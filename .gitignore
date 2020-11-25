@@ -1,0 +1,8 @@
+*.egg-info
+venv
+.venv
+.ipynb_checkpoints
+.idea
+dist
+build
+MANIFEST
