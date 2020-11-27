@@ -117,6 +117,6 @@ For numerical features we use [two-sample Kolmogorov-Smirnov test](https://en.wi
 Currently we analyze data drift individually for each feature, integral data drift estimation is not prodided.
 
 ## Examples
-- Iris report generation [jupyetr notebook](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/iris_data_drift.ipynb)
-- Boston report generation [jupyetr notebook](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/boston_data_drift.ipynb)
-- Breast cancer report generation [jupyetr notebook](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/breast_cancer_data_drift.ipynb)
+- Iris report generation [jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/iris_data_drift.ipynb)
+- Boston report generation [jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/boston_data_drift.ipynb)
+- Breast cancer report generation [jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/breast_cancer_data_drift.ipynb)
