@@ -1,6 +1,9 @@
 # evidently
 ## What is it?
-Evidently generates interactive reports from a pandas `DataFrame`. Currently Data Drift report is avaliable.
+Evidently helps analyze the performance of machine learning models in production. The tool generates interactive reports from pandas `DataFrame`. 
+Currently Data Drift report is avaliable.
+![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/iris_data_drift_report_picture.png)
+
 ## Installing from PyPI
 We establish Evidently as `evidently` package in PyPI.
 You can install using the pip package manager by running:
