@@ -2,6 +2,7 @@
 ## What is it?
 Evidently helps analyze the performance of machine learning models in production. The tool generates interactive reports from pandas `DataFrame`. 
 Currently Data Drift report is avaliable.
+
 ![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/iris_data_drift_report_picture.png)
 
 ## Installing from PyPI
@@ -44,7 +45,7 @@ iris_data_drift_report.show()
 ```
 
 ## More details
-`Dashboard` generate interactive report, which consists from selected `Tabs`. Currently there is on `DriftTab` for data drift estimation, however, later on more tabs will be avaliable.
+`Dashboard` generate interactive report, which consists of selected `Tabs`. Currently there is on `DriftTab` for data drift estimation, however, later on more tabs will be avaliable.
 To generate `Dashbord` you have to do the following steps:
 1. Prepare your data as pandas DataFrames. 
 For data drift estimation you will need two datasets: reference data and the most recent data. Data drift will be estimated as a difference of the most recent data comparing to the reference dataset.
