@@ -111,8 +111,3 @@ To estimate drift we compare distribution for each feature in reference dataset 
 For numerical features we use [two-sample Kolmogorov-Smirnov test](https://en.wikipedia.org/wiki/Kolmogorov%E2%80%93Smirnov_test), for categorical features we use [chi-squared test](https://en.wikipedia.org/wiki/Chi-squared_test), for both tests 0.95 confidence level is used. 
 
 Currently we analyze data drift individually for each feature, integral data drift estimation is not prodided.
-
-## Examples
-- Iris data report: jupyter notebook and html report
-- Boston data report: jupyter notebook and html report
-- Breast cancer data report: jupyter notebook and html report
