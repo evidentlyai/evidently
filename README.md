@@ -45,7 +45,7 @@ iris_data_drift_report.show()
 ```
 
 ## More details
-`Dashboard` generate interactive report, which consists of selected `Tabs`. Currently there is on `DriftTab` for data drift estimation, however, later on more tabs will be avaliable.
+`Dashboard` generates interactive report, which consists of selected `Tabs`. Currently there is on `DriftTab` for data drift estimation, however, later on more tabs will be avaliable.
 To generate `Dashbord` you have to do the following steps:
 1. Prepare your data as pandas DataFrames. 
 For data drift estimation you will need two datasets: reference data and the most recent data. Data drift will be estimated as a difference of the most recent data comparing to the reference dataset.
@@ -110,11 +110,11 @@ Note, that you need to specify path where to save your report and report name.
 Report will not be opened automatically, so to explore it you need to open it.
 
 ## How it works
-To calculate data drift two datasets are needed: reference dataset and the most recent dataset. The idea here is that we use reference dataset as en etalone and estimate data drift as a shift of the most resent data comparing to the etalone data. Suretainly, you can use any datasets you like as a reference and most recent ones, but be aware that reference one will serve as an etalone for comparison.
+To calculate data drift two datasets are needed: reference dataset and the most recent dataset. The idea here is that we use reference dataset as en etalon and estimate data drift as a shift of the most resent data comparing to the etalon data. Certainly, you can use any datasets you like as a reference and most recent ones, but be aware that reference one will serve as an etalon for comparison.
 To estimate drift we compare distribution for each feature in reference dataset with distribution of the corresponding feature from the most recent dataset. We detect if distribution has changed signifivantly using statistical tests. 
 For numerical features we use [two-sample Kolmogorov-Smirnov test](https://en.wikipedia.org/wiki/Kolmogorov%E2%80%93Smirnov_test), for categorical features we use [chi-squared test](https://en.wikipedia.org/wiki/Chi-squared_test), for both tests 0.95 confidence level is used. 
 
-Currently we analyze data drift individually for each feature, integral data drift estimation is not prodided.
+Currently we analyze data drift individually for each feature, integral data drift estimation is not provided.
 
 ## Examples
 - Iris report generation [jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/iris_data_drift.ipynb)
