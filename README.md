@@ -77,7 +77,7 @@ column_mapping['id'] = None #there is no ID column in the dataset
 column_mapping['datetime'] = 'date' #'date' is the name of the column with datetime 
 
 column_mapping['numerical_features'] = ['temp', 'atemp', 'humidity'] #list of numerical features
-test_column_mapping['categorical_features'] = ['season', 'holiday'] #list of categorical features
+column_mapping['categorical_features'] = ['season', 'holiday'] #list of categorical features
 ```
 
 Though the tool works only with numerical data, you can also estimate drift for categorical features. To do that, you should first encode the categorical data with [numerical labels](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.LabelEncoder.html). You can use other strategies to represent categorical data as numerical, for instance [OneHotEncoding](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.get_dummies.html). Then you should create `column_mapping` `dict` and list all your encoded categorical features in the `categorical_feature` section, like:
