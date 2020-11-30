@@ -5,11 +5,15 @@ Evidently helps analyze machine learning models during development, validation, 
 ![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/iris_data_drift_report_picture.png)
 
 ## Installing from PyPI
+### MAC OS and Linux
 Evidently is available as a PyPI package. To install it using pip package manager, run:
 ```sh
 $ pip install evidently
 ```
-The tool allows building interactive reports both inside a Jupyter notebook and as a separate .html file. To enable this, we use jupyter nbextension. After installing `evidently` you should run the two following commands in the terminal from evidently directory.
+
+The tool allows building interactive reports both inside a Jupyter notebook and as a separate .html file. If you want have nteractive reports only in .html files, than the installation is finished.
+
+ To enable building interactive reports inside a Jupyter notebook, we use jupyter nbextension. This means that if you want to create reports inside a Jupyter notebook, then after installing `evidently` you should run the two following commands in the terminal from evidently directory.
 
 To install jupyter nbextention, run:
 ```sh
@@ -22,6 +26,15 @@ jupyter nbextension enable evidently --py --sys-prefix
 That's it!
 
 **Note**: a single run after the installation is enough. No need to repeat the last two commands every time.
+
+**Note 2**: if you use Jupyter Lab, you may experience difficulties with exploring report iside a Jupyter notebook. Howewer, report generation in a separate .html file will work correctly.
+
+### Windows
+Evidently is available as a PyPI package. To install it using pip package manager, run:
+```sh
+$ pip install evidently
+```
+The tool allows building interactive reports both inside a Jupyter notebook and as a separate .html file. Unfortunatelly, building interactive reports inside a Jupyter notebook is not possible for Windows yet. The reason is that Windows requires administrator privilege for creating symlink. In later versions we will address this issue.
 
 ## Getting started
 To start, prepare your datasets as two pandas DataFrames: DataFrame with your reference data and DataFrame with your most recent data. For example, you can do it as the following:
@@ -39,9 +52,11 @@ iris_frame = pd.DataFrame(iris.data, columns = iris.feature_names)
 
 To generate the Data Drift report, run:
 ```python
-iris_data_drift_report = Dashboard(iris_frame[:100], iris_frame[100:], column_mapping = None, tabs = [DriftTab])
-iris_data_drift_report.show()
+iris_data_drift_report = Dashboard(iris_frame[:100], iris_frame[100:], tabs = [DriftTab])
+iris_data_drift_report.save("reports/my_report.html")
 ```
+If you get security allert, press "trust html".
+Report will not open automatically, to explore it, you should open it.
 
 ## More details
 `Dashboard` generates an interactive report that includes the selected `Tabs`. Currently, you can choose only the `DriftTab` to estimate the data drift. We will be adding more tabs soon!
@@ -63,7 +78,7 @@ If the `column_mapping` is `None`, we use the default mapping strategy:
 - Column with 'target' name will be treated as a target function.
 - Column with 'prediction' name will be treated as a model prediction.
 
-ID, datetime, target and prediction are utility columns. They are not required to calculate drift. If you specify datetime, it will be used in data plots. If you specify target and prediction, they will be excluded from the data drift report.  
+ID, datetime, target and prediction are utility columns. They are not required to calculate drift. If you specify datetime, it will be used in data plots. If you specify id, target and prediction, they will be excluded from the data drift report.  
 
 You can create a `column_mapping` to specify if your dataset includes utility columns, and split features into numerical and categorical types. 
 
@@ -90,8 +105,7 @@ Categorical features will be actually treated as categorical. Data drift estimat
 3. **Generate the report**.
 You can generate the report without specifying the `column_mapping`:
 ```python
-drift_dashboard = Dashboard(reference_data, recent_data, 
-	column_mapping = None, tabs=[DriftTab])
+drift_dashboard = Dashboard(reference_data, recent_data, tabs=[DriftTab])
 ```
 And with `column_mapping` specification:
 ```python
@@ -108,6 +122,8 @@ drift_dashboard.show()
 ```python
 drift_dashboard.save("reports/my_report.html")
 ```
+If you get security allert, press "trust html".
+
 You will need to specify the path where to save your report and the report name. 
 Report will not open automatically. To explore it, you should open it.
 
@@ -116,11 +132,13 @@ To calculate the data drift, we need two datasets. The reference dataset will se
 
 You can potentially choose any two datasets for comparison. But keep in mind that only “reference” dataset will be used as a basis for comparison. 
 
-To estimate the drift, we compare distributions of each individual feature in the two datasets. We use statistical tests to detect if the distribution has changed significantly. For numerical features, we use [two-sample Kolmogorov-Smirnov test](https://en.wikipedia.org/wiki/Kolmogorov%E2%80%93Smirnov_test). For categorical features, we use [chi-squared test](https://en.wikipedia.org/wiki/Chi-squared_test). Both tests use 0.95 confidence level. 
+To estimate the drift, we compare distributions of each individual feature in the two datasets. We use statistical tests to detect if the distribution has changed significantly. For numerical features, we use [two-sample Kolmogorov-Smirnov test](https://en.wikipedia.org/wiki/Kolmogorov%E2%80%93Smirnov_test). For categorical features, we will use [chi-squared test](https://en.wikipedia.org/wiki/Chi-squared_test). Both tests use 0.95 confidence level. We will add some levers later on, but this is a good enough default approach.
 
 Currently, we estimate data drift for each feature individually. Integral data drift is not evaluated.
 
+By clicking on each feature, you can explore the values mapped in a plot. The green area covers one standard deviation from the mean, as seen in the reference dataset. Or, you can zoom on distributions to understand what has changed.
+
 ## Examples
-- Iris report generation: [Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/iris_data_drift.ipynb)
-- Boston report generation: [Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/boston_data_drift.ipynb)
-- Breast cancer report generation: [Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/breast_cancer_data_drift.ipynb)
+- See Iris report generation to explore report both inside a Jupyter notebook and as a separate .html file: [Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/iris_data_drift.ipynb) 
+- See Boston report generation to explore report with and without column mapping: [Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/boston_data_drift.ipynb)
+- See Breast cancer report generation to explore report with and without datetime specification: [Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/breast_cancer_data_drift.ipynb)
