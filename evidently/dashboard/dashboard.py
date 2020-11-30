@@ -128,8 +128,8 @@ class Dashboard:
     def __init__(self,
                  reference_data: pandas.DataFrame,
                  production_data: pandas.DataFrame,
-                 column_mapping: Dict,
-                 tabs: List[Type[Tab]]):
+                 tabs: List[Type[Tab]],
+                 column_mapping = None):
         self.reference_data = reference_data
         self.production_data = production_data
         self.tabsData = [t() for t in tabs]

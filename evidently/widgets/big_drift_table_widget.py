@@ -6,7 +6,7 @@ import pandas as pd
 from pandas.api.types import is_numeric_dtype
 import numpy as np
 
-from scipy.stats import ks_2samp
+from scipy.stats import ks_2samp, chisquare
 import matplotlib.pyplot as plt
 import plotly.graph_objs as go
 
@@ -34,10 +34,16 @@ class BigDriftTableWidget(Widget):
             target_column = column_mapping.get('target')
             prediction_column = column_mapping.get('prediction')
             num_feature_names = column_mapping.get('numerical_features')
-            num_feature_names = [name for name in num_feature_names if is_numeric_dtype(reference_data[name])] 
+            if num_feature_names is None:
+                num_feature_names = []
+            else:
+                num_feature_names = [name for name in num_feature_names if is_numeric_dtype(reference_data[name])] 
 
             cat_feature_names = column_mapping.get('categorical_features')
-            cat_feature_names = [name for name in cat_feature_names if is_numeric_dtype(reference_data[name])] 
+            if cat_feature_names is None:
+                cat_feature_names = []
+            else:
+                cat_feature_names = [name for name in cat_feature_names if is_numeric_dtype(reference_data[name])] 
         
         else:
             date_column = 'datetime' if 'datetime' in reference_data.columns else None
@@ -50,19 +56,14 @@ class BigDriftTableWidget(Widget):
             num_feature_names = list(set(reference_data.select_dtypes([np.number]).columns) - set(utility_columns))
             cat_feature_names = list(set(reference_data.select_dtypes([np.object]).columns) - set(utility_columns))
 
-
-        #obsolete columns mapping
-        #date_column = 'datetime' #later get it from columns_mapping
-        #id_column = None #later get it from columns_mapping
-        #utility_columns = [date_column, id_column] #later get it from columns_mapping
-        #feature_names = set(reference_data.columns.to_list()) - set(utility_columns)
-
         #set params data
         params_data = []
         plt.ioff()
-        for feature_name in num_feature_names + cat_feature_names: #feature_names:
+        for feature_name in num_feature_names:# + cat_feature_names: #feature_names:
             prod_small_hist = plt.hist(production_data[feature_name], density = True)
             ref_small_hist = plt.hist(reference_data[feature_name], density = True)
+
+            feature_type = 'num'
 
             p_value = ks_2samp(reference_data[feature_name], production_data[feature_name])[1]
 
@@ -84,6 +85,49 @@ class BigDriftTableWidget(Widget):
                             "insights": []
                         },
                         "f1": feature_name,
+                        "f6": feature_type,
+                        "f3": {
+                            "x": list(ref_small_hist[1]),
+                            "y": list(ref_small_hist[0])
+                        },
+                        "f4": {
+                            "x": list(prod_small_hist[1]),
+                            "y": list(prod_small_hist[0])
+                        },
+                        "f2": distr_sim_test,
+                        "f5": round(p_value, 6) 
+                }
+                )
+
+        for feature_name in cat_feature_names: #feature_names:
+            prod_small_hist = plt.hist(production_data[feature_name], density = True)
+            ref_small_hist = plt.hist(reference_data[feature_name], density = True)
+
+            feature_type = 'cat'
+
+            p_value = ks_2samp(reference_data[feature_name], production_data[feature_name])[1]
+            #CHI2 to be implemented for cases with different categories
+            #p_value = chisquare(reference_data[feature_name], production_data[feature_name])[1]
+
+            distr_sim_test = "Detected" if p_value < 0.05 else "Not Detected"
+
+            params_data.append(
+                {
+                    "details": {
+                            "parts": [
+                                {
+                                    "title": "Data drift",
+                                    "id": feature_name + "_drift"
+                                },
+                                {
+                                    "title": "Data distribution",
+                                    "id": feature_name + "_distr"
+                                }
+                            ],
+                            "insights": []
+                        },
+                        "f1": feature_name,
+                        "f6": feature_type,
                         "f3": {
                             "x": list(ref_small_hist[1]),
                             "y": list(ref_small_hist[0])
@@ -132,8 +176,8 @@ class BigDriftTableWidget(Widget):
             fig = go.Figure()
 
             fig.add_trace(go.Scatter(
-                x = reference_data[date_column] if date_column else reference_data.index,
-                y = reference_data[feature_name],
+                x = production_data[date_column] if date_column else production_data.index,
+                y = production_data[feature_name],
                 mode = 'markers',
                 name = 'Production',
                 marker = dict(
@@ -226,6 +270,10 @@ class BigDriftTableWidget(Widget):
                     {
                         "title": "Feature",
                         "field": "f1"
+                    },
+                    {
+                        "title": "Type",
+                        "field": "f6"
                     },
                     {
                         "title": "Reference Distribution",
