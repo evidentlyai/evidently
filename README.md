@@ -2,7 +2,7 @@
 ## What is it?
 Evidently helps analyze machine learning models during development, validation, or production monitoring. The tool generates interactive reports from pandas `DataFrame`. Currently, the Data Drift report is available.
 
-![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/iris_data_drift_report_picture.png)
+![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/evidently_github.png)
 
 ## Installing from PyPI
 ### MAC OS and Linux

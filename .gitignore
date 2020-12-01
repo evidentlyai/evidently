@@ -1,6 +1,7 @@
 *.egg-info
 venv
 .venv
+.DS_Store
 evidently/examples/.DS_Store
 .ipynb_checkpoints
 .idea
