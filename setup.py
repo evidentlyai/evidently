@@ -75,7 +75,7 @@ setup_args = dict(
         "dataclasses",
         "pandas",
         "numpy",
-        "matplotlib",
+        #"matplotlib",
         "plotly",
         "scipy",
     ],

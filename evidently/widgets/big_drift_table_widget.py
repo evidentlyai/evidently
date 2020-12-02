@@ -7,7 +7,7 @@ from pandas.api.types import is_numeric_dtype
 import numpy as np
 
 from scipy.stats import ks_2samp, chisquare
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import plotly.graph_objs as go
 
 from evidently.model.widget import BaseWidgetInfo, AlertStats, AdditionalGraphInfo
@@ -58,10 +58,10 @@ class BigDriftTableWidget(Widget):
 
         #set params data
         params_data = []
-        plt.ioff()
+        #plt.ioff()
         for feature_name in num_feature_names:# + cat_feature_names: #feature_names:
-            prod_small_hist = plt.hist(production_data[feature_name], density = True)
-            ref_small_hist = plt.hist(reference_data[feature_name], density = True)
+            prod_small_hist = np.histogram(production_data[feature_name], bins = 10, density = True)
+            ref_small_hist = np.histogram(reference_data[feature_name], bins = 10, density = True)
 
             feature_type = 'num'
 
@@ -100,8 +100,10 @@ class BigDriftTableWidget(Widget):
                 )
 
         for feature_name in cat_feature_names: #feature_names:
-            prod_small_hist = plt.hist(production_data[feature_name], density = True)
-            ref_small_hist = plt.hist(reference_data[feature_name], density = True)
+            prod_small_hist = np.histogram(production_data[feature_name], bins = 10, density = True)
+            #plt.hist(production_data[feature_name], density = True)
+            ref_small_hist = np.histogram(reference_data[feature_name], bins = 10, density = True)
+            #plt.hist(reference_data[feature_name], density = True)
 
             feature_type = 'cat'
 
