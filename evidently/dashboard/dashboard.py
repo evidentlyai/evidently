@@ -139,12 +139,14 @@ class Dashboard:
     def __render(self, template: typing.Callable[[TemplateParams], str]):
         dashboard_id = "evidently_dashboard_" + str(uuid.uuid4()).replace("-", "")
         tab_widgets = [t.info() for t in self.tabsData]
-        di = DashboardInfo(dashboard_id, [item for tab in tab_widgets for item in tab])
+
+        di = DashboardInfo(dashboard_id, [item for tab in tab_widgets for item in tab if item is not None])
         additional_graphs = {}
         for widget in [item for tab in tab_widgets for item in tab]:
+            if widget is None:
+                continue
             for graph in widget.additionalGraphs:
                 additional_graphs[graph.id] = graph.params
-
         return template(TemplateParams(dashboard_id, di, additional_graphs))
 
     def show(self):
