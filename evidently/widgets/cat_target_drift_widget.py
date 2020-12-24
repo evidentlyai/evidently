@@ -6,7 +6,7 @@ import pandas as pd
 from pandas.api.types import is_numeric_dtype
 import numpy as np
 
-from scipy.stats import ks_2samp
+from scipy.stats import chisquare
 #import matplotlib.pyplot as plt
 import plotly.graph_objs as go
 import plotly.figure_factory as ff
@@ -18,16 +18,13 @@ red = "#ed0400"
 grey = "#4d4d4d"
 
 
-class NumPredictionDriftWidget(Widget):
+class CatTargetDriftWidget(Widget):
     def __init__(self, title: str):
         super().__init__()
         self.title = title
-        #self.wi = None
 
     def get_info(self) -> BaseWidgetInfo:
-        #if self.wi:
         return self.wi
-        #raise ValueError("No prediction data provided")
 
     def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping): 
         if column_mapping:
@@ -58,34 +55,54 @@ class NumPredictionDriftWidget(Widget):
             num_feature_names = list(set(reference_data.select_dtypes([np.number]).columns) - set(utility_columns))
             cat_feature_names = list(set(reference_data.select_dtypes([np.object]).columns) - set(utility_columns))
 
-        if prediction_column is not None:
+        if target_column is not None:
             #calculate output drift
-            pred_p_value = ks_2samp(reference_data[prediction_column], production_data[prediction_column])[1]
-            pred_sim_test = "detected" if pred_p_value < 0.05 else "not detected"
+            ref_feature_vc = reference_data[target_column][np.isfinite(reference_data[target_column])].value_counts()
+            prod_feature_vc = production_data[target_column][np.isfinite(production_data[target_column])].value_counts()
+
+            keys = set(list(reference_data[target_column][np.isfinite(reference_data[target_column])].unique()) + 
+                list(production_data[target_column][np.isfinite(production_data[target_column])].unique()))
+
+            ref_feature_dict = dict.fromkeys(keys, 0)
+            for key, item in zip(ref_feature_vc.index, ref_feature_vc.values):
+                ref_feature_dict[key] = item
+
+            prod_feature_dict = dict.fromkeys(keys, 0)
+            for key, item in zip(prod_feature_vc.index, prod_feature_vc.values):
+                prod_feature_dict[key] = item
+
+            f_exp = [value[1] for value in sorted(ref_feature_dict.items())]
+            f_obs = [value[1] for value in sorted(prod_feature_dict.items())]
+
+            target_p_value = chisquare(f_exp, f_obs)[1]
+
+            target_sim_test = "detected" if target_p_value < 0.05 else "not detected"
 
             #plot output distributions
-            pred_distr = ff.create_distplot(
-                [reference_data[prediction_column], production_data[prediction_column]], 
-                ["Reference", "Production"],  
-                colors=[grey, red],
-                show_rug=True)
+            fig = go.Figure()
 
-            pred_distr.update_layout(
-                xaxis_title = "Value",
-                yaxis_title = "Share",
+            fig.add_trace(go.Histogram(x=reference_data[target_column], 
+                 marker_color=grey, opacity=0.6, nbinsx=10,  name='Reference', histnorm='probability'))
+
+            fig.add_trace(go.Histogram(x=production_data[target_column],
+                 marker_color=red, opacity=0.6,nbinsx=10, name='Production', histnorm='probability'))
+
+            fig.update_layout(
                 legend = dict(
                 orientation="h",
                 yanchor="bottom",
                 y=1.02,
                 xanchor="right",
                 x=1
-                )
+                ),
+                xaxis_title = target_column,
+                yaxis_title = "Share"
             )
 
-            pred_drift_json  = json.loads(pred_distr.to_json())
+            target_drift_json  = json.loads(fig.to_json())
 
             self.wi = BaseWidgetInfo(
-                title="Prediction Drift: " + pred_sim_test + ", p_value=" + str(round(pred_p_value, 6)),
+                title="Target Drift: " + target_sim_test + ", p_value=" + str(round(target_p_value, 6)),
                 type="big_graph",
                 details="",
                 alertStats=AlertStats(),
@@ -94,11 +111,10 @@ class NumPredictionDriftWidget(Widget):
                 insights=[],
                 size=2,
                 params={
-                    "data": pred_drift_json['data'],
-                    "layout": pred_drift_json['layout']
+                    "data": target_drift_json['data'],
+                    "layout": target_drift_json['layout']
                 },
                 additionalGraphs=[],
             )
         else:
             self.wi = None
-

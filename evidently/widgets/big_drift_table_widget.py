@@ -276,7 +276,8 @@ class BigDriftTableWidget(Widget):
             )
 
         self.wi = BaseWidgetInfo(
-            title=f"Data Drift: drift detected for {drifted_fetures_count} out of {len(num_feature_names) + len(cat_feature_names)} features",
+            title="Data Drift: drift detected for " + str(drifted_fetures_count) +
+                " out of " + str(len(num_feature_names) + len(cat_feature_names)) + " features",
             type="big_table",
             details="",
             alertStats=AlertStats(),

@@ -58,7 +58,7 @@ class NumTargetDriftWidget(Widget):
         if target_column is not None:
             #calculate output drift
             target_p_value = ks_2samp(reference_data[target_column], production_data[target_column])[1]
-            target_sim_test = "Detected" if target_p_value < 0.05 else "Not Detected"
+            target_sim_test = "detected" if target_p_value < 0.05 else "not detected"
 
             #plot output distributions
             target_distr = ff.create_distplot(
@@ -82,7 +82,7 @@ class NumTargetDriftWidget(Widget):
             target_drift_json  = json.loads(target_distr.to_json())
 
             self.wi = BaseWidgetInfo(
-                title=self.title,
+                title="Target Drift: " + target_sim_test + ", p_value=" + str(round(target_p_value, 6)),
                 type="big_graph",
                 details="",
                 alertStats=AlertStats(),

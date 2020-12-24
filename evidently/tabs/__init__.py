@@ -3,4 +3,5 @@
 
 from .drift_tab import DriftTab 
 from .num_target_drift_tab import NumTargetDriftTab
+from .cat_target_drift_tab import CatTargetDriftTab
 
