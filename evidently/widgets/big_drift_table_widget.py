@@ -58,16 +58,18 @@ class BigDriftTableWidget(Widget):
 
         #set params data
         params_data = []
+        drifted_fetures_count = 0
         #plt.ioff()
         for feature_name in num_feature_names:# + cat_feature_names: #feature_names:
-            prod_small_hist = np.histogram(production_data[feature_name], bins = 10, density = True)
-            ref_small_hist = np.histogram(reference_data[feature_name], bins = 10, density = True)
+            prod_small_hist = np.histogram(production_data[feature_name][np.isfinite(production_data[feature_name])], bins = 10, density = True)
+            ref_small_hist = np.histogram(reference_data[feature_name][np.isfinite(reference_data[feature_name])], bins = 10, density = True)
 
             feature_type = 'num'
 
             p_value = ks_2samp(reference_data[feature_name], production_data[feature_name])[1]
 
             distr_sim_test = "Detected" if p_value < 0.05 else "Not Detected"
+            drifted_fetures_count += 1 if p_value < 0.05 else 0
 
             params_data.append(
                 {
@@ -100,18 +102,34 @@ class BigDriftTableWidget(Widget):
                 )
 
         for feature_name in cat_feature_names: #feature_names:
-            prod_small_hist = np.histogram(production_data[feature_name], bins = 10, density = True)
-            #plt.hist(production_data[feature_name], density = True)
-            ref_small_hist = np.histogram(reference_data[feature_name], bins = 10, density = True)
-            #plt.hist(reference_data[feature_name], density = True)
+            prod_small_hist = np.histogram(production_data[feature_name][np.isfinite(production_data[feature_name])], bins = 10, density = True)
+            ref_small_hist = np.histogram(reference_data[feature_name][np.isfinite(reference_data[feature_name])], bins = 10, density = True)
 
             feature_type = 'cat'
 
-            p_value = ks_2samp(reference_data[feature_name], production_data[feature_name])[1]
+            #p_value = ks_2samp(reference_data[feature_name], production_data[feature_name])[1]
             #CHI2 to be implemented for cases with different categories
-            #p_value = chisquare(reference_data[feature_name], production_data[feature_name])[1]
+            ref_feature_vc = reference_data[feature_name][np.isfinite(reference_data[feature_name])].value_counts()
+            prod_feature_vc = production_data[feature_name][np.isfinite(production_data[feature_name])].value_counts()
+
+            keys = set(list(reference_data[feature_name][np.isfinite(reference_data[feature_name])].unique()) + 
+                list(production_data[feature_name][np.isfinite(production_data[feature_name])].unique()))
+
+            ref_feature_dict = dict.fromkeys(keys, 0)
+            for key, item in zip(ref_feature_vc.index, ref_feature_vc.values):
+                ref_feature_dict[key] = item
+
+            prod_feature_dict = dict.fromkeys(keys, 0)
+            for key, item in zip(prod_feature_vc.index, prod_feature_vc.values):
+                prod_feature_dict[key] = item
+
+            f_exp = [value[1] for value in sorted(ref_feature_dict.items())]
+            f_obs = [value[1] for value in sorted(prod_feature_dict.items())]
+
+            p_value = chisquare(f_exp, f_obs)[1]
 
             distr_sim_test = "Detected" if p_value < 0.05 else "Not Detected"
+            drifted_fetures_count += 1 if p_value < 0.05 else 0
 
             params_data.append(
                 {
@@ -151,10 +169,10 @@ class BigDriftTableWidget(Widget):
             #plot distributions
             fig = go.Figure()
             fig.add_trace(go.Histogram(x=reference_data[feature_name], 
-                 marker_color=grey, opacity=0.6, nbinsx=10,  name = 'Reference', histnorm='probability'))
+                 marker_color=grey, opacity=0.6, nbinsx=10,  name='Reference', histnorm='probability'))
 
             fig.add_trace(go.Histogram(x=production_data[feature_name],
-                 marker_color=red, opacity=0.6,nbinsx=10, name = 'Production', histnorm='probability'))
+                 marker_color=red, opacity=0.6,nbinsx=10, name='Production', histnorm='probability'))
 
             fig.update_layout(
                 legend = dict(
@@ -171,8 +189,8 @@ class BigDriftTableWidget(Widget):
             distr_figure = json.loads(fig.to_json())
         
             #plot drift
-            reference_mean = np.mean(reference_data[feature_name])
-            reference_std = np.std(reference_data[feature_name], ddof = 1) 
+            reference_mean = np.mean(reference_data[feature_name][np.isfinite(reference_data[feature_name])])
+            reference_std = np.std(reference_data[feature_name][np.isfinite(reference_data[feature_name])], ddof = 1) 
             x_title = "Timestamp" if date_column else "Index"
 
             fig = go.Figure()
@@ -258,7 +276,7 @@ class BigDriftTableWidget(Widget):
             )
 
         self.wi = BaseWidgetInfo(
-            title=self.title,
+            title=f"Data Drift: drift detected for {drifted_fetures_count} out of {len(num_feature_names) + len(cat_feature_names)} features",
             type="big_table",
             details="",
             alertStats=AlertStats(),

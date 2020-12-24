@@ -11,5 +11,5 @@ from evidently.widgets.widget import Widget
 class DriftTab(Tab):
     def _get_widgets(self) -> List[Widget]:
         return [
-            BigDriftTableWidget("Data Drift Table")
+            BigDriftTableWidget("Data Drift")
         ]

@@ -18,16 +18,15 @@ red = "#ed0400"
 grey = "#4d4d4d"
 
 
-class RegOutputCorrWidget(Widget):
+class NumPredictionCorrWidget(Widget):
     def __init__(self, title: str):
         super().__init__()
         self.title = title
-        self.wi = None
 
     def get_info(self) -> BaseWidgetInfo:
-        if self.wi:
-            return self.wi
-        raise ValueError("No prediction data provided")
+        #if self.wi:
+        return self.wi
+        #raise ValueError("No prediction data provided")
 
     def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping): 
         if column_mapping:
@@ -96,3 +95,5 @@ class RegOutputCorrWidget(Widget):
                 },
                 additionalGraphs=[],
             )
+        else:
+            self.wi = None
