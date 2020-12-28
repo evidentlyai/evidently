@@ -1,8 +1,8 @@
 # evidently
 ## What is it?
 Evidently helps analyze machine learning models during development, validation, or production monitoring. The tool generates interactive reports from pandas `DataFrame`. There are three reports available now: 
-**Data Drift**: 
 
+**Data Drift**: 
 ![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/evidently_github.png)
 **Numerical Target Drift**:
 ![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/evidently_num_target_drift_github.png)
@@ -151,6 +151,7 @@ To calculate target or data drift, we need two datasets. The reference dataset w
 You can potentially choose any two datasets for comparison. But keep in mind that only “reference” dataset will be used as a basis for comparison. 
 
 **Data Drift**
+
 To estimate the data drift, we compare distributions of each individual feature in the two datasets. We use statistical tests to detect if the distribution has changed significantly. For numerical features, we use [two-sample Kolmogorov-Smirnov test](https://en.wikipedia.org/wiki/Kolmogorov%E2%80%93Smirnov_test). For categorical features, we will use [chi-squared test](https://en.wikipedia.org/wiki/Chi-squared_test). Both tests use 0.95 confidence level. We will add some levers later on, but this is a good enough default approach.
 
 Currently, we estimate data drift for each feature individually. Integral data drift is not evaluated.
@@ -158,6 +159,7 @@ Currently, we estimate data drift for each feature individually. Integral data d
 By clicking on each feature, you can explore the values mapped in a plot. The green area covers one standard deviation from the mean, as seen in the reference dataset. Or, you can zoom on distributions to understand what has changed.
 
 **Numerical Target Drift**
+
 We estimate drift for target and predictions equally. If both target and predictions data are passed to the dashboard, we build equal plots for both of them. If only one of them (either target or predictions) is passed to the dashboard, we build report only for passed column. If there are neither target nor predictions are avaliable to the analysis, you get an error.
 
 To estimate the numerical target drift, we compare distribution of target in the two datasets. We use Kolmogorov-Smirnov statistical test with 0.95 confidence level to detect if the distribution has changed significantly.
@@ -169,6 +171,7 @@ We visualize target values by time (if `datetime` column is in the datasets or d
 Finally we generate interactive table with visualization of dependencies between target and each feature. These plots are needed to analyze how feature values relates to the target values and check for diferences between datasets. It is especially interesting to analyze dependencies between target and important features, because ML model relies on them a lot and significan changes can confuse model and cause higher errors.
 
 **Categorical Target Drift**
+
 Here again we estimate drift for target and predictions equally. If both target and predictions data are passed to the dashboard, we build equal plots for both of them. If only one of them (either target or predictions) is passed to the dashboard, we build report only for passed column. If there are neither target nor predictions are avaliable to the analysis, you get an error.
 
 To estimate the categorical target drift, we compare distribution of target in the two datasets. We use chi-squared statistical test with 0.95 confidence level to detect if the distribution has changed significantly.
