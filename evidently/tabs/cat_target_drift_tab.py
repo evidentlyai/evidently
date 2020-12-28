@@ -16,6 +16,6 @@ class CatTargetDriftTab(Tab):
         widgets = [
             CatTargetDriftWidget("Target Drift"),
             CatPredictionDriftWidget("Prediction Drift"),
-            CatTargetPredFeatureTable("Target/Prediction Drift By Feature")
+            CatTargetPredFeatureTable("Target (Prediction) Behavior By Feature")
         ]
         return widgets

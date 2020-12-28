@@ -24,6 +24,6 @@ class NumTargetDriftTab(Tab):
             NumPredictionDriftWidget("Prediction Drift"),
             NumPredictionCorrWidget("Prediction Correlations"),
             NumPredictionValuesWidget("Prediction Values"),
-            NumTargetPredFeatureTable("Target/Prediction Drift By Feature")
+            NumTargetPredFeatureTable("Target (Prediction) Behavior By Feature")
         ]
         return widgets

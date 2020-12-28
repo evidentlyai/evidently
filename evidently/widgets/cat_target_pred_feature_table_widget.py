@@ -67,11 +67,11 @@ class CatTargetPredFeatureTable(Widget):
                         "details": {
                                 "parts": [
                                     {
-                                        "title": "Distribution by Target",
+                                        "title": "Target",
                                         "id": feature_name + "_target_values"
                                     },
                                     {
-                                        "title": "Distribution by Prediction",
+                                        "title": "Prediction",
                                         "id": feature_name + "_prediction_values"
                                     }
                                 ],
@@ -150,7 +150,7 @@ class CatTargetPredFeatureTable(Widget):
                         "details": {
                                 "parts": [
                                     {
-                                        "title": "Distribution by Target",
+                                        "title": "Target",
                                         "id": feature_name + "_target_values"
                                     }
                                 ],
@@ -212,7 +212,7 @@ class CatTargetPredFeatureTable(Widget):
                         "details": {
                                 "parts": [
                                     {
-                                        "title": "Distribution by Prediction",
+                                        "title": "Prediction",
                                         "id": feature_name + "_prediction_values"
                                     }
                                 ],
