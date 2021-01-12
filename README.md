@@ -48,7 +48,7 @@ $ pip install evidently
 The tool allows building interactive reports both inside a Jupyter notebook and as a separate .html file. Unfortunately, building reports inside a Jupyter notebook is not yet possible for Windows. The reason is Windows requires administrator privileges to create symlink. In later versions we will address this issue.
 
 ## Getting started
-To start, prepare your datasets as two pandas DataFrames: DataFrame with your reference data and DataFrame with your most recent data. For example, you can do it as the following:
+To start, prepare your data as two pandas DataFrames. The first should include your reference data, the second -  most recent production data. The structure should be identical. For Target Drift report, include the column with Target and/or Prediction:
 
 ```python
 import pandas as pd
