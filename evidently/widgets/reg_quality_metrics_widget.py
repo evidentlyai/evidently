@@ -5,6 +5,7 @@ import json
 import pandas as pd
 from pandas.api.types import is_numeric_dtype
 import numpy as np
+import math
 
 from scipy.stats import ks_2samp
 from statsmodels.graphics.gofplots import qqplot
@@ -19,7 +20,7 @@ red = "#ed0400"
 grey = "#4d4d4d"
 
 
-class RegErrorNormalityWidget(Widget):
+class RegQualityMetricsWidget(Widget):
     def __init__(self, title: str):
         super().__init__()
         self.title = title
@@ -60,64 +61,48 @@ class RegErrorNormalityWidget(Widget):
 
         if target_column is not None and prediction_column is not None:
             
-            #plot output correlations
-            error_norm = go.Figure()
+            #calculate quality metrics
+            abs_err = list(map(lambda x : abs(x[0] - x[1]), 
+                zip(reference_data[target_column], reference_data[prediction_column])))
+            mae = np.mean(abs_err)
+            sdae = np.std(abs_err, ddof = 1)
 
-            error = reference_data[target_column] - reference_data[prediction_column]
-            qqplot_data = qqplot(error, line='s').gca().lines
+            abs_perc_err = list(map(lambda x : 100*abs(x[0] - x[1])/x[0], 
+                zip(reference_data[target_column], reference_data[prediction_column])))
+            mape = np.mean(abs_perc_err)
+            sdape = np.std(abs_perc_err, ddof = 1)
 
-            sample_quantile_trace = go.Scatter(
-                x = qqplot_data[0].get_xdata(),
-                y = qqplot_data[0].get_ydata(),
-                mode = 'markers',
-                name = 'Dataset Quantiles',
-                marker=dict(
-                    size=6,
-                    color=red
-                )
-            )
+            sqrt_err = list(map(lambda x : (x[0] - x[1])**2, 
+                zip(reference_data[target_column], reference_data[prediction_column])))
+            mse = np.mean(sqrt_err)
+            sdse = np.std(sqrt_err, ddof = 1)
 
-            theoretical_quantile_trace = go.Scatter(
-                x = qqplot_data[1].get_xdata(),
-                y = qqplot_data[1].get_ydata(),
-                mode = 'lines',
-                name = 'Theoretical Quantiles',
-                marker=dict(
-                    size=6,
-                    color=grey
-                )
-            )
-
-            error_norm.add_trace(sample_quantile_trace)
-            error_norm.add_trace(theoretical_quantile_trace)
-
-            error_norm.update_layout(
-                xaxis_title = "Theoretical Quantiles",
-                yaxis_title = "Dataset Quantiles",
-
-                legend = dict(
-                orientation="h",
-                yanchor="bottom",
-                y=1.02,
-                xanchor="right",
-                x=1
-                )
-            )
-
-            error_norm_json = json.loads(error_norm.to_json())
+            #error_norm_json = json.loads(error_norm.to_json())
 
             self.wi = BaseWidgetInfo(
                 title=self.title,
-                type="big_graph",
+                type="counter",
                 details="",
                 alertStats=AlertStats(),
                 alerts=[],
                 alertsPosition="row",
                 insights=[],
-                size=1,
-                params={
-                    "data": error_norm_json['data'],
-                    "layout": error_norm_json['layout']
+                size=2,
+                params={   
+                    "counters": [
+                      {
+                        "value": str(round(mae, 2)) + " (+/-" + str(round(sdae,2)) + ")",
+                        "label": "MAE"
+                      },
+                      {
+                        "value": str(round(mape, 2)) + " (+/-" + str(round(sdape, 2)) + ")",
+                        "label": "MAPE"
+                      },
+                      {
+                        "value": str(round(mse, 2)) + " (+/-" + str(round(sdse, 2)) + ")",
+                        "label": "MSE"
+                      }
+                    ]
                 },
                 additionalGraphs=[],
             )
