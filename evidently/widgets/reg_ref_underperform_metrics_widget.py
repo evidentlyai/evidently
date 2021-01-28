@@ -6,10 +6,10 @@ import pandas as pd
 from pandas.api.types import is_numeric_dtype
 import numpy as np
 
-from scipy.stats import ks_2samp
+from scipy.stats import ks_2samp, chisquare
 #import matplotlib.pyplot as plt
 import plotly.graph_objs as go
-import plotly.figure_factory as ff
+import plotly.express as px
 
 from evidently.model.widget import BaseWidgetInfo, AlertStats, AdditionalGraphInfo
 from evidently.widgets.widget import Widget
@@ -18,15 +18,15 @@ red = "#ed0400"
 grey = "#4d4d4d"
 
 
-class RegAbsPercErrorTimeWidget(Widget):
+class RefUnderperformMetricsWidget(Widget):
     def __init__(self, title: str):
         super().__init__()
         self.title = title
 
     def get_info(self) -> BaseWidgetInfo:
-        #if self.wi:
-        return self.wi
-        #raise ValueError("No prediction data provided")
+        if self.wi:
+            return self.wi
+        raise ValueError("no widget info provided")
 
     def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping): 
         if column_mapping:
@@ -57,69 +57,55 @@ class RegAbsPercErrorTimeWidget(Widget):
             num_feature_names = list(set(reference_data.select_dtypes([np.number]).columns) - set(utility_columns))
             cat_feature_names = list(set(reference_data.select_dtypes([np.object]).columns) - set(utility_columns))
 
+        reference_data.replace([np.inf, -np.inf], np.nan, inplace=True)
+        reference_data.dropna(axis=0, how='any', inplace=True)
+
         if target_column is not None and prediction_column is not None:
+            error = reference_data[prediction_column] - reference_data[target_column]
+
+            quantile_5 = np.quantile(error, .05)
+            quantile_95 = np.quantile(error, .95)
+
+            mae = np.mean(error)
+            mae_under = np.mean(error[error <= quantile_5])
+            mae_exp = np.mean(error[(error > quantile_5) & (error < quantile_95)])
+            mae_over = np.mean(error[error >= quantile_95])
+
+            sd = np.std(error, ddof = 1)
+            sd_under = np.std(error[error <= quantile_5], ddof = 1)
+            sd_exp = np.std(error[(error > quantile_5) & (error < quantile_95)], ddof = 1)
+            sd_over = np.std(error[error >= quantile_95], ddof = 1)
             
-            #plot output correlations
-            abs_perc_error_time = go.Figure()
-
-            abs_perc_error = list(map(lambda x : 100*abs(x[0] - x[1])/x[0], 
-                zip(reference_data[target_column], reference_data[prediction_column])))
-
-            error_trace = go.Scatter(
-                x = reference_data[date_column] if date_column else reference_data.index,
-                y = abs_perc_error,
-                mode = 'lines',
-                name = 'Absolute Percentage Error',
-                marker=dict(
-                    size=6,
-                    color=red
-                )
-            )
-
-            zero_trace = go.Scatter(
-                x = reference_data[date_column] if date_column else reference_data.index,
-                y = [0]*reference_data.shape[0],
-                mode = 'lines',
-                opacity=0.5,
-                marker=dict(
-                    size=6,
-                    color='green',
-                ),
-                showlegend=False,
-            )
-
-            abs_perc_error_time.add_trace(error_trace)
-            abs_perc_error_time.add_trace(zero_trace)
-
-            abs_perc_error_time.update_layout(
-                xaxis_title = "Timestamp" if date_column else "Index",
-                yaxis_title = "Percent",
-                legend = dict(
-                orientation="h",
-                yanchor="bottom",
-                y=1.02,
-                xanchor="right",
-                x=1
-                )
-            )
-
-            abs_perc_error_time_json = json.loads(abs_perc_error_time.to_json())
-
             self.wi = BaseWidgetInfo(
-                title=self.title,
-                type="big_graph",
+                title="Reference Data: Error Bias",
+                type="counter",
                 details="",
                 alertStats=AlertStats(),
                 alerts=[],
                 alertsPosition="row",
                 insights=[],
-                size=1,
-                params={
-                    "data": abs_perc_error_time_json['data'],
-                    "layout": abs_perc_error_time_json['layout']
+                size=2,
+                params={   
+                    "counters": [
+                      {
+                        "value": str(round(mae, 2)) + " (" + str(round(sd,2)) + ")",
+                        "label": "Overall"
+                      },
+                      {
+                        "value": str(round(mae_exp, 2)) + " (" + str(round(sd_exp,2)) + ")",
+                        "label": "Expected error"
+                      },
+                      {
+                        "value": str(round(mae_under, 2)) + " (" + str(round(sd_under, 2)) + ")",
+                        "label": "Underestimation"
+                      },
+                      {
+                        "value": str(round(mae_over, 2)) + " (" + str(round(sd_over, 2)) + ")",
+                        "label": "Overestimation"
+                      }
+                    ]
                 },
-                additionalGraphs=[],
+                additionalGraphs=[]
             )
         else:
             self.wi = None
-

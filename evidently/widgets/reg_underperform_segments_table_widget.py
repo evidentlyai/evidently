@@ -58,34 +58,57 @@ class UnderperformSegmTableWidget(Widget):
             cat_feature_names = list(set(reference_data.select_dtypes([np.object]).columns) - set(utility_columns))
 
         
-        reference_data['err'] = list(map(lambda x : x[0] - x[1], 
-            zip(reference_data[prediction_column], reference_data[target_column])))
+        if production_data is not None:
+            production_data.replace([np.inf, -np.inf], np.nan, inplace=True)
+            production_data.dropna(axis=0, how='any', inplace=True)
 
-        quntile_5 = np.quantile(reference_data['err'], .05)
-        quntile_95 = np.quantile(reference_data['err'], .95)
+            reference_data.replace([np.inf, -np.inf], np.nan, inplace=True)
+            reference_data.dropna(axis=0, how='any', inplace=True)
 
-        reference_data['Error bias'] = reference_data.err.apply(lambda x : 'Underestimation' if x <= quntile_5 else 'Expected error' 
-                                          if x < quntile_95 else 'Overestimation')
+            ref_error = reference_data[prediction_column] - reference_data[target_column]
+            prod_error = production_data[prediction_column] - production_data[target_column]
 
-        params_data = []
-        additional_graphs_data = []
+            ref_quntile_5 = np.quantile(ref_error, .05)
+            ref_quntile_95 = np.quantile(ref_error, .95)
 
-        for feature_name in num_feature_names:# + cat_feature_names: #feature_names:
+            prod_quntile_5 = np.quantile(prod_error, .05)
+            prod_quntile_95 = np.quantile(prod_error, .95)
 
-            feature_type = 'num'
-            ref_overal_value = np.mean(reference_data[feature_name])
-            ref_under_value = np.mean(reference_data[reference_data.err <= quntile_5][feature_name])
-            ref_expected_value = np.mean(reference_data[(reference_data.err > quntile_5) & (reference_data.err < quntile_95)][feature_name])
-            ref_over_value = np.mean(reference_data[reference_data.err >= quntile_95][feature_name])
+            #create subplots
+            reference_data['dataset'] = 'Reference'
+            reference_data['Error bias'] = list(map(lambda x : 'Underestimation' if x <= ref_quntile_5 else 'Expected error' 
+                                          if x < ref_quntile_95 else 'Overestimation', ref_error))
 
-            hist = px.histogram(reference_data, x=feature_name, color='Error bias', histnorm = 'percent')
+            production_data['dataset'] = 'Production'
+            production_data['Error bias'] = list(map(lambda x : 'Underestimation' if x <= prod_quntile_5 else 'Expected error' 
+                                          if x < prod_quntile_95 else 'Overestimation', prod_error))
+            merged_data = pd.concat([reference_data, production_data])
 
-            #hist_fig = px.histogram(reference_data, x=feature_name, color=target_column, facet_col="dataset",
-            #        category_orders={"dataset": ["Reference", "Production"]})
+            reference_data.drop(['dataset', 'Error bias'], axis=1, inplace=True)
+            production_data.drop(['dataset', 'Error bias'], axis=1, inplace=True)
 
-            hist_figure = json.loads(hist.to_json())
+            params_data = []
+            additional_graphs_data = []
 
-            params_data.append(
+            for feature_name in num_feature_names:
+                feature_type = 'num'
+
+                ref_overal_value = np.mean(reference_data[feature_name])
+                ref_under_value = np.mean(reference_data[ref_error <= ref_quntile_5][feature_name])
+                ref_expected_value = np.mean(reference_data[(ref_error > ref_quntile_5) & (ref_error < ref_quntile_95)][feature_name])
+                ref_over_value = np.mean(reference_data[ref_error >= ref_quntile_95][feature_name])
+
+                prod_overal_value = np.mean(production_data[feature_name])
+                prod_under_value = np.mean(production_data[prod_error <= prod_quntile_5][feature_name])
+                prod_expected_value = np.mean(production_data[(prod_error > prod_quntile_5) & (prod_error < prod_quntile_95)][feature_name])
+                prod_over_value = np.mean(production_data[prod_error >= prod_quntile_95][feature_name])
+
+                feature_hist = px.histogram(merged_data, x=feature_name, color='Error bias', facet_col="dataset",
+                    histnorm = 'percent', barmode='overlay', category_orders={"dataset": ["Reference", "Production"]})
+
+                feature_hist_json  = json.loads(feature_hist.to_json())
+
+                params_data.append(
                 {
                     "details": 
                         {
@@ -102,36 +125,43 @@ class UnderperformSegmTableWidget(Widget):
                         "f3": round(ref_overal_value, 2),
                         "f4": round(ref_under_value, 2),
                         "f5": round(ref_expected_value, 2),
-                        "f6": round(ref_over_value, 2)
-                }
-            )
-
-            additional_graphs_data.append(
-            AdditionalGraphInfo(
-                feature_name + '_hist',
-                {
-                    "data" : hist_figure['data'],
-                    "layout" : hist_figure['layout']
+                        "f6": round(ref_over_value, 2),
+                        "f7": round(prod_overal_value, 2),
+                        "f8": round(prod_under_value, 2),
+                        "f9": round(prod_expected_value, 2),
+                        "f10": round(prod_over_value, 2)
                 }
                 )
-            )
 
-        for feature_name in cat_feature_names: #feature_names:
+                additional_graphs_data.append(
+                AdditionalGraphInfo(
+                    feature_name + '_hist',
+                    {
+                        "data" : feature_hist_json['data'],
+                        "layout" : feature_hist_json['layout']
+                    }
+                    )
+                )
 
-            feature_type = 'cat'
-            ref_overal_value = reference_data[feature_name].value_counts().idxmax()
-            ref_under_value = reference_data[reference_data.err <= quntile_5][feature_name].value_counts().idxmax()
-            ref_expected_value = reference_data[(reference_data.err > quntile_5) & (reference_data.err < quntile_95)][feature_name].value_counts().idxmax()
-            ref_over_value = reference_data[reference_data.err >= quntile_95][feature_name].value_counts().idxmax()
+            for feature_name in cat_feature_names:
+                feature_type = 'cat'
 
-            hist = px.histogram(reference_data, x=feature_name, color='Error bias', histnorm = 'percent')
+                ref_overal_value = reference_data[feature_name].value_counts().idxmax()
+                ref_under_value = reference_data[ref_error <= ref_quntile_5][feature_name].value_counts().idxmax()
+                ref_expected_value = reference_data[(ref_error > ref_quntile_5) & (ref_error < ref_quntile_95)][feature_name].value_counts().idxmax()
+                ref_over_value = reference_data[ref_error >= ref_quntile_95][feature_name].value_counts().idxmax()
 
-            #hist_fig = px.histogram(reference_data, x=feature_name, color=target_column, facet_col="dataset",
-            #        category_orders={"dataset": ["Reference", "Production"]})
+                prod_overal_value = production_data[feature_name].value_counts().idxmax()
+                prod_under_value = production_data[prod_error <= prod_quntile_5][feature_name].value_counts().idxmax()
+                prod_expected_value = production_data[(prod_error > prod_quntile_5) & (prod_error < prod_quntile_95)][feature_name].value_counts().idxmax()
+                prod_over_value = production_data[prod_error >= prod_quntile_95][feature_name].value_counts().idxmax()
 
-            hist_figure = json.loads(hist.to_json())
+                feature_hist = px.histogram(merged_data, x=feature_name, color='Error bias', facet_col="dataset",
+                    histnorm = 'percent', barmode='overlay', category_orders={"dataset": ["Reference", "Production"]})
 
-            params_data.append(
+                feature_hist_json  = json.loads(feature_hist.to_json())
+
+                params_data.append(
                 {
                     "details": 
                         {
@@ -145,62 +175,235 @@ class UnderperformSegmTableWidget(Widget):
                         },
                         "f1": feature_name,
                         "f2": feature_type,
-                        "f3": int(ref_overal_value), 
-                        "f4": int(ref_under_value), 
-                        "f5": int(ref_expected_value),
-                        "f6": int(ref_over_value), 
-                }
-            )
-
-            additional_graphs_data.append(
-            AdditionalGraphInfo(
-                feature_name + '_hist',
-                {
-                    "data" : hist_figure['data'],
-                    "layout" : hist_figure['layout']
+                        "f3": str(ref_overal_value),
+                        "f4": str(ref_under_value),
+                        "f5": str(ref_expected_value),
+                        "f6": str(ref_over_value),
+                        "f7": str(prod_overal_value),
+                        "f8": str(prod_under_value),
+                        "f9": str(prod_expected_value),
+                        "f10": str(prod_over_value)
                 }
                 )
+
+                additional_graphs_data.append(
+                AdditionalGraphInfo(
+                    feature_name + '_hist',
+                    {
+                        "data" : feature_hist_json['data'],
+                        "layout" : feature_hist_json['layout']
+                    }
+                    )
+                )
+
+            self.wi = BaseWidgetInfo(
+                title = self.title,
+                type="big_table",
+                details="",
+                alertStats=AlertStats(),
+                alerts=[],
+                alertsPosition="row",
+                insights=[],
+                size=2,
+                params={
+                    "rowsPerPage" : min(len(num_feature_names) + len(cat_feature_names), 10),
+                    "columns": [
+                        {
+                            "title": "Feature",
+                            "field": "f1"
+                        },
+                        {
+                            "title": "Type",
+                            "field": "f2"
+                        },
+                        {
+                            "title": "REF overall",
+                            "field": "f3"
+                        },
+                        {
+                            "title": "REF Under",
+                            "field": "f4"
+                        },
+                        {
+                            "title": "REF Expected",
+                            "field": "f5"
+                        },
+                        {
+                            "title": "REF Over",
+                            "field": "f6"
+                        },
+                        {
+                            "title": "PROD overall",
+                            "field": "f7"
+                        },
+                        {
+                            "title": "PROD Under",
+                            "field": "f8"
+                        },
+                        {
+                            "title": "PROD Expected",
+                            "field": "f9"
+                        },
+                        {
+                            "title": "PROD Over",
+                            "field": "f10"
+                        }
+
+                    ],
+                    "data": params_data
+                },
+
+                additionalGraphs = additional_graphs_data
             )
 
-        self.wi = BaseWidgetInfo(
-            title = self.title,
-            type="big_table",
-            details="",
-            alertStats=AlertStats(),
-            alerts=[],
-            alertsPosition="row",
-            insights=[],
-            size=2,
-            params={
-                "rowsPerPage" : min(len(num_feature_names) + len(cat_feature_names), 10),
-                "columns": [
-                    {
-                        "title": "Feature",
-                        "field": "f1"
-                    },
-                    {
-                        "title": "Type",
-                        "field": "f2"
-                    },
-                    {
-                        "title": "Overal",
-                        "field": "f3"
-                    },
-                    {
-                        "title": "Underestimation",
-                        "field": "f4"
-                    },
-                    {
-                        "title": "Expected error",
-                        "field": "f5"
-                    },
-                    {
-                        "title": "Overestimation",
-                        "field": "f6"
-                    }
-                ],
-                "data": params_data
-            },
+        else:
+            reference_data.replace([np.inf, -np.inf], np.nan, inplace=True)
+            reference_data.dropna(axis=0, how='any', inplace=True)
+         
+            error = reference_data[prediction_column] - reference_data[target_column]
 
-            additionalGraphs = additional_graphs_data
-        )
+            quntile_5 = np.quantile(error, .05)
+            quntile_95 = np.quantile(error, .95)
+
+            reference_data['Error bias'] = reference_data['Error bias'] = list(map(lambda x : 'Underestimation' if x <= quntile_5 else 'Expected error' 
+                                          if x < quntile_95 else 'Overestimation', error))
+
+            params_data = []
+            additional_graphs_data = []
+
+            for feature_name in num_feature_names:# + cat_feature_names: #feature_names:
+
+                feature_type = 'num'
+                ref_overal_value = np.mean(reference_data[feature_name])
+                ref_under_value = np.mean(reference_data[error <= quntile_5][feature_name])
+                ref_expected_value = np.mean(reference_data[(error > quntile_5) & (error < quntile_95)][feature_name])
+                ref_over_value = np.mean(reference_data[error >= quntile_95][feature_name])
+
+                hist = px.histogram(reference_data, x=feature_name, color='Error bias', histnorm = 'percent', barmode='overlay')
+
+                #hist_fig = px.histogram(reference_data, x=feature_name, color=target_column, facet_col="dataset",
+                #        category_orders={"dataset": ["Reference", "Production"]})
+
+                hist_figure = json.loads(hist.to_json())
+
+                params_data.append(
+                    {
+                        "details": 
+                            {
+                                "parts": [
+                                    {
+                                        "title": "Error bias",
+                                        "id": feature_name + "_hist"
+                                    }
+                                ],
+                                "insights": []
+                            },
+                            "f1": feature_name,
+                            "f2": feature_type,
+                            "f3": round(ref_overal_value, 2),
+                            "f4": round(ref_under_value, 2),
+                            "f5": round(ref_expected_value, 2),
+                            "f6": round(ref_over_value, 2)
+                    }
+                )
+
+                additional_graphs_data.append(
+                AdditionalGraphInfo(
+                    feature_name + '_hist',
+                    {
+                        "data" : hist_figure['data'],
+                        "layout" : hist_figure['layout']
+                    }
+                    )
+                )
+
+            for feature_name in cat_feature_names: #feature_names:
+
+                feature_type = 'cat'
+                ref_overal_value = reference_data[feature_name].value_counts().idxmax()
+                ref_under_value = reference_data[error <= quntile_5][feature_name].value_counts().idxmax()
+                ref_expected_value = reference_data[(error > quntile_5) & (error < quntile_95)][feature_name].value_counts().idxmax()
+                ref_over_value = reference_data[error >= quntile_95][feature_name].value_counts().idxmax()
+
+                hist = px.histogram(reference_data, x=feature_name, color='Error bias', histnorm = 'percent', barmode='overlay')
+
+                #hist_fig = px.histogram(reference_data, x=feature_name, color=target_column, facet_col="dataset",
+                #        category_orders={"dataset": ["Reference", "Production"]})
+
+                hist_figure = json.loads(hist.to_json())
+
+                params_data.append(
+                    {
+                        "details": 
+                            {
+                                "parts": [
+                                    {
+                                        "title": "Error bias",
+                                        "id": feature_name + "_hist"
+                                    }
+                                ],
+                                "insights": []
+                            },
+                            "f1": feature_name,
+                            "f2": feature_type,
+                            "f3": str(ref_overal_value), 
+                            "f4": str(ref_under_value), 
+                            "f5": str(ref_expected_value),
+                            "f6": str(ref_over_value)
+                    }
+                )
+
+                additional_graphs_data.append(
+                AdditionalGraphInfo(
+                    feature_name + '_hist',
+                    {
+                        "data" : hist_figure['data'],
+                        "layout" : hist_figure['layout']
+                    }
+                    )
+                )
+
+            reference_data.drop('Error bias', axis=1, inplace=True)
+
+            self.wi = BaseWidgetInfo(
+                title = self.title,
+                type="big_table",
+                details="",
+                alertStats=AlertStats(),
+                alerts=[],
+                alertsPosition="row",
+                insights=[],
+                size=2,
+                params={
+                    "rowsPerPage" : min(len(num_feature_names) + len(cat_feature_names), 10),
+                    "columns": [
+                        {
+                            "title": "Feature",
+                            "field": "f1"
+                        },
+                        {
+                            "title": "Type",
+                            "field": "f2"
+                        },
+                        {
+                            "title": "Overall",
+                            "field": "f3"
+                        },
+                        {
+                            "title": "Underestimation",
+                            "field": "f4"
+                        },
+                        {
+                            "title": "Expected error",
+                            "field": "f5"
+                        },
+                        {
+                            "title": "Overestimation",
+                            "field": "f6"
+                        }
+                    ],
+                    "data": params_data
+                },
+
+                additionalGraphs = additional_graphs_data
+            )

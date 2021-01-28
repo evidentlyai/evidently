@@ -18,15 +18,15 @@ red = "#ed0400"
 grey = "#4d4d4d"
 
 
-class RegPredActualTimeWidget(Widget):
+class RegRefPredActualWidget(Widget):
     def __init__(self, title: str):
         super().__init__()
         self.title = title
 
     def get_info(self) -> BaseWidgetInfo:
-        #if self.wi:
-        return self.wi
-        #raise ValueError("No prediction data provided")
+        if self.wi:
+            return self.wi
+        raise ValueError("No reference data provided")
 
     def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping): 
         if column_mapping:
@@ -58,61 +58,35 @@ class RegPredActualTimeWidget(Widget):
             cat_feature_names = list(set(reference_data.select_dtypes([np.object]).columns) - set(utility_columns))
 
         if target_column is not None and prediction_column is not None:
+            reference_data.replace([np.inf, -np.inf], np.nan, inplace=True)
+            reference_data.dropna(axis=0, how='any', inplace=True)
             
             #plot output correlations
-            pred_actual_time = go.Figure()
+            pred_actual = go.Figure()
 
-            target_trace = go.Scatter(
-                x = reference_data[date_column] if date_column else reference_data.index,
-                y = reference_data[target_column],
-                mode = 'lines',
-                name = 'Actual',
-                marker=dict(
-                    size=6,
-                    color=grey
+            pred_actual.add_trace(go.Scatter(
+            x = reference_data[target_column],
+            y = reference_data[prediction_column],
+            mode = 'markers',
+            name = 'Reference',
+            marker = dict(
+                color = red,
+                showscale = False
                 )
-            )
+            ))
 
-            pred_trace = go.Scatter(
-                x = reference_data[date_column] if date_column else reference_data.index,
-                y = reference_data[prediction_column],
-                mode = 'lines',
-                name = 'Predicted',
-                marker=dict(
-                    size=6,
-                    color=red
-                )
-            )
-
-            zero_trace = go.Scatter(
-                x = reference_data[date_column] if date_column else reference_data.index,
-                y = [0]*reference_data.shape[0],
-                mode = 'lines',
-                opacity=0.5,
-                marker=dict(
-                    size=6,
-                    color='green',
+            pred_actual.update_layout(
+                xaxis_title = "Actual value",
+                yaxis_title = "Predicted value",
+                xaxis = dict(
+                    showticklabels=True
                 ),
-                showlegend=False,
+                yaxis = dict(
+                    showticklabels=True
+                ),
             )
 
-            pred_actual_time.add_trace(target_trace)
-            pred_actual_time.add_trace(pred_trace)
-            pred_actual_time.add_trace(zero_trace)
-
-            pred_actual_time.update_layout(
-                xaxis_title = "Timestamp" if date_column else "Index",
-                yaxis_title = "Value",
-                legend = dict(
-                orientation="h",
-                yanchor="bottom",
-                y=1.02,
-                xanchor="right",
-                x=1
-                )
-            )
-
-            pred_actual_time_json = json.loads(pred_actual_time.to_json())
+            pred_actual_json  = json.loads(pred_actual.to_json())
 
             self.wi = BaseWidgetInfo(
                 title=self.title,
@@ -124,8 +98,8 @@ class RegPredActualTimeWidget(Widget):
                 insights=[],
                 size=1,
                 params={
-                    "data": pred_actual_time_json['data'],
-                    "layout": pred_actual_time_json['layout']
+                    "data": pred_actual_json['data'],
+                    "layout": pred_actual_json['layout']
                 },
                 additionalGraphs=[],
             )

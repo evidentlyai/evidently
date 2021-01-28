@@ -7,7 +7,6 @@ from pandas.api.types import is_numeric_dtype
 import numpy as np
 
 from scipy.stats import ks_2samp
-from statsmodels.graphics.gofplots import qqplot
 #import matplotlib.pyplot as plt
 import plotly.graph_objs as go
 import plotly.figure_factory as ff
@@ -19,7 +18,7 @@ red = "#ed0400"
 grey = "#4d4d4d"
 
 
-class RegErrorNormalityWidget(Widget):
+class RegProdPredActualWidget(Widget):
     def __init__(self, title: str):
         super().__init__()
         self.title = title
@@ -27,7 +26,7 @@ class RegErrorNormalityWidget(Widget):
     def get_info(self) -> BaseWidgetInfo:
         #if self.wi:
         return self.wi
-        #raise ValueError("No prediction data provided")
+        #raise ValueError("No reference data provided")
 
     def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping): 
         if column_mapping:
@@ -58,69 +57,55 @@ class RegErrorNormalityWidget(Widget):
             num_feature_names = list(set(reference_data.select_dtypes([np.number]).columns) - set(utility_columns))
             cat_feature_names = list(set(reference_data.select_dtypes([np.object]).columns) - set(utility_columns))
 
-        if target_column is not None and prediction_column is not None:
-            
-            #plot output correlations
-            error_norm = go.Figure()
+        if production_data is not None:
+            if target_column is not None and prediction_column is not None:
+                production_data.replace([np.inf, -np.inf], np.nan, inplace=True)
+                production_data.dropna(axis=0, how='any', inplace=True)
+                
+                #plot output correlations
+                pred_actual = go.Figure()
 
-            error = reference_data[target_column] - reference_data[prediction_column]
-            qqplot_data = qqplot(error, line='s').gca().lines
-
-            sample_quantile_trace = go.Scatter(
-                x = qqplot_data[0].get_xdata(),
-                y = qqplot_data[0].get_ydata(),
+                pred_actual.add_trace(go.Scatter(
+                x = production_data[target_column],
+                y = production_data[prediction_column],
                 mode = 'markers',
-                name = 'Dataset Quantiles',
-                marker=dict(
-                    size=6,
-                    color=red
+                name = 'Reference',
+                marker = dict(
+                    color = red,
+                    showscale = False
+                    )
+                ))
+
+                pred_actual.update_layout(
+                    xaxis_title = "Actual value",
+                    yaxis_title = "Predicted value",
+                    xaxis = dict(
+                        showticklabels=True
+                    ),
+                    yaxis = dict(
+                        showticklabels=True
+                    ),
                 )
-            )
 
-            theoretical_quantile_trace = go.Scatter(
-                x = qqplot_data[1].get_xdata(),
-                y = qqplot_data[1].get_ydata(),
-                mode = 'lines',
-                name = 'Theoretical Quantiles',
-                marker=dict(
-                    size=6,
-                    color=grey
+                pred_actual_json  = json.loads(pred_actual.to_json())
+
+                self.wi = BaseWidgetInfo(
+                    title=self.title,
+                    type="big_graph",
+                    details="",
+                    alertStats=AlertStats(),
+                    alerts=[],
+                    alertsPosition="row",
+                    insights=[],
+                    size=1,
+                    params={
+                        "data": pred_actual_json['data'],
+                        "layout": pred_actual_json['layout']
+                    },
+                    additionalGraphs=[],
                 )
-            )
-
-            error_norm.add_trace(sample_quantile_trace)
-            error_norm.add_trace(theoretical_quantile_trace)
-
-            error_norm.update_layout(
-                xaxis_title = "Theoretical Quantiles",
-                yaxis_title = "Dataset Quantiles",
-
-                legend = dict(
-                orientation="h",
-                yanchor="bottom",
-                y=1.02,
-                xanchor="right",
-                x=1
-                )
-            )
-
-            error_norm_json = json.loads(error_norm.to_json())
-
-            self.wi = BaseWidgetInfo(
-                title=self.title,
-                type="big_graph",
-                details="",
-                alertStats=AlertStats(),
-                alerts=[],
-                alertsPosition="row",
-                insights=[],
-                size=1,
-                params={
-                    "data": error_norm_json['data'],
-                    "layout": error_norm_json['layout']
-                },
-                additionalGraphs=[],
-            )
+            else:
+                self.wi = None
         else:
             self.wi = None
 

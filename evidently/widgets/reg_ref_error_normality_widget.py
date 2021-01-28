@@ -6,8 +6,7 @@ import pandas as pd
 from pandas.api.types import is_numeric_dtype
 import numpy as np
 
-from scipy.stats import ks_2samp
-#import matplotlib.pyplot as plt
+from scipy.stats import ks_2samp, probplot
 import plotly.graph_objs as go
 import plotly.figure_factory as ff
 
@@ -18,15 +17,15 @@ red = "#ed0400"
 grey = "#4d4d4d"
 
 
-class RegErrorDistrWidget(Widget):
+class RegRefErrorNormalityWidget(Widget):
     def __init__(self, title: str):
         super().__init__()
         self.title = title
 
     def get_info(self) -> BaseWidgetInfo:
-        #if self.wi:
-        return self.wi
-        #raise ValueError("No prediction data provided")
+        if self.wi:
+            return self.wi
+        raise ValueError("No prediction data provided")
 
     def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping): 
         if column_mapping:
@@ -58,22 +57,55 @@ class RegErrorDistrWidget(Widget):
             cat_feature_names = list(set(reference_data.select_dtypes([np.object]).columns) - set(utility_columns))
 
         if target_column is not None and prediction_column is not None:
+            reference_data.replace([np.inf, -np.inf], np.nan, inplace=True)
+            reference_data.dropna(axis=0, how='any', inplace=True)
             
             #plot output correlations
-            error_distr = go.Figure()
+            error_norm = go.Figure()
 
-            error = reference_data[target_column] - reference_data[prediction_column]
+            error = reference_data[prediction_column] - reference_data[target_column] 
+            qq_lines = probplot(error, dist="norm", plot=None)
+            theoretical_q_x = np.linspace(qq_lines[0][0][0], qq_lines[0][0][-1], 100)
 
-            error_distr.add_trace(go.Histogram(x=error,
-                marker_color=red, name = 'error distribution', histnorm = 'percent'))
-
-            error_distr.update_layout(
-                xaxis_title = "Error (Actual - Predicted)",
-                yaxis_title = "Percentage",
+            sample_quantile_trace = go.Scatter(
+                x = qq_lines[0][0],
+                y = qq_lines[0][1],
+                mode = 'markers',
+                name = 'Dataset Quantiles',
+                marker=dict(
+                    size=6,
+                    color=red
+                )
             )
 
+            theoretical_quantile_trace = go.Scatter(
+                x = theoretical_q_x,
+                y = qq_lines[1][0]*theoretical_q_x + qq_lines[1][1],
+                mode = 'lines',
+                name = 'Theoretical Quantiles',
+                marker=dict(
+                    size=6,
+                    color=grey
+                )
+            )
 
-            error_distr_json = json.loads(error_distr.to_json())
+            error_norm.add_trace(sample_quantile_trace)
+            error_norm.add_trace(theoretical_quantile_trace)
+
+            error_norm.update_layout(
+                xaxis_title = "Theoretical Quantiles",
+                yaxis_title = "Dataset Quantiles",
+
+                legend = dict(
+                orientation="h",
+                yanchor="bottom",
+                y=1.02,
+                xanchor="right",
+                x=1
+                )
+            )
+
+            error_norm_json = json.loads(error_norm.to_json())
 
             self.wi = BaseWidgetInfo(
                 title=self.title,
@@ -85,8 +117,8 @@ class RegErrorDistrWidget(Widget):
                 insights=[],
                 size=1,
                 params={
-                    "data": error_distr_json['data'],
-                    "layout": error_distr_json['layout']
+                    "data": error_norm_json['data'],
+                    "layout": error_norm_json['layout']
                 },
                 additionalGraphs=[],
             )

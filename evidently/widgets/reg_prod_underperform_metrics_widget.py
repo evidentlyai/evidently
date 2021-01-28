@@ -5,13 +5,11 @@ import json
 import pandas as pd
 from pandas.api.types import is_numeric_dtype
 import numpy as np
-import math
 
-from scipy.stats import ks_2samp
-from statsmodels.graphics.gofplots import qqplot
+from scipy.stats import ks_2samp, chisquare
 #import matplotlib.pyplot as plt
 import plotly.graph_objs as go
-import plotly.figure_factory as ff
+import plotly.express as px
 
 from evidently.model.widget import BaseWidgetInfo, AlertStats, AdditionalGraphInfo
 from evidently.widgets.widget import Widget
@@ -20,15 +18,13 @@ red = "#ed0400"
 grey = "#4d4d4d"
 
 
-class RegQualityMetricsWidget(Widget):
+class ProdUnderperformMetricsWidget(Widget):
     def __init__(self, title: str):
         super().__init__()
         self.title = title
 
     def get_info(self) -> BaseWidgetInfo:
-        #if self.wi:
         return self.wi
-        #raise ValueError("No prediction data provided")
 
     def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping): 
         if column_mapping:
@@ -59,28 +55,28 @@ class RegQualityMetricsWidget(Widget):
             num_feature_names = list(set(reference_data.select_dtypes([np.number]).columns) - set(utility_columns))
             cat_feature_names = list(set(reference_data.select_dtypes([np.object]).columns) - set(utility_columns))
 
-        if target_column is not None and prediction_column is not None:
+        
+        if production_data is not None:
+            production_data.replace([np.inf, -np.inf], np.nan, inplace=True)
+            production_data.dropna(axis=0, how='any', inplace=True)
             
-            #calculate quality metrics
-            abs_err = list(map(lambda x : abs(x[0] - x[1]), 
-                zip(reference_data[target_column], reference_data[prediction_column])))
-            mae = np.mean(abs_err)
-            sdae = np.std(abs_err, ddof = 1)
+            prod_error = production_data[prediction_column] - production_data[target_column]
 
-            abs_perc_err = list(map(lambda x : 100*abs(x[0] - x[1])/x[0], 
-                zip(reference_data[target_column], reference_data[prediction_column])))
-            mape = np.mean(abs_perc_err)
-            sdape = np.std(abs_perc_err, ddof = 1)
+            prod_quantile_5 = np.quantile(prod_error, .05)
+            prod_quantile_95 = np.quantile(prod_error, .95)
 
-            sqrt_err = list(map(lambda x : (x[0] - x[1])**2, 
-                zip(reference_data[target_column], reference_data[prediction_column])))
-            mse = np.mean(sqrt_err)
-            sdse = np.std(sqrt_err, ddof = 1)
+            prod_mae = np.mean(prod_error)
+            prod_mae_under = np.mean(prod_error[prod_error <= prod_quantile_5])
+            prod_mae_exp = np.mean(prod_error[(prod_error > prod_quantile_5) & (prod_error < prod_quantile_95)])
+            prod_mae_over = np.mean(prod_error[prod_error >= prod_quantile_95])
 
-            #error_norm_json = json.loads(error_norm.to_json())
-
+            prod_sd = np.std(prod_error, ddof = 1)
+            prod_sd_under = np.std(prod_error[prod_error <= prod_quantile_5], ddof = 1)
+            prod_sd_exp = np.std(prod_error[(prod_error > prod_quantile_5) & (prod_error < prod_quantile_95)], ddof = 1)
+            prod_sd_over = np.std(prod_error[prod_error >= prod_quantile_95], ddof = 1)
+            
             self.wi = BaseWidgetInfo(
-                title=self.title,
+                title="Production Data: Error Bias",
                 type="counter",
                 details="",
                 alertStats=AlertStats(),
@@ -91,21 +87,24 @@ class RegQualityMetricsWidget(Widget):
                 params={   
                     "counters": [
                       {
-                        "value": str(round(mae, 2)) + " (+/-" + str(round(sdae,2)) + ")",
-                        "label": "MAE"
+                        "value": str(round(prod_mae, 2)) + " (" + str(round(prod_sd,2)) + ")",
+                        "label": "Overall"
                       },
                       {
-                        "value": str(round(mape, 2)) + " (+/-" + str(round(sdape, 2)) + ")",
-                        "label": "MAPE"
+                        "value": str(round(prod_mae_exp, 2)) + " (" + str(round(prod_sd_exp,2)) + ")",
+                        "label": "Expected"
                       },
                       {
-                        "value": str(round(mse, 2)) + " (+/-" + str(round(sdse, 2)) + ")",
-                        "label": "MSE"
+                        "value": str(round(prod_mae_under, 2)) + " (" + str(round(prod_sd_under, 2)) + ")",
+                        "label": "Underestimation"
+                      },
+                      {
+                        "value": str(round(prod_mae_over, 2)) + " (" + str(round(prod_sd_over, 2)) + ")",
+                        "label": "Overestimation"
                       }
                     ]
                 },
-                additionalGraphs=[],
+                additionalGraphs=[]
             )
         else:
             self.wi = None
-

@@ -18,15 +18,15 @@ red = "#ed0400"
 grey = "#4d4d4d"
 
 
-class RegErrorTimeWidget(Widget):
+class RegRefAbsPercErrorTimeWidget(Widget):
     def __init__(self, title: str):
         super().__init__()
         self.title = title
 
     def get_info(self) -> BaseWidgetInfo:
-        #if self.wi:
-        return self.wi
-        #raise ValueError("No prediction data provided")
+        if self.wi:
+            return self.wi
+        raise ValueError("No reference data provided")
 
     def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping): 
         if column_mapping:
@@ -58,15 +58,20 @@ class RegErrorTimeWidget(Widget):
             cat_feature_names = list(set(reference_data.select_dtypes([np.object]).columns) - set(utility_columns))
 
         if target_column is not None and prediction_column is not None:
+            reference_data.replace([np.inf, -np.inf], np.nan, inplace=True)
+            reference_data.dropna(axis=0, how='any', inplace=True)
             
             #plot output correlations
-            pred_actual_time = go.Figure()
+            abs_perc_error_time = go.Figure()
+
+            abs_perc_error = list(map(lambda x : 100*abs(x[0] - x[1])/x[0], 
+                zip(reference_data[target_column], reference_data[prediction_column])))
 
             error_trace = go.Scatter(
                 x = reference_data[date_column] if date_column else reference_data.index,
-                y = reference_data[target_column] - reference_data[prediction_column],
+                y = abs_perc_error,
                 mode = 'lines',
-                name = 'Actual - Predicted',
+                name = 'Absolute Percentage Error',
                 marker=dict(
                     size=6,
                     color=red
@@ -85,12 +90,12 @@ class RegErrorTimeWidget(Widget):
                 showlegend=False,
             )
 
-            pred_actual_time.add_trace(error_trace)
-            pred_actual_time.add_trace(zero_trace)
+            abs_perc_error_time.add_trace(error_trace)
+            abs_perc_error_time.add_trace(zero_trace)
 
-            pred_actual_time.update_layout(
+            abs_perc_error_time.update_layout(
                 xaxis_title = "Timestamp" if date_column else "Index",
-                yaxis_title = "Error",
+                yaxis_title = "Percent",
                 legend = dict(
                 orientation="h",
                 yanchor="bottom",
@@ -100,7 +105,7 @@ class RegErrorTimeWidget(Widget):
                 )
             )
 
-            pred_actual_time_json = json.loads(pred_actual_time.to_json())
+            abs_perc_error_time_json = json.loads(abs_perc_error_time.to_json())
 
             self.wi = BaseWidgetInfo(
                 title=self.title,
@@ -112,8 +117,8 @@ class RegErrorTimeWidget(Widget):
                 insights=[],
                 size=1,
                 params={
-                    "data": pred_actual_time_json['data'],
-                    "layout": pred_actual_time_json['layout']
+                    "data": abs_perc_error_time_json['data'],
+                    "layout": abs_perc_error_time_json['layout']
                 },
                 additionalGraphs=[],
             )

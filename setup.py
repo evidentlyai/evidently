@@ -77,7 +77,7 @@ setup_args = dict(
         "numpy",
         #"matplotlib",
         "plotly",
-        "scipy",
+        "scipy"
     ],
     entry_points={
     },
