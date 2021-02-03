@@ -77,7 +77,7 @@ class RefUnderperformMetricsWidget(Widget):
             sd_over = np.std(error[error >= quantile_95], ddof = 1)
             
             self.wi = BaseWidgetInfo(
-                title="Reference Data: Error Bias",
+                title="Reference: Mean Error per Group (+/- std)",
                 type="counter",
                 details="",
                 alertStats=AlertStats(),
@@ -88,20 +88,20 @@ class RefUnderperformMetricsWidget(Widget):
                 params={   
                     "counters": [
                       {
-                        "value": str(round(mae, 2)) + " (" + str(round(sd,2)) + ")",
-                        "label": "Overall"
-                      },
-                      {
                         "value": str(round(mae_exp, 2)) + " (" + str(round(sd_exp,2)) + ")",
-                        "label": "Expected error"
+                        "label": "Majority(90%)"
                       },
+                      #{
+                      #  "value": str(round(mae_exp, 2)) + " (" + str(round(sd_exp,2)) + ")",
+                      #  "label": "Expected error"
+                      #},
                       {
                         "value": str(round(mae_under, 2)) + " (" + str(round(sd_under, 2)) + ")",
-                        "label": "Underestimation"
+                        "label": "Underestimation(5%)"
                       },
                       {
                         "value": str(round(mae_over, 2)) + " (" + str(round(sd_over, 2)) + ")",
-                        "label": "Overestimation"
+                        "label": "Overestimation(5%)"
                       }
                     ]
                 },

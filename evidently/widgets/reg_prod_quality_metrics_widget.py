@@ -65,6 +65,9 @@ class RegProdQualityMetricsWidget(Widget):
                 production_data.dropna(axis=0, how='any', inplace=True)
             
                 #calculate quality metrics
+                me = np.mean(production_data[prediction_column] - production_data[target_column])
+                sde = np.std(production_data[prediction_column] - production_data[target_column], ddof = 1)
+
                 abs_err = list(map(lambda x : abs(x[0] - x[1]), 
                     zip(production_data[prediction_column], production_data[target_column])))
                 mae = np.mean(abs_err)
@@ -75,15 +78,15 @@ class RegProdQualityMetricsWidget(Widget):
                 mape = np.mean(abs_perc_err)
                 sdape = np.std(abs_perc_err, ddof = 1)
 
-                sqrt_err = list(map(lambda x : (x[0] - x[1])**2, 
-                    zip(production_data[prediction_column], production_data[target_column])))
-                mse = np.mean(sqrt_err)
-                sdse = np.std(sqrt_err, ddof = 1)
+                #sqrt_err = list(map(lambda x : (x[0] - x[1])**2, 
+                #    zip(production_data[prediction_column], production_data[target_column])))
+                #mse = np.mean(sqrt_err)
+                #sdse = np.std(sqrt_err, ddof = 1)
 
                 #error_norm_json = json.loads(error_norm.to_json())
 
                 self.wi = BaseWidgetInfo(
-                    title="Production Quality",
+                    title="Production: Model Quality (+/- std)",
                     type="counter",
                     details="",
                     alertStats=AlertStats(),
@@ -94,17 +97,21 @@ class RegProdQualityMetricsWidget(Widget):
                     params={   
                         "counters": [
                           {
+                            "value": str(round(me, 2)) + " (" + str(round(sde,2)) + ")",
+                            "label": "ME"
+                          },
+                          {
                             "value": str(round(mae, 2)) + " (" + str(round(sdae,2)) + ")",
                             "label": "MAE"
                           },
                           {
                             "value": str(round(mape, 2)) + " (" + str(round(sdape, 2)) + ")",
                             "label": "MAPE"
-                          },
-                          {
-                            "value": str(round(mse, 2)) + " (" + str(round(sdse, 2)) + ")",
-                            "label": "MSE"
-                          }
+                          }#,
+                          #{
+                          #  "value": str(round(mse, 2)) + " (" + str(round(sdse, 2)) + ")",
+                          #  "label": "MSE"
+                          #}
                         ]
                     },
                     additionalGraphs=[],

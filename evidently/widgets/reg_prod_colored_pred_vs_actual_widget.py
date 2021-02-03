@@ -18,15 +18,15 @@ red = "#ed0400"
 grey = "#4d4d4d"
 
 
-class RegProdErrorDistrWidget(Widget):
+class RegProdColoredPredActualWidget(Widget):
     def __init__(self, title: str):
         super().__init__()
         self.title = title
 
     def get_info(self) -> BaseWidgetInfo:
-        #if self.wi:
-        return self.wi
-        #raise ValueError("No reference data provided")
+        if self.wi:
+            return self.wi
+        raise ValueError("No reference data provided")
 
     def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping): 
         if column_mapping:
@@ -61,22 +61,64 @@ class RegProdErrorDistrWidget(Widget):
             if target_column is not None and prediction_column is not None:
                 production_data.replace([np.inf, -np.inf], np.nan, inplace=True)
                 production_data.dropna(axis=0, how='any', inplace=True)
+
+                prod_error = production_data[prediction_column] - production_data[target_column]
+
+                prod_quntile_5 = np.quantile(prod_error, .05)
+                prod_quntile_95 = np.quantile(prod_error, .95)
+
+                production_data['dataset'] = 'Reference'
+                production_data['Error bias'] = list(map(lambda x : 'Underestimation' if x <= prod_quntile_5 else 'Majority' 
+                                              if x < prod_quntile_95 else 'Overestimation', prod_error))
                 
                 #plot output correlations
-                error_distr = go.Figure()
+                pred_actual = go.Figure()
 
-                error = production_data[prediction_column] - production_data[target_column] 
+                pred_actual.add_trace(go.Scatter(
+                x = production_data[production_data['Error bias'] == 'Underestimation'][target_column],
+                y = production_data[production_data['Error bias'] == 'Underestimation'][prediction_column],
+                mode = 'markers',
+                name = 'Underestimation',
+                marker = dict(
+                    color = '#6574f7',
+                    showscale = False
+                    )
+                ))
 
-                error_distr.add_trace(go.Histogram(x=error,
-                    marker_color=red, name = 'error distribution', histnorm = 'percent'))
+                pred_actual.add_trace(go.Scatter(
+                x = production_data[production_data['Error bias'] == 'Overestimation'][target_column],
+                y = production_data[production_data['Error bias'] == 'Overestimation'][prediction_column],
+                mode = 'markers',
+                name = 'Overestimation',
+                marker = dict(
+                    color = '#ee5540',
+                    showscale = False
+                    )
+                ))
 
-                error_distr.update_layout(
-                    xaxis_title = "Error (Predicted - Actual)",
-                    yaxis_title = "Percentage",
+                pred_actual.add_trace(go.Scatter(
+                x = production_data[production_data['Error bias'] == 'Majority'][target_column],
+                y = production_data[production_data['Error bias'] == 'Majority'][prediction_column],
+                mode = 'markers',
+                name = 'Majority',
+                marker = dict(
+                    color = '#1acc98',
+                    showscale = False
+                    )
+                ))
+
+                pred_actual.update_layout(
+                    xaxis_title = "Actual value",
+                    yaxis_title = "Predicted value",
+                    xaxis = dict(
+                        showticklabels=True
+                    ),
+                    yaxis = dict(
+                        showticklabels=True
+                    ),
                 )
 
-
-                error_distr_json = json.loads(error_distr.to_json())
+                pred_actual_json  = json.loads(pred_actual.to_json())
 
                 self.wi = BaseWidgetInfo(
                     title=self.title,
@@ -88,8 +130,8 @@ class RegProdErrorDistrWidget(Widget):
                     insights=[],
                     size=1,
                     params={
-                        "data": error_distr_json['data'],
-                        "layout": error_distr_json['layout']
+                        "data": pred_actual_json['data'],
+                        "layout": pred_actual_json['layout']
                     },
                     additionalGraphs=[],
                 )

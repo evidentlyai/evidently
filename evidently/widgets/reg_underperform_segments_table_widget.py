@@ -76,11 +76,11 @@ class UnderperformSegmTableWidget(Widget):
 
             #create subplots
             reference_data['dataset'] = 'Reference'
-            reference_data['Error bias'] = list(map(lambda x : 'Underestimation' if x <= ref_quntile_5 else 'Expected error' 
+            reference_data['Error bias'] = list(map(lambda x : 'Underestimation' if x <= ref_quntile_5 else 'Majority' 
                                           if x < ref_quntile_95 else 'Overestimation', ref_error))
 
             production_data['dataset'] = 'Production'
-            production_data['Error bias'] = list(map(lambda x : 'Underestimation' if x <= prod_quntile_5 else 'Expected error' 
+            production_data['Error bias'] = list(map(lambda x : 'Underestimation' if x <= prod_quntile_5 else 'Majority' 
                                           if x < prod_quntile_95 else 'Overestimation', prod_error))
             merged_data = pd.concat([reference_data, production_data])
 
@@ -97,14 +97,17 @@ class UnderperformSegmTableWidget(Widget):
                 ref_under_value = np.mean(reference_data[ref_error <= ref_quntile_5][feature_name])
                 ref_expected_value = np.mean(reference_data[(ref_error > ref_quntile_5) & (ref_error < ref_quntile_95)][feature_name])
                 ref_over_value = np.mean(reference_data[ref_error >= ref_quntile_95][feature_name])
+                ref_range_value = 0 if ref_over_value == ref_under_value else 100*abs(ref_over_value - ref_under_value)/(np.max(reference_data[feature_name]) - np.min(reference_data[feature_name]))
 
                 prod_overal_value = np.mean(production_data[feature_name])
                 prod_under_value = np.mean(production_data[prod_error <= prod_quntile_5][feature_name])
                 prod_expected_value = np.mean(production_data[(prod_error > prod_quntile_5) & (prod_error < prod_quntile_95)][feature_name])
                 prod_over_value = np.mean(production_data[prod_error >= prod_quntile_95][feature_name])
+                prod_range_value = 0 if prod_over_value == prod_under_value else 100*abs(prod_over_value - prod_under_value)/(np.max(production_data[feature_name]) - np.min(production_data[feature_name]))
+
 
                 feature_hist = px.histogram(merged_data, x=feature_name, color='Error bias', facet_col="dataset",
-                    histnorm = 'percent', barmode='overlay', category_orders={"dataset": ["Reference", "Production"]})
+                    histnorm = 'percent', barmode='overlay', category_orders={"dataset": ["Reference", "Production"], "Error bias": ["Underestimation", "Overestimation", "Majority"]})
 
                 feature_hist_json  = json.loads(feature_hist.to_json())
 
@@ -122,14 +125,14 @@ class UnderperformSegmTableWidget(Widget):
                         },
                         "f1": feature_name,
                         "f2": feature_type,
-                        "f3": round(ref_overal_value, 2),
+                        "f3": round(ref_expected_value, 2),
                         "f4": round(ref_under_value, 2),
-                        "f5": round(ref_expected_value, 2),
-                        "f6": round(ref_over_value, 2),
-                        "f7": round(prod_overal_value, 2),
+                        "f5": round(ref_over_value, 2),
+                        "f6": round(ref_range_value, 2),
+                        "f7": round(prod_expected_value, 2),
                         "f8": round(prod_under_value, 2),
-                        "f9": round(prod_expected_value, 2),
-                        "f10": round(prod_over_value, 2)
+                        "f9": round(prod_over_value, 2),
+                        "f10": round(prod_range_value, 2)
                 }
                 )
 
@@ -148,16 +151,20 @@ class UnderperformSegmTableWidget(Widget):
 
                 ref_overal_value = reference_data[feature_name].value_counts().idxmax()
                 ref_under_value = reference_data[ref_error <= ref_quntile_5][feature_name].value_counts().idxmax()
-                ref_expected_value = reference_data[(ref_error > ref_quntile_5) & (ref_error < ref_quntile_95)][feature_name].value_counts().idxmax()
+                #ref_expected_value = reference_data[(ref_error > ref_quntile_5) & (ref_error < ref_quntile_95)][feature_name].value_counts().idxmax()
                 ref_over_value = reference_data[ref_error >= ref_quntile_95][feature_name].value_counts().idxmax()
+                ref_range_value = 1 if (ref_overal_value != ref_under_value) or (ref_over_value != ref_overal_value) \
+                   or (ref_under_value != ref_overal_value) else 0
 
                 prod_overal_value = production_data[feature_name].value_counts().idxmax()
                 prod_under_value = production_data[prod_error <= prod_quntile_5][feature_name].value_counts().idxmax()
-                prod_expected_value = production_data[(prod_error > prod_quntile_5) & (prod_error < prod_quntile_95)][feature_name].value_counts().idxmax()
+                #prod_expected_value = production_data[(prod_error > prod_quntile_5) & (prod_error < prod_quntile_95)][feature_name].value_counts().idxmax()
                 prod_over_value = production_data[prod_error >= prod_quntile_95][feature_name].value_counts().idxmax()
+                prod_range_value = 1 if (prod_overal_value != prod_under_value) or (prod_over_value != prod_overal_value) \
+                   or (prod_under_value != prod_overal_value) else 0
 
                 feature_hist = px.histogram(merged_data, x=feature_name, color='Error bias', facet_col="dataset",
-                    histnorm = 'percent', barmode='overlay', category_orders={"dataset": ["Reference", "Production"]})
+                    histnorm = 'percent', barmode='overlay', category_orders={"dataset": ["Reference", "Production"], "Error bias": ["Underestimation", "Overestimation", "Majority"]})
 
                 feature_hist_json  = json.loads(feature_hist.to_json())
 
@@ -177,12 +184,12 @@ class UnderperformSegmTableWidget(Widget):
                         "f2": feature_type,
                         "f3": str(ref_overal_value),
                         "f4": str(ref_under_value),
-                        "f5": str(ref_expected_value),
-                        "f6": str(ref_over_value),
+                        "f5": str(ref_over_value),
+                        "f6": str(ref_range_value),
                         "f7": str(prod_overal_value),
                         "f8": str(prod_under_value),
-                        "f9": str(prod_expected_value),
-                        "f10": str(prod_over_value)
+                        "f9": str(prod_over_value),
+                        "f10": int(prod_range_value)
                 }
                 )
 
@@ -217,36 +224,37 @@ class UnderperformSegmTableWidget(Widget):
                             "field": "f2"
                         },
                         {
-                            "title": "REF overall",
+                            "title": "REF: Majority",
                             "field": "f3"
                         },
                         {
-                            "title": "REF Under",
+                            "title": "REF: Under",
                             "field": "f4"
                         },
                         {
-                            "title": "REF Expected",
+                            "title": "REF: Over",
                             "field": "f5"
                         },
                         {
-                            "title": "REF Over",
+                            "title": "REF: Range(%)",
                             "field": "f6"
                         },
                         {
-                            "title": "PROD overall",
+                            "title": "PROD: Majority",
                             "field": "f7"
                         },
                         {
-                            "title": "PROD Under",
+                            "title": "PROD: Under",
                             "field": "f8"
                         },
                         {
-                            "title": "PROD Expected",
+                            "title": "PROD: Over",
                             "field": "f9"
                         },
                         {
-                            "title": "PROD Over",
-                            "field": "f10"
+                            "title": "PROD: Range(%)",
+                            "field": "f10",
+                            "sort" : "desc"
                         }
 
                     ],
@@ -259,13 +267,13 @@ class UnderperformSegmTableWidget(Widget):
         else:
             reference_data.replace([np.inf, -np.inf], np.nan, inplace=True)
             reference_data.dropna(axis=0, how='any', inplace=True)
-         
+
             error = reference_data[prediction_column] - reference_data[target_column]
 
             quntile_5 = np.quantile(error, .05)
             quntile_95 = np.quantile(error, .95)
 
-            reference_data['Error bias'] = reference_data['Error bias'] = list(map(lambda x : 'Underestimation' if x <= quntile_5 else 'Expected error' 
+            reference_data['Error bias'] = reference_data['Error bias'] = list(map(lambda x : 'Underestimation' if x <= quntile_5 else 'Majority' 
                                           if x < quntile_95 else 'Overestimation', error))
 
             params_data = []
@@ -276,10 +284,12 @@ class UnderperformSegmTableWidget(Widget):
                 feature_type = 'num'
                 ref_overal_value = np.mean(reference_data[feature_name])
                 ref_under_value = np.mean(reference_data[error <= quntile_5][feature_name])
-                ref_expected_value = np.mean(reference_data[(error > quntile_5) & (error < quntile_95)][feature_name])
+                #ref_expected_value = np.mean(reference_data[(error > quntile_5) & (error < quntile_95)][feature_name])
                 ref_over_value = np.mean(reference_data[error >= quntile_95][feature_name])
+                ref_range_value = 100*abs(ref_over_value - ref_under_value)/(np.max(reference_data[feature_name]) - np.min(reference_data[feature_name]))
 
-                hist = px.histogram(reference_data, x=feature_name, color='Error bias', histnorm = 'percent', barmode='overlay')
+                hist = px.histogram(reference_data, x=feature_name, color='Error bias', histnorm = 'percent', barmode='overlay', 
+                    category_orders={"Error bias": ["Underestimation", "Overestimation", "Majority"]})
 
                 #hist_fig = px.histogram(reference_data, x=feature_name, color=target_column, facet_col="dataset",
                 #        category_orders={"dataset": ["Reference", "Production"]})
@@ -302,8 +312,8 @@ class UnderperformSegmTableWidget(Widget):
                             "f2": feature_type,
                             "f3": round(ref_overal_value, 2),
                             "f4": round(ref_under_value, 2),
-                            "f5": round(ref_expected_value, 2),
-                            "f6": round(ref_over_value, 2)
+                            "f5": round(ref_over_value, 2),
+                            "f6": round(ref_range_value, 2)
                     }
                 )
 
@@ -322,10 +332,13 @@ class UnderperformSegmTableWidget(Widget):
                 feature_type = 'cat'
                 ref_overal_value = reference_data[feature_name].value_counts().idxmax()
                 ref_under_value = reference_data[error <= quntile_5][feature_name].value_counts().idxmax()
-                ref_expected_value = reference_data[(error > quntile_5) & (error < quntile_95)][feature_name].value_counts().idxmax()
+                #ref_expected_value = reference_data[(error > quntile_5) & (error < quntile_95)][feature_name].value_counts().idxmax()
                 ref_over_value = reference_data[error >= quntile_95][feature_name].value_counts().idxmax()
+                ref_range_value = 1 if (ref_overal_value != ref_under_value) or (ref_over_value != ref_overal_value) \
+                   or (ref_under_value != ref_overal_value) else 0
 
-                hist = px.histogram(reference_data, x=feature_name, color='Error bias', histnorm = 'percent', barmode='overlay')
+                hist = px.histogram(reference_data, x=feature_name, color='Error bias', histnorm = 'percent', 
+                    barmode='overlay', category_orders={"Error bias": ["Underestimation", "Overestimation", "Majority"]})
 
                 #hist_fig = px.histogram(reference_data, x=feature_name, color=target_column, facet_col="dataset",
                 #        category_orders={"dataset": ["Reference", "Production"]})
@@ -348,8 +361,8 @@ class UnderperformSegmTableWidget(Widget):
                             "f2": feature_type,
                             "f3": str(ref_overal_value), 
                             "f4": str(ref_under_value), 
-                            "f5": str(ref_expected_value),
-                            "f6": str(ref_over_value)
+                            "f5": str(ref_over_value),
+                            "f6": int(ref_range_value)
                     }
                 )
 
@@ -386,7 +399,7 @@ class UnderperformSegmTableWidget(Widget):
                             "field": "f2"
                         },
                         {
-                            "title": "Overall",
+                            "title": "Majority",
                             "field": "f3"
                         },
                         {
@@ -394,12 +407,13 @@ class UnderperformSegmTableWidget(Widget):
                             "field": "f4"
                         },
                         {
-                            "title": "Expected error",
+                            "title": "Overestimation",
                             "field": "f5"
                         },
                         {
-                            "title": "Overestimation",
-                            "field": "f6"
+                            "title": "Range(%)",
+                            "field": "f6",
+                            "sort" : "desc"
                         }
                     ],
                     "data": params_data

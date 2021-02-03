@@ -5,8 +5,10 @@ import json
 import pandas as pd
 from pandas.api.types import is_numeric_dtype
 import numpy as np
+import math
 
 from scipy.stats import ks_2samp
+from statsmodels.graphics.gofplots import qqplot
 #import matplotlib.pyplot as plt
 import plotly.graph_objs as go
 import plotly.figure_factory as ff
@@ -18,15 +20,15 @@ red = "#ed0400"
 grey = "#4d4d4d"
 
 
-class RegProdErrorDistrWidget(Widget):
+class RegTargetNameWidget(Widget):
     def __init__(self, title: str):
         super().__init__()
         self.title = title
 
     def get_info(self) -> BaseWidgetInfo:
-        #if self.wi:
-        return self.wi
-        #raise ValueError("No reference data provided")
+        if self.wi:
+            return self.wi
+        raise ValueError("No reference data with target and prediction provided")
 
     def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping): 
         if column_mapping:
@@ -57,44 +59,27 @@ class RegProdErrorDistrWidget(Widget):
             num_feature_names = list(set(reference_data.select_dtypes([np.number]).columns) - set(utility_columns))
             cat_feature_names = list(set(reference_data.select_dtypes([np.object]).columns) - set(utility_columns))
 
-        if production_data is not None:
-            if target_column is not None and prediction_column is not None:
-                production_data.replace([np.inf, -np.inf], np.nan, inplace=True)
-                production_data.dropna(axis=0, how='any', inplace=True)
-                
-                #plot output correlations
-                error_distr = go.Figure()
-
-                error = production_data[prediction_column] - production_data[target_column] 
-
-                error_distr.add_trace(go.Histogram(x=error,
-                    marker_color=red, name = 'error distribution', histnorm = 'percent'))
-
-                error_distr.update_layout(
-                    xaxis_title = "Error (Predicted - Actual)",
-                    yaxis_title = "Percentage",
-                )
-
-
-                error_distr_json = json.loads(error_distr.to_json())
-
-                self.wi = BaseWidgetInfo(
-                    title=self.title,
-                    type="big_graph",
-                    details="",
-                    alertStats=AlertStats(),
-                    alerts=[],
-                    alertsPosition="row",
-                    insights=[],
-                    size=1,
-                    params={
-                        "data": error_distr_json['data'],
-                        "layout": error_distr_json['layout']
-                    },
-                    additionalGraphs=[],
-                )
-            else:
-                self.wi = None
+        if target_column is not None and prediction_column is not None:
+            
+            self.wi = BaseWidgetInfo(
+                title=self.title,
+                type="counter",
+                details="",
+                alertStats=AlertStats(),
+                alerts=[],
+                alertsPosition="row",
+                insights=[],
+                size=2,
+                params={   
+                    "counters": [
+                      {
+                        "value": "",
+                        "label": "Regression Model Performance Report. Target:'" + target_column +"'"
+                      }
+                    ]
+                },
+                additionalGraphs=[],
+            )
         else:
             self.wi = None
 

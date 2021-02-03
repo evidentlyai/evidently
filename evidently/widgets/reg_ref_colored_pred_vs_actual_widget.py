@@ -5,10 +5,8 @@ import json
 import pandas as pd
 from pandas.api.types import is_numeric_dtype
 import numpy as np
-import math
 
 from scipy.stats import ks_2samp
-from statsmodels.graphics.gofplots import qqplot
 #import matplotlib.pyplot as plt
 import plotly.graph_objs as go
 import plotly.figure_factory as ff
@@ -20,7 +18,7 @@ red = "#ed0400"
 grey = "#4d4d4d"
 
 
-class RegRefQualityMetricsWidget(Widget):
+class RegRefColoredPredActualWidget(Widget):
     def __init__(self, title: str):
         super().__init__()
         self.title = title
@@ -28,7 +26,7 @@ class RegRefQualityMetricsWidget(Widget):
     def get_info(self) -> BaseWidgetInfo:
         if self.wi:
             return self.wi
-        raise ValueError("No reference data with target and prediction provided")
+        raise ValueError("No reference data provided")
 
     def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping): 
         if column_mapping:
@@ -62,56 +60,77 @@ class RegRefQualityMetricsWidget(Widget):
         if target_column is not None and prediction_column is not None:
             reference_data.replace([np.inf, -np.inf], np.nan, inplace=True)
             reference_data.dropna(axis=0, how='any', inplace=True)
+
+            ref_error = reference_data[prediction_column] - reference_data[target_column]
+
+            ref_quntile_5 = np.quantile(ref_error, .05)
+            ref_quntile_95 = np.quantile(ref_error, .95)
+
+            reference_data['dataset'] = 'Reference'
+            reference_data['Error bias'] = list(map(lambda x : 'Underestimation' if x <= ref_quntile_5 else 'Majority' 
+                                          if x < ref_quntile_95 else 'Overestimation', ref_error))
             
-            #calculate quality metrics
-            me = np.mean(reference_data[prediction_column] - reference_data[target_column])
-            sde = np.std(reference_data[prediction_column] - reference_data[target_column], ddof = 1)
+            #plot output correlations
+            pred_actual = go.Figure()
 
-            abs_err = list(map(lambda x : abs(x[0] - x[1]), 
-                zip(reference_data[target_column], reference_data[prediction_column])))
-            mae = np.mean(abs_err)
-            sdae = np.std(abs_err, ddof = 1)
+            pred_actual.add_trace(go.Scatter(
+            x = reference_data[reference_data['Error bias'] == 'Underestimation'][target_column],
+            y = reference_data[reference_data['Error bias'] == 'Underestimation'][prediction_column],
+            mode = 'markers',
+            name = 'Underestimation',
+            marker = dict(
+                color = '#6574f7',
+                showscale = False
+                )
+            ))
 
-            abs_perc_err = list(map(lambda x : 100*abs(x[0] - x[1])/x[0], 
-                zip(reference_data[target_column], reference_data[prediction_column])))
-            mape = np.mean(abs_perc_err)
-            sdape = np.std(abs_perc_err, ddof = 1)
+            pred_actual.add_trace(go.Scatter(
+            x = reference_data[reference_data['Error bias'] == 'Overestimation'][target_column],
+            y = reference_data[reference_data['Error bias'] == 'Overestimation'][prediction_column],
+            mode = 'markers',
+            name = 'Overestimation',
+            marker = dict(
+                color = '#ee5540',
+                showscale = False
+                )
+            ))
 
-            #sqrt_err = list(map(lambda x : (x[0] - x[1])**2, 
-            #    zip(reference_data[target_column], reference_data[prediction_column])))
-            #mse = np.mean(sqrt_err)
-            #sdse = np.std(sqrt_err, ddof = 1)
+            pred_actual.add_trace(go.Scatter(
+            x = reference_data[reference_data['Error bias'] == 'Majority'][target_column],
+            y = reference_data[reference_data['Error bias'] == 'Majority'][prediction_column],
+            mode = 'markers',
+            name = 'Majority',
+            marker = dict(
+                color = '#1acc98',
+                showscale = False
+                )
+            ))
 
-            #error_norm_json = json.loads(error_norm.to_json())
+            pred_actual.update_layout(
+                xaxis_title = "Actual value",
+                yaxis_title = "Predicted value",
+                xaxis = dict(
+                    showticklabels=True
+                ),
+                yaxis = dict(
+                    showticklabels=True
+                ),
+            )
+
+            pred_actual_json  = json.loads(pred_actual.to_json())
 
             self.wi = BaseWidgetInfo(
-                title="Reference: Model Quality (+/- std)",
-                type="counter",
+                title=self.title,
+                type="big_graph",
                 details="",
                 alertStats=AlertStats(),
                 alerts=[],
                 alertsPosition="row",
                 insights=[],
-                size=2,
-                params={   
-                    "counters": [
-                      {
-                        "value": str(round(me, 2)) + " (" + str(round(sde,2)) + ")",
-                        "label": "ME"
-                      },
-                      {
-                        "value": str(round(mae, 2)) + " (" + str(round(sdae,2)) + ")",
-                        "label": "MAE"
-                      },
-                      {
-                        "value": str(round(mape, 2)) + " (" + str(round(sdape, 2)) + ")",
-                        "label": "MAPE"
-                      }#,
-                      #{
-                      #  "value": str(round(mse, 2)) + " (" + str(round(sdse, 2)) + ")",
-                      #  "label": "MSE"
-                      #}
-                    ]
+                size=1,
+                params={
+                    "data": pred_actual_json['data'],
+                    "layout": pred_actual_json['layout']
                 },
                 additionalGraphs=[],
             )

@@ -4,6 +4,7 @@
 from typing import List
 
 from evidently.tabs.base_tab import Tab
+from evidently.widgets.reg_target_name_widget import RegTargetNameWidget
 from evidently.widgets.reg_ref_quality_metrics_widget import RegRefQualityMetricsWidget
 from evidently.widgets.reg_prod_quality_metrics_widget import RegProdQualityMetricsWidget
 from evidently.widgets.reg_ref_pred_vs_actual_widget import RegRefPredActualWidget
@@ -20,16 +21,19 @@ from evidently.widgets.reg_ref_error_normality_widget import RegRefErrorNormalit
 from evidently.widgets.reg_prod_error_normality_widget import RegProdErrorNormalityWidget
 from evidently.widgets.reg_ref_underperform_metrics_widget import RefUnderperformMetricsWidget
 from evidently.widgets.reg_prod_underperform_metrics_widget import ProdUnderperformMetricsWidget
+from evidently.widgets.reg_ref_colored_pred_vs_actual_widget import RegRefColoredPredActualWidget
+from evidently.widgets.reg_prod_colored_pred_vs_actual_widget import RegProdColoredPredActualWidget
 from evidently.widgets.reg_underperform_segments_table_widget import UnderperformSegmTableWidget
 from evidently.widgets.widget import Widget
 
 
-class RegressionValidationTab(Tab):
+class RegressionPerformanceTab(Tab):
     def _get_widgets(self) -> List[Widget]:
         
         widgets = [
-            RegRefQualityMetricsWidget("Reference Quality"),
-            RegProdQualityMetricsWidget("Production Quality"),
+            RegTargetNameWidget(""),
+            RegRefQualityMetricsWidget("Reference: Model Quality (+/- std)"),
+            RegProdQualityMetricsWidget("Production: Model Quality (+/- std)"),
             RegRefPredActualWidget("Reference: Predicted vs Actual"),
             RegProdPredActualWidget("Production: Predicted vs Actual"),
             RegRefPredActualTimeWidget("Reference: Predicted vs Actual in Time"),
@@ -42,9 +46,11 @@ class RegressionValidationTab(Tab):
             RegProdErrorDistrWidget("Production: Error Distribution"),
             RegRefErrorNormalityWidget("Reference: Error Normality"),
             RegProdErrorNormalityWidget("Production: Error Normality"),
-            RefUnderperformMetricsWidget("Error bias"), 
-            ProdUnderperformMetricsWidget("Error bias"),
-            UnderperformSegmTableWidget("Error bias shift: mean/most common feature values per segment")
+            RefUnderperformMetricsWidget("Reference: Mean Error per Group (+/- std)"), 
+            ProdUnderperformMetricsWidget("Production: Mean Error per Group (+/- std)"),
+            RegRefColoredPredActualWidget("Reference: Predicted vs Actual per Group"),
+            RegProdColoredPredActualWidget("Production: Predicted vs Actual per Group"),
+            UnderperformSegmTableWidget("Error Bias: Mean/Most Common Feature Value per Group")
 
         ]
         return widgets

@@ -76,7 +76,7 @@ class ProdUnderperformMetricsWidget(Widget):
             prod_sd_over = np.std(prod_error[prod_error >= prod_quantile_95], ddof = 1)
             
             self.wi = BaseWidgetInfo(
-                title="Production Data: Error Bias",
+                title="Production: Mean Error per Group (+/- std)",
                 type="counter",
                 details="",
                 alertStats=AlertStats(),
@@ -87,20 +87,20 @@ class ProdUnderperformMetricsWidget(Widget):
                 params={   
                     "counters": [
                       {
-                        "value": str(round(prod_mae, 2)) + " (" + str(round(prod_sd,2)) + ")",
-                        "label": "Overall"
+                        "value": str(round(prod_mae_exp, 2)) + " (" + str(round(prod_sd_exp, 2)) + ")",
+                        "label": "Majority(90%)"
                       },
-                      {
-                        "value": str(round(prod_mae_exp, 2)) + " (" + str(round(prod_sd_exp,2)) + ")",
-                        "label": "Expected"
-                      },
+                      #{
+                      #  "value": str(round(prod_mae_exp, 2)) + " (" + str(round(prod_sd_exp,2)) + ")",
+                      #  "label": "Expected"
+                      #},
                       {
                         "value": str(round(prod_mae_under, 2)) + " (" + str(round(prod_sd_under, 2)) + ")",
-                        "label": "Underestimation"
+                        "label": "Underestimation(5%)"
                       },
                       {
                         "value": str(round(prod_mae_over, 2)) + " (" + str(round(prod_sd_over, 2)) + ")",
-                        "label": "Overestimation"
+                        "label": "Overestimation(5%)"
                       }
                     ]
                 },

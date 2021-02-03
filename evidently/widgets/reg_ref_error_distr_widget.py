@@ -70,7 +70,7 @@ class RegRefErrorDistrWidget(Widget):
                 marker_color=red, name = 'error distribution', histnorm = 'percent'))
 
             error_distr.update_layout(
-                xaxis_title = "Error (Actual - Predicted)",
+                xaxis_title = "Error (Predicted - Actual)",
                 yaxis_title = "Percentage",
             )
 
