@@ -127,7 +127,7 @@ class RegRefColoredPredActualWidget(Widget):
                 alerts=[],
                 alertsPosition="row",
                 insights=[],
-                size=1,
+                size=1 if production_data is not None else 2,
                 params={
                     "data": pred_actual_json['data'],
                     "layout": pred_actual_json['layout']
