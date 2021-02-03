@@ -219,7 +219,7 @@ Read more in the [release blog](https://evidentlyai.com/blog/evidently-014-targe
 ### Regression Performance Report 
 We evaluate the quality of a regression model and compare it to past performance. To run this report, you need to have both target and prediction columns available. 
 
-You can also run this report if you have only one `DataFrame`. In this case, pass is as reference_data. 
+You can also run this report if you have only one `DataFrame`. In this case, pass it as reference_data. 
 
 To evaluate the regression model quality we calculate Mean Error (ME), Mean Absolute Error (MAE) and Mean Absolute Percentage Error (MAPE) metrics. To support the model performance analysis, we generate interactive visualizations: 
 - Predicted vs Actual values scatter plot
@@ -228,6 +228,7 @@ To evaluate the regression model quality we calculate Mean Error (ME), Mean Abso
 - Absolute Percentage Error in time/index
 - Error Distribution
 - Error Normality Q-Q plot
+
 These plots help analyse where the model makes mistakes and come up with improvement ideas. 
 
 We also generate an interactive Error Bias table. It visualizes the regions where the regression model underestimates and overestimates the target function. To generate it, we take 5% of the highest negative and positive errors. Then, we create histograms with feature values for these data segments with extreme errors and for the rest of the data. You can compare distributions and see if the error is sensitive to the values of a given feature.
