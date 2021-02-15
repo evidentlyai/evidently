@@ -286,7 +286,7 @@ class UnderperformSegmTableWidget(Widget):
                 ref_under_value = np.mean(reference_data[error <= quntile_5][feature_name])
                 #ref_expected_value = np.mean(reference_data[(error > quntile_5) & (error < quntile_95)][feature_name])
                 ref_over_value = np.mean(reference_data[error >= quntile_95][feature_name])
-                ref_range_value = 100*abs(ref_over_value - ref_under_value)/(np.max(reference_data[feature_name]) - np.min(reference_data[feature_name]))
+                ref_range_value = 0 if ref_over_value == ref_under_value else 100*abs(ref_over_value - ref_under_value)/(np.max(reference_data[feature_name]) - np.min(reference_data[feature_name]))
 
                 hist = px.histogram(reference_data, x=feature_name, color='Error bias', histnorm = 'percent', barmode='overlay', 
                     category_orders={"Error bias": ["Underestimation", "Overestimation", "Majority"]})

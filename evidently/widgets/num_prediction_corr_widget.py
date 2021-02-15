@@ -60,8 +60,8 @@ class NumPredictionCorrWidget(Widget):
         if prediction_column is not None:
 
             #calculate corr
-            ref_pred_corr = reference_data.corr()[prediction_column]
-            prod_pred_corr = production_data.corr()[prediction_column]
+            ref_pred_corr = reference_data[num_feature_names + [prediction_column]].corr()[prediction_column]
+            prod_pred_corr = production_data[num_feature_names + [prediction_column]].corr()[prediction_column]
             
             #plot output correlations
             pred_corr = go.Figure()

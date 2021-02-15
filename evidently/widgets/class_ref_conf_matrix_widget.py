@@ -3,11 +3,12 @@
 
 import json
 import pandas as pd
-from pandas.api.types import is_numeric_dtype
+
 import numpy as np
 
-from scipy.stats import ks_2samp
-#import matplotlib.pyplot as plt
+from sklearn import metrics
+from pandas.api.types import is_numeric_dtype
+
 import plotly.graph_objs as go
 import plotly.figure_factory as ff
 
@@ -18,15 +19,15 @@ red = "#ed0400"
 grey = "#4d4d4d"
 
 
-class NumTargetCorrWidget(Widget):
+class ClassRefConfMatrixWidget(Widget):
     def __init__(self, title: str):
         super().__init__()
         self.title = title
 
     def get_info(self) -> BaseWidgetInfo:
-        #if self.wi:
-        return self.wi
-        #raise ValueError("No prediction data provided")
+        if self.wi:
+            return self.wi
+        raise ValueError("No prediction or target data provided")
 
     def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping): 
         if column_mapping:
@@ -35,6 +36,7 @@ class NumTargetCorrWidget(Widget):
             target_column = column_mapping.get('target')
             prediction_column = column_mapping.get('prediction')
             num_feature_names = column_mapping.get('numerical_features')
+            target_names = column_mapping.get('target_names')
             if num_feature_names is None:
                 num_feature_names = []
             else:
@@ -57,28 +59,31 @@ class NumTargetCorrWidget(Widget):
             num_feature_names = list(set(reference_data.select_dtypes([np.number]).columns) - set(utility_columns))
             cat_feature_names = list(set(reference_data.select_dtypes([np.object]).columns) - set(utility_columns))
 
-        if target_column is not None:
+            target_names = None
 
-            #calculate corr
-            ref_target_corr = reference_data[num_feature_names + [target_column]].corr()[target_column]
-            prod_target_corr = production_data[num_feature_names + [target_column]].corr()[target_column]
+        if target_column is not None and prediction_column is not None:
+            reference_data.replace([np.inf, -np.inf], np.nan, inplace=True)
+            reference_data.dropna(axis=0, how='any', inplace=True)
             
-            #plot output correlations
-            target_corr = go.Figure()
+            #plot confusion matrix
+            conf_matrix = metrics.confusion_matrix(reference_data[target_column], 
+                reference_data[prediction_column])
 
-            target_corr.add_trace(go.Bar(y = ref_target_corr, x = ref_target_corr.index, 
-                marker_color = grey, name = 'Reference'))
+            z = conf_matrix.astype(int)
 
-            target_corr.add_trace(go.Bar(y = prod_target_corr, x = ref_target_corr.index, 
-                marker_color = red, name = 'Production'))
+            labels = target_names if target_names else sorted(set(reference_data[target_column]))
 
-            target_corr.update_layout(xaxis_title = "Features", yaxis_title = "Correlation",
-                yaxis = dict(
-                    range=(-1, 1),
-                    showticklabels=True
-                ))
+            # change each element of z to type string for annotations
+            z_text = [[str(y) for y in x] for x in z]
 
-            target_corr_json  = json.loads(target_corr.to_json())
+            fig = ff.create_annotated_heatmap(z, x=labels, y=labels, annotation_text=z_text, 
+                colorscale='bluered',showscale=True)
+
+            fig.update_layout(
+                xaxis_title="Predicted value", 
+                yaxis_title="Actual value")
+
+            conf_matrix_json = json.loads(fig.to_json())
 
             self.wi = BaseWidgetInfo(
                 title=self.title,
@@ -88,10 +93,10 @@ class NumTargetCorrWidget(Widget):
                 alerts=[],
                 alertsPosition="row",
                 insights=[],
-                size=1,
+                size=1 if production_data is not None else 2,
                 params={
-                    "data": target_corr_json['data'],
-                    "layout": target_corr_json['layout']
+                    "data": conf_matrix_json['data'],
+                    "layout": conf_matrix_json['layout']
                 },
                 additionalGraphs=[],
             )

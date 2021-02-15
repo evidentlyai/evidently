@@ -5,11 +5,11 @@ import json
 import pandas as pd
 from pandas.api.types import is_numeric_dtype
 import numpy as np
+import math
 
 from scipy.stats import ks_2samp
-#import matplotlib.pyplot as plt
-import plotly.graph_objs as go
-import plotly.figure_factory as ff
+from sklearn import metrics
+
 
 from evidently.model.widget import BaseWidgetInfo, AlertStats, AdditionalGraphInfo
 from evidently.widgets.widget import Widget
@@ -18,15 +18,15 @@ red = "#ed0400"
 grey = "#4d4d4d"
 
 
-class NumTargetCorrWidget(Widget):
+class ClassRefQualityMetricsWidget(Widget):
     def __init__(self, title: str):
         super().__init__()
         self.title = title
 
     def get_info(self) -> BaseWidgetInfo:
-        #if self.wi:
-        return self.wi
-        #raise ValueError("No prediction data provided")
+        if self.wi:
+            return self.wi
+        raise ValueError("No reference data with target and prediction provided")
 
     def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping): 
         if column_mapping:
@@ -57,41 +57,47 @@ class NumTargetCorrWidget(Widget):
             num_feature_names = list(set(reference_data.select_dtypes([np.number]).columns) - set(utility_columns))
             cat_feature_names = list(set(reference_data.select_dtypes([np.object]).columns) - set(utility_columns))
 
-        if target_column is not None:
-
-            #calculate corr
-            ref_target_corr = reference_data[num_feature_names + [target_column]].corr()[target_column]
-            prod_target_corr = production_data[num_feature_names + [target_column]].corr()[target_column]
+        if target_column is not None and prediction_column is not None:
+            reference_data.replace([np.inf, -np.inf], np.nan, inplace=True)
+            reference_data.dropna(axis=0, how='any', inplace=True)
             
-            #plot output correlations
-            target_corr = go.Figure()
-
-            target_corr.add_trace(go.Bar(y = ref_target_corr, x = ref_target_corr.index, 
-                marker_color = grey, name = 'Reference'))
-
-            target_corr.add_trace(go.Bar(y = prod_target_corr, x = ref_target_corr.index, 
-                marker_color = red, name = 'Production'))
-
-            target_corr.update_layout(xaxis_title = "Features", yaxis_title = "Correlation",
-                yaxis = dict(
-                    range=(-1, 1),
-                    showticklabels=True
-                ))
-
-            target_corr_json  = json.loads(target_corr.to_json())
+            #calculate quality metrics
+            accuracy_score = metrics.accuracy_score(reference_data[target_column], reference_data[prediction_column])
+            avg_precision = metrics.precision_score(reference_data[target_column], reference_data[prediction_column],
+                average='macro')
+            avg_recall = metrics.recall_score(reference_data[target_column], reference_data[prediction_column],
+                average='macro')
+            avg_f1 = metrics.f1_score(reference_data[target_column], reference_data[prediction_column],
+                average='macro')
 
             self.wi = BaseWidgetInfo(
-                title=self.title,
-                type="big_graph",
+                title="Reference: Model Quality With Macro Average",
+                type="counter",
                 details="",
                 alertStats=AlertStats(),
                 alerts=[],
                 alertsPosition="row",
                 insights=[],
-                size=1,
-                params={
-                    "data": target_corr_json['data'],
-                    "layout": target_corr_json['layout']
+                size=2,
+                params={   
+                    "counters": [
+                      {
+                        "value": str(round(accuracy_score, 3)),
+                        "label": "Accuracy"
+                      },
+                      {
+                        "value": str(round(avg_precision, 3)),
+                        "label": "Precision"
+                      },
+                      {
+                        "value": str(round(avg_recall, 3)),
+                        "label": "Recall"
+                      },
+                      {
+                        "value": str(round(avg_f1, 3)),
+                        "label": "F1"
+                      }
+                    ]
                 },
                 additionalGraphs=[],
             )

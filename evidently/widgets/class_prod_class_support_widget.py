@@ -3,11 +3,12 @@
 
 import json
 import pandas as pd
-from pandas.api.types import is_numeric_dtype
+
 import numpy as np
 
-from scipy.stats import ks_2samp
-#import matplotlib.pyplot as plt
+from sklearn import metrics
+from pandas.api.types import is_numeric_dtype
+
 import plotly.graph_objs as go
 import plotly.figure_factory as ff
 
@@ -18,7 +19,7 @@ red = "#ed0400"
 grey = "#4d4d4d"
 
 
-class NumTargetCorrWidget(Widget):
+class ClassProdClassSupportWidget(Widget):
     def __init__(self, title: str):
         super().__init__()
         self.title = title
@@ -26,7 +27,7 @@ class NumTargetCorrWidget(Widget):
     def get_info(self) -> BaseWidgetInfo:
         #if self.wi:
         return self.wi
-        #raise ValueError("No prediction data provided")
+        #raise ValueError("No prediction or target data provided")
 
     def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping): 
         if column_mapping:
@@ -35,6 +36,7 @@ class NumTargetCorrWidget(Widget):
             target_column = column_mapping.get('target')
             prediction_column = column_mapping.get('prediction')
             num_feature_names = column_mapping.get('numerical_features')
+            target_names = column_mapping.get('target_names')
             if num_feature_names is None:
                 num_feature_names = []
             else:
@@ -57,28 +59,29 @@ class NumTargetCorrWidget(Widget):
             num_feature_names = list(set(reference_data.select_dtypes([np.number]).columns) - set(utility_columns))
             cat_feature_names = list(set(reference_data.select_dtypes([np.object]).columns) - set(utility_columns))
 
-        if target_column is not None:
+            target_names = None
 
-            #calculate corr
-            ref_target_corr = reference_data[num_feature_names + [target_column]].corr()[target_column]
-            prod_target_corr = production_data[num_feature_names + [target_column]].corr()[target_column]
+        if production_data is not None and target_column is not None and prediction_column is not None:
+            production_data.replace([np.inf, -np.inf], np.nan, inplace=True)
+            production_data.dropna(axis=0, how='any', inplace=True)
             
-            #plot output correlations
-            target_corr = go.Figure()
+            #plot support bar
+            metrics_matrix = metrics.classification_report(production_data[target_column], production_data[prediction_column], 
+                output_dict=True)
+            metrics_frame = pd.DataFrame(metrics_matrix)
+            support = metrics_frame.iloc[-1:,:-3].values[0]
 
-            target_corr.add_trace(go.Bar(y = ref_target_corr, x = ref_target_corr.index, 
-                marker_color = grey, name = 'Reference'))
+            fig = go.Figure()
 
-            target_corr.add_trace(go.Bar(y = prod_target_corr, x = ref_target_corr.index, 
-                marker_color = red, name = 'Production'))
+            fig.add_trace(go.Bar(x=target_names if target_names else metrics_frame.columns.tolist()[:-3], 
+                y=metrics_frame.iloc[-1:,:-3].values[0], marker_color=red, name='Support'))
 
-            target_corr.update_layout(xaxis_title = "Features", yaxis_title = "Correlation",
-                yaxis = dict(
-                    range=(-1, 1),
-                    showticklabels=True
-                ))
+            fig.update_layout(
+                xaxis_title = "Class",
+                yaxis_title = "Number of Objects",
+            )
 
-            target_corr_json  = json.loads(target_corr.to_json())
+            support_bar_json = json.loads(fig.to_json())
 
             self.wi = BaseWidgetInfo(
                 title=self.title,
@@ -90,8 +93,8 @@ class NumTargetCorrWidget(Widget):
                 insights=[],
                 size=1,
                 params={
-                    "data": target_corr_json['data'],
-                    "layout": target_corr_json['layout']
+                    "data": support_bar_json['data'],
+                    "layout": support_bar_json['layout']
                 },
                 additionalGraphs=[],
             )
