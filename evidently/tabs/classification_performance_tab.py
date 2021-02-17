@@ -13,6 +13,7 @@ from evidently.widgets.class_ref_conf_matrix_widget import ClassRefConfMatrixWid
 from evidently.widgets.class_prod_conf_matrix_widget import ClassProdConfMatrixWidget
 from evidently.widgets.class_ref_metrics_matrix_widget import ClassRefMetricsMatrixWidget
 from evidently.widgets.class_prod_metrics_matrix_widget import ClassProdMetricsMatrixWidget
+from evidently.widgets.class_confusion_based_feature_distr_table_widget import ClassConfusionBasedFeatureDistrTable
 
 from evidently.widgets.widget import Widget
 
@@ -24,11 +25,12 @@ class ClassificationPerformanceTab(Tab):
             ClassTargetNameWidget(""),
             ClassRefQualityMetricsWidget("Reference: Model Quality With Macro Average"),
             ClassProdQualityMetricsWidget("Production: Model Quality With Macro Average"),
-            ClassRefClassSupportWidget("Reference: Class Support"),
-            ClassProdClassSupportWidget("Production: Class Support"),
+            ClassRefClassSupportWidget("Reference: Class Representation"),
+            ClassProdClassSupportWidget("Production: Class Representation"),
             ClassRefConfMatrixWidget("Reference: Confusion Matrix"),
             ClassProdConfMatrixWidget("Production: Confusion Matrix"),
             ClassRefMetricsMatrixWidget("Reference: Quality Metrics by Classes"),
-            ClassProdMetricsMatrixWidget("Production: Quality Metrics by Classes")
+            ClassProdMetricsMatrixWidget("Production: Quality Metrics by Classes"),
+            ClassConfusionBasedFeatureDistrTable("Missclassification by Features")
         ]
         return widgets
