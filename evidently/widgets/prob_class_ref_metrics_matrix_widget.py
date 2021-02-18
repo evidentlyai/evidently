@@ -92,7 +92,7 @@ class ProbClassRefMetricsMatrixWidget(Widget):
             z_text = [[str(round(y,3)) for y in x] for x in z]
 
             # set up figure 
-            fig = ff.create_annotated_heatmap(z, x=x, y=y, annotation_text=z_text, colorscale='bluered',showscale=True)
+            fig = ff.create_annotated_heatmap(z, y=y, annotation_text=z_text, colorscale='bluered', showscale=True)
             fig.update_layout(
                 xaxis_title="Class", 
                 yaxis_title="Metric")

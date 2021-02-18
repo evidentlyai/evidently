@@ -73,7 +73,7 @@ class ProbClassRefPRCurveWidget(Widget):
             binaraizer = preprocessing.LabelBinarizer()
             binaraizer.fit(reference_data[target_column])
             binaraized_target = pd.DataFrame(binaraizer.transform(reference_data[target_column]))
-            
+            binaraized_target.columns = prediction_column
             #plot support bar
             graphs = []
 
@@ -93,8 +93,8 @@ class ProbClassRefPRCurveWidget(Widget):
                 ))
 
                 fig.update_layout(
-                    yaxis_title="Recall",
-                    xaxis_title="Precision",
+                    yaxis_title="Precision",
+                    xaxis_title="Recall",
                     showlegend=True
                 )
 

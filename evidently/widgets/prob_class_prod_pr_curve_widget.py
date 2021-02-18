@@ -73,7 +73,7 @@ class ProbClassProdPRCurveWidget(Widget):
             binaraizer = preprocessing.LabelBinarizer()
             binaraizer.fit(production_data[target_column])
             binaraized_target = pd.DataFrame(binaraizer.transform(production_data[target_column]))
-            
+            binaraized_target.columns = prediction_column
             #plot support bar
             graphs = []
 
@@ -93,8 +93,8 @@ class ProbClassProdPRCurveWidget(Widget):
                 ))
 
                 fig.update_layout(
-                    yaxis_title="True Positive Rate",
-                    xaxis_title="False Positive Rate",
+                    yaxis_title="Precision",
+                    xaxis_title="Recall",
                     showlegend=True
                 )
 

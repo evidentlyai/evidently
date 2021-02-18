@@ -73,7 +73,7 @@ class ProbClassProdRocCurveWidget(Widget):
             binaraizer = preprocessing.LabelBinarizer()
             binaraizer.fit(production_data[target_column])
             binaraized_target = pd.DataFrame(binaraizer.transform(production_data[target_column]))
-            
+            binaraized_target.columns = prediction_column
             #plot support bar
             graphs = []
 
