@@ -77,7 +77,8 @@ class BigDriftTableWidget(Widget):
                             "parts": [
                                 {
                                     "title": "Data drift",
-                                    "id": feature_name + "_drift"
+                                    "id": feature_name + "_drift",
+                                    "type": "widget"
                                 },
                                 {
                                     "title": "Data distribution",
@@ -137,7 +138,8 @@ class BigDriftTableWidget(Widget):
                             "parts": [
                                 {
                                     "title": "Data drift",
-                                    "id": feature_name + "_drift"
+                                    "id": feature_name + "_drift",
+                                    "type": "widget"
                                 },
                                 {
                                     "title": "Data distribution",
@@ -269,8 +271,15 @@ class BigDriftTableWidget(Widget):
                 AdditionalGraphInfo(
                     feature_name + '_drift',
                     {
-                        "data" : drift_figure['data'],
-                        "layout" : drift_figure['layout']
+                        "title": feature_name + "drift",
+                        "size": 2,
+                        "text": "",
+                        "type": "big_graph",
+                        "params":
+                        {
+                            "data": drift_figure['data'],
+                            "layout": drift_figure['layout']
+                        }
                     }
                 )
             )
