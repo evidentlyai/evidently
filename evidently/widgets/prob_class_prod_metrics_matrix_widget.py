@@ -79,20 +79,20 @@ class ProbClassProdMetricsMatrixWidget(Widget):
              output_dict=True)
             metrics_frame = pd.DataFrame(metrics_matrix)
 
-            roc_aucs = metrics.roc_auc_score(binaraized_target, array_prediction, average=None)
-            
             z = metrics_frame.iloc[:-1,:-3].values
-            z = np.append(z, [roc_aucs], axis = 0)
-
             x = prediction_column
+            y =  ['precision', 'recall', 'f1-score']
 
-            y =  ['precision', 'recall', 'f1-score', 'roc-auc']
+            if len(prediction_column) > 2:
+                roc_aucs = metrics.roc_auc_score(binaraized_target, array_prediction, average=None)
+                z = np.append(z, [roc_aucs], axis = 0)
+                y.append('roc-auc')
 
             # change each element of z to type string for annotations
             z_text = [[str(round(y,3)) for y in x] for x in z]
 
             # set up figure 
-            fig = ff.create_annotated_heatmap(z, y=y, annotation_text=z_text, colorscale='bluered',showscale=True)
+            fig = ff.create_annotated_heatmap(z, y=y, x=x, annotation_text=z_text, colorscale='bluered',showscale=True)
             fig.update_layout(
                 xaxis_title="Class", 
                 yaxis_title="Metric")

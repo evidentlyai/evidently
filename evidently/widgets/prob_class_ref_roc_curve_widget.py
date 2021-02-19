@@ -69,16 +69,13 @@ class ProbClassRefRocCurveWidget(Widget):
 
             #prediction_ids = np.argmax(array_prediction, axis=-1)
             #prediction_labels = [prediction_column[x] for x in prediction_ids]
+            if len(prediction_column) <= 2:
+                binaraizer = preprocessing.LabelBinarizer()
+                binaraizer.fit(reference_data[target_column])
+                binaraized_target = pd.DataFrame(binaraizer.transform(reference_data[target_column]))
+                binaraized_target.columns = ['target']
 
-            binaraizer = preprocessing.LabelBinarizer()
-            binaraizer.fit(reference_data[target_column])
-            binaraized_target = pd.DataFrame(binaraizer.transform(reference_data[target_column]))
-            binaraized_target.columns = prediction_column
-            #plot support bar
-            graphs = []
-
-            for label in prediction_column:
-                fpr, tpr, thrs = metrics.roc_curve(binaraized_target[label], reference_data[label])
+                fpr, tpr, thrs = metrics.roc_curve(binaraized_target, reference_data[prediction_column[0]])
                 fig = go.Figure()
 
                 fig.add_trace(go.Scatter(
@@ -93,36 +90,83 @@ class ProbClassRefRocCurveWidget(Widget):
                 ))
 
                 fig.update_layout(
-                    yaxis_title="True Positive Rate",
-                    xaxis_title="False Positive Rate",
-                    showlegend=True
-                )
+                        yaxis_title="True Positive Rate",
+                        xaxis_title="False Positive Rate",
+                        showlegend=True
+                    )
 
                 fig_json = json.loads(fig.to_json())
 
-                graphs.append({
-                    "id": "tab_" + str(label),
-                    "title": str(label),
-                    "graph":{
-                        "data":fig_json["data"],
-                        "layout":fig_json["layout"],
-                        }
-                    })
+                self.wi = BaseWidgetInfo(
+                    title=self.title,
+                    type="big_graph",
+                    details="",
+                    alertStats=AlertStats(),
+                    alerts=[],
+                    alertsPosition="row",
+                    insights=[],
+                    size=1 if production_data is not None else 2,
+                    params={
+                        "data": fig_json['data'],
+                        "layout": fig_json['layout']
+                    },
+                    additionalGraphs=[],
+                )
 
-            self.wi = BaseWidgetInfo(
-                title=self.title,
-                type="tabbed_graph",
-                details="",
-                alertStats=AlertStats(),
-                alerts=[],
-                alertsPosition="row",
-                insights=[],
-                size=1 if production_data is not None else 2,
-                params={
-                    "graphs": graphs
-                },
-                additionalGraphs=[],
-            )
+            else:
+                binaraizer = preprocessing.LabelBinarizer()
+                binaraizer.fit(reference_data[target_column])
+                binaraized_target = pd.DataFrame(binaraizer.transform(reference_data[target_column]))
+                binaraized_target.columns = prediction_column
+                #plot support bar
+                graphs = []
+
+                for label in prediction_column:
+                    fpr, tpr, thrs = metrics.roc_curve(binaraized_target[label], reference_data[label])
+                    fig = go.Figure()
+
+                    fig.add_trace(go.Scatter(
+                        x = fpr,
+                        y = tpr,
+                        mode = 'lines',
+                        name='ROC',
+                        marker=dict(
+                            size=6,
+                            color=red,
+                        )
+                    ))
+
+                    fig.update_layout(
+                        yaxis_title="True Positive Rate",
+                        xaxis_title="False Positive Rate",
+                        showlegend=True
+                    )
+
+                    fig_json = json.loads(fig.to_json())
+
+                    graphs.append({
+                        "id": "tab_" + str(label),
+                        "title": str(label),
+                        "graph":{
+                            "data":fig_json["data"],
+                            "layout":fig_json["layout"],
+                            }
+                        })
+
+                self.wi = BaseWidgetInfo(
+                    title=self.title,
+                    type="tabbed_graph",
+                    details="",
+                    alertStats=AlertStats(),
+                    alerts=[],
+                    alertsPosition="row",
+                    insights=[],
+                    size=1 if production_data is not None else 2,
+                    params={
+                        "graphs": graphs
+                    },
+                    additionalGraphs=[],
+                )
         else:
             self.wi = None
 

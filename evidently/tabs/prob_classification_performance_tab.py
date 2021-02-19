@@ -19,6 +19,9 @@ from evidently.widgets.prob_class_ref_roc_curve_widget import ProbClassRefRocCur
 from evidently.widgets.prob_class_prod_roc_curve_widget import ProbClassProdRocCurveWidget
 from evidently.widgets.prob_class_ref_pr_curve_widget import ProbClassRefPRCurveWidget
 from evidently.widgets.prob_class_prod_pr_curve_widget import ProbClassProdPRCurveWidget
+from evidently.widgets.prob_class_ref_pr_table_widget import ProbClassRefPRTableWidget
+from evidently.widgets.prob_class_prod_pr_table_widget import ProbClassProdPRTableWidget
+#from evidently.widgets.tabs_widget import TabsWidget
 from evidently.widgets.prob_class_confusion_based_feature_distr_table_widget import ProbClassConfusionBasedFeatureDistrTable
 
 from evidently.widgets.widget import Widget
@@ -43,6 +46,9 @@ class ProbClassificationPerformanceTab(Tab):
             ProbClassProdRocCurveWidget("Production: ROC Curve"),
             ProbClassRefPRCurveWidget("Reference: Precision Recall Curve"),
             ProbClassProdPRCurveWidget("Production: Precision Recall Curve"),
+            ProbClassRefPRTableWidget("Reference: Precision Recall Table"),
+            ProbClassProdPRTableWidget("Production: Precision Recall Table"),
+            #TabsWidget("test"),
             ProbClassConfusionBasedFeatureDistrTable("Missclassification by Features")
         ]
         return widgets

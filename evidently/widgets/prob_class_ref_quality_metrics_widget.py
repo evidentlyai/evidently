@@ -71,6 +71,14 @@ class ProbClassRefQualityMetricsWidget(Widget):
             prediction_labels = [prediction_column[x] for x in prediction_ids]
 
             #calculate quality metrics
+            if len(prediction_column) > 2:
+                roc_auc = metrics.roc_auc_score(binaraized_target, array_prediction, average='macro')
+                log_loss = metrics.log_loss(binaraized_target, array_prediction)
+            else:
+                roc_auc = metrics.roc_auc_score(binaraized_target, reference_data[prediction_column[0]], 
+                average='macro')
+                log_loss = metrics.log_loss(binaraized_target, reference_data[prediction_column[0]])
+
             accuracy_score = metrics.accuracy_score(reference_data[target_column], prediction_labels)
             avg_precision = metrics.precision_score(reference_data[target_column], prediction_labels, 
                 average='macro')
@@ -78,9 +86,6 @@ class ProbClassRefQualityMetricsWidget(Widget):
                 average='macro')
             avg_f1 = metrics.f1_score(reference_data[target_column], prediction_labels, 
                 average='macro')
-            roc_auc = metrics.roc_auc_score(binaraized_target, array_prediction, 
-                average='macro')
-            log_loss = metrics.log_loss(binaraized_target, array_prediction)
 
             self.wi = BaseWidgetInfo(
                 title="Reference: Model Quality With Macro Average",

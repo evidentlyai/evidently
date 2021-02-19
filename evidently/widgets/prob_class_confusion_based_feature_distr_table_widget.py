@@ -120,7 +120,7 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                                                        ('FN' if (x['target'] == label and x['prediction_labels'] != label) else 'TN')), axis = 1)
                         
                         fig = px.histogram(merged_data, x=feature_name, color='Confusion', facet_col="dataset", histnorm = '',
-                            category_orders={"dataset": ["Reference", "Production"]})
+                            category_orders={"dataset": ["Reference", "Production"], "Confusion": ["TP", "TN", "FP", "FN"]})
 
                         fig_json  = json.loads(fig.to_json())
 
@@ -201,7 +201,7 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                                                  else ('FP' if(x['target'] != label and x['prediction_labels'] == label) else \
                                                        ('FN' if (x['target'] == label and x['prediction_labels'] != label) else 'TN')), axis = 1)
                         
-                        fig = px.histogram(reference_data, x=feature_name, color='Confusion', histnorm = '')
+                        fig = px.histogram(reference_data, x=feature_name, color='Confusion', histnorm = '', category_orders={"Confusion": ["TP", "TN", "FP", "FN"]})
 
                         fig_json  = json.loads(fig.to_json())
 
