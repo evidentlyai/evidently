@@ -86,7 +86,7 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                     params_data.append(
                         {
                             "details": {
-                                    "parts": [{"title":"All Data", "id":"All Data"}] + [{"title":str(label), "id": feature_name + "_" + str(label)} for label in labels],
+                                    "parts": [{"title":"All", "id":"All"}] + [{"title":str(label), "id": feature_name + "_" + str(label)} for label in labels],
                                     "insights": []
                                 },
                             "f1": feature_name
@@ -106,7 +106,7 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                     #write plot data in table as additional data
                     additional_graphs_data.append(
                         AdditionalGraphInfo(
-                            "All Data",
+                            "All",
                             {
                                 "data" : fig_json['data'],
                                 "layout" : fig_json['layout']
@@ -173,7 +173,7 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                     params_data.append(
                         {
                             "details": {
-                                    "parts": [{"title":"All Data", "id":"All Data"}] + [{"title":str(label), "id": feature_name + "_" + str(label)} for label in labels],
+                                    "parts": [{"title":"All", "id":"All"}] + [{"title":str(label), "id": feature_name + "_" + str(label)} for label in labels],
                                     "insights": []
                                 },
                             "f1": feature_name
@@ -188,7 +188,7 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                     #write plot data in table as additional data
                     additional_graphs_data.append(
                         AdditionalGraphInfo(
-                            "All Data",
+                            "All",
                             {
                                 "data" : fig_json['data'],
                                 "layout" : fig_json['layout']

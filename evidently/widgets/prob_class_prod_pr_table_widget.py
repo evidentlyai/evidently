@@ -85,23 +85,25 @@ class ProbClassProdPRTableWidget(Widget):
                 data_size = len(binded)
                 target_class_size = sum([x[0] for x in binded])
 
-                result = pd.DataFrame(columns = ['Top(%)', 'Count', 'TP', 'FP', 'precision', 'recall'])
+                #result = pd.DataFrame(columns = ['Top(%)', 'Count', 'TP', 'FP', 'precision', 'recall'])
 
-                offset = int(data_size*step_size)
+                offset = max(round(data_size*step_size), 1)
                 for step in np.arange(offset, data_size + offset, offset):
                     count = min(step, data_size)
+                    prob = round(binded[min(step, data_size-1)][1],2)
                     top = round(100.0*min(step, data_size)/data_size, 1)
                     tp = sum([x[0] for x in binded[:min(step, data_size)]])
                     fp = count - tp
                     precision = round(100.0*tp/count, 1)
                     recall = round(100.0*tp/target_class_size, 1)
 
-                    params_data.append({ 'f1': str(top), 
+                    params_data.append({ 'f1': float(top), 
                                    'f2' : int(count), 
-                                   'f3' : str(tp), 
-                                   'f4' : str(fp), 
-                                   'f5' : str(precision), 
-                                   'f6' : str(recall)})
+                                   'f3' : float(prob),
+                                   'f4' : int(tp), 
+                                   'f5' : int(fp), 
+                                   'f6' : float(precision), 
+                                   'f7' : float(recall)})
 
                 self.wi = BaseWidgetInfo(
                 title = self.title,
@@ -118,27 +120,31 @@ class ProbClassProdPRTableWidget(Widget):
                         {
                             "title": "Top(%)",
                             "field": "f1",
+                            "sort" : "asc"
                         },
                         {
                             "title": "Count",
                             "field": "f2",
-                            "sort" : "asc"
+                        },
+                        {
+                            "title": "Prob",
+                            "field": "f3",
                         },
                         {
                             "title": "TP",
-                            "field": "f3"
-                        },
-                        {
-                            "title": "FP",
                             "field": "f4"
                         },
                         {
-                            "title": "precision",
+                            "title": "FP",
                             "field": "f5"
                         },
                         {
-                            "title": "recall",
+                            "title": "Precision",
                             "field": "f6"
+                        },
+                        {
+                            "title": "Recall",
+                            "field": "f7"
                         }
                     ],
                     "data": params_data
@@ -165,63 +171,69 @@ class ProbClassProdPRTableWidget(Widget):
                     data_size = len(binded)
                     target_class_size = sum([x[0] for x in binded])
 
-                    result = pd.DataFrame(columns = ['Top(%)', 'Count', 'TP', 'FP', 'precision', 'recall'])
+                    #result = pd.DataFrame(columns = ['Top(%)', 'Count', 'TP', 'FP', 'precision', 'recall'])
 
-                    offset = int(data_size*step_size)
+                    offset = max(round(data_size*step_size), 1)
                     for step in np.arange(offset, data_size + offset, offset):
                         count = min(step, data_size)
+                        prob = round(binded[min(step, data_size-1)][1],2)
                         top = round(100.0*min(step, data_size)/data_size, 1)
                         tp = sum([x[0] for x in binded[:min(step, data_size)]])
                         fp = count - tp
                         precision = round(100.0*tp/count, 1)
                         recall = round(100.0*tp/target_class_size, 1)
 
-                        params_data.append({ 'f1': str(top), 
+                        params_data.append({ 'f1': float(top), 
                                        'f2' : int(count), 
-                                       'f3' : str(tp), 
-                                       'f4' : str(fp), 
-                                       'f5' : str(precision), 
-                                       'f6' : str(recall)})
+                                       'f3' : float(prob),
+                                       'f4' : int(tp), 
+                                       'f5' : int(fp), 
+                                       'f6' : float(precision), 
+                                       'f7' : float(recall)})
 
                     tabs.append(TabInfo(
                         id=label,
                         title=label,
                         widget=BaseWidgetInfo(
-                            title=label,
+                            title="",
                             type="big_table",
                             details="",
                             alertStats=AlertStats(),
                             alerts=[],
                             alertsPosition="row",
                             insights=[],
-                            size=1,
+                            size=2,
                             params={
                                 "rowsPerPage": 21,
                                 "columns": [
                                     {
                                         "title": "Top(%)",
-                                        "field": "f1"
-                                    },
-                                    {
-                                        "title": "Count",
-                                        "field": "f2",
+                                        "field": "f1",
                                         "sort" : "asc"
                                     },
                                     {
-                                        "title": "TP",
-                                        "field": "f3"
+                                        "title": "Count",
+                                        "field": "f2", 
                                     },
                                     {
-                                        "title": "FP",
+                                        "title": "Prob",
+                                        "field": "f3", 
+                                    },
+                                    {
+                                        "title": "TP",
                                         "field": "f4"
                                     },
                                     {
-                                        "title": "precision",
+                                        "title": "FP",
                                         "field": "f5"
                                     },
                                     {
-                                        "title": "recall",
+                                        "title": "Precision",
                                         "field": "f6"
+                                    },
+                                    {
+                                        "title": "Recall",
+                                        "field": "f7"
                                     }
                                 ],
                                 "data": params_data

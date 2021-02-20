@@ -73,7 +73,7 @@ class ClassConfusionBasedFeatureDistrTable(Widget):
                     params_data.append(
                         {
                             "details": {
-                                    "parts": [{"title":"All Data", "id":"All Data"}] + [{"title":str(label), "id": feature_name + "_" + str(label)} for label in labels],
+                                    "parts": [{"title":"All", "id":"All"}] + [{"title":str(label), "id": feature_name + "_" + str(label)} for label in labels],
                                     "insights": []
                                 },
                             "f1": feature_name
@@ -93,7 +93,7 @@ class ClassConfusionBasedFeatureDistrTable(Widget):
                     #write plot data in table as additional data
                     additional_graphs_data.append(
                         AdditionalGraphInfo(
-                            "All Data",
+                            "All",
                             {
                                 "data" : fig_json['data'],
                                 "layout" : fig_json['layout']
@@ -107,7 +107,7 @@ class ClassConfusionBasedFeatureDistrTable(Widget):
                                                        ('FN' if (x['target'] == label and x['prediction'] != label) else 'TN')), axis = 1)
                         
                         fig = px.histogram(merged_data, x=feature_name, color='Confusion', facet_col="dataset", histnorm = '',
-                            category_orders={"dataset": ["Reference", "Production"]})
+                            category_orders={"dataset": ["Reference", "Production"], "Confusion": ["TP", "TN", "FP", "FN"]})
 
                         fig_json  = json.loads(fig.to_json())
 
@@ -156,7 +156,7 @@ class ClassConfusionBasedFeatureDistrTable(Widget):
                     params_data.append(
                         {
                             "details": {
-                                    "parts": [{"title":"All Data", "id":"All Data"}] + [{"title":str(label), "id": feature_name + "_" + str(label)} for label in labels],
+                                    "parts": [{"title":"All", "id":"All"}] + [{"title":str(label), "id": feature_name + "_" + str(label)} for label in labels],
                                     "insights": []
                                 },
                             "f1": feature_name
@@ -171,7 +171,7 @@ class ClassConfusionBasedFeatureDistrTable(Widget):
                     #write plot data in table as additional data
                     additional_graphs_data.append(
                         AdditionalGraphInfo(
-                            "All Data",
+                            "All",
                             {
                                 "data" : fig_json['data'],
                                 "layout" : fig_json['layout']
@@ -184,7 +184,7 @@ class ClassConfusionBasedFeatureDistrTable(Widget):
                                                  else ('FP' if(x['target'] != label and x['prediction'] == label) else \
                                                        ('FN' if (x['target'] == label and x['prediction'] != label) else 'TN')), axis = 1)
                         
-                        fig = px.histogram(reference_data, x=feature_name, color='Confusion', histnorm = '')
+                        fig = px.histogram(reference_data, x=feature_name, color='Confusion', histnorm = '', category_orders={"Confusion": ["TP", "TN", "FP", "FN"]})
 
                         fig_json  = json.loads(fig.to_json())
 

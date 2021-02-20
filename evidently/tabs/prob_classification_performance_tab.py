@@ -32,23 +32,22 @@ class ProbClassificationPerformanceTab(Tab):
         
         widgets = [
             ProbClassTargetNameWidget(""),
-            ProbClassRefQualityMetricsWidget("Reference: Model Quality With Macro Average"),
-            ProbClassProdQualityMetricsWidget("Production: Model Quality With Macro Average"),
+            ProbClassRefQualityMetricsWidget("Reference: Model Quality With Macro-average Metrics"),
+            ProbClassProdQualityMetricsWidget("Production: Model Quality With Macro-average Metrics"),
             ProbClassRefClassSupportWidget("Reference: Class Representation"),
             ProbClassProdClassSupportWidget("Production: Class Representation"),
             ProbClassRefConfMatrixWidget("Reference: Confusion Matrix"),
             ProbClassProdConfMatrixWidget("Production: Confusion Matrix"),
-            ProbClassRefMetricsMatrixWidget("Reference: Quality Metrics by Classes"),
-            ProbClassProdMetricsMatrixWidget("Production: Quality Metrics by Classes"),
-            ProbClassRefPredictionCloudWidget("Reference: Predictions by Classes"),
-            ProbClassProdPredictionCloudWidget("Production: Predictions by Classes"),
+            ProbClassRefMetricsMatrixWidget("Reference: Quality Metrics by Class"),
+            ProbClassProdMetricsMatrixWidget("Production: Quality Metrics by Class"),
+            ProbClassRefPredictionCloudWidget("Reference: Class Prediction Quality"),
+            ProbClassProdPredictionCloudWidget("Production: Class Prediction Quality"),
             ProbClassRefRocCurveWidget("Reference: ROC Curve"),
             ProbClassProdRocCurveWidget("Production: ROC Curve"),
-            ProbClassRefPRCurveWidget("Reference: Precision Recall Curve"),
-            ProbClassProdPRCurveWidget("Production: Precision Recall Curve"),
-            ProbClassRefPRTableWidget("Reference: Precision Recall Table"),
-            ProbClassProdPRTableWidget("Production: Precision Recall Table"),
-            #TabsWidget("test"),
-            ProbClassConfusionBasedFeatureDistrTable("Missclassification by Features")
+            ProbClassRefPRCurveWidget("Reference: Precision-Recall Curve"),
+            ProbClassProdPRCurveWidget("Production: Precision-Recall Curve"),
+            ProbClassRefPRTableWidget("Reference: Precision-Recall Table"),
+            ProbClassProdPRTableWidget("Production: Precision-Recall Table"),
+            ProbClassConfusionBasedFeatureDistrTable("Classification Quality By Feature")
         ]
         return widgets
