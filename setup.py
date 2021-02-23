@@ -20,7 +20,7 @@ from setuptools import setup
 name = 'evidently'
 
 # Ensure a valid python version
-ensure_python('>=3.4')
+ensure_python('>=3.6')
 
 # Get our version
 version = get_version(pjoin(name, '_version.py'))
@@ -75,7 +75,7 @@ setup_args = dict(
         "dataclasses",
         "pandas",
         "numpy",
-        #"matplotlib",
+        "statsmodels",
         "plotly",
         "scipy"
     ],
