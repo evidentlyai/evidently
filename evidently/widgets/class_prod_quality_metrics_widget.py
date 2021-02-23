@@ -71,7 +71,7 @@ class ClassProdQualityMetricsWidget(Widget):
                     average='macro')
 
                 self.wi = BaseWidgetInfo(
-                    title="Production: Model Quality With Macro Average",
+                    title=self.title,
                     type="counter",
                     details="",
                     alertStats=AlertStats(),

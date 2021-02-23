@@ -71,7 +71,7 @@ class ClassRefQualityMetricsWidget(Widget):
                 average='macro')
 
             self.wi = BaseWidgetInfo(
-                title="Reference: Model Quality With Macro Average",
+                title=self.title,
                 type="counter",
                 details="",
                 alertStats=AlertStats(),
