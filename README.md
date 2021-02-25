@@ -272,9 +272,9 @@ For non-probabilistic classification, you can use both numerical labels like 0, 
 You can also run this report if you have only one DataFrame. In this case, pass it as reference_data.
  
 To evaluate the classification model quality we calculate Accuracy, Precision, Recall, and F1-score metrics. To support the model performance analysis, we generate interactive visualizations:
-⁃ Class representation
-⁃ Confusion matrix
-⁃ Quality Metrics for each class
+- Class representation
+- Confusion matrix
+- Quality Metrics for each class
    	     
 These plots help analyze where the model makes mistakes and come up with improvement ideas.
 
@@ -297,13 +297,13 @@ The Target column should contain labels that match the column names for each cla
 You can also run this report if you have only one DataFrame. In this case, pass it as reference_data.
  
 To evaluate the classification model quality we calculate Accuracy, Precision, Recall, F1-score, ROC AUC, and LogLoss metrics. To support the model performance analysis, we generate interactive visualizations:
-⁃ Class representation
-⁃ Confusion matrix
-⁃ Quality Metrics for each class
-⁃ Class Separation Quality
-⁃ ROC Curve
-⁃ Precision-Recall Curve
-⁃ Precision-Recall Table
+- Class representation
+- Confusion matrix
+- Quality Metrics for each class
+- Class Separation Quality
+- ROC Curve
+- Precision-Recall Curve
+- Precision-Recall Table
  
 These plots help analyze where the model makes mistakes and come up with improvement ideas.
 
