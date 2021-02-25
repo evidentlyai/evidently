@@ -1,7 +1,7 @@
 # evidently
 ## What is it?
 Evidently helps analyze machine learning models during development, validation, or production monitoring. The tool generates interactive reports from pandas `DataFrame`.
-Currently 4 reports are available.  
+Currently 6 reports are available.  
 
 ### 1. Data Drift
 Detects changes in feature distribution. 
@@ -18,6 +18,14 @@ Detects changes in categorical target and feature behavior (see example below).
 ### 4. Regression Model Performance
 Analyzes the performance of a regression model and model errors (see example below).
 ![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/evidently_regression_performance_report_github.png)
+
+### 5. Classification Model Performance
+Analyzes the performance and errors of a classification model. Works both for binary and multi-class models (see example below).
+![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/evidently_classification_performance_report_github.png)
+
+### 6. Probabilistic Classification Model Performance
+Analyzes the performance of a probabilistic classification model, quality of model calibration, and model errors. Works both for binary and multi-class models (see example below).
+![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/evidently_prob_classification_performance_report_github.png)
 
 ## Installing from PyPI
 ### MAC OS and Linux
@@ -94,6 +102,20 @@ You can also generate a Regression Model Performance for a single `DataFrame`. I
 regression_single_model_performance = Dashboard(ref_data, None, column_mapping=column_mapping, tabs=[RegressionPerformanceTab])
 ```
 
+To generate the Classification Model Performance report, run:
+`classification_performance_report = Dashboard(reference, production, column_mapping = column_mapping,
+                   	tabs=[ClassificationPerformanceTab])`
+ 
+For Probabilistic Classification Model Performance report, run:
+`classification_performance_report = Dashboard(reference, production, column_mapping = column_mapping,
+                   	tabs=[ProbClassificationPerformanceTab])`
+ 
+You can also generate either of the Classification reports for a single `DataFrame`. In this case, run:
+`classification_single_model_performance = Dashboard(reference, None, column_mapping=column_mapping, tabs=[ClassificationPerformanceTab])`
+or
+`prob_classification_single_model_performance = Dashboard(reference, None, column_mapping=column_mapping, tabs=[ProbClassificationPerformanceTab])`
+
+
 ## More details
 `Dashboard` generates an interactive report that includes the selected `Tabs`. 
 Currently, you can choose the following Tabs:
@@ -101,6 +123,8 @@ Currently, you can choose the following Tabs:
 - `NumTargetDrift` to estimate target drift for numerical target. It is an option for a problem statement with a numerical target function: regression, probabilistic classification or ranking, etc.
 - `CatTargetDrift` to estimate target drift for categorical target. It is an option for a problem statement with a categorical target function: binary classification, multi-class classification, etc.
 - `RegressionPerformance` to explore the performance of a regression model. 
+- `ClassificationPerformanceTab` to explore the performance of a classification model.
+- `ProbClassificationPerformanceTab` to explore the performance of a probabilistic classification model and quality of model calibration.
 
 We will be adding more tabs soon!
 
@@ -131,7 +155,7 @@ If you specify the datetime, it will be used in data plots.
 
 For target drift reports, either target or prediction column (or both) are required. 
 
-For model performance report, both target and prediction column are required.
+For model performance reports, both target and prediction column are required.
 
 You can create a `column_mapping` to specify if your dataset includes utility columns, and split features into numerical and categorical types. 
 
@@ -140,7 +164,7 @@ You can create a `column_mapping` to specify if your dataset includes utility co
 column_mapping = {}
 
 column_mapping['target'] = 'y' #'y' is the name of the column with the target function
-column_mapping['prediction'] = 'pred' #'pred' is the name of the column with model predictions
+column_mapping['prediction'] = 'pred' #'pred' is the name of the column(s) with model predictions
 column_mapping['id'] = None #there is no ID column in the dataset
 column_mapping['datetime'] = 'date' #'date' is the name of the column with datetime 
 
@@ -148,6 +172,11 @@ column_mapping['numerical_features'] = ['temp', 'atemp', 'humidity'] #list of nu
 column_mapping['categorical_features'] = ['season', 'holiday'] #list of categorical features
 ```
 
+**Note for PROBABILISTIC CLASSIFICATION**
+`column_mapping['prediction'] = [‘class_name1’, ‘class_name2’, ‘class_name3’,… etc]`
+The tool expects your pd.DataFrame(s) to contain columns with the names matching the ones from the ‘prediction’ list. Each column should include information about the predicted probability [0;1] for the corresponding class.
+
+**Note for DATA DRIFT** 
 Though the data drift tool works only with numerical data, you can also estimate drift for categorical features. To do that, you should encode the categorical data with [numerical labels](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.LabelEncoder.html). You can use other strategies to represent categorical data as numerical, for instance [OneHotEncoding](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.get_dummies.html). Then you should create `column_mapping` `dict` and list all encoded categorical features in the `categorical_feature` section, like:
 ```python
 column_mapping['categorical_features'] = ['encoded_cat_feature_1', 
@@ -234,6 +263,51 @@ These plots help analyse where the model makes mistakes and come up with improve
 We also generate an interactive Error Bias table. It visualizes the regions where the regression model underestimates and overestimates the target function. To generate it, we take 5% of the highest negative and positive errors. Then, we create histograms with feature values for these data segments with extreme errors and for the rest of the data. You can compare distributions and see if the error is sensitive to the values of a given feature.
 
 Read more in the [release blog](https://evidentlyai.com/blog/evidently-016-regression-model-performance).
+
+### Classification Performance Report
+We evaluate the quality of a classification model and compare it to the past performance. To run this report, you need to have both target and prediction columns available.
+ 
+For non-probabilistic classification, you can use both numerical labels like 0, 1,2 or class names like ‘virginica’, ’setoza’, ‘versicolor’ inside the target and prediction columns. The labels should be the same for the target and predictions.
+ 
+You can also run this report if you have only one DataFrame. In this case, pass it as reference_data.
+ 
+To evaluate the classification model quality we calculate Accuracy, Precision, Recall, and F1-score metrics. To support the model performance analysis, we generate interactive visualizations:
+⁃ Class representation
+⁃ Confusion matrix
+⁃ Quality Metrics for each class
+   	     
+These plots help analyze where the model makes mistakes and come up with improvement ideas.
+
+We also generate an interactive Classification Quality table. It shows the distribution of each given feature and plots the correct predictions (True Positives - TP, True Negatives - TN), and model errors (False Positives - FP, False Negatives - FN) against it. It helps visualize the regions where the model makes errors of each type. The plots are available for all classes and all features. This way, you can compare the distributions and see if the specific error is sensitive to the values of a given feature.
+ 
+### Probabilistic Classification Performance Report
+We evaluate the quality of a classification model and compare it to the past performance. To run this report, you need to have both target and prediction columns available.
+ 
+In column mapping, you need to specify the names of your prediction columns. The tool expects a separate column for each class, that should contain predicted probability. (This applies even if you have a binary classification problem). Column names can be numerical labels like 0, 1,2 or class names like ‘virginica’, ’setoza’, ‘versicolor’.
+ 
+You can find the example below:
+```python
+column_mapping['prediction'] = [‘class_name1’, ‘class_name2’, ‘class_name3’]
+```
+
+The tool expects your pd.DataFrame(s) to contain columns with the names matching the ones from the ‘prediction’ list. Each column should include information about the predicted probability [0;1] for the corresponding class.
+
+The Target column should contain labels that match the column names for each class. The tool performs the matching and evaluates the model quality by looking for the names from the ‘prediction’ list inside the Target column.
+ 
+You can also run this report if you have only one DataFrame. In this case, pass it as reference_data.
+ 
+To evaluate the classification model quality we calculate Accuracy, Precision, Recall, F1-score, ROC AUC, and LogLoss metrics. To support the model performance analysis, we generate interactive visualizations:
+⁃ Class representation
+⁃ Confusion matrix
+⁃ Quality Metrics for each class
+⁃ Class Separation Quality
+⁃ ROC Curve
+⁃ Precision-Recall Curve
+⁃ Precision-Recall Table
+ 
+These plots help analyze where the model makes mistakes and come up with improvement ideas.
+
+We also generate an interactive Classification Quality table. It shows the distribution of each given feature and plots the correct predictions (True Positives - TP, True Negatives - TN), and model errors (False Positives - FP, False Negatives - FN) against it. It helps visualize the regions where the model makes errors of each type. The plots are available for all classes and all features. This way, you can compare the distributions and see if the specific error is sensitive to the values of a given feature.
 
 ## Examples
 - See Iris **Data Drift** and **Categorical Target Drift** report generation to explore the report both inside a Jupyter notebook and as a separate .html file: [Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/iris_data_drift.ipynb) 
