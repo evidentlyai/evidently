@@ -279,6 +279,8 @@ To evaluate the classification model quality we calculate Accuracy, Precision, R
 These plots help analyze where the model makes mistakes and come up with improvement ideas.
 
 We also generate an interactive Classification Quality table. It shows the distribution of each given feature and plots the correct predictions (True Positives - TP, True Negatives - TN), and model errors (False Positives - FP, False Negatives - FN) against it. It helps visualize the regions where the model makes errors of each type. The plots are available for all classes and all features. This way, you can compare the distributions and see if the specific error is sensitive to the values of a given feature.
+
+Read more in the [release blog](https://evidentlyai.com/blog/evidently-018-classification-model-performance).
  
 ### Probabilistic Classification Performance Report
 We evaluate the quality of a classification model and compare it to the past performance. To run this report, you need to have both target and prediction columns available.
@@ -309,10 +311,12 @@ These plots help analyze where the model makes mistakes and come up with improve
 
 We also generate an interactive Classification Quality table. It shows the distribution of each given feature and plots the correct predictions (True Positives - TP, True Negatives - TN), and model errors (False Positives - FP, False Negatives - FN) against it. It helps visualize the regions where the model makes errors of each type. The plots are available for all classes and all features. This way, you can compare the distributions and see if the specific error is sensitive to the values of a given feature.
 
+Read more in the [release blog](https://evidentlyai.com/blog/evidently-018-classification-model-performance).
+
 ## Examples
-- See Iris **Data Drift** and **Categorical Target Drift** report generation to explore the report both inside a Jupyter notebook and as a separate .html file: [Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/iris_data_drift.ipynb) 
-- See Boston **Data Drift** and **Numerical Target Drift** report generation to explore the report with and without column mapping: [Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/boston_data_drift.ipynb)
-- See Breast cancer **Data Drift** report generation to explore the report with and without datetime specification: [Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/breast_cancer_data_drift.ipynb)
+- See Iris **Data Drift**, **Categorical Target Drift** and **Classification Performance** report generation to explore the reports both inside a Jupyter notebook and as a separate .html file: [Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/iris_data_drift.ipynb) 
+- See Boston **Data Drift** and **Numerical Target Drift** report generation to explore the reports with and without column mapping: [Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/boston_data_drift.ipynb)
+- See Breast cancer **Data Drift** and **Probabilistic Classification Performance** report generation to explore the reports with and without datetime specification: [Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/breast_cancer_data_drift.ipynb)
 - See Bike Demand Prediction **Regression Model Performance** report with datetime and column mapping inside a Jupyter notebook: [Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/bike_sharing_demand_regression_performance.ipynb)
 
 ## Stay updated
