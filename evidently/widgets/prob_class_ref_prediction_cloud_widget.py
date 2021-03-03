@@ -91,7 +91,7 @@ class ProbClassRefPredictionCloudWidget(Widget):
                     x = np.random.random(reference_data[reference_data[target_column] != label].shape[0]),
                     y = reference_data[reference_data[target_column] != label][label],
                     mode = 'markers',
-                    name = 'others',
+                    name = 'other',
                     marker=dict(
                         size=6,
                         color=grey

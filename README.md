@@ -103,18 +103,25 @@ regression_single_model_performance = Dashboard(ref_data, None, column_mapping=c
 ```
 
 To generate the Classification Model Performance report, run:
-`classification_performance_report = Dashboard(reference, production, column_mapping = column_mapping,
-                   	tabs=[ClassificationPerformanceTab])`
+```python
+classification_performance_report = Dashboard(reference, production, column_mapping = column_mapping,
+                   	tabs=[ClassificationPerformanceTab])
+```
  
 For Probabilistic Classification Model Performance report, run:
-`classification_performance_report = Dashboard(reference, production, column_mapping = column_mapping,
-                   	tabs=[ProbClassificationPerformanceTab])`
+```python
+classification_performance_report = Dashboard(reference, production, column_mapping = column_mapping,
+                   	tabs=[ProbClassificationPerformanceTab])
+```
  
 You can also generate either of the Classification reports for a single `DataFrame`. In this case, run:
-`classification_single_model_performance = Dashboard(reference, None, column_mapping=column_mapping, tabs=[ClassificationPerformanceTab])`
+```python
+classification_single_model_performance = Dashboard(reference, None, column_mapping=column_mapping, tabs=[ClassificationPerformanceTab])
+```
 or
-`prob_classification_single_model_performance = Dashboard(reference, None, column_mapping=column_mapping, tabs=[ProbClassificationPerformanceTab])`
-
+```python
+prob_classification_single_model_performance = Dashboard(reference, None, column_mapping=column_mapping, tabs=[ProbClassificationPerformanceTab])
+```
 
 ## More details
 `Dashboard` generates an interactive report that includes the selected `Tabs`. 
@@ -175,6 +182,8 @@ column_mapping['categorical_features'] = ['season', 'holiday'] #list of categori
 **Note for PROBABILISTIC CLASSIFICATION**
 `column_mapping['prediction'] = [‘class_name1’, ‘class_name2’, ‘class_name3’,… etc]`
 The tool expects your pd.DataFrame(s) to contain columns with the names matching the ones from the ‘prediction’ list. Each column should include information about the predicted probability [0;1] for the corresponding class.
+
+For binary classification class order matters. The tool expects that the target (so called positive) class is the first in the column_mapping['prediction'] list.
 
 **Note for DATA DRIFT** 
 Though the data drift tool works only with numerical data, you can also estimate drift for categorical features. To do that, you should encode the categorical data with [numerical labels](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.LabelEncoder.html). You can use other strategies to represent categorical data as numerical, for instance [OneHotEncoding](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.get_dummies.html). Then you should create `column_mapping` `dict` and list all encoded categorical features in the `categorical_feature` section, like:

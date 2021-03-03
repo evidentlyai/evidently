@@ -91,7 +91,7 @@ class ProbClassProdPredictionCloudWidget(Widget):
                     x = np.random.random(production_data[production_data[target_column] != label].shape[0]),
                     y = production_data[production_data[target_column] != label][label],
                     mode = 'markers',
-                    name = 'others',
+                    name = 'other',
                     marker=dict(
                         size=6,
                         color=grey

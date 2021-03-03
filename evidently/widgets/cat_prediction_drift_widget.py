@@ -60,11 +60,23 @@ class CatPredictionDriftWidget(Widget):
 
         if prediction_column is not None:
             #calculate output drift
-            ref_feature_vc = reference_data[prediction_column][np.isfinite(reference_data[prediction_column])].value_counts()
-            prod_feature_vc = production_data[prediction_column][np.isfinite(production_data[prediction_column])].value_counts()
+            reference_data.replace([np.inf, -np.inf], np.nan, inplace=True)
+            reference_data.dropna(axis=0, how='any', inplace=True)
 
-            keys = set(list(reference_data[prediction_column][np.isfinite(reference_data[prediction_column])].unique()) + 
-                list(production_data[prediction_column][np.isfinite(production_data[prediction_column])].unique()))
+            production_data.replace([np.inf, -np.inf], np.nan, inplace=True)
+            production_data.dropna(axis=0, how='any', inplace=True)
+
+            #ref_feature_vc = reference_data[prediction_column][np.isfinite(reference_data[prediction_column])].value_counts()
+            #prod_feature_vc = production_data[prediction_column][np.isfinite(production_data[prediction_column])].value_counts()
+
+            #keys = set(list(reference_data[prediction_column][np.isfinite(reference_data[prediction_column])].unique()) + 
+            #    list(production_data[prediction_column][np.isfinite(production_data[prediction_column])].unique()))
+
+            ref_feature_vc = reference_data[prediction_column].value_counts()
+            prod_feature_vc = production_data[prediction_column].value_counts()
+
+            keys = set(list(reference_data[prediction_column].unique()) + 
+                list(production_data[prediction_column].unique()))
 
             ref_feature_dict = dict.fromkeys(keys, 0)
             for key, item in zip(ref_feature_vc.index, ref_feature_vc.values):

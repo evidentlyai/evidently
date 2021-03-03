@@ -115,9 +115,9 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                     )
 
                     for label in labels:
-                        merged_data['Confusion'] = merged_data.apply(lambda x : 'TP' if (x['target'] == label and x['prediction_labels'] == label) 
-                                                 else ('FP' if(x['target'] != label and x['prediction_labels'] == label) else \
-                                                       ('FN' if (x['target'] == label and x['prediction_labels'] != label) else 'TN')), axis = 1)
+                        merged_data['Confusion'] = merged_data.apply(lambda x : 'TP' if (x[target_column] == label and x['prediction_labels'] == label) 
+                                                 else ('FP' if(x[target_column] != label and x['prediction_labels'] == label) else \
+                                                       ('FN' if (x[target_column] == label and x['prediction_labels'] != label) else 'TN')), axis = 1)
                         
                         fig = px.histogram(merged_data, x=feature_name, color='Confusion', facet_col="dataset", histnorm = '',
                             category_orders={"dataset": ["Reference", "Production"], "Confusion": ["TP", "TN", "FP", "FN"]})
@@ -197,9 +197,9 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                     )
 
                     for label in labels:
-                        reference_data['Confusion'] = reference_data.apply(lambda x : 'TP' if (x['target'] == label and x['prediction_labels'] == label) 
-                                                 else ('FP' if(x['target'] != label and x['prediction_labels'] == label) else \
-                                                       ('FN' if (x['target'] == label and x['prediction_labels'] != label) else 'TN')), axis = 1)
+                        reference_data['Confusion'] = reference_data.apply(lambda x : 'TP' if (x[target_column] == label and x['prediction_labels'] == label) 
+                                                 else ('FP' if(x[target_column] != label and x['prediction_labels'] == label) else \
+                                                       ('FN' if (x[target_column] == label and x['prediction_labels'] != label) else 'TN')), axis = 1)
                         
                         fig = px.histogram(reference_data, x=feature_name, color='Confusion', histnorm = '', category_orders={"Confusion": ["TP", "TN", "FP", "FN"]})
 

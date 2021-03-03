@@ -56,12 +56,24 @@ class CatTargetDriftWidget(Widget):
             cat_feature_names = list(set(reference_data.select_dtypes([np.object]).columns) - set(utility_columns))
 
         if target_column is not None:
-            #calculate output drift
-            ref_feature_vc = reference_data[target_column][np.isfinite(reference_data[target_column])].value_counts()
-            prod_feature_vc = production_data[target_column][np.isfinite(production_data[target_column])].value_counts()
+            reference_data.replace([np.inf, -np.inf], np.nan, inplace=True)
+            reference_data.dropna(axis=0, how='any', inplace=True)
 
-            keys = set(list(reference_data[target_column][np.isfinite(reference_data[target_column])].unique()) + 
-                list(production_data[target_column][np.isfinite(production_data[target_column])].unique()))
+            production_data.replace([np.inf, -np.inf], np.nan, inplace=True)
+            production_data.dropna(axis=0, how='any', inplace=True)
+
+            #calculate output drift
+            #ref_feature_vc = reference_data[target_column][np.isfinite(reference_data[target_column])].value_counts()
+            #prod_feature_vc = production_data[target_column][np.isfinite(production_data[target_column])].value_counts()
+
+            #keys = set(list(reference_data[target_column][np.isfinite(reference_data[target_column])].unique()) + 
+            #    list(production_data[target_column][np.isfinite(production_data[target_column])].unique()))
+
+            ref_feature_vc = reference_data[target_column].value_counts()
+            prod_feature_vc = production_data[target_column].value_counts()
+
+            keys = set(list(reference_data[target_column].unique()) + 
+                list(production_data[target_column].unique()))
 
             ref_feature_dict = dict.fromkeys(keys, 0)
             for key, item in zip(ref_feature_vc.index, ref_feature_vc.values):
