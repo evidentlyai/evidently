@@ -66,7 +66,7 @@ class RegRefColoredPredActualWidget(Widget):
             ref_quntile_5 = np.quantile(ref_error, .05)
             ref_quntile_95 = np.quantile(ref_error, .95)
 
-            reference_data['dataset'] = 'Reference'
+            reference_data['dataset'] = 'Current'
             reference_data['Error bias'] = list(map(lambda x : 'Underestimation' if x <= ref_quntile_5 else 'Majority' 
                                           if x < ref_quntile_95 else 'Overestimation', ref_error))
             

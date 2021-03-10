@@ -83,17 +83,17 @@ class CatTargetPredFeatureTable(Widget):
 
                 #create target plot
                 reference_data['dataset'] = 'Reference'
-                production_data['dataset'] = 'Production'
+                production_data['dataset'] = 'Current'
                 merged_data = pd.concat([reference_data, production_data])
 
                 target_fig = px.histogram(merged_data, x=feature_name, color=target_column, facet_col="dataset",
-                    category_orders={"dataset": ["Reference", "Production"]})
+                    category_orders={"dataset": ["Reference", "Current"]})
 
                 target_fig_json  = json.loads(target_fig.to_json())
 
                 #create prediction plot
                 pred_fig = px.histogram(merged_data, x=feature_name, color=prediction_column, facet_col="dataset",
-                    category_orders={"dataset": ["Reference", "Production"]})
+                    category_orders={"dataset": ["Reference", "Current"]})
 
                 pred_fig_json  = json.loads(pred_fig.to_json())
 
@@ -162,11 +162,11 @@ class CatTargetPredFeatureTable(Widget):
 
                 #create target plot
                 reference_data['dataset'] = 'Reference'
-                production_data['dataset'] = 'Production'
+                production_data['dataset'] = 'Current'
                 merged_data = pd.concat([reference_data, production_data])
 
                 target_fig = px.histogram(merged_data, x=feature_name, color=target_column, facet_col="dataset",
-                    category_orders={"dataset": ["Reference", "Production"]})
+                    category_orders={"dataset": ["Reference", "Current"]})
 
                 target_fig_json  = json.loads(target_fig.to_json())
 
@@ -224,11 +224,11 @@ class CatTargetPredFeatureTable(Widget):
 
                 #create target plot
                 reference_data['dataset'] = 'Reference'
-                production_data['dataset'] = 'Production'
+                production_data['dataset'] = 'Current'
                 merged_data = pd.concat([reference_data, production_data])
 
                 prediction_fig = px.histogram(merged_data, x=feature_name, color=prediction_column, facet_col="dataset",
-                    category_orders={"dataset": ["Reference", "Production"]})
+                    category_orders={"dataset": ["Reference", "Current"]})
 
                 prediction_fig_json  = json.loads(prediction_fig.to_json())
 

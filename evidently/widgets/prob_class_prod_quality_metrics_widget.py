@@ -75,8 +75,8 @@ class ProbClassProdQualityMetricsWidget(Widget):
                     roc_auc = metrics.roc_auc_score(binaraized_target, array_prediction, average='macro')
                     log_loss = metrics.log_loss(binaraized_target, array_prediction)
                 else:
-                    roc_auc = metrics.roc_auc_score(binaraized_target, production_data[prediction_column[0]])
-                    log_loss = metrics.log_loss(binaraized_target, production_data[prediction_column[0]])
+                    roc_auc = metrics.roc_auc_score(binaraized_target, production_data[prediction_column[0]]) #problem!!!
+                    log_loss = metrics.log_loss(binaraized_target, production_data[prediction_column[0]]) #problem!!!
 
                 accuracy_score = metrics.accuracy_score(production_data[target_column], prediction_labels)
                 avg_precision = metrics.precision_score(production_data[target_column], prediction_labels, 

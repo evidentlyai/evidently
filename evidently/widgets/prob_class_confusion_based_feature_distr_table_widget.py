@@ -11,6 +11,7 @@ from sklearn import preprocessing
 
 import plotly.graph_objs as go
 import plotly.express as px
+from plotly.subplots import make_subplots
 
 from evidently.model.widget import BaseWidgetInfo, AlertStats, AdditionalGraphInfo
 from evidently.widgets.widget import Widget
@@ -86,7 +87,7 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                     params_data.append(
                         {
                             "details": {
-                                    "parts": [{"title":"All", "id":"All"}] + [{"title":str(label), "id": feature_name + "_" + str(label)} for label in labels],
+                                    "parts": [{"title":"All", "id":"All" + "_" + str(feature_name)}] + [{"title":str(label), "id": feature_name + "_" + str(label)} for label in labels],
                                     "insights": []
                                 },
                             "f1": feature_name
@@ -95,18 +96,18 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
 
                     #create confusion based plots 
                     reference_data['dataset'] = 'Reference'
-                    production_data['dataset'] = 'Production'
+                    production_data['dataset'] = 'Current'
                     merged_data = pd.concat([reference_data, production_data])
 
                     fig = px.histogram(merged_data, x=feature_name, color=target_column, facet_col="dataset", histnorm = '',
-                        category_orders={"dataset": ["Reference", "Production"]})
+                        category_orders={"dataset": ["Reference", "Current"]})
 
                     fig_json  = json.loads(fig.to_json())
 
                     #write plot data in table as additional data
                     additional_graphs_data.append(
                         AdditionalGraphInfo(
-                            "All",
+                            "All" + "_" + str(feature_name),
                             {
                                 "data" : fig_json['data'],
                                 "layout" : fig_json['layout']
@@ -115,12 +116,94 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                     )
 
                     for label in labels:
-                        merged_data['Confusion'] = merged_data.apply(lambda x : 'TP' if (x[target_column] == label and x['prediction_labels'] == label) 
-                                                 else ('FP' if(x[target_column] != label and x['prediction_labels'] == label) else \
-                                                       ('FN' if (x[target_column] == label and x['prediction_labels'] != label) else 'TN')), axis = 1)
-                        
-                        fig = px.histogram(merged_data, x=feature_name, color='Confusion', facet_col="dataset", histnorm = '',
-                            category_orders={"dataset": ["Reference", "Production"], "Confusion": ["TP", "TN", "FP", "FN"]})
+                        fig = make_subplots(rows=1, cols=2, subplot_titles=("Reference", "Current"))
+
+                        #REF 
+                        fig.add_trace(go.Scatter(
+                            x = reference_data[reference_data[target_column] == label][feature_name],
+                            y = reference_data[reference_data[target_column] == label][label],
+                            mode = 'markers',
+                            name = str(label) + ' (ref)',
+                            marker=dict(
+                                size=6,
+                                color=red 
+                                )
+                            ),
+                            row=1, col=1
+                        )
+
+                        fig.add_trace(go.Scatter(
+                            x = reference_data[reference_data[target_column] != label][feature_name],
+                            y = reference_data[reference_data[target_column] != label][label],
+                            mode = 'markers',
+                            name = 'other (ref)',
+                            marker=dict(
+                                size=6,
+                                color=grey 
+                                )
+                            ),
+                            row=1, col=1
+                        )
+
+
+                        fig.update_layout(
+                            xaxis_title=feature_name,
+                            yaxis_title='Probability',
+                            xaxis = dict(
+                                showticklabels=True
+                            ),
+                             yaxis = dict(
+                                range=(0, 1),
+                                showticklabels=True
+                            )
+                        )
+
+                        #PROD Prediction
+                        fig.add_trace(go.Scatter(
+                            x = production_data[production_data[target_column] == label][feature_name],
+                            y = production_data[production_data[target_column] == label][label],
+                            mode = 'markers',
+                            name = str(label) + ' (curr)',
+                            marker=dict(
+                                size=6,
+                                color=red #set color equal to a variable
+                                )
+                            ),
+                            row=1, col=2
+                        )
+
+                        fig.add_trace(go.Scatter(
+                            x = production_data[production_data[target_column] != label][feature_name],
+                            y = production_data[production_data[target_column] != label][label],
+                            mode = 'markers',
+                            name = 'other (curr)',
+                            marker=dict(
+                                size=6,
+                                color=grey #set color equal to a variable
+                                )
+                            ),
+                            row=1, col=2
+                        )
+
+                        fig.update_layout(
+                            xaxis_title=feature_name,
+                            yaxis_title='Probability',
+                            xaxis = dict(
+                                showticklabels=True
+                            ),
+                             yaxis = dict(
+                                range=(0, 1),
+                                showticklabels=True
+                            )
+                        )
+
+                        # Update xaxis properties
+                        fig.update_xaxes(title_text=feature_name, showgrid=True, row=1, col=1)
+                        fig.update_xaxes(title_text=feature_name, showgrid=True, row=1, col=2)
+
+                        # Update yaxis properties
+                        fig.update_yaxes(title_text="Probability", showgrid=True, row=1, col=1)
+                        fig.update_yaxes(title_text="Probability", showgrid=True, row=1, col=2)
 
                         fig_json  = json.loads(fig.to_json())
 
@@ -173,7 +256,7 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                     params_data.append(
                         {
                             "details": {
-                                    "parts": [{"title":"All", "id":"All"}] + [{"title":str(label), "id": feature_name + "_" + str(label)} for label in labels],
+                                    "parts": [{"title":"All", "id":"All" + "_" + str(feature_name)}] + [{"title":str(label), "id": feature_name + "_" + str(label)} for label in labels],
                                     "insights": []
                                 },
                             "f1": feature_name
@@ -188,7 +271,7 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                     #write plot data in table as additional data
                     additional_graphs_data.append(
                         AdditionalGraphInfo(
-                            "All",
+                            "All" + "_" + str(feature_name),
                             {
                                 "data" : fig_json['data'],
                                 "layout" : fig_json['layout']
@@ -197,11 +280,43 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                     )
 
                     for label in labels:
-                        reference_data['Confusion'] = reference_data.apply(lambda x : 'TP' if (x[target_column] == label and x['prediction_labels'] == label) 
-                                                 else ('FP' if(x[target_column] != label and x['prediction_labels'] == label) else \
-                                                       ('FN' if (x[target_column] == label and x['prediction_labels'] != label) else 'TN')), axis = 1)
-                        
-                        fig = px.histogram(reference_data, x=feature_name, color='Confusion', histnorm = '', category_orders={"Confusion": ["TP", "TN", "FP", "FN"]})
+
+                        fig = go.Figure()
+
+                        fig.add_trace(go.Scatter(
+                            x = reference_data[reference_data[target_column] == label][feature_name],
+                            y = reference_data[reference_data[target_column] == label][label],
+                            mode = 'markers',
+                            name = str(label),
+                            marker=dict(
+                                size=6,
+                                color=red #set color equal to a variable
+                            )
+                        ))
+
+                        fig.add_trace(go.Scatter(
+                            x = reference_data[reference_data[target_column] != label][feature_name],
+                            y = reference_data[reference_data[target_column] != label][label],
+                            mode = 'markers',
+                            name = 'other',
+                            marker=dict(
+                                size=6,
+                                color=grey 
+                            )
+                        ))
+
+
+                        fig.update_layout(
+                            xaxis_title=feature_name,
+                            yaxis_title='Probability',
+                            xaxis = dict(
+                                showticklabels=True
+                            ),
+                             yaxis = dict(
+                                range=(0, 1),
+                                showticklabels=True
+                            )
+                        )
 
                         fig_json  = json.loads(fig.to_json())
 

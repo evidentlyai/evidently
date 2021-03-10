@@ -174,7 +174,7 @@ class BigDriftTableWidget(Widget):
                  marker_color=grey, opacity=0.6, nbinsx=10,  name='Reference', histnorm='probability'))
 
             fig.add_trace(go.Histogram(x=production_data[feature_name],
-                 marker_color=red, opacity=0.6,nbinsx=10, name='Production', histnorm='probability'))
+                 marker_color=red, opacity=0.6,nbinsx=10, name='Current', histnorm='probability'))
 
             fig.update_layout(
                 legend = dict(
@@ -201,7 +201,7 @@ class BigDriftTableWidget(Widget):
                 x = production_data[date_column] if date_column else production_data.index,
                 y = production_data[feature_name],
                 mode = 'markers',
-                name = 'Production',
+                name = 'Current',
                 marker = dict(
                     size = 6,
                     color = grey
@@ -315,7 +315,7 @@ class BigDriftTableWidget(Widget):
                         }
                     },
                     {
-                        "title": "Production Distribution",
+                        "title": "Current Distribution",
                         "field": "f4",
                         "type": "histogram",
                         "options": {

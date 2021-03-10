@@ -76,7 +76,7 @@ class ProdUnderperformMetricsWidget(Widget):
             prod_sd_over = np.std(prod_error[prod_error >= prod_quantile_95], ddof = 1)
             
             self.wi = BaseWidgetInfo(
-                title="Production: Mean Error per Group (+/- std)",
+                title=self.title,
                 type="counter",
                 details="",
                 alertStats=AlertStats(),

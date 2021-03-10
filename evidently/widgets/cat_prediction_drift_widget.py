@@ -100,7 +100,7 @@ class CatPredictionDriftWidget(Widget):
                  marker_color=grey, opacity=0.6, nbinsx=10,  name='Reference', histnorm='probability'))
 
             fig.add_trace(go.Histogram(x=production_data[prediction_column],
-                 marker_color=red, opacity=0.6,nbinsx=10, name='Production', histnorm='probability'))
+                 marker_color=red, opacity=0.6,nbinsx=10, name='Current', histnorm='probability'))
 
             fig.update_layout(
                 legend = dict(

@@ -24,13 +24,13 @@ class ClassificationPerformanceTab(Tab):
         widgets = [
             ClassTargetNameWidget(""),
             ClassRefQualityMetricsWidget("Reference: Model Quality With Macro-average Metrics"),
-            ClassProdQualityMetricsWidget("Production: Model Quality With Macro-average Metrics"),
+            ClassProdQualityMetricsWidget("Current: Model Quality With Macro-average Metrics"),
             ClassRefClassSupportWidget("Reference: Class Representation"),
-            ClassProdClassSupportWidget("Production: Class Representation"),
+            ClassProdClassSupportWidget("Current: Class Representation"),
             ClassRefConfMatrixWidget("Reference: Confusion Matrix"),
-            ClassProdConfMatrixWidget("Production: Confusion Matrix"),
+            ClassProdConfMatrixWidget("Current: Confusion Matrix"),
             ClassRefMetricsMatrixWidget("Reference: Quality Metrics by Class"),
-            ClassProdMetricsMatrixWidget("Production: Quality Metrics by Class"),
+            ClassProdMetricsMatrixWidget("Current: Quality Metrics by Class"),
             ClassConfusionBasedFeatureDistrTable("Classification Quality By Feature")
         ]
         return widgets

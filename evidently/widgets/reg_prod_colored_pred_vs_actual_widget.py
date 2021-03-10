@@ -67,7 +67,7 @@ class RegProdColoredPredActualWidget(Widget):
                 prod_quntile_5 = np.quantile(prod_error, .05)
                 prod_quntile_95 = np.quantile(prod_error, .95)
 
-                production_data['dataset'] = 'Reference'
+                production_data['dataset'] = 'Current'
                 production_data['Error bias'] = list(map(lambda x : 'Underestimation' if x <= prod_quntile_5 else 'Majority' 
                                               if x < prod_quntile_95 else 'Overestimation', prod_error))
                 

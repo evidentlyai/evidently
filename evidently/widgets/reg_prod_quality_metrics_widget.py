@@ -86,7 +86,7 @@ class RegProdQualityMetricsWidget(Widget):
                 #error_norm_json = json.loads(error_norm.to_json())
 
                 self.wi = BaseWidgetInfo(
-                    title="Production: Model Quality (+/- std)",
+                    title=self.title,
                     type="counter",
                     details="",
                     alertStats=AlertStats(),

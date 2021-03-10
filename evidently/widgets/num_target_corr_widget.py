@@ -70,7 +70,7 @@ class NumTargetCorrWidget(Widget):
                 marker_color = grey, name = 'Reference'))
 
             target_corr.add_trace(go.Bar(y = prod_target_corr, x = ref_target_corr.index, 
-                marker_color = red, name = 'Production'))
+                marker_color = red, name = 'Current'))
 
             target_corr.update_layout(xaxis_title = "Features", yaxis_title = "Correlation",
                 yaxis = dict(

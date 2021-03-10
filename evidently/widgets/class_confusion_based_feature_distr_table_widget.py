@@ -73,7 +73,7 @@ class ClassConfusionBasedFeatureDistrTable(Widget):
                     params_data.append(
                         {
                             "details": {
-                                    "parts": [{"title":"All", "id":"All"}] + [{"title":str(label), "id": feature_name + "_" + str(label)} for label in labels],
+                                    "parts": [{"title":"All", "id":"All" + "_" + str(feature_name)}] + [{"title":str(label), "id": feature_name + "_" + str(label)} for label in labels],
                                     "insights": []
                                 },
                             "f1": feature_name
@@ -93,7 +93,7 @@ class ClassConfusionBasedFeatureDistrTable(Widget):
                     #write plot data in table as additional data
                     additional_graphs_data.append(
                         AdditionalGraphInfo(
-                            "All",
+                            "All" + "_" + str(feature_name),
                             {
                                 "data" : fig_json['data'],
                                 "layout" : fig_json['layout']
@@ -156,7 +156,7 @@ class ClassConfusionBasedFeatureDistrTable(Widget):
                     params_data.append(
                         {
                             "details": {
-                                    "parts": [{"title":"All", "id":"All"}] + [{"title":str(label), "id": feature_name + "_" + str(label)} for label in labels],
+                                    "parts": [{"title":"All", "id":"All" + "_" + str(feature_name)}] + [{"title":str(label), "id": feature_name + "_" + str(label)} for label in labels],
                                     "insights": []
                                 },
                             "f1": feature_name
@@ -171,7 +171,7 @@ class ClassConfusionBasedFeatureDistrTable(Widget):
                     #write plot data in table as additional data
                     additional_graphs_data.append(
                         AdditionalGraphInfo(
-                            "All",
+                            "All" + "_" + str(feature_name),
                             {
                                 "data" : fig_json['data'],
                                 "layout" : fig_json['layout']

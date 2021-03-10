@@ -79,7 +79,7 @@ class UnderperformSegmTableWidget(Widget):
             reference_data['Error bias'] = list(map(lambda x : 'Underestimation' if x <= ref_quntile_5 else 'Majority' 
                                           if x < ref_quntile_95 else 'Overestimation', ref_error))
 
-            production_data['dataset'] = 'Production'
+            production_data['dataset'] = 'Current'
             production_data['Error bias'] = list(map(lambda x : 'Underestimation' if x <= prod_quntile_5 else 'Majority' 
                                           if x < prod_quntile_95 else 'Overestimation', prod_error))
             merged_data = pd.concat([reference_data, production_data])
@@ -107,7 +107,7 @@ class UnderperformSegmTableWidget(Widget):
 
 
                 feature_hist = px.histogram(merged_data, x=feature_name, color='Error bias', facet_col="dataset",
-                    histnorm = 'percent', barmode='overlay', category_orders={"dataset": ["Reference", "Production"], "Error bias": ["Underestimation", "Overestimation", "Majority"]})
+                    histnorm = 'percent', barmode='overlay', category_orders={"dataset": ["Reference", "Current"], "Error bias": ["Underestimation", "Overestimation", "Majority"]})
 
                 feature_hist_json  = json.loads(feature_hist.to_json())
 
@@ -164,7 +164,7 @@ class UnderperformSegmTableWidget(Widget):
                    or (prod_under_value != prod_overal_value) else 0
 
                 feature_hist = px.histogram(merged_data, x=feature_name, color='Error bias', facet_col="dataset",
-                    histnorm = 'percent', barmode='overlay', category_orders={"dataset": ["Reference", "Production"], "Error bias": ["Underestimation", "Overestimation", "Majority"]})
+                    histnorm = 'percent', barmode='overlay', category_orders={"dataset": ["Reference", "Current"], "Error bias": ["Underestimation", "Overestimation", "Majority"]})
 
                 feature_hist_json  = json.loads(feature_hist.to_json())
 
@@ -240,19 +240,19 @@ class UnderperformSegmTableWidget(Widget):
                             "field": "f6"
                         },
                         {
-                            "title": "PROD: Majority",
+                            "title": "CURR: Majority",
                             "field": "f7"
                         },
                         {
-                            "title": "PROD: Under",
+                            "title": "CURR: Under",
                             "field": "f8"
                         },
                         {
-                            "title": "PROD: Over",
+                            "title": "CURR: Over",
                             "field": "f9"
                         },
                         {
-                            "title": "PROD: Range(%)",
+                            "title": "CURR: Range(%)",
                             "field": "f10",
                             "sort" : "desc"
                         }

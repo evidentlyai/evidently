@@ -81,7 +81,7 @@ class NumPredictionValuesWidget(Widget):
                 x = production_data[date_column] if date_column else production_data.index,
                 y = production_data[prediction_column],
                 mode = 'markers',
-                name = 'Production',
+                name = 'Current',
                 marker = dict(
                     size = 6,
                     color = red
