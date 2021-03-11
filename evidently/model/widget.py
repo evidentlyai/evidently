@@ -32,11 +32,17 @@ class BaseWidgetInfo:
     title: str
     size: int
     details: str
-    params: Any
-    alertsPosition: str
-    alertStats: AlertStats
-    alerts: List[Alert]
-    insights: List[Insight]
-    additionalGraphs: List[AdditionalGraphInfo]
+    alertsPosition: str = None
+    alertStats: AlertStats = None
+    params: Any = None
+    insights: List[Insight] = ()
+    additionalGraphs: List[AdditionalGraphInfo] = ()
+    alerts: List[Alert] = ()
+    tabs: List["TabInfo"] = ()
 
 
+@dataclass
+class TabInfo:
+    id: str
+    title: str
+    widget: BaseWidgetInfo

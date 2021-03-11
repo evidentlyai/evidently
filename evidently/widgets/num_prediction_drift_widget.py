@@ -66,7 +66,7 @@ class NumPredictionDriftWidget(Widget):
             #plot output distributions
             pred_distr = ff.create_distplot(
                 [reference_data[prediction_column], production_data[prediction_column]], 
-                ["Reference", "Production"],  
+                ["Reference", "Current"],  
                 colors=[grey, red],
                 show_rug=True)
 

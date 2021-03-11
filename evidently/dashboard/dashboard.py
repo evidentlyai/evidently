@@ -42,7 +42,6 @@ def inline_template(params: TemplateParams):
 <script>
     var {params.dashboard_id} = {__dashboard_info_to_json(params.dashboard_info)};
     var additional_graphs_{params.dashboard_id} = {json.dumps(params.additional_graphs)};
-    console.log(additional_graphs_{params.dashboard_id});
 </script>
 <script>
 $(document).ready(function () {{
@@ -93,14 +92,13 @@ def file_html_template(params: TemplateParams):
 <script>
     var {params.dashboard_id} = {__dashboard_info_to_json(params.dashboard_info)};
     var additional_graphs_{params.dashboard_id} = {json.dumps(params.additional_graphs)};
-    console.log(additional_graphs_{params.dashboard_id});
 </script>
-<script>{__load_js()}</script>
 </head>
 <body>
-<div id="root_{params.dashboard_id}">Failed to load</div>
+<div id="root_{params.dashboard_id}">Loading...</div>
+<script>{__load_js()}</script>
 <script>
-drawDashboard({params.dashboard_id},
+window.drawDashboard({params.dashboard_id},
     new Map(Object.entries(additional_graphs_{params.dashboard_id})),
     "root_{params.dashboard_id}"
 );

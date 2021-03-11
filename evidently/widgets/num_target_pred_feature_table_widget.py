@@ -78,7 +78,7 @@ class NumTargetPredFeatureTable(Widget):
                     )
 
                 #create plot
-                fig = make_subplots(rows=1, cols=2, subplot_titles=("Reference", "Production"))
+                fig = make_subplots(rows=1, cols=2, subplot_titles=("Reference", "Current"))
 
                 if prediction_column is not None:
                     fig.add_trace(
@@ -116,7 +116,7 @@ class NumTargetPredFeatureTable(Widget):
                         x = production_data[feature_name],
                         y = production_data[prediction_column],
                         mode = 'markers',
-                        name = 'Prediction (prod)',
+                        name = 'Prediction (curr)',
                         marker = dict(
                             size = 6,
                             color = grey
@@ -131,7 +131,7 @@ class NumTargetPredFeatureTable(Widget):
                         x = production_data[feature_name],
                         y = production_data[target_column],
                         mode = 'markers',
-                        name = 'Target (prod)',
+                        name = 'Target (curr)',
                         marker = dict(
                             size = 6,
                             color = red

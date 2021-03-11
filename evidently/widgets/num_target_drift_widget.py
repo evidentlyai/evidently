@@ -63,7 +63,7 @@ class NumTargetDriftWidget(Widget):
             #plot output distributions
             target_distr = ff.create_distplot(
                 [reference_data[target_column], production_data[target_column]], 
-                ["Reference", "Production"],  
+                ["Reference", "Current"],  
                 colors=[grey, red],
                 show_rug=True)
 

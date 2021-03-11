@@ -60,8 +60,8 @@ class NumTargetCorrWidget(Widget):
         if target_column is not None:
 
             #calculate corr
-            ref_target_corr = reference_data.corr()[target_column]
-            prod_target_corr = production_data.corr()[target_column]
+            ref_target_corr = reference_data[num_feature_names + [target_column]].corr()[target_column]
+            prod_target_corr = production_data[num_feature_names + [target_column]].corr()[target_column]
             
             #plot output correlations
             target_corr = go.Figure()
@@ -70,7 +70,7 @@ class NumTargetCorrWidget(Widget):
                 marker_color = grey, name = 'Reference'))
 
             target_corr.add_trace(go.Bar(y = prod_target_corr, x = ref_target_corr.index, 
-                marker_color = red, name = 'Production'))
+                marker_color = red, name = 'Current'))
 
             target_corr.update_layout(xaxis_title = "Features", yaxis_title = "Correlation",
                 yaxis = dict(
