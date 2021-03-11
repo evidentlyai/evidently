@@ -60,7 +60,7 @@ $ pip install evidently
 The tool allows building interactive reports both inside a Jupyter notebook and as a separate .html file. Unfortunately, building reports inside a Jupyter notebook is not yet possible for Windows. The reason is Windows requires administrator privileges to create symlink. In later versions we will address this issue.
 
 ## Getting started
-To start, prepare your data as two pandas `DataFrames`. The first should include your reference data, the second -  most recent production data. The structure of both datasets should be identical. 
+To start, prepare your data as two pandas `DataFrames`. The first should include your reference data, the second -  current production data. The structure of both datasets should be identical. 
 
 For Data Drift report, include the input features only.
 For Target Drift reports, include the column with Target and/or Prediction.
@@ -94,33 +94,33 @@ Html report does not open automatically. To explore it, you should open it from 
 
 To generate the Regression Model Performance report, run:
 ```python
-regression_model_performance = Dashboard(reference_data, recent_data,  column_mapping = column_mapping, tabs=[RegressionPerfomanceTab]) 
+regression_model_performance = Dashboard(reference_data, current_data,  column_mapping = column_mapping, tabs=[RegressionPerfomanceTab]) 
 ```
 
 You can also generate a Regression Model Performance for a single `DataFrame`. In this case, run:
 ```python
-regression_single_model_performance = Dashboard(ref_data, None, column_mapping=column_mapping, tabs=[RegressionPerformanceTab])
+regression_single_model_performance = Dashboard(reference_data, None, column_mapping=column_mapping, tabs=[RegressionPerformanceTab])
 ```
 
 To generate the Classification Model Performance report, run:
 ```python
-classification_performance_report = Dashboard(reference, production, column_mapping = column_mapping,
+classification_performance_report = Dashboard(reference_data, current_data, column_mapping = column_mapping,
                    	tabs=[ClassificationPerformanceTab])
 ```
  
 For Probabilistic Classification Model Performance report, run:
 ```python
-classification_performance_report = Dashboard(reference, production, column_mapping = column_mapping,
+classification_performance_report = Dashboard(reference_data, current_data, column_mapping = column_mapping,
                    	tabs=[ProbClassificationPerformanceTab])
 ```
  
 You can also generate either of the Classification reports for a single `DataFrame`. In this case, run:
 ```python
-classification_single_model_performance = Dashboard(reference, None, column_mapping=column_mapping, tabs=[ClassificationPerformanceTab])
+classification_single_model_performance = Dashboard(reference_data, None, column_mapping=column_mapping, tabs=[ClassificationPerformanceTab])
 ```
 or
 ```python
-prob_classification_single_model_performance = Dashboard(reference, None, column_mapping=column_mapping, tabs=[ProbClassificationPerformanceTab])
+prob_classification_single_model_performance = Dashboard(reference_data, None, column_mapping=column_mapping, tabs=[ProbClassificationPerformanceTab])
 ```
 
 ## More details
@@ -139,13 +139,13 @@ To create a `Dashboard`, take the following steps:
 
 1. **Prepare your data as two pandas DataFrames**. 
 To analyze model performance or drift, you will need two datasets. 
-The first one is the “reference” dataset. It can include training or earlier production data. The second dataset should include the most recent production data. Performance or drift will be evaluated by comparing the recent data to the reference data. 
+The first one is the “reference” dataset. It can include training or earlier production data. The second is the "current" dataset that should include the most recent production data. Performance or drift will be evaluated by comparing the current data to the reference data. 
 
 We expect that DataFrames:
 - Have only `string` column names;
 - Have only numerical type (`np.number`) for feature columns that are analyzed for data drift. **All non-numerical columns will be ignored**. The datetime column is the only exception. If available, it will be used as the x-axis in the data plots. 
 
-**Note**: you can also prepare a single pandas DataFrame. When calling the dashboard, you can specify the rows that belong to the reference dataset, and rows that belong to the production dataset. See Boston housing and Breast Cancer notebooks for examples. 
+**Note**: you can also prepare a single pandas DataFrame. When calling the dashboard, you can specify the rows that belong to the reference dataset, and rows that belong to the current dataset. See Boston housing and Breast Cancer notebooks for examples. 
 
 2. **Pass `column_mapping` into `Dashboard`**. 
 If the `column_mapping` is not specified or set as `None`, we use the default mapping strategy:
@@ -318,7 +318,7 @@ To evaluate the classification model quality we calculate Accuracy, Precision, R
  
 These plots help analyze where the model makes mistakes and come up with improvement ideas.
 
-We also generate an interactive Classification Quality table. It shows the distribution of each given feature and for non probabilstic cases it plots the correct predictions (True Positives - TP, True Negatives - TN), and model errors (False Positives - FP, False Negatives - FN) against it, for probabilistic cases it plots the probabilities predicted by the model in terms of feature values. It helps visualize the regions where the model makes errors of each type. The plots are available for all classes and all features. This way, you can compare the distributions and see if the specific error is sensitive to the values of a given feature.
+We also generate an interactive Classification Quality table. It shows the distribution of each given feature values and plots the probabilities predicted by the model alongside it. It helps visualize the regions where the model makes errors of each type. The plots are available for all classes and all features. This way, you can compare the distributions and see if the specific error is sensitive to the values of a given feature.
 
 Read more in the [release blog](https://evidentlyai.com/blog/evidently-018-classification-model-performance).
 
@@ -329,4 +329,4 @@ Read more in the [release blog](https://evidentlyai.com/blog/evidently-018-class
 - See Bike Demand Prediction **Regression Model Performance** report with datetime and column mapping inside a Jupyter notebook: [Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/bike_sharing_demand_regression_performance.ipynb)
 
 ## Stay updated
-We will be releasing more reports soon. If you want to receive updates, follow us on [Twitter](https://twitter.com/EvidentlyAI), or sign up for our [newsletter](https://evidentlyai.com/sign-up). You can also find more tutorials and explanations in our [Blog](https://evidentlyai.com/blog).
+We will be releasing more reports soon. If you want to receive updates, follow us on [Twitter](https://twitter.com/EvidentlyAI), or sign up for our [newsletter](https://evidentlyai.com/sign-up). You can also find more tutorials and explanations in our [Blog](https://evidentlyai.com/blog). If you want to chat and connect, join our [Discord community](https://discord.gg/xZjKRaNp8b)!
