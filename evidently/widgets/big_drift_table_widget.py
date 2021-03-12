@@ -271,7 +271,7 @@ class BigDriftTableWidget(Widget):
                 AdditionalGraphInfo(
                     feature_name + '_drift',
                     {
-                        "title": feature_name + "drift",
+                        "title": "",
                         "size": 2,
                         "text": "",
                         "type": "big_graph",
