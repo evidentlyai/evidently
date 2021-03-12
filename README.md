@@ -318,7 +318,7 @@ To evaluate the classification model quality we calculate Accuracy, Precision, R
  
 These plots help analyze where the model makes mistakes and come up with improvement ideas.
 
-We also generate an interactive Classification Quality table. It shows the distribution of each given feature and plots the correct predictions (True Positives - TP, True Negatives - TN), and model errors (False Positives - FP, False Negatives - FN) against it. It helps visualize the regions where the model makes errors of each type. The plots are available for all classes and all features. This way, you can compare the distributions and see if the specific error is sensitive to the values of a given feature.
+We also generate an interactive Classification Quality table. It shows the distribution of each given feature and for non probabilstic cases it plots the correct predictions (True Positives - TP, True Negatives - TN), and model errors (False Positives - FP, False Negatives - FN) against it, for probabilistic cases it plots the probabilities predicted by the model in terms of feature values. It helps visualize the regions where the model makes errors of each type. The plots are available for all classes and all features. This way, you can compare the distributions and see if the specific error is sensitive to the values of a given feature.
 
 Read more in the [release blog](https://evidentlyai.com/blog/evidently-018-classification-model-performance).
 
