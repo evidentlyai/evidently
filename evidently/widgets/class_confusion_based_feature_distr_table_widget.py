@@ -82,11 +82,11 @@ class ClassConfusionBasedFeatureDistrTable(Widget):
 
                     #create confusion based plots 
                     reference_data['dataset'] = 'Reference'
-                    production_data['dataset'] = 'Production'
+                    production_data['dataset'] = 'Current'
                     merged_data = pd.concat([reference_data, production_data])
 
                     fig = px.histogram(merged_data, x=feature_name, color=target_column, facet_col="dataset", histnorm = '',
-                        category_orders={"dataset": ["Reference", "Production"]})
+                        category_orders={"dataset": ["Reference", "Current"]})
 
                     fig_json  = json.loads(fig.to_json())
 
@@ -107,7 +107,7 @@ class ClassConfusionBasedFeatureDistrTable(Widget):
                                                        ('FN' if (x['target'] == label and x['prediction'] != label) else 'TN')), axis = 1)
                         
                         fig = px.histogram(merged_data, x=feature_name, color='Confusion', facet_col="dataset", histnorm = '',
-                            category_orders={"dataset": ["Reference", "Production"], "Confusion": ["TP", "TN", "FP", "FN"]})
+                            category_orders={"dataset": ["Reference", "Current"], "Confusion": ["TP", "TN", "FP", "FN"]})
 
                         fig_json  = json.loads(fig.to_json())
 

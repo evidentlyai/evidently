@@ -73,6 +73,8 @@ class ProbClassProdMetricsMatrixWidget(Widget):
 
             prediction_ids = np.argmax(array_prediction, axis=-1)
             prediction_labels = [prediction_column[x] for x in prediction_ids]
+
+            labels = sorted(set(production_data[target_column]))
             
             #plot support bar
             metrics_matrix = metrics.classification_report(production_data[target_column], prediction_labels,
@@ -80,7 +82,7 @@ class ProbClassProdMetricsMatrixWidget(Widget):
             metrics_frame = pd.DataFrame(metrics_matrix)
 
             z = metrics_frame.iloc[:-1,:-3].values
-            x = prediction_column
+            x = labels
             y =  ['precision', 'recall', 'f1-score']
 
             if len(prediction_column) > 2:

@@ -75,7 +75,7 @@ class ProbClassProdPRCurveWidget(Widget):
                 binaraized_target = pd.DataFrame(binaraizer.transform(production_data[target_column]))
                 binaraized_target.columns = ['target']
 
-                p, r, thrs = metrics.precision_recall_curve(binaraized_target, production_data[prediction_column[0]])
+                p, r, thrs = metrics.precision_recall_curve(binaraized_target, production_data[prediction_column[0]]) #problem!!!
                 fig = go.Figure()
 
                 fig.add_trace(go.Scatter(

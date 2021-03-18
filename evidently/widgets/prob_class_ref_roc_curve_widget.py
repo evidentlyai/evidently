@@ -75,7 +75,7 @@ class ProbClassRefRocCurveWidget(Widget):
                 binaraized_target = pd.DataFrame(binaraizer.transform(reference_data[target_column]))
                 binaraized_target.columns = ['target']
 
-                fpr, tpr, thrs = metrics.roc_curve(binaraized_target, reference_data[prediction_column[0]])
+                fpr, tpr, thrs = metrics.roc_curve(binaraized_target, reference_data[prediction_column[0]]) #problem!!!
                 fig = go.Figure()
 
                 fig.add_trace(go.Scatter(

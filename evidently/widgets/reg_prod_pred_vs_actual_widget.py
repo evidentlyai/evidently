@@ -69,7 +69,7 @@ class RegProdPredActualWidget(Widget):
                 x = production_data[target_column],
                 y = production_data[prediction_column],
                 mode = 'markers',
-                name = 'Reference',
+                name = 'Current',
                 marker = dict(
                     color = red,
                     showscale = False

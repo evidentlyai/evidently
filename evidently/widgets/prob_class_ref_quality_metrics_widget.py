@@ -70,14 +70,16 @@ class ProbClassRefQualityMetricsWidget(Widget):
             prediction_ids = np.argmax(array_prediction, axis=-1)
             prediction_labels = [prediction_column[x] for x in prediction_ids]
 
+            labels = sorted(set(reference_data[target_column]))
+
             #calculate quality metrics
             if len(prediction_column) > 2:
                 roc_auc = metrics.roc_auc_score(binaraized_target, array_prediction, average='macro')
                 log_loss = metrics.log_loss(binaraized_target, array_prediction)
             else:
-                roc_auc = metrics.roc_auc_score(binaraized_target, reference_data[prediction_column[0]], 
+                roc_auc = metrics.roc_auc_score(binaraized_target, reference_data[prediction_column[0]], #problem!!!
                 average='macro')
-                log_loss = metrics.log_loss(binaraized_target, reference_data[prediction_column[0]])
+                log_loss = metrics.log_loss(binaraized_target, reference_data[prediction_column[0]]) #problem!!!
 
             accuracy_score = metrics.accuracy_score(reference_data[target_column], prediction_labels)
             avg_precision = metrics.precision_score(reference_data[target_column], prediction_labels, 
