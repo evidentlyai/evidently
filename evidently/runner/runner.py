@@ -1,10 +1,11 @@
-from typing import Optional, List
+from typing import Optional, List, Dict
 
 import pandas as pd
 from dataclasses import dataclass
 
 from evidently.dashboard import Dashboard
-from evidently.tabs import DriftTab
+from evidently.tabs import DriftTab, CatTargetDriftTab, ClassificationPerformanceTab,\
+    NumTargetDriftTab, ProbClassificationPerformanceTab, RegressionPerformanceTab
 
 
 class DataOptions:
@@ -28,7 +29,19 @@ class RunnerOptions:
     reference_data_options: DataOptions
     production_data_path: Optional[str]
     production_data_options: Optional[DataOptions]
+    dashboard_tabs: List[str]
+    column_mapping: Dict[str, str]
     output_path: str
+
+
+tabs_mapping = dict(
+    drift=DriftTab,
+    cat_target=CatTargetDriftTab,
+    classification_performance=ClassificationPerformanceTab,
+    prob_classification_perfomance=ProbClassificationPerformanceTab,
+    num_target_drift=NumTargetDriftTab,
+    regression_perfomance=RegressionPerformanceTab,
+)
 
 
 class Runner:
@@ -50,5 +63,14 @@ class Runner:
                                           index_col=self.options.production_data_options.date_column)
         else:
             production_data = None
-        report = Dashboard(reference_data, production_data, tabs=[DriftTab])
+
+        tabs = []
+
+        for tab in self.options.dashboard_tabs:
+            tab_class = tabs_mapping.get(tab, None)
+            if tab_class is None:
+                raise ValueError(f"Unknown tab {tab}")
+            tabs.append(tab_class)
+
+        report = Dashboard(reference_data, production_data, tabs=tabs, column_mapping=self.options.column_mapping)
         report.save(self.options.output_path)

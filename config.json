@@ -1,0 +1,9 @@
+{
+  "data_format": {
+    "separator": ",",
+    "header": true,
+    "date_column": "dteday"
+  },
+  "column_mapping" : {},
+  "dashboard_tabs": ["drift", "num_target_drift"]
+}
