@@ -1,0 +1,5 @@
+{
+  "separator": ",",
+  "header": true,
+  "date_column": "dteday"
+}
