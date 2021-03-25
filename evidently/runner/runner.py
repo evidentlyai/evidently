@@ -36,11 +36,11 @@ class RunnerOptions:
 
 tabs_mapping = dict(
     drift=DriftTab,
-    cat_target=CatTargetDriftTab,
+    cat_target_drift=CatTargetDriftTab,
     classification_performance=ClassificationPerformanceTab,
-    prob_classification_perfomance=ProbClassificationPerformanceTab,
+    prob_classification_performance=ProbClassificationPerformanceTab,
     num_target_drift=NumTargetDriftTab,
-    regression_perfomance=RegressionPerformanceTab,
+    regression_performance=RegressionPerformanceTab,
 )
 
 
@@ -52,15 +52,15 @@ class Runner:
         reference_data = pd.read_csv(self.options.reference_data_path,
                                      header=0 if self.options.reference_data_options.header else None,
                                      sep=self.options.reference_data_options.separator,
-                                     parse_dates=[self.options.reference_data_options.date_column],
-                                     index_col=self.options.reference_data_options.date_column)
+                                     parse_dates=[self.options.reference_data_options.date_column],)
+                                     #index_col=self.options.reference_data_options.date_column)
 
         if self.options.production_data_path:
             production_data = pd.read_csv(self.options.production_data_path,
                                           header=0 if self.options.production_data_options.header else None,
                                           sep=self.options.production_data_options.separator,
-                                          parse_dates=[self.options.production_data_options.date_column],
-                                          index_col=self.options.production_data_options.date_column)
+                                          parse_dates=[self.options.production_data_options.date_column],)
+                                          #index_col=self.options.production_data_options.date_column)
         else:
             production_data = None
 
