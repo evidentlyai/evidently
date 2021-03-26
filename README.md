@@ -131,21 +131,22 @@ Now you can run a report generation directly from bash shell. To do this, prepar
 To gererate report run in bash the following command:
 
 ```bash
-python -m evidently analyze --config config.json --reference reference.csv --current current.csv --output output_folder
+python -m evidently analyze --config config.json 
+--reference reference.csv --current current.csv --output output_folder
 ```
 Here:
-`reference` is the path to the reference data, 
-`current` is the path to the current data, 
-`output` is the path to the output folder,
-`config` is the path to the configuration file.
+- `reference` is the path to the reference data, 
+- `current` is the path to the current data, 
+- `output` is the path to the output folder,
+- `config` is the path to the configuration file.
 
 Currently, you can choose the following Tabs:
-`drift` to estimate the data drift,
-`num_target_drift` to estimate target drift for numerical target,
-`cat_target_drift` to estimate target drift for categorical target.,
-`classification_performance` to explore the performance of a classification model,
-`prob_classification_performance` to explore the performance of a classification model,
-`regression_performance` to explore the performance of a regression model.
+- `drift` to estimate the data drift,
+- `num_target_drift` to estimate target drift for numerical target,
+- `cat_target_drift` to estimate target drift for categorical target.,
+- `classification_performance` to explore the performance of a classification model,
+- `prob_classification_performance` to explore the performance of a classification model,
+- `regression_performance` to explore the performance of a regression model.
 
 To configure the report you need to create `config.json` file. This file configures the way of reading your input data and the type of the report. 
 
