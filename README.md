@@ -60,6 +60,8 @@ $ pip install evidently
 The tool allows building interactive reports both inside a Jupyter notebook and as a separate .html file. Unfortunately, building reports inside a Jupyter notebook is not yet possible for Windows. The reason is Windows requires administrator privileges to create symlink. In later versions we will address this issue.
 
 ## Getting started
+
+### Jupyter Notebook
 To start, prepare your data as two pandas `DataFrames`. The first should include your reference data, the second -  current production data. The structure of both datasets should be identical. 
 
 For Data Drift report, include the input features only.
@@ -123,13 +125,69 @@ or
 prob_classification_single_model_performance = Dashboard(reference_data, None, column_mapping=column_mapping, tabs=[ProbClassificationPerformanceTab])
 ```
 
+### Terminal
+Now you can run a report generation directly from bash shell. To do this, prepare your data as two `csv` files (in case you run one of the performance report, you might have only one file). The first should include your reference data, the second -  current production data. The structure of both datasets should be identical. 
+
+To gererate report run in bash the following command:
+
+```bash
+python -m evidently analyze --config config.json --reference reference.csv --current current.csv --output output_folder
+```
+Here:
+`reference` is the path to the reference data, 
+`current` is the path to the current data, 
+`output` is the path to the output folder,
+`config` is the path to the configuration file.
+
+Currently, you can choose the following Tabs:
+`drift` to estimate the data drift,
+`num_target_drift` to estimate target drift for numerical target,
+`cat_target_drift` to estimate target drift for categorical target.,
+`classification_performance` to explore the performance of a classification model,
+`prob_classification_performance` to explore the performance of a classification model,
+`regression_performance` to explore the performance of a regression model.
+
+To configure the report you need to create `config.json` file. This file configures the way of reading your input data and the type of the report. 
+
+Here is an example of the simple configurations, where we have comma separated `csv` files with headers and there is no `date` column in the data.
+
+```bash
+{
+  "data_format": {
+    "separator": ",",
+    "header": true,
+    "date_column": null
+  },
+  "dashboard_tabs": ["cat_target_drift"]
+}
+```
+
+Here is an example of the more complicated configurations, where we have comma separated `csv` files with headers and `datetime` column. And we also specified the `column_mapping` dictionary, where we added information about `datetime`, `target` and `numerical_features`. 
+
+```bash
+{
+  "data_format": {
+    "separator": ",",
+    "header": true,
+    "date_column": "datetime"
+  },
+  "column_mapping" : {
+  	"datetime":"datetime",
+  	"target":"target",
+  	"numerical_features": ["mean radius", "mean texture", "mean perimeter", 
+  		"mean area", "mean smoothness", "mean compactness", "mean concavity", 
+  		"mean concave points", "mean symmetry"]},
+  "dashboard_tabs": ["cat_target_drift"]
+}
+```
+
 ## More details
 `Dashboard` generates an interactive report that includes the selected `Tabs`. 
 Currently, you can choose the following Tabs:
 - `DriftTab` to estimate the data drift.
-- `NumTargetDrift` to estimate target drift for numerical target. It is an option for a problem statement with a numerical target function: regression, probabilistic classification or ranking, etc.
-- `CatTargetDrift` to estimate target drift for categorical target. It is an option for a problem statement with a categorical target function: binary classification, multi-class classification, etc.
-- `RegressionPerformance` to explore the performance of a regression model. 
+- `NumTargetDriftTab` to estimate target drift for numerical target. It is an option for a problem statement with a numerical target function: regression, probabilistic classification or ranking, etc.
+- `CatTargetDriftTab` to estimate target drift for categorical target. It is an option for a problem statement with a categorical target function: binary classification, multi-class classification, etc.
+- `RegressionPerformanceTab` to explore the performance of a regression model. 
 - `ClassificationPerformanceTab` to explore the performance of a classification model.
 - `ProbClassificationPerformanceTab` to explore the performance of a probabilistic classification model and quality of model calibration.
 
