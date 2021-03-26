@@ -25,9 +25,9 @@ class ProbClassProdPRTableWidget(Widget):
         self.title = title
 
     def get_info(self) -> BaseWidgetInfo:
-        if self.wi:
-            return self.wi
-        raise ValueError("No prediction or target data provided")
+        #if self.wi:
+        return self.wi
+        #raise ValueError("No prediction or target data provided")
 
     def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping): 
         if column_mapping:
