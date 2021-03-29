@@ -151,6 +151,9 @@ class Dashboard:
         from IPython.display import HTML
         return HTML(self.__render(inline_template))
 
+    def html(self):
+        return self.__render(file_html_template)
+
     def save(self, filename):
         parent_dir = os.path.dirname(filename)
         if parent_dir and not os.path.exists(parent_dir):
