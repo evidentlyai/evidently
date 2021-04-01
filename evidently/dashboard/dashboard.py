@@ -159,4 +159,5 @@ class Dashboard:
         if parent_dir and not os.path.exists(parent_dir):
             os.makedirs(parent_dir, exist_ok=True)
         f = open(filename, 'w')
-        f.write(self.__render(file_html_template))
+        f.write(self.html())
+        #f.write(self.__render(file_html_template))
