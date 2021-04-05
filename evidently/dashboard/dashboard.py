@@ -147,6 +147,19 @@ class Dashboard:
                 additional_graphs[graph.id] = graph.params
         return template(TemplateParams(dashboard_id, di, additional_graphs))
 
+    def _json(self):
+        dashboard_id = "evidently_dashboard_" + str(uuid.uuid4()).replace("-", "")
+        tab_widgets = [t.info() for t in self.tabsData]
+        di = DashboardInfo(dashboard_id, [item for tab in tab_widgets for item in tab if item is not None])
+        return json.dumps(asdict(di))
+
+    def _save_to_json(self, filename): 
+        parent_dir = os.path.dirname(filename)
+        if parent_dir and not os.path.exists(parent_dir):
+            os.makedirs(parent_dir, exist_ok=True)
+        f = open(filename, 'w')
+        f.write(self._json())
+
     def show(self):
         from IPython.display import HTML
         return HTML(self.__render(inline_template))

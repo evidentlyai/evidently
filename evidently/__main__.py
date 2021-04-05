@@ -23,7 +23,7 @@ class AnalyzeOptions:
     dashboard_tabs: List[str]
 
 
-def analyze_handler(config: str, reference: str, current: str, output: str, report_name: str, **kv):
+def analyze_handler(config: str, reference: str, current: str, output_path: str, output_type: str, report_name: str, **kv):
     with open(config) as f_config:
         opts_data = json.load(f_config)
         opts = AnalyzeOptions(data_format=DataFormatOptions(**opts_data["data_format"]),
@@ -41,7 +41,8 @@ def analyze_handler(config: str, reference: str, current: str, output: str, repo
                                             header=opts.data_format.header),
         dashboard_tabs=opts.dashboard_tabs,
         column_mapping=opts.column_mapping,
-        output_path=os.path.join(output, report_name + ".html"),
+        output_path=os.path.join(output_path, report_name),
+        output_type=output_type,
     ))
     runner.run()
 
@@ -59,7 +60,8 @@ analyze_parser = parsers.add_parser("analyze")
 analyze_parser.add_argument("--config", dest="config", required=True, help="Path to analyze configuration")
 analyze_parser.add_argument("--reference", dest="reference", required=True, help="Path to reference data")
 analyze_parser.add_argument("--current", dest="current", help="Path to current data")
-analyze_parser.add_argument("--output", dest="output", required=True, help="Path to store HTML report")
+analyze_parser.add_argument("--output_path", dest="output_path", required=True, help="Path to store report")
+analyze_parser.add_argument("--output_type", dest="output_type", required=True, help="Report type: html (preffered) or json")
 analyze_parser.add_argument("--report_name", dest="report_name", default="report", help="Report name")
 analyze_parser.set_defaults(handler=analyze_handler)
 

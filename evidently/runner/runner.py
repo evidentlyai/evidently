@@ -32,6 +32,7 @@ class RunnerOptions:
     dashboard_tabs: List[str]
     column_mapping: Dict[str, str]
     output_path: str
+    output_type: str
 
 
 tabs_mapping = dict(
@@ -73,4 +74,11 @@ class Runner:
             tabs.append(tab_class)
 
         report = Dashboard(reference_data, production_data, tabs=tabs, column_mapping=self.options.column_mapping)
-        report.save(self.options.output_path)
+
+        if self.options.output_type == 'json':
+            report._save_to_json(self.options.output_path + ".json")
+        elif self.options.output_type == 'html':
+            report.save(self.options.output_path + ".html")
+        else:
+            raise ValueError(f"Unsupported output type")
+        
