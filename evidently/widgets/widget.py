@@ -14,9 +14,13 @@ class Widget:
 
     @abc.abstractmethod
     def calculate(self, reference_data: pandas.DataFrame,
-                  production_data: pandas.DataFrame, column_mapping):
+                  production_data: pandas.DataFrame, column_mapping, analyzes_results):
         raise NotImplemented()
 
     @abc.abstractmethod
     def get_info(self) -> BaseWidgetInfo:
+        raise NotImplemented()
+
+    @abc.abstractmethod
+    def analyzes(self):
         raise NotImplemented()

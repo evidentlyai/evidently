@@ -124,15 +124,17 @@ class Dashboard:
     name: str
 
     def __init__(self,
-                 reference_data: pandas.DataFrame,
-                 production_data: pandas.DataFrame,
-                 tabs: List[Type[Tab]],
-                 column_mapping = None):
-        self.reference_data = reference_data
-        self.production_data = production_data
+                 tabs: List[Type[Tab]]):
         self.tabsData = [t() for t in tabs]
+        self.analyzes = list(set([analyze for tab in self.tabsData for analyze in tab.analyzes()]))
+
+    def calculate(self,
+                  reference_data: pandas.DataFrame,
+                  production_data: pandas.DataFrame,
+                  column_mapping: dict = None,
+                  analyzes_results: dict = None):
         for tab in self.tabsData:
-            tab.calculate(reference_data, production_data, column_mapping)
+            tab.calculate(reference_data, production_data, column_mapping, analyzes_results)
 
     def __render(self, template: typing.Callable[[TemplateParams], str]):
         dashboard_id = "evidently_dashboard_" + str(uuid.uuid4()).replace("-", "")
@@ -153,7 +155,7 @@ class Dashboard:
         di = DashboardInfo(dashboard_id, [item for tab in tab_widgets for item in tab if item is not None])
         return json.dumps(asdict(di))
 
-    def _save_to_json(self, filename): 
+    def _save_to_json(self, filename):
         parent_dir = os.path.dirname(filename)
         if parent_dir and not os.path.exists(parent_dir):
             os.makedirs(parent_dir, exist_ok=True)
@@ -173,4 +175,4 @@ class Dashboard:
             os.makedirs(parent_dir, exist_ok=True)
         f = open(filename, 'w')
         f.write(self.html())
-        #f.write(self.__render(file_html_template))
+        # f.write(self.__render(file_html_template))

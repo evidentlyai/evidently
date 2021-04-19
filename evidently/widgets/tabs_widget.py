@@ -12,7 +12,8 @@ class TabsWidget(Widget):
     def get_info(self) -> BaseWidgetInfo:
         return self.wi
 
-    def calculate(self, reference_data: pandas.DataFrame, production_data: pandas.DataFrame, column_mapping):
+    def calculate(self, reference_data: pandas.DataFrame, production_data: pandas.DataFrame, column_mapping,
+                  analyzes_results):
         self.wi = BaseWidgetInfo(
             type="tabs",
             title="Tabs Example",

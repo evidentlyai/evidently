@@ -12,7 +12,7 @@ class BigTableWidget(Widget):
         super().__init__()
         self.title = title
 
-    def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping):
+    def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping, analyzes_results):
         ## need to fill self.widget_info / self.additional_graph with same structure
         pass
 

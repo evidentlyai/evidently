@@ -17,7 +17,8 @@ class BarWidget(Widget):
         self.wi = None
         self.title = title
 
-    def calculate(self, reference_data: pandas.DataFrame, production_data: pandas.DataFrame, _: Dict):
+    def calculate(self, reference_data: pandas.DataFrame, production_data: pandas.DataFrame, column_mapping: Dict,
+                  analyzes_results):
         self.wi = BaseWidgetInfo(
             type="big_graph",
             title=self.title,
