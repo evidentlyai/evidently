@@ -4,6 +4,7 @@ import pandas as pd
 from dataclasses import dataclass
 
 from evidently.dashboard import Dashboard
+from evidently.pipeline.pipeline import Pipeline
 from evidently.tabs import DriftTab, CatTargetDriftTab, ClassificationPerformanceTab,\
     NumTargetDriftTab, ProbClassificationPerformanceTab, RegressionPerformanceTab
 
@@ -73,7 +74,10 @@ class Runner:
                 raise ValueError(f"Unknown tab {tab}")
             tabs.append(tab_class)
 
-        report = Dashboard(reference_data, production_data, tabs=tabs, column_mapping=self.options.column_mapping)
+        pipeline = Pipeline(Dashboard(tabs=tabs))
+        pipeline.execute(reference_data, production_data, column_mapping=self.options.column_mapping)
+
+        report = pipeline.dashboard
 
         if self.options.output_type == 'json':
             report._save_to_json(self.options.output_path + ".json")
@@ -81,4 +85,3 @@ class Runner:
             report.save(self.options.output_path + ".html")
         else:
             raise ValueError(f"Unsupported output type")
-        
