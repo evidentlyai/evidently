@@ -10,6 +10,7 @@ from scipy.stats import ks_2samp, chisquare
 #import matplotlib.pyplot as plt
 import plotly.graph_objs as go
 import plotly.express as px
+from plotly.subplots import make_subplots
 
 from evidently.model.widget import BaseWidgetInfo, AlertStats, AdditionalGraphInfo
 from evidently.widgets.widget import Widget
@@ -111,6 +112,58 @@ class UnderperformSegmTableWidget(Widget):
 
                 feature_hist_json  = json.loads(feature_hist.to_json())
 
+                segment_fig = make_subplots(rows=1, cols=2, subplot_titles=("Reference", "Current"))
+
+                segment_fig.add_trace(
+                    go.Scatter(
+                        x = reference_data[target_column],
+                        y = reference_data[prediction_column],
+                        mode = 'markers',
+                        marker=dict(
+                            size=6,
+                            cmax=max(max(reference_data[feature_name]), max(production_data[feature_name])),
+                            cmin=min(min(reference_data[feature_name]), min(production_data[feature_name])),
+                            color=reference_data[feature_name],
+                            #colorbar=dict(
+                            #    title="Colorbar"
+                            #),
+                        ),
+                        showlegend = False,
+                        ),
+                    row=1, col=1
+                )
+
+                segment_fig.add_trace(
+                    go.Scatter(
+                        x = production_data[target_column],
+                        y = production_data[prediction_column],
+                        mode = 'markers',
+                        #name = feature_name + ' (curr)',
+                        marker=dict(
+                            size=6,
+                            cmax=max(max(reference_data[feature_name]), max(production_data[feature_name])),
+                            cmin=min(min(reference_data[feature_name]), min(production_data[feature_name])),
+                            color=production_data[feature_name],
+                            colorbar=dict(
+                                title=feature_name
+                            ),
+                            #colorscale="Viridis"
+                        ),
+                        showlegend = False,
+                        ),
+                    row=1, col=2
+                )
+
+                # Update xaxis properties
+                segment_fig.update_xaxes(title_text="Actual Value", showgrid=True, row=1, col=1)
+                segment_fig.update_xaxes(title_text="Actual Value", showgrid=True, row=1, col=2)
+
+                # Update yaxis properties
+                segment_fig.update_yaxes(title_text="Predicted Value", showgrid=True, row=1, col=1)
+                segment_fig.update_yaxes(title_text="Predicted Value", showgrid=True, row=1, col=2)
+
+                segment_json  = json.loads(segment_fig.to_json())
+
                 params_data.append(
                 {
                     "details": 
@@ -119,7 +172,12 @@ class UnderperformSegmTableWidget(Widget):
                                 {
                                     "title": "Error bias",
                                     "id": feature_name + "_hist"
+                                },
+                                {
+                                    "title": "Predicted vs Actual",
+                                    "id": feature_name + "_segm"
                                 }
+
                             ],
                             "insights": []
                         },
@@ -146,6 +204,16 @@ class UnderperformSegmTableWidget(Widget):
                     )
                 )
 
+                additional_graphs_data.append(
+                AdditionalGraphInfo(
+                    feature_name + '_segm',
+                    {
+                        "data" : segment_json['data'],
+                        "layout" : segment_json['layout']
+                    }
+                    )
+                )
+
             for feature_name in cat_feature_names:
                 feature_type = 'cat'
 
@@ -168,6 +236,60 @@ class UnderperformSegmTableWidget(Widget):
 
                 feature_hist_json  = json.loads(feature_hist.to_json())
 
+                segment_fig = make_subplots(rows=1, cols=2, subplot_titles=("Reference", "Current"))
+
+                segment_fig.add_trace(
+                    go.Scatter(
+                        x = reference_data[target_column],
+                        y = reference_data[prediction_column],
+                        mode = 'markers',
+                        #name = feature_name + ' (ref)',
+                        #marker_color = reference_data[feature_name],
+                        marker=dict(
+                            size=6,
+                            cmax=max(max(reference_data[feature_name]), max(production_data[feature_name])),
+                            cmin=min(min(reference_data[feature_name]), min(production_data[feature_name])),
+                            color=reference_data[feature_name],
+                            #colorbar=dict(
+                            #    title="Colorbar"
+                            #),
+                        ),
+                        showlegend = False,
+                        ),
+                    row=1, col=1
+                )
+
+                segment_fig.add_trace(
+                    go.Scatter(
+                        x = production_data[target_column],
+                        y = production_data[prediction_column],
+                        mode = 'markers',
+                        #name = feature_name + ' (curr)',
+                        #marker_color = production_data[feature_name],
+                        marker=dict(
+                            size=6,
+                            cmax=max(max(reference_data[feature_name]), max(production_data[feature_name])),
+                            cmin=min(min(reference_data[feature_name]), min(production_data[feature_name])),
+                            color=production_data[feature_name],
+                            colorbar=dict(
+                                title=feature_name
+                            ),
+                        ),
+                        showlegend = False,
+                        ),
+                    row=1, col=2
+                )
+
+                # Update xaxis properties
+                segment_fig.update_xaxes(title_text="Actual Value", showgrid=True, row=1, col=1)
+                segment_fig.update_xaxes(title_text="Actual Value", showgrid=True, row=1, col=2)
+
+                # Update yaxis properties
+                segment_fig.update_yaxes(title_text="Predicted Value", showgrid=True, row=1, col=1)
+                segment_fig.update_yaxes(title_text="Predicted Value", showgrid=True, row=1, col=2)
+
+                segment_json  = json.loads(segment_fig.to_json())
+
                 params_data.append(
                 {
                     "details": 
@@ -176,6 +298,10 @@ class UnderperformSegmTableWidget(Widget):
                                 {
                                     "title": "Error bias",
                                     "id": feature_name + "_hist"
+                                },
+                                {
+                                    "title": "Predicted vs Actual",
+                                    "id": feature_name + "_segm"
                                 }
                             ],
                             "insights": []
@@ -199,6 +325,16 @@ class UnderperformSegmTableWidget(Widget):
                     {
                         "data" : feature_hist_json['data'],
                         "layout" : feature_hist_json['layout']
+                    }
+                    )
+                )
+
+                additional_graphs_data.append(
+                AdditionalGraphInfo(
+                    feature_name + '_segm',
+                    {
+                        "data" : segment_json['data'],
+                        "layout" : segment_json['layout']
                     }
                     )
                 )
@@ -296,6 +432,9 @@ class UnderperformSegmTableWidget(Widget):
 
                 hist_figure = json.loads(hist.to_json())
 
+                segm = px.scatter(reference_data, x = target_column, y = prediction_column, color = feature_name)
+                segm_figure = json.loads(segm.to_json())
+
                 params_data.append(
                     {
                         "details": 
@@ -304,7 +443,12 @@ class UnderperformSegmTableWidget(Widget):
                                     {
                                         "title": "Error bias",
                                         "id": feature_name + "_hist"
+                                    },
+                                    {
+                                        "title": "Predicted vs Actual",
+                                        "id": feature_name + "_segm"
                                     }
+
                                 ],
                                 "insights": []
                             },
@@ -327,6 +471,16 @@ class UnderperformSegmTableWidget(Widget):
                     )
                 )
 
+                additional_graphs_data.append(
+                AdditionalGraphInfo(
+                    feature_name + '_segm',
+                    {
+                        "data" : segm_figure['data'],
+                        "layout" : segm_figure['layout']
+                    }
+                    )
+                )
+
             for feature_name in cat_feature_names: #feature_names:
 
                 feature_type = 'cat'
@@ -345,6 +499,13 @@ class UnderperformSegmTableWidget(Widget):
 
                 hist_figure = json.loads(hist.to_json())
 
+                initial_type = reference_data[feature_name].dtype
+                reference_data[feature_name] = reference_data[feature_name].astype(str)
+                segm = px.scatter(reference_data, x = target_column, y = prediction_column, color = feature_name)
+                reference_data[feature_name] = reference_data[feature_name].astype(initial_type)
+
+                segm_figure = json.loads(segm.to_json())
+
                 params_data.append(
                     {
                         "details": 
@@ -353,6 +514,10 @@ class UnderperformSegmTableWidget(Widget):
                                     {
                                         "title": "Error bias",
                                         "id": feature_name + "_hist"
+                                    },
+                                    {
+                                        "title": "Predicted vs Actual",
+                                        "id": feature_name + "_segm"
                                     }
                                 ],
                                 "insights": []
@@ -372,6 +537,16 @@ class UnderperformSegmTableWidget(Widget):
                     {
                         "data" : hist_figure['data'],
                         "layout" : hist_figure['layout']
+                    }
+                    )
+                )
+
+                additional_graphs_data.append(
+                AdditionalGraphInfo(
+                    feature_name + '_segm',
+                    {
+                        "data" : segm_figure['data'],
+                        "layout" : segm_figure['layout']
                     }
                     )
                 )
