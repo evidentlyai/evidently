@@ -3,13 +3,12 @@
 
 import json
 import pandas as pd
-from pandas.api.types import is_numeric_dtype
-import numpy as np
-import math
 
-from scipy.stats import ks_2samp
-from statsmodels.graphics.gofplots import qqplot
-#import matplotlib.pyplot as plt
+import numpy as np
+
+from sklearn import metrics, preprocessing
+from pandas.api.types import is_numeric_dtype
+
 import plotly.graph_objs as go
 import plotly.figure_factory as ff
 
@@ -20,15 +19,15 @@ red = "#ed0400"
 grey = "#4d4d4d"
 
 
-class RegRefQualityMetricsWidget(Widget):
+class ProbClassProdPredDistrWidget(Widget):
     def __init__(self, title: str):
         super().__init__()
         self.title = title
 
     def get_info(self) -> BaseWidgetInfo:
-        if self.wi:
-            return self.wi
-        raise ValueError("No reference data with target and prediction provided")
+        #if self.wi:
+        return self.wi
+        #raise ValueError("No prediction or target data provided")
 
     def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping): 
         if column_mapping:
@@ -37,6 +36,7 @@ class RegRefQualityMetricsWidget(Widget):
             target_column = column_mapping.get('target')
             prediction_column = column_mapping.get('prediction')
             num_feature_names = column_mapping.get('numerical_features')
+            #target_names = column_mapping.get('target_names')
             if num_feature_names is None:
                 num_feature_names = []
             else:
@@ -59,50 +59,66 @@ class RegRefQualityMetricsWidget(Widget):
             num_feature_names = list(set(reference_data.select_dtypes([np.number]).columns) - set(utility_columns))
             cat_feature_names = list(set(reference_data.select_dtypes([np.object]).columns) - set(utility_columns))
 
-        if target_column is not None and prediction_column is not None:
-            reference_data.replace([np.inf, -np.inf], np.nan, inplace=True)
-            reference_data.dropna(axis=0, how='any', inplace=True)
-            
-            #calculate quality metrics
-            me = np.mean(reference_data[prediction_column] - reference_data[target_column])
-            sde = np.std(reference_data[prediction_column] - reference_data[target_column], ddof = 1)
-            
-            abs_err = np.abs(reference_data[prediction_column] - reference_data[target_column])
-            mae = np.mean(abs_err)
-            sdae = np.std(abs_err, ddof = 1)
+            #target_names = None
 
-            abs_perc_err = 100.*np.abs(reference_data[prediction_column] - reference_data[target_column])/reference_data[target_column]
-            mape = np.mean(abs_perc_err)
-            sdape = np.std(abs_perc_err, ddof = 1)
+        if production_data is not None and target_column is not None and prediction_column is not None:
+            production_data.replace([np.inf, -np.inf], np.nan, inplace=True)
+            production_data.dropna(axis=0, how='any', inplace=True)
+
+            array_prediction = production_data[prediction_column].to_numpy()
+
+            prediction_ids = np.argmax(array_prediction, axis=-1)
+            prediction_labels = [prediction_column[x] for x in prediction_ids]
+            
+            #plot support bar
+            graphs = []
+
+            for label in prediction_column:
+                pred_distr = ff.create_distplot(
+                    [
+                        production_data[production_data[target_column] == label][label], 
+                        production_data[production_data[target_column] != label][label]
+                    ], 
+                    [str(label), "other"],  
+                    colors=[red, grey],
+                    bin_size = 0.05,
+                    show_curve = False,
+                    show_rug=True)
+
+                pred_distr.update_layout(
+                    xaxis_title = "Probability",
+                    yaxis_title = "Share",
+                    legend = dict(
+                    orientation="h",
+                    yanchor="bottom",
+                    y=1.02,
+                    xanchor="right",
+                    x=1
+                    )
+                )
+
+                pred_distr_json = json.loads(pred_distr.to_json())
+
+                graphs.append({
+                    "id": "tab_" + str(label),
+                    "title": str(label),
+                    "graph":{
+                        "data":pred_distr_json["data"],
+                        "layout":pred_distr_json["layout"],
+                        }
+                    })
 
             self.wi = BaseWidgetInfo(
-                title="Reference: Model Quality (+/- std)",
-                type="counter",
+                title=self.title,
+                type="tabbed_graph",
                 details="",
                 alertStats=AlertStats(),
                 alerts=[],
                 alertsPosition="row",
                 insights=[],
-                size=2,
-                params={   
-                    "counters": [
-                      {
-                        "value": str(round(me, 2)) + " (" + str(round(sde,2)) + ")",
-                        "label": "ME"
-                      },
-                      {
-                        "value": str(round(mae, 2)) + " (" + str(round(sdae,2)) + ")",
-                        "label": "MAE"
-                      },
-                      {
-                        "value": str(round(mape, 2)) + " (" + str(round(sdape, 2)) + ")",
-                        "label": "MAPE"
-                      }#,
-                      #{
-                      #  "value": str(round(mse, 2)) + " (" + str(round(sdse, 2)) + ")",
-                      #  "label": "MSE"
-                      #}
-                    ]
+                size=1,
+                params={
+                    "graphs": graphs
                 },
                 additionalGraphs=[],
             )

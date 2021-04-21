@@ -15,13 +15,14 @@ from evidently.widgets.prob_class_ref_metrics_matrix_widget import ProbClassRefM
 from evidently.widgets.prob_class_prod_metrics_matrix_widget import ProbClassProdMetricsMatrixWidget
 from evidently.widgets.prob_class_ref_prediction_cloud_widget import ProbClassRefPredictionCloudWidget
 from evidently.widgets.prob_class_prod_prediction_cloud_widget import ProbClassProdPredictionCloudWidget
+from evidently.widgets.prob_class_ref_pred_distr_widget import ProbClassRefPredDistrWidget
+from evidently.widgets.prob_class_prod_pred_distr_widget import ProbClassProdPredDistrWidget
 from evidently.widgets.prob_class_ref_roc_curve_widget import ProbClassRefRocCurveWidget
 from evidently.widgets.prob_class_prod_roc_curve_widget import ProbClassProdRocCurveWidget
 from evidently.widgets.prob_class_ref_pr_curve_widget import ProbClassRefPRCurveWidget
 from evidently.widgets.prob_class_prod_pr_curve_widget import ProbClassProdPRCurveWidget
 from evidently.widgets.prob_class_ref_pr_table_widget import ProbClassRefPRTableWidget
 from evidently.widgets.prob_class_prod_pr_table_widget import ProbClassProdPRTableWidget
-#from evidently.widgets.tabs_widget import TabsWidget
 from evidently.widgets.prob_class_confusion_based_feature_distr_table_widget import ProbClassConfusionBasedFeatureDistrTable
 
 from evidently.widgets.widget import Widget
@@ -42,6 +43,8 @@ class ProbClassificationPerformanceTab(Tab):
             ProbClassProdMetricsMatrixWidget("Current: Quality Metrics by Class"),
             ProbClassRefPredictionCloudWidget("Reference: Class Separation Quality"),
             ProbClassProdPredictionCloudWidget("Current: Class Separation Quality"),
+            ProbClassRefPredDistrWidget("Reference: Probability Distribution"),
+            ProbClassProdPredDistrWidget("Current: Probability Distribution"),            
             ProbClassRefRocCurveWidget("Reference: ROC Curve"),
             ProbClassProdRocCurveWidget("Current: ROC Curve"),
             ProbClassRefPRCurveWidget("Reference: Precision-Recall Curve"),

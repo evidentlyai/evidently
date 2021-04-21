@@ -68,22 +68,13 @@ class RegProdQualityMetricsWidget(Widget):
                 me = np.mean(production_data[prediction_column] - production_data[target_column])
                 sde = np.std(production_data[prediction_column] - production_data[target_column], ddof = 1)
 
-                abs_err = list(map(lambda x : abs(x[0] - x[1]), 
-                    zip(production_data[prediction_column], production_data[target_column])))
+                abs_err = np.abs(production_data[prediction_column] - production_data[target_column])
                 mae = np.mean(abs_err)
                 sdae = np.std(abs_err, ddof = 1)
 
-                abs_perc_err = list(map(lambda x : 100*abs(x[0] - x[1])/x[0], 
-                    zip(production_data[prediction_column], production_data[target_column])))
+                abs_perc_err = 100.*np.abs(production_data[prediction_column] - production_data[target_column])/production_data[target_column]
                 mape = np.mean(abs_perc_err)
                 sdape = np.std(abs_perc_err, ddof = 1)
-
-                #sqrt_err = list(map(lambda x : (x[0] - x[1])**2, 
-                #    zip(production_data[prediction_column], production_data[target_column])))
-                #mse = np.mean(sqrt_err)
-                #sdse = np.std(sqrt_err, ddof = 1)
-
-                #error_norm_json = json.loads(error_norm.to_json())
 
                 self.wi = BaseWidgetInfo(
                     title=self.title,
