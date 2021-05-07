@@ -1,4 +1,6 @@
 <h1 align="center">Evidently</h1>
+
+![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/evidently_4_reports_preview_small.png)
  
 <p align="center"><b>Interactive reports to analyze, monitor and debug machine learning models.</b></p>
 
