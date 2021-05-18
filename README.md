@@ -8,6 +8,8 @@
   <a href="https://evidentlyai.gitbook.io/docs/">Docs</a>
   |
   <a href="https://discord.gg/xZjKRaNp8b">Join Discord</a>
+  |
+  <a href="https://evidentlyai.com/sign-up">Newsletter</a>
   | 
   <a href="https://evidentlyai.com/blog">Blog</a>
   | 
