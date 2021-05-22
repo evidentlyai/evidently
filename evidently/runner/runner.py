@@ -4,7 +4,7 @@ import pandas as pd
 from dataclasses import dataclass
 
 from evidently.dashboard import Dashboard
-from evidently.tabs import DriftTab, CatTargetDriftTab, ClassificationPerformanceTab,\
+from evidently.tabs import DataDriftTab, CatTargetDriftTab, ClassificationPerformanceTab,\
     NumTargetDriftTab, ProbClassificationPerformanceTab, RegressionPerformanceTab
 
 

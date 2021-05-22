@@ -6,7 +6,7 @@ from typing import List, Dict, Type
 
 import pandas
 
-from evidently.analyzes.base_analyze import Analyze
+from evidently.analyzers.base_analyzer import Analyzer
 from evidently.model.widget import BaseWidgetInfo
 from evidently.widgets.widget import Widget
 
@@ -17,16 +17,17 @@ class Tab:
     def __init__(self):
         self.widgets = []
 
-    def analyzes(self) -> List[Type[Analyze]]:
-        return list(set([analyse for widget in self.widgets for analyse in widget.analyzes()]))
+    def analyzers(self) -> List[Type[Analyzer]]:
+        self.widgets = self._get_widgets()
+        return list(set([analyzer for widget in self.widgets for analyzer in widget.analyzers()]))
 
     def calculate(self, reference_data: pandas.DataFrame,
                   production_data: pandas.DataFrame,
                   column_mapping: Dict,
-                  analyzes_results: Dict):
+                  analyzers_results: Dict):
         self.widgets = self._get_widgets()
         for widget in self.widgets:
-            widget.calculate(reference_data, production_data, column_mapping, analyzes_results)
+            widget.calculate(reference_data, production_data, column_mapping, analyzers_results)
 
     def info(self) -> List[BaseWidgetInfo]:
         return [w.get_info() for w in self.widgets]

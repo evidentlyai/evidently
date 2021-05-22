@@ -13,7 +13,7 @@ import pandas
 import typing
 
 import evidently
-from evidently.analyzes.base_analyze import Analyze
+from evidently.analyzers.base_analyzer import Analyzer
 from evidently.model.dashboard import DashboardInfo
 from evidently.pipeline.pipeline import Pipeline
 from evidently.tabs.base_tab import Tab
@@ -124,15 +124,15 @@ def __load_font():
 
 class Dashboard(Pipeline):
     name: str
-    _analyzes: List[Type[Analyze]]
+    _analyzers: List[Type[Analyzer]]
 
     def __init__(self, tabs: List[Type[Tab]]):
         super().__init__()
         self.tabsData = [t() for t in tabs]
-        self._analyzes = list(set([analyze for tab in self.tabsData for analyze in tab.analyzes()]))
+        self._analyzers = list(set([analyzer for tab in self.tabsData for analyzer in tab.analyzers()]))
 
-    def get_analyzes(self):
-        return self._analyzes
+    def get_analyzers(self):
+        return self._analyzers
 
     def calculate(self,
                   reference_data: pandas.DataFrame,
@@ -140,7 +140,7 @@ class Dashboard(Pipeline):
                   column_mapping: dict = None):
         self.execute(reference_data, production_data, column_mapping)
         for tab in self.tabsData:
-            tab.calculate(reference_data, production_data, column_mapping, self.analyzes_results)
+            tab.calculate(reference_data, production_data, column_mapping, self.analyzers_results)
 
     def __render(self, template: typing.Callable[[TemplateParams], str]):
         dashboard_id = "evidently_dashboard_" + str(uuid.uuid4()).replace("-", "")

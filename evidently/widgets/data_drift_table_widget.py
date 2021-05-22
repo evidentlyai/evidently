@@ -7,7 +7,7 @@ import numpy as np
 
 import plotly.graph_objs as go
 
-from evidently.analyzes.drift_analyze import DriftAnalyze
+from evidently.analyzers.data_drift_analyzer import DataDriftAnalyzer
 from evidently.model.widget import BaseWidgetInfo, AlertStats, AdditionalGraphInfo
 from evidently.widgets.widget import Widget
 
@@ -15,9 +15,9 @@ red = "#ed0400"
 grey = "#4d4d4d"
 
 
-class BigDriftTableWidget(Widget):
-    def analyzes(self):
-        return [DriftAnalyze]
+class DataDriftTableWidget(Widget):
+    def analyzers(self):
+        return [DataDriftAnalyzer]
 
     def __init__(self, title: str):
         super().__init__()
@@ -32,8 +32,8 @@ class BigDriftTableWidget(Widget):
                   reference_data: pd.DataFrame,
                   production_data: pd.DataFrame,
                   column_mapping,
-                  analyzes_results):
-        results = analyzes_results[DriftAnalyze]
+                  analyzers_results):
+        results = analyzers_results[DataDriftAnalyzer]
         num_feature_names = results["num_feature_names"]
         cat_feature_names = results["cat_feature_names"]
 

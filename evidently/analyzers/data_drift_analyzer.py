@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-from evidently.analyzes.base_analyze import Analyze
+from evidently.analyzers.base_analyzer import Analyzer
 import pandas as pd
 from pandas.api.types import is_numeric_dtype
 import numpy as np
@@ -9,7 +9,7 @@ import numpy as np
 from scipy.stats import ks_2samp, chisquare
 
 
-class DriftAnalyze(Analyze):
+class DataDriftAnalyzer(Analyzer):
     def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping):
         result = dict()
         if column_mapping:

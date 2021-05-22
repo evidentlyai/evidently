@@ -5,7 +5,7 @@ import abc
 import pandas as pd
 
 
-class Analyze:
+class Analyzer:
     def __init__(self):
         pass
 

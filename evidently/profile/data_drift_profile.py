@@ -2,17 +2,18 @@ from typing import List, Type
 
 import pandas
 
-from evidently.analyzes.base_analyze import Analyze
+#from evidently.analyzers.base_analyzer import Analyzer
+from evidently.analyzers.data_drift_analyzer import DataDriftAnalyzer
 from evidently.pipeline.pipeline import Pipeline
 
 
-class Report(Pipeline):
-    def __init__(self, analyzes_types: List[Type[Analyze]]):
+class DataDriftProfile(Pipeline):
+    def __init__(self):
         super().__init__()
-        self.analyzes_types = analyzes_types
+        self.analyzers_types = [DataDriftAnalyzer]
 
-    def get_analyzes(self):
-        return self.analyzes_types
+    def get_analyzers(self):
+        return self.analyzers_types
 
     def calculate(self,
                   reference_data: pandas.DataFrame,
@@ -21,4 +22,4 @@ class Report(Pipeline):
         self.execute(reference_data, production_data, column_mapping)
 
     def json(self):
-        return self.analyzes_results
+        return self.analyzers_results
