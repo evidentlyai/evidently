@@ -17,6 +17,9 @@ class CounterWidget(Widget):
         self.wi = None
         self.title = title
 
+    def analyzers(self):
+        return []
+
     def calculate(self,
                   reference_data: pandas.DataFrame,
                   production_data: pandas.DataFrame,

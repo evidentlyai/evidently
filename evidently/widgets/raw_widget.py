@@ -15,6 +15,9 @@ class RawWidget(Widget):
                   analyzes_results):
         raise NotImplemented()
 
+    def analyzers(self):
+        return []
+
     def __init__(self, wi: BaseWidgetInfo):
         super().__init__()
         self.wi = wi

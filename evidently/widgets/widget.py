@@ -23,5 +23,4 @@ class Widget:
 
     @abc.abstractmethod
     def analyzers(self):
-        #raise NotImplemented()
         return []

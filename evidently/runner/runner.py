@@ -4,6 +4,8 @@ import pandas as pd
 from dataclasses import dataclass
 
 from evidently.dashboard import Dashboard
+from evidently.profile.profile import Profile
+from evidently.profile_parts.data_drift_profile_part import DataDriftProfilePart
 from evidently.tabs import DataDriftTab, CatTargetDriftTab, ClassificationPerformanceTab,\
     NumTargetDriftTab, ProbClassificationPerformanceTab, RegressionPerformanceTab
 
@@ -75,6 +77,10 @@ class Runner:
 
         report = Dashboard(tabs=tabs)
         report.execute(reference_data, production_data, self.options.column_mapping)
+
+        profile = Profile(parts=[DataDriftProfilePart])
+        profile.execute(reference_data, production_data, self.options.column_mapping)
+        profile.json()
 
         if self.options.output_type == 'json':
             report._save_to_json(self.options.output_path + ".json")

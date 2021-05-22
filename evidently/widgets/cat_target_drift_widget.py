@@ -23,6 +23,9 @@ class CatTargetDriftWidget(Widget):
         super().__init__()
         self.title = title
 
+    def analyzers(self):
+        return []
+
     def get_info(self) -> BaseWidgetInfo:
         return self.wi
 

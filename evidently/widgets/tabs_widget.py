@@ -9,6 +9,9 @@ class TabsWidget(Widget):
         super().__init__()
         self.wi = None
 
+    def analyzers(self):
+        return []
+
     def get_info(self) -> BaseWidgetInfo:
         return self.wi
 

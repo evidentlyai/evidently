@@ -24,6 +24,9 @@ class NumPredictionDriftWidget(Widget):
         self.title = title
         #self.wi = None
 
+    def analyzers(self):
+        return []
+
     def get_info(self) -> BaseWidgetInfo:
         #if self.wi:
         return self.wi
