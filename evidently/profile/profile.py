@@ -16,5 +16,5 @@ class Profile(Pipeline):
 
     def json(self):
         result = dict([(part.part_id(), part.calculate(self.analyzers_results)) for part in self.parts])
-        result["timestamp"] = datetime.now()
+        result["timestamp"] = str(datetime.now())
         return json.dumps(result)
