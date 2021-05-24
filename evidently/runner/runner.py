@@ -38,7 +38,7 @@ class RunnerOptions:
 
 
 tabs_mapping = dict(
-    drift=DriftTab,
+    data_drift=DataDriftTab,
     cat_target_drift=CatTargetDriftTab,
     classification_performance=ClassificationPerformanceTab,
     prob_classification_performance=ProbClassificationPerformanceTab,
@@ -75,17 +75,17 @@ class Runner:
                 raise ValueError(f"Unknown tab {tab}")
             tabs.append(tab_class)
 
-        report = Dashboard(tabs=tabs)
-        report.execute(reference_data, production_data, self.options.column_mapping)
+        dashboard = Dashboard(tabs=tabs)
+        dashboard.calculate(reference_data, production_data, self.options.column_mapping)
 
-        profile = Profile(parts=[DataDriftProfilePart])
-        profile.execute(reference_data, production_data, self.options.column_mapping)
-        profile.json()
+        #profile = Profile(parts=[DataDriftProfilePart])
+        #profile.execute(reference_data, production_data, self.options.column_mapping)
+        #profile.json()
 
         if self.options.output_type == 'json':
-            report._save_to_json(self.options.output_path + ".json")
+            dashboard._save_to_json(self.options.output_path + ".json")
         elif self.options.output_type == 'html':
-            report.save(self.options.output_path + ".html")
+            dashboard.save(self.options.output_path + ".html")
         else:
             raise ValueError(f"Unsupported output type")
         

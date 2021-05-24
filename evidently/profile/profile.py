@@ -1,4 +1,5 @@
 import json
+import pandas 
 from datetime import datetime
 from typing import List, Type
 
@@ -10,6 +11,12 @@ class Profile(Pipeline):
     def __init__(self, parts: List[Type[ProfilePart]]):
         super().__init__()
         self.parts = [part() for part in parts]
+
+    def calculate(self,
+                  reference_data: pandas.DataFrame,
+                  production_data: pandas.DataFrame,
+                  column_mapping: dict = None):
+        self.execute(reference_data, production_data, column_mapping)
 
     def get_analyzers(self):
         return list(set([analyzer for tab in self.parts for analyzer in tab.analyzers()]))
