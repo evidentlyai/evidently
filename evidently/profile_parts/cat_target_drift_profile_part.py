@@ -18,12 +18,24 @@ class CatTargetDriftProfilePart(ProfilePart):
         return self.analyzers_types
 
     def calculate(self, analyzers_results):
+        target_p_value = analyzers_results[CatTargetDriftAnalyzer].get('target_drift')
+        prediction_p_value = analyzers_results[CatTargetDriftAnalyzer].get('prediction_drift')
 
         profile = {}
         profile['name'] = self.part_id()
         profile['datetime'] = str(datetime.now())
         profile['data'] = {}
-        profile['data']['target_drift'] = analyzers_results[CatTargetDriftAnalyzer].get('target_drift')
-        profile['data']['prediction_drift'] = analyzers_results[CatTargetDriftAnalyzer].get('prediction_drift')  
+
+        if target_p_value:
+            profile['data']['target_drift'] = {
+                'target_type' : 'cat',
+                'p_value' : target_p_value
+            }
+
+        if prediction_p_value:
+            profile['data']['prediction_drift'] = {
+                'prediction_type' : 'cat',
+                'p_value' : prediction_p_value
+            }
 
         return profile
