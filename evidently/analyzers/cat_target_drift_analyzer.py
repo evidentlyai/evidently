@@ -9,7 +9,7 @@ import numpy as np
 from scipy.stats import ks_2samp, chisquare
 
 
-class DataDriftAnalyzer(Analyzer):
+class CatTargetDriftAnalyzer(Analyzer):
     def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping):
         result = dict()
         if column_mapping:
@@ -43,27 +43,19 @@ class DataDriftAnalyzer(Analyzer):
         result["cat_feature_names"] = cat_feature_names
         result["num_feature_names"] = num_feature_names
 
-        #calculate result
-        #params_data = []
-        drifted_fetures_count = 0
-        result["num_features"] = dict()
-        for feature_name in num_feature_names:
-            result["num_features"][feature_name] = dict(
-                prod_small_hist=np.histogram(production_data[feature_name][np.isfinite(production_data[feature_name])],
-                                             bins=10, density=True),
-                ref_small_hist=np.histogram(reference_data[feature_name][np.isfinite(reference_data[feature_name])],
-                                            bins=10, density=True),
-                feature_type='num',
-                p_value=ks_2samp(reference_data[feature_name], production_data[feature_name])[1]
-            )
+        #target drift
+        if target_column is not None:
+            reference_data.replace([np.inf, -np.inf], np.nan, inplace=True)
+            reference_data.dropna(axis=0, how='any', inplace=True)
 
-        result["cat_features"] = dict()
-        for feature_name in cat_feature_names:
-            ref_feature_vc = reference_data[feature_name][np.isfinite(reference_data[feature_name])].value_counts()
-            prod_feature_vc = production_data[feature_name][np.isfinite(production_data[feature_name])].value_counts()
+            production_data.replace([np.inf, -np.inf], np.nan, inplace=True)
+            production_data.dropna(axis=0, how='any', inplace=True)
 
-            keys = set(list(reference_data[feature_name][np.isfinite(reference_data[feature_name])].unique()) +
-                       list(production_data[feature_name][np.isfinite(production_data[feature_name])].unique()))
+            ref_feature_vc = reference_data[target_column].value_counts()
+            prod_feature_vc = production_data[target_column].value_counts()
+
+            keys = set(list(reference_data[target_column].unique()) + 
+                list(production_data[target_column].unique()))
 
             ref_feature_dict = dict.fromkeys(keys, 0)
             for key, item in zip(ref_feature_vc.index, ref_feature_vc.values):
@@ -76,15 +68,36 @@ class DataDriftAnalyzer(Analyzer):
             f_exp = [value[1] for value in sorted(ref_feature_dict.items())]
             f_obs = [value[1] for value in sorted(prod_feature_dict.items())]
 
-            # CHI2 to be implemented for cases with different categories
-            p_value = chisquare(f_exp, f_obs)[1]
+            target_p_value = chisquare(f_exp, f_obs)[1]
+            result["target_drift"] = target_p_value
 
-            result["cat_features"][feature_name] = dict(
-                prod_small_hist=np.histogram(production_data[feature_name][np.isfinite(production_data[feature_name])],
-                                             bins=10, density=True),
-                ref_small_hist=np.histogram(reference_data[feature_name][np.isfinite(reference_data[feature_name])],
-                                            bins=10, density=True),
-                feature_type='cat',
-                p_value=p_value,
-            )
+        #prediction drift
+        if prediction_column is not None:
+            #calculate output drift
+            reference_data.replace([np.inf, -np.inf], np.nan, inplace=True)
+            reference_data.dropna(axis=0, how='any', inplace=True)
+
+            production_data.replace([np.inf, -np.inf], np.nan, inplace=True)
+            production_data.dropna(axis=0, how='any', inplace=True)
+
+            ref_feature_vc = reference_data[prediction_column].value_counts()
+            prod_feature_vc = production_data[prediction_column].value_counts()
+
+            keys = set(list(reference_data[prediction_column].unique()) + 
+                list(production_data[prediction_column].unique()))
+
+            ref_feature_dict = dict.fromkeys(keys, 0)
+            for key, item in zip(ref_feature_vc.index, ref_feature_vc.values):
+                ref_feature_dict[key] = item
+
+            prod_feature_dict = dict.fromkeys(keys, 0)
+            for key, item in zip(prod_feature_vc.index, prod_feature_vc.values):
+                prod_feature_dict[key] = item
+
+            f_exp = [value[1] for value in sorted(ref_feature_dict.items())]
+            f_obs = [value[1] for value in sorted(prod_feature_dict.items())]
+
+            pred_p_value = chisquare(f_exp, f_obs)[1]
+            result["prediction_drift"] = pred_p_value
+
         return result

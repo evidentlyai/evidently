@@ -2,3 +2,4 @@
 # coding: utf-8
 
 from .data_drift_profile_part import DataDriftProfilePart
+from .cat_target_drift_profile_part import CatTargetDriftProfilePart

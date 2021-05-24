@@ -8,7 +8,7 @@ from evidently.profile_parts.base_profile_part import ProfilePart
 
 class DataDriftProfilePart(ProfilePart):
     def part_id(self) -> str:
-        return "data_drift"
+        return "data_drift_profile"
 
     def __init__(self):
         super().__init__()
@@ -25,7 +25,7 @@ class DataDriftProfilePart(ProfilePart):
         cat_pvalues = analyzers_results[DataDriftAnalyzer]['cat_features']
 
         profile = {}
-        profile['name'] = 'data_drift_profile'
+        profile['name'] = self.part_id()
         profile['datetime'] = str(datetime.now())
         profile['data'] = {}
 
