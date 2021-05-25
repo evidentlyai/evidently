@@ -26,16 +26,16 @@ class CatTargetDriftProfilePart(ProfilePart):
         profile['datetime'] = str(datetime.now())
         profile['data'] = {}
 
-        if target_p_value:
-            profile['data']['target_drift'] = {
-                'target_type' : 'cat',
-                'p_value' : target_p_value
-            }
+        #if target_p_value:
+        profile['data']['target_drift'] = {
+            'target_type' : 'cat',
+            'p_value' : target_p_value
+        }
 
-        if prediction_p_value:
-            profile['data']['prediction_drift'] = {
-                'prediction_type' : 'cat',
-                'p_value' : prediction_p_value
-            }
+        #if prediction_p_value:
+        profile['data']['prediction_drift'] = {
+            'prediction_type' : 'cat',
+            'p_value' : prediction_p_value
+        }
 
         return profile
