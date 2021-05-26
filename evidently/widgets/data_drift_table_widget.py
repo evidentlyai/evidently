@@ -41,7 +41,7 @@ class DataDriftTableWidget(Widget):
         params_data = []
         drifted_fetures_count = 0
 
-        date_column = results["utility_columns"][0]
+        date_column = results['utility_columns']['date']
 
         for feature_name in num_feature_names:
             prod_small_hist = results["num_features"][feature_name]["prod_small_hist"]

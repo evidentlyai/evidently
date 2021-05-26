@@ -18,9 +18,12 @@ class NumTargetDriftProfilePart(ProfilePart):
         return self.analyzers_types
 
     def calculate(self, analyzers_results):
+        target_name = analyzers_results[NumTargetDriftAnalyzer].get('utility_columns').get('target')
         target_p_value = analyzers_results[NumTargetDriftAnalyzer].get('target_drift')
-        prediction_p_value = analyzers_results[NumTargetDriftAnalyzer].get('prediction_drift')
         target_corr = analyzers_results[NumTargetDriftAnalyzer].get('target_correlations')
+
+        prediction_name = analyzers_results[NumTargetDriftAnalyzer].get('utility_columns').get('prediction')
+        prediction_p_value = analyzers_results[NumTargetDriftAnalyzer].get('prediction_drift')
         prediction_corr = analyzers_results[NumTargetDriftAnalyzer].get('prediction_correlations')
 
         profile = {}
@@ -30,16 +33,18 @@ class NumTargetDriftProfilePart(ProfilePart):
 
         #if target_p_value:
         profile['data']['target'] = {
-            'target_type' : 'num',
-            'p_value' : target_p_value,
-            'correlations' : target_corr
+            'target':target_name,
+            'target_type':'num',
+            'p_value':target_p_value,
+            'correlations':target_corr
         }
 
         #if prediction_p_value:
         profile['data']['prediction'] = {
-            'prediction_type' : 'num',
-            'p_value' : prediction_p_value,
-            'correlations' : prediction_corr
+            'prediction':prediction_name,
+            'prediction_type':'num',
+            'p_value':prediction_p_value,
+            'correlations':prediction_corr
         }
 
         return profile

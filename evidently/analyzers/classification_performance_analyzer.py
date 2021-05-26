@@ -43,12 +43,9 @@ class ClassificationPerformanceAnalyzer(Analyzer):
 
             target_names = None
 
-        result["utility_columns"] = [date_column, id_column, target_column, prediction_column]
+        result["utility_columns"] = {'date':date_column, 'id':id_column, 'target':target_column, 'prediction':prediction_column}
         result["cat_feature_names"] = cat_feature_names
         result["num_feature_names"] = num_feature_names
-
-        #get target
-        result['target_column'] = target_column
 
         result['metrics'] = {}
         if target_column is not None and prediction_column is not None:

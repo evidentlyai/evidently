@@ -8,7 +8,7 @@ from evidently.profile_parts.base_profile_part import ProfilePart
 
 class DataDriftProfilePart(ProfilePart):
     def part_id(self) -> str:
-        return "data_drift_profile"
+        return "data_drift"
 
     def __init__(self):
         super().__init__()

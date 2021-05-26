@@ -5,3 +5,4 @@ from .data_drift_profile_part import DataDriftProfilePart
 from .cat_target_drift_profile_part import CatTargetDriftProfilePart
 from .num_target_drift_profile_part import NumTargetDriftProfilePart
 from .classification_performance_profile_part import ClassificationPerformanceProfilePart
+from .prob_classification_performance_profile_part import ProbClassificationPerformanceProfilePart
