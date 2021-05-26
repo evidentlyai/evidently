@@ -44,20 +44,17 @@ class DataDriftAnalyzer(Analyzer):
         result["num_feature_names"] = num_feature_names
 
         #calculate result
-        #params_data = []
-        drifted_fetures_count = 0
-        result["num_features"] = dict()
+        result['metrics'] = {}
         for feature_name in num_feature_names:
-            result["num_features"][feature_name] = dict(
-                prod_small_hist=np.histogram(production_data[feature_name][np.isfinite(production_data[feature_name])],
-                                             bins=10, density=True),
-                ref_small_hist=np.histogram(reference_data[feature_name][np.isfinite(reference_data[feature_name])],
-                                            bins=10, density=True),
+            result['metrics'][feature_name] = dict(
+                prod_small_hist=[t.tolist() for t in np.histogram(production_data[feature_name][np.isfinite(production_data[feature_name])],
+                                             bins=10, density=True)],
+                ref_small_hist=[t.tolist() for t in np.histogram(reference_data[feature_name][np.isfinite(reference_data[feature_name])],
+                                            bins=10, density=True)],
                 feature_type='num',
                 p_value=ks_2samp(reference_data[feature_name], production_data[feature_name])[1]
             )
 
-        result["cat_features"] = dict()
         for feature_name in cat_feature_names:
             ref_feature_vc = reference_data[feature_name][np.isfinite(reference_data[feature_name])].value_counts()
             prod_feature_vc = production_data[feature_name][np.isfinite(production_data[feature_name])].value_counts()
@@ -79,11 +76,11 @@ class DataDriftAnalyzer(Analyzer):
             # CHI2 to be implemented for cases with different categories
             p_value = chisquare(f_exp, f_obs)[1]
 
-            result["cat_features"][feature_name] = dict(
-                prod_small_hist=np.histogram(production_data[feature_name][np.isfinite(production_data[feature_name])],
-                                             bins=10, density=True),
-                ref_small_hist=np.histogram(reference_data[feature_name][np.isfinite(reference_data[feature_name])],
-                                            bins=10, density=True),
+            result['metrics'][feature_name] = dict(
+                prod_small_hist=[t.tolist() for t in np.histogram(production_data[feature_name][np.isfinite(production_data[feature_name])],
+                                             bins=10, density=True)],
+                ref_small_hist=[t.tolist() for t in np.histogram(reference_data[feature_name][np.isfinite(reference_data[feature_name])],
+                                            bins=10, density=True)],
                 feature_type='cat',
                 p_value=p_value,
             )

@@ -43,6 +43,7 @@ class CatTargetDriftAnalyzer(Analyzer):
         result["cat_feature_names"] = cat_feature_names
         result["num_feature_names"] = num_feature_names
 
+        result['metrics'] = {}
         #target drift
         if target_column is not None:
             reference_data.replace([np.inf, -np.inf], np.nan, inplace=True)
@@ -69,7 +70,9 @@ class CatTargetDriftAnalyzer(Analyzer):
             f_obs = [value[1] for value in sorted(prod_feature_dict.items())]
 
             target_p_value = chisquare(f_exp, f_obs)[1]
-            result["target_drift"] = target_p_value
+            result['metrics']["target_name"] = target_column
+            result['metrics']["target_type"] = 'cat'
+            result['metrics']["target_drift"] = target_p_value
 
         #prediction drift
         if prediction_column is not None:
@@ -98,6 +101,8 @@ class CatTargetDriftAnalyzer(Analyzer):
             f_obs = [value[1] for value in sorted(prod_feature_dict.items())]
 
             pred_p_value = chisquare(f_exp, f_obs)[1]
-            result["prediction_drift"] = pred_p_value
+            result['metrics']["prediction_name"] = prediction_column
+            result['metrics']["prediction_type"] = 'cat'
+            result['metrics']["prediction_drift"] = pred_p_value
 
         return result

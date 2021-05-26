@@ -44,11 +44,11 @@ class DataDriftTableWidget(Widget):
         date_column = results['utility_columns']['date']
 
         for feature_name in num_feature_names:
-            prod_small_hist = results["num_features"][feature_name]["prod_small_hist"]
-            ref_small_hist = results["num_features"][feature_name]["ref_small_hist"]
-            feature_type = results["num_features"][feature_name]["feature_type"]
+            prod_small_hist = results['metrics'][feature_name]["prod_small_hist"]
+            ref_small_hist = results['metrics'][feature_name]["ref_small_hist"]
+            feature_type = results['metrics'][feature_name]["feature_type"]
 
-            p_value = results["num_features"][feature_name]["p_value"]
+            p_value = results['metrics'][feature_name]["p_value"]
 
             distr_sim_test = "Detected" if p_value < 0.05 else "Not Detected"
             drifted_fetures_count += 1 if p_value < 0.05 else 0
@@ -85,12 +85,12 @@ class DataDriftTableWidget(Widget):
             )
 
         for feature_name in cat_feature_names:
-            prod_small_hist = results["cat_features"][feature_name]["prod_small_hist"]
-            ref_small_hist = results["cat_features"][feature_name]["ref_small_hist"]
+            prod_small_hist = results['metrics'][feature_name]["prod_small_hist"]
+            ref_small_hist = results['metrics'][feature_name]["ref_small_hist"]
 
-            feature_type = results["cat_features"][feature_name]["feature_type"]
+            feature_type = results['metrics'][feature_name]["feature_type"]
 
-            p_value = results["cat_features"][feature_name]["p_value"]
+            p_value = results['metrics'][feature_name]["p_value"]
 
             distr_sim_test = "Detected" if p_value < 0.05 else "Not Detected"
             drifted_fetures_count += 1 if p_value < 0.05 else 0

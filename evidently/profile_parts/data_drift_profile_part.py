@@ -18,21 +18,17 @@ class DataDriftProfilePart(ProfilePart):
         return self.analyzers_types
 
     def calculate(self, analyzers_results):
-        num_keys = analyzers_results[DataDriftAnalyzer]['num_features'].keys()
-        num_pvalues = analyzers_results[DataDriftAnalyzer]['num_features']
-
-        cat_keys = analyzers_results[DataDriftAnalyzer]['cat_features'].keys()
-        cat_pvalues = analyzers_results[DataDriftAnalyzer]['cat_features']
+        result = analyzers_results[DataDriftAnalyzer]
 
         profile = {}
         profile['name'] = self.part_id()
         profile['datetime'] = str(datetime.now())
-        profile['data'] = {}
+        profile['data'] = result
 
-        for key in num_keys:
-            profile['data'][key] = {'feature_type' : num_pvalues[key]['feature_type'], 'p_value' : num_pvalues[key]['p_value']}
+        #for key in num_keys:
+        #    profile['data'][key] = {'feature_type' : num_pvalues[key]['feature_type'], 'p_value' : num_pvalues[key]['p_value']}
 
-        for key in cat_keys:
-            profile['data'][key] = {'feature_type' : cat_pvalues[key]['feature_type'], 'p_value' : cat_pvalues[key]['p_value']}
+        #for key in cat_keys:
+        #    profile['data'][key] = {'feature_type' : cat_pvalues[key]['feature_type'], 'p_value' : cat_pvalues[key]['p_value']}
 
         return profile
