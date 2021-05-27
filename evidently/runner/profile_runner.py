@@ -36,6 +36,9 @@ class ProfileRunner(Runner):
 
         profile = Profile(parts=parts)
         profile.calculate(reference_data, production_data, self.options.column_mapping)
+        output_path = self.options.output_path \
+            if self.options.output_path.endswith(".json") \
+            else self.options.output_path + ".json"
 
-        with open(self.options.output_path, 'w') as f:
-            json.dump(profile.object(), f, indent=2)
+        with open(output_path, 'w') as f:
+            json.dump(profile.object(), f, indent=2 if self.options.pretty_print else None)

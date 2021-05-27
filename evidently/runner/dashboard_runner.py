@@ -10,7 +10,6 @@ from evidently.tabs import DataDriftTab, CatTargetDriftTab, ClassificationPerfor
 @dataclass
 class DashboardRunnerOptions(RunnerOptions):
     dashboard_tabs: List[str]
-    output_type: str
 
 
 tabs_mapping = dict(
@@ -41,10 +40,4 @@ class DashboardRunner(Runner):
 
         dashboard = Dashboard(tabs=tabs)
         dashboard.calculate(reference_data, production_data, self.options.column_mapping)
-
-        if self.options.output_type == 'json':
-            dashboard._save_to_json(self.options.output_path + ".json")
-        elif self.options.output_type == 'html':
-            dashboard.save(self.options.output_path + ".html")
-        else:
-            raise ValueError(f"Unsupported output type")
+        dashboard.save(self.options.output_path + ".html")
