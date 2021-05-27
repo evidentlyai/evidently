@@ -24,12 +24,15 @@ class ClassRefClassSupportWidget(Widget):
         super().__init__()
         self.title = title
 
+    def analyzers(self):
+        return []
+
     def get_info(self) -> BaseWidgetInfo:
         if self.wi:
             return self.wi
         raise ValueError("No prediction or target data provided")
 
-    def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping): 
+    def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping, analyzes_results):
         if column_mapping:
             date_column = column_mapping.get('datetime')
             id_column = column_mapping.get('id')

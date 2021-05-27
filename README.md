@@ -99,14 +99,16 @@ iris_frame = pd.DataFrame(iris.data, columns = iris.feature_names)
 
 To generate the **Data Drift** report, run:
 ```python
-iris_data_drift_report = Dashboard(iris_frame[:100], iris_frame[100:], tabs = [DriftTab])
+iris_data_drift_report = Dashboard(tabs=[DataDriftTab])
+iris_data_drift_report.calculate(iris_frame[:100], iris_frame[100:], column_mapping = None)
 iris_data_drift_report.save("reports/my_report.html")
 ```
 
 To generate the **Data Drift** and the **Categorical Target Drift** reports, run:
 ```python
-iris_data_drift_report = Dashboard(iris_frame[:100], iris_frame[100:], tabs = [DriftTab, CatTargetDriftTab])
-iris_data_drift_report.save("reports/my_report_with_2_tabs.html")
+iris_data_and_target_drift_report = Dashboard(tabs=[DataDriftTab, CatTargetDriftTab])
+iris_data_and_target_drift_report.calculate(iris_frame[:100], iris_frame[100:], column_mapping = None)
+iris_data_and_target_drift_report.save("reports/my_report_with_2_tabs.html")
 ```
 
 If you get a security alert, press "trust html".
@@ -114,33 +116,37 @@ Html report does not open automatically. To explore it, you should open it from 
 
 To generate the **Regression Model Performance** report, run:
 ```python
-regression_model_performance = Dashboard(reference_data, current_data,  column_mapping = column_mapping, tabs=[RegressionPerfomanceTab]) 
+regression_model_performance = Dashboard(tabs=[RegressionPerfomanceTab]) 
+regression_model_performance.calculate(reference_data, current_data, column_mapping = column_mapping) 
 ```
 
 You can also generate a **Regression Model Performance** for a single `DataFrame`. In this case, run:
 ```python
-regression_single_model_performance = Dashboard(reference_data, None, column_mapping=column_mapping, tabs=[RegressionPerformanceTab])
+regression_single_model_performance = Dashboard(tabs=[RegressionPerformanceTab])
+regression_single_model_performance.calculate(reference_data, None, column_mapping=column_mapping)
 ```
 
 To generate the **Classification Model Performance** report, run:
 ```python
-classification_performance_report = Dashboard(reference_data, current_data, column_mapping = column_mapping,
-                   	tabs=[ClassificationPerformanceTab])
+classification_performance_report = Dashboard(tabs=[ClassificationPerformanceTab])
+classification_performance_report.calculate(reference_data, current_data, column_mapping = column_mapping)
 ```
  
 For **Probabilistic Classification Model Performance** report, run:
 ```python
-classification_performance_report = Dashboard(reference_data, current_data, column_mapping = column_mapping,
-                   	tabs=[ProbClassificationPerformanceTab])
+classification_performance_report = Dashboard(tabs=[ProbClassificationPerformanceTab])
+classification_performance_report.calculate(reference_data, current_data, column_mapping = column_mapping)
 ```
  
 You can also generate either of the **Classification** reports for a single `DataFrame`. In this case, run:
 ```python
-classification_single_model_performance = Dashboard(reference_data, None, column_mapping=column_mapping, tabs=[ClassificationPerformanceTab])
+classification_single_model_performance = Dashboard(tabs=[ClassificationPerformanceTab])
+classification_single_model_performance.calculate(reference_data, None, column_mapping=column_mapping)
 ```
 or
 ```python
-prob_classification_single_model_performance = Dashboard(reference_data, None, column_mapping=column_mapping, tabs=[ProbClassificationPerformanceTab])
+prob_classification_single_model_performance = Dashboard(tabs=[ProbClassificationPerformanceTab])
+prob_classification_single_model_performance.calculate(reference_data, None, column_mapping=column_mapping)
 ```
 
 ### Terminal
@@ -149,7 +155,7 @@ You can run a report generation directly from the bash shell. To do this, prepar
 To generate reportm run the following command in bash:
 
 ```bash
-python -m evidently analyze --config config.json 
+python -m evidently calculate --config config.json 
 --reference reference.csv --current current.csv --output output_folder
 ```
 Here:
@@ -159,7 +165,7 @@ Here:
 - `config` is the path to the configuration file.
 
 Currently, you can choose the following Tabs:
-- `drift` to estimate the data drift,
+- `data_drift` to estimate the data drift,
 - `num_target_drift` to estimate target drift for numerical target,
 - `cat_target_drift` to estimate target drift for categorical target,
 - `classification_performance` to explore the performance of a classification model,
@@ -191,11 +197,11 @@ Here is an example of a more complicated configuration, where we have comma sepa
     "date_column": "datetime"
   },
   "column_mapping" : {
-  	"datetime":"datetime",
-  	"target":"target",
-  	"numerical_features": ["mean radius", "mean texture", "mean perimeter", 
-  		"mean area", "mean smoothness", "mean compactness", "mean concavity", 
-  		"mean concave points", "mean symmetry"]},
+    "datetime":"datetime",
+    "target":"target",
+    "numerical_features": ["mean radius", "mean texture", "mean perimeter", 
+      "mean area", "mean smoothness", "mean compactness", "mean concavity", 
+      "mean concave points", "mean symmetry"]},
   "dashboard_tabs": ["cat_target_drift"]
 }
 ```

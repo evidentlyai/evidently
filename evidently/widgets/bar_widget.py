@@ -10,6 +10,7 @@ from evidently.widgets.widget import Widget
 
 
 class BarWidget(Widget):
+
     wi: Optional[BaseWidgetInfo]
 
     def __init__(self, title: str):
@@ -17,7 +18,11 @@ class BarWidget(Widget):
         self.wi = None
         self.title = title
 
-    def calculate(self, reference_data: pandas.DataFrame, production_data: pandas.DataFrame, _: Dict):
+    def analyzers(self):
+        return []
+
+    def calculate(self, reference_data: pandas.DataFrame, production_data: pandas.DataFrame, column_mapping: Dict,
+                  analyzes_results):
         self.wi = BaseWidgetInfo(
             type="big_graph",
             title=self.title,
