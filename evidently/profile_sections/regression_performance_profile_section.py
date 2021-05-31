@@ -3,10 +3,10 @@ from datetime import datetime
 import json
 
 from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceAnalyzer
-from evidently.profile_parts.base_profile_part import ProfilePart
+from evidently.profile_sections.base_profile_section import ProfileSection
 
 
-class RegressionPerformanceProfilePart(ProfilePart):
+class RegressionPerformanceProfileSection(ProfileSection):
     def part_id(self) -> str:
         return 'regression_performance'
 

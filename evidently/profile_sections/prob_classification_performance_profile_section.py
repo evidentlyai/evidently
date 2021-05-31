@@ -3,10 +3,10 @@ from datetime import datetime
 import json
 
 from evidently.analyzers.prob_classification_performance_analyzer import ProbClassificationPerformanceAnalyzer
-from evidently.profile_parts.base_profile_part import ProfilePart
+from evidently.profile_sections.base_profile_section import ProfileSection
 
 
-class ProbClassificationPerformanceProfilePart(ProfilePart):
+class ProbClassificationPerformanceProfileSection(ProfileSection):
     def part_id(self) -> str:
         return 'probabilistic_classification_performance'
 

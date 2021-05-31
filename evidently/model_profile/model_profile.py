@@ -4,13 +4,13 @@ from datetime import datetime
 from typing import List, Type
 
 from evidently.pipeline.pipeline import Pipeline
-from evidently.profile_parts.base_profile_part import ProfilePart
+from evidently.profile_sections.base_profile_section import ProfileSection
 
 
 class Profile(Pipeline):
-    def __init__(self, parts: List[Type[ProfilePart]]):
+    def __init__(self, sections: List[Type[ProfileSection]]):
         super().__init__()
-        self.parts = [part() for part in parts]
+        self.parts = [part() for part in sections]
 
     def calculate(self,
                   reference_data: pandas.DataFrame,

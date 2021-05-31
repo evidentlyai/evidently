@@ -3,10 +3,10 @@ from datetime import datetime
 import json
 
 from evidently.analyzers.cat_target_drift_analyzer import CatTargetDriftAnalyzer
-from evidently.profile_parts.base_profile_part import ProfilePart
+from evidently.profile_sections.base_profile_section import ProfileSection
 
 
-class CatTargetDriftProfilePart(ProfilePart):
+class CatTargetDriftProfileSection(ProfileSection):
     def part_id(self) -> str:
         return 'cat_target_drift'
 

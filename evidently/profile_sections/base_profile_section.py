@@ -4,7 +4,7 @@ from typing import List
 from evidently.analyzers.base_analyzer import Analyzer
 
 
-class ProfilePart:
+class ProfileSection:
     @abc.abstractmethod
     def analyzers(self) -> List[Analyzer]:
         raise NotImplementedError()

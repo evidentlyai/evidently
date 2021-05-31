@@ -63,7 +63,7 @@ def calculate_profile(config: str, reference: str, current: str, output_path: st
         opts_data = json.load(f_config)
         opts = ProfileOptions(data_format=DataFormatOptions(**opts_data["data_format"]),
                               column_mapping=opts_data["column_mapping"],
-                              profile_parts=opts_data["profile_parts"],
+                              profile_parts=opts_data["profile_sections"],
                               pretty_print=opts_data["pretty_print"])
 
     runner = ProfileRunner(ProfileRunnerOptions(
@@ -106,7 +106,7 @@ profile_parser = calc_subparsers.add_parser("profile")
 _add_default_parameters(profile_parser, "profile")
 profile_parser.set_defaults(handler=calculate_profile)
 dashboard_parser = calc_subparsers.add_parser("dashboard")
-_add_default_parameters(dashboard_parser, "report")
+_add_default_parameters(dashboard_parser, "dashboard")
 dashboard_parser.set_defaults(handler=calculate_dashboard)
 
 parsed = parser.parse_args(sys.argv[1:])
