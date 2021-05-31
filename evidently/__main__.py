@@ -63,7 +63,8 @@ def calculate_profile(config: str, reference: str, current: str, output_path: st
         opts_data = json.load(f_config)
         opts = ProfileOptions(data_format=DataFormatOptions(**opts_data["data_format"]),
                               column_mapping=opts_data["column_mapping"],
-                              profile_parts=opts_data["profile_parts"])
+                              profile_parts=opts_data["profile_parts"],
+                              pretty_print=opts_data["pretty_print"])
 
     runner = ProfileRunner(ProfileRunnerOptions(
         reference_data_path=reference,
@@ -87,11 +88,11 @@ def help_handler(**_kv):
     exit(1)
 
 
-def _add_default_parameters(configurable_parser):
+def _add_default_parameters(configurable_parser, default_output_name: str):
     configurable_parser.add_argument("--reference", dest="reference", required=True, help="Path to reference data")
     configurable_parser.add_argument("--current", dest="current", help="Path to current data")
     configurable_parser.add_argument("--output_path", dest="output_path", required=True, help="Path to store report")
-    configurable_parser.add_argument("--report_name", dest="report_name", default="report", help="Report name")
+    configurable_parser.add_argument("--report_name", dest="report_name", default=default_output_name, help="Report name")
     configurable_parser.add_argument("--config", dest="config", required=True, help="Path to configuration")
 
 
@@ -102,10 +103,10 @@ parser.set_defaults(handler=help_handler)
 calculate_parser = parsers.add_parser("calculate")
 calc_subparsers = calculate_parser.add_subparsers()
 profile_parser = calc_subparsers.add_parser("profile")
-_add_default_parameters(profile_parser)
+_add_default_parameters(profile_parser, "profile")
 profile_parser.set_defaults(handler=calculate_profile)
 dashboard_parser = calc_subparsers.add_parser("dashboard")
-_add_default_parameters(dashboard_parser)
+_add_default_parameters(dashboard_parser, "report")
 dashboard_parser.set_defaults(handler=calculate_dashboard)
 
 parsed = parser.parse_args(sys.argv[1:])

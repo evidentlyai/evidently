@@ -2,7 +2,7 @@ import json
 from dataclasses import dataclass
 from typing import List
 
-from evidently.profile import Profile
+from evidently.model_profile import Profile
 from evidently.profile_parts.data_drift_profile_part import DataDriftProfilePart
 from evidently.runner.runner import RunnerOptions, Runner
 
