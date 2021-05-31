@@ -228,6 +228,7 @@ Here:
 - `current` is the path to the current data, 
 - `output` is the path to the output folder,
 - `config` is the path to the configuration file.
+- `pretty_print` to print json profile with indents (for profile only)
 
 Currently, you can choose the following Tabs or Sections:
 - `data_drift` to estimate the data drift,
