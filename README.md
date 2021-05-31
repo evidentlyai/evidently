@@ -2,7 +2,7 @@
 
 ![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/evidently_4_reports_preview_small.png)
  
-<p align="center"><b>Interactive reports to analyze, monitor and debug machine learning models.</b></p>
+<p align="center"><b>Interactive reports and json profiles to analyze, monitor and debug machine learning models.</b></p>
 
 <p align="center">
   <a href="https://evidentlyai.gitbook.io/docs/">Docs</a>
@@ -18,7 +18,7 @@
 
 
 ## What is it?
-Evidently helps analyze machine learning models during validation or production monitoring. The tool generates interactive reports from pandas `DataFrame` or `csv` files.
+Evidently helps analyze machine learning models during validation or production monitoring. The tool generates interactive reports and json profiles from pandas `DataFrame` or `csv` files.
 Currently 6 reports are available.  
 
 ### 1. Data Drift
@@ -86,6 +86,8 @@ To start, prepare your data as two pandas `DataFrames`. The first should include
 * For **Target Drift** reports, include the column with Target and/or Prediction.
 * For **Model Performance** reports, include the columns with Target and Prediction.
 
+**Dashboards**
+
 ```python
 import pandas as pd
 from sklearn import datasets
@@ -149,14 +151,77 @@ prob_classification_single_model_performance = Dashboard(tabs=[ProbClassificatio
 prob_classification_single_model_performance.calculate(reference_data, None, column_mapping=column_mapping)
 ```
 
-### Terminal
-You can run a report generation directly from the bash shell. To do this, prepare your data as two `csv` files. In case you run one of the performance reports, you can have only one file. The first one should include your reference data, the second - current production data. The structure of both datasets should be identical. 
+**Profiles**
 
-To generate reportm run the following command in bash:
+```python
+import pandas as pd
+from sklearn import datasets
+
+from evidently.model_profile import Profile
+from evidently.profile_sections import DataDriftProfileSection
+
+iris = datasets.load_iris()
+iris_frame = pd.DataFrame(iris.data, columns = iris.feature_names)
+```
+
+To generate the **Data Drift** profile, run:
+```python
+iris_data_drift_profile = Profile(sections=[DataDriftProfileSection])
+iris_data_drift_profile.calculate(iris_frame, iris_frame, column_mapping = None)
+iris_data_drift_profile.json() 
+```
+
+To generate the **Data Drift** and the **Categorical Target Drift** profile, run:
+```python
+iris_target_and_data_drift_profile = Profile(sections=[DataDriftProfileSection, CatTargetDriftProfileSection])
+iris_target_and_data_drift_profile.calculate(iris_frame[:75], iris_frame[75:], column_mapping = None) 
+iris_target_and_data_drift_profile.json() 
+```
+
+You can also generate a **Regression Model Performance** for a single `DataFrame`. In this case, run:
+```python
+regression_single_model_performance = Profile(sections=[RegressionPerformanceProfileSection])
+regression_single_model_performance.calculate(reference_data, None, column_mapping=column_mapping)
+```
+
+To generate the **Classification Model Performance** profile, run:
+```python
+classification_performance_profile = Profile(sections=[ClassificationPerformanceProfileSection])
+classification_performance_profile.calculate(reference_data, current_data, column_mapping = column_mapping)
+```
+
+For **Probabilistic Classification Model Performance** profile, run:
+```python
+classification_performance_report = Profile(sections=[ProbClassificationPerformanceProfileSection])
+classification_performance_report.calculate(reference_data, current_data, column_mapping = column_mapping)
+```
+
+You can also generate either of the **Classification** profiles for a single `DataFrame`. In this case, run:
+```python
+classification_single_model_performance = Profile(sections=[ClassificationPerformanceProfileSection])
+classification_single_model_performance.calculate(reference_data, None, column_mapping=column_mapping)
+```
+or
+```python
+prob_classification_single_model_performance = Profile(sections=[ProbClassificationPerformanceProfileSection])
+prob_classification_single_model_performance.calculate(reference_data, None, column_mapping=column_mapping)
+```
+
+### Terminal
+You can run a report or profile generation directly from the bash shell. To do this, prepare your data as two `csv` files. In case you run one of the performance reports, you can have only one file. The first one should include your reference data, the second - current production data. The structure of both datasets should be identical. 
+
+To generate report run the following command in bash:
 
 ```bash
-python -m evidently calculate --config config.json 
---reference reference.csv --current current.csv --output output_folder
+python -m evidently calculate dashboard --config config.json 
+--reference reference.csv --current current.csv --output output_folder --report_name output_file_name
+```
+
+To generate profile run the following command in bash:
+```bash
+python -m evidently calculate profile --config config.json 
+--reference reference.csv --current current.csv --output output_folder --report_name output_file_name
+
 ```
 Here:
 - `reference` is the path to the reference data, 
@@ -164,7 +229,7 @@ Here:
 - `output` is the path to the output folder,
 - `config` is the path to the configuration file.
 
-Currently, you can choose the following Tabs:
+Currently, you can choose the following Tabs or Sections:
 - `data_drift` to estimate the data drift,
 - `num_target_drift` to estimate target drift for numerical target,
 - `cat_target_drift` to estimate target drift for categorical target,
@@ -172,10 +237,11 @@ Currently, you can choose the following Tabs:
 - `prob_classification_performance` to explore the performance of a probabilistic classification model,
 - `regression_performance` to explore the performance of a regression model.
 
-To configure the report you need to create the `config.json` file. This file configures the way of reading your input data and the type of the report. 
+To configure a report or a profile you need to create the `config.json` file. This file configures the way of reading your input data and the type of the report. 
 
-Here is an example of a simple configuration, where we have comma separated `csv` files with headers and there is no `date` column in the data.
+Here is an example of a simple configuration for a report, where we have comma separated `csv` files with headers and there is no `date` column in the data.
 
+Dashboard:
 ```bash
 {
   "data_format": {
@@ -183,12 +249,28 @@ Here is an example of a simple configuration, where we have comma separated `csv
     "header": true,
     "date_column": null
   },
+  "column_mapping" : {},
   "dashboard_tabs": ["cat_target_drift"]
+}
+```
+
+Profile:
+```bash
+{
+  "data_format": {
+    "separator": ",",
+    "header": true,
+    "date_column": null
+  },
+  "column_mapping" : {},
+  "profile_parts": ["data_drift"],
+  "pretty_print": true
 }
 ```
 
 Here is an example of a more complicated configuration, where we have comma separated `csv` files with headers and `datetime` column. We also specified the `column_mapping` dictionary to add information about `datetime`, `target` and `numerical_features`. 
 
+Dashboard:
 ```bash
 {
   "data_format": {
@@ -203,6 +285,24 @@ Here is an example of a more complicated configuration, where we have comma sepa
       "mean area", "mean smoothness", "mean compactness", "mean concavity", 
       "mean concave points", "mean symmetry"]},
   "dashboard_tabs": ["cat_target_drift"]
+}
+```
+
+Profile:
+```bash
+{
+  "data_format": {
+    "separator": ",",
+    "header": true,
+    "date_column": null
+  },
+  "column_mapping" : {
+    "target":"target",
+    "numerical_features": ["mean radius", "mean texture", "mean perimeter", 
+      "mean area", "mean smoothness", "mean compactness", "mean concavity", 
+      "mean concave points", "mean symmetry"]},
+  "profile_sections": ["data_drift", "cat_target_drift"],
+  "pretty_print": true
 }
 ```
 ## Documentation
