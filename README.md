@@ -2,7 +2,7 @@
 
 ![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/evidently_4_reports_preview_small.png)
  
-<p align="center"><b>Interactive reports and json profiles to analyze, monitor and debug machine learning models.</b></p>
+<p align="center"><b>Interactive reports and JSON profiles to analyze, monitor and debug machine learning models.</b></p>
 
 <p align="center">
   <a href="https://evidentlyai.gitbook.io/docs/">Docs</a>
@@ -18,8 +18,7 @@
 
 
 ## What is it?
-Evidently helps analyze machine learning models during validation or production monitoring. The tool generates interactive reports and json profiles from pandas `DataFrame` or `csv` files.
-Currently 6 reports are available.  
+Evidently helps analyze machine learning models during validation or production monitoring. The tool generates interactive visual reports and JSON profiles from pandas `DataFrame` or `csv` files. Currently 6 reports are available.  
 
 ### 1. Data Drift
 Detects changes in feature distribution. 
@@ -52,7 +51,7 @@ Evidently is available as a PyPI package. To install it using pip package manage
 $ pip install evidently
 ```
 
-The tool allows building interactive reports both inside a Jupyter notebook and as a separate .html file. If you only want to generate interactive reports as .html files, the installation is now complete.
+The tool allows building interactive reports both inside a Jupyter notebook and as a separate HTML file. If you only want to generate interactive reports as HTML files or export as JSON profiles, the installation is now complete.
 
 To enable building interactive reports inside a Jupyter notebook, we use jupyter nbextension. If you want to create reports inside a Jupyter notebook, then after installing `evidently` you should run the two following commands in the terminal from evidently directory.
 
@@ -75,7 +74,7 @@ Evidently is available as a PyPI package. To install it using pip package manage
 ```sh
 $ pip install evidently
 ```
-The tool allows building interactive reports both inside a Jupyter notebook and as a separate .html file. Unfortunately, building reports inside a Jupyter notebook is not yet possible for Windows. The reason is Windows requires administrator privileges to create symlink. In later versions we will address this issue.
+The tool allows building interactive reports both inside a Jupyter notebook and as a separate HTML file. Unfortunately, building reports inside a Jupyter notebook is not yet possible for Windows. The reason is Windows requires administrator privileges to create symlink. In later versions we will address this issue.
 
 ## Getting started
 
@@ -86,7 +85,13 @@ To start, prepare your data as two pandas `DataFrames`. The first should include
 * For **Target Drift** reports, include the column with Target and/or Prediction.
 * For **Model Performance** reports, include the columns with Target and Prediction.
 
-**Dashboards**
+Calculation results can be available in one of the two formats:
+* Option 1: an interactive **Dashboard** displayed inside the Jupyter notebook or exportable as a HTML report.
+* Option 2: a JSON **Profile** that includes the values of metrics and the results of statistical tests.  
+
+#### Option 1: Dashboard
+
+After installing the tool, import Evidently **dashboard** and required tabs:
 
 ```python
 import pandas as pd
@@ -114,7 +119,7 @@ iris_data_and_target_drift_report.save("reports/my_report_with_2_tabs.html")
 ```
 
 If you get a security alert, press "trust html".
-Html report does not open automatically. To explore it, you should open it from the destination folder.
+HTML report does not open automatically. To explore it, you should open it from the destination folder.
 
 To generate the **Regression Model Performance** report, run:
 ```python
@@ -151,7 +156,9 @@ prob_classification_single_model_performance = Dashboard(tabs=[ProbClassificatio
 prob_classification_single_model_performance.calculate(reference_data, None, column_mapping=column_mapping)
 ```
 
-**Profiles**
+#### Option 2: Profile
+
+After installing the tool, import Evidently **profile** and required sections:
 
 ```python
 import pandas as pd
@@ -208,16 +215,16 @@ prob_classification_single_model_performance.calculate(reference_data, None, col
 ```
 
 ### Terminal
-You can run a report or profile generation directly from the bash shell. To do this, prepare your data as two `csv` files. In case you run one of the performance reports, you can have only one file. The first one should include your reference data, the second - current production data. The structure of both datasets should be identical. 
+You can generate **HTML reports** or **JSON profiles** directly from the bash shell. To do this, prepare your data as two `csv` files. In case you run one of the performance reports, you can have only one file. The first one should include your reference data, the second - current production data. The structure of both datasets should be identical. 
 
-To generate report run the following command in bash:
+To generate a HTML report, run the following command in bash:
 
 ```bash
 python -m evidently calculate dashboard --config config.json 
 --reference reference.csv --current current.csv --output output_folder --report_name output_file_name
 ```
 
-To generate profile run the following command in bash:
+To generate a JSON profile, run the following command in bash:
 ```bash
 python -m evidently calculate profile --config config.json 
 --reference reference.csv --current current.csv --output output_folder --report_name output_file_name
@@ -228,7 +235,7 @@ Here:
 - `current` is the path to the current data, 
 - `output` is the path to the output folder,
 - `config` is the path to the configuration file.
-- `pretty_print` to print json profile with indents (for profile only)
+- `pretty_print` to print the JSON profile with indents (for profile only)
 
 Currently, you can choose the following Tabs or Sections:
 - `data_drift` to estimate the data drift,
@@ -242,7 +249,7 @@ To configure a report or a profile you need to create the `config.json` file. Th
 
 Here is an example of a simple configuration for a report, where we have comma separated `csv` files with headers and there is no `date` column in the data.
 
-Dashboard:
+**Dashboard**:
 ```bash
 {
   "data_format": {
@@ -255,7 +262,7 @@ Dashboard:
 }
 ```
 
-Profile:
+**Profile**:
 ```bash
 {
   "data_format": {
@@ -271,7 +278,7 @@ Profile:
 
 Here is an example of a more complicated configuration, where we have comma separated `csv` files with headers and `datetime` column. We also specified the `column_mapping` dictionary to add information about `datetime`, `target` and `numerical_features`. 
 
-Dashboard:
+**Dashboard**:
 ```bash
 {
   "data_format": {
@@ -289,7 +296,7 @@ Dashboard:
 }
 ```
 
-Profile:
+**Profile**:
 ```bash
 {
   "data_format": {
