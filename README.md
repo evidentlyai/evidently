@@ -271,7 +271,7 @@ Here is an example of a simple configuration for a report, where we have comma s
     "date_column": null
   },
   "column_mapping" : {},
-  "profile_parts": ["data_drift"],
+  "profile_sections": ["data_drift"],
   "pretty_print": true
 }
 ```
