@@ -65,14 +65,14 @@ class RegProdColoredPredActualWidget(Widget):
                 current_data.replace([np.inf, -np.inf], np.nan, inplace=True)
                 current_data.dropna(axis=0, how='any', inplace=True)
 
-                prod_error = current_data[prediction_column] - current_data[target_column]
+                current_error = current_data[prediction_column] - current_data[target_column]
 
-                prod_quntile_5 = np.quantile(prod_error, .05)
-                prod_quntile_95 = np.quantile(prod_error, .95)
+                current_quntile_5 = np.quantile(current_error, .05)
+                current_quntile_95 = np.quantile(current_error, .95)
 
                 current_data['dataset'] = 'Current'
-                current_data['Error bias'] = list(map(lambda x : 'Underestimation' if x <= prod_quntile_5 else 'Majority'
-                                              if x < prod_quntile_95 else 'Overestimation', prod_error))
+                current_data['Error bias'] = list(map(lambda x : 'Underestimation' if x <= current_quntile_5 else 'Majority'
+                                              if x < current_quntile_95 else 'Overestimation', current_error))
                 
                 #plot output correlations
                 pred_actual = go.Figure()
@@ -89,8 +89,8 @@ class RegProdColoredPredActualWidget(Widget):
                 ))
 
                 pred_actual.add_trace(go.Scatter(
-                x = current_data[production_data['Error bias'] == 'Overestimation'][target_column],
-                y = production_data[production_data['Error bias'] == 'Overestimation'][prediction_column],
+                x = current_data[current_data['Error bias'] == 'Overestimation'][target_column],
+                y = current_data[current_data['Error bias'] == 'Overestimation'][prediction_column],
                 mode = 'markers',
                 name = 'Overestimation',
                 marker = dict(
@@ -100,8 +100,8 @@ class RegProdColoredPredActualWidget(Widget):
                 ))
 
                 pred_actual.add_trace(go.Scatter(
-                x = production_data[production_data['Error bias'] == 'Majority'][target_column],
-                y = production_data[production_data['Error bias'] == 'Majority'][prediction_column],
+                x = current_data[current_data['Error bias'] == 'Majority'][target_column],
+                y = current_data[current_data['Error bias'] == 'Majority'][prediction_column],
                 mode = 'markers',
                 name = 'Majority',
                 marker = dict(

@@ -22,7 +22,7 @@ class CounterWidget(Widget):
 
     def calculate(self,
                   reference_data: pandas.DataFrame,
-                  production_data: pandas.DataFrame,
+                  current_data: pandas.DataFrame,
                   column_mapping: Dict,
                   analyzes_results):
         self.wi = BaseWidgetInfo(

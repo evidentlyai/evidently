@@ -22,12 +22,12 @@ class Tab:
         return list(set([analyzer for widget in self.widgets for analyzer in widget.analyzers()]))
 
     def calculate(self, reference_data: pandas.DataFrame,
-                  production_data: pandas.DataFrame,
+                  current_data: pandas.DataFrame,
                   column_mapping: Dict,
                   analyzers_results: Dict):
         self.widgets = self._get_widgets()
         for widget in self.widgets:
-            widget.calculate(reference_data, production_data, column_mapping, analyzers_results)
+            widget.calculate(reference_data, current_data, column_mapping, analyzers_results)
 
     def info(self) -> List[BaseWidgetInfo]:
         return [w.get_info() for w in self.widgets]

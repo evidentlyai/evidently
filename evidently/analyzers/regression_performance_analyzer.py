@@ -117,8 +117,8 @@ class RegressionPerformanceAnalyzer(Analyzer):
                 'error_std':float(sde), 'abs_error_std':float(sdae), 'abs_perc_error_std':float(sdape)}
 
                 #error normality
-                prod_error = production_data[prediction_column] - production_data[target_column] 
-                qq_lines = probplot(prod_error, dist="norm", plot=None)
+                current_error = current_data[prediction_column] - current_data[target_column] 
+                qq_lines = probplot(current_error, dist="norm", plot=None)
                 theoretical_q_x = np.linspace(qq_lines[0][0][0], qq_lines[0][0][-1], 100)
 
                 qq_dots = [t.tolist() for t in qq_lines[0]]
@@ -128,23 +128,23 @@ class RegressionPerformanceAnalyzer(Analyzer):
                 'order_statistic_medians':[float(x) for x in qq_dots[1]], 'slope':float(qq_line[0]), 'intercept':float(qq_line[1]), 'r':float(qq_line[2])}
 
                 #underperformance metrics
-                prod_quantile_5 = np.quantile(prod_error, .05)
-                prod_quantile_95 = np.quantile(prod_error, .95)
+                current_quantile_5 = np.quantile(current_error, .05)
+                current_quantile_95 = np.quantile(current_error, .95)
 
-                prod_mae = np.mean(prod_error)
-                prod_mae_under = np.mean(prod_error[prod_error <= prod_quantile_5])
-                prod_mae_exp = np.mean(prod_error[(prod_error > prod_quantile_5) & (prod_error < prod_quantile_95)])
-                prod_mae_over = np.mean(prod_error[prod_error >= prod_quantile_95])
+                current_mae = np.mean(current_error)
+                current_mae_under = np.mean(current_error[current_error <= pcurrent_quantile_5])
+                current_mae_exp = np.mean(current_error[(current_error > current_quantile_5) & (current_error < current_quantile_95)])
+                current_mae_over = np.mean(current_error[current_error >= current_quantile_95])
 
-                prod_sd = np.std(prod_error, ddof = 1)
-                prod_sd_under = np.std(prod_error[prod_error <= prod_quantile_5], ddof = 1)
-                prod_sd_exp = np.std(prod_error[(prod_error > prod_quantile_5) & (prod_error < prod_quantile_95)], ddof = 1)
-                prod_sd_over = np.std(prod_error[prod_error >= prod_quantile_95], ddof = 1)
+                current_sd = np.std(current_error, ddof = 1)
+                current_sd_under = np.std(current_error[current_error <= current_quantile_5], ddof = 1)
+                current_sd_exp = np.std(current_error[(current_error > current_quantile_5) & (current_error < current_quantile_95)], ddof = 1)
+                current_sd_over = np.std(current_error[current_error >= current_quantile_95], ddof = 1)
 
                 result['metrics']['current']['underperformance'] = {}
-                result['metrics']['current']['underperformance']['majority'] = {'mean_error':float(prod_mae_exp), 'std_error':float(prod_sd_exp)}
-                result['metrics']['current']['underperformance']['underestimation'] = {'mean_error':float(prod_mae_under), 'std_error':float(prod_sd_under)}
-                result['metrics']['current']['underperformance']['overestimation'] = {'mean_error':float(prod_mae_over), 'std_error':float(prod_sd_over)}
+                result['metrics']['current']['underperformance']['majority'] = {'mean_error':float(current_mae_exp), 'std_error':float(current_sd_exp)}
+                result['metrics']['current']['underperformance']['underestimation'] = {'mean_error':float(current_mae_under), 'std_error':float(current_sd_under)}
+                result['metrics']['current']['underperformance']['overestimation'] = {'mean_error':float(current_mae_over), 'std_error':float(current_sd_over)}
 
                 #error bias table
                 error_bias = {}
@@ -157,15 +157,15 @@ class RegressionPerformanceAnalyzer(Analyzer):
                     ref_over_value = np.mean(reference_data[error >= quantile_95][feature_name])
                     ref_range_value = 0 if ref_over_value == ref_under_value else 100*abs(ref_over_value - ref_under_value)/(np.max(reference_data[feature_name]) - np.min(reference_data[feature_name]))
 
-                    prod_overal_value = np.mean(production_data[feature_name])
-                    prod_under_value = np.mean(production_data[prod_error <= prod_quantile_5][feature_name])
-                    prod_expected_value = np.mean(production_data[(prod_error > prod_quantile_5) & (prod_error < prod_quantile_95)][feature_name])
-                    prod_over_value = np.mean(production_data[prod_error >= prod_quantile_95][feature_name])
-                    prod_range_value = 0 if prod_over_value == prod_under_value else 100*abs(prod_over_value - prod_under_value)/(np.max(production_data[feature_name]) - np.min(production_data[feature_name]))
+                    current_overal_value = np.mean(current_data[feature_name])
+                    current_under_value = np.mean(current_data[current_error <= current_quantile_5][feature_name])
+                    current_expected_value = np.mean(current_data[(current_error > current_quantile_5) & (current_error < current_quantile_95)][feature_name])
+                    current_over_value = np.mean(current_data[current_error >= current_quantile_95][feature_name])
+                    current_range_value = 0 if current_over_value == current_under_value else 100*abs(current_over_value - current_under_value)/(np.max(current_data[feature_name]) - np.min(current_data[feature_name]))
 
                     error_bias[feature_name] = {'feature_type':feature_type, 'ref_majority':float(ref_expected_value), 'ref_under':float(ref_under_value), 
-                        'ref_over':float(ref_over_value), 'ref_range':float(ref_range_value),'prod_majority':float(prod_expected_value), 'prod_under':float(prod_under_value), 
-                        'prod_over':float(prod_over_value), 'prod_range':float(prod_range_value)}
+                        'ref_over':float(ref_over_value), 'ref_range':float(ref_range_value),'current_majority':float(current_expected_value), 'current_under':float(current_under_value), 
+                        'current_over':float(current_over_value), 'current_range':float(current_range_value)}
 
                 for feature_name in cat_feature_names:
                     feature_type = 'cat'
@@ -176,15 +176,15 @@ class RegressionPerformanceAnalyzer(Analyzer):
                     ref_range_value = 1 if (ref_overal_value != ref_under_value) or (ref_over_value != ref_overal_value) \
                        or (ref_under_value != ref_overal_value) else 0
 
-                    prod_overal_value = production_data[feature_name].value_counts().idxmax()
-                    prod_under_value = production_data[prod_error <= prod_quantile_5][feature_name].value_counts().idxmax()
-                    prod_over_value = production_data[prod_error >= prod_quantile_95][feature_name].value_counts().idxmax()
-                    prod_range_value = 1 if (prod_overal_value != prod_under_value) or (prod_over_value != prod_overal_value) \
-                       or (prod_under_value != prod_overal_value) else 0
+                    current_overal_value = current_data[feature_name].value_counts().idxmax()
+                    current_under_value = current_data[current_error <= current_quantile_5][feature_name].value_counts().idxmax()
+                    current_over_value = current_data[current_error >= current_quantile_95][feature_name].value_counts().idxmax()
+                    current_range_value = 1 if (current_overal_value != current_under_value) or (current_over_value != current_overal_value) \
+                       or (current_under_value != current_overal_value) else 0
 
                     error_bias[feature_name] = {'feature_type':feature_type, 'ref_majority':float(ref_overal_value), 'ref_under':float(ref_under_value), 
-                        'ref_over':float(ref_over_value), 'ref_range':float(ref_range_value),'prod_majority':float(prod_overal_value), 'prod_under':float(prod_under_value), 
-                        'prod_over':float(prod_over_value), 'prod_range':float(prod_range_value)}
+                        'ref_over':float(ref_over_value), 'ref_range':float(ref_range_value),'current_majority':float(current_overal_value), 'current_under':float(current_under_value), 
+                        'current_over':float(current_over_value), 'current_range':float(current_range_value)}
 
                 result['metrics']['error_bias'] = error_bias
 

@@ -31,7 +31,7 @@ class NumTargetPredFeatureTable(Widget):
             return self.wi
         raise ValueError("neither target nor prediction data provided")
 
-    def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping, analyzes_results):
+    def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping, analyzes_results):
         if column_mapping:
             date_column = column_mapping.get('datetime')
             id_column = column_mapping.get('id')
@@ -116,8 +116,8 @@ class NumTargetPredFeatureTable(Widget):
                 if prediction_column is not None:
                     fig.add_trace(
                         go.Scatter(
-                        x = production_data[feature_name],
-                        y = production_data[prediction_column],
+                        x = current_data[feature_name],
+                        y = current_data[prediction_column],
                         mode = 'markers',
                         name = 'Prediction (curr)',
                         marker = dict(
@@ -131,8 +131,8 @@ class NumTargetPredFeatureTable(Widget):
                 if target_column is not None:
                     fig.add_trace(
                         go.Scatter(
-                        x = production_data[feature_name],
-                        y = production_data[target_column],
+                        x = current_data[feature_name],
+                        y = current_data[target_column],
                         mode = 'markers',
                         name = 'Target (curr)',
                         marker = dict(

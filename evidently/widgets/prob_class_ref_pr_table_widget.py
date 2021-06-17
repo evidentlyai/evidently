@@ -249,7 +249,7 @@ class ProbClassRefPRTableWidget(Widget):
                 self.wi = BaseWidgetInfo(
                     type="tabs",
                     title=self.title,
-                    size=1 if production_data is not None else 2,
+                    size=1 if current_data is not None else 2,
                     details="",
                     tabs=tabs
                 )

@@ -68,9 +68,9 @@ class ClassProdQualityMetricsWidget(Widget):
                 accuracy_score = metrics.accuracy_score(current_data[target_column], current_data[prediction_column])
                 avg_precision = metrics.precision_score(current_data[target_column], current_data[prediction_column],
                     average='macro')
-                avg_recall = metrics.recall_score(production_data[target_column], production_data[prediction_column],
+                avg_recall = metrics.recall_score(current_data[target_column], current_data[prediction_column],
                     average='macro')
-                avg_f1 = metrics.f1_score(production_data[target_column], production_data[prediction_column],
+                avg_f1 = metrics.f1_score(current_data[target_column], current_data[prediction_column],
                     average='macro')
 
                 self.wi = BaseWidgetInfo(

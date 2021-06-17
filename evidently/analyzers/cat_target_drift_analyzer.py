@@ -53,7 +53,7 @@ class CatTargetDriftAnalyzer(Analyzer):
             current_data.dropna(axis=0, how='any', inplace=True)
 
             ref_feature_vc = reference_data[target_column].value_counts()
-            prod_feature_vc = current_data[target_column].value_counts()
+            current_feature_vc = current_data[target_column].value_counts()
 
             keys = set(list(reference_data[target_column].unique()) + 
                 list(current_data[target_column].unique()))
@@ -62,12 +62,12 @@ class CatTargetDriftAnalyzer(Analyzer):
             for key, item in zip(ref_feature_vc.index, ref_feature_vc.values):
                 ref_feature_dict[key] = item
 
-            prod_feature_dict = dict.fromkeys(keys, 0)
-            for key, item in zip(prod_feature_vc.index, prod_feature_vc.values):
-                prod_feature_dict[key] = item
+            current_feature_dict = dict.fromkeys(keys, 0)
+            for key, item in zip(current_feature_vc.index, current_feature_vc.values):
+                current_feature_dict[key] = item
 
             f_exp = [value[1] for value in sorted(ref_feature_dict.items())]
-            f_obs = [value[1] for value in sorted(prod_feature_dict.items())]
+            f_obs = [value[1] for value in sorted(current_feature_dict.items())]
 
             target_p_value = chisquare(f_exp, f_obs)[1]
             result['metrics']["target_name"] = target_column
@@ -84,7 +84,7 @@ class CatTargetDriftAnalyzer(Analyzer):
             current_data.dropna(axis=0, how='any', inplace=True)
 
             ref_feature_vc = reference_data[prediction_column].value_counts()
-            prod_feature_vc = current_data[prediction_column].value_counts()
+            current_feature_vc = current_data[prediction_column].value_counts()
 
             keys = set(list(reference_data[prediction_column].unique()) + 
                 list(current_data[prediction_column].unique()))
@@ -93,12 +93,12 @@ class CatTargetDriftAnalyzer(Analyzer):
             for key, item in zip(ref_feature_vc.index, ref_feature_vc.values):
                 ref_feature_dict[key] = item
 
-            prod_feature_dict = dict.fromkeys(keys, 0)
-            for key, item in zip(prod_feature_vc.index, prod_feature_vc.values):
-                prod_feature_dict[key] = item
+            current_feature_dict = dict.fromkeys(keys, 0)
+            for key, item in zip(current_feature_vc.index, current_feature_vc.values):
+                current_feature_dict[key] = item
 
             f_exp = [value[1] for value in sorted(ref_feature_dict.items())]
-            f_obs = [value[1] for value in sorted(prod_feature_dict.items())]
+            f_obs = [value[1] for value in sorted(current_feature_dict.items())]
 
             pred_p_value = chisquare(f_exp, f_obs)[1]
             result['metrics']["prediction_name"] = prediction_column

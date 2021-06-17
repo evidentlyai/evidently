@@ -33,7 +33,7 @@ class RegProdQualityMetricsWidget(Widget):
         return self.wi
         #raise ValueError("No reference data with target and prediction provided")
 
-    def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping, analyzes_results):
+    def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping, analyzes_results):
         if column_mapping:
             date_column = column_mapping.get('datetime')
             id_column = column_mapping.get('id')
@@ -62,20 +62,20 @@ class RegProdQualityMetricsWidget(Widget):
             num_feature_names = list(set(reference_data.select_dtypes([np.number]).columns) - set(utility_columns))
             cat_feature_names = list(set(reference_data.select_dtypes([np.object]).columns) - set(utility_columns))
 
-        if production_data is not None:
+        if current_data is not None:
             if target_column is not None and prediction_column is not None:
-                production_data.replace([np.inf, -np.inf], np.nan, inplace=True)
-                production_data.dropna(axis=0, how='any', inplace=True)
+                current_data.replace([np.inf, -np.inf], np.nan, inplace=True)
+                current_data.dropna(axis=0, how='any', inplace=True)
             
                 #calculate quality metrics
-                me = np.mean(production_data[prediction_column] - production_data[target_column])
-                sde = np.std(production_data[prediction_column] - production_data[target_column], ddof = 1)
+                me = np.mean(current_data[prediction_column] - current_data[target_column])
+                sde = np.std(current_data[prediction_column] - current_data[target_column], ddof = 1)
 
-                abs_err = np.abs(production_data[prediction_column] - production_data[target_column])
+                abs_err = np.abs(current_data[prediction_column] - current_data[target_column])
                 mae = np.mean(abs_err)
                 sdae = np.std(abs_err, ddof = 1)
 
-                abs_perc_err = 100.*np.abs(production_data[prediction_column] - production_data[target_column])/production_data[target_column]
+                abs_perc_err = 100.*np.abs(current_data[prediction_column] - current_data[target_column])/current_data[target_column]
                 mape = np.mean(abs_perc_err)
                 sdape = np.std(abs_perc_err, ddof = 1)
 

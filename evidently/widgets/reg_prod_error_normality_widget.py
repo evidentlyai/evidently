@@ -30,7 +30,7 @@ class RegProdErrorNormalityWidget(Widget):
         return self.wi
         #raise ValueError("No prediction data provided")
 
-    def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping, analyzes_results):
+    def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping, analyzes_results):
         if column_mapping:
             date_column = column_mapping.get('datetime')
             id_column = column_mapping.get('id')
@@ -59,15 +59,15 @@ class RegProdErrorNormalityWidget(Widget):
             num_feature_names = list(set(reference_data.select_dtypes([np.number]).columns) - set(utility_columns))
             cat_feature_names = list(set(reference_data.select_dtypes([np.object]).columns) - set(utility_columns))
 
-        if production_data is not None:
+        if current_data is not None:
             if target_column is not None and prediction_column is not None:
-                production_data.replace([np.inf, -np.inf], np.nan, inplace=True)
-                production_data.dropna(axis=0, how='any', inplace=True)
+                current_data.replace([np.inf, -np.inf], np.nan, inplace=True)
+                current_data.dropna(axis=0, how='any', inplace=True)
                 
                 #plot output correlations
                 error_norm = go.Figure()
 
-                error = production_data[prediction_column] - production_data[target_column] 
+                error = current_data[prediction_column] - current_data[target_column] 
                 qq_lines = probplot(error, dist="norm", plot=None)
                 theoretical_q_x = np.linspace(qq_lines[0][0][0], qq_lines[0][0][-1], 100)
 

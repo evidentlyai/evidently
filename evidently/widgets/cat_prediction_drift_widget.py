@@ -32,7 +32,7 @@ class CatPredictionDriftWidget(Widget):
         return self.wi
         #raise ValueError("No prediction data provided")
 
-    def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping, analyzes_results):
+    def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping, analyzes_results):
         if column_mapping:
             date_column = column_mapping.get('datetime')
             id_column = column_mapping.get('id')
@@ -66,31 +66,31 @@ class CatPredictionDriftWidget(Widget):
             reference_data.replace([np.inf, -np.inf], np.nan, inplace=True)
             reference_data.dropna(axis=0, how='any', inplace=True)
 
-            production_data.replace([np.inf, -np.inf], np.nan, inplace=True)
-            production_data.dropna(axis=0, how='any', inplace=True)
+            current_data.replace([np.inf, -np.inf], np.nan, inplace=True)
+            current_data.dropna(axis=0, how='any', inplace=True)
 
             #ref_feature_vc = reference_data[prediction_column][np.isfinite(reference_data[prediction_column])].value_counts()
-            #prod_feature_vc = production_data[prediction_column][np.isfinite(production_data[prediction_column])].value_counts()
+            #current_feature_vc = current_data[prediction_column][np.isfinite(current_data[prediction_column])].value_counts()
 
             #keys = set(list(reference_data[prediction_column][np.isfinite(reference_data[prediction_column])].unique()) + 
-            #    list(production_data[prediction_column][np.isfinite(production_data[prediction_column])].unique()))
+            #    list(current_data[prediction_column][np.isfinite(current_data[prediction_column])].unique()))
 
             ref_feature_vc = reference_data[prediction_column].value_counts()
-            prod_feature_vc = production_data[prediction_column].value_counts()
+            current_feature_vc = current_data[prediction_column].value_counts()
 
             keys = set(list(reference_data[prediction_column].unique()) + 
-                list(production_data[prediction_column].unique()))
+                list(current_data[prediction_column].unique()))
 
             ref_feature_dict = dict.fromkeys(keys, 0)
             for key, item in zip(ref_feature_vc.index, ref_feature_vc.values):
                 ref_feature_dict[key] = item
 
-            prod_feature_dict = dict.fromkeys(keys, 0)
-            for key, item in zip(prod_feature_vc.index, prod_feature_vc.values):
-                prod_feature_dict[key] = item
+            current_feature_dict = dict.fromkeys(keys, 0)
+            for key, item in zip(current_feature_vc.index, current_feature_vc.values):
+                current_feature_dict[key] = item
 
             f_exp = [value[1] for value in sorted(ref_feature_dict.items())]
-            f_obs = [value[1] for value in sorted(prod_feature_dict.items())]
+            f_obs = [value[1] for value in sorted(current_feature_dict.items())]
 
             pred_p_value = chisquare(f_exp, f_obs)[1]
 
@@ -102,7 +102,7 @@ class CatPredictionDriftWidget(Widget):
             fig.add_trace(go.Histogram(x=reference_data[prediction_column], 
                  marker_color=grey, opacity=0.6, nbinsx=10,  name='Reference', histnorm='probability'))
 
-            fig.add_trace(go.Histogram(x=production_data[prediction_column],
+            fig.add_trace(go.Histogram(x=current_data[prediction_column],
                  marker_color=red, opacity=0.6,nbinsx=10, name='Current', histnorm='probability'))
 
             fig.update_layout(
