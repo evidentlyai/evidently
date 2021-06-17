@@ -78,6 +78,7 @@ setup_args = dict(
         "statsmodels",
         "plotly",
         "scipy",
+        "pyyaml",
         "scikit-learn>=0.22.1"
     ],
     entry_points={
