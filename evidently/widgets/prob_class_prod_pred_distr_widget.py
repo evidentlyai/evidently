@@ -33,7 +33,7 @@ class ProbClassProdPredDistrWidget(Widget):
         return self.wi
         #raise ValueError("No prediction or target data provided")
 
-    def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping, analyzers_results):
+    def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping, analyzers_results):
         if column_mapping:
             date_column = column_mapping.get('datetime')
             id_column = column_mapping.get('id')
@@ -65,11 +65,11 @@ class ProbClassProdPredDistrWidget(Widget):
 
             #target_names = None
 
-        if production_data is not None and target_column is not None and prediction_column is not None:
-            production_data.replace([np.inf, -np.inf], np.nan, inplace=True)
-            production_data.dropna(axis=0, how='any', inplace=True)
+        if current_data is not None and target_column is not None and prediction_column is not None:
+            current_data.replace([np.inf, -np.inf], np.nan, inplace=True)
+            current_data.dropna(axis=0, how='any', inplace=True)
 
-            array_prediction = production_data[prediction_column].to_numpy()
+            array_prediction = current_data[prediction_column].to_numpy()
 
             prediction_ids = np.argmax(array_prediction, axis=-1)
             prediction_labels = [prediction_column[x] for x in prediction_ids]
@@ -80,8 +80,8 @@ class ProbClassProdPredDistrWidget(Widget):
             for label in prediction_column:
                 pred_distr = ff.create_distplot(
                     [
-                        production_data[production_data[target_column] == label][label], 
-                        production_data[production_data[target_column] != label][label]
+                        current_data[current_data[target_column] == label][label],
+                        current_data[current_data[target_column] != label][label]
                     ], 
                     [str(label), "other"],  
                     colors=[red, grey],

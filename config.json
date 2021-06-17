@@ -10,12 +10,12 @@
   "sampling": {
     "reference": {
       "type": "none",
-      "skip_rows": 1,
+      "n": 1,
       "ratio": 0.1
     },
-    "production": {
-      "type": "simple",
-      "skip_rows": 2,
+    "current": {
+      "type": "nth",
+      "n": 2,
       "ratio": 0.1
     }
   }

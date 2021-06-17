@@ -14,7 +14,7 @@ class Widget:
 
     @abc.abstractmethod
     def calculate(self, reference_data: pandas.DataFrame,
-                  production_data: pandas.DataFrame, column_mapping, analyzers_results):
+                  current_data: pandas.DataFrame, column_mapping, analyzers_results):
         raise NotImplemented()
 
     @abc.abstractmethod

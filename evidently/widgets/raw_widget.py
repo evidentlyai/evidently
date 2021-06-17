@@ -11,7 +11,7 @@ from evidently.widgets.widget import Widget
 
 class RawWidget(Widget):
     @abc.abstractmethod
-    def calculate(self, reference_data: pandas.DataFrame, production_data: pandas.DataFrame, column_mapping,
+    def calculate(self, reference_data: pandas.DataFrame, current_data: pandas.DataFrame, column_mapping,
                   analyzes_results):
         raise NotImplemented()
 

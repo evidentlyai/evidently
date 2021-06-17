@@ -10,7 +10,7 @@ from scipy.stats import ks_2samp, chisquare
 
 
 class CatTargetDriftAnalyzer(Analyzer):
-    def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping):
+    def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping):
         result = dict()
         if column_mapping:
             date_column = column_mapping.get('datetime')
@@ -49,14 +49,14 @@ class CatTargetDriftAnalyzer(Analyzer):
             reference_data.replace([np.inf, -np.inf], np.nan, inplace=True)
             reference_data.dropna(axis=0, how='any', inplace=True)
 
-            production_data.replace([np.inf, -np.inf], np.nan, inplace=True)
-            production_data.dropna(axis=0, how='any', inplace=True)
+            current_data.replace([np.inf, -np.inf], np.nan, inplace=True)
+            current_data.dropna(axis=0, how='any', inplace=True)
 
             ref_feature_vc = reference_data[target_column].value_counts()
-            prod_feature_vc = production_data[target_column].value_counts()
+            prod_feature_vc = current_data[target_column].value_counts()
 
             keys = set(list(reference_data[target_column].unique()) + 
-                list(production_data[target_column].unique()))
+                list(current_data[target_column].unique()))
 
             ref_feature_dict = dict.fromkeys(keys, 0)
             for key, item in zip(ref_feature_vc.index, ref_feature_vc.values):
@@ -80,14 +80,14 @@ class CatTargetDriftAnalyzer(Analyzer):
             reference_data.replace([np.inf, -np.inf], np.nan, inplace=True)
             reference_data.dropna(axis=0, how='any', inplace=True)
 
-            production_data.replace([np.inf, -np.inf], np.nan, inplace=True)
-            production_data.dropna(axis=0, how='any', inplace=True)
+            current_data.replace([np.inf, -np.inf], np.nan, inplace=True)
+            current_data.dropna(axis=0, how='any', inplace=True)
 
             ref_feature_vc = reference_data[prediction_column].value_counts()
-            prod_feature_vc = production_data[prediction_column].value_counts()
+            prod_feature_vc = current_data[prediction_column].value_counts()
 
             keys = set(list(reference_data[prediction_column].unique()) + 
-                list(production_data[prediction_column].unique()))
+                list(current_data[prediction_column].unique()))
 
             ref_feature_dict = dict.fromkeys(keys, 0)
             for key, item in zip(ref_feature_vc.index, ref_feature_vc.values):

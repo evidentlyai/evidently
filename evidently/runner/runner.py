@@ -11,9 +11,9 @@ class RunnerOptions:
     reference_data_path: str
     reference_data_options: DataOptions
     reference_data_sampling: Optional[SamplingOptions]
-    production_data_path: Optional[str]
-    production_data_options: Optional[DataOptions]
-    production_data_sampling: Optional[SamplingOptions]
+    current_data_path: Optional[str]
+    current_data_options: Optional[DataOptions]
+    current_data_sampling: Optional[SamplingOptions]
     column_mapping: Dict[str, str]
     output_path: str
 
@@ -29,12 +29,12 @@ class Runner:
                                      self.options.reference_data_options,
                                      self.options.reference_data_sampling)
         logging.info(f"reference dataset loaded: {len(reference_data)} rows")
-        if self.options.production_data_path:
-            production_data = loader.load(self.options.production_data_path,
-                                          self.options.production_data_options,
-                                          self.options.production_data_sampling)
-            logging.info(f"production dataset loaded: {len(production_data)} rows")
+        if self.options.current_data_path:
+            current_data = loader.load(self.options.current_data_path,
+                                          self.options.current_data_options,
+                                          self.options.current_data_sampling)
+            logging.info(f"current dataset loaded: {len(current_data)} rows")
         else:
-            production_data = None
+            current_data = None
 
-        return reference_data, production_data
+        return reference_data, current_data

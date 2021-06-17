@@ -8,9 +8,10 @@ import pandas as pd
 
 @dataclasses.dataclass
 class SamplingOptions:
-    type: str
-    ratio: float
-    skip_rows: int
+    type: str = "none"
+    random_seed: int = 1
+    ratio: float = 1.0
+    n: int = 1
 
 
 @dataclasses.dataclass
@@ -32,10 +33,12 @@ class DataOptions:
 def _skiprows(sampling_options: SamplingOptions) -> Union[Callable[[int], bool], None]:
     if sampling_options.type == "none":
         return None
-    if sampling_options.type == "simple":
+    if sampling_options.type == "nth":
+        if sampling_options.n < 1:
+            raise Exception("nth sampling should have 'n' parameter >= 1")
         return __simple(sampling_options)
     if sampling_options.type == "random":
-        sk = RandomizedSkipRows(sampling_options.ratio)
+        sk = RandomizedSkipRows(sampling_options.ratio, sampling_options.random_seed)
         return sk.skiprows
 
 
@@ -44,7 +47,7 @@ def __simple(sampling_options: SamplingOptions):
         if row_idx == 0:
             result = False
         else:
-            rem = row_idx % (sampling_options.skip_rows + 1)
+            rem = row_idx % sampling_options.n
             result = rem != 1
         return result
     return func
@@ -59,7 +62,6 @@ class DataLoader:
         parse_dates = [data_options.date_column] \
             if data_options.date_column \
             else False
-        logging.info(f"{data_options.__repr__()}, {parse_dates.__repr__()}, {sampling_options.__repr__()}")
         return pd.read_csv(filename,
                            header=0 if data_options.header else None,
                            sep=data_options.separator,
@@ -71,8 +73,8 @@ CHUNK_SIZE = 1000
 
 
 class RandomizedSkipRows:
-    def __init__(self, ratio: float):
-        self.random = random.Random()
+    def __init__(self, ratio: float, random_seed: int):
+        self.random = random.Random(random_seed)
         self.ratio = ratio
         self.selected_rows = self._select()
 

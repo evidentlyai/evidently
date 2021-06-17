@@ -31,7 +31,7 @@ class NumTargetCorrWidget(Widget):
         return self.wi
         #raise ValueError("No prediction data provided")
 
-    def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping, analyzes_results):
+    def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping, analyzes_results):
         if column_mapping:
             date_column = column_mapping.get('datetime')
             id_column = column_mapping.get('id')
@@ -64,7 +64,7 @@ class NumTargetCorrWidget(Widget):
 
             #calculate corr
             ref_target_corr = reference_data[num_feature_names + [target_column]].corr()[target_column]
-            prod_target_corr = production_data[num_feature_names + [target_column]].corr()[target_column]
+            prod_target_corr = current_data[num_feature_names + [target_column]].corr()[target_column]
             
             #plot output correlations
             target_corr = go.Figure()

@@ -25,7 +25,7 @@ class DataFormatOptions:
 @dataclass
 class Sampling:
     reference: SamplingOptions
-    production: SamplingOptions
+    current: SamplingOptions
 
 
 @dataclass
@@ -59,7 +59,7 @@ def calculate_dashboard(config: str, reference: str, current: str, output_path: 
                                 dashboard_tabs=opts_data["dashboard_tabs"],
                                 sampling=Sampling(
                                     reference=SamplingOptions(**opts_data["sampling"]["reference"]),
-                                    production=SamplingOptions(**opts_data["sampling"]["production"]),
+                                    current=SamplingOptions(**opts_data["sampling"]["current"]),
                                 ))
 
     runner = DashboardRunner(DashboardRunnerOptions(
@@ -68,11 +68,11 @@ def calculate_dashboard(config: str, reference: str, current: str, output_path: 
                                            separator=opts.data_format.separator,
                                            header=opts.data_format.header),
         reference_data_sampling=opts.sampling.reference,
-        production_data_path=current,
-        production_data_options=DataOptions(date_column=opts.data_format.date_column,
+        current_data_path=current,
+        current_data_options=DataOptions(date_column=opts.data_format.date_column,
                                             separator=opts.data_format.separator,
                                             header=opts.data_format.header),
-        production_data_sampling=opts.sampling.production,
+        current_data_sampling=opts.sampling.current,
         dashboard_tabs=opts.dashboard_tabs,
         column_mapping=opts.column_mapping,
         output_path=os.path.join(output_path, report_name),
@@ -94,7 +94,7 @@ def calculate_profile(config: str, reference: str, current: str, output_path: st
                               pretty_print=opts_data["pretty_print"],
                               sampling=Sampling(
                                   reference=SamplingOptions(**opts_data["sampling"]["reference"]),
-                                  production=SamplingOptions(**opts_data["sampling"]["production"]),
+                                  current=SamplingOptions(**opts_data["sampling"]["current"]),
                               ))
 
     runner = ProfileRunner(ProfileRunnerOptions(
@@ -103,11 +103,11 @@ def calculate_profile(config: str, reference: str, current: str, output_path: st
                                            separator=opts.data_format.separator,
                                            header=opts.data_format.header),
         reference_data_sampling=opts.sampling.reference,
-        production_data_path=current,
-        production_data_options=DataOptions(date_column=opts.data_format.date_column,
+        current_data_path=current,
+        current_data_options=DataOptions(date_column=opts.data_format.date_column,
                                             separator=opts.data_format.separator,
                                             header=opts.data_format.header),
-        production_data_sampling=opts.sampling.production,
+        current_data_sampling=opts.sampling.current,
         profile_parts=opts.profile_parts,
         column_mapping=opts.column_mapping,
         output_path=os.path.join(output_path, report_name),

@@ -31,7 +31,7 @@ class ClassConfusionBasedFeatureDistrTable(Widget):
             return self.wi
         raise ValueError("neither target nor prediction data provided")
 
-    def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping, analyzes_results):
+    def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping, analyzes_results):
         if column_mapping:
             date_column = column_mapping.get('datetime')
             id_column = column_mapping.get('id')
@@ -64,7 +64,7 @@ class ClassConfusionBasedFeatureDistrTable(Widget):
             cat_feature_names = list(set(reference_data.select_dtypes([np.object]).columns) - set(utility_columns))
 
         if prediction_column is not None and target_column is not None: 
-            if production_data is not None:
+            if current_data is not None:
 
                 additional_graphs_data = []
                 params_data = []
@@ -85,8 +85,8 @@ class ClassConfusionBasedFeatureDistrTable(Widget):
 
                     #create confusion based plots 
                     reference_data['dataset'] = 'Reference'
-                    production_data['dataset'] = 'Current'
-                    merged_data = pd.concat([reference_data, production_data])
+                    current_data['dataset'] = 'Current'
+                    merged_data = pd.concat([reference_data, current_data])
 
                     fig = px.histogram(merged_data, x=feature_name, color=target_column, facet_col="dataset", histnorm = '',
                         category_orders={"dataset": ["Reference", "Current"]})

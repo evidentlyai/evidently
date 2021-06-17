@@ -17,9 +17,9 @@ class Profile(Pipeline):
 
     def calculate(self,
                   reference_data: pandas.DataFrame,
-                  production_data: pandas.DataFrame,
+                  current_data: pandas.DataFrame,
                   column_mapping: dict = None):
-        self.execute(reference_data, production_data, column_mapping)
+        self.execute(reference_data, current_data, column_mapping)
 
     def get_analyzers(self):
         return list(set([analyzer for tab in self.parts for analyzer in tab.analyzers()]))

@@ -10,7 +10,7 @@ from scipy.stats import ks_2samp, chisquare, probplot
 from sklearn import metrics
 
 class RegressionPerformanceAnalyzer(Analyzer):
-    def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping):
+    def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping):
         result = dict()
         if column_mapping:
             date_column = column_mapping.get('datetime')
@@ -97,19 +97,19 @@ class RegressionPerformanceAnalyzer(Analyzer):
             result['metrics']['reference']['underperformance']['underestimation'] = {'mean_error':float(mae_under), 'std_error':float(sd_under)}
             result['metrics']['reference']['underperformance']['overestimation'] = {'mean_error':float(mae_over), 'std_error':float(sd_over)}
             
-            if production_data is not None:
-                production_data.replace([np.inf, -np.inf], np.nan, inplace=True)
-                production_data.dropna(axis=0, how='any', inplace=True)
+            if current_data is not None:
+                current_data.replace([np.inf, -np.inf], np.nan, inplace=True)
+                current_data.dropna(axis=0, how='any', inplace=True)
             
                 #calculate quality metrics
-                me = np.mean(production_data[prediction_column] - production_data[target_column])
-                sde = np.std(production_data[prediction_column] - production_data[target_column], ddof = 1)
+                me = np.mean(current_data[prediction_column] - current_data[target_column])
+                sde = np.std(current_data[prediction_column] - current_data[target_column], ddof = 1)
 
-                abs_err = np.abs(production_data[prediction_column] - production_data[target_column])
+                abs_err = np.abs(current_data[prediction_column] - current_data[target_column])
                 mae = np.mean(abs_err)
                 sdae = np.std(abs_err, ddof = 1)
 
-                abs_perc_err = 100.*np.abs(production_data[prediction_column] - production_data[target_column])/production_data[target_column]
+                abs_perc_err = 100.*np.abs(current_data[prediction_column] - current_data[target_column])/current_data[target_column]
                 mape = np.mean(abs_perc_err)
                 sdape = np.std(abs_perc_err, ddof = 1)
 

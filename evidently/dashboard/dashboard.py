@@ -136,11 +136,11 @@ class Dashboard(Pipeline):
 
     def calculate(self,
                   reference_data: pandas.DataFrame,
-                  production_data: pandas.DataFrame,
+                  current_data: pandas.DataFrame,
                   column_mapping: dict = None):
-        self.execute(reference_data, production_data, column_mapping)
+        self.execute(reference_data, current_data, column_mapping)
         for tab in self.tabsData:
-            tab.calculate(reference_data, production_data, column_mapping, self.analyzers_results)
+            tab.calculate(reference_data, current_data, column_mapping, self.analyzers_results)
 
     def __render(self, template: typing.Callable[[TemplateParams], str]):
         dashboard_id = "evidently_dashboard_" + str(uuid.uuid4()).replace("-", "")

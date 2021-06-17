@@ -28,13 +28,14 @@ parts_mapping = dict(
 
 )
 
+
 class ProfileRunner(Runner):
     def __init__(self, options: ProfileRunnerOptions):
         super().__init__(options)
         self.options = options
 
     def run(self):
-        (reference_data, production_data) = self._parse_data()
+        (reference_data, current_data) = self._parse_data()
 
         parts = []
 
@@ -45,7 +46,7 @@ class ProfileRunner(Runner):
             parts.append(part_class)
 
         profile = Profile(sections=parts)
-        profile.calculate(reference_data, production_data, self.options.column_mapping)
+        profile.calculate(reference_data, current_data, self.options.column_mapping)
         output_path = self.options.output_path \
             if self.options.output_path.endswith(".json") \
             else self.options.output_path + ".json"
