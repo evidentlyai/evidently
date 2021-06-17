@@ -10,6 +10,7 @@ from evidently.profile_sections.classification_performance_profile_section impor
 from evidently.profile_sections.prob_classification_performance_profile_section import ProbClassificationPerformanceProfileSection
 from evidently.profile_sections.regression_performance_profile_section import RegressionPerformanceProfileSection
 from evidently.runner.runner import RunnerOptions, Runner
+from evidently.utils import NumpyEncoder
 
 
 @dataclass
@@ -50,4 +51,4 @@ class ProfileRunner(Runner):
             else self.options.output_path + ".json"
 
         with open(output_path, 'w') as f:
-            json.dump(profile.object(), f, indent=2 if self.options.pretty_print else None)
+            json.dump(profile.object(), f, indent=2 if self.options.pretty_print else None, cls=NumpyEncoder)
