@@ -79,10 +79,12 @@ class RandomizedSkipRows:
         self.selected_rows = self._select()
 
     def skiprows(self, row_index: int):
+        if row_index == 0:
+            return False
         if row_index % CHUNK_SIZE == 0:
             self.selected_rows = self._select()
         idx = row_index - int(row_index / CHUNK_SIZE) * CHUNK_SIZE
         return self.selected_rows[idx]
 
     def _select(self):
-        return [False if self.random.random() > self.ratio else True for x in range(1000)]
+        return [False if self.random.random() < self.ratio else True for x in range(1000)]
