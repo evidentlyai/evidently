@@ -234,8 +234,9 @@ Here:
 - `reference` is the path to the reference data, 
 - `current` is the path to the current data, 
 - `output` is the path to the output folder,
-- `config` is the path to the configuration file.
-- `pretty_print` to print the JSON profile with indents (for profile only)
+- `report_name` is name of the output file,
+- `config` is the path to the configuration file,
+- `pretty_print` to print the JSON profile with indents (for profile only).
 
 Currently, you can choose the following Tabs or Sections:
 - `data_drift` to estimate the data drift,
@@ -292,7 +293,16 @@ Here is an example of a more complicated configuration, where we have comma sepa
     "numerical_features": ["mean radius", "mean texture", "mean perimeter", 
       "mean area", "mean smoothness", "mean compactness", "mean concavity", 
       "mean concave points", "mean symmetry"]},
-  "dashboard_tabs": ["cat_target_drift"]
+  "dashboard_tabs": ["cat_target_drift"],
+  "sampling": {
+      "reference": {
+      "type": "none"
+    },
+      "current": {
+      "type": "nth",
+      "n": 2
+    }
+  }
 }
 ```
 
@@ -310,9 +320,24 @@ Here is an example of a more complicated configuration, where we have comma sepa
       "mean area", "mean smoothness", "mean compactness", "mean concavity", 
       "mean concave points", "mean symmetry"]},
   "profile_sections": ["data_drift", "cat_target_drift"],
-  "pretty_print": true
+  "pretty_print": true,
+  "sampling": {
+    "reference": {
+      "type": "none"
+    },
+    "current": {
+      "type": "random",
+      "ratio": 0.8
+    }
+  }
 }
 ```
+As you can see from the above example, you can specify **sampling** parameters for large files. You can use different sampling stratagies for reference and current data, or apply sampling only for one of the files. 
+Currently we have 3 sampling types avaliable:
+`none` - there will be no sampling for the file,
+`nth` - each Nth row of the file will be taken. This option works together with `n` parameter (see the example with the Dashboard above)
+`random` - random sampling will be applied. This option works together with `ratio` parameter (see the example with the Profile above)
+
 ## Documentation
 
 For more information, refer to a complete <a href="https://evidentlyai.gitbook.io/docs/">Documentation</a>.
