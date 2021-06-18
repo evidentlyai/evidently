@@ -1,0 +1,22 @@
+{
+  "data_format": {
+    "separator": ",",
+    "header": true,
+    "date_column": "dteday"
+  },
+  "column_mapping" : {},
+  "profile_sections": ["data_drift"],
+  "pretty_print": true,
+  "sampling": {
+    "reference": {
+      "type": "none",
+      "n": 1,
+      "ratio": 0.1
+    },
+    "current": {
+      "type": "nth",
+      "n": 2,
+      "ratio": 0.1
+    }
+  }
+}

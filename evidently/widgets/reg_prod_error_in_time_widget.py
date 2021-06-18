@@ -31,7 +31,7 @@ class RegProdErrorTimeWidget(Widget):
         return self.wi
         #raise ValueError("No prediction data provided")
 
-    def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping, analyzes_results):
+    def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping, analyzes_results):
         if column_mapping:
             date_column = column_mapping.get('datetime')
             id_column = column_mapping.get('id')
@@ -60,17 +60,17 @@ class RegProdErrorTimeWidget(Widget):
             num_feature_names = list(set(reference_data.select_dtypes([np.number]).columns) - set(utility_columns))
             cat_feature_names = list(set(reference_data.select_dtypes([np.object]).columns) - set(utility_columns))
 
-        if production_data is not None:
+        if current_data is not None:
             if target_column is not None and prediction_column is not None:
-                production_data.replace([np.inf, -np.inf], np.nan, inplace=True)
-                production_data.dropna(axis=0, how='any', inplace=True)
+                current_data.replace([np.inf, -np.inf], np.nan, inplace=True)
+                current_data.dropna(axis=0, how='any', inplace=True)
                 
                 #plot output correlations
                 pred_actual_time = go.Figure()
 
                 error_trace = go.Scatter(
-                    x = production_data[date_column] if date_column else production_data.index,
-                    y = production_data[prediction_column] - production_data[target_column],
+                    x = current_data[date_column] if date_column else current_data.index,
+                    y = current_data[prediction_column] - current_data[target_column],
                     mode = 'lines',
                     name = 'Predicted - Actual',
                     marker=dict(
@@ -80,8 +80,8 @@ class RegProdErrorTimeWidget(Widget):
                 )
 
                 zero_trace = go.Scatter(
-                    x = production_data[date_column] if date_column else production_data.index,
-                    y = [0]*production_data.shape[0],
+                    x = current_data[date_column] if date_column else current_data.index,
+                    y = [0]*current_data.shape[0],
                     mode = 'lines',
                     opacity=0.5,
                     marker=dict(

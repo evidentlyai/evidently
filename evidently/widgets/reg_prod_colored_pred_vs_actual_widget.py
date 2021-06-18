@@ -31,7 +31,7 @@ class RegProdColoredPredActualWidget(Widget):
         return self.wi
         #raise ValueError("No reference data provided")
 
-    def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping, analyzes_results):
+    def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping, analyzes_results):
         if column_mapping:
             date_column = column_mapping.get('datetime')
             id_column = column_mapping.get('id')
@@ -60,26 +60,26 @@ class RegProdColoredPredActualWidget(Widget):
             num_feature_names = list(set(reference_data.select_dtypes([np.number]).columns) - set(utility_columns))
             cat_feature_names = list(set(reference_data.select_dtypes([np.object]).columns) - set(utility_columns))
 
-        if production_data is not None:
+        if current_data is not None:
             if target_column is not None and prediction_column is not None:
-                production_data.replace([np.inf, -np.inf], np.nan, inplace=True)
-                production_data.dropna(axis=0, how='any', inplace=True)
+                current_data.replace([np.inf, -np.inf], np.nan, inplace=True)
+                current_data.dropna(axis=0, how='any', inplace=True)
 
-                prod_error = production_data[prediction_column] - production_data[target_column]
+                current_error = current_data[prediction_column] - current_data[target_column]
 
-                prod_quntile_5 = np.quantile(prod_error, .05)
-                prod_quntile_95 = np.quantile(prod_error, .95)
+                current_quntile_5 = np.quantile(current_error, .05)
+                current_quntile_95 = np.quantile(current_error, .95)
 
-                production_data['dataset'] = 'Current'
-                production_data['Error bias'] = list(map(lambda x : 'Underestimation' if x <= prod_quntile_5 else 'Majority' 
-                                              if x < prod_quntile_95 else 'Overestimation', prod_error))
+                current_data['dataset'] = 'Current'
+                current_data['Error bias'] = list(map(lambda x : 'Underestimation' if x <= current_quntile_5 else 'Majority'
+                                              if x < current_quntile_95 else 'Overestimation', current_error))
                 
                 #plot output correlations
                 pred_actual = go.Figure()
 
                 pred_actual.add_trace(go.Scatter(
-                x = production_data[production_data['Error bias'] == 'Underestimation'][target_column],
-                y = production_data[production_data['Error bias'] == 'Underestimation'][prediction_column],
+                x = current_data[current_data['Error bias'] == 'Underestimation'][target_column],
+                y = current_data[current_data['Error bias'] == 'Underestimation'][prediction_column],
                 mode = 'markers',
                 name = 'Underestimation',
                 marker = dict(
@@ -89,8 +89,8 @@ class RegProdColoredPredActualWidget(Widget):
                 ))
 
                 pred_actual.add_trace(go.Scatter(
-                x = production_data[production_data['Error bias'] == 'Overestimation'][target_column],
-                y = production_data[production_data['Error bias'] == 'Overestimation'][prediction_column],
+                x = current_data[current_data['Error bias'] == 'Overestimation'][target_column],
+                y = current_data[current_data['Error bias'] == 'Overestimation'][prediction_column],
                 mode = 'markers',
                 name = 'Overestimation',
                 marker = dict(
@@ -100,8 +100,8 @@ class RegProdColoredPredActualWidget(Widget):
                 ))
 
                 pred_actual.add_trace(go.Scatter(
-                x = production_data[production_data['Error bias'] == 'Majority'][target_column],
-                y = production_data[production_data['Error bias'] == 'Majority'][prediction_column],
+                x = current_data[current_data['Error bias'] == 'Majority'][target_column],
+                y = current_data[current_data['Error bias'] == 'Majority'][prediction_column],
                 mode = 'markers',
                 name = 'Majority',
                 marker = dict(

@@ -32,7 +32,7 @@ class NumTargetValuesWidget(Widget):
         return self.wi
         #raise ValueError("No prediction data provided")
 
-    def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping, analyzes_results):
+    def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping, analyzes_results):
         if column_mapping:
             date_column = column_mapping.get('datetime')
             id_column = column_mapping.get('id')
@@ -81,8 +81,8 @@ class NumTargetValuesWidget(Widget):
             ))
 
             target_values.add_trace(go.Scatter(
-                x = production_data[date_column] if date_column else production_data.index,
-                y = production_data[target_column],
+                x = current_data[date_column] if date_column else current_data.index,
+                y = current_data[target_column],
                 mode = 'markers',
                 name = 'Current',
                 marker = dict(

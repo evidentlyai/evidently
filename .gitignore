@@ -8,3 +8,5 @@ evidently/examples/.DS_Store
 dist
 build
 MANIFEST
+
+__pycache__

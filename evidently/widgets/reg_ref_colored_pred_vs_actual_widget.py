@@ -31,7 +31,7 @@ class RegRefColoredPredActualWidget(Widget):
             return self.wi
         raise ValueError("No reference data provided")
 
-    def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping, analyzes_results):
+    def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping, analyzes_results):
         if column_mapping:
             date_column = column_mapping.get('datetime')
             id_column = column_mapping.get('id')
@@ -130,7 +130,7 @@ class RegRefColoredPredActualWidget(Widget):
                 alerts=[],
                 alertsPosition="row",
                 insights=[],
-                size=1 if production_data is not None else 2,
+                size=1 if current_data is not None else 2,
                 params={
                     "data": pred_actual_json['data'],
                     "layout": pred_actual_json['layout']

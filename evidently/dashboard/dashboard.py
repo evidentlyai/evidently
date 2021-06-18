@@ -17,6 +17,7 @@ from evidently.analyzers.base_analyzer import Analyzer
 from evidently.model.dashboard import DashboardInfo
 from evidently.pipeline.pipeline import Pipeline
 from evidently.tabs.base_tab import Tab
+from evidently.utils import NumpyEncoder
 
 
 @dataclasses.dataclass()
@@ -27,7 +28,7 @@ class TemplateParams:
 
 
 def __dashboard_info_to_json(di: DashboardInfo):
-    return json.dumps(asdict(di))
+    return json.dumps(asdict(di), cls=NumpyEncoder)
 
 
 def inline_template(params: TemplateParams):
@@ -136,11 +137,11 @@ class Dashboard(Pipeline):
 
     def calculate(self,
                   reference_data: pandas.DataFrame,
-                  production_data: pandas.DataFrame,
+                  current_data: pandas.DataFrame,
                   column_mapping: dict = None):
-        self.execute(reference_data, production_data, column_mapping)
+        self.execute(reference_data, current_data, column_mapping)
         for tab in self.tabsData:
-            tab.calculate(reference_data, production_data, column_mapping, self.analyzers_results)
+            tab.calculate(reference_data, current_data, column_mapping, self.analyzers_results)
 
     def __render(self, template: typing.Callable[[TemplateParams], str]):
         dashboard_id = "evidently_dashboard_" + str(uuid.uuid4()).replace("-", "")
@@ -159,7 +160,7 @@ class Dashboard(Pipeline):
         dashboard_id = "evidently_dashboard_" + str(uuid.uuid4()).replace("-", "")
         tab_widgets = [t.info() for t in self.tabsData]
         di = DashboardInfo(dashboard_id, [item for tab in tab_widgets for item in tab if item is not None])
-        return json.dumps(asdict(di))
+        return json.dumps(asdict(di), cls=NumpyEncoder)
 
     def _save_to_json(self, filename):
         parent_dir = os.path.dirname(filename)

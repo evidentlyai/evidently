@@ -31,7 +31,7 @@ class NumPredictionCorrWidget(Widget):
         return self.wi
         #raise ValueError("No prediction data provided")
 
-    def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping, analyzes_results):
+    def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping, analyzes_results):
         if column_mapping:
             date_column = column_mapping.get('datetime')
             id_column = column_mapping.get('id')
@@ -64,7 +64,7 @@ class NumPredictionCorrWidget(Widget):
 
             #calculate corr
             ref_pred_corr = reference_data[num_feature_names + [prediction_column]].corr()[prediction_column]
-            prod_pred_corr = production_data[num_feature_names + [prediction_column]].corr()[prediction_column]
+            current_pred_corr = current_data[num_feature_names + [prediction_column]].corr()[prediction_column]
             
             #plot output correlations
             pred_corr = go.Figure()
@@ -72,7 +72,7 @@ class NumPredictionCorrWidget(Widget):
             pred_corr.add_trace(go.Bar(y = ref_pred_corr, x = ref_pred_corr.index, 
                 marker_color = grey, name = 'Reference'))
 
-            pred_corr.add_trace(go.Bar(y = prod_pred_corr, x = ref_pred_corr.index, 
+            pred_corr.add_trace(go.Bar(y = current_pred_corr, x = ref_pred_corr.index, 
                 marker_color = red, name = 'Current'))
 
             pred_corr.update_layout(xaxis_title = "Features", yaxis_title = "Correlation",

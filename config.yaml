@@ -1,0 +1,18 @@
+data_format:
+  separator: ","
+  header: true
+  date_column: "dteday"
+column_mapping: {}
+profile_sections:
+  - "data_drift"
+pretty_print: true
+sampling:
+  reference:
+    type: "simple" # could be "none", "simple", "random"
+    n: 5 # used with simple sampling, number of rows to skip
+    ratio: 0.1   # used with random sampling, part of data to take from chunk
+    random_seed: 4 # used with random sampling, used as seed for random generator
+  current:
+    type: "nth" # could be "none", "simple", "random"
+    n: 5 # used with simple sampling, number of rows to skip
+    ratio: 0.1   # used with random sampling, part of data to take from chunk

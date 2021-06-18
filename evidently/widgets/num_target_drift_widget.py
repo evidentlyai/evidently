@@ -29,7 +29,7 @@ class NumTargetDriftWidget(Widget):
     def get_info(self) -> BaseWidgetInfo:
         return self.wi
 
-    def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping, analyzes_results):
+    def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping, analyzes_results):
         if column_mapping:
             date_column = column_mapping.get('datetime')
             id_column = column_mapping.get('id')
@@ -60,12 +60,12 @@ class NumTargetDriftWidget(Widget):
 
         if target_column is not None:
             #calculate output drift
-            target_p_value = ks_2samp(reference_data[target_column], production_data[target_column])[1]
+            target_p_value = ks_2samp(reference_data[target_column], current_data[target_column])[1]
             target_sim_test = "detected" if target_p_value < 0.05 else "not detected"
 
             #plot output distributions
             target_distr = ff.create_distplot(
-                [reference_data[target_column], production_data[target_column]], 
+                [reference_data[target_column], current_data[target_column]],
                 ["Reference", "Current"],  
                 colors=[grey, red],
                 show_rug=True)

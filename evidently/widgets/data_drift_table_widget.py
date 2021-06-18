@@ -30,7 +30,7 @@ class DataDriftTableWidget(Widget):
 
     def calculate(self,
                   reference_data: pd.DataFrame,
-                  production_data: pd.DataFrame,
+                  current_data: pd.DataFrame,
                   column_mapping,
                   analyzers_results):
         results = analyzers_results[DataDriftAnalyzer]
@@ -44,7 +44,7 @@ class DataDriftTableWidget(Widget):
         date_column = results['utility_columns']['date']
 
         for feature_name in num_feature_names:
-            prod_small_hist = results['metrics'][feature_name]["prod_small_hist"]
+            current_small_hist = results['metrics'][feature_name]["current_small_hist"]
             ref_small_hist = results['metrics'][feature_name]["ref_small_hist"]
             feature_type = results['metrics'][feature_name]["feature_type"]
 
@@ -76,8 +76,8 @@ class DataDriftTableWidget(Widget):
                         "y": list(ref_small_hist[0])
                     },
                     "f4": {
-                        "x": list(prod_small_hist[1]),
-                        "y": list(prod_small_hist[0])
+                        "x": list(current_small_hist[1]),
+                        "y": list(current_small_hist[0])
                     },
                     "f2": distr_sim_test,
                     "f5": round(p_value, 6)
@@ -85,7 +85,7 @@ class DataDriftTableWidget(Widget):
             )
 
         for feature_name in cat_feature_names:
-            prod_small_hist = results['metrics'][feature_name]["prod_small_hist"]
+            current_small_hist = results['metrics'][feature_name]["current_small_hist"]
             ref_small_hist = results['metrics'][feature_name]["ref_small_hist"]
 
             feature_type = results['metrics'][feature_name]["feature_type"]
@@ -118,8 +118,8 @@ class DataDriftTableWidget(Widget):
                         "y": list(ref_small_hist[0])
                     },
                     "f4": {
-                        "x": list(prod_small_hist[1]),
-                        "y": list(prod_small_hist[0])
+                        "x": list(current_small_hist[1]),
+                        "y": list(current_small_hist[0])
                     },
                     "f2": distr_sim_test,
                     "f5": round(p_value, 6)
@@ -135,7 +135,7 @@ class DataDriftTableWidget(Widget):
                                        marker_color=grey, opacity=0.6, nbinsx=10, name='Reference',
                                        histnorm='probability'))
 
-            fig.add_trace(go.Histogram(x=production_data[feature_name],
+            fig.add_trace(go.Histogram(x=current_data[feature_name],
                                        marker_color=red, opacity=0.6, nbinsx=10, name='Current',
                                        histnorm='probability'))
 
@@ -161,8 +161,8 @@ class DataDriftTableWidget(Widget):
             fig = go.Figure()
 
             fig.add_trace(go.Scatter(
-                x=production_data[date_column] if date_column else production_data.index,
-                y=production_data[feature_name],
+                x=current_data[date_column] if date_column else current_data.index,
+                y=current_data[feature_name],
                 mode='markers',
                 name='Current',
                 marker=dict(

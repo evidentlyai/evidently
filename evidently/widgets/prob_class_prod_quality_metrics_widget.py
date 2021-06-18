@@ -30,7 +30,7 @@ class ProbClassProdQualityMetricsWidget(Widget):
         return self.wi
         #raise ValueError("No reference data with target and prediction provided")
 
-    def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping, analyzes_results):
+    def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping, analyzes_results):
         if column_mapping:
             date_column = column_mapping.get('datetime')
             id_column = column_mapping.get('id')
@@ -59,16 +59,16 @@ class ProbClassProdQualityMetricsWidget(Widget):
             num_feature_names = list(set(reference_data.select_dtypes([np.number]).columns) - set(utility_columns))
             cat_feature_names = list(set(reference_data.select_dtypes([np.object]).columns) - set(utility_columns))
 
-        if production_data is not None:
+        if current_data is not None:
             if target_column is not None and prediction_column is not None:
-                production_data.replace([np.inf, -np.inf], np.nan, inplace=True)
-                production_data.dropna(axis=0, how='any', inplace=True)
+                current_data.replace([np.inf, -np.inf], np.nan, inplace=True)
+                current_data.dropna(axis=0, how='any', inplace=True)
 
                 binaraizer = preprocessing.LabelBinarizer()
                 binaraizer.fit(reference_data[target_column])
-                binaraized_target = binaraizer.transform(production_data[target_column])
+                binaraized_target = binaraizer.transform(current_data[target_column])
 
-                array_prediction = production_data[prediction_column].to_numpy()
+                array_prediction = current_data[prediction_column].to_numpy()
 
                 prediction_ids = np.argmax(array_prediction, axis=-1)
                 prediction_labels = [prediction_column[x] for x in prediction_ids]
@@ -78,15 +78,15 @@ class ProbClassProdQualityMetricsWidget(Widget):
                     roc_auc = metrics.roc_auc_score(binaraized_target, array_prediction, average='macro')
                     log_loss = metrics.log_loss(binaraized_target, array_prediction)
                 else:
-                    roc_auc = metrics.roc_auc_score(binaraized_target, production_data[prediction_column[0]]) #problem!!!
-                    log_loss = metrics.log_loss(binaraized_target, production_data[prediction_column[0]]) #problem!!!
+                    roc_auc = metrics.roc_auc_score(binaraized_target, current_data[prediction_column[0]]) #problem!!!
+                    log_loss = metrics.log_loss(binaraized_target, current_data[prediction_column[0]]) #problem!!!
 
-                accuracy_score = metrics.accuracy_score(production_data[target_column], prediction_labels)
-                avg_precision = metrics.precision_score(production_data[target_column], prediction_labels, 
+                accuracy_score = metrics.accuracy_score(current_data[target_column], prediction_labels)
+                avg_precision = metrics.precision_score(current_data[target_column], prediction_labels, 
                     average='macro')
-                avg_recall = metrics.recall_score(production_data[target_column], prediction_labels, 
+                avg_recall = metrics.recall_score(current_data[target_column], prediction_labels, 
                     average='macro')
-                avg_f1 = metrics.f1_score(production_data[target_column], prediction_labels, 
+                avg_f1 = metrics.f1_score(current_data[target_column], prediction_labels, 
                     average='macro')
 
                 self.wi = BaseWidgetInfo(

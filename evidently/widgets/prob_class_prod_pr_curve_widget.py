@@ -32,7 +32,7 @@ class ProbClassProdPRCurveWidget(Widget):
         return self.wi
         #raise ValueError("No prediction or target data provided")
 
-    def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping, analyzes_results):
+    def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping, analyzes_results):
         if column_mapping:
             date_column = column_mapping.get('datetime')
             id_column = column_mapping.get('id')
@@ -64,9 +64,9 @@ class ProbClassProdPRCurveWidget(Widget):
 
             #target_names = None
 
-        if production_data is not None and target_column is not None and prediction_column is not None:
-            production_data.replace([np.inf, -np.inf], np.nan, inplace=True)
-            production_data.dropna(axis=0, how='any', inplace=True)
+        if current_data is not None and target_column is not None and prediction_column is not None:
+            current_data.replace([np.inf, -np.inf], np.nan, inplace=True)
+            current_data.dropna(axis=0, how='any', inplace=True)
 
             #array_prediction = reference_data[prediction_column].to_numpy()
 
@@ -74,11 +74,11 @@ class ProbClassProdPRCurveWidget(Widget):
             #prediction_labels = [prediction_column[x] for x in prediction_ids]
             if len(prediction_column) <= 2:
                 binaraizer = preprocessing.LabelBinarizer()
-                binaraizer.fit(production_data[target_column])
-                binaraized_target = pd.DataFrame(binaraizer.transform(production_data[target_column]))
+                binaraizer.fit(current_data[target_column])
+                binaraized_target = pd.DataFrame(binaraizer.transform(current_data[target_column]))
                 binaraized_target.columns = ['target']
 
-                p, r, thrs = metrics.precision_recall_curve(binaraized_target, production_data[prediction_column[0]]) #problem!!!
+                p, r, thrs = metrics.precision_recall_curve(binaraized_target, current_data[prediction_column[0]]) #problem!!!
                 fig = go.Figure()
 
                 fig.add_trace(go.Scatter(
@@ -118,14 +118,14 @@ class ProbClassProdPRCurveWidget(Widget):
 
             else:
                 binaraizer = preprocessing.LabelBinarizer()
-                binaraizer.fit(production_data[target_column])
-                binaraized_target = pd.DataFrame(binaraizer.transform(production_data[target_column]))
+                binaraizer.fit(current_data[target_column])
+                binaraized_target = pd.DataFrame(binaraizer.transform(current_data[target_column]))
                 binaraized_target.columns = prediction_column
                 #plot support bar
                 graphs = []
 
                 for label in prediction_column:
-                    p, r, thrs = metrics.precision_recall_curve(binaraized_target[label], production_data[label])
+                    p, r, thrs = metrics.precision_recall_curve(binaraized_target[label], current_data[label])
                     fig = go.Figure()
 
                     fig.add_trace(go.Scatter(

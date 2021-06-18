@@ -32,7 +32,7 @@ class NumPredictionDriftWidget(Widget):
         return self.wi
         #raise ValueError("No prediction data provided")
 
-    def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping, analyzes_results):
+    def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping, analyzes_results):
         if column_mapping:
             date_column = column_mapping.get('datetime')
             id_column = column_mapping.get('id')
@@ -63,12 +63,12 @@ class NumPredictionDriftWidget(Widget):
 
         if prediction_column is not None:
             #calculate output drift
-            pred_p_value = ks_2samp(reference_data[prediction_column], production_data[prediction_column])[1]
+            pred_p_value = ks_2samp(reference_data[prediction_column], current_data[prediction_column])[1]
             pred_sim_test = "detected" if pred_p_value < 0.05 else "not detected"
 
             #plot output distributions
             pred_distr = ff.create_distplot(
-                [reference_data[prediction_column], production_data[prediction_column]], 
+                [reference_data[prediction_column], current_data[prediction_column]],
                 ["Reference", "Current"],  
                 colors=[grey, red],
                 show_rug=True)

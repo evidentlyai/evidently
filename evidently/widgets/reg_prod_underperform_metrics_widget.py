@@ -29,7 +29,7 @@ class ProdUnderperformMetricsWidget(Widget):
     def get_info(self) -> BaseWidgetInfo:
         return self.wi
 
-    def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping, analyzes_results):
+    def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping, analyzes_results):
         if column_mapping:
             date_column = column_mapping.get('datetime')
             id_column = column_mapping.get('id')
@@ -59,24 +59,24 @@ class ProdUnderperformMetricsWidget(Widget):
             cat_feature_names = list(set(reference_data.select_dtypes([np.object]).columns) - set(utility_columns))
 
         
-        if production_data is not None:
-            production_data.replace([np.inf, -np.inf], np.nan, inplace=True)
-            production_data.dropna(axis=0, how='any', inplace=True)
+        if current_data is not None:
+            current_data.replace([np.inf, -np.inf], np.nan, inplace=True)
+            current_data.dropna(axis=0, how='any', inplace=True)
             
-            prod_error = production_data[prediction_column] - production_data[target_column]
+            current_error = current_data[prediction_column] - current_data[target_column]
 
-            prod_quantile_5 = np.quantile(prod_error, .05)
-            prod_quantile_95 = np.quantile(prod_error, .95)
+            current_quantile_5 = np.quantile(current_error, .05)
+            current_quantile_95 = np.quantile(current_error, .95)
 
-            prod_mae = np.mean(prod_error)
-            prod_mae_under = np.mean(prod_error[prod_error <= prod_quantile_5])
-            prod_mae_exp = np.mean(prod_error[(prod_error > prod_quantile_5) & (prod_error < prod_quantile_95)])
-            prod_mae_over = np.mean(prod_error[prod_error >= prod_quantile_95])
+            current_mae = np.mean(current_error)
+            current_mae_under = np.mean(current_error[current_error <= current_quantile_5])
+            current_mae_exp = np.mean(current_error[(current_error > current_quantile_5) & (current_error < current_quantile_95)])
+            current_mae_over = np.mean(current_error[current_error >= current_quantile_95])
 
-            prod_sd = np.std(prod_error, ddof = 1)
-            prod_sd_under = np.std(prod_error[prod_error <= prod_quantile_5], ddof = 1)
-            prod_sd_exp = np.std(prod_error[(prod_error > prod_quantile_5) & (prod_error < prod_quantile_95)], ddof = 1)
-            prod_sd_over = np.std(prod_error[prod_error >= prod_quantile_95], ddof = 1)
+            current_sd = np.std(current_error, ddof = 1)
+            current_sd_under = np.std(current_error[current_error <= current_quantile_5], ddof = 1)
+            current_sd_exp = np.std(current_error[(current_error > current_quantile_5) & (current_error < current_quantile_95)], ddof = 1)
+            current_sd_over = np.std(current_error[current_error >= current_quantile_95], ddof = 1)
             
             self.wi = BaseWidgetInfo(
                 title=self.title,
@@ -90,19 +90,19 @@ class ProdUnderperformMetricsWidget(Widget):
                 params={   
                     "counters": [
                       {
-                        "value": str(round(prod_mae_exp, 2)) + " (" + str(round(prod_sd_exp, 2)) + ")",
+                        "value": str(round(current_mae_exp, 2)) + " (" + str(round(current_sd_exp, 2)) + ")",
                         "label": "Majority(90%)"
                       },
                       #{
-                      #  "value": str(round(prod_mae_exp, 2)) + " (" + str(round(prod_sd_exp,2)) + ")",
+                      #  "value": str(round(current_mae_exp, 2)) + " (" + str(round(current_sd_exp,2)) + ")",
                       #  "label": "Expected"
                       #},
                       {
-                        "value": str(round(prod_mae_under, 2)) + " (" + str(round(prod_sd_under, 2)) + ")",
+                        "value": str(round(current_mae_under, 2)) + " (" + str(round(current_sd_under, 2)) + ")",
                         "label": "Underestimation(5%)"
                       },
                       {
-                        "value": str(round(prod_mae_over, 2)) + " (" + str(round(prod_sd_over, 2)) + ")",
+                        "value": str(round(current_mae_over, 2)) + " (" + str(round(current_sd_over, 2)) + ")",
                         "label": "Overestimation(5%)"
                       }
                     ]

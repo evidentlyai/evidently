@@ -33,7 +33,7 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
             return self.wi
         raise ValueError("neither target nor prediction data provided")
 
-    def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping, analyzes_results):
+    def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping, analyzes_results):
         if column_mapping:
             date_column = column_mapping.get('datetime')
             id_column = column_mapping.get('id')
@@ -69,16 +69,16 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
             binaraizer = preprocessing.LabelBinarizer()
             binaraizer.fit(reference_data[target_column])
             binaraized_target = binaraizer.transform(reference_data[target_column])
-            if production_data is not None:
+            if current_data is not None:
                 ref_array_prediction = reference_data[prediction_column].to_numpy()
                 ref_prediction_ids = np.argmax(ref_array_prediction, axis=-1)
                 ref_prediction_labels = [prediction_column[x] for x in ref_prediction_ids]
                 reference_data['prediction_labels'] = ref_prediction_labels
 
-                prod_array_prediction = production_data[prediction_column].to_numpy()
-                prod_prediction_ids = np.argmax(prod_array_prediction, axis=-1)
-                prod_prediction_labels = [prediction_column[x] for x in prod_prediction_ids]
-                production_data['prediction_labels'] = prod_prediction_labels
+                current_array_prediction = current_data[prediction_column].to_numpy()
+                current_prediction_ids = np.argmax(current_array_prediction, axis=-1)
+                current_prediction_labels = [prediction_column[x] for x in current_prediction_ids]
+                current_data['prediction_labels'] = current_prediction_labels
 
                 additional_graphs_data = []
                 params_data = []
@@ -99,8 +99,8 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
 
                     #create confusion based plots 
                     reference_data['dataset'] = 'Reference'
-                    production_data['dataset'] = 'Current'
-                    merged_data = pd.concat([reference_data, production_data])
+                    current_data['dataset'] = 'Current'
+                    merged_data = pd.concat([reference_data, current_data])
 
                     fig = px.histogram(merged_data, x=feature_name, color=target_column, facet_col="dataset", histnorm = '',
                         category_orders={"dataset": ["Reference", "Current"]})
@@ -156,15 +156,15 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                                 showticklabels=True
                             ),
                              yaxis = dict(
-                                range=(0, 1),
+                                range=(-0.1, 1.1),
                                 showticklabels=True
                             )
                         )
 
-                        #PROD Prediction
+                        #current Prediction
                         fig.add_trace(go.Scatter(
-                            x = production_data[production_data[target_column] == label][feature_name],
-                            y = production_data[production_data[target_column] == label][label],
+                            x = current_data[current_data[target_column] == label][feature_name],
+                            y = current_data[current_data[target_column] == label][label],
                             mode = 'markers',
                             name = str(label) + ' (curr)',
                             marker=dict(
@@ -176,8 +176,8 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                         )
 
                         fig.add_trace(go.Scatter(
-                            x = production_data[production_data[target_column] != label][feature_name],
-                            y = production_data[production_data[target_column] != label][label],
+                            x = current_data[current_data[target_column] != label][feature_name],
+                            y = current_data[current_data[target_column] != label][label],
                             mode = 'markers',
                             name = 'other (curr)',
                             marker=dict(
@@ -195,7 +195,7 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                                 showticklabels=True
                             ),
                              yaxis = dict(
-                                range=(0, 1),
+                                range=(-0.1, 1.1),
                                 showticklabels=True
                             )
                         )
@@ -316,7 +316,7 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                                 showticklabels=True
                             ),
                              yaxis = dict(
-                                range=(0, 1),
+                                range=(-0.1, 1.1),
                                 showticklabels=True
                             )
                         )

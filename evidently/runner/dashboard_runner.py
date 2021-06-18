@@ -28,7 +28,7 @@ class DashboardRunner(Runner):
         self.options = options
 
     def run(self):
-        (reference_data, production_data) = self._parse_data()
+        (reference_data, current_data) = self._parse_data()
 
         tabs = []
 
@@ -39,5 +39,5 @@ class DashboardRunner(Runner):
             tabs.append(tab_class)
 
         dashboard = Dashboard(tabs=tabs)
-        dashboard.calculate(reference_data, production_data, self.options.column_mapping)
+        dashboard.calculate(reference_data, current_data, self.options.column_mapping)
         dashboard.save(self.options.output_path + ".html")

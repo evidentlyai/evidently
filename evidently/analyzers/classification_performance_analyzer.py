@@ -10,7 +10,7 @@ from scipy.stats import ks_2samp, chisquare
 from sklearn import metrics
 
 class ClassificationPerformanceAnalyzer(Analyzer):
-    def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping):
+    def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping):
         result = dict()
         if column_mapping:
             date_column = column_mapping.get('datetime')
@@ -83,18 +83,18 @@ class ClassificationPerformanceAnalyzer(Analyzer):
             result['metrics']['reference']['confusion_matrix']['labels'] = labels
             result['metrics']['reference']['confusion_matrix']['values'] = conf_matrix.tolist()
 
-            if production_data is not None:
-                production_data.replace([np.inf, -np.inf], np.nan, inplace=True)
-                production_data.dropna(axis=0, how='any', inplace=True)
+            if current_data is not None:
+                current_data.replace([np.inf, -np.inf], np.nan, inplace=True)
+                current_data.dropna(axis=0, how='any', inplace=True)
 
                 result['metrics']['current'] = {}
             
-                accuracy_score = metrics.accuracy_score(production_data[target_column], production_data[prediction_column])
-                avg_precision = metrics.precision_score(production_data[target_column], production_data[prediction_column],
+                accuracy_score = metrics.accuracy_score(current_data[target_column], current_data[prediction_column])
+                avg_precision = metrics.precision_score(current_data[target_column], current_data[prediction_column],
                     average='macro')
-                avg_recall = metrics.recall_score(production_data[target_column], production_data[prediction_column],
+                avg_recall = metrics.recall_score(current_data[target_column], current_data[prediction_column],
                     average='macro')
-                avg_f1 = metrics.f1_score(production_data[target_column], production_data[prediction_column],
+                avg_f1 = metrics.f1_score(current_data[target_column], current_data[prediction_column],
                     average='macro')
 
                 result['metrics']['current']['accuracy'] = accuracy_score
@@ -103,15 +103,15 @@ class ClassificationPerformanceAnalyzer(Analyzer):
                 result['metrics']['current']['f1'] = avg_f1
 
                 #calculate class support and metrics matrix
-                metrics_matrix = metrics.classification_report(production_data[target_column], production_data[prediction_column],
+                metrics_matrix = metrics.classification_report(current_data[target_column], current_data[prediction_column],
                  output_dict=True)
 
                 result['metrics']['current']['metrics_matrix'] = metrics_matrix
 
                 #calculate confusion matrix
-                conf_matrix = metrics.confusion_matrix(production_data[target_column], 
-                    production_data[prediction_column])
-                labels = target_names if target_names else sorted(set(production_data[target_column]))
+                conf_matrix = metrics.confusion_matrix(current_data[target_column],
+                    current_data[prediction_column])
+                labels = target_names if target_names else sorted(set(current_data[target_column]))
             
                 result['metrics']['current']['confusion_matrix'] = {}
                 result['metrics']['current']['confusion_matrix']['labels'] = labels

@@ -10,7 +10,7 @@ from scipy.stats import ks_2samp, chisquare
 
 
 class DataDriftAnalyzer(Analyzer):
-    def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping):
+    def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping):
         result = dict()
         if column_mapping:
             date_column = column_mapping.get('datetime')
@@ -47,37 +47,37 @@ class DataDriftAnalyzer(Analyzer):
         result['metrics'] = {}
         for feature_name in num_feature_names:
             result['metrics'][feature_name] = dict(
-                prod_small_hist=[t.tolist() for t in np.histogram(production_data[feature_name][np.isfinite(production_data[feature_name])],
+                current_small_hist=[t.tolist() for t in np.histogram(current_data[feature_name][np.isfinite(current_data[feature_name])],
                                              bins=10, density=True)],
                 ref_small_hist=[t.tolist() for t in np.histogram(reference_data[feature_name][np.isfinite(reference_data[feature_name])],
                                             bins=10, density=True)],
                 feature_type='num',
-                p_value=ks_2samp(reference_data[feature_name], production_data[feature_name])[1]
+                p_value=ks_2samp(reference_data[feature_name], current_data[feature_name])[1]
             )
 
         for feature_name in cat_feature_names:
             ref_feature_vc = reference_data[feature_name][np.isfinite(reference_data[feature_name])].value_counts()
-            prod_feature_vc = production_data[feature_name][np.isfinite(production_data[feature_name])].value_counts()
+            current_feature_vc = current_data[feature_name][np.isfinite(current_data[feature_name])].value_counts()
 
             keys = set(list(reference_data[feature_name][np.isfinite(reference_data[feature_name])].unique()) +
-                       list(production_data[feature_name][np.isfinite(production_data[feature_name])].unique()))
+                       list(current_data[feature_name][np.isfinite(current_data[feature_name])].unique()))
 
             ref_feature_dict = dict.fromkeys(keys, 0)
             for key, item in zip(ref_feature_vc.index, ref_feature_vc.values):
                 ref_feature_dict[key] = item
 
-            prod_feature_dict = dict.fromkeys(keys, 0)
-            for key, item in zip(prod_feature_vc.index, prod_feature_vc.values):
-                prod_feature_dict[key] = item
+            current_feature_dict = dict.fromkeys(keys, 0)
+            for key, item in zip(current_feature_vc.index, current_feature_vc.values):
+                current_feature_dict[key] = item
 
             f_exp = [value[1] for value in sorted(ref_feature_dict.items())]
-            f_obs = [value[1] for value in sorted(prod_feature_dict.items())]
+            f_obs = [value[1] for value in sorted(current_feature_dict.items())]
 
             # CHI2 to be implemented for cases with different categories
             p_value = chisquare(f_exp, f_obs)[1]
 
             result['metrics'][feature_name] = dict(
-                prod_small_hist=[t.tolist() for t in np.histogram(production_data[feature_name][np.isfinite(production_data[feature_name])],
+                current_small_hist=[t.tolist() for t in np.histogram(current_data[feature_name][np.isfinite(current_data[feature_name])],
                                              bins=10, density=True)],
                 ref_small_hist=[t.tolist() for t in np.histogram(reference_data[feature_name][np.isfinite(reference_data[feature_name])],
                                             bins=10, density=True)],

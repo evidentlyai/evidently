@@ -32,7 +32,7 @@ class UnderperformSegmTableWidget(Widget):
             return self.wi
         raise ValueError("no widget info provided")
 
-    def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping, analyzes_results):
+    def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping, analyzes_results):
         if column_mapping:
             date_column = column_mapping.get('datetime')
             id_column = column_mapping.get('id')
@@ -62,34 +62,34 @@ class UnderperformSegmTableWidget(Widget):
             cat_feature_names = list(set(reference_data.select_dtypes([np.object]).columns) - set(utility_columns))
 
         
-        if production_data is not None:
-            production_data.replace([np.inf, -np.inf], np.nan, inplace=True)
-            production_data.dropna(axis=0, how='any', inplace=True)
+        if current_data is not None:
+            current_data.replace([np.inf, -np.inf], np.nan, inplace=True)
+            current_data.dropna(axis=0, how='any', inplace=True)
 
             reference_data.replace([np.inf, -np.inf], np.nan, inplace=True)
             reference_data.dropna(axis=0, how='any', inplace=True)
 
             ref_error = reference_data[prediction_column] - reference_data[target_column]
-            prod_error = production_data[prediction_column] - production_data[target_column]
+            current_error = current_data[prediction_column] - current_data[target_column]
 
             ref_quntile_5 = np.quantile(ref_error, .05)
             ref_quntile_95 = np.quantile(ref_error, .95)
 
-            prod_quntile_5 = np.quantile(prod_error, .05)
-            prod_quntile_95 = np.quantile(prod_error, .95)
+            current_quntile_5 = np.quantile(current_error, .05)
+            current_quntile_95 = np.quantile(current_error, .95)
 
             #create subplots
             reference_data['dataset'] = 'Reference'
             reference_data['Error bias'] = list(map(lambda x : 'Underestimation' if x <= ref_quntile_5 else 'Majority' 
                                           if x < ref_quntile_95 else 'Overestimation', ref_error))
 
-            production_data['dataset'] = 'Current'
-            production_data['Error bias'] = list(map(lambda x : 'Underestimation' if x <= prod_quntile_5 else 'Majority' 
-                                          if x < prod_quntile_95 else 'Overestimation', prod_error))
-            merged_data = pd.concat([reference_data, production_data])
+            current_data['dataset'] = 'Current'
+            current_data['Error bias'] = list(map(lambda x : 'Underestimation' if x <= current_quntile_5 else 'Majority' 
+                                          if x < current_quntile_95 else 'Overestimation', current_error))
+            merged_data = pd.concat([reference_data, current_data])
 
             reference_data.drop(['dataset', 'Error bias'], axis=1, inplace=True)
-            production_data.drop(['dataset', 'Error bias'], axis=1, inplace=True)
+            current_data.drop(['dataset', 'Error bias'], axis=1, inplace=True)
 
             params_data = []
             additional_graphs_data = []
@@ -103,11 +103,11 @@ class UnderperformSegmTableWidget(Widget):
                 ref_over_value = np.mean(reference_data[ref_error >= ref_quntile_95][feature_name])
                 ref_range_value = 0 if ref_over_value == ref_under_value else 100*abs(ref_over_value - ref_under_value)/(np.max(reference_data[feature_name]) - np.min(reference_data[feature_name]))
 
-                prod_overal_value = np.mean(production_data[feature_name])
-                prod_under_value = np.mean(production_data[prod_error <= prod_quntile_5][feature_name])
-                prod_expected_value = np.mean(production_data[(prod_error > prod_quntile_5) & (prod_error < prod_quntile_95)][feature_name])
-                prod_over_value = np.mean(production_data[prod_error >= prod_quntile_95][feature_name])
-                prod_range_value = 0 if prod_over_value == prod_under_value else 100*abs(prod_over_value - prod_under_value)/(np.max(production_data[feature_name]) - np.min(production_data[feature_name]))
+                current_overal_value = np.mean(current_data[feature_name])
+                current_under_value = np.mean(current_data[current_error <= current_quntile_5][feature_name])
+                current_expected_value = np.mean(current_data[(current_error > current_quntile_5) & (current_error < current_quntile_95)][feature_name])
+                current_over_value = np.mean(current_data[current_error >= current_quntile_95][feature_name])
+                current_range_value = 0 if current_over_value == current_under_value else 100*abs(current_over_value - current_under_value)/(np.max(current_data[feature_name]) - np.min(current_data[feature_name]))
 
 
                 feature_hist = px.histogram(merged_data, x=feature_name, color='Error bias', facet_col="dataset",
@@ -124,8 +124,8 @@ class UnderperformSegmTableWidget(Widget):
                         mode = 'markers',
                         marker=dict(
                             size=6,
-                            cmax=max(max(reference_data[feature_name]), max(production_data[feature_name])),
-                            cmin=min(min(reference_data[feature_name]), min(production_data[feature_name])),
+                            cmax=max(max(reference_data[feature_name]), max(current_data[feature_name])),
+                            cmin=min(min(reference_data[feature_name]), min(current_data[feature_name])),
                             color=reference_data[feature_name],
                             #colorbar=dict(
                             #    title="Colorbar"
@@ -138,15 +138,15 @@ class UnderperformSegmTableWidget(Widget):
 
                 segment_fig.add_trace(
                     go.Scatter(
-                        x = production_data[target_column],
-                        y = production_data[prediction_column],
+                        x = current_data[target_column],
+                        y = current_data[prediction_column],
                         mode = 'markers',
                         #name = feature_name + ' (curr)',
                         marker=dict(
                             size=6,
-                            cmax=max(max(reference_data[feature_name]), max(production_data[feature_name])),
-                            cmin=min(min(reference_data[feature_name]), min(production_data[feature_name])),
-                            color=production_data[feature_name],
+                            cmax=max(max(reference_data[feature_name]), max(current_data[feature_name])),
+                            cmin=min(min(reference_data[feature_name]), min(current_data[feature_name])),
+                            color=current_data[feature_name],
                             colorbar=dict(
                                 title=feature_name
                             ),
@@ -190,10 +190,10 @@ class UnderperformSegmTableWidget(Widget):
                         "f4": round(ref_under_value, 2),
                         "f5": round(ref_over_value, 2),
                         "f6": round(ref_range_value, 2),
-                        "f7": round(prod_expected_value, 2),
-                        "f8": round(prod_under_value, 2),
-                        "f9": round(prod_over_value, 2),
-                        "f10": round(prod_range_value, 2)
+                        "f7": round(current_expected_value, 2),
+                        "f8": round(current_under_value, 2),
+                        "f9": round(current_over_value, 2),
+                        "f10": round(current_range_value, 2)
                 }
                 )
 
@@ -227,12 +227,12 @@ class UnderperformSegmTableWidget(Widget):
                 ref_range_value = 1 if (ref_overal_value != ref_under_value) or (ref_over_value != ref_overal_value) \
                    or (ref_under_value != ref_overal_value) else 0
 
-                prod_overal_value = production_data[feature_name].value_counts().idxmax()
-                prod_under_value = production_data[prod_error <= prod_quntile_5][feature_name].value_counts().idxmax()
-                #prod_expected_value = production_data[(prod_error > prod_quntile_5) & (prod_error < prod_quntile_95)][feature_name].value_counts().idxmax()
-                prod_over_value = production_data[prod_error >= prod_quntile_95][feature_name].value_counts().idxmax()
-                prod_range_value = 1 if (prod_overal_value != prod_under_value) or (prod_over_value != prod_overal_value) \
-                   or (prod_under_value != prod_overal_value) else 0
+                current_overal_value = current_data[feature_name].value_counts().idxmax()
+                current_under_value = current_data[current_error <= current_quntile_5][feature_name].value_counts().idxmax()
+                #current_expected_value = current_data[(current_error > current_quntile_5) & (current_error < current_quntile_95)][feature_name].value_counts().idxmax()
+                current_over_value = current_data[current_error >= current_quntile_95][feature_name].value_counts().idxmax()
+                current_range_value = 1 if (current_overal_value != current_under_value) or (current_over_value != current_overal_value) \
+                   or (current_under_value != current_overal_value) else 0
 
                 feature_hist = px.histogram(merged_data, x=feature_name, color='Error bias', facet_col="dataset",
                     histnorm = 'percent', barmode='overlay', category_orders={"dataset": ["Reference", "Current"], "Error bias": ["Underestimation", "Overestimation", "Majority"]})
@@ -250,8 +250,8 @@ class UnderperformSegmTableWidget(Widget):
                         #marker_color = reference_data[feature_name],
                         marker=dict(
                             size=6,
-                            cmax=max(max(reference_data[feature_name]), max(production_data[feature_name])),
-                            cmin=min(min(reference_data[feature_name]), min(production_data[feature_name])),
+                            cmax=max(max(reference_data[feature_name]), max(current_data[feature_name])),
+                            cmin=min(min(reference_data[feature_name]), min(current_data[feature_name])),
                             color=reference_data[feature_name],
                             #colorbar=dict(
                             #    title="Colorbar"
@@ -264,16 +264,16 @@ class UnderperformSegmTableWidget(Widget):
 
                 segment_fig.add_trace(
                     go.Scatter(
-                        x = production_data[target_column],
-                        y = production_data[prediction_column],
+                        x = current_data[target_column],
+                        y = current_data[prediction_column],
                         mode = 'markers',
                         #name = feature_name + ' (curr)',
-                        #marker_color = production_data[feature_name],
+                        #marker_color = current_data[feature_name],
                         marker=dict(
                             size=6,
-                            cmax=max(max(reference_data[feature_name]), max(production_data[feature_name])),
-                            cmin=min(min(reference_data[feature_name]), min(production_data[feature_name])),
-                            color=production_data[feature_name],
+                            cmax=max(max(reference_data[feature_name]), max(current_data[feature_name])),
+                            cmin=min(min(reference_data[feature_name]), min(current_data[feature_name])),
+                            color=current_data[feature_name],
                             colorbar=dict(
                                 title=feature_name
                             ),
@@ -315,10 +315,10 @@ class UnderperformSegmTableWidget(Widget):
                         "f4": str(ref_under_value),
                         "f5": str(ref_over_value),
                         "f6": str(ref_range_value),
-                        "f7": str(prod_overal_value),
-                        "f8": str(prod_under_value),
-                        "f9": str(prod_over_value),
-                        "f10": int(prod_range_value)
+                        "f7": str(current_overal_value),
+                        "f8": str(current_under_value),
+                        "f9": str(current_over_value),
+                        "f10": int(current_range_value)
                 }
                 )
 
@@ -431,7 +431,7 @@ class UnderperformSegmTableWidget(Widget):
                     category_orders={"Error bias": ["Underestimation", "Overestimation", "Majority"]})
 
                 #hist_fig = px.histogram(reference_data, x=feature_name, color=target_column, facet_col="dataset",
-                #        category_orders={"dataset": ["Reference", "Production"]})
+                #        category_orders={"dataset": ["Reference", "Сurrent"]})
 
                 hist_figure = json.loads(hist.to_json())
 
@@ -498,7 +498,7 @@ class UnderperformSegmTableWidget(Widget):
                     barmode='overlay', category_orders={"Error bias": ["Underestimation", "Overestimation", "Majority"]})
 
                 #hist_fig = px.histogram(reference_data, x=feature_name, color=target_column, facet_col="dataset",
-                #        category_orders={"dataset": ["Reference", "Production"]})
+                #        category_orders={"dataset": ["Reference", "Сurrent"]})
 
                 hist_figure = json.loads(hist.to_json())
 

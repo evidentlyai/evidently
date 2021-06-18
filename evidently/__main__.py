@@ -1,12 +1,16 @@
 import argparse
 import json
+import logging
 import os
 import sys
 from typing import Dict, List
 
 from dataclasses import dataclass
 
+import yaml
+
 from evidently.runner.dashboard_runner import DashboardRunnerOptions, DashboardRunner
+from evidently.runner.loader import SamplingOptions
 from evidently.runner.profile_runner import ProfileRunner, ProfileRunnerOptions
 from evidently.runner.runner import DataOptions
 
@@ -19,9 +23,16 @@ class DataFormatOptions:
 
 
 @dataclass
+class Sampling:
+    reference: SamplingOptions
+    current: SamplingOptions
+
+
+@dataclass
 class CalculateOptions:
     data_format: DataFormatOptions
     column_mapping: Dict[str, str]
+    sampling: Sampling
 
 
 @dataclass
@@ -35,22 +46,42 @@ class ProfileOptions(CalculateOptions):
     pretty_print: bool = False
 
 
+def __get_not_none(d, key, default):
+    return default if d.get(key, None) is None else d.get(key)
+
+
 def calculate_dashboard(config: str, reference: str, current: str, output_path: str, report_name: str, **_kv):
     with open(config) as f_config:
-        opts_data = json.load(f_config)
+        if config.endswith(".yaml") or config.endswith(".yml"):
+            opts_data = yaml.load(f_config, Loader=yaml.SafeLoader)
+        elif config.endswith(".json"):
+            opts_data = json.load(f_config)
+        else:
+            raise Exception(f"config .{config.split('.')[-1]} not supported")
+
+        sampling = __get_not_none(opts_data, "sampling", {})
+        ref_sampling = __get_not_none(sampling, "reference", {})
+        cur_sampling = __get_not_none(sampling, "current", {})
+
         opts = DashboardOptions(data_format=DataFormatOptions(**opts_data["data_format"]),
                                 column_mapping=opts_data["column_mapping"],
-                                dashboard_tabs=opts_data["dashboard_tabs"])
+                                dashboard_tabs=opts_data["dashboard_tabs"],
+                                sampling=Sampling(
+                                    reference=SamplingOptions(**ref_sampling),
+                                    current=SamplingOptions(**cur_sampling),
+                                ))
 
     runner = DashboardRunner(DashboardRunnerOptions(
         reference_data_path=reference,
         reference_data_options=DataOptions(date_column=opts.data_format.date_column,
                                            separator=opts.data_format.separator,
                                            header=opts.data_format.header),
-        production_data_path=current,
-        production_data_options=DataOptions(date_column=opts.data_format.date_column,
-                                            separator=opts.data_format.separator,
-                                            header=opts.data_format.header),
+        reference_data_sampling=opts.sampling.reference,
+        current_data_path=current,
+        current_data_options=DataOptions(date_column=opts.data_format.date_column,
+                                         separator=opts.data_format.separator,
+                                         header=opts.data_format.header),
+        current_data_sampling=opts.sampling.current,
         dashboard_tabs=opts.dashboard_tabs,
         column_mapping=opts.column_mapping,
         output_path=os.path.join(output_path, report_name),
@@ -60,21 +91,37 @@ def calculate_dashboard(config: str, reference: str, current: str, output_path: 
 
 def calculate_profile(config: str, reference: str, current: str, output_path: str, report_name: str, **_kv):
     with open(config) as f_config:
-        opts_data = json.load(f_config)
+        if config.endswith(".yaml") or config.endswith(".yml"):
+            opts_data = yaml.load(f_config, Loader=yaml.SafeLoader)
+        elif config.endswith(".json"):
+            opts_data = json.load(f_config)
+        else:
+            raise Exception(f"config .{config.split('.')[-1]} not supported")
+
+        sampling = __get_not_none(opts_data, "sampling", {})
+        ref_sampling = __get_not_none(sampling, "reference", {})
+        cur_sampling = __get_not_none(sampling, "current", {})
+
         opts = ProfileOptions(data_format=DataFormatOptions(**opts_data["data_format"]),
                               column_mapping=opts_data["column_mapping"],
                               profile_parts=opts_data["profile_sections"],
-                              pretty_print=opts_data["pretty_print"])
+                              pretty_print=opts_data["pretty_print"],
+                              sampling=Sampling(
+                                  reference=SamplingOptions(**ref_sampling),
+                                  current=SamplingOptions(**cur_sampling),
+                              ))
 
     runner = ProfileRunner(ProfileRunnerOptions(
         reference_data_path=reference,
         reference_data_options=DataOptions(date_column=opts.data_format.date_column,
                                            separator=opts.data_format.separator,
                                            header=opts.data_format.header),
-        production_data_path=current,
-        production_data_options=DataOptions(date_column=opts.data_format.date_column,
-                                            separator=opts.data_format.separator,
-                                            header=opts.data_format.header),
+        reference_data_sampling=opts.sampling.reference,
+        current_data_path=current,
+        current_data_options=DataOptions(date_column=opts.data_format.date_column,
+                                         separator=opts.data_format.separator,
+                                         header=opts.data_format.header),
+        current_data_sampling=opts.sampling.current,
         profile_parts=opts.profile_parts,
         column_mapping=opts.column_mapping,
         output_path=os.path.join(output_path, report_name),
@@ -92,9 +139,12 @@ def _add_default_parameters(configurable_parser, default_output_name: str):
     configurable_parser.add_argument("--reference", dest="reference", required=True, help="Path to reference data")
     configurable_parser.add_argument("--current", dest="current", help="Path to current data")
     configurable_parser.add_argument("--output_path", dest="output_path", required=True, help="Path to store report")
-    configurable_parser.add_argument("--report_name", dest="report_name", default=default_output_name, help="Report name")
+    configurable_parser.add_argument("--report_name", dest="report_name", default=default_output_name,
+                                     help="Report name")
     configurable_parser.add_argument("--config", dest="config", required=True, help="Path to configuration")
 
+
+logging.basicConfig(level=logging.INFO)
 
 parser = argparse.ArgumentParser()
 
