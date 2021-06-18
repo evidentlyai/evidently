@@ -335,7 +335,7 @@ Here is an example of a more complicated configuration, where we have comma sepa
 ## Large datasets
 
 As you can see from the above example, you can specify **sampling** parameters for large files. You can use different sampling strategies for reference and current data, or apply sampling only to one of the files. 
-Currently we have 3 sampling types avaliable:
+Currently we have 3 sampling types available:
 * `none` - there will be no sampling for the file,
 * `nth` - each Nth row of the file will be taken. This option works together with `n` parameter (see the example with the Dashboard above)
 * `random` - random sampling will be applied. This option works together with `ratio` parameter (see the example with the Profile above)
