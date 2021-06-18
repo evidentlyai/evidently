@@ -46,6 +46,10 @@ class ProfileOptions(CalculateOptions):
     pretty_print: bool = False
 
 
+def __get_not_none(d, key, default):
+    return default if d.get(key, None) is None else d.get(key)
+
+
 def calculate_dashboard(config: str, reference: str, current: str, output_path: str, report_name: str, **_kv):
     with open(config) as f_config:
         if config.endswith(".yaml") or config.endswith(".yml"):
@@ -54,12 +58,17 @@ def calculate_dashboard(config: str, reference: str, current: str, output_path: 
             opts_data = json.load(f_config)
         else:
             raise Exception(f"config .{config.split('.')[-1]} not supported")
+
+        sampling = __get_not_none(opts_data, "sampling", {})
+        ref_sampling = __get_not_none(sampling, "reference", {})
+        cur_sampling = __get_not_none(sampling, "current", {})
+
         opts = DashboardOptions(data_format=DataFormatOptions(**opts_data["data_format"]),
                                 column_mapping=opts_data["column_mapping"],
                                 dashboard_tabs=opts_data["dashboard_tabs"],
                                 sampling=Sampling(
-                                    reference=SamplingOptions(**opts_data["sampling"]["reference"]),
-                                    current=SamplingOptions(**opts_data["sampling"]["current"]),
+                                    reference=SamplingOptions(**ref_sampling),
+                                    current=SamplingOptions(**cur_sampling),
                                 ))
 
     runner = DashboardRunner(DashboardRunnerOptions(
@@ -70,8 +79,8 @@ def calculate_dashboard(config: str, reference: str, current: str, output_path: 
         reference_data_sampling=opts.sampling.reference,
         current_data_path=current,
         current_data_options=DataOptions(date_column=opts.data_format.date_column,
-                                            separator=opts.data_format.separator,
-                                            header=opts.data_format.header),
+                                         separator=opts.data_format.separator,
+                                         header=opts.data_format.header),
         current_data_sampling=opts.sampling.current,
         dashboard_tabs=opts.dashboard_tabs,
         column_mapping=opts.column_mapping,
@@ -88,13 +97,18 @@ def calculate_profile(config: str, reference: str, current: str, output_path: st
             opts_data = json.load(f_config)
         else:
             raise Exception(f"config .{config.split('.')[-1]} not supported")
+
+        sampling = __get_not_none(opts_data, "sampling", {})
+        ref_sampling = __get_not_none(sampling, "reference", {})
+        cur_sampling = __get_not_none(sampling, "current", {})
+
         opts = ProfileOptions(data_format=DataFormatOptions(**opts_data["data_format"]),
                               column_mapping=opts_data["column_mapping"],
                               profile_parts=opts_data["profile_sections"],
                               pretty_print=opts_data["pretty_print"],
                               sampling=Sampling(
-                                  reference=SamplingOptions(**opts_data["sampling"]["reference"]),
-                                  current=SamplingOptions(**opts_data["sampling"]["current"]),
+                                  reference=SamplingOptions(**ref_sampling),
+                                  current=SamplingOptions(**cur_sampling),
                               ))
 
     runner = ProfileRunner(ProfileRunnerOptions(
@@ -105,8 +119,8 @@ def calculate_profile(config: str, reference: str, current: str, output_path: st
         reference_data_sampling=opts.sampling.reference,
         current_data_path=current,
         current_data_options=DataOptions(date_column=opts.data_format.date_column,
-                                            separator=opts.data_format.separator,
-                                            header=opts.data_format.header),
+                                         separator=opts.data_format.separator,
+                                         header=opts.data_format.header),
         current_data_sampling=opts.sampling.current,
         profile_parts=opts.profile_parts,
         column_mapping=opts.column_mapping,
