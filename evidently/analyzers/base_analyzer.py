@@ -10,5 +10,5 @@ class Analyzer:
         pass
 
     @abc.abstractmethod
-    def calculate(self, reference_data: pd.DataFrame, production_data: pd.DataFrame, column_mapping) -> object:
+    def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping) -> object:
         raise NotImplementedError()

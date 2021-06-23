@@ -132,7 +132,7 @@ class RegressionPerformanceAnalyzer(Analyzer):
                 current_quantile_95 = np.quantile(current_error, .95)
 
                 current_mae = np.mean(current_error)
-                current_mae_under = np.mean(current_error[current_error <= pcurrent_quantile_5])
+                current_mae_under = np.mean(current_error[current_error <= current_quantile_5])
                 current_mae_exp = np.mean(current_error[(current_error > current_quantile_5) & (current_error < current_quantile_95)])
                 current_mae_over = np.mean(current_error[current_error >= current_quantile_95])
 
