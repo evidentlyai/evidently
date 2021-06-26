@@ -4,7 +4,8 @@
 from typing import List
 
 from evidently.tabs.base_tab import Tab
-from evidently.widgets.reg_target_name_widget import RegTargetNameWidget
+#from evidently.widgets.reg_target_name_widget import RegTargetNameWidget
+from evidently.widgets.target_name_widget import TargetNameWidget
 from evidently.widgets.reg_ref_quality_metrics_widget import RegRefQualityMetricsWidget
 from evidently.widgets.reg_prod_quality_metrics_widget import RegProdQualityMetricsWidget
 from evidently.widgets.reg_ref_pred_vs_actual_widget import RegRefPredActualWidget
@@ -31,7 +32,8 @@ class RegressionPerformanceTab(Tab):
     def _get_widgets(self) -> List[Widget]:
         
         widgets = [
-            RegTargetNameWidget(""),
+            #RegTargetNameWidget(""),
+            TargetNameWidget("Regression Model Performance Report.", kind = 'regression'),
             RegRefQualityMetricsWidget("Reference: Model Quality (+/- std)"),
             RegProdQualityMetricsWidget("Current: Model Quality (+/- std)"),
             RegRefPredActualWidget("Reference: Predicted vs Actual"),

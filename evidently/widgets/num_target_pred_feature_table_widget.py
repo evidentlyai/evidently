@@ -11,6 +11,7 @@ from scipy.stats import ks_2samp, chisquare
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
 
+from evidently.analyzers.num_target_drift_analyzer import NumTargetDriftAnalyzer
 from evidently.model.widget import BaseWidgetInfo, AlertStats, AdditionalGraphInfo
 from evidently.widgets.widget import Widget
 
@@ -24,46 +25,26 @@ class NumTargetPredFeatureTable(Widget):
         self.title = title
 
     def analyzers(self):
-        return []
+        return [NumTargetDriftAnalyzer]
 
     def get_info(self) -> BaseWidgetInfo:
-        if self.wi:
-            return self.wi
-        raise ValueError("neither target nor prediction data provided")
+        #if self.wi:
+        #    return self.wi
+        #raise ValueError("no widget info provided")
+        return self.wi
 
-    def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping, analyzes_results):
-        if column_mapping:
-            date_column = column_mapping.get('datetime')
-            id_column = column_mapping.get('id')
-            target_column = column_mapping.get('target')
-            prediction_column = column_mapping.get('prediction')
-            num_feature_names = column_mapping.get('numerical_features')
-            if num_feature_names is None:
-                num_feature_names = []
-            else:
-                num_feature_names = [name for name in num_feature_names if is_numeric_dtype(reference_data[name])] 
-
-            cat_feature_names = column_mapping.get('categorical_features')
-            if cat_feature_names is None:
-                cat_feature_names = []
-            else:
-                cat_feature_names = [name for name in cat_feature_names if is_numeric_dtype(reference_data[name])] 
+    def calculate(self,
+                  reference_data: pd.DataFrame,
+                  current_data: pd.DataFrame,
+                  column_mapping,
+                  analyzers_results):
         
-        else:
-            date_column = 'datetime' if 'datetime' in reference_data.columns else None
-            id_column = None
-            target_column = 'target' if 'target' in reference_data.columns else None
-            prediction_column = 'prediction' if 'prediction' in reference_data.columns else None
+        results = analyzers_results[NumTargetDriftAnalyzer]
 
-            utility_columns = [date_column, id_column, target_column, prediction_column]
-
-            num_feature_names = list(set(reference_data.select_dtypes([np.number]).columns) - set(utility_columns))
-            cat_feature_names = list(set(reference_data.select_dtypes([np.object]).columns) - set(utility_columns))
-
-        if prediction_column is not None or target_column is not None:           
+        if results['utility_columns']['prediction'] is not None or results['utility_columns']['target'] is not None: 
             additional_graphs_data = []
             params_data = []
-            for feature_name in num_feature_names + cat_feature_names: 
+            for feature_name in results['num_feature_names'] + results['cat_feature_names']: 
                 #add data for table in params
                 params_data.append(
                     {
@@ -83,11 +64,11 @@ class NumTargetPredFeatureTable(Widget):
                 #create plot
                 fig = make_subplots(rows=1, cols=2, subplot_titles=("Reference", "Current"))
 
-                if prediction_column is not None:
+                if results['utility_columns']['prediction'] is not None:
                     fig.add_trace(
                         go.Scatter(
                         x = reference_data[feature_name],
-                        y = reference_data[prediction_column],
+                        y = reference_data[results['utility_columns']['prediction']],
                         mode = 'markers',
                         name = 'Prediction (ref)',
                         marker = dict(
@@ -98,11 +79,11 @@ class NumTargetPredFeatureTable(Widget):
                         row=1, col=1
                     )
 
-                if target_column is not None:
+                if results['utility_columns']['target'] is not None:
                     fig.add_trace(
                         go.Scatter(
                         x = reference_data[feature_name],
-                        y = reference_data[target_column],
+                        y = reference_data[results['utility_columns']['target']],
                         mode = 'markers',
                         name = 'Target (ref)',
                         marker = dict(
@@ -113,11 +94,11 @@ class NumTargetPredFeatureTable(Widget):
                         row=1, col=1
                     )
 
-                if prediction_column is not None:
+                if results['utility_columns']['prediction'] is not None:
                     fig.add_trace(
                         go.Scatter(
                         x = current_data[feature_name],
-                        y = current_data[prediction_column],
+                        y = current_data[results['utility_columns']['prediction']],
                         mode = 'markers',
                         name = 'Prediction (curr)',
                         marker = dict(
@@ -128,11 +109,11 @@ class NumTargetPredFeatureTable(Widget):
                         row=1, col=2
                     )
 
-                if target_column is not None:
+                if results['utility_columns']['target'] is not None:
                     fig.add_trace(
                         go.Scatter(
                         x = current_data[feature_name],
-                        y = current_data[target_column],
+                        y = current_data[results['utility_columns']['target']],
                         mode = 'markers',
                         name = 'Target (curr)',
                         marker = dict(
@@ -174,7 +155,7 @@ class NumTargetPredFeatureTable(Widget):
                 insights=[],
                 size=2,
                 params={
-                    "rowsPerPage" : min(len(num_feature_names) + len(cat_feature_names), 10),
+                    "rowsPerPage" : min(len(results['num_feature_names']) + len(results['cat_feature_names']), 10),
                     "columns": [
                         {
                             "title": "Feature",

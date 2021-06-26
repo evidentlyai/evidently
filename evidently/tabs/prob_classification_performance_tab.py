@@ -4,7 +4,8 @@
 from typing import List
 
 from evidently.tabs.base_tab import Tab
-from evidently.widgets.prob_class_target_name_widget import ProbClassTargetNameWidget
+#from evidently.widgets.prob_class_target_name_widget import ProbClassTargetNameWidget
+from evidently.widgets.target_name_widget import TargetNameWidget
 from evidently.widgets.prob_class_ref_quality_metrics_widget import ProbClassRefQualityMetricsWidget
 from evidently.widgets.prob_class_prod_quality_metrics_widget import ProbClassProdQualityMetricsWidget
 from evidently.widgets.prob_class_ref_class_support_widget import ProbClassRefClassSupportWidget
@@ -32,7 +33,8 @@ class ProbClassificationPerformanceTab(Tab):
     def _get_widgets(self) -> List[Widget]:
         
         widgets = [
-            ProbClassTargetNameWidget(""),
+            #ProbClassTargetNameWidget(""),
+            TargetNameWidget("Probabilistic Classification Model Performance Report.", kind = 'prob_classification'),
             ProbClassRefQualityMetricsWidget("Reference: Model Quality With Macro-average Metrics"),
             ProbClassProdQualityMetricsWidget("Current: Model Quality With Macro-average Metrics"),
             ProbClassRefClassSupportWidget("Reference: Class Representation"),

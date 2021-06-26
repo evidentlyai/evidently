@@ -4,7 +4,8 @@
 from typing import List
 
 from evidently.tabs.base_tab import Tab
-from evidently.widgets.class_target_name_widget import ClassTargetNameWidget
+#from evidently.widgets.class_target_name_widget import ClassTargetNameWidget
+from evidently.widgets.target_name_widget import TargetNameWidget
 from evidently.widgets.class_ref_quality_metrics_widget import ClassRefQualityMetricsWidget
 from evidently.widgets.class_prod_quality_metrics_widget import ClassProdQualityMetricsWidget
 from evidently.widgets.class_ref_class_support_widget import ClassRefClassSupportWidget
@@ -22,7 +23,8 @@ class ClassificationPerformanceTab(Tab):
     def _get_widgets(self) -> List[Widget]:
         
         widgets = [
-            ClassTargetNameWidget(""),
+            #ClassTargetNameWidget(""),
+            TargetNameWidget("Classification Model Performance Report.", kind = 'classification'),
             ClassRefQualityMetricsWidget("Reference: Model Quality With Macro-average Metrics"),
             ClassProdQualityMetricsWidget("Current: Model Quality With Macro-average Metrics"),
             ClassRefClassSupportWidget("Reference: Class Representation"),

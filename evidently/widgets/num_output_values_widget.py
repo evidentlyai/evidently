@@ -11,6 +11,7 @@ from scipy.stats import ks_2samp
 import plotly.graph_objs as go
 import plotly.figure_factory as ff
 
+from evidently.analyzers.num_target_drift_analyzer import NumTargetDriftAnalyzer
 from evidently.model.widget import BaseWidgetInfo, AlertStats, AdditionalGraphInfo
 from evidently.widgets.widget import Widget
 
@@ -18,60 +19,40 @@ red = "#ed0400"
 grey = "#4d4d4d"
 
 
-class NumPredictionValuesWidget(Widget):
-    def __init__(self, title: str):
+class NumOutputValuesWidget(Widget):
+    def __init__(self, title:str, kind:str = 'target'):
         super().__init__()
         self.title = title
-        #self.wi = None
+        self.kind = kind #target or prediction
 
     def analyzers(self):
-        return []
+        return [NumTargetDriftAnalyzer]
 
     def get_info(self) -> BaseWidgetInfo:
         #if self.wi:
+        #    return self.wi
+        #raise ValueError("no widget info provided")
         return self.wi
-        #raise ValueError("No prediction data provided")
 
-    def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping, analyzes_results):
-        if column_mapping:
-            date_column = column_mapping.get('datetime')
-            id_column = column_mapping.get('id')
-            target_column = column_mapping.get('target')
-            prediction_column = column_mapping.get('prediction')
-            num_feature_names = column_mapping.get('numerical_features')
-            if num_feature_names is None:
-                num_feature_names = []
-            else:
-                num_feature_names = [name for name in num_feature_names if is_numeric_dtype(reference_data[name])] 
-
-            cat_feature_names = column_mapping.get('categorical_features')
-            if cat_feature_names is None:
-                cat_feature_names = []
-            else:
-                cat_feature_names = [name for name in cat_feature_names if is_numeric_dtype(reference_data[name])] 
+    def calculate(self,
+                  reference_data: pd.DataFrame,
+                  current_data: pd.DataFrame,
+                  column_mapping,
+                  analyzers_results):
         
-        else:
-            date_column = 'datetime' if 'datetime' in reference_data.columns else None
-            id_column = None
-            target_column = 'target' if 'target' in reference_data.columns else None
-            prediction_column = 'prediction' if 'prediction' in reference_data.columns else None
+        results = analyzers_results[NumTargetDriftAnalyzer]
 
-            utility_columns = [date_column, id_column, target_column, prediction_column]
+        if results['utility_columns'][self.kind] is not None:
+            #plot values
+            reference_mean = np.mean(reference_data[results['utility_columns'][self.kind]])
+            reference_std = np.std(reference_data[results['utility_columns'][self.kind]], ddof = 1) 
+            x_title = "Timestamp" if results['utility_columns']['date'] else "Index"
 
-            num_feature_names = list(set(reference_data.select_dtypes([np.number]).columns) - set(utility_columns))
-            cat_feature_names = list(set(reference_data.select_dtypes([np.object]).columns) - set(utility_columns))
+            output_values = go.Figure()
 
-        if prediction_column is not None:
-            #plot drift
-            reference_mean = np.mean(reference_data[prediction_column])
-            reference_std = np.std(reference_data[prediction_column], ddof = 1) 
-            x_title = "Timestamp" if date_column else "Index"
-
-            pred_values = go.Figure()
-
-            pred_values.add_trace(go.Scatter(
-                x = reference_data[date_column] if date_column else reference_data.index,
-                y = reference_data[prediction_column],
+            output_values.add_trace(go.Scatter(
+                x = reference_data[results['utility_columns']['date']] if results['utility_columns']['date'] else reference_data.index,
+                y = reference_data[results['utility_columns'][self.kind]],
                 mode = 'markers',
                 name = 'Reference',
                 marker = dict(
@@ -80,9 +61,9 @@ class NumPredictionValuesWidget(Widget):
                 )
             ))
 
-            pred_values.add_trace(go.Scatter(
-                x = current_data[date_column] if date_column else current_data.index,
-                y = current_data[prediction_column],
+            output_values.add_trace(go.Scatter(
+                x = current_data[results['utility_columns']['date']] if results['utility_columns']['date'] else current_data.index,
+                y = current_data[results['utility_columns'][self.kind]],
                 mode = 'markers',
                 name = 'Current',
                 marker = dict(
@@ -91,9 +72,9 @@ class NumPredictionValuesWidget(Widget):
                 )
             ))
 
-            pred_values.update_layout(
+            output_values.update_layout(
                 xaxis_title = x_title,
-                yaxis_title = 'Prediction Value',
+                yaxis_title = self.kind.title() + ' Value',
                 showlegend = True,
                 legend = dict(
                 orientation = "h",
@@ -135,7 +116,7 @@ class NumPredictionValuesWidget(Widget):
                 ]  
             )
 
-            pred_values_json  = json.loads(pred_values.to_json())
+            output_values_json  = json.loads(output_values.to_json())
 
             self.wi = BaseWidgetInfo(
                 title=self.title,
@@ -147,8 +128,8 @@ class NumPredictionValuesWidget(Widget):
                 insights=[],
                 size=1,
                 params={
-                    "data": pred_values_json['data'],
-                    "layout": pred_values_json['layout']
+                    "data": output_values_json['data'],
+                    "layout": output_values_json['layout']
                 },
                 additionalGraphs=[],
             )
