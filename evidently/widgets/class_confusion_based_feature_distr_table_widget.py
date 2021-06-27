@@ -11,6 +11,7 @@ from scipy.stats import ks_2samp, chisquare
 import plotly.graph_objs as go
 import plotly.express as px
 
+from evidently.analyzers.classification_performance_analyzer import ClassificationPerformanceAnalyzer
 from evidently.model.widget import BaseWidgetInfo, AlertStats, AdditionalGraphInfo
 from evidently.widgets.widget import Widget
 
@@ -19,59 +20,36 @@ grey = "#4d4d4d"
 
 
 class ClassConfusionBasedFeatureDistrTable(Widget):
-    def __init__(self, title: str):
+    def __init__(self, title:str):
         super().__init__()
         self.title = title
 
-    def analyzers(self):
-        return []
+    def analyzers(self):   
+        return [ClassificationPerformanceAnalyzer]
 
     def get_info(self) -> BaseWidgetInfo:
         if self.wi:
             return self.wi
-        raise ValueError("neither target nor prediction data provided")
+        raise ValueError("no data for quality metrics widget provided")
 
-    def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping, analyzes_results):
-        if column_mapping:
-            date_column = column_mapping.get('datetime')
-            id_column = column_mapping.get('id')
-            target_column = column_mapping.get('target')
-            prediction_column = column_mapping.get('prediction')
-            num_feature_names = column_mapping.get('numerical_features')
-            target_names = column_mapping.get('target_names')
-            if num_feature_names is None:
-                num_feature_names = []
-            else:
-                num_feature_names = [name for name in num_feature_names if is_numeric_dtype(reference_data[name])] 
 
-            cat_feature_names = column_mapping.get('categorical_features')
-            if cat_feature_names is None:
-                cat_feature_names = []
-            else:
-                cat_feature_names = [name for name in cat_feature_names if is_numeric_dtype(reference_data[name])] 
+    def calculate(self,
+                  reference_data: pd.DataFrame,
+                  current_data: pd.DataFrame,
+                  column_mapping,
+                  analyzers_results):
         
-        else:
-            date_column = 'datetime' if 'datetime' in reference_data.columns else None
-            id_column = None
-            target_column = 'target' if 'target' in reference_data.columns else None
-            prediction_column = 'prediction' if 'prediction' in reference_data.columns else None
+        results = analyzers_results[ClassificationPerformanceAnalyzer]
 
-            utility_columns = [date_column, id_column, target_column, prediction_column]
-
-            target_names = None
-
-            num_feature_names = list(set(reference_data.select_dtypes([np.number]).columns) - set(utility_columns))
-            cat_feature_names = list(set(reference_data.select_dtypes([np.object]).columns) - set(utility_columns))
-
-        if prediction_column is not None and target_column is not None: 
+        if results['utility_columns']['target'] is not None and results['utility_columns']['prediction'] is not None: 
             if current_data is not None:
 
                 additional_graphs_data = []
                 params_data = []
 
-                for feature_name in num_feature_names + cat_feature_names: 
+                for feature_name in results['num_feature_names'] + results['cat_feature_names']: 
                     #add data for table in params
-                    labels = sorted(set(reference_data[target_column]))
+                    labels = sorted(set(reference_data[results['utility_columns']['target']]))
 
                     params_data.append(
                         {
@@ -88,7 +66,7 @@ class ClassConfusionBasedFeatureDistrTable(Widget):
                     current_data['dataset'] = 'Current'
                     merged_data = pd.concat([reference_data, current_data])
 
-                    fig = px.histogram(merged_data, x=feature_name, color=target_column, facet_col="dataset", histnorm = '',
+                    fig = px.histogram(merged_data, x=feature_name, color=results['utility_columns']['target'], facet_col="dataset", histnorm = '',
                         category_orders={"dataset": ["Reference", "Current"]})
 
                     fig_json  = json.loads(fig.to_json())
@@ -105,9 +83,9 @@ class ClassConfusionBasedFeatureDistrTable(Widget):
                     )
 
                     for label in labels:
-                        merged_data['Confusion'] = merged_data.apply(lambda x : 'TP' if (x['target'] == label and x['prediction'] == label) 
-                                                 else ('FP' if(x['target'] != label and x['prediction'] == label) else \
-                                                       ('FN' if (x['target'] == label and x['prediction'] != label) else 'TN')), axis = 1)
+                        merged_data['Confusion'] = merged_data.apply(lambda x : 'TP' if (x[results['utility_columns']['target']] == label and x[results['utility_columns']['prediction']] == label) 
+                                                 else ('FP' if(x[results['utility_columns']['target']] != label and x[results['utility_columns']['prediction']] == label) else \
+                                                       ('FN' if (x[results['utility_columns']['target']] == label and x[results['utility_columns']['prediction']] != label) else 'TN')), axis = 1)
                         
                         fig = px.histogram(merged_data, x=feature_name, color='Confusion', facet_col="dataset", histnorm = '',
                             category_orders={"dataset": ["Reference", "Current"], "Confusion": ["TP", "TN", "FP", "FN"]})
@@ -135,7 +113,7 @@ class ClassConfusionBasedFeatureDistrTable(Widget):
                     insights=[],
                     size=2,
                     params={
-                        "rowsPerPage" : min(len(num_feature_names) + len(cat_feature_names), 10),
+                        "rowsPerPage" : min(len(results['num_feature_names']) + len(results['cat_feature_names']), 10),
                         "columns": [
                             {
                                 "title": "Feature",
@@ -152,9 +130,9 @@ class ClassConfusionBasedFeatureDistrTable(Widget):
                 additional_graphs_data = []
                 params_data = []
 
-                for feature_name in num_feature_names + cat_feature_names: 
+                for feature_name in results['num_feature_names'] + results['cat_feature_names']: 
                     #add data for table in params
-                    labels = sorted(set(reference_data[target_column]))
+                    labels = sorted(set(reference_data[results['utility_columns']['target']]))
 
                     params_data.append(
                         {
@@ -167,7 +145,7 @@ class ClassConfusionBasedFeatureDistrTable(Widget):
                         )
 
                     #create confusion based plots 
-                    fig = px.histogram(reference_data, x=feature_name, color=target_column, histnorm = '')
+                    fig = px.histogram(reference_data, x=feature_name, color=results['utility_columns']['target'], histnorm = '')
 
                     fig_json  = json.loads(fig.to_json())
 
@@ -183,9 +161,9 @@ class ClassConfusionBasedFeatureDistrTable(Widget):
                     )
 
                     for label in labels:
-                        reference_data['Confusion'] = reference_data.apply(lambda x : 'TP' if (x['target'] == label and x['prediction'] == label) 
-                                                 else ('FP' if(x['target'] != label and x['prediction'] == label) else \
-                                                       ('FN' if (x['target'] == label and x['prediction'] != label) else 'TN')), axis = 1)
+                        reference_data['Confusion'] = reference_data.apply(lambda x : 'TP' if (x[results['utility_columns']['target']] == label and x[results['utility_columns']['prediction']] == label) 
+                                                 else ('FP' if(x[results['utility_columns']['target']] != label and x[results['utility_columns']['prediction']] == label) else \
+                                                       ('FN' if (x[results['utility_columns']['target']] == label and x[results['utility_columns']['prediction']] != label) else 'TN')), axis = 1)
                         
                         fig = px.histogram(reference_data, x=feature_name, color='Confusion', histnorm = '', category_orders={"Confusion": ["TP", "TN", "FP", "FN"]})
 
@@ -212,7 +190,7 @@ class ClassConfusionBasedFeatureDistrTable(Widget):
                     insights=[],
                     size=2,
                     params={
-                        "rowsPerPage" : min(len(num_feature_names) + len(cat_feature_names), 10),
+                        "rowsPerPage" : min(len(results['num_feature_names']) + len(results['cat_feature_names']), 10),
                         "columns": [
                             {
                                 "title": "Feature",
