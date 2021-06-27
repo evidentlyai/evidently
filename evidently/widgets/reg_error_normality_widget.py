@@ -8,7 +8,9 @@ import numpy as np
 
 from scipy.stats import ks_2samp, probplot
 import plotly.graph_objs as go
-import plotly.figure_factory as ff
+#import plotly.figure_factory as ff
+
+from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceAnalyzer
 
 from evidently.model.widget import BaseWidgetInfo, AlertStats, AdditionalGraphInfo
 from evidently.widgets.widget import Widget
@@ -17,57 +19,45 @@ red = "#ed0400"
 grey = "#4d4d4d"
 
 
-class RegProdErrorNormalityWidget(Widget):
-    def __init__(self, title: str):
+class RegErrorNormalityWidget(Widget):
+    def __init__(self, title:str, dataset:str='reference'):
         super().__init__()
         self.title = title
+        self.dataset = dataset #reference or current
 
-    def analyzers(self):
-        return []
+    def analyzers(self):   
+        return [RegressionPerformanceAnalyzer]
 
     def get_info(self) -> BaseWidgetInfo:
-        #if self.wi:
-        return self.wi
-        #raise ValueError("No prediction data provided")
-
-    def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping, analyzes_results):
-        if column_mapping:
-            date_column = column_mapping.get('datetime')
-            id_column = column_mapping.get('id')
-            target_column = column_mapping.get('target')
-            prediction_column = column_mapping.get('prediction')
-            num_feature_names = column_mapping.get('numerical_features')
-            if num_feature_names is None:
-                num_feature_names = []
-            else:
-                num_feature_names = [name for name in num_feature_names if is_numeric_dtype(reference_data[name])] 
-
-            cat_feature_names = column_mapping.get('categorical_features')
-            if cat_feature_names is None:
-                cat_feature_names = []
-            else:
-                cat_feature_names = [name for name in cat_feature_names if is_numeric_dtype(reference_data[name])] 
-        
+        if self.dataset == 'reference':
+            if self.wi:
+                return self.wi
+            raise ValueError("no data for predicted and actual in time widget provided")
         else:
-            date_column = 'datetime' if 'datetime' in reference_data.columns else None
-            id_column = None
-            target_column = 'target' if 'target' in reference_data.columns else None
-            prediction_column = 'prediction' if 'prediction' in reference_data.columns else None
+            return self.wi
 
-            utility_columns = [date_column, id_column, target_column, prediction_column]
+    def calculate(self,
+                  reference_data: pd.DataFrame,
+                  current_data: pd.DataFrame,
+                  column_mapping,
+                  analyzers_results):
+        
+        results = analyzers_results[RegressionPerformanceAnalyzer]
 
-            num_feature_names = list(set(reference_data.select_dtypes([np.number]).columns) - set(utility_columns))
-            cat_feature_names = list(set(reference_data.select_dtypes([np.object]).columns) - set(utility_columns))
+        if results['utility_columns']['target'] is not None and results['utility_columns']['prediction'] is not None:
+            if self.dataset == 'current':
+                dataset_to_plot = current_data.copy(deep=False) if current_data is not None else None
+            else:
+                dataset_to_plot = reference_data.copy(deep=False)
 
-        if current_data is not None:
-            if target_column is not None and prediction_column is not None:
-                current_data.replace([np.inf, -np.inf], np.nan, inplace=True)
-                current_data.dropna(axis=0, how='any', inplace=True)
-                
-                #plot output correlations
+            if dataset_to_plot is not None:
+                dataset_to_plot.replace([np.inf, -np.inf], np.nan, inplace=True)
+                dataset_to_plot.dropna(axis=0, how='any', inplace=True)
+
+                #plot error normality
                 error_norm = go.Figure()
 
-                error = current_data[prediction_column] - current_data[target_column] 
+                error = dataset_to_plot[results['utility_columns']['prediction']] - dataset_to_plot[results['utility_columns']['target']] 
                 qq_lines = probplot(error, dist="norm", plot=None)
                 theoretical_q_x = np.linspace(qq_lines[0][0][0], qq_lines[0][0][-1], 100)
 

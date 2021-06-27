@@ -96,6 +96,34 @@ class RegressionPerformanceAnalyzer(Analyzer):
             result['metrics']['reference']['underperformance']['majority'] = {'mean_error':float(mae_exp), 'std_error':float(sd_exp)}
             result['metrics']['reference']['underperformance']['underestimation'] = {'mean_error':float(mae_under), 'std_error':float(sd_under)}
             result['metrics']['reference']['underperformance']['overestimation'] = {'mean_error':float(mae_over), 'std_error':float(sd_over)}
+
+            #error bias table
+            error_bias = {}
+            for feature_name in num_feature_names:
+                feature_type = 'num'
+
+                ref_overal_value = np.mean(reference_data[feature_name])
+                ref_under_value = np.mean(reference_data[error <= quantile_5][feature_name])
+                ref_expected_value = np.mean(reference_data[(error > quantile_5) & (error < quantile_95)][feature_name])
+                ref_over_value = np.mean(reference_data[error >= quantile_95][feature_name])
+                ref_range_value = 0 if ref_over_value == ref_under_value else 100*abs(ref_over_value - ref_under_value)/(np.max(reference_data[feature_name]) - np.min(reference_data[feature_name]))
+
+                error_bias[feature_name] = {'feature_type':feature_type, 'ref_majority':float(ref_expected_value), 'ref_under':float(ref_under_value), 
+                    'ref_over':float(ref_over_value), 'ref_range':float(ref_range_value)}
+            
+            for feature_name in cat_feature_names:
+                feature_type = 'cat'
+
+                ref_overal_value = reference_data[feature_name].value_counts().idxmax()
+                ref_under_value = reference_data[error <= quantile_5][feature_name].value_counts().idxmax()
+                ref_over_value = reference_data[error >= quantile_95][feature_name].value_counts().idxmax()
+                ref_range_value = 1 if (ref_overal_value != ref_under_value) or (ref_over_value != ref_overal_value) \
+                   or (ref_under_value != ref_overal_value) else 0
+
+                error_bias[feature_name] = {'feature_type':feature_type, 'ref_majority':float(ref_overal_value), 'ref_under':float(ref_under_value), 
+                    'ref_over':float(ref_over_value), 'ref_range':float(ref_range_value)}
+
+            result['metrics']['error_bias'] = error_bias
             
             if current_data is not None:
                 current_data.replace([np.inf, -np.inf], np.nan, inplace=True)
