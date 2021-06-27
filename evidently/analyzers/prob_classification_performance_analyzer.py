@@ -46,6 +46,7 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
         result["utility_columns"] = {'date':date_column, 'id':id_column, 'target':target_column, 'prediction':prediction_column}
         result["cat_feature_names"] = cat_feature_names
         result["num_feature_names"] = num_feature_names
+        result["target_names"] = target_names
 
         result['metrics'] = {}
         if target_column is not None and prediction_column is not None:
@@ -145,6 +146,7 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
                 
                 result['metrics']['reference']['roc_curve'] = {}
                 result['metrics']['reference']['pr_curve'] = {}
+                result['metrics']['reference']['pr_table'] = {}
                 for label in prediction_column:
                     fpr, tpr, thrs = metrics.roc_curve(binaraized_target[label], reference_data[label])
                     result['metrics']['reference']['roc_curve'][label] = {'fpr':fpr.tolist(), 'tpr':tpr.tolist(), 'thrs':thrs.tolist()}
@@ -169,7 +171,7 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
                         precision = round(100.0*tp/count, 1)
                         recall = round(100.0*tp/target_class_size, 1)
                         pr_table.append([top, int(count), prob, int(tp), int(fp), precision, recall])
-                    result['metrics']['reference']['pr_curve'][label] = pr_table
+                    result['metrics']['reference']['pr_table'][label] = pr_table
 
             if current_data is not None:
                 current_data.replace([np.inf, -np.inf], np.nan, inplace=True)
@@ -266,6 +268,7 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
                     
                     result['metrics']['current']['roc_curve'] = {}
                     result['metrics']['current']['pr_curve'] = {}
+                    result['metrics']['current']['pr_table'] = {}
                     for label in prediction_column:
                         fpr, tpr, thrs = metrics.roc_curve(binaraized_target[label], current_data[label])
                         result['metrics']['current']['roc_curve'][label] = {'fpr':fpr.tolist(), 'tpr':tpr.tolist(), 'thrs':thrs.tolist()}
@@ -290,6 +293,6 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
                             precision = round(100.0*tp/count, 1)
                             recall = round(100.0*tp/target_class_size, 1)
                             pr_table.append([top, int(count), prob, int(tp), int(fp), precision, recall])
-                        result['metrics']['current']['pr_curve'][label] = pr_table
+                        result['metrics']['current']['pr_table'][label] = pr_table
 
         return result
