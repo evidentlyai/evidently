@@ -9,6 +9,7 @@ from dataclasses import dataclass
 
 import yaml
 
+from evidently.telemetry import TelemetrySender
 from evidently.runner.dashboard_runner import DashboardRunnerOptions, DashboardRunner
 from evidently.runner.loader import SamplingOptions
 from evidently.runner.profile_runner import ProfileRunner, ProfileRunnerOptions
@@ -51,6 +52,8 @@ def __get_not_none(d, key, default):
 
 
 def calculate_dashboard(config: str, reference: str, current: str, output_path: str, report_name: str, **_kv):
+    usage = dict(type="dashboard")
+
     with open(config) as f_config:
         if config.endswith(".yaml") or config.endswith(".yml"):
             opts_data = yaml.load(f_config, Loader=yaml.SafeLoader)
@@ -63,6 +66,8 @@ def calculate_dashboard(config: str, reference: str, current: str, output_path: 
         ref_sampling = __get_not_none(sampling, "reference", {})
         cur_sampling = __get_not_none(sampling, "current", {})
 
+        usage["tabs"] = opts_data["dashboard_tabs"]
+        usage["sampling"] = sampling
         opts = DashboardOptions(data_format=DataFormatOptions(**opts_data["data_format"]),
                                 column_mapping=opts_data["column_mapping"],
                                 dashboard_tabs=opts_data["dashboard_tabs"],
@@ -87,9 +92,13 @@ def calculate_dashboard(config: str, reference: str, current: str, output_path: 
         output_path=os.path.join(output_path, report_name),
     ))
     runner.run()
+    sender = TelemetrySender("")
+    sender.send(usage)
 
 
 def calculate_profile(config: str, reference: str, current: str, output_path: str, report_name: str, **_kv):
+    usage = dict(type="profile")
+
     with open(config) as f_config:
         if config.endswith(".yaml") or config.endswith(".yml"):
             opts_data = yaml.load(f_config, Loader=yaml.SafeLoader)
@@ -101,7 +110,8 @@ def calculate_profile(config: str, reference: str, current: str, output_path: st
         sampling = __get_not_none(opts_data, "sampling", {})
         ref_sampling = __get_not_none(sampling, "reference", {})
         cur_sampling = __get_not_none(sampling, "current", {})
-
+        usage["parts"] = opts_data["profile_sections"]
+        usage["sampling"] = sampling
         opts = ProfileOptions(data_format=DataFormatOptions(**opts_data["data_format"]),
                               column_mapping=opts_data["column_mapping"],
                               profile_parts=opts_data["profile_sections"],
@@ -128,6 +138,9 @@ def calculate_profile(config: str, reference: str, current: str, output_path: st
         pretty_print=opts.pretty_print,
     ))
     runner.run()
+    sender = TelemetrySender("")
+    sender.send(usage)
+
 
 
 def help_handler(**_kv):
