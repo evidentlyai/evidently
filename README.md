@@ -1,6 +1,6 @@
 <h1 align="center">Evidently</h1>
 
-![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/evidently_4_reports_preview_small.png)
+![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/evidently/pics/evidently_4_reports_preview_small.png)
  
 <p align="center"><b>Interactive reports and JSON profiles to analyze, monitor and debug machine learning models.</b></p>
 
@@ -22,27 +22,27 @@ Evidently helps analyze machine learning models during validation or production 
 
 ### 1. Data Drift
 Detects changes in feature distribution. 
-![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/evidently_github.png)
+![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/evidently/pics/evidently_github.png)
 
 ### 2. Numerical Target Drift
 Detects changes in numerical target and feature behavior.
-![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/evidently_num_target_drift_github.png)
+![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/evidently/pics/evidently_num_target_drift_github.png)
 
 ### 3. Categorical Target Drift
 Detects changes in categorical target and feature behavior.
-![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/evidently_cat_target_drift_github.png)
+![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/evidently/pics/evidently_cat_target_drift_github.png)
 
 ### 4. Regression Model Performance
 Analyzes the performance of a regression model and model errors.
-![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/evidently_regression_performance_report_github.png)
+![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/evidently/pics/evidently_regression_performance_report_github.png)
 
 ### 5. Classification Model Performance
 Analyzes the performance and errors of a classification model. Works both for binary and multi-class models.
-![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/evidently_classification_performance_report_github.png)
+![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/evidently/pics/evidently_classification_performance_report_github.png)
 
 ### 6. Probabilistic Classification Model Performance
 Analyzes the performance of a probabilistic classification model, quality of model calibration, and model errors. Works both for binary and multi-class models.
-![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/evidently_prob_classification_performance_report_github.png)
+![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/evidently/pics/evidently_prob_classification_performance_report_github.png)
 
 ## Installing from PyPI
 ### MAC OS and Linux
@@ -343,12 +343,6 @@ Currently we have 3 sampling types available:
 ## Documentation
 
 For more information, refer to a complete <a href="https://evidentlyai.gitbook.io/docs/">Documentation</a>.
-
-## Examples
-- See Iris **Data Drift**, **Categorical Target Drift** and **Classification Performance** report generation to explore the reports both inside a Jupyter notebook and as a separate .html file: [Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/iris_data_drift.ipynb) 
-- See Boston Housing **Data Drift** and **Numerical Target Drift** report generation to explore the reports with and without column mapping: [Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/boston_data_drift.ipynb)
-- See Breast cancer **Data Drift** and **Probabilistic Classification Performance** report generation to explore the reports with and without datetime specification: [Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/breast_cancer_data_drift.ipynb)
-- See Bike Demand Prediction **Regression Model Performance** report with datetime and column mapping inside a Jupyter notebook: [Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/bike_sharing_demand_regression_performance.ipynb)
 
 ## Stay updated
 We will be releasing more reports soon. If you want to receive updates, follow us on [Twitter](https://twitter.com/EvidentlyAI), or sign up for our [newsletter](https://evidentlyai.com/sign-up). You can also find more tutorials and explanations in our [Blog](https://evidentlyai.com/blog). If you want to chat and connect, join our [Discord community](https://discord.gg/xZjKRaNp8b)!
