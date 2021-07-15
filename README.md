@@ -344,5 +344,26 @@ Currently we have 3 sampling types available:
 
 For more information, refer to a complete <a href="https://evidentlyai.gitbook.io/docs/">Documentation</a>.
 
+## Examples
+
+- See **Data Drift** Dashboard and Profile generation to explore the results both inside a Jupyter notebook and as a separate .html file:
+[Iris](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/iris_data_drift.ipynb), 
+[Boston](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/boston_data_drift.ipynb)
+
+- See **Target and Data Drift** Dashboard and Profile generation to explore the results both inside a Jupyter notebook and as a separate file:
+[Iris](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/iris_target_and_data_drift.ipynb),
+[Boston](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/boston_target_and_data_drift.ipynb), 
+[Breast Cancer](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/breast_cancer_target_and_data_drift.ipynb)
+
+- See **Regression Performance** Dashboard and Profile generation to explore the results both inside a Jupyter notebook and as a separate file:
+[Bike Sharing Demand](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/bike_sharing_demand_regression_performance.ipynb)
+
+- See **Classification Performance** Dashboard and Profile generation to explore the results both inside a Jupyter notebook and as a separate file:
+[Iris](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/iris_classification_performance.ipynb) 
+ 
+- See **Probabilistic Classification Performance** Dashboard and Profile generation to explore the results both inside a Jupyter notebook and as a separate .html file:
+[Iris](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/iris_probabilistic_classification_performance.ipynb), 
+[Breast Cancer](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/breast_cancer_prob_classification_performance.ipynb)
+
 ## Stay updated
 We will be releasing more reports soon. If you want to receive updates, follow us on [Twitter](https://twitter.com/EvidentlyAI), or sign up for our [newsletter](https://evidentlyai.com/sign-up). You can also find more tutorials and explanations in our [Blog](https://evidentlyai.com/blog). If you want to chat and connect, join our [Discord community](https://discord.gg/xZjKRaNp8b)!
