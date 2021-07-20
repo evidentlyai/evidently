@@ -6,7 +6,31 @@ import pandas as pd
 from pandas.api.types import is_numeric_dtype
 import numpy as np
 
-from scipy.stats import ks_2samp, chisquare
+from scipy.stats import ks_2samp, chisquare, norm
+
+def proportions_diff_z_stat_ind(ref, curr):
+    n1 = len(ref)
+    n2 = len(curr)
+    
+    p1 = float(sum(ref)) / n1
+    p2 = float(sum(curr)) / n2 
+    P = float(p1*n1 + p2*n2) / (n1 + n2)
+    
+    return (p1 - p2) / np.sqrt(P * (1 - P) * (1. / n1 + 1. / n2))
+
+def proportions_diff_z_test(z_stat, alternative = 'two-sided'):
+    if alternative not in ('two-sided', 'less', 'greater'):
+        raise ValueError("alternative not recognized\n"
+                         "should be 'two-sided', 'less' or 'greater'")
+    
+    if alternative == 'two-sided':
+        return 2 * (1 - norm.cdf(np.abs(z_stat)))
+    
+    if alternative == 'less':
+        return norm.cdf(z_stat)
+
+    if alternative == 'greater':
+        return 1 - norm.cdf(z_stat)
 
 
 class DataDriftAnalyzer(Analyzer):
@@ -70,11 +94,15 @@ class DataDriftAnalyzer(Analyzer):
             for key, item in zip(current_feature_vc.index, current_feature_vc.values):
                 current_feature_dict[key] = item
 
-            f_exp = [value[1] for value in sorted(ref_feature_dict.items())]
-            f_obs = [value[1] for value in sorted(current_feature_dict.items())]
-
-            # CHI2 to be implemented for cases with different categories
-            p_value = chisquare(f_exp, f_obs)[1]
+            if len(keys) > 2:
+                f_exp = [value[1] for value in sorted(ref_feature_dict.items())]
+                f_obs = [value[1] for value in sorted(current_feature_dict.items())]
+                # CHI2 to be implemented for cases with different categories
+                p_value = chisquare(f_exp, f_obs)[1]
+            else:
+                ordered_keys = sorted(list(keys))
+                p_value = proportions_diff_z_test(proportions_diff_z_stat_ind(reference_data[feature_name].apply(lambda x : 0 if x == ordered_keys[0] else 1), 
+                    current_data[feature_name].apply(lambda x : 0 if x == ordered_keys[0] else 1)))
 
             result['metrics'][feature_name] = dict(
                 current_small_hist=[t.tolist() for t in np.histogram(current_data[feature_name][np.isfinite(current_data[feature_name])],
