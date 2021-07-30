@@ -18,7 +18,9 @@
 
 
 ## What is it?
-Evidently helps analyze machine learning models during validation or production monitoring. The tool generates interactive visual reports and JSON profiles from pandas `DataFrame` or `csv` files. Currently 6 reports are available.  
+Evidently helps evaluate machine learning models during validation and monitor them in production. The tool generates interactive visual reports and JSON profiles from pandas `DataFrame` or `csv` files. You can use visual reports for ad hoc analysis, debugging and team sharing, and JSON profiles to integrate Evidently in prediction pipelines or with other visualization tools.
+
+Currently 6 reports are available.  
 
 ### 1. Data Drift
 Detects changes in feature distribution. 
