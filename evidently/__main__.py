@@ -14,7 +14,7 @@ from evidently.runner.dashboard_runner import DashboardRunnerOptions, DashboardR
 from evidently.runner.loader import SamplingOptions
 from evidently.runner.profile_runner import ProfileRunner, ProfileRunnerOptions
 from evidently.runner.runner import DataOptions
-
+from _config import TELEMETRY_ENABLED, TELEMETRY_ADDRESS
 
 @dataclass
 class DataFormatOptions:
@@ -92,8 +92,9 @@ def calculate_dashboard(config: str, reference: str, current: str, output_path: 
         output_path=os.path.join(output_path, report_name),
     ))
     runner.run()
-    sender = TelemetrySender("")
-    sender.send(usage)
+    if TELEMETRY_ENABLED:
+        sender = TelemetrySender(TELEMETRY_ADDRESS)
+        sender.send(usage)
 
 
 def calculate_profile(config: str, reference: str, current: str, output_path: str, report_name: str, **_kv):
@@ -138,9 +139,9 @@ def calculate_profile(config: str, reference: str, current: str, output_path: st
         pretty_print=opts.pretty_print,
     ))
     runner.run()
-    sender = TelemetrySender("")
-    sender.send(usage)
-
+    if TELEMETRY_ENABLED:
+        sender = TelemetrySender(TELEMETRY_ADDRESS)
+        sender.send(usage)
 
 
 def help_handler(**_kv):

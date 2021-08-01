@@ -1,6 +1,9 @@
 import json
+import logging
 import os
 import platform
+
+import requests
 
 import evidently
 
@@ -17,7 +20,10 @@ class TelemetrySender:
             evidently=self.evi,
             usage=usage,
         )
-        print(json.dumps(collected))
+        try:
+            requests.post(self.address, json=collected, timeout=1)
+        except Exception as e:
+            logging.warning(f"failed to send telemetry: {e}")
 
 
 def _collect_environment():
