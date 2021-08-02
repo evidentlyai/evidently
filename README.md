@@ -334,7 +334,7 @@ Here is an example of a more complicated configuration, where we have comma sepa
 ```
 
 ## Telemetry
-When you use Evidently in the command-line interface, we collect basic telemetry. It includes data on the environment (e.g. Python version) and usage (type of report or profile generated). You can read more about what we collect [here](https://docs.evidentlyai.com/support/telemetry). 
+When you use Evidently in the command-line interface, we collect basic telemetry (starting from 0.1.21.dev0 version). It includes data on the environment (e.g. Python version) and usage (type of report or profile generated). You can read more about what we collect [here](https://docs.evidentlyai.com/support/telemetry). 
 
 You can opt-out from telemetry collection by setting the environment variable EVIDENTLY_DISABLE_TELEMETRY=1
 
