@@ -14,7 +14,7 @@ from evidently.runner.dashboard_runner import DashboardRunnerOptions, DashboardR
 from evidently.runner.loader import SamplingOptions
 from evidently.runner.profile_runner import ProfileRunner, ProfileRunnerOptions
 from evidently.runner.runner import DataOptions
-from _config import TELEMETRY_ENABLED, TELEMETRY_ADDRESS
+from ._config import TELEMETRY_ENABLED, TELEMETRY_ADDRESS
 
 @dataclass
 class DataFormatOptions:
