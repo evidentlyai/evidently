@@ -79,7 +79,8 @@ setup_args = dict(
         "plotly",
         "scipy",
         "pyyaml",
-        "scikit-learn>=0.22.1"
+        "scikit-learn>=0.22.1",
+        "requests"
     ],
     entry_points={
     },
