@@ -27,7 +27,6 @@ services:
     volumes:
       - ./dags:/usr/local/airflow/dags
       - ./evidently_reports:/usr/local/airflow/reports
-      # - ./plugins:/usr/local/airflow/plugins
     ports:
       - "8080:8080"
     command: webserver

@@ -1,6 +1,4 @@
 try:
-
-    #from datetime import timedelta
     from airflow import DAG
     from airflow.operators.python_operator import PythonOperator
     
@@ -15,11 +13,8 @@ try:
     from evidently.model_profile import Profile
     from evidently.profile_sections import DataDriftProfileSection
 
-    print("All Dag modules are ok ......")
-
 except Exception as e:
     print("Error  {} ".format(e))
-
 
 dir_path = 'reports'
 file_path = 'boston_data_drift_by_airflow.html'
@@ -45,8 +40,6 @@ def drift_analysis_execute(**context):
         print ("Creation of the directory {} failed".format(dir_path))
 
     boston_data_drift_dashboard.save(os.path.join(dir_path, file_path))
-    #print(output)
-    #print("I am in drift_analysis_execute got value :{} from load_data  ".format(instance))
 
 
 with DAG(
@@ -64,7 +57,7 @@ with DAG(
         task_id="load_data_execute",
         python_callable=load_data_execute,
         provide_context=True,
-        op_kwargs={"parameter_variable":"parameter_value"} #not used now
+        op_kwargs={"parameter_variable":"parameter_value"} #not used now, may be used to specify data
     )
 
     drift_analysis_execute = PythonOperator(
