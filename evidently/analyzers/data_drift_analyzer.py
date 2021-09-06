@@ -32,6 +32,11 @@ def proportions_diff_z_test(z_stat, alternative = 'two-sided'):
     if alternative == 'greater':
         return 1 - norm.cdf(z_stat)
 
+def dataset_drift_evaluation(p_values, confidence, drift_share):
+    n_drifted_features = sum([1 if x<(1. - confidence) else 0 for x in p_values])
+    share_drifted_features = n_drifted_features/len(p_values)
+    dataset_drift = True if share_drifted_features >= drift_share else False
+    return (n_drifted_features, share_drifted_features, dataset_drift)
 
 class DataDriftAnalyzer(Analyzer):
     def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping):
@@ -42,6 +47,10 @@ class DataDriftAnalyzer(Analyzer):
             target_column = column_mapping.get('target')
             prediction_column = column_mapping.get('prediction')
             num_feature_names = column_mapping.get('numerical_features')
+            confidence = column_mapping.get('drift_conf_level') 
+            drift_share = column_mapping.get('drift_features_share')
+            nbinsx = column_mapping.get('nbinsx') 
+            xbins = column_mapping.get('xbins')  
             if num_feature_names is None:
                 num_feature_names = []
             else:
@@ -62,21 +71,35 @@ class DataDriftAnalyzer(Analyzer):
 
             num_feature_names = list(set(reference_data.select_dtypes([np.number]).columns) - set(utility_columns))
             cat_feature_names = list(set(reference_data.select_dtypes([np.object]).columns) - set(utility_columns))
+            confidence = 0.95 
+            drift_share = 0.5
+            nbinsx = None
+            xbins = None
 
-        result["utility_columns"] = {'date':date_column, 'id':id_column, 'target':target_column, 'prediction':prediction_column}
+        result["utility_columns"] = {'date':date_column, 'id':id_column, 'target':target_column, 'prediction':prediction_column,
+            'drift_conf_level':confidence, 'drift_features_share':drift_share, 'nbinsx':nbinsx, 'xbins':xbins}
         result["cat_feature_names"] = cat_feature_names
         result["num_feature_names"] = num_feature_names
 
         #calculate result
         result['metrics'] = {}
+
+        p_values = []
+
         for feature_name in num_feature_names:
+            p_value=ks_2samp(reference_data[feature_name], current_data[feature_name])[1]
+            p_values.append(p_value)
+            if nbinsx:
+                current_nbinsx = nbinsx.get(feature_name) if nbinsx.get(feature_name) else 10
+            else:
+                current_nbinsx = 10
             result['metrics'][feature_name] = dict(
                 current_small_hist=[t.tolist() for t in np.histogram(current_data[feature_name][np.isfinite(current_data[feature_name])],
-                                             bins=10, density=True)],
+                                             bins=current_nbinsx, density=True)],
                 ref_small_hist=[t.tolist() for t in np.histogram(reference_data[feature_name][np.isfinite(reference_data[feature_name])],
-                                            bins=10, density=True)],
+                                            bins=current_nbinsx, density=True)],
                 feature_type='num',
-                p_value=ks_2samp(reference_data[feature_name], current_data[feature_name])[1]
+                p_value=p_value    
             )
 
         for feature_name in cat_feature_names:
@@ -103,13 +126,25 @@ class DataDriftAnalyzer(Analyzer):
                 ordered_keys = sorted(list(keys))
                 p_value = proportions_diff_z_test(proportions_diff_z_stat_ind(reference_data[feature_name].apply(lambda x : 0 if x == ordered_keys[0] else 1), 
                     current_data[feature_name].apply(lambda x : 0 if x == ordered_keys[0] else 1)))
+            
+            p_values.append(p_value)
 
+            if nbinsx:
+                current_nbinsx = nbinsx.get(feature_name) if nbinsx.get(feature_name) else 10
+            else:
+                current_nbinsx = 10
             result['metrics'][feature_name] = dict(
                 current_small_hist=[t.tolist() for t in np.histogram(current_data[feature_name][np.isfinite(current_data[feature_name])],
-                                             bins=10, density=True)],
+                                             bins=current_nbinsx, density=True)],
                 ref_small_hist=[t.tolist() for t in np.histogram(reference_data[feature_name][np.isfinite(reference_data[feature_name])],
-                                            bins=10, density=True)],
+                                            bins=current_nbinsx, density=True)],
                 feature_type='cat',
-                p_value=p_value,
+                p_value=p_value
             )
+
+        n_drifted_features, share_drifted_features, dataset_drift = dataset_drift_evaluation(p_values, confidence, drift_share)
+        result['metrics']['n_features'] = len(num_feature_names) + len(cat_feature_names)
+        result['metrics']['n_drifted_features'] = n_drifted_features
+        result['metrics']['share_drifted_features'] = share_drifted_features
+        result['metrics']['dataset_drift'] = dataset_drift
         return result

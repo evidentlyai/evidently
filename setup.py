@@ -77,7 +77,7 @@ setup_args = dict(
         "numpy",
         "statsmodels",
         "plotly",
-        "scipy",
+        "scipy<=1.6.3",
         "pyyaml",
         "scikit-learn>=0.22.1",
         "requests"
