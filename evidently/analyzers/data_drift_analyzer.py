@@ -32,7 +32,7 @@ def proportions_diff_z_test(z_stat, alternative = 'two-sided'):
     if alternative == 'greater':
         return 1 - norm.cdf(z_stat)
 
-def dataset_drift_evaluation(p_values, confidence, drift_share):
+def dataset_drift_evaluation(p_values, confidence=0.95, drift_share=0.5):
     n_drifted_features = sum([1 if x<(1. - confidence) else 0 for x in p_values])
     share_drifted_features = n_drifted_features/len(p_values)
     dataset_drift = True if share_drifted_features >= drift_share else False
@@ -48,7 +48,11 @@ class DataDriftAnalyzer(Analyzer):
             prediction_column = column_mapping.get('prediction')
             num_feature_names = column_mapping.get('numerical_features')
             confidence = column_mapping.get('drift_conf_level') 
+            if confidence is None:
+                confidence = 0.95
             drift_share = column_mapping.get('drift_features_share')
+            if drift_share is None:
+                drift_share = 0.5
             nbinsx = column_mapping.get('nbinsx') 
             xbins = column_mapping.get('xbins')  
             if num_feature_names is None:
