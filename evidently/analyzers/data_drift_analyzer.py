@@ -21,6 +21,9 @@ class DataDriftAnalyzer(Analyzer):
 
         num_feature_names = columns.num_feature_names
         cat_feature_names = columns.cat_feature_names
+        nbinsx = columns.utility_columns.nbinsx
+        confidence = columns.utility_columns.drift_conf_level
+        drift_share = columns.utility_columns.drift_features_share
 
         #calculate result
         result['metrics'] = {}
@@ -28,7 +31,7 @@ class DataDriftAnalyzer(Analyzer):
         p_values = []
 
         for feature_name in num_feature_names:
-            p_value=ks_2samp(reference_data[feature_name], current_data[feature_name])[1]
+            p_value = ks_2samp(reference_data[feature_name], current_data[feature_name])[1]
             p_values.append(p_value)
             if nbinsx:
                 current_nbinsx = nbinsx.get(feature_name) if nbinsx.get(feature_name) else 10
@@ -40,7 +43,7 @@ class DataDriftAnalyzer(Analyzer):
                 ref_small_hist=[t.tolist() for t in np.histogram(reference_data[feature_name][np.isfinite(reference_data[feature_name])],
                                             bins=current_nbinsx, density=True)],
                 feature_type='num',
-                p_value=p_value    
+                p_value=p_value
             )
 
         for feature_name in cat_feature_names:
@@ -71,7 +74,7 @@ class DataDriftAnalyzer(Analyzer):
                         current_data[feature_name].apply(lambda x, key=ordered_keys[0] : 0 if x == key else 1)
                     )
                 )
-            
+
             p_values.append(p_value)
 
             if nbinsx:

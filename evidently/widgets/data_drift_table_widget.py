@@ -120,35 +120,35 @@ class DataDriftTableWidget(Widget):
         nbinsx = results['utility_columns']['nbinsx']
         for feature_name in num_feature_names + cat_feature_names:
             # plot distributions
-            fig = go.Figure() 
+            fig = go.Figure()
             if xbins:
                 current_xbins = results['utility_columns']['xbins'].get(feature_name)
                 if current_xbins:
                     current_nbinsx = None
                 else:
                     if nbinsx:
-                        current_nbinsx = results['utility_columns']['nbinsx'].get(feature_name) 
+                        current_nbinsx = results['utility_columns']['nbinsx'].get(feature_name)
                         current_nbinsx = current_nbinsx if current_nbinsx else 10
                     else:
                         current_nbinsx = 10
                 fig.add_trace(go.Histogram(x=reference_data[feature_name],
-                           marker_color=grey, opacity=0.6, xbins=current_xbins, nbinsx=current_nbinsx, name='Reference',
+                           marker_color=GREY, opacity=0.6, xbins=current_xbins, nbinsx=current_nbinsx, name='Reference',
                            histnorm='probability'))
 
                 fig.add_trace(go.Histogram(x=current_data[feature_name],
-                                           marker_color=red, opacity=0.6, xbins=current_xbins, nbinsx=current_nbinsx, name='Current',
+                                           marker_color=RED, opacity=0.6, xbins=current_xbins, nbinsx=current_nbinsx, name='Current',
                                            histnorm='probability'))
             else:
                 current_nbinsx = None
                 if nbinsx:
-                    current_nbinsx = results['utility_columns']['nbinsx'].get(feature_name) 
+                    current_nbinsx = results['utility_columns']['nbinsx'].get(feature_name)
                 current_nbinsx = current_nbinsx if current_nbinsx else 10
                 fig.add_trace(go.Histogram(x=reference_data[feature_name],
-                                           marker_color=grey, opacity=0.6, nbinsx=current_nbinsx, name='Reference',
+                                           marker_color=GREY, opacity=0.6, nbinsx=current_nbinsx, name='Reference',
                                            histnorm='probability'))
 
                 fig.add_trace(go.Histogram(x=current_data[feature_name],
-                                           marker_color=red, opacity=0.6, nbinsx=current_nbinsx, name='Current',
+                                           marker_color=RED, opacity=0.6, nbinsx=current_nbinsx, name='Current',
                                            histnorm='probability'))
 
             fig.update_layout(
@@ -263,7 +263,7 @@ class DataDriftTableWidget(Widget):
 
         title_prefix = 'Drift is detected for ' + str(drift_share) + '% of features (' + str(results['metrics']['n_drifted_features']) +  ' out of ' + str(n_features) + '). '
         title_suffix = 'Dataset Drift is detected.' if results['metrics']['dataset_drift'] else 'Dataset Drift is NOT detected.'
-    
+
         self.wi = BaseWidgetInfo(
             title=title_prefix + title_suffix,
             type="big_table",
