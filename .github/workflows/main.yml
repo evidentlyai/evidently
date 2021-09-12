@@ -31,4 +31,4 @@ jobs:
       - name: Install PyLint
         run: pip install pylint
       - name: Run PyLint
-        run: pylint evidently
+        run: pylint evidently --disable=R
