@@ -1,6 +1,7 @@
 *.egg-info
 venv
 .venv
+.vscode
 .DS_Store
 evidently/examples/.DS_Store
 .ipynb_checkpoints
@@ -8,5 +9,7 @@ evidently/examples/.DS_Store
 dist
 build
 MANIFEST
+
+profile.json
 
 __pycache__

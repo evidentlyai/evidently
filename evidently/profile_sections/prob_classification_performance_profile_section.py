@@ -1,7 +1,5 @@
 from datetime import datetime
 
-import json
-
 from evidently.analyzers.prob_classification_performance_analyzer import ProbClassificationPerformanceAnalyzer
 from evidently.profile_sections.base_profile_section import ProfileSection
 
@@ -20,9 +18,8 @@ class ProbClassificationPerformanceProfileSection(ProfileSection):
     def calculate(self, analyzers_results):
         result = analyzers_results[ProbClassificationPerformanceAnalyzer]
 
-        profile = {}
-        profile['name'] = self.part_id()
-        profile['datetime'] = str(datetime.now())
-        profile['data'] = result
-
-        return profile
+        return {
+            'name': self.part_id(),
+            'datetime': str(datetime.now()),
+            'data': result
+        }

@@ -34,4 +34,4 @@ class Tab:
 
     @abc.abstractmethod
     def _get_widgets(self) -> List[Widget]:
-        raise NotImplemented()
+        raise NotImplementedError()

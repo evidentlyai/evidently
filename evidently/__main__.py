@@ -14,7 +14,8 @@ from evidently.runner.dashboard_runner import DashboardRunnerOptions, DashboardR
 from evidently.runner.loader import SamplingOptions
 from evidently.runner.profile_runner import ProfileRunner, ProfileRunnerOptions
 from evidently.runner.runner import DataOptions
-from ._config import TELEMETRY_ENABLED, TELEMETRY_ADDRESS
+from evidently._config import TELEMETRY_ENABLED, TELEMETRY_ADDRESS
+
 
 @dataclass
 class DataFormatOptions:
@@ -47,34 +48,39 @@ class ProfileOptions(CalculateOptions):
     pretty_print: bool = False
 
 
-def __get_not_none(d, key, default):
-    return default if d.get(key, None) is None else d.get(key)
+def __get_not_none(src: Dict, key, default):
+    return default if src.get(key, None) is None else src.get(key)
+
+
+def __load_config_file(config_file: str):
+    with open(config_file, encoding="utf-8") as f_config:
+        if config_file.endswith(".yaml") or config_file.endswith(".yml"):
+            opts_data = yaml.load(f_config, Loader=yaml.SafeLoader)
+        elif config_file.endswith(".json"):
+            opts_data = json.load(f_config)
+        else:
+            raise Exception(f"config .{config_file.split('.')[-1]} not supported")
+    return opts_data
 
 
 def calculate_dashboard(config: str, reference: str, current: str, output_path: str, report_name: str, **_kv):
     usage = dict(type="dashboard")
 
-    with open(config) as f_config:
-        if config.endswith(".yaml") or config.endswith(".yml"):
-            opts_data = yaml.load(f_config, Loader=yaml.SafeLoader)
-        elif config.endswith(".json"):
-            opts_data = json.load(f_config)
-        else:
-            raise Exception(f"config .{config.split('.')[-1]} not supported")
+    opts_data = __load_config_file(config)
 
-        sampling = __get_not_none(opts_data, "sampling", {})
-        ref_sampling = __get_not_none(sampling, "reference", {})
-        cur_sampling = __get_not_none(sampling, "current", {})
+    sampling = __get_not_none(opts_data, "sampling", {})
+    ref_sampling = __get_not_none(sampling, "reference", {})
+    cur_sampling = __get_not_none(sampling, "current", {})
 
-        usage["tabs"] = opts_data["dashboard_tabs"]
-        usage["sampling"] = sampling
-        opts = DashboardOptions(data_format=DataFormatOptions(**opts_data["data_format"]),
-                                column_mapping=opts_data["column_mapping"],
-                                dashboard_tabs=opts_data["dashboard_tabs"],
-                                sampling=Sampling(
-                                    reference=SamplingOptions(**ref_sampling),
-                                    current=SamplingOptions(**cur_sampling),
-                                ))
+    usage["tabs"] = opts_data["dashboard_tabs"]
+    usage["sampling"] = sampling
+    opts = DashboardOptions(data_format=DataFormatOptions(**opts_data["data_format"]),
+                            column_mapping=opts_data["column_mapping"],
+                            dashboard_tabs=opts_data["dashboard_tabs"],
+                            sampling=Sampling(
+                                reference=SamplingOptions(**ref_sampling),
+                                current=SamplingOptions(**cur_sampling),
+                            ))
 
     runner = DashboardRunner(DashboardRunnerOptions(
         reference_data_path=reference,
@@ -100,27 +106,21 @@ def calculate_dashboard(config: str, reference: str, current: str, output_path: 
 def calculate_profile(config: str, reference: str, current: str, output_path: str, report_name: str, **_kv):
     usage = dict(type="profile")
 
-    with open(config) as f_config:
-        if config.endswith(".yaml") or config.endswith(".yml"):
-            opts_data = yaml.load(f_config, Loader=yaml.SafeLoader)
-        elif config.endswith(".json"):
-            opts_data = json.load(f_config)
-        else:
-            raise Exception(f"config .{config.split('.')[-1]} not supported")
+    opts_data = __load_config_file(config)
 
-        sampling = __get_not_none(opts_data, "sampling", {})
-        ref_sampling = __get_not_none(sampling, "reference", {})
-        cur_sampling = __get_not_none(sampling, "current", {})
-        usage["parts"] = opts_data["profile_sections"]
-        usage["sampling"] = sampling
-        opts = ProfileOptions(data_format=DataFormatOptions(**opts_data["data_format"]),
-                              column_mapping=opts_data["column_mapping"],
-                              profile_parts=opts_data["profile_sections"],
-                              pretty_print=opts_data["pretty_print"],
-                              sampling=Sampling(
-                                  reference=SamplingOptions(**ref_sampling),
-                                  current=SamplingOptions(**cur_sampling),
-                              ))
+    sampling = __get_not_none(opts_data, "sampling", {})
+    ref_sampling = __get_not_none(sampling, "reference", {})
+    cur_sampling = __get_not_none(sampling, "current", {})
+    usage["parts"] = opts_data["profile_sections"]
+    usage["sampling"] = sampling
+    opts = ProfileOptions(data_format=DataFormatOptions(**opts_data["data_format"]),
+                          column_mapping=opts_data["column_mapping"],
+                          profile_parts=opts_data["profile_sections"],
+                          pretty_print=opts_data["pretty_print"],
+                          sampling=Sampling(
+                              reference=SamplingOptions(**ref_sampling),
+                              current=SamplingOptions(**cur_sampling),
+                          ))
 
     runner = ProfileRunner(ProfileRunnerOptions(
         reference_data_path=reference,
@@ -146,7 +146,7 @@ def calculate_profile(config: str, reference: str, current: str, output_path: st
 
 def help_handler(**_kv):
     parser.print_help()
-    exit(1)
+    sys.exit(1)
 
 
 def _add_default_parameters(configurable_parser, default_output_name: str):

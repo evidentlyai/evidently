@@ -1,52 +1,21 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-from evidently.analyzers.base_analyzer import Analyzer
 import pandas as pd
-from pandas.api.types import is_numeric_dtype
 import numpy as np
 
-from scipy.stats import ks_2samp, chisquare
 from sklearn import metrics, preprocessing
+from evidently.analyzers.base_analyzer import Analyzer
+from .utils import process_columns
+
 
 class ProbClassificationPerformanceAnalyzer(Analyzer):
     def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping):
-        result = dict()
-        if column_mapping:
-            date_column = column_mapping.get('datetime')
-            id_column = column_mapping.get('id')
-            target_column = column_mapping.get('target')
-            prediction_column = column_mapping.get('prediction')
-            num_feature_names = column_mapping.get('numerical_features')
-            target_names = column_mapping.get('target_names')
-            if num_feature_names is None:
-                num_feature_names = []
-            else:
-                num_feature_names = [name for name in num_feature_names if is_numeric_dtype(reference_data[name])] 
+        columns = process_columns(reference_data, column_mapping)
+        result = columns.as_dict()
 
-            cat_feature_names = column_mapping.get('categorical_features')
-            if cat_feature_names is None:
-                cat_feature_names = []
-            else:
-                cat_feature_names = [name for name in cat_feature_names if is_numeric_dtype(reference_data[name])] 
-        
-        else:
-            date_column = 'datetime' if 'datetime' in reference_data.columns else None
-            id_column = None
-            target_column = 'target' if 'target' in reference_data.columns else None
-            prediction_column = 'prediction' if 'prediction' in reference_data.columns else None
-
-            utility_columns = [date_column, id_column, target_column, prediction_column]
-
-            num_feature_names = list(set(reference_data.select_dtypes([np.number]).columns) - set(utility_columns))
-            cat_feature_names = list(set(reference_data.select_dtypes([np.object]).columns) - set(utility_columns))
-
-            target_names = None
-
-        result["utility_columns"] = {'date':date_column, 'id':id_column, 'target':target_column, 'prediction':prediction_column}
-        result["cat_feature_names"] = cat_feature_names
-        result["num_feature_names"] = num_feature_names
-        result["target_names"] = target_names
+        target_column = columns.utility_columns.target
+        prediction_column = columns.utility_columns.prediction
 
         result['metrics'] = {}
         if target_column is not None and prediction_column is not None:
@@ -76,11 +45,11 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
                 log_loss = metrics.log_loss(binaraized_target, reference_data[prediction_column[0]]) #problem!!!
 
             accuracy_score = metrics.accuracy_score(reference_data[target_column], prediction_labels)
-            avg_precision = metrics.precision_score(reference_data[target_column], prediction_labels, 
+            avg_precision = metrics.precision_score(reference_data[target_column], prediction_labels,
                 average='macro')
-            avg_recall = metrics.recall_score(reference_data[target_column], prediction_labels, 
+            avg_recall = metrics.recall_score(reference_data[target_column], prediction_labels,
                 average='macro')
-            avg_f1 = metrics.f1_score(reference_data[target_column], prediction_labels, 
+            avg_f1 = metrics.f1_score(reference_data[target_column], prediction_labels,
                 average='macro')
 
             result['metrics']['reference']['accuracy'] = accuracy_score
@@ -91,7 +60,7 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
             result['metrics']['reference']['log_loss'] = log_loss
 
             #calculate class support and metrics matrix
-            metrics_matrix = metrics.classification_report(reference_data[target_column], prediction_labels, 
+            metrics_matrix = metrics.classification_report(reference_data[target_column], prediction_labels,
                 output_dict=True)
             result['metrics']['reference']['metrics_matrix'] = metrics_matrix
             if len(prediction_column) > 2:
@@ -99,9 +68,9 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
                 result['metrics']['reference']['roc_aucs'] = roc_aucs.tolist()
 
             #calculate confusion matrix
-            conf_matrix = metrics.confusion_matrix(reference_data[target_column], 
+            conf_matrix = metrics.confusion_matrix(reference_data[target_column],
                 prediction_labels)
-            
+
             result['metrics']['reference']['confusion_matrix'] = {}
             result['metrics']['reference']['confusion_matrix']['labels'] = labels
             result['metrics']['reference']['confusion_matrix']['values'] = conf_matrix.tolist()
@@ -115,15 +84,15 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
 
                 fpr, tpr, thrs = metrics.roc_curve(binaraized_target, reference_data[prediction_column[0]])
                 result['metrics']['reference']['roc_curve'] = {'fpr':fpr.tolist(), 'tpr':tpr.tolist(), 'thrs':thrs.tolist()}
-                
+
                 pr, rcl, thrs = metrics.precision_recall_curve(binaraized_target, reference_data[prediction_column[0]])
                 result['metrics']['reference']['pr_curve'] = {'pr':pr.tolist(), 'rcl':rcl.tolist(), 'thrs':thrs.tolist()}
 
                 pr_table = []
                 step_size = 0.05
-                binded = list(zip(binaraized_target['target'].tolist(),  
+                binded = list(zip(binaraized_target['target'].tolist(),
                     reference_data[prediction_column[0]].tolist()))
-                binded.sort(key = lambda item: item[1], reverse = True)  
+                binded.sort(key = lambda item: item[1], reverse = True)
                 data_size = len(binded)
                 target_class_size = sum([x[0] for x in binded])
                 offset = max(round(data_size*step_size), 1)
@@ -143,7 +112,7 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
                 binaraizer.fit(reference_data[target_column])
                 binaraized_target = pd.DataFrame(binaraizer.transform(reference_data[target_column]))
                 binaraized_target.columns = prediction_column
-                
+
                 result['metrics']['reference']['roc_curve'] = {}
                 result['metrics']['reference']['pr_curve'] = {}
                 result['metrics']['reference']['pr_table'] = {}
@@ -156,7 +125,7 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
 
                     pr_table = []
                     step_size = 0.05
-                    binded = list(zip(binaraized_target[label].tolist(),  
+                    binded = list(zip(binaraized_target[label].tolist(),
                         reference_data[label].tolist()))
                     binded.sort(key = lambda item: item[1], reverse = True)
                     data_size = len(binded)
@@ -187,7 +156,7 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
                 prediction_labels = [prediction_column[x] for x in prediction_ids]
 
                 result['metrics']['current'] = {}
-            
+
                 #calculate quality metrics
                 if len(prediction_column) > 2:
                     roc_auc = metrics.roc_auc_score(binaraized_target, array_prediction, average='macro')
@@ -197,11 +166,11 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
                     log_loss = metrics.log_loss(binaraized_target, current_data[prediction_column[0]]) #problem!!!
 
                 accuracy_score = metrics.accuracy_score(current_data[target_column], prediction_labels)
-                avg_precision = metrics.precision_score(current_data[target_column], prediction_labels, 
+                avg_precision = metrics.precision_score(current_data[target_column], prediction_labels,
                     average='macro')
-                avg_recall = metrics.recall_score(current_data[target_column], prediction_labels, 
+                avg_recall = metrics.recall_score(current_data[target_column], prediction_labels,
                     average='macro')
-                avg_f1 = metrics.f1_score(current_data[target_column], prediction_labels, 
+                avg_f1 = metrics.f1_score(current_data[target_column], prediction_labels,
                     average='macro')
 
                 result['metrics']['current']['accuracy'] = accuracy_score
@@ -221,9 +190,9 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
                     result['metrics']['current']['roc_aucs'] = roc_aucs.tolist()
 
                 #calculate confusion matrix
-                conf_matrix = metrics.confusion_matrix(current_data[target_column], 
+                conf_matrix = metrics.confusion_matrix(current_data[target_column],
                     prediction_labels)
-            
+
                 result['metrics']['current']['confusion_matrix'] = {}
                 result['metrics']['current']['confusion_matrix']['labels'] = labels
                 result['metrics']['current']['confusion_matrix']['values'] = conf_matrix.tolist()
@@ -237,15 +206,15 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
 
                     fpr, tpr, thrs = metrics.roc_curve(binaraized_target, current_data[prediction_column[0]])
                     result['metrics']['current']['roc_curve'] = {'fpr':fpr.tolist(), 'tpr':tpr.tolist(), 'thrs':thrs.tolist()}
-                    
+
                     pr, rcl, thrs = metrics.precision_recall_curve(binaraized_target, current_data[prediction_column[0]])
                     result['metrics']['current']['pr_curve'] = {'pr':pr.tolist(), 'rcl':rcl.tolist(), 'thrs':thrs.tolist()}
 
                     pr_table = []
                     step_size = 0.05
-                    binded = list(zip(binaraized_target['target'].tolist(),  
+                    binded = list(zip(binaraized_target['target'].tolist(),
                         current_data[prediction_column[0]].tolist()))
-                    binded.sort(key = lambda item: item[1], reverse = True)  
+                    binded.sort(key = lambda item: item[1], reverse = True)
                     data_size = len(binded)
                     target_class_size = sum([x[0] for x in binded])
                     offset = max(round(data_size*step_size), 1)
@@ -265,7 +234,7 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
                     binaraizer.fit(current_data[target_column])
                     binaraized_target = pd.DataFrame(binaraizer.transform(current_data[target_column]))
                     binaraized_target.columns = prediction_column
-                    
+
                     result['metrics']['current']['roc_curve'] = {}
                     result['metrics']['current']['pr_curve'] = {}
                     result['metrics']['current']['pr_table'] = {}
@@ -278,7 +247,7 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
 
                         pr_table = []
                         step_size = 0.05
-                        binded = list(zip(binaraized_target[label].tolist(),  
+                        binded = list(zip(binaraized_target[label].tolist(),
                             current_data[label].tolist()))
                         binded.sort(key = lambda item: item[1], reverse = True)
                         data_size = len(binded)

@@ -3,45 +3,31 @@
 
 import json
 import pandas as pd
-from pandas.api.types import is_numeric_dtype
 import numpy as np
 
-from scipy.stats import ks_2samp, probplot
+from scipy.stats import probplot
 import plotly.graph_objs as go
-#import plotly.figure_factory as ff
 
 from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceAnalyzer
 
-from evidently.model.widget import BaseWidgetInfo, AlertStats, AdditionalGraphInfo
-from evidently.widgets.widget import Widget
-
-red = "#ed0400"
-grey = "#4d4d4d"
+from evidently.model.widget import BaseWidgetInfo, AlertStats
+from evidently.widgets.widget import Widget, RED, GREY
 
 
 class RegErrorNormalityWidget(Widget):
-    def __init__(self, title:str, dataset:str='reference'):
-        super().__init__()
-        self.title = title
+    def __init__(self, title: str, dataset: str='reference'):
+        super().__init__(title)
         self.dataset = dataset #reference or current
 
-    def analyzers(self):   
+    def analyzers(self):
         return [RegressionPerformanceAnalyzer]
-
-    def get_info(self) -> BaseWidgetInfo:
-        if self.dataset == 'reference':
-            if self.wi:
-                return self.wi
-            raise ValueError("no data for predicted and actual in time widget provided")
-        else:
-            return self.wi
 
     def calculate(self,
                   reference_data: pd.DataFrame,
                   current_data: pd.DataFrame,
                   column_mapping,
                   analyzers_results):
-        
+
         results = analyzers_results[RegressionPerformanceAnalyzer]
 
         if results['utility_columns']['target'] is not None and results['utility_columns']['prediction'] is not None:
@@ -57,7 +43,7 @@ class RegErrorNormalityWidget(Widget):
                 #plot error normality
                 error_norm = go.Figure()
 
-                error = dataset_to_plot[results['utility_columns']['prediction']] - dataset_to_plot[results['utility_columns']['target']] 
+                error = dataset_to_plot[results['utility_columns']['prediction']] - dataset_to_plot[results['utility_columns']['target']]
                 qq_lines = probplot(error, dist="norm", plot=None)
                 theoretical_q_x = np.linspace(qq_lines[0][0][0], qq_lines[0][0][-1], 100)
 
@@ -68,7 +54,7 @@ class RegErrorNormalityWidget(Widget):
                     name = 'Dataset Quantiles',
                     marker=dict(
                         size=6,
-                        color=red
+                        color=RED
                     )
                 )
 
@@ -79,7 +65,7 @@ class RegErrorNormalityWidget(Widget):
                     name = 'Theoretical Quantiles',
                     marker=dict(
                         size=6,
-                        color=grey
+                        color=GREY
                     )
                 )
 
@@ -120,4 +106,3 @@ class RegErrorNormalityWidget(Widget):
                 self.wi = None
         else:
             self.wi = None
-

@@ -1,5 +1,4 @@
 import dataclasses
-import logging
 import random
 from typing import Callable, Union, Optional, List
 
@@ -38,8 +37,8 @@ def _skiprows(sampling_options: SamplingOptions) -> Union[Callable[[int], bool],
             raise Exception("nth sampling should have 'n' parameter >= 1")
         return __simple(sampling_options)
     if sampling_options.type == "random":
-        sk = RandomizedSkipRows(sampling_options.ratio, sampling_options.random_seed)
-        return sk.skiprows
+        skip_rows = RandomizedSkipRows(sampling_options.ratio, sampling_options.random_seed)
+        return skip_rows.skiprows
 
 
 def __simple(sampling_options: SamplingOptions):

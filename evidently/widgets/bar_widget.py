@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-from typing import Dict, Optional
+from typing import Dict
 
 import pandas
 
@@ -10,19 +10,11 @@ from evidently.widgets.widget import Widget
 
 
 class BarWidget(Widget):
-
-    wi: Optional[BaseWidgetInfo]
-
-    def __init__(self, title: str):
-        super().__init__()
-        self.wi = None
-        self.title = title
-
     def analyzers(self):
         return []
 
-    def calculate(self, reference_data: pandas.DataFrame, production_data: pandas.DataFrame, column_mapping: Dict,
-                  analyzes_results):
+    def calculate(self, reference_data: pandas.DataFrame, current_data: pandas.DataFrame, column_mapping: Dict,
+                  analyzers_results):
         self.wi = BaseWidgetInfo(
             type="big_graph",
             title=self.title,
@@ -868,8 +860,3 @@ class BarWidget(Widget):
             alertStats=AlertStats(),
             additionalGraphs=[],
         )
-
-    def get_info(self) -> BaseWidgetInfo:
-        if self.wi:
-            return self.wi
-        raise ValueError("no widget info provided")

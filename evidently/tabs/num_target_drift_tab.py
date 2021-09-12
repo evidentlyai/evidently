@@ -13,7 +13,6 @@ from evidently.widgets.widget import Widget
 
 class NumTargetDriftTab(Tab):
     def _get_widgets(self) -> List[Widget]:
-        
         widgets = [
             NumOutputDriftWidget("Target Drift"),
             NumOutputCorrWidget("Target Correlations"),

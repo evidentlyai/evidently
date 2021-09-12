@@ -3,58 +3,40 @@
 
 import json
 import pandas as pd
-from pandas.api.types import is_numeric_dtype
-import numpy as np
-
-from scipy.stats import ks_2samp
-#import matplotlib.pyplot as plt
-import plotly.graph_objs as go
 import plotly.figure_factory as ff
 
 from evidently.analyzers.num_target_drift_analyzer import NumTargetDriftAnalyzer
-from evidently.model.widget import BaseWidgetInfo, AlertStats, AdditionalGraphInfo
-from evidently.widgets.widget import Widget
-
-red = "#ed0400"
-grey = "#4d4d4d"
+from evidently.model.widget import BaseWidgetInfo, AlertStats
+from evidently.widgets.widget import Widget, GREY, RED
 
 
 class NumOutputDriftWidget(Widget):
-    def __init__(self, title:str, kind:str = 'target'):
-        super().__init__()
-        self.title = title
+    def __init__(self, title: str, kind: str = 'target'):
+        super().__init__(title)
         self.kind = kind #target or prediction
 
     def analyzers(self):
         return [NumTargetDriftAnalyzer]
-
-    def get_info(self) -> BaseWidgetInfo:
-        #if self.wi:
-        #    return self.wi
-        #raise ValueError("no widget info provided")
-        return self.wi
 
     def calculate(self,
                   reference_data: pd.DataFrame,
                   current_data: pd.DataFrame,
                   column_mapping,
                   analyzers_results):
-        
+
         results = analyzers_results[NumTargetDriftAnalyzer]
 
         if results['utility_columns'][self.kind] is not None:
             #calculate output drift
-            output_name = results['metrics'][self.kind + '_name'] 
-            output_type = results['metrics'][self.kind + '_type'] 
-            output_p_value = results['metrics'][self.kind + '_drift'] 
+            output_p_value = results['metrics'][self.kind + '_drift']
             output_sim_test = "detected" if output_p_value < 0.05 else "not detected"
 
             #plot output distributions
             output_distr = ff.create_distplot(
-                [reference_data[results['utility_columns'][self.kind]], 
+                [reference_data[results['utility_columns'][self.kind]],
                 current_data[results['utility_columns'][self.kind]]],
-                ["Reference", "Current"],  
-                colors=[grey, red],
+                ["Reference", "Current"],
+                colors=[GREY, RED],
                 show_rug=True)
 
             output_distr.update_layout(

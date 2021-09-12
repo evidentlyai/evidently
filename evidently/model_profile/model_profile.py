@@ -1,9 +1,8 @@
 import json
-
-import pandas
-import numpy as np
 from datetime import datetime
 from typing import List, Type
+
+import pandas
 
 from evidently.pipeline.pipeline import Pipeline
 from evidently.profile_sections.base_profile_section import ProfileSection

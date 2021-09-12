@@ -1,219 +1,213 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-from evidently.analyzers.base_analyzer import Analyzer
-import pandas as pd
-from pandas.api.types import is_numeric_dtype
-import numpy as np
+from dataclasses import dataclass
+from typing import Dict
 
-from scipy.stats import ks_2samp, chisquare, probplot
-from sklearn import metrics
+import pandas as pd
+import numpy as np
+from scipy.stats import probplot
+
+from evidently.analyzers.base_analyzer import Analyzer
+from .utils import process_columns
+
+
+class ErrorWithQuantiles:
+    def __init__(self, error, quantile_5, quantile_95):
+        self.error = error
+        self.quantile_5 = quantile_5
+        self.quantile_95 = quantile_95
+
+
+@dataclass
+class FeatureBias:
+    feature_type: str
+    majority: float
+    under: float
+    over: float
+    range: float
+
+    def as_dict(self, prefix):
+        return {
+            prefix + 'majority': self.majority,
+            prefix + 'under': self.under,
+            prefix + 'over': self.over,
+            prefix + 'range':self.range
+        }
+
 
 class RegressionPerformanceAnalyzer(Analyzer):
     def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping):
-        result = dict()
-        if column_mapping:
-            date_column = column_mapping.get('datetime')
-            id_column = column_mapping.get('id')
-            target_column = column_mapping.get('target')
-            prediction_column = column_mapping.get('prediction')
-            num_feature_names = column_mapping.get('numerical_features')
-            target_names = column_mapping.get('target_names')
-            if num_feature_names is None:
-                num_feature_names = []
-            else:
-                num_feature_names = [name for name in num_feature_names if is_numeric_dtype(reference_data[name])] 
+        columns = process_columns(reference_data, column_mapping)
+        result = columns.as_dict()
 
-            cat_feature_names = column_mapping.get('categorical_features')
-            if cat_feature_names is None:
-                cat_feature_names = []
-            else:
-                cat_feature_names = [name for name in cat_feature_names if is_numeric_dtype(reference_data[name])] 
-        
-        else:
-            date_column = 'datetime' if 'datetime' in reference_data.columns else None
-            id_column = None
-            target_column = 'target' if 'target' in reference_data.columns else None
-            prediction_column = 'prediction' if 'prediction' in reference_data.columns else None
+        target_column = columns.utility_columns.target
+        prediction_column = columns.utility_columns.prediction
 
-            utility_columns = [date_column, id_column, target_column, prediction_column]
-
-            num_feature_names = list(set(reference_data.select_dtypes([np.number]).columns) - set(utility_columns))
-            cat_feature_names = list(set(reference_data.select_dtypes([np.object]).columns) - set(utility_columns))
-
-            target_names = None
-
-        result["utility_columns"] = {'date':date_column, 'id':id_column, 'target':target_column, 'prediction':prediction_column}
-        result["cat_feature_names"] = cat_feature_names
-        result["num_feature_names"] = num_feature_names
+        num_feature_names = columns.num_feature_names
+        cat_feature_names = columns.cat_feature_names
 
         result['metrics'] = {}
         if target_column is not None and prediction_column is not None:
-            reference_data.replace([np.inf, -np.inf], np.nan, inplace=True)
-            reference_data.dropna(axis=0, how='any', inplace=True)
-            
+            __prepare_dataset(reference_data)
+
             #calculate quality metrics
-            me = np.mean(reference_data[prediction_column] - reference_data[target_column])
-            sde = np.std(reference_data[prediction_column] - reference_data[target_column], ddof = 1)
-
-            abs_err = np.abs(reference_data[prediction_column] - reference_data[target_column])
-            mae = np.mean(abs_err)
-            sdae = np.std(abs_err, ddof = 1)
-
-            abs_perc_err = 100.*np.abs(reference_data[prediction_column] - reference_data[target_column])/reference_data[target_column]
-            mape = np.mean(abs_perc_err)
-            sdape = np.std(abs_perc_err, ddof = 1)
-
-            result['metrics']['reference'] = {'mean_error':float(me), 'mean_abs_error':float(mae), 'mean_abs_perc_error':float(mape),
-                'error_std':float(sde), 'abs_error_std':float(sdae), 'abs_perc_error_std':float(sdape)}
+            result['metrics']['reference'] = __calculate_quality_metrics(reference_data, prediction_column, target_column)
 
             #error normality
-            error = reference_data[prediction_column] - reference_data[target_column] 
-            qq_lines = probplot(error, dist="norm", plot=None)
-            theoretical_q_x = np.linspace(qq_lines[0][0][0], qq_lines[0][0][-1], 100)
+            err_quantiles = __error_with_qantiles(reference_data, prediction_column, target_column)
 
-            qq_dots = [t.tolist() for t in qq_lines[0]]
-            qq_line = list(qq_lines[1])
-
-            result['metrics']['reference']['error_normality'] = {'order_statistic_medians':[float(x) for x in qq_dots[0]], 
-                'order_statistic_medians':[float(x) for x in qq_dots[1]], 'slope':float(qq_line[0]), 'intercept':float(qq_line[1]), 'r':float(qq_line[2])}
+            result['metrics']['reference']['error_normality'] = __calculate_error_normality(err_quantiles)
 
             #underperformance metrics
-            quantile_5 = np.quantile(error, .05)
-            quantile_95 = np.quantile(error, .95)
-
-            mae = np.mean(error)
-            mae_under = np.mean(error[error <= quantile_5])
-            mae_exp = np.mean(error[(error > quantile_5) & (error < quantile_95)])
-            mae_over = np.mean(error[error >= quantile_95])
-
-            sd = np.std(error, ddof = 1)
-            sd_under = np.std(error[error <= quantile_5], ddof = 1)
-            sd_exp = np.std(error[(error > quantile_5) & (error < quantile_95)], ddof = 1)
-            sd_over = np.std(error[error >= quantile_95], ddof = 1)
-
-            result['metrics']['reference']['underperformance'] = {}
-            result['metrics']['reference']['underperformance']['majority'] = {'mean_error':float(mae_exp), 'std_error':float(sd_exp)}
-            result['metrics']['reference']['underperformance']['underestimation'] = {'mean_error':float(mae_under), 'std_error':float(sd_under)}
-            result['metrics']['reference']['underperformance']['overestimation'] = {'mean_error':float(mae_over), 'std_error':float(sd_over)}
+            result['metrics']['reference']['underperformance'] = __calculate_underperformance(err_quantiles)
 
             #error bias table
             error_bias = {}
-            for feature_name in num_feature_names:
-                feature_type = 'num'
+            ref_feature_bias = __error_bias_table(reference_data, err_quantiles, num_feature_names, cat_feature_names)
+            # convert to old forma
+            error_bias = {feature: dict(feature_type=bias.feature_type, **bias.as_dict('ref_'))
+                                    for feature, bias in ref_feature_bias}
 
-                ref_overal_value = np.mean(reference_data[feature_name])
-                ref_under_value = np.mean(reference_data[error <= quantile_5][feature_name])
-                ref_expected_value = np.mean(reference_data[(error > quantile_5) & (error < quantile_95)][feature_name])
-                ref_over_value = np.mean(reference_data[error >= quantile_95][feature_name])
-                ref_range_value = 0 if ref_over_value == ref_under_value else 100*abs(ref_over_value - ref_under_value)/(np.max(reference_data[feature_name]) - np.min(reference_data[feature_name]))
-
-                error_bias[feature_name] = {'feature_type':feature_type, 'ref_majority':float(ref_expected_value), 'ref_under':float(ref_under_value), 
-                    'ref_over':float(ref_over_value), 'ref_range':float(ref_range_value)}
-            
-            for feature_name in cat_feature_names:
-                feature_type = 'cat'
-
-                ref_overal_value = reference_data[feature_name].value_counts().idxmax()
-                ref_under_value = reference_data[error <= quantile_5][feature_name].value_counts().idxmax()
-                ref_over_value = reference_data[error >= quantile_95][feature_name].value_counts().idxmax()
-                ref_range_value = 1 if (ref_overal_value != ref_under_value) or (ref_over_value != ref_overal_value) \
-                   or (ref_under_value != ref_overal_value) else 0
-
-                error_bias[feature_name] = {'feature_type':feature_type, 'ref_majority':float(ref_overal_value), 'ref_under':float(ref_under_value), 
-                    'ref_over':float(ref_over_value), 'ref_range':float(ref_range_value)}
-
-            result['metrics']['error_bias'] = error_bias
-            
             if current_data is not None:
-                current_data.replace([np.inf, -np.inf], np.nan, inplace=True)
-                current_data.dropna(axis=0, how='any', inplace=True)
-            
+                __prepare_dataset(current_data)
+
                 #calculate quality metrics
-                me = np.mean(current_data[prediction_column] - current_data[target_column])
-                sde = np.std(current_data[prediction_column] - current_data[target_column], ddof = 1)
-
-                abs_err = np.abs(current_data[prediction_column] - current_data[target_column])
-                mae = np.mean(abs_err)
-                sdae = np.std(abs_err, ddof = 1)
-
-                abs_perc_err = 100.*np.abs(current_data[prediction_column] - current_data[target_column])/current_data[target_column]
-                mape = np.mean(abs_perc_err)
-                sdape = np.std(abs_perc_err, ddof = 1)
-
-                result['metrics']['current'] = {'mean_error':float(me), 'mean_abs_error':float(mae), 'mean_abs_perc_error':float(mape),
-                'error_std':float(sde), 'abs_error_std':float(sdae), 'abs_perc_error_std':float(sdape)}
+                result['metrics']['current'] = __calculate_quality_metrics(current_data, prediction_column, target_column)
 
                 #error normality
-                current_error = current_data[prediction_column] - current_data[target_column] 
-                qq_lines = probplot(current_error, dist="norm", plot=None)
-                theoretical_q_x = np.linspace(qq_lines[0][0][0], qq_lines[0][0][-1], 100)
-
-                qq_dots = [t.tolist() for t in qq_lines[0]]
-                qq_line = list(qq_lines[1])
-
-                result['metrics']['current']['error_normality'] = {'order_statistic_medians':[float(x) for x in qq_dots[0]], 
-                'order_statistic_medians':[float(x) for x in qq_dots[1]], 'slope':float(qq_line[0]), 'intercept':float(qq_line[1]), 'r':float(qq_line[2])}
+                current_err_quantiles = __error_with_qantiles(current_data, prediction_column, target_column)
+                result['metrics']['current']['error_normality'] = __calculate_error_normality(current_err_quantiles)
 
                 #underperformance metrics
-                current_quantile_5 = np.quantile(current_error, .05)
-                current_quantile_95 = np.quantile(current_error, .95)
-
-                current_mae = np.mean(current_error)
-                current_mae_under = np.mean(current_error[current_error <= current_quantile_5])
-                current_mae_exp = np.mean(current_error[(current_error > current_quantile_5) & (current_error < current_quantile_95)])
-                current_mae_over = np.mean(current_error[current_error >= current_quantile_95])
-
-                current_sd = np.std(current_error, ddof = 1)
-                current_sd_under = np.std(current_error[current_error <= current_quantile_5], ddof = 1)
-                current_sd_exp = np.std(current_error[(current_error > current_quantile_5) & (current_error < current_quantile_95)], ddof = 1)
-                current_sd_over = np.std(current_error[current_error >= current_quantile_95], ddof = 1)
-
-                result['metrics']['current']['underperformance'] = {}
-                result['metrics']['current']['underperformance']['majority'] = {'mean_error':float(current_mae_exp), 'std_error':float(current_sd_exp)}
-                result['metrics']['current']['underperformance']['underestimation'] = {'mean_error':float(current_mae_under), 'std_error':float(current_sd_under)}
-                result['metrics']['current']['underperformance']['overestimation'] = {'mean_error':float(current_mae_over), 'std_error':float(current_sd_over)}
+                result['metrics']['current']['underperformance'] = __calculate_underperformance(current_err_quantiles)
 
                 #error bias table
                 error_bias = {}
-                for feature_name in num_feature_names:
-                    feature_type = 'num'
+                current_feature_bias = __error_bias_table(current_data, current_err_quantiles, num_feature_names, cat_feature_names)
+                for feature, bias in current_feature_bias:
+                    error_bias[feature].update(bias.as_dict("current_"))
 
-                    ref_overal_value = np.mean(reference_data[feature_name])
-                    ref_under_value = np.mean(reference_data[error <= quantile_5][feature_name])
-                    ref_expected_value = np.mean(reference_data[(error > quantile_5) & (error < quantile_95)][feature_name])
-                    ref_over_value = np.mean(reference_data[error >= quantile_95][feature_name])
-                    ref_range_value = 0 if ref_over_value == ref_under_value else 100*abs(ref_over_value - ref_under_value)/(np.max(reference_data[feature_name]) - np.min(reference_data[feature_name]))
-
-                    current_overal_value = np.mean(current_data[feature_name])
-                    current_under_value = np.mean(current_data[current_error <= current_quantile_5][feature_name])
-                    current_expected_value = np.mean(current_data[(current_error > current_quantile_5) & (current_error < current_quantile_95)][feature_name])
-                    current_over_value = np.mean(current_data[current_error >= current_quantile_95][feature_name])
-                    current_range_value = 0 if current_over_value == current_under_value else 100*abs(current_over_value - current_under_value)/(np.max(current_data[feature_name]) - np.min(current_data[feature_name]))
-
-                    error_bias[feature_name] = {'feature_type':feature_type, 'ref_majority':float(ref_expected_value), 'ref_under':float(ref_under_value), 
-                        'ref_over':float(ref_over_value), 'ref_range':float(ref_range_value),'current_majority':float(current_expected_value), 'current_under':float(current_under_value), 
-                        'current_over':float(current_over_value), 'current_range':float(current_range_value)}
-
-                for feature_name in cat_feature_names:
-                    feature_type = 'cat'
-
-                    ref_overal_value = reference_data[feature_name].value_counts().idxmax()
-                    ref_under_value = reference_data[error <= quantile_5][feature_name].value_counts().idxmax()
-                    ref_over_value = reference_data[error >= quantile_95][feature_name].value_counts().idxmax()
-                    ref_range_value = 1 if (ref_overal_value != ref_under_value) or (ref_over_value != ref_overal_value) \
-                       or (ref_under_value != ref_overal_value) else 0
-
-                    current_overal_value = current_data[feature_name].value_counts().idxmax()
-                    current_under_value = current_data[current_error <= current_quantile_5][feature_name].value_counts().idxmax()
-                    current_over_value = current_data[current_error >= current_quantile_95][feature_name].value_counts().idxmax()
-                    current_range_value = 1 if (current_overal_value != current_under_value) or (current_over_value != current_overal_value) \
-                       or (current_under_value != current_overal_value) else 0
-
-                    error_bias[feature_name] = {'feature_type':feature_type, 'ref_majority':float(ref_overal_value), 'ref_under':float(ref_under_value), 
-                        'ref_over':float(ref_over_value), 'ref_range':float(ref_range_value),'current_majority':float(current_overal_value), 'current_under':float(current_under_value), 
-                        'current_over':float(current_over_value), 'current_range':float(current_range_value)}
-
-                result['metrics']['error_bias'] = error_bias
+            result['metrics']['error_bias'] = error_bias
 
         return result
+
+
+def __calculate_error_normality(error: ErrorWithQuantiles):
+    qq_lines = probplot(error.error, dist="norm", plot=None)
+    theoretical_q_x = np.linspace(qq_lines[0][0][0], qq_lines[0][0][-1], 100) # TODO: review  unused?
+
+    qq_dots = [t.tolist() for t in qq_lines[0]]
+    qq_line = list(qq_lines[1])
+    return {
+                'order_statistic_medians': [float(x) for x in qq_dots[0]],
+                'order_statistic_medians': [float(x) for x in qq_dots[1]],
+                'slope': float(qq_line[0]),
+                'intercept': float(qq_line[1]),
+                'r': float(qq_line[2])
+            }
+
+
+def __calculate_quality_metrics(dataset, prediction_column, target_column):
+    me = np.mean(dataset[prediction_column] - dataset[target_column])
+    sde = np.std(dataset[prediction_column] - dataset[target_column], ddof = 1)
+
+    abs_err = np.abs(dataset[prediction_column] - dataset[target_column])
+    mae = np.mean(abs_err)
+    sdae = np.std(abs_err, ddof = 1)
+
+    abs_perc_err = 100.*np.abs(dataset[prediction_column] - dataset[target_column]) / dataset[target_column]
+    mape = np.mean(abs_perc_err)
+    sdape = np.std(abs_perc_err, ddof = 1)
+
+    return {
+        'mean_error':float(me),
+        'mean_abs_error':float(mae),
+        'mean_abs_perc_error':float(mape),
+        'error_std':float(sde),
+        'abs_error_std':float(sdae),
+        'abs_perc_error_std':float(sdape)
+    }
+
+
+def __prepare_dataset(dataset):
+    dataset.replace([np.inf, -np.inf], np.nan, inplace=True)
+    dataset.dropna(axis=0, how='any', inplace=True)
+
+
+def __calculate_underperformance(err_quantiles: ErrorWithQuantiles):
+    error = err_quantiles.error
+    quantile_5 = err_quantiles.quantile_5
+    quantile_95 = err_quantiles.quantile_95
+    mae = np.mean(error) # TODO: review unused
+    mae_under = np.mean(error[error <= quantile_5])
+    mae_exp = np.mean(error[(error > quantile_5) & (error < quantile_95)])
+    mae_over = np.mean(error[error >= quantile_95])
+
+    sd = np.std(error, ddof = 1) # TODO: review unused
+    sd_under = np.std(error[error <= quantile_5], ddof = 1)
+    sd_exp = np.std(error[(error > quantile_5) & (error < quantile_95)], ddof = 1)
+    sd_over = np.std(error[error >= quantile_95], ddof = 1)
+
+    return {
+        'majority': {'mean_error': float(mae_exp), 'std_error': float(sd_exp)},
+        'underestimation': {'mean_error': float(mae_under), 'std_error': float(sd_under)},
+        'overestimation': {'mean_error': float(mae_over), 'std_error': float(sd_over)}
+    }
+
+
+def __error_bias_table(dataset, err_quantiles, num_feature_names, cat_feature_names) -> Dict[str, FeatureBias]:
+    num_bias = { feature_name: __error_num_feature_bias(dataset, feature_name, err_quantiles)
+                            for feature_name in num_feature_names }
+    cat_bias = { feature_name: __error_cat_feature_bias(dataset, feature_name, err_quantiles)
+                            for feature_name in cat_feature_names }
+    error_bias = num_bias.copy()
+    error_bias.update(cat_bias)
+    return error_bias
+
+
+def __error_num_feature_bias(dataset, feature_name, err_quantiles: ErrorWithQuantiles) -> FeatureBias:
+    error = err_quantiles.error
+    quantile_5 = err_quantiles.quantile_5
+    quantile_95 = err_quantiles.quantile_95
+    ref_overal_value = np.mean(dataset[feature_name])
+    ref_under_value = np.mean(dataset[error <= quantile_5][feature_name])
+    ref_expected_value = np.mean(dataset[(error > quantile_5) & (error < quantile_95)][feature_name])
+    ref_over_value = np.mean(dataset[error >= quantile_95][feature_name])
+    # TODO: overal or over?
+    ref_range_value = 0 if ref_over_value == ref_under_value \
+                         else 100 * abs(ref_over_value - ref_under_value) / (np.max(dataset[feature_name]) - np.min(dataset[feature_name]))
+
+    return FeatureBias(
+        feature_type='num',
+        majority=float(ref_overal_value),
+        under=float(ref_under_value),
+        over=float(ref_over_value),
+        range=float(ref_range_value))
+
+
+def __error_cat_feature_bias(dataset, feature_name, err_quantiles: ErrorWithQuantiles) -> FeatureBias:
+    error = err_quantiles.error
+    quantile_5 = err_quantiles.quantile_5
+    quantile_95 = err_quantiles.quantile_95
+    ref_overal_value = dataset[feature_name].value_counts().idxmax()
+    ref_under_value = dataset[error <= quantile_5][feature_name].value_counts().idxmax()
+    ref_over_value = dataset[error >= quantile_95][feature_name].value_counts().idxmax()
+    ref_range_value = 1 if (ref_overal_value != ref_under_value) or (ref_over_value != ref_overal_value) \
+        or (ref_under_value != ref_overal_value) else 0
+
+    return FeatureBias(
+        feature_type='cat',
+        majority=float(ref_overal_value),
+        under=float(ref_under_value),
+        over=float(ref_over_value),
+        range=float(ref_range_value))
+
+
+def __error_with_qantiles(dataset, prediction_column, target_column):
+    error = dataset[prediction_column] - dataset[target_column]
+
+    #underperformance metrics
+    quantile_5 = np.quantile(error, .05)
+    quantile_95 = np.quantile(error, .95)
+    return ErrorWithQuantiles(error, quantile_5, quantile_95)

@@ -9,24 +9,12 @@ import plotly.graph_objs as go
 
 from evidently.analyzers.data_drift_analyzer import DataDriftAnalyzer
 from evidently.model.widget import BaseWidgetInfo, AlertStats, AdditionalGraphInfo
-from evidently.widgets.widget import Widget
-
-red = "#ed0400"
-grey = "#4d4d4d"
+from evidently.widgets.widget import Widget, GREY, RED
 
 
 class DataDriftTableWidget(Widget):
     def analyzers(self):
         return [DataDriftAnalyzer]
-
-    def __init__(self, title: str):
-        super().__init__()
-        self.title = title
-
-    def get_info(self) -> BaseWidgetInfo:
-        if self.wi:
-            return self.wi
-        raise ValueError("no widget info provided")
 
     def calculate(self,
                   reference_data: pd.DataFrame,
@@ -191,7 +179,7 @@ class DataDriftTableWidget(Widget):
                 name='Current',
                 marker=dict(
                     size=6,
-                    color=grey
+                    color=GREY
                 )
             ))
 

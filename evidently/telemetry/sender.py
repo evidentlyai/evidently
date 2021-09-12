@@ -1,4 +1,3 @@
-import json
 import logging
 import os
 import platform
@@ -22,8 +21,8 @@ class TelemetrySender:
         )
         try:
             requests.post(self.address, json=collected, timeout=3)
-        except Exception as e:
-            logging.warning(f"failed to send telemetry: {e}")
+        except Exception as error: # pylint: disable=broad-except
+            logging.warning(f"failed to send telemetry: {error}")
 
 
 def _collect_environment():

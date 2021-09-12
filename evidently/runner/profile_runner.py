@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import List
 
 from evidently.model_profile import Profile
-from evidently.profile_sections.data_drift_profile_section import DataDriftProfileSection 
+from evidently.profile_sections.data_drift_profile_section import DataDriftProfileSection
 from evidently.profile_sections.cat_target_drift_profile_section import CatTargetDriftProfileSection
 from evidently.profile_sections.num_target_drift_profile_section import NumTargetDriftProfileSection
 from evidently.profile_sections.classification_performance_profile_section import ClassificationPerformanceProfileSection
@@ -51,5 +51,5 @@ class ProfileRunner(Runner):
             if self.options.output_path.endswith(".json") \
             else self.options.output_path + ".json"
 
-        with open(output_path, 'w') as f:
-            json.dump(profile.object(), f, indent=2 if self.options.pretty_print else None, cls=NumpyEncoder)
+        with open(output_path, 'w', encoding='utf-8') as out_file:
+            json.dump(profile.object(), out_file, indent=2 if self.options.pretty_print else None, cls=NumpyEncoder)
