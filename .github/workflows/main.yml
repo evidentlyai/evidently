@@ -32,3 +32,5 @@ jobs:
         run: pip install pylint
       - name: Run PyLint
         run: pylint evidently --disable=R
+      - name: Run Tests
+        run: python -m unittest discover -s evidently -p 'test_*.py' -v
