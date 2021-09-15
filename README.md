@@ -18,7 +18,9 @@
 
 
 ## What is it?
-Evidently helps evaluate machine learning models during validation and monitor them in production. The tool generates interactive visual reports and JSON profiles from pandas `DataFrame` or `csv` files. You can use visual reports for ad hoc analysis, debugging and team sharing, and JSON profiles to integrate Evidently in prediction pipelines or with other visualization tools.
+Evidently helps evaluate machine learning models during validation and monitor them in production. The tool generates interactive visual reports and JSON profiles from pandas `DataFrame` or `csv` files. 
+
+You can use **visual reports** for ad hoc analysis, debugging and team sharing, and **JSON profiles** to integrate Evidently in prediction pipelines or with other visualization tools.
 
 Currently 6 reports are available.  
 
@@ -358,11 +360,11 @@ For more information, refer to a complete <a href="https://evidentlyai.gitbook.i
 [Iris](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/iris_data_drift.ipynb), 
 [Boston](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/boston_data_drift.ipynb)
 
-- See **Numerical Target and Data Drift** Dashboard and Profile generation to explore the results both inside a Jupyter notebook and as a separate file:
+- See **Categorical Target and Data Drift** Dashboard and Profile generation to explore the results both inside a Jupyter notebook and as a separate file:
 [Iris](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/iris_target_and_data_drift.ipynb),
 [Breast Cancer](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/breast_cancer_target_and_data_drift.ipynb)
 
-- See **Categorical Target and Data Drift** Dashboard and Profile generation to explore the results both inside a Jupyter notebook and as a separate file:
+- See **Numerical Target and Data Drift** Dashboard and Profile generation to explore the results both inside a Jupyter notebook and as a separate file:
 [Boston](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/boston_target_and_data_drift.ipynb) 
 
 - See **Regression Performance** Dashboard and Profile generation to explore the results both inside a Jupyter notebook and as a separate file:
