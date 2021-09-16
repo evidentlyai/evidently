@@ -40,7 +40,7 @@ class DataDriftTableWidget(Widget):
         # set params data
         params_data = []
         drifted_fetures_count = 0
-
+        confidence = results['utility_columns']['drift_conf_level']
         date_column = results['utility_columns']['date']
 
         for feature_name in num_feature_names:
@@ -48,7 +48,6 @@ class DataDriftTableWidget(Widget):
             ref_small_hist = results['metrics'][feature_name]["ref_small_hist"]
             feature_type = results['metrics'][feature_name]["feature_type"]
 
-            confidence = results['utility_columns']['drift_conf_level']
             p_value = results['metrics'][feature_name]["p_value"]
 
             distr_sim_test = "Detected" if p_value < (1. - confidence) else "Not Detected"
