@@ -19,6 +19,9 @@ class CatOutputDriftWidget(Widget):
     def analyzers(self):
         return [CatTargetDriftAnalyzer]
 
+    def get_info(self) -> BaseWidgetInfo:
+        return self.wi
+
     def calculate(self,
                   reference_data: pd.DataFrame,
                   current_data: pd.DataFrame,

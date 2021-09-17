@@ -19,6 +19,14 @@ class ProbClassSupportWidget(Widget):
     def analyzers(self):
         return [ProbClassificationPerformanceAnalyzer]
 
+    def get_info(self) -> BaseWidgetInfo:
+        if self.dataset == 'reference':
+            if self.wi:
+                return self.wi
+            raise ValueError("no data for quality metrics widget provided")
+        else:
+            return self.wi
+
     def calculate(self,
                   reference_data: pd.DataFrame,
                   current_data: pd.DataFrame,

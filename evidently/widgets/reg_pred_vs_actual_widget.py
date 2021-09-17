@@ -19,6 +19,14 @@ class RegPredActualWidget(Widget):
     def analyzers(self):
         return [RegressionPerformanceAnalyzer]
 
+    def get_info(self) -> BaseWidgetInfo:
+        if self.dataset == 'reference':
+            if self.wi:
+                return self.wi
+            raise ValueError("no data for predicted vs actual widget provided")
+        else:
+            return self.wi
+
     def calculate(self,
                   reference_data: pd.DataFrame,
                   current_data: pd.DataFrame,
