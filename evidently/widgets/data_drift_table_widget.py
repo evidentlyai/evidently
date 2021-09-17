@@ -27,7 +27,7 @@ class DataDriftTableWidget(Widget):
 
         # set params data
         params_data = []
-        drifted_fetures_count = 0
+
         confidence = results['utility_columns']['drift_conf_level']
         date_column = results['utility_columns']['date']
 
@@ -39,7 +39,6 @@ class DataDriftTableWidget(Widget):
             p_value = results['metrics'][feature_name]["p_value"]
 
             distr_sim_test = "Detected" if p_value < (1. - confidence) else "Not Detected"
-            #drifted_fetures_count += 1 if p_value < 0.05 else 0
 
             params_data.append(
                 {
