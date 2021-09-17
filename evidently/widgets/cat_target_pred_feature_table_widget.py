@@ -3,47 +3,30 @@
 
 import json
 import pandas as pd
-from pandas.api.types import is_numeric_dtype
-import numpy as np
 
-from scipy.stats import ks_2samp, chisquare
-
-import plotly.graph_objs as go
 import plotly.express as px
 
 from evidently.analyzers.cat_target_drift_analyzer import CatTargetDriftAnalyzer
 from evidently.model.widget import BaseWidgetInfo, AlertStats, AdditionalGraphInfo
 from evidently.widgets.widget import Widget
 
-red = "#ed0400"
-grey = "#4d4d4d"
-
 
 class CatTargetPredFeatureTable(Widget):
-    def __init__(self, title: str):
-        super().__init__()
-        self.title = title
-
     def analyzers(self):
         return [CatTargetDriftAnalyzer]
-
-    def get_info(self) -> BaseWidgetInfo:
-        if self.wi:
-            return self.wi
-        raise ValueError("neither target nor prediction data provided")
 
     def calculate(self,
                   reference_data: pd.DataFrame,
                   current_data: pd.DataFrame,
                   column_mapping,
                   analyzers_results):
-        
+
         results = analyzers_results[CatTargetDriftAnalyzer]
 
-        if results['utility_columns']['prediction'] is not None and results['utility_columns']['target'] is not None:           
+        if results['utility_columns']['prediction'] is not None and results['utility_columns']['target'] is not None:
             additional_graphs_data = []
             params_data = []
-            for feature_name in results['num_feature_names'] + results['cat_feature_names']: 
+            for feature_name in results['num_feature_names'] + results['cat_feature_names']:
                 #add data for table in params
                 params_data.append(
                     {
@@ -87,7 +70,7 @@ class CatTargetPredFeatureTable(Widget):
                         {
                             "data" : target_fig_json['data'],
                             "layout" : target_fig_json['layout']
-                        }, 
+                        },
                     )
                 )
 
@@ -97,7 +80,7 @@ class CatTargetPredFeatureTable(Widget):
                         {
                             "data" : pred_fig_json['data'],
                             "layout" : pred_fig_json['layout']
-                        }, 
+                        },
                     )
                 )
 
@@ -126,7 +109,7 @@ class CatTargetPredFeatureTable(Widget):
         elif results['utility_columns']['target'] is not None:
             additional_graphs_data = []
             params_data = []
-            for feature_name in results['num_feature_names'] + results['cat_feature_names']: 
+            for feature_name in results['num_feature_names'] + results['cat_feature_names']:
                 #add data for table in params
                 params_data.append(
                     {
@@ -143,7 +126,7 @@ class CatTargetPredFeatureTable(Widget):
                     }
                     )
 
-                #create target plot 
+                #create target plot
                 #TO DO%: out pf the cycle
                 reference_data['dataset'] = 'Reference'
                 current_data['dataset'] = 'Current'
@@ -161,7 +144,7 @@ class CatTargetPredFeatureTable(Widget):
                         {
                             "data" : target_fig_json['data'],
                             "layout" : target_fig_json['layout']
-                        }, 
+                        },
                     )
                 )
 
@@ -189,7 +172,7 @@ class CatTargetPredFeatureTable(Widget):
         elif results['utility_columns']['prediction'] is not None:
             additional_graphs_data = []
             params_data = []
-            for feature_name in results['num_feature_names'] + results['cat_feature_names']: 
+            for feature_name in results['num_feature_names'] + results['cat_feature_names']:
                 #add data for table in params
                 params_data.append(
                     {
@@ -223,7 +206,7 @@ class CatTargetPredFeatureTable(Widget):
                         {
                             "data" : prediction_fig_json['data'],
                             "layout" : prediction_fig_json['layout']
-                        }, 
+                        },
                     )
                 )
 
@@ -247,10 +230,7 @@ class CatTargetPredFeatureTable(Widget):
                     "data": params_data
                 },
                 additionalGraphs=additional_graphs_data
-            )            
+            )
 
         else:
             self.wi = None
-
-        
-

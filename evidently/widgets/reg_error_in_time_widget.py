@@ -3,26 +3,21 @@
 
 import json
 import pandas as pd
-from pandas.api.types import is_numeric_dtype
 import numpy as np
 
 import plotly.graph_objs as go
 
 from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceAnalyzer
-from evidently.model.widget import BaseWidgetInfo, AlertStats, AdditionalGraphInfo
-from evidently.widgets.widget import Widget
-
-red = "#ed0400"
-grey = "#4d4d4d"
+from evidently.model.widget import BaseWidgetInfo, AlertStats
+from evidently.widgets.widget import Widget, RED
 
 
 class RegErrorTimeWidget(Widget):
-    def __init__(self, title:str, dataset:str='reference'):
-        super().__init__()
-        self.title = title
+    def __init__(self, title: str, dataset: str='reference'):
+        super().__init__(title)
         self.dataset = dataset #reference or current
 
-    def analyzers(self):   
+    def analyzers(self):
         return [RegressionPerformanceAnalyzer]
 
     def get_info(self) -> BaseWidgetInfo:
@@ -38,7 +33,7 @@ class RegErrorTimeWidget(Widget):
                   current_data: pd.DataFrame,
                   column_mapping,
                   analyzers_results):
-        
+
         results = analyzers_results[RegressionPerformanceAnalyzer]
 
         if results['utility_columns']['target'] is not None and results['utility_columns']['prediction'] is not None:
@@ -50,7 +45,7 @@ class RegErrorTimeWidget(Widget):
             if dataset_to_plot is not None:
                 dataset_to_plot.replace([np.inf, -np.inf], np.nan, inplace=True)
                 dataset_to_plot.dropna(axis=0, how='any', inplace=True)
-            
+
                 #plot error in time
                 error_in_time = go.Figure()
 
@@ -61,7 +56,7 @@ class RegErrorTimeWidget(Widget):
                     name = 'Predicted - Actual',
                     marker=dict(
                         size=6,
-                        color=red
+                        color=RED
                     )
                 )
 
@@ -113,4 +108,3 @@ class RegErrorTimeWidget(Widget):
                 self.wi = None
         else:
             self.wi = None
-

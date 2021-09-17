@@ -4,29 +4,19 @@
 import json
 import pandas as pd
 
-import numpy as np
-
-from sklearn import metrics, preprocessing
-from pandas.api.types import is_numeric_dtype
-
-import plotly.graph_objs as go
 import plotly.figure_factory as ff
 
 from evidently.analyzers.prob_classification_performance_analyzer import ProbClassificationPerformanceAnalyzer
-from evidently.model.widget import BaseWidgetInfo, AlertStats, AdditionalGraphInfo
+from evidently.model.widget import BaseWidgetInfo, AlertStats
 from evidently.widgets.widget import Widget
-
-red = "#ed0400"
-grey = "#4d4d4d"
 
 
 class ProbClassConfMatrixWidget(Widget):
-    def __init__(self, title:str, dataset:str='reference'):
-        super().__init__()
-        self.title = title
+    def __init__(self, title: str, dataset: str='reference'):
+        super().__init__(title)
         self.dataset = dataset #reference or current
 
-    def analyzers(self):   
+    def analyzers(self):
         return [ProbClassificationPerformanceAnalyzer]
 
     def get_info(self) -> BaseWidgetInfo:
@@ -42,11 +32,11 @@ class ProbClassConfMatrixWidget(Widget):
                   current_data: pd.DataFrame,
                   column_mapping,
                   analyzers_results):
-        
+
         results = analyzers_results[ProbClassificationPerformanceAnalyzer]
 
         if results['utility_columns']['target'] is not None and results['utility_columns']['prediction'] is not None:
-            if self.dataset in results['metrics'].keys():       
+            if self.dataset in results['metrics'].keys():
                 #plot confusion matrix
                 conf_matrix = results['metrics'][self.dataset]['confusion_matrix']['values']
 
@@ -57,11 +47,11 @@ class ProbClassConfMatrixWidget(Widget):
                 # change each element of z to type string for annotations
                 z_text = [[str(y) for y in x] for x in z]
 
-                fig = ff.create_annotated_heatmap(z, x=labels, y=labels, annotation_text=z_text, 
+                fig = ff.create_annotated_heatmap(z, x=labels, y=labels, annotation_text=z_text,
                     colorscale='bluered',showscale=True)
 
                 fig.update_layout(
-                    xaxis_title="Predicted value", 
+                    xaxis_title="Predicted value",
                     yaxis_title="Actual value")
 
                 conf_matrix_json = json.loads(fig.to_json())
@@ -85,4 +75,3 @@ class ProbClassConfMatrixWidget(Widget):
                 self.wi = None
         else:
             self.wi = None
-

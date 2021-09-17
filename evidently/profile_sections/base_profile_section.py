@@ -14,5 +14,5 @@ class ProfileSection:
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def calculate(self, analyzer_results):
+    def calculate(self, analyzers_results):
         raise NotImplementedError()

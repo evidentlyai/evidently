@@ -3,34 +3,20 @@
 
 import json
 import pandas as pd
-from pandas.api.types import is_numeric_dtype
-import numpy as np
-
-from scipy.stats import ks_2samp, chisquare
 
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
 
 from evidently.analyzers.num_target_drift_analyzer import NumTargetDriftAnalyzer
 from evidently.model.widget import BaseWidgetInfo, AlertStats, AdditionalGraphInfo
-from evidently.widgets.widget import Widget
-
-red = "#ed0400"
-grey = "#4d4d4d"
+from evidently.widgets.widget import Widget, RED, GREY
 
 
 class NumTargetPredFeatureTable(Widget):
-    def __init__(self, title: str):
-        super().__init__()
-        self.title = title
-
     def analyzers(self):
         return [NumTargetDriftAnalyzer]
 
     def get_info(self) -> BaseWidgetInfo:
-        #if self.wi:
-        #    return self.wi
-        #raise ValueError("no widget info provided")
         return self.wi
 
     def calculate(self,
@@ -38,13 +24,13 @@ class NumTargetPredFeatureTable(Widget):
                   current_data: pd.DataFrame,
                   column_mapping,
                   analyzers_results):
-        
+
         results = analyzers_results[NumTargetDriftAnalyzer]
 
-        if results['utility_columns']['prediction'] is not None or results['utility_columns']['target'] is not None: 
+        if results['utility_columns']['prediction'] is not None or results['utility_columns']['target'] is not None:
             additional_graphs_data = []
             params_data = []
-            for feature_name in results['num_feature_names'] + results['cat_feature_names']: 
+            for feature_name in results['num_feature_names'] + results['cat_feature_names']:
                 #add data for table in params
                 params_data.append(
                     {
@@ -73,7 +59,7 @@ class NumTargetPredFeatureTable(Widget):
                         name = 'Prediction (ref)',
                         marker = dict(
                             size = 6,
-                            color = grey
+                            color = GREY
                             )
                         ),
                         row=1, col=1
@@ -88,7 +74,7 @@ class NumTargetPredFeatureTable(Widget):
                         name = 'Target (ref)',
                         marker = dict(
                             size = 6,
-                            color = red
+                            color = RED
                             )
                         ),
                         row=1, col=1
@@ -103,7 +89,7 @@ class NumTargetPredFeatureTable(Widget):
                         name = 'Prediction (curr)',
                         marker = dict(
                             size = 6,
-                            color = grey
+                            color = GREY
                             )
                         ),
                         row=1, col=2
@@ -118,7 +104,7 @@ class NumTargetPredFeatureTable(Widget):
                         name = 'Target (curr)',
                         marker = dict(
                             size = 6,
-                            color = red
+                            color = RED
                             )
                         ),
                         row=1, col=2
@@ -169,6 +155,3 @@ class NumTargetPredFeatureTable(Widget):
 
         else:
             self.wi = None
-
-        
-

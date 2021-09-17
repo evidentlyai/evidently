@@ -4,29 +4,19 @@
 import json
 import pandas as pd
 
-import numpy as np
-
-from sklearn import metrics
-from pandas.api.types import is_numeric_dtype
-
 import plotly.graph_objs as go
-#import plotly.figure_factory as ff
 
 from evidently.analyzers.classification_performance_analyzer import ClassificationPerformanceAnalyzer
-from evidently.model.widget import BaseWidgetInfo, AlertStats, AdditionalGraphInfo
-from evidently.widgets.widget import Widget
-
-red = "#ed0400"
-grey = "#4d4d4d"
+from evidently.model.widget import BaseWidgetInfo, AlertStats
+from evidently.widgets.widget import Widget, RED
 
 
 class ClassSupportWidget(Widget):
-    def __init__(self, title:str, dataset:str='reference'):
-        super().__init__()
-        self.title = title
+    def __init__(self, title: str, dataset: str='reference'):
+        super().__init__(title)
         self.dataset = dataset #reference or current
 
-    def analyzers(self):   
+    def analyzers(self):
         return [ClassificationPerformanceAnalyzer]
 
     def get_info(self) -> BaseWidgetInfo:
@@ -42,20 +32,19 @@ class ClassSupportWidget(Widget):
                   current_data: pd.DataFrame,
                   column_mapping,
                   analyzers_results):
-        
+
         results = analyzers_results[ClassificationPerformanceAnalyzer]
 
         if results['utility_columns']['target'] is not None and results['utility_columns']['prediction'] is not None:
-            if self.dataset in results['metrics'].keys():   
-            
+            if self.dataset in results['metrics'].keys():
+
                 #plot support bar
                 metrics_frame = pd.DataFrame(results['metrics'][self.dataset]['metrics_matrix'])
-                support = metrics_frame.iloc[-1:,:-3].values[0]
 
                 fig = go.Figure()
 
-                fig.add_trace(go.Bar(x=results['target_names'] if results['target_names'] else metrics_frame.columns.tolist()[:-3], 
-                    y=metrics_frame.iloc[-1:,:-3].values[0], marker_color=red, name='Support'))
+                fig.add_trace(go.Bar(x=results['target_names'] if results['target_names'] else metrics_frame.columns.tolist()[:-3],
+                    y=metrics_frame.iloc[-1:,:-3].values[0], marker_color=RED, name='Support'))
 
                 fig.update_layout(
                     xaxis_title = "Class",
@@ -83,4 +72,3 @@ class ClassSupportWidget(Widget):
                 self.wi = None
         else:
             self.wi = None
-

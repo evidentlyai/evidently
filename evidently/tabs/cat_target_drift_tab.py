@@ -11,7 +11,6 @@ from evidently.widgets.widget import Widget
 
 class CatTargetDriftTab(Tab):
     def _get_widgets(self) -> List[Widget]:
-        
         widgets = [
             CatOutputDriftWidget("Target Drift"),
             CatOutputDriftWidget("Prediction Drift", 'prediction'),

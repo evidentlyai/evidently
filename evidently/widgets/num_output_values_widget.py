@@ -3,25 +3,18 @@
 
 import json
 import pandas as pd
-from pandas.api.types import is_numeric_dtype
 import numpy as np
 
-from scipy.stats import ks_2samp
-#import matplotlib.pyplot as plt
 import plotly.graph_objs as go
-import plotly.figure_factory as ff
 
 from evidently.analyzers.num_target_drift_analyzer import NumTargetDriftAnalyzer
-from evidently.model.widget import BaseWidgetInfo, AlertStats, AdditionalGraphInfo
-from evidently.widgets.widget import Widget
-
-red = "#ed0400"
-grey = "#4d4d4d"
+from evidently.model.widget import BaseWidgetInfo, AlertStats
+from evidently.widgets.widget import Widget, GREY, RED
 
 
 class NumOutputValuesWidget(Widget):
-    def __init__(self, title:str, kind:str = 'target'):
-        super().__init__()
+    def __init__(self, title: str, kind: str = 'target'):
+        super().__init__(title)
         self.title = title
         self.kind = kind #target or prediction
 
@@ -29,9 +22,6 @@ class NumOutputValuesWidget(Widget):
         return [NumTargetDriftAnalyzer]
 
     def get_info(self) -> BaseWidgetInfo:
-        #if self.wi:
-        #    return self.wi
-        #raise ValueError("no widget info provided")
         return self.wi
 
     def calculate(self,
@@ -39,13 +29,13 @@ class NumOutputValuesWidget(Widget):
                   current_data: pd.DataFrame,
                   column_mapping,
                   analyzers_results):
-        
+
         results = analyzers_results[NumTargetDriftAnalyzer]
 
         if results['utility_columns'][self.kind] is not None:
             #plot values
             reference_mean = np.mean(reference_data[results['utility_columns'][self.kind]])
-            reference_std = np.std(reference_data[results['utility_columns'][self.kind]], ddof = 1) 
+            reference_std = np.std(reference_data[results['utility_columns'][self.kind]], ddof = 1)
             x_title = "Timestamp" if results['utility_columns']['date'] else "Index"
 
             output_values = go.Figure()
@@ -57,7 +47,7 @@ class NumOutputValuesWidget(Widget):
                 name = 'Reference',
                 marker = dict(
                     size = 6,
-                    color = grey
+                    color = GREY
                 )
             ))
 
@@ -68,7 +58,7 @@ class NumOutputValuesWidget(Widget):
                 name = 'Current',
                 marker = dict(
                     size = 6,
-                    color = red
+                    color = RED
                 )
             ))
 
@@ -90,10 +80,10 @@ class NumOutputValuesWidget(Widget):
                         xref = "paper",
                         # y-reference is assigned to the plot paper [0,1]
                         yref = "y",
-                        x0 = 0, 
-                        y0 = reference_mean - reference_std, 
-                        x1 = 1, 
-                        y1 = reference_mean + reference_std, 
+                        x0 = 0,
+                        y0 = reference_mean - reference_std,
+                        x1 = 1,
+                        y1 = reference_mean + reference_std,
                         fillcolor = "LightGreen",
                         opacity = 0.5,
                         layer = "below",
@@ -113,7 +103,7 @@ class NumOutputValuesWidget(Widget):
                             width = 3
                             )
                     ),
-                ]  
+                ]
             )
 
             output_values_json  = json.loads(output_values.to_json())
@@ -135,4 +125,3 @@ class NumOutputValuesWidget(Widget):
             )
         else:
             self.wi = None
-

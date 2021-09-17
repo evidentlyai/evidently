@@ -7,16 +7,16 @@ _float_types = (np.float_, np.float16, np.float32, np.float64)
 
 
 class NumpyEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, _integer_types):
-            return int(obj)
-        elif isinstance(obj, (np.float_, np.float16, np.float32, np.float64)):
-            return float(obj)
-        elif isinstance(obj, (np.ndarray,)):
-            return obj.tolist()
-        elif isinstance(obj, np.bool_):
-            return bool(obj)
-        elif isinstance(obj, np.void):
+    def default(self, o):
+        if isinstance(o, _integer_types):
+            return int(o)
+        if isinstance(o, (np.float_, np.float16, np.float32, np.float64)):
+            return float(o)
+        if isinstance(o, (np.ndarray,)):
+            return o.tolist()
+        if isinstance(o, np.bool_):
+            return bool(o)
+        if isinstance(o, np.void):
             return None
 
-        return json.JSONEncoder.default(self, obj)
+        return json.JSONEncoder.default(self, o)

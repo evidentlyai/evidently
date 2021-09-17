@@ -20,7 +20,6 @@ from evidently.widgets.widget import Widget
 
 class RegressionPerformanceTab(Tab):
     def _get_widgets(self) -> List[Widget]:
-        
         widgets = [
             TargetNameWidget("Regression Model Performance Report.", kind='regression'),
             RegQualityMetricsBarWidget("Reference: Model Quality (+/- std)"),
@@ -37,11 +36,10 @@ class RegressionPerformanceTab(Tab):
             RegErrorDistrWidget("Current: Error Distribution", dataset='current'),
             RegErrorNormalityWidget("Reference: Error Normality"),
             RegErrorNormalityWidget("Current: Error Normality", dataset='current'),
-            RegUnderperformMetricsWidget("Reference: Mean Error per Group (+/- std)"), 
+            RegUnderperformMetricsWidget("Reference: Mean Error per Group (+/- std)"),
             RegUnderperformMetricsWidget("Current: Mean Error per Group (+/- std)", dataset='current'),
             RegColoredPredActualWidget("Reference: Predicted vs Actual per Group"),
             RegColoredPredActualWidget("Current: Predicted vs Actual per Group", dataset='current'),
             UnderperformSegmTableWidget("Error Bias: Mean/Most Common Feature Value per Group")
-
         ]
         return widgets

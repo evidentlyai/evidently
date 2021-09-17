@@ -22,7 +22,6 @@ from evidently.widgets.widget import Widget
 
 class ProbClassificationPerformanceTab(Tab):
     def _get_widgets(self) -> List[Widget]:
-        
         widgets = [
             TargetNameWidget("Probabilistic Classification Model Performance Report.", kind = 'prob_classification'),
             ProbClassQualityMetricBarWidget("Reference: Model Quality With Macro-average Metrics"),
@@ -36,7 +35,7 @@ class ProbClassificationPerformanceTab(Tab):
             ProbClassPredictionCloudWidget("Reference: Class Separation Quality"),
             ProbClassPredictionCloudWidget("Current: Class Separation Quality", 'current'),
             ProbClassPredDistrWidget("Reference: Probability Distribution"),
-            ProbClassPredDistrWidget("Current: Probability Distribution", 'current'),            
+            ProbClassPredDistrWidget("Current: Probability Distribution", 'current'),
             ProbClassRocCurveWidget("Reference: ROC Curve"),
             ProbClassRocCurveWidget("Current: ROC Curve", 'current'),
             ProbClassPRCurveWidget("Reference: Precision-Recall Curve"),

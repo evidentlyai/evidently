@@ -7,10 +7,10 @@ import os
 import uuid
 import base64
 from dataclasses import asdict
+import typing
 from typing import List, Dict, Type
 
 import pandas
-import typing
 
 import evidently
 from evidently.analyzers.base_analyzer import Analyzer
@@ -27,8 +27,8 @@ class TemplateParams:
     additional_graphs: Dict
 
 
-def __dashboard_info_to_json(di: DashboardInfo):
-    return json.dumps(asdict(di), cls=NumpyEncoder)
+def __dashboard_info_to_json(dashboard_info: DashboardInfo):
+    return json.dumps(asdict(dashboard_info), cls=NumpyEncoder)
 
 
 def inline_template(params: TemplateParams):
@@ -110,17 +110,17 @@ window.drawDashboard({params.dashboard_id},
 """
 
 
-__base_path = evidently.__path__[0]
-__static_path = os.path.join(__base_path, "nbextension", "static")
+__BASE_PATH = evidently.__path__[0]
+__STATIC_PATH = os.path.join(__BASE_PATH, "nbextension", "static")
 
 
 def __load_js():
-    return open(os.path.join(__static_path, "index.js")).read()
+    return open(os.path.join(__STATIC_PATH, "index.js"), encoding='utf-8').read()
 
 
 def __load_font():
     return base64.b64encode(
-        open(os.path.join(__static_path, "material-ui-icons.woff2"), 'rb').read()).decode()
+        open(os.path.join(__STATIC_PATH, "material-ui-icons.woff2"), 'rb').read()).decode()
 
 
 class Dashboard(Pipeline):
@@ -129,8 +129,8 @@ class Dashboard(Pipeline):
 
     def __init__(self, tabs: List[Type[Tab]]):
         super().__init__()
-        self.tabsData = [t() for t in tabs]
-        self._analyzers = list(set([analyzer for tab in self.tabsData for analyzer in tab.analyzers()]))
+        self.tabs_data = [t() for t in tabs]
+        self._analyzers = list(set([analyzer for tab in self.tabs_data for analyzer in tab.analyzers()]))
 
     def get_analyzers(self):
         return self._analyzers
@@ -140,38 +140,42 @@ class Dashboard(Pipeline):
                   current_data: pandas.DataFrame,
                   column_mapping: dict = None):
         self.execute(reference_data, current_data, column_mapping)
-        for tab in self.tabsData:
+        for tab in self.tabs_data:
             tab.calculate(reference_data, current_data, column_mapping, self.analyzers_results)
 
     def __render(self, template: typing.Callable[[TemplateParams], str]):
         dashboard_id = "evidently_dashboard_" + str(uuid.uuid4()).replace("-", "")
-        tab_widgets = [t.info() for t in self.tabsData]
+        tab_widgets = [t.info() for t in self.tabs_data]
 
-        di = DashboardInfo(dashboard_id, [item for tab in tab_widgets for item in tab if item is not None])
+        dashboard_info = DashboardInfo(dashboard_id, [item for tab in tab_widgets for item in tab if item is not None])
         additional_graphs = {}
         for widget in [item for tab in tab_widgets for item in tab]:
             if widget is None:
                 continue
             for graph in widget.additionalGraphs:
                 additional_graphs[graph.id] = graph.params
-        return template(TemplateParams(dashboard_id, di, additional_graphs))
+        return template(TemplateParams(dashboard_id, dashboard_info, additional_graphs))
 
     def _json(self):
         dashboard_id = "evidently_dashboard_" + str(uuid.uuid4()).replace("-", "")
-        tab_widgets = [t.info() for t in self.tabsData]
-        di = DashboardInfo(dashboard_id, [item for tab in tab_widgets for item in tab if item is not None])
-        return json.dumps(asdict(di), cls=NumpyEncoder)
+        tab_widgets = [t.info() for t in self.tabs_data]
+        dashboard_info = DashboardInfo(dashboard_id, [item for tab in tab_widgets for item in tab if item is not None])
+        return json.dumps(asdict(dashboard_info), cls=NumpyEncoder)
 
     def _save_to_json(self, filename):
         parent_dir = os.path.dirname(filename)
         if parent_dir and not os.path.exists(parent_dir):
             os.makedirs(parent_dir, exist_ok=True)
-        f = open(filename, 'w')
-        f.write(self._json())
+        out_file = open(filename, 'w', encoding='utf-8')
+        out_file.write(self._json())
 
     def show(self):
-        from IPython.display import HTML
-        return HTML(self.__render(inline_template))
+        # pylint: disable=import-outside-toplevel
+        try:
+            from IPython.display import HTML
+            return HTML(self.__render(inline_template))
+        except ImportError as err:
+            raise Exception("Cannot import HTML from IPython.display, no way to show html") from err
 
     def html(self):
         return self.__render(file_html_template)
@@ -180,6 +184,5 @@ class Dashboard(Pipeline):
         parent_dir = os.path.dirname(filename)
         if parent_dir and not os.path.exists(parent_dir):
             os.makedirs(parent_dir, exist_ok=True)
-        f = open(filename, 'w')
-        f.write(self.html())
-        # f.write(self.__render(file_html_template))
+        out_file = open(filename, 'w', encoding='utf-8')
+        out_file.write(self.html())
