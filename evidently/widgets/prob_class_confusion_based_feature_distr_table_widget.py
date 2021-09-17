@@ -4,9 +4,6 @@
 import json
 import pandas as pd
 import numpy as np
-
-from sklearn import preprocessing
-
 import plotly.graph_objs as go
 import plotly.express as px
 from plotly.subplots import make_subplots
@@ -30,9 +27,6 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
         results = analyzers_results[ProbClassificationPerformanceAnalyzer]
 
         if results['utility_columns']['target'] is not None and results['utility_columns']['prediction'] is not None:
-            binaraizer = preprocessing.LabelBinarizer()
-            binaraizer.fit(reference_data[results['utility_columns']['target']])
-            binaraized_target = binaraizer.transform(reference_data[results['utility_columns']['target']]) # TODO: review unused?
             if current_data is not None:
                 ref_array_prediction = reference_data[results['utility_columns']['prediction']].to_numpy()
                 ref_prediction_ids = np.argmax(ref_array_prediction, axis=-1)

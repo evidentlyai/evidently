@@ -98,13 +98,13 @@ def process_columns(dataset, column_mapping):
         if num_feature_names is None:
             num_feature_names = []
         else:
-            num_feature_names = [name for name in num_feature_names if np.is_numeric_dtype(dataset[name])]
+            num_feature_names = dataset[num_feature_names].select_dtypes([np.number]).columns.tolist()
 
         cat_feature_names = column_mapping.get('categorical_features')
         if cat_feature_names is None:
             cat_feature_names = []
         else:
-            cat_feature_names = [name for name in cat_feature_names if np.is_numeric_dtype(dataset[name])]
+            cat_feature_names = dataset[cat_feature_names].select_dtypes([np.number]).columns.tolist()
     else:
         date_column = 'datetime' if 'datetime' in dataset.columns else None
         id_column = None

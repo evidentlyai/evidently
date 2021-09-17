@@ -65,7 +65,7 @@ class RegressionPerformanceAnalyzer(Analyzer):
             #error bias table
             error_bias = {}
             ref_feature_bias = __error_bias_table(reference_data, err_quantiles, num_feature_names, cat_feature_names)
-            # convert to old forma
+            # convert to old format
             error_bias = {feature: dict(feature_type=bias.feature_type, **bias.as_dict('ref_'))
                                     for feature, bias in ref_feature_bias}
 
@@ -95,13 +95,13 @@ class RegressionPerformanceAnalyzer(Analyzer):
 
 def __calculate_error_normality(error: ErrorWithQuantiles):
     qq_lines = probplot(error.error, dist="norm", plot=None)
-    theoretical_q_x = np.linspace(qq_lines[0][0][0], qq_lines[0][0][-1], 100) # TODO: review  unused?
+    # theoretical_q_x = np.linspace(qq_lines[0][0][0], qq_lines[0][0][-1], 100) # TODO: review  unused?
 
     qq_dots = [t.tolist() for t in qq_lines[0]]
     qq_line = list(qq_lines[1])
     return {
-                'order_statistic_medians': [float(x) for x in qq_dots[0]],
-                'order_statistic_medians': [float(x) for x in qq_dots[1]],
+                'order_statistic_medians_x': [float(x) for x in qq_dots[0]],
+                'order_statistic_medians_y': [float(x) for x in qq_dots[1]],
                 'slope': float(qq_line[0]),
                 'intercept': float(qq_line[1]),
                 'r': float(qq_line[2])
@@ -139,12 +139,12 @@ def __calculate_underperformance(err_quantiles: ErrorWithQuantiles):
     error = err_quantiles.error
     quantile_5 = err_quantiles.quantile_5
     quantile_95 = err_quantiles.quantile_95
-    mae = np.mean(error) # TODO: review unused
+   #mae = np.mean(error) # TODO: review unused
     mae_under = np.mean(error[error <= quantile_5])
     mae_exp = np.mean(error[(error > quantile_5) & (error < quantile_95)])
     mae_over = np.mean(error[error >= quantile_95])
 
-    sd = np.std(error, ddof = 1) # TODO: review unused
+    #sd = np.std(error, ddof = 1) # TODO: review unused
     sd_under = np.std(error[error <= quantile_5], ddof = 1)
     sd_exp = np.std(error[(error > quantile_5) & (error < quantile_95)], ddof = 1)
     sd_over = np.std(error[error >= quantile_95], ddof = 1)
@@ -172,9 +172,8 @@ def __error_num_feature_bias(dataset, feature_name, err_quantiles: ErrorWithQuan
     quantile_95 = err_quantiles.quantile_95
     ref_overal_value = np.mean(dataset[feature_name])
     ref_under_value = np.mean(dataset[error <= quantile_5][feature_name])
-    ref_expected_value = np.mean(dataset[(error > quantile_5) & (error < quantile_95)][feature_name])
+    #ref_expected_value = np.mean(dataset[(error > quantile_5) & (error < quantile_95)][feature_name])
     ref_over_value = np.mean(dataset[error >= quantile_95][feature_name])
-    # TODO: overal or over?
     ref_range_value = 0 if ref_over_value == ref_under_value \
                          else 100 * abs(ref_over_value - ref_under_value) / (np.max(dataset[feature_name]) - np.min(dataset[feature_name]))
 

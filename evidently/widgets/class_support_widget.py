@@ -32,7 +32,6 @@ class ClassSupportWidget(Widget):
 
                 #plot support bar
                 metrics_frame = pd.DataFrame(results['metrics'][self.dataset]['metrics_matrix'])
-                support = metrics_frame.iloc[-1:,:-3].values[0] # TODO: review unused?
 
                 fig = go.Figure()
 

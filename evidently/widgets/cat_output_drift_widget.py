@@ -27,11 +27,11 @@ class CatOutputDriftWidget(Widget):
 
         results = analyzers_results[CatTargetDriftAnalyzer]
 
-        if results['utility_columns'][self.kind] is not None:
+        if results['utility_columns'][self.kind] is None:
             return
 
         output_name = results['metrics'][self.kind + '_name']
-        output_type = results['metrics'][self.kind + '_type'] # TODO: review unused
+        #output_type = results['metrics'][self.kind + '_type']
         output_p_value = results['metrics'][self.kind + '_drift']
         output_sim_test = "detected" if output_p_value < 0.05 else "not detected"
         #plot output distributions
