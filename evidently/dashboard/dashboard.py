@@ -37,9 +37,10 @@ def inline_template(params: TemplateParams):
 <style>
 .reset-this-parent {{
   all: initial;
-  * {{
-    all: unset;
-  }}
+}}
+.reset-this-parent h5 {{
+  all: initial;
+  font: initial;
 }}
 </style>
 <script>
@@ -130,7 +131,7 @@ class Dashboard(Pipeline):
     def __init__(self, tabs: List[Type[Tab]]):
         super().__init__()
         self.tabs_data = [t() for t in tabs]
-        self._analyzers = list(set([analyzer for tab in self.tabs_data for analyzer in tab.analyzers()]))
+        self._analyzers = list({analyzer for tab in self.tabs_data for analyzer in tab.analyzers()})
 
     def get_analyzers(self):
         return self._analyzers
@@ -166,8 +167,8 @@ class Dashboard(Pipeline):
         parent_dir = os.path.dirname(filename)
         if parent_dir and not os.path.exists(parent_dir):
             os.makedirs(parent_dir, exist_ok=True)
-        out_file = open(filename, 'w', encoding='utf-8')
-        out_file.write(self._json())
+        with open(filename, 'w', encoding='utf-8') as out_file:
+            out_file.write(self._json())
 
     def show(self):
         # pylint: disable=import-outside-toplevel
@@ -184,5 +185,5 @@ class Dashboard(Pipeline):
         parent_dir = os.path.dirname(filename)
         if parent_dir and not os.path.exists(parent_dir):
             os.makedirs(parent_dir, exist_ok=True)
-        out_file = open(filename, 'w', encoding='utf-8')
-        out_file.write(self.html())
+        with open(filename, 'w', encoding='utf-8') as out_file:
+            out_file.write(self.html())

@@ -5,28 +5,30 @@
 # Distributed under the terms of the Modified BSD License.
 
 from __future__ import print_function
+
+import os
 from glob import glob
 from os.path import join as pjoin
+
+from setuptools import setup
 
 from setupbase import (
     create_cmdclass, ensure_targets,
     find_packages, combine_commands, ensure_python,
-    get_version, HERE
+    get_version, HERE, install_npm
 )
 
-from setuptools import setup
-
 # The name of the project
-name = 'evidently'
+NAME = 'evidently'
 
 # Ensure a valid python version
 ensure_python('>=3.6')
 
 # Get our version
-version = get_version(pjoin(name, '_version.py'))
+version = get_version(pjoin(NAME, '_version.py'))
 
-nb_path = pjoin(HERE, name, 'nbextension', 'static')
-lab_path = pjoin(HERE, name, 'labextension')
+nb_path = pjoin(HERE, NAME, 'nbextension', 'static')
+lab_path = pjoin(HERE, NAME, 'labextension')
 
 # Representative files that should exist after a successful build
 jstargets = [
@@ -35,7 +37,7 @@ jstargets = [
 ]
 
 package_data_spec = {
-    name: [
+    NAME: [
         'nbextension/static/*.*js*',
         'nbextension/static/*.woff2',
         'labextension/*.tgz'
@@ -52,12 +54,12 @@ data_files_spec = [
 cmdclass = create_cmdclass('jsdeps', package_data_spec=package_data_spec,
                            data_files_spec=data_files_spec)
 cmdclass['jsdeps'] = combine_commands(
-    # install_npm(HERE, build_cmd='build:all'),
+    install_npm(os.path.join(HERE, "ui"), build_cmd='build'),
     ensure_targets(jstargets),
 )
 
 setup_args = dict(
-    name=name,
+    name=NAME,
     description='Open-source tools to analyze, monitor, and debug machine learning model in production.',
     version=version,
     scripts=glob(pjoin('scripts', '*')),
