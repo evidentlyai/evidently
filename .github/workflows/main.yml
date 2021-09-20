@@ -41,3 +41,12 @@ jobs:
         run: pip install -r requirements.txt
       - name: Run Tests
         run: python -m unittest discover -s evidently -p 'test_*.py' -v
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Build package
+        run: python setup.py sdist
