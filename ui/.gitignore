@@ -1,0 +1,14 @@
+# IDE files
+.idea
+.vscode
+
+# JS/TS files and folders
+node_modules
+build
+
+# MacOS files
+.DS_Store
+
+# python
+venv
+*.pyc

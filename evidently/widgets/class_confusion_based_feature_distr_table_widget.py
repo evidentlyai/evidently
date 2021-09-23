@@ -65,7 +65,7 @@ class ClassConfusionBasedFeatureDistrTable(Widget):
 
                     for label in labels:
                         def confusion_func(row, label=label):
-                            return __confusion(row, results['utility_columns']['target'], results['utility_columns']['prediction'], label)
+                            return _confusion(row, results['utility_columns']['target'], results['utility_columns']['prediction'], label)
                         merged_data['Confusion'] = merged_data.apply(confusion_func, axis=1)
 
                         fig = px.histogram(merged_data, x=feature_name, color='Confusion', facet_col="dataset", histnorm = '',
@@ -142,7 +142,7 @@ class ClassConfusionBasedFeatureDistrTable(Widget):
 
                     for label in labels:
                         def confusion_func(row, label=label):
-                            return __confusion(row, results['utility_columns']['target'], results['utility_columns']['prediction'], label)
+                            return _confusion(row, results['utility_columns']['target'], results['utility_columns']['prediction'], label)
                         reference_data['Confusion'] = reference_data.apply(confusion_func, axis=1)
 
                         fig = px.histogram(reference_data, x=feature_name, color='Confusion', histnorm = '', category_orders={"Confusion": ["TP", "TN", "FP", "FN"]})
@@ -184,7 +184,8 @@ class ClassConfusionBasedFeatureDistrTable(Widget):
         else:
             self.wi = None
 
-def __confusion(row, target_column, prediction_column, label):
+
+def _confusion(row, target_column, prediction_column, label):
     if (row[target_column] == label and row[prediction_column] == label):
         return 'TP'
     if (row[target_column] != label and row[prediction_column] == label):

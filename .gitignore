@@ -4,6 +4,7 @@ venv
 .vscode
 .DS_Store
 evidently/examples/.DS_Store
+evidently/nbextension/static/index.*
 .ipynb_checkpoints
 .idea
 dist
