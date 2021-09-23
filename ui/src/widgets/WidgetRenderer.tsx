@@ -4,7 +4,7 @@ import {
     BigGraphWidgetParams,
     BigTableWidgetParams,
     CounterWidgetParams,
-    MultiTabGraphWidgetParams,
+    MultiTabGraphWidgetParams, MultiTabWidgetParams,
     PercentWidgetParams,
     TableWidgetParams,
     WidgetGroupParams,
@@ -20,6 +20,7 @@ import NotImplementedWidgetContent from "./NotImplementedWidgetContent";
 import TabbedGraphWidgetContent from "./TabbedGraphWidgetContent";
 import TableWidgetContent from "./TableWidgetContent";
 import BigTableWidgetContent from "./BigTableWidget/BigTableWidgetContent";
+import TabbedWidgetContent from "./TabbedWidgetContent";
 
 function sizeTransform(size: WidgetSize) : (1 | 3 | 6 | 12) {
     if (size === WidgetSize.Small) {
@@ -42,6 +43,8 @@ export function WidgetRenderer(key: string, info: WidgetInfo) {
         content = <BigGraphWidgetContent {...(info.params as BigGraphWidgetParams)} widgetSize={info.size} />;
     } else if (info.type === "tabbed_graph") {
         content = <TabbedGraphWidgetContent {...(info.params as MultiTabGraphWidgetParams)} widgetSize={info.size} />;
+    } else if (info.type === "tabs") {
+        content = <TabbedWidgetContent {...((info as unknown) as MultiTabWidgetParams)} widgetSize={info.size} id={"twc_"} />;
     } else if (info.type === "table") {
         content = <TableWidgetContent {...(info.params as TableWidgetParams)} />;
     } else if (info.type === "big_table") {

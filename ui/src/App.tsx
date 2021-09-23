@@ -1,13 +1,13 @@
 import React from 'react';
-import {createStyles, createTheme, ThemeProvider} from '@material-ui/core/styles';
+import {createTheme, ThemeProvider} from '@material-ui/core/styles';
 
 import {AdditionalGraphInfo, DashboardInfo} from "./api/Api";
 import ApiContext from "./contexts/ApiContext";
 import DashboardContext, {CreateDashboardContextState} from "./contexts/DashboardContext";
-import SummaryView from "./components/SummaryView";
 import LoadableView from "./components/LoadableVIew";
 import LocalApi from "./api/LocalApi";
-import {withStyles} from "@material-ui/core/styles";
+import {DashboardContent} from "./components/DashboardContent";
+import {Grid} from "@material-ui/core";
 
 
 const theme = createTheme({
@@ -47,35 +47,40 @@ const theme = createTheme({
     }
 });
 
-const reset = createStyles({".reset-styles h5": {all: "initial"}})
-
-function App(props: {dashboard: DashboardInfo, additionalGraphs: Map<string, AdditionalGraphInfo>}) {
+function App(props: { dashboard: DashboardInfo, additionalGraphs: Map<string, AdditionalGraphInfo>}) {
     return (
-        <div className={"reset-styles"}>
         <ThemeProvider theme={theme}>
             <ApiContext.Provider value={{Api: new LocalApi(props.dashboard, props.additionalGraphs)}}>
                 <ApiContext.Consumer>
                     {api =>
                         <DashboardContext.Provider value={CreateDashboardContextState(
-                            graphId => api.Api!.getAdditionalGraphData(
-                                "",
-                                "",
-                                graphId
-                            )
-                        )}>
+                                                    {
+                                                        getAdditionGraphData: graphId => api.Api!.getAdditionalGraphData(
+                                                    "",
+                                                    "",
+                                                    graphId
+                                                    ),
+                                                        getAdditionWidgetData: widgetId => api.Api!.getAdditionalWidgetData(
+                                                    "",
+                                                    "",
+                                                    widgetId
+                                                    ),
+                                                }
+                                                )}>
                             <LoadableView func={() => api.Api.getDashboard("", "")}>
                                 {
-                                    params => <SummaryView showHeader={false} dashboardInfo={params} />
+                                    params => <Grid container spacing={3} direction="row" alignItems="stretch">
+                                        <DashboardContent info={params}/>
+                                    </Grid>
                                 }
                             </LoadableView>
 
-                        </DashboardContext.Provider>
-                    }
-                </ApiContext.Consumer>
-            </ApiContext.Provider>
+                    </DashboardContext.Provider>
+                }
+            </ApiContext.Consumer>
+        </ApiContext.Provider>
         </ThemeProvider>
-        </div>
     );
 }
 
-export default withStyles(reset)(App);
+export default App;

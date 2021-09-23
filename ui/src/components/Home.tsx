@@ -11,6 +11,7 @@ import SummaryView from "./SummaryView";
 import LoadableView from "./LoadableVIew";
 import BaseLayout from "./BaseLayout";
 import BaseTabs, {TabInfo} from "./BaseTabs";
+import Grid from "@material-ui/core/Grid";
 
 interface HomeProps {
     projectId: string;
@@ -57,14 +58,13 @@ function ExpandSection(projects: ProjectsContextState, projectId: string, leftDe
             tab: !section.disabled ? <ApiContext.Consumer>
                 {(api) => <LoadableView
                     func={() => api.Api.getDashboard(projectId, [...prevSections, section.id].join("."))}>
-                    {val => (<SummaryView showHeader={false} dashboardInfo={val}/>)}
+                    {val => (<SummaryView dashboardInfo={val}/>)}
                 </LoadableView>
                 }
             </ApiContext.Consumer> : <div/>
         }
     }
 }
-
 
 const Home: React.FunctionComponent<HomeProps> = (props) => {
     const classes = useStyles();

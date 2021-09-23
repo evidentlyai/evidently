@@ -11,6 +11,8 @@ import LoadableView from "../../components/LoadableVIew";
 
 import BigGraphWidgetContent from "../BigGraphWidgetContent";
 import InsightBlock from "../InsightBlock";
+import {WidgetRenderer} from "../WidgetRenderer";
+import NotImplementedWidgetContent from "../NotImplementedWidgetContent";
 
 interface BigTableDetailsProps {
     details: BigTableRowDetails;
@@ -24,9 +26,16 @@ export const BigTableDetails: React.FunctionComponent<BigTableDetailsProps> = (p
                 {props.details.parts.length > 1 ? <AutoTabs tabs={props.details.parts.map(part =>
                 ({
                     title: part.title,
-                    tab: <LoadableView func={() => dashboardContext.getAdditionGraphData(part.id)}>
-                        {params => <BigGraphWidgetContent {...params} widgetSize={props.widgetSize} />}
-                    </LoadableView>})
+                    tab: (part.type ?? "graph") === "graph" ?
+                        <LoadableView func={() => dashboardContext.getAdditionGraphData(part.id)}>
+                            {params => <BigGraphWidgetContent {...params} widgetSize={props.widgetSize} />}
+                        </LoadableView>
+                        : (part.type ?? "graph") === "widget" ?
+                        <LoadableView func={() => dashboardContext.getAdditionWidgetData(part.id)}>
+                            {params => WidgetRenderer(part.id, params)}
+                        </LoadableView>
+                        : <NotImplementedWidgetContent />
+                })
                 )}/>
                 : <LoadableView func={() => dashboardContext.getAdditionGraphData(props.details.parts[0].id)}>
                         {params => <BigGraphWidgetContent {...params} widgetSize={props.widgetSize} />}

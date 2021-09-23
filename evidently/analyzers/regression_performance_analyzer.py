@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # coding: utf-8
-
 from dataclasses import dataclass
 from typing import Dict
 
@@ -49,42 +48,42 @@ class RegressionPerformanceAnalyzer(Analyzer):
 
         result['metrics'] = {}
         if target_column is not None and prediction_column is not None:
-            __prepare_dataset(reference_data)
+            _prepare_dataset(reference_data)
 
             #calculate quality metrics
-            result['metrics']['reference'] = __calculate_quality_metrics(reference_data, prediction_column, target_column)
+            result['metrics']['reference'] = _calculate_quality_metrics(reference_data, prediction_column, target_column)
 
             #error normality
-            err_quantiles = __error_with_qantiles(reference_data, prediction_column, target_column)
+            err_quantiles = _error_with_qantiles(reference_data, prediction_column, target_column)
 
-            result['metrics']['reference']['error_normality'] = __calculate_error_normality(err_quantiles)
+            result['metrics']['reference']['error_normality'] = _calculate_error_normality(err_quantiles)
 
             #underperformance metrics
-            result['metrics']['reference']['underperformance'] = __calculate_underperformance(err_quantiles)
+            result['metrics']['reference']['underperformance'] = _calculate_underperformance(err_quantiles)
 
             #error bias table
             error_bias = {}
-            ref_feature_bias = __error_bias_table(reference_data, err_quantiles, num_feature_names, cat_feature_names)
+            ref_feature_bias = _error_bias_table(reference_data, err_quantiles, num_feature_names, cat_feature_names)
             # convert to old format
             error_bias = {feature: dict(feature_type=bias.feature_type, **bias.as_dict('ref_'))
                                     for feature, bias in ref_feature_bias}
 
             if current_data is not None:
-                __prepare_dataset(current_data)
+                _prepare_dataset(current_data)
 
                 #calculate quality metrics
-                result['metrics']['current'] = __calculate_quality_metrics(current_data, prediction_column, target_column)
+                result['metrics']['current'] = _calculate_quality_metrics(current_data, prediction_column, target_column)
 
                 #error normality
-                current_err_quantiles = __error_with_qantiles(current_data, prediction_column, target_column)
-                result['metrics']['current']['error_normality'] = __calculate_error_normality(current_err_quantiles)
+                current_err_quantiles = _error_with_qantiles(current_data, prediction_column, target_column)
+                result['metrics']['current']['error_normality'] = _calculate_error_normality(current_err_quantiles)
 
                 #underperformance metrics
-                result['metrics']['current']['underperformance'] = __calculate_underperformance(current_err_quantiles)
+                result['metrics']['current']['underperformance'] = _calculate_underperformance(current_err_quantiles)
 
                 #error bias table
                 error_bias = {}
-                current_feature_bias = __error_bias_table(current_data, current_err_quantiles, num_feature_names, cat_feature_names)
+                current_feature_bias = _error_bias_table(current_data, current_err_quantiles, num_feature_names, cat_feature_names)
                 for feature, bias in current_feature_bias:
                     error_bias[feature].update(bias.as_dict("current_"))
 
@@ -93,7 +92,7 @@ class RegressionPerformanceAnalyzer(Analyzer):
         return result
 
 
-def __calculate_error_normality(error: ErrorWithQuantiles):
+def _calculate_error_normality(error: ErrorWithQuantiles):
     qq_lines = probplot(error.error, dist="norm", plot=None)
     # theoretical_q_x = np.linspace(qq_lines[0][0][0], qq_lines[0][0][-1], 100) # TODO: review  unused?
 
@@ -108,7 +107,7 @@ def __calculate_error_normality(error: ErrorWithQuantiles):
             }
 
 
-def __calculate_quality_metrics(dataset, prediction_column, target_column):
+def _calculate_quality_metrics(dataset, prediction_column, target_column):
     me = np.mean(dataset[prediction_column] - dataset[target_column])
     sde = np.std(dataset[prediction_column] - dataset[target_column], ddof = 1)
 
@@ -130,12 +129,12 @@ def __calculate_quality_metrics(dataset, prediction_column, target_column):
     }
 
 
-def __prepare_dataset(dataset):
+def _prepare_dataset(dataset):
     dataset.replace([np.inf, -np.inf], np.nan, inplace=True)
     dataset.dropna(axis=0, how='any', inplace=True)
 
 
-def __calculate_underperformance(err_quantiles: ErrorWithQuantiles):
+def _calculate_underperformance(err_quantiles: ErrorWithQuantiles):
     error = err_quantiles.error
     quantile_5 = err_quantiles.quantile_5
     quantile_95 = err_quantiles.quantile_95
@@ -156,17 +155,17 @@ def __calculate_underperformance(err_quantiles: ErrorWithQuantiles):
     }
 
 
-def __error_bias_table(dataset, err_quantiles, num_feature_names, cat_feature_names) -> Dict[str, FeatureBias]:
-    num_bias = { feature_name: __error_num_feature_bias(dataset, feature_name, err_quantiles)
+def _error_bias_table(dataset, err_quantiles, num_feature_names, cat_feature_names) -> Dict[str, FeatureBias]:
+    num_bias = { feature_name: _error_num_feature_bias(dataset, feature_name, err_quantiles)
                             for feature_name in num_feature_names }
-    cat_bias = { feature_name: __error_cat_feature_bias(dataset, feature_name, err_quantiles)
+    cat_bias = { feature_name: _error_cat_feature_bias(dataset, feature_name, err_quantiles)
                             for feature_name in cat_feature_names }
     error_bias = num_bias.copy()
     error_bias.update(cat_bias)
     return error_bias
 
 
-def __error_num_feature_bias(dataset, feature_name, err_quantiles: ErrorWithQuantiles) -> FeatureBias:
+def _error_num_feature_bias(dataset, feature_name, err_quantiles: ErrorWithQuantiles) -> FeatureBias:
     error = err_quantiles.error
     quantile_5 = err_quantiles.quantile_5
     quantile_95 = err_quantiles.quantile_95
@@ -185,7 +184,7 @@ def __error_num_feature_bias(dataset, feature_name, err_quantiles: ErrorWithQuan
         range=float(ref_range_value))
 
 
-def __error_cat_feature_bias(dataset, feature_name, err_quantiles: ErrorWithQuantiles) -> FeatureBias:
+def _error_cat_feature_bias(dataset, feature_name, err_quantiles: ErrorWithQuantiles) -> FeatureBias:
     error = err_quantiles.error
     quantile_5 = err_quantiles.quantile_5
     quantile_95 = err_quantiles.quantile_95
@@ -203,7 +202,7 @@ def __error_cat_feature_bias(dataset, feature_name, err_quantiles: ErrorWithQuan
         range=float(ref_range_value))
 
 
-def __error_with_qantiles(dataset, prediction_column, target_column):
+def _error_with_qantiles(dataset, prediction_column, target_column):
     error = dataset[prediction_column] - dataset[target_column]
 
     #underperformance metrics

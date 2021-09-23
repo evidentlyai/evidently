@@ -7,7 +7,7 @@ import Select from "@material-ui/core/Select";
 import {createStyles, makeStyles} from "@material-ui/core/styles";
 
 import {DashboardInfo} from "../api/Api";
-import {WidgetRenderer} from "../widgets/WidgetRenderer";
+import {DashboardContent} from "./DashboardContent";
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -35,7 +35,6 @@ const useStyles = makeStyles((theme) =>
 
 interface SummaryViewProps
 {
-    showHeader: boolean;
     dashboardInfo: DashboardInfo;
 }
 
@@ -45,31 +44,27 @@ const SummaryView: React.FunctionComponent<SummaryViewProps> = (props) => {
     return (
         <div className={classes.root}>
             <Grid container spacing={3} direction="row" alignItems="stretch">
-                {props.showHeader ?
-                    <Grid item xs={12} className={classes.header}>
-                        <Select
-                            label="Age"
-                            labelId="time_range_label"
-                            value={"recent"}
-                            inputProps={{
-                                name: 'age',
-                                id: 'age-native-simple',
-                            }}
-                        >
-                            <option value={"6m"}>Last 6 months</option>
-                            <option value={"3m"}>Last 3 months</option>
-                            <option value={"recent"}>Recent data</option>
-                        </Select>
-                        <div className={classes.filler}/>
-                        <Box>
-                            <Button className={classes.headerAction} variant={"contained"} color="primary">Edit</Button>
-                            <Button className={classes.headerAction} variant={"contained"}
-                                    color="primary">Export</Button>
-                        </Box>
-                    </Grid>
-                    : <div />
-                }
-                {props.dashboardInfo.widgets.map(((wi, idx) => WidgetRenderer(`wi_${idx}`, wi)))}
+                <Grid item xs={12} className={classes.header}>
+                    <Select
+                        label="Age"
+                        labelId="time_range_label"
+                        value={"recent"}
+                        inputProps={{
+                            name: 'age',
+                            id: 'age-native-simple',
+                        }}
+                    >
+                        <option value={"6m"}>Last 6 months</option>
+                        <option value={"3m"}>Last 3 months</option>
+                        <option value={"recent"}>Recent data</option>
+                    </Select>
+                    <div className={classes.filler}/>
+                    <Box>
+                        <Button className={classes.headerAction} variant={"contained"} color="primary">Edit</Button>
+                        <Button className={classes.headerAction} variant={"contained"} color="primary">Export</Button>
+                    </Box>
+                </Grid>
+                <DashboardContent info={props.dashboardInfo}/>
             </Grid>
         </div>
     )

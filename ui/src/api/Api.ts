@@ -58,6 +58,17 @@ export interface MultiTabGraphWidgetParams
     graphs: TabGraph[];
 }
 
+export interface TabWidget {
+    id: string;
+    title: string;
+    widget: WidgetInfo;
+}
+
+export interface MultiTabWidgetParams
+{
+    tabs: TabWidget[];
+}
+
 export interface WidgetGroupParams
 {
     widgets: WidgetInfo[];
@@ -119,7 +130,7 @@ export interface ColumnDefinition {
 }
 
 export interface BigTableRowDetails {
-    parts: {"title": string, "id": string}[];
+    parts: {"title": string, "id": string, "type": string}[];
     insights: InsightsParams[];
 }
 
@@ -176,6 +187,7 @@ export interface ProjectInfo {
 
 export interface Api {
     getAdditionalGraphData(projectId: string, dashboardId: string, graphId: string): Promise<AdditionalGraphInfo>
+    getAdditionalWidgetData(projectId: string, dashboardId: string, widgetId: string): Promise<WidgetInfo>
     getDashboard(projectId: string, dashboardId: string): Promise<DashboardInfo>
     getProjects(): Promise<ProjectInfo[]>
 }
