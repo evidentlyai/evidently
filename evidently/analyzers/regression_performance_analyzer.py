@@ -66,7 +66,7 @@ class RegressionPerformanceAnalyzer(Analyzer):
             ref_feature_bias = _error_bias_table(reference_data, err_quantiles, num_feature_names, cat_feature_names)
             # convert to old format
             error_bias = {feature: dict(feature_type=bias.feature_type, **bias.as_dict('ref_'))
-                                    for feature, bias in ref_feature_bias}
+                                    for feature, bias in ref_feature_bias.items()}
 
             if current_data is not None:
                 _prepare_dataset(current_data)
@@ -82,10 +82,11 @@ class RegressionPerformanceAnalyzer(Analyzer):
                 result['metrics']['current']['underperformance'] = _calculate_underperformance(current_err_quantiles)
 
                 #error bias table
-                error_bias = {}
                 current_feature_bias = _error_bias_table(current_data, current_err_quantiles, num_feature_names, cat_feature_names)
-                for feature, bias in current_feature_bias:
-                    error_bias[feature].update(bias.as_dict("current_"))
+                for feature, bias in current_feature_bias.items():
+                    ref_bias = error_bias.get(feature, {})
+                    ref_bias.update(bias.as_dict("current_"))
+                    error_bias[feature] = ref_bias
 
             result['metrics']['error_bias'] = error_bias
 
