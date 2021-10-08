@@ -10,7 +10,9 @@ class ModelMonitoringMetric:
         self.name = name
         self.labels = labels
 
-    def create(self, value: float, labels: Dict[str, str]):
+    def create(self, value: float, labels: Dict[str, str] = None):
+        if (labels is None or len(labels) == 0) and (self.labels is None or len(self.labels) == 0):
+            return self, value, None
         if set(labels.keys()) != set(self.labels):
             raise ValueError(f"Trying to create metric with"
                              f" incorrect labels got {set(labels.keys())} expected {set(self.labels)}")
