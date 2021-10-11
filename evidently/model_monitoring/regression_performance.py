@@ -1,4 +1,4 @@
-from typing import List, Type, Dict, Optional, Tuple, Generator, TypeVar
+from typing import List, Type, Generator
 
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceAnalyzer
