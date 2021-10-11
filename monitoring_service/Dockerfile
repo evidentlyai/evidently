@@ -7,7 +7,7 @@ WORKDIR /app
 RUN apt update && apt install -y git
 
 COPY requirements.txt requirements.txt
-COPY evidently-0.1.25.dev0.tar.gz evidently-0.1.25.dev0.tar.gz
+COPY evidently-*.tar.gz ./
 
 
 RUN pip3 install -r requirements.txt

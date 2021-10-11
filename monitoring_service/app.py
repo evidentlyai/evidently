@@ -7,7 +7,7 @@ from typing import Dict, List, Optional
 import flask
 import pandas
 from evidently import model_monitoring
-from evidently.model_monitoring import DataDriftMonitor
+from evidently.model_monitoring import DataDriftMonitor, RegressionPerformanceMonitor
 from flask import Flask
 from prometheus_client import Gauge
 from prometheus_client import make_wsgi_app
@@ -36,6 +36,7 @@ class MonitoringServiceOptions:
 
 monitor_mapping = {
     "data_drift": DataDriftMonitor,
+    "regression_performance": RegressionPerformanceMonitor
 }
 
 

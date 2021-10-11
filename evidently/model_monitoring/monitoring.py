@@ -19,13 +19,16 @@ class ModelMonitoringMetric:
         return self, value, labels
 
 
+MetricsType = Tuple[ModelMonitoringMetric, float, Optional[Dict[str, str]]]
+
+
 class ModelMonitor:
     @abc.abstractmethod
     def monitor_id(self) -> str:
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def analyzers(self) -> List[Analyzer]:
+    def analyzers(self) -> List[Type[Analyzer]]:
         raise NotImplementedError()
 
     @abc.abstractmethod
@@ -41,7 +44,7 @@ class ModelMonitoring(Pipeline):
     def get_analyzers(self):
         return list(set([analyzer for tab in self.monitors for analyzer in tab.analyzers()]))
 
-    def metrics(self) -> Generator[Tuple[ModelMonitoringMetric, float, Optional[Dict[str, str]]], None, None]:
+    def metrics(self) -> Generator[MetricsType, None, None]:
         for monitor in self.monitors:
             for metric in monitor.metrics(self.analyzers_results):
                 yield metric

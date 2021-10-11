@@ -26,7 +26,7 @@ class NumpyEncoder(json.JSONEncoder):
 
 
 if __name__ == '__main__':
-    new_data = pandas.read_csv("day.csv")
+    new_data = pandas.read_csv("production.csv")
     new_data = new_data.iloc[360:, :]
     for idx in range(0, new_data.shape[0]):
         # to test request to service sending new data

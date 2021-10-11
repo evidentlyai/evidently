@@ -16,4 +16,4 @@ service:
   moving_reference: false
   window_size: 30
   calculation_period_sec: 10
-  monitors: [ "data_drift" ]
+  monitors: [ "data_drift", "regression_performance" ]
