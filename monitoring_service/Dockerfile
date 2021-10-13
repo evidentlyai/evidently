@@ -4,8 +4,6 @@ FROM python:3.8-slim-buster
 
 WORKDIR /app
 
-RUN apt update && apt install -y git
-
 COPY requirements.txt requirements.txt
 COPY evidently-*.tar.gz ./
 

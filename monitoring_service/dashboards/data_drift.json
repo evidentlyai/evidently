@@ -56,6 +56,7 @@
     },
     {
       "datasource": "Prometheus",
+      "description": "",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -65,6 +66,12 @@
             "fillOpacity": 70,
             "lineWidth": 0
           },
+          "links": [
+            {
+              "title": "Details",
+              "url": "http://localhost:3000/d/8e6Ij_Dnz/data-drift-details"
+            }
+          ],
           "mappings": [
             {
               "options": {
@@ -113,7 +120,7 @@
         "rowHeight": 0.9,
         "showValue": "auto",
         "tooltip": {
-          "mode": "none"
+          "mode": "single"
         }
       },
       "targets": [
@@ -229,7 +236,7 @@
               },
               {
                 "color": "red",
-                "value": 80
+                "value": 0
               }
             ]
           },
@@ -362,7 +369,6 @@
             "mode": "palette-classic"
           },
           "custom": {
-            "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "line",
@@ -374,6 +380,9 @@
               "viz": false
             },
             "lineInterpolation": "linear",
+            "lineStyle": {
+              "fill": "solid"
+            },
             "lineWidth": 1,
             "pointSize": 5,
             "scaleDistribution": {
@@ -466,7 +475,7 @@
           "hide": false,
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "_hash",
+          "legendFormat": "reference_hash",
           "refId": "B"
         }
       ],
@@ -474,6 +483,7 @@
       "type": "timeseries"
     }
   ],
+  "refresh": "10s",
   "schemaVersion": 30,
   "style": "dark",
   "tags": [],
@@ -481,7 +491,7 @@
     "list": []
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-30m",
     "to": "now"
   },
   "timepicker": {},

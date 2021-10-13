@@ -8,10 +8,10 @@ from evidently.model_monitoring.monitoring import ModelMonitor, ModelMonitoringM
 class RegressionPerformanceMetrics:
     _tag = "regression_performance"
     quality = ModelMonitoringMetric(f"{_tag}:quality", ["dataset", "metric"])
-    normality = ModelMonitoringMetric(f"{_tag}:regression_performance:error_normality", ["dataset", "metric"])
-    underperformance = ModelMonitoringMetric(f"{_tag}:regression_performance:underperformance",
+    normality = ModelMonitoringMetric(f"{_tag}:error_normality", ["dataset", "metric"])
+    underperformance = ModelMonitoringMetric(f"{_tag}:underperformance",
                                              ["dataset", "metric", "type"])
-    feature_error_bias = ModelMonitoringMetric(f"{_tag}:regression_performance:feature_error_bias",
+    feature_error_bias = ModelMonitoringMetric(f"{_tag}:feature_error_bias",
                                                ["feature", "feature_type", "metric"])
 
 
