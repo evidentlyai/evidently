@@ -19,10 +19,11 @@
     ]
   },
   "editable": true,
+  "fiscalYearStartMonth": 0,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 1,
   "links": [],
+  "liveNow": false,
   "panels": [
     {
       "datasource": null,
@@ -37,7 +38,7 @@
         "content": "# Evidently Data Drift Monitoring\n\n  Here can be your information about dashboard and its usage.\n",
         "mode": "markdown"
       },
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.2.1",
       "type": "text"
     },
     {
@@ -60,28 +61,24 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "thresholds"
+            "mode": "fixed"
           },
           "custom": {
             "fillOpacity": 70,
             "lineWidth": 0
           },
-          "links": [
-            {
-              "title": "Details",
-              "url": "http://localhost:3000/d/8e6Ij_Dnz/data-drift-details"
-            }
-          ],
           "mappings": [
             {
               "options": {
                 "0": {
+                  "color": "green",
                   "index": 1,
-                  "text": "No data drift"
+                  "text": "No Data Drift"
                 },
                 "1": {
+                  "color": "red",
                   "index": 0,
-                  "text": "Data drift detected"
+                  "text": "Data Drift Detected"
                 }
               },
               "type": "value"
@@ -266,7 +263,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.2.1",
       "targets": [
         {
           "exemplar": true,
@@ -330,7 +327,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.2.1",
       "targets": [
         {
           "exemplar": true,
@@ -369,6 +366,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "line",
@@ -484,7 +482,7 @@
     }
   ],
   "refresh": "10s",
-  "schemaVersion": 30,
+  "schemaVersion": 31,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -498,5 +496,5 @@
   "timezone": "",
   "title": "Evidently Data Drift Dashboard",
   "uid": "U54hsxv7k",
-  "version": 3
+  "version": 1
 }
