@@ -88,8 +88,8 @@ To adopt the example for the custom service we recommend to copy the ```monitori
 
 2. Place the ```reference.csv``` inside the project folder (```monitoring_service``` in the initial example)
 
-3. (option 1) If you do not have the running service, you can place the ```production.csv``` servcie in the project folder exactly as we did in the example. In this scenario your example will work exactly as the initial one: each **calculation_period_sec** service will take the next line from the production data to simu;ate the procuction service. 
+3.1 (option 1) If you do not have the running service, you can place the ```production.csv``` servcie in the project folder exactly as we did in the example. In this scenario your example will work exactly as the initial one: each **calculation_period_sec** service will take the next line from the production data to simu;ate the procuction service. 
 
-3. (option 2) If you do have the running service, then you should update the ```app.py``` script to make the script use your service instead of the toy example. Update the ```@app.route('/iterate', methods=["POST"])
+3.2 (option 2) If you do have the running service, then you should update the ```app.py``` script to make the script use your service instead of the toy example. Update the ```@app.route('/iterate', methods=["POST"])
 def iterate()``` method to send the data from your service to the monitoring.
 
