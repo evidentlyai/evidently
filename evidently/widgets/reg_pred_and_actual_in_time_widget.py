@@ -74,6 +74,7 @@ class RegPredActualTimeWidget(Widget):
                     x = dataset_to_plot[results['utility_columns']['date']] if results['utility_columns']['date'] else dataset_to_plot.index,
                     y = [0]*dataset_to_plot.shape[0],
                     mode = 'lines',
+                    name = 'Reference',
                     opacity=0.5,
                     marker=dict(
                         size=6,
