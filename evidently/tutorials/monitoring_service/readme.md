@@ -18,8 +18,9 @@ In this example we use:
 
 2. Download the data folder Bike-Sharing-Dataset.zip from the UCI repo: https://archive.ics.uci.edu/ml/machine-learning-databases/00275/ 
 
-7. Unzip and place the data in the example directory in your file system: evidently/evidently/tutorials/monitoring_service 
-8. Prepare the datasets:
+3. Unzip and place the data in the example directory in your file system: evidently/evidently/tutorials/monitoring_service 
+
+4. Prepare the datasets:
 - Go the example directory. In terminal, run the command ```cd evidently/tutorials/monitoring_service/``` 
 - Run the python script ```prepare_datasets.py``` from the example directory (evidently/evidently/tutorials/monitoring_service) to prepare the datasets: ```python prepare_datasets.py``` 
 - After the script is executed successfully, the two files should appear at the example directory: ```reference.csv``` and ```example.csv```.
@@ -44,51 +45,61 @@ In this example each prediction is made with 10 seconds timeout. This is why at 
 
 8. To stop the execution, run ```docker compose down``` command.
 
-### How to customize the Dashboard view (using the same source data)
-The Dashboard view is determined by the json config. 
-In our example the config for Data Drift Dashboard is stored in the monitoring_service/dashboards folder: https://github.com/evidentlyai/evidently/blob/main/evidently/tutorials/monitoring_service/dashboards/data_drift.json
+### How to customize the Grafana Dashboard view 
 
-To customize the Dashboard visual representation (but keeping the same metrics) you should:
-1. Run the example, using the instrcutions from the above
-2. Visit Grafana web interface (localhost:3000)
-3. Customize the visuals in the Grafane interface
-4. Apply your changes to the Dashboard and make sure you like it :)
-5. Click the button "save" from the Grafana Top Menu. This will lead to the dialog window opennig. Select the option "Download Json" to save configurations in the json file.
-6. Replace the initial configirations with the new one, meaning replce the old data_drift.json with the newly generated one.
+The Grafana Dashboard view is determined by the JSON config. In our example, the config for a Data Drift Dashboard is stored in the monitoring_service/dashboards folder: https://github.com/evidentlyai/evidently/blob/main/evidently/tutorials/monitoring_service/dashboards/data_drift.json
 
-### How to customize metrics to show in the Dashboard 
+If you want to continue using the same source data and metrics, but **change the way the plots are displayed** in the Garafana interface, take the following steps:
 
-To calculate metrics for Dashboard we use ```Analyzers``` from Evidently:https://github.com/evidentlyai/evidently/blob/main/evidently/analyzers/. Particularly to calculate Data Drift metrics we use ```DataDriftAnalyzer```: https://github.com/evidentlyai/evidently/blob/main/evidently/analyzers/data_drift_analyzer.py
+1. Run the example using the above instructions
+2. Open the Grafana web interface (localhost:3000)
+3. Customize the visuals in the Grafana interface. 
+4. Apply your changes to the Dashboard and check that you like what you see :)
+5. Click the button "save" from the Grafana Top Menu. This will open a dialog window. Select the option "Download JSON" to save the configurations in the JSON file.
+6. Replace the initial configiration file (data_drift.JSON) with the newly generated one.
 
-Depending on the changes you want to make there are several ways how you can customize metrics:
-1. If you want to remove some metrics from the Dashboard, you can simply remove them by removing the corresponding visuals/metrics from Grafana interface
-2. If you want to add or customize some metrics, you need to check the implemendation of the corresponding ```Analyzer``` and ```Monitor```:
-- If the statistic you are interested in is calculated in the Analyzer, but not used in Monitor, you can add it there by updating the Monitor code
-- If the statistic you are interested in is not calculated in the Analyzer, than you should start from adding the metric to Analyzed and than to Monitor
+You can refer to the Grafana documentation to learn more about UI customization.  
 
-For example, to add something to DataDrift Dashbord: 
-- check if the metric you are interested in is calculated in the ```DataDriftAnalyzer```: https://github.com/evidentlyai/evidently/blob/main/evidently/analyzers/data_drift_analyzer.py 
-- if the metric is not implemented in ```Analyzer```, update the analyzer and add this metric to the ```result``` dictionary
-- update ```metric``` method in ```DataDriftMonitor``` in order to yield new metric as wll
-- visit Grafana web interface and create a visual Dashboard for new metric
+### How to customize metrics displayed in the Grafana Dashboard 
 
-### How to adopt the example to the custom ML service
-To adopt the example for the custom service we recommend to copy the ```monitoring_service``` folder and rename in. Then you need to make the following steps in the new creadted directory:
+To **remove some metrics** from the Dashboard, you can simply do that from the Grafana interface following the steps above. 
+
+To **add, or change** the way metrics are calculated (for example, use a different statistical test), you need to change the code.
+
+To calculate the metrics we use Evidently ```Analyzers```: https://github.com/evidentlyai/evidently/blob/main/evidently/analyzers/.
+
+For example, we use the ```DataDriftAnalyzer``` to calculate the Data Drift metrics: https://github.com/evidentlyai/evidently/blob/main/evidently/analyzers/data_drift_analyzer.py
+
+If you want to add or customize metrics, you need to check the implemendation of the corresponding ```Analyzer``` and ```Monitor```:
+- If the statistic you need **is calculated** in the Analyzer, but **not used** in Monitor, you can add it there by updating the Monitor code
+- If the statistic you need **is not calculated** in the Analyzer, than you should first add the metric to the Analyzer and than to Monitor
+
+For example, to add something to the Data Drift Dashboard: 
+- Check if the metric you need is calculated in the ```DataDriftAnalyzer```: https://github.com/evidentlyai/evidently/blob/main/evidently/analyzers/data_drift_analyzer.py 
+- If the metric is not implemented in ```Analyzer```, update the analyzer code and add this metric to the ```result``` dictionary
+- Update the ```metric``` method in ```DataDriftMonitor``` in order to yield the new metric 
+- Visit the Grafana web interface and create a visual Dashboard for a new metric
+
+### How to adapt the example to work with your ML service
+
+To adapt the example for a custom ML service, we recommend to copy the ```monitoring_service``` folder and rename it. 
+Then, take the following steps in the newly created directory:
+
 1. Update ```config.yaml``` to let ```evidently``` know how to parse the data correctly. The config file contains the following parts:
-- ```data_format``` - the format of the input data;
-- ```column_mapping``` -  the information about the target, prediction names, lists of the numeric and categorical features. The format if similar to the column_mapping we use to calculate ```evidently``` interactive dashboards and profiles;
-- ```service```:
-  **reference_path** - path to the reference data
-  **min_reference_size** - the minimal amount of objects in the reference dataset to start monitoring metrics calculation
-  **use_reference** - should the service use the provided reference data or collect the reference from the data, that comes to the service (currently only ```true``` option is avaliable)
-  **moving_reference** - should we move the reference in time during metrics calculation (currently only ```false``` option is avaliable)
-  **window_size** - how much new objects should be collected in order to calculate new vaue for metrics
-  **calculation_period_sec** - how often the monitoring service will check for new values of monitoring metrics
-  **monitors** - the amould of monitors to use (currently only the ["data_drift"] option is avaliable)
+* ```data_format``` - the format of the input data;
+* ```column_mapping``` -  the information about the target, prediction names, lists of the numerical and categorical features. The format is similar to the column_mapping we use to calculate ```evidently``` interactive dashboards and profiles;
+* ```service```:
+  * **reference_path** - path to the reference dataset
+  * **use_reference** - define if to use the provided reference dataset ("true") or collect the reference from the production data stream ("false"). Currently only ```true``` option is avaliable.
+  * **min_reference_size** - the minimal number of objects in the reference dataset to start calculating the monitoring metrics. If the reference dataset is provided externally, but has less objects than defined, the required number of objects will be collected from the production data and added to the reference.  
+  * **moving_reference** - define if to move the reference in time during metrics calculation. Currently only ```false``` option is avaliable.
+  * **window_size** - the number of the new objects in the current production data stream required to calculate the new monitoring metrics.
+  * **calculation_period_sec** - how often the monitoring service will check for the new values of monitoring metrics.
+  * **monitors** - the number of monitors to use. Currently only the ["data_drift"] option is avaliable.
 
 2. Place the ```reference.csv``` inside the project folder (```monitoring_service``` in the initial example)
 
-3.1 (option 1) If you do not have the running service, you can place the ```production.csv``` servcie in the project folder exactly as we did in the example. In this scenario your example will work exactly as the initial one: each **calculation_period_sec** service will take the next line from the production data to simu;ate the procuction service. 
+3.1 (option 1) If you do not have a live service, you can place the ```production.csv``` file in the project folder exactly as we did in the example. In this scenario, your example will work exactly as the initial one: each **calculation_period_sec** the service will take the next line from the production data to simulate the production service. 
 
-3.2 (option 2) If you do have the running service, then you should update the ```app.py``` script to make the script use your service instead of the toy example. Update the ```iterate()``` method from ```@app.route('/iterate', methods=["POST"])``` to send the data from your service to the monitoring.
+3.2 (option 2) If you do have a live service, then you should update the ```app.py``` script to make it use your service instead of the toy example. Update the ```iterate()``` method from ```@app.route('/iterate', methods=["POST"])``` to send the data from your service to the monitoring.
 
