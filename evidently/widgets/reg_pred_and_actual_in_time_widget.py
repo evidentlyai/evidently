@@ -80,7 +80,8 @@ class RegPredActualTimeWidget(Widget):
                         size=6,
                         color='green',
                     ),
-                    showlegend=False,
+                    showlegend=True,
+                    visible='legendonly'
                 )
 
                 pred_actual_time.add_trace(target_trace)
