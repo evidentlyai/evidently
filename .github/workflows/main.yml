@@ -41,6 +41,15 @@ jobs:
         run: pip install -r requirements.txt
       - name: Run Tests
         run: python -m unittest discover -s evidently -p 'test_*.py' -v
+      - name: Prepare env
+        run: pip install jupyter && pip install --upgrade pygments && pip install -e .
+      - name: Export examples
+        run: jupyter nbconvert --to script evidently/examples/*.ipynb --output-dir example_scripts
+      - name: Download test data
+        run: curl https://archive.ics.uci.edu/ml/machine-learning-databases/00275/Bike-Sharing-Dataset.zip -o Bike-Sharing-Dataset.zip &&
+             unzip Bike-Sharing-Dataset.zip -d Bike-Sharing-Dataset
+      - name: Run examples
+        run: python example_test.py
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
