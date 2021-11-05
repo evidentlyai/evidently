@@ -48,7 +48,16 @@ def inline_template(params: TemplateParams):
     var additional_graphs_{params.dashboard_id} = {json.dumps(params.additional_graphs)};
 </script>
 <script>
-$(document).ready(function () {{
+function domReady(fn) {{
+  // If we're early to the party
+  document.addEventListener("DOMContentLoaded", fn);
+  // If late; I mean on time.
+  if (document.readyState === "interactive" || document.readyState === "complete" ) {{
+    fn();
+  }}
+}}
+
+domReady(function () {{
     requirejs(["evidently"], function(ev) {{
         drawDashboard({params.dashboard_id},
         new Map(Object.entries(additional_graphs_{params.dashboard_id})),
