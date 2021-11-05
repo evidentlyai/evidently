@@ -174,6 +174,9 @@ class Dashboard(Pipeline):
         # pylint: disable=import-outside-toplevel
         try:
             from IPython.display import HTML
+            from IPython import get_ipython
+            if type(get_ipython()).__module__.startswith("google.colab"):
+                return HTML(self.__render(file_html_template))
             return HTML(self.__render(inline_template))
         except ImportError as err:
             raise Exception("Cannot import HTML from IPython.display, no way to show html") from err
