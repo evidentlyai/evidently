@@ -27,7 +27,7 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: pip install -r requirements.txt && pip install -r dev_requirements.txt
       - name: Install PyLint
         run: pip install pylint
       - name: Run PyLint
@@ -38,11 +38,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: pip install -r requirements.txt && pip install -r dev_requirements.txt && pip install --upgrade pygments
       - name: Run Tests
         run: python -m unittest discover -s evidently -p 'test_*.py' -v
       - name: Prepare env
-        run: pip install jupyter && pip install --upgrade pygments && pip install -e .
+        run: pip install -e .
       - name: Export examples
         run: jupyter nbconvert --to script evidently/examples/*.ipynb --output-dir example_scripts
       - name: Download test data

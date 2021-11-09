@@ -1,9 +1,12 @@
-setuptools~=50.3.2
 pandas~=1.1.4
 dataclasses~=0.6
 numpy~=1.19.3
 plotly~=4.12.0
-scipy~=1.5.4
 statsmodels~=0.12.2
-scikit-learn~=0.23.2
+scikit-learn~=1.0.0
 wheel~=0.35.1
+pandas~=1.1.5
+numpy~=1.19.5
+scipy~=1.5.4
+requests~=2.26.0
+PyYAML~=6.0
