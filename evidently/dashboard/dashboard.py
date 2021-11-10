@@ -48,7 +48,16 @@ def inline_template(params: TemplateParams):
     var additional_graphs_{params.dashboard_id} = {json.dumps(params.additional_graphs)};
 </script>
 <script>
-$(document).ready(function () {{
+function domReady(fn) {{
+  // If we're early to the party
+  document.addEventListener("DOMContentLoaded", fn);
+  // If late; I mean on time.
+  if (document.readyState === "interactive" || document.readyState === "complete" ) {{
+    fn();
+  }}
+}}
+
+domReady(function () {{
     requirejs(["evidently"], function(ev) {{
         drawDashboard({params.dashboard_id},
         new Map(Object.entries(additional_graphs_{params.dashboard_id})),
@@ -170,11 +179,16 @@ class Dashboard(Pipeline):
         with open(filename, 'w', encoding='utf-8') as out_file:
             out_file.write(self._json())
 
-    def show(self):
+    def show(self, mode: typing.Literal['auto', 'notebook', 'jupyterlab', 'colab'] = 'auto'):
         # pylint: disable=import-outside-toplevel
         try:
             from IPython.display import HTML
-            return HTML(self.__render(inline_template))
+            from IPython import get_ipython
+            if mode in ['colab', 'jupyterlab'] or\
+                    (mode == 'auto' and type(get_ipython()).__module__.startswith("google.colab")):
+                return HTML(self.__render(file_html_template))
+            if mode == 'notebook' or mode == 'auto':
+                return HTML(self.__render(inline_template))
         except ImportError as err:
             raise Exception("Cannot import HTML from IPython.display, no way to show html") from err
 
