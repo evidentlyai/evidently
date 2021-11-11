@@ -7,3 +7,4 @@ scipy~=1.5.4
 statsmodels~=0.12.2
 scikit-learn~=0.23.2
 wheel~=0.35.1
+requests~=2.26.0

@@ -179,7 +179,7 @@ class Dashboard(Pipeline):
         with open(filename, 'w', encoding='utf-8') as out_file:
             out_file.write(self._json())
 
-    def show(self, mode: typing.Literal['auto', 'notebook', 'jupyterlab', 'colab'] = 'auto'):
+    def show(self, mode='auto'):
         # pylint: disable=import-outside-toplevel
         try:
             from IPython.display import HTML
@@ -187,8 +187,9 @@ class Dashboard(Pipeline):
             if mode in ['colab', 'jupyterlab'] or\
                     (mode == 'auto' and type(get_ipython()).__module__.startswith("google.colab")):
                 return HTML(self.__render(file_html_template))
-            if mode == 'notebook' or mode == 'auto':
+            if mode in ['notebook', 'auto']:
                 return HTML(self.__render(inline_template))
+            return HTML(self.__render(inline_template))
         except ImportError as err:
             raise Exception("Cannot import HTML from IPython.display, no way to show html") from err
 
