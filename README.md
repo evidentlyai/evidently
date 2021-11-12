@@ -226,7 +226,7 @@ To use ```evidently``` there start from the installation. Run the following inst
 
 There is no need to enable nbextension for this case, because ```evidently``` uses alternative way to display visuals in the hosted notebooks.
 
-To build a ```Dashboard``` or a ```Profile``` simply repeate the steps we described in the previous paragraph, for example to bild **Data Drift** dashboard run the following code:
+To build a ```Dashboard``` or a ```Profile``` simply repeat the steps we described in the previous paragraph, for example to bild **Data Drift** dashboard run the following code:
 
 ```python
 import pandas as pd
@@ -249,7 +249,7 @@ iris_data_drift_report.show()
 
 The ```show()``` method has the argument ```mode```, wich can take the following options:
 
-* **auto** - the default optoins. Ideally, you will not need to specify the value for ```mode``` and use the default. But, if it does not work (in case we failed to determine the environement automatically), consider setting the correct value explicitly.
+* **auto** - the default optoin. Ideally, you will not need to specify the value for ```mode``` and use the default. But, if it does not work (in case we failed to determine the environment automatically), consider setting the correct value explicitly.
 * **nbextention** - to show the UI using nbextension. Use this option to display dashboards in jupyter notebooks (should work automatically).
 * **inline** - to insert the UI directly into the cell. Use this option for Google Colab, Kaggle Kernels and Deepnote. For Google Colab this should work automatically, for **Kaggle Kernels** and **Deepnote** option should be specified explicitly.
 
