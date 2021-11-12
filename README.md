@@ -218,6 +218,41 @@ prob_classification_single_model_performance = Profile(sections=[ProbClassificat
 prob_classification_single_model_performance.calculate(reference_data, None, column_mapping=column_mapping)
 ```
 
+### Google Colab, Kaggle Kernel, Deepnote
+You can run ```evidently``` in [Google Colab](https://colab.research.google.com/), [Kaggle Notebook](https://www.kaggle.com/code) and [Deepnote](https://deepnote.com/).
+
+To use ```evidently``` there start from the installation. Run the following instruction in the notebook  cell:
+```!pip install evidently```
+
+There is no need to enable nbextension for this case, because ```evidently``` uses alternative way to display visuals in the hosted notebooks.
+
+To build a ```Dashboard``` or a ```Profile``` simply repeate the steps we described in the previous paragraph, for example to bild **Data Drift** dashboard run the following code:
+
+```python
+import pandas as pd
+from sklearn import datasets
+
+from evidently.dashboard import Dashboard
+from evidently.tabs import DataDriftTab
+
+iris = datasets.load_iris()
+iris_frame = pd.DataFrame(iris.data, columns = iris.feature_names)
+
+iris_data_drift_report = Dashboard(tabs=[DataDriftTab])
+iris_data_drift_report.calculate(iris_frame[:100], iris_frame[100:], column_mapping = None)
+```
+
+To display the dashboard in the Google Colab, Kaggle Kernel, Deepnote run:
+```python
+iris_data_drift_report.show()
+```
+
+The ```show()``` method has the argument ```mode```, wich can take the following options:
+
+* **auto** - the default optoins. Ideally, you will not need to specify the value for ```mode``` and use the default. But, if it does not work (in case we failed to determine the environement automatically), consider setting the correct value explicitly.
+* **nbextention** - to show UI uning nbextension. Use this option to display dashboards in jupyter notebooks (should work automatically).
+* **inline** - to insert the UI directly into the cell. Use this option for Google Colab, Kaggle Kernels and Deepnote. For Google Colab this should work work automatically, for **Kaggle Kernels** and **Deepnote** option should be specified explicitly.
+
 ### Terminal
 You can generate **HTML reports** or **JSON profiles** directly from the bash shell. To do this, prepare your data as two `csv` files. In case you run one of the performance reports, you can have only one file. The first one should include your reference data, the second - current production data. The structure of both datasets should be identical. 
 
