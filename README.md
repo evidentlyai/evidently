@@ -250,8 +250,8 @@ iris_data_drift_report.show()
 The ```show()``` method has the argument ```mode```, wich can take the following options:
 
 * **auto** - the default optoins. Ideally, you will not need to specify the value for ```mode``` and use the default. But, if it does not work (in case we failed to determine the environement automatically), consider setting the correct value explicitly.
-* **nbextention** - to show UI uning nbextension. Use this option to display dashboards in jupyter notebooks (should work automatically).
-* **inline** - to insert the UI directly into the cell. Use this option for Google Colab, Kaggle Kernels and Deepnote. For Google Colab this should work work automatically, for **Kaggle Kernels** and **Deepnote** option should be specified explicitly.
+* **nbextention** - to show the UI using nbextension. Use this option to display dashboards in jupyter notebooks (should work automatically).
+* **inline** - to insert the UI directly into the cell. Use this option for Google Colab, Kaggle Kernels and Deepnote. For Google Colab this should work automatically, for **Kaggle Kernels** and **Deepnote** option should be specified explicitly.
 
 ### Terminal
 You can generate **HTML reports** or **JSON profiles** directly from the bash shell. To do this, prepare your data as two `csv` files. In case you run one of the performance reports, you can have only one file. The first one should include your reference data, the second - current production data. The structure of both datasets should be identical. 
