@@ -181,15 +181,20 @@ class Dashboard(Pipeline):
 
     def show(self, mode='auto'):
         # pylint: disable=import-outside-toplevel
+        render_mode = mode
         try:
             from IPython.display import HTML
             from IPython import get_ipython
-            if mode in ['colab', 'jupyterlab'] or\
-                    (mode == 'auto' and type(get_ipython()).__module__.startswith("google.colab")):
+            if mode == 'auto':
+                if type(get_ipython()).__module__.startswith("google.colab"):
+                    render_mode = 'inline'
+                else:
+                    render_mode = 'nbextension'
+            if render_mode == 'inline':
                 return HTML(self.__render(file_html_template))
-            if mode in ['notebook', 'auto']:
+            if render_mode == 'nbextension':
                 return HTML(self.__render(inline_template))
-            return HTML(self.__render(inline_template))
+            raise ValueError(f"Unexpected value {mode}/{render_mode} for mode")
         except ImportError as err:
             raise Exception("Cannot import HTML from IPython.display, no way to show html") from err
 
