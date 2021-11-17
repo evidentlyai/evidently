@@ -61,4 +61,25 @@ python example_test.py
 ```
 
 ## Working with UI
-TBD
+
+### Requirements
+
+For building ui required:
+- `nodejs` and `npm` https://nodejs.org/en/download/
+- `yarn` https://yarnpkg.com/getting-started/install
+
+### Building UI
+
+One-time build:
+```shell
+cd ui
+yarn
+yarn build
+```
+
+Watched build (any changes to UI source files will be automatically recompiled):
+```shell
+cd ui
+yarn
+yarn watch
+```
