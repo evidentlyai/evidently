@@ -9,10 +9,10 @@ from evidently.widgets.widget import Widget
 
 
 class RegUnderperformMetricsWidget(Widget):
-    def __init__(self, title: str, dataset: str='reference'):
+    def __init__(self, title: str, dataset: str = 'reference'):
         super().__init__(title)
         self.title = title
-        self.dataset = dataset #reference or current
+        self.dataset = dataset  # reference or current
 
     def analyzers(self):
         return [RegressionPerformanceAnalyzer]
@@ -48,22 +48,24 @@ class RegUnderperformMetricsWidget(Widget):
             size=2,
             params={
                 "counters": [
-                  {
-                    "value": str(round(results['metrics'][self.dataset]['underperformance']['majority']['mean_error'], 2)) + \
-                    " (" + str(round(results['metrics'][self.dataset]['underperformance']['majority']['std_error'],2)) + ")",
-                    "label": "Majority(90%)"
-                  },
-                  {
-                    "value": str(round(results['metrics'][self.dataset]['underperformance']['underestimation']['mean_error'], 2)) + \
-                    " (" + str(round(results['metrics'][self.dataset]['underperformance']['underestimation']['std_error'], 2)) +  ")",
-                    "label": "Underestimation(5%)"
-                  },
-                  {
-                    "value": str(round(results['metrics'][self.dataset]['underperformance']['overestimation']['mean_error'], 2)) + \
-                    " (" + str(round(results['metrics'][self.dataset]['underperformance']['overestimation']['std_error'], 2)) + ")",
-                    "label": "Overestimation(5%)"
-                  }
+                    {
+                        "value": _format_value(results, self.dataset, 'majority'),
+                        "label": "Majority(90%)"
+                    },
+                    {
+                        "value": _format_value(results, self.dataset, 'underestimation'),
+                        "label": "Underestimation(5%)"
+                    },
+                    {
+                        "value": _format_value(results, self.dataset, 'overestimation'),
+                        "label": "Overestimation(5%)"
+                    }
                 ]
             },
             additionalGraphs=[]
         )
+
+
+def _format_value(results, dataset, counter_type):
+    return f"{round(results['metrics'][dataset]['underperformance'][counter_type]['mean_error'], 2)}" \
+           + f" ({round(results['metrics'][dataset]['underperformance'][counter_type]['std_error'], 2)})"

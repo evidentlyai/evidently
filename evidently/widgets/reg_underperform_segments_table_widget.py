@@ -14,6 +14,16 @@ from evidently.model.widget import BaseWidgetInfo, AlertStats, AdditionalGraphIn
 from evidently.widgets.widget import Widget
 
 
+def _error_bias_string(quantile_5, quantile_95):
+    def __error_bias_string(error):
+        if error <= quantile_5:
+            return 'Underestimation'
+        if error < quantile_95:
+            return 'Majority'
+        return 'Overestimation'
+    return __error_bias_string
+
+
 class UnderperformSegmTableWidget(Widget):
     def analyzers(self):
         return [RegressionPerformanceAnalyzer]
@@ -31,8 +41,10 @@ class UnderperformSegmTableWidget(Widget):
             reference_data.replace([np.inf, -np.inf], np.nan, inplace=True)
             reference_data.dropna(axis=0, how='any', inplace=True)
 
-            ref_error = reference_data[results['utility_columns']['prediction']] - reference_data[results['utility_columns']['target']]
-            current_error = current_data[results['utility_columns']['prediction']] - current_data[results['utility_columns']['target']]
+            ref_error = reference_data[results['utility_columns']['prediction']] - reference_data[
+                results['utility_columns']['target']]
+            current_error = current_data[results['utility_columns']['prediction']] - current_data[
+                results['utility_columns']['target']]
 
             ref_quntile_5 = np.quantile(ref_error, .05)
             ref_quntile_95 = np.quantile(ref_error, .95)
@@ -40,14 +52,13 @@ class UnderperformSegmTableWidget(Widget):
             current_quntile_5 = np.quantile(current_error, .05)
             current_quntile_95 = np.quantile(current_error, .95)
 
-            #create subplots
+            # create subplots
             reference_data['dataset'] = 'Reference'
-            reference_data['Error bias'] = list(map(lambda x : 'Underestimation' if x <= ref_quntile_5 else 'Majority'
-                                            if x < ref_quntile_95 else 'Overestimation', ref_error))
+            reference_data['Error bias'] = list(map(_error_bias_string(ref_quntile_5, ref_quntile_95), ref_error))
 
             current_data['dataset'] = 'Current'
-            current_data['Error bias'] = list(map(lambda x : 'Underestimation' if x <= current_quntile_5 else 'Majority'
-                                            if x < current_quntile_95 else 'Overestimation', current_error))
+            current_data['Error bias'] = list(map(_error_bias_string(current_quntile_5, current_quntile_95),
+                                                  current_error))
             merged_data = pd.concat([reference_data, current_data])
 
             reference_data.drop(['dataset', 'Error bias'], axis=1, inplace=True)
@@ -60,33 +71,36 @@ class UnderperformSegmTableWidget(Widget):
                 feature_type = 'num'
 
                 feature_hist = px.histogram(merged_data, x=feature_name, color='Error bias', facet_col="dataset",
-                    histnorm = 'percent', barmode='overlay', category_orders={"dataset": ["Reference", "Current"], "Error bias": ["Underestimation", "Overestimation", "Majority"]})
+                                            histnorm='percent', barmode='overlay',
+                                            category_orders={"dataset": ["Reference", "Current"],
+                                                             "Error bias": ["Underestimation", "Overestimation",
+                                                                            "Majority"]})
 
-                feature_hist_json  = json.loads(feature_hist.to_json())
+                feature_hist_json = json.loads(feature_hist.to_json())
 
                 segment_fig = make_subplots(rows=1, cols=2, subplot_titles=("Reference", "Current"))
 
                 segment_fig.add_trace(
                     go.Scatter(
-                        x = reference_data[results['utility_columns']['target']],
-                        y = reference_data[results['utility_columns']['prediction']],
-                        mode = 'markers',
+                        x=reference_data[results['utility_columns']['target']],
+                        y=reference_data[results['utility_columns']['prediction']],
+                        mode='markers',
                         marker=dict(
                             size=6,
                             cmax=max(max(reference_data[feature_name]), max(current_data[feature_name])),
                             cmin=min(min(reference_data[feature_name]), min(current_data[feature_name])),
                             color=reference_data[feature_name],
                         ),
-                        showlegend = False,
-                        ),
+                        showlegend=False,
+                    ),
                     row=1, col=1
                 )
 
                 segment_fig.add_trace(
                     go.Scatter(
-                        x = current_data[results['utility_columns']['target']],
-                        y = current_data[results['utility_columns']['prediction']],
-                        mode = 'markers',
+                        x=current_data[results['utility_columns']['target']],
+                        y=current_data[results['utility_columns']['prediction']],
+                        mode='markers',
                         marker=dict(
                             size=6,
                             cmax=max(max(reference_data[feature_name]), max(current_data[feature_name])),
@@ -96,8 +110,8 @@ class UnderperformSegmTableWidget(Widget):
                                 title=feature_name
                             ),
                         ),
-                        showlegend = False,
-                        ),
+                        showlegend=False,
+                    ),
                     row=1, col=2
                 )
 
@@ -109,25 +123,25 @@ class UnderperformSegmTableWidget(Widget):
                 segment_fig.update_yaxes(title_text="Predicted Value", showgrid=True, row=1, col=1)
                 segment_fig.update_yaxes(title_text="Predicted Value", showgrid=True, row=1, col=2)
 
-                segment_json  = json.loads(segment_fig.to_json())
+                segment_json = json.loads(segment_fig.to_json())
 
                 params_data.append(
-                {
-                    "details":
-                        {
-                            "parts": [
-                                {
-                                    "title": "Error bias",
-                                    "id": feature_name + "_hist"
-                                },
-                                {
-                                    "title": "Predicted vs Actual",
-                                    "id": feature_name + "_segm"
-                                }
+                    {
+                        "details":
+                            {
+                                "parts": [
+                                    {
+                                        "title": "Error bias",
+                                        "id": feature_name + "_hist"
+                                    },
+                                    {
+                                        "title": "Predicted vs Actual",
+                                        "id": feature_name + "_segm"
+                                    }
 
-                            ],
-                            "insights": []
-                        },
+                                ],
+                                "insights": []
+                            },
                         "f1": feature_name,
                         "f2": feature_type,
                         "f3": round(results['metrics']['error_bias'][feature_name]['ref_majority'], 2),
@@ -138,26 +152,26 @@ class UnderperformSegmTableWidget(Widget):
                         "f8": round(results['metrics']['error_bias'][feature_name]['current_under'], 2),
                         "f9": round(results['metrics']['error_bias'][feature_name]['current_over'], 2),
                         "f10": round(results['metrics']['error_bias'][feature_name]['current_range'], 2)
-                }
+                    }
                 )
 
                 additional_graphs_data.append(
-                AdditionalGraphInfo(
-                    feature_name + '_hist',
-                    {
-                        "data" : feature_hist_json['data'],
-                        "layout" : feature_hist_json['layout']
-                    }
+                    AdditionalGraphInfo(
+                        feature_name + '_hist',
+                        {
+                            "data": feature_hist_json['data'],
+                            "layout": feature_hist_json['layout']
+                        }
                     )
                 )
 
                 additional_graphs_data.append(
-                AdditionalGraphInfo(
-                    feature_name + '_segm',
-                    {
-                        "data" : segment_json['data'],
-                        "layout" : segment_json['layout']
-                    }
+                    AdditionalGraphInfo(
+                        feature_name + '_segm',
+                        {
+                            "data": segment_json['data'],
+                            "layout": segment_json['layout']
+                        }
                     )
                 )
 
@@ -165,33 +179,36 @@ class UnderperformSegmTableWidget(Widget):
                 feature_type = 'cat'
 
                 feature_hist = px.histogram(merged_data, x=feature_name, color='Error bias', facet_col="dataset",
-                    histnorm = 'percent', barmode='overlay', category_orders={"dataset": ["Reference", "Current"], "Error bias": ["Underestimation", "Overestimation", "Majority"]})
+                                            histnorm='percent', barmode='overlay',
+                                            category_orders={"dataset": ["Reference", "Current"],
+                                                             "Error bias": ["Underestimation", "Overestimation",
+                                                                            "Majority"]})
 
-                feature_hist_json  = json.loads(feature_hist.to_json())
+                feature_hist_json = json.loads(feature_hist.to_json())
 
                 segment_fig = make_subplots(rows=1, cols=2, subplot_titles=("Reference", "Current"))
 
                 segment_fig.add_trace(
                     go.Scatter(
-                        x = reference_data[results['utility_columns']['target']],
-                        y = reference_data[results['utility_columns']['prediction']],
-                        mode = 'markers',
+                        x=reference_data[results['utility_columns']['target']],
+                        y=reference_data[results['utility_columns']['prediction']],
+                        mode='markers',
                         marker=dict(
                             size=6,
                             cmax=max(max(reference_data[feature_name]), max(current_data[feature_name])),
                             cmin=min(min(reference_data[feature_name]), min(current_data[feature_name])),
                             color=reference_data[feature_name],
                         ),
-                        showlegend = False,
-                        ),
+                        showlegend=False,
+                    ),
                     row=1, col=1
                 )
 
                 segment_fig.add_trace(
                     go.Scatter(
-                        x = current_data[results['utility_columns']['target']],
-                        y = current_data[results['utility_columns']['prediction']],
-                        mode = 'markers',
+                        x=current_data[results['utility_columns']['target']],
+                        y=current_data[results['utility_columns']['prediction']],
+                        mode='markers',
                         marker=dict(
                             size=6,
                             cmax=max(max(reference_data[feature_name]), max(current_data[feature_name])),
@@ -201,8 +218,8 @@ class UnderperformSegmTableWidget(Widget):
                                 title=feature_name
                             ),
                         ),
-                        showlegend = False,
-                        ),
+                        showlegend=False,
+                    ),
                     row=1, col=2
                 )
 
@@ -214,24 +231,24 @@ class UnderperformSegmTableWidget(Widget):
                 segment_fig.update_yaxes(title_text="Predicted Value", showgrid=True, row=1, col=1)
                 segment_fig.update_yaxes(title_text="Predicted Value", showgrid=True, row=1, col=2)
 
-                segment_json  = json.loads(segment_fig.to_json())
+                segment_json = json.loads(segment_fig.to_json())
 
                 params_data.append(
-                {
-                    "details":
-                        {
-                            "parts": [
-                                {
-                                    "title": "Error bias",
-                                    "id": feature_name + "_hist"
-                                },
-                                {
-                                    "title": "Predicted vs Actual",
-                                    "id": feature_name + "_segm"
-                                }
-                            ],
-                            "insights": []
-                        },
+                    {
+                        "details":
+                            {
+                                "parts": [
+                                    {
+                                        "title": "Error bias",
+                                        "id": feature_name + "_hist"
+                                    },
+                                    {
+                                        "title": "Predicted vs Actual",
+                                        "id": feature_name + "_segm"
+                                    }
+                                ],
+                                "insights": []
+                            },
                         "f1": feature_name,
                         "f2": feature_type,
                         "f3": str(results['metrics']['error_bias'][feature_name]['ref_majority']),
@@ -242,31 +259,31 @@ class UnderperformSegmTableWidget(Widget):
                         "f8": str(results['metrics']['error_bias'][feature_name]['current_under']),
                         "f9": str(results['metrics']['error_bias'][feature_name]['current_over']),
                         "f10": int(results['metrics']['error_bias'][feature_name]['current_range'])
-                }
+                    }
                 )
 
                 additional_graphs_data.append(
-                AdditionalGraphInfo(
-                    feature_name + '_hist',
-                    {
-                        "data" : feature_hist_json['data'],
-                        "layout" : feature_hist_json['layout']
-                    }
+                    AdditionalGraphInfo(
+                        feature_name + '_hist',
+                        {
+                            "data": feature_hist_json['data'],
+                            "layout": feature_hist_json['layout']
+                        }
                     )
                 )
 
                 additional_graphs_data.append(
-                AdditionalGraphInfo(
-                    feature_name + '_segm',
-                    {
-                        "data" : segment_json['data'],
-                        "layout" : segment_json['layout']
-                    }
+                    AdditionalGraphInfo(
+                        feature_name + '_segm',
+                        {
+                            "data": segment_json['data'],
+                            "layout": segment_json['layout']
+                        }
                     )
                 )
 
             self.wi = BaseWidgetInfo(
-                title = self.title,
+                title=self.title,
                 type="big_table",
                 details="",
                 alertStats=AlertStats(),
@@ -275,7 +292,7 @@ class UnderperformSegmTableWidget(Widget):
                 insights=[],
                 size=2,
                 params={
-                    "rowsPerPage" : min(len(results["num_feature_names"]) + len(results["cat_feature_names"]), 10),
+                    "rowsPerPage": min(len(results["num_feature_names"]) + len(results["cat_feature_names"]), 10),
                     "columns": [
                         {
                             "title": "Feature",
@@ -316,41 +333,46 @@ class UnderperformSegmTableWidget(Widget):
                         {
                             "title": "CURR: Range(%)",
                             "field": "f10",
-                            "sort" : "desc"
+                            "sort": "desc"
                         }
 
                     ],
                     "data": params_data
                 },
 
-                additionalGraphs = additional_graphs_data
+                additionalGraphs=additional_graphs_data
             )
 
         else:
             reference_data.replace([np.inf, -np.inf], np.nan, inplace=True)
             reference_data.dropna(axis=0, how='any', inplace=True)
 
-            error = reference_data[results['utility_columns']['prediction']] - reference_data[results['utility_columns']['target']]
+            error = reference_data[results['utility_columns']['prediction']] - reference_data[
+                results['utility_columns']['target']]
 
             quntile_5 = np.quantile(error, .05)
             quntile_95 = np.quantile(error, .95)
 
-            reference_data['Error bias'] = reference_data['Error bias'] = list(map(lambda x : 'Underestimation' if x <= quntile_5 else 'Majority'
-                                            if x < quntile_95 else 'Overestimation', error))
+            reference_data['Error bias'] = reference_data['Error bias'] = list(
+                map(lambda x: 'Underestimation'
+                              if x <= quntile_5 else 'Majority'
+                              if x < quntile_95 else 'Overestimation', error))
 
             params_data = []
             additional_graphs_data = []
 
-            for feature_name in results["num_feature_names"]:# + cat_feature_names: #feature_names:
+            for feature_name in results["num_feature_names"]:  # + cat_feature_names: #feature_names:
 
                 feature_type = 'num'
 
-                hist = px.histogram(reference_data, x=feature_name, color='Error bias', histnorm = 'percent', barmode='overlay',
-                    category_orders={"Error bias": ["Underestimation", "Overestimation", "Majority"]})
+                hist = px.histogram(reference_data, x=feature_name, color='Error bias', histnorm='percent',
+                                    barmode='overlay',
+                                    category_orders={"Error bias": ["Underestimation", "Overestimation", "Majority"]})
 
                 hist_figure = json.loads(hist.to_json())
 
-                segm = px.scatter(reference_data, x = results['utility_columns']['target'], y = results['utility_columns']['prediction'], color = feature_name)
+                segm = px.scatter(reference_data, x=results['utility_columns']['target'],
+                                  y=results['utility_columns']['prediction'], color=feature_name)
                 segm_figure = json.loads(segm.to_json())
 
                 params_data.append(
@@ -370,47 +392,49 @@ class UnderperformSegmTableWidget(Widget):
                                 ],
                                 "insights": []
                             },
-                            "f1": feature_name,
-                            "f2": feature_type,
-                            "f3": round(results['metrics']['error_bias'][feature_name]['ref_majority'], 2),
-                            "f4": round(results['metrics']['error_bias'][feature_name]['ref_under'], 2),
-                            "f5": round(results['metrics']['error_bias'][feature_name]['ref_over'], 2),
-                            "f6": round(results['metrics']['error_bias'][feature_name]['ref_range'], 2)
+                        "f1": feature_name,
+                        "f2": feature_type,
+                        "f3": round(results['metrics']['error_bias'][feature_name]['ref_majority'], 2),
+                        "f4": round(results['metrics']['error_bias'][feature_name]['ref_under'], 2),
+                        "f5": round(results['metrics']['error_bias'][feature_name]['ref_over'], 2),
+                        "f6": round(results['metrics']['error_bias'][feature_name]['ref_range'], 2)
                     }
                 )
 
                 additional_graphs_data.append(
-                AdditionalGraphInfo(
-                    feature_name + '_hist',
-                    {
-                        "data" : hist_figure['data'],
-                        "layout" : hist_figure['layout']
-                    }
+                    AdditionalGraphInfo(
+                        feature_name + '_hist',
+                        {
+                            "data": hist_figure['data'],
+                            "layout": hist_figure['layout']
+                        }
                     )
                 )
 
                 additional_graphs_data.append(
-                AdditionalGraphInfo(
-                    feature_name + '_segm',
-                    {
-                        "data" : segm_figure['data'],
-                        "layout" : segm_figure['layout']
-                    }
+                    AdditionalGraphInfo(
+                        feature_name + '_segm',
+                        {
+                            "data": segm_figure['data'],
+                            "layout": segm_figure['layout']
+                        }
                     )
                 )
 
-            for feature_name in results["cat_feature_names"]: #feature_names:
+            for feature_name in results["cat_feature_names"]:  # feature_names:
 
                 feature_type = 'cat'
 
-                hist = px.histogram(reference_data, x=feature_name, color='Error bias', histnorm = 'percent',
-                    barmode='overlay', category_orders={"Error bias": ["Underestimation", "Overestimation", "Majority"]})
+                hist = px.histogram(reference_data, x=feature_name, color='Error bias', histnorm='percent',
+                                    barmode='overlay',
+                                    category_orders={"Error bias": ["Underestimation", "Overestimation", "Majority"]})
 
                 hist_figure = json.loads(hist.to_json())
 
                 initial_type = reference_data[feature_name].dtype
                 reference_data[feature_name] = reference_data[feature_name].astype(str)
-                segm = px.scatter(reference_data, x = results['utility_columns']['target'], y = results['utility_columns']['prediction'], color = feature_name)
+                segm = px.scatter(reference_data, x=results['utility_columns']['target'],
+                                  y=results['utility_columns']['prediction'], color=feature_name)
                 reference_data[feature_name] = reference_data[feature_name].astype(initial_type)
 
                 segm_figure = json.loads(segm.to_json())
@@ -431,39 +455,39 @@ class UnderperformSegmTableWidget(Widget):
                                 ],
                                 "insights": []
                             },
-                            "f1": feature_name,
-                            "f2": feature_type,
-                            "f3": str(results['metrics']['error_bias'][feature_name]['ref_majority']),
-                            "f4": str(results['metrics']['error_bias'][feature_name]['ref_under']),
-                            "f5": str(results['metrics']['error_bias'][feature_name]['ref_over']),
-                            "f6": str(results['metrics']['error_bias'][feature_name]['ref_range'])
+                        "f1": feature_name,
+                        "f2": feature_type,
+                        "f3": str(results['metrics']['error_bias'][feature_name]['ref_majority']),
+                        "f4": str(results['metrics']['error_bias'][feature_name]['ref_under']),
+                        "f5": str(results['metrics']['error_bias'][feature_name]['ref_over']),
+                        "f6": str(results['metrics']['error_bias'][feature_name]['ref_range'])
                     }
                 )
 
                 additional_graphs_data.append(
-                AdditionalGraphInfo(
-                    feature_name + '_hist',
-                    {
-                        "data" : hist_figure['data'],
-                        "layout" : hist_figure['layout']
-                    }
+                    AdditionalGraphInfo(
+                        feature_name + '_hist',
+                        {
+                            "data": hist_figure['data'],
+                            "layout": hist_figure['layout']
+                        }
                     )
                 )
 
                 additional_graphs_data.append(
-                AdditionalGraphInfo(
-                    feature_name + '_segm',
-                    {
-                        "data" : segm_figure['data'],
-                        "layout" : segm_figure['layout']
-                    }
+                    AdditionalGraphInfo(
+                        feature_name + '_segm',
+                        {
+                            "data": segm_figure['data'],
+                            "layout": segm_figure['layout']
+                        }
                     )
                 )
 
             reference_data.drop('Error bias', axis=1, inplace=True)
 
             self.wi = BaseWidgetInfo(
-                title = self.title,
+                title=self.title,
                 type="big_table",
                 details="",
                 alertStats=AlertStats(),
@@ -472,7 +496,7 @@ class UnderperformSegmTableWidget(Widget):
                 insights=[],
                 size=2,
                 params={
-                    "rowsPerPage" : min(len(results["num_feature_names"]) + len(results["cat_feature_names"]), 10),
+                    "rowsPerPage": min(len(results["num_feature_names"]) + len(results["cat_feature_names"]), 10),
                     "columns": [
                         {
                             "title": "Feature",
@@ -497,11 +521,11 @@ class UnderperformSegmTableWidget(Widget):
                         {
                             "title": "Range(%)",
                             "field": "f6",
-                            "sort" : "desc"
+                            "sort": "desc"
                         }
                     ],
                     "data": params_data
                 },
 
-                additionalGraphs = additional_graphs_data
+                additionalGraphs=additional_graphs_data
             )

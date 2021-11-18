@@ -9,9 +9,9 @@ from evidently.widgets.widget import Widget
 
 
 class ProbClassQualityMetricBarWidget(Widget):
-    def __init__(self, title: str, dataset: str='reference'):
+    def __init__(self, title: str, dataset: str = 'reference'):
         super().__init__(title)
-        self.dataset = dataset #reference or current
+        self.dataset = dataset  # reference or current
 
     def analyzers(self):
         return [ProbClassificationPerformanceAnalyzer]
@@ -45,30 +45,30 @@ class ProbClassQualityMetricBarWidget(Widget):
                     size=2,
                     params={
                         "counters": [
-                          {
-                            "value": str(round(results['metrics'][self.dataset]['accuracy'], 3)),
-                            "label": "Accuracy"
-                          },
-                          {
-                            "value": str(round(results['metrics'][self.dataset]['precision'], 3)),
-                            "label": "Precision"
-                          },
-                          {
-                            "value": str(round(results['metrics'][self.dataset]['recall'], 3)),
-                            "label": "Recall"
-                          },
-                          {
-                            "value": str(round(results['metrics'][self.dataset]['f1'], 3)),
-                            "label": "F1"
-                          },
-                          {
-                            "value": str(round(results['metrics'][self.dataset]['roc_auc'], 3)),
-                            "label": "ROC AUC"
-                          },
-                          {
-                            "value": str(round(results['metrics'][self.dataset]['log_loss'], 3)),
-                            "label": "LogLoss"
-                          }
+                            {
+                                "value": str(round(results['metrics'][self.dataset]['accuracy'], 3)),
+                                "label": "Accuracy"
+                            },
+                            {
+                                "value": str(round(results['metrics'][self.dataset]['precision'], 3)),
+                                "label": "Precision"
+                            },
+                            {
+                                "value": str(round(results['metrics'][self.dataset]['recall'], 3)),
+                                "label": "Recall"
+                            },
+                            {
+                                "value": str(round(results['metrics'][self.dataset]['f1'], 3)),
+                                "label": "F1"
+                            },
+                            {
+                                "value": str(round(results['metrics'][self.dataset]['roc_auc'], 3)),
+                                "label": "ROC AUC"
+                            },
+                            {
+                                "value": str(round(results['metrics'][self.dataset]['log_loss'], 3)),
+                                "label": "LogLoss"
+                            }
                         ]
                     },
                     additionalGraphs=[],

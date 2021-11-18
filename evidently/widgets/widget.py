@@ -8,7 +8,6 @@ import pandas
 
 from evidently.model.widget import BaseWidgetInfo
 
-
 RED = "#ed0400"
 GREY = "#4d4d4d"
 

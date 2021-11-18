@@ -24,7 +24,7 @@ ignore=CVS
 
 # Add files or directories matching the regex patterns to the ignore-list. The
 # regex matches against paths.
-ignore-paths=
+ignore-paths=venv,.venv,setupbase.py
 
 # Files or directories matching the regex patterns are skipped. The regex
 # matches against base names, not paths.
@@ -162,6 +162,11 @@ disable=print-statement,
 # temporary rules
         duplicate-code,
         line-too-long,
+        no-self-use,
+        too-many-branches,
+        too-many-statements,
+        too-many-arguments,
+        too-many-instance-attributes,
         no-else-raise
 
 # Enable the message, report, category or checker with the given id(s). You can

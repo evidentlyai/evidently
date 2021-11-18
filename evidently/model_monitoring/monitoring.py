@@ -42,7 +42,7 @@ class ModelMonitoring(Pipeline):
         self.monitors = [monitor_class() for monitor_class in monitors]
 
     def get_analyzers(self):
-        return list(set([analyzer for tab in self.monitors for analyzer in tab.analyzers()]))
+        return list({analyzer for tab in self.monitors for analyzer in tab.analyzers()})
 
     def metrics(self) -> Generator[MetricsType, None, None]:
         for monitor in self.monitors:

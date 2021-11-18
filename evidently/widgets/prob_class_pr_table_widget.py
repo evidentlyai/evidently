@@ -10,9 +10,9 @@ from evidently.widgets.widget import Widget
 
 
 class ProbClassPRTableWidget(Widget):
-    def __init__(self, title: str, dataset: str='reference'):
+    def __init__(self, title: str, dataset: str = 'reference'):
         super().__init__(title)
-        self.dataset = dataset #reference or current
+        self.dataset = dataset  # reference or current
 
     def analyzers(self):
         return [ProbClassificationPerformanceAnalyzer]
@@ -39,7 +39,7 @@ class ProbClassPRTableWidget(Widget):
                     params_data = []
                     for line in pr_table_data:
                         count = line[1]
-                        prob = round(line[2],2)
+                        prob = round(line[2], 2)
                         top = round(line[0], 1)
                         tp = line[3]
                         fp = line[4]
@@ -47,64 +47,64 @@ class ProbClassPRTableWidget(Widget):
                         recall = round(line[6], 1)
 
                         params_data.append({
-                                       'f1': float(top),
-                                       'f2' : int(count),
-                                       'f3' : float(prob),
-                                       'f4' : int(tp),
-                                       'f5' : int(fp),
-                                       'f6' : float(precision),
-                                       'f7' : float(recall)
-                                    })
+                            'f1': float(top),
+                            'f2': int(count),
+                            'f3': float(prob),
+                            'f4': int(tp),
+                            'f5': int(fp),
+                            'f6': float(precision),
+                            'f7': float(recall)
+                        })
 
                     self.wi = BaseWidgetInfo(
-                    title = self.title,
-                    type="big_table",
-                    details="",
-                    alertStats=AlertStats(),
-                    alerts=[],
-                    alertsPosition="row",
-                    insights=[],
-                    size=1 if current_data is not None else 2,
-                    params={
-                        "rowsPerPage" : 21,
-                        "columns": [
-                            {
-                                "title": "Top(%)",
-                                "field": "f1",
-                                "sort" : "asc"
-                            },
-                            {
-                                "title": "Count",
-                                "field": "f2"
-                            },
-                            {
-                                "title": "Prob",
-                                "field": "f3",
-                            },
-                            {
-                                "title": "TP",
-                                "field": "f4"
-                            },
-                            {
-                                "title": "FP",
-                                "field": "f5"
-                            },
-                            {
-                                "title": "Precision",
-                                "field": "f6"
-                            },
-                            {
-                                "title": "Recall",
-                                "field": "f7"
-                            }
-                        ],
-                        "data": params_data
-                    },
-                    additionalGraphs = []
-                )
+                        title=self.title,
+                        type="big_table",
+                        details="",
+                        alertStats=AlertStats(),
+                        alerts=[],
+                        alertsPosition="row",
+                        insights=[],
+                        size=1 if current_data is not None else 2,
+                        params={
+                            "rowsPerPage": 21,
+                            "columns": [
+                                {
+                                    "title": "Top(%)",
+                                    "field": "f1",
+                                    "sort": "asc"
+                                },
+                                {
+                                    "title": "Count",
+                                    "field": "f2"
+                                },
+                                {
+                                    "title": "Prob",
+                                    "field": "f3",
+                                },
+                                {
+                                    "title": "TP",
+                                    "field": "f4"
+                                },
+                                {
+                                    "title": "FP",
+                                    "field": "f5"
+                                },
+                                {
+                                    "title": "Precision",
+                                    "field": "f6"
+                                },
+                                {
+                                    "title": "Recall",
+                                    "field": "f7"
+                                }
+                            ],
+                            "data": params_data
+                        },
+                        additionalGraphs=[]
+                    )
 
                 else:
-                    #create tables
+                    # create tables
                     tabs = []
 
                     for label in results['utility_columns']['prediction']:
@@ -113,20 +113,20 @@ class ProbClassPRTableWidget(Widget):
 
                         for line in pr_table_data:
                             count = line[1]
-                            prob = round(line[2],2)
+                            prob = round(line[2], 2)
                             top = round(line[0], 1)
                             tp = line[3]
                             fp = line[4]
                             precision = round(line[5], 1)
                             recall = round(line[6], 1)
 
-                            params_data.append({ 'f1': float(top),
-                                           'f2' : int(count),
-                                           'f3' : float(prob),
-                                           'f4' : int(tp),
-                                           'f5' : int(fp),
-                                           'f6' : float(precision),
-                                           'f7' : float(recall)})
+                            params_data.append({'f1': float(top),
+                                                'f2': int(count),
+                                                'f3': float(prob),
+                                                'f4': int(tp),
+                                                'f5': int(fp),
+                                                'f6': float(precision),
+                                                'f7': float(recall)})
 
                         tabs.append(TabInfo(
                             id=label,
@@ -139,14 +139,14 @@ class ProbClassPRTableWidget(Widget):
                                 alerts=[],
                                 alertsPosition="row",
                                 insights=[],
-                                size=2, #if current_data is not None else 2,
+                                size=2,  # if current_data is not None else 2,
                                 params={
                                     "rowsPerPage": 21,
                                     "columns": [
                                         {
                                             "title": "Top(%)",
                                             "field": "f1",
-                                            "sort" : "asc"
+                                            "sort": "asc"
                                         },
                                         {
                                             "title": "Count",
@@ -175,7 +175,7 @@ class ProbClassPRTableWidget(Widget):
                                     ],
                                     "data": params_data
                                 },
-                                additionalGraphs = []
+                                additionalGraphs=[]
                             )
                         ))
 

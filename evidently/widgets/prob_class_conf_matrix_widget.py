@@ -12,9 +12,9 @@ from evidently.widgets.widget import Widget
 
 
 class ProbClassConfMatrixWidget(Widget):
-    def __init__(self, title: str, dataset: str='reference'):
+    def __init__(self, title: str, dataset: str = 'reference'):
         super().__init__(title)
-        self.dataset = dataset #reference or current
+        self.dataset = dataset  # reference or current
 
     def analyzers(self):
         return [ProbClassificationPerformanceAnalyzer]
@@ -37,7 +37,7 @@ class ProbClassConfMatrixWidget(Widget):
 
         if results['utility_columns']['target'] is not None and results['utility_columns']['prediction'] is not None:
             if self.dataset in results['metrics'].keys():
-                #plot confusion matrix
+                # plot confusion matrix
                 conf_matrix = results['metrics'][self.dataset]['confusion_matrix']['values']
 
                 labels = results['metrics'][self.dataset]['confusion_matrix']['labels']
@@ -48,7 +48,7 @@ class ProbClassConfMatrixWidget(Widget):
                 z_text = [[str(y) for y in x] for x in z]
 
                 fig = ff.create_annotated_heatmap(z, x=labels, y=labels, annotation_text=z_text,
-                    colorscale='bluered',showscale=True)
+                                                  colorscale='bluered', showscale=True)
 
                 fig.update_layout(
                     xaxis_title="Predicted value",

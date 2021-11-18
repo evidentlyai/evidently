@@ -39,6 +39,7 @@ def _skiprows(sampling_options: SamplingOptions) -> Union[Callable[[int], bool],
     if sampling_options.type == "random":
         skip_rows = RandomizedSkipRows(sampling_options.ratio, sampling_options.random_seed)
         return skip_rows.skiprows
+    raise ValueError(f"Unexpected sampling type {sampling_options.type}")
 
 
 def __simple(sampling_options: SamplingOptions):
@@ -49,6 +50,7 @@ def __simple(sampling_options: SamplingOptions):
             rem = row_idx % sampling_options.n
             result = rem != 1
         return result
+
     return func
 
 
@@ -86,4 +88,4 @@ class RandomizedSkipRows:
         return self.selected_rows[idx]
 
     def _select(self):
-        return [False if self.random.random() < self.ratio else True for x in range(1000)]
+        return [bool(self.random.random() < self.ratio) for _ in range(1000)]

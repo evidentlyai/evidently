@@ -12,9 +12,9 @@ from evidently.widgets.widget import Widget
 
 
 class ClassMetricsMatrixWidget(Widget):
-    def __init__(self, title: str, dataset: str='reference'):
+    def __init__(self, title: str, dataset: str = 'reference'):
         super().__init__(title)
-        self.dataset = dataset #reference or current
+        self.dataset = dataset  # reference or current
 
     def analyzers(self):
         return [ClassificationPerformanceAnalyzer]
@@ -39,21 +39,21 @@ class ClassMetricsMatrixWidget(Widget):
             return
         if self.dataset not in results['metrics'].keys():
             return
-        #plot support bar
+        # plot support bar
         metrics_matrix = results['metrics'][self.dataset]['metrics_matrix']
         metrics_frame = pd.DataFrame(metrics_matrix)
 
-        z = metrics_frame.iloc[:-1,:-3].values
+        z = metrics_frame.iloc[:-1, :-3].values
 
         x = results['target_names'] if results['target_names'] else metrics_frame.columns.tolist()[:-3]
 
-        y =  ['precision', 'recall', 'f1-score']
+        y = ['precision', 'recall', 'f1-score']
 
         # change each element of z to type string for annotations
-        z_text = [[str(round(y,3)) for y in x] for x in z]
+        z_text = [[str(round(y, 3)) for y in x] for x in z]
 
         # set up figure
-        fig = ff.create_annotated_heatmap(z, x=x, y=y, annotation_text=z_text, colorscale='bluered',showscale=True)
+        fig = ff.create_annotated_heatmap(z, x=x, y=y, annotation_text=z_text, colorscale='bluered', showscale=True)
         fig.update_layout(
             xaxis_title="Class",
             yaxis_title="Metric")

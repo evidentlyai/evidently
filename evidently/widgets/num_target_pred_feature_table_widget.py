@@ -31,35 +31,35 @@ class NumTargetPredFeatureTable(Widget):
             additional_graphs_data = []
             params_data = []
             for feature_name in results['num_feature_names'] + results['cat_feature_names']:
-                #add data for table in params
+                # add data for table in params
                 params_data.append(
                     {
                         "details": {
-                                "parts": [
-                                    {
-                                        "title": "Feature values",
-                                        "id": feature_name + "_values"
-                                    }
-                                ],
-                                "insights": []
-                            },
-                            "f1": feature_name
+                            "parts": [
+                                {
+                                    "title": "Feature values",
+                                    "id": feature_name + "_values"
+                                }
+                            ],
+                            "insights": []
+                        },
+                        "f1": feature_name
                     }
-                    )
+                )
 
-                #create plot
+                # create plot
                 fig = make_subplots(rows=1, cols=2, subplot_titles=("Reference", "Current"))
 
                 if results['utility_columns']['prediction'] is not None:
                     fig.add_trace(
                         go.Scatter(
-                        x = reference_data[feature_name],
-                        y = reference_data[results['utility_columns']['prediction']],
-                        mode = 'markers',
-                        name = 'Prediction (ref)',
-                        marker = dict(
-                            size = 6,
-                            color = GREY
+                            x=reference_data[feature_name],
+                            y=reference_data[results['utility_columns']['prediction']],
+                            mode='markers',
+                            name='Prediction (ref)',
+                            marker=dict(
+                                size=6,
+                                color=GREY
                             )
                         ),
                         row=1, col=1
@@ -68,13 +68,13 @@ class NumTargetPredFeatureTable(Widget):
                 if results['utility_columns']['target'] is not None:
                     fig.add_trace(
                         go.Scatter(
-                        x = reference_data[feature_name],
-                        y = reference_data[results['utility_columns']['target']],
-                        mode = 'markers',
-                        name = 'Target (ref)',
-                        marker = dict(
-                            size = 6,
-                            color = RED
+                            x=reference_data[feature_name],
+                            y=reference_data[results['utility_columns']['target']],
+                            mode='markers',
+                            name='Target (ref)',
+                            marker=dict(
+                                size=6,
+                                color=RED
                             )
                         ),
                         row=1, col=1
@@ -83,13 +83,13 @@ class NumTargetPredFeatureTable(Widget):
                 if results['utility_columns']['prediction'] is not None:
                     fig.add_trace(
                         go.Scatter(
-                        x = current_data[feature_name],
-                        y = current_data[results['utility_columns']['prediction']],
-                        mode = 'markers',
-                        name = 'Prediction (curr)',
-                        marker = dict(
-                            size = 6,
-                            color = GREY
+                            x=current_data[feature_name],
+                            y=current_data[results['utility_columns']['prediction']],
+                            mode='markers',
+                            name='Prediction (curr)',
+                            marker=dict(
+                                size=6,
+                                color=GREY
                             )
                         ),
                         row=1, col=2
@@ -98,13 +98,13 @@ class NumTargetPredFeatureTable(Widget):
                 if results['utility_columns']['target'] is not None:
                     fig.add_trace(
                         go.Scatter(
-                        x = current_data[feature_name],
-                        y = current_data[results['utility_columns']['target']],
-                        mode = 'markers',
-                        name = 'Target (curr)',
-                        marker = dict(
-                            size = 6,
-                            color = RED
+                            x=current_data[feature_name],
+                            y=current_data[results['utility_columns']['target']],
+                            mode='markers',
+                            name='Target (curr)',
+                            marker=dict(
+                                size=6,
+                                color=RED
                             )
                         ),
                         row=1, col=2
@@ -118,15 +118,15 @@ class NumTargetPredFeatureTable(Widget):
                 fig.update_yaxes(title_text="Value", showgrid=True, row=1, col=1)
                 fig.update_yaxes(title_text="Value", showgrid=True, row=1, col=2)
 
-                fig_json  = json.loads(fig.to_json())
+                fig_json = json.loads(fig.to_json())
 
-                #write plot data in table as additional data
+                # write plot data in table as additional data
                 additional_graphs_data.append(
                     AdditionalGraphInfo(
                         feature_name + '_values',
                         {
-                            "data" : fig_json['data'],
-                            "layout" : fig_json['layout']
+                            "data": fig_json['data'],
+                            "layout": fig_json['layout']
                         }
                     )
                 )
@@ -141,7 +141,7 @@ class NumTargetPredFeatureTable(Widget):
                 insights=[],
                 size=2,
                 params={
-                    "rowsPerPage" : min(len(results['num_feature_names']) + len(results['cat_feature_names']), 10),
+                    "rowsPerPage": min(len(results['num_feature_names']) + len(results['cat_feature_names']), 10),
                     "columns": [
                         {
                             "title": "Feature",

@@ -17,7 +17,7 @@ from evidently.widgets.widget import Widget
 class ClassificationPerformanceTab(Tab):
     def _get_widgets(self) -> List[Widget]:
         widgets = [
-            TargetNameWidget("Classification Model Performance Report.", kind = 'classification'),
+            TargetNameWidget("Classification Model Performance Report.", kind='classification'),
             ClassQualityMetricsBarWidget("Reference: Model Quality With Macro-average Metrics"),
             ClassQualityMetricsBarWidget("Current: Model Quality With Macro-average Metrics", 'current'),
             ClassSupportWidget("Reference: Class Representation"),

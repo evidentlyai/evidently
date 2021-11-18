@@ -13,9 +13,9 @@ from evidently.widgets.widget import Widget, RED, GREY
 
 
 class RegPredActualTimeWidget(Widget):
-    def __init__(self, title: str, dataset: str='reference'):
+    def __init__(self, title: str, dataset: str = 'reference'):
         super().__init__(title)
-        self.dataset = dataset #reference or current
+        self.dataset = dataset  # reference or current
 
     def analyzers(self):
         return [RegressionPerformanceAnalyzer]
@@ -45,14 +45,15 @@ class RegPredActualTimeWidget(Widget):
                 dataset_to_plot.replace([np.inf, -np.inf], np.nan, inplace=True)
                 dataset_to_plot.dropna(axis=0, how='any', inplace=True)
 
-                #make plots
+                # make plots
                 pred_actual_time = go.Figure()
 
                 target_trace = go.Scatter(
-                    x = dataset_to_plot[results['utility_columns']['date']] if results['utility_columns']['date'] else dataset_to_plot.index,
-                    y = dataset_to_plot[results['utility_columns']['target']],
-                    mode = 'lines',
-                    name = 'Actual',
+                    x=dataset_to_plot[results['utility_columns']['date']] if results['utility_columns'][
+                        'date'] else dataset_to_plot.index,
+                    y=dataset_to_plot[results['utility_columns']['target']],
+                    mode='lines',
+                    name='Actual',
                     marker=dict(
                         size=6,
                         color=GREY
@@ -60,10 +61,11 @@ class RegPredActualTimeWidget(Widget):
                 )
 
                 pred_trace = go.Scatter(
-                    x = dataset_to_plot[results['utility_columns']['date']] if results['utility_columns']['date'] else dataset_to_plot.index,
-                    y = dataset_to_plot[results['utility_columns']['prediction']],
-                    mode = 'lines',
-                    name = 'Predicted',
+                    x=dataset_to_plot[results['utility_columns']['date']] if results['utility_columns'][
+                        'date'] else dataset_to_plot.index,
+                    y=dataset_to_plot[results['utility_columns']['prediction']],
+                    mode='lines',
+                    name='Predicted',
                     marker=dict(
                         size=6,
                         color=RED
@@ -71,9 +73,10 @@ class RegPredActualTimeWidget(Widget):
                 )
 
                 zero_trace = go.Scatter(
-                    x = dataset_to_plot[results['utility_columns']['date']] if results['utility_columns']['date'] else dataset_to_plot.index,
-                    y = [0]*dataset_to_plot.shape[0],
-                    mode = 'lines',
+                    x=dataset_to_plot[results['utility_columns']['date']] if results['utility_columns'][
+                        'date'] else dataset_to_plot.index,
+                    y=[0] * dataset_to_plot.shape[0],
+                    mode='lines',
                     opacity=0.5,
                     marker=dict(
                         size=6,
@@ -87,14 +90,14 @@ class RegPredActualTimeWidget(Widget):
                 pred_actual_time.add_trace(zero_trace)
 
                 pred_actual_time.update_layout(
-                    xaxis_title = "Timestamp" if results['utility_columns']['date'] else "Index",
-                    yaxis_title = "Value",
-                    legend = dict(
-                    orientation="h",
-                    yanchor="bottom",
-                    y=1.02,
-                    xanchor="right",
-                    x=1
+                    xaxis_title="Timestamp" if results['utility_columns']['date'] else "Index",
+                    yaxis_title="Value",
+                    legend=dict(
+                        orientation="h",
+                        yanchor="bottom",
+                        y=1.02,
+                        xanchor="right",
+                        x=1
                     )
                 )
 

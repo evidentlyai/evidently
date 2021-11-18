@@ -13,9 +13,9 @@ from evidently.widgets.widget import Widget
 
 
 class RegColoredPredActualWidget(Widget):
-    def __init__(self, title: str, dataset: str='reference'):
+    def __init__(self, title: str, dataset: str = 'reference'):
         super().__init__(title)
-        self.dataset = dataset #reference or current
+        self.dataset = dataset  # reference or current
 
     def analyzers(self):
         return [RegressionPerformanceAnalyzer]
@@ -46,62 +46,71 @@ class RegColoredPredActualWidget(Widget):
                 dataset_to_plot.replace([np.inf, -np.inf], np.nan, inplace=True)
                 dataset_to_plot.dropna(axis=0, how='any', inplace=True)
 
-                error = dataset_to_plot[results['utility_columns']['prediction']] - dataset_to_plot[results['utility_columns']['target']]
+                error = dataset_to_plot[results['utility_columns']['prediction']] - dataset_to_plot[
+                    results['utility_columns']['target']]
 
                 quantile_5 = np.quantile(error, .05)
                 quantile_95 = np.quantile(error, .95)
 
-                dataset_to_plot['Error bias'] = list(map(lambda x : 'Underestimation' if x <= quantile_5 else 'Majority'
-                                              if x < quantile_95 else 'Overestimation', error))
+                dataset_to_plot['Error bias'] = list(map(
+                    lambda x: 'Underestimation'
+                              if x <= quantile_5 else 'Majority'
+                              if x < quantile_95 else 'Overestimation', error))
 
-                #plot output correlations
+                # plot output correlations
                 pred_actual = go.Figure()
 
                 pred_actual.add_trace(go.Scatter(
-                x = dataset_to_plot[dataset_to_plot['Error bias'] == 'Underestimation'][results['utility_columns']['target']],
-                y = dataset_to_plot[dataset_to_plot['Error bias'] == 'Underestimation'][results['utility_columns']['prediction']],
-                mode = 'markers',
-                name = 'Underestimation',
-                marker = dict(
-                    color = '#6574f7',
-                    showscale = False
+                    x=dataset_to_plot[dataset_to_plot['Error bias'] == 'Underestimation'][
+                        results['utility_columns']['target']],
+                    y=dataset_to_plot[dataset_to_plot['Error bias'] == 'Underestimation'][
+                        results['utility_columns']['prediction']],
+                    mode='markers',
+                    name='Underestimation',
+                    marker=dict(
+                        color='#6574f7',
+                        showscale=False
                     )
                 ))
 
                 pred_actual.add_trace(go.Scatter(
-                x = dataset_to_plot[dataset_to_plot['Error bias'] == 'Overestimation'][results['utility_columns']['target']],
-                y = dataset_to_plot[dataset_to_plot['Error bias'] == 'Overestimation'][results['utility_columns']['prediction']],
-                mode = 'markers',
-                name = 'Overestimation',
-                marker = dict(
-                    color = '#ee5540',
-                    showscale = False
+                    x=dataset_to_plot[dataset_to_plot['Error bias'] == 'Overestimation'][
+                        results['utility_columns']['target']],
+                    y=dataset_to_plot[dataset_to_plot['Error bias'] == 'Overestimation'][
+                        results['utility_columns']['prediction']],
+                    mode='markers',
+                    name='Overestimation',
+                    marker=dict(
+                        color='#ee5540',
+                        showscale=False
                     )
                 ))
 
                 pred_actual.add_trace(go.Scatter(
-                x = dataset_to_plot[dataset_to_plot['Error bias'] == 'Majority'][results['utility_columns']['target']],
-                y = dataset_to_plot[dataset_to_plot['Error bias'] == 'Majority'][results['utility_columns']['prediction']],
-                mode = 'markers',
-                name = 'Majority',
-                marker = dict(
-                    color = '#1acc98',
-                    showscale = False
+                    x=dataset_to_plot[dataset_to_plot['Error bias'] == 'Majority'][
+                        results['utility_columns']['target']],
+                    y=dataset_to_plot[dataset_to_plot['Error bias'] == 'Majority'][
+                        results['utility_columns']['prediction']],
+                    mode='markers',
+                    name='Majority',
+                    marker=dict(
+                        color='#1acc98',
+                        showscale=False
                     )
                 ))
 
                 pred_actual.update_layout(
-                    xaxis_title = "Actual value",
-                    yaxis_title = "Predicted value",
-                    xaxis = dict(
+                    xaxis_title="Actual value",
+                    yaxis_title="Predicted value",
+                    xaxis=dict(
                         showticklabels=True
                     ),
-                    yaxis = dict(
+                    yaxis=dict(
                         showticklabels=True
                     ),
                 )
 
-                pred_actual_json  = json.loads(pred_actual.to_json())
+                pred_actual_json = json.loads(pred_actual.to_json())
 
                 self.wi = BaseWidgetInfo(
                     title=self.title,

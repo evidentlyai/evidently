@@ -31,8 +31,8 @@ class Runner:
         logging.info(f"reference dataset loaded: {len(reference_data)} rows")
         if self.options.current_data_path:
             current_data = loader.load(self.options.current_data_path,
-                                          self.options.current_data_options,
-                                          self.options.current_data_sampling)
+                                       self.options.current_data_options,
+                                       self.options.current_data_sampling)
             logging.info(f"current dataset loaded: {len(current_data)} rows")
         else:
             current_data = None

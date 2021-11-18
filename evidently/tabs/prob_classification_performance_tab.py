@@ -15,7 +15,8 @@ from evidently.widgets.prob_class_pred_distr_widget import ProbClassPredDistrWid
 from evidently.widgets.prob_class_roc_curve_widget import ProbClassRocCurveWidget
 from evidently.widgets.prob_class_pr_curve_widget import ProbClassPRCurveWidget
 from evidently.widgets.prob_class_pr_table_widget import ProbClassPRTableWidget
-from evidently.widgets.prob_class_confusion_based_feature_distr_table_widget import ProbClassConfusionBasedFeatureDistrTable
+from evidently.widgets.prob_class_confusion_based_feature_distr_table_widget import \
+    ProbClassConfusionBasedFeatureDistrTable
 
 from evidently.widgets.widget import Widget
 
@@ -23,7 +24,7 @@ from evidently.widgets.widget import Widget
 class ProbClassificationPerformanceTab(Tab):
     def _get_widgets(self) -> List[Widget]:
         widgets = [
-            TargetNameWidget("Probabilistic Classification Model Performance Report.", kind = 'prob_classification'),
+            TargetNameWidget("Probabilistic Classification Model Performance Report.", kind='prob_classification'),
             ProbClassQualityMetricBarWidget("Reference: Model Quality With Macro-average Metrics"),
             ProbClassQualityMetricBarWidget("Current: Model Quality With Macro-average Metrics", 'current'),
             ProbClassSupportWidget("Reference: Class Representation"),

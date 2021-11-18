@@ -9,9 +9,9 @@ from evidently.widgets.widget import Widget
 
 
 class RegQualityMetricsBarWidget(Widget):
-    def __init__(self, title: str, dataset: str='reference'):
+    def __init__(self, title: str, dataset: str = 'reference'):
         super().__init__(title)
-        self.dataset = dataset #reference or current
+        self.dataset = dataset  # reference or current
 
     def analyzers(self):
         return [RegressionPerformanceAnalyzer]
@@ -45,21 +45,21 @@ class RegQualityMetricsBarWidget(Widget):
                     size=2,
                     params={
                         "counters": [
-                          {
-                            "value": str(round(results['metrics'][self.dataset]['mean_error'], 2)) + \
-                            " (" + str(round(results['metrics'][self.dataset]['error_std'],2)) + ")",
-                            "label": "ME"
-                          },
-                          {
-                            "value": str(round(results['metrics'][self.dataset]['mean_abs_error'], 2)) + \
-                            " (" + str(round(results['metrics'][self.dataset]['abs_error_std'],2)) + ")",
-                            "label": "MAE"
-                          },
-                          {
-                            "value": str(round(results['metrics'][self.dataset]['mean_abs_perc_error'], 2)) + \
-                            " (" + str(round(results['metrics'][self.dataset]['abs_perc_error_std'], 2)) + ")",
-                            "label": "MAPE"
-                          }
+                            {
+                                "value": f"{round(results['metrics'][self.dataset]['mean_error'], 2)}"
+                                         f" ({round(results['metrics'][self.dataset]['error_std'], 2)})",
+                                "label": "ME"
+                            },
+                            {
+                                "value": f"{round(results['metrics'][self.dataset]['mean_abs_error'], 2)}"
+                                         f" ({round(results['metrics'][self.dataset]['abs_error_std'], 2)}",
+                                "label": "MAE"
+                            },
+                            {
+                                "value": f"{round(results['metrics'][self.dataset]['mean_abs_perc_error'], 2)}"
+                                         f" ({round(results['metrics'][self.dataset]['abs_perc_error_std'], 2)})",
+                                "label": "MAPE"
+                            }
                         ]
                     },
                     additionalGraphs=[],

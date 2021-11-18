@@ -14,9 +14,9 @@ from evidently.widgets.widget import Widget, RED, GREY
 
 
 class ProbClassPredictionCloudWidget(Widget):
-    def __init__(self, title: str, dataset: str='reference'):
+    def __init__(self, title: str, dataset: str = 'reference'):
         super().__init__(title)
-        self.dataset = dataset #reference or current
+        self.dataset = dataset  # reference or current
 
     def analyzers(self):
         return [ProbClassificationPerformanceAnalyzer]
@@ -45,17 +45,18 @@ class ProbClassPredictionCloudWidget(Widget):
             if dataset_to_plot is not None:
                 dataset_to_plot.replace([np.inf, -np.inf], np.nan, inplace=True)
                 dataset_to_plot.dropna(axis=0, how='any', inplace=True)
-                #plot clouds
+                # plot clouds
                 graphs = []
 
                 for label in results['utility_columns']['prediction']:
                     fig = go.Figure()
 
                     fig.add_trace(go.Scatter(
-                        x = np.random.random(dataset_to_plot[dataset_to_plot[results['utility_columns']['target']] == label].shape[0]),
-                        y = dataset_to_plot[dataset_to_plot[results['utility_columns']['target']] == label][label],
-                        mode = 'markers',
-                        name = str(label),
+                        x=np.random.random(
+                            dataset_to_plot[dataset_to_plot[results['utility_columns']['target']] == label].shape[0]),
+                        y=dataset_to_plot[dataset_to_plot[results['utility_columns']['target']] == label][label],
+                        mode='markers',
+                        name=str(label),
                         marker=dict(
                             size=6,
                             color=RED
@@ -63,10 +64,11 @@ class ProbClassPredictionCloudWidget(Widget):
                     ))
 
                     fig.add_trace(go.Scatter(
-                        x = np.random.random(dataset_to_plot[dataset_to_plot[results['utility_columns']['target']] != label].shape[0]),
-                        y = dataset_to_plot[dataset_to_plot[results['utility_columns']['target']] != label][label],
-                        mode = 'markers',
-                        name = 'other',
+                        x=np.random.random(
+                            dataset_to_plot[dataset_to_plot[results['utility_columns']['target']] != label].shape[0]),
+                        y=dataset_to_plot[dataset_to_plot[results['utility_columns']['target']] != label][label],
+                        mode='markers',
+                        name='other',
                         marker=dict(
                             size=6,
                             color=GREY
@@ -75,7 +77,7 @@ class ProbClassPredictionCloudWidget(Widget):
 
                     fig.update_layout(
                         yaxis_title="Probability",
-                        xaxis = dict(
+                        xaxis=dict(
                             range=(-2, 3),
                             showticklabels=False
                         )
@@ -86,11 +88,11 @@ class ProbClassPredictionCloudWidget(Widget):
                     graphs.append({
                         "id": "tab_" + str(label),
                         "title": str(label),
-                        "graph":{
-                            "data":fig_json["data"],
-                            "layout":fig_json["layout"],
-                            }
-                        })
+                        "graph": {
+                            "data": fig_json["data"],
+                            "layout": fig_json["layout"],
+                        }
+                    })
 
                 self.wi = BaseWidgetInfo(
                     title=self.title,

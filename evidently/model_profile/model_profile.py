@@ -21,12 +21,12 @@ class Profile(Pipeline):
         self.execute(reference_data, current_data, column_mapping)
 
     def get_analyzers(self):
-        return list(set([analyzer for tab in self.parts for analyzer in tab.analyzers()]))
+        return list({analyzer for tab in self.parts for analyzer in tab.analyzers()})
 
     def json(self):
         return json.dumps(self.object(), cls=NumpyEncoder)
 
     def object(self):
-        result = dict([(part.part_id(), part.calculate(self.analyzers_results)) for part in self.parts])
+        result = {part.part_id(): part.calculate(self.analyzers_results) for part in self.parts}
         result["timestamp"] = str(datetime.now())
         return result

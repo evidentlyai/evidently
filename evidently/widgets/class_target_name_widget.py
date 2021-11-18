@@ -28,10 +28,10 @@ class ClassTargetNameWidget(Widget):
                 size=2,
                 params={
                     "counters": [
-                      {
-                        "value": "",
-                        "label": "Classification Model Performance Report. Target:'" + columns.utility_columns.target +"'"
-                      }
+                        {
+                            "value": "",
+                            "label": "Classification Model Performance Report. Target:'" + columns.utility_columns.target + "'"
+                        }
                     ]
                 },
                 additionalGraphs=[],

@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.stats import norm
 
+
 def proportions_diff_z_stat_ind(ref, curr):
     # pylint: disable=invalid-name
     n1 = len(ref)
@@ -8,12 +9,12 @@ def proportions_diff_z_stat_ind(ref, curr):
 
     p1 = float(sum(ref)) / n1
     p2 = float(sum(curr)) / n2
-    P = float(p1*n1 + p2*n2) / (n1 + n2)
+    P = float(p1 * n1 + p2 * n2) / (n1 + n2)
 
     return (p1 - p2) / np.sqrt(P * (1 - P) * (1. / n1 + 1. / n2))
 
 
-def proportions_diff_z_test(z_stat, alternative = 'two-sided'):
+def proportions_diff_z_test(z_stat, alternative='two-sided'):
     if alternative == 'two-sided':
         return 2 * (1 - norm.cdf(np.abs(z_stat)))
 
@@ -24,7 +25,7 @@ def proportions_diff_z_test(z_stat, alternative = 'two-sided'):
         return 1 - norm.cdf(z_stat)
 
     raise ValueError("alternative not recognized\n"
-                        "should be 'two-sided', 'less' or 'greater'")
+                     "should be 'two-sided', 'less' or 'greater'")
 
 
 class DatasetUtilityColumns:
@@ -123,7 +124,8 @@ def process_columns(dataset, column_mapping):
         xbins = None
 
     return DatasetColumns(
-                DatasetUtilityColumns(date_column, id_column, target_column, prediction_column, confidence, drift_share, nbinsx, xbins),
-                num_feature_names,
-                cat_feature_names,
-                target_names)
+        DatasetUtilityColumns(date_column, id_column, target_column, prediction_column, confidence, drift_share, nbinsx,
+                              xbins),
+        num_feature_names,
+        cat_feature_names,
+        target_names)

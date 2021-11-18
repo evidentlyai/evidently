@@ -14,10 +14,10 @@ from evidently.widgets.widget import Widget
 
 
 class ProbClassMetricsMatrixWidget(Widget):
-    def __init__(self, title: str, dataset: str='reference'):
+    def __init__(self, title: str, dataset: str = 'reference'):
         super().__init__(title)
         self.title = title
-        self.dataset = dataset #reference or current
+        self.dataset = dataset  # reference or current
 
     def analyzers(self):
         return [ProbClassificationPerformanceAnalyzer]
@@ -40,24 +40,25 @@ class ProbClassMetricsMatrixWidget(Widget):
 
         if results['utility_columns']['target'] is not None and results['utility_columns']['prediction'] is not None:
             if self.dataset in results['metrics'].keys():
-                #plot support bar
+                # plot support bar
                 metrics_matrix = results['metrics'][self.dataset]['metrics_matrix']
                 metrics_frame = pd.DataFrame(metrics_matrix)
 
-                z = metrics_frame.iloc[:-1,:-3].values
+                z = metrics_frame.iloc[:-1, :-3].values
                 x = results['metrics'][self.dataset]['confusion_matrix']['labels']
-                y =  ['precision', 'recall', 'f1-score']
+                y = ['precision', 'recall', 'f1-score']
 
                 if len(results['utility_columns']['prediction']) > 2:
                     roc_aucs = results['metrics'][self.dataset]['roc_aucs']
-                    z = np.append(z, [roc_aucs], axis = 0)
+                    z = np.append(z, [roc_aucs], axis=0)
                     y.append('roc-auc')
 
                 # change each element of z to type string for annotations
-                z_text = [[str(round(y,3)) for y in x] for x in z]
+                z_text = [[str(round(y, 3)) for y in x] for x in z]
 
                 # set up figure
-                fig = ff.create_annotated_heatmap(z, y=y, x=x, annotation_text=z_text, colorscale='bluered', showscale=True)
+                fig = ff.create_annotated_heatmap(z, y=y, x=x, annotation_text=z_text, colorscale='bluered',
+                                                  showscale=True)
                 fig.update_layout(
                     xaxis_title="Class",
                     yaxis_title="Metric")

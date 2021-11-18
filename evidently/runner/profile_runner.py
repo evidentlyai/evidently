@@ -6,8 +6,10 @@ from evidently.model_profile import Profile
 from evidently.profile_sections.data_drift_profile_section import DataDriftProfileSection
 from evidently.profile_sections.cat_target_drift_profile_section import CatTargetDriftProfileSection
 from evidently.profile_sections.num_target_drift_profile_section import NumTargetDriftProfileSection
-from evidently.profile_sections.classification_performance_profile_section import ClassificationPerformanceProfileSection
-from evidently.profile_sections.prob_classification_performance_profile_section import ProbClassificationPerformanceProfileSection
+from evidently.profile_sections.classification_performance_profile_section import \
+    ClassificationPerformanceProfileSection
+from evidently.profile_sections.prob_classification_performance_profile_section import \
+    ProbClassificationPerformanceProfileSection
 from evidently.profile_sections.regression_performance_profile_section import RegressionPerformanceProfileSection
 from evidently.runner.runner import RunnerOptions, Runner
 from evidently.utils import NumpyEncoder
@@ -17,6 +19,7 @@ from evidently.utils import NumpyEncoder
 class ProfileRunnerOptions(RunnerOptions):
     profile_parts: List[str]
     pretty_print: bool
+
 
 parts_mapping = dict(
     data_drift=DataDriftProfileSection,

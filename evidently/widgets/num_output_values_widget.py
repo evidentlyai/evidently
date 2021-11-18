@@ -16,7 +16,7 @@ class NumOutputValuesWidget(Widget):
     def __init__(self, title: str, kind: str = 'target'):
         super().__init__(title)
         self.title = title
-        self.kind = kind #target or prediction
+        self.kind = kind  # target or prediction
 
     def analyzers(self):
         return [NumTargetDriftAnalyzer]
@@ -33,80 +33,82 @@ class NumOutputValuesWidget(Widget):
         results = analyzers_results[NumTargetDriftAnalyzer]
 
         if results['utility_columns'][self.kind] is not None:
-            #plot values
+            # plot values
             reference_mean = np.mean(reference_data[results['utility_columns'][self.kind]])
-            reference_std = np.std(reference_data[results['utility_columns'][self.kind]], ddof = 1)
+            reference_std = np.std(reference_data[results['utility_columns'][self.kind]], ddof=1)
             x_title = "Timestamp" if results['utility_columns']['date'] else "Index"
 
             output_values = go.Figure()
 
             output_values.add_trace(go.Scatter(
-                x = reference_data[results['utility_columns']['date']] if results['utility_columns']['date'] else reference_data.index,
-                y = reference_data[results['utility_columns'][self.kind]],
-                mode = 'markers',
-                name = 'Reference',
-                marker = dict(
-                    size = 6,
-                    color = GREY
+                x=reference_data[results['utility_columns']['date']] if results['utility_columns'][
+                    'date'] else reference_data.index,
+                y=reference_data[results['utility_columns'][self.kind]],
+                mode='markers',
+                name='Reference',
+                marker=dict(
+                    size=6,
+                    color=GREY
                 )
             ))
 
             output_values.add_trace(go.Scatter(
-                x = current_data[results['utility_columns']['date']] if results['utility_columns']['date'] else current_data.index,
-                y = current_data[results['utility_columns'][self.kind]],
-                mode = 'markers',
-                name = 'Current',
-                marker = dict(
-                    size = 6,
-                    color = RED
+                x=current_data[results['utility_columns']['date']] if results['utility_columns'][
+                    'date'] else current_data.index,
+                y=current_data[results['utility_columns'][self.kind]],
+                mode='markers',
+                name='Current',
+                marker=dict(
+                    size=6,
+                    color=RED
                 )
             ))
 
             output_values.update_layout(
-                xaxis_title = x_title,
-                yaxis_title = self.kind.title() + ' Value',
-                showlegend = True,
-                legend = dict(
-                orientation = "h",
-                yanchor = "bottom",
-                y=1.02,
-                xanchor = "right",
-                x = 1
+                xaxis_title=x_title,
+                yaxis_title=self.kind.title() + ' Value',
+                showlegend=True,
+                legend=dict(
+                    orientation="h",
+                    yanchor="bottom",
+                    y=1.02,
+                    xanchor="right",
+                    x=1
                 ),
-                shapes = [
+                shapes=[
                     dict(
-                        type = "rect",
+                        type="rect",
                         # x-reference is assigned to the x-values
-                        xref = "paper",
+                        xref="paper",
                         # y-reference is assigned to the plot paper [0,1]
-                        yref = "y",
-                        x0 = 0,
-                        y0 = reference_mean - reference_std,
-                        x1 = 1,
-                        y1 = reference_mean + reference_std,
-                        fillcolor = "LightGreen",
-                        opacity = 0.5,
-                        layer = "below",
-                        line_width = 0,
+                        yref="y",
+                        x0=0,
+                        y0=reference_mean - reference_std,
+                        x1=1,
+                        y1=reference_mean + reference_std,
+                        fillcolor="LightGreen",
+                        opacity=0.5,
+                        layer="below",
+                        line_width=0,
                     ),
                     dict(
                         type="line",
-                        name = 'Reference',
-                        xref = "paper",
-                        yref = "y",
-                        x0 = 0, #min(testset_agg_by_date.index),
-                        y0 = reference_mean,
-                        x1 = 1, #max(testset_agg_by_date.index),
-                        y1 = reference_mean,
-                        line = dict(
-                            color = "Green",
-                            width = 3
-                            )
+                        name='Reference',
+                        xref="paper",
+                        yref="y",
+                        x0=0,  # min(testset_agg_by_date.index),
+                        y0=reference_mean,
+                        x1=1,  # max(testset_agg_by_date.index),
+                        y1=reference_mean,
+                        line=dict(
+                            color="Green",
+                            width=3
+                        )
                     ),
                 ]
             )
 
-            output_values_json  = json.loads(output_values.to_json())
+            output_values_json = json.loads(output_values.to_json())
 
             self.wi = BaseWidgetInfo(
                 title=self.title,

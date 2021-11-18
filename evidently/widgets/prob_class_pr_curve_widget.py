@@ -13,9 +13,9 @@ from evidently.widgets.widget import Widget, RED
 
 
 class ProbClassPRCurveWidget(Widget):
-    def __init__(self, title: str, dataset: str='reference'):
+    def __init__(self, title: str, dataset: str = 'reference'):
         super().__init__(title)
-        self.dataset = dataset #reference or current
+        self.dataset = dataset  # reference or current
 
     def analyzers(self):
         return [ProbClassificationPerformanceAnalyzer]
@@ -37,7 +37,7 @@ class ProbClassPRCurveWidget(Widget):
         results = analyzers_results[ProbClassificationPerformanceAnalyzer]
         if results['utility_columns']['target'] is not None and results['utility_columns']['prediction'] is not None:
             if self.dataset in results['metrics'].keys():
-                #plot PR-curve
+                # plot PR-curve
                 if len(results['utility_columns']['prediction']) <= 2:
 
                     pr_curve = results['metrics'][self.dataset]['pr_curve']
@@ -45,9 +45,9 @@ class ProbClassPRCurveWidget(Widget):
                     fig = go.Figure()
 
                     fig.add_trace(go.Scatter(
-                        x = pr_curve['pr'],
-                        y = pr_curve['rcl'],
-                        mode = 'lines',
+                        x=pr_curve['pr'],
+                        y=pr_curve['rcl'],
+                        mode='lines',
                         name='PR',
                         marker=dict(
                             size=6,
@@ -56,10 +56,10 @@ class ProbClassPRCurveWidget(Widget):
                     ))
 
                     fig.update_layout(
-                            yaxis_title="Precision",
-                            xaxis_title="Recall",
-                            showlegend=True
-                        )
+                        yaxis_title="Precision",
+                        xaxis_title="Recall",
+                        showlegend=True
+                    )
 
                     fig_json = json.loads(fig.to_json())
 
@@ -88,9 +88,9 @@ class ProbClassPRCurveWidget(Widget):
                         fig = go.Figure()
 
                         fig.add_trace(go.Scatter(
-                            x = pr_curve['pr'],
-                            y = pr_curve['rcl'],
-                            mode = 'lines',
+                            x=pr_curve['pr'],
+                            y=pr_curve['rcl'],
+                            mode='lines',
                             name='PR',
                             marker=dict(
                                 size=6,
@@ -109,11 +109,11 @@ class ProbClassPRCurveWidget(Widget):
                         graphs.append({
                             "id": "tab_" + str(label),
                             "title": str(label),
-                            "graph":{
-                                "data":fig_json["data"],
-                                "layout":fig_json["layout"],
-                                }
-                            })
+                            "graph": {
+                                "data": fig_json["data"],
+                                "layout": fig_json["layout"],
+                            }
+                        })
 
                     self.wi = BaseWidgetInfo(
                         title=self.title,
