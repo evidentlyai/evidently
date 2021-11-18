@@ -30,7 +30,8 @@ class ClassTargetNameWidget(Widget):
                     "counters": [
                         {
                             "value": "",
-                            "label": "Classification Model Performance Report. Target:'" + columns.utility_columns.target + "'"
+                            "label":
+                                f"Classification Model Performance Report. Target:'{columns.utility_columns.target}'"
                         }
                     ]
                 },

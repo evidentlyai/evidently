@@ -196,7 +196,8 @@ def _error_cat_feature_bias(dataset, feature_name, err_quantiles: ErrorWithQuant
     ref_overal_value = dataset[feature_name].value_counts().idxmax()
     ref_under_value = dataset[error <= quantile_5][feature_name].value_counts().idxmax()
     ref_over_value = dataset[error >= quantile_95][feature_name].value_counts().idxmax()
-    if (ref_overal_value != ref_under_value) or (ref_over_value != ref_overal_value) or (ref_under_value != ref_overal_value):
+    if (ref_overal_value != ref_under_value) or (ref_over_value != ref_overal_value)\
+            or (ref_under_value != ref_overal_value):
         ref_range_value = 1
     else:
         ref_range_value = 0
