@@ -2,6 +2,8 @@
 # coding: utf-8
 
 import json
+from typing import Optional
+
 import pandas as pd
 
 import plotly.figure_factory as ff
@@ -19,7 +21,7 @@ class ClassMetricsMatrixWidget(Widget):
     def analyzers(self):
         return [ClassificationPerformanceAnalyzer]
 
-    def get_info(self) -> BaseWidgetInfo:
+    def get_info(self) -> Optional[BaseWidgetInfo]:
         if self.dataset == 'reference':
             if self.wi:
                 return self.wi

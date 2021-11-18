@@ -25,7 +25,7 @@ class Widget:
                   current_data: pandas.DataFrame, column_mapping, analyzers_results):
         raise NotImplementedError()
 
-    def get_info(self):
+    def get_info(self) -> Optional[BaseWidgetInfo]:
         if self.wi:
             return self.wi
         raise ValueError(f"[Widget {self.title}] self.wi is None, no data available (forget to set it in widget?)")

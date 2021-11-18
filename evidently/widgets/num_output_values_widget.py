@@ -2,6 +2,8 @@
 # coding: utf-8
 
 import json
+from typing import Optional
+
 import pandas as pd
 import numpy as np
 
@@ -21,7 +23,7 @@ class NumOutputValuesWidget(Widget):
     def analyzers(self):
         return [NumTargetDriftAnalyzer]
 
-    def get_info(self) -> BaseWidgetInfo:
+    def get_info(self) -> Optional[BaseWidgetInfo]:
         return self.wi
 
     def calculate(self,

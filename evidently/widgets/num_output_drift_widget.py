@@ -2,6 +2,8 @@
 # coding: utf-8
 
 import json
+from typing import Optional
+
 import pandas as pd
 import plotly.figure_factory as ff
 
@@ -18,7 +20,7 @@ class NumOutputDriftWidget(Widget):
     def analyzers(self):
         return [NumTargetDriftAnalyzer]
 
-    def get_info(self) -> BaseWidgetInfo:
+    def get_info(self) -> Optional[BaseWidgetInfo]:
         return self.wi
 
     def calculate(self,

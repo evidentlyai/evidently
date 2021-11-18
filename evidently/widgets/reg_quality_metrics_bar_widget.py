@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+from typing import Optional
+
 import pandas as pd
 
 from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceAnalyzer
@@ -16,7 +18,7 @@ class RegQualityMetricsBarWidget(Widget):
     def analyzers(self):
         return [RegressionPerformanceAnalyzer]
 
-    def get_info(self) -> BaseWidgetInfo:
+    def get_info(self) -> Optional[BaseWidgetInfo]:
         if self.dataset == 'reference':
             if self.wi:
                 return self.wi

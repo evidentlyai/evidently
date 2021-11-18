@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
+from typing import Optional
 
 import pandas as pd
 
@@ -16,7 +17,7 @@ class ClassQualityMetricsBarWidget(Widget):
     def analyzers(self):
         return [ClassificationPerformanceAnalyzer]
 
-    def get_info(self) -> BaseWidgetInfo:
+    def get_info(self) -> Optional[BaseWidgetInfo]:
         if self.dataset == 'reference':
             if self.wi:
                 return self.wi

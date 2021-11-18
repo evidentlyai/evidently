@@ -8,15 +8,16 @@ from evidently.pipeline.pipeline import Pipeline
 class ModelMonitoringMetric:
     def __init__(self, name: str, labels: List[str] = None):
         self.name = name
-        self.labels = labels
+        self.labels = labels if labels is not None else []
 
-    def create(self, value: float, labels: Dict[str, str] = None):
-        if (labels is None or len(labels) == 0) and (self.labels is None or len(self.labels) == 0):
+    def create(self, value: float, labels: Optional[Dict[str, str]] = None):
+        _labels = labels if labels is not None else {}
+        if len(_labels) == 0 and len(self.labels) == 0:
             return self, value, None
-        if set(labels.keys()) != set(self.labels):
+        if set(_labels.keys()) != set(self.labels):
             raise ValueError(f"Trying to create metric with"
-                             f" incorrect labels got {set(labels.keys())} expected {set(self.labels)}")
-        return self, value, labels
+                             f" incorrect labels got {set(_labels.keys())} expected {set(self.labels)}")
+        return self, value, _labels
 
 
 MetricsType = Tuple[ModelMonitoringMetric, float, Optional[Dict[str, str]]]

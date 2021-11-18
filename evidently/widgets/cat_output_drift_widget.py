@@ -2,6 +2,8 @@
 # coding: utf-8
 
 import json
+from typing import Optional
+
 import pandas as pd
 
 import plotly.graph_objs as go
@@ -19,7 +21,7 @@ class CatOutputDriftWidget(Widget):
     def analyzers(self):
         return [CatTargetDriftAnalyzer]
 
-    def get_info(self) -> BaseWidgetInfo:
+    def get_info(self) -> Optional[BaseWidgetInfo]:
         return self.wi
 
     def calculate(self,

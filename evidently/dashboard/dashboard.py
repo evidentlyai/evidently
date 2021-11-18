@@ -120,7 +120,7 @@ window.drawDashboard({params.dashboard_id},
 """
 
 
-__BASE_PATH = evidently.__path__[0]
+__BASE_PATH = evidently.__path__[0]  # type: ignore
 __STATIC_PATH = os.path.join(__BASE_PATH, "nbextension", "static")
 
 
