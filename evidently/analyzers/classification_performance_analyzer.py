@@ -8,6 +8,7 @@ from sklearn import metrics
 from evidently.analyzers.base_analyzer import Analyzer
 from .utils import process_columns
 
+
 class ClassificationPerformanceAnalyzer(Analyzer):
     def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping):
         columns = process_columns(reference_data, column_mapping)
@@ -23,21 +24,21 @@ class ClassificationPerformanceAnalyzer(Analyzer):
 
             result['metrics']['reference'] = {}
 
-            #calculate quality metrics
+            # calculate quality metrics
             accuracy_score = metrics.accuracy_score(reference_data[target_column], reference_data[prediction_column])
             avg_precision = metrics.precision_score(reference_data[target_column], reference_data[prediction_column],
-                average='macro')
+                                                    average='macro')
             avg_recall = metrics.recall_score(reference_data[target_column], reference_data[prediction_column],
-                average='macro')
+                                              average='macro')
             avg_f1 = metrics.f1_score(reference_data[target_column], reference_data[prediction_column],
-                average='macro')
+                                      average='macro')
 
             result['metrics']['reference']['accuracy'] = accuracy_score
             result['metrics']['reference']['precision'] = avg_precision
             result['metrics']['reference']['recall'] = avg_recall
             result['metrics']['reference']['f1'] = avg_f1
 
-            #calculate class support and metrics matrix
+            # calculate class support and metrics matrix
             metrics_matrix = metrics.classification_report(
                 reference_data[target_column],
                 reference_data[prediction_column],
@@ -45,9 +46,9 @@ class ClassificationPerformanceAnalyzer(Analyzer):
 
             result['metrics']['reference']['metrics_matrix'] = metrics_matrix
 
-            #calculate confusion matrix
+            # calculate confusion matrix
             conf_matrix = metrics.confusion_matrix(reference_data[target_column],
-                reference_data[prediction_column])
+                                                   reference_data[prediction_column])
             labels = target_names if target_names else sorted(set(reference_data[target_column]))
 
             result['metrics']['reference']['confusion_matrix'] = {}
@@ -62,26 +63,27 @@ class ClassificationPerformanceAnalyzer(Analyzer):
 
                 accuracy_score = metrics.accuracy_score(current_data[target_column], current_data[prediction_column])
                 avg_precision = metrics.precision_score(current_data[target_column], current_data[prediction_column],
-                    average='macro')
+                                                        average='macro')
                 avg_recall = metrics.recall_score(current_data[target_column], current_data[prediction_column],
-                    average='macro')
+                                                  average='macro')
                 avg_f1 = metrics.f1_score(current_data[target_column], current_data[prediction_column],
-                    average='macro')
+                                          average='macro')
 
                 result['metrics']['current']['accuracy'] = accuracy_score
                 result['metrics']['current']['precision'] = avg_precision
                 result['metrics']['current']['recall'] = avg_recall
                 result['metrics']['current']['f1'] = avg_f1
 
-                #calculate class support and metrics matrix
-                metrics_matrix = metrics.classification_report(current_data[target_column], current_data[prediction_column],
-                 output_dict=True)
+                # calculate class support and metrics matrix
+                metrics_matrix = metrics.classification_report(current_data[target_column],
+                                                               current_data[prediction_column],
+                                                               output_dict=True)
 
                 result['metrics']['current']['metrics_matrix'] = metrics_matrix
 
-                #calculate confusion matrix
+                # calculate confusion matrix
                 conf_matrix = metrics.confusion_matrix(current_data[target_column],
-                    current_data[prediction_column])
+                                                       current_data[prediction_column])
                 labels = target_names if target_names else sorted(set(current_data[target_column]))
 
                 result['metrics']['current']['confusion_matrix'] = {}

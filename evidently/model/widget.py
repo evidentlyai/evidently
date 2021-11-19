@@ -3,7 +3,7 @@
 # pylint: disable=invalid-name
 
 from dataclasses import dataclass
-from typing import List, Any
+from typing import Any, Optional, Iterable
 
 
 @dataclass
@@ -33,13 +33,13 @@ class BaseWidgetInfo:
     title: str
     size: int
     details: str
-    alertsPosition: str = None
-    alertStats: AlertStats = None
+    alertsPosition: Optional[str] = None
+    alertStats: Optional[AlertStats] = None
     params: Any = None
-    insights: List[Insight] = ()
-    additionalGraphs: List[AdditionalGraphInfo] = ()
-    alerts: List[Alert] = ()
-    tabs: List["TabInfo"] = ()
+    insights: Iterable[Insight] = ()
+    additionalGraphs: Iterable[AdditionalGraphInfo] = ()
+    alerts: Iterable[Alert] = ()
+    tabs: Iterable["TabInfo"] = ()
 
 
 @dataclass

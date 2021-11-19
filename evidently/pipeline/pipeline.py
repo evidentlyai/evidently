@@ -4,7 +4,7 @@ import pandas
 
 class Pipeline:
     def __init__(self):
-        self.analyzers_results = dict()
+        self.analyzers_results = {}
 
     @abc.abstractmethod
     def get_analyzers(self):

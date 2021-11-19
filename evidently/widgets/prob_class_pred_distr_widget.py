@@ -2,6 +2,8 @@
 # coding: utf-8
 
 import json
+from typing import Optional
+
 import pandas as pd
 
 import numpy as np
@@ -14,14 +16,14 @@ from evidently.widgets.widget import Widget, RED, GREY
 
 
 class ProbClassPredDistrWidget(Widget):
-    def __init__(self, title: str, dataset: str='reference'):
+    def __init__(self, title: str, dataset: str = 'reference'):
         super().__init__(title)
-        self.dataset = dataset #reference or current
+        self.dataset = dataset  # reference or current
 
     def analyzers(self):
         return [ProbClassificationPerformanceAnalyzer]
 
-    def get_info(self) -> BaseWidgetInfo:
+    def get_info(self) -> Optional[BaseWidgetInfo]:
         if self.dataset == 'reference':
             if self.wi:
                 return self.wi
@@ -46,11 +48,10 @@ class ProbClassPredDistrWidget(Widget):
                 dataset_to_plot.replace([np.inf, -np.inf], np.nan, inplace=True)
                 dataset_to_plot.dropna(axis=0, how='any', inplace=True)
 
-                #plot distributions
+                # plot distributions
                 graphs = []
 
                 for label in results['utility_columns']['prediction']:
-
                     pred_distr = ff.create_distplot(
                         [
                             dataset_to_plot[dataset_to_plot[results['utility_columns']['target']] == label][label],
@@ -58,20 +59,20 @@ class ProbClassPredDistrWidget(Widget):
                         ],
                         [str(label), "other"],
                         colors=[RED, GREY],
-                        bin_size = 0.05,
-                        show_curve = False,
+                        bin_size=0.05,
+                        show_curve=False,
                         show_rug=True
                     )
 
                     pred_distr.update_layout(
-                        xaxis_title = "Probability",
-                        yaxis_title = "Share",
-                        legend = dict(
-                        orientation="h",
-                        yanchor="bottom",
-                        y=1.02,
-                        xanchor="right",
-                        x=1
+                        xaxis_title="Probability",
+                        yaxis_title="Share",
+                        legend=dict(
+                            orientation="h",
+                            yanchor="bottom",
+                            y=1.02,
+                            xanchor="right",
+                            x=1
                         )
                     )
 
@@ -80,11 +81,11 @@ class ProbClassPredDistrWidget(Widget):
                     graphs.append({
                         "id": "tab_" + str(label),
                         "title": str(label),
-                        "graph":{
-                            "data":pred_distr_json["data"],
-                            "layout":pred_distr_json["layout"],
-                            }
-                        })
+                        "graph": {
+                            "data": pred_distr_json["data"],
+                            "layout": pred_distr_json["layout"],
+                        }
+                    })
 
                 self.wi = BaseWidgetInfo(
                     title=self.title,

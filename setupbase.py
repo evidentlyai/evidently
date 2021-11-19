@@ -14,6 +14,7 @@ from os.path import join as pjoin
 import io
 import os
 import functools
+from packaging import version
 import pipes
 import re
 import shlex
@@ -23,7 +24,8 @@ import sys
 
 # BEFORE importing distutils, remove MANIFEST. distutils doesn't properly
 # update it when the contents of directories change.
-if os.path.exists('MANIFEST'): os.remove('MANIFEST')
+if os.path.exists('MANIFEST'):
+    os.remove('MANIFEST')
 
 
 from distutils.cmd import Command
@@ -86,22 +88,14 @@ def get_version(file, name='__version__'):
     return version_ns[name]
 
 
-def ensure_python(specs):
+def ensure_python(min_version):
     """Given a list of range specifiers for python, ensure compatibility.
     """
-    if not isinstance(specs, (list, tuple)):
-        specs = [specs]
     v = sys.version_info
     part = '%s.%s' % (v.major, v.minor)
-    for spec in specs:
-        if part == spec:
-            return
-        try:
-            if eval(part + spec):
-                return
-        except SyntaxError:
-            pass
-    raise ValueError('Python version %s unsupported' % part)
+    version.parse(min_version)
+    if version.parse(part) < version.parse(min_version):
+        raise ValueError('Python version %s unsupported' % part)
 
 
 def find_packages(top=HERE):

@@ -2,6 +2,8 @@
 # coding: utf-8
 
 import json
+from typing import Optional
+
 import pandas as pd
 
 import plotly.graph_objs as go
@@ -12,14 +14,14 @@ from evidently.widgets.widget import Widget, RED
 
 
 class ProbClassRocCurveWidget(Widget):
-    def __init__(self, title: str, dataset: str='reference'):
+    def __init__(self, title: str, dataset: str = 'reference'):
         super().__init__(title)
-        self.dataset = dataset #reference or current
+        self.dataset = dataset  # reference or current
 
     def analyzers(self):
         return [ProbClassificationPerformanceAnalyzer]
 
-    def get_info(self) -> BaseWidgetInfo:
+    def get_info(self) -> Optional[BaseWidgetInfo]:
         if self.dataset == 'reference':
             if self.wi:
                 return self.wi
@@ -37,16 +39,16 @@ class ProbClassRocCurveWidget(Widget):
         if results['utility_columns']['target'] is not None and results['utility_columns']['prediction'] is not None:
             if self.dataset in results['metrics'].keys():
 
-                #plot roc-curve
+                # plot roc-curve
                 if len(results['utility_columns']['prediction']) <= 2:
 
                     roc_curve = results['metrics'][self.dataset]['roc_curve']
                     fig = go.Figure()
 
                     fig.add_trace(go.Scatter(
-                        x = roc_curve['fpr'],
-                        y = roc_curve['tpr'],
-                        mode = 'lines',
+                        x=roc_curve['fpr'],
+                        y=roc_curve['tpr'],
+                        mode='lines',
                         name='ROC',
                         marker=dict(
                             size=6,
@@ -55,10 +57,10 @@ class ProbClassRocCurveWidget(Widget):
                     ))
 
                     fig.update_layout(
-                            yaxis_title="True Positive Rate",
-                            xaxis_title="False Positive Rate",
-                            showlegend=True
-                        )
+                        yaxis_title="True Positive Rate",
+                        xaxis_title="False Positive Rate",
+                        showlegend=True
+                    )
 
                     fig_json = json.loads(fig.to_json())
 
@@ -79,7 +81,7 @@ class ProbClassRocCurveWidget(Widget):
                     )
 
                 else:
-                    #plot roc-curve
+                    # plot roc-curve
                     graphs = []
 
                     for label in results['utility_columns']['prediction']:
@@ -87,9 +89,9 @@ class ProbClassRocCurveWidget(Widget):
                         fig = go.Figure()
 
                         fig.add_trace(go.Scatter(
-                            x = roc_curve['fpr'],
-                            y = roc_curve['tpr'],
-                            mode = 'lines',
+                            x=roc_curve['fpr'],
+                            y=roc_curve['tpr'],
+                            mode='lines',
                             name='ROC',
                             marker=dict(
                                 size=6,
@@ -108,11 +110,11 @@ class ProbClassRocCurveWidget(Widget):
                         graphs.append({
                             "id": "tab_" + str(label),
                             "title": str(label),
-                            "graph":{
-                                "data":fig_json["data"],
-                                "layout":fig_json["layout"],
-                                }
-                            })
+                            "graph": {
+                                "data": fig_json["data"],
+                                "layout": fig_json["layout"],
+                            }
+                        })
 
                     self.wi = BaseWidgetInfo(
                         title=self.title,

@@ -2,6 +2,7 @@
 # coding: utf-8
 
 import json
+from typing import Optional
 
 import pandas as pd
 import numpy as np
@@ -13,15 +14,15 @@ from evidently.widgets.widget import Widget, RED
 
 
 class RegErrorDistrWidget(Widget):
-    def __init__(self, title: str, dataset: str='reference'):
+    def __init__(self, title: str, dataset: str = 'reference'):
         super().__init__(title)
         self.title = title
-        self.dataset = dataset #reference or current
+        self.dataset = dataset  # reference or current
 
     def analyzers(self):
         return [RegressionPerformanceAnalyzer]
 
-    def get_info(self) -> BaseWidgetInfo:
+    def get_info(self) -> Optional[BaseWidgetInfo]:
         if self.dataset == 'reference':
             if self.wi:
                 return self.wi
@@ -47,19 +48,19 @@ class RegErrorDistrWidget(Widget):
                 dataset_to_plot.replace([np.inf, -np.inf], np.nan, inplace=True)
                 dataset_to_plot.dropna(axis=0, how='any', inplace=True)
 
-            #plot distributions
+                # plot distributions
                 error_distr = go.Figure()
 
-                error = dataset_to_plot[results['utility_columns']['prediction']] - dataset_to_plot[results['utility_columns']['target']]
+                error = dataset_to_plot[results['utility_columns']['prediction']] - dataset_to_plot[
+                    results['utility_columns']['target']]
 
                 error_distr.add_trace(go.Histogram(x=error,
-                    marker_color=RED, name = 'error distribution', histnorm = 'percent'))
+                                                   marker_color=RED, name='error distribution', histnorm='percent'))
 
                 error_distr.update_layout(
-                    xaxis_title = "Error (Predicted - Actual)",
-                    yaxis_title = "Percentage",
+                    xaxis_title="Error (Predicted - Actual)",
+                    yaxis_title="Percentage",
                 )
-
 
                 error_distr_json = json.loads(error_distr.to_json())
 

@@ -5,6 +5,7 @@ import pandas
 
 from evidently.analyzers.utils import process_columns
 
+
 class TestUtils(unittest.TestCase):
     def test_process_columns(self):
         dataset = pandas.DataFrame.from_dict([

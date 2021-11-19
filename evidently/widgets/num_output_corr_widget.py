@@ -2,6 +2,7 @@
 # coding: utf-8
 
 import json
+from typing import Optional
 
 import pandas as pd
 import plotly.graph_objs as go
@@ -10,16 +11,17 @@ from evidently.analyzers.num_target_drift_analyzer import NumTargetDriftAnalyzer
 from evidently.model.widget import BaseWidgetInfo, AlertStats
 from evidently.widgets.widget import Widget, RED, GREY
 
+
 class NumOutputCorrWidget(Widget):
     def __init__(self, title: str, kind: str = 'target'):
         super().__init__(title)
         self.title = title
-        self.kind = kind #target or prediction
+        self.kind = kind  # target or prediction
 
     def analyzers(self):
         return [NumTargetDriftAnalyzer]
 
-    def get_info(self) -> BaseWidgetInfo:
+    def get_info(self) -> Optional[BaseWidgetInfo]:
         return self.wi
 
     def calculate(self,
@@ -32,26 +34,26 @@ class NumOutputCorrWidget(Widget):
 
         if results['utility_columns'][self.kind] is not None:
 
-            #calculate corr
+            # calculate corr
             ref_output_corr = results['metrics'][self.kind + '_correlations']['reference']
             current_output_corr = results['metrics'][self.kind + '_correlations']['current']
 
-            #plot output correlations
+            # plot output correlations
             output_corr = go.Figure()
 
-            output_corr.add_trace(go.Bar(y = list(ref_output_corr.values()), x = list(ref_output_corr.keys()),
-                marker_color = GREY, name = 'Reference'))
+            output_corr.add_trace(go.Bar(y=list(ref_output_corr.values()), x=list(ref_output_corr.keys()),
+                                         marker_color=GREY, name='Reference'))
 
-            output_corr.add_trace(go.Bar(y = list(current_output_corr.values()), x = list(ref_output_corr.keys()),
-                marker_color = RED, name = 'Current'))
+            output_corr.add_trace(go.Bar(y=list(current_output_corr.values()), x=list(ref_output_corr.keys()),
+                                         marker_color=RED, name='Current'))
 
-            output_corr.update_layout(xaxis_title = "Features", yaxis_title = "Correlation",
-                yaxis = dict(
-                    range=(-1, 1),
-                    showticklabels=True
-                ))
+            output_corr.update_layout(xaxis_title="Features", yaxis_title="Correlation",
+                                      yaxis=dict(
+                                          range=(-1, 1),
+                                          showticklabels=True
+                                      ))
 
-            output_corr_json  = json.loads(output_corr.to_json())
+            output_corr_json = json.loads(output_corr.to_json())
 
             self.wi = BaseWidgetInfo(
                 title=self.title,

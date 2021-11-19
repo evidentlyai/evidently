@@ -74,13 +74,14 @@ def calculate_dashboard(config: str, reference: str, current: str, output_path: 
 
     usage["tabs"] = opts_data["dashboard_tabs"]
     usage["sampling"] = sampling
-    opts = DashboardOptions(data_format=DataFormatOptions(**opts_data["data_format"]),
-                            column_mapping=opts_data["column_mapping"],
-                            dashboard_tabs=opts_data["dashboard_tabs"],
-                            sampling=Sampling(
-                                reference=SamplingOptions(**ref_sampling),
-                                current=SamplingOptions(**cur_sampling),
-                            ))
+    opts = DashboardOptions(
+        data_format=DataFormatOptions(**opts_data["data_format"]),
+        column_mapping=opts_data["column_mapping"],
+        dashboard_tabs=opts_data["dashboard_tabs"],
+        sampling=Sampling(
+            reference=SamplingOptions(**ref_sampling),
+            current=SamplingOptions(**cur_sampling),
+        ))
 
     runner = DashboardRunner(DashboardRunnerOptions(
         reference_data_path=reference,
@@ -113,14 +114,15 @@ def calculate_profile(config: str, reference: str, current: str, output_path: st
     cur_sampling = __get_not_none(sampling, "current", {})
     usage["parts"] = opts_data["profile_sections"]
     usage["sampling"] = sampling
-    opts = ProfileOptions(data_format=DataFormatOptions(**opts_data["data_format"]),
-                          column_mapping=opts_data["column_mapping"],
-                          profile_parts=opts_data["profile_sections"],
-                          pretty_print=opts_data["pretty_print"],
-                          sampling=Sampling(
-                              reference=SamplingOptions(**ref_sampling),
-                              current=SamplingOptions(**cur_sampling),
-                          ))
+    opts = ProfileOptions(
+        data_format=DataFormatOptions(**opts_data["data_format"]),
+        column_mapping=opts_data["column_mapping"],
+        profile_parts=opts_data["profile_sections"],
+        pretty_print=opts_data["pretty_print"],
+        sampling=Sampling(
+            reference=SamplingOptions(**ref_sampling),
+            current=SamplingOptions(**cur_sampling),
+        ))
 
     runner = ProfileRunner(ProfileRunnerOptions(
         reference_data_path=reference,

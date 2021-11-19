@@ -2,6 +2,8 @@
 # coding: utf-8
 
 import json
+from typing import Optional
+
 import pandas as pd
 import numpy as np
 
@@ -11,15 +13,16 @@ from evidently.analyzers.regression_performance_analyzer import RegressionPerfor
 from evidently.model.widget import BaseWidgetInfo, AlertStats
 from evidently.widgets.widget import Widget, RED
 
+
 class RegPredActualWidget(Widget):
-    def __init__(self, title: str, dataset: str='reference'):
+    def __init__(self, title: str, dataset: str = 'reference'):
         super().__init__(title)
-        self.dataset = dataset #reference or current
+        self.dataset = dataset  # reference or current
 
     def analyzers(self):
         return [RegressionPerformanceAnalyzer]
 
-    def get_info(self) -> BaseWidgetInfo:
+    def get_info(self) -> Optional[BaseWidgetInfo]:
         if self.dataset == 'reference':
             if self.wi:
                 return self.wi
@@ -45,32 +48,32 @@ class RegPredActualWidget(Widget):
                 dataset_to_plot.replace([np.inf, -np.inf], np.nan, inplace=True)
                 dataset_to_plot.dropna(axis=0, how='any', inplace=True)
 
-                #plot output correlations
+                # plot output correlations
                 pred_actual = go.Figure()
 
                 pred_actual.add_trace(go.Scatter(
-                x = dataset_to_plot[results['utility_columns']['target']],
-                y = dataset_to_plot[results['utility_columns']['prediction']],
-                mode = 'markers',
-                name = self.dataset.title(),
-                marker = dict(
-                    color = RED,
-                    showscale = False
+                    x=dataset_to_plot[results['utility_columns']['target']],
+                    y=dataset_to_plot[results['utility_columns']['prediction']],
+                    mode='markers',
+                    name=self.dataset.title(),
+                    marker=dict(
+                        color=RED,
+                        showscale=False
                     )
                 ))
 
                 pred_actual.update_layout(
-                    xaxis_title = "Actual value",
-                    yaxis_title = "Predicted value",
-                    xaxis = dict(
+                    xaxis_title="Actual value",
+                    yaxis_title="Predicted value",
+                    xaxis=dict(
                         showticklabels=True
                     ),
-                    yaxis = dict(
+                    yaxis=dict(
                         showticklabels=True
                     ),
                 )
 
-                pred_actual_json  = json.loads(pred_actual.to_json())
+                pred_actual_json = json.loads(pred_actual.to_json())
 
                 self.wi = BaseWidgetInfo(
                     title=self.title,

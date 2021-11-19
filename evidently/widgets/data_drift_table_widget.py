@@ -130,11 +130,13 @@ class DataDriftTableWidget(Widget):
                     else:
                         current_nbinsx = 10
                 fig.add_trace(go.Histogram(x=reference_data[feature_name],
-                           marker_color=GREY, opacity=0.6, xbins=current_xbins, nbinsx=current_nbinsx, name='Reference',
-                           histnorm='probability'))
+                                           marker_color=GREY, opacity=0.6, xbins=current_xbins, nbinsx=current_nbinsx,
+                                           name='Reference',
+                                           histnorm='probability'))
 
                 fig.add_trace(go.Histogram(x=current_data[feature_name],
-                                           marker_color=RED, opacity=0.6, xbins=current_xbins, nbinsx=current_nbinsx, name='Current',
+                                           marker_color=RED, opacity=0.6, xbins=current_xbins, nbinsx=current_nbinsx,
+                                           name='Current',
                                            histnorm='probability'))
             else:
                 current_nbinsx = None
@@ -257,10 +259,12 @@ class DataDriftTableWidget(Widget):
             )
 
         n_features = len(num_feature_names) + len(cat_feature_names)
-        drift_share = round(100.*results['metrics']['share_drifted_features'], 1)
+        drift_share = round(100. * results['metrics']['share_drifted_features'], 1)
 
-        title_prefix = 'Drift is detected for ' + str(drift_share) + '% of features (' + str(results['metrics']['n_drifted_features']) +  ' out of ' + str(n_features) + '). '
-        title_suffix = 'Dataset Drift is detected.' if results['metrics']['dataset_drift'] else 'Dataset Drift is NOT detected.'
+        title_prefix = 'Drift is detected for ' + str(drift_share) + '% of features (' + str(
+            results['metrics']['n_drifted_features']) + ' out of ' + str(n_features) + '). '
+        title_suffix = 'Dataset Drift is detected.' if results['metrics'][
+            'dataset_drift'] else 'Dataset Drift is NOT detected.'
 
         self.wi = BaseWidgetInfo(
             title=title_prefix + title_suffix,

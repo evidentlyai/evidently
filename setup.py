@@ -22,7 +22,7 @@ from setupbase import (
 NAME = 'evidently'
 
 # Ensure a valid python version
-ensure_python('>=3.6')
+ensure_python('3.6')
 
 # Get our version
 version = get_version(pjoin(NAME, '_version.py'))
@@ -58,6 +58,10 @@ cmdclass['jsdeps'] = combine_commands(
     ensure_targets(jstargets),
 )
 
+with open("requirements.txt", encoding="utf-8") as dep_file:
+    dependencies = dep_file.readlines()
+with open("dev_requirements.txt", encoding="utf-8") as dev_dep_file:
+    dev_dependencies = dev_dep_file.readlines()
 setup_args = dict(
     name=NAME,
     description='Open-source tools to analyze, monitor, and debug machine learning model in production.',
@@ -73,17 +77,10 @@ setup_args = dict(
     keywords=[],
     classifiers=[],
     include_package_data=True,
-    install_requires=[
-        "dataclasses",
-        "pandas",
-        "numpy",
-        "statsmodels",
-        "plotly",
-        "scipy<=1.6.3",
-        "pyyaml",
-        "scikit-learn>=0.22.1",
-        "requests"
-    ],
+    install_requires=dependencies,
+    extras_require={
+        "dev": dev_dependencies,
+    },
     entry_points={
     },
 )
