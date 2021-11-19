@@ -106,6 +106,7 @@ from evidently.tabs import DataDriftTab
 
 iris = datasets.load_iris()
 iris_frame = pd.DataFrame(iris.data, columns = iris.feature_names)
+iris_frame['target'] = iris.target
 ```
 
 To generate the **Data Drift** report, run:
