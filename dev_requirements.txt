@@ -1,0 +1,6 @@
+setuptools~=50.3.2
+flake8~=4.0.1
+jupyter~=1.0.0
+mypy~=0.910
+types-PyYAML~=6.0.1
+types-requests~=2.26.0
