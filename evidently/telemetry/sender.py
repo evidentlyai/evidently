@@ -21,23 +21,21 @@ class TelemetrySender:
         )
         try:
             requests.post(self.address, json=collected, timeout=3)
-        except Exception as error: # pylint: disable=broad-except
+        except Exception as error:  # pylint: disable=broad-except
             logging.warning(f"failed to send telemetry: {error}")
 
 
 def _collect_environment():
     return dict(
-            python=dict(
-                version=platform.python_version(),
-                interpreter=platform.python_implementation(),
-                conda='CONDA_DEFAULT_ENV' in os.environ,
-                venv='VIRTUAL_ENV' in os.environ,
-            ),
-            os=platform.platform(),
-        )
+        python=dict(
+            version=platform.python_version(),
+            interpreter=platform.python_implementation(),
+            conda='CONDA_DEFAULT_ENV' in os.environ,
+            venv='VIRTUAL_ENV' in os.environ,
+        ),
+        os=platform.platform(),
+    )
 
 
 def _collect_package():
-    return dict(
-        version=evidently.__version__
-    )
+    return dict(version=evidently.__version__)

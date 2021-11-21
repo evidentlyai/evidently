@@ -19,32 +19,32 @@ class NumTargetDriftAnalyzer(Analyzer):
         num_feature_names = columns.num_feature_names
 
         result['metrics'] = {}
-        #target
+        # target
         if target_column is not None:
-            #drift
+            # drift
             target_p_value = ks_2samp(reference_data[target_column], current_data[target_column])[1]
             result['metrics']["target_name"] = target_column
             result['metrics']["target_type"] = 'num'
             result['metrics']["target_drift"] = target_p_value
 
-            #corr
+            # corr
             ref_target_corr = reference_data[num_feature_names + [target_column]].corr()[target_column]
             curr_target_corr = current_data[num_feature_names + [target_column]].corr()[target_column]
-            target_corr = {'reference':ref_target_corr.to_dict(), 'current':curr_target_corr.to_dict()}
+            target_corr = {'reference': ref_target_corr.to_dict(), 'current': curr_target_corr.to_dict()}
             result['metrics']['target_correlations'] = target_corr
 
-        #prediction
+        # prediction
         if prediction_column is not None:
-            #drift
+            # drift
             pred_p_value = ks_2samp(reference_data[prediction_column], current_data[prediction_column])[1]
             result['metrics']["prediction_name"] = prediction_column
             result['metrics']["prediction_type"] = 'num'
             result['metrics']["prediction_drift"] = pred_p_value
 
-            #corr
+            # corr
             ref_pred_corr = reference_data[num_feature_names + [prediction_column]].corr()[prediction_column]
             curr_pred_corr = current_data[num_feature_names + [prediction_column]].corr()[prediction_column]
-            prediction_corr = {'reference':ref_pred_corr.to_dict(), 'current':curr_pred_corr.to_dict()}
+            prediction_corr = {'reference': ref_pred_corr.to_dict(), 'current': curr_pred_corr.to_dict()}
             result['metrics']['prediction_correlations'] = prediction_corr
 
         return result

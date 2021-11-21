@@ -22,7 +22,7 @@ from setupbase import (
 NAME = 'evidently'
 
 # Ensure a valid python version
-ensure_python('>=3.6')
+ensure_python('3.6')
 
 # Get our version
 version = get_version(pjoin(NAME, '_version.py'))

@@ -17,7 +17,7 @@ class CatTargetDriftAnalyzer(Analyzer):
         prediction_column = columns.utility_columns.prediction
 
         result['metrics'] = {}
-        #target drift
+        # target drift
         if target_column is not None:
             reference_data.replace([np.inf, -np.inf], np.nan, inplace=True)
             reference_data.dropna(axis=0, how='any', inplace=True)
@@ -47,8 +47,8 @@ class CatTargetDriftAnalyzer(Analyzer):
                 ordered_keys = sorted(list(keys))
                 target_p_value = proportions_diff_z_test(
                     proportions_diff_z_stat_ind(
-                        reference_data[target_column].apply(lambda x : 0 if x == ordered_keys[0] else 1),
-                        current_data[target_column].apply(lambda x : 0 if x == ordered_keys[0] else 1)
+                        reference_data[target_column].apply(lambda x: 0 if x == ordered_keys[0] else 1),
+                        current_data[target_column].apply(lambda x: 0 if x == ordered_keys[0] else 1)
                     )
                 )
 
@@ -56,9 +56,9 @@ class CatTargetDriftAnalyzer(Analyzer):
             result['metrics']["target_type"] = 'cat'
             result['metrics']["target_drift"] = target_p_value
 
-        #prediction drift
+        # prediction drift
         if prediction_column is not None:
-            #calculate output drift
+            # calculate output drift
             reference_data.replace([np.inf, -np.inf], np.nan, inplace=True)
             reference_data.dropna(axis=0, how='any', inplace=True)
 
@@ -87,8 +87,8 @@ class CatTargetDriftAnalyzer(Analyzer):
                 ordered_keys = sorted(list(keys))
                 pred_p_value = proportions_diff_z_test(
                     proportions_diff_z_stat_ind(
-                        reference_data[prediction_column].apply(lambda x : 0 if x == ordered_keys[0] else 1),
-                        current_data[prediction_column].apply(lambda x : 0 if x == ordered_keys[0] else 1)
+                        reference_data[prediction_column].apply(lambda x: 0 if x == ordered_keys[0] else 1),
+                        current_data[prediction_column].apply(lambda x: 0 if x == ordered_keys[0] else 1)
                     )
                 )
 

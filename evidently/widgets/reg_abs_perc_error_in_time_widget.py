@@ -2,6 +2,8 @@
 # coding: utf-8
 
 import json
+from typing import Optional
+
 import pandas as pd
 import numpy as np
 
@@ -14,14 +16,14 @@ from evidently.widgets.widget import Widget, RED
 
 
 class RegAbsPercErrorTimeWidget(Widget):
-    def __init__(self, title: str, dataset: str='reference'):
+    def __init__(self, title: str, dataset: str = 'reference'):
         super().__init__(title)
-        self.dataset = dataset #reference or current
+        self.dataset = dataset  # reference or current
 
     def analyzers(self):
         return [RegressionPerformanceAnalyzer]
 
-    def get_info(self) -> BaseWidgetInfo:
+    def get_info(self) -> Optional[BaseWidgetInfo]:
         if self.dataset == 'reference':
             if self.wi:
                 return self.wi
@@ -47,17 +49,20 @@ class RegAbsPercErrorTimeWidget(Widget):
                 dataset_to_plot.replace([np.inf, -np.inf], np.nan, inplace=True)
                 dataset_to_plot.dropna(axis=0, how='any', inplace=True)
 
-                #plot absolute error in time
+                # plot absolute error in time
                 abs_perc_error_time = go.Figure()
 
-                abs_perc_error = 100.*np.abs(dataset_to_plot[results['utility_columns']['prediction']] - \
-                    dataset_to_plot[results['utility_columns']['target']])/dataset_to_plot[results['utility_columns']['target']]
+                abs_perc_error = 100. * np.abs(
+                    dataset_to_plot[results['utility_columns']['prediction']]
+                    - dataset_to_plot[results['utility_columns']['target']]
+                ) / dataset_to_plot[results['utility_columns']['target']]
 
                 error_trace = go.Scatter(
-                    x = dataset_to_plot[results['utility_columns']['date']] if results['utility_columns']['date'] else dataset_to_plot.index,
-                    y = abs_perc_error,
-                    mode = 'lines',
-                    name = 'Absolute Percentage Error',
+                    x=dataset_to_plot[results['utility_columns']['date']] if results['utility_columns'][
+                        'date'] else dataset_to_plot.index,
+                    y=abs_perc_error,
+                    mode='lines',
+                    name='Absolute Percentage Error',
                     marker=dict(
                         size=6,
                         color=RED
@@ -65,9 +70,10 @@ class RegAbsPercErrorTimeWidget(Widget):
                 )
 
                 zero_trace = go.Scatter(
-                    x = dataset_to_plot[results['utility_columns']['date']] if results['utility_columns']['date'] else dataset_to_plot.index,
-                    y = [0]*dataset_to_plot.shape[0],
-                    mode = 'lines',
+                    x=dataset_to_plot[results['utility_columns']['date']] if results['utility_columns'][
+                        'date'] else dataset_to_plot.index,
+                    y=[0] * dataset_to_plot.shape[0],
+                    mode='lines',
                     opacity=0.5,
                     marker=dict(
                         size=6,
@@ -80,14 +86,14 @@ class RegAbsPercErrorTimeWidget(Widget):
                 abs_perc_error_time.add_trace(zero_trace)
 
                 abs_perc_error_time.update_layout(
-                    xaxis_title = "Timestamp" if results['utility_columns']['date'] else "Index",
-                    yaxis_title = "Percent",
-                    legend = dict(
-                    orientation="h",
-                    yanchor="bottom",
-                    y=1.02,
-                    xanchor="right",
-                    x=1
+                    xaxis_title="Timestamp" if results['utility_columns']['date'] else "Index",
+                    yaxis_title="Percent",
+                    legend=dict(
+                        orientation="h",
+                        yanchor="bottom",
+                        y=1.02,
+                        xanchor="right",
+                        x=1
                     )
                 )
 

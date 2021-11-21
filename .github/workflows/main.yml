@@ -28,15 +28,19 @@ jobs:
       # Runs a single command using the runners shell
       - name: Install dependencies
         run: pip install -r requirements.txt && pip install -r dev_requirements.txt
-      - name: Install PyLint
-        run: pip install pylint
-      - name: Run PyLint
-        run: pylint evidently --disable=R
+      - name: Run Flake8
+        run: flake8 evidently
+      - name: Run Mypy
+        run: mypy
   test:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.6'
+          architecture: 'x64'
       - name: Install dependencies
         run: pip install -r requirements.txt && pip install -r dev_requirements.txt && pip install --upgrade pygments
       - name: Run Tests

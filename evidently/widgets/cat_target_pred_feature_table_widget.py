@@ -27,49 +27,51 @@ class CatTargetPredFeatureTable(Widget):
             additional_graphs_data = []
             params_data = []
             for feature_name in results['num_feature_names'] + results['cat_feature_names']:
-                #add data for table in params
+                # add data for table in params
                 params_data.append(
                     {
                         "details": {
-                                "parts": [
-                                    {
-                                        "title": "Target",
-                                        "id": feature_name + "_target_values"
-                                    },
-                                    {
-                                        "title": "Prediction",
-                                        "id": feature_name + "_prediction_values"
-                                    }
-                                ],
-                                "insights": []
-                            },
-                            "f1": feature_name
+                            "parts": [
+                                {
+                                    "title": "Target",
+                                    "id": feature_name + "_target_values"
+                                },
+                                {
+                                    "title": "Prediction",
+                                    "id": feature_name + "_prediction_values"
+                                }
+                            ],
+                            "insights": []
+                        },
+                        "f1": feature_name
                     }
-                    )
+                )
 
-                #create target plot
+                # create target plot
                 reference_data['dataset'] = 'Reference'
                 current_data['dataset'] = 'Current'
                 merged_data = pd.concat([reference_data, current_data])
 
-                target_fig = px.histogram(merged_data, x=feature_name, color=results['utility_columns']['target'], facet_col="dataset",
-                    category_orders={"dataset": ["Reference", "Current"]})
+                target_fig = px.histogram(merged_data, x=feature_name, color=results['utility_columns']['target'],
+                                          facet_col="dataset",
+                                          category_orders={"dataset": ["Reference", "Current"]})
 
-                target_fig_json  = json.loads(target_fig.to_json())
+                target_fig_json = json.loads(target_fig.to_json())
 
-                #create prediction plot
-                pred_fig = px.histogram(merged_data, x=feature_name, color=results['utility_columns']['prediction'], facet_col="dataset",
-                    category_orders={"dataset": ["Reference", "Current"]})
+                # create prediction plot
+                pred_fig = px.histogram(merged_data, x=feature_name, color=results['utility_columns']['prediction'],
+                                        facet_col="dataset",
+                                        category_orders={"dataset": ["Reference", "Current"]})
 
-                pred_fig_json  = json.loads(pred_fig.to_json())
+                pred_fig_json = json.loads(pred_fig.to_json())
 
-                #write plot data in table as additional data
+                # write plot data in table as additional data
                 additional_graphs_data.append(
                     AdditionalGraphInfo(
                         feature_name + '_target_values',
                         {
-                            "data" : target_fig_json['data'],
-                            "layout" : target_fig_json['layout']
+                            "data": target_fig_json['data'],
+                            "layout": target_fig_json['layout']
                         },
                     )
                 )
@@ -78,8 +80,8 @@ class CatTargetPredFeatureTable(Widget):
                     AdditionalGraphInfo(
                         feature_name + '_prediction_values',
                         {
-                            "data" : pred_fig_json['data'],
-                            "layout" : pred_fig_json['layout']
+                            "data": pred_fig_json['data'],
+                            "layout": pred_fig_json['layout']
                         },
                     )
                 )
@@ -94,7 +96,7 @@ class CatTargetPredFeatureTable(Widget):
                 insights=[],
                 size=2,
                 params={
-                    "rowsPerPage" : min(len(results['num_feature_names']) + len(results['cat_feature_names']), 10),
+                    "rowsPerPage": min(len(results['num_feature_names']) + len(results['cat_feature_names']), 10),
                     "columns": [
                         {
                             "title": "Feature",
@@ -110,40 +112,41 @@ class CatTargetPredFeatureTable(Widget):
             additional_graphs_data = []
             params_data = []
             for feature_name in results['num_feature_names'] + results['cat_feature_names']:
-                #add data for table in params
+                # add data for table in params
                 params_data.append(
                     {
                         "details": {
-                                "parts": [
-                                    {
-                                        "title": "Target",
-                                        "id": feature_name + "_target_values"
-                                    }
-                                ],
-                                "insights": []
-                            },
-                            "f1": feature_name
+                            "parts": [
+                                {
+                                    "title": "Target",
+                                    "id": feature_name + "_target_values"
+                                }
+                            ],
+                            "insights": []
+                        },
+                        "f1": feature_name
                     }
-                    )
+                )
 
-                #create target plot
-                #TO DO%: out pf the cycle
+                # create target plot
+                # TO DO%: out pf the cycle
                 reference_data['dataset'] = 'Reference'
                 current_data['dataset'] = 'Current'
                 merged_data = pd.concat([reference_data, current_data])
 
-                target_fig = px.histogram(merged_data, x=feature_name, color=results['utility_columns']['target'], facet_col="dataset",
-                    category_orders={"dataset": ["Reference", "Current"]})
+                target_fig = px.histogram(merged_data, x=feature_name, color=results['utility_columns']['target'],
+                                          facet_col="dataset",
+                                          category_orders={"dataset": ["Reference", "Current"]})
 
-                target_fig_json  = json.loads(target_fig.to_json())
+                target_fig_json = json.loads(target_fig.to_json())
 
-                #write plot data in table as additional data
+                # write plot data in table as additional data
                 additional_graphs_data.append(
                     AdditionalGraphInfo(
                         feature_name + '_target_values',
                         {
-                            "data" : target_fig_json['data'],
-                            "layout" : target_fig_json['layout']
+                            "data": target_fig_json['data'],
+                            "layout": target_fig_json['layout']
                         },
                     )
                 )
@@ -158,7 +161,7 @@ class CatTargetPredFeatureTable(Widget):
                 insights=[],
                 size=2,
                 params={
-                    "rowsPerPage" : min(len(results['num_feature_names']) + len(results['cat_feature_names']), 10),
+                    "rowsPerPage": min(len(results['num_feature_names']) + len(results['cat_feature_names']), 10),
                     "columns": [
                         {
                             "title": "Feature",
@@ -173,39 +176,40 @@ class CatTargetPredFeatureTable(Widget):
             additional_graphs_data = []
             params_data = []
             for feature_name in results['num_feature_names'] + results['cat_feature_names']:
-                #add data for table in params
+                # add data for table in params
                 params_data.append(
                     {
                         "details": {
-                                "parts": [
-                                    {
-                                        "title": "Prediction",
-                                        "id": feature_name + "_prediction_values"
-                                    }
-                                ],
-                                "insights": []
-                            },
-                            "f1": feature_name
+                            "parts": [
+                                {
+                                    "title": "Prediction",
+                                    "id": feature_name + "_prediction_values"
+                                }
+                            ],
+                            "insights": []
+                        },
+                        "f1": feature_name
                     }
-                    )
+                )
 
-                #create target plot
+                # create target plot
                 reference_data['dataset'] = 'Reference'
                 current_data['dataset'] = 'Current'
                 merged_data = pd.concat([reference_data, current_data])
 
-                prediction_fig = px.histogram(merged_data, x=feature_name, color=results['utility_columns']['prediction'], facet_col="dataset",
-                    category_orders={"dataset": ["Reference", "Current"]})
+                prediction_fig = px.histogram(merged_data, x=feature_name,
+                                              color=results['utility_columns']['prediction'], facet_col="dataset",
+                                              category_orders={"dataset": ["Reference", "Current"]})
 
-                prediction_fig_json  = json.loads(prediction_fig.to_json())
+                prediction_fig_json = json.loads(prediction_fig.to_json())
 
-                #write plot data in table as additional data
+                # write plot data in table as additional data
                 additional_graphs_data.append(
                     AdditionalGraphInfo(
                         feature_name + '_prediction_values',
                         {
-                            "data" : prediction_fig_json['data'],
-                            "layout" : prediction_fig_json['layout']
+                            "data": prediction_fig_json['data'],
+                            "layout": prediction_fig_json['layout']
                         },
                     )
                 )
@@ -220,7 +224,7 @@ class CatTargetPredFeatureTable(Widget):
                 insights=[],
                 size=2,
                 params={
-                    "rowsPerPage" : min(len(results['num_feature_names']) + len(results['cat_feature_names']), 10),
+                    "rowsPerPage": min(len(results['num_feature_names']) + len(results['cat_feature_names']), 10),
                     "columns": [
                         {
                             "title": "Feature",

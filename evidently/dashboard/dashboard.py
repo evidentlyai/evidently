@@ -48,7 +48,16 @@ def inline_template(params: TemplateParams):
     var additional_graphs_{params.dashboard_id} = {json.dumps(params.additional_graphs)};
 </script>
 <script>
-$(document).ready(function () {{
+function domReady(fn) {{
+  // If we're early to the party
+  document.addEventListener("DOMContentLoaded", fn);
+  // If late; I mean on time.
+  if (document.readyState === "interactive" || document.readyState === "complete" ) {{
+    fn();
+  }}
+}}
+
+domReady(function () {{
     requirejs(["evidently"], function(ev) {{
         drawDashboard({params.dashboard_id},
         new Map(Object.entries(additional_graphs_{params.dashboard_id})),
@@ -111,7 +120,7 @@ window.drawDashboard({params.dashboard_id},
 """
 
 
-__BASE_PATH = evidently.__path__[0]
+__BASE_PATH = evidently.__path__[0]  # type: ignore
 __STATIC_PATH = os.path.join(__BASE_PATH, "nbextension", "static")
 
 
@@ -170,11 +179,22 @@ class Dashboard(Pipeline):
         with open(filename, 'w', encoding='utf-8') as out_file:
             out_file.write(self._json())
 
-    def show(self):
+    def show(self, mode='auto'):
         # pylint: disable=import-outside-toplevel
+        render_mode = mode
         try:
             from IPython.display import HTML
-            return HTML(self.__render(inline_template))
+            from IPython import get_ipython
+            if mode == 'auto':
+                if type(get_ipython()).__module__.startswith("google.colab"):
+                    render_mode = 'inline'
+                else:
+                    render_mode = 'nbextension'
+            if render_mode == 'inline':
+                return HTML(self.__render(file_html_template))
+            if render_mode == 'nbextension':
+                return HTML(self.__render(inline_template))
+            raise ValueError(f"Unexpected value {mode}/{render_mode} for mode")
         except ImportError as err:
             raise Exception("Cannot import HTML from IPython.display, no way to show html") from err
 

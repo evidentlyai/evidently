@@ -65,7 +65,7 @@ $ jupyter nbextension install --sys-prefix --symlink --overwrite --py evidently
 ```
 To enable it, run:
 ```sh
-jupyter nbextension enable evidently --py --sys-prefix
+$ jupyter nbextension enable evidently --py --sys-prefix
 ```
 That's it!
 
@@ -106,6 +106,7 @@ from evidently.tabs import DataDriftTab
 
 iris = datasets.load_iris()
 iris_frame = pd.DataFrame(iris.data, columns = iris.feature_names)
+iris_frame['target'] = iris.target
 ```
 
 To generate the **Data Drift** report, run:
@@ -217,6 +218,41 @@ or
 prob_classification_single_model_performance = Profile(sections=[ProbClassificationPerformanceProfileSection])
 prob_classification_single_model_performance.calculate(reference_data, None, column_mapping=column_mapping)
 ```
+
+### Google Colab, Kaggle Kernel, Deepnote
+You can run ```evidently``` in [Google Colab](https://colab.research.google.com/), [Kaggle Notebook](https://www.kaggle.com/code) and [Deepnote](https://deepnote.com/).
+
+To use ```evidently``` there start from the installation. Run the following instruction in the notebook  cell:
+```!pip install evidently```
+
+There is no need to enable nbextension for this case, because ```evidently``` uses alternative way to display visuals in the hosted notebooks.
+
+To build a ```Dashboard``` or a ```Profile``` simply repeat the steps we described in the previous paragraph, for example to bild **Data Drift** dashboard run the following code:
+
+```python
+import pandas as pd
+from sklearn import datasets
+
+from evidently.dashboard import Dashboard
+from evidently.tabs import DataDriftTab
+
+iris = datasets.load_iris()
+iris_frame = pd.DataFrame(iris.data, columns = iris.feature_names)
+
+iris_data_drift_report = Dashboard(tabs=[DataDriftTab])
+iris_data_drift_report.calculate(iris_frame[:100], iris_frame[100:], column_mapping = None)
+```
+
+To display the dashboard in the Google Colab, Kaggle Kernel, Deepnote run:
+```python
+iris_data_drift_report.show()
+```
+
+The ```show()``` method has the argument ```mode```, wich can take the following options:
+
+* **auto** - the default optoin. Ideally, you will not need to specify the value for ```mode``` and use the default. But, if it does not work (in case we failed to determine the environment automatically), consider setting the correct value explicitly.
+* **nbextention** - to show the UI using nbextension. Use this option to display dashboards in jupyter notebooks (should work automatically).
+* **inline** - to insert the UI directly into the cell. Use this option for Google Colab, Kaggle Kernels and Deepnote. For Google Colab this should work automatically, for **Kaggle Kernels** and **Deepnote** option should be specified explicitly.
 
 ### Terminal
 You can generate **HTML reports** or **JSON profiles** directly from the bash shell. To do this, prepare your data as two `csv` files. In case you run one of the performance reports, you can have only one file. The first one should include your reference data, the second - current production data. The structure of both datasets should be identical. 
@@ -357,25 +393,25 @@ For more information, refer to a complete <a href="https://evidentlyai.gitbook.i
 ## Examples
 
 - See **Data Drift** Dashboard and Profile generation to explore the results both inside a Jupyter notebook and as a separate .html file:
-[Iris](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/iris_data_drift.ipynb), 
-[Boston](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/boston_data_drift.ipynb)
+[Iris](https://colab.research.google.com/drive/1TCdDjuiMzvSyjkIJOwYl2dkN8N56c00Z?authuser=1), 
+[Boston](https://colab.research.google.com/drive/1J8FvINy5nX47L5-iklsGD4C4y1Zi1Wlo?authuser=1)
 
 - See **Categorical Target and Data Drift** Dashboard and Profile generation to explore the results both inside a Jupyter notebook and as a separate file:
-[Iris](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/iris_target_and_data_drift.ipynb),
-[Breast Cancer](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/breast_cancer_target_and_data_drift.ipynb)
+[Iris](https://colab.research.google.com/drive/18HvFvZeIjOmbAV7KVL103PlWlFuIjdGj?authuser=1),
+[Breast Cancer](https://colab.research.google.com/drive/157kTbk-uZKi4Q6Eea3yaEbLrpR_h_Pow?authuser=1)
 
 - See **Numerical Target and Data Drift** Dashboard and Profile generation to explore the results both inside a Jupyter notebook and as a separate file:
-[Boston](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/boston_target_and_data_drift.ipynb) 
+[Boston](https://colab.research.google.com/drive/1IDE02r-Xh-T4k5Yw3SpRGlewHOS8ZsmX?authuser=1) 
 
 - See **Regression Performance** Dashboard and Profile generation to explore the results both inside a Jupyter notebook and as a separate file:
-[Bike Sharing Demand](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/bike_sharing_demand_regression_performance.ipynb)
+[Bike Sharing Demand](https://colab.research.google.com/drive/1VA1KjBYxMRfccSS5IXAClBGKB9Lw7WtP?authuser=1)
 
 - See **Classification Performance** Dashboard and Profile generation to explore the results both inside a Jupyter notebook and as a separate file:
-[Iris](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/iris_classification_performance.ipynb) 
+[Iris](https://colab.research.google.com/drive/1SAsaUTUaIzg3FyI_EbmO9hzuEu1hVl4v?authuser=1) 
  
 - See **Probabilistic Classification Performance** Dashboard and Profile generation to explore the results both inside a Jupyter notebook and as a separate .html file:
-[Iris](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/iris_probabilistic_classification_performance.ipynb), 
-[Breast Cancer](https://github.com/evidentlyai/evidently/blob/main/evidently/examples/breast_cancer_prob_classification_performance.ipynb)
+[Iris](https://colab.research.google.com/drive/1uFN0ZWNLk3ExylBywq_M8oGkmac0lDrq?authuser=1), 
+[Breast Cancer](https://colab.research.google.com/drive/1vwEBgGnDVk5BJG2PXT1w41VfZ-_bq_Sw?authuser=1)
 
 ## Stay updated
 We will be releasing more reports soon. If you want to receive updates, follow us on [Twitter](https://twitter.com/EvidentlyAI), or sign up for our [newsletter](https://evidentlyai.com/sign-up). You can also find more tutorials and explanations in our [Blog](https://evidentlyai.com/blog). If you want to chat and connect, join our [Discord community](https://discord.gg/xZjKRaNp8b)!

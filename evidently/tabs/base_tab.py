@@ -2,7 +2,7 @@
 # coding: utf-8
 
 import abc
-from typing import List, Dict, Type
+from typing import List, Dict, Type, Optional
 
 import pandas
 
@@ -19,17 +19,17 @@ class Tab:
 
     def analyzers(self) -> List[Type[Analyzer]]:
         self.widgets = self._get_widgets()
-        return list(set([analyzer for widget in self.widgets for analyzer in widget.analyzers()]))
+        return list({analyzer for widget in self.widgets for analyzer in widget.analyzers()})
 
     def calculate(self, reference_data: pandas.DataFrame,
                   current_data: pandas.DataFrame,
-                  column_mapping: Dict,
+                  column_mapping: Optional[Dict],
                   analyzers_results: Dict):
         self.widgets = self._get_widgets()
         for widget in self.widgets:
             widget.calculate(reference_data, current_data, column_mapping, analyzers_results)
 
-    def info(self) -> List[BaseWidgetInfo]:
+    def info(self) -> List[Optional[BaseWidgetInfo]]:
         return [w.get_info() for w in self.widgets]
 
     @abc.abstractmethod

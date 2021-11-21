@@ -48,7 +48,8 @@ class RegressionPerformanceMonitor(ModelMonitor):
                 yield RegressionPerformanceMetrics.feature_error_bias.create(
                     metrics['error_bias'][feature][field], dict(feature=feature, feature_type='cat', metric=field))
 
-    def _yield_quality(self, metrics, dataset) -> Generator[MetricsType, None, None]:
+    @staticmethod
+    def _yield_quality(metrics, dataset) -> Generator[MetricsType, None, None]:
         dataset_quality = metrics[dataset]
         metric_labels = ['mean_error',
                          'mean_abs_error',
@@ -60,13 +61,15 @@ class RegressionPerformanceMonitor(ModelMonitor):
             yield RegressionPerformanceMetrics.quality.create(dataset_quality[label],
                                                               dict(dataset=dataset, metric=label))
 
-    def _yield_error_normality(self, normality_data, dataset) -> Generator[MetricsType, None, None]:
+    @staticmethod
+    def _yield_error_normality(normality_data, dataset) -> Generator[MetricsType, None, None]:
         metric_labels = ['slope', 'intercept', 'r']
         for label in metric_labels:
             yield RegressionPerformanceMetrics.normality.create(normality_data[label],
                                                                 dict(dataset=dataset, metric=label))
 
-    def _yield_underperformance(self, underperformance_data, dataset) -> Generator[MetricsType, None, None]:
+    @staticmethod
+    def _yield_underperformance(underperformance_data, dataset) -> Generator[MetricsType, None, None]:
         type_labels = ['majority', 'underestimation', 'overestimation']
         metric_labels = ['mean_error', 'std_error']
         for type_label in type_labels:
