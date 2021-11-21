@@ -6,8 +6,8 @@ Thank you for considering contributing to Evidently!
 - Evidently is under active development. 
 - We are happy to receive a pull request for bug fixes or new functions for any section of the library. 
 - The only exception is UI, because it is a subject of significant refactoring! If you want to contribute to UI, please first come to our [Discord channel](https://discord.gg/xZjKRaNp8b) for a quick chat.  
-- We highly recommend that you open an issue, describe your contribution, share all neede information there and link it to a pull request.
-- We evaluate pull requests taking into account: code architecture and quality, code style, comments and docstrings and coverage by tests.
+- We highly recommend that you open an issue, describe your contribution, share all needed information there and link it to a pull request.
+- We evaluate pull requests taking into account: code architecture and quality, code style, comments & docstrings and coverage by tests.
 
 ## Clone repository
 ```sh
