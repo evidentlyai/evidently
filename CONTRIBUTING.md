@@ -1,29 +1,37 @@
-#Contributing
+# Contributing to Evidently
 
-### Clone repository
+Thank you for considering contributing to Evidently!
 
+## Support question
+- Evidently is under active development. 
+- We are happy to receive a pull request for bug fixes or new functions for any section of the library. 
+- The only exception is UI, because it is a subject of significant refactoring! If you want to contribute to UI, please first come to our [Discord channel](https://discord.gg/xZjKRaNp8b) for a quick chat.  
+- We highly recommend that you open an issue, describe your contribution, share all neede information there and link it to a pull request.
+- We evaluate pull requests taking into account: code architecture and quality, code style, comments and docstrings and coverage by tests.
+
+## Clone repository
 ```sh
 git clone https://github.com/evidentlyai/evidently.git
 ```
 
-### (Recommended) Create virtual environment
+## (Optional, but recommended!) Create virtual environment
 
 #### MacOS / Linux
-```shell
+```sh
 cd /path/to/evidently_repo
 python3 -m venv venv
 . venv/bin/activate
 ```
 
 #### Windows
-```commandline
+```sh
 cd C:\path\to\evidently_repo
 py -m venv venv
 .\venv\Scripts\activate
 ```
 
-### Using local copy as editable dependency
-For using cloned version in virtual environment as package you need to install package in editable mode:
+## Use local copy as editable dependency
+For using cloned version in the virtual environment as a package you need to install the package in the editable mode:
 
 #### MacOS / Linux
 ```sh
@@ -37,39 +45,46 @@ cd C:\path\to\evidently_repo
 pip install -e .[dev]
 ```
 
-### Running PyLint
-Example of running PyLint checks as is is executed on GitHub CI.
-```shell
-pylint evidently --disable=R
+## Run the tests
+### Running flake8 
+We use flake8 for code style checks.
+```sh
+flake8 evidently
 ```
 
-### Running tests
+### Running mypy
+We use mypy for object types checks.
+```sh
+mypy
+```
 
-```shell
+### Running unit tests
+Currently the project is not fully covered by unit tests, but we adding more soon and expect to receive PRs with some unit tests 🙂
+```sh
 python -m unittest discover -s evidently -p 'test_*.py' -v
 ```
 
-### Running examples smoke tests
+### Running smoke tests
+Together with the unit tests we use smoke testing: we basically run all the notebooks from the [examples](https://github.com/evidentlyai/evidently/tree/main/evidently/examples).
+To run the tests first convert all the notebooks to python script, then download required datasets and run all script to check that all computation executed correctly. It can be done by using  the following commands: 
 
-Convert all example notebooks to script, download required datasets and run all script to check that all computation executed correctly.
-
-```shell
+```sh
 jupyter nbconvert --to script evidently/examples/*.ipynb --output-dir example_scripts
 curl https://archive.ics.uci.edu/ml/machine-learning-databases/00275/Bike-Sharing-Dataset.zip -o Bike-Sharing-Dataset.zip &&
              unzip Bike-Sharing-Dataset.zip -d Bike-Sharing-Dataset
 python example_test.py
 ```
 
-## Working with UI
+## (first come to our [Discord channel](https://discord.gg/xZjKRaNp8b) for a quick chat) Working with UI
+
 
 ### Requirements
-
 For building ui required:
 - `nodejs` and `npm` https://nodejs.org/en/download/
 - `yarn` https://yarnpkg.com/getting-started/install
 
-### Building UI
 
+### Building UI
 One-time build:
 ```shell
 cd ui
