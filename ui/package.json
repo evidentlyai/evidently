@@ -45,7 +45,8 @@
     "webpack-cli": "^4.8.0"
   },
   "scripts": {
-    "build": "npx webpack --mode production"
+    "build": "npx webpack --mode production",
+    "watch": "npx webpack --watch --mode development"
   },
   "eslintConfig": {
     "extends": "react-app"
