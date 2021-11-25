@@ -222,12 +222,12 @@ prob_classification_single_model_performance.calculate(reference_data, None, col
 ### Google Colab, Kaggle Kernel, Deepnote
 You can run ```evidently``` in [Google Colab](https://colab.research.google.com/), [Kaggle Notebook](https://www.kaggle.com/code) and [Deepnote](https://deepnote.com/).
 
-To use ```evidently``` there start from the installation. Run the following instruction in the notebook  cell:
+First, install ```evidently```. Run the following command in the notebook cell:
 ```!pip install evidently```
 
-There is no need to enable nbextension for this case, because ```evidently``` uses alternative way to display visuals in the hosted notebooks.
+There is no need to enable nbextension for this case, because ```evidently``` uses an alternative way to display visuals in the hosted notebooks.
 
-To build a ```Dashboard``` or a ```Profile``` simply repeat the steps we described in the previous paragraph, for example to bild **Data Drift** dashboard run the following code:
+To build a ```Dashboard``` or a ```Profile``` simply repeat the steps described in the previous paragraph. For example, to build the **Data Drift** dashboard, run:
 
 ```python
 import pandas as pd
@@ -243,16 +243,16 @@ iris_data_drift_report = Dashboard(tabs=[DataDriftTab])
 iris_data_drift_report.calculate(iris_frame[:100], iris_frame[100:], column_mapping = None)
 ```
 
-To display the dashboard in the Google Colab, Kaggle Kernel, Deepnote run:
+To display the dashboard in the Google Colab, Kaggle Kernel, Deepnote, run:
 ```python
 iris_data_drift_report.show()
 ```
 
-The ```show()``` method has the argument ```mode```, wich can take the following options:
+The ```show()``` method has the argument ```mode```, which can take the following options:
 
-* **auto** - the default optoin. Ideally, you will not need to specify the value for ```mode``` and use the default. But, if it does not work (in case we failed to determine the environment automatically), consider setting the correct value explicitly.
-* **nbextention** - to show the UI using nbextension. Use this option to display dashboards in jupyter notebooks (should work automatically).
-* **inline** - to insert the UI directly into the cell. Use this option for Google Colab, Kaggle Kernels and Deepnote. For Google Colab this should work automatically, for **Kaggle Kernels** and **Deepnote** option should be specified explicitly.
+* **auto** - the default option. Ideally, you will not need to specify the value for ```mode``` and use the default. But, if it does not work (in case we failed to determine the environment automatically), consider setting the correct value explicitly.
+* **nbextention** - to show the UI using nbextension. Use this option to display dashboards in Jupyter notebooks (it should work automatically).
+* **inline** - to insert the UI directly into the cell. Use this option for Google Colab, Kaggle Kernels and Deepnote. For Google Colab, this should work automatically, for **Kaggle Kernels** and **Deepnote** the option should be specified explicitly.
 
 ### Terminal
 You can generate **HTML reports** or **JSON profiles** directly from the bash shell. To do this, prepare your data as two `csv` files. In case you run one of the performance reports, you can have only one file. The first one should include your reference data, the second - current production data. The structure of both datasets should be identical. 
