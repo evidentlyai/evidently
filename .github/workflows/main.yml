@@ -44,7 +44,7 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt && pip install -r dev_requirements.txt && pip install --upgrade pygments
       - name: Run Tests
-        run: python -m unittest discover -s evidently -p 'test_*.py' -v
+        run: python -m unittest discover -v
       - name: Prepare env
         run: pip install -e .
       - name: Export examples
