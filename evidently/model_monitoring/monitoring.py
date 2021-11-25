@@ -38,9 +38,9 @@ class ModelMonitor:
 
 
 class ModelMonitoring(Pipeline):
-    def __init__(self, monitors: List[Type[ModelMonitor]]):
+    def __init__(self, monitors: List[ModelMonitor]):
         super().__init__()
-        self.monitors = [monitor_class() for monitor_class in monitors]
+        self.monitors = monitors.copy()
 
     def get_analyzers(self):
         return list({analyzer for tab in self.monitors for analyzer in tab.analyzers()})

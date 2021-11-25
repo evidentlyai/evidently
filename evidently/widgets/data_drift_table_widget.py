@@ -2,6 +2,10 @@
 # coding: utf-8
 
 import json
+from typing import Dict, Optional
+
+from dataclasses import dataclass
+
 import pandas as pd
 import numpy as np
 
@@ -12,7 +16,26 @@ from evidently.model.widget import BaseWidgetInfo, AlertStats, AdditionalGraphIn
 from evidently.widgets.widget import Widget, GREY, RED
 
 
+@dataclass
+class DataDriftOptions:
+    confidence: float = 0.95
+    drift_share: float = 0.5
+    nbinsx: Optional[Dict[str, int]] = None
+    xbins = None
+
+
+def dataset_drift_evaluation(p_values, confidence=0.95, drift_share=0.5):
+    n_drifted_features = sum([1 if x < (1. - confidence) else 0 for x in p_values])
+    share_drifted_features = n_drifted_features / len(p_values)
+    dataset_drift = bool(share_drifted_features >= drift_share)
+    return n_drifted_features, share_drifted_features, dataset_drift
+
+
 class DataDriftTableWidget(Widget):
+    def __init__(self, title: str, options: DataDriftOptions):
+        super().__init__(title)
+        self.options = options
+
     def analyzers(self):
         return [DataDriftAnalyzer]
 
@@ -24,57 +47,29 @@ class DataDriftTableWidget(Widget):
         results = analyzers_results[DataDriftAnalyzer]
         num_feature_names = results["num_feature_names"]
         cat_feature_names = results["cat_feature_names"]
+        date_column = results['utility_columns']['date']
 
         # set params data
         params_data = []
 
-        confidence = results['utility_columns']['drift_conf_level']
-        date_column = results['utility_columns']['date']
+        confidence = self.options.confidence
+        drift_share = self.options.drift_share
 
-        for feature_name in num_feature_names:
-            current_small_hist = results['metrics'][feature_name]["current_small_hist"]
-            ref_small_hist = results['metrics'][feature_name]["ref_small_hist"]
-            feature_type = results['metrics'][feature_name]["feature_type"]
-
-            p_value = results['metrics'][feature_name]["p_value"]
-
-            distr_sim_test = "Detected" if p_value < (1. - confidence) else "Not Detected"
-
-            params_data.append(
-                {
-                    "details": {
-                        "parts": [
-                            {
-                                "title": "Data drift",
-                                "id": feature_name + "_drift",
-                                "type": "widget"
-                            },
-                            {
-                                "title": "Data distribution",
-                                "id": feature_name + "_distr"
-                            }
-                        ],
-                        "insights": []
-                    },
-                    "f1": feature_name,
-                    "f6": feature_type,
-                    "f3": {
-                        "x": list(ref_small_hist[1]),
-                        "y": list(ref_small_hist[0])
-                    },
-                    "f4": {
-                        "x": list(current_small_hist[1]),
-                        "y": list(current_small_hist[0])
-                    },
-                    "f2": distr_sim_test,
-                    "f5": round(p_value, 6)
-                }
-            )
-
-        for feature_name in cat_feature_names:
-            current_small_hist = results['metrics'][feature_name]["current_small_hist"]
-            ref_small_hist = results['metrics'][feature_name]["ref_small_hist"]
-
+        for feature_name in num_feature_names + cat_feature_names:
+            if self.options.nbinsx:
+                current_nbinsx = self.options.nbinsx.get(feature_name) if self.options.nbinsx.get(feature_name) else 10
+            else:
+                current_nbinsx = 10
+            current_small_hist = [t.tolist() for t in np.histogram(
+                current_data[feature_name][np.isfinite(current_data[feature_name])],
+                bins=current_nbinsx,
+                density=True
+            )]
+            ref_small_hist = [t.tolist() for t in np.histogram(
+                reference_data[feature_name][np.isfinite(reference_data[feature_name])],
+                bins=current_nbinsx,
+                density=True
+            )]
             feature_type = results['metrics'][feature_name]["feature_type"]
 
             p_value = results['metrics'][feature_name]["p_value"]
@@ -114,43 +109,35 @@ class DataDriftTableWidget(Widget):
 
         # set additionalGraphs
         additional_graphs_data = []
-        xbins = results['utility_columns']['xbins']
-        nbinsx = results['utility_columns']['nbinsx']
+        xbins = self.options.xbins
+        nbinsx = self.options.nbinsx
         for feature_name in num_feature_names + cat_feature_names:
             # plot distributions
             fig = go.Figure()
-            if xbins:
-                current_xbins = results['utility_columns']['xbins'].get(feature_name)
-                if current_xbins:
-                    current_nbinsx = None
-                else:
-                    if nbinsx:
-                        current_nbinsx = results['utility_columns']['nbinsx'].get(feature_name)
-                        current_nbinsx = current_nbinsx if current_nbinsx else 10
-                    else:
-                        current_nbinsx = 10
-                fig.add_trace(go.Histogram(x=reference_data[feature_name],
-                                           marker_color=GREY, opacity=0.6, xbins=current_xbins, nbinsx=current_nbinsx,
-                                           name='Reference',
-                                           histnorm='probability'))
-
-                fig.add_trace(go.Histogram(x=current_data[feature_name],
-                                           marker_color=RED, opacity=0.6, xbins=current_xbins, nbinsx=current_nbinsx,
-                                           name='Current',
-                                           histnorm='probability'))
-            else:
+            if xbins and xbins.get(feature_name):
+                current_xbins = xbins.get(feature_name)
                 current_nbinsx = None
+            else:
+                current_xbins = None
                 if nbinsx:
-                    current_nbinsx = results['utility_columns']['nbinsx'].get(feature_name)
-                current_nbinsx = current_nbinsx if current_nbinsx else 10
-                fig.add_trace(go.Histogram(x=reference_data[feature_name],
-                                           marker_color=GREY, opacity=0.6, nbinsx=current_nbinsx, name='Reference',
-                                           histnorm='probability'))
+                    current_nbinsx = nbinsx.get(feature_name, 10)
+                else:
+                    current_nbinsx = 10
+            fig.add_trace(go.Histogram(x=reference_data[feature_name],
+                                       marker_color=GREY,
+                                       opacity=0.6,
+                                       xbins=current_xbins,
+                                       nbinsx=current_nbinsx,
+                                       name='Reference',
+                                       histnorm='probability'))
 
-                fig.add_trace(go.Histogram(x=current_data[feature_name],
-                                           marker_color=RED, opacity=0.6, nbinsx=current_nbinsx, name='Current',
-                                           histnorm='probability'))
-
+            fig.add_trace(go.Histogram(x=current_data[feature_name],
+                                       marker_color=RED,
+                                       opacity=0.6,
+                                       xbins=current_xbins,
+                                       nbinsx=current_nbinsx,
+                                       name='Current',
+                                       histnorm='probability'))
             fig.update_layout(
                 legend=dict(
                     orientation="h",
@@ -257,14 +244,15 @@ class DataDriftTableWidget(Widget):
                     }
                 )
             )
-
+        n_drifted_features, share_drifted_features, dataset_drift = dataset_drift_evaluation(
+            [results['metrics'][fn]['p_value'] for fn in num_feature_names + cat_feature_names],
+            confidence,
+            drift_share)
         n_features = len(num_feature_names) + len(cat_feature_names)
-        drift_share = round(100. * results['metrics']['share_drifted_features'], 1)
+        drift_share = share_drifted_features
 
-        title_prefix = 'Drift is detected for ' + str(drift_share) + '% of features (' + str(
-            results['metrics']['n_drifted_features']) + ' out of ' + str(n_features) + '). '
-        title_suffix = 'Dataset Drift is detected.' if results['metrics'][
-            'dataset_drift'] else 'Dataset Drift is NOT detected.'
+        title_prefix = f'Drift is detected for {drift_share}% of features ({n_drifted_features}) out of {n_features}). '
+        title_suffix = 'Dataset Drift is detected.' if dataset_drift else 'Dataset Drift is NOT detected.'
 
         self.wi = BaseWidgetInfo(
             title=title_prefix + title_suffix,

@@ -15,7 +15,7 @@ class CatTargetDriftProfileSection(ProfileSection):
     def analyzers(self):
         return self.analyzers_types
 
-    def calculate(self, analyzers_results):
+    def calculate(self, reference_data, current_data, analyzers_results):
         result = analyzers_results[CatTargetDriftAnalyzer]
         return {
             'name': self.part_id(),

@@ -8,6 +8,7 @@ import pandas
 
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.model.widget import BaseWidgetInfo
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.widgets.widget import Widget
 
 
@@ -23,8 +24,8 @@ class Tab:
 
     def calculate(self, reference_data: pandas.DataFrame,
                   current_data: pandas.DataFrame,
-                  column_mapping: Optional[Dict],
-                  analyzers_results: Dict):
+                  column_mapping: ColumnMapping,
+                  analyzers_results: Dict[Type[Analyzer], object]):
         self.widgets = self._get_widgets()
         for widget in self.widgets:
             widget.calculate(reference_data, current_data, column_mapping, analyzers_results)

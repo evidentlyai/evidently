@@ -1,8 +1,9 @@
 import logging
-from typing import Optional, Dict
+from typing import Optional
 
 from dataclasses import dataclass
 
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.runner.loader import DataLoader, SamplingOptions, DataOptions
 
 
@@ -14,7 +15,7 @@ class RunnerOptions:
     current_data_path: Optional[str]
     current_data_options: Optional[DataOptions]
     current_data_sampling: Optional[SamplingOptions]
-    column_mapping: Dict[str, str]
+    column_mapping: ColumnMapping
     output_path: str
 
 

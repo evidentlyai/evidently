@@ -36,7 +36,7 @@ class DashboardRunner(Runner):
             tab_class = tabs_mapping.get(tab, None)
             if tab_class is None:
                 raise ValueError(f"Unknown tab {tab}")
-            tabs.append(tab_class)
+            tabs.append(tab_class())
 
         dashboard = Dashboard(tabs=tabs)
         dashboard.calculate(reference_data, current_data, self.options.column_mapping)

@@ -1,6 +1,8 @@
 import abc
 from typing import List
 
+import pandas
+
 from evidently.analyzers.base_analyzer import Analyzer
 
 
@@ -14,5 +16,5 @@ class ProfileSection:
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def calculate(self, analyzers_results):
+    def calculate(self, reference_data: pandas.DataFrame, current_data: pandas.DataFrame, analyzers_results):
         raise NotImplementedError()

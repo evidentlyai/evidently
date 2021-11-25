@@ -46,7 +46,7 @@ class ProfileRunner(Runner):
             part_class = parts_mapping.get(part, None)
             if part_class is None:
                 raise ValueError(f"Unknown profile section {part}")
-            parts.append(part_class)
+            parts.append(part_class())
 
         profile = Profile(sections=parts)
         profile.calculate(reference_data, current_data, self.options.column_mapping)

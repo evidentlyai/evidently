@@ -16,6 +16,7 @@ import evidently
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.model.dashboard import DashboardInfo
 from evidently.pipeline.pipeline import Pipeline
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.tabs.base_tab import Tab
 from evidently.utils import NumpyEncoder
 
@@ -137,18 +138,20 @@ class Dashboard(Pipeline):
     name: str
     _analyzers: List[Type[Analyzer]]
 
-    def __init__(self, tabs: List[Type[Tab]]):
+    def __init__(self, tabs: List[Tab]):
         super().__init__()
-        self.tabs_data = [t() for t in tabs]
+        self.tabs_data = tabs.copy()
         self._analyzers = list({analyzer for tab in self.tabs_data for analyzer in tab.analyzers()})
 
-    def get_analyzers(self):
+    def get_analyzers(self) -> List[Type[Analyzer]]:
         return self._analyzers
 
     def calculate(self,
                   reference_data: pandas.DataFrame,
                   current_data: pandas.DataFrame,
-                  column_mapping: dict = None):
+                  column_mapping: ColumnMapping = None):
+        if column_mapping is None:
+            column_mapping = ColumnMapping()
         self.execute(reference_data, current_data, column_mapping)
         for tab in self.tabs_data:
             tab.calculate(reference_data, current_data, column_mapping, self.analyzers_results)

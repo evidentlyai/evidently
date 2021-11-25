@@ -3,12 +3,13 @@ import json
 import logging
 import os
 import sys
-from typing import Dict, List
+from typing import Dict, List, Any
 
 from dataclasses import dataclass
 
 import yaml
 
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.telemetry import TelemetrySender
 from evidently.runner.dashboard_runner import DashboardRunnerOptions, DashboardRunner
 from evidently.runner.loader import SamplingOptions
@@ -33,7 +34,7 @@ class Sampling:
 @dataclass
 class CalculateOptions:
     data_format: DataFormatOptions
-    column_mapping: Dict[str, str]
+    column_mapping: Dict[str, Any]
     sampling: Sampling
 
 
@@ -95,7 +96,7 @@ def calculate_dashboard(config: str, reference: str, current: str, output_path: 
                                          header=opts.data_format.header),
         current_data_sampling=opts.sampling.current,
         dashboard_tabs=opts.dashboard_tabs,
-        column_mapping=opts.column_mapping,
+        column_mapping=ColumnMapping(**opts.column_mapping),
         output_path=os.path.join(output_path, report_name),
     ))
     runner.run()
@@ -136,7 +137,7 @@ def calculate_profile(config: str, reference: str, current: str, output_path: st
                                          header=opts.data_format.header),
         current_data_sampling=opts.sampling.current,
         profile_parts=opts.profile_parts,
-        column_mapping=opts.column_mapping,
+        column_mapping=ColumnMapping(**opts.column_mapping),
         output_path=os.path.join(output_path, report_name),
         pretty_print=opts.pretty_print,
     ))
