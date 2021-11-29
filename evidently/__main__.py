@@ -3,7 +3,7 @@ import json
 import logging
 import os
 import sys
-from typing import Dict, List, Any
+from typing import Dict, Any
 
 from dataclasses import dataclass
 
@@ -40,12 +40,12 @@ class CalculateOptions:
 
 @dataclass
 class DashboardOptions(CalculateOptions):
-    dashboard_tabs: List[str]
+    dashboard_tabs: Dict[str, Dict[str, str]]
 
 
 @dataclass
 class ProfileOptions(CalculateOptions):
-    profile_parts: List[str]
+    profile_parts: Dict[str, Dict[str, str]]
     pretty_print: bool = False
 
 

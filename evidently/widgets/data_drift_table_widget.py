@@ -24,18 +24,7 @@ class DataDriftOptions:
     xbins = None
 
 
-def dataset_drift_evaluation(p_values, confidence=0.95, drift_share=0.5):
-    n_drifted_features = sum([1 if x < (1. - confidence) else 0 for x in p_values])
-    share_drifted_features = n_drifted_features / len(p_values)
-    dataset_drift = bool(share_drifted_features >= drift_share)
-    return n_drifted_features, share_drifted_features, dataset_drift
-
-
 class DataDriftTableWidget(Widget):
-    def __init__(self, title: str, options: DataDriftOptions):
-        super().__init__(title)
-        self.options = options
-
     def analyzers(self):
         return [DataDriftAnalyzer]
 
@@ -51,30 +40,16 @@ class DataDriftTableWidget(Widget):
 
         # set params data
         params_data = []
-
-        confidence = self.options.confidence
-        drift_share = self.options.drift_share
+        options = self.options_provider.get(DataDriftOptions)
 
         for feature_name in num_feature_names + cat_feature_names:
-            if self.options.nbinsx:
-                current_nbinsx = self.options.nbinsx.get(feature_name) if self.options.nbinsx.get(feature_name) else 10
-            else:
-                current_nbinsx = 10
-            current_small_hist = [t.tolist() for t in np.histogram(
-                current_data[feature_name][np.isfinite(current_data[feature_name])],
-                bins=current_nbinsx,
-                density=True
-            )]
-            ref_small_hist = [t.tolist() for t in np.histogram(
-                reference_data[feature_name][np.isfinite(reference_data[feature_name])],
-                bins=current_nbinsx,
-                density=True
-            )]
+            current_small_hist = results['metrics'][feature_name]["current_small_hist"]
+            ref_small_hist = results['metrics'][feature_name]["ref_small_hist"]
             feature_type = results['metrics'][feature_name]["feature_type"]
 
             p_value = results['metrics'][feature_name]["p_value"]
 
-            distr_sim_test = "Detected" if p_value < (1. - confidence) else "Not Detected"
+            distr_sim_test = "Detected" if p_value < (1. - options.confidence) else "Not Detected"
 
             params_data.append(
                 {
@@ -109,8 +84,8 @@ class DataDriftTableWidget(Widget):
 
         # set additionalGraphs
         additional_graphs_data = []
-        xbins = self.options.xbins
-        nbinsx = self.options.nbinsx
+        xbins = options.xbins
+        nbinsx = options.nbinsx
         for feature_name in num_feature_names + cat_feature_names:
             # plot distributions
             fig = go.Figure()
@@ -244,12 +219,10 @@ class DataDriftTableWidget(Widget):
                     }
                 )
             )
-        n_drifted_features, share_drifted_features, dataset_drift = dataset_drift_evaluation(
-            [results['metrics'][fn]['p_value'] for fn in num_feature_names + cat_feature_names],
-            confidence,
-            drift_share)
-        n_features = len(num_feature_names) + len(cat_feature_names)
-        drift_share = share_drifted_features
+        n_drifted_features = results['metrics']['n_drifted_features']
+        dataset_drift = results['metrics']['dataset_drift']
+        n_features = results['metrics']['n_features']
+        drift_share = results['metrics']['share_drifted_features']
 
         title_prefix = f'Drift is detected for {drift_share}% of features ({n_drifted_features}) out of {n_features}). '
         title_suffix = 'Dataset Drift is detected.' if dataset_drift else 'Dataset Drift is NOT detected.'

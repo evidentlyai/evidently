@@ -1,6 +1,6 @@
 import json
 from datetime import datetime
-from typing import List, Any, Dict
+from typing import Any, Dict, Sequence, Optional
 
 import pandas
 
@@ -12,10 +12,10 @@ from evidently.utils import NumpyEncoder
 
 class Profile(Pipeline):
     result: Dict[str, Any]
+    stages: Sequence[ProfileSection]
 
-    def __init__(self, sections: List[ProfileSection]):
-        super().__init__()
-        self.parts = sections.copy()
+    def __init__(self, sections: Sequence[ProfileSection], options: Optional[list] = None):
+        super().__init__(sections, options if options is not None else [])
         self.result = {}
 
     def calculate(self,
@@ -23,11 +23,13 @@ class Profile(Pipeline):
                   current_data: pandas.DataFrame,
                   column_mapping: ColumnMapping):
         self.execute(reference_data, current_data, column_mapping)
-        self.result = {part.part_id(): part.calculate(reference_data, current_data, self.analyzers_results)
-                       for part in self.parts}
+        self.result = {
+            part.part_id(): part.calculate(reference_data, current_data, column_mapping, self.analyzers_results)
+            for part in self.stages
+        }
 
     def get_analyzers(self):
-        return list({analyzer for tab in self.parts for analyzer in tab.analyzers()})
+        return list({analyzer for tab in self.stages for analyzer in tab.analyzers()})
 
     def json(self):
         return json.dumps(self.object(), cls=NumpyEncoder)

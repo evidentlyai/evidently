@@ -1,13 +1,13 @@
-from typing import Optional, List
+from typing import Optional, List, Union, Sequence
 
 from dataclasses import dataclass
 
 
 @dataclass
 class ColumnMapping:
-    target: str = "target"
-    prediction: str = "prediction"
-    datetime: str = "datetime"
+    target: Optional[str] = "target"
+    prediction: Optional[Union[str, Sequence[str]]] = "prediction"
+    datetime: Optional[str] = "datetime"
     id: Optional[str] = None
     numerical_features: Optional[List[str]] = None
     categorical_features: Optional[List[str]] = None

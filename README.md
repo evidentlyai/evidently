@@ -110,18 +110,16 @@ iris_frame['target'] = iris.target
 ```
 
 To generate the **Data Drift** report, run:
-
 ```python
-iris_data_drift_report = Dashboard(tabs=[DataDriftTab])
-iris_data_drift_report.calculate(reference_data, current_data, iris_frame[:100])
+iris_data_drift_report = Dashboard(tabs=[DataDriftTab()])
+iris_data_drift_report.calculate(iris_frame[:100], iris_frame[100:], column_mapping = None)
 iris_data_drift_report.save("reports/my_report.html")
 ```
 
 To generate the **Data Drift** and the **Categorical Target Drift** reports, run:
-
 ```python
-iris_data_and_target_drift_report = Dashboard(tabs=[DataDriftTab, CatTargetDriftTab])
-iris_data_and_target_drift_report.calculate(reference_data, current_data, iris_frame[:100])
+iris_data_and_target_drift_report = Dashboard(tabs=[DataDriftTab(), CatTargetDriftTab()])
+iris_data_and_target_drift_report.calculate(iris_frame[:100], iris_frame[100:], column_mapping = None)
 iris_data_and_target_drift_report.save("reports/my_report_with_2_tabs.html")
 ```
 
@@ -129,44 +127,38 @@ If you get a security alert, press "trust html".
 HTML report does not open automatically. To explore it, you should open it from the destination folder.
 
 To generate the **Regression Model Performance** report, run:
-
 ```python
-regression_model_performance = Dashboard(tabs=[RegressionPerfomanceTab])
-regression_model_performance.calculate(reference_data, current_data, reference_data) 
+regression_model_performance = Dashboard(tabs=[RegressionPerfomanceTab()]) 
+regression_model_performance.calculate(reference_data, current_data, column_mapping = column_mapping) 
 ```
 
 You can also generate a **Regression Model Performance** for a single `DataFrame`. In this case, run:
-
 ```python
-regression_single_model_performance = Dashboard(tabs=[RegressionPerformanceTab])
-regression_single_model_performance.calculate(reference_data, current_data, reference_data)
+regression_single_model_performance = Dashboard(tabs=[RegressionPerformanceTab()])
+regression_single_model_performance.calculate(reference_data, None, column_mapping=column_mapping)
 ```
 
 To generate the **Classification Model Performance** report, run:
-
 ```python
-classification_performance_report = Dashboard(tabs=[ClassificationPerformanceTab])
-classification_performance_report.calculate(reference_data, current_data, reference_data)
+classification_performance_report = Dashboard(tabs=[ClassificationPerformanceTab()])
+classification_performance_report.calculate(reference_data, current_data, column_mapping = column_mapping)
 ```
  
 For **Probabilistic Classification Model Performance** report, run:
-
 ```python
-classification_performance_report = Dashboard(tabs=[ProbClassificationPerformanceTab])
-classification_performance_report.calculate(reference_data, current_data, reference_data)
+classification_performance_report = Dashboard(tabs=[ProbClassificationPerformanceTab()])
+classification_performance_report.calculate(reference_data, current_data, column_mapping = column_mapping)
 ```
  
 You can also generate either of the **Classification** reports for a single `DataFrame`. In this case, run:
-
 ```python
-classification_single_model_performance = Dashboard(tabs=[ClassificationPerformanceTab])
-classification_single_model_performance.calculate(reference_data, current_data, reference_data)
+classification_single_model_performance = Dashboard(tabs=[ClassificationPerformanceTab()])
+classification_single_model_performance.calculate(reference_data, None, column_mapping=column_mapping)
 ```
 or
-
 ```python
-prob_classification_single_model_performance = Dashboard(tabs=[ProbClassificationPerformanceTab])
-prob_classification_single_model_performance.calculate(reference_data, current_data, reference_data)
+prob_classification_single_model_performance = Dashboard(tabs=[ProbClassificationPerformanceTab()])
+prob_classification_single_model_performance.calculate(reference_data, None, column_mapping=column_mapping)
 ```
 
 #### Option 2: Profile
@@ -185,53 +177,46 @@ iris_frame = pd.DataFrame(iris.data, columns = iris.feature_names)
 ```
 
 To generate the **Data Drift** profile, run:
-
 ```python
-iris_data_drift_profile = Profile(sections=[DataDriftProfileSection])
-iris_data_drift_profile.calculate(reference_data, current_data, iris_frame)
+iris_data_drift_profile = Profile(sections=[DataDriftProfileSection()])
+iris_data_drift_profile.calculate(iris_frame, iris_frame, column_mapping = None)
 iris_data_drift_profile.json() 
 ```
 
 To generate the **Data Drift** and the **Categorical Target Drift** profile, run:
-
 ```python
-iris_target_and_data_drift_profile = Profile(sections=[DataDriftProfileSection, CatTargetDriftProfileSection])
-iris_target_and_data_drift_profile.calculate(reference_data, current_data, iris_frame[:75])
+iris_target_and_data_drift_profile = Profile(sections=[DataDriftProfileSection(), CatTargetDriftProfileSection()])
+iris_target_and_data_drift_profile.calculate(iris_frame[:75], iris_frame[75:], column_mapping = None) 
 iris_target_and_data_drift_profile.json() 
 ```
 
 You can also generate a **Regression Model Performance** for a single `DataFrame`. In this case, run:
-
 ```python
-regression_single_model_performance = Profile(sections=[RegressionPerformanceProfileSection])
-regression_single_model_performance.calculate(reference_data, current_data, reference_data)
+regression_single_model_performance = Profile(sections=[RegressionPerformanceProfileSection()])
+regression_single_model_performance.calculate(reference_data, None, column_mapping=column_mapping)
 ```
 
 To generate the **Classification Model Performance** profile, run:
-
 ```python
-classification_performance_profile = Profile(sections=[ClassificationPerformanceProfileSection])
-classification_performance_profile.calculate(reference_data, current_data, reference_data)
+classification_performance_profile = Profile(sections=[ClassificationPerformanceProfileSection()])
+classification_performance_profile.calculate(reference_data, current_data, column_mapping = column_mapping)
 ```
 
 For **Probabilistic Classification Model Performance** profile, run:
-
 ```python
-classification_performance_report = Profile(sections=[ProbClassificationPerformanceProfileSection])
-classification_performance_report.calculate(reference_data, current_data, reference_data)
+classification_performance_report = Profile(sections=[ProbClassificationPerformanceProfileSection()])
+classification_performance_report.calculate(reference_data, current_data, column_mapping = column_mapping)
 ```
 
 You can also generate either of the **Classification** profiles for a single `DataFrame`. In this case, run:
-
 ```python
-classification_single_model_performance = Profile(sections=[ClassificationPerformanceProfileSection])
-classification_single_model_performance.calculate(reference_data, current_data, reference_data)
+classification_single_model_performance = Profile(sections=[ClassificationPerformanceProfileSection()])
+classification_single_model_performance.calculate(reference_data, None, column_mapping=column_mapping)
 ```
 or
-
 ```python
-prob_classification_single_model_performance = Profile(sections=[ProbClassificationPerformanceProfileSection])
-prob_classification_single_model_performance.calculate(reference_data, current_data, reference_data)
+prob_classification_single_model_performance = Profile(sections=[ProbClassificationPerformanceProfileSection()])
+prob_classification_single_model_performance.calculate(reference_data, None, column_mapping=column_mapping)
 ```
 
 ### Google Colab, Kaggle Kernel, Deepnote
@@ -306,6 +291,7 @@ To configure a report or a profile you need to create the `config.json` file. Th
 Here is an example of a simple configuration for a report, where we have comma separated `csv` files with headers and there is no `date` column in the data.
 
 **Dashboard**:
+
 ```json
 {
   "data_format": {
@@ -313,9 +299,11 @@ Here is an example of a simple configuration for a report, where we have comma s
     "header": true,
     "date_column": null
   },
-  "column_mapping" : {},
+  "column_mapping": {},
   "dashboard_tabs": {
-    "cat_target_drift": {}
+    "cat_target_drift": {
+      "verbose_level": "full"
+    }
   }
 }
 ```

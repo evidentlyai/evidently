@@ -15,7 +15,7 @@ class RegressionPerformanceProfileSection(ProfileSection):
     def analyzers(self):
         return self.analyzers_types
 
-    def calculate(self, reference_data, current_data, analyzers_results):
+    def calculate(self, reference_data, current_data, column_mapping, analyzers_results):
         result = analyzers_results[RegressionPerformanceAnalyzer]
 
         return {

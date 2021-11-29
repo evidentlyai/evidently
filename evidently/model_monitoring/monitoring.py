@@ -1,8 +1,9 @@
 import abc
-from typing import List, Dict, Type, Generator, Tuple, Optional
+from typing import List, Dict, Type, Generator, Tuple, Optional, Sequence
 
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.pipeline.pipeline import Pipeline
+from evidently.pipeline.stage import PipelineStage
 
 
 class ModelMonitoringMetric:
@@ -23,7 +24,7 @@ class ModelMonitoringMetric:
 MetricsType = Tuple[ModelMonitoringMetric, float, Optional[Dict[str, str]]]
 
 
-class ModelMonitor:
+class ModelMonitor(PipelineStage):
     @abc.abstractmethod
     def monitor_id(self) -> str:
         raise NotImplementedError()
@@ -38,9 +39,9 @@ class ModelMonitor:
 
 
 class ModelMonitoring(Pipeline):
-    def __init__(self, monitors: List[ModelMonitor]):
-        super().__init__()
-        self.monitors = monitors.copy()
+    def __init__(self, monitors: Sequence[ModelMonitor], options: list):
+        super().__init__(monitors, options if options is not None else [])
+        self.monitors = list(monitors)
 
     def get_analyzers(self):
         return list({analyzer for tab in self.monitors for analyzer in tab.analyzers()})

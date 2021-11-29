@@ -1,15 +1,16 @@
 from dataclasses import dataclass
-from typing import List
+from typing import Dict
 
 from evidently.dashboard import Dashboard
 from evidently.runner.runner import RunnerOptions, Runner
 from evidently.tabs import DataDriftTab, CatTargetDriftTab, ClassificationPerformanceTab, \
     NumTargetDriftTab, ProbClassificationPerformanceTab, RegressionPerformanceTab
+from evidently.tabs.base_tab import Verbose
 
 
 @dataclass
 class DashboardRunnerOptions(RunnerOptions):
-    dashboard_tabs: List[str]
+    dashboard_tabs: Dict[str, Dict[str, str]]
 
 
 tabs_mapping = dict(
@@ -32,11 +33,12 @@ class DashboardRunner(Runner):
 
         tabs = []
 
-        for tab in self.options.dashboard_tabs:
+        for tab, params in self.options.dashboard_tabs.items():
             tab_class = tabs_mapping.get(tab, None)
             if tab_class is None:
                 raise ValueError(f"Unknown tab {tab}")
-            tabs.append(tab_class())
+            verbose_level = params.get('verbose_level', None)
+            tabs.append(tab_class(verbose_level=Verbose.parse_level(verbose_level)))
 
         dashboard = Dashboard(tabs=tabs)
         dashboard.calculate(reference_data, current_data, self.options.column_mapping)

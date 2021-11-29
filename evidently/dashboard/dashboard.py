@@ -7,13 +7,11 @@ import os
 import uuid
 import base64
 from dataclasses import asdict
-import typing
-from typing import List, Dict, Type
+from typing import List, Callable, Dict, Optional, Sequence
 
 import pandas
 
 import evidently
-from evidently.analyzers.base_analyzer import Analyzer
 from evidently.model.dashboard import DashboardInfo
 from evidently.pipeline.pipeline import Pipeline
 from evidently.pipeline.column_mapping import ColumnMapping
@@ -136,15 +134,10 @@ def __load_font():
 
 class Dashboard(Pipeline):
     name: str
-    _analyzers: List[Type[Analyzer]]
+    stages: Sequence[Tab]
 
-    def __init__(self, tabs: List[Tab]):
-        super().__init__()
-        self.tabs_data = tabs.copy()
-        self._analyzers = list({analyzer for tab in self.tabs_data for analyzer in tab.analyzers()})
-
-    def get_analyzers(self) -> List[Type[Analyzer]]:
-        return self._analyzers
+    def __init__(self, tabs: Sequence[Tab], options: Optional[List[object]] = None):
+        super().__init__(tabs, options if options is not None else [])
 
     def calculate(self,
                   reference_data: pandas.DataFrame,
@@ -153,12 +146,12 @@ class Dashboard(Pipeline):
         if column_mapping is None:
             column_mapping = ColumnMapping()
         self.execute(reference_data, current_data, column_mapping)
-        for tab in self.tabs_data:
+        for tab in self.stages:
             tab.calculate(reference_data, current_data, column_mapping, self.analyzers_results)
 
-    def __render(self, template: typing.Callable[[TemplateParams], str]):
+    def __render(self, template: Callable[[TemplateParams], str]):
         dashboard_id = "evidently_dashboard_" + str(uuid.uuid4()).replace("-", "")
-        tab_widgets = [t.info() for t in self.tabs_data]
+        tab_widgets = [t.info() for t in self.stages]
 
         dashboard_info = DashboardInfo(dashboard_id, [item for tab in tab_widgets for item in tab if item is not None])
         additional_graphs = {}
@@ -171,7 +164,7 @@ class Dashboard(Pipeline):
 
     def _json(self):
         dashboard_id = "evidently_dashboard_" + str(uuid.uuid4()).replace("-", "")
-        tab_widgets = [t.info() for t in self.tabs_data]
+        tab_widgets = [t.info() for t in self.stages]
         dashboard_info = DashboardInfo(dashboard_id, [item for tab in tab_widgets for item in tab if item is not None])
         return json.dumps(asdict(dashboard_info), cls=NumpyEncoder)
 
