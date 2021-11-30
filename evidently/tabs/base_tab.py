@@ -16,7 +16,7 @@ VerboseLevel = int
 
 class Verbose:
     FULL = 0
-    SHORT= 1
+    SHORT = 1
     ALWAYS = 99  # should be max value in list
 
     @staticmethod
