@@ -17,9 +17,9 @@ class ClassificationPerformanceTab(Tab):
          Verbose.ALWAYS),
         (ClassSupportWidget("Reference: Class Representation"), Verbose.ALWAYS),
         (ClassSupportWidget("Current: Class Representation", 'current'), Verbose.ALWAYS),
-        (ClassConfMatrixWidget("Reference: Confusion Matrix"), Verbose.ALWAYS),
-        (ClassConfMatrixWidget("Current: Confusion Matrix", 'current'), Verbose.ALWAYS),
+        (ClassConfMatrixWidget("Reference: Confusion Matrix"), Verbose.FULL),
+        (ClassConfMatrixWidget("Current: Confusion Matrix", 'current'), Verbose.FULL),
         (ClassMetricsMatrixWidget("Reference: Quality Metrics by Class"), Verbose.ALWAYS),
         (ClassMetricsMatrixWidget("Current: Quality Metrics by Class", 'current'), Verbose.ALWAYS),
-        (ClassConfusionBasedFeatureDistrTable("Classification Quality By Feature"), Verbose.ALWAYS),
+        (ClassConfusionBasedFeatureDistrTable("Classification Quality By Feature"), Verbose.FULL),
     ]

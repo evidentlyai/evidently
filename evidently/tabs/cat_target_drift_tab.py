@@ -9,5 +9,5 @@ class CatTargetDriftTab(Tab):
     widgets = [
         (CatOutputDriftWidget("Target Drift"), Verbose.ALWAYS),
         (CatOutputDriftWidget("Prediction Drift", 'prediction'), Verbose.ALWAYS),
-        (CatTargetPredFeatureTable("Target (Prediction) Behavior By Feature"), Verbose.ALWAYS),
+        (CatTargetPredFeatureTable("Target (Prediction) Behavior By Feature"), Verbose.FULL),
     ]

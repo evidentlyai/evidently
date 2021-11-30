@@ -10,10 +10,10 @@ from evidently.widgets.num_target_pred_feature_table_widget import NumTargetPred
 class NumTargetDriftTab(Tab):
     widgets = [
         (NumOutputDriftWidget("Target Drift"), Verbose.ALWAYS),
-        (NumOutputCorrWidget("Target Correlations"), Verbose.ALWAYS),
-        (NumOutputValuesWidget("Target Values"), Verbose.ALWAYS),
+        (NumOutputCorrWidget("Target Correlations"), Verbose.FULL),
+        (NumOutputValuesWidget("Target Values"), Verbose.FULL),
         (NumOutputDriftWidget("Prediction Drift", "prediction"), Verbose.ALWAYS),
-        (NumOutputCorrWidget("Prediction Correlations", "prediction"), Verbose.ALWAYS),
-        (NumOutputValuesWidget("Prediction Values", "prediction"), Verbose.ALWAYS),
-        (NumTargetPredFeatureTable("Target (Prediction) Behavior By Feature"), Verbose.ALWAYS),
+        (NumOutputCorrWidget("Prediction Correlations", "prediction"), Verbose.FULL),
+        (NumOutputValuesWidget("Prediction Values", "prediction"), Verbose.FULL),
+        (NumTargetPredFeatureTable("Target (Prediction) Behavior By Feature"), Verbose.FULL),
     ]
