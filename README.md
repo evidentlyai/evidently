@@ -302,7 +302,7 @@ Here is an example of a simple configuration for a report, where we have comma s
   "column_mapping": {},
   "dashboard_tabs": {
     "cat_target_drift": {
-      "verbose_level": "full"
+      "verbose_level": "1"
     }
   }
 }
@@ -349,7 +349,19 @@ Here is an example of a more complicated configuration, where we have comma sepa
       "mean area", "mean smoothness", "mean compactness", "mean concavity", 
       "mean concave points", "mean symmetry"]},
   "dashboard_tabs": {
-   "cat_target_drift": {} 
+   "cat_target_drift": {
+      "include_widgets": ["Target Drift", "Target (Prediction) Behavior By Feature"]
+    } 
+  },
+  "options": {
+    "data_drift": {
+      "confidence": 0.99,
+      "drift_share": 0.5,
+      "nbinsx": {
+        "mean perimeter": 4,
+        "mean symmetry": 4
+      }
+    }
   },
   "sampling": {
       "reference": {
