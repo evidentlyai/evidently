@@ -40,7 +40,7 @@ class CalculateOptions:
 
 @dataclass
 class DashboardOptions(CalculateOptions):
-    dashboard_tabs: Dict[str, Dict[str, str]]
+    dashboard_tabs: Dict[str, Dict[str, object]]
 
 
 @dataclass
