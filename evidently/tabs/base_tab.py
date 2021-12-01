@@ -58,3 +58,7 @@ class Tab(PipelineStage):
 
     def info(self) -> List[Optional[BaseWidgetInfo]]:
         return [w.get_info() for w in self._widgets]
+
+    @classmethod
+    def list_widgets(cls):
+        return [widget[0].title for widget in cls.widgets]
