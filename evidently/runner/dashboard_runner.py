@@ -37,7 +37,9 @@ class DashboardRunner(Runner):
             if tab_class is None:
                 raise ValueError(f"Unknown tab {tab}")
             try:
-                verbose_level = int(params.get('verbose_level', None))
+                verbose_level = int(params.get('verbose_level', None)) \
+                    if params.get('verbose_level', None) is not None\
+                    else None
             except ValueError as ex:
                 raise ValueError(f"Failed to parse verbose level for tab {tab}") from ex
             include_widgets = params.get('include_widgets', None)

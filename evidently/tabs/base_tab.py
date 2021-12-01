@@ -25,9 +25,11 @@ class Tab(PipelineStage):
     _widgets: List[Widget]
 
     def __init__(self,
-                 verbose_level: VerboseLevel = Verbose.FULL,
+                 verbose_level: VerboseLevel = None,
                  include_widgets: List[str] = None):
         super().__init__()
+        if verbose_level is None:
+            verbose_level = Verbose.FULL
         self._widgets = []
         self.details_level = verbose_level
         for widget in self.widgets:
