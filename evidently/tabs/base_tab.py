@@ -15,18 +15,9 @@ VerboseLevel = int
 
 
 class Verbose:
-    FULL = 0
-    SHORT = 1
-    ALWAYS = 99  # should be max value in list
-
-    @staticmethod
-    def parse_level(string: str):
-        string_upper = string.upper()
-        if string_upper == "FULL":
-            return Verbose.FULL
-        if string_upper == "SHORT":
-            return Verbose.SHORT
-        raise ValueError(f"Unknown verbose level: {string}")
+    ALWAYS = -1
+    SHORT = 0
+    FULL = 1
 
 
 class Tab(PipelineStage):
@@ -42,7 +33,7 @@ class Tab(PipelineStage):
         for widget in self.widgets:
             if include_widgets is not None and widget[0].title not in include_widgets:
                 continue
-            if include_widgets is None and widget[1] < verbose_level:
+            if include_widgets is None and widget[1] > verbose_level:
                 continue
             self._widgets.append(widget[0])
             for analyzer in widget[0].analyzers():
