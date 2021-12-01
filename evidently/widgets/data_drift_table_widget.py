@@ -2,26 +2,15 @@
 # coding: utf-8
 
 import json
-from typing import Dict, Optional
-
-from dataclasses import dataclass
 
 import pandas as pd
 import numpy as np
 
 import plotly.graph_objs as go
 
-from evidently.analyzers.data_drift_analyzer import DataDriftAnalyzer
+from evidently.analyzers.data_drift_analyzer import DataDriftAnalyzer, DataDriftOptions
 from evidently.model.widget import BaseWidgetInfo, AlertStats, AdditionalGraphInfo
 from evidently.widgets.widget import Widget, GREY, RED
-
-
-@dataclass
-class DataDriftOptions:
-    confidence: float = 0.95
-    drift_share: float = 0.5
-    nbinsx: Optional[Dict[str, int]] = None
-    xbins = None
 
 
 class DataDriftTableWidget(Widget):

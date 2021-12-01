@@ -48,7 +48,7 @@ class ProfileRunner(Runner):
                 raise ValueError(f"Unknown profile section {part}")
             parts.append(part_class())
 
-        profile = Profile(sections=parts)
+        profile = Profile(sections=parts, options=self.options.options)
         profile.calculate(reference_data, current_data, self.options.column_mapping)
         output_path = self.options.output_path \
             if self.options.output_path.endswith(".json") \

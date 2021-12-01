@@ -14,7 +14,7 @@ from evidently.telemetry import TelemetrySender
 from evidently.runner.dashboard_runner import DashboardRunnerOptions, DashboardRunner
 from evidently.runner.loader import SamplingOptions
 from evidently.runner.profile_runner import ProfileRunner, ProfileRunnerOptions
-from evidently.runner.runner import DataOptions
+from evidently.runner.runner import DataOptions, parse_options
 from evidently._config import TELEMETRY_ENABLED, TELEMETRY_ADDRESS
 
 
@@ -96,6 +96,7 @@ def calculate_dashboard(config: str, reference: str, current: str, output_path: 
                                          header=opts.data_format.header),
         current_data_sampling=opts.sampling.current,
         dashboard_tabs=opts.dashboard_tabs,
+        options=parse_options(opts_data["options"]),
         column_mapping=ColumnMapping(**opts.column_mapping),
         output_path=os.path.join(output_path, report_name),
     ))
@@ -138,6 +139,7 @@ def calculate_profile(config: str, reference: str, current: str, output_path: st
         current_data_sampling=opts.sampling.current,
         profile_parts=opts.profile_parts,
         column_mapping=ColumnMapping(**opts.column_mapping),
+        options=parse_options(opts_data.get("options", None)),
         output_path=os.path.join(output_path, report_name),
         pretty_print=opts.pretty_print,
     ))

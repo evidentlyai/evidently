@@ -6,10 +6,14 @@
   },
   "column_mapping" : {},
   "profile_sections": {
+    "data_drift": {}
+  },
+  "options": {
     "data_drift": {
-      "drift_share": 0.4,
-      "nbinsx": {},
-      "xbins": {}
+      "confidence": 0.95,
+      "drift_share": 0.5,
+      "nbinsx": null,
+      "xbins": null
     }
   },
   "pretty_print": true,

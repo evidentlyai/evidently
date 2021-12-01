@@ -320,6 +320,14 @@ Here is an example of a simple configuration for a report, where we have comma s
   "profile_sections": {
     "data_drift": {}
   },
+  "options": {
+    "data_drift": {
+      "confidence": 0.95,
+      "drift_share": 0.5,
+      "nbinsx": null,
+      "xbins": null
+    }
+  },
   "pretty_print": true
 }
 ```

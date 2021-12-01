@@ -43,6 +43,6 @@ class DashboardRunner(Runner):
             include_widgets = params.get('include_widgets', None)
             tabs.append(tab_class(verbose_level=verbose_level, include_widgets=include_widgets))
 
-        dashboard = Dashboard(tabs=tabs)
+        dashboard = Dashboard(tabs=tabs, options=self.options.options)
         dashboard.calculate(reference_data, current_data, self.options.column_mapping)
         dashboard.save(self.options.output_path + ".html")

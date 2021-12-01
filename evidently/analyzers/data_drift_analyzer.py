@@ -20,6 +20,14 @@ class DataDriftOptions:
     nbinsx: Optional[Dict[str, int]] = None
     xbins: Optional[Dict[str, int]] = None
 
+    def as_dict(self):
+        return {
+            "confidence": self.confidence,
+            "drift_share": self.drift_share,
+            "nbinsx": self.nbinsx,
+            "xbins": self.xbins
+        }
+
 
 def dataset_drift_evaluation(p_values, confidence=0.95, drift_share=0.5):
     n_drifted_features = sum([1 if x < (1. - confidence) else 0 for x in p_values])
@@ -46,6 +54,7 @@ class DataDriftAnalyzer(Analyzer):
         confidence = options.confidence
         drift_share = options.drift_share
 
+        result['options'] = options.as_dict()
         # calculate result
         result['metrics'] = {}
 
