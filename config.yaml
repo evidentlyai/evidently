@@ -4,7 +4,10 @@ data_format:
   date_column: "dteday"
 column_mapping: {}
 profile_sections:
-  - "data_drift"
+  - data_drift:
+      xbins:
+      nbinsx:
+      drift_share: 0.5
 pretty_print: true
 sampling:
   reference:

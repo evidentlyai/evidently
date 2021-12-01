@@ -7,6 +7,7 @@ from typing import Optional
 import pandas
 
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options import OptionsProvider
 
 RED = "#ed0400"
 GREY = "#4d4d4d"
@@ -15,6 +16,7 @@ GREY = "#4d4d4d"
 class Widget:
     title: str
     wi: Optional[BaseWidgetInfo]
+    options_provider: OptionsProvider
 
     def __init__(self, title: str):
         self.title = title

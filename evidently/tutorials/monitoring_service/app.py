@@ -50,7 +50,7 @@ class MonitoringService:
                  reference: pandas.DataFrame,
                  options: MonitoringServiceOptions,
                  column_mapping: dict = None):
-        self.monitoring = model_monitoring.ModelMonitoring(monitors=[monitor_mapping[k] for k in options.monitors])
+        self.monitoring = model_monitoring.ModelMonitoring(monitors=[monitor_mapping[k]() for k in options.monitors])
 
         if options.use_reference:
             self.reference = reference.iloc[:-options.window_size, :].copy()

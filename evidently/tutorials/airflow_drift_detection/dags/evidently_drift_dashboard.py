@@ -31,7 +31,7 @@ def load_data_execute(**context):
 def drift_analysis_execute(**context):
     data = context.get("ti").xcom_pull(key='boston_frame')
 
-    boston_data_drift_dashboard = Dashboard(tabs=[DataDriftTab])
+    boston_data_drift_dashboard = Dashboard(tabs=[DataDriftTab()])
     boston_data_drift_dashboard.calculate(data[:200], data[200:])
 
     try:

@@ -1,12 +1,32 @@
 #!/usr/bin/env python
 # coding: utf-8
+from typing import Dict, Optional
+
+from dataclasses import dataclass
 
 import pandas as pd
 import numpy as np
 from scipy.stats import ks_2samp, chisquare
 
+from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
 from .utils import proportions_diff_z_stat_ind, proportions_diff_z_test, process_columns
+
+
+@dataclass
+class DataDriftOptions:
+    confidence: float = 0.95
+    drift_share: float = 0.5
+    nbinsx: Optional[Dict[str, int]] = None
+    xbins: Optional[Dict[str, int]] = None
+
+    def as_dict(self):
+        return {
+            "confidence": self.confidence,
+            "drift_share": self.drift_share,
+            "nbinsx": self.nbinsx,
+            "xbins": self.xbins
+        }
 
 
 def dataset_drift_evaluation(p_values, confidence=0.95, drift_share=0.5):
@@ -16,17 +36,25 @@ def dataset_drift_evaluation(p_values, confidence=0.95, drift_share=0.5):
     return n_drifted_features, share_drifted_features, dataset_drift
 
 
+class DataDriftAnalyzerResults:
+    pass
+
+
 class DataDriftAnalyzer(Analyzer):
-    def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping):
+    results: DataDriftAnalyzerResults
+
+    def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping: ColumnMapping):
+        options = self.options_provider.get(DataDriftOptions)
         columns = process_columns(reference_data, column_mapping)
         result = columns.as_dict()
 
         num_feature_names = columns.num_feature_names
         cat_feature_names = columns.cat_feature_names
-        nbinsx = columns.utility_columns.nbinsx
-        confidence = columns.utility_columns.drift_conf_level
-        drift_share = columns.utility_columns.drift_features_share
+        nbinsx = options.nbinsx
+        confidence = options.confidence
+        drift_share = options.drift_share
 
+        result['options'] = options.as_dict()
         # calculate result
         result['metrics'] = {}
 

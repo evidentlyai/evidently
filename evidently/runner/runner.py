@@ -1,8 +1,10 @@
 import logging
-from typing import Optional, Dict
+from typing import Optional, List, Dict, Type
 
 from dataclasses import dataclass
 
+from evidently.analyzers.data_drift_analyzer import DataDriftOptions
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.runner.loader import DataLoader, SamplingOptions, DataOptions
 
 
@@ -14,8 +16,26 @@ class RunnerOptions:
     current_data_path: Optional[str]
     current_data_options: Optional[DataOptions]
     current_data_sampling: Optional[SamplingOptions]
-    column_mapping: Dict[str, str]
+    column_mapping: ColumnMapping
+    options: List[object]
     output_path: str
+
+
+options_mapping: Dict[str, Type] = {
+    'data_drift': DataDriftOptions
+}
+
+
+def parse_options(raw_dict: Optional[Dict[str, Dict[str, object]]]) -> List[object]:
+    if raw_dict is None:
+        return []
+    result = []
+    for key, params in raw_dict.items():
+        opt_class = options_mapping.get(key, None)
+        if opt_class is None:
+            raise ValueError(f"No options with id {key} exists")
+        result.append(opt_class(**params))
+    return result
 
 
 class Runner:
