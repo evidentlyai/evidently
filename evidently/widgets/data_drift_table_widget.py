@@ -213,7 +213,8 @@ class DataDriftTableWidget(Widget):
         n_features = results['metrics']['n_features']
         drift_share = results['metrics']['share_drifted_features']
 
-        title_prefix = f'Drift is detected for {drift_share}% of features ({n_drifted_features}) out of {n_features}). '
+        title_prefix = f'Drift is detected for {drift_share * 100:.2f}% of features ({n_drifted_features}' \
+                       f' out of {n_features}). '
         title_suffix = 'Dataset Drift is detected.' if dataset_drift else 'Dataset Drift is NOT detected.'
 
         self.wi = BaseWidgetInfo(
