@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # coding: utf-8
-
 import json
 from typing import Optional
 
@@ -9,7 +8,7 @@ import pandas as pd
 import plotly.graph_objs as go
 
 from evidently.analyzers.cat_target_drift_analyzer import CatTargetDriftAnalyzer
-from evidently.model.widget import BaseWidgetInfo, AlertStats
+from evidently.model.widget import BaseWidgetInfo
 from evidently.widgets.widget import Widget, RED, GREY
 
 
@@ -21,18 +20,15 @@ class CatOutputDriftWidget(Widget):
     def analyzers(self):
         return [CatTargetDriftAnalyzer]
 
-    def get_info(self) -> Optional[BaseWidgetInfo]:
-        return self.wi
-
     def calculate(self,
                   reference_data: pd.DataFrame,
                   current_data: pd.DataFrame,
                   column_mapping,
-                  analyzers_results):
+                  analyzers_results) -> Optional[BaseWidgetInfo]:
         results = analyzers_results[CatTargetDriftAnalyzer]
 
         if results['utility_columns'][self.kind] is None:
-            return
+            return None
 
         output_name = results['metrics'][self.kind + '_name']
         # output_type = results['metrics'][self.kind + '_type']
@@ -61,19 +57,13 @@ class CatOutputDriftWidget(Widget):
 
         output_drift_json = json.loads(fig.to_json())
 
-        self.wi = BaseWidgetInfo(
+        return BaseWidgetInfo(
             title=self.kind.title() + " drift: ".title() + output_sim_test + ", p_value=" + str(
                 round(output_p_value, 6)),
             type="big_graph",
-            details="",
-            alertStats=AlertStats(),
-            alerts=[],
-            alertsPosition="row",
-            insights=[],
             size=2,
             params={
                 "data": output_drift_json['data'],
                 "layout": output_drift_json['layout']
-            },
-            additionalGraphs=[],
+            }
         )

@@ -1,32 +1,13 @@
 #!/usr/bin/env python
 # coding: utf-8
-from typing import Dict, Optional
-
-from dataclasses import dataclass
-
 import pandas as pd
 import numpy as np
 from scipy.stats import ks_2samp, chisquare
 
 from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
+from evidently.options import DataDriftOptions
 from .utils import proportions_diff_z_stat_ind, proportions_diff_z_test, process_columns
-
-
-@dataclass
-class DataDriftOptions:
-    confidence: float = 0.95
-    drift_share: float = 0.5
-    nbinsx: Optional[Dict[str, int]] = None
-    xbins: Optional[Dict[str, int]] = None
-
-    def as_dict(self):
-        return {
-            "confidence": self.confidence,
-            "drift_share": self.drift_share,
-            "nbinsx": self.nbinsx,
-            "xbins": self.xbins
-        }
 
 
 def dataset_drift_evaluation(p_values, confidence=0.95, drift_share=0.5):

@@ -32,7 +32,7 @@ class BaseWidgetInfo:
     type: str
     title: str
     size: int
-    details: str
+    details: str = ""
     alertsPosition: Optional[str] = None
     alertStats: Optional[AlertStats] = None
     params: Any = None

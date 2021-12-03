@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-from typing import Dict
+from typing import Optional
 
 import pandas
 
-from evidently.model.widget import BaseWidgetInfo, AlertStats
+from evidently import ColumnMapping
+from evidently.model.widget import BaseWidgetInfo
 from evidently.widgets.widget import Widget
 
 
@@ -16,9 +17,9 @@ class CounterWidget(Widget):
     def calculate(self,
                   reference_data: pandas.DataFrame,
                   current_data: pandas.DataFrame,
-                  column_mapping: Dict,
-                  analyzers_results):
-        self.wi = BaseWidgetInfo(
+                  column_mapping: ColumnMapping,
+                  analyzers_results) -> Optional[BaseWidgetInfo]:
+        return BaseWidgetInfo(
             type="counter",
             title=self.title,
             size=2,
@@ -30,10 +31,4 @@ class CounterWidget(Widget):
                     }
                 ]
             },
-            alerts=[],
-            insights=[],
-            details="",
-            alertsPosition="row",
-            alertStats=AlertStats(),
-            additionalGraphs=[],
         )
