@@ -5,7 +5,17 @@
     "date_column": "dteday"
   },
   "column_mapping" : {},
-  "profile_sections": ["data_drift"],
+  "profile_sections": {
+    "data_drift": {}
+  },
+  "options": {
+    "data_drift": {
+      "confidence": 0.95,
+      "drift_share": 0.5,
+      "nbinsx": null,
+      "xbins": null
+    }
+  },
   "pretty_print": true,
   "sampling": {
     "reference": {

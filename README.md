@@ -111,14 +111,14 @@ iris_frame['target'] = iris.target
 
 To generate the **Data Drift** report, run:
 ```python
-iris_data_drift_report = Dashboard(tabs=[DataDriftTab])
+iris_data_drift_report = Dashboard(tabs=[DataDriftTab()])
 iris_data_drift_report.calculate(iris_frame[:100], iris_frame[100:], column_mapping = None)
 iris_data_drift_report.save("reports/my_report.html")
 ```
 
 To generate the **Data Drift** and the **Categorical Target Drift** reports, run:
 ```python
-iris_data_and_target_drift_report = Dashboard(tabs=[DataDriftTab, CatTargetDriftTab])
+iris_data_and_target_drift_report = Dashboard(tabs=[DataDriftTab(), CatTargetDriftTab()])
 iris_data_and_target_drift_report.calculate(iris_frame[:100], iris_frame[100:], column_mapping = None)
 iris_data_and_target_drift_report.save("reports/my_report_with_2_tabs.html")
 ```
@@ -128,36 +128,36 @@ HTML report does not open automatically. To explore it, you should open it from 
 
 To generate the **Regression Model Performance** report, run:
 ```python
-regression_model_performance = Dashboard(tabs=[RegressionPerformanceTab]) 
+regression_model_performance = Dashboard(tabs=[RegressionPerformanceTab()]) 
 regression_model_performance.calculate(reference_data, current_data, column_mapping = column_mapping) 
 ```
 
 You can also generate a **Regression Model Performance** for a single `DataFrame`. In this case, run:
 ```python
-regression_single_model_performance = Dashboard(tabs=[RegressionPerformanceTab])
+regression_single_model_performance = Dashboard(tabs=[RegressionPerformanceTab()])
 regression_single_model_performance.calculate(reference_data, None, column_mapping=column_mapping)
 ```
 
 To generate the **Classification Model Performance** report, run:
 ```python
-classification_performance_report = Dashboard(tabs=[ClassificationPerformanceTab])
+classification_performance_report = Dashboard(tabs=[ClassificationPerformanceTab()])
 classification_performance_report.calculate(reference_data, current_data, column_mapping = column_mapping)
 ```
  
 For **Probabilistic Classification Model Performance** report, run:
 ```python
-classification_performance_report = Dashboard(tabs=[ProbClassificationPerformanceTab])
+classification_performance_report = Dashboard(tabs=[ProbClassificationPerformanceTab()])
 classification_performance_report.calculate(reference_data, current_data, column_mapping = column_mapping)
 ```
  
 You can also generate either of the **Classification** reports for a single `DataFrame`. In this case, run:
 ```python
-classification_single_model_performance = Dashboard(tabs=[ClassificationPerformanceTab])
+classification_single_model_performance = Dashboard(tabs=[ClassificationPerformanceTab()])
 classification_single_model_performance.calculate(reference_data, None, column_mapping=column_mapping)
 ```
 or
 ```python
-prob_classification_single_model_performance = Dashboard(tabs=[ProbClassificationPerformanceTab])
+prob_classification_single_model_performance = Dashboard(tabs=[ProbClassificationPerformanceTab()])
 prob_classification_single_model_performance.calculate(reference_data, None, column_mapping=column_mapping)
 ```
 
@@ -178,44 +178,44 @@ iris_frame = pd.DataFrame(iris.data, columns = iris.feature_names)
 
 To generate the **Data Drift** profile, run:
 ```python
-iris_data_drift_profile = Profile(sections=[DataDriftProfileSection])
+iris_data_drift_profile = Profile(sections=[DataDriftProfileSection()])
 iris_data_drift_profile.calculate(iris_frame, iris_frame, column_mapping = None)
 iris_data_drift_profile.json() 
 ```
 
 To generate the **Data Drift** and the **Categorical Target Drift** profile, run:
 ```python
-iris_target_and_data_drift_profile = Profile(sections=[DataDriftProfileSection, CatTargetDriftProfileSection])
+iris_target_and_data_drift_profile = Profile(sections=[DataDriftProfileSection(), CatTargetDriftProfileSection()])
 iris_target_and_data_drift_profile.calculate(iris_frame[:75], iris_frame[75:], column_mapping = None) 
 iris_target_and_data_drift_profile.json() 
 ```
 
 You can also generate a **Regression Model Performance** for a single `DataFrame`. In this case, run:
 ```python
-regression_single_model_performance = Profile(sections=[RegressionPerformanceProfileSection])
+regression_single_model_performance = Profile(sections=[RegressionPerformanceProfileSection()])
 regression_single_model_performance.calculate(reference_data, None, column_mapping=column_mapping)
 ```
 
 To generate the **Classification Model Performance** profile, run:
 ```python
-classification_performance_profile = Profile(sections=[ClassificationPerformanceProfileSection])
+classification_performance_profile = Profile(sections=[ClassificationPerformanceProfileSection()])
 classification_performance_profile.calculate(reference_data, current_data, column_mapping = column_mapping)
 ```
 
 For **Probabilistic Classification Model Performance** profile, run:
 ```python
-classification_performance_report = Profile(sections=[ProbClassificationPerformanceProfileSection])
+classification_performance_report = Profile(sections=[ProbClassificationPerformanceProfileSection()])
 classification_performance_report.calculate(reference_data, current_data, column_mapping = column_mapping)
 ```
 
 You can also generate either of the **Classification** profiles for a single `DataFrame`. In this case, run:
 ```python
-classification_single_model_performance = Profile(sections=[ClassificationPerformanceProfileSection])
+classification_single_model_performance = Profile(sections=[ClassificationPerformanceProfileSection()])
 classification_single_model_performance.calculate(reference_data, None, column_mapping=column_mapping)
 ```
 or
 ```python
-prob_classification_single_model_performance = Profile(sections=[ProbClassificationPerformanceProfileSection])
+prob_classification_single_model_performance = Profile(sections=[ProbClassificationPerformanceProfileSection()])
 prob_classification_single_model_performance.calculate(reference_data, None, column_mapping=column_mapping)
 ```
 
@@ -239,7 +239,7 @@ from evidently.tabs import DataDriftTab
 iris = datasets.load_iris()
 iris_frame = pd.DataFrame(iris.data, columns = iris.feature_names)
 
-iris_data_drift_report = Dashboard(tabs=[DataDriftTab])
+iris_data_drift_report = Dashboard(tabs=[DataDriftTab()])
 iris_data_drift_report.calculate(iris_frame[:100], iris_frame[100:], column_mapping = None)
 ```
 
@@ -291,20 +291,25 @@ To configure a report or a profile you need to create the `config.json` file. Th
 Here is an example of a simple configuration for a report, where we have comma separated `csv` files with headers and there is no `date` column in the data.
 
 **Dashboard**:
-```bash
+
+```json
 {
   "data_format": {
     "separator": ",",
     "header": true,
     "date_column": null
   },
-  "column_mapping" : {},
-  "dashboard_tabs": ["cat_target_drift"]
+  "column_mapping": {},
+  "dashboard_tabs": {
+    "cat_target_drift": {
+      "verbose_level": "1"
+    }
+  }
 }
 ```
 
 **Profile**:
-```bash
+```json
 {
   "data_format": {
     "separator": ",",
@@ -312,7 +317,17 @@ Here is an example of a simple configuration for a report, where we have comma s
     "date_column": null
   },
   "column_mapping" : {},
-  "profile_sections": ["data_drift"],
+  "profile_sections": {
+    "data_drift": {}
+  },
+  "options": {
+    "data_drift": {
+      "confidence": 0.95,
+      "drift_share": 0.5,
+      "nbinsx": null,
+      "xbins": null
+    }
+  },
   "pretty_print": true
 }
 ```
@@ -320,7 +335,7 @@ Here is an example of a simple configuration for a report, where we have comma s
 Here is an example of a more complicated configuration, where we have comma separated `csv` files with headers and `datetime` column. We also specified the `column_mapping` dictionary to add information about `datetime`, `target` and `numerical_features`. 
 
 **Dashboard**:
-```bash
+```json
 {
   "data_format": {
     "separator": ",",
@@ -333,7 +348,21 @@ Here is an example of a more complicated configuration, where we have comma sepa
     "numerical_features": ["mean radius", "mean texture", "mean perimeter", 
       "mean area", "mean smoothness", "mean compactness", "mean concavity", 
       "mean concave points", "mean symmetry"]},
-  "dashboard_tabs": ["cat_target_drift"],
+  "dashboard_tabs": {
+   "cat_target_drift": {
+      "include_widgets": ["Target Drift", "Target (Prediction) Behavior By Feature"]
+    } 
+  },
+  "options": {
+    "data_drift": {
+      "confidence": 0.99,
+      "drift_share": 0.5,
+      "nbinsx": {
+        "mean perimeter": 4,
+        "mean symmetry": 4
+      }
+    }
+  },
   "sampling": {
       "reference": {
       "type": "none"
@@ -347,7 +376,7 @@ Here is an example of a more complicated configuration, where we have comma sepa
 ```
 
 **Profile**:
-```bash
+```json
 {
   "data_format": {
     "separator": ",",
@@ -359,7 +388,10 @@ Here is an example of a more complicated configuration, where we have comma sepa
     "numerical_features": ["mean radius", "mean texture", "mean perimeter", 
       "mean area", "mean smoothness", "mean compactness", "mean concavity", 
       "mean concave points", "mean symmetry"]},
-  "profile_sections": ["data_drift", "cat_target_drift"],
+  "profile_sections": {
+    "data_drift": {},
+    "cat_target_drift": {}
+  },
   "pretty_print": true,
   "sampling": {
     "reference": {

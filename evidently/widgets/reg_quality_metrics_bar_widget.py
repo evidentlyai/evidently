@@ -54,7 +54,7 @@ class RegQualityMetricsBarWidget(Widget):
                             },
                             {
                                 "value": f"{round(results['metrics'][self.dataset]['mean_abs_error'], 2)}"
-                                         f" ({round(results['metrics'][self.dataset]['abs_error_std'], 2)}",
+                                         f" ({round(results['metrics'][self.dataset]['abs_error_std'], 2)})",
                                 "label": "MAE"
                             },
                             {

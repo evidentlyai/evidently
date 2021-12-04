@@ -1,5 +1,10 @@
+from typing import Optional, Union, Sequence
+
 import numpy as np
+import pandas as pd
 from scipy.stats import norm
+
+from evidently.pipeline.column_mapping import ColumnMapping
 
 
 def proportions_diff_z_stat_ind(ref, curr):
@@ -30,22 +35,14 @@ def proportions_diff_z_test(z_stat, alternative='two-sided'):
 
 class DatasetUtilityColumns:
     def __init__(self,
-                 date: str,
-                 id_column: str,
-                 target: str,
-                 prediction: str,
-                 drift_conf_level: float,
-                 drift_features_share: float,
-                 nbinsx: float,
-                 xbins: float):
+                 date: Optional[str],
+                 id_column: Optional[str],
+                 target: Optional[str],
+                 prediction: Optional[Union[str, Sequence[str]]]):
         self.date = date
         self.id_column = id_column
         self.target = target
         self.prediction = prediction
-        self.drift_conf_level = drift_conf_level
-        self.drift_features_share = drift_features_share
-        self.nbinsx = nbinsx
-        self.xbins = xbins
 
     def as_dict(self):
         return {
@@ -53,10 +50,6 @@ class DatasetUtilityColumns:
             'id': self.id_column,
             'target': self.target,
             'prediction': self.prediction,
-            'drift_conf_level': self.drift_conf_level,
-            'drift_features_share': self.drift_features_share,
-            'nbinsx': self.nbinsx,
-            'xbins': self.xbins
         }
 
 
@@ -80,52 +73,36 @@ class DatasetColumns:
         }
 
 
-def process_columns(dataset, column_mapping):
-    if column_mapping:
-        date_column = column_mapping.get('datetime')
-        id_column = column_mapping.get('id')
-        target_column = column_mapping.get('target')
-        prediction_column = column_mapping.get('prediction')
-        num_feature_names = column_mapping.get('numerical_features')
-        confidence = column_mapping.get('drift_conf_level')
-        if confidence is None:
-            confidence = 0.95
-        drift_share = column_mapping.get('drift_features_share')
-        if drift_share is None:
-            drift_share = 0.5
-        nbinsx = column_mapping.get('nbinsx')
-        xbins = column_mapping.get('xbins')
-        target_names = column_mapping.get('target_names')
-        if num_feature_names is None:
-            num_feature_names = []
-        else:
-            num_feature_names = dataset[num_feature_names].select_dtypes([np.number]).columns.tolist()
+def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping):
+    date_column = column_mapping.datetime if column_mapping.datetime in dataset else None
+    id_column = column_mapping.id
+    target_column = column_mapping.target if column_mapping.target in dataset else None
+    prediction_column = column_mapping.prediction
+    num_feature_names = column_mapping.numerical_features
+    target_names = column_mapping.target_names
 
-        cat_feature_names = column_mapping.get('categorical_features')
-        if cat_feature_names is None:
-            cat_feature_names = []
-        else:
-            cat_feature_names = dataset[cat_feature_names].select_dtypes([np.number]).columns.tolist()
+    utility_columns = [date_column, id_column, target_column]
+    if isinstance(prediction_column, str):
+        prediction_column = prediction_column if prediction_column in dataset else None
+        utility_columns.append(prediction_column)
+    elif prediction_column is None:
+        pass
     else:
-        date_column = 'datetime' if 'datetime' in dataset.columns else None
-        id_column = None
-        target_column = 'target' if 'target' in dataset.columns else None
-        prediction_column = 'prediction' if 'prediction' in dataset.columns else None
-
-        utility_columns = [date_column, id_column, target_column, prediction_column]
-
+        prediction_column = dataset[prediction_column].columns.tolist()
+        utility_columns += prediction_column if prediction_column else []
+    if num_feature_names is None:
         num_feature_names = list(set(dataset.select_dtypes([np.number]).columns) - set(utility_columns))
-        cat_feature_names = list(set(dataset.select_dtypes([np.object]).columns) - set(utility_columns))
+    else:
+        num_feature_names = dataset[num_feature_names].select_dtypes([np.number]).columns.tolist()
 
-        target_names = None
-        confidence = 0.95
-        drift_share = 0.5
-        nbinsx = None
-        xbins = None
+    cat_feature_names = column_mapping.categorical_features
+    if cat_feature_names is None:
+        cat_feature_names = list(set(dataset.select_dtypes([np.object]).columns) - set(utility_columns))
+    else:
+        cat_feature_names = dataset[cat_feature_names].select_dtypes([np.number]).columns.tolist()
 
     return DatasetColumns(
-        DatasetUtilityColumns(date_column, id_column, target_column, prediction_column, confidence, drift_share, nbinsx,
-                              xbins),
+        DatasetUtilityColumns(date_column, id_column, target_column, prediction_column),
         num_feature_names,
         cat_feature_names,
         target_names)

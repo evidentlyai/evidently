@@ -34,7 +34,7 @@ def _detect_dataset_drift(reference, production, column_mapping, confidence=0.95
     Data Drift for the dataset is detected if share of the drifted features is above the selected threshold (default value is 0.5).
     """
     
-    data_drift_profile = Profile(sections=[DataDriftProfileSection])
+    data_drift_profile = Profile(sections=[DataDriftProfileSection()])
     data_drift_profile.calculate(reference, production, column_mapping=column_mapping)
     report = data_drift_profile.json()
     json_report = json.loads(report)
@@ -89,7 +89,7 @@ def create_dashboard_execute(**context):
 	print("create_dashboard_execute   ")
 	data = context.get("ti").xcom_pull(key='data_frame')
 	print("data")
-	data_drift_dashboard = Dashboard(tabs=[DataDriftTab])
+	data_drift_dashboard = Dashboard(tabs=[DataDriftTab()])
 	data_drift_dashboard.calculate(data[:200], data[200:])
 
 	try:

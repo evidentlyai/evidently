@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List
+from typing import Dict
 
 from evidently.dashboard import Dashboard
 from evidently.runner.runner import RunnerOptions, Runner
@@ -9,7 +9,7 @@ from evidently.tabs import DataDriftTab, CatTargetDriftTab, ClassificationPerfor
 
 @dataclass
 class DashboardRunnerOptions(RunnerOptions):
-    dashboard_tabs: List[str]
+    dashboard_tabs: Dict[str, Dict[str, object]]
 
 
 tabs_mapping = dict(
@@ -32,12 +32,19 @@ class DashboardRunner(Runner):
 
         tabs = []
 
-        for tab in self.options.dashboard_tabs:
+        for tab, params in self.options.dashboard_tabs.items():
             tab_class = tabs_mapping.get(tab, None)
             if tab_class is None:
                 raise ValueError(f"Unknown tab {tab}")
-            tabs.append(tab_class)
+            try:
+                verbose_level = int(params.get('verbose_level', None)) \
+                    if params.get('verbose_level', None) is not None\
+                    else None
+            except ValueError as ex:
+                raise ValueError(f"Failed to parse verbose level for tab {tab}") from ex
+            include_widgets = params.get('include_widgets', None)
+            tabs.append(tab_class(verbose_level=verbose_level, include_widgets=include_widgets))
 
-        dashboard = Dashboard(tabs=tabs)
+        dashboard = Dashboard(tabs=tabs, options=self.options.options)
         dashboard.calculate(reference_data, current_data, self.options.column_mapping)
         dashboard.save(self.options.output_path + ".html")

@@ -1,6 +1,6 @@
 import json
 from dataclasses import dataclass
-from typing import List
+from typing import Dict
 
 from evidently.model_profile import Profile
 from evidently.profile_sections.data_drift_profile_section import DataDriftProfileSection
@@ -17,7 +17,7 @@ from evidently.utils import NumpyEncoder
 
 @dataclass
 class ProfileRunnerOptions(RunnerOptions):
-    profile_parts: List[str]
+    profile_parts: Dict[str, Dict[str, str]]
     pretty_print: bool
 
 
@@ -42,13 +42,13 @@ class ProfileRunner(Runner):
 
         parts = []
 
-        for part in self.options.profile_parts:
+        for part, _ in self.options.profile_parts.items():
             part_class = parts_mapping.get(part, None)
             if part_class is None:
                 raise ValueError(f"Unknown profile section {part}")
-            parts.append(part_class)
+            parts.append(part_class())
 
-        profile = Profile(sections=parts)
+        profile = Profile(sections=parts, options=self.options.options)
         profile.calculate(reference_data, current_data, self.options.column_mapping)
         output_path = self.options.output_path \
             if self.options.output_path.endswith(".json") \
