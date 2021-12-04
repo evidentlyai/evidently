@@ -97,7 +97,7 @@ class TestDashboards(TestCase):
         self.assertTrue('name' in actual)
         self.assertEqual(len(actual['widgets']), 10)
 
-    def test_classification_performance_single_frame_dashboard(self):
+    def test_methods_on_single_frame_dashboard(self):
         # You can also generate either of the **Classification** reports for a single `DataFrame`. In this case, run:
         # FIXME: like above, when prediction column is not present in the dataset
         self.iris_frame['prediction'] = self.iris_frame['target'][::-1]
@@ -105,7 +105,7 @@ class TestDashboards(TestCase):
         classification_single_model_performance.calculate(self.iris_frame, None)
         actual = json.loads(classification_single_model_performance._json())
         self.assertTrue('name' in actual)
-        self.assertEqual(len(actual['widgets']), 6)
+        self.assertEqual(len(actual['widgets']), 9)
         prob_classification_single_model_performance = Dashboard(tabs=[ProbClassificationPerformanceTab()])
         prob_classification_single_model_performance.calculate(self.iris_frame, None)
         actual = json.loads(prob_classification_single_model_performance._json())
