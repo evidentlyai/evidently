@@ -21,7 +21,8 @@ class Profile(Pipeline):
     def calculate(self,
                   reference_data: pandas.DataFrame,
                   current_data: pandas.DataFrame,
-                  column_mapping: ColumnMapping):
+                  column_mapping: ColumnMapping = None):
+        column_mapping = column_mapping or ColumnMapping()
         self.execute(reference_data, current_data, column_mapping)
         self.result = {
             part.part_id(): part.calculate(reference_data, current_data, column_mapping, self.analyzers_results)
