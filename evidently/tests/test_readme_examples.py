@@ -105,7 +105,7 @@ class TestDashboards(TestCase):
         classification_single_model_performance.calculate(self.iris_frame, None)
         actual = json.loads(classification_single_model_performance._json())
         self.assertTrue('name' in actual)
-        self.assertEqual(len(actual['widgets']), 9)
+        self.assertEqual(len(actual['widgets']), 6)
         prob_classification_single_model_performance = Dashboard(tabs=[ProbClassificationPerformanceTab()])
         prob_classification_single_model_performance.calculate(self.iris_frame, None)
         actual = json.loads(prob_classification_single_model_performance._json())
