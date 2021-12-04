@@ -13,22 +13,16 @@ class TestProbClassificationAnalyzer(TestCase):
     def test_single_dataset_with_two_classes(self):
         df = pd.DataFrame(
             {
-                'target': [0, 0, 0, 1, 1, 1],
-                'prediction': [0, 0, 0, 1, 1, 1],
+                'target': ['label_a', 'label_a', 'label_a', 'label_b', 'label_b', 'label_b'],
+                'label_a': [.1, .2, .3, .4, .5, .6],
+                'label_b': [.9, .8, .7, .6, .5, .4],
             }
+        )
+        df_column_mapping = ColumnMapping(
+            target='target',
+            prediction=['label_a', 'label_b'],
         )
         analyzer = ProbClassificationPerformanceAnalyzer()
-        blubb = analyzer.calculate(df, None, ColumnMapping())
-        print(blubb)
-
-    def test_single_dataset_with_three_classes(self):
-        df = pd.DataFrame(
-            {
-                'target': [0, 0, 0, 1, 1, 1, 2, 2, 2],
-                'prediction': [2, 2, 2, 1, 1, 1, 0, 0, 0],
-            }
-        )
-        analyzer = ClassificationPerformanceAnalyzer()
-        blubb = analyzer.calculate(df, None, ColumnMapping())
+        blubb = analyzer.calculate(df, None, df_column_mapping)
         print(blubb)
 
