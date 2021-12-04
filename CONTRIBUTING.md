@@ -77,9 +77,9 @@ mypy
 ```
 
 ### Running unit tests
-Currently the project is not fully covered by unit tests, but we adding more soon and expect to receive PRs with some unit tests 🙂
+Currently, the project is not fully covered by unit tests, but we are going to add more soon and expect to receive PRs with some unit tests 🙂
 ```sh
-python -m unittest discover -s evidently -p 'test_*.py' -v
+pytest -v
 ```
 
 ### Running smoke tests
