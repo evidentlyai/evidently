@@ -57,6 +57,7 @@ class Tab(PipelineStage):
                   current_data: pandas.DataFrame,
                   column_mapping: ColumnMapping,
                   analyzers_results: Dict[Type[Analyzer], object]):
+        self._widget_results.clear()
         for widget in self._widgets:
             widget.options_provider = self.options_provider
             self._widget_results.append(widget.calculate(reference_data,

@@ -146,8 +146,6 @@ class Dashboard(Pipeline):
         if column_mapping is None:
             column_mapping = ColumnMapping()
         self.execute(reference_data, current_data, column_mapping)
-        for tab in self.stages:
-            tab.calculate(reference_data, current_data, column_mapping, self.analyzers_results)
 
     def __render(self, template: Callable[[TemplateParams], str]):
         dashboard_id = "evidently_dashboard_" + str(uuid.uuid4()).replace("-", "")
