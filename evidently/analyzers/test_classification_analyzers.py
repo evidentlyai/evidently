@@ -472,3 +472,5 @@ class TestProbClassificationAnalyzer(TestCase):
 #     target='target',
 #     prediction=['label_a'],
 # )
+
+# test above tests cases with data frames with more than two classes
