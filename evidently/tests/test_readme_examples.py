@@ -90,7 +90,7 @@ class TestDashboards(TestCase):
     def test_probabilistic_classification_performance_dashboard(self):
         # For **Probabilistic Classification Model Performance** report, run:
         random_probs = np.random.random((3, 150))
-        random_probs = (random_probs/random_probs.sum(0))
+        random_probs = (random_probs / random_probs.sum(0))
         pred_df = pd.DataFrame(random_probs.T, columns=self.iris_targets)
         iris_frame = pd.concat([self.iris_frame, pred_df], axis=1)
         iris_frame['target'] = self.iris_targets[self.iris_frame['target']]
@@ -116,7 +116,7 @@ class TestDashboards(TestCase):
         # You can also generate either of the **Classification** reports for a single `DataFrame`. In this case, run:
         # FIXME: like above, when prediction column is not present in the dataset
         random_probs = np.random.random((3, 150))
-        random_probs = (random_probs/random_probs.sum(0))
+        random_probs = (random_probs / random_probs.sum(0))
         pred_df = pd.DataFrame(random_probs.T, columns=self.iris_targets)
         iris_frame = pd.concat([self.iris_frame, pred_df], axis=1)
         iris_frame['target'] = self.iris_targets[self.iris_frame['target']]
@@ -154,7 +154,8 @@ class TestProfiles(TestCase):
 
     def test_data_drift_categorical_target_drift_profile(self):
         # To generate the **Data Drift** and the **Categorical Target Drift** reports, run:
-        iris_target_and_data_drift_profile = Profile(sections=[DataDriftProfileSection(), CatTargetDriftProfileSection()])
+        iris_target_and_data_drift_profile = Profile(
+            sections=[DataDriftProfileSection(), CatTargetDriftProfileSection()])
         iris_target_and_data_drift_profile.calculate(self.iris_frame[:100], self.iris_frame[100:])
 
         actual = json.loads(iris_target_and_data_drift_profile.json())
