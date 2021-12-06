@@ -67,7 +67,8 @@ class DataDriftAnalyzer(Analyzer):
             )
 
         for feature_name in cat_feature_names:
-            func = options.feature_stattest_func.get(feature_name, None)
+            func = None if options.feature_stattest_func is None \
+                else options.feature_stattest_func.get(feature_name, None)
             func = options.stattest_func if func is None else func
             keys = set(list(reference_data[feature_name][np.isfinite(reference_data[feature_name])].unique()) +
                        list(current_data[feature_name][np.isfinite(current_data[feature_name])].unique()))
