@@ -1,9 +1,11 @@
 import json
 
 import pandas as pd
+import numpy as np
 from sklearn import datasets
 from unittest import TestCase
 
+from evidently import ColumnMapping
 from evidently.dashboard import Dashboard
 from evidently.model_profile import Profile
 from evidently.profile_sections import DataDriftProfileSection, CatTargetDriftProfileSection, \
@@ -20,12 +22,13 @@ class TestDashboards(TestCase):
     #  saving an html report in the test itself fails.
     #  A reasonable fallback is to use the private _json() method. Although, since it is never used anywhere else
     #  it may be considered a bad testing practice to have methods only for testing purposes.
-    #  For now we stick to it, however, until something better comes along.
+    #  For now we stick to it until something better comes along.
 
     def setUp(self) -> None:
         iris = datasets.load_iris()
         self.iris_frame = pd.DataFrame(iris.data, columns=iris.feature_names)
         self.iris_frame['target'] = iris.target
+        self.iris_targets = iris.target_names
 
     ###
     # The following are extracted from the README.md file.
@@ -86,31 +89,44 @@ class TestDashboards(TestCase):
 
     def test_probabilistic_classification_performance_dashboard(self):
         # For **Probabilistic Classification Model Performance** report, run:
-        # FIXME: when prediction column is not present in the dataset
-        #  ValueError: [Widget Probabilistic Classification Model Performance Report.] self.wi is None,
-        #  no data available (forget to set it in widget?)
-        self.iris_frame['prediction'] = self.iris_frame['target'][::-1]
+        random_probs = np.random.random((3, 150))
+        random_probs = (random_probs/random_probs.sum(0))
+        pred_df = pd.DataFrame(random_probs.T, columns=self.iris_targets)
+        iris_frame = pd.concat([self.iris_frame, pred_df], axis=1)
+        iris_frame['target'] = self.iris_targets[self.iris_frame['target']]
+        iris_column_mapping = ColumnMapping()
+        iris_column_mapping.prediction = self.iris_targets
         classification_performance_report = Dashboard(tabs=[ProbClassificationPerformanceTab()])
-        classification_performance_report.calculate(self.iris_frame[:100], self.iris_frame[100:])
+        classification_performance_report.calculate(iris_frame, iris_frame, iris_column_mapping)
 
         actual = json.loads(classification_performance_report._json())
         self.assertTrue('name' in actual)
-        self.assertEqual(len(actual['widgets']), 10)
+        self.assertEqual(len(actual['widgets']), 20)
 
-    def test_methods_on_single_frame_dashboard(self):
+    def test_classification_performance_on_single_frame_dashboard(self):
         # You can also generate either of the **Classification** reports for a single `DataFrame`. In this case, run:
-        # FIXME: like above, when prediction column is not present in the dataset
         self.iris_frame['prediction'] = self.iris_frame['target'][::-1]
-        classification_single_model_performance = Dashboard(tabs=[ClassificationPerformanceTab()])
-        classification_single_model_performance.calculate(self.iris_frame, None)
-        actual = json.loads(classification_single_model_performance._json())
+        classification_single_frame_performance = Dashboard(tabs=[ClassificationPerformanceTab()])
+        classification_single_frame_performance.calculate(self.iris_frame, None)
+        actual = json.loads(classification_single_frame_performance._json())
         self.assertTrue('name' in actual)
         self.assertEqual(len(actual['widgets']), 9)
-        prob_classification_single_model_performance = Dashboard(tabs=[ProbClassificationPerformanceTab()])
-        prob_classification_single_model_performance.calculate(self.iris_frame, None)
-        actual = json.loads(prob_classification_single_model_performance._json())
+
+    def test_probabilistic_classification_performance_on_single_frame_dashboard(self):
+        # You can also generate either of the **Classification** reports for a single `DataFrame`. In this case, run:
+        # FIXME: like above, when prediction column is not present in the dataset
+        random_probs = np.random.random((3, 150))
+        random_probs = (random_probs/random_probs.sum(0))
+        pred_df = pd.DataFrame(random_probs.T, columns=self.iris_targets)
+        iris_frame = pd.concat([self.iris_frame, pred_df], axis=1)
+        iris_frame['target'] = self.iris_targets[self.iris_frame['target']]
+        iris_column_mapping = ColumnMapping()
+        iris_column_mapping.prediction = self.iris_targets
+        prob_classification_single_frame_performance = Dashboard(tabs=[ProbClassificationPerformanceTab()])
+        prob_classification_single_frame_performance.calculate(iris_frame, None, iris_column_mapping)
+        actual = json.loads(prob_classification_single_frame_performance._json())
         self.assertTrue('name' in actual)
-        self.assertEqual(len(actual['widgets']), 10)
+        self.assertEqual(len(actual['widgets']), 11)
 
 
 class TestProfiles(TestCase):
