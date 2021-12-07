@@ -2,11 +2,11 @@
 # coding: utf-8
 
 import pandas as pd
-from scipy.stats import ks_2samp
 
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.options import DataDriftOptions
-from .utils import process_columns
+from evidently.analyzers.stattests import ks_stat_test
+from evidently.analyzers.utils import process_columns
 
 
 class NumTargetDriftAnalyzer(Analyzer):
@@ -22,10 +22,7 @@ class NumTargetDriftAnalyzer(Analyzer):
 
         result['metrics'] = {}
 
-        def ks_stat_test(reference_data, current_data):
-            return ks_2samp(reference_data, current_data)[1]
-
-        func = options.num_target_stattest_func 
+        func = options.num_target_stattest_func
         func = ks_stat_test if func is None else func
         # target
         if target_column is not None:
