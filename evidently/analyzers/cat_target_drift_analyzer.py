@@ -20,19 +20,11 @@ def _remove_nans_and_infinities(dataframe):
 
 
 def _compute_data_stats(reference_data: pd.DataFrame, current_data: pd.DataFrame, column_name: str):
-    ref_feature_vc = reference_data[column_name].value_counts()
-    current_feature_vc = current_data[column_name].value_counts()
-
     keys = set(reference_data[column_name]) | set(current_data[column_name].unique())
 
-    ref_feature_dict = dict.fromkeys(keys, 0)
-    for key, item in zip(ref_feature_vc.index, ref_feature_vc.values):
-        ref_feature_dict[key] = item
-
-    current_feature_dict = dict.fromkeys(keys, 0)
-    for key, item in zip(current_feature_vc.index, current_feature_vc.values):
-        current_feature_dict[key] = item
-
+    ref_feature_dict = {**dict.fromkeys(keys, 0), **dict(reference_data[column_name].value_counts())}
+    current_feature_dict = {**dict.fromkeys(keys, 0), **dict(current_data[column_name].value_counts())}
+    
     if len(keys) > 2:
         f_exp = [value[1] for value in sorted(ref_feature_dict.items())]
         f_obs = [value[1] for value in sorted(current_feature_dict.items())]
