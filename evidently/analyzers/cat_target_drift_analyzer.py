@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 from scipy.stats import chisquare
 
 from evidently.analyzers.base_analyzer import Analyzer
 from .utils import proportions_diff_z_stat_ind, proportions_diff_z_test, process_columns
+from .. import ColumnMapping
 
 
 # TODO: document somewhere, that all analyzers are mutators, i.e. they will change
@@ -42,7 +43,30 @@ def _compute_data_stats(reference_data: pd.DataFrame, current_data: pd.DataFrame
 
 
 class CatTargetDriftAnalyzer(Analyzer):
-    def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping) -> dict:
+    """Categorical target drift analyzer.
+
+    Analyze categorical `target` and `prediction` distributions and provide calculations to the following questions:
+    Does the model target behave similarly to the past period? Do my model predictions still look the same?
+
+    For reference see https://evidentlyai.com/blog/evidently-014-target-and-prediction-drift
+    """
+
+    def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame,
+                  column_mapping: ColumnMapping) -> dict:
+        """Calculate the target and prediction drifts.
+
+        Notes:
+            Be aware that nay nan or infinity values will be dropped from the dataframes in place.
+
+        Args:
+            reference_data: usually the data which you used in training.
+            current_data: new, unseen data to which we compare the reference data.
+            column_mapping: a `ColumnMapping` object that contains references to the name of target and prediction
+                columns
+        Returns:
+            A dictionary that contains some meta information as well as `metrics` for either target or prediction
+            columns or both.
+        """
         columns = process_columns(reference_data, column_mapping)
         result = columns.as_dict()
         target_column = columns.utility_columns.target
