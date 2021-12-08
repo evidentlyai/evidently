@@ -23,8 +23,7 @@ def _compute_data_stats(reference_data: pd.DataFrame, current_data: pd.DataFrame
     ref_feature_vc = reference_data[column_name].value_counts()
     current_feature_vc = current_data[column_name].value_counts()
 
-    keys = set(list(reference_data[column_name].unique()) +
-               list(current_data[column_name].unique()))
+    keys = set(reference_data[column_name]) | set(current_data[column_name].unique())
 
     ref_feature_dict = dict.fromkeys(keys, 0)
     for key, item in zip(ref_feature_vc.index, ref_feature_vc.values):
