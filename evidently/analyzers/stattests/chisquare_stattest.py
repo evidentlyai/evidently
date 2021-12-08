@@ -1,16 +1,14 @@
 #!/usr/bin/env python
 # coding: utf-8
-import numpy as np
 import pandas as pd
 
 from scipy.stats import chisquare
 
 
 def chi_stat_test(reference_data: pd.DataFrame, current_data: pd.DataFrame):
-    ref_feature_vc = reference_data[np.isfinite(reference_data)].value_counts()
-    current_feature_vc = current_data[np.isfinite(current_data)].value_counts()
-    keys = set(list(reference_data[np.isfinite(reference_data)].unique()) +
-               list(current_data[np.isfinite(current_data)].unique()))
+    ref_feature_vc = reference_data.value_counts()
+    current_feature_vc = current_data.value_counts()
+    keys = set(list(reference_data.unique()) + list(current_data.unique()))
 
     ref_feature_dict = dict.fromkeys(keys, 0)
     for key, item in zip(ref_feature_vc.index, ref_feature_vc.values):

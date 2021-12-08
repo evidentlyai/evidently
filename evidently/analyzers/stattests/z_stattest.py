@@ -33,8 +33,7 @@ def proportions_diff_z_test(z_stat, alternative='two-sided'):
 
 
 def z_stat_test(reference_data: pd.DataFrame, current_data: pd.DataFrame):
-    keys = set(list(reference_data[np.isfinite(reference_data)].unique()) +
-               list(current_data[np.isfinite(current_data)].unique()))
+    keys = set(list(reference_data.unique()) + list(current_data.unique()))
     ordered_keys = sorted(list(keys))
     return proportions_diff_z_test(
         proportions_diff_z_stat_ind(
