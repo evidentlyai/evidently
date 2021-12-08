@@ -24,10 +24,11 @@ def _compute_data_stats(reference_data: pd.DataFrame, current_data: pd.DataFrame
 
     ref_feature_dict = {**dict.fromkeys(keys, 0), **dict(reference_data[column_name].value_counts())}
     current_feature_dict = {**dict.fromkeys(keys, 0), **dict(current_data[column_name].value_counts())}
-    
+
     if len(keys) > 2:
-        f_exp = [value[1] for value in sorted(ref_feature_dict.items())]
-        f_obs = [value[1] for value in sorted(current_feature_dict.items())]
+        # sort by key and in that order extract values
+        f_exp = [value for key, value in sorted(ref_feature_dict.items())]
+        f_obs = [value for key, value in sorted(current_feature_dict.items())]
         target_p_value = chisquare(f_exp, f_obs)[1]
     else:
         ordered_keys = sorted(list(keys))
