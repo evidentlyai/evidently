@@ -20,7 +20,8 @@ def _remove_nans_and_infinities(dataframe):
 
 
 def _compute_data_stats(reference_data: pd.DataFrame, current_data: pd.DataFrame, column_name: str):
-    keys = set(reference_data[column_name]) | set(current_data[column_name].unique())
+    # keys will be sorted from the beginning
+    keys = sorted(set(reference_data[column_name]) | set(current_data[column_name]))
 
     ref_feature_dict = {**dict.fromkeys(keys, 0), **dict(reference_data[column_name].value_counts())}
     current_feature_dict = {**dict.fromkeys(keys, 0), **dict(current_data[column_name].value_counts())}
@@ -31,11 +32,10 @@ def _compute_data_stats(reference_data: pd.DataFrame, current_data: pd.DataFrame
         f_obs = [value for key, value in sorted(current_feature_dict.items())]
         target_p_value = chisquare(f_exp, f_obs)[1]
     else:
-        ordered_keys = sorted(list(keys))
         target_p_value = proportions_diff_z_test(
             proportions_diff_z_stat_ind(
-                reference_data[column_name].apply(lambda x: 0 if x == ordered_keys[0] else 1),
-                current_data[column_name].apply(lambda x: 0 if x == ordered_keys[0] else 1)
+                reference_data[column_name].apply(lambda x: 0 if x == keys[0] else 1),
+                current_data[column_name].apply(lambda x: 0 if x == keys[0] else 1)
             )
         )
     return target_p_value
