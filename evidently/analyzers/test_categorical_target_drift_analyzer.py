@@ -153,12 +153,12 @@ class TestCatTargetDriftAnalyzer(TestCase):
 
     def test_computing_with_nans(self):
         df1 = DataFrame({
-            'target': ['a'] * 10 + ['b'] * 10 + [np.nan]*2 + [np.inf]*2,
-            'prediction': ['a'] * 10 + ['b'] * 10 + [np.nan]*2 + [np.inf]*2
+            'target': ['a'] * 10 + ['b'] * 10 + [np.nan] * 2 + [np.inf] * 2,
+            'prediction': ['a'] * 10 + ['b'] * 10 + [np.nan] * 2 + [np.inf] * 2
         })
         df2 = DataFrame({
-            'target': ['a'] * 3 + ['b'] * 7 + [np.nan]*2,
-            'prediction': ['a'] * 3 + ['b'] * 7 + [np.nan]*2
+            'target': ['a'] * 3 + ['b'] * 7 + [np.nan] * 2,
+            'prediction': ['a'] * 3 + ['b'] * 7 + [np.nan] * 2
         })
         analyzer = CatTargetDriftAnalyzer()
 
@@ -169,8 +169,8 @@ class TestCatTargetDriftAnalyzer(TestCase):
         self.assertEqual(result['metrics']['target_name'], 'target')
 
         df3 = DataFrame({
-            'target': ['a'] * 3 + ['b'] * 7 + [np.nan]*20,
-            'prediction': ['a'] * 3 + ['b'] * 7 + [np.nan]*20
+            'target': ['a'] * 3 + ['b'] * 7 + [np.nan] * 20,
+            'prediction': ['a'] * 3 + ['b'] * 7 + [np.nan] * 20
         })
         result = analyzer.calculate(df1, df3, ColumnMapping())
         self._assert_result_structure(result)
