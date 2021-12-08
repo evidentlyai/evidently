@@ -9,7 +9,7 @@ import pandas as pd
 import plotly.figure_factory as ff
 
 from evidently.analyzers.classification_performance_analyzer import ClassificationPerformanceAnalyzer
-from evidently.model.widget import BaseWidgetInfo, AlertStats
+from evidently.model.widget import BaseWidgetInfo
 from evidently.widgets.widget import Widget
 
 
@@ -21,26 +21,23 @@ class ClassMetricsMatrixWidget(Widget):
     def analyzers(self):
         return [ClassificationPerformanceAnalyzer]
 
-    def get_info(self) -> Optional[BaseWidgetInfo]:
-        if self.dataset == 'reference':
-            if self.wi:
-                return self.wi
-            raise ValueError("no data for quality metrics widget provided")
-        else:
-            return self.wi
-
     def calculate(self,
                   reference_data: pd.DataFrame,
                   current_data: pd.DataFrame,
                   column_mapping,
-                  analyzers_results):
+                  analyzers_results) -> Optional[BaseWidgetInfo]:
 
         results = analyzers_results[ClassificationPerformanceAnalyzer]
 
         if results['utility_columns']['target'] is None or results['utility_columns']['prediction'] is None:
-            return
+            if self.dataset == 'reference':
+                raise ValueError(f"Widget [{self.title}] requires 'target' and 'prediction' columns.")
+            return None
         if self.dataset not in results['metrics'].keys():
-            return
+            if self.dataset == 'reference':
+                raise ValueError(f"Widget [{self.title}] required 'reference' results from"
+                                 f" {ClassificationPerformanceAnalyzer.__name__} but no data found")
+            return None
         # plot support bar
         metrics_matrix = results['metrics'][self.dataset]['metrics_matrix']
         metrics_frame = pd.DataFrame(metrics_matrix)
@@ -62,18 +59,12 @@ class ClassMetricsMatrixWidget(Widget):
 
         metrics_matrix_json = json.loads(fig.to_json())
 
-        self.wi = BaseWidgetInfo(
+        return BaseWidgetInfo(
             title=self.title,
             type="big_graph",
-            details="",
-            alertStats=AlertStats(),
-            alerts=[],
-            alertsPosition="row",
-            insights=[],
             size=1 if current_data is not None else 2,
             params={
                 "data": metrics_matrix_json['data'],
                 "layout": metrics_matrix_json['layout']
             },
-            additionalGraphs=[],
         )

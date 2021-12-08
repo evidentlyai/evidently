@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # coding: utf-8
-
 import abc
 
 import pandas as pd

@@ -5,8 +5,12 @@
     "date_column": "dteday"
   },
   "column_mapping" : {},
-  "profile_sections": {
-    "data_drift": {}
+  "dashboard_tabs": {
+    "data_drift": {
+    },
+    "cat_target_drift":{
+      "verbose_level": 0
+    }
   },
   "options": {
     "data_drift": {

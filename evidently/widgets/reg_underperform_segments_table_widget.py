@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # coding: utf-8
-
 import json
+from typing import Optional
+
 import pandas as pd
 import numpy as np
 
@@ -10,7 +11,7 @@ import plotly.express as px
 from plotly.subplots import make_subplots
 
 from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceAnalyzer
-from evidently.model.widget import BaseWidgetInfo, AlertStats, AdditionalGraphInfo
+from evidently.model.widget import BaseWidgetInfo, AdditionalGraphInfo
 from evidently.widgets.widget import Widget
 
 
@@ -28,12 +29,18 @@ class UnderperformSegmTableWidget(Widget):
     def analyzers(self):
         return [RegressionPerformanceAnalyzer]
 
-    def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping, analyzers_results):
+    def calculate(self,
+                  reference_data: pd.DataFrame,
+                  current_data: pd.DataFrame,
+                  column_mapping,
+                  analyzers_results) -> Optional[BaseWidgetInfo]:
 
         results = analyzers_results[RegressionPerformanceAnalyzer]
 
         if results['utility_columns']['target'] is None or results['utility_columns']['prediction'] is None:
-            return
+            raise ValueError(f"Widget [{self.title}] requires 'target' and 'prediction' columns.")
+
+        widget_info = None
         if current_data is not None:
             current_data.replace([np.inf, -np.inf], np.nan, inplace=True)
             current_data.dropna(axis=0, how='any', inplace=True)
@@ -282,14 +289,9 @@ class UnderperformSegmTableWidget(Widget):
                     )
                 )
 
-            self.wi = BaseWidgetInfo(
+            widget_info = BaseWidgetInfo(
                 title=self.title,
                 type="big_table",
-                details="",
-                alertStats=AlertStats(),
-                alerts=[],
-                alertsPosition="row",
-                insights=[],
                 size=2,
                 params={
                     "rowsPerPage": min(len(results["num_feature_names"]) + len(results["cat_feature_names"]), 10),
@@ -339,7 +341,6 @@ class UnderperformSegmTableWidget(Widget):
                     ],
                     "data": params_data
                 },
-
                 additionalGraphs=additional_graphs_data
             )
 
@@ -486,14 +487,9 @@ class UnderperformSegmTableWidget(Widget):
 
             reference_data.drop('Error bias', axis=1, inplace=True)
 
-            self.wi = BaseWidgetInfo(
+            widget_info = BaseWidgetInfo(
                 title=self.title,
                 type="big_table",
-                details="",
-                alertStats=AlertStats(),
-                alerts=[],
-                alertsPosition="row",
-                insights=[],
                 size=2,
                 params={
                     "rowsPerPage": min(len(results["num_feature_names"]) + len(results["cat_feature_names"]), 10),
@@ -526,6 +522,6 @@ class UnderperformSegmTableWidget(Widget):
                     ],
                     "data": params_data
                 },
-
                 additionalGraphs=additional_graphs_data
             )
+        return widget_info

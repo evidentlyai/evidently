@@ -1,5 +1,7 @@
 from typing import TypeVar, Generic, Type, Dict, Any
 
+from .data_drift import DataDriftOptions
+
 TypeParam = TypeVar('TypeParam')
 
 
