@@ -117,3 +117,21 @@ class TestCatTargetDriftAnalyzer(TestCase):
         self.assertAlmostEqual(result['metrics']['target_drift'], 0., 3)
         self.assertEqual(result['metrics']['prediction_name'], 'prediction')
         self.assertEqual(result['metrics']['prediction_type'], 'cat')
+
+    def test_computing_of_only_prediction(self):
+        df1 = DataFrame({
+            'prediction': ['b', 'c'] * 10
+        })
+        df2 = DataFrame({
+            'prediction': ['a', 'b'] * 5
+        })
+        analyzer = CatTargetDriftAnalyzer()
+        # FIXME: wtf: RuntimeWarning: divide by zero encountered in true_divide ?
+        result = analyzer.calculate(df1, df2, ColumnMapping())
+        self.assertAlmostEqual(result['metrics']['prediction_drift'], 0., 3)
+        self.assertTrue('utility_columns' in result)
+        self.assertTrue('cat_feature_names' in result)
+        self.assertTrue('num_feature_names' in result)
+        self.assertTrue('metrics' in result)
+        self.assertEqual(result['metrics']['prediction_name'], 'prediction')
+        self.assertEqual(result['metrics']['prediction_type'], 'cat')
