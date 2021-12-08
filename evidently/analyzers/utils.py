@@ -72,7 +72,7 @@ def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping):
     if cat_feature_names is None:
         cat_feature_names = list(set(dataset.select_dtypes([np.object]).columns) - set(utility_columns))
     else:
-        cat_feature_names = dataset[cat_feature_names].select_dtypes([np.number]).columns.tolist()
+        cat_feature_names = dataset[cat_feature_names].select_dtypes([np.object]).columns.tolist()
 
     return DatasetColumns(
         DatasetUtilityColumns(date_column, id_column, target_column, prediction_column),
