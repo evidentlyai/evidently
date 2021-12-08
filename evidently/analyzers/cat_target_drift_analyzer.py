@@ -9,6 +9,9 @@ from evidently.analyzers.base_analyzer import Analyzer
 from .utils import proportions_diff_z_stat_ind, proportions_diff_z_test, process_columns
 
 
+def _remove_nans_and_infs():
+    pass
+
 class CatTargetDriftAnalyzer(Analyzer):
     def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping) -> dict:
         columns = process_columns(reference_data, column_mapping)

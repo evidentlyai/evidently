@@ -1,4 +1,6 @@
 from unittest import TestCase
+
+import numpy as np
 from pandas import DataFrame
 
 from evidently import ColumnMapping
@@ -40,6 +42,20 @@ class TestCatTargetDriftAnalyzer(TestCase):
         result = analyzer.calculate(df1, df2, ColumnMapping())
         self._assert_result_structure(result)
         self.assertAlmostEqual(result['metrics']['target_drift'], 1)
+        self.assertEqual(result['metrics']['target_name'], 'target')
+
+    def test_computing_some_drift(self):
+        df1 = DataFrame({
+            'target': ['a'] * 10 + ['b'] * 10
+        })
+        df2 = DataFrame({
+            'target': ['a'] * 6 + ['b'] * 15
+        })
+        analyzer = CatTargetDriftAnalyzer()
+
+        result = analyzer.calculate(df1, df2, ColumnMapping())
+        self._assert_result_structure(result)
+        self.assertAlmostEqual(result['metrics']['target_drift'], 0.1597, 4)
         self.assertEqual(result['metrics']['target_name'], 'target')
 
     def test_small_sample_size(self):
@@ -100,7 +116,6 @@ class TestCatTargetDriftAnalyzer(TestCase):
         self._assert_result_structure(result)
         self.assertAlmostEqual(result['metrics']['target_drift'], 0.04122, 3)
         self.assertEqual(result['metrics']['target_name'], 'target')
-        print(result)
 
     def test_computing_of_target_and_prediction(self):
         df1 = DataFrame({
@@ -135,3 +150,30 @@ class TestCatTargetDriftAnalyzer(TestCase):
         self.assertTrue('metrics' in result)
         self.assertEqual(result['metrics']['prediction_name'], 'prediction')
         self.assertEqual(result['metrics']['prediction_type'], 'cat')
+
+    def test_computing_with_nans(self):
+        df1 = DataFrame({
+            'target': ['a'] * 10 + ['b'] * 10 + [np.nan]*2 + [np.inf]*2,
+            'prediction': ['a'] * 10 + ['b'] * 10 + [np.nan]*2 + [np.inf]*2
+        })
+        df2 = DataFrame({
+            'target': ['a'] * 3 + ['b'] * 7 + [np.nan]*2,
+            'prediction': ['a'] * 3 + ['b'] * 7 + [np.nan]*2
+        })
+        analyzer = CatTargetDriftAnalyzer()
+
+        result = analyzer.calculate(df1, df2, ColumnMapping())
+        self._assert_result_structure(result)
+        self.assertAlmostEqual(result['metrics']['target_drift'], 0.29736, 4)
+        self.assertAlmostEqual(result['metrics']['prediction_drift'], 0.29736, 4)
+        self.assertEqual(result['metrics']['target_name'], 'target')
+
+        df3 = DataFrame({
+            'target': ['a'] * 3 + ['b'] * 7 + [np.nan]*20,
+            'prediction': ['a'] * 3 + ['b'] * 7 + [np.nan]*20
+        })
+        result = analyzer.calculate(df1, df3, ColumnMapping())
+        self._assert_result_structure(result)
+        self.assertAlmostEqual(result['metrics']['target_drift'], 0.29736, 4)
+        self.assertAlmostEqual(result['metrics']['prediction_drift'], 0.29736, 4)
+        self.assertEqual(result['metrics']['target_name'], 'target')
