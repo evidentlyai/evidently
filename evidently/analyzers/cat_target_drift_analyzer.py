@@ -10,7 +10,7 @@ from .utils import proportions_diff_z_stat_ind, proportions_diff_z_test, process
 
 
 class CatTargetDriftAnalyzer(Analyzer):
-    def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping):
+    def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping) -> dict:
         columns = process_columns(reference_data, column_mapping)
         result = columns.as_dict()
         target_column = columns.utility_columns.target
