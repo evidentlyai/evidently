@@ -5,6 +5,7 @@ from pandas import DataFrame
 
 from evidently import ColumnMapping
 from evidently.analyzers.cat_target_drift_analyzer import CatTargetDriftAnalyzer
+from evidently.options import DataDriftOptions
 
 
 class TestCatTargetDriftAnalyzer(TestCase):
@@ -178,7 +179,7 @@ class TestCatTargetDriftAnalyzer(TestCase):
         self.assertAlmostEqual(result['metrics']['prediction_drift'], 0.29736, 4)
         self.assertEqual(result['metrics']['target_name'], 'target')
 
-    def test_computing_takes_a_custom_function(self):
+    def test_computing_uses_a_custom_function(self):
         df1 = DataFrame({
             'target': ['a'] * 10 + ['b'] * 10
         })
@@ -186,8 +187,9 @@ class TestCatTargetDriftAnalyzer(TestCase):
             'target': ['a'] * 6 + ['b'] * 15
         })
         analyzer = CatTargetDriftAnalyzer()
-
-        result = analyzer.calculate(df1, df2, ColumnMapping())
+        options = DataDriftOptions()
+        options.cat_target_stattest_func = lambda x: np.pi
+        result = analyzer.calculate(df1, df2, ColumnMapping(), options)
         self._assert_result_structure(result)
-        self.assertAlmostEqual(result['metrics']['target_drift'], 0.1597, 4)
+        self.assertAlmostEqual(result['metrics']['target_drift'], np.pi, 4)
         self.assertEqual(result['metrics']['target_name'], 'target')
