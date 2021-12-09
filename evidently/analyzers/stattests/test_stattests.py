@@ -6,10 +6,20 @@ from pandas import DataFrame
 class TestChiSquare(TestCase):
 
     def test_simple_calculation(self):
-        df1 = DataFrame({
-            'a': ['a'] * 5 + ['b'] * 5
+        reference = DataFrame({
+            'column_name': ['a'] * 5 + ['b'] * 5
         })
-        df2 = DataFrame({
-            'a': ['a'] * 5 + ['b'] * 5
+        current = DataFrame({
+            'column_name': ['a'] * 5 + ['b'] * 5
         })
-        self.assertEqual(chisquare_stattest.chi_stat_test(df1['a'], df2['a']), 1.)
+        self.assertAlmostEqual(chisquare_stattest.chi_stat_test(reference['column_name'], current['column_name']), 1.)
+
+    def test_simple_calculation_2(self):
+        reference = DataFrame({
+            'column_name': ['a'] * 5 + ['b'] * 5
+        })
+        current = DataFrame({
+            'column_name': ['a'] * 8 + ['b'] * 3
+        })
+        result = chisquare_stattest.chi_stat_test(reference['column_name'], current['column_name'])
+        self.assertAlmostEqual(result, 0.11690, 3)
