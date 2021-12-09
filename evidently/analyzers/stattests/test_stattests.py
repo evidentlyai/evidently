@@ -23,3 +23,23 @@ class TestChiSquare(TestCase):
         })
         result = chisquare_stattest.chi_stat_test(reference['column_name'], current['column_name'])
         self.assertAlmostEqual(result, 0.11690, 3)
+
+    def test_current_data_contains_one_class_less(self):
+        reference = DataFrame({
+            'column_name': ['a'] * 5 + ['b'] * 5 + ['c'] * 5
+        })
+        current = DataFrame({
+            'column_name': ['a'] * 8 + ['b'] * 3
+        })
+        result = chisquare_stattest.chi_stat_test(reference['column_name'], current['column_name'])
+        self.assertAlmostEqual(result, 0.11690, 3)
+
+    def test_reference_data_contains_one_class_less(self):
+        reference = DataFrame({
+            'column_name': ['a'] * 5 + ['b'] * 5
+        })
+        current = DataFrame({
+            'column_name': ['a'] * 8 + ['b'] * 3 + ['c'] * 5
+        })
+        result = chisquare_stattest.chi_stat_test(reference['column_name'], current['column_name'])
+        self.assertAlmostEqual(result, 0.024, 3)
