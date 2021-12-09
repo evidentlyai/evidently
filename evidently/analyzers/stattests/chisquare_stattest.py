@@ -5,7 +5,7 @@ import pandas as pd
 from scipy.stats import chisquare
 
 
-def chi_stat_test(reference_data: pd.DataFrame, current_data: pd.DataFrame):
+def chi_stat_test(reference_data: pd.Series, current_data: pd.Series):
     ref_feature_vc = reference_data.value_counts()
     current_feature_vc = current_data.value_counts()
     keys = set(list(reference_data.unique()) + list(current_data.unique()))
