@@ -6,17 +6,11 @@ from scipy.stats import chisquare
 
 
 def chi_stat_test(reference_data: pd.Series, current_data: pd.Series):
-    ref_feature_vc = reference_data.value_counts()
-    current_feature_vc = current_data.value_counts()
-    keys = set(list(reference_data.unique()) + list(current_data.unique()))
+    keys = sorted(set(reference_data) | set(current_data))
 
-    ref_feature_dict = dict.fromkeys(keys, 0)
-    for key, item in zip(ref_feature_vc.index, ref_feature_vc.values):
-        ref_feature_dict[key] = item
+    ref_feature_dict = {**dict.fromkeys(keys, 0), **dict(reference_data.value_counts())}
+    current_feature_dict = {**dict.fromkeys(keys, 0), **dict(current_data.value_counts())}
 
-    current_feature_dict = dict.fromkeys(keys, 0)
-    for key, item in zip(current_feature_vc.index, current_feature_vc.values):
-        current_feature_dict[key] = item
-    f_exp = [value[1] for value in sorted(ref_feature_dict.items())]
-    f_obs = [value[1] for value in sorted(current_feature_dict.items())]
+    f_exp = [value for key, value in sorted(ref_feature_dict.items())]
+    f_obs = [value for key, value in sorted(current_feature_dict.items())]
     return chisquare(f_exp, f_obs)[1]
