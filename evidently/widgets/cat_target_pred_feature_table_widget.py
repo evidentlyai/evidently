@@ -2,12 +2,14 @@
 # coding: utf-8
 
 import json
+from typing import Optional
+
 import pandas as pd
 
 import plotly.express as px
 
 from evidently.analyzers.cat_target_drift_analyzer import CatTargetDriftAnalyzer
-from evidently.model.widget import BaseWidgetInfo, AlertStats, AdditionalGraphInfo
+from evidently.model.widget import BaseWidgetInfo, AdditionalGraphInfo
 from evidently.widgets.widget import Widget
 
 
@@ -19,7 +21,7 @@ class CatTargetPredFeatureTable(Widget):
                   reference_data: pd.DataFrame,
                   current_data: pd.DataFrame,
                   column_mapping,
-                  analyzers_results):
+                  analyzers_results) -> Optional[BaseWidgetInfo]:
 
         results = analyzers_results[CatTargetDriftAnalyzer]
 
@@ -86,14 +88,9 @@ class CatTargetPredFeatureTable(Widget):
                     )
                 )
 
-            self.wi = BaseWidgetInfo(
+            return BaseWidgetInfo(
                 title=self.title,
                 type="big_table",
-                details="",
-                alertStats=AlertStats(),
-                alerts=[],
-                alertsPosition="row",
-                insights=[],
                 size=2,
                 params={
                     "rowsPerPage": min(len(results['num_feature_names']) + len(results['cat_feature_names']), 10),
@@ -107,8 +104,7 @@ class CatTargetPredFeatureTable(Widget):
                 },
                 additionalGraphs=additional_graphs_data
             )
-
-        elif results['utility_columns']['target'] is not None:
+        if results['utility_columns']['target'] is not None:
             additional_graphs_data = []
             params_data = []
             for feature_name in results['num_feature_names'] + results['cat_feature_names']:
@@ -151,14 +147,9 @@ class CatTargetPredFeatureTable(Widget):
                     )
                 )
 
-            self.wi = BaseWidgetInfo(
+            return BaseWidgetInfo(
                 title=self.title,
                 type="big_table",
-                details="",
-                alertStats=AlertStats(),
-                alerts=[],
-                alertsPosition="row",
-                insights=[],
                 size=2,
                 params={
                     "rowsPerPage": min(len(results['num_feature_names']) + len(results['cat_feature_names']), 10),
@@ -172,7 +163,7 @@ class CatTargetPredFeatureTable(Widget):
                 },
                 additionalGraphs=additional_graphs_data
             )
-        elif results['utility_columns']['prediction'] is not None:
+        if results['utility_columns']['prediction'] is not None:
             additional_graphs_data = []
             params_data = []
             for feature_name in results['num_feature_names'] + results['cat_feature_names']:
@@ -214,14 +205,9 @@ class CatTargetPredFeatureTable(Widget):
                     )
                 )
 
-            self.wi = BaseWidgetInfo(
+            return BaseWidgetInfo(
                 title=self.title,
                 type="big_table",
-                details="",
-                alertStats=AlertStats(),
-                alerts=[],
-                alertsPosition="row",
-                insights=[],
                 size=2,
                 params={
                     "rowsPerPage": min(len(results['num_feature_names']) + len(results['cat_feature_names']), 10),
@@ -235,6 +221,4 @@ class CatTargetPredFeatureTable(Widget):
                 },
                 additionalGraphs=additional_graphs_data
             )
-
-        else:
-            self.wi = None
+        raise ValueError(f"Widget {self.title} require 'prediction' or 'target' columns not to be None")

@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
-
 from typing import Optional
 
 import pandas as pd
 
 from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceAnalyzer
-from evidently.model.widget import BaseWidgetInfo, AlertStats
+from evidently.model.widget import BaseWidgetInfo
 from evidently.widgets.widget import Widget
 
 
@@ -18,55 +17,44 @@ class RegQualityMetricsBarWidget(Widget):
     def analyzers(self):
         return [RegressionPerformanceAnalyzer]
 
-    def get_info(self) -> Optional[BaseWidgetInfo]:
-        if self.dataset == 'reference':
-            if self.wi:
-                return self.wi
-            raise ValueError("no data for quality metrics widget provided")
-        else:
-            return self.wi
-
     def calculate(self,
                   reference_data: pd.DataFrame,
                   current_data: pd.DataFrame,
                   column_mapping,
-                  analyzers_results):
-
+                  analyzers_results) -> Optional[BaseWidgetInfo]:
         results = analyzers_results[RegressionPerformanceAnalyzer]
 
-        if results['utility_columns']['target'] is not None and results['utility_columns']['prediction'] is not None:
-            if self.dataset in results['metrics'].keys():
-                self.wi = BaseWidgetInfo(
-                    title=self.title,
-                    type="counter",
-                    details="",
-                    alertStats=AlertStats(),
-                    alerts=[],
-                    alertsPosition="row",
-                    insights=[],
-                    size=2,
-                    params={
-                        "counters": [
-                            {
-                                "value": f"{round(results['metrics'][self.dataset]['mean_error'], 2)}"
-                                         f" ({round(results['metrics'][self.dataset]['error_std'], 2)})",
-                                "label": "ME"
-                            },
-                            {
-                                "value": f"{round(results['metrics'][self.dataset]['mean_abs_error'], 2)}"
-                                         f" ({round(results['metrics'][self.dataset]['abs_error_std'], 2)})",
-                                "label": "MAE"
-                            },
-                            {
-                                "value": f"{round(results['metrics'][self.dataset]['mean_abs_perc_error'], 2)}"
-                                         f" ({round(results['metrics'][self.dataset]['abs_perc_error_std'], 2)})",
-                                "label": "MAPE"
-                            }
-                        ]
+        if results['utility_columns']['target'] is None or results['utility_columns']['prediction'] is None:
+            if self.dataset == 'reference':
+                raise ValueError(f"Widget [{self.title}] requires 'target' and 'prediction' columns")
+            return None
+        if self.dataset not in results['metrics'].keys():
+            if self.dataset == 'reference':
+                raise ValueError(f"Widget [{self.title}] required 'reference' results from"
+                                 f" {RegressionPerformanceAnalyzer.__name__} but no data found")
+            return None
+
+        return BaseWidgetInfo(
+            title=self.title,
+            type="counter",
+            size=2,
+            params={
+                "counters": [
+                    {
+                        "value": f"{round(results['metrics'][self.dataset]['mean_error'], 2)}"
+                                 f" ({round(results['metrics'][self.dataset]['error_std'], 2)})",
+                        "label": "ME"
                     },
-                    additionalGraphs=[],
-                )
-            else:
-                self.wi = None
-        else:
-            self.wi = None
+                    {
+                        "value": f"{round(results['metrics'][self.dataset]['mean_abs_error'], 2)}"
+                                 f" ({round(results['metrics'][self.dataset]['abs_error_std'], 2)})",
+                        "label": "MAE"
+                    },
+                    {
+                        "value": f"{round(results['metrics'][self.dataset]['mean_abs_perc_error'], 2)}"
+                                 f" ({round(results['metrics'][self.dataset]['abs_perc_error_std'], 2)})",
+                        "label": "MAPE"
+                    }
+                ]
+            },
+        )

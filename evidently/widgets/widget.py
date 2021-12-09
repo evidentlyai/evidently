@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # coding: utf-8
-
 import abc
 from typing import Optional
 
@@ -24,13 +23,8 @@ class Widget:
 
     @abc.abstractmethod
     def calculate(self, reference_data: pandas.DataFrame,
-                  current_data: pandas.DataFrame, column_mapping, analyzers_results):
+                  current_data: pandas.DataFrame, column_mapping, analyzers_results) -> Optional[BaseWidgetInfo]:
         raise NotImplementedError()
-
-    def get_info(self) -> Optional[BaseWidgetInfo]:
-        if self.wi:
-            return self.wi
-        raise ValueError(f"[Widget {self.title}] self.wi is None, no data available (forget to set it in widget?)")
 
     @abc.abstractmethod
     def analyzers(self):

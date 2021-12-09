@@ -16,17 +16,12 @@ class Profile(Pipeline):
 
     def __init__(self, sections: Sequence[ProfileSection], options: Optional[list] = None):
         super().__init__(sections, options if options is not None else [])
-        self.result = {}
 
     def calculate(self,
                   reference_data: pandas.DataFrame,
                   current_data: pandas.DataFrame,
                   column_mapping: ColumnMapping):
         self.execute(reference_data, current_data, column_mapping)
-        self.result = {
-            part.part_id(): part.calculate(reference_data, current_data, column_mapping, self.analyzers_results)
-            for part in self.stages
-        }
 
     def get_analyzers(self):
         return list({analyzer for tab in self.stages for analyzer in tab.analyzers()})
@@ -35,5 +30,8 @@ class Profile(Pipeline):
         return json.dumps(self.object(), cls=NumpyEncoder)
 
     def object(self):
-        self.result["timestamp"] = str(datetime.now())
-        return self.result
+        result = {
+            part.part_id(): part.get_results() for part in self.stages
+        }
+        result["timestamp"] = str(datetime.now())
+        return result

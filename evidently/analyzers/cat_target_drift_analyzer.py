@@ -14,6 +14,9 @@ from .. import ColumnMapping
 #   the dataframe, like here: replace infs and nans. That means if far down the pipeline
 #   somebody want to compute number of nans, the results will be 0.
 #   Consider return copies of dataframes, even though it will drain memory for large datasets
+from ..options import DataDriftOptions
+
+
 def _remove_nans_and_infinities(dataframe):
     dataframe.replace([np.inf, -np.inf], np.nan, inplace=True)
     dataframe.dropna(axis=0, how='any', inplace=True)
@@ -52,7 +55,7 @@ class CatTargetDriftAnalyzer(Analyzer):
     """
 
     def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame,
-                  column_mapping: ColumnMapping) -> dict:
+                  column_mapping: ColumnMapping, options: DataDriftOptions = None) -> dict:
         """Calculate the target and prediction drifts.
 
         Notes:
@@ -67,6 +70,7 @@ class CatTargetDriftAnalyzer(Analyzer):
             A dictionary that contains some meta information as well as `metrics` for either target or prediction
             columns or both.
         """
+        # options = options or DataDriftOptions()
         columns = process_columns(reference_data, column_mapping)
         result = columns.as_dict()
         target_column = columns.utility_columns.target
@@ -78,6 +82,8 @@ class CatTargetDriftAnalyzer(Analyzer):
         current_data = _remove_nans_and_infinities(current_data)
 
         result['metrics'] = {}
+
+        func = options.cat_target_stattest_func
         # target drift
         if target_column is not None:
             p_value = _compute_data_stats(reference_data, current_data, target_column)

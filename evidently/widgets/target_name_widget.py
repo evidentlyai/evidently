@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 # coding: utf-8
+from typing import Optional
 
 import pandas as pd
 
 from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceAnalyzer
 from evidently.analyzers.classification_performance_analyzer import ClassificationPerformanceAnalyzer
 from evidently.analyzers.prob_classification_performance_analyzer import ProbClassificationPerformanceAnalyzer
-from evidently.model.widget import BaseWidgetInfo, AlertStats
+from evidently.model.widget import BaseWidgetInfo
 from evidently.widgets.widget import Widget
 
 
@@ -28,7 +29,7 @@ class TargetNameWidget(Widget):
                   reference_data: pd.DataFrame,
                   current_data: pd.DataFrame,
                   column_mapping,
-                  analyzers_results):
+                  analyzers_results) -> Optional[BaseWidgetInfo]:
 
         if self.kind == 'regression':
             results = analyzers_results[RegressionPerformanceAnalyzer]
@@ -40,17 +41,12 @@ class TargetNameWidget(Widget):
             raise ValueError(f"Unexpected kind({self.kind}) of TagetNameWidget")
 
         if not results:
-            return
+            raise ValueError(f"Widget [{self.title}]: analyzer results not found")
         if results['utility_columns']['target'] is None or results['utility_columns']['prediction'] is None:
-            return
-        self.wi = BaseWidgetInfo(
+            raise ValueError(f"Widget [{self.title}] requires 'target' and 'prediction' columns")
+        return BaseWidgetInfo(
             title="",
             type="counter",
-            details="",
-            alertStats=AlertStats(),
-            alerts=[],
-            alertsPosition="row",
-            insights=[],
             size=2,
             params={
                 "counters": [
@@ -60,5 +56,4 @@ class TargetNameWidget(Widget):
                     }
                 ]
             },
-            additionalGraphs=[],
         )
