@@ -188,7 +188,7 @@ class TestCatTargetDriftAnalyzer(TestCase):
         })
         analyzer = CatTargetDriftAnalyzer()
         options = DataDriftOptions()
-        options.cat_target_stattest_func = lambda x: np.pi
+        options.cat_target_stattest_func = lambda x, y: np.pi
         result = analyzer.calculate(df1, df2, ColumnMapping(), options)
         self._assert_result_structure(result)
         self.assertAlmostEqual(result['metrics']['target_drift'], np.pi, 4)
