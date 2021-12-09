@@ -70,9 +70,9 @@ def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping):
 
     cat_feature_names = column_mapping.categorical_features
     if cat_feature_names is None:
-        cat_feature_names = list(set(dataset.select_dtypes([np.object]).columns) - set(utility_columns))
+        cat_feature_names = list(set(dataset.select_dtypes(exclude=[np.number]).columns) - set(utility_columns))
     else:
-        cat_feature_names = dataset[cat_feature_names].select_dtypes([np.object]).columns.tolist()
+        cat_feature_names = dataset[cat_feature_names].columns.tolist()
 
     return DatasetColumns(
         DatasetUtilityColumns(date_column, id_column, target_column, prediction_column),
