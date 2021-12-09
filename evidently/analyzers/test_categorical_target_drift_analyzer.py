@@ -177,3 +177,17 @@ class TestCatTargetDriftAnalyzer(TestCase):
         self.assertAlmostEqual(result['metrics']['target_drift'], 0.29736, 4)
         self.assertAlmostEqual(result['metrics']['prediction_drift'], 0.29736, 4)
         self.assertEqual(result['metrics']['target_name'], 'target')
+
+    def test_computing_takes_a_custom_function(self):
+        df1 = DataFrame({
+            'target': ['a'] * 10 + ['b'] * 10
+        })
+        df2 = DataFrame({
+            'target': ['a'] * 6 + ['b'] * 15
+        })
+        analyzer = CatTargetDriftAnalyzer()
+
+        result = analyzer.calculate(df1, df2, ColumnMapping())
+        self._assert_result_structure(result)
+        self.assertAlmostEqual(result['metrics']['target_drift'], 0.1597, 4)
+        self.assertEqual(result['metrics']['target_name'], 'target')

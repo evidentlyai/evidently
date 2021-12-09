@@ -6,7 +6,8 @@ import pandas as pd
 from scipy.stats import chisquare
 
 from evidently.analyzers.base_analyzer import Analyzer
-from .utils import proportions_diff_z_stat_ind, proportions_diff_z_test, process_columns
+from .stattests.z_stattest import proportions_diff_z_stat_ind, proportions_diff_z_test
+from .utils import process_columns
 from .. import ColumnMapping
 
 
@@ -83,7 +84,7 @@ class CatTargetDriftAnalyzer(Analyzer):
 
         result['metrics'] = {}
 
-        func = options.cat_target_stattest_func
+        # func = options.cat_target_stattest_func
         # target drift
         if target_column is not None:
             p_value = _compute_data_stats(reference_data, current_data, target_column)
