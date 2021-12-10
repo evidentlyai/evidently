@@ -10,7 +10,7 @@ from evidently.analyzers.utils import process_columns
 
 
 class NumTargetDriftAnalyzer(Analyzer):
-    def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping):
+    def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping) -> dict:
         options = self.options_provider.get(DataDriftOptions)
         columns = process_columns(reference_data, column_mapping)
         result = columns.as_dict()
