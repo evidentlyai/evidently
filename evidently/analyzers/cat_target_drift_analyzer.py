@@ -4,18 +4,18 @@
 import numpy as np
 import pandas as pd
 
+from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.analyzers.stattests import z_stat_test, chi_stat_test
-from .utils import process_columns
-from .. import ColumnMapping
-from ..options import DataDriftOptions
+from evidently.analyzers.utils import process_columns
+from evidently.options import DataDriftOptions
 
 
-# TODO: document somewhere, that all analyzers are mutators, i.e. they will change
-#   the dataframe, like here: replace infs and nans. That means if far down the pipeline
-#   somebody want to compute number of nans, the results will be 0.
-#   Consider return copies of dataframes, even though it will drain memory for large datasets
 def _remove_nans_and_infinities(dataframe):
+    #   document somewhere, that all analyzers are mutators, i.e. they will change
+    #   the dataframe, like here: replace infs and nans. That means if far down the pipeline
+    #   somebody want to compute number of nans, the results will be 0.
+    #   Consider return copies of dataframes, even though it will drain memory for large datasets
     dataframe.replace([np.inf, -np.inf], np.nan, inplace=True)
     dataframe.dropna(axis=0, how='any', inplace=True)
     return dataframe
@@ -38,7 +38,7 @@ class CatTargetDriftAnalyzer(Analyzer):
     """
 
     def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame,
-                  column_mapping: ColumnMapping, options: DataDriftOptions = None) -> dict:
+                  column_mapping: ColumnMapping) -> dict:
         """Calculate the target and prediction drifts.
 
         With default options, uses a chi² test when number of labels is greater than 2.
@@ -47,9 +47,13 @@ class CatTargetDriftAnalyzer(Analyzer):
         Notes:
             Be aware that any nan or infinity values will be dropped from the dataframes in place.
 
-            You can also provide a custom function that computes a statistic by setting
-            options.cat_target_stattest_func value with the desired function.
-            Such a function takes two arguments:
+            You can also provide a custom function that computes a statistic by adding special
+            `DataDriftOptions` object to the `option_provider` of the class.::
+
+                options = DataDriftOptions(cat_target_stattest_func=...)
+                analyzer.options_prover.add(options)
+
+            Such a function takes two arguments:::
 
                 def(reference_data: pd.Series, current_data: pd.Series):
                    ...
@@ -60,18 +64,17 @@ class CatTargetDriftAnalyzer(Analyzer):
             current_data: new, unseen data to which we compare the reference data.
             column_mapping: a `ColumnMapping` object that contains references to the name of target and prediction
                 columns
-            options: a configuration for the calculation.
         Returns:
             A dictionary that contains some meta information as well as `metrics` for either target or prediction
             columns or both. The `*_drift` column in `metrics` contains a computed p_value from tests.
         """
-        options = options or DataDriftOptions()
+        options = self.options_provider.get(DataDriftOptions)
         columns = process_columns(reference_data, column_mapping)
         result = columns.as_dict()
         target_column = columns.utility_columns.target
         prediction_column = columns.utility_columns.prediction
 
-        # TODO: consider replacing only values in target and prediction column, see comment above
+        # consider replacing only values in target and prediction column, see comment above
         #   _remove_nans_and_infinities
         reference_data = _remove_nans_and_infinities(reference_data)
         current_data = _remove_nans_and_infinities(current_data)
