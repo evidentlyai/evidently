@@ -10,8 +10,8 @@ from evidently.options import DataDriftOptions, OptionsProvider
 
 class TestCatTargetDriftAnalyzer(TestCase):
 
-    def setUp(self) -> None:
-        options_provider = OptionsProvider()
+    def setUp(self):
+        options_provider: OptionsProvider = OptionsProvider()
         options_provider.add(DataDriftOptions(confidence=0.5))
         self.analyzer = CatTargetDriftAnalyzer()
         self.analyzer.options_provider = options_provider
