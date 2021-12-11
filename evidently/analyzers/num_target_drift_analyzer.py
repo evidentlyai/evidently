@@ -27,25 +27,54 @@ def _compute_correlation(reference_data: pd.DataFrame, current_data: pd.DataFram
 
 
 class NumTargetDriftAnalyzer(Analyzer):
+    """Numerical target drift analyzer.
+
+    Analyze numerical `target` and `prediction` distributions and provide calculations to the following questions:
+    Does the model target behave similarly to the past period? Do my model predictions still look the same?
+
+    For reference see https://evidentlyai.com/blog/evidently-014-target-and-prediction-drift
+    """
+
     def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping) -> dict:
+        """Calculate the target and prediction drifts.
+
+        With default options, uses a two sample Kolmogorov-Smirnov test at a 0.95 confidence level.
+
+        Notes:
+            You can also provide a custom function that computes a statistic by adding special
+            `DataDriftOptions` object to the `option_provider` of the class.::
+
+                options = DataDriftOptions(num_target_stattest_func=...)
+                analyzer.options_prover.add(options)
+
+            Such a function takes two arguments:::
+
+                def(reference_data: pd.Series, current_data: pd.Series):
+                   ...
+
+            and returns arbitrary number (like a p_value from the other tests ;-))
+        Args:
+            reference_data: usually the data which you used in training.
+            current_data: new, unseen data to which we compare the reference data.
+            column_mapping: a `ColumnMapping` object that contains references to the name of target and prediction
+                columns
+        Returns:
+            A dictionary that contains some meta information as well as `metrics` for either target or prediction
+            columns or both. The `*_drift` column in `metrics` contains a computed p_value from tests.
+        Raises:
+            ValueError when target or predictions columns are not numerical.
+        """
         options = self.options_provider.get(DataDriftOptions)
         columns = process_columns(reference_data, column_mapping)
         result = columns.as_dict()
 
-        target_column = columns.utility_columns.target
-        prediction_column = columns.utility_columns.prediction
-
-        num_feature_names = columns.num_feature_names
-
-        result['metrics'] = {}
-
         func = options.num_target_stattest_func or ks_stat_test
-        # target
-        metrics = _compute_correlation(reference_data, current_data, 'target', target_column, num_feature_names, func)
+        result['metrics'] = {}
+        metrics = _compute_correlation(reference_data, current_data, 'target',
+                                       columns.utility_columns.target, columns.num_feature_names, func)
         result['metrics'] = dict(**result['metrics'], **metrics)
-
-        # prediction
-        metrics = _compute_correlation(reference_data, current_data, 'prediction', prediction_column, num_feature_names, func)
+        metrics = _compute_correlation(reference_data, current_data, 'prediction',
+                                       columns.utility_columns.prediction, columns.num_feature_names, func)
         result['metrics'] = dict(**result['metrics'], **metrics)
 
         return result
