@@ -13,6 +13,9 @@ def _compute_correlation(reference_data: pd.DataFrame, current_data: pd.DataFram
                          main_column, num_columns, stats_fun):
     if main_column is None:
         return {}
+    if not pd.api.types.is_numeric_dtype(reference_data[main_column]) or \
+            not pd.api.types.is_numeric_dtype(current_data[main_column]):
+        raise ValueError
     target_p_value = stats_fun(reference_data[main_column], current_data[main_column])
     metrics = {
         prefix + '_name': main_column,
@@ -70,11 +73,10 @@ class NumTargetDriftAnalyzer(Analyzer):
 
         func = options.num_target_stattest_func or ks_stat_test
         result['metrics'] = {}
-        metrics = _compute_correlation(reference_data, current_data, 'target',
-                                       columns.utility_columns.target, columns.num_feature_names, func)
-        result['metrics'] = dict(**result['metrics'], **metrics)
-        metrics = _compute_correlation(reference_data, current_data, 'prediction',
-                                       columns.utility_columns.prediction, columns.num_feature_names, func)
-        result['metrics'] = dict(**result['metrics'], **metrics)
+        target_metrics = _compute_correlation(reference_data, current_data, 'target',
+                                              columns.utility_columns.target, columns.num_feature_names, func)
+        prediction_metrics = _compute_correlation(reference_data, current_data, 'prediction',
+                                                  columns.utility_columns.prediction, columns.num_feature_names, func)
+        result['metrics'] = dict(**result['metrics'], **target_metrics, **prediction_metrics)
 
         return result
