@@ -11,6 +11,8 @@ from evidently.analyzers.utils import process_columns
 
 def _compute_correlation(reference_data: pd.DataFrame, current_data: pd.DataFrame, prefix,
                          main_column, num_columns, stats_fun):
+    if main_column is None:
+        return {}
     target_p_value = stats_fun(reference_data[main_column], current_data[main_column])
     metrics = {
         prefix + '_name': main_column,
@@ -37,16 +39,13 @@ class NumTargetDriftAnalyzer(Analyzer):
 
         result['metrics'] = {}
 
-        func = options.num_target_stattest_func
-        func = ks_stat_test if func is None else func
+        func = options.num_target_stattest_func or ks_stat_test
         # target
-        if target_column is not None:
-            metrics = _compute_correlation(reference_data, current_data, 'target', target_column, num_feature_names, func)
-            result['metrics'] = dict(**result['metrics'], **metrics)
+        metrics = _compute_correlation(reference_data, current_data, 'target', target_column, num_feature_names, func)
+        result['metrics'] = dict(**result['metrics'], **metrics)
 
         # prediction
-        if prediction_column is not None:
-            metrics = _compute_correlation(reference_data, current_data, 'prediction', prediction_column, num_feature_names, func)
-            result['metrics'] = dict(**result['metrics'], **metrics)
+        metrics = _compute_correlation(reference_data, current_data, 'prediction', prediction_column, num_feature_names, func)
+        result['metrics'] = dict(**result['metrics'], **metrics)
 
         return result
