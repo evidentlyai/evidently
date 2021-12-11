@@ -15,7 +15,7 @@ def _compute_correlation(reference_data: pd.DataFrame, current_data: pd.DataFram
         return {}
     if not pd.api.types.is_numeric_dtype(reference_data[main_column]) or \
             not pd.api.types.is_numeric_dtype(current_data[main_column]):
-        raise ValueError
+        raise ValueError(f'Column {main_column} should only contain numerical values.')
     target_p_value = stats_fun(reference_data[main_column], current_data[main_column])
     metrics = {
         prefix + '_name': main_column,
