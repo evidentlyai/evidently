@@ -4,7 +4,6 @@ import numpy as np
 from pandas import DataFrame
 
 from evidently import ColumnMapping
-from evidently.analyzers.cat_target_drift_analyzer import CatTargetDriftAnalyzer
 from evidently.analyzers.num_target_drift_analyzer import NumTargetDriftAnalyzer
 from evidently.options import DataDriftOptions, OptionsProvider
 
@@ -284,14 +283,7 @@ class TestCatTargetDriftAnalyzer(TestCase):
             'target': range(10)
         })
 
-        result = self.analyzer.calculate(df1, df2, ColumnMapping())
-        self._assert_result_structure(result)
-        self.assertEqual(result['metrics']['target_name'], 'target')
-        self.assertEqual(result['metrics']['target_type'], 'num')
-        self.assertAlmostEqual(result['metrics']['target_drift'], 1., 4)
-        correlations = result['metrics']['target_correlations']
-        self.assertEqual(correlations['reference'], {'target': 1.0})
-        self.assertEqual(correlations['current'], {'target': 1.0})
+        self.analyzer.calculate(df1, df2, ColumnMapping())
 
     def test_computing_of_correlations_between_columns_fails_for_second_data_when_columns_missing_2(self):
         df1 = DataFrame({
@@ -305,11 +297,4 @@ class TestCatTargetDriftAnalyzer(TestCase):
             'num_1': range(0, -10, -1),
         })
 
-        result = self.analyzer.calculate(df1, df2, ColumnMapping())
-        self._assert_result_structure(result)
-        self.assertEqual(result['metrics']['target_name'], 'target')
-        self.assertEqual(result['metrics']['target_type'], 'num')
-        self.assertAlmostEqual(result['metrics']['target_drift'], 1., 4)
-        correlations = result['metrics']['target_correlations']
-        self.assertEqual(correlations['reference'], {'target': 1.0})
-        self.assertEqual(correlations['current'], {'target': 1.0})
+        self.analyzer.calculate(df1, df2, ColumnMapping())
