@@ -1,7 +1,10 @@
 import abc
-from typing import List, Dict, Type, Generator, Tuple, Optional, Sequence
+from typing import List, Dict, Type, Generator, Tuple, Optional, Sequence, Any
+
+import pandas
 
 from evidently.analyzers.base_analyzer import Analyzer
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.pipeline.pipeline import Pipeline
 from evidently.pipeline.stage import PipelineStage
 
@@ -25,6 +28,13 @@ MetricsType = Tuple[ModelMonitoringMetric, float, Optional[Dict[str, str]]]
 
 
 class ModelMonitor(PipelineStage):
+    def calculate(self,
+                  reference_data: pandas.DataFrame,
+                  current_data: pandas.DataFrame,
+                  column_mapping: ColumnMapping,
+                  analyzers_results: Dict[Type[Analyzer], Any]):
+        pass
+
     @abc.abstractmethod
     def monitor_id(self) -> str:
         raise NotImplementedError()

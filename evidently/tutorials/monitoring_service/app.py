@@ -14,6 +14,7 @@ import yaml
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 
 from evidently import model_monitoring
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.model_monitoring import DataDriftMonitor, RegressionPerformanceMonitor
 from evidently.runner.loader import DataLoader, DataOptions
 
@@ -49,8 +50,9 @@ class MonitoringService:
     def __init__(self,
                  reference: pandas.DataFrame,
                  options: MonitoringServiceOptions,
-                 column_mapping: dict = None):
-        self.monitoring = model_monitoring.ModelMonitoring(monitors=[monitor_mapping[k]() for k in options.monitors])
+                 column_mapping: ColumnMapping = None):
+        self.monitoring = model_monitoring.ModelMonitoring(monitors=[monitor_mapping[k]() for k in options.monitors],
+                                                           options=[])
 
         if options.use_reference:
             self.reference = reference.iloc[:-options.window_size, :].copy()
@@ -117,7 +119,9 @@ def configure_service():
                                              separator=config['data_format']['separator'],
                                              header=config['data_format']['header']))
     logger.info(f"reference dataset loaded: {len(reference_data)} rows")
-    SERVICE = MonitoringService(reference_data, options=options, column_mapping=config['column_mapping'])
+    SERVICE = MonitoringService(reference_data,
+                                options=options,
+                                column_mapping=ColumnMapping(**config['column_mapping']))
 
 
 @app.route('/iterate', methods=["POST"])
