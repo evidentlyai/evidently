@@ -13,6 +13,7 @@ from evidently.model_profile import Profile
 from evidently.profile_sections import DataDriftProfileSection
 from evidently.dashboard import Dashboard
 from evidently.tabs import DataDriftTab
+from evidently.pipeline.column_mapping import ColumnMapping
 
 default_args = {
 	"start_date": datetime(2020, 1, 1),
@@ -40,8 +41,8 @@ def _detect_dataset_drift(reference, production, column_mapping, confidence=0.95
     json_report = json.loads(report)
 
     drifts = []
-    num_features = column_mapping.get('numerical_features') if column_mapping.get('numerical_features') else []
-    cat_features = column_mapping.get('categorical_features') if column_mapping.get('categorical_features') else []
+    num_features = column_mapping.numerical_features if column_mapping.numerical_features else []
+    cat_features = column_mapping.categorical_features if column_mapping.categorical_features else []
     for feature in num_features + cat_features:
         drifts.append(json_report['data_drift']['data']['metrics'][feature]['p_value']) 
         
@@ -59,8 +60,8 @@ def load_data_execute(**context):
 	data = datasets.load_boston()
 	data_frame = pd.DataFrame(data.data, columns=data.feature_names)
 
-	data_columns = {}
-	data_columns['numerical_features'] = ['CRIM', 'ZN', 'INDUS', 'NOX', 'RM', 'AGE', 'DIS', 'TAX','PTRATIO', 'B', 'LSTAT']
+	data_columns = ColumnMapping()
+	data_columns.numerical_features = ['CRIM', 'ZN', 'INDUS', 'NOX', 'RM', 'AGE', 'DIS', 'TAX','PTRATIO', 'B', 'LSTAT']
 	#data_columns['categorical_features'] = ['CHAS', 'RAD']
 
 	context['ti'].xcom_push(key='data_frame', value=data_frame)
