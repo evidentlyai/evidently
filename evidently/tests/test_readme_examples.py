@@ -97,7 +97,7 @@ class TestDashboards(TestCase):
         regression_single_model_performance.calculate(self.iris_frame, None)
         actual = json.loads(regression_single_model_performance._json())
         self.assertTrue('name' in actual)
-        self.assertEqual(len(actual['widgets']), 12)
+        self.assertEqual(len(actual['widgets']), 11)
 
     def test_classification_performance_dashboard(self):
         # To generate the **Classification Model Performance** report, run:
@@ -135,7 +135,7 @@ class TestDashboards(TestCase):
         classification_single_frame_performance.calculate(self.iris_frame, None)
         actual = json.loads(classification_single_frame_performance._json())
         self.assertTrue('name' in actual)
-        self.assertEqual(len(actual['widgets']), 9)
+        self.assertEqual(len(actual['widgets']), 6)
 
     def test_probabilistic_classification_performance_on_single_frame_dashboard(self):
         # You can also generate either of the **Classification** reports for a single `DataFrame`. In this case, run:
@@ -261,8 +261,8 @@ class TestProfiles(TestCase):
         iris_prob_classification_profile = Profile(sections=[ProbClassificationPerformanceProfileSection()])
         iris_prob_classification_profile.calculate(merged_reference, merged_reference, column_mapping)
         # FIXME: this does not work! why?
-        # iris_prob_classification_profile.calculate(merged_reference[:100], merged_reference[100:],
-        #                                            column_mapping = iris_column_mapping)
+        # iris_prob_classification_profile.calculate(merged_reference[:100], merged_reference[100:].reset_index(drop=True),
+        #                                            column_mapping = column_mapping)
 
         actual = json.loads(iris_prob_classification_profile.json())
         # we leave the actual content test to other tests for widgets

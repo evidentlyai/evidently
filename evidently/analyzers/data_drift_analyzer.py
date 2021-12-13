@@ -34,6 +34,8 @@ class DataDriftAnalyzer(Analyzer):
         nbinsx = options.nbinsx
         confidence = options.confidence
         drift_share = options.drift_share
+
+        result['options'] = options.as_dict()
         # calculate result
         result['metrics'] = {}
 
