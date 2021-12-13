@@ -128,7 +128,7 @@ HTML report does not open automatically. To explore it, you should open it from 
 
 To generate the **Regression Model Performance** report, run:
 ```python
-regression_model_performance = Dashboard(tabs=[RegressionPerfomanceTab()]) 
+regression_model_performance = Dashboard(tabs=[RegressionPerformanceTab()]) 
 regression_model_performance.calculate(reference_data, current_data, column_mapping = column_mapping) 
 ```
 

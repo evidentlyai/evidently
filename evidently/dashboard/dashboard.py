@@ -143,8 +143,7 @@ class Dashboard(Pipeline):
                   reference_data: pandas.DataFrame,
                   current_data: pandas.DataFrame,
                   column_mapping: ColumnMapping = None):
-        if column_mapping is None:
-            column_mapping = ColumnMapping()
+        column_mapping = column_mapping or ColumnMapping()
         self.execute(reference_data, current_data, column_mapping)
 
     def __render(self, template: Callable[[TemplateParams], str]):
