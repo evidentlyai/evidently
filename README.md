@@ -219,6 +219,9 @@ prob_classification_single_model_performance = Profile(sections=[ProbClassificat
 prob_classification_single_model_performance.calculate(reference_data, None, column_mapping=column_mapping)
 ```
 
+### Community Reports
+
+
 ### Google Colab, Kaggle Kernel, Deepnote
 You can run ```evidently``` in [Google Colab](https://colab.research.google.com/), [Kaggle Notebook](https://www.kaggle.com/code) and [Deepnote](https://deepnote.com/).
 
