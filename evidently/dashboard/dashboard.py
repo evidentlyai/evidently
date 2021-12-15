@@ -143,11 +143,8 @@ class Dashboard(Pipeline):
                   reference_data: pandas.DataFrame,
                   current_data: pandas.DataFrame,
                   column_mapping: ColumnMapping = None):
-        if column_mapping is None:
-            column_mapping = ColumnMapping()
+        column_mapping = column_mapping or ColumnMapping()
         self.execute(reference_data, current_data, column_mapping)
-        for tab in self.stages:
-            tab.calculate(reference_data, current_data, column_mapping, self.analyzers_results)
 
     def __render(self, template: Callable[[TemplateParams], str]):
         dashboard_id = "evidently_dashboard_" + str(uuid.uuid4()).replace("-", "")

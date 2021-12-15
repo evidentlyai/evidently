@@ -22,3 +22,7 @@ class ProfileSection(PipelineStage):
                   column_mapping,
                   analyzers_results):
         raise NotImplementedError()
+
+    @abc.abstractmethod
+    def get_results(self):
+        raise NotImplementedError()

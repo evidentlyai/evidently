@@ -2,12 +2,14 @@
 # coding: utf-8
 
 import json
+from typing import Optional
 
 import pandas as pd
 import numpy as np
 
 import plotly.graph_objs as go
 
+from evidently import ColumnMapping
 from evidently.analyzers.data_drift_analyzer import DataDriftAnalyzer, DataDriftOptions
 from evidently.model.widget import BaseWidgetInfo, AlertStats, AdditionalGraphInfo
 from evidently.widgets.widget import Widget, GREY, RED
@@ -20,8 +22,8 @@ class DataDriftTableWidget(Widget):
     def calculate(self,
                   reference_data: pd.DataFrame,
                   current_data: pd.DataFrame,
-                  column_mapping,
-                  analyzers_results):
+                  column_mapping: ColumnMapping,
+                  analyzers_results) -> Optional[BaseWidgetInfo]:
         results = analyzers_results[DataDriftAnalyzer]
         num_feature_names = results["num_feature_names"]
         cat_feature_names = results["cat_feature_names"]
@@ -217,7 +219,7 @@ class DataDriftTableWidget(Widget):
                        f' out of {n_features}). '
         title_suffix = 'Dataset Drift is detected.' if dataset_drift else 'Dataset Drift is NOT detected.'
 
-        self.wi = BaseWidgetInfo(
+        return BaseWidgetInfo(
             title=title_prefix + title_suffix,
             type="big_table",
             details="",
