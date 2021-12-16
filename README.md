@@ -220,7 +220,7 @@ prob_classification_single_model_performance.calculate(reference_data, None, col
 ```
 
 ### Community Reports
-
+* A simple dashboard which contains two custom widgets with target distribution information [link to repository](https://github.com/0lgaF/my_tab_with_evidently)
 
 ### Google Colab, Kaggle Kernel, Deepnote
 You can run ```evidently``` in [Google Colab](https://colab.research.google.com/), [Kaggle Notebook](https://www.kaggle.com/code) and [Deepnote](https://deepnote.com/).
