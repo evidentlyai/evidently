@@ -219,10 +219,10 @@ prob_classification_single_model_performance = Profile(sections=[ProbClassificat
 prob_classification_single_model_performance.calculate(reference_data, None, column_mapping=column_mapping)
 ```
 
-### Community Reports
+## Community Reports
 * A simple dashboard which contains two custom widgets with target distribution information [link to repository](https://github.com/0lgaF/my_tab_with_evidently)
 
-### Google Colab, Kaggle Kernel, Deepnote
+## Google Colab, Kaggle Kernel, Deepnote
 You can run ```evidently``` in [Google Colab](https://colab.research.google.com/), [Kaggle Notebook](https://www.kaggle.com/code) and [Deepnote](https://deepnote.com/).
 
 First, install ```evidently```. Run the following command in the notebook cell:
@@ -257,164 +257,12 @@ The ```show()``` method has the argument ```mode```, which can take the followin
 * **nbextention** - to show the UI using nbextension. Use this option to display dashboards in Jupyter notebooks (it should work automatically).
 * **inline** - to insert the UI directly into the cell. Use this option for Google Colab, Kaggle Kernels and Deepnote. For Google Colab, this should work automatically, for **Kaggle Kernels** and **Deepnote** the option should be specified explicitly.
 
-### Terminal
-You can generate **HTML reports** or **JSON profiles** directly from the bash shell. To do this, prepare your data as two `csv` files. In case you run one of the performance reports, you can have only one file. The first one should include your reference data, the second - current production data. The structure of both datasets should be identical. 
-
-To generate a HTML report, run the following command in bash:
-
-```bash
-python -m evidently calculate dashboard --config config.json 
---reference reference.csv --current current.csv --output output_folder --report_name output_file_name
-```
-
-To generate a JSON profile, run the following command in bash:
-```bash
-python -m evidently calculate profile --config config.json 
---reference reference.csv --current current.csv --output output_folder --report_name output_file_name
-
-```
-Here:
-- `reference` is the path to the reference data, 
-- `current` is the path to the current data, 
-- `output` is the path to the output folder,
-- `report_name` is name of the output file,
-- `config` is the path to the configuration file,
-- `pretty_print` to print the JSON profile with indents (for profile only).
-
-Currently, you can choose the following Tabs or Sections:
-- `data_drift` to estimate the data drift,
-- `num_target_drift` to estimate target drift for numerical target,
-- `cat_target_drift` to estimate target drift for categorical target,
-- `classification_performance` to explore the performance of a classification model,
-- `prob_classification_performance` to explore the performance of a probabilistic classification model,
-- `regression_performance` to explore the performance of a regression model.
-
-To configure a report or a profile you need to create the `config.json` file. This file configures the way of reading your input data and the type of the report. 
-
-Here is an example of a simple configuration for a report, where we have comma separated `csv` files with headers and there is no `date` column in the data.
-
-**Dashboard**:
-
-```json
-{
-  "data_format": {
-    "separator": ",",
-    "header": true,
-    "date_column": null
-  },
-  "column_mapping": {},
-  "dashboard_tabs": {
-    "cat_target_drift": {
-      "verbose_level": "1"
-    }
-  }
-}
-```
-
-**Profile**:
-```json
-{
-  "data_format": {
-    "separator": ",",
-    "header": true,
-    "date_column": null
-  },
-  "column_mapping" : {},
-  "profile_sections": {
-    "data_drift": {}
-  },
-  "options": {
-    "data_drift": {
-      "confidence": 0.95,
-      "drift_share": 0.5,
-      "nbinsx": null,
-      "xbins": null
-    }
-  },
-  "pretty_print": true
-}
-```
-
-Here is an example of a more complicated configuration, where we have comma separated `csv` files with headers and `datetime` column. We also specified the `column_mapping` dictionary to add information about `datetime`, `target` and `numerical_features`. 
-
-**Dashboard**:
-```json
-{
-  "data_format": {
-    "separator": ",",
-    "header": true,
-    "date_column": "datetime"
-  },
-  "column_mapping" : {
-    "datetime":"datetime",
-    "target":"target",
-    "numerical_features": ["mean radius", "mean texture", "mean perimeter", 
-      "mean area", "mean smoothness", "mean compactness", "mean concavity", 
-      "mean concave points", "mean symmetry"]},
-  "dashboard_tabs": {
-   "cat_target_drift": {
-      "include_widgets": ["Target Drift", "Target (Prediction) Behavior By Feature"]
-    } 
-  },
-  "options": {
-    "data_drift": {
-      "confidence": 0.99,
-      "drift_share": 0.5,
-      "nbinsx": {
-        "mean perimeter": 4,
-        "mean symmetry": 4
-      }
-    }
-  },
-  "sampling": {
-      "reference": {
-      "type": "none"
-    },
-      "current": {
-      "type": "nth",
-      "n": 2
-    }
-  }
-}
-```
-
-**Profile**:
-```json
-{
-  "data_format": {
-    "separator": ",",
-    "header": true,
-    "date_column": null
-  },
-  "column_mapping" : {
-    "target":"target",
-    "numerical_features": ["mean radius", "mean texture", "mean perimeter", 
-      "mean area", "mean smoothness", "mean compactness", "mean concavity", 
-      "mean concave points", "mean symmetry"]},
-  "profile_sections": {
-    "data_drift": {},
-    "cat_target_drift": {}
-  },
-  "pretty_print": true,
-  "sampling": {
-    "reference": {
-      "type": "none"
-    },
-    "current": {
-      "type": "random",
-      "ratio": 0.8
-    }
-  }
-}
-```
-
 ## Telemetry
 When you use Evidently in the command-line interface, we collect basic telemetry (starting from 0.1.21.dev0 version). It includes data on the environment (e.g. Python version) and usage (type of report or profile generated). You can read more about what we collect [here](https://docs.evidentlyai.com/support/telemetry). 
 
 You can opt-out from telemetry collection by setting the environment variable EVIDENTLY_DISABLE_TELEMETRY=1
 
 ## Large datasets
-
 As you can see from the above example, you can specify **sampling** parameters for large files. You can use different sampling strategies for reference and current data, or apply sampling only to one of the files. 
 Currently we have 3 sampling types available:
 * `none` - there will be no sampling for the file,
@@ -422,11 +270,9 @@ Currently we have 3 sampling types available:
 * `random` - random sampling will be applied. This option works together with `ratio` parameter (see the example with the Profile above)
 
 ## Documentation
-
 For more information, refer to a complete <a href="https://evidentlyai.gitbook.io/docs/">Documentation</a>.
 
 ## Examples
-
 - See **Data Drift** Dashboard and Profile generation to explore the results both inside a Jupyter notebook and as a separate .html file:
 [Iris](https://colab.research.google.com/drive/1TCdDjuiMzvSyjkIJOwYl2dkN8N56c00Z?authuser=1), 
 [Boston](https://colab.research.google.com/drive/1J8FvINy5nX47L5-iklsGD4C4y1Zi1Wlo?authuser=1)
