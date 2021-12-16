@@ -1,5 +1,4 @@
 import datetime
-from typing import NoReturn
 
 import pandas
 
@@ -7,7 +6,7 @@ from evidently.analyzers.utils import process_columns
 from evidently.pipeline.column_mapping import ColumnMapping
 
 
-def test_process_columns() -> NoReturn:
+def test_process_columns() -> None:
     dataset = pandas.DataFrame.from_dict([
         dict(datetime=datetime.datetime.now(),
              target=1,
