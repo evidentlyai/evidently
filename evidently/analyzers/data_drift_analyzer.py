@@ -41,7 +41,12 @@ class DataDriftAnalyzer(Analyzer):
 
         p_values = []
 
+        default_confidence = DataDriftOptions().confidence
         for feature_name in num_feature_names:
+            if isinstance(options.confidence, float):
+                confidence = options.confidence
+            else:
+                confidence = options.confidence.get(feature_name, default_confidence)
             func = None if options.feature_stattest_func is None \
                 else options.feature_stattest_func.get(feature_name, None)
             func = options.stattest_func if func is None else func
