@@ -71,6 +71,10 @@ class NumTargetDriftAnalyzer(Analyzer):
         columns = process_columns(reference_data, column_mapping)
         result = columns.as_dict()
 
+        if set(columns.num_feature_names) - set(current_data.columns):
+            raise ValueError(f'Some numerical features in current data {current_data.columns}'
+                             f'are not present in columns.num_feature_names')
+
         func = options.num_target_stattest_func or ks_stat_test
         result['metrics'] = {}
         target_metrics = _compute_correlation(reference_data, current_data, 'target',
