@@ -3,6 +3,7 @@
 
 import pandas as pd
 import numpy as np
+from typing import Optional
 
 from sklearn import metrics, preprocessing
 from evidently.analyzers.base_analyzer import Analyzer
@@ -10,7 +11,7 @@ from .utils import process_columns
 
 
 class ProbClassificationPerformanceAnalyzer(Analyzer):
-    def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping):
+    def calculate(self, reference_data: pd.DataFrame, current_data: Optional[pd.DataFrame], column_mapping):
         columns = process_columns(reference_data, column_mapping)
         result = columns.as_dict()
 
