@@ -283,7 +283,8 @@ class TestCatTargetDriftAnalyzer(TestCase):
             'target': range(10)
         })
 
-        self.analyzer.calculate(df1, df2, ColumnMapping())
+        with self.assertRaises(ValueError):
+            self.analyzer.calculate(df1, df2, ColumnMapping())
 
     def test_computing_of_correlations_between_columns_fails_for_second_data_when_columns_missing_2(self):
         df1 = DataFrame({
@@ -297,4 +298,5 @@ class TestCatTargetDriftAnalyzer(TestCase):
             'num_1': range(0, -10, -1),
         })
 
-        self.analyzer.calculate(df1, df2, ColumnMapping())
+        with self.assertRaises(ValueError):
+            self.analyzer.calculate(df1, df2, ColumnMapping())
