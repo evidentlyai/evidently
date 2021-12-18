@@ -12,3 +12,11 @@ class DataDriftOptions:
     feature_stattest_func: Optional[Dict[str, Callable]] = None
     cat_target_stattest_func: Optional[Callable] = None
     num_target_stattest_func: Optional[Callable] = None
+
+    def as_dict(self):
+        return {
+            "confidence": self.confidence,
+            "drift_share": self.drift_share,
+            "nbinsx": self.nbinsx,
+            "xbins": self.xbins
+        }
