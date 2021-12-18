@@ -32,18 +32,13 @@ class DataDriftTableWidget(Widget):
         # set params data
         params_data = []
         options = self.options_provider.get(DataDriftOptions)
-
-        default_confidence = DataDriftOptions().confidence
         for feature_name in num_feature_names + cat_feature_names:
             current_small_hist = results['metrics'][feature_name]["current_small_hist"]
             ref_small_hist = results['metrics'][feature_name]["ref_small_hist"]
             feature_type = results['metrics'][feature_name]["feature_type"]
 
             p_value = results['metrics'][feature_name]["p_value"]
-            if isinstance(options.confidence, float):
-                feature_confidence = options.confidence
-            else:
-                feature_confidence = options.confidence.get(feature_name, default_confidence)
+            feature_confidence = options.get_confidence(feature_name)
             distr_sim_test = "Detected" if p_value < (1. - feature_confidence) else "Not Detected"
 
             params_data.append(

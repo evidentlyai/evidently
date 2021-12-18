@@ -32,7 +32,6 @@ class DataDriftAnalyzer(Analyzer):
         num_feature_names = columns.num_feature_names
         cat_feature_names = columns.cat_feature_names
         nbinsx = options.nbinsx
-        confidence = options.confidence
         drift_share = options.drift_share
 
         result['options'] = options.as_dict()
@@ -40,13 +39,8 @@ class DataDriftAnalyzer(Analyzer):
         result['metrics'] = {}
 
         p_values = []
-
-        default_confidence = DataDriftOptions().confidence
         for feature_name in num_feature_names:
-            if isinstance(options.confidence, float):
-                confidence = options.confidence
-            else:
-                confidence = options.confidence.get(feature_name, default_confidence)
+            confidence = options.get_confidence(feature_name)
             func = None if options.feature_stattest_func is None \
                 else options.feature_stattest_func.get(feature_name, None)
             func = options.stattest_func if func is None else func

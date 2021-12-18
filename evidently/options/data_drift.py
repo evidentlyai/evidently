@@ -20,3 +20,10 @@ class DataDriftOptions:
             "nbinsx": self.nbinsx,
             "xbins": self.xbins
         }
+
+    def get_confidence(self, feature_name):
+        if isinstance(self.confidence, float):
+            return self.confidence
+        if isinstance(self.confidence, dict):
+            return self.confidence.get(feature_name, DataDriftOptions.confidence)
+        raise ValueError(f"DataDriftOptions.confidence is incorrect type {type(self.confidence)}")
