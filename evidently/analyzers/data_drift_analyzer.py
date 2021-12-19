@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
+import collections
+
 import pandas as pd
 import numpy as np
 
@@ -10,8 +12,8 @@ from evidently.analyzers.stattests import chi_stat_test, ks_stat_test, z_stat_te
 from evidently.analyzers.utils import process_columns
 
 
-def dataset_drift_evaluation(p_values, confidence=0.95, drift_share=0.5):
-    n_drifted_features = sum([1 if x < (1. - confidence) else 0 for x in p_values])
+def dataset_drift_evaluation(p_values, drift_share=0.5):
+    n_drifted_features = sum([1 if x.p_value < (1. - x.confidence) else 0 for _, x in p_values.items()])
     share_drifted_features = n_drifted_features / len(p_values)
     dataset_drift = bool(share_drifted_features >= drift_share)
     return n_drifted_features, share_drifted_features, dataset_drift
@@ -19,6 +21,9 @@ def dataset_drift_evaluation(p_values, confidence=0.95, drift_share=0.5):
 
 class DataDriftAnalyzerResults:
     pass
+
+
+PValueWithConfidence = collections.namedtuple("PValueWithConfidence", ["p_value", "confidence"])
 
 
 class DataDriftAnalyzer(Analyzer):
@@ -38,15 +43,12 @@ class DataDriftAnalyzer(Analyzer):
         # calculate result
         result['metrics'] = {}
 
-        p_values = []
+        p_values = {}
         for feature_name in num_feature_names:
             confidence = options.get_confidence(feature_name)
-            func = None if options.feature_stattest_func is None \
-                else options.feature_stattest_func.get(feature_name, None)
-            func = options.stattest_func if func is None else func
-            func = ks_stat_test if func is None else func
+            func = options.get_feature_stattest_func(feature_name, ks_stat_test)
             p_value = func(reference_data[feature_name], current_data[feature_name])
-            p_values.append(p_value)
+            p_values[feature_name] = PValueWithConfidence(p_value, confidence)
             if nbinsx:
                 current_nbinsx = nbinsx.get(feature_name) if nbinsx.get(feature_name) else 10
             else:
@@ -63,9 +65,8 @@ class DataDriftAnalyzer(Analyzer):
             )
 
         for feature_name in cat_feature_names:
-            func = None if options.feature_stattest_func is None \
-                else options.feature_stattest_func.get(feature_name, None)
-            func = options.stattest_func if func is None else func
+            confidence = options.get_confidence(feature_name)
+            func = options.get_feature_stattest_func(feature_name, ks_stat_test)
             keys = set(list(reference_data[feature_name][np.isfinite(reference_data[feature_name])].unique()) +
                        list(current_data[feature_name][np.isfinite(current_data[feature_name])].unique()))
 
@@ -77,7 +78,7 @@ class DataDriftAnalyzer(Analyzer):
                 func = z_stat_test if func is None else func
                 p_value = func(reference_data[feature_name], current_data[feature_name])
 
-            p_values.append(p_value)
+            p_values[feature_name] = PValueWithConfidence(p_value, confidence)
 
             if nbinsx:
                 current_nbinsx = nbinsx.get(feature_name) if nbinsx.get(feature_name) else 10
@@ -94,8 +95,7 @@ class DataDriftAnalyzer(Analyzer):
                 p_value=p_value
             )
 
-        n_drifted_features, share_drifted_features, dataset_drift = dataset_drift_evaluation(p_values, confidence,
-                                                                                             drift_share)
+        n_drifted_features, share_drifted_features, dataset_drift = dataset_drift_evaluation(p_values, drift_share)
         result['metrics']['n_features'] = len(num_feature_names) + len(cat_feature_names)
         result['metrics']['n_drifted_features'] = n_drifted_features
         result['metrics']['share_drifted_features'] = share_drifted_features

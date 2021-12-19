@@ -21,9 +21,15 @@ class DataDriftOptions:
             "xbins": self.xbins
         }
 
-    def get_confidence(self, feature_name):
+    def get_confidence(self, feature_name: str) -> float:
         if isinstance(self.confidence, float):
             return self.confidence
         if isinstance(self.confidence, dict):
             return self.confidence.get(feature_name, DataDriftOptions.confidence)
         raise ValueError(f"DataDriftOptions.confidence is incorrect type {type(self.confidence)}")
+
+    def get_feature_stattest_func(self, feature_name: str, default: Callable) -> Callable:
+        _default = default if self.stattest_func is None else self.stattest_func
+        if self.feature_stattest_func is not None:
+            return self.feature_stattest_func.get(feature_name, _default)
+        return _default
