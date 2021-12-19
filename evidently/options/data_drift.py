@@ -2,9 +2,12 @@ from dataclasses import dataclass
 from typing import Optional, Dict, Callable, Union
 
 
+DEFAULT_CONFIDENCE = 0.95
+
+
 @dataclass
 class DataDriftOptions:
-    confidence: Union[float, Dict[str, float]] = 0.95
+    confidence: Union[float, Dict[str, float]] = DEFAULT_CONFIDENCE
     drift_share: float = 0.5
     nbinsx: Optional[Dict[str, int]] = None
     xbins: Optional[Dict[str, int]] = None
@@ -25,7 +28,7 @@ class DataDriftOptions:
         if isinstance(self.confidence, float):
             return self.confidence
         if isinstance(self.confidence, dict):
-            return self.confidence.get(feature_name, DataDriftOptions.confidence)
+            return self.confidence.get(feature_name, DEFAULT_CONFIDENCE)
         raise ValueError(f"DataDriftOptions.confidence is incorrect type {type(self.confidence)}")
 
     def get_feature_stattest_func(self, feature_name: str, default: Callable) -> Callable:
