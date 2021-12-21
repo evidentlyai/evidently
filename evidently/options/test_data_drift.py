@@ -40,15 +40,33 @@ def _another_stattest():
     pass
 
 
-@pytest.mark.parametrize("func,feature_func,expected", [
-    (None, None, {"feature1": _default_stattest, "feature2": _default_stattest}),
-    (_custom_stattest, None, {"feature1": _custom_stattest, "feature2": _custom_stattest}),
-    (None, {"feature1": _custom_stattest}, {"feature1": _custom_stattest, "feature2": _default_stattest}),
-    (None, {"feature2": _custom_stattest}, {"feature1": _default_stattest, "feature2": _custom_stattest}),
-    (None, {"feature2": _custom_stattest}, {"feature1": _default_stattest, "feature2": _custom_stattest}),
-    (_another_stattest, {"feature2": _custom_stattest}, {"feature1": _another_stattest, "feature2": _custom_stattest}),
+@pytest.mark.parametrize("feature_func,expected", [
+    (None, {"feature1": _default_stattest, "feature2": _default_stattest}),
+    ({"feature1": _custom_stattest}, {"feature1": _custom_stattest, "feature2": _default_stattest}),
+    ({"feature2": _custom_stattest}, {"feature1": _default_stattest, "feature2": _custom_stattest}),
+    ({"feature2": _custom_stattest}, {"feature1": _default_stattest, "feature2": _custom_stattest}),
 ])
-def test_stattest_function_valid(func, feature_func, expected):
-    options = DataDriftOptions(stattest_func=func, feature_stattest_func=feature_func)
+def test_stattest_function_valid(feature_func, expected):
+    options = DataDriftOptions(feature_stattest_func=feature_func)
     for feature, expected_func in expected.items():
         assert options.get_feature_stattest_func(feature, _default_stattest) == expected_func
+
+
+@pytest.mark.parametrize("nbinsx,expected", [
+    (20, {"feature1": 20, "feature2": 20}),
+    ({"feature1": 15}, {"feature1": 15, "feature2": DataDriftOptions.nbinsx}),
+    ({"feature2": 11}, {"feature1": DataDriftOptions.nbinsx, "feature2": 11}),
+    ({"feature1": 25, "feature2": 35}, {"feature1": 25, "feature2": 35})
+])
+def test_nbinsx_valid(nbinsx, expected):
+    options = DataDriftOptions(nbinsx=nbinsx)
+    for feature, expected_nbinsx in expected.items():
+        assert options.get_nbinsx(feature) == expected_nbinsx
+
+
+def test_nbinsx_invalid():
+    # special check if passed totally incorrect value
+    # noinspection PyTypeChecker
+    options = DataDriftOptions(nbinsx="")
+    with pytest.raises(ValueError):
+        options.get_nbinsx("feature1")

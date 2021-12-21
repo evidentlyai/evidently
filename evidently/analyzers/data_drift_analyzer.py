@@ -36,7 +36,6 @@ class DataDriftAnalyzer(Analyzer):
 
         num_feature_names = columns.num_feature_names
         cat_feature_names = columns.cat_feature_names
-        nbinsx = options.nbinsx
         drift_share = options.drift_share
 
         result['options'] = options.as_dict()
@@ -49,10 +48,7 @@ class DataDriftAnalyzer(Analyzer):
             func = options.get_feature_stattest_func(feature_name, ks_stat_test)
             p_value = func(reference_data[feature_name], current_data[feature_name])
             p_values[feature_name] = PValueWithConfidence(p_value, confidence)
-            if nbinsx:
-                current_nbinsx = nbinsx.get(feature_name) if nbinsx.get(feature_name) else 10
-            else:
-                current_nbinsx = 10
+            current_nbinsx = options.get_nbinsx(feature_name)
             result['metrics'][feature_name] = dict(
                 current_small_hist=[t.tolist() for t in
                                     np.histogram(current_data[feature_name][np.isfinite(current_data[feature_name])],
@@ -80,10 +76,7 @@ class DataDriftAnalyzer(Analyzer):
 
             p_values[feature_name] = PValueWithConfidence(p_value, confidence)
 
-            if nbinsx:
-                current_nbinsx = nbinsx.get(feature_name) if nbinsx.get(feature_name) else 10
-            else:
-                current_nbinsx = 10
+            current_nbinsx = options.get_nbinsx(feature_name)
             result['metrics'][feature_name] = dict(
                 current_small_hist=[t.tolist() for t in
                                     np.histogram(current_data[feature_name][np.isfinite(current_data[feature_name])],

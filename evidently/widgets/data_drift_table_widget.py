@@ -75,7 +75,6 @@ class DataDriftTableWidget(Widget):
         # set additionalGraphs
         additional_graphs_data = []
         xbins = options.xbins
-        nbinsx = options.nbinsx
         for feature_name in num_feature_names + cat_feature_names:
             # plot distributions
             fig = go.Figure()
@@ -84,10 +83,7 @@ class DataDriftTableWidget(Widget):
                 current_nbinsx = None
             else:
                 current_xbins = None
-                if nbinsx:
-                    current_nbinsx = nbinsx.get(feature_name, 10)
-                else:
-                    current_nbinsx = 10
+                current_nbinsx = options.get_nbinsx(feature_name)
             fig.add_trace(go.Histogram(x=reference_data[feature_name],
                                        marker_color=GREY,
                                        opacity=0.6,
