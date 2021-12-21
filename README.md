@@ -102,7 +102,13 @@ import pandas as pd
 from sklearn import datasets
 
 from evidently.dashboard import Dashboard
-from evidently.tabs import DataDriftTab
+from evidently.tabs import (
+    DataDriftTab,
+    CatTargetDriftTab,
+    RegressionPerformanceTab,
+    ClassificationPerformanceTab,
+    ProbClassificationPerformanceTab,
+)
 
 iris = datasets.load_iris()
 iris_frame = pd.DataFrame(iris.data, columns = iris.feature_names)
@@ -170,7 +176,13 @@ import pandas as pd
 from sklearn import datasets
 
 from evidently.model_profile import Profile
-from evidently.profile_sections import DataDriftProfileSection
+from evidently.profile_sections import (
+    DataDriftProfileSection,
+    CatTargetDriftProfileSection,
+    RegressionPerformanceProfileSection,
+    ClassificationPerformanceProfileSection,
+    ProbClassificationPerformanceProfileSection,
+)
 
 iris = datasets.load_iris()
 iris_frame = pd.DataFrame(iris.data, columns = iris.feature_names)
