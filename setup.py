@@ -3,41 +3,26 @@
 
 # Copyright (c) Jupyter Development Team.
 # Distributed under the terms of the Modified BSD License.
-
-from __future__ import print_function
-
 import os
-from glob import glob
 from os.path import join as pjoin
 
 from setuptools import setup
 
 from setupbase import (
-    create_cmdclass, ensure_targets,
-    find_packages, combine_commands, ensure_python,
-    get_version, HERE, install_npm
+    create_cmdclass, ensure_targets, combine_commands,
+    HERE, install_npm
 )
 
-# The name of the project
-NAME = 'evidently'
-
-# Ensure a valid python version
-ensure_python('3.6')
-
-# Get our version
-version = get_version(pjoin(NAME, '_version.py'))
-
-nb_path = pjoin(HERE, NAME, 'nbextension', 'static')
-lab_path = pjoin(HERE, NAME, 'labextension')
+nb_path = pjoin(HERE, 'evidently', 'nbextension', 'static')
+lab_path = pjoin(HERE, 'evidently', 'labextension')
 
 # Representative files that should exist after a successful build
 jstargets = [
     pjoin(nb_path, 'index.js'),
-    # pjoin(HERE, 'lib', 'plugin.js'),
 ]
 
 package_data_spec = {
-    NAME: [
+    'evidently': [
         'nbextension/static/*.*js*',
         'nbextension/static/*.woff2',
         'labextension/*.tgz'
@@ -45,8 +30,7 @@ package_data_spec = {
 }
 
 data_files_spec = [
-    ('share/jupyter/nbextensions/evidently',
-     nb_path, '*.js*'),
+    ('share/jupyter/nbextensions/evidently', nb_path, '*.js*'),
     ('share/jupyter/lab/extensions', lab_path, '*.tgz'),
     ('etc/jupyter/nbconfig/notebook.d', HERE, 'evidently.json')
 ]
@@ -58,31 +42,33 @@ cmdclass['jsdeps'] = combine_commands(
     ensure_targets(jstargets),
 )
 
-with open("requirements.txt", encoding="utf-8") as dep_file:
-    dependencies = dep_file.readlines()
-with open("dev_requirements.txt", encoding="utf-8") as dev_dep_file:
-    dev_dependencies = dev_dep_file.readlines()
 setup_args = dict(
-    name=NAME,
-    description='Open-source tools to analyze, monitor, and debug machine learning model in production.',
-    version=version,
-    scripts=glob(pjoin('scripts', '*')),
     cmdclass=cmdclass,
-    packages=find_packages(),
-    author='Emeli Dral',
     author_email='emeli.dral@gmail.com',
-    url='https://github.com/evidentlyai/evidently',
-    license='Apache License 2.0',
-    platforms="Linux, Mac OS X, Windows",
-    keywords=[],
-    classifiers=[],
     include_package_data=True,
-    install_requires=dependencies,
+    install_requires=[
+        "dataclasses>=0.6",
+        "plotly>=4.12.0",
+        "statsmodels>=0.12.2",
+        "scikit-learn>=0.23.2",
+        "pandas>=1.1.5",
+        "numpy>=1.19.5",
+        "scipy>=1.5.4",
+        "requests>=2.19.0",
+        "PyYAML>=5.1"],
     extras_require={
-        "dev": dev_dependencies,
+        "dev": [
+            "setuptools==50.3.2",
+            "flake8==4.0.1",
+            "jupyter==1.0.0",
+            "mypy==0.910",
+            "pytest==6.2.5",
+            "types-PyYAML==6.0.1",
+            "types-requests==2.26.0",
+            "packaging==21.0",
+        ]
     },
-    entry_points={
-    },
+    entry_points={},
 )
 
 if __name__ == '__main__':
