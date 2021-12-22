@@ -55,7 +55,7 @@ setup_args = dict(
         "numpy>=1.19.5",
         "scipy>=1.5.4",
         "requests>=2.19.0",
-        "PyYAML>=5.1"],
+        "PyYAML~=5.1"],
     extras_require={
         "dev": [
             "setuptools==50.3.2",
