@@ -19,16 +19,10 @@ def dataset_drift_evaluation(p_values, drift_share=0.5):
     return n_drifted_features, share_drifted_features, dataset_drift
 
 
-class DataDriftAnalyzerResults:
-    pass
-
-
 PValueWithConfidence = collections.namedtuple("PValueWithConfidence", ["p_value", "confidence"])
 
 
 class DataDriftAnalyzer(Analyzer):
-    results: DataDriftAnalyzerResults
-
     def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping: ColumnMapping):
         options = self.options_provider.get(DataDriftOptions)
         columns = process_columns(reference_data, column_mapping)
