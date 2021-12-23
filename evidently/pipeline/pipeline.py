@@ -36,7 +36,7 @@ class Pipeline:
             instance = analyzer()
             instance.options_provider = self.options_provider
             self.analyzers_results[analyzer] =\
-                instance.calculate(reference_data, current_data, column_mapping)
+                instance.calculate(reference_data.copy(), current_data.copy(), column_mapping)
         for stage in self.stages:
             stage.options_provider = self.options_provider
-            stage.calculate(reference_data, current_data, column_mapping, self.analyzers_results)
+            stage.calculate(reference_data.copy(), current_data.copy(), column_mapping, self.analyzers_results)
