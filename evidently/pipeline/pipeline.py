@@ -32,11 +32,14 @@ class Pipeline:
                 column_mapping: ColumnMapping = None):
         if column_mapping is None:
             column_mapping = ColumnMapping()
+
+        rdata = reference_data.copy()
+        cdata = current_data.copy()
         for analyzer in self.get_analyzers():
             instance = analyzer()
             instance.options_provider = self.options_provider
             self.analyzers_results[analyzer] =\
-                instance.calculate(reference_data.copy(), current_data.copy(), column_mapping)
+                instance.calculate(rdata, cdata, column_mapping)
         for stage in self.stages:
             stage.options_provider = self.options_provider
-            stage.calculate(reference_data.copy(), current_data.copy(), column_mapping, self.analyzers_results)
+            stage.calculate(rdata.copy(), cdata.copy(), column_mapping, self.analyzers_results)
