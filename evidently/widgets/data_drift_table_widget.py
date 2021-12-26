@@ -32,11 +32,10 @@ class DataDriftTableWidget(Widget):
         params_data = []
         options = self.options_provider.get(DataDriftOptions)
         for feature_name in all_features:
-            current_small_hist = data_drift_results.metrics[feature_name]["current_small_hist"]
-            ref_small_hist = data_drift_results.metrics[feature_name]["ref_small_hist"]
-            feature_type = data_drift_results.metrics[feature_name]["feature_type"]
-
-            p_value = data_drift_results.metrics[feature_name]["p_value"]
+            current_small_hist = data_drift_results.metrics.features[feature_name].current_small_hist
+            ref_small_hist = data_drift_results.metrics.features[feature_name].ref_small_hist
+            feature_type = data_drift_results.metrics.features[feature_name].feature_type
+            p_value = data_drift_results.metrics.features[feature_name].p_value
             feature_confidence = options.get_confidence(feature_name)
             distr_sim_test = "Detected" if p_value < (1. - feature_confidence) else "Not Detected"
 
@@ -204,10 +203,10 @@ class DataDriftTableWidget(Widget):
                     }
                 )
             )
-        n_drifted_features = data_drift_results.metrics['n_drifted_features']
-        dataset_drift = data_drift_results.metrics['dataset_drift']
-        n_features = data_drift_results.metrics['n_features']
-        drift_share = data_drift_results.metrics['share_drifted_features']
+        n_drifted_features = data_drift_results.metrics.n_drifted_features
+        dataset_drift = data_drift_results.metrics.dataset_drift
+        n_features = data_drift_results.metrics.n_features
+        drift_share = data_drift_results.metrics.share_drifted_features
 
         title_prefix = f'Drift is detected for {drift_share * 100:.2f}% of features ({n_drifted_features}' \
                        f' out of {n_features}). '

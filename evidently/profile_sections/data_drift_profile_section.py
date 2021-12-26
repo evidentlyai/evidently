@@ -21,7 +21,7 @@ class DataDriftProfileSection(ProfileSection):
         self._result = {
             'name': self.part_id(),
             'datetime': str(datetime.now()),
-            'data': data_drift_results.to_dict()
+            'data': data_drift_results.as_dict()
         }
 
     def get_results(self):
