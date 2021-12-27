@@ -52,7 +52,7 @@ def test_different_target_column_name(analyzer):
     assert result['metrics']['target_drift'] == 1
     correlations = result['metrics']['target_correlations']
     assert correlations['reference'] == {'another_target': 1.0}
-    assert correlations['current'], {'another_target': 1.0}
+    assert correlations['current'] == {'another_target': 1.0}
 
 
 def test_different_prediction_column_name(analyzer):

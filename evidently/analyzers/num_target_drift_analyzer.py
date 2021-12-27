@@ -7,10 +7,11 @@ from evidently.analyzers.base_analyzer import Analyzer
 from evidently.options import DataDriftOptions
 from evidently.analyzers.stattests import ks_stat_test
 from evidently.analyzers.utils import process_columns
+from typing import List, Callable
 
 
-def _compute_correlation(reference_data: pd.DataFrame, current_data: pd.DataFrame, prefix,
-                         main_column, num_columns, stats_fun):
+def _compute_correlation(reference_data: pd.DataFrame, current_data: pd.DataFrame, prefix: str,
+                         main_column: str, num_columns: List[str], stats_fun: Callable):
     if main_column is None:
         return {}
     if not pd.api.types.is_numeric_dtype(reference_data[main_column]) or \
@@ -76,11 +77,10 @@ class NumTargetDriftAnalyzer(Analyzer):
                              f'are not present in columns.num_feature_names')
 
         func = options.num_target_stattest_func or ks_stat_test
-        result['metrics'] = {}
         target_metrics = _compute_correlation(reference_data, current_data, 'target',
                                               columns.utility_columns.target, columns.num_feature_names, func)
         prediction_metrics = _compute_correlation(reference_data, current_data, 'prediction',
                                                   columns.utility_columns.prediction, columns.num_feature_names, func)
-        result['metrics'] = dict(**result['metrics'], **target_metrics, **prediction_metrics)
+        result['metrics'] = dict(**target_metrics, **prediction_metrics)
 
         return result
