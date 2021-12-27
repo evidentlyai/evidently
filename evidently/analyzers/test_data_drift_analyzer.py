@@ -1,9 +1,11 @@
+import json
 import pytest
 from pandas import DataFrame
 
 from evidently import ColumnMapping
 from evidently.analyzers.data_drift_analyzer import DataDriftAnalyzer
 from evidently.options import DataDriftOptions, OptionsProvider
+from evidently.utils import NumpyEncoder
 
 
 @pytest.fixture
@@ -64,3 +66,5 @@ def test_data_drift_analyzer_as_dict_format(analyzer: DataDriftAnalyzer) -> None
     _check_feature_metrics(result_as_dict['metrics']['categorical_feature_1'], 'cat')
     assert 'categorical_feature_2' in result_as_dict['metrics']
     _check_feature_metrics(result_as_dict['metrics']['categorical_feature_2'], 'cat')
+
+    json.dumps(result_as_dict, cls=NumpyEncoder)
