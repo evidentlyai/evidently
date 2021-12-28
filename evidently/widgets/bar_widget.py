@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-from typing import Dict
+from typing import Optional
 
-import pandas
+import pandas as pd
 
+from evidently import ColumnMapping
 from evidently.model.widget import BaseWidgetInfo, AlertStats
 from evidently.widgets.widget import Widget
 
@@ -13,8 +14,11 @@ class BarWidget(Widget):
     def analyzers(self):
         return []
 
-    def calculate(self, reference_data: pandas.DataFrame, current_data: pandas.DataFrame, column_mapping: Dict,
-                  analyzers_results):
+    def calculate(self,
+                  reference_data: pd.DataFrame,
+                  current_data: Optional[pd.DataFrame],
+                  column_mapping: ColumnMapping,
+                  analyzers_results) -> Optional[BaseWidgetInfo]:
         return BaseWidgetInfo(
             type="big_graph",
             title=self.title,

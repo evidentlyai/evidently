@@ -9,6 +9,7 @@ import numpy as np
 
 import plotly.graph_objs as go
 
+from evidently import ColumnMapping
 from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceAnalyzer
 
 from evidently.model.widget import BaseWidgetInfo
@@ -25,8 +26,8 @@ class RegAbsPercErrorTimeWidget(Widget):
 
     def calculate(self,
                   reference_data: pd.DataFrame,
-                  current_data: pd.DataFrame,
-                  column_mapping,
+                  current_data: Optional[pd.DataFrame],
+                  column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
 
         results = analyzers_results[RegressionPerformanceAnalyzer]

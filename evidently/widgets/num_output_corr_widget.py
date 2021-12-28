@@ -24,7 +24,7 @@ class NumOutputCorrWidget(Widget):
 
     def calculate(self,
                   reference_data: pd.DataFrame,
-                  current_data: pd.DataFrame,
+                  current_data: Optional[pd.DataFrame],
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
 

@@ -1,5 +1,5 @@
 import itertools
-from typing import List, Dict, Type, Sequence
+from typing import List, Dict, Type, Sequence, Optional
 
 import pandas
 
@@ -28,13 +28,13 @@ class Pipeline:
 
     def execute(self,
                 reference_data: pandas.DataFrame,
-                current_data: pandas.DataFrame,
+                current_data: Optional[pandas.DataFrame],
                 column_mapping: ColumnMapping = None):
         if column_mapping is None:
             column_mapping = ColumnMapping()
 
         rdata = reference_data.copy()
-        cdata = current_data.copy()
+        cdata = None if current_data is None else current_data.copy()
         for analyzer in self.get_analyzers():
             instance = analyzer()
             instance.options_provider = self.options_provider
@@ -42,4 +42,7 @@ class Pipeline:
                 instance.calculate(rdata, cdata, column_mapping)
         for stage in self.stages:
             stage.options_provider = self.options_provider
-            stage.calculate(rdata.copy(), cdata.copy(), column_mapping, self.analyzers_results)
+            stage.calculate(rdata.copy(),
+                            None if cdata is None else cdata.copy(),
+                            column_mapping,
+                            self.analyzers_results)

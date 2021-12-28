@@ -9,6 +9,7 @@ import numpy as np
 
 import plotly.figure_factory as ff
 
+from evidently import ColumnMapping
 from evidently.analyzers.prob_classification_performance_analyzer import ProbClassificationPerformanceAnalyzer
 from evidently.model.widget import BaseWidgetInfo
 from evidently.widgets.widget import Widget
@@ -25,8 +26,8 @@ class ProbClassMetricsMatrixWidget(Widget):
 
     def calculate(self,
                   reference_data: pd.DataFrame,
-                  current_data: pd.DataFrame,
-                  column_mapping,
+                  current_data: Optional[pd.DataFrame],
+                  column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
         results = analyzers_results[ProbClassificationPerformanceAnalyzer]
 

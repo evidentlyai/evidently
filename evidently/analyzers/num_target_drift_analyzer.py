@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
+from typing import Optional
 
 import pandas as pd
 
+from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.options import DataDriftOptions
 from evidently.analyzers.stattests import ks_stat_test
@@ -10,7 +12,10 @@ from evidently.analyzers.utils import process_columns
 
 
 class NumTargetDriftAnalyzer(Analyzer):
-    def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping):
+    def calculate(self,
+                  reference_data: pd.DataFrame,
+                  current_data: Optional[pd.DataFrame],
+                  column_mapping: ColumnMapping):
         options = self.options_provider.get(DataDriftOptions)
         columns = process_columns(reference_data, column_mapping)
         result = columns.as_dict()
@@ -24,6 +29,8 @@ class NumTargetDriftAnalyzer(Analyzer):
 
         func = options.num_target_stattest_func
         func = ks_stat_test if func is None else func
+        if current_data is None:
+            raise ValueError("current_data should not be None")
         # target
         if target_column is not None:
             # drift

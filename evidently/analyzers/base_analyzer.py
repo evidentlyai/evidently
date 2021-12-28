@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 import abc
+from typing import Optional
 
 import pandas as pd
 
@@ -12,7 +13,7 @@ class Analyzer:
     @abc.abstractmethod
     def calculate(self,
                   reference_data: pd.DataFrame,
-                  current_data: pd.DataFrame,
+                  current_data: Optional[pd.DataFrame],
                   column_mapping: ColumnMapping) -> object:
         raise NotImplementedError()
 
