@@ -24,7 +24,7 @@ class DataDriftTableWidget(Widget):
                   current_data: pd.DataFrame,
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
-        data_drift_results = DataDriftAnalyzer.get_data_drift_results(analyzers_results)
+        data_drift_results = DataDriftAnalyzer.get_results(analyzers_results)
         all_features = data_drift_results.get_all_features_list()
         date_column = data_drift_results.utility_columns.date
 

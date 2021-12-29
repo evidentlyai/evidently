@@ -17,7 +17,7 @@ class DataDriftMonitor(ModelMonitor):
         return [DataDriftAnalyzer]
 
     def metrics(self, analyzer_results):
-        data_drift_results = DataDriftAnalyzer.get_data_drift_results(analyzer_results)
+        data_drift_results = DataDriftAnalyzer.get_results(analyzer_results)
         yield DataDriftMetrics.share_drifted_features.create(data_drift_results.metrics.share_drifted_features)
         yield DataDriftMetrics.n_drifted_features.create(data_drift_results.metrics.n_drifted_features)
         yield DataDriftMetrics.dataset_drift.create(data_drift_results.metrics.dataset_drift)

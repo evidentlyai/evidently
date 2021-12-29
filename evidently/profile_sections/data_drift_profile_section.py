@@ -17,7 +17,7 @@ class DataDriftProfileSection(ProfileSection):
         return self.analyzers_types
 
     def calculate(self, reference_data, current_data, column_mapping, analyzers_results):
-        data_drift_results = DataDriftAnalyzer.get_data_drift_results(analyzers_results)
+        data_drift_results = DataDriftAnalyzer.get_results(analyzers_results)
         self._result = {
             'name': self.part_id(),
             'datetime': str(datetime.now()),

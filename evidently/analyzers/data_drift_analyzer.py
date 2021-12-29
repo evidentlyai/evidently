@@ -89,7 +89,7 @@ class DataDriftAnalyzerResults:
 
 class DataDriftAnalyzer(Analyzer):
     @staticmethod
-    def get_data_drift_results(analyzer_results) -> DataDriftAnalyzerResults:
+    def get_results(analyzer_results) -> DataDriftAnalyzerResults:
         return analyzer_results[DataDriftAnalyzer]
 
     def calculate(
