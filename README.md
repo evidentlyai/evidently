@@ -59,7 +59,7 @@ The tool allows building interactive reports both inside a Jupyter notebook and 
 
 To enable building interactive reports inside a Jupyter notebook, we use jupyter nbextension. If you want to create reports inside a Jupyter notebook, then after installing `evidently` you should run the two following commands in the terminal from evidently directory.
 
-To install jupyter nbextention, run:
+To install jupyter nbextension, run:
 ```sh
 $ jupyter nbextension install --sys-prefix --symlink --overwrite --py evidently
 ```
@@ -254,7 +254,7 @@ iris_data_drift_report.show()
 The ```show()``` method has the argument ```mode```, which can take the following options:
 
 * **auto** - the default option. Ideally, you will not need to specify the value for ```mode``` and use the default. But, if it does not work (in case we failed to determine the environment automatically), consider setting the correct value explicitly.
-* **nbextention** - to show the UI using nbextension. Use this option to display dashboards in Jupyter notebooks (it should work automatically).
+* **nbextension** - to show the UI using nbextension. Use this option to display dashboards in Jupyter notebooks (it should work automatically).
 * **inline** - to insert the UI directly into the cell. Use this option for Google Colab, Kaggle Kernels and Deepnote. For Google Colab, this should work automatically, for **Kaggle Kernels** and **Deepnote** the option should be specified explicitly.
 
 ## Telemetry
