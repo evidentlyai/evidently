@@ -33,6 +33,9 @@ class Pipeline:
         if column_mapping is None:
             column_mapping = ColumnMapping()
 
+        #  making shallow copy - this copy DOES NOT copy existing data, but contains link to it:
+        #  - this copy WILL DISCARD all columns changes or rows changes (adding or removing)
+        #  - this copy WILL KEEP all values' changes in existing rows and columns.
         rdata = reference_data.copy()
         cdata = None if current_data is None else current_data.copy()
         for analyzer in self.get_analyzers():
