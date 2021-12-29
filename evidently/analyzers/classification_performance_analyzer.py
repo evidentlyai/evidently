@@ -1,16 +1,21 @@
 #!/usr/bin/env python
 # coding: utf-8
+from typing import Optional
 
 import pandas as pd
 import numpy as np
 from sklearn import metrics
 
+from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
-from .utils import process_columns
+from evidently.analyzers.utils import process_columns
 
 
 class ClassificationPerformanceAnalyzer(Analyzer):
-    def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping):
+    def calculate(self,
+                  reference_data: pd.DataFrame,
+                  current_data: Optional[pd.DataFrame],
+                  column_mapping: ColumnMapping):
         columns = process_columns(reference_data, column_mapping)
         result = columns.as_dict()
         target_column = columns.utility_columns.target

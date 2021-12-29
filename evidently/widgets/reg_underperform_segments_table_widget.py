@@ -10,6 +10,7 @@ import plotly.graph_objs as go
 import plotly.express as px
 from plotly.subplots import make_subplots
 
+from evidently import ColumnMapping
 from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceAnalyzer
 from evidently.model.widget import BaseWidgetInfo, AdditionalGraphInfo
 from evidently.widgets.widget import Widget
@@ -31,8 +32,8 @@ class UnderperformSegmTableWidget(Widget):
 
     def calculate(self,
                   reference_data: pd.DataFrame,
-                  current_data: pd.DataFrame,
-                  column_mapping,
+                  current_data: Optional[pd.DataFrame],
+                  column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
 
         results = analyzers_results[RegressionPerformanceAnalyzer]

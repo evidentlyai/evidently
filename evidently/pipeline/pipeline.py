@@ -1,5 +1,5 @@
 import itertools
-from typing import List, Dict, Type, Sequence
+from typing import List, Dict, Type, Sequence, Optional
 
 import pandas
 
@@ -28,15 +28,24 @@ class Pipeline:
 
     def execute(self,
                 reference_data: pandas.DataFrame,
-                current_data: pandas.DataFrame,
+                current_data: Optional[pandas.DataFrame],
                 column_mapping: ColumnMapping = None):
         if column_mapping is None:
             column_mapping = ColumnMapping()
+
+        #  making shallow copy - this copy DOES NOT copy existing data, but contains link to it:
+        #  - this copy WILL DISCARD all columns changes or rows changes (adding or removing)
+        #  - this copy WILL KEEP all values' changes in existing rows and columns.
+        rdata = reference_data.copy()
+        cdata = None if current_data is None else current_data.copy()
         for analyzer in self.get_analyzers():
             instance = analyzer()
             instance.options_provider = self.options_provider
             self.analyzers_results[analyzer] =\
-                instance.calculate(reference_data, current_data, column_mapping)
+                instance.calculate(rdata, cdata, column_mapping)
         for stage in self.stages:
             stage.options_provider = self.options_provider
-            stage.calculate(reference_data, current_data, column_mapping, self.analyzers_results)
+            stage.calculate(rdata.copy(),
+                            None if cdata is None else cdata.copy(),
+                            column_mapping,
+                            self.analyzers_results)

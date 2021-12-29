@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
+from typing import Optional
 
 import pandas as pd
 
+from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.options import DataDriftOptions
 from evidently.analyzers.stattests import ks_stat_test
@@ -38,8 +40,10 @@ class NumTargetDriftAnalyzer(Analyzer):
 
     For reference see https://evidentlyai.com/blog/evidently-014-target-and-prediction-drift
     """
-
-    def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping) -> dict:
+    def calculate(self,
+                  reference_data: pd.DataFrame,
+                  current_data: Optional[pd.DataFrame],
+                  column_mapping: ColumnMapping):
         """Calculate the target and prediction drifts.
 
         With default options, uses a two sample Kolmogorov-Smirnov test at a 0.95 confidence level.
@@ -71,7 +75,8 @@ class NumTargetDriftAnalyzer(Analyzer):
         options = self.options_provider.get(DataDriftOptions)
         columns = process_columns(reference_data, column_mapping)
         result = columns.as_dict()
-
+        if current_data is None:
+            raise ValueError("current_data should not be None")
         if set(columns.num_feature_names) - set(current_data.columns):
             raise ValueError(f'Some numerical features in current data {current_data.columns}'
                              f'are not present in columns.num_feature_names')

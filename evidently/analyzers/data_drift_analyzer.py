@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 import collections
+from typing import Optional
 
 import pandas as pd
 import numpy as np
@@ -23,9 +24,14 @@ PValueWithConfidence = collections.namedtuple("PValueWithConfidence", ["p_value"
 
 
 class DataDriftAnalyzer(Analyzer):
-    def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping: ColumnMapping):
+    def calculate(self,
+                  reference_data: pd.DataFrame,
+                  current_data: Optional[pd.DataFrame],
+                  column_mapping: ColumnMapping):
         options = self.options_provider.get(DataDriftOptions)
         columns = process_columns(reference_data, column_mapping)
+        if current_data is None:
+            raise ValueError("current_data should be present")
         result = columns.as_dict()
 
         num_feature_names = columns.num_feature_names

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
+from typing import Optional
 
 import numpy as np
 import pandas as pd
@@ -37,7 +38,9 @@ class CatTargetDriftAnalyzer(Analyzer):
     For reference see https://evidentlyai.com/blog/evidently-014-target-and-prediction-drift
     """
 
-    def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame,
+    def calculate(self,
+                  reference_data: pd.DataFrame,
+                  current_data: Optional[pd.DataFrame],
                   column_mapping: ColumnMapping) -> dict:
         """Calculate the target and prediction drifts.
 

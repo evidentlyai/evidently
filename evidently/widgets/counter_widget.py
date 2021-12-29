@@ -3,7 +3,7 @@
 
 from typing import Optional
 
-import pandas
+import pandas as pd
 
 from evidently import ColumnMapping
 from evidently.model.widget import BaseWidgetInfo
@@ -15,8 +15,8 @@ class CounterWidget(Widget):
         return []
 
     def calculate(self,
-                  reference_data: pandas.DataFrame,
-                  current_data: pandas.DataFrame,
+                  reference_data: pd.DataFrame,
+                  current_data: Optional[pd.DataFrame],
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
         return BaseWidgetInfo(
