@@ -26,6 +26,14 @@ class Widget:
                   current_data: pandas.DataFrame, column_mapping, analyzers_results) -> Optional[BaseWidgetInfo]:
         raise NotImplementedError()
 
+    # pylint: disable=unused-argument
+    def calculate_section(self,
+                          reference_data: pandas.DataFrame,
+                          current_data: pandas.DataFrame,
+                          column_mapping,
+                          analyzers_results) -> dict:
+        return {}
+
     @abc.abstractmethod
     def analyzers(self):
         return []

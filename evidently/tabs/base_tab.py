@@ -7,7 +7,7 @@ import pandas
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.model.widget import BaseWidgetInfo
 from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.pipeline.stage import PipelineStage
+from evidently.profile_sections.base_profile_section import ProfileSection
 from evidently.widgets.widget import Widget
 
 
@@ -20,10 +20,11 @@ class Verbose:
     FULL = 1
 
 
-class Tab(PipelineStage):
+class Tab(ProfileSection):
     widgets: List[Tuple[Widget, VerboseLevel]]
     _widgets: List[Widget]
     _widget_results: List[Optional[BaseWidgetInfo]]
+    _sections_results: Dict[str, dict]
 
     def __init__(self,
                  verbose_level: VerboseLevel = None,
@@ -33,6 +34,7 @@ class Tab(PipelineStage):
             verbose_level = Verbose.FULL
         self._widgets = []
         self._widget_results = []
+        self._sections_results = {}
         self.details_level = verbose_level
         predefined_widgets = {widget[0].title: widget[0] for widget in self.widgets}
 
@@ -65,9 +67,31 @@ class Tab(PipelineStage):
                                                          column_mapping,
                                                          analyzers_results))
 
+    def calculate_section(self, reference_data: pandas.DataFrame,
+                  current_data: pandas.DataFrame,
+                  column_mapping: ColumnMapping,
+                  analyzers_results: Dict[Type[Analyzer], object]):
+        self._sections_results.clear()
+        for widget in self._widgets:
+            widget.options_provider = self.options_provider
+            self._sections_results[widget.__class__.__name__] = widget.calculate_section(
+                reference_data,
+                current_data,
+                column_mapping,
+                analyzers_results,
+            )
+
     def info(self) -> List[Optional[BaseWidgetInfo]]:
         return self._widget_results
 
+    def part_id(self) -> str:
+        return self.__class__.__name__
+
+    def get_results(self):
+        return self._sections_results
+
+
     @classmethod
     def list_widgets(cls):
+        """Returns list of available widgets in tab"""
         return [widget[0].title for widget in cls.widgets]
