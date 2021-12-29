@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 import collections
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
 import pandas as pd
 import numpy as np
@@ -31,14 +31,6 @@ class DataDriftAnalyzerFeatureMetrics:
     feature_type: str
     p_value: float
 
-    def as_dict(self) -> Dict[str, Any]:
-        return {
-            'current_small_hist': self.current_small_hist,
-            'ref_small_hist': self.ref_small_hist,
-            'feature_type': self.feature_type,
-            'p_value': self.p_value,
-        }
-
 
 @dataclass
 class DataDriftAnalyzerMetrics:
@@ -47,19 +39,6 @@ class DataDriftAnalyzerMetrics:
     share_drifted_features: float
     dataset_drift: bool
     features: Dict[str, DataDriftAnalyzerFeatureMetrics]
-
-    def as_dict(self) -> Dict[str, Any]:
-        result: Dict[str, Any] = {
-            'n_features': self.n_features,
-            'n_drifted_features': self.n_drifted_features,
-            'share_drifted_features': self.share_drifted_features,
-            'dataset_drift': self.dataset_drift
-        }
-
-        for feature_name, feature_metrics in self.features.items():
-            result[feature_name] = feature_metrics.as_dict()
-
-        return result
 
 
 @dataclass
@@ -70,17 +49,6 @@ class DataDriftAnalyzerResults:
     target_names: Optional[List[str]]
     options: DataDriftOptions
     metrics: DataDriftAnalyzerMetrics
-
-    def as_dict(self) -> Dict[str, Any]:
-        """Convert the analyser data to dict for data serialization"""
-        return {
-            'utility_columns': self.utility_columns.as_dict(),
-            'cat_feature_names': self.cat_feature_names,
-            'num_feature_names': self.num_feature_names,
-            'target_names': self.target_names,
-            'options': self.options.as_dict(),
-            'metrics': self.metrics.as_dict()
-        }
 
     def get_all_features_list(self) -> List[str]:
         """List all features names"""
