@@ -10,7 +10,7 @@ def chi_stat_test(reference_data: pd.Series, current_data: pd.Series):
 
     ref_feature_dict = {**dict.fromkeys(keys, 0), **dict(reference_data.value_counts())}
     current_feature_dict = {**dict.fromkeys(keys, 0), **dict(current_data.value_counts())}
-    
+
     k_norm = current_data.shape[0] / reference_data.shape[0]
 
     f_exp = [value * k_norm for key, value in sorted(ref_feature_dict.items())]
