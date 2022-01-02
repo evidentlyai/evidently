@@ -59,7 +59,7 @@ The tool allows building interactive reports both inside a Jupyter notebook and 
 
 To enable building interactive reports inside a Jupyter notebook, we use jupyter nbextension. If you want to create reports inside a Jupyter notebook, then after installing `evidently` you should run the two following commands in the terminal from evidently directory.
 
-To install jupyter nbextention, run:
+To install jupyter nbextension, run:
 ```sh
 $ jupyter nbextension install --sys-prefix --symlink --overwrite --py evidently
 ```
@@ -102,7 +102,13 @@ import pandas as pd
 from sklearn import datasets
 
 from evidently.dashboard import Dashboard
-from evidently.tabs import DataDriftTab
+from evidently.tabs import (
+    DataDriftTab,
+    CatTargetDriftTab,
+    RegressionPerformanceTab,
+    ClassificationPerformanceTab,
+    ProbClassificationPerformanceTab,
+)
 
 iris = datasets.load_iris()
 iris_frame = pd.DataFrame(iris.data, columns = iris.feature_names)
@@ -170,7 +176,13 @@ import pandas as pd
 from sklearn import datasets
 
 from evidently.model_profile import Profile
-from evidently.profile_sections import DataDriftProfileSection
+from evidently.profile_sections import (
+    DataDriftProfileSection,
+    CatTargetDriftProfileSection,
+    RegressionPerformanceProfileSection,
+    ClassificationPerformanceProfileSection,
+    ProbClassificationPerformanceProfileSection,
+)
 
 iris = datasets.load_iris()
 iris_frame = pd.DataFrame(iris.data, columns = iris.feature_names)
@@ -254,7 +266,7 @@ iris_data_drift_report.show()
 The ```show()``` method has the argument ```mode```, which can take the following options:
 
 * **auto** - the default option. Ideally, you will not need to specify the value for ```mode``` and use the default. But, if it does not work (in case we failed to determine the environment automatically), consider setting the correct value explicitly.
-* **nbextention** - to show the UI using nbextension. Use this option to display dashboards in Jupyter notebooks (it should work automatically).
+* **nbextension** - to show the UI using nbextension. Use this option to display dashboards in Jupyter notebooks (it should work automatically).
 * **inline** - to insert the UI directly into the cell. Use this option for Google Colab, Kaggle Kernels and Deepnote. For Google Colab, this should work automatically, for **Kaggle Kernels** and **Deepnote** the option should be specified explicitly.
 
 ## Telemetry

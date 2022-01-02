@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 from dataclasses import dataclass
-from typing import Dict
+from typing import Dict, Optional
 
 import pandas as pd
 import numpy as np
@@ -9,6 +9,7 @@ from scipy.stats import probplot
 
 from evidently.analyzers.base_analyzer import Analyzer
 from .utils import process_columns
+from .. import ColumnMapping
 
 
 class ErrorWithQuantiles:
@@ -36,7 +37,10 @@ class FeatureBias:
 
 
 class RegressionPerformanceAnalyzer(Analyzer):
-    def calculate(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping):
+    def calculate(self,
+                  reference_data: pd.DataFrame,
+                  current_data: Optional[pd.DataFrame],
+                  column_mapping: ColumnMapping):
         columns = process_columns(reference_data, column_mapping)
         result = columns.as_dict()
 

@@ -8,6 +8,7 @@ import pandas as pd
 
 import plotly.figure_factory as ff
 
+from evidently import ColumnMapping
 from evidently.analyzers.classification_performance_analyzer import ClassificationPerformanceAnalyzer
 from evidently.model.widget import BaseWidgetInfo
 from evidently.widgets.widget import Widget
@@ -23,8 +24,8 @@ class ClassMetricsMatrixWidget(Widget):
 
     def calculate(self,
                   reference_data: pd.DataFrame,
-                  current_data: pd.DataFrame,
-                  column_mapping,
+                  current_data: Optional[pd.DataFrame],
+                  column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
 
         results = analyzers_results[ClassificationPerformanceAnalyzer]

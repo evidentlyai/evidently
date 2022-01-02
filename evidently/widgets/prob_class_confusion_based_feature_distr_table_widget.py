@@ -2,12 +2,15 @@
 # coding: utf-8
 
 import json
+from typing import Optional
+
 import pandas as pd
 import numpy as np
 import plotly.graph_objs as go
 import plotly.express as px
 from plotly.subplots import make_subplots
 
+from evidently import ColumnMapping
 from evidently.analyzers.prob_classification_performance_analyzer import ProbClassificationPerformanceAnalyzer
 
 from evidently.model.widget import BaseWidgetInfo, AdditionalGraphInfo
@@ -20,9 +23,9 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
 
     def calculate(self,
                   reference_data: pd.DataFrame,
-                  current_data: pd.DataFrame,
-                  column_mapping,
-                  analyzers_results):
+                  current_data: Optional[pd.DataFrame],
+                  column_mapping: ColumnMapping,
+                  analyzers_results) -> Optional[BaseWidgetInfo]:
 
         results = analyzers_results[ProbClassificationPerformanceAnalyzer]
 

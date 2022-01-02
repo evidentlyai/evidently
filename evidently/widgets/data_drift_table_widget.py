@@ -21,12 +21,15 @@ class DataDriftTableWidget(Widget):
 
     def calculate(self,
                   reference_data: pd.DataFrame,
-                  current_data: pd.DataFrame,
+                  current_data: Optional[pd.DataFrame],
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
         data_drift_results = DataDriftAnalyzer.get_results(analyzers_results)
         all_features = data_drift_results.get_all_features_list()
         date_column = data_drift_results.utility_columns.date
+
+        if current_data is None:
+            raise ValueError("current_data should be present")
 
         # set params data
         params_data = []

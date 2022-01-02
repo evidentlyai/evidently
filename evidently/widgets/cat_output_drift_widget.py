@@ -7,6 +7,7 @@ import pandas as pd
 
 import plotly.graph_objs as go
 
+from evidently import ColumnMapping
 from evidently.analyzers.cat_target_drift_analyzer import CatTargetDriftAnalyzer
 from evidently.model.widget import BaseWidgetInfo
 from evidently.widgets.widget import Widget, RED, GREY
@@ -22,10 +23,13 @@ class CatOutputDriftWidget(Widget):
 
     def calculate(self,
                   reference_data: pd.DataFrame,
-                  current_data: pd.DataFrame,
-                  column_mapping,
+                  current_data: Optional[pd.DataFrame],
+                  column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
         results = analyzers_results[CatTargetDriftAnalyzer]
+
+        if current_data is None:
+            raise ValueError("current_data should be present")
 
         if results['utility_columns'][self.kind] is None:
             return None

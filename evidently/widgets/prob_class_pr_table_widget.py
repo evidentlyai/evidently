@@ -4,6 +4,7 @@ from typing import Optional
 
 import pandas as pd
 
+from evidently import ColumnMapping
 from evidently.analyzers.prob_classification_performance_analyzer import ProbClassificationPerformanceAnalyzer
 
 from evidently.model.widget import BaseWidgetInfo, TabInfo
@@ -20,8 +21,8 @@ class ProbClassPRTableWidget(Widget):
 
     def calculate(self,
                   reference_data: pd.DataFrame,
-                  current_data: pd.DataFrame,
-                  column_mapping,
+                  current_data: Optional[pd.DataFrame],
+                  column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
 
         results = analyzers_results[ProbClassificationPerformanceAnalyzer]

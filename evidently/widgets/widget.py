@@ -3,8 +3,9 @@
 import abc
 from typing import Optional
 
-import pandas
+import pandas as pd
 
+from evidently import ColumnMapping
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import OptionsProvider
 
@@ -22,8 +23,11 @@ class Widget:
         self.wi = None
 
     @abc.abstractmethod
-    def calculate(self, reference_data: pandas.DataFrame,
-                  current_data: pandas.DataFrame, column_mapping, analyzers_results) -> Optional[BaseWidgetInfo]:
+    def calculate(self,
+                  reference_data: pd.DataFrame,
+                  current_data: Optional[pd.DataFrame],
+                  column_mapping: ColumnMapping,
+                  analyzers_results) -> Optional[BaseWidgetInfo]:
         raise NotImplementedError()
 
     @abc.abstractmethod
