@@ -104,14 +104,29 @@ Here you can find simple examples on toy datasets to quickly explore what Eviden
 
 Report | Jupyter notebook | Colab notebook | Data source 
 --- | --- | --- | --- 
-Data Drift + Categorical Target Drift (Multiclass) | link | link | Iris plants sklearn.datasets 
-Data Drift + Categorical Target Drift (Binary) | link | link | Breast cancer sklearn.datasets
-Data Drift + Numerical Target Drift | link | link | California housing sklearn.datasets 
-Regression Performance | link | link | Bike sharing UCI: [link](https://archive.ics.uci.edu/ml/datasets/bike+sharing+dataset)
-Classification Performance (Multiclass) | link | link | Iris plants sklearn.datasets 
-Probabilistic Classification Performance (Multiclass) | link | link | Iris plants sklearn.datasets 
-Classification Performance(Binary) | link | link | Breast cancer sklearn.datasets
-Probabilistic Classification Performance (Binary) | link | link | Breast cancer sklearn.datasets
+Data Drift + Categorical Target Drift (Multiclass) | link | [link](https://colab.research.google.com/drive/1Dd6ZzIgeBYkD_4bqWZ0RAdUpCU0b6Y6H?authuser=2) | Iris plants sklearn.datasets 
+Data Drift + Categorical Target Drift (Binary) | link | [link](https://colab.research.google.com/drive/1gpzNuFbhoGc4-DLAPMJofQXrsX7Sqsl5?authuser=2) | Breast cancer sklearn.datasets
+Data Drift + Numerical Target Drift | link | [link](https://colab.research.google.com/drive/1TGt-0rA7MiXsxwtKB4eaAGIUwnuZtyxc?authuser=2) | California housing sklearn.datasets 
+Regression Performance | link | [link](https://colab.research.google.com/drive/1ONgyDXKMFyt9IYUwLpvfxz9VIZHw-qBJ?authuser=2) | Bike sharing UCI: [link](https://archive.ics.uci.edu/ml/datasets/bike+sharing+dataset)
+Classification Performance (Multiclass) | link | [link](https://colab.research.google.com/drive/1pnYbVJEHBqvVmHUXzG-kw-Fr6PqhzRg3?authuser=2) | Iris plants sklearn.datasets 
+Probabilistic Classification Performance (Multiclass) | link | [link](https://colab.research.google.com/drive/1UkFaBqOzBseB_UqisvNbsh9hX5w3dpYS?authuser=2) | Iris plants sklearn.datasets 
+Classification Performance(Binary) | link | [link](https://colab.research.google.com/drive/1b2kTLUIVJkKJybYeD3ZjpaREr_9dDTpz?authuser=2) | Breast cancer sklearn.datasets
+Probabilistic Classification Performance (Binary) | link | [link](https://colab.research.google.com/drive/1sE2H4mFSgtNe34JZMAeC3eLntid6oe1g?authuser=2) | Breast cancer sklearn.datasets
 
 ### How-to notebooks
 These examples answer “how-to” questions - they help you to adjust evidently as you need
+How to | Jupyter notebook | Colab notebook | Data source 
+--- | --- | --- | --- 
+How to customize drift dashboards? (set confidence level, number of bins in a histogram and statistical test) | link | link | California housing sklearn.datasets 
+How to add your own widget or create your own report? | link | link | California housing sklearn.datasets 
+
+### Data Stories
+To better understand potential use cases (such as model evaluation and monitoring), refer to the detailed tutorials accompanied by the blog posts.
+Title | Jupyter notebook | Colab notebook | Blog post | Data source 
+--- | --- | --- | --- | --- 
+Monitor production models | --- | --- | [How to break a model in 20 days](https://evidentlyai.com/blog/tutorial-1-model-analytics-in-production) | Bike sharing UCI: [link](https://archive.ics.uci.edu/ml/datasets/bike+sharing+dataset)
+Compare two models | --- | --- | [What Is Your Model Hiding?](https://evidentlyai.com/blog/tutorial-2-model-evaluation-hr-attrition) | HR Employee Attrition: [link](https://www.kaggle.com/pavansubhasht/ibm-hr-analytics-attrition-dataset)
+Custom tab and PSI widget | --- | --- | --- | California housing sklearn.datasets 
+
+### Integrations
+To see how to integrate Evidently in your prediction pipelines and use it with other tools, refer to the integrations. 
