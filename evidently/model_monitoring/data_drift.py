@@ -17,13 +17,13 @@ class DataDriftMonitor(ModelMonitor):
         return [DataDriftAnalyzer]
 
     def metrics(self, analyzer_results):
-        data_drift_results = analyzer_results[DataDriftAnalyzer]
-        features = data_drift_results['cat_feature_names'] + data_drift_results['num_feature_names']
-        yield DataDriftMetrics.share_drifted_features.create(data_drift_results['metrics']['share_drifted_features'])
-        yield DataDriftMetrics.n_drifted_features.create(data_drift_results['metrics']['n_drifted_features'])
-        yield DataDriftMetrics.dataset_drift.create(data_drift_results['metrics']['dataset_drift'])
-        for feature in features:
-            feature_metric = data_drift_results['metrics'][feature]
+        data_drift_results = DataDriftAnalyzer.get_results(analyzer_results)
+        yield DataDriftMetrics.share_drifted_features.create(data_drift_results.metrics.share_drifted_features)
+        yield DataDriftMetrics.n_drifted_features.create(data_drift_results.metrics.n_drifted_features)
+        yield DataDriftMetrics.dataset_drift.create(data_drift_results.metrics.dataset_drift)
+
+        for feature_name in data_drift_results.get_all_features_list():
+            feature_metric = data_drift_results.metrics.features[feature_name]
             yield DataDriftMetrics.p_value.create(
-                feature_metric['p_value'],
-                dict(feature=feature, feature_type=feature_metric['feature_type']))
+                feature_metric.p_value,
+                dict(feature=feature_name, feature_type=feature_metric.feature_type))

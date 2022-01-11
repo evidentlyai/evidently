@@ -7,6 +7,8 @@ evidently/examples/.DS_Store
 evidently/nbextension/static/index.*
 .ipynb_checkpoints
 .idea
+.mypy_cache
+.pytest_cache
 dist
 build
 MANIFEST

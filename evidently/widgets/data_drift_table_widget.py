@@ -24,10 +24,9 @@ class DataDriftTableWidget(Widget):
                   current_data: Optional[pd.DataFrame],
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
-        results = analyzers_results[DataDriftAnalyzer]
-        num_feature_names = results["num_feature_names"]
-        cat_feature_names = results["cat_feature_names"]
-        date_column = results['utility_columns']['date']
+        data_drift_results = DataDriftAnalyzer.get_results(analyzers_results)
+        all_features = data_drift_results.get_all_features_list()
+        date_column = data_drift_results.utility_columns.date
 
         if current_data is None:
             raise ValueError("current_data should be present")
@@ -35,12 +34,11 @@ class DataDriftTableWidget(Widget):
         # set params data
         params_data = []
         options = self.options_provider.get(DataDriftOptions)
-        for feature_name in num_feature_names + cat_feature_names:
-            current_small_hist = results['metrics'][feature_name]["current_small_hist"]
-            ref_small_hist = results['metrics'][feature_name]["ref_small_hist"]
-            feature_type = results['metrics'][feature_name]["feature_type"]
-
-            p_value = results['metrics'][feature_name]["p_value"]
+        for feature_name in all_features:
+            current_small_hist = data_drift_results.metrics.features[feature_name].current_small_hist
+            ref_small_hist = data_drift_results.metrics.features[feature_name].ref_small_hist
+            feature_type = data_drift_results.metrics.features[feature_name].feature_type
+            p_value = data_drift_results.metrics.features[feature_name].p_value
             feature_confidence = options.get_confidence(feature_name)
             distr_sim_test = "Detected" if p_value < (1. - feature_confidence) else "Not Detected"
 
@@ -78,7 +76,7 @@ class DataDriftTableWidget(Widget):
         # set additionalGraphs
         additional_graphs_data = []
         xbins = options.xbins
-        for feature_name in num_feature_names + cat_feature_names:
+        for feature_name in all_features:
             # plot distributions
             fig = go.Figure()
             if xbins and xbins.get(feature_name):
@@ -208,10 +206,10 @@ class DataDriftTableWidget(Widget):
                     }
                 )
             )
-        n_drifted_features = results['metrics']['n_drifted_features']
-        dataset_drift = results['metrics']['dataset_drift']
-        n_features = results['metrics']['n_features']
-        drift_share = results['metrics']['share_drifted_features']
+        n_drifted_features = data_drift_results.metrics.n_drifted_features
+        dataset_drift = data_drift_results.metrics.dataset_drift
+        n_features = data_drift_results.metrics.n_features
+        drift_share = data_drift_results.metrics.share_drifted_features
 
         title_prefix = f'Drift is detected for {drift_share * 100:.2f}% of features ({n_drifted_features}' \
                        f' out of {n_features}). '

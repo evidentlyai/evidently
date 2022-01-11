@@ -78,7 +78,12 @@ def test_data_drift_dashboard(iris_frame) -> None:
     actual = json.loads(iris_data_drift_report._json())
     # we leave the actual content test to other tests for widgets
     assert 'name' in actual
+    assert len(actual['name']) > 0
+    assert 'widgets' in actual
     assert len(actual['widgets']) == 1
+    data_drift_widget_data = actual['widgets'][0]
+    assert 'type' in data_drift_widget_data
+    assert 'title' in data_drift_widget_data
 
 
 def test_data_drift_categorical_target_drift_dashboard(iris_frame) -> None:
