@@ -117,8 +117,8 @@ Probabilistic Classification Performance (Binary) | link | [link](https://colab.
 These examples answer “how-to” questions - they help you to adjust evidently as you need
 How to | Jupyter notebook | Colab notebook | Data source 
 --- | --- | --- | --- 
-How to customize drift dashboards? (set confidence level, number of bins in a histogram and statistical test) | link | link | California housing sklearn.datasets 
-How to add your own widget or create your own report? | link | link | California housing sklearn.datasets 
+How to customize drift dashboards? (set confidence level, number of bins in a histogram and statistical test) | link | [link](https://colab.research.google.com/drive/1roAyq4DdxBSGyzp0XmmH0zqOHso6Fd6y?authuser=2) | California housing sklearn.datasets 
+How to add your own widget or create your own report? | link | [link](https://colab.research.google.com/drive/1ZYhokqQupQVX0n2boRjyr5cpg_WgFJoL?authuser=2) | California housing sklearn.datasets 
 
 ### Data Stories
 To better understand potential use cases (such as model evaluation and monitoring), refer to the detailed tutorials accompanied by the blog posts.
