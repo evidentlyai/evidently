@@ -64,10 +64,10 @@ my_dashboard.calculate(reference_data, current_data)
 my_dashboard.show()
 ```
 You can set the custom options for the following Reports: 
-num_target_drift_tab (Numerical Target Drift)
-cat_target_drift_tab (Categorical Target Drift)
-data_drift_tab (Data Drift)
-See the example [here](link)
+* num_target_drift_tab (Numerical Target Drift)
+* cat_target_drift_tab (Categorical Target Drift)
+* data_drift_tab (Data Drift)
+See the example [here](how_to_questions/drift_dashboard_with_options_california_housing.ipynb).
 
 ## Export the report as an HTML file
 To save the Data Drift report as HTML, run:
@@ -104,34 +104,34 @@ Here you can find simple examples on toy datasets to quickly explore what Eviden
 
 Report | Jupyter notebook | Colab notebook | Data source 
 --- | --- | --- | --- 
-Data Drift + Categorical Target Drift (Multiclass) | link | [link](https://colab.research.google.com/drive/1Dd6ZzIgeBYkD_4bqWZ0RAdUpCU0b6Y6H?authuser=2) | Iris plants sklearn.datasets 
-Data Drift + Categorical Target Drift (Binary) | link | [link](https://colab.research.google.com/drive/1gpzNuFbhoGc4-DLAPMJofQXrsX7Sqsl5?authuser=2) | Breast cancer sklearn.datasets
-Data Drift + Numerical Target Drift | link | [link](https://colab.research.google.com/drive/1TGt-0rA7MiXsxwtKB4eaAGIUwnuZtyxc?authuser=2) | California housing sklearn.datasets 
-Regression Performance | link | [link](https://colab.research.google.com/drive/1ONgyDXKMFyt9IYUwLpvfxz9VIZHw-qBJ?authuser=2) | Bike sharing UCI: [link](https://archive.ics.uci.edu/ml/datasets/bike+sharing+dataset)
-Classification Performance (Multiclass) | link | [link](https://colab.research.google.com/drive/1pnYbVJEHBqvVmHUXzG-kw-Fr6PqhzRg3?authuser=2) | Iris plants sklearn.datasets 
-Probabilistic Classification Performance (Multiclass) | link | [link](https://colab.research.google.com/drive/1UkFaBqOzBseB_UqisvNbsh9hX5w3dpYS?authuser=2) | Iris plants sklearn.datasets 
-Classification Performance(Binary) | link | [link](https://colab.research.google.com/drive/1b2kTLUIVJkKJybYeD3ZjpaREr_9dDTpz?authuser=2) | Breast cancer sklearn.datasets
-Probabilistic Classification Performance (Binary) | link | [link](https://colab.research.google.com/drive/1sE2H4mFSgtNe34JZMAeC3eLntid6oe1g?authuser=2) | Breast cancer sklearn.datasets
+Data Drift + Categorical Target Drift (Multiclass) | [link](sample_notebooks/multiclass_target_and_data_drift_iris.ipynb) | [link](https://colab.research.google.com/drive/1Dd6ZzIgeBYkD_4bqWZ0RAdUpCU0b6Y6H?authuser=2) | Iris plants sklearn.datasets 
+Data Drift + Categorical Target Drift (Binary) | [link](sample_notebooks/binary_target_and_data_drift_breast_cancer.ipynb) | [link](https://colab.research.google.com/drive/1gpzNuFbhoGc4-DLAPMJofQXrsX7Sqsl5?authuser=2) | Breast cancer sklearn.datasets
+Data Drift + Numerical Target Drift | [link](sample_notebooks/numerical_target_and_data_drift_california_housing.ipynb) | [link](https://colab.research.google.com/drive/1TGt-0rA7MiXsxwtKB4eaAGIUwnuZtyxc?authuser=2) | California housing sklearn.datasets 
+Regression Performance | [link](sample_notebooks/regression_performance_bike_sharing_demand.ipynb) | [link](https://colab.research.google.com/drive/1ONgyDXKMFyt9IYUwLpvfxz9VIZHw-qBJ?authuser=2) | Bike sharing UCI: [link](https://archive.ics.uci.edu/ml/datasets/bike+sharing+dataset)
+Classification Performance (Multiclass) | [link](sample_notebooks/classification_performance_multiclass_iris.ipynb) | [link](https://colab.research.google.com/drive/1pnYbVJEHBqvVmHUXzG-kw-Fr6PqhzRg3?authuser=2) | Iris plants sklearn.datasets 
+Probabilistic Classification Performance (Multiclass) | [link](sample_notebooks/probabilistic_classification_performance_multiclass_iris.ipynb) | [link](https://colab.research.google.com/drive/1UkFaBqOzBseB_UqisvNbsh9hX5w3dpYS?authuser=2) | Iris plants sklearn.datasets 
+Classification Performance (Binary) | [link](sample_notebooks/classification_performance_breast_cancer.ipynb) | [link](https://colab.research.google.com/drive/1b2kTLUIVJkKJybYeD3ZjpaREr_9dDTpz?authuser=2) | Breast cancer sklearn.datasets
+Probabilistic Classification Performance (Binary) | [link](sample_notebooks/probabilistic_classification_performance_breast_cancer.ipynb) | [link](https://colab.research.google.com/drive/1sE2H4mFSgtNe34JZMAeC3eLntid6oe1g?authuser=2) | Breast cancer sklearn.datasets
 
 ### How-to notebooks
 These examples answer “how-to” questions - they help you to adjust evidently as you need
 How to | Jupyter notebook | Colab notebook | Data source 
 --- | --- | --- | --- 
-How to customize drift dashboards? (set confidence level, number of bins in a histogram and statistical test) | link | [link](https://colab.research.google.com/drive/1roAyq4DdxBSGyzp0XmmH0zqOHso6Fd6y?authuser=2) | California housing sklearn.datasets 
-How to add your own widget or create your own report? | link | [link](https://colab.research.google.com/drive/1ZYhokqQupQVX0n2boRjyr5cpg_WgFJoL?authuser=2) | California housing sklearn.datasets 
+How to customize drift dashboards? (set confidence level, number of bins in a histogram and statistical test) | [link](how_to_questions/drift_dashboard_with_options_california_housing.ipynb) | [link](https://colab.research.google.com/drive/1roAyq4DdxBSGyzp0XmmH0zqOHso6Fd6y?authuser=2) | California housing sklearn.datasets 
+How to add your own widget or create your own report? | [link](how_to_questions/custom_widget_and_tab_example/) | [link](https://colab.research.google.com/drive/1ZYhokqQupQVX0n2boRjyr5cpg_WgFJoL?authuser=2) | California housing sklearn.datasets 
 
 ### Data Stories
 To better understand potential use cases (such as model evaluation and monitoring), refer to the detailed tutorials accompanied by the blog posts.
 Title | Jupyter notebook | Colab notebook | Blog post | Data source 
 --- | --- | --- | --- | --- 
-Monitor production models | --- | [link](https://colab.research.google.com/drive/1xjAGInfh_LDenTxxTflazsKJp_YKmUiD?authuser=2) | [How to break a model in 20 days](https://evidentlyai.com/blog/tutorial-1-model-analytics-in-production) | Bike sharing UCI: [link](https://archive.ics.uci.edu/ml/datasets/bike+sharing+dataset)
-Compare two models | --- | [link](https://colab.research.google.com/drive/12AyNh3RLSEchNx5_V-aFJ1_EnLIKkDfr?authuser=2) | [What Is Your Model Hiding?](https://evidentlyai.com/blog/tutorial-2-model-evaluation-hr-attrition) | HR Employee Attrition: [link](https://www.kaggle.com/pavansubhasht/ibm-hr-analytics-attrition-dataset)
-Custom tab and PSI widget | --- | [link](https://colab.research.google.com/drive/1FuXId8p-lCP9Ho_gHeqxAdoxHRuvY9d0?authuser=2) | --- | California housing sklearn.datasets 
+Monitor production models | [link](data_stories/bicycle_demand_monitoring.ipynb) | [link](https://colab.research.google.com/drive/1xjAGInfh_LDenTxxTflazsKJp_YKmUiD?authuser=2) | [How to break a model in 20 days](https://evidentlyai.com/blog/tutorial-1-model-analytics-in-production) | Bike sharing UCI: [link](https://archive.ics.uci.edu/ml/datasets/bike+sharing+dataset)
+Compare two models | [link](data_stories/ibm_hr_attrition_model_validation.ipynb) | [link](https://colab.research.google.com/drive/12AyNh3RLSEchNx5_V-aFJ1_EnLIKkDfr?authuser=2) | [What Is Your Model Hiding?](https://evidentlyai.com/blog/tutorial-2-model-evaluation-hr-attrition) | HR Employee Attrition: [link](https://www.kaggle.com/pavansubhasht/ibm-hr-analytics-attrition-dataset)
+Custom tab and PSI widget | [link](data_stories/california_housing_custom_PSI_widget_and_tab.ipynb) | [link](https://colab.research.google.com/drive/1FuXId8p-lCP9Ho_gHeqxAdoxHRuvY9d0?authuser=2) | --- | California housing sklearn.datasets 
 
 ### Integrations
 To see how to integrate Evidently in your prediction pipelines and use it with other tools, refer to the integrations. 
 Title | link to tutorial
 --- | ---
-Real-time ML monitoring with Grafana | [Evidently + Grafana]
-Batch ML monitoring with Airflow | Evidently + Airflow
-Log Evidently metrics in MLflow UI | Evidently + MLflow
+Real-time ML monitoring with Grafana | [Evidently + Grafana](integrations/monitoring_service/)
+Batch ML monitoring with Airflow | [Evidently + Airflow](integrations/airflow_drift_detection/)
+Log Evidently metrics in MLflow UI | [Evidently + MLflow](integrations/mlflow_integration.ipynb)
