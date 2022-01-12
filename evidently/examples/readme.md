@@ -124,9 +124,9 @@ How to add your own widget or create your own report? | link | [link](https://co
 To better understand potential use cases (such as model evaluation and monitoring), refer to the detailed tutorials accompanied by the blog posts.
 Title | Jupyter notebook | Colab notebook | Blog post | Data source 
 --- | --- | --- | --- | --- 
-Monitor production models | --- | --- | [How to break a model in 20 days](https://evidentlyai.com/blog/tutorial-1-model-analytics-in-production) | Bike sharing UCI: [link](https://archive.ics.uci.edu/ml/datasets/bike+sharing+dataset)
-Compare two models | --- | --- | [What Is Your Model Hiding?](https://evidentlyai.com/blog/tutorial-2-model-evaluation-hr-attrition) | HR Employee Attrition: [link](https://www.kaggle.com/pavansubhasht/ibm-hr-analytics-attrition-dataset)
-Custom tab and PSI widget | --- | --- | --- | California housing sklearn.datasets 
+Monitor production models | --- | [link](https://colab.research.google.com/drive/1xjAGInfh_LDenTxxTflazsKJp_YKmUiD?authuser=2) | [How to break a model in 20 days](https://evidentlyai.com/blog/tutorial-1-model-analytics-in-production) | Bike sharing UCI: [link](https://archive.ics.uci.edu/ml/datasets/bike+sharing+dataset)
+Compare two models | --- | [link](https://colab.research.google.com/drive/12AyNh3RLSEchNx5_V-aFJ1_EnLIKkDfr?authuser=2) | [What Is Your Model Hiding?](https://evidentlyai.com/blog/tutorial-2-model-evaluation-hr-attrition) | HR Employee Attrition: [link](https://www.kaggle.com/pavansubhasht/ibm-hr-analytics-attrition-dataset)
+Custom tab and PSI widget | --- | [link](https://colab.research.google.com/drive/1FuXId8p-lCP9Ho_gHeqxAdoxHRuvY9d0?authuser=2) | --- | California housing sklearn.datasets 
 
 ### Integrations
 To see how to integrate Evidently in your prediction pipelines and use it with other tools, refer to the integrations. 
