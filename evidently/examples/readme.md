@@ -132,6 +132,6 @@ Custom tab and PSI widget | --- | [link](https://colab.research.google.com/drive
 To see how to integrate Evidently in your prediction pipelines and use it with other tools, refer to the integrations. 
 Title | link to tutorial
 --- | ---
-Real-time ML monitoring with Grafana | Evidently + Grafana
+Real-time ML monitoring with Grafana | [Evidently + Grafana]
 Batch ML monitoring with Airflow | Evidently + Airflow
 Log Evidently metrics in MLflow UI | Evidently + MLflow
