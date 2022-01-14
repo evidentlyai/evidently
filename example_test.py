@@ -1,7 +1,11 @@
 import os
 import sys
 
-excludes = ['bicycle_demand_monitoring.py']
+excludes = ['bicycle_demand_monitoring.py',
+            'historical_drift_visualization.py',
+            'mlflow_integration.py',
+            'ibm_hr_attrition_model_validation.py',
+            ]
 
 
 if __name__ == '__main__':
