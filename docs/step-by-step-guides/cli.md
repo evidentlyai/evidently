@@ -96,13 +96,26 @@ Here is an example for a more complicated configuration, where we have comma-sep
       "mean area", "mean smoothness", "mean compactness", "mean concavity", 
       "mean concave points", "mean symmetry"]},
   "dashboard_tabs":["cat_target_drift"],
-  "sampling": {
-      "reference": {
-      "type": "none"
+  "sampling":{
+      "reference":{
+      "type":"none"
     },
-      "current": {
-      "type": "nth",
-      "n": 2
+      "current":{
+      "type":"nth",
+      "n":2
+    }
+  },
+  "options":{
+    "data_drift":{
+      "confidence":{
+        "mean perimeter":0.8,
+        "mean symmetry":0.8
+    },
+      "drift_share":0.5,
+      "nbinsx":{
+        "mean perimeter":4,
+        "mean symmetry":4
+      }
     }
   }
 }
@@ -124,13 +137,13 @@ Here is an example for a more complicated configuration, where we have comma-sep
       "mean concave points", "mean symmetry"]},
   "profile_sections":["data_drift", "cat_target_drift"],
   "pretty_print":true,
-  "sampling": {
-    "reference": {
+  "sampling":{
+    "reference":{
       "type": "none"
     },
-    "current": {
-      "type": "random",
-      "ratio": 0.8
+    "current":{
+      "type":"random",
+      "ratio":0.8
     }
   }
 }
