@@ -1,6 +1,6 @@
 # Table of contents
 
-* [What is Evidently?](README.md)
+* [What is Evidently?](index.md)
 * [Core concepts](core-concepts.md)
 
 ## GET STARTED
