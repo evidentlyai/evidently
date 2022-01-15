@@ -29,7 +29,7 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt && pip install -r dev_requirements.txt
       - name: Run Flake8
-        run: flake8 evidently
+        run: flake8 src/evidently
       - name: Run Mypy
         run: mypy
   test:
@@ -43,10 +43,12 @@ jobs:
           architecture: 'x64'
       - name: Install dependencies
         run: pip install -r requirements.txt && pip install -r dev_requirements.txt && pip install --upgrade pygments
+      - name: Install package
+        run: pip install -e .
       - name: Run Tests
         run: python -m pytest
-      - name: Prepare env
-        run: pip install -e . && pip install catboost
+      - name: Prepare examples dependencies
+        run: pip install catboost
       - name: Export examples
         run: jupyter nbconvert --to script evidently/examples/*/*.ipynb --output-dir example_scripts
       - name: Download test data
