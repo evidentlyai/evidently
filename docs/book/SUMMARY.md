@@ -1,22 +1,20 @@
 # Table of contents
 
 * [What is Evidently?](README.md)
-* [Core concepts](core-concepts.md)
+* [Core concepts](core/core-concepts.md)
 
 ## GET STARTED
 
-***
-
-* [Install Evidently](install-evidently.md)
-* [Quick start](quick-start.md)
-* [Reports](reports/README.md)
-  * [Data Drift](reports/data-drift.md)
-  * [Numerical Target Drift](reports/num-target-drift.md)
-  * [Categorical Target Drift](reports/categorical-target-drift.md)
-  * [Regression Performance](reports/reg-performance.md)
-  * [Classification Performance](reports/classification-performance.md)
-  * [Probabilistic Classification Performance](reports/probabilistic-classification-performance.md)
-* [Examples](examples.md)
+* [Install Evidently](get-started/install-evidently.md)
+* [Quick start](get-started/quick-start.md)
+* [Reports](get-started/reports/README.md)
+  * [Data Drift](get-started/reports/data-drift.md)
+  * [Numerical Target Drift](get-started/reports/num-target-drift.md)
+  * [Categorical Target Drift](get-started/reports/categorical-target-drift.md)
+  * [Regression Performance](get-started/reports/reg-performance.md)
+  * [Classification Performance](get-started/reports/classification-performance.md)
+  * [Probabilistic Classification Performance](get-started/reports/probabilistic-classification-performance.md)
+* [Examples](get-started/examples.md)
 
 ## Step-by-step guides
 
