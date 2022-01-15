@@ -45,15 +45,15 @@ Analyzes the performance of a probabilistic classification model, quality of the
 ![Part of the Probabilstic Classification Model Performance Report.](.gitbook/assets/evidently\_prob\_classification\_performance\_report\_github.png)
 
 {% content-ref url="(get-started/install-evidently.md" %}
-[install-evidently.md](get-started/install-evidently.md)
+[install-evidently.md](install-evidently.md)
 {% endcontent-ref %}
 
 {% content-ref url="get-started/quick-start.md" %}
 [quick-start.md](quick-start.md)
 {% endcontent-ref %}
 
-{% content-ref url="examples.md" %}
-[examples.md](get-started/examples.md)
+{% content-ref url="get-started/examples.md" %}
+[examples.md](examples.md)
 {% endcontent-ref %}
 
 
