@@ -50,7 +50,7 @@ jobs:
       - name: Prepare examples dependencies
         run: pip install catboost
       - name: Export examples
-        run: jupyter nbconvert --to script evidently/examples/*/*.ipynb --output-dir example_scripts
+        run: jupyter nbconvert --to script examples/*/*.ipynb --output-dir example_scripts
       - name: Download test data
         run: curl https://archive.ics.uci.edu/ml/machine-learning-databases/00275/Bike-Sharing-Dataset.zip -o Bike-Sharing-Dataset.zip &&
              unzip Bike-Sharing-Dataset.zip -d Bike-Sharing-Dataset
