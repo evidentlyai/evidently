@@ -42,31 +42,31 @@ The report includes 4 components. All plots are interactive.
 
 The report first shows the **comparison of target (prediction) distributions** in the current and reference dataset. The result of the statistical test and P-value are displayed in the title.&#x20;
 
-![](../.gitbook/assets/num\_targ\_drift.png)
+![](../../.gitbook/assets/num_targ_drift.png)
 
 ### 2. Target (Prediction) Correlations
 
 The report shows the **correlations between individual features and the target (prediction)** in the current and reference dataset. It helps detects shifts in the relationship.
 
-![](../.gitbook/assets/num\_targ\_drift\_target\_correlations.png)
+![](../../.gitbook/assets/num_targ_drift_target_correlations.png)
 
 ### 3. Target (Prediction) Values&#x20;
 
 The report visualizes the **target (prediction) values by index or time** (if the`datetime` column is available or defined in the `column_mapping` dictionary). This plot helps explore the target behavior and compare it between the datasets.
 
-![](../.gitbook/assets/num\_targ\_drift\_target\_values.png)
+![](../../.gitbook/assets/num_targ_drift_target_values.png)
 
 ### 4. Target (Prediction) Behavior By Feature
 
 Finally, we generate an interactive table with the **visualizations of dependencies between the target and each feature**.&#x20;
 
-![](../.gitbook/assets/num\_targ\_drift\_behavior\_by\_feature.png)
+![](../../.gitbook/assets/num_targ_drift_behavior_by_feature.png)
 
 If you click on any feature in the table, you get an overview of its behavior.&#x20;
 
 The plot shows how **feature values relate to the target (prediction) values** and if there are differences between the datasets. It helps explore if they can explain the target (prediction) shift.
 
-![](../.gitbook/assets/num\_targ\_drift\_behavior\_by\_feature\_example\_tax.png)
+![](../../.gitbook/assets/num_targ_drift_behavior_by_feature_example_tax.png)
 
 We recommend paying attention to the behavior of the **most important features** since significant changes might confuse the model and cause higher errors.
 
