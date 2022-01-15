@@ -37,7 +37,7 @@ The tool does not yet work for multi-label classification. It expects a single t
 
 To generate a comparative report, you will need **two** datasets. The **reference** dataset serves as a benchmark. We analyze the change by comparing the **current** production data to the **reference** data.
 
-![](../.gitbook/assets/two\_datasets\_classification.png)
+![](../../.gitbook/assets/two_datasets_classification.png)
 
 You can also run this report for a **single** `DataFrame` , with no comparison performed. In this case, pass it as `reference_data`.
 
@@ -57,19 +57,19 @@ We calculate a few standard model quality metrics: Accuracy, Precision, Recall, 
 
 Shows the number of objects of each class.
 
-![](../.gitbook/assets/prob\_class\_perf\_class\_representation.png)
+![](../../.gitbook/assets/prob_class_perf_class_representation.png)
 
 ### 3. Confusion Matrix
 
 Visualizes the classification errors and their type.
 
-![](../.gitbook/assets/prob\_class\_perf\_confusion\_matrix.png)
+![](../../.gitbook/assets/prob_class_perf_confusion_matrix.png)
 
 ### 4. Quality Metrics by Class
 
 Shows the model quality metrics for the individual classes. In the case of multi-class problems, it will also include ROC AUC.
 
-![](../.gitbook/assets/prob\_class\_perf\_quality\_by\_class.png)
+![](../../.gitbook/assets/prob_class_perf_quality_by_class.png)
 
 ### **5. Class Separation Quality**
 
@@ -77,31 +77,31 @@ A scatter plot of the predicted probabilities that shows correct and incorrect p
 
 It serves as a representation of both model accuracy and the quality of its calibration. It also helps visually **choose the best probability threshold for each class.**
 
-![](../.gitbook/assets/prob\_class\_perf\_class\_separation\_quality.png)
+![](../../.gitbook/assets/prob_class_perf_class_separation_quality.png)
 
 ### 6. Probability Distribution
 
 A similar view as above, it shows the distribution of predicted probabilities.
 
-![](../.gitbook/assets/prob\_class\_perf\_probability\_distr.png)
+![](../../.gitbook/assets/prob_class_perf_probability_distr.png)
 
 ### **7. ROC Curve**
 
 ROC Curve (**receiver operating characteristic curve**) shows the share of true positives and true negatives at different classification thresholds.&#x20;
 
-![](../.gitbook/assets/prob\_class\_perf\_roc.png)
+![](../../.gitbook/assets/prob_class_perf_roc.png)
 
 ### 8. **Precision-Recall Curve**
 
 The **precision**-**recall curve** shows the trade-off between **precision** and **recall** for different classification thresholds.
 
-![](../.gitbook/assets/prob\_class\_perf\_pr.png)
+![](../../.gitbook/assets/prob_class_perf_pr.png)
 
 ### 9. Precision-Recall Table
 
 The table shows possible **outcomes for different classification thresholds** and **prediction coverage**. If you have two datasets, the table is generated for both.
 
-![](../.gitbook/assets/prob\_class\_perf\_pr\_table\_current.png)
+![](../../.gitbook/assets/prob_class_perf_pr_table_current.png)
 
 Each line in the table defines a case when only _top-X%_ predictions are considered, with a 5% step. It shows the absolute number of predictions _(Count)_ and the probability threshold _(Prob)_ that correspond to this combination.
 
@@ -113,17 +113,17 @@ This helps explore the quality of the model if you choose to act only on some of
 
 In this table, we show a number of plots for each feature. To expand the plots, click on the feature name.
 
-![](../.gitbook/assets/prob\_class\_perf\_classification\_quality\_by\_feature.png)
+![](../../.gitbook/assets/prob_class_perf_classification_quality_by_feature.png)
 
 In the tab “ALL”, we plot the distribution of classes against the values of the feature. This is the “Target Behavior by Feature” plot from the [Categorial Target Drift ](categorical-target-drift.md)report.&#x20;
 
 If you compare the two datasets, it visually shows the changes in the feature distribution and in the relationship between the values of the feature and the target.&#x20;
 
-![](../.gitbook/assets/prob\_class\_perf\_classification\_quality\_by\_feature\_example\_all.png)
+![](../../.gitbook/assets/prob_class_perf_classification_quality_by_feature_example_all.png)
 
 Then, for each class, we plot the predicted probabilities alongside the values of the feature.&#x20;
 
-![](../.gitbook/assets/prob\_class\_perf\_classification\_quality\_by\_feature\_example\_class.png)
+![](../../.gitbook/assets/prob_class_perf_classification_quality_by_feature_example_class.png)
 
 It visualizes the regions where the model makes errors of each type and reveals the low-performance segments. You can compare the distributions and see **if the errors are sensitive to the values of a given feature**.
 
