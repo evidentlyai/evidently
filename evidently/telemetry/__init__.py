@@ -1,1 +1,0 @@
-from .sender import TelemetrySender

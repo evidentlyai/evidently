@@ -1,0 +1,19 @@
+data_format:
+  separator: ","
+  header: true
+  date_column: "dteday"
+column_mapping:
+  target: "cnt"
+  prediction: "prediction"
+  datetime: "dteday"
+  numerical_features: ['mnth', 'temp', 'atemp', 'hum', 'windspeed']
+  categorical_features: ['season', 'holiday', 'weekday', 'workingday', 'weathersit', ]
+pretty_print: true
+service:
+  reference_path: "./reference.csv"
+  min_reference_size: 30
+  use_reference: true
+  moving_reference: false
+  window_size: 30
+  calculation_period_sec: 10
+  monitors: [ "data_drift", "regression_performance" ]
