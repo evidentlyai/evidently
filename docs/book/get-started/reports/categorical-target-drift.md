@@ -44,17 +44,17 @@ The report first shows the **comparison of target (prediction) distributions** i
 
 For a classification problem with three classes, it can look like this (an example of the extreme target drift with the appearance of a new class):
 
-![](../.gitbook/assets/cat\_target\_drift.png)
+![](../../.gitbook/assets/cat_target_drift.png)
 
 ### 2. Target (Prediction) Behavior By Feature
 
 The report generates an interactive table with the **visualizations of dependencies between the target and each feature**.&#x20;
 
-![](../.gitbook/assets/cat\_target\_drift\_behavior\_by\_feature.png)
+![](../../.gitbook/assets/cat_target_drift_behavior_by_feature.png)
 
 If you click on any feature, you get a plot that shows the feature distribution for the different target labels.&#x20;
 
-![](../.gitbook/assets/cat\_target\_drift\_behavior\_by\_feature\_example.png)
+![](../../.gitbook/assets/cat_target_drift_behavior_by_feature_example.png)
 
 These plots help analyze how feature values relate to the target labels and identify the differences between the datasets.&#x20;
 
