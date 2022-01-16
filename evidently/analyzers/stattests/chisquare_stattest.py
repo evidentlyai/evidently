@@ -5,7 +5,7 @@ import pandas as pd
 from scipy.stats import chisquare
 
 
-def chi_stat_test(reference_data: pd.Series, current_data: pd.Series):
+def chi_stat_test(reference_data: pd.Series, current_data: pd.Series) -> float:
     keys = set(reference_data) | set(current_data)
 
     ref_feature_dict = {**dict.fromkeys(keys, 0), **dict(reference_data.value_counts())}
