@@ -31,7 +31,7 @@ def _compute_statistic(reference_data, current_data, column_name, statistic_fun)
 
 
 @dataclass
-class DataMetrics:
+class DataDriftMetrics:
     """Class for drift values"""
     column_name: str
     drift: float
@@ -41,8 +41,8 @@ class DataMetrics:
 class CatTargetDriftAnalyzerResults:
     """Class for all results of category target drift calculations"""
     columns: DatasetColumns
-    target_metrics: Optional[DataMetrics] = None
-    prediction_metrics: Optional[DataMetrics] = None
+    target_metrics: Optional[DataDriftMetrics] = None
+    prediction_metrics: Optional[DataDriftMetrics] = None
 
 
 class CatTargetDriftAnalyzer(Analyzer):
@@ -106,7 +106,7 @@ class CatTargetDriftAnalyzer(Analyzer):
         # target drift
         if target_column is not None:
             p_value = _compute_statistic(reference_data, current_data, target_column, stattest_func)
-            result.target_metrics = DataMetrics(
+            result.target_metrics = DataDriftMetrics(
                 column_name=target_column,
                 drift=p_value
             )
@@ -114,7 +114,7 @@ class CatTargetDriftAnalyzer(Analyzer):
         # prediction drift
         if prediction_column is not None:
             p_value = _compute_statistic(reference_data, current_data, prediction_column, stattest_func)
-            result.prediction_metrics = DataMetrics(
+            result.prediction_metrics = DataDriftMetrics(
                 column_name=prediction_column,
                 drift=p_value
             )
