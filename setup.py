@@ -13,8 +13,7 @@ from setupbase import (
     HERE, install_npm
 )
 
-nb_path = pjoin(HERE, 'evidently', 'nbextension', 'static')
-lab_path = pjoin(HERE, 'evidently', 'labextension')
+nb_path = pjoin(HERE, 'src', 'evidently', 'nbextension', 'static')
 
 # Representative files that should exist after a successful build
 jstargets = [
@@ -25,13 +24,11 @@ package_data_spec = {
     'evidently': [
         'nbextension/static/*.*js*',
         'nbextension/static/*.woff2',
-        'labextension/*.tgz'
     ]
 }
 
 data_files_spec = [
     ('share/jupyter/nbextensions/evidently', nb_path, '*.js*'),
-    ('share/jupyter/lab/extensions', lab_path, '*.tgz'),
     ('etc/jupyter/nbconfig/notebook.d', HERE, 'evidently.json')
 ]
 

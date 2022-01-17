@@ -22,6 +22,6 @@ module.exports = {
     },
     output: {
         filename: 'index.js',
-        path: path.resolve(__dirname, '../evidently/nbextension/static/'),
+        path: path.resolve(__dirname, '../src/evidently/nbextension/static/'),
     }
 };
