@@ -26,7 +26,7 @@ Currently 6 reports are available.
 
 ### 1. Data Drift
 Detects changes in feature distribution. 
-![Dashboard example](https://github.com//evidently/blob/main/docs/images/evidently_github.png)
+![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/docs/images/evidently_github.png)
 
 ### 2. Numerical Target Drift
 Detects changes in numerical target and feature behavior.
