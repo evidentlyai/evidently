@@ -115,6 +115,7 @@ Probabilistic Classification Performance (Binary) | [link](sample_notebooks/prob
 
 ### How-to notebooks
 These examples answer “how-to” questions - they help you to adjust evidently as you need
+
 How to | Jupyter notebook | Colab notebook | Data source 
 --- | --- | --- | --- 
 How to customize drift dashboards? (set confidence level, number of bins in a histogram and statistical test) | [link](how_to_questions/drift_dashboard_with_options_california_housing.ipynb) | [link](https://colab.research.google.com/drive/1roAyq4DdxBSGyzp0XmmH0zqOHso6Fd6y?authuser=2) | California housing sklearn.datasets 
@@ -122,6 +123,7 @@ How to add your own widget or create your own report? | [link](how_to_questions/
 
 ### Data Stories
 To better understand potential use cases (such as model evaluation and monitoring), refer to the detailed tutorials accompanied by the blog posts.
+
 Title | Jupyter notebook | Colab notebook | Blog post | Data source 
 --- | --- | --- | --- | --- 
 Monitor production models | [link](data_stories/bicycle_demand_monitoring.ipynb) | [link](https://colab.research.google.com/drive/1xjAGInfh_LDenTxxTflazsKJp_YKmUiD?authuser=2) | [How to break a model in 20 days](https://evidentlyai.com/blog/tutorial-1-model-analytics-in-production) | Bike sharing UCI: [link](https://archive.ics.uci.edu/ml/datasets/bike+sharing+dataset)
@@ -130,8 +132,9 @@ Custom tab and PSI widget | [link](data_stories/california_housing_custom_PSI_wi
 
 ### Integrations
 To see how to integrate Evidently in your prediction pipelines and use it with other tools, refer to the integrations. 
+
 Title | link to tutorial
 --- | ---
-Real-time ML monitoring with Grafana | [Evidently + Grafana](integrations/monitoring_service/)
+Real-time ML monitoring with Grafana | [Evidently + Grafana](integrations/grafana_monitoring_service/)
 Batch ML monitoring with Airflow | [Evidently + Airflow](integrations/airflow_drift_detection/)
-Log Evidently metrics in MLflow UI | [Evidently + MLflow](integrations/mlflow_integration.ipynb)
+Log Evidently metrics in MLflow UI | [Evidently + MLflow](integrations/mlflow_logging/)

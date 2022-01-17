@@ -8,9 +8,9 @@ Below are a few specific examples of how to integrate Evidently in the predictio
 
 Title | link to tutorial
 --- | ---
-Real-time ML monitoring with Grafana | [Evidently + Grafana](integrations/monitoring_service/)
+Real-time ML monitoring with Grafana | [Evidently + Grafana](integrations/grafana_monitoring_service/)
 Batch ML monitoring with Airflow | [Evidently + Airflow](integrations/airflow_drift_detection/)
-Log Evidently metrics in MLflow UI | [Evidently + MLflow](integrations/mlflow_integration.ipynb)
+Log Evidently metrics in MLflow UI | [Evidently + MLflow](integrations/mlflow_logging/)
 
 To quickly explore what Evidently can do right out of the box, refer to the [sample notebooks](./sample_notebooks/).
 
