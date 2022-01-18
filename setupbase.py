@@ -607,7 +607,7 @@ def _get_package_data(root, file_patterns=None):
     """
     if file_patterns is None:
         file_patterns = ['*']
-    return _get_files(file_patterns, _glob_pjoin(HERE, root))
+    return _get_files(file_patterns, _glob_pjoin(HERE, 'src', root))
 
 
 def _compile_pattern(pat, ignore_case=True):
