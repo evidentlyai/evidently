@@ -11,7 +11,7 @@
 
 **Probabilistic Classification Performance** report evaluates the quality of a probabilistic classification model. It works both for binary and multi-class classification.&#x20;
 
-If you have a non-probabilistic classification model, refer to a [separate report](probabilistic-classification-performance.md).
+If you have a non-probabilistic classification model, refer to a [separate report](classification-performance.md).
 
 This report can be generated for a single model, or as a comparison. You can contrast your current production model performance against the past or an alternative model.&#x20;
 
@@ -129,9 +129,9 @@ It visualizes the regions where the model makes errors of each type and reveals 
 
 ## Report customization
 
-You can select which components of the reports to display or choose to show the short version of the report: [select-widgets-to-display.md](../step-by-step-guides/report-customization/select-widgets-to-display.md "mention").&#x20;
+You can select which components of the reports to display or choose to show the short version of the report: [select-widgets-to-display.md](../../step-by-step-guides/report-customization/select-widgets-to-display.md "mention").&#x20;
 
-If you want to create a new plot or metric, you can [add-a-custom-widget-or-tab.md](../step-by-step-guides/report-customization/add-a-custom-widget-or-tab.md "mention").
+If you want to create a new plot or metric, you can [add-a-custom-widget-or-tab.md](../../step-by-step-guides/report-customization/add-a-custom-widget-or-tab.md "mention").
 
 ## When to use the report
 
@@ -147,10 +147,10 @@ Here are our suggestions on when to use it—you can also combine it with the [D
 
 **5. To debug or improve model performance.** You can use the Classification Quality table to identify underperforming segments and decide on the ways to address them.
 
-* See Iris **Classification Performance** report: [Jupyter notebook](../evidently/examples/iris\_data\_drift.ipynb)
-* Browse our [examples](../step-by-step-guides/tutorials/) for more reports.
+* See Iris **Classification Performance** report: [Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/examples/sample_notebooks/multiclass_target_and_data_drift_iris.ipynb)
+* Browse our [examples](../../step-by-step-guides/tutorials/) for more reports.
 
-## Examples
+## JSON Profile
 
 If you choose to generate a JSON profile, it will contain the following information:&#x20;
 
@@ -262,6 +262,6 @@ If you choose to generate a JSON profile, it will contain the following informat
 ## Examples
 
 * Browse our [examples](../examples.md) for sample Jupyter notebooks.
-* See a tutorial "[What is your model hiding](../step-by-step-guides/tutorials/compare-two-models.md)" where we analyze the performance of two models with identical ROC AUC to choose between the two.
+* See a tutorial "[What is your model hiding](../../step-by-step-guides/tutorials/compare-two-models.md)" where we analyze the performance of two models with identical ROC AUC to choose between the two.
 
 You can also read the [release blog](https://evidentlyai.com/blog/evidently-018-classification-model-performance).
