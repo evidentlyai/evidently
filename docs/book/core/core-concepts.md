@@ -4,7 +4,7 @@
 
 The primary use for Evidently is the comparison between two datasets. These datasets are model application logs. They can include model input features, predictions, and/or actuals (true labels).&#x20;
 
-* **Reference** dataset **** serves as a basis for the comparison.
+* **Reference** dataset serves as a basis for the comparison.
 * **Current (Production)** dataset is the dataset that is compared to the first.&#x20;
 
 ![](../.gitbook/assets/two_datasets_classification.png)
