@@ -4,7 +4,7 @@ description: Log Evidently metrics in the MLflow UI.
 
 # Evidently + MLflow
 
-**TL;DR:** You can use Evidently to calculate metrics, and MLflow Tracking to log and view the results. Here is a [sample Jupyter notebook](../../evidently/tutorials/mlflow\_integration.ipynb).&#x20;
+**TL;DR:** You can use Evidently to calculate metrics, and MLflow Tracking to log and view the results. Here is a [sample Jupyter notebook](../../../../examples/integrations/mlflow_logging/mlflow_integration.ipynb).&#x20;
 
 ### **Overview**
 
@@ -14,7 +14,7 @@ In this case, you use **Evidently to calculate the metrics** and **MLflow to log
 
 ### **How it works**
 
-Evidently calculates a rich set of metrics and statistical tests. You can choose any of the pre-built [reports](../../reports/) to define the metrics you’d want to get.&#x20;
+Evidently calculates a rich set of metrics and statistical tests. You can choose any of the pre-built [reports](../../get-started/reports/) to define the metrics you’d want to get.&#x20;
 
 You can then generate **a JSON profile** that will contain the defined metrics output. You can combine several profile sections (e.g., Data and Prediction Drift together).&#x20;
 
@@ -22,11 +22,11 @@ You might not always need all metrics from the profile. You should explicitly de
 
 ## Tutorial 1: Evaluating Data Drift with **MLFlow and Evidently**&#x20;
 
-In this example, we will use Evidently to check input features for [Data Drift](../../reports/data-drift.md) and log and visualize the results with MLflow.
+In this example, we will use Evidently to check input features for [Data Drift](../../get-started/reports/data-drift.md) and log and visualize the results with MLflow.
 
 Here is a Jupyter notebook with the example:&#x20;
 
-{% embed url="https://github.com/evidentlyai/evidently/blob/main/evidently/tutorials/mlflow_integration.ipynb" %}
+{% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/integrations/mlflow_logging/mlflow_integration.ipynb" %}
 
 ### **Step 1. Install MLflow and Evidently**
 
@@ -36,7 +36,7 @@ Evidently is available as a PyPI package:
 $ pip install evidently
 ```
 
-For more details, refer to the Evidently [installation guide](../../install-evidently.md).&#x20;
+For more details, refer to the Evidently [installation guide](../../get-started/install-evidently.md).&#x20;
 
 To install MLflow, run:&#x20;
 
