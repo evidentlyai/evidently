@@ -6,7 +6,7 @@ You can generate the dashboards and JSON profiles using **Jupyter notebook** or 
 If you want to **display** the dashboards directly in Jupyter notebook, make sure you [installed](install-evidently.md) the Jupyter **nbextension**.
 {% endhint %}
 
-For a more **detailed version**, head to the step-by-step guide on using `evidently` in [Jupyter notebook](step-by-step-guides/step-by-step-guide-for-jupyter-notebooks.md) or [Command-line interface](step-by-step-guides/cli.md).
+For a more **detailed version**, head to the step-by-step guide on using `evidently` in [Jupyter notebook](../step-by-step-guides/step-by-step-guide-for-jupyter-notebooks.md) or [Command-line interface](../step-by-step-guides/cli.md).
 
 If you prefer a **video** version, here is a **10-min Quick Start** on how to generate Data and Target Drift reports and JSON profiles in the Jupyter notebook.&#x20;
 
@@ -417,7 +417,7 @@ Here is an example for a more complicated configuration, where we have comma-sep
 
 Telemetry is collected in Evidently starting from version 0.1.21.dev0.
 
-When you use Evidently in the command-line interface, we collect some basic telemetry. It includes data on the environment (e.g. Python version) and usage (type of report or profile generated). You can read more about what we collect [here](support/telemetry.md).
+When you use Evidently in the command-line interface, we collect some basic telemetry. It includes data on the environment (e.g. Python version) and usage (type of report or profile generated). You can read more about what we collect [here](../support/telemetry.md).
 
 You can opt-out from telemetry collection by setting the environment variable:
 
