@@ -130,9 +130,9 @@ For each feature, we also show the Predicted vs Actual scatterplot. We use color
 
 ## Report customization
 
-You can select which components of the reports to display or choose to show the short version of the report: [select-widgets-to-display.md](../step-by-step-guides/report-customization/select-widgets-to-display.md "mention").&#x20;
+You can select which components of the reports to display or choose to show the short version of the report: [select-widgets-to-display.md](../../step-by-step-guides/report-customization/select-widgets-to-display.md "mention").&#x20;
 
-If you want to create a new plot or metric, you can [add-a-custom-widget-or-tab.md](../step-by-step-guides/report-customization/add-a-custom-widget-or-tab.md "mention").
+If you want to create a new plot or metric, you can [add-a-custom-widget-or-tab.md](../../step-by-step-guides/report-customization/add-a-custom-widget-or-tab.md "mention").
 
 ## When to use the report
 
@@ -258,6 +258,6 @@ If you choose to generate a JSON profile, it will contain the following informat
 ## Examples
 
 * Browse our [examples](../examples.md) for sample Jupyter notebooks.
-* See a tutorial "[How to break a model in 20 days](../step-by-step-guides/tutorials/production-monitoring.md)" where we create a demand prediction model and analyze its gradual decay.
+* See a tutorial "[How to break a model in 20 days](../../step-by-step-guides/tutorials/production-monitoring.md)" where we create a demand prediction model and analyze its gradual decay.
 
 You can also read the initial [release blog](https://evidentlyai.com/blog/evidently-016-regression-model-performance).
