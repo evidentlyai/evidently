@@ -22,7 +22,7 @@ You can generate an Evidently report (e.g. a data drift report) every time the n
 
 **Here is a DAG example:**
 
-{% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/integrations/airflow_drift_detection/dags/evidently_drift_dashboard.pyy" %}
+{% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/integrations/airflow_drift_detection/dags/evidently_drift_dashboard.py" %}
 
 ### 2. Generate visual performance reports on defined conditions  &#x20;
 
