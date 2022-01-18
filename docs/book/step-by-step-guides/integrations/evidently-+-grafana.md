@@ -10,7 +10,7 @@ You can use this same stack for ML monitoring. In this case, Evidently provides 
 
 **An integration example is available as a Docker container:**
 
-{% embed url="https://github.com/evidentlyai/evidently/tree/main/evidently/tutorials/monitoring_service" %}
+{% embed url="https://github.com/evidentlyai/evidently/tree/main/examples/integrations/grafana_monitoring_service" %}
 
 Follow the readme to install and modify the example.&#x20;
 
