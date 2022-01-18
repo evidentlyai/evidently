@@ -22,7 +22,7 @@ Probabilistic Classification Performance (Binary) | [link](../../../examples/sam
 
 To better understand potential use cases (such as model evaluation and monitoring), refer to the **detailed tutorials** accompanied by the blog posts.&#x20;
 
-{% content-ref url="step-by-step-guides/tutorials/" %}
+{% content-ref url="../step-by-step-guides/tutorials/" %}
 [tutorials](../step-by-step-guides/tutorials/)
 {% endcontent-ref %}
 
@@ -30,7 +30,7 @@ To better understand potential use cases (such as model evaluation and monitorin
 
 To see how to integrate Evidently in your prediction pipelines and use it with other tools, refer to the **integrations**.&#x20;
 
-{% content-ref url="step-by-step-guides/integrations/" %}
+{% content-ref url="../step-by-step-guides/integrations/" %}
 [integrations](../step-by-step-guides/integrations/)
 {% endcontent-ref %}
 
