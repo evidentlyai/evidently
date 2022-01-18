@@ -9,9 +9,8 @@ Grafana is an open-source [data visualization platform](https://github.com/grafa
 You can use this same stack for ML monitoring. In this case, Evidently provides a metrics calculation layer that can be easily configured for your use case.&#x20;
 
 **An integration example is available as a Docker container:**
-{% content-ref url="../../../../examples/integrations/grafana_monitoring_service" %}
-[Grafana Monitoring Service](../../../../examples/integrations/grafana_monitoring_service)
-{% endcontent-ref %}
+[Grafana Monitoring Service](https://github.com/evidentlyai/evidently/blob/main/examples/integrations/grafana_monitoring_service/readme.md)
+
 
 Follow the readme to install and modify the example.&#x20;
 
