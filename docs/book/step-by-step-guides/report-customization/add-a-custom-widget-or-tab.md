@@ -14,7 +14,7 @@ Below is a step-by-step guide with a simplified example.
 
 ### Create your own Widget
 
-To create a new Widget, you should create a class derived from our base class: [https://github.com/evidentlyai/evidently/blob/main/evidently/widgets/widget.py](../../evidently/widgets/widget.py)
+To create a new Widget, you should create a class derived from our base class: [https://github.com/evidentlyai/evidently/blob/main/src/evidently/dashboard/widgets/widget.py](../../../../src/evidently/dashboard/widgets/widget.py)
 
 Then you need to modify the **calculate** method. It takes as arguments `reference` data, `current` data, and `column_mapping`. Your Widget can use any information from these variables.
 
@@ -22,7 +22,7 @@ Here is an instruction on how to create a simple Widget with the information abo
 
 **Example 2 (California Housing, Simple Widget and Tab):**
 
-{% embed url="https://colab.research.google.com/drive/1d8kmGjlOsr5cr_Wl9In-CZwxyO5G4bRE?authuser=1" %}
+{% embed url="https://colab.research.google.com/drive/1d8kmGjlOsr5cr_Wl9In-CZwxyO5G4bRE?usp=sharing" %}
 
 1. **We make a prototype of our Widget in Jupyter Notebook.** Using Plotly, we create a graph that we want to see in the Dashboard.&#x20;
 
@@ -58,7 +58,7 @@ fig.update_layout(
 
 **2. Now we need to write a class for our Widget**.&#x20;
 
-Create a new Python file. Copy the code from [https://github.com/evidentlyai/evidently/blob/main/evidently/widgets/RegPredActualTimeWidget.py](../../evidently/widgets/RegPredActualTimeWidget.py) - we will use it as starting point and edit to create a custom implementation.&#x20;
+Create a new Python file. Copy the code from [https://github.com/evidentlyai/evidently/blob/main/src/evidently/dashboard/widgets/reg_pred_and_actual_in_time_widget.py](../../../../src/evidently/dashboard/widgets/reg_pred_and_actual_in_time_widget.py) - we will use it as starting point and edit to create a custom implementation.&#x20;
 
 We start from imports. We change the Plotly import, remove analyzer import, and the default colors:\
 
@@ -102,7 +102,7 @@ dashboard.show()
 
 ### Create your own Tab
 
-Creating a custom Tab is even easier. You need to create a class derived from the base class: [https://github.com/evidentlyai/evidently/blob/main/evidently/tabs/base\_tab.py](../../evidently/tabs/base\_tab.py)
+Creating a custom Tab is even easier. You need to create a class derived from the base class: [https://github.com/evidentlyai/evidently/blob/main/src/evidently/dashboard/tabs/base_tab.py](../../../../src/evidently/dashboard/tabs/base_tab.py)
 
 Again, let's take an existing Evidently tab as an example and change it.
 

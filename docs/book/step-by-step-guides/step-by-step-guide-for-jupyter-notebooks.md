@@ -7,7 +7,7 @@ description: How to use Evidently in Jupyter notebook or other notebook environm
 Take the following steps to create and display a `Dashboard` in Jupyter notebook, export the report as an HTML file, or generate a JSON `Profile`.&#x20;
 
 {% hint style="info" %}
-If you want to display the dashboards in Jupyter notebook, make sure you [installed](../install-evidently.md) the Jupyter **nbextension**.
+If you want to display the dashboards in Jupyter notebook, make sure you [installed](../get-started/install-evidently.md) the Jupyter **nbextension**.
 {% endhint %}
 
 You can also use **Google Colab**, **Kaggle Kernel**, or **Deepnote**.&#x20;
@@ -43,12 +43,12 @@ Below is a summary of the data requirements:
 
 | Report Type                                                                                                    | Feature columns  | Target column                     | Prediction column                 | Works with a single dataset |
 | -------------------------------------------------------------------------------------------------------------- | ---------------- | --------------------------------- | --------------------------------- | --------------------------- |
-| ****[**Data Drift**](../reports/data-drift.md)****                                                             | Required         | No                                | No                                | No                          |
-| ****[**Numerical Target Drift**](../reports/num-target-drift.md)****                                           | Required         | Target and/or Prediction required | Target and/or Prediction required | No                          |
-| ****[**Categorical Target Drift** ](../reports/categorical-target-drift.md)****                                | Required         | Target and/or Prediction required | Target and/or Prediction required | No                          |
-| ****[**Regression Performance**](../reports/reg-performance.md)****                                            | Required         | Required                          | Required                          | Yes                         |
-| ****[**Classification Performance**](../reports/classification-performance.md)****                             | Required         | Required                          | Required                          | Yes                         |
-| ****[**Probabilistic Classification Performance**](../reports/probabilistic-classification-performance.md)**** | Required         | Required                          | Required                          | Yes                         |
+| ****[**Data Drift**](../get-started/reports/data-drift.md)****                                                             | Required         | No                                | No                                | No                          |
+| ****[**Numerical Target Drift**](../get-started/reports/num-target-drift.md)****                                           | Required         | Target and/or Prediction required | Target and/or Prediction required | No                          |
+| ****[**Categorical Target Drift** ](../get-started/reports/categorical-target-drift.md)****                                | Required         | Target and/or Prediction required | Target and/or Prediction required | No                          |
+| ****[**Regression Performance**](../get-started/reports/reg-performance.md)****                                            | Required         | Required                          | Required                          | Yes                         |
+| ****[**Classification Performance**](../get-started/reports/classification-performance.md)****                             | Required         | Required                          | Required                          | Yes                         |
+| ****[**Probabilistic Classification Performance**](../get-started/reports/probabilistic-classification-performance.md)**** | Required         | Required                          | Required                          | Yes                         |
 
 ### `DataFrame` requirements
 
@@ -56,7 +56,7 @@ Make sure the data complies with the following expectations.
 
 1\) All column names are `string`&#x20;
 
-2\) All feature columns that are analyzed for drift have the numerical type (`np.number)` ****&#x20;
+2\) All feature columns that are analyzed for drift have the numerical type `(np.number)`&#x20;
 
 * **All non-numerical columns will be ignored**. Categorical data can be encoded as numerical labels and specified in the column mapping
 * **The datetime column is the only exception.** If available, it will be used as the x-axis in the data plots.&#x20;
@@ -106,7 +106,7 @@ column_mapping.categorical_features = ['encoded_cat_feature_1',
     'encoded_cat_feature_2']
 ```
 
-Categorical features will be then treated accordingly. The [**data drift**](../reports/data-drift.md) report will use the chi-squared test by default.
+Categorical features will be then treated accordingly. The [**data drift**](../get-started/reports/data-drift.md) report will use the chi-squared test by default.
 
 **NOTE: Column names in Probabilistic Classification**
 
@@ -213,7 +213,7 @@ import pandas as pd
 from sklearn import datasets
 
 from evidently.dashboard import Dashboard
-from evidently.tabs import DataDriftTab
+from evidently.dashboard.tabs import DataDriftTab
 
 iris = datasets.load_iris()
 iris_frame = pd.DataFrame(iris.data, columns = iris.feature_names)

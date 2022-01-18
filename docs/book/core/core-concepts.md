@@ -4,10 +4,10 @@
 
 The primary use for Evidently is the comparison between two datasets. These datasets are model application logs. They can include model input features, predictions, and/or actuals (true labels).&#x20;
 
-* **Reference** dataset **** serves as a basis for the comparison.
+* **Reference** dataset serves as a basis for the comparison.
 * **Current (Production)** dataset is the dataset that is compared to the first.&#x20;
 
-![](<.gitbook/assets/two\_datasets\_classification (1).png>)
+![](../.gitbook/assets/two_datasets_classification.png)
 
 In practice, you can use it in different combinations:
 
@@ -33,7 +33,7 @@ Right now, you cannot choose a custom name for your dataset.&#x20;
 
 ## Reports
 
-![](<.gitbook/assets/image (2).png>)
+![](../.gitbook/assets/image%20(2).png)
 
 Evidently includes a set of pre-built Reports. Each of them addresses a specific aspect of the data or model performance.&#x20;
 

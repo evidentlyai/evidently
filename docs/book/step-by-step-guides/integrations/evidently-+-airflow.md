@@ -10,7 +10,7 @@ You can use it to schedule Evidently HTML reports and JSON profiles as a step in
 
 **An integration example is available as a Docker container:**
 
-{% embed url="https://github.com/evidentlyai/evidently/tree/main/evidently/tutorials/airflow_drift_detection" %}
+{% embed url="https://github.com/evidentlyai/evidently/tree/main/examples/integrations/airflow_drift_detection" %}
 
 Follow the readme to install and modify the example.&#x20;
 
@@ -22,7 +22,7 @@ You can generate an Evidently report (e.g. a data drift report) every time the n
 
 **Here is a DAG example:**
 
-{% embed url="https://github.com/evidentlyai/evidently/blob/main/evidently/tutorials/airflow_drift_detection/dags/evidently_drift_dashboard.py" %}
+{% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/integrations/airflow_drift_detection/dags/evidently_drift_dashboard.py" %}
 
 ### 2. Generate visual performance reports on defined conditions  &#x20;
 
@@ -32,7 +32,7 @@ For example, you can run checks on the model performance and only generate the r
 
 **Here is a DAG example:**
 
-{% embed url="https://github.com/evidentlyai/evidently/blob/main/evidently/tutorials/airflow_drift_detection/dags/evidently_conditional_drift_dashboard_generation.py" %}
+{% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/integrations/airflow_drift_detection/dags/evidently_conditional_drift_dashboard_generation.py" %}
 
 It works as the following:
 

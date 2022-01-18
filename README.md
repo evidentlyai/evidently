@@ -1,6 +1,6 @@
 <h1 align="center">Evidently</h1>
 
-![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/evidently/pics/evidently_4_reports_preview_small.png)
+![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/docs/images/evidently_4_reports_preview_small.png)
  
 <p align="center"><b>Interactive reports and JSON profiles to analyze, monitor and debug machine learning models.</b></p>
 
@@ -26,27 +26,27 @@ Currently 6 reports are available.
 
 ### 1. Data Drift
 Detects changes in feature distribution. 
-![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/evidently/pics/evidently_github.png)
+![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/docs/images/evidently_github.png)
 
 ### 2. Numerical Target Drift
 Detects changes in numerical target and feature behavior.
-![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/evidently/pics/evidently_num_target_drift_github.png)
+![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/docs/images/evidently_num_target_drift_github.png)
 
 ### 3. Categorical Target Drift
 Detects changes in categorical target and feature behavior.
-![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/evidently/pics/evidently_cat_target_drift_github.png)
+![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/docs/images/evidently_cat_target_drift_github.png)
 
 ### 4. Regression Model Performance
 Analyzes the performance of a regression model and model errors.
-![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/evidently/pics/evidently_regression_performance_report_github.png)
+![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/docs/images/evidently_regression_performance_report_github.png)
 
 ### 5. Classification Model Performance
 Analyzes the performance and errors of a classification model. Works both for binary and multi-class models.
-![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/evidently/pics/evidently_classification_performance_report_github.png)
+![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/docs/images/evidently_classification_performance_report_github.png)
 
 ### 6. Probabilistic Classification Model Performance
 Analyzes the performance of a probabilistic classification model, quality of model calibration, and model errors. Works both for binary and multi-class models.
-![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/evidently/pics/evidently_prob_classification_performance_report_github.png)
+![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/docs/images/evidently_prob_classification_performance_report_github.png)
 
 ## Installing from PyPI
 ### MAC OS and Linux
@@ -102,7 +102,7 @@ import pandas as pd
 from sklearn import datasets
 
 from evidently.dashboard import Dashboard
-from evidently.tabs import (
+from evidently.dashboard.tabs import (
     DataDriftTab,
     CatTargetDriftTab,
     RegressionPerformanceTab,
@@ -176,7 +176,7 @@ import pandas as pd
 from sklearn import datasets
 
 from evidently.model_profile import Profile
-from evidently.profile_sections import (
+from evidently.model_profile.sections import (
     DataDriftProfileSection,
     CatTargetDriftProfileSection,
     RegressionPerformanceProfileSection,
@@ -249,7 +249,7 @@ import pandas as pd
 from sklearn import datasets
 
 from evidently.dashboard import Dashboard
-from evidently.tabs import DataDriftTab
+from evidently.dashboard.tabs import DataDriftTab
 
 iris = datasets.load_iris()
 iris_frame = pd.DataFrame(iris.data, columns = iris.feature_names)

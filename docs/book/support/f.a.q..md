@@ -16,7 +16,7 @@ That said, please do file an issue on [GitHub](https://github.com/evidentlyai/ev
 
 ### **Can I export the report to display it elsewhere / integrate it into the prediction pipeline?**
 
-You can export the report summary as a JSON profile and integrate it with external tools. This functionality is available both for Jupyter notebooks and in Terminal. See [Quick Start](../quick-start.md) guide or browse through [Examples](../step-by-step-guides/tutorials/) to see the implementations.&#x20;
+You can export the report summary as a JSON profile and integrate it with external tools. This functionality is available both for Jupyter notebooks and in Terminal. See [Quick Start](../get-started/quick-start.md) guide or browse through [Tutorials](../step-by-step-guides/tutorials/) to see the implementations.&#x20;
 
 ### **The report size is too large. Can I decrease it?**
 
@@ -28,7 +28,7 @@ In the meantime, we suggest using some sampling strategy for your dataset, for i
 
 ### **Does it work for large datasets and distributed computation?**
 
-If your dataset is too large, you can define a sampling strategy. See [Quick Start](../quick-start.md) guide to see the available options.&#x20;
+If your dataset is too large, you can define a sampling strategy. See [Quick Start](../get-started/quick-start.md) guide to see the available options.&#x20;
 
 We plan to add support for distributed computation in the later version.&#x20;
 

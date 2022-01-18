@@ -18,7 +18,7 @@ To run this report, you need to have input features, and **both target and predi
 
 To generate a comparative report, you will need **two** datasets. The **reference** dataset serves as a benchmark. We analyze the change by comparing the **current** production data to the **reference** data.
 
-![](../.gitbook/assets/two\_datasets\_regression.png)
+![](../../.gitbook/assets/two_datasets_regression.png)
 
 You can also run this report for a **single** `DataFrame` , with no comparison performed. In this case, pass it as `reference_data`.
 
@@ -32,7 +32,7 @@ The report includes 12 components. All plots are interactive.
 
 We calculate a few standard model quality metrics: Mean Error (ME), Mean Absolute Error (MAE), Mean Absolute Percentage Error (MAPE).
 
-![](../.gitbook/assets/reg\_perf\_model\_quality\_summary.png)
+![](../../.gitbook/assets/reg_perf_model_quality_summary.png)
 
 For each quality metric, we also show one standard deviation of its value (in brackets) to estimate the stability of the performance.&#x20;
 
@@ -42,37 +42,37 @@ For each quality metric, we also show one standard deviation of its value (in br
 
 Predicted versus actual values in a scatter plot.
 
-![](../.gitbook/assets/reg\_perf\_predicted\_actual.png)
+![](../../.gitbook/assets/reg_perf_predicted_actual.png)
 
 ### 3. **Predicted vs Actual in Time**
 
 Predicted and Actual values over time or by index, if no datetime is provided.
 
-![](../.gitbook/assets/reg\_perf\_predicted\_actual\_in\_time.png)
+![](../../.gitbook/assets/reg_perf_predicted_actual_in_time.png)
 
 ### 4. Error (Predicted - Actual)
 
 Model error values over time or by index, if no datetime is provided.&#x20;
 
-![](../.gitbook/assets/reg\_perf\_error.png)
+![](../../.gitbook/assets/reg_perf_error.png)
 
 ### 5. Absolute Percentage Error
 
 Absolute percentage error values over time or by index, if no datetime is provided.
 
-![](../.gitbook/assets/reg\_perf\_abs\_per\_error.png)
+![](../../.gitbook/assets/reg_perf_abs_per_error.png)
 
 ### 6. Error Distribution
 
 Distribution of the model error values.&#x20;
 
-![](../.gitbook/assets/reg\_perf\_error\_distribution.png)
+![](../../.gitbook/assets/reg_perf_error_distribution.png)
 
 ### 7. Error Normality&#x20;
 
 Quantile-quantile plot ([Q-Q plot](https://en.wikipedia.org/wiki/Q%E2%80%93Q\_plot)) to estimate value normality.
 
-![](../.gitbook/assets/reg\_perf\_error\_normality.png)
+![](../../.gitbook/assets/reg_perf_error_normality.png)
 
 **Next, we explore in detail the two segments in the dataset: 5% of predictions with the highest negative and positive errors. We refer to them as "underesimation" and "overestimation" groups. We refer to the rest of the predictions as "majority".**
 
@@ -80,13 +80,13 @@ Quantile-quantile plot ([Q-Q plot](https://en.wikipedia.org/wiki/Q%E2%80%93Q\_pl
 
 We show a summary of the model quality metrics for each of the two groups: mean Error (ME), Mean Absolute Error (MAE), Mean Absolute Percentage Error (MAPE).
 
-![](../.gitbook/assets/reg\_perf\_mean\_error\_per\_group.png)
+![](../../.gitbook/assets/reg_perf_mean_error_per_group.png)
 
 ### **9. Predicted vs Actual per Group**
 
 We plot the predictions, coloring them by the group they belong to. It visualizes the regions where the model underestimates and overestimates the target function.
 
-![](../.gitbook/assets/reg\_perf\_predicted\_actual\_per\_group.png)
+![](../../.gitbook/assets/reg_perf_predicted_actual_per_group.png)
 
 ### **10. Error Bias: Mean/Most Common Feature Value per Group**
 
@@ -100,7 +100,7 @@ For the numerical features, it shows the mean value per group. For the categoric
 
 If you have two datasets, the table displays the values for both REF (reference) and CURR (current).
 
-![](../.gitbook/assets/reg\_perf\_error\_bias\_table.png)
+![](../../.gitbook/assets/reg_perf_error_bias_table.png)
 
 If you observe a large difference between the groups, it means that the model error is sensitive to the values of a given feature.
 
@@ -120,19 +120,19 @@ For each feature, we show a histogram to visualize the **distribution of its val
 
 Here is an example where extreme errors are dependent on the "temperature" feature.
 
-![](../.gitbook/assets/reg\_perf\_error\_bias\_per\_feature.png)
+![](../../.gitbook/assets/reg_perf_error_bias_per_feature.png)
 
 ### 12. Predicted vs Actual per Feature
 
 For each feature, we also show the Predicted vs Actual scatterplot. We use colors to show the distribution of the values of a given feature. It helps visually detect and explore underperforming segments which might be sensitive to the values of the given feature.
 
-![](../.gitbook/assets/reg\_perf\_error\_bias\_predicted\_actual\_per\_feature.png)
+![](../../.gitbook/assets/reg_perf_error_bias_predicted_actual_per_feature.png)
 
 ## Report customization
 
-You can select which components of the reports to display or choose to show the short version of the report: [select-widgets-to-display.md](../step-by-step-guides/report-customization/select-widgets-to-display.md "mention").&#x20;
+You can select which components of the reports to display or choose to show the short version of the report: [select-widgets-to-display.md](../../step-by-step-guides/report-customization/select-widgets-to-display.md "mention").&#x20;
 
-If you want to create a new plot or metric, you can [add-a-custom-widget-or-tab.md](../step-by-step-guides/report-customization/add-a-custom-widget-or-tab.md "mention").
+If you want to create a new plot or metric, you can [add-a-custom-widget-or-tab.md](../../step-by-step-guides/report-customization/add-a-custom-widget-or-tab.md "mention").
 
 ## When to use the report
 
@@ -258,6 +258,6 @@ If you choose to generate a JSON profile, it will contain the following informat
 ## Examples
 
 * Browse our [examples](../examples.md) for sample Jupyter notebooks.
-* See a tutorial "[How to break a model in 20 days](../step-by-step-guides/tutorials/production-monitoring.md)" where we create a demand prediction model and analyze its gradual decay.
+* See a tutorial "[How to break a model in 20 days](../../step-by-step-guides/tutorials/production-monitoring.md)" where we create a demand prediction model and analyze its gradual decay.
 
 You can also read the initial [release blog](https://evidentlyai.com/blog/evidently-016-regression-model-performance).

@@ -31,7 +31,7 @@ To estimate the **categorical target (prediction) drift**, we compare the distri
 * If the categorical target is **binary**, we use the proportion difference test for independent samples based on Z-score.
 
 {% hint style="info" %}
-To set a different confidence level or tests you use, you can define [custom options](../step-by-step-guides/report-customization/options-for-data-target-drift.md).
+To set a different confidence level or tests you use, you can define [custom options](../../step-by-step-guides/report-customization/options-for-data-target-drift.md).
 {% endhint %}
 
 ## How it looks
@@ -44,17 +44,17 @@ The report first shows the **comparison of target (prediction) distributions** i
 
 For a classification problem with three classes, it can look like this (an example of the extreme target drift with the appearance of a new class):
 
-![](../.gitbook/assets/cat\_target\_drift.png)
+![](../../.gitbook/assets/cat_target_drift.png)
 
 ### 2. Target (Prediction) Behavior By Feature
 
 The report generates an interactive table with the **visualizations of dependencies between the target and each feature**.&#x20;
 
-![](../.gitbook/assets/cat\_target\_drift\_behavior\_by\_feature.png)
+![](../../.gitbook/assets/cat_target_drift_behavior_by_feature.png)
 
 If you click on any feature, you get a plot that shows the feature distribution for the different target labels.&#x20;
 
-![](../.gitbook/assets/cat\_target\_drift\_behavior\_by\_feature\_example.png)
+![](../../.gitbook/assets/cat_target_drift_behavior_by_feature_example.png)
 
 These plots help analyze how feature values relate to the target labels and identify the differences between the datasets.&#x20;
 
@@ -62,11 +62,11 @@ We recommend paying attention to the behavior of the most important features sin
 
 ## Report customization
 
-You can set different [options-for-data-target-drift.md](../step-by-step-guides/report-customization/options-for-data-target-drift.md "mention") to modify the report components.&#x20;
+You can set different [options-for-data-target-drift.md](../../step-by-step-guides/report-customization/options-for-data-target-drift.md "mention") to modify the report components.&#x20;
 
-You can also select which components of the reports to display or choose to show the short version of the report: [select-widgets-to-display.md](../step-by-step-guides/report-customization/select-widgets-to-display.md "mention").&#x20;
+You can also select which components of the reports to display or choose to show the short version of the report: [select-widgets-to-display.md](../../step-by-step-guides/report-customization/select-widgets-to-display.md "mention").&#x20;
 
-If you want to create a new plot or metric, you can [add-a-custom-widget-or-tab.md](../step-by-step-guides/report-customization/add-a-custom-widget-or-tab.md "mention").
+If you want to create a new plot or metric, you can [add-a-custom-widget-or-tab.md](../../step-by-step-guides/report-customization/add-a-custom-widget-or-tab.md "mention").
 
 ## When to use the report
 
