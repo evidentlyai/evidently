@@ -9,7 +9,7 @@ from evidently.model_profile.sections.cat_target_drift_profile_section import Ca
 from evidently.utils import NumpyEncoder
 
 
-def test_cat_target_drift_profile_section_empty_results():
+def test_category_target_drift_profile_section_empty_results():
     profile_section = CatTargetDriftProfileSection()
     assert profile_section.analyzers() == [CatTargetDriftAnalyzer]
     assert profile_section.part_id() == 'cat_target_drift'
