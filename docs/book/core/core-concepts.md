@@ -39,7 +39,7 @@ Evidently includes a set of pre-built Reports. Each of them addresses a specific
 
 Evidently calculates a number of metrics and statistical tests in each report, and generates interactive visualizations.
 
-Currently, you can choose between 6 different [**Report**](reports/) **** types.  &#x20;
+Currently, you can choose between 6 different [**Report**](../get-started/reports/) types.  &#x20;
 
 The calculation results can be available in one of the following formats:&#x20;
 
