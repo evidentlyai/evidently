@@ -9,6 +9,7 @@ from sklearn import metrics, preprocessing
 
 from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
+from evidently.options import QualityMetricsOptions
 from evidently.analyzers.utils import process_columns
 
 
@@ -17,11 +18,13 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
                   reference_data: pd.DataFrame,
                   current_data: Optional[pd.DataFrame],
                   column_mapping: ColumnMapping):
+        quality_metrics_options = self.options_provider.get(QualityMetricsOptions)
         columns = process_columns(reference_data, column_mapping)
         result = columns.as_dict()
 
         target_column = columns.utility_columns.target
         prediction_column = columns.utility_columns.prediction
+        classification_treshold = quality_metrics_options.classification_treshold
 
         result['metrics'] = {}
         if target_column is not None and prediction_column is not None:
@@ -45,18 +48,21 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
             if len(prediction_column) > 2:
                 roc_auc = metrics.roc_auc_score(binaraized_target, array_prediction, average='macro')
                 log_loss = metrics.log_loss(binaraized_target, array_prediction)
+                accuracy_score = metrics.accuracy_score(reference_data[target_column], prediction_labels)
+                avg_precision = metrics.precision_score(reference_data[target_column], prediction_labels,
+                                                        average='macro')
+                avg_recall = metrics.recall_score(reference_data[target_column], prediction_labels,
+                                                average='macro')
+                avg_f1 = metrics.f1_score(reference_data[target_column], prediction_labels,
+                                        average='macro')
             else:
                 roc_auc = metrics.roc_auc_score(binaraized_target, reference_data[prediction_column[0]],  # problem!!!
                                                 average='macro')
                 log_loss = metrics.log_loss(binaraized_target, reference_data[prediction_column[0]])  # problem!!!
-
-            accuracy_score = metrics.accuracy_score(reference_data[target_column], prediction_labels)
-            avg_precision = metrics.precision_score(reference_data[target_column], prediction_labels,
-                                                    average='macro')
-            avg_recall = metrics.recall_score(reference_data[target_column], prediction_labels,
-                                              average='macro')
-            avg_f1 = metrics.f1_score(reference_data[target_column], prediction_labels,
-                                      average='macro')
+                accuracy_score = metrics.accuracy_score(binaraized_target, reference_data[prediction_column[0]] >= classification_treshold)
+                avg_precision = metrics.precision_score(binaraized_target, reference_data[prediction_column[0]] >= classification_treshold)
+                avg_recall = metrics.recall_score(binaraized_target, reference_data[prediction_column[0]] >= classification_treshold)
+                avg_f1 = metrics.f1_score(binaraized_target, reference_data[prediction_column[0]] >= classification_treshold)
 
             result['metrics']['reference']['accuracy'] = accuracy_score
             result['metrics']['reference']['precision'] = avg_precision
@@ -66,16 +72,24 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
             result['metrics']['reference']['log_loss'] = log_loss
 
             # calculate class support and metrics matrix
-            metrics_matrix = metrics.classification_report(reference_data[target_column], prediction_labels,
-                                                           output_dict=True)
+            if len(prediction_column) > 2:
+                metrics_matrix = metrics.classification_report(reference_data[target_column], prediction_labels,
+                                                            output_dict=True)
+            else:
+                metrics_matrix = metrics.classification_report(binaraized_target, 
+                                                reference_data[prediction_column[0]] >= classification_treshold, output_dict=True)
             result['metrics']['reference']['metrics_matrix'] = metrics_matrix
             if len(prediction_column) > 2:
                 roc_aucs = metrics.roc_auc_score(binaraized_target, array_prediction, average=None)
                 result['metrics']['reference']['roc_aucs'] = roc_aucs.tolist()
 
             # calculate confusion matrix
-            conf_matrix = metrics.confusion_matrix(reference_data[target_column],
-                                                   prediction_labels)
+            if len(prediction_column) > 2:
+                conf_matrix = metrics.confusion_matrix(reference_data[target_column],
+                                                    prediction_labels)
+            else:
+                conf_matrix = metrics.confusion_matrix(binaraized_target, 
+                                                reference_data[prediction_column[0]] >= classification_treshold)
 
             result['metrics']['reference']['confusion_matrix'] = {}
             result['metrics']['reference']['confusion_matrix']['labels'] = labels
@@ -171,17 +185,20 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
                 if len(prediction_column) > 2:
                     roc_auc = metrics.roc_auc_score(binaraized_target, array_prediction, average='macro')
                     log_loss = metrics.log_loss(binaraized_target, array_prediction)
+                    accuracy_score = metrics.accuracy_score(current_data[target_column], prediction_labels)
+                    avg_precision = metrics.precision_score(current_data[target_column], prediction_labels,
+                                                            average='macro')
+                    avg_recall = metrics.recall_score(current_data[target_column], prediction_labels,
+                                                    average='macro')
+                    avg_f1 = metrics.f1_score(current_data[target_column], prediction_labels,
+                                            average='macro')
                 else:
                     roc_auc = metrics.roc_auc_score(binaraized_target, current_data[prediction_column[0]])  # problem!!!
                     log_loss = metrics.log_loss(binaraized_target, current_data[prediction_column[0]])  # problem!!!
-
-                accuracy_score = metrics.accuracy_score(current_data[target_column], prediction_labels)
-                avg_precision = metrics.precision_score(current_data[target_column], prediction_labels,
-                                                        average='macro')
-                avg_recall = metrics.recall_score(current_data[target_column], prediction_labels,
-                                                  average='macro')
-                avg_f1 = metrics.f1_score(current_data[target_column], prediction_labels,
-                                          average='macro')
+                    accuracy_score = metrics.accuracy_score(binaraized_target, current_data[prediction_column[0]] >= classification_treshold)
+                    avg_precision = metrics.precision_score(binaraized_target, current_data[prediction_column[0]] >= classification_treshold)
+                    avg_recall = metrics.recall_score(binaraized_target, current_data[prediction_column[0]] >= classification_treshold)
+                    avg_f1 = metrics.f1_score(binaraized_target, current_data[prediction_column[0]] >= classification_treshold)
 
                 result['metrics']['current']['accuracy'] = accuracy_score
                 result['metrics']['current']['precision'] = avg_precision
@@ -191,8 +208,12 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
                 result['metrics']['current']['log_loss'] = log_loss
 
                 # calculate class support and metrics matrix
-                metrics_matrix = metrics.classification_report(current_data[target_column], prediction_labels,
-                                                               output_dict=True)
+                if len(prediction_column) > 2:
+                    metrics_matrix = metrics.classification_report(current_data[target_column], prediction_labels,
+                                                                output_dict=True)
+                else:
+                    metrics_matrix = metrics.classification_report(binaraized_target, 
+                                                current_data[prediction_column[0]] >= classification_treshold, output_dict=True)
                 result['metrics']['current']['metrics_matrix'] = metrics_matrix
 
                 if len(prediction_column) > 2:
@@ -200,8 +221,12 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
                     result['metrics']['current']['roc_aucs'] = roc_aucs.tolist()
 
                 # calculate confusion matrix
-                conf_matrix = metrics.confusion_matrix(current_data[target_column],
-                                                       prediction_labels)
+                if len(prediction_column) > 2:
+                    conf_matrix = metrics.confusion_matrix(current_data[target_column],
+                                                        prediction_labels)
+                else: 
+                    conf_matrix = metrics.confusion_matrix(binaraized_target, 
+                                                current_data[prediction_column[0]] >= classification_treshold)
 
                 result['metrics']['current']['confusion_matrix'] = {}
                 result['metrics']['current']['confusion_matrix']['labels'] = labels

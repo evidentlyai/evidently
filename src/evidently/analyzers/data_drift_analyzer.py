@@ -9,7 +9,7 @@ from dataclasses import dataclass
 
 from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
-from evidently.options import DataDriftOptions
+from evidently.options import DataDriftOptions, QualityMetricsOptions
 from evidently.analyzers.stattests import chi_stat_test, ks_stat_test, z_stat_test
 from evidently.analyzers.utils import process_columns, DatasetUtilityColumns
 
@@ -47,7 +47,8 @@ class DataDriftAnalyzerResults:
     cat_feature_names: List[str]
     num_feature_names: List[str]
     target_names: Optional[List[str]]
-    options: DataDriftOptions
+    data_drift_options: DataDriftOptions
+    quality_metrics_options: QualityMetricsOptions
     metrics: DataDriftAnalyzerMetrics
 
     def get_all_features_list(self) -> List[str]:
@@ -63,25 +64,27 @@ class DataDriftAnalyzer(Analyzer):
     def calculate(
             self, reference_data: pd.DataFrame, current_data: Optional[pd.DataFrame], column_mapping: ColumnMapping
     ) -> DataDriftAnalyzerResults:
-        options = self.options_provider.get(DataDriftOptions)
+        data_drift_options = self.options_provider.get(DataDriftOptions)
+        quality_metrics_options = self.options_provider.get(QualityMetricsOptions)
         columns = process_columns(reference_data, column_mapping)
         if current_data is None:
             raise ValueError("current_data should be present")
 
         num_feature_names = columns.num_feature_names
         cat_feature_names = columns.cat_feature_names
-        drift_share = options.drift_share
+        drift_share = data_drift_options.drift_share
+        # conf_interval_n_sigmas = quality_metrics_options.сonf_interval_n_sigmas
 
         # calculate result
         features_metrics = {}
         p_values = {}
 
         for feature_name in num_feature_names:
-            confidence = options.get_confidence(feature_name)
-            func = options.get_feature_stattest_func(feature_name, ks_stat_test)
+            confidence = data_drift_options.get_confidence(feature_name)
+            func = data_drift_options.get_feature_stattest_func(feature_name, ks_stat_test)
             p_value = func(reference_data[feature_name], current_data[feature_name])
             p_values[feature_name] = PValueWithConfidence(p_value, confidence)
-            current_nbinsx = options.get_nbinsx(feature_name)
+            current_nbinsx = data_drift_options.get_nbinsx(feature_name)
             features_metrics[feature_name] = DataDriftAnalyzerFeatureMetrics(
                 current_small_hist=[t.tolist() for t in
                                     np.histogram(current_data[feature_name][np.isfinite(current_data[feature_name])],
@@ -94,8 +97,8 @@ class DataDriftAnalyzer(Analyzer):
             )
 
         for feature_name in cat_feature_names:
-            confidence = options.get_confidence(feature_name)
-            func = options.get_feature_stattest_func(feature_name, ks_stat_test)
+            confidence = data_drift_options.get_confidence(feature_name)
+            func = data_drift_options.get_feature_stattest_func(feature_name, ks_stat_test)
             keys = set(list(reference_data[feature_name][np.isfinite(reference_data[feature_name])].unique()) +
                        list(current_data[feature_name][np.isfinite(current_data[feature_name])].unique()))
 
@@ -109,7 +112,7 @@ class DataDriftAnalyzer(Analyzer):
 
             p_values[feature_name] = PValueWithConfidence(p_value, confidence)
 
-            current_nbinsx = options.get_nbinsx(feature_name)
+            current_nbinsx = data_drift_options.get_nbinsx(feature_name)
             features_metrics[feature_name] = DataDriftAnalyzerFeatureMetrics(
                 current_small_hist=[t.tolist() for t in
                                     np.histogram(current_data[feature_name][np.isfinite(current_data[feature_name])],
@@ -134,7 +137,8 @@ class DataDriftAnalyzer(Analyzer):
             cat_feature_names=columns.cat_feature_names,
             num_feature_names=columns.num_feature_names,
             target_names=columns.target_names,
-            options=options,
+            data_drift_options=data_drift_options,
+            quality_metrics_options=quality_metrics_options,
             metrics=result_metrics,
         )
         return result

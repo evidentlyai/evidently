@@ -10,7 +10,7 @@ import numpy as np
 import plotly.graph_objs as go
 
 from evidently import ColumnMapping
-from evidently.analyzers.data_drift_analyzer import DataDriftAnalyzer, DataDriftOptions
+from evidently.analyzers.data_drift_analyzer import DataDriftAnalyzer, DataDriftOptions, QualityMetricsOptions
 from evidently.model.widget import BaseWidgetInfo, AlertStats, AdditionalGraphInfo
 from evidently.dashboard.widgets.widget import Widget, GREY, RED
 
@@ -33,13 +33,16 @@ class DataDriftTableWidget(Widget):
 
         # set params data
         params_data = []
-        options = self.options_provider.get(DataDriftOptions)
+        data_drift_options = self.options_provider.get(DataDriftOptions)
+        # quality_metrics_options = self.options_provider.get(QualityMetricsOptions)
+        quality_metrics_options = data_drift_results.quality_metrics_options
+        conf_interval_n_sigmas = quality_metrics_options.сonf_interval_n_sigmas
         for feature_name in all_features:
             current_small_hist = data_drift_results.metrics.features[feature_name].current_small_hist
             ref_small_hist = data_drift_results.metrics.features[feature_name].ref_small_hist
             feature_type = data_drift_results.metrics.features[feature_name].feature_type
             p_value = data_drift_results.metrics.features[feature_name].p_value
-            feature_confidence = options.get_confidence(feature_name)
+            feature_confidence = data_drift_options.get_confidence(feature_name)
             distr_sim_test = "Detected" if p_value < (1. - feature_confidence) else "Not Detected"
 
             params_data.append(
@@ -75,7 +78,7 @@ class DataDriftTableWidget(Widget):
 
         # set additionalGraphs
         additional_graphs_data = []
-        xbins = options.xbins
+        xbins = data_drift_options.xbins
         for feature_name in all_features:
             # plot distributions
             fig = go.Figure()
@@ -84,7 +87,7 @@ class DataDriftTableWidget(Widget):
                 current_nbinsx = None
             else:
                 current_xbins = None
-                current_nbinsx = options.get_nbinsx(feature_name)
+                current_nbinsx = data_drift_options.get_nbinsx(feature_name)
             fig.add_trace(go.Histogram(x=reference_data[feature_name],
                                        marker_color=GREY,
                                        opacity=0.6,
@@ -151,9 +154,9 @@ class DataDriftTableWidget(Widget):
                         # y-reference is assigned to the plot paper [0,1]
                         yref="y",
                         x0=0,
-                        y0=reference_mean - reference_std,
+                        y0=reference_mean - conf_interval_n_sigmas * reference_std,
                         x1=1,
-                        y1=reference_mean + reference_std,
+                        y1=reference_mean + conf_interval_n_sigmas * reference_std,
                         fillcolor="LightGreen",
                         opacity=0.5,
                         layer="below",

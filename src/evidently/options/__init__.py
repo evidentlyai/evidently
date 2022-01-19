@@ -1,6 +1,7 @@
 from typing import TypeVar, Generic, Type, Dict, Any
 
 from .data_drift import DataDriftOptions
+from .quality_metrics import QualityMetricsOptions
 
 TypeParam = TypeVar('TypeParam')
 
