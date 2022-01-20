@@ -38,11 +38,19 @@ class Pipeline:
         #  - this copy WILL KEEP all values' changes in existing rows and columns.
         rdata = reference_data.copy()
         cdata = None if current_data is None else current_data.copy()
+        analyzer_instances = {}
         for analyzer in self.get_analyzers():
             instance = analyzer()
+            analyzer_instances[analyzer] = instance
+            for preprocess in instance.get_preprocesses():
+                preprocess.process(rdata, cdata)
+
+        for analyzer, instance in analyzer_instances.items():
             instance.options_provider = self.options_provider
             self.analyzers_results[analyzer] =\
-                instance.calculate(rdata, cdata, column_mapping)
+                instance.calculate(rdata.copy(),
+                                   None if cdata is None else cdata.copy(),
+                                   column_mapping)
         for stage in self.stages:
             stage.options_provider = self.options_provider
             stage.calculate(rdata.copy(),
