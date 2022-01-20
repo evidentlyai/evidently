@@ -36,7 +36,7 @@ class DataDriftTableWidget(Widget):
         data_drift_options = self.options_provider.get(DataDriftOptions)
         # quality_metrics_options = self.options_provider.get(QualityMetricsOptions)
         quality_metrics_options = data_drift_results.quality_metrics_options
-        conf_interval_n_sigmas = quality_metrics_options.сonf_interval_n_sigmas
+        conf_interval_n_sigmas = quality_metrics_options.conf_interval_n_sigmas
         for feature_name in all_features:
             current_small_hist = data_drift_results.metrics.features[feature_name].current_small_hist
             ref_small_hist = data_drift_results.metrics.features[feature_name].ref_small_hist

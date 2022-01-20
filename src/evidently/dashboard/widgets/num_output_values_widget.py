@@ -10,7 +10,7 @@ import numpy as np
 import plotly.graph_objs as go
 
 from evidently import ColumnMapping
-from evidently.analyzers.num_target_drift_analyzer import NumTargetDriftAnalyzer
+from evidently.analyzers.num_target_drift_analyzer import NumTargetDriftAnalyzer, QualityMetricsOptions
 from evidently.model.widget import BaseWidgetInfo
 from evidently.dashboard.widgets.widget import Widget, GREY, RED
 
@@ -31,6 +31,8 @@ class NumOutputValuesWidget(Widget):
                   analyzers_results) -> Optional[BaseWidgetInfo]:
 
         results = analyzers_results[NumTargetDriftAnalyzer]
+        quality_metrics_options = self.options_provider.get(QualityMetricsOptions)
+        conf_interval_n_sigmas = quality_metrics_options.conf_interval_n_sigmas
 
         if current_data is None:
             raise ValueError("current_data should be present")
@@ -87,9 +89,9 @@ class NumOutputValuesWidget(Widget):
                     # y-reference is assigned to the plot paper [0,1]
                     yref="y",
                     x0=0,
-                    y0=reference_mean - reference_std,
+                    y0=reference_mean - conf_interval_n_sigmas * reference_std,
                     x1=1,
-                    y1=reference_mean + reference_std,
+                    y1=reference_mean + conf_interval_n_sigmas * reference_std,
                     fillcolor="LightGreen",
                     opacity=0.5,
                     layer="below",
