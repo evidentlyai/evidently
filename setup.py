@@ -63,7 +63,6 @@ setup_args = dict(
             "pytest==6.2.5",
             "types-PyYAML==6.0.1",
             "types-requests==2.26.0",
-            "packaging==21.0",
         ]
     },
     entry_points={},
