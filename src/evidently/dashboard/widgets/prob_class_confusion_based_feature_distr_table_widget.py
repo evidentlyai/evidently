@@ -11,11 +11,11 @@ import plotly.express as px
 from plotly.subplots import make_subplots
 
 from evidently import ColumnMapping
-from evidently.analyzers.prob_classification_performance_analyzer import ProbClassificationPerformanceAnalyzer, QualityMetricsOptions
-
+from evidently.analyzers.prob_classification_performance_analyzer import ProbClassificationPerformanceAnalyzer
 from evidently.model.widget import BaseWidgetInfo, AdditionalGraphInfo
 from evidently.dashboard.widgets.widget import Widget, RED, GREY
 from evidently.dashboard.widgets.utils import CutQuantileTransformer
+from evidently.options import QualityMetricsOptions
 
 
 class ProbClassConfusionBasedFeatureDistrTable(Widget):
@@ -80,8 +80,8 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                 merged_data = pd.concat([reference_data_to_plot, current_data_to_plot])
 
                 fig = px.histogram(merged_data, x=feature_name, color=results['utility_columns']['target'],
-                                   facet_col="dataset", histnorm='', barmode='overlay',
-                                   category_orders={"dataset": ["Reference", "Current"]})
+                                    facet_col="dataset", histnorm='', barmode='overlay',
+                                    category_orders={"dataset": ["Reference", "Current"]})
 
                 fig_json = json.loads(fig.to_json())
 
@@ -231,7 +231,7 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                     reference_data_to_plot = cqt.transform_df(reference_data, feature_name)
                 else:
                     reference_data_to_plot = reference_data
-            
+
                 fig = px.histogram(reference_data_to_plot, x=feature_name, color=results['utility_columns']['target'],
                                    histnorm='', barmode='overlay')
 

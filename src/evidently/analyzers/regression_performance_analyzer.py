@@ -8,7 +8,6 @@ import numpy as np
 from scipy.stats import probplot
 
 from evidently.analyzers.base_analyzer import Analyzer
-from evidently.options import QualityMetricsOptions
 from .utils import process_columns
 from .. import ColumnMapping
 

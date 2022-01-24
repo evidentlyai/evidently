@@ -8,7 +8,6 @@ from sklearn import metrics
 
 from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
-from evidently.options import QualityMetricsOptions
 from evidently.analyzers.utils import process_columns
 
 
@@ -33,14 +32,15 @@ class ClassificationPerformanceAnalyzer(Analyzer):
             # calculate quality metrics
             accuracy_score = metrics.accuracy_score(reference_data[target_column], reference_data[prediction_column])
             if len(prediction_column) > 2:
-                avg_precision = metrics.precision_score(reference_data[target_column], reference_data[prediction_column],
-                                                        average='macro')
+                avg_precision = metrics.precision_score(reference_data[target_column],
+                                                                reference_data[prediction_column], average='macro')
                 avg_recall = metrics.recall_score(reference_data[target_column], reference_data[prediction_column],
                                                 average='macro')
                 avg_f1 = metrics.f1_score(reference_data[target_column], reference_data[prediction_column],
                                         average='macro')
             else:
-                avg_precision = metrics.precision_score(reference_data[target_column], reference_data[prediction_column])
+                avg_precision = metrics.precision_score(reference_data[target_column],
+                                                                                reference_data[prediction_column])
                 avg_recall = metrics.recall_score(reference_data[target_column], reference_data[prediction_column])
                 avg_f1 = metrics.f1_score(reference_data[target_column], reference_data[prediction_column])
 
@@ -74,14 +74,15 @@ class ClassificationPerformanceAnalyzer(Analyzer):
 
                 accuracy_score = metrics.accuracy_score(current_data[target_column], current_data[prediction_column])
                 if len(prediction_column) > 2:
-                    avg_precision = metrics.precision_score(current_data[target_column], current_data[prediction_column],
-                                                            average='macro')
+                    avg_precision = metrics.precision_score(current_data[target_column],
+                                                                    current_data[prediction_column], average='macro')
                     avg_recall = metrics.recall_score(current_data[target_column], current_data[prediction_column],
                                                     average='macro')
                     avg_f1 = metrics.f1_score(current_data[target_column], current_data[prediction_column],
                                             average='macro')
                 else:
-                    avg_precision = metrics.precision_score(reference_data[target_column], reference_data[prediction_column])
+                    avg_precision = metrics.precision_score(reference_data[target_column],
+                                                                            reference_data[prediction_column])
                     avg_recall = metrics.recall_score(reference_data[target_column], reference_data[prediction_column])
                     avg_f1 = metrics.f1_score(reference_data[target_column], reference_data[prediction_column])
 

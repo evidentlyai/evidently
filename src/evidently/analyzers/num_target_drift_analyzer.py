@@ -6,7 +6,7 @@ import pandas as pd
 
 from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
-from evidently.options import DataDriftOptions, QualityMetricsOptions
+from evidently.options import DataDriftOptions
 from evidently.analyzers.stattests import ks_stat_test
 from evidently.analyzers.utils import process_columns
 from typing import List, Callable
