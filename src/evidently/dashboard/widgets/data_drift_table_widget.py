@@ -13,6 +13,7 @@ from evidently import ColumnMapping
 from evidently.analyzers.data_drift_analyzer import DataDriftAnalyzer, DataDriftOptions, QualityMetricsOptions
 from evidently.model.widget import BaseWidgetInfo, AlertStats, AdditionalGraphInfo
 from evidently.dashboard.widgets.widget import Widget, GREY, RED
+from evidently.dashboard.widgets.utils import CutQuantileTransformer
 
 
 class DataDriftTableWidget(Widget):
@@ -34,8 +35,7 @@ class DataDriftTableWidget(Widget):
         # set params data
         params_data = []
         data_drift_options = self.options_provider.get(DataDriftOptions)
-        # quality_metrics_options = self.options_provider.get(QualityMetricsOptions)
-        quality_metrics_options = data_drift_results.quality_metrics_options
+        quality_metrics_options = self.options_provider.get(QualityMetricsOptions)
         conf_interval_n_sigmas = quality_metrics_options.conf_interval_n_sigmas
         for feature_name in all_features:
             current_small_hist = data_drift_results.metrics.features[feature_name].current_small_hist
@@ -79,6 +79,7 @@ class DataDriftTableWidget(Widget):
         # set additionalGraphs
         additional_graphs_data = []
         xbins = data_drift_options.xbins
+        cut_quantile = quality_metrics_options.cut_quantile
         for feature_name in all_features:
             # plot distributions
             fig = go.Figure()
@@ -88,7 +89,16 @@ class DataDriftTableWidget(Widget):
             else:
                 current_xbins = None
                 current_nbinsx = data_drift_options.get_nbinsx(feature_name)
-            fig.add_trace(go.Histogram(x=reference_data[feature_name],
+            if cut_quantile and quality_metrics_options.get_cut_quantile(feature_name):
+                side, q = quality_metrics_options.get_cut_quantile(feature_name)
+                cqt = CutQuantileTransformer(side=side, q=q)
+                cqt.fit(reference_data[feature_name])
+                reference_data_to_plot = cqt.transform(reference_data[feature_name])
+                current_data_to_plot = cqt.transform(current_data[feature_name])
+            else:
+                reference_data_to_plot = reference_data[feature_name]
+                current_data_to_plot = current_data[feature_name]
+            fig.add_trace(go.Histogram(x=reference_data_to_plot,
                                        marker_color=GREY,
                                        opacity=0.6,
                                        xbins=current_xbins,
@@ -96,7 +106,7 @@ class DataDriftTableWidget(Widget):
                                        name='Reference',
                                        histnorm='probability'))
 
-            fig.add_trace(go.Histogram(x=current_data[feature_name],
+            fig.add_trace(go.Histogram(x=current_data_to_plot,
                                        marker_color=RED,
                                        opacity=0.6,
                                        xbins=current_xbins,

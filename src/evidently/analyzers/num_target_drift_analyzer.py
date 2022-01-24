@@ -73,7 +73,6 @@ class NumTargetDriftAnalyzer(Analyzer):
             ValueError when target or predictions columns are not numerical.
         """
         data_drift_options = self.options_provider.get(DataDriftOptions)
-        # quality_metrics_options = self.options_provider.get(QualityMetricsOptions)
         columns = process_columns(reference_data, column_mapping)
         result = columns.as_dict()
         if current_data is None:

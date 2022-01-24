@@ -9,7 +9,7 @@ from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.analyzers.stattests import z_stat_test, chi_stat_test
 from evidently.analyzers.utils import process_columns
-from evidently.options import DataDriftOptions
+from evidently.options import DataDriftOptions, QualityMetricsOptions
 
 
 def _remove_nans_and_infinities(dataframe):
