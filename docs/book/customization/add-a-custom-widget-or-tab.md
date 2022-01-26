@@ -58,11 +58,11 @@ Create a new Python file. Copy the code from [https://github.com/evidentlyai/evi
 We start from imports. We change the Plotly import, remove analyzer import, and the default colors:
 
 
-![](<../../.gitbook/assets/image (8).png>)
+![](<../.gitbook/assets/image (8).png>)
 
 Then, we remove the arguments that we don’t need from the `init` function. We remove the `analyzers` function because we don't use its result in the custom Widget.
 
-![](<../../.gitbook/assets/image (9).png>)
+![](<../.gitbook/assets/image (9).png>)
 
 Next, we remove everything from the **calculate** method until the JSON and return section. We then paste the code for the custom plot we created earlier from the Jupyter notebook.&#x20;
 
