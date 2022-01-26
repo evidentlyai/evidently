@@ -38,7 +38,7 @@ You can specify the following parameters:
 
 ### How to define Data/Target Drift options
 
-1. Define a **DataDriftOptions** object**.** This is a single object for Data Drift and Target Drift Reports.
+1. Define a **DataDriftOptions** object. This is a single object for Data Drift and Target Drift Reports.
 
 ```python
 options = DataDriftOptions(
@@ -109,7 +109,7 @@ Then, define the **DataDriftOptions** object as shown above.
 
 ### **2. Set a custom Dataset Drift condition**
 
-The [get-started/data-drift.md](../../get-started/reports/data-drift.md "mention") report contains a component that confirms whether the drift was detected on the Dataset level.
+The [Data Drift](../reports/data-drift.md) report contains a component that confirms whether the drift was detected on the Dataset level.
 
 To set custom drift conditions, you need to specify the following **options**:
 
