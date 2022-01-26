@@ -4,15 +4,15 @@ description: You can modify certain options when calculating the Data and Target
 
 # Options for Data / Target drift
 
-**An example of setting custom options in the Data Drift Report on California Housing Dataset:**
+**An example of setting custom options in the Data Drift report on California Housing Dataset:**
 
 {% embed url="https://colab.research.google.com/drive/11tY2g-XbkZSLSqgyGBJ5ijVvyl1E2TpY" %}
 
 You can set the custom options for the following Reports:
 
-* num\_target\_drift\_tab ([get-started/num-target-drift.md](../reports/num-target-drift.md))
-* cat\_target\_drift\_tab ( [get-started/categorical-target-drift.md](../reports/categorical-target-drift.md))
-* data\_drift\_tab ([get-started/data-drift.md](../reports/data-drift.md))
+* num\_target\_drift\_tab ([Numerical Target Drift](../reports/num-target-drift.md))
+* cat\_target\_drift\_tab ( [Categorical Target Drift.md](../reports/categorical-target-drift.md))
+* data\_drift\_tab ([Data Drift.md](../reports/data-drift.md))
 
 ## Available Options
 
@@ -124,7 +124,7 @@ Then, define the **DataDriftOptions** object as shown above.
 
 ### 3. Customize the histogram plots
 
-You can customize how the distribution plots look for the individual features in the [Data Drift Report](../reports/data-drift.md). It is helpful, for example, if you have NULL or other specific values and want to see them in a separate bin.
+You can customize how the distribution plots look for the individual features in the [Data Drift report](../reports/data-drift.md). It is helpful, for example, if you have NULL or other specific values and want to see them in a separate bin.
 
 To customize the plots, specify the following **options**:
 
