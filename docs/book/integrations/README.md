@@ -14,14 +14,20 @@ Below are a few specific examples of how to integrate Evidently in the predictio
 [evidently-and-grafana.md](evidently-and-grafana.md)
 {% endcontent-ref %}
 
+![](../../.gitbook/assets/photo\_2021-10-20\_14-38-53.png)
+
 ### 2. Data and ML model checks with Airflow
 
 {% content-ref url="evidently-and-airflow.md" %}
 [evidently-and-airflow.md](evidently-and-airflow.md)
 {% endcontent-ref %}
 
+![](<../../.gitbook/assets/image (12).png>)
+
 ### 3. Log Evidently metrics in MLflow UI
 
 {% content-ref url="evidently-and-mlflow.md" %}
 [evidently-and-mlflow.md](evidently-and-mlflow.md)
 {% endcontent-ref %}
+
+![](<../../.gitbook/assets/mlflow\_3 (1).png>)
