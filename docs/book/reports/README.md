@@ -32,4 +32,4 @@ description: What each report contains and how and when to use them.
 
 ## Show me the code
 
-If you want to see the code, go straight to [examples](../examples.md).
+If you want to see the code, go straight to [examples](../get-started/examples.md).
