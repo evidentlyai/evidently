@@ -1,5 +1,5 @@
 ---
-description: See the code
+description: Sample notebooks and tutorials
 ---
 
 # Examples
@@ -30,8 +30,8 @@ To better understand potential use cases (such as model evaluation and monitorin
 
 To see how to integrate Evidently in your prediction pipelines and use it with other tools, refer to the **integrations**.&#x20;
 
-{% content-ref url="../step-by-step-guides/integrations/" %}
-[integrations](../step-by-step-guides/integrations/)
+{% content-ref url="../integrations/" %}
+[integrations](../integrations/)
 {% endcontent-ref %}
 
 
