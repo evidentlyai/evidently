@@ -11,7 +11,7 @@ Below are a few specific examples of how to integrate Evidently in the predictio
 ### 1. Real-time ML monitoring with Grafana
 
 {% content-ref url="evidently-and-grafana.md" %}
-[evidently-+-grafana.md](evidently-and-grafana.md)
+[evidently-and-grafana.md](evidently-and-grafana.md)
 {% endcontent-ref %}
 
 ### 2. Data and ML model checks with Airflow
