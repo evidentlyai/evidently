@@ -68,11 +68,11 @@ Next, we remove everything from the **calculate** method until the JSON and retu
 
 **Tip:** don't forget to replace the DataFrame names!
 
-![](<../../.gitbook/assets/image (13).png>)
+![](<../.gitbook/assets/image (13).png>)
 
 Finally, we fix the JSON conversion and return sections:
 
-![](<../../.gitbook/assets/image (4).png>)
+![](<../.gitbook/assets/image (4).png>)
 
 That’s it!&#x20;
 
@@ -90,7 +90,7 @@ dashboard.calculate(ref_data.sample(1000, random_state=0),
 dashboard.show()
 ```
 
-![](<../../.gitbook/assets/image (3).png>)
+![](<../.gitbook/assets/image (3).png>)
 
 ### Create your own Tab
 
@@ -100,7 +100,7 @@ Again, let's take an existing Evidently tab as an example and change it.
 
 Just import the custom widgets and list them in the attribute "**widgets"**. You can specify the "**verbose"** parameter to have an option to adjust the tab composition.&#x20;
 
-![](<../../.gitbook/assets/image (11).png>)
+![](<../.gitbook/assets/image (11).png>)
 
 To generate the report, run these commands:
 
@@ -114,4 +114,4 @@ dashboard.calculate(ref_data.sample(1000, random_state=0),
 dashboard.show()
 ```
 
-![](<../../.gitbook/assets/image (15).png>)
+![](<../.gitbook/assets/image (15).png>)
