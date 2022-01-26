@@ -60,7 +60,7 @@ For demonstration purposes, we treat this data as the input data for a live mode
 
 This is how it looks:
 
-![](<../../.gitbook/assets/Screenshot 2021-07-19 at 18.56.18.png>)
+![](<../.gitbook/assets/Screenshot 2021-07-19 at 18.56.18.png>)
 
 ### **Step 3. Define column mapping**&#x20;
 
@@ -139,13 +139,12 @@ for date in experiment_batches:
 
 You can then use the MLflow UI to see the results of the runs.&#x20;
 
-![](../../.gitbook/assets/mlflow\_1.png)
+![](../.gitbook/assets/mlflow\_1.png)
 
 With a large number of metrics, you can use the expanded view.
 
-![](../../.gitbook/assets/mlflow\_3.png)
+![](../.gitbook/assets/mlflow\_3.png)
 
 ## Tutorial 2: Evaluating Historical Data Drift with Evidently, Plotly and **MLflow** &#x20;
 
 See a tutorial [here](https://evidentlyai.com/blog/tutorial-3-historical-data-drift).
-
