@@ -2,19 +2,19 @@
 description: Log Evidently metrics in the MLflow UI.
 ---
 
-# Evidently + MLflow
+# Evidently and MLflow
 
 **TL;DR:** You can use Evidently to calculate metrics, and MLflow Tracking to log and view the results. Here is a [sample Jupyter notebook](../../../../examples/integrations/mlflow_logging/mlflow_integration.ipynb).&#x20;
 
 ### **Overview**
 
-Many machine learning teams use [MLflow](https://www.mlflow.org) for experiment management, deployment, and as a model registry.  If you are already familiar with MLflow, you can integrate it with Evidently to **track the performance of production models**.&#x20;
+Many machine learning teams use [MLflow](https://www.mlflow.org) for experiment management, deployment, and as a model registry.  If you are already familiar with MLflow, you can integrate it with Evidently to **track the performance of your models**.&#x20;
 
 In this case, you use **Evidently to calculate the metrics** and **MLflow to log the results**. You can then access the metrics in the MLflow interface.&#x20;
 
 ### **How it works**
 
-Evidently calculates a rich set of metrics and statistical tests. You can choose any of the pre-built [reports](../../get-started/reports/) to define the metrics you’d want to get.&#x20;
+Evidently calculates a rich set of metrics and statistical tests. You can choose any of the pre-built [reports](../../reports/) to define the metrics you’d want to get.&#x20;
 
 You can then generate **a JSON profile** that will contain the defined metrics output. You can combine several profile sections (e.g., Data and Prediction Drift together).&#x20;
 
@@ -22,7 +22,7 @@ You might not always need all metrics from the profile. You should explicitly de
 
 ## Tutorial 1: Evaluating Data Drift with **MLFlow and Evidently**&#x20;
 
-In this example, we will use Evidently to check input features for [Data Drift](../../get-started/reports/data-drift.md) and log and visualize the results with MLflow.
+In this example, we will use Evidently to check input features for [Data Drift](../../reports/data-drift.md) and log and visualize the results with MLflow.
 
 Here is a Jupyter notebook with the example:&#x20;
 
@@ -147,5 +147,5 @@ With a large number of metrics, you can use the expanded view.
 
 ## Tutorial 2: Evaluating Historical Data Drift with Evidently, Plotly and **MLflow** &#x20;
 
-See a tutorial [here](../tutorials/analyze-historical-data-drift.md).
+See a tutorial [here](https://evidentlyai.com/blog/tutorial-3-historical-data-drift).
 
