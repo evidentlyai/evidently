@@ -62,7 +62,7 @@ Finally, we generate an interactive table with the **visualizations of dependenc
 
 ![](../.gitbook/assets/num_targ_drift_behavior_by_feature.png)
 
-If you click on any feature in the table, you get an overview of its behavior.&#x20;
+If you click on any feature in the table, you get an overview of its behavior.
 
 The plot shows how **feature values relate to the target (prediction) values** and if there are differences between the datasets. It helps explore if they can explain the target (prediction) shift.
 
@@ -70,7 +70,7 @@ The plot shows how **feature values relate to the target (prediction) values** a
 
 We recommend paying attention to the behavior of the **most important features** since significant changes might confuse the model and cause higher errors.
 
-For example, in a Boston house pricing dataset, we can see a new segment with values of TAX above 600 but the low value of the target (house price).\
+For example, in a Boston house pricing dataset, we can see a new segment with values of TAX above 600 but the low value of the target (house price).
 
 
 ## Report customization
@@ -83,11 +83,11 @@ If you want to create a new plot or metric, you can [add-a-custom-widget-or-tab.
 
 ## When to use the report
 
-Here are our suggestions on when to use it—best combined with the [Data Drift report.](data-drift.md)\
-\
-**1. Before model retraining.** Before feeding fresh data into the model, you might want to verify whether it even makes sense.\
-**2. When you are debugging the model decay.** If you observe a drop in performance, this report can help see what has changed.\
-**3. When you are flying blind, and no ground truth is available.** If you do not have immediate feedback, you can use this report to explore the changes in the model output and the relationship between the features and prediction. This can help anticipate [data and concept drift](https://evidentlyai.com/blog/machine-learning-monitoring-data-and-concept-drift).&#x20;
+Here are our suggestions on when to use it—best combined with the [Data Drift report.](data-drift.md)
+
+**1. Before model retraining.** Before feeding fresh data into the model, you might want to verify whether it even makes sense.
+**2. When you are debugging the model decay.** If you observe a drop in performance, this report can help see what has changed.
+**3. When you are flying blind, and no ground truth is available.** If you do not have immediate feedback, you can use this report to explore the changes in the model output and the relationship between the features and prediction. This can help anticipate [data and concept drift](https://evidentlyai.com/blog/machine-learning-monitoring-data-and-concept-drift).
 
 ## JSON Profile
 
