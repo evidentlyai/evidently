@@ -17,6 +17,6 @@ It contains pre-built dashboards to display Evidently reports in the Grafana int
 
 ### 1. Data Drift Dashboard
 
-![](../../.gitbook/assets/grafana\_dashboard.jpg)
+![](../.gitbook/assets/grafana\_dashboard.jpg)
 
 We plan to add more pre-built dashboards in the future.
