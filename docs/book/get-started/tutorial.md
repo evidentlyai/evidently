@@ -1,4 +1,4 @@
-# Quick start
+# Getting Started Tutorial
 
 You can generate the dashboards and JSON profiles using **Jupyter notebook** or **terminal**. You can also use Google Colab, Kaggle Kernel, Deepnote. All options are described below.
 
