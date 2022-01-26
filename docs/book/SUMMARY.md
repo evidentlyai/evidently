@@ -5,7 +5,7 @@
 ## GET STARTED
 
 * [Install Evidently](get-started/install-evidently.md)
-* [Get Started Tutorial](get-started/README.md)
+* [Get Started Tutorial](get-started/tutorial.md)
 * [Reports](reports/README.md)
   * [Data Drift](reports/data-drift.md)
   * [Numerical Target Drift](reports/num-target-drift.md)
