@@ -1,11 +1,11 @@
 # Data Drift
 
-**TL;DR:** The report detects changes in feature distributions.&#x20;
+**TL;DR:** The report detects changes in feature distributions.
 
 * Performs a suitable **statistical test** for numerical and categorical features
-* Plots **feature values and distributions** for the two datasets.&#x20;
+* Plots **feature values and distributions** for the two datasets.
 
-## Summary&#x20;
+## Summary
 
 The **Data Drift** report helps detect and explore changes in the input data.
 
@@ -15,27 +15,27 @@ You will need **two** datasets. The **reference** dataset serves as a benchmark.
 
 The dataset should include the features you want to evaluate for drift. The schema of both datasets should be identical.
 
-* In the case of pandas `DataFrame,`all column names should be `string` .&#x20;
+* In the case of pandas `DataFrame,`all column names should be `string` 
 * All feature columns analyzed for drift should have the **numerical** type (`np.number)`
-* **Categorical** data can be encoded as numerical labels and specified in the **column\_mapping**.&#x20;
+* **Categorical** data can be encoded as numerical labels and specified in the **column\_mapping**.
 * **DateTime** column is the only exception. If available, it can be used as the x-axis in the plots.
 
 You can potentially choose any two datasets for comparison. But keep in mind that only the **reference** dataset will be used as a basis for comparison.
 
 ## How it works
 
-To estimate the data drift, we compare distributions of each individual feature in the two datasets.&#x20;
+To estimate the data drift, we compare distributions of each individual feature in the two datasets.
 
-We use **statistical tests** to detect if the distribution has changed significantly.&#x20;
+We use **statistical tests** to detect if the distribution has changed significantly.;
 
-* For **numerical** features, we use the [two-sample Kolmogorov-Smirnov test](https://en.wikipedia.org/wiki/Kolmogorov%E2%80%93Smirnov\_test).&#x20;
-* For **categorical** features, we use the [chi-squared test](https://en.wikipedia.org/wiki/Chi-squared\_test).&#x20;
+* For **numerical** features, we use the [two-sample Kolmogorov-Smirnov test](https://en.wikipedia.org/wiki/Kolmogorov%E2%80%93Smirnov\_test).
+* For **categorical** features, we use the [chi-squared test](https://en.wikipedia.org/wiki/Chi-squared\_test).
   * For **binary categorical** features, we use the proportion difference test for independent samples based on Z-score.
 
-All tests use a 0.95 confidence level by default.&#x20;
+All tests use a 0.95 confidence level by default.
 
 {% hint style="info" %}
-To set a different confidence level or tests you use, you can define [custom options](../step-by-step-guides/report-customization/options-for-data-target-drift.md).
+To set a different confidence level or tests you use, you can define [custom options](../customization/options-for-data-target-drift.md).
 {% endhint %}
 
 ## How it looks
@@ -46,7 +46,7 @@ The default report includes 4 components. All plots are interactive.
 
 The report returns **the share of drifting features** and an aggregate **Dataset Drift** result. For example:
 
-![](<../../.gitbook/assets/Screenshot%202021-09-08%20at%2011.13.40.png>)
+![](<../.gitbook/assets/Screenshot%202021-09-08%20at%2011.13.40.png>)
 
 Dataset Drift sets a rule on top of the results of the statistical tests for individual features. By default, Dataset Drift is detected if at least 50% of features drift at a 0.95 confidence level.&#x20;
 
@@ -58,7 +58,7 @@ To set different Dataset Drift conditions, you can define [custom options](../..
 
 The table shows the drifting features first, sorting them by P-value. You can also choose to sort the rows by the feature name or type.
 
-![](../../.gitbook/assets/data_drift.png)
+![](../.gitbook/assets/data_drift.png)
 
 ### 3. Data Drift by Feature
 
@@ -67,13 +67,13 @@ By clicking on each feature, you can explore the values mapped in a plot.&#x20;
 * The dark green line is the **mean**, as seen in the reference dataset.&#x20;
 * The green area covers **one standard deviation** from the mean.&#x20;
 
-![](../../.gitbook/assets/data_drift_by_feature.png)
+![](../.gitbook/assets/data_drift_by_feature.png)
 
 ### 4. Data Distribution by Feature
 
 You can also zoom on distributions to understand what has changed.
 
-![](../../.gitbook/assets/data_distr_by_feature.png)
+![](../.gitbook/assets/data_distr_by_feature.png)
 
 {% hint style="info" %}
 To change the bins displayed, you can define [custom options](../../step-by-step-guides/report-customization/options-for-data-target-drift.md).
@@ -81,11 +81,11 @@ To change the bins displayed, you can define [custom options](../../step-by-step
 
 ## Report customization
 
-As mentioned above, you can set different [options-for-data-target-drift.md](../../step-by-step-guides/report-customization/options-for-data-target-drift.md "mention") to modify the existing components of the report. Use this to change the statistical tests used, define Dataset Drift conditions, or change histogram Bins.
+As mentioned above, you can set different [options-for-data-target-drift.md](../customization/options-for-data-target-drift.md "mention") to modify the existing components of the report. Use this to change the statistical tests used, define Dataset Drift conditions, or change histogram Bins.
 
-You can also select which components of the reports to display or choose to show the short version of the report: [select-widgets-to-display.md](../../step-by-step-guides/report-customization/select-widgets-to-display.md "mention").&#x20;
+You can also select which components of the reports to display or choose to show the short version of the report: [select-widgets-to-display.md](../customization/select-widgets-to-display.md "mention").
 
-If you want to create a new plot or metric, you can [add-a-custom-widget-or-tab.md](../../step-by-step-guides/report-customization/add-a-custom-widget-or-tab.md "mention").
+If you want to create a new plot or metric, you can [add-a-custom-widget-or-tab.md](../customization/add-a-custom-widget-or-tab.md "mention").
 
 ## When to use this report
 
@@ -148,6 +148,6 @@ If you choose to generate a JSON profile, it will contain the following informat
 
 ## Data Drift Dashboard Examples
 
-* Browse our [example](../examples.md) notebooks to see sample Reports.
+* Browse our [example](../get-started/examples.md) notebooks to see sample Reports.
 
 You can also read the initial [release blog](https://evidentlyai.com/blog/evidently-001-open-source-tool-to-analyze-data-drift).
