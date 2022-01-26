@@ -109,4 +109,4 @@ We’d be grateful if you keep the telemetry on since it helps us answer questio
 
 It helps us prioritize the development of new features and make sure we test the performance in the most popular environments.
 
-**We understand that you might still prefer not to share any telemetry data, and we respect this wish. Follow the steps above to disable the data collection.** \
+**We understand that you might still prefer not to share any telemetry data, and we respect this wish. Follow the steps above to disable the data collection.** 
