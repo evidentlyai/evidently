@@ -11,8 +11,8 @@ description: You can modify certain options when calculating the Data and Target
 You can set the custom options for the following Reports:
 
 * num\_target\_drift\_tab ([Numerical Target Drift](../reports/num-target-drift.md))
-* cat\_target\_drift\_tab ( [Categorical Target Drift.md](../reports/categorical-target-drift.md))
-* data\_drift\_tab ([Data Drift.md](../reports/data-drift.md))
+* cat\_target\_drift\_tab ( [Categorical Target Drift](../reports/categorical-target-drift.md))
+* data\_drift\_tab ([Data Drift](../reports/data-drift.md))
 
 ## Available Options
 
