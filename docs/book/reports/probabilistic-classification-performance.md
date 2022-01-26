@@ -258,7 +258,7 @@ If you choose to generate a JSON profile, it will contain the following informat
 
 ## Examples
 
-* Browse our [examples](../examples.md) for sample Jupyter notebooks.
+* Browse our [examples](../get-started/examples.md) for sample Jupyter notebooks.
 * See a tutorial "[What is your model hiding](https://evidentlyai.com/blog/tutorial-2-model-evaluation-hr-attrition)" where we analyze the performance of two models with identical ROC AUC to choose between the two.
 
 You can also read the [release blog](https://evidentlyai.com/blog/evidently-018-classification-model-performance).
