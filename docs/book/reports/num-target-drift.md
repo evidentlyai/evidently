@@ -1,14 +1,14 @@
 # Numerical Target Drift
 
-**TL;DR:**  The report explores the changes in the numerical target function (prediction).&#x20;
+**TL;DR:**  The report explores the changes in the numerical target function (prediction).
 
-* Performs a suitable **statistical test** to compare target (prediction) **distribution**&#x20;
+* Performs a suitable **statistical test** to compare target (prediction) **distribution**
 * Calculates the **correlations** between the feature and the target (prediction)
-* **Plots the relations** between each individual feature and the target (prediction) &#x20;
+* **Plots the relations** between each individual feature and the target (prediction)
 
 ## Summary
 
-The **Target Drift** report helps detect and explore changes in the target function and/or model predictions.&#x20;
+The **Target Drift** report helps detect and explore changes in the target function and/or model predictions.
 
 The **Numerical Target Drift** report is suitable for problem statements with the numerical target function: regression, probabilistic classification, ranking, etc.
 
@@ -22,7 +22,7 @@ You can potentially choose any two datasets for comparison. But keep in mind tha
 
 ## How it works
 
-We estimate the drift for the **target** (actual values) and **predictions** in the same manner. If both columns are passed to the dashboard, we build two sets of plots.&#x20;
+We estimate the drift for the **target** (actual values) and **predictions** in the same manner. If both columns are passed to the dashboard, we build two sets of plots.
 
 If only one of them (either target or predictions) is provided, we build one set of plots. If neither target nor predictions column is available, you will get an error.
 
@@ -31,42 +31,42 @@ To **estimate the numerical target (prediction) drift**, we compare the distribu
 We also calculate the [Pearson correlation](https://en.wikipedia.org/wiki/Pearson\_correlation\_coefficient) between the target (prediction) and each individual feature in the two datasets to detect a **change in the relationship.**
 
 {% hint style="info" %}
-To set a different confidence level or tests you use, you can define [custom options](../../step-by-step-guides/report-customization/options-for-data-target-drift.md).
+To set a different confidence level or tests you use, you can define [custom options](../customization/options-for-data-target-drift.md).
 {% endhint %}
 
 ## How it looks
 
 The report includes 4 components. All plots are interactive.
 
-### 1. Target (Prediction) Drift&#x20;
+### 1. Target (Prediction) Drift
 
-The report first shows the **comparison of target (prediction) distributions** in the current and reference dataset. The result of the statistical test and P-value are displayed in the title.&#x20;
+The report first shows the **comparison of target (prediction) distributions** in the current and reference dataset. The result of the statistical test and P-value are displayed in the title.
 
-![](../../.gitbook/assets/num_targ_drift.png)
+![](../.gitbook/assets/num_targ_drift.png)
 
 ### 2. Target (Prediction) Correlations
 
 The report shows the **correlations between individual features and the target (prediction)** in the current and reference dataset. It helps detects shifts in the relationship.
 
-![](../../.gitbook/assets/num_targ_drift_target_correlations.png)
+![](../.gitbook/assets/num_targ_drift_target_correlations.png)
 
 ### 3. Target (Prediction) Values&#x20;
 
 The report visualizes the **target (prediction) values by index or time** (if the`datetime` column is available or defined in the `column_mapping` dictionary). This plot helps explore the target behavior and compare it between the datasets.
 
-![](../../.gitbook/assets/num_targ_drift_target_values.png)
+![](../.gitbook/assets/num_targ_drift_target_values.png)
 
 ### 4. Target (Prediction) Behavior By Feature
 
 Finally, we generate an interactive table with the **visualizations of dependencies between the target and each feature**.&#x20;
 
-![](../../.gitbook/assets/num_targ_drift_behavior_by_feature.png)
+![](../.gitbook/assets/num_targ_drift_behavior_by_feature.png)
 
 If you click on any feature in the table, you get an overview of its behavior.&#x20;
 
 The plot shows how **feature values relate to the target (prediction) values** and if there are differences between the datasets. It helps explore if they can explain the target (prediction) shift.
 
-![](../../.gitbook/assets/num_targ_drift_behavior_by_feature_example_tax.png)
+![](../.gitbook/assets/num_targ_drift_behavior_by_feature_example_tax.png)
 
 We recommend paying attention to the behavior of the **most important features** since significant changes might confuse the model and cause higher errors.
 
@@ -75,11 +75,11 @@ For example, in a Boston house pricing dataset, we can see a new segment with va
 
 ## Report customization
 
-You can set different [options-for-data-target-drift.md](../../step-by-step-guides/report-customization/options-for-data-target-drift.md "mention") to modify the report components.&#x20;
+You can set different [options-for-data-target-drift.md](../customization/options-for-data-target-drift.md "mention") to modify the report components.&#x20;
 
-You can also select which components of the reports to display or choose to show the short version of the report: [select-widgets-to-display.md](../../step-by-step-guides/report-customization/select-widgets-to-display.md "mention").&#x20;
+You can also select which components of the reports to display or choose to show the short version of the report: [select-widgets-to-display.md](../customization/select-widgets-to-display.md "mention").
 
-If you want to create a new plot or metric, you can [add-a-custom-widget-or-tab.md](../../step-by-step-guides/report-customization/add-a-custom-widget-or-tab.md "mention").
+If you want to create a new plot or metric, you can [add-a-custom-widget-or-tab.md](../customization/add-a-custom-widget-or-tab.md "mention").
 
 ## When to use the report
 
@@ -128,6 +128,6 @@ If you choose to generate a JSON profile, it will contain the following informat
 
 ## Examples
 
-* Browse our [examples](../examples.md) for sample Jupyter notebooks.
+* Browse our [examples](../get-started/examples.md) for sample Jupyter notebooks.
 
 You can also read the initial [release blog](https://evidentlyai.com/blog/evidently-014-target-and-prediction-drift).
