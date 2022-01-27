@@ -13,6 +13,5 @@ Explore the integration page for further details:
 [evidently-and-grafana.md](evidently-and-grafana.md)
 {% endcontent-ref %}
 
-
 ![](../.gitbook/assets/photo\_2021-10-20\_14-38-53.png)
 
