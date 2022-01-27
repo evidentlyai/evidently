@@ -1,8 +1,8 @@
 ---
-description: How to use Evidently in Jupyter notebook or other notebook environments.
+description: How to generate visual reports in Jupyter notebook or other environments.
 ---
 
-# Jupyter notebooks
+# Dashboards
 
 Take the following steps to create and display a `Dashboard` in Jupyter notebook, export the report as an HTML file, or generate a JSON `Profile`.&#x20;
 
