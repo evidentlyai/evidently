@@ -88,7 +88,7 @@ Create a `Pandas DataFrame` with the dataset to analyze:
 iris = datasets.load_iris()
 iris_frame = pd.DataFrame(iris.data, columns = iris.feature_names)
 ```
-To evaluate things like data drift (change in the input data distributions), you would need two datasets to perform a comparison. The first one is the baseline: this can often be the data used in training. We call it **reference** data. The second dataset is the **current** production data. 
+To evaluate things like data drift, you would need two datasets to perform a comparison. The first one is the baseline: this can often be the data used in training. We call it **reference** data. The second dataset is the **current** production data. 
 
 You can prepare two separate datasets with identical schema. You can also proceed with one dataset but explicitly **identify rows** that refer to reference and production data. That is what we do now to generate the first report. 
 
@@ -99,6 +99,14 @@ Let us split the data in half, and treat the first 75 rows as reference, and the
 {% endhint %}
 
 ## 4. Generate the Data Drift dashboard
+
+(.gitbook/assets/evidently\_github.png)
+
+Data drift dashboard helps visualize the change in the input data distributions, and see the results of the statistical tests. 
+
+{% hint style="info" %}
+**What is included in the reports?** You can explore [this section](../reports) to understand the components, statistical tests and metrics included in each report by default.
+{% endhint %}
 
 To generate the Data Drift dashboard, run:
 
