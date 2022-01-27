@@ -27,23 +27,29 @@ class ClassConfMatrixWidget(Widget):
                   current_data: Optional[pd.DataFrame],
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
-        results = analyzers_results[ClassificationPerformanceAnalyzer]
+        results = ClassificationPerformanceAnalyzer.get_results(analyzers_results)
 
-        if results['utility_columns']['target'] is None or results['utility_columns']['prediction'] is None:
+        if results.columns.utility_columns.target is None or results.columns.utility_columns.prediction is None:
             if self.dataset == 'reference':
                 raise ValueError(f"Widget [{self.title}] required 'target' or 'prediction' column to be set")
             return None
 
-        if self.dataset not in results['metrics'].keys():
-            if self.dataset == 'reference':
-                raise ValueError(f"Widget [{self.title}] required 'reference' results from"
-                                 f" {ClassificationPerformanceAnalyzer.__name__} but no data found")
+        if self.dataset == 'current':
+            result_metrics = results.current_metrics
+
+        elif self.dataset == 'reference':
+            result_metrics = results.reference_metrics
+
+        else:
+            raise ValueError(f"Widget [{self.title}] required '{self.dataset}' results from"
+                             f" {ClassificationPerformanceAnalyzer.__name__} but no data found")
+
+        if result_metrics is None:
             return None
+
         # plot confusion matrix
-        conf_matrix = results['metrics'][self.dataset]['confusion_matrix']['values']
-
-        labels = results['metrics'][self.dataset]['confusion_matrix']['labels']
-
+        conf_matrix = result_metrics.confusion_matrix.values
+        labels = result_metrics.confusion_matrix.labels
         z = [[int(y) for y in x] for x in conf_matrix]
 
         # change each element of z to type string for annotations

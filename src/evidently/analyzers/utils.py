@@ -1,4 +1,7 @@
-from typing import Optional, Union, Sequence
+from typing import List
+from typing import Optional
+from typing import Sequence
+from typing import Union
 
 import numpy as np
 import pandas as pd
@@ -44,6 +47,18 @@ class DatasetColumns:
             'num_feature_names': self.num_feature_names,
             'target_names': self.target_names,
         }
+
+    def get_all_features_list(self, cat_before_num: bool = True) -> List[str]:
+        """List all features names"""
+        if cat_before_num:
+            return self.cat_feature_names + self.num_feature_names
+
+        else:
+            return self.num_feature_names + self.cat_feature_names
+
+    def get_features_len(self) -> int:
+        """How mane feature do we have. It is useful for pagination in widgets."""
+        return len(self.num_feature_names) + len(self.cat_feature_names)
 
 
 def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping):

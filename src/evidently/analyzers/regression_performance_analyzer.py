@@ -7,9 +7,9 @@ import pandas as pd
 import numpy as np
 from scipy.stats import probplot
 
+from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
-from .utils import process_columns
-from .. import ColumnMapping
+from evidently.analyzers.utils import process_columns, DatasetColumns
 
 
 class ErrorWithQuantiles:
@@ -36,13 +36,37 @@ class FeatureBias:
         }
 
 
+@dataclass
+class RegressionPerformanceMetrics:
+    mean_error: float
+    mean_abs_error: float
+    mean_abs_perc_error: float
+    error_std: float
+    abs_error_std: float
+    abs_perc_error_std: float
+    error_normality: dict
+    underperformance: dict
+
+
+@dataclass
+class RegressionPerformanceAnalyzerResults:
+    columns: DatasetColumns
+    reference_metrics: Optional[RegressionPerformanceMetrics] = None
+    current_metrics: Optional[RegressionPerformanceMetrics] = None
+    error_bias: Optional[dict] = None
+
+
 class RegressionPerformanceAnalyzer(Analyzer):
+    @staticmethod
+    def get_results(analyzer_results) -> RegressionPerformanceAnalyzerResults:
+        return analyzer_results[RegressionPerformanceAnalyzer]
+
     def calculate(self,
                   reference_data: pd.DataFrame,
                   current_data: Optional[pd.DataFrame],
-                  column_mapping: ColumnMapping):
+                  column_mapping: ColumnMapping) -> RegressionPerformanceAnalyzerResults:
         columns = process_columns(reference_data, column_mapping)
-        result = columns.as_dict()
+        result = RegressionPerformanceAnalyzerResults(columns=columns)
 
         target_column = columns.utility_columns.target
         prediction_column = columns.utility_columns.prediction
@@ -50,24 +74,22 @@ class RegressionPerformanceAnalyzer(Analyzer):
         num_feature_names = columns.num_feature_names
         cat_feature_names = columns.cat_feature_names
 
-        result['metrics'] = {}
         if target_column is not None and prediction_column is not None:
             _prepare_dataset(reference_data)
 
             # calculate quality metrics
-            result['metrics']['reference'] = _calculate_quality_metrics(reference_data, prediction_column,
-                                                                        target_column)
+            quality_metrics = _calculate_quality_metrics(reference_data, prediction_column, target_column)
 
             # error normality
             err_quantiles = _error_with_qantiles(reference_data, prediction_column, target_column)
 
-            result['metrics']['reference']['error_normality'] = _calculate_error_normality(err_quantiles)
+            quality_metrics['error_normality'] = _calculate_error_normality(err_quantiles)
 
             # underperformance metrics
-            result['metrics']['reference']['underperformance'] = _calculate_underperformance(err_quantiles)
+            quality_metrics['underperformance'] = _calculate_underperformance(err_quantiles)
 
-            # error bias table
-            error_bias = {}
+            result.reference_metrics = RegressionPerformanceMetrics(**quality_metrics)
+
             ref_feature_bias = _error_bias_table(reference_data, err_quantiles, num_feature_names, cat_feature_names)
             # convert to old format
             error_bias = {feature: dict(feature_type=bias.feature_type, **bias.as_dict('ref_'))
@@ -77,15 +99,17 @@ class RegressionPerformanceAnalyzer(Analyzer):
                 _prepare_dataset(current_data)
 
                 # calculate quality metrics
-                result['metrics']['current'] = _calculate_quality_metrics(current_data, prediction_column,
+                quality_metrics = _calculate_quality_metrics(current_data, prediction_column,
                                                                           target_column)
 
                 # error normality
                 current_err_quantiles = _error_with_qantiles(current_data, prediction_column, target_column)
-                result['metrics']['current']['error_normality'] = _calculate_error_normality(current_err_quantiles)
+                quality_metrics['error_normality'] = _calculate_error_normality(current_err_quantiles)
 
                 # underperformance metrics
-                result['metrics']['current']['underperformance'] = _calculate_underperformance(current_err_quantiles)
+                quality_metrics['underperformance'] = _calculate_underperformance(current_err_quantiles)
+
+                result.current_metrics = RegressionPerformanceMetrics(**quality_metrics)
 
                 # error bias table
                 current_feature_bias = _error_bias_table(current_data, current_err_quantiles, num_feature_names,
@@ -95,7 +119,7 @@ class RegressionPerformanceAnalyzer(Analyzer):
                     ref_bias.update(bias.as_dict("current_"))
                     error_bias[feature] = ref_bias
 
-            result['metrics']['error_bias'] = error_bias
+            result.error_bias = error_bias
 
         return result
 

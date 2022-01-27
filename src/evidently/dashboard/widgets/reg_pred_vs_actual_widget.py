@@ -29,20 +29,27 @@ class RegPredActualWidget(Widget):
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
 
-        results = analyzers_results[RegressionPerformanceAnalyzer]
+        results = RegressionPerformanceAnalyzer.get_results(analyzers_results)
 
-        if results['utility_columns']['target'] is None or results['utility_columns']['prediction'] is None:
+        target_name = results.columns.utility_columns.target
+        prediction_name = results.columns.utility_columns.prediction
+
+        if target_name is None or prediction_name is None:
             if self.dataset == 'reference':
                 raise ValueError(f"Widget [{self.title}] requires 'target' and 'prediction' columns")
+
             return None
+
         if self.dataset == 'current':
             dataset_to_plot = current_data.copy(deep=False) if current_data is not None else None
+
         else:
             dataset_to_plot = reference_data.copy(deep=False)
 
         if dataset_to_plot is None:
             if self.dataset == 'reference':
-                raise ValueError(f"Widget [{self.title}] requires reference dataset but it is None")
+                raise ValueError(f'Widget [{self.title}] requires reference dataset but it is None')
+
             return None
 
         dataset_to_plot.replace([np.inf, -np.inf], np.nan, inplace=True)
@@ -52,8 +59,8 @@ class RegPredActualWidget(Widget):
         pred_actual = go.Figure()
 
         pred_actual.add_trace(go.Scatter(
-            x=dataset_to_plot[results['utility_columns']['target']],
-            y=dataset_to_plot[results['utility_columns']['prediction']],
+            x=dataset_to_plot[target_name],
+            y=dataset_to_plot[prediction_name],
             mode='markers',
             name=self.dataset.title(),
             marker=dict(
@@ -63,8 +70,8 @@ class RegPredActualWidget(Widget):
         ))
 
         pred_actual.update_layout(
-            xaxis_title="Actual value",
-            yaxis_title="Predicted value",
+            xaxis_title='Actual value',
+            yaxis_title='Predicted value',
             xaxis=dict(
                 showticklabels=True
             ),
@@ -77,10 +84,10 @@ class RegPredActualWidget(Widget):
 
         return BaseWidgetInfo(
             title=self.title,
-            type="big_graph",
+            type='big_graph',
             size=1,
             params={
-                "data": pred_actual_json['data'],
-                "layout": pred_actual_json['layout']
+                'data': pred_actual_json['data'],
+                'layout': pred_actual_json['layout']
             },
         )
