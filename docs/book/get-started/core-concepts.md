@@ -31,35 +31,5 @@ Right now, you cannot choose a custom name for your dataset.&#x20;
 
 **Note:** earlier, we referred to the second dataset as "Production". You might notice that in some older examples. &#x20;
 
-## Reports
-
-![](../.gitbook/assets/image%20(2).png)
-
-Evidently includes a set of pre-built Reports. Each of them addresses a specific aspect of the data or model performance.&#x20;
-
-Evidently calculates a number of metrics and statistical tests in each report, and generates interactive visualizations.
-
-Currently, you can choose between 6 different [**Report**](../get-started/reports/) types.  &#x20;
-
-The calculation results can be available in one of the following formats:&#x20;
-
-* An interactive visual **Dashboard** displayed inside the Jupyter notebook.
-* An **HTML report.** Same as dashboard, but available as a standalone file.&#x20;
-* A **JSON profile.** A summary of the metrics, the results of statistical tests, and simple histograms.&#x20;
-
-Right now, you cannot change the composition of the report, e.g. to add or exclude metrics. Reports are pre-built to serve as good enough defaults. We expect to add configurations in the future.
-
-## Dashboards
-
-To display the output in the Jupyter notebook, you can create a visual **Dashboard.**&#x20;
-
-To specify which analysis you want to perform, you should select a **Tab** (for example, a Data Drift tab)**.** You can combine several tabs in a single Dashboard (for example, Data Drift and Prediction Drift). Each tab will contain a combination of metrics, interactive plots, and tables for a chosen [Report](../get-started/reports/) type.&#x20;
-
-You can also save the Dashboard as **a standalone HTML file.** You can group several Tabs in one file.&#x20;
-
-You can generate HTML files from Jupyter notebook or using Terminal.&#x20;
-
-**This option helps visually explore and evaluate model performance and errors.**
 
 
-## &#x20;
