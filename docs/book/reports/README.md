@@ -13,7 +13,7 @@ The calculation results can be available in one of the following formats:
 * An interactive visual **Dashboard** displayed inside the Jupyter notebook.
 * An **HTML report.** Same as dashboard, but available as a standalone file.
 * A **JSON profile.** A summary of the metrics, the results of statistical tests, and simple histograms.
-* A live monitoring dashboard, currently availble through [integration with Grafana](../integrations/evidently-and-grafana).
+* A live monitoring dashboard, currently availble through [integration with Grafana](../integrations/evidently-and-grafana.md).
 
 ## Reports by type
 
