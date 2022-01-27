@@ -176,25 +176,6 @@ If you get a security alert, press "trust HTML".
 
 You will need to specify the path where to save your report and the report name. The report will not open automatically. To explore it, you should open it from the destination folder.
 
-## &#x20;**6**. **Create a JSON profile**
-
-Alternatively, you can generate and view the output as a JSON profile.
-
-```python
-data_drift_profile = Profile(sections=[DataDriftProfileSection()])
-data_drift_profile.calculate(reference_data, recent_data, 
-    column_mapping=column_mapping)
-data_drift_profile.json()
-```
-
-For each profile, you should specify `sections` to include. They work just like Tabs. You can choose among:
-
-* `DataDriftProfileSection` to estimate the data drift,
-* `NumTargetDriftProfileSection` to estimate target drift for numerical target,
-* `CatTargetDriftProfileSection`to estimate target drift for categorical target,
-* `ClassificationPerformanceProfileSection` to explore the performance of a classification model,
-* `ProbClassificationPerformanceProfileSection` to explore the performance of a probabilistic classification model,
-* `RegressionPerformanceProfileSection` to explore the performance of a regression model.
 
 ### Google Colab, Kaggle Kernel, Deepnote
 
