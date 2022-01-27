@@ -19,7 +19,6 @@ In this tutorial, we will go through the following steps for Jupyter notebook an
 * Generate model performance dashboards  
 * Generate JSON profiles  
 
- 
 ## 1. Install Evidently
 
 ### MAC OS and Linux
@@ -89,10 +88,57 @@ Create a `Pandas DataFrame` with the dataset to analyze:
 iris = datasets.load_iris()
 iris_frame = pd.DataFrame(iris.data, columns = iris.feature_names)
 ```
-To evaluate things like data drift, you would need two datasets. The first one is the baseline: this can often be the data used in training. We call it **reference** data. The second dataset is the **current** production data. 
+To evaluate things like data drift (change in the input data distributions), you would need two datasets to perform a comparison. The first one is the baseline: this can often be the data used in training. We call it **reference** data. The second dataset is the **current** production data. 
 
-You can use two separate datasets with identical schema. In this example, we proceed with one dataset but explicitly **identify rows** that refer to reference and production data.
+You can prepare two separate datasets with identical schema. You can also proceed with one dataset but explicitly **identify rows** that refer to reference and production data. That is what we do now to generate the first report. 
 
+Let us split the data in half, and treat the first 75 rows as reference, and the remaining as the current data.
+
+{% hint style="info" %}
+**Column_mapping.** In this simple example, we can directly display the dashboard in the next step. In other cases, you might need to add column_mapping. For example, if you have encoded categorical features, or need to point to the name of the target column. Consult this section ADD LINK for help.
+{% endhint %}
+
+## 4. Generate the Data Drift dashboard
+
+To generate the Data Drift dashboard, run:
+
+```python
+iris_data_drift_report = Dashboard(tabs=[DataDriftTab])
+iris_data_drift_report.calculate(iris_frame[:75], iris_frame[75:], 
+    column_mapping = None)
+iris_data_drift_report.show()
+```
+If you use Jupyter notebook or Colab, the report will appear directly in the notebook. 
+
+You can also save it as an HTML file externally.
+
+```
+iris_data_drift_report.save("reports/my_report.html")
+```
+{% hint style="info" %}
+
+To see the report, go to the specified directly and open the file. 
+
+**This might work slightly different in other notebook environments.** In some environments, like Jupyter lab, you might not be able to display the dashboard directly in the cell. In this case, try exporting the file as an HTML. Consult this section ADD LINK to check the supported environments. In other notebooks like Kaggle and Deepnote, you might need to explicitly add an argument: iris_data_drift_report.show(mode='inline'). Consult this section ADD LINK for help.
+{% endhint %}
+
+## 5. Generate the Target Drift dashboard
+
+
+
+## 6. Generate the Model Performnance dashboard
+
+
+{% hint style="info" %}
+**If you use a larger dataset, the report might take time to show.** The dashboard contains the data necessary to generate interactive plots and can become large. The limitation depends on infrastructure. In this case, we suggest applying sampling to your dataset. In Jupyter notebook, that can be done directly with pandas. Consult this section ADD LINK to check.
+{% endhint %}
+
+```python
+iris_data_drift_report = Dashboard(tabs=[DataDriftTab])
+iris_data_drift_report.calculate(iris_frame[:75], iris_frame[75:], 
+    column_mapping = None)
+iris_data_drift_report.save("reports/my_report.html")
+```
 
 
 Work in progress
@@ -134,11 +180,13 @@ All options are described below.
 
 ### Generating dashboards and HTML reports
 
-
+Note about column mapping. We do not perform any further data preparation
 
 
 
 `Dashboard` generates an interactive report that includes the selected `Tabs`.&#x20;
+
+## 4. Understand which other Tabs and Sections are available
 
 You can choose the following **Tabs**:
 
@@ -151,12 +199,8 @@ You can choose the following **Tabs**:
 
 To generate the **Data Drift** report and save it as HTML, run:
 
-```python
-iris_data_drift_report = Dashboard(tabs=[DataDriftTab])
-iris_data_drift_report.calculate(iris_frame[:75], iris_frame[75:], 
-    column_mapping = None)
-iris_data_drift_report.save("reports/my_report.html")
-```
+## 4. Understand which other Tabs and Sections are available
+
 
 To generate the **Data Drift** and the **Categorical Target Drift** reports, first add a target (and/or prediction) column to the initial dataset:&#x20;
 
@@ -261,3 +305,5 @@ The `show()` method has the argument `mode`, which can take the following option
 Understand all reports.
 
 You can later refere to the Dashboard and Profile pages that sum up all the functionality.
+
+Join Discord
