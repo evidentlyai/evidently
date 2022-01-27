@@ -87,4 +87,4 @@ Evidently configures the monitoring on top of the streaming data and emits the m
 
 There is a lightweight [integration with Prometheus and Grafana](integrations/evidently-and-grafana.md) that comes with pre-built dashboards.
 
-![](/.gitbook/assets/grafana\_dashboard.jpg)
+![](.gitbook/assets/grafana\_dashboard.jpg)
