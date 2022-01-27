@@ -4,6 +4,20 @@ description: How to generate visual reports in Jupyter notebook or other environ
 
 # Dashboards
 
+
+## Dashboards
+
+To display the output in the Jupyter notebook, you can create a visual **Dashboard.**&#x20;
+
+To specify which analysis you want to perform, you should select a **Tab** (for example, a Data Drift tab)**.** You can combine several tabs in a single Dashboard (for example, Data Drift and Prediction Drift). Each tab will contain a combination of metrics, interactive plots, and tables for a chosen [Report](../get-started/reports/) type.&#x20;
+
+You can also save the Dashboard as **a standalone HTML file.** You can group several Tabs in one file.&#x20;
+
+You can generate HTML files from Jupyter notebook or using Terminal.&#x20;
+
+**This option helps visually explore and evaluate model performance and errors.**
+
+
 Take the following steps to create and display a `Dashboard` in Jupyter notebook, export the report as an HTML file, or generate a JSON `Profile`.&#x20;
 
 {% hint style="info" %}
