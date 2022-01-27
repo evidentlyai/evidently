@@ -222,14 +222,16 @@ There is also CLI interface ADD LINK in case you want to generate HTML dashboard
 
 ## What else is there?
 
-While you can treat JSON profile as a "text version" of the report to look at, it is intented for use with other tools. We suggest to explore [Integrations](../integrations) section of documentation to see how you can use it in your machine learning workflow with tools like MLflow and Airflow to log and profile the models and data. 
+While you can treat JSON profile as a "text version" of the report to look at, it is intended for use with other tools. We suggest exploring [Integrations](../integrations) section of the documentation to see how you can use it in your machine learning workflow with tools like MLflow and Airflow to log and profile the models and data. 
 
-If you have a deployed ML service and want to collect data and model metrics on top of the live data stream, you can explore the [intgeration with Grafana and Prometheus](../integrations/evidently_and_grafana.md). In this case, Evidently acts as a monitoring service, and you can configure the options to design more sophisticated logic as such size of the reference windows, moving reference, etc. It also comes with pre-built Grafana dashboards that act as a versions of Evidently dashboards meant for real-time monitoring. 
+If you have a deployed ML service and want to collect data and model metrics on top of the live data stream, you can explore the [intgeration with Grafana and Prometheus](../integrations/evidently_and_grafana.md). In this case, Evidently acts as a monitoring service, and you can configure the options to design more sophisticated logic as such size of the reference windows, moving reference, etc. It also comes with pre-built Grafana dashboards that act as a version of Evidently dashboards meant for real-time monitoring. 
 
-Evidently is in active development, so expect things to change and evolve. You can subscribe to the [newsletter]() or follow our [releases on GitHub]() to stay updated about the latest functionality. 
+Evidently is in active development, so expect things to change and evolve. You can subscribe to the [newsletter](https://evidentlyai.com/sign-up) or follow our [releases on GitHub](https://github.com/evidentlyai/evidently/releases) to stay updated about the latest functionality. 
 
 ## Join our Community!
 
 We run a [Discord community](https://discord.gg/xZjKRaNp8b) to connect with our users and chat about ML in production topics. 
 
-In case you have feedback or need help, just ask in Discord or open a GitHub is [GitHub](https://github.com/evidentlyai/evidently).
+In case you have feedback or need help, just ask in Discord or open a GitHub issue. 
+
+And if you want to support a project, give us a star on [GitHub](https://github.com/evidentlyai/evidently)!
