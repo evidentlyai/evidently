@@ -192,9 +192,32 @@ drift_dashboard_with_mapping = Dashboard(tabs=[DataDriftTab()])
 drift_dashboard_with_mapping.calculate(reference_data, recent_data, 
     column_mapping=column_mapping)
 ```
+## Display the dashboard in Jupyter notebook
 
-### Generating dashboards and HTML reports
+You can display the chosen Tabs in a single Dashboard directly in the notebook:
 
+```python
+drift_dashboard.show()
+```
+
+{% hint style="info" %}
+
+**If the report is not displayed, this might be due to the dataset size.** The dashboard contains the data necessary to generate interactive plots and can become large. The limitation depends on infrastructure. In this case, we suggest applying sampling to your dataset. In Jupyter notebook, that can be done directly with pandas. You can also generate JSON profiles instead.
+{% endhint %}
+
+## Export the report as an HTML file
+
+You can save the report as an HTML file, and open it in your browser.
+
+```python
+drift_dashboard.save("reports/my_report.html")
+```
+
+If you get a security alert, press "trust HTML".
+
+You will need to specify the path where to save your report and the report name. The report will not open automatically. To explore it, you should open it from the destination folder.
+
+## Code examples
 
 To generate the **Data Drift** report and save it as HTML, run:
 
@@ -277,35 +300,8 @@ prob_classification_single_model_performance.show()
 ```
 
 {% hint style="info" %}
-**It might take some time to display the report. If it does not show, this might be due to the dataset size.** The dashboard contains the data necessary to generate interactive plots and can become large. The limitation depends on infrastructure. In this case, we suggest applying sampling to your dataset. In Jupyter notebook, that can be done directly with pandas. You can also generate a JSON profile instead 👇🏼
-{% endhint %}
 
-## 4. **Explore the dashboard in the Jupyter notebook**
-
-You can display the chosen Tabs in a single Dashboard directly in the notebook.&#x20;
-
-```python
-drift_dashboard.show()
-```
-
-{% hint style="info" %}
-**If the report is not displayed, this might be due to the dataset size.** The dashboard contains the data necessary to generate interactive plots and can become large. The limitation depends on infrastructure. In this case, we suggest applying sampling to your dataset. In Jupyter notebook, that can be done directly with pandas. You can also generate JSON instead 👇🏼
-{% endhint %}
-
-## 5. **Export the report as an HTML file**
-
-You can save the report as an HTML file, and open it in your browser.
-
-```python
-drift_dashboard.save("reports/my_report.html")
-```
-
-If you get a security alert, press "trust HTML".
-
-You will need to specify the path where to save your report and the report name. The report will not open automatically. To explore it, you should open it from the destination folder.
-
-
-### Google Colab, Kaggle Kernel, Deepnote
+## Google Colab, Kaggle Kernel, Deepnote
 
 To install `evidently`, run the following command in the notebook cell:
 
@@ -313,7 +309,7 @@ To install `evidently`, run the following command in the notebook cell:
 !pip install evidently
 ```
 
-To build a `Dashboard` or a `Profile` in Google Colab, Kaggle Notebook or Deepnote, simply repeat the steps described above.&#x20;
+To build a `Dashboard` or a `Profile` in Google Colab, Kaggle Notebook or Deepnote, simply repeat the steps described above.
 
 For example, to build the **Data Drift** dashboard, run:
 
@@ -347,16 +343,13 @@ The `show()` method has the argument `mode` which can take the following options
 iris_data_drift_report.show(mode='inline')
 ```
 
+## Command line interface
 
-# Command line interface
+To start, prepare your data as `csv`  files. Follow the same data requirements as described above.
 
-To start, prepare your data as `csv`  files. Follow the same data requirements as described in the [Jupyter notebook](step-by-step-guide-for-jupyter-notebooks.md) guide.
-
-If you prefer a video version, here is 7-min Quick Start on how to use Evidently using CLI. &#x20;
+If you prefer a video version, here is 7-min Quick Start on how to use Evidently using CLI. 
 
 {% embed url="https://www.youtube.com/watch?v=3j3NwIkhmTs" %}
-
-## Generate HTML report or JSON Profile
 
 To generate the HTML report, run the following command in bash:
 
@@ -391,7 +384,7 @@ You can choose the following **Tabs**:
 
 To configure the report you need to create the `config.json` file or a `config.yaml` file. This file configures the way of reading your input data and the type of the report.
 
-## Configuration examples
+### Configuration examples
 
 Here is an example of a simple configuration, where we have comma-separated `csv` files with headers and there is no `date` column in the data.
 
@@ -482,7 +475,7 @@ Here is an example for a more complicated configuration, where we have comma-sep
 }
 ```
 
-## Telemetry
+### Telemetry
 
 Telemetry is collected in Evidently starting from version 0.1.21.dev0.
 
@@ -494,7 +487,7 @@ You can opt-out from telemetry collection by setting the environment variable:
  EVIDENTLY_DISABLE_TELEMETRY=1
 ```
 
-## Sampling for large datasets
+### Sampling for large datasets
 
 As shown in the configuration example above, you can specify **sampling** parameters for large files. You can use different sampling strategies for the reference and current data, or apply sampling only to one of the files.
 
@@ -505,8 +498,3 @@ Currently, you can choose from the following options:
 * `random` - **random sampling** will be applied. This option works together with `ratio` parameter (see the example with the Profile above)
 
 If you do not specify the sampling parameters in the configuration, it will be treated as none and no sampling will be applied.
-
-
-
-Take the following steps to create and display a `Dashboard` in Jupyter notebook, export the report as an HTML file, or generate a JSON `Profile`.&#x20;
-
