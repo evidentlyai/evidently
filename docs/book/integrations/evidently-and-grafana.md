@@ -14,7 +14,7 @@ Grafana is an open-source [data visualization platform](https://github.com/grafa
 
 You can use this same stack for ML monitoring. In this case, Evidently provides a metrics calculation layer, Prometheus is used to store the metrics, and Grafana is used to display the dashboards and manage alerts. 
 
-![](../.gitbook/assets/202201_evidently_grafana_service.png
+![](../.gitbook/assets/202201_evidently_grafana_service.png)
 
 **An integration example is available as a Docker container:**
 {% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/integrations/grafana_monitoring_service" %}
