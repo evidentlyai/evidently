@@ -25,7 +25,7 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
         quality_metrics_options = self.options_provider.get(QualityMetricsOptions)
         classification_threshold = quality_metrics_options.classification_threshold
 
-        result['options'] = quality_metrics_options
+        result['options'] = quality_metrics_options.as_dict()
         result['metrics'] = {}
         if target_column is not None and prediction_column is not None:
             reference_data.replace([np.inf, -np.inf], np.nan, inplace=True)
