@@ -1,3 +1,7 @@
+---
+description: How-to examples.
+---
+
 # Recipes
 
 These example notebooks and tutorials answer “how-to” questions. They help solve specific tasks or adapt Evidently to your needs.  
