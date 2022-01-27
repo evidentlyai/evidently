@@ -29,14 +29,18 @@ class RegColoredPredActualWidget(Widget):
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
 
-        results = analyzers_results[RegressionPerformanceAnalyzer]
+        results = RegressionPerformanceAnalyzer.get_results(analyzers_results)
+        results_utility_columns = results.columns.utility_columns
 
-        if results['utility_columns']['target'] is None or results['utility_columns']['prediction'] is None:
+        if results_utility_columns.target is None or results_utility_columns.prediction is None:
             if self.dataset == 'reference':
                 raise ValueError(f"Widget [{self.title}] requires 'target' and 'prediction' columns")
+
             return None
+
         if self.dataset == 'current':
             dataset_to_plot = current_data.copy(deep=False) if current_data is not None else None
+
         else:
             dataset_to_plot = reference_data.copy(deep=False)
 
@@ -48,8 +52,7 @@ class RegColoredPredActualWidget(Widget):
         dataset_to_plot.replace([np.inf, -np.inf], np.nan, inplace=True)
         dataset_to_plot.dropna(axis=0, how='any', inplace=True)
 
-        error = dataset_to_plot[results['utility_columns']['prediction']] - dataset_to_plot[
-            results['utility_columns']['target']]
+        error = dataset_to_plot[results_utility_columns.prediction] - dataset_to_plot[results_utility_columns.target]
 
         quantile_5 = np.quantile(error, .05)
         quantile_95 = np.quantile(error, .95)
@@ -63,10 +66,8 @@ class RegColoredPredActualWidget(Widget):
         pred_actual = go.Figure()
 
         pred_actual.add_trace(go.Scatter(
-            x=dataset_to_plot[dataset_to_plot['Error bias'] == 'Underestimation'][
-                results['utility_columns']['target']],
-            y=dataset_to_plot[dataset_to_plot['Error bias'] == 'Underestimation'][
-                results['utility_columns']['prediction']],
+            x=dataset_to_plot[dataset_to_plot['Error bias'] == 'Underestimation'][results_utility_columns.target],
+            y=dataset_to_plot[dataset_to_plot['Error bias'] == 'Underestimation'][results_utility_columns.prediction],
             mode='markers',
             name='Underestimation',
             marker=dict(
@@ -76,10 +77,8 @@ class RegColoredPredActualWidget(Widget):
         ))
 
         pred_actual.add_trace(go.Scatter(
-            x=dataset_to_plot[dataset_to_plot['Error bias'] == 'Overestimation'][
-                results['utility_columns']['target']],
-            y=dataset_to_plot[dataset_to_plot['Error bias'] == 'Overestimation'][
-                results['utility_columns']['prediction']],
+            x=dataset_to_plot[dataset_to_plot['Error bias'] == 'Overestimation'][results_utility_columns.target],
+            y=dataset_to_plot[dataset_to_plot['Error bias'] == 'Overestimation'][results_utility_columns.prediction],
             mode='markers',
             name='Overestimation',
             marker=dict(
@@ -89,10 +88,8 @@ class RegColoredPredActualWidget(Widget):
         ))
 
         pred_actual.add_trace(go.Scatter(
-            x=dataset_to_plot[dataset_to_plot['Error bias'] == 'Majority'][
-                results['utility_columns']['target']],
-            y=dataset_to_plot[dataset_to_plot['Error bias'] == 'Majority'][
-                results['utility_columns']['prediction']],
+            x=dataset_to_plot[dataset_to_plot['Error bias'] == 'Majority'][results_utility_columns.target],
+            y=dataset_to_plot[dataset_to_plot['Error bias'] == 'Majority'][results_utility_columns.prediction],
             mode='markers',
             name='Majority',
             marker=dict(

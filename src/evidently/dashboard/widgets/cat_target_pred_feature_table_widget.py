@@ -33,10 +33,12 @@ class CatTargetPredFeatureTable(Widget):
         if current_data is None:
             raise ValueError("current_data should be present")
 
-        if results.columns.utility_columns.prediction is not None and results.columns.utility_columns.target is not None:
+        target_name = results.columns.utility_columns.target
+
+        if results.columns.utility_columns.prediction is not None and target_name is not None:
             additional_graphs_data = []
             params_data = []
-            for feature_name in results.columns.num_feature_names + results.columns.cat_feature_names:
+            for feature_name in results.columns.get_all_features_list(cat_before_num=False):
                 # add data for table in params
                 params_data.append(
                     {
@@ -62,7 +64,7 @@ class CatTargetPredFeatureTable(Widget):
                 current_data['dataset'] = 'Current'
                 merged_data = pd.concat([reference_data, current_data])
 
-                target_fig = px.histogram(merged_data, x=feature_name, color=results.columns.utility_columns.target,
+                target_fig = px.histogram(merged_data, x=feature_name, color=target_name,
                                           facet_col="dataset",
                                           category_orders={"dataset": ["Reference", "Current"]})
 
@@ -112,10 +114,12 @@ class CatTargetPredFeatureTable(Widget):
                 },
                 additionalGraphs=additional_graphs_data
             )
-        if results.columns.utility_columns.target is not None:
+
+        if target_name is not None:
             additional_graphs_data = []
             params_data = []
-            for feature_name in results.columns.num_feature_names + results.columns.cat_feature_names:
+
+            for feature_name in results.columns.get_all_features_list(cat_before_num=False):
                 # add data for table in params
                 params_data.append(
                     {
@@ -138,7 +142,7 @@ class CatTargetPredFeatureTable(Widget):
                 current_data['dataset'] = 'Current'
                 merged_data = pd.concat([reference_data, current_data])
 
-                target_fig = px.histogram(merged_data, x=feature_name, color=results.columns.utility_columns.target,
+                target_fig = px.histogram(merged_data, x=feature_name, color=target_name,
                                           facet_col="dataset",
                                           category_orders={"dataset": ["Reference", "Current"]})
 

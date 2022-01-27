@@ -27,21 +27,36 @@ class NumOutputDriftWidget(Widget):
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
 
-        results = analyzers_results[NumTargetDriftAnalyzer]
+        results = NumTargetDriftAnalyzer.get_results(analyzers_results)
 
         if current_data is None:
             raise ValueError("current_data should be present")
 
-        if results['utility_columns'][self.kind] is None:
-            return None
+        if self.kind == 'target':
+            if results.columns.utility_columns.target is None:
+                return None
+
+            column_name = results.columns.utility_columns.target
+            metrics = results.target_metrics
+
+        elif self.kind == 'prediction':
+            if results.columns.utility_columns.prediction is None:
+                return None
+
+            column_name = results.columns.utility_columns.prediction
+            metrics = results.prediction_metrics
+
+        else:
+            raise ValueError(f"Widget [{self.title}] requires 'target' or 'prediction' kind parameter value")
+
         # calculate output drift
-        output_p_value = results['metrics'][self.kind + '_drift']
+        output_p_value = metrics.drift
         output_sim_test = "detected" if output_p_value < 0.05 else "not detected"
 
         # plot output distributions
         output_distr = ff.create_distplot(
-            [reference_data[results['utility_columns'][self.kind]],
-             current_data[results['utility_columns'][self.kind]]],
+            [reference_data[column_name],
+             current_data[column_name]],
             ["Reference", "Current"],
             colors=[GREY, RED],
             show_rug=True)

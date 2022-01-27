@@ -3,22 +3,42 @@
 from typing import Optional
 
 import pandas as pd
+from dataclasses import dataclass
 
 from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.options import DataDriftOptions
 from evidently.analyzers.stattests import ks_stat_test
 from evidently.analyzers.utils import process_columns
+from evidently.analyzers.utils import DatasetColumns
 from typing import List, Callable
 
 
-def _compute_correlation(reference_data: pd.DataFrame, current_data: pd.DataFrame, prefix: str,
-                         main_column: str, num_columns: List[str], stats_fun: Callable):
+@dataclass
+class NumDataDriftMetrics:
+    """Class for drift values"""
+    column_name: str
+    reference_correlations: dict
+    current_correlations: dict
+    drift: float
+
+
+def _compute_correlation(
+        reference_data: pd.DataFrame,
+        current_data: pd.DataFrame,
+        prefix: str,
+        main_column: str,
+        num_columns: List[str],
+        stats_fun: Callable
+) -> Optional[NumDataDriftMetrics]:
     if main_column is None:
-        return {}
+        return None
+
     if not pd.api.types.is_numeric_dtype(reference_data[main_column]) or \
             not pd.api.types.is_numeric_dtype(current_data[main_column]):
+
         raise ValueError(f'Column {main_column} should only contain numerical values.')
+
     target_p_value = stats_fun(reference_data[main_column], current_data[main_column])
     metrics = {
         prefix + '_name': main_column,
@@ -29,7 +49,19 @@ def _compute_correlation(reference_data: pd.DataFrame, current_data: pd.DataFram
     curr_target_corr = current_data[num_columns + [main_column]].corr()[main_column]
     target_corr = {'reference': ref_target_corr.to_dict(), 'current': curr_target_corr.to_dict()}
     metrics[prefix + '_correlations'] = target_corr
-    return metrics
+    return NumDataDriftMetrics(
+        column_name=main_column,
+        reference_correlations=ref_target_corr.to_dict(),
+        current_correlations=curr_target_corr.to_dict(),
+        drift=target_p_value,
+    )
+
+
+@dataclass
+class NumTargetDriftAnalyzerResults:
+    columns: DatasetColumns
+    target_metrics: Optional[NumDataDriftMetrics] = None
+    prediction_metrics: Optional[NumDataDriftMetrics] = None
 
 
 class NumTargetDriftAnalyzer(Analyzer):
@@ -40,10 +72,15 @@ class NumTargetDriftAnalyzer(Analyzer):
 
     For reference see https://evidentlyai.com/blog/evidently-014-target-and-prediction-drift
     """
+
+    @staticmethod
+    def get_results(analyzer_results) -> NumTargetDriftAnalyzerResults:
+        return analyzer_results[NumTargetDriftAnalyzer]
+
     def calculate(self,
                   reference_data: pd.DataFrame,
                   current_data: Optional[pd.DataFrame],
-                  column_mapping: ColumnMapping):
+                  column_mapping: ColumnMapping) -> NumTargetDriftAnalyzerResults:
         """Calculate the target and prediction drifts.
 
         With default options, uses a two sample Kolmogorov-Smirnov test at a 0.95 confidence level.
@@ -74,18 +111,23 @@ class NumTargetDriftAnalyzer(Analyzer):
         """
         options = self.options_provider.get(DataDriftOptions)
         columns = process_columns(reference_data, column_mapping)
-        result = columns.as_dict()
+        result = NumTargetDriftAnalyzerResults(columns=columns)
+
         if current_data is None:
             raise ValueError("current_data should not be None")
+
         if set(columns.num_feature_names) - set(current_data.columns):
             raise ValueError(f'Some numerical features in current data {current_data.columns}'
                              f'are not present in columns.num_feature_names')
 
         func = options.num_target_stattest_func or ks_stat_test
-        target_metrics = _compute_correlation(reference_data, current_data, 'target',
-                                              columns.utility_columns.target, columns.num_feature_names, func)
-        prediction_metrics = _compute_correlation(reference_data, current_data, 'prediction',
-                                                  columns.utility_columns.prediction, columns.num_feature_names, func)
-        result['metrics'] = dict(**target_metrics, **prediction_metrics)
+        result.target_metrics = _compute_correlation(
+            reference_data, current_data, 'target',
+            columns.utility_columns.target, columns.num_feature_names, func
+        )
+        result.prediction_metrics = _compute_correlation(
+            reference_data, current_data, 'prediction',
+            columns.utility_columns.prediction, columns.num_feature_names, func
+        )
 
         return result

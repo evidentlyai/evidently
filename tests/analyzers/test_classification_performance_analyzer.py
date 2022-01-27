@@ -1,11 +1,9 @@
 import pytest
-import numpy as np
 from pandas import DataFrame
 from pytest import approx
 
 from evidently import ColumnMapping
 from evidently.analyzers.classification_performance_analyzer import ClassificationPerformanceAnalyzer
-from evidently.options import DataDriftOptions, OptionsProvider
 
 
 @pytest.fixture

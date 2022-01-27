@@ -28,24 +28,39 @@ class ClassMetricsMatrixWidget(Widget):
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
 
-        results = analyzers_results[ClassificationPerformanceAnalyzer]
+        results = ClassificationPerformanceAnalyzer.get_results(analyzers_results)
+        target_name = results.columns.utility_columns.target
+        prediction_name = results.columns.utility_columns.prediction
 
-        if results['utility_columns']['target'] is None or results['utility_columns']['prediction'] is None:
+        if target_name is None or prediction_name is None:
             if self.dataset == 'reference':
                 raise ValueError(f"Widget [{self.title}] requires 'target' and 'prediction' columns.")
+
             return None
-        if self.dataset not in results['metrics'].keys():
-            if self.dataset == 'reference':
+
+        if self.dataset == 'current':
+            result_metrics = results.current_metrics
+
+        elif self.dataset == 'reference':
+            result_metrics = results.reference_metrics
+
+            if result_metrics is None:
                 raise ValueError(f"Widget [{self.title}] required 'reference' results from"
                                  f" {ClassificationPerformanceAnalyzer.__name__} but no data found")
+
+        else:
+            raise ValueError(f"Widget [{self.title}] requires 'current' or 'reference' dataset value")
+
+        if result_metrics is None:
             return None
+
         # plot support bar
-        metrics_matrix = results['metrics'][self.dataset]['metrics_matrix']
+        metrics_matrix = result_metrics.metrics_matrix
         metrics_frame = pd.DataFrame(metrics_matrix)
 
         z = metrics_frame.iloc[:-1, :-3].values
 
-        x = results['target_names'] if results['target_names'] else metrics_frame.columns.tolist()[:-3]
+        x = results.columns.target_names if results.columns.target_names else metrics_frame.columns.tolist()[:-3]
 
         y = ['precision', 'recall', 'f1-score']
 

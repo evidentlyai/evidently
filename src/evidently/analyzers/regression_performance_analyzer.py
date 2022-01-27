@@ -1,15 +1,16 @@
 #!/usr/bin/env python
 # coding: utf-8
-from dataclasses import dataclass
 from typing import Dict, Optional
 
 import pandas as pd
 import numpy as np
+from dataclasses import dataclass
 from scipy.stats import probplot
 
 from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
-from evidently.analyzers.utils import process_columns, DatasetColumns
+from evidently.analyzers.utils import process_columns
+from evidently.analyzers.utils import DatasetColumns
 
 
 class ErrorWithQuantiles:
@@ -99,8 +100,7 @@ class RegressionPerformanceAnalyzer(Analyzer):
                 _prepare_dataset(current_data)
 
                 # calculate quality metrics
-                quality_metrics = _calculate_quality_metrics(current_data, prediction_column,
-                                                                          target_column)
+                quality_metrics = _calculate_quality_metrics(current_data, prediction_column, target_column)
 
                 # error normality
                 current_err_quantiles = _error_with_qantiles(current_data, prediction_column, target_column)

@@ -30,24 +30,37 @@ class NumOutputValuesWidget(Widget):
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
 
-        results = analyzers_results[NumTargetDriftAnalyzer]
+        results = NumTargetDriftAnalyzer.get_results(analyzers_results)
 
         if current_data is None:
             raise ValueError("current_data should be present")
 
-        if results['utility_columns'][self.kind] is None:
-            return None
+        if self.kind == 'target':
+            if results.columns.utility_columns.target is None:
+                return None
+
+            column_name = results.columns.utility_columns.target
+
+        elif self.kind == 'prediction':
+            if results.columns.utility_columns.prediction is None:
+                return None
+
+            column_name = results.columns.utility_columns.prediction
+
+        else:
+            raise ValueError(f"Widget [{self.title}] requires 'target' or 'prediction' kind parameter value")
+
+        utility_columns_date = results.columns.utility_columns.date
         # plot values
-        reference_mean = np.mean(reference_data[results['utility_columns'][self.kind]])
-        reference_std = np.std(reference_data[results['utility_columns'][self.kind]], ddof=1)
-        x_title = "Timestamp" if results['utility_columns']['date'] else "Index"
+        reference_mean = np.mean(reference_data[column_name])
+        reference_std = np.std(reference_data[column_name], ddof=1)
+        x_title = "Timestamp" if utility_columns_date else "Index"
 
         output_values = go.Figure()
 
         output_values.add_trace(go.Scatter(
-            x=reference_data[results['utility_columns']['date']] if results['utility_columns'][
-                'date'] else reference_data.index,
-            y=reference_data[results['utility_columns'][self.kind]],
+            x=reference_data[utility_columns_date] if utility_columns_date else reference_data.index,
+            y=reference_data[column_name],
             mode='markers',
             name='Reference',
             marker=dict(
@@ -57,9 +70,8 @@ class NumOutputValuesWidget(Widget):
         ))
 
         output_values.add_trace(go.Scatter(
-            x=current_data[results['utility_columns']['date']] if results['utility_columns'][
-                'date'] else current_data.index,
-            y=current_data[results['utility_columns'][self.kind]],
+            x=current_data[utility_columns_date] if utility_columns_date else current_data.index,
+            y=current_data[column_name],
             mode='markers',
             name='Current',
             marker=dict(

@@ -24,17 +24,28 @@ class ClassQualityMetricsBarWidget(Widget):
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
 
-        results = analyzers_results[ClassificationPerformanceAnalyzer]
+        results = ClassificationPerformanceAnalyzer.get_results(analyzers_results)
+        target_name = results.columns.utility_columns.target
+        prediction_name = results.columns.utility_columns.prediction
 
-        if results['utility_columns']['target'] is None or results['utility_columns']['prediction'] is None:
+        if target_name is None or prediction_name is None:
             if self.dataset == 'reference':
                 raise ValueError(f"Widget [{self.title}] requires 'target' and 'prediction' columns.")
             return None
-        if self.dataset not in results['metrics'].keys():
-            if self.dataset == 'reference':
+
+        if self.dataset == 'current':
+            result_metrics = results.current_metrics
+
+        elif self.dataset == 'reference':
+            result_metrics = results.reference_metrics
+
+            if not result_metrics:
                 raise ValueError(f"Widget [{self.title}] required 'reference' results from"
                                  f" {ClassificationPerformanceAnalyzer.__name__} but no data found")
-            return None
+
+        else:
+            raise ValueError(f"Widget [{self.title}] requires 'current' or 'reference' dataset value")
+
         # plot quality metrics bar
         return BaseWidgetInfo(
             title=self.title,
@@ -43,19 +54,19 @@ class ClassQualityMetricsBarWidget(Widget):
             params={
                 "counters": [
                     {
-                        "value": str(round(results['metrics'][self.dataset]['accuracy'], 3)),
+                        "value": str(round(result_metrics.accuracy, 3)),
                         "label": "Accuracy"
                     },
                     {
-                        "value": str(round(results['metrics'][self.dataset]['precision'], 3)),
+                        "value": str(round(result_metrics.precision, 3)),
                         "label": "Precision"
                     },
                     {
-                        "value": str(round(results['metrics'][self.dataset]['recall'], 3)),
+                        "value": str(round(result_metrics.recall, 3)),
                         "label": "Recall"
                     },
                     {
-                        "value": str(round(results['metrics'][self.dataset]['f1'], 3)),
+                        "value": str(round(result_metrics.f1, 3)),
                         "label": "F1"
                     }
                 ]
