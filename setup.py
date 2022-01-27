@@ -23,12 +23,13 @@ jstargets = [
 package_data_spec = {
     'evidently': [
         'nbextension/static/*.*js*',
-        'nbextension/static/*.woff2',
+        'nbextension/static/*.*woff2*',
     ]
 }
 
 data_files_spec = [
     ('share/jupyter/nbextensions/evidently', nb_path, '*.js*'),
+    ('share/jupyter/nbextensions/evidently', nb_path, '*.woff2'),
     ('etc/jupyter/nbconfig/notebook.d', HERE, 'evidently.json')
 ]
 
@@ -62,7 +63,6 @@ setup_args = dict(
             "pytest==6.2.5",
             "types-PyYAML==6.0.1",
             "types-requests==2.26.0",
-            "packaging==21.0",
         ]
     },
     entry_points={},
