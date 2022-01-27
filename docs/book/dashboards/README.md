@@ -192,7 +192,7 @@ drift_dashboard_with_mapping = Dashboard(tabs=[DataDriftTab()])
 drift_dashboard_with_mapping.calculate(reference_data, recent_data, 
     column_mapping=column_mapping)
 ```
-## Display the dashboard in Jupyter notebook
+### Display the dashboard in Jupyter notebook
 
 You can display the chosen Tabs in a single Dashboard directly in the notebook:
 
@@ -205,7 +205,7 @@ drift_dashboard.show()
 **If the report is not displayed, this might be due to the dataset size.** The dashboard contains the data necessary to generate interactive plots and can become large. The limitation depends on infrastructure. In this case, we suggest applying sampling to your dataset. In Jupyter notebook, that can be done directly with pandas. You can also generate JSON profiles instead.
 {% endhint %}
 
-## Export the report as an HTML file
+### Export the report as an HTML file
 
 You can save the report as an HTML file, and open it in your browser.
 
@@ -217,7 +217,7 @@ If you get a security alert, press "trust HTML".
 
 You will need to specify the path where to save your report and the report name. The report will not open automatically. To explore it, you should open it from the destination folder.
 
-## Code examples
+### Code examples
 
 To generate the **Data Drift** report and save it as HTML, run:
 
