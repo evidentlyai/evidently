@@ -11,13 +11,13 @@ If you prefer a **video** version, here is a **10-min Quick Start** on how to ge
 {% embed url="https://www.youtube.com/watch?v=g0Z2e-IqmmU&ab_channel=EvidentlyAI" %}
 
 In this tutorial, we will go through the following steps for Jupyter notebook and Colab:
-*Install Evidently
-*Prepare the data
-*Understand output formats
-*Generate data drift dashboards 
-*Generate prediction drift dashboards 
-*Generate model performance dashboards  
-*Generate JSON profiles  
+* Install Evidently
+* Prepare the data
+* Understand output formats
+* Generate data drift dashboards 
+* Generate prediction drift dashboards 
+* Generate model performance dashboards  
+* Generate JSON profiles  
 
  
 ## 1. Install Evidently
