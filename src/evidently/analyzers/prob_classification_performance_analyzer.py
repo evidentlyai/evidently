@@ -53,9 +53,9 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
             avg_precision = metrics.precision_score(reference_data[target_column], prediction_labels,
                                                     average='macro')
             avg_recall = metrics.recall_score(reference_data[target_column], prediction_labels,
-                                                average='macro')
+                                              average='macro')
             avg_f1 = metrics.f1_score(reference_data[target_column], prediction_labels,
-                                          average='macro')
+                                      average='macro')
 
             result['metrics']['reference']['accuracy'] = accuracy_score
             result['metrics']['reference']['precision'] = avg_precision
@@ -66,15 +66,14 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
 
             # calculate class support and metrics matrix
             metrics_matrix = metrics.classification_report(reference_data[target_column], prediction_labels,
-                                                               output_dict=True)
+                                                           output_dict=True)
             result['metrics']['reference']['metrics_matrix'] = metrics_matrix
             if len(prediction_column) > 2:
                 roc_aucs = metrics.roc_auc_score(binaraized_target, array_prediction, average=None)
                 result['metrics']['reference']['roc_aucs'] = roc_aucs.tolist()
 
             # calculate confusion matrix
-            conf_matrix = metrics.confusion_matrix(reference_data[target_column],
-                                                       prediction_labels)
+            conf_matrix = metrics.confusion_matrix(reference_data[target_column], prediction_labels)
 
             result['metrics']['reference']['confusion_matrix'] = {}
             result['metrics']['reference']['confusion_matrix']['labels'] = labels
@@ -162,7 +161,6 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
                     maper = {True: prediction_column[0], False: prediction_column[1]}
                     prediction_labels = (current_data[prediction_column[0]] >= classification_threshold).map(maper)
 
-
                 result['metrics']['current'] = {}
 
                 # calculate quality metrics
@@ -172,9 +170,9 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
                 avg_precision = metrics.precision_score(current_data[target_column], prediction_labels,
                                                         average='macro')
                 avg_recall = metrics.recall_score(current_data[target_column], prediction_labels,
-                                                    average='macro')
+                                                  average='macro')
                 avg_f1 = metrics.f1_score(current_data[target_column], prediction_labels,
-                                            average='macro')
+                                          average='macro')
 
                 result['metrics']['current']['accuracy'] = accuracy_score
                 result['metrics']['current']['precision'] = avg_precision
@@ -185,7 +183,7 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
 
                 # calculate class support and metrics matrix
                 metrics_matrix = metrics.classification_report(current_data[target_column], prediction_labels,
-                                                                   output_dict=True)
+                                                               output_dict=True)
                 result['metrics']['current']['metrics_matrix'] = metrics_matrix
 
                 if len(prediction_column) > 2:

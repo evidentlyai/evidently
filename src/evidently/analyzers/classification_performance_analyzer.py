@@ -66,12 +66,12 @@ class ClassificationPerformanceAnalyzer(Analyzer):
                 result['metrics']['current'] = {}
 
                 accuracy_score = metrics.accuracy_score(current_data[target_column], current_data[prediction_column])
-                avg_precision = metrics.precision_score(current_data[target_column], current_data[prediction_column], 
+                avg_precision = metrics.precision_score(current_data[target_column], current_data[prediction_column],
                                                         average='macro')
                 avg_recall = metrics.recall_score(current_data[target_column], current_data[prediction_column],
                                                   average='macro')
                 avg_f1 = metrics.f1_score(current_data[target_column], current_data[prediction_column], average='macro')
-              
+
                 result['metrics']['current']['accuracy'] = accuracy_score
                 result['metrics']['current']['precision'] = avg_precision
                 result['metrics']['current']['recall'] = avg_recall
