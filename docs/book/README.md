@@ -88,3 +88,8 @@ Evidently configures the monitoring on top of the streaming data and emits the m
 There is a lightweight [integration with Prometheus and Grafana](integrations/evidently-and-grafana.md) that comes with pre-built dashboards.
 
 ![](.gitbook/assets/grafana\_dashboard.jpg)
+
+## Community and support 
+
+Evidently is in active development, and we are happy to take feedback. If you have any questions, ideas or want to hang out and chat about running ML models in prodiction [join our Discord community](https://discord.com/invite/xZjKRaNp8b)!
+
