@@ -18,7 +18,7 @@ class QualityMetricsOptions:
             "cut_quantile": self.cut_quantile
         }
 
-    def get_cut_quantile(self, feature_name: str) -> Tuple[str, float]:
+    def get_cut_quantile(self, feature_name: str) -> Optional[Tuple[str, float]]:
         if isinstance(self.cut_quantile, tuple):
             return self.cut_quantile
         if isinstance(self.cut_quantile, dict):
