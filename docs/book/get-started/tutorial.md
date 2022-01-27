@@ -103,7 +103,7 @@ Let us split the data in half, and treat the first 75 rows as reference, and the
 
 ## 4. Generate the Data Drift dashboard
 
-![Part of the Data Drift Report.](.gitbook/assets/evidently\_github.png)
+![Part of the Data Drift Report.](../.gitbook/assets/evidently\_github.png)
 
 Data drift dashboard helps visualize the change in the input data distributions, and see the results of the statistical tests. This helps understand if the data has shifted and serve as proxy to evaluate model performance, even if you do not have the true labels yet.   
 
