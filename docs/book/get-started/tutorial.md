@@ -77,10 +77,13 @@ from evidently.dashboard.tabs import (
     ProbClassificationPerformanceTab,
 )
 ```
+{% hint style="info" %}
+**What is included in the reports?** You can explore [this section](../reports) to understand the components, statistical tests and metrics included in each report by default.
+{% endhint %}
 
 ## 3. Prepare the data
 
-In this example, you will work with `pandas.DataFrames`. For simplicity, we take a toy dataset. In real use case, you can swap it for the real logs with input data and/or model predictions.  
+In this example, you will work with `pandas.DataFrames`. For simplicity, we take a toy dataset. In the real use case, you can swap it for the real logs with input data, model predictions and true lables, if available.  
 
 Create a `Pandas DataFrame` with the dataset to analyze:
 
@@ -95,18 +98,14 @@ You can prepare two separate datasets with identical schema. You can also procee
 Let us split the data in half, and treat the first 75 rows as reference, and the remaining as the current data.
 
 {% hint style="info" %}
-**Column_mapping.** In this simple example, we can directly display the dashboard in the next step. In other cases, you might need to add column_mapping. For example, if you have encoded categorical features, or need to point to the name of the target column. Consult this section ADD LINK for help.
+**Column_mapping.** In this simple example, we can directly display the dashboard in the next step. In other cases, you might need to add column_mapping dictionary to help the tool process the input data correctly. For example, if you have encoded categorical features, or need to point to the name of the target column. Consult this section ADD LINK for help.
 {% endhint %}
 
 ## 4. Generate the Data Drift dashboard
 
-(.gitbook/assets/evidently\_github.png)
+![Part of the Data Drift Report.](.gitbook/assets/evidently\_github.png)
 
-Data drift dashboard helps visualize the change in the input data distributions, and see the results of the statistical tests. 
-
-{% hint style="info" %}
-**What is included in the reports?** You can explore [this section](../reports) to understand the components, statistical tests and metrics included in each report by default.
-{% endhint %}
+Data drift dashboard helps visualize the change in the input data distributions, and see the results of the statistical tests. This helps understand if the data has shifted and serve as proxy to evaluate model performance, even if you do not have the true labels yet.   
 
 To generate the Data Drift dashboard, run:
 
@@ -118,40 +117,54 @@ iris_data_drift_report.show()
 ```
 If you use Jupyter notebook or Colab, the report will appear directly in the notebook. 
 
-You can also save it as an HTML file externally.
+You can also save it as an HTML file externally. If you get a security alert, press "trust html".
 
 ```
 iris_data_drift_report.save("reports/my_report.html")
 ```
+
+To see the report, go to the specified directory and open the file. 
+
 {% hint style="info" %}
-
-To see the report, go to the specified directly and open the file. 
-
-**This might work slightly different in other notebook environments.** In some environments, like Jupyter lab, you might not be able to display the dashboard directly in the cell. In this case, try exporting the file as an HTML. Consult this section ADD LINK to check the supported environments. In other notebooks like Kaggle and Deepnote, you might need to explicitly add an argument: iris_data_drift_report.show(mode='inline'). Consult this section ADD LINK for help.
+**This might work slightly differently in other notebook environments.** In some environments, like Jupyter lab, you might not be able to display the dashboard directly in the cell. In this case, try exporting the file as an HTML. Consult this section ADD LINK to check the supported environments. In other notebooks like Kaggle and Deepnote, you might need to explicitly add an argument: iris_data_drift_report.show(mode='inline'). Consult this section ADD LINK for help.
 {% endhint %}
 
 ## 5. Generate the Target Drift dashboard
 
+Next, you will generate a Target Drift dashboard.
+
+There are two use cases for this report. If you have the model predictions, you can use this report to evaluate the **prediction drift**. This will help see if there is a statistically significant change in the model outputs, for example, if a certain category is predicted more frequently. If you have the true labels, you can use the report to evaluate **target drift**. This will help see if the concept behind the model has evolved, for example, if a certain label in fact appears more frequently. 
+
+In the toy dataset, we already have the true labels. Let us treat it as such, and add the target column to the initial dataset.
+
+```python
+iris_frame['target'] = iris.target
+```
+This toy dataset is meant to perform a classification task, and the target is categorical. You should use the Categorical Target Drift report.
+
+To generate the Target Drift report, run:
+
+```python
+iris_data_and_target_drift_report = Dashboard(tabs=[DataDriftTab, CatTargetDriftTab])
+iris_data_and_target_drift_report.calculate(iris_frame[:75], iris_frame[75:], 
+    column_mapping=None)
+iris_data_and_target_drift_report.show()
+```
+
+## 6. Generate the Model Performance dashboard
+
+If you have the labels, you can also generate the model performance dashboard. It helps explore the model quality and understand the errors.
 
 
-## 6. Generate the Model Performnance dashboard
 
 
 {% hint style="info" %}
-**If you use a larger dataset, the report might take time to show.** The dashboard contains the data necessary to generate interactive plots and can become large. The limitation depends on infrastructure. In this case, we suggest applying sampling to your dataset. In Jupyter notebook, that can be done directly with pandas. Consult this section ADD LINK to check.
+**Large reports might take time to load.** In this simple example, we work with a small dataset, so the report should appear quickly. If you use a larger dataset, the report might take time to show, since it contains the data needed for interactive plots. The size limitation depends on your infrastructure. In this case, we suggest applying sampling to your dataset. In Jupyter notebook, that can be done directly with pandas. 
 {% endhint %}
 
-```python
-iris_data_drift_report = Dashboard(tabs=[DataDriftTab])
-iris_data_drift_report.calculate(iris_frame[:75], iris_frame[75:], 
-    column_mapping = None)
-iris_data_drift_report.save("reports/my_report.html")
-```
 
+## 7. Modify the dashboard
 
-Work in progress
-
---- 
 Model Performance reports can be generated for a **single** dataset, with no comparison performed. You can simply pass a single `DataFrame`or `csv` file.&#x20;
 
 The data structure is different depending on the report type.
@@ -209,21 +222,6 @@ To generate the **Data Drift** report and save it as HTML, run:
 
 ## 4. Understand which other Tabs and Sections are available
 
-
-To generate the **Data Drift** and the **Categorical Target Drift** reports, first add a target (and/or prediction) column to the initial dataset:&#x20;
-
-```python
-iris_frame['target'] = iris.target
-```
-
-Then run:
-
-```python
-iris_data_and_target_drift_report = Dashboard(tabs=[DataDriftTab, CatTargetDriftTab])
-iris_data_and_target_drift_report.calculate(iris_frame[:75], iris_frame[75:], 
-    column_mapping=None)
-iris_data_and_target_drift_report.save("reports/my_report_with_2_tabs.html")
-```
 
 If you get a security alert, press "trust html". The HTML report does not open automatically. To explore it, you should open it from the destination folder.
 
