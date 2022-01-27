@@ -4,27 +4,36 @@ description: How to profile ML models and data.
 
 # JSON Profiles
 
+## Overview
+
 To get the calculation results as a JSON file, you should create a **Profile**.
 
-To specify which analysis you want to perform, you should select a **Section**. You can combine several sections together in a single Profile. Each section will contain a summary of metrics, results of statistical tests, and simple histograms that correspond to the chosen [Report](../get-started/reports/) type.&#x20;
+JSON profiles helps integrate Evidently in your prediction pipelines. For example, you log and store JSON profiles for further analysis, or build a conditional workflow based on the result of the check (e.g. to trigger alert, retraining, or generate a visual report). 
 
-You can generate profiles from Jupyter notebook or using Terminal.&#x20;
+The profiles calculate the same metrics and statistical tests as visual reports. You can thing about profiles as "JSON versions" of reports. 
 
-**This option helps integrate Evidently in your prediction pipelines:** for example, you can use Evidently to calculate drift, and then log the needed metrics externally (e.g. using [Mlflow](../step-by-step-guides/integrations/evidently-+-mlflow.md)).
+To specify which analysis you want to perform, you should select a **Section**. You can combine several sections together in a single Profile. Each section will contain a summary of metrics, results of statistical tests, and simple histograms that correspond to the chosen [Report](../reports/).
+
+You can generate JSON profiles in Jupyter notebook, Colab and other notebooks, or using the command-line interface. 
+
+To understand requirements for the data inputs and understand column mapping, explore the corresponding sections in the [Dashboards](../dashboards/) section of documention: it works just the same.
+
+You can also explore sepcific [integrations](../integrations) to see how Evidently works with other ML tools.
 
 
-## **Create a JSON profile**
+## How to generate JSON profiles
 
-Alternatively, you can generate and view the output as a JSON profile.
+After [installation](../get-started/install-evidently.md), import `evidently` and the required profiles sections:
 
 ```python
-data_drift_profile = Profile(sections=[DataDriftProfileSection()])
-data_drift_profile.calculate(reference_data, recent_data, 
-    column_mapping=column_mapping)
-data_drift_profile.json()
+import pandas as pd
+from sklearn import datasets
+
+from evidently.model_profile import Profile
+from evidently.model_profile.sections import DataDriftProfileSection
 ```
 
-For each profile, you should specify `sections` to include. They work just like Tabs. You can choose among:
+`Sections` in Profiles work just like `Tabs` in Dashboards. You can choose among:
 
 * `DataDriftProfileSection` to estimate the data drift,
 * `NumTargetDriftProfileSection` to estimate target drift for numerical target,
@@ -33,20 +42,23 @@ For each profile, you should specify `sections` to include. They work just like 
 * `ProbClassificationPerformanceProfileSection` to explore the performance of a probabilistic classification model,
 * `RegressionPerformanceProfileSection` to explore the performance of a regression model.
 
-### Generating JSON profiles
-
-After installing the tool, import Evidently **profile** and the required sections:
+Create a `pandas.DataFrame` with the dataset to analyze:
 
 ```python
-import pandas as pd
-from sklearn import datasets
-
-from evidently.model_profile import Profile
-from evidently.model_profile.sections import DataDriftProfileSection
-
 iris = datasets.load_iris()
 iris_frame = pd.DataFrame(iris.data, columns = iris.feature_names)
 ```
+
+Generate and view the output as a JSON profile.
+
+```python
+data_drift_profile = Profile(sections=[DataDriftProfileSection()])
+data_drift_profile.calculate(reference_data, recent_data, 
+    column_mapping=column_mapping)
+data_drift_profile.json()
+```
+
+### Code examples
 
 To generate the **Data Drift** profile, run:
 
@@ -104,8 +116,7 @@ prob_classification_single_model_performance.calculate(reference_data, None, col
 prob_classification_single_model_performance.json()
 ```
 
-
-## Terminal
+## Command-line interface
 
 To generate the HTML report, run the following command in bash:
 
@@ -243,7 +254,7 @@ You can opt-out from telemetry collection by setting the environment variable:
  EVIDENTLY_DISABLE_TELEMETRY=1
 ```
 
-### Large datasets
+### Sampling for large datasets
 
 As shown in the configuration example above, you can specify **sampling** parameters for large files. You can use different sampling strategies for the reference and current data, or apply sampling only to one of the files.
 
