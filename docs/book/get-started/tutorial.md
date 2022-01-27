@@ -1,27 +1,103 @@
 # Getting Started Tutorial
 
-You can generate the dashboards and JSON profiles using **Jupyter notebook** or **terminal**. You can also use Google Colab, Kaggle Kernel, Deepnote. All options are described below.
+In this tutorial, we will use Evidently to generate profiles and visual reports on data drift and model performance. You can reproduce the steps in Jupyter notebooks or Colab. 
 
-{% hint style="info" %}
-If you want to **display** the dashboards directly in Jupyter notebook, make sure you [installed](install-evidently.md) the Jupyter **nbextension**.
-{% endhint %}
+We suggest going through this tutorial once to understand the key tool functionality on a toy dataset. Once you’ve completed it, you can further explore more advanced features such as customization and setting up real-time monitoring. 
 
-For a more **detailed version**, head to the step-by-step guide on using `evidently` in [Jupyter notebook](../step-by-step-guides/step-by-step-guide-for-jupyter-notebooks.md) or [Command-line interface](../step-by-step-guides/cli.md).
+To complete the tutorial, you need basic knowledge of Python and familiarity with notebook environments. You should be able to complete it in under 10 minutes.
 
-If you prefer a **video** version, here is a **10-min Quick Start** on how to generate Data and Target Drift reports and JSON profiles in the Jupyter notebook.&#x20;
+If you prefer a **video** version, here is a **10-min Quick Start** on how to generate Data and Target Drift reports and JSON profiles in the Jupyter notebook.
 
 {% embed url="https://www.youtube.com/watch?v=g0Z2e-IqmmU&ab_channel=EvidentlyAI" %}
 
+In this tutorial, we will go through the following steps for Jupyter notebook and Colab:
+*Install Evidently
+*Prepare the data
+*Understand output formats
+*Generate data drift dashboards 
+*Generate prediction drift dashboards 
+*Generate model performance dashboards  
+*Generate JSON profiles  
+
+ 
+## 1. Install Evidently
+
+### MAC OS and Linux
+
+To install Evidently using the pip package manager, run:
+
+```bash
+$ pip install evidently
+```
+If you want to see reports inside a Jupyter notebook, you need to also install the Jupyter **nbextension**. After installing `evidently`, run the **two following commands** in the terminal from the Evidently directory.
+
+To install jupyter nbextension, run:
+
+```
+$ jupyter nbextension install --sys-prefix --symlink --overwrite --py evidently
+```
+
+To enable it, run:
+
+```
+$ jupyter nbextension enable evidently --py --sys-prefix
+```
+
+That's it!
+
+### Google Colab, Kaggle Kernel, Deepnote
 
 
-## Prepare the data
+To install `evidently`, run the following command in the notebook cell:
 
-To generate the reports using the **Jupyter notebook** or anther notebook environment, prepare the data as pandas `DataFrames`. To use the **terminal**, prepare it as `csv`files.
+```
+!pip install evidently
+```
+### Windows
 
-You can prepare two datasets. The first should include the **reference** data, the second—**current** production data. The structure of datasets should be identical.
+Unfortunately, building reports inside a **Jupyter notebook** is **not yet possible** for Windows. You can still install Evidently and use it to generate reports as a separate HTML file.
 
-You can also generate comparative reports from a **single** `DataFrame`or `csv` file. You will need to **identify rows** that refer to reference and production data.
+To install Evidently, run:
 
+```bash
+$ pip install evidently
+```
+
+## 2. Import Evidently
+
+After installing the tool, import `evidently` and the required tabs. Each tab corresponds to a specific report type. In this example, you'd use 3 different reports. 
+
+```python
+import pandas as pd
+from sklearn import datasets
+
+from evidently.dashboard import Dashboard
+from evidently.dashboard.tabs import (
+    DataDriftTab,
+    CatTargetDriftTab,
+    ProbClassificationPerformanceTab,
+)
+```
+
+## 3. Prepare the data
+
+In this example, you will work with `pandas.DataFrames`. For simplicity, we take a toy dataset. In real use case, you can swap it for the real logs with input data and/or model predictions.  
+
+Create a `Pandas DataFrame` with the dataset to analyze:
+
+```python
+iris = datasets.load_iris()
+iris_frame = pd.DataFrame(iris.data, columns = iris.feature_names)
+```
+To evaluate things like data drift, you would need two datasets. The first one is the baseline: this can often be the data used in training. We call it **reference** data. The second dataset is the **current** production data. 
+
+You can use two separate datasets with identical schema. In this example, we proceed with one dataset but explicitly **identify rows** that refer to reference and production data.
+
+
+
+Work in progress
+
+--- 
 Model Performance reports can be generated for a **single** dataset, with no comparison performed. You can simply pass a single `DataFrame`or `csv` file.&#x20;
 
 The data structure is different depending on the report type.
@@ -58,28 +134,9 @@ All options are described below.
 
 ### Generating dashboards and HTML reports
 
-After installing the tool, import `evidently` and the required tabs:
 
-```python
-import pandas as pd
-from sklearn import datasets
 
-from evidently.dashboard import Dashboard
-from evidently.dashboard.tabs import (
-    DataDriftTab,
-    CatTargetDriftTab,
-    RegressionPerformanceTab,
-    ClassificationPerformanceTab,
-    ProbClassificationPerformanceTab,
-)
-```
 
-Create a `Pandas DataFrame` with the dataset to analyze:
-
-```python
-iris = datasets.load_iris()
-iris_frame = pd.DataFrame(iris.data, columns = iris.feature_names)
-```
 
 `Dashboard` generates an interactive report that includes the selected `Tabs`.&#x20;
 
@@ -200,3 +257,7 @@ The `show()` method has the argument `mode`, which can take the following option
 * **auto** - the default option. Ideally, you will not need to specify the value for `mode` and use the default. But, if it does not work (in case we failed to determine the environment automatically), consider setting the correct value explicitly.
 * **nbextension** - to show the UI using nbextension. Use this option to display dashboards in Jupyter notebooks (it should work automatically).
 * **inline** - to insert the UI directly into the cell. Use this option for Google Colab, Kaggle Kernels and Deepnote. For Google Colab, this should work automatically, for **Kaggle Kernels** and **Deepnote** the option should be specified explicitly.
+
+Understand all reports.
+
+You can later refere to the Dashboard and Profile pages that sum up all the functionality.
