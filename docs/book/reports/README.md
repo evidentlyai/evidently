@@ -4,8 +4,6 @@ description: What each report contains and how and when to use them.
 
 # Reports
 
-## Reports
-
 ![](../.gitbook/assets/image%20(2).png)
 
 Evidently includes a set of pre-built Reports. Each of them addresses a specific aspect of the data or model performance. You can think of reports as combinations of the metrics and statistial tests that are grouped together.  
