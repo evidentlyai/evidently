@@ -8,17 +8,17 @@ description: How to profile ML models and data.
 
 To get the calculation results as a JSON file, you should create a **Profile**.
 
-JSON profiles helps integrate Evidently in your prediction pipelines. For example, you log and store JSON profiles for further analysis, or build a conditional workflow based on the result of the check (e.g. to trigger alert, retraining, or generate a visual report). 
+JSON profiles help integrate Evidently in your prediction pipelines. For example, you can log and store JSON profiles for further analysis, or build a conditional workflow based on the result of the check (e.g. to trigger alert, retraining, or generate a visual report). 
 
-The profiles calculate the same metrics and statistical tests as visual reports. You can thing about profiles as "JSON versions" of reports. 
+The profiles calculate the same metrics and statistical tests as visual reports. You can think about profiles as "JSON versions" of the Evidently dashboards. 
 
-To specify which analysis you want to perform, you should select a **Section**. You can combine several sections together in a single Profile. Each section will contain a summary of metrics, results of statistical tests, and simple histograms that correspond to the chosen [Report](../reports/).
+To specify which analysis you want to perform, you should select a **Section**. You can combine several sections in a single Profile. Each section will contain a summary of metrics, results of statistical tests, and simple histograms that correspond to the chosen [Report](../reports/).
 
-You can generate JSON profiles in Jupyter notebook, Colab and other notebooks, or using the command-line interface. 
+You can generate JSON profiles in Jupyter notebook, Colab and other notebooks, or use the command-line interface. 
 
-To understand requirements for the data inputs and understand column mapping, explore the corresponding sections in the [Dashboards](../dashboards/) section of documention: it works just the same.
+To understand requirements for the data inputs and understand column mapping, explore the corresponding sections in the [Dashboards](../dashboards/) section of the documentation: it works just the same.
 
-You can also explore sepcific [integrations](../integrations) to see how Evidently works with other ML tools.
+You can also explore specific [integrations](../integrations) to see how Evidently works with other ML tools.
 
 
 ## How to generate JSON profiles
