@@ -1,81 +1,85 @@
 ---
-description: How to generate visual reports in Jupyter notebook or other environments.
+description: How to generate visual reports on data and model performnace.
 ---
 
 # Dashboards
 
+## Overview
 
-## Dashboards
+Dashboards help visually explore and evaluate the data and model performance.
 
-To display the output in the Jupyter notebook, you can create a visual **Dashboard.**&#x20;
+You can generate dashboards in certain notebook environments (see full list below) or using the command-line interface. The dashboards can be displayed directly in the notebook, or exported as a separate HTML file. 
 
-To specify which analysis you want to perform, you should select a **Tab** (for example, a Data Drift tab)**.** You can combine several tabs in a single Dashboard (for example, Data Drift and Prediction Drift). Each tab will contain a combination of metrics, interactive plots, and tables for a chosen [Report](../get-started/reports/) type.&#x20;
+To specify which analysis you want to perform, you should select a **Tab** (for example, a Data Drift tab). You can combine several tabs in a single Dashboard (for example, Data Drift and Prediction Drift). Each tab will contain a combination of metrics, interactive plots, and tables for a chosen [Report](../reports/) type.
 
-You can also save the Dashboard as **a standalone HTML file.** You can group several Tabs in one file.&#x20;
+For a step-by-step introduction, we recommend you to go first through the [Getting Started tutorial](../get-started/tutorial.md).
 
-You can generate HTML files from Jupyter notebook or using Terminal.&#x20;
+## Supported environments
 
-**This option helps visually explore and evaluate model performance and errors.**
-
-
-Take the following steps to create and display a `Dashboard` in Jupyter notebook, export the report as an HTML file, or generate a JSON `Profile`.&#x20;
+You can generate the dashboards in **Jupyter notebooks**. 
 
 {% hint style="info" %}
 If you want to display the dashboards in Jupyter notebook, make sure you [installed](../get-started/install-evidently.md) the Jupyter **nbextension**.
 {% endhint %}
 
-You can also use **Google Colab**, **Kaggle Kernel**, or **Deepnote**.
+You can also use **Google Colab**, **Kaggle Kernel**, or **Deepnote**. Review the related section for some details. 
 
 If you use **Jupyter Lab**, you won't be able to explore the reports inside a Jupyter notebook. However, the report generation in a separate HTML file will work correctly.
 
-## **1. Prepare your data as pandas `DataFrames`**
+## Data inputs
 
-To analyze data or target drift, you always need two datasets. For the model performance reports, the second dataset is optional.&#x20;
+If you work in the notebook, you should prepare the data as a `pandas.DataFrame`. If you use command-line interface, you need the `csv` files. 
 
-* The first dataset is the **reference**. This can be training or earlier production data.&#x20;
-* The second dataset is **current**. It should include the recent production data. &#x20;
+To generate the dashboards, Evidently usually performs comparison between two datasets. 
 
-You can prepare the datasets as **two** pandas `DataFrames`. The structure of both datasets should be identical. Performance or drift will be evaluated by comparing the current data to the reference data.
+* The first dataset is the **reference**. This can be training or earlier production data that serves as a baseline for comparoson.
+* The second dataset is **current**. It can include the recent production data. 
 
 ![](<../.gitbook/assets/two\_datasets\_classification (1).png>)
 
-You can also prepare a **single** pandas DataFrame to generate a comparative report. When calling the dashboard, you should specify the rows that belong to the reference and production dataset accordingly.&#x20;
+You can prepare two separate datasets. You can also prepare only one dataset and identify the rows that refer to reference and current data accordingly.
 
-Model Performance reports can be generated for a **single** dataset, with no comparison performed. In this case, you can simply pass a single `DataFrame`.&#x20;
+For some reports (e.g. model performance), the second dataset is optional. You can generate a dashboard with no comparison performed. In this case, simply pass a single dataset.
+
+{% hint style="info" %}
+If your dataset is large, we suggest taking a sample. If you work in the notebook, you can do that with pandas before generating the dashboard. If you work using CLI, you can specify that in the configuration.
+{% endhint %}
 
 ### Dataset structure
 
-The data structure is different depending on the report type.
+The expected data schema is different depending on the report type.
 
-* For the **Data Drift** report, include the input features only.&#x20;
-* For the **Target Drift** reports, include the input features and the column with the Target and/or the Prediction.&#x20;
-* For the **Model Performance** reports, include the input features, the column with the Target, and the column with the Prediction.
+* For the **Data Drift** report, include the input features only.
+* For the **Target Drift** reports, include the input features and Target and/or the Prediction column.
+* For the **Model Performance** reports, include the input features, Target, and Prediction.
 
-If you include more columns than needed for a given report, they will be ignored. &#x20;
+If you include more columns than needed for a given report, they will be ignored. 
+
+If you pass two datasets, the structure of both datasets should be identical. 
 
 Below is a summary of the data requirements:
 
 | Report Type                                                                                                    | Feature columns  | Target column                     | Prediction column                 | Works with a single dataset |
 | -------------------------------------------------------------------------------------------------------------- | ---------------- | --------------------------------- | --------------------------------- | --------------------------- |
-| ****[**Data Drift**](../get-started/reports/data-drift.md)****                                                             | Required         | No                                | No                                | No                          |
-| ****[**Numerical Target Drift**](../get-started/reports/num-target-drift.md)****                                           | Required         | Target and/or Prediction required | Target and/or Prediction required | No                          |
-| ****[**Categorical Target Drift** ](../get-started/reports/categorical-target-drift.md)****                                | Required         | Target and/or Prediction required | Target and/or Prediction required | No                          |
-| ****[**Regression Performance**](../get-started/reports/reg-performance.md)****                                            | Required         | Required                          | Required                          | Yes                         |
-| ****[**Classification Performance**](../get-started/reports/classification-performance.md)****                             | Required         | Required                          | Required                          | Yes                         |
-| ****[**Probabilistic Classification Performance**](../get-started/reports/probabilistic-classification-performance.md)**** | Required         | Required                          | Required                          | Yes                         |
+| ****[**Data Drift**](../reports/data-drift.md)****                                                             | Required         | No                                | No                                | No                          |
+| ****[**Numerical Target Drift**](../reports/num-target-drift.md)****                                           | Required         | Target and/or Prediction required | Target and/or Prediction required | No                          |
+| ****[**Categorical Target Drift** ](../reports/categorical-target-drift.md)****                                | Required         | Target and/or Prediction required | Target and/or Prediction required | No                          |
+| ****[**Regression Performance**](../reports/reg-performance.md)****                                            | Required         | Required                          | Required                          | Yes                         |
+| ****[**Classification Performance**](../reports/classification-performance.md)****                             | Required         | Required                          | Required                          | Yes                         |
+| ****[**Probabilistic Classification Performance**](../reports/probabilistic-classification-performance.md)**** | Required         | Required                          | Required                          | Yes                         |
 
 ### `DataFrame` requirements
 
 Make sure the data complies with the following expectations.
 
-1\) All column names are `string`&#x20;
+1\) All column names are `string`
 
-2\) All feature columns that are analyzed for drift have the numerical type `(np.number)`&#x20;
+2\) All feature columns that are analyzed for drift have the numerical type `(np.number)`
 
-* **All non-numerical columns will be ignored**. Categorical data can be encoded as numerical labels and specified in the column mapping
-* **The datetime column is the only exception.** If available, it will be used as the x-axis in the data plots.&#x20;
+* **All non-numerical columns will be ignored**. Categorical data can be encoded as numerical labels and specified in the column mapping. 
+* **The datetime column is the only exception.** If available, it will be used as the x-axis in the data plots.
 
-## **2. Pass the `column_mapping` into `Dashboard`**&#x20;
+## Column mapping 
 
 If the `column_mapping` is not specified or set as `None`, we use the default mapping strategy:
 
@@ -140,16 +144,39 @@ For binary classification, class order matters. The tool expects that the target
 
 {% embed url="https://www.youtube.com/watch?v=MiSl73LRj5I&t=7s&ab_channel=EvidentlyAI" %}
 
-## **3. Generate the report**
+## How to generate dashboards
+
+After [installation](../get-started/install-evidently.md), import `evidently` and the required tabs:
+
+```python
+import pandas as pd
+from sklearn import datasets
+
+from evidently.dashboard import Dashboard
+from evidently.dashboard.tabs import (
+    DataDriftTab,
+    CatTargetDriftTab,
+    RegressionPerformanceTab,
+    ClassificationPerformanceTab,
+    ProbClassificationPerformanceTab,
+)
+```
+
+Create a `pandas.DataFrame` with the dataset to analyze:
+
+```python
+iris = datasets.load_iris()
+iris_frame = pd.DataFrame(iris.data, columns = iris.feature_names)
+```
 
 You can choose one or several of the following **Tabs**.
 
 * `DataDriftTab` to estimate the **data drift**
-* `NumTargetDriftTab` to estimate **target drift** for the numerical **** target (for problem statements with the numerical target function: regression, probabilistic classification or ranking, etc.)
+* `NumTargetDriftTab` to estimate **target drift** for the numerical target (for problem statements with the numerical target function: regression, probabilistic classification or ranking, etc.)
 * `CatTargetDriftTab` to estimate **target drift** for the categorical target (for problem statements with the categorical target function: binary classification, multi-class classification, etc.)
 * `RegressionPerformanceTab` to explore the **performance** of a regression model.
-* `ClassificationPerformanceTab` to explore the **performance** of a classification **** model
-* `ProbClassificationPerformanceTab` to explore the **performance** of a probabilistic classification model and the quality of the model calibration
+* `ClassificationPerformanceTab` to explore the **performance** of a classification model.
+* `ProbClassificationPerformanceTab` to explore the **performance** of a probabilistic classification model and the quality of the model calibration.
 
 You can generate the report without specifying the `ColumnMapping`:
 
@@ -168,39 +195,6 @@ drift_dashboard_with_mapping.calculate(reference_data, recent_data,
 
 ### Generating dashboards and HTML reports
 
-After installing the tool, import `evidently` and the required tabs:
-
-```python
-import pandas as pd
-from sklearn import datasets
-
-from evidently.dashboard import Dashboard
-from evidently.dashboard.tabs import (
-    DataDriftTab,
-    CatTargetDriftTab,
-    RegressionPerformanceTab,
-    ClassificationPerformanceTab,
-    ProbClassificationPerformanceTab,
-)
-```
-
-Create a `Pandas DataFrame` with the dataset to analyze:
-
-```python
-iris = datasets.load_iris()
-iris_frame = pd.DataFrame(iris.data, columns = iris.feature_names)
-```
-
-`Dashboard` generates an interactive report that includes the selected `Tabs`.&#x20;
-
-You can choose the following **Tabs**:
-
-* `DataDriftTab` to estimate the **data drift**
-* `NumTargetDriftTab` to estimate **target drift** for the numerical **** target&#x20;
-* `CatTargetDriftTab` to estimate **target drift** for the categorical target&#x20;
-* `RegressionPerformanceTab` to explore the **performance** of a regression model
-* `ClassificationPerformanceTab` to explore the **performance** of a classification **** model
-* `ProbClassificationPerformanceTab` to explore the **performance** of a probabilistic classification model&#x20;
 
 To generate the **Data Drift** report and save it as HTML, run:
 
@@ -511,4 +505,8 @@ Currently, you can choose from the following options:
 * `random` - **random sampling** will be applied. This option works together with `ratio` parameter (see the example with the Profile above)
 
 If you do not specify the sampling parameters in the configuration, it will be treated as none and no sampling will be applied.
+
+
+
+Take the following steps to create and display a `Dashboard` in Jupyter notebook, export the report as an HTML file, or generate a JSON `Profile`.&#x20;
 
