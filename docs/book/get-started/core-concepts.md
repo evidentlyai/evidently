@@ -61,16 +61,5 @@ You can generate HTML files from Jupyter notebook or using Terminal.&#x20;
 
 **This option helps visually explore and evaluate model performance and errors.**
 
-## JSON Profiles
-
-To get the calculation results as a JSON file, you should create a **Profile**.
-
-To specify which analysis you want to perform, you should select a **Section**. You can combine several sections together in a single Profile. Each section will contain a summary of metrics, results of statistical tests, and simple histograms that correspond to the chosen [Report](../get-started/reports/) type.&#x20;
-
-You can generate profiles from Jupyter notebook or using Terminal.&#x20;
-
-**This option helps integrate Evidently in your prediction pipelines:** for example, you can use Evidently to calculate drift, and then log the needed metrics externally (e.g. using [Mlflow](../step-by-step-guides/integrations/evidently-+-mlflow.md)).
-
-
 
 ## &#x20;
