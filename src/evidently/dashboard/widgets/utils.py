@@ -1,7 +1,5 @@
-from typing import Optional, Union, Sequence
-
-import numpy as np
 import pandas as pd
+
 
 class CutQuantileTransformer:
     def __init__(self,
@@ -36,4 +34,3 @@ class CutQuantileTransformer:
             return df[df[feature] <= self.q_val_right]
         else:
             return df[df[feature].between(self.q_val_left, self.q_val_right)]
-            

@@ -4,6 +4,7 @@ from typing import Optional, Dict, Tuple, Union
 DEFAULT_CONF_INTERVAL_SIZE = 1
 DEFAULT_CLASSIFICATION_THRESHOLD = 0.5
 
+
 @dataclass
 class QualityMetricsOptions:
     conf_interval_n_sigmas: int = DEFAULT_CONF_INTERVAL_SIZE
@@ -22,5 +23,5 @@ class QualityMetricsOptions:
             return self.cut_quantile
         if isinstance(self.cut_quantile, dict):
             return self.cut_quantile.get(feature_name, None)
-        raise ValueError(f"""QualityMetricsOptions.remove_outliers 
+        raise ValueError(f"""QualityMetricsOptions.remove_outliers
                                 is incorrect type {type(self.cut_quantile)}""")

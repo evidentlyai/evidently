@@ -146,6 +146,25 @@ class DataDriftTableWidget(Widget):
                 )
             ))
 
+            if date_column:
+                x0 = current_data[date_column].sort_values()[1]
+            else:
+                x0 = current_data.index.sort_values()[1]
+
+            fig.add_trace(go.Scatter(
+                x=[x0, x0],
+                y=[reference_mean - conf_interval_n_sigmas * reference_std,
+                    reference_mean + conf_interval_n_sigmas * reference_std],
+                mode='markers',
+                name='Current',
+                marker=dict(
+                    size=0.01,
+                    color='white',
+                    opacity=0.005
+                ),
+                showlegend=False
+            ))
+
             fig.update_layout(
                 xaxis_title=x_title,
                 yaxis_title=feature_name,

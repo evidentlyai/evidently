@@ -2,14 +2,14 @@
 # coding: utf-8
 import collections
 from typing import Dict, List, Optional, Tuple
+from dataclasses import dataclass
 
 import pandas as pd
 import numpy as np
-from dataclasses import dataclass
 
 from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
-from evidently.options import DataDriftOptions, QualityMetricsOptions
+from evidently.options import DataDriftOptions
 from evidently.analyzers.stattests import chi_stat_test, ks_stat_test, z_stat_test
 from evidently.analyzers.utils import process_columns, DatasetUtilityColumns
 
@@ -47,8 +47,7 @@ class DataDriftAnalyzerResults:
     cat_feature_names: List[str]
     num_feature_names: List[str]
     target_names: Optional[List[str]]
-    data_drift_options: DataDriftOptions
-    quality_metrics_options: QualityMetricsOptions
+    options: DataDriftOptions
     metrics: DataDriftAnalyzerMetrics
 
     def get_all_features_list(self) -> List[str]:
@@ -65,7 +64,6 @@ class DataDriftAnalyzer(Analyzer):
             self, reference_data: pd.DataFrame, current_data: Optional[pd.DataFrame], column_mapping: ColumnMapping
     ) -> DataDriftAnalyzerResults:
         data_drift_options = self.options_provider.get(DataDriftOptions)
-        quality_metrics_options = self.options_provider.get(QualityMetricsOptions)
         columns = process_columns(reference_data, column_mapping)
         if current_data is None:
             raise ValueError("current_data should be present")
@@ -73,7 +71,6 @@ class DataDriftAnalyzer(Analyzer):
         num_feature_names = columns.num_feature_names
         cat_feature_names = columns.cat_feature_names
         drift_share = data_drift_options.drift_share
-        # conf_interval_n_sigmas = quality_metrics_options.сonf_interval_n_sigmas
 
         # calculate result
         features_metrics = {}
@@ -137,8 +134,7 @@ class DataDriftAnalyzer(Analyzer):
             cat_feature_names=columns.cat_feature_names,
             num_feature_names=columns.num_feature_names,
             target_names=columns.target_names,
-            data_drift_options=data_drift_options,
-            quality_metrics_options=quality_metrics_options,
+            options=data_drift_options,
             metrics=result_metrics,
         )
         return result

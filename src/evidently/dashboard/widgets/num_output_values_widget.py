@@ -71,6 +71,25 @@ class NumOutputValuesWidget(Widget):
             )
         ))
 
+        if results['utility_columns']['date']:
+            x0 = current_data[results['utility_columns']['date']].sort_values()[1]
+        else:
+            x0 = current_data.index.sort_values()[1]
+
+        output_values.add_trace(go.Scatter(
+            x=[x0, x0],
+            y=[reference_mean - conf_interval_n_sigmas * reference_std,
+                reference_mean + conf_interval_n_sigmas * reference_std],
+            mode='markers',
+            name='Current',
+            marker=dict(
+                size=0.01,
+                color='white',
+                opacity=0.005
+            ),
+            showlegend=False
+        ))
+
         output_values.update_layout(
             xaxis_title=x_title,
             yaxis_title=self.kind.title() + ' Value',

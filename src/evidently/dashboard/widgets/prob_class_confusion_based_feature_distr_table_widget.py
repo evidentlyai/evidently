@@ -80,8 +80,8 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                 merged_data = pd.concat([reference_data_to_plot, current_data_to_plot])
 
                 fig = px.histogram(merged_data, x=feature_name, color=results['utility_columns']['target'],
-                                    facet_col="dataset", histnorm='', barmode='overlay',
-                                    category_orders={"dataset": ["Reference", "Current"]})
+                                   facet_col="dataset", histnorm='', barmode='overlay',
+                                   category_orders={"dataset": ["Reference", "Current"]})
 
                 fig_json = json.loads(fig.to_json())
 

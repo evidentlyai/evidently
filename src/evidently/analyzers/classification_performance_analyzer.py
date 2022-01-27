@@ -33,14 +33,14 @@ class ClassificationPerformanceAnalyzer(Analyzer):
             accuracy_score = metrics.accuracy_score(reference_data[target_column], reference_data[prediction_column])
             if len(prediction_column) > 2:
                 avg_precision = metrics.precision_score(reference_data[target_column],
-                                                                reference_data[prediction_column], average='macro')
+                                                        reference_data[prediction_column], average='macro')
                 avg_recall = metrics.recall_score(reference_data[target_column], reference_data[prediction_column],
-                                                average='macro')
+                                                  average='macro')
                 avg_f1 = metrics.f1_score(reference_data[target_column], reference_data[prediction_column],
-                                        average='macro')
+                                          average='macro')
             else:
                 avg_precision = metrics.precision_score(reference_data[target_column],
-                                                                                reference_data[prediction_column])
+                                                        reference_data[prediction_column])
                 avg_recall = metrics.recall_score(reference_data[target_column], reference_data[prediction_column])
                 avg_f1 = metrics.f1_score(reference_data[target_column], reference_data[prediction_column])
 
@@ -75,14 +75,14 @@ class ClassificationPerformanceAnalyzer(Analyzer):
                 accuracy_score = metrics.accuracy_score(current_data[target_column], current_data[prediction_column])
                 if len(prediction_column) > 2:
                     avg_precision = metrics.precision_score(current_data[target_column],
-                                                                    current_data[prediction_column], average='macro')
+                                                            current_data[prediction_column], average='macro')
                     avg_recall = metrics.recall_score(current_data[target_column], current_data[prediction_column],
-                                                    average='macro')
+                                                      average='macro')
                     avg_f1 = metrics.f1_score(current_data[target_column], current_data[prediction_column],
-                                            average='macro')
+                                              average='macro')
                 else:
                     avg_precision = metrics.precision_score(reference_data[target_column],
-                                                                            reference_data[prediction_column])
+                                                            reference_data[prediction_column])
                     avg_recall = metrics.recall_score(reference_data[target_column], reference_data[prediction_column])
                     avg_f1 = metrics.f1_score(reference_data[target_column], reference_data[prediction_column])
 
