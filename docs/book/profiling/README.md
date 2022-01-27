@@ -1,4 +1,8 @@
-## JSON Profiles
+---
+description: How to profile ML models and data.
+---
+
+# JSON Profiles
 
 To get the calculation results as a JSON file, you should create a **Profile**.
 
