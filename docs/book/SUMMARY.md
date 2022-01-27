@@ -23,7 +23,7 @@
 
 * [Dashboards](dashboards/README.md)
 * [Profiling](profiling/README.md)
-* [Monitoring](monitoring/README.md)
+* [Monitoring](integrations/evidently-and-grafana.md)
 
 ## User Guide
 * [Customization](customization/README.md)
