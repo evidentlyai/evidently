@@ -16,6 +16,8 @@ You can use this same stack for ML monitoring. In this case, Evidently provides 
 
 ![](../.gitbook/assets/202201_evidently_grafana_service.png)
 
+## Integration example
+
 **An integration example is available as a Docker container:**
 {% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/integrations/grafana_monitoring_service" %}
 
@@ -28,3 +30,5 @@ It contains pre-built dashboards to display Evidently reports in the Grafana int
 ![](../.gitbook/assets/grafana\_dashboard.jpg)
 
 We plan to add more pre-built dashboards in the future.
+
+You can also read the [release blog post](https://evidentlyai.com/blog/evidently-and-grafana-ml-monitoring-live-dashboards).
