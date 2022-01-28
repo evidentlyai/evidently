@@ -73,14 +73,14 @@ class NumOutputDriftWidget(Widget):
         else:
             reference_data_to_plot = reference_data[column_name]
             current_data_to_plot = current_data[column_name]
+
         output_distr = ff.create_distplot(
-            [reference_data[column_name],
-             current_data[column_name]],
             [reference_data_to_plot,
              current_data_to_plot],
             ["Reference", "Current"],
             colors=[GREY, RED],
-            show_rug=True)
+            show_rug=True
+        )
 
         output_distr.update_layout(
             xaxis_title="Value",
