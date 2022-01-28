@@ -24,6 +24,15 @@ Each report covers a certain aspect of the model performance. You can display re
 
 Evidently currently works with **tabular data**. 6 reports are available.
 
+|   |   |
+| :----: | :----: |
+| [Data Drift](reports/data-drift.md)| [Categorical Target Drift](reports/categorical-target-drift.md)|
+| ![](../images/01\_data\_drift.png)| ![](../images/02\_cat\_target\_drift.png)|
+| [Numerical Target Drift](reports/num-target-drift.md)| [Regression Performance](reports/reg-performance.md)|
+| ![](../images/03\_num\_target\_drift.png)| ![](../images/04\_reg\_performance.png)|
+| [Classification Performance](reports/classification-performance.md)| [Probabilistic Classification Performance](reports/probabilistic-classification-performance.md)|
+| ![](../images/05\_class\_performance.png)]| ![](../images/06\_prob\_class\_performance)|
+
 ### [1. Data Drift](reports/data-drift.md)
 
 Detects changes in feature distribution.
