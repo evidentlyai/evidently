@@ -12,7 +12,7 @@ Open an issue on [GitHub](https://github.com/evidentlyai/evidently), or ask in o
 
 We probably can! However, we might choose not to, since we try to have a good-enough default setup without unnecessarily increasing the size of the report. That is a delicate balance!
 
-If you want to change the default report, you can create a custom widget and tab, and even contribute it back to the community gallery! Explore the [Customization section](/../customization). for more details.
+If you want to change the default report, you can create a custom widget and tab, and even contribute it back to the community gallery! Explore the [Customization section](../customization) for more details.
 
 ### **Can I export the report to display it elsewhere / integrate it into the prediction pipeline?**
 
