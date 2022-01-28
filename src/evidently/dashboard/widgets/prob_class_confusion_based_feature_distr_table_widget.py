@@ -12,9 +12,10 @@ from plotly.subplots import make_subplots
 
 from evidently import ColumnMapping
 from evidently.analyzers.prob_classification_performance_analyzer import ProbClassificationPerformanceAnalyzer
-
 from evidently.model.widget import BaseWidgetInfo, AdditionalGraphInfo
 from evidently.dashboard.widgets.widget import Widget, RED, GREY
+from evidently.dashboard.widgets.utils import CutQuantileTransformer
+from evidently.options import QualityMetricsOptions
 
 
 class ProbClassConfusionBasedFeatureDistrTable(Widget):
@@ -28,6 +29,8 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                   analyzers_results) -> Optional[BaseWidgetInfo]:
 
         results = analyzers_results[ProbClassificationPerformanceAnalyzer]
+        quality_metrics_options = self.options_provider.get(QualityMetricsOptions)
+        cut_quantile = quality_metrics_options.cut_quantile
 
         if results['utility_columns']['target'] is None or results['utility_columns']['prediction'] is None:
             raise ValueError(f"Widget [{self.title}] requires 'target' or 'prediction' columns")
@@ -65,10 +68,19 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                 # create confusion based plots
                 reference_data['dataset'] = 'Reference'
                 current_data['dataset'] = 'Current'
-                merged_data = pd.concat([reference_data, current_data])
+                if cut_quantile and quality_metrics_options.get_cut_quantile(feature_name):
+                    side, q = quality_metrics_options.get_cut_quantile(feature_name)
+                    cqt = CutQuantileTransformer(side=side, q=q)
+                    cqt.fit(reference_data[feature_name])
+                    reference_data_to_plot = cqt.transform_df(reference_data, feature_name)
+                    current_data_to_plot = cqt.transform_df(current_data, feature_name)
+                else:
+                    reference_data_to_plot = reference_data
+                    current_data_to_plot = current_data
+                merged_data = pd.concat([reference_data_to_plot, current_data_to_plot])
 
                 fig = px.histogram(merged_data, x=feature_name, color=results['utility_columns']['target'],
-                                   facet_col="dataset", histnorm='',
+                                   facet_col="dataset", histnorm='', barmode='overlay',
                                    category_orders={"dataset": ["Reference", "Current"]})
 
                 fig_json = json.loads(fig.to_json())
@@ -212,8 +224,16 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                 )
 
                 # create confusion based plots
-                fig = px.histogram(reference_data, x=feature_name, color=results['utility_columns']['target'],
-                                   histnorm='')
+                if cut_quantile and quality_metrics_options.get_cut_quantile(feature_name):
+                    side, q = quality_metrics_options.get_cut_quantile(feature_name)
+                    cqt = CutQuantileTransformer(side=side, q=q)
+                    cqt.fit(reference_data[feature_name])
+                    reference_data_to_plot = cqt.transform_df(reference_data, feature_name)
+                else:
+                    reference_data_to_plot = reference_data
+
+                fig = px.histogram(reference_data_to_plot, x=feature_name, color=results['utility_columns']['target'],
+                                   histnorm='', barmode='overlay')
 
                 fig_json = json.loads(fig.to_json())
 

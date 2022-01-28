@@ -35,8 +35,7 @@ class ClassificationPerformanceAnalyzer(Analyzer):
                                                     average='macro')
             avg_recall = metrics.recall_score(reference_data[target_column], reference_data[prediction_column],
                                               average='macro')
-            avg_f1 = metrics.f1_score(reference_data[target_column], reference_data[prediction_column],
-                                      average='macro')
+            avg_f1 = metrics.f1_score(reference_data[target_column], reference_data[prediction_column], average='macro')
 
             result['metrics']['reference']['accuracy'] = accuracy_score
             result['metrics']['reference']['precision'] = avg_precision
@@ -71,8 +70,7 @@ class ClassificationPerformanceAnalyzer(Analyzer):
                                                         average='macro')
                 avg_recall = metrics.recall_score(current_data[target_column], current_data[prediction_column],
                                                   average='macro')
-                avg_f1 = metrics.f1_score(current_data[target_column], current_data[prediction_column],
-                                          average='macro')
+                avg_f1 = metrics.f1_score(current_data[target_column], current_data[prediction_column], average='macro')
 
                 result['metrics']['current']['accuracy'] = accuracy_score
                 result['metrics']['current']['precision'] = avg_precision

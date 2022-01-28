@@ -13,6 +13,7 @@ from evidently import ColumnMapping
 from evidently.analyzers.num_target_drift_analyzer import NumTargetDriftAnalyzer
 from evidently.model.widget import BaseWidgetInfo
 from evidently.dashboard.widgets.widget import Widget, GREY, RED
+from evidently.options import QualityMetricsOptions
 
 
 class NumOutputValuesWidget(Widget):
@@ -31,6 +32,8 @@ class NumOutputValuesWidget(Widget):
                   analyzers_results) -> Optional[BaseWidgetInfo]:
 
         results = analyzers_results[NumTargetDriftAnalyzer]
+        quality_metrics_options = self.options_provider.get(QualityMetricsOptions)
+        conf_interval_n_sigmas = quality_metrics_options.conf_interval_n_sigmas
 
         if current_data is None:
             raise ValueError("current_data should be present")
@@ -68,6 +71,25 @@ class NumOutputValuesWidget(Widget):
             )
         ))
 
+        if results['utility_columns']['date']:
+            x0 = current_data[results['utility_columns']['date']].sort_values()[1]
+        else:
+            x0 = current_data.index.sort_values()[1]
+
+        output_values.add_trace(go.Scatter(
+            x=[x0, x0],
+            y=[reference_mean - conf_interval_n_sigmas * reference_std,
+                reference_mean + conf_interval_n_sigmas * reference_std],
+            mode='markers',
+            name='Current',
+            marker=dict(
+                size=0.01,
+                color='white',
+                opacity=0.005
+            ),
+            showlegend=False
+        ))
+
         output_values.update_layout(
             xaxis_title=x_title,
             yaxis_title=self.kind.title() + ' Value',
@@ -87,9 +109,9 @@ class NumOutputValuesWidget(Widget):
                     # y-reference is assigned to the plot paper [0,1]
                     yref="y",
                     x0=0,
-                    y0=reference_mean - reference_std,
+                    y0=reference_mean - conf_interval_n_sigmas * reference_std,
                     x1=1,
-                    y1=reference_mean + reference_std,
+                    y1=reference_mean + conf_interval_n_sigmas * reference_std,
                     fillcolor="LightGreen",
                     opacity=0.5,
                     layer="below",

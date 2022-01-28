@@ -11,6 +11,8 @@ from evidently import ColumnMapping
 from evidently.analyzers.num_target_drift_analyzer import NumTargetDriftAnalyzer
 from evidently.model.widget import BaseWidgetInfo, AlertStats
 from evidently.dashboard.widgets.widget import Widget, GREY, RED
+from evidently.dashboard.widgets.utils import CutQuantileTransformer
+from evidently.options import QualityMetricsOptions
 
 
 class NumOutputDriftWidget(Widget):
@@ -28,6 +30,8 @@ class NumOutputDriftWidget(Widget):
                   analyzers_results) -> Optional[BaseWidgetInfo]:
 
         results = analyzers_results[NumTargetDriftAnalyzer]
+        quality_metrics_options = self.options_provider.get(QualityMetricsOptions)
+        cut_quantile = quality_metrics_options.cut_quantile
 
         if current_data is None:
             raise ValueError("current_data should be present")
@@ -39,9 +43,18 @@ class NumOutputDriftWidget(Widget):
         output_sim_test = "detected" if output_p_value < 0.05 else "not detected"
 
         # plot output distributions
+        if cut_quantile and quality_metrics_options.get_cut_quantile(results['utility_columns'][self.kind]):
+            side, q = quality_metrics_options.get_cut_quantile(results['utility_columns'][self.kind])
+            cqt = CutQuantileTransformer(side=side, q=q)
+            cqt.fit(reference_data[results['utility_columns'][self.kind]])
+            reference_data_to_plot = cqt.transform(reference_data[results['utility_columns'][self.kind]])
+            current_data_to_plot = cqt.transform(current_data[results['utility_columns'][self.kind]])
+        else:
+            reference_data_to_plot = reference_data[results['utility_columns'][self.kind]]
+            current_data_to_plot = current_data[results['utility_columns'][self.kind]]
         output_distr = ff.create_distplot(
-            [reference_data[results['utility_columns'][self.kind]],
-             current_data[results['utility_columns'][self.kind]]],
+            [reference_data_to_plot,
+             current_data_to_plot],
             ["Reference", "Current"],
             colors=[GREY, RED],
             show_rug=True)
