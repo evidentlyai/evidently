@@ -29,27 +29,41 @@ class ProbClassMetricsMatrixWidget(Widget):
                   current_data: Optional[pd.DataFrame],
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
-        results = analyzers_results[ProbClassificationPerformanceAnalyzer]
+        results = ProbClassificationPerformanceAnalyzer.get_results(analyzers_results)
+        utility_columns = results.columns.utility_columns
 
-        if results['utility_columns']['target'] is None or results['utility_columns']['prediction'] is None:
+        if utility_columns.target is None or utility_columns.prediction is None:
             if self.dataset == 'reference':
                 raise ValueError(f"Widget [{self.title}] requires 'target' and 'prediction' columns")
+
             return None
-        if self.dataset not in results['metrics'].keys():
-            if self.dataset == 'reference':
+
+        if self.dataset == 'reference':
+            metrics = results.reference_metrics
+
+            if metrics is None:
                 raise ValueError(f"Widget [{self.title}] required 'reference' results from"
                                  f" {ProbClassificationPerformanceAnalyzer.__name__} but no data found")
+
+        elif self.dataset == 'current':
+            metrics = results.current_metrics
+
+        else:
+            raise ValueError(f"Widget [{self.title}] required 'current' or 'reference' dataset value")
+
+        if metrics is None:
             return None
+
         # plot support bar
-        metrics_matrix = results['metrics'][self.dataset]['metrics_matrix']
+        metrics_matrix = metrics.metrics_matrix
         metrics_frame = pd.DataFrame(metrics_matrix)
 
         z = metrics_frame.iloc[:-1, :-3].values
-        x = results['metrics'][self.dataset]['confusion_matrix']['labels']
+        x = metrics.confusion_matrix.labels
         y = ['precision', 'recall', 'f1-score']
 
-        if len(results['utility_columns']['prediction']) > 2:
-            roc_aucs = results['metrics'][self.dataset]['roc_aucs']
+        if len(utility_columns.prediction) > 2:
+            roc_aucs = metrics.roc_aucs
             z = np.append(z, [roc_aucs], axis=0)
             y.append('roc-auc')
 

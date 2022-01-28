@@ -45,6 +45,9 @@ class NumOutputCorrWidget(Widget):
         else:
             raise ValueError(f"Widget [{self.title}] requires 'target' or 'prediction' kind parameter value")
 
+        if metrics is None:
+            return None
+
         # calculate corr
         ref_output_corr = metrics.reference_correlations
         current_output_corr = metrics.current_correlations

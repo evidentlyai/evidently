@@ -46,6 +46,9 @@ class ClassQualityMetricsBarWidget(Widget):
         else:
             raise ValueError(f"Widget [{self.title}] requires 'current' or 'reference' dataset value")
 
+        if result_metrics is None:
+            return None
+
         # plot quality metrics bar
         return BaseWidgetInfo(
             title=self.title,

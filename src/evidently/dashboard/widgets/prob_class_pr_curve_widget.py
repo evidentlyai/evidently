@@ -29,23 +29,35 @@ class ProbClassPRCurveWidget(Widget):
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
 
-        results = analyzers_results[ProbClassificationPerformanceAnalyzer]
+        results = ProbClassificationPerformanceAnalyzer.get_results(analyzers_results)
+        utility_columns = results.columns.utility_columns
 
-        if results['utility_columns']['target'] is None or results['utility_columns']['prediction'] is None:
+        if utility_columns.target is None or utility_columns.prediction is None:
             if self.dataset == 'reference':
                 raise ValueError(f"Widget [{self.title}] requires 'target' and 'prediction' columns")
+
             return None
-        if self.dataset not in results['metrics'].keys():
-            if self.dataset == 'reference':
+
+        if self.dataset == 'reference':
+            metrics = results.reference_metrics
+
+            if metrics is None:
                 raise ValueError(f"Widget [{self.title}] required 'reference' results from"
                                  f" {ProbClassificationPerformanceAnalyzer.__name__} but no data found")
+
+        elif self.dataset == 'current':
+            metrics = results.current_metrics
+
+        else:
+            raise ValueError(f"Widget [{self.title}] required 'current' or 'reference' dataset value")
+
+        if metrics is None:
             return None
 
-        widget_info = None
         # plot PR-curve
-        if len(results['utility_columns']['prediction']) <= 2:
+        if len(utility_columns.prediction) <= 2:
 
-            pr_curve = results['metrics'][self.dataset]['pr_curve']
+            pr_curve = metrics.pr_curve
 
             fig = go.Figure()
 
@@ -81,8 +93,8 @@ class ProbClassPRCurveWidget(Widget):
 
             graphs = []
 
-            for label in results['utility_columns']['prediction']:
-                pr_curve = results['metrics'][self.dataset]['pr_curve'][label]
+            for label in utility_columns.prediction:
+                pr_curve = metrics.pr_curve[label]
 
                 fig = go.Figure()
 
