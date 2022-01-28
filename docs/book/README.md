@@ -31,7 +31,7 @@ Evidently currently works with **tabular data**. 6 reports are available.
 | [Numerical Target Drift](reports/num-target-drift.md)| [Regression Performance](reports/reg-performance.md)|
 | ![](../images/03\_num\_target\_drift.png)| ![](../images/04\_reg\_performance.png)|
 | [Classification Performance](reports/classification-performance.md)| [Probabilistic Classification Performance](reports/probabilistic-classification-performance.md)|
-| ![](../images/05\_class\_performance.png)]| ![](../images/06\_prob\_class\_performance)|
+| ![](../images/05\_class\_performance.png)]| ![](../images/06\_prob\_class\_performance.png)|
 
 ### [1. Data Drift](reports/data-drift.md)
 
