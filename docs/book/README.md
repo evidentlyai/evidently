@@ -16,7 +16,7 @@ Explore the examples of the Evidently reports on different datasets and code tut
 
 # How it works 
 
-Evidently has a modular approach with 3 interfaces on top of the shared analyzer functionality. 
+Evidently has a modular approach with 3 interfaces on top of the shared `Analyzer` functionality. 
 
 ## [1. Interactive visual reports](dashboards/README.md)
 
