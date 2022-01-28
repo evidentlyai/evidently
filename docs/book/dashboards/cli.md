@@ -2,15 +2,15 @@
 description: How to use Evidently from the Terminal.
 ---
 
-# Command line interface
+This section applies both to Dashboards and Profiles.
 
-To start, prepare your data as `csv`  files. Follow the same data requirements as described in the [Jupyter notebook](step-by-step-guide-for-jupyter-notebooks.md) guide.
+## Command line interface
 
-If you prefer a video version, here is 7-min Quick Start on how to use Evidently using CLI. &#x20;
+If you prefer a video version, here is 7-min Quick Start on how to use Evidently using CLI. 
 
 {% embed url="https://www.youtube.com/watch?v=3j3NwIkhmTs" %}
 
-## Generate HTML report or JSON Profile
+To start, prepare your data as `csv`  files. 
 
 To generate the HTML report, run the following command in bash:
 
@@ -45,7 +45,7 @@ You can choose the following **Tabs**:
 
 To configure the report you need to create the `config.json` file or a `config.yaml` file. This file configures the way of reading your input data and the type of the report.
 
-## Configuration examples
+### Configuration examples
 
 Here is an example of a simple configuration, where we have comma-separated `csv` files with headers and there is no `date` column in the data.
 
@@ -136,7 +136,7 @@ Here is an example for a more complicated configuration, where we have comma-sep
 }
 ```
 
-## Telemetry
+### Telemetry
 
 Telemetry is collected in Evidently starting from version 0.1.21.dev0.
 
@@ -148,7 +148,7 @@ You can opt-out from telemetry collection by setting the environment variable:
  EVIDENTLY_DISABLE_TELEMETRY=1
 ```
 
-## Sampling for large datasets
+### Sampling for large datasets
 
 As shown in the configuration example above, you can specify **sampling** parameters for large files. You can use different sampling strategies for the reference and current data, or apply sampling only to one of the files.
 
