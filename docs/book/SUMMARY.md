@@ -22,12 +22,17 @@
 ## Features
 
 * [Dashboards](dashboards/README.md)
-  * [Prepare data](dashboards/input_data.md)
+  * [Input data](dashboards/input_data.md)
   * [Column mapping](dashboards/column_mapping.md)
   * [Generate dashboards](dashboards/generate_dashboards.md)
   * [CLI](dashboards/cli.md)
   * [Colab and other environments](dashboards/notebook_environments.md)
 * [Profiling](profiling/README.md)
+  * [Input data](dashboards/input_data.md)
+  * [Column mapping](dashboards/column_mapping.md)
+  * [Generate profiles](dashboards/generate_profiles.md)
+  * [CLI](dashboards/cli.md)
+  * [Colab and other environments](dashboards/notebook_environments.md)
 * [Monitoring](integrations/evidently-and-grafana.md)
 
 ## User Guide
