@@ -4,6 +4,10 @@ description: How to use column_mapping in Evidently.
 
 This section applies both to Dashboards and Profiles.
 
+If you prefer a video version, watch this tutorial:
+
+{% embed url="https://www.youtube.com/watch?v=MiSl73LRj5I&t=7s&ab_channel=EvidentlyAI" %}
+
 ## Column mapping 
 
 If the `column_mapping` is not specified or set as `None`, we use the default mapping strategy:
@@ -65,6 +69,3 @@ column_mapping.prediction = ['class_name1', 'class_name2', 'class_name3',]
 
 For binary classification, class order matters. The tool expects that the target (so-called positive) class is the **first** in the `column_mapping.prediction` list.
 
-#### If you are unsure how to use column mapping, watch this video tutorial:
-
-{% embed url="https://www.youtube.com/watch?v=MiSl73LRj5I&t=7s&ab_channel=EvidentlyAI" %}
