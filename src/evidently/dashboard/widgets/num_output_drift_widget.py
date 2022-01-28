@@ -43,11 +43,17 @@ class NumOutputDriftWidget(Widget):
             if results.columns.utility_columns.prediction is None:
                 return None
 
+            if not isinstance(results.columns.utility_columns.prediction, str):
+                raise ValueError(f"Widget [{self.title}] requires one str value for 'prediction' column")
+
             column_name = results.columns.utility_columns.prediction
             metrics = results.prediction_metrics
 
         else:
             raise ValueError(f"Widget [{self.title}] requires 'target' or 'prediction' kind parameter value")
+
+        if metrics is None:
+            return None
 
         # calculate output drift
         output_p_value = metrics.drift

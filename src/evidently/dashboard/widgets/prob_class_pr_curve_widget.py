@@ -56,11 +56,11 @@ class ProbClassPRCurveWidget(Widget):
 
         # plot PR-curve
         if len(utility_columns.prediction) <= 2:
+            if metrics.pr_curve is None:
+                raise ValueError(f"Widget [{self.title}] got no pr_curve value")
 
             pr_curve = metrics.pr_curve
-
             fig = go.Figure()
-
             fig.add_trace(go.Scatter(
                 x=pr_curve['pr'],
                 y=pr_curve['rcl'],
@@ -90,14 +90,17 @@ class ProbClassPRCurveWidget(Widget):
                 },
             )
         else:
+            if metrics.pr_curve is None:
+                raise ValueError(f"Widget [{self.title}] got no pr_curve value")
+
+            if not isinstance(metrics.pr_curve, dict):
+                raise ValueError(f"Widget [{self.title}] got incorrect type for pr_curve value")
 
             graphs = []
 
             for label in utility_columns.prediction:
                 pr_curve = metrics.pr_curve[label]
-
                 fig = go.Figure()
-
                 fig.add_trace(go.Scatter(
                     x=pr_curve['pr'],
                     y=pr_curve['rcl'],

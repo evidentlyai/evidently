@@ -50,8 +50,15 @@ class ProbClassPRTableWidget(Widget):
             return None
 
         if len(utility_columns.prediction) <= 2:
-            pr_table_data = metrics.pr_table
+            if metrics.pr_table is None:
+                raise ValueError(f"Widget [{self.title}] got no pr_table value")
+
+            if not isinstance(metrics.pr_table, list):
+                raise ValueError(f"Widget [{self.title}] got incorrect tyoe for pr_table value")
+
+            pr_table_data: list = metrics.pr_table
             params_data = []
+
             for line in pr_table_data:
                 count = line[1]
                 prob = round(line[2], 2)
@@ -118,9 +125,16 @@ class ProbClassPRTableWidget(Widget):
 
             for label in utility_columns.prediction:
                 params_data = []
-                pr_table_data = metrics.pr_table[label]
 
-                for line in pr_table_data:
+                if metrics.pr_table is None:
+                    raise ValueError(f"Widget [{self.title}] got no pr_table value")
+
+                if not isinstance(metrics.pr_table, dict):
+                    raise ValueError(f"Widget [{self.title}] got incorrect type of pr_table value")
+
+                pr_table_data_list = metrics.pr_table[label]
+
+                for line in pr_table_data_list:
                     count = line[1]
                     prob = round(line[2], 2)
                     top = round(line[0], 1)

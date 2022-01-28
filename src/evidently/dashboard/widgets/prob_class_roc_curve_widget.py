@@ -55,10 +55,15 @@ class ProbClassRocCurveWidget(Widget):
 
         # plot roc-curve
         if len(utility_columns.prediction) <= 2:
-
-            roc_curve = metrics.roc_curve
             fig = go.Figure()
 
+            if metrics.roc_curve is None:
+                raise ValueError(f"Widget [{self.title}] got no roc_curve value")
+
+            if not isinstance(metrics.roc_curve, dict):
+                raise ValueError(f"Widget [{self.title}] got incorrect type for roc_curve value")
+
+            roc_curve = metrics.roc_curve
             fig.add_trace(go.Scatter(
                 x=roc_curve['fpr'],
                 y=roc_curve['tpr'],
@@ -94,6 +99,12 @@ class ProbClassRocCurveWidget(Widget):
             graphs = []
 
             for label in utility_columns.prediction:
+                if metrics.roc_curve is None:
+                    raise ValueError(f"Widget [{self.title}] got no roc_curve value")
+
+                if not isinstance(metrics.roc_curve, dict):
+                    raise ValueError(f"Widget [{self.title}] got incorrect type for roc_curve value")
+
                 roc_curve = metrics.roc_curve[label]
                 fig = go.Figure()
 

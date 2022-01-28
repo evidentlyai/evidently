@@ -133,6 +133,9 @@ class UnderperformSegmTableWidget(Widget):
 
                 segment_json = json.loads(segment_fig.to_json())
 
+                if results.error_bias is None:
+                    raise ValueError(f"Widget [{self.title}] got no error_bias value")
+
                 params_data.append(
                     {
                         "details":
@@ -240,6 +243,9 @@ class UnderperformSegmTableWidget(Widget):
                 segment_fig.update_yaxes(title_text="Predicted Value", showgrid=True, row=1, col=2)
 
                 segment_json = json.loads(segment_fig.to_json())
+
+                if results.error_bias is None:
+                    raise ValueError(f"Widget [{self.title}] got no error_bias value")
 
                 params_data.append(
                     {
@@ -376,6 +382,9 @@ class UnderperformSegmTableWidget(Widget):
                                   y=prediction_name, color=feature_name)
                 segm_figure = json.loads(segm.to_json())
 
+                if results.error_bias is None:
+                    raise ValueError(f"Widget [{self.title}] got no error_bias value")
+
                 params_data.append(
                     {
                         "details":
@@ -439,6 +448,9 @@ class UnderperformSegmTableWidget(Widget):
                 reference_data[feature_name] = reference_data[feature_name].astype(initial_type)
 
                 segm_figure = json.loads(segm.to_json())
+
+                if results.error_bias is None:
+                    raise ValueError(f"Widget [{self.title}] got no error_bias value")
 
                 params_data.append(
                     {

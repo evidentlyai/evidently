@@ -45,6 +45,9 @@ class NumOutputValuesWidget(Widget):
             if results.columns.utility_columns.prediction is None:
                 return None
 
+            if not isinstance(results.columns.utility_columns.prediction, str):
+                raise ValueError(f"Widget [{self.title}] requires one str value for 'prediction' column")
+
             column_name = results.columns.utility_columns.prediction
 
         else:
