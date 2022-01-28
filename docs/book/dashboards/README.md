@@ -8,7 +8,7 @@ Dashboards help visually explore and evaluate the data and model performance.
 
 You can generate dashboards in certain notebook environments (see full list below) or using the command-line interface. The dashboards can be displayed directly in the notebook, or exported as a separate HTML file. 
 
-To specify which analysis you want to perform, you should select a Tab** (for example, a Data Drift tab). You can combine several tabs in a single Dashboard (for example, Data Drift and Prediction Drift). Each tab will contain a combination of metrics, interactive plots, and tables for a chosen [Report](../reports/) type.
+To specify which analysis you want to perform, you should select a `Tab` (for example, a `DataDriftTab`). You can combine several tabs in a single Dashboard (for example, for Data Drift and Prediction Drift). Each tab contains a combination of metrics, interactive plots, and tables for a chosen [Report](../reports/) type.
 
 For a step-by-step introduction, we recommend you to go first through the [Getting Started tutorial](../get-started/tutorial.md).
 
