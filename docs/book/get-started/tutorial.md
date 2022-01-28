@@ -1,5 +1,3 @@
-# Getting Started Tutorial
-
 In this tutorial, you will use Evidently to evaluate data and target drift.
 
 We suggest going through this tutorial once to understand the key tool functionality on a toy dataset. Once you’ve completed it, you can further explore more advanced features such as report customization and real-time monitoring. 
