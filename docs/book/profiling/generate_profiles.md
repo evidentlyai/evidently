@@ -2,6 +2,8 @@
 description: How to generate JSON profiles in Evidently.
 ---
 
+# Generate profiles
+
 After [installation](../get-started/install-evidently.md), import `evidently` and the required profiles sections:
 
 ```python
