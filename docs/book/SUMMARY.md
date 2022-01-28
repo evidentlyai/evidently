@@ -30,7 +30,7 @@
 * [Profiling](profiling/README.md)
   * [Input data](dashboards/input_data.md)
   * [Column mapping](dashboards/column_mapping.md)
-  * [Generate profiles](dashboards/generate_profiles.md)
+  * [Generate profiles](profiling/generate_profiles.md)
   * [CLI](dashboards/cli.md)
 * [Monitoring](integrations/evidently-and-grafana.md)
 
