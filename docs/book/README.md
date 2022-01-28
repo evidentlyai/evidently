@@ -44,7 +44,7 @@ You can combine, customize the reports or contribute your own report.
 
 Evidently also generates JSON `Profiles`. You can use them to integrate the data or model evaluation step into the ML pipeline. 
 
-For example, you use it to perform scheduled batch checks of model health or log JSON profiles for further analysis. You can also build a conditional workflow based on the result of the check, e.g. to trigger alert, retraining, or generate a visual report. 
+For example, you can use it to perform scheduled batch checks of model health or log JSON profiles for further analysis. You can also build a conditional workflow based on the result of the check, e.g. to trigger alert, retraining, or generate a visual report. 
 
 Each Evidently dashboard has a corresponding JSON profile that returns the summary of metrics and statistical test results. 
 
