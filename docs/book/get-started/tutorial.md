@@ -6,7 +6,7 @@ We suggest going through this tutorial once to understand the key tool functiona
 
 To complete the tutorial, you need basic knowledge of Python and familiarity with notebook environments. You should be able to complete it in under 10 minutes.
 
-You can reproduce the steps in Jupyter notebooks or Colab or explore the sample notebooks.
+You can reproduce the steps in Jupyter notebooks or Colab, or run the sample notebooks.
 
 Colab:
 {% embed url="https://colab.research.google.com/drive/1Dd6ZzIgeBYkD_4bqWZ0RAdUpCU0b6Y6H" %}
@@ -85,7 +85,7 @@ from evidently.dashboard.tabs import DataDriftTab, CatTargetDriftTab
 
 ## 3. Prepare the data
 
-In this example, you will work with `pandas.DataFrames`. For simplicity, we take a toy dataset. In the real use case, you can swap it for the real logs with input data, model predictions and true lables, if available.  
+In this example, you will work with `pandas.DataFrames`. For simplicity, we take a toy dataset. In the real use case, you can swap it for the real model application logs. They can include the input data, model predictions and true lables, if available.  
 
 Create a `Pandas DataFrame` with the dataset to analyze:
 
@@ -93,21 +93,21 @@ Create a `Pandas DataFrame` with the dataset to analyze:
 iris = datasets.load_iris()
 iris_frame = pd.DataFrame(iris.data, columns = iris.feature_names)
 ```
-To evaluate things like data drift, you would need two datasets to perform a comparison. The first one is the baseline: this can often be the data used in training. We call it **reference** data. The second dataset is the **current** production data. 
+To evaluate data or prediction drift, you would need two datasets to perform a comparison. The first dataset is the baseline: this can often be the data used in training. We call it the **reference** data. The second dataset is the **current** production data. 
 
-You can prepare two separate datasets with identical schema. You can also proceed with one dataset but explicitly **identify rows** that refer to reference and production data. 
+You can prepare two separate datasets with identical schema. You can also proceed with one dataset but explicitly **identify rows** that refer to reference and current data. 
 
-That is what we do now to generate the first report. Let us split the data in half, and treat the first 75 rows as reference, and the remaining as the current data.
+You can do this to generate the first report. Split the data: treat the first 75 rows as the reference, and the remaining as the current data.
 
 {% hint style="info" %}
-**Column_mapping.** In this example, we directly display the dashboard in the next step. In other cases, you might need to add **column_mapping** dictionary to help the tool process the input data correctly. For example, you can point to the encoded categorical features, or the name of the target column. Consult the [Column Mapping section](../dashboards/column_mapping.md) for help.
+**Column_mapping.** In this example, we directly proceed to display the dashboard. In other cases, you might need to add **column_mapping** dictionary to help Evidently process the input data correctly. For example, you can point to the encoded categorical features, or the name of the target column. Consult the [Column Mapping section](../dashboards/column_mapping.md) for help.
 {% endhint %}
 
 ## 4. Generate the Data Drift dashboard
 
 ![Part of the Data Drift Report.](../.gitbook/assets/evidently\_github.png)
 
-Data drift dashboard helps visualize the change in the input data distributions, and see the results of the statistical tests. This helps understand if the data has shifted. It can serve as proxy of model performance, even if you do not have the true labels yet.   
+Data drift dashboard runs statistical tests to compare the data distributions for each feature and helps visualize the change. Understanding the data shift can serve as a proxy of model performance, especially if you do not have the true labels yet.      
 
 To generate the Data Drift dashboard, run:
 
@@ -135,7 +135,7 @@ To see the report, go to the specified directory and open the file.
 
 Next, you will generate a Target Drift dashboard.
 
-There are two use cases for this report. If you have the model predictions, you can use this report to evaluate the **prediction drift**. This will help see if there is a statistically significant change in the model outputs, for example, if a certain category is predicted more frequently. If you have the true labels, you can use the report to evaluate **target drift**. This will help see if the concept behind the model has evolved, for example, if a certain label in fact appears more frequently. 
+There are two use cases for this report. If you have the model predictions, you can use this report to evaluate the **prediction drift**. This will help see if there is a statistically significant change in the model outputs: for example, if a certain category is predicted more frequently. If you have the true labels, you can use the report to evaluate **target drift**. This will help see if the concept behind the model has evolved: for example, if a certain label in fact appears more frequently. 
 
 In the toy dataset, we already have the true labels. Let us treat it as such, and add the target column to the initial dataset.
 
@@ -159,11 +159,9 @@ iris_data_and_target_drift_report.show()
 
 ## 6. Get a short version of the dashboard
 
-You might have noticed that the Target Drift dashboard is quite long and includes a lot of visualizations to explore relationships between the features and the target. You don't always need them all. 
+You might have noticed that the Target Drift dashboard is quite long and includes a lot of visualizations to explore relationships between the features and the target. You don't always need them all. You can then generate a shorter version of the dashboard.
 
-A complete dashboard corresponds to the verbose_level=1.
-
-To get a shorter version of a dashboard, set the verbose_level to 0.
+A complete dashboard corresponds to the verbose_level=1. To get a shorter version of a dashboard, set the verbose_level to 0.
 
 ```python
 iris_target_drift_dashboard = Dashboard(tabs=[CatTargetDriftTab(verbose_level=1)])
@@ -181,7 +179,7 @@ There are more report types!
 
 If you have both the predictions and true labels, you can also generate the model performance dashboard. It helps explore the model quality and understand the errors. In our case, we could have generated a **Classification Performance** or **Probabilistic Classification Performance** reports.
 
-We skip this step in the quick tutorial. It would have required us to train a model and generate the predictions we can compare with true labels. You can instead explore the sample notebooks in the [examples](../examples) section that do just that.
+We skip this step in the quick tutorial. It would require us to train a model and generate the predictions we can compare with the true labels. You can instead explore the sample notebooks in the [examples](../examples) section that do just that.
 
 If you have a regression task, Evidently has matching dashboard tabs for **Numerical Target Drift** and **Regression Model Performance**. 
 
@@ -224,9 +222,9 @@ There is also [Command-line interface](../dashboards/cli.md) in case you want to
 
 ## What else is there?
 
-While you can treat JSON profile as a "text version" of the report to look at, it is intended for use with other tools. We suggest exploring [Integrations](../integrations) section of the documentation to see how you can **use it in your machine learning workflow** with tools like MLflow and Airflow to log and profile the models and data. 
+While you can treat JSON profile as a "text version" of the report to look at, it is intended for use together with other tools as part of the ML pipeline. We suggest exploring [Integrations](../integrations) section of the documentation to see how you can **use it in your machine learning workflow** with tools like MLflow and Airflow to log and profile the models and data. 
 
-If you have a deployed ML service and want to **collect data and model metrics on top of the live data stream**, you can explore the [intgeration with Grafana and Prometheus](../integrations/evidently_and_grafana.md). In this case, Evidently acts as a monitoring service, and you can configure the options to design more sophisticated logic as such size of the reference windows, moving reference, etc. It also comes with pre-built Grafana dashboards that act as a version of Evidently dashboards meant for real-time monitoring. 
+If you have a deployed ML service and want to **collect data and model metrics on top of the live data stream**, you can explore the [intgeration with Grafana and Prometheus](../integrations/evidently_and_grafana.md). In this case, Evidently acts as a monitoring service. You can configure the options to define more sophisticated logic as such size of the reference windows, moving reference, etc. It also comes with pre-built Grafana dashboards that act as a version of Evidently dashboards meant for real-time monitoring. 
 
 Evidently is in active development, so expect things to change and evolve. You can subscribe to the [newsletter](https://evidentlyai.com/sign-up) or follow our [releases on GitHub](https://github.com/evidentlyai/evidently/releases) to stay updated about the latest functionality. 
 
