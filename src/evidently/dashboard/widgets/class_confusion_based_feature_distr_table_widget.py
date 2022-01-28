@@ -96,10 +96,14 @@ class ClassConfusionBasedFeatureDistrTable(Widget):
 
                     merged_data['Confusion'] = merged_data.apply(confusion_func, axis=1)
 
-                    fig = px.histogram(merged_data, x=feature_name, color='Confusion', facet_col="dataset",
-                                       histnorm='', barmode='overlay',
-                                       category_orders={"dataset": ["Reference", "Current"],
-                                                        "Confusion": ["TP", "TN", "FP", "FN"]})
+                    fig = px.histogram(
+                        merged_data, x=feature_name, color='Confusion', facet_col="dataset",
+                        histnorm='', barmode='overlay',
+                        category_orders={
+                            "dataset": ["Reference", "Current"],
+                            "Confusion": ["TP", "TN", "FP", "FN"]
+                        }
+                    )
                     fig_json = json.loads(fig.to_json())
 
                     # write plot data in table as additional data
@@ -149,8 +153,6 @@ class ClassConfusionBasedFeatureDistrTable(Widget):
             )
 
             # create confusion based plots
-            fig = px.histogram(reference_data, x=feature_name, color=target_name,
-                               histnorm='')
             if cut_quantile and quality_metrics_options.get_cut_quantile(feature_name):
                 side, q = quality_metrics_options.get_cut_quantile(feature_name)
                 cqt = CutQuantileTransformer(side=side, q=q)
@@ -158,8 +160,10 @@ class ClassConfusionBasedFeatureDistrTable(Widget):
                 reference_data_to_plot = cqt.transform_df(reference_data, feature_name)
             else:
                 reference_data_to_plot = reference_data
-            fig = px.histogram(reference_data_to_plot, x=feature_name, color=target_name,
-                               histnorm='', barmode='overlay')
+
+            fig = px.histogram(
+                reference_data_to_plot, x=feature_name, color=target_name, histnorm='', barmode='overlay'
+            )
 
             fig_json = json.loads(fig.to_json())
 
@@ -180,8 +184,10 @@ class ClassConfusionBasedFeatureDistrTable(Widget):
 
                 reference_data['Confusion'] = reference_data.apply(_confusion_func, axis=1)
 
-                fig = px.histogram(reference_data_to_plot, x=feature_name, color='Confusion', histnorm='',
-                                   category_orders={"Confusion": ["TP", "TN", "FP", "FN"]})
+                fig = px.histogram(
+                    reference_data_to_plot, x=feature_name, color='Confusion', histnorm='', barmode='overlay',
+                    category_orders={"Confusion": ["TP", "TN", "FP", "FN"]}
+                )
 
                 fig_json = json.loads(fig.to_json())
 
