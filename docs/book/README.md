@@ -1,4 +1,4 @@
-Evidently is an open-source Python library for data scientists and ML engineers. It helps evaluate, test and monitor the performance ML models from validation to production.
+Evidently is an open-source Python library for data scientists and ML engineers. It helps evaluate, test and monitor the performance of ML models from validation to production.
 
 You can think of it as an evaluation layer that fits into the existing ML stack.
 
@@ -61,7 +61,7 @@ You can explore integrations with other tools:
 ## [3. Real-time ML monitoring](integrations/evidently-and-grafana.md)
 
 Evidently also has `Monitors` that collect data and model metrics from a deployed ML service. You can use them to build live monitoring dashboards. 
-Evidently configures the monitoring on top of the streaming data and emits the metrics. You can log and use the metrics elsewhere. 
+Evidently helps configure the monitoring on top of the streaming data and emits the metrics. You can log and use the metrics elsewhere. 
 
 There is a lightweight [integration with Prometheus and Grafana](integrations/evidently-and-grafana.md) that comes with pre-built dashboards.
 
@@ -69,5 +69,5 @@ There is a lightweight [integration with Prometheus and Grafana](integrations/ev
 
 ## Community and support 
 
-Evidently is in active development, and we are happy to take feedback. If you have any questions, ideas or want to hang out and chat about doing ML in prodiction, [join our Discord community](https://discord.com/invite/xZjKRaNp8b)!
+Evidently is in active development, and we are happy to receive and incorporate feedback. If you have any questions, ideas or want to hang out and chat about doing ML in prodiction, [join our Discord community](https://discord.com/invite/xZjKRaNp8b)!
 
