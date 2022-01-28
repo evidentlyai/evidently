@@ -32,7 +32,7 @@ If your dataset is too large, you can define a sampling strategy.
 
 We plan to add support for distributed computation in the later version.
 
-### **Do you have a Slack chat?
+### **Do you have a Slack chat?**
 
 We have a [Discord community](https://discord.gg/xZjKRaNp8b)!
 
