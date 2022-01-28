@@ -51,11 +51,11 @@ Each Evidently dashboard has a corresponding JSON profile that returns the summa
 You can explore integrations with other tools: 
 
 {% content-ref url="integrations/evidently-and-mlflow.md" %}
-[evidently-and-mlflow.md](evidently-and-mflow.md)
+[Evidently and MLflow](evidently-and-mflow.md)
 {% endcontent-ref %}
 
 {% content-ref url="integrations/evidently-and-airflow.md" %}
-[evidently-and-airflow.md](evidently-and-airflow.md)
+[Evidently and Airflow](evidently-and-airflow.md)
 {% endcontent-ref %}
 
 ## [3. Real-time ML monitoring](integrations/evidently-and-grafana.md)
