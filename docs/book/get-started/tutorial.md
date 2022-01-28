@@ -216,7 +216,7 @@ iris_target_and_data_drift_profile.json()
 
 The JSON profile will show directly in the notebook. 
 
-There is also CLI interface ADD LINK in case you want to generate HTML dashboards or JSONs from the Terminal without opening the notebook.
+There is also [Command-line interface](../dashboards/cli.md) in case you want to generate HTML dashboards or JSONs from the Terminal without opening the notebook.
 
 {% hint style="info" %}
 **JSON profiles documentation.** To see the complete guide to using JSON profiles for future reference, you can always consult [Profiling](../profiling) section of documentation.  
