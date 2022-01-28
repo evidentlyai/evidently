@@ -100,7 +100,7 @@ You can prepare two separate datasets with identical schema. You can also procee
 That is what we do now to generate the first report. Let us split the data in half, and treat the first 75 rows as reference, and the remaining as the current data.
 
 {% hint style="info" %}
-**Column_mapping.** In this example, we directly display the dashboard in the next step. In other cases, you might need to add **column_mapping** dictionary to help the tool process the input data correctly. For example, you can point to the encoded categorical features, or the name of the target column. Consult this section ADD LINK for help.
+**Column_mapping.** In this example, we directly display the dashboard in the next step. In other cases, you might need to add **column_mapping** dictionary to help the tool process the input data correctly. For example, you can point to the encoded categorical features, or the name of the target column. Consult the [Column Mapping section](../dashboards/column_mapping.md) for help.
 {% endhint %}
 
 ## 4. Generate the Data Drift dashboard
@@ -128,7 +128,7 @@ iris_data_drift_report.save("reports/my_report.html")
 To see the report, go to the specified directory and open the file. 
 
 {% hint style="info" %}
-**This might work slightly differently in other notebook environments.** In some environments, like Jupyter lab, you might not be able to display the dashboard directly in the cell. In this case, try exporting the file as an HTML. Consult this section ADD LINK to check the supported environments. In other notebooks like Kaggle and Deepnote, you might need to explicitly add an argument: iris_data_drift_report.show(mode='inline'). Consult this section ADD LINK for help.
+**This might work slightly differently in other notebook environments.** In some environments, like Jupyter lab, you might not be able to display the dashboard directly in the cell. In this case, try exporting the file as an HTML. In other notebooks like Kaggle and Deepnote, you might need to explicitly add an argument to display the report inline: iris_data_drift_report.show(mode='inline'). Consult [this section](../dashboards/notebook_environments.md) for help.
 {% endhint %}
 
 ## 5. Generate the Target Drift dashboard
