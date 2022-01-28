@@ -1,5 +1,3 @@
-# What is Evidently?
-
 Evidently is an open-source Python library for data scientists and ML engineers. It helps evaluate, test and monitor the performance ML models from validation to production.
 
 You can think of it as an evaluation layer that fits into the existing ML stack.
