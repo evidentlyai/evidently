@@ -16,6 +16,8 @@ Explore the examples of the Evidently reports on different datasets and code tut
 [Example](get-started/examples.md). 
 {% endcontent-ref %}
 
+# How it works 
+
 Evidently has a modular approach with 3 interfaces on top of the shared analyzer functionality. 
 
 ## [Interactive visual reports](dashboards/README.md)
