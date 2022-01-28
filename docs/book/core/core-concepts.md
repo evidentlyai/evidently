@@ -4,7 +4,7 @@
 
 The primary use for Evidently is the comparison between two datasets. These datasets are model application logs. They can include model input features, predictions, and/or actuals (true labels).&#x20;
 
-* **Reference** dataset **** serves as a basis for the comparison.
+* **Reference** dataset serves as a basis for the comparison.
 * **Current (Production)** dataset is the dataset that is compared to the first.&#x20;
 
 ![](../.gitbook/assets/two_datasets_classification.png)
@@ -39,7 +39,7 @@ Evidently includes a set of pre-built Reports. Each of them addresses a specific
 
 Evidently calculates a number of metrics and statistical tests in each report, and generates interactive visualizations.
 
-Currently, you can choose between 6 different [**Report**](reports/) **** types.  &#x20;
+Currently, you can choose between 6 different [**Report**](../get-started/reports/) types.  &#x20;
 
 The calculation results can be available in one of the following formats:&#x20;
 
@@ -53,7 +53,7 @@ Right now, you cannot change the composition of the report, e.g. to add or exclu
 
 To display the output in the Jupyter notebook, you can create a visual **Dashboard.**&#x20;
 
-To specify which analysis you want to perform, you should select a **Tab** (for example, a Data Drift tab)**.** You can combine several tabs in a single Dashboard (for example, Data Drift and Prediction Drift). Each tab will contain a combination of metrics, interactive plots, and tables for a chosen [Report](reports/) type.&#x20;
+To specify which analysis you want to perform, you should select a **Tab** (for example, a Data Drift tab)**.** You can combine several tabs in a single Dashboard (for example, Data Drift and Prediction Drift). Each tab will contain a combination of metrics, interactive plots, and tables for a chosen [Report](../get-started/reports/) type.&#x20;
 
 You can also save the Dashboard as **a standalone HTML file.** You can group several Tabs in one file.&#x20;
 
@@ -65,11 +65,11 @@ You can generate HTML files from Jupyter notebook or using Terminal.&#x20;
 
 To get the calculation results as a JSON file, you should create a **Profile**.
 
-To specify which analysis you want to perform, you should select a **Section**. You can combine several sections together in a single Profile. Each section will contain a summary of metrics, results of statistical tests, and simple histograms that correspond to the chosen [Report](reports/) type.&#x20;
+To specify which analysis you want to perform, you should select a **Section**. You can combine several sections together in a single Profile. Each section will contain a summary of metrics, results of statistical tests, and simple histograms that correspond to the chosen [Report](../get-started/reports/) type.&#x20;
 
 You can generate profiles from Jupyter notebook or using Terminal.&#x20;
 
-**This option helps integrate Evidently in your prediction pipelines:** for example, you can use Evidently to calculate drift, and then log the needed metrics externally (e.g. using [Mlflow](step-by-step-guides/integrations/evidently-+-mlflow.md)).
+**This option helps integrate Evidently in your prediction pipelines:** for example, you can use Evidently to calculate drift, and then log the needed metrics externally (e.g. using [Mlflow](../step-by-step-guides/integrations/evidently-+-mlflow.md)).
 
 
 

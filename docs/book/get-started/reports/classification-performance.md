@@ -79,9 +79,9 @@ It visualizes the regions where the model makes errors of each type and reveals 
 
 ## Report customization
 
-You can select which components of the reports to display or choose to show the short version of the report: [select-widgets-to-display.md](../step-by-step-guides/report-customization/select-widgets-to-display.md "mention").&#x20;
+You can select which components of the reports to display or choose to show the short version of the report: [select-widgets-to-display.md](../../step-by-step-guides/report-customization/select-widgets-to-display.md "mention").&#x20;
 
-If you want to create a new plot or metric, you can [add-a-custom-widget-or-tab.md](../step-by-step-guides/report-customization/add-a-custom-widget-or-tab.md "mention").
+If you want to create a new plot or metric, you can [add-a-custom-widget-or-tab.md](../../step-by-step-guides/report-customization/add-a-custom-widget-or-tab.md "mention").
 
 ## When to use the report
 

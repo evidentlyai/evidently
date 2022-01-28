@@ -31,7 +31,7 @@ To **estimate the numerical target (prediction) drift**, we compare the distribu
 We also calculate the [Pearson correlation](https://en.wikipedia.org/wiki/Pearson\_correlation\_coefficient) between the target (prediction) and each individual feature in the two datasets to detect a **change in the relationship.**
 
 {% hint style="info" %}
-To set a different confidence level or tests you use, you can define [custom options](../step-by-step-guides/report-customization/options-for-data-target-drift.md).
+To set a different confidence level or tests you use, you can define [custom options](../../step-by-step-guides/report-customization/options-for-data-target-drift.md).
 {% endhint %}
 
 ## How it looks
@@ -75,11 +75,11 @@ For example, in a Boston house pricing dataset, we can see a new segment with va
 
 ## Report customization
 
-You can set different [options-for-data-target-drift.md](../step-by-step-guides/report-customization/options-for-data-target-drift.md "mention") to modify the report components.&#x20;
+You can set different [options-for-data-target-drift.md](../../step-by-step-guides/report-customization/options-for-data-target-drift.md "mention") to modify the report components.&#x20;
 
-You can also select which components of the reports to display or choose to show the short version of the report: [select-widgets-to-display.md](../step-by-step-guides/report-customization/select-widgets-to-display.md "mention").&#x20;
+You can also select which components of the reports to display or choose to show the short version of the report: [select-widgets-to-display.md](../../step-by-step-guides/report-customization/select-widgets-to-display.md "mention").&#x20;
 
-If you want to create a new plot or metric, you can [add-a-custom-widget-or-tab.md](../step-by-step-guides/report-customization/add-a-custom-widget-or-tab.md "mention").
+If you want to create a new plot or metric, you can [add-a-custom-widget-or-tab.md](../../step-by-step-guides/report-customization/add-a-custom-widget-or-tab.md "mention").
 
 ## When to use the report
 

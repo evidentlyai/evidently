@@ -6,13 +6,13 @@ description: You can modify certain options when calculating the Data and Target
 
 **An example of setting custom options in the Data Drift Report on California Housing Dataset:**
 
-{% embed url="https://colab.research.google.com/drive/11tY2g-XbkZSLSqgyGBJ5ijVvyl1E2TpY?authuser=1" %}
+{% embed url="https://colab.research.google.com/drive/11tY2g-XbkZSLSqgyGBJ5ijVvyl1E2TpY" %}
 
 You can set the custom options for the following Reports:&#x20;
 
-* num\_target\_drift\_tab ([num-target-drift.md](../../reports/num-target-drift.md "mention"))
-* cat\_target\_drift\_tab ( [categorical-target-drift.md](../../reports/categorical-target-drift.md "mention"))
-* data\_drift\_tab ([data-drift.md](../../reports/data-drift.md "mention"))
+* num\_target\_drift\_tab ([get-started/num-target-drift.md](../../get-started/reports/num-target-drift.md "mention"))
+* cat\_target\_drift\_tab ( [get-started/categorical-target-drift.md](../../get-started/reports/categorical-target-drift.md "mention"))
+* data\_drift\_tab ([get-started/data-drift.md](../../get-started/reports/data-drift.md "mention"))
 
 ## Available Options
 
@@ -82,7 +82,7 @@ The section below explains specific popular customizations in more detail.
 
 ### **1. Choose a different statistical test to detect Data Drift**
 
-You can override the default statistical tests that Evidently uses in the [Data Drift report](../../reports/data-drift.md). &#x20;
+You can override the default statistical tests that Evidently uses in the [Data Drift report](../../get-started/reports/data-drift.md). &#x20;
 
 To do that, set the following option:&#x20;
 
@@ -110,7 +110,7 @@ Then, define the **DataDriftOptions** object as shown above.
 
 ### **2. Set a custom Dataset Drift condition**
 
-The [data-drift.md](../../reports/data-drift.md "mention") report contains a component that confirms whether the drift was detected on the Dataset level.&#x20;
+The [get-started/data-drift.md](../../get-started/reports/data-drift.md "mention") report contains a component that confirms whether the drift was detected on the Dataset level.&#x20;
 
 To set custom drift conditions, you need to specify the following **options**:
 
@@ -125,7 +125,7 @@ Then, define the **DataDriftOptions** object as shown above.
 
 ### 3. Customize the histogram plots&#x20;
 
-You can customize how the distribution plots look for the individual features in the [Data Drift Report](../../reports/data-drift.md). It is helpful, for example, if you have NULL or other specific values and want to see them in a separate bin.
+You can customize how the distribution plots look for the individual features in the [Data Drift Report](../../get-started/reports/data-drift.md). It is helpful, for example, if you have NULL or other specific values and want to see them in a separate bin.
 
 To customize the plots, specify the following **options**:
 
@@ -135,7 +135,7 @@ To customize the plots, specify the following **options**:
 * “**xbins**” - to define the specific bin sizes (default value = none).&#x20;
   * Dict("start"=value, "end"=value, "size"=value) or [plotly.graph\_objects.histogram.XBins](https://plotly.github.io/plotly.py-docs/generated/plotly.graph\_objects.histogram.html#plotly.graph\_objects.histogram.XBins)
 
-You can set different options for each feature. For example, you can specify “**nbinsx**” for one subset of the features, “**xbins**” for another, and apply defaults for the rest. [Here](../../evidently/examples/boston\_dataset\_drift\_with\_customized\_bins.ipynb) is an example.
+You can set different options for each feature. For example, you can specify “**nbinsx**” for one subset of the features, “**xbins**” for another, and apply defaults for the rest. [Here](../../../../examples/how_to_questions/drift_dashboard_with_options_california_housing.ipynb) is an example.
 
 Once you specify the options, define the **DataDriftOptions** object as shown above.
 

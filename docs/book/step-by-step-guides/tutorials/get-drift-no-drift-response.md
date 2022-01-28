@@ -1,6 +1,6 @@
 # Get Drift/No Drift response
 
-**TL;DR:** You can use Evidently to evaluate drift for individual features and then add custom parameters to get a boolean TRUE/FALSE response for the overall dataset drift. Here is an example [Jupyter notebook](../../evidently/tutorials/drift\_detection.ipynb).
+**TL;DR:** You can use Evidently to evaluate drift for individual features and then add custom parameters to get a boolean TRUE/FALSE response for the overall dataset drift. Here is an example [Jupyter notebook](../../../../examples/integrations/mlflow_logging/historical_drift_visualization.ipynb).
 
 ### **Overview**
 
@@ -12,7 +12,7 @@ The exact choice of parameters requires an understanding of the use case and mod
 
 ### Example
 
-In this example [Jupyter notebook](../../evidently/tutorials/drift\_detection.ipynb), we use Evidently profiles to calculate data drift. Then, we add the following custom parameters:
+In this example [Jupyter notebook](../../../../examples/integrations/mlflow_logging/historical_drift_visualization.ipynb), we use Evidently profiles to calculate data drift. Then, we add the following custom parameters:
 
 * **Confidence interval** for **** individual feature drift. (Default: 0.95)
 * **Drift threshold** on the share of drifting features. (Default: 0.5).

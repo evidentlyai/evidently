@@ -14,7 +14,6 @@ from os.path import join as pjoin
 import io
 import os
 import functools
-from packaging import version
 import pipes
 import re
 import shlex
@@ -86,17 +85,6 @@ def get_version(file, name='__version__'):
     with io.open(path, encoding="utf8") as f:
         exec(f.read(), {}, version_ns)
     return version_ns[name]
-
-
-def ensure_python(min_version):
-    """Given a list of range specifiers for python, ensure compatibility.
-    """
-    v = sys.version_info
-    part = '%s.%s' % (v.major, v.minor)
-    version.parse(min_version)
-    if version.parse(part) < version.parse(min_version):
-        raise ValueError('Python version %s unsupported' % part)
-
 
 def find_packages(top=HERE):
     """
@@ -607,7 +595,7 @@ def _get_package_data(root, file_patterns=None):
     """
     if file_patterns is None:
         file_patterns = ['*']
-    return _get_files(file_patterns, _glob_pjoin(HERE, root))
+    return _get_files(file_patterns, _glob_pjoin(HERE, 'src', root))
 
 
 def _compile_pattern(pat, ignore_case=True):

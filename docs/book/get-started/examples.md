@@ -7,33 +7,31 @@ description: See the code
 ## Sample notebooks
 
 Each shows how to create a default Evidently dashboard, a JSON profile and an HTML report.
-
-| Report Type                              | Jupyter notebook                                                                             |  Colab notebook                                                                                                                         | Data source                                                                 |
-| ---------------------------------------- | -------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| Data Drift                               | [Iris ](evidently/examples/iris\_data\_drift.ipynb)                                          |  [Iris](https://colab.research.google.com/drive/1TCdDjuiMzvSyjkIJOwYl2dkN8N56c00Z?authuser=1)                                           |                                                                             |
-|                                          | [Boston Housing](evidently/examples/boston\_data\_drift.ipynb)                               | [Boston housing](https://colab.research.google.com/drive/1J8FvINy5nX47L5-iklsGD4C4y1Zi1Wlo?authuser=1)                                  |                                                                             |
-| Categorical Target Drift                 | [Iris ](evidently/examples/iris\_target\_and\_data\_drift.ipynb)                             | <p></p><p><a href="https://colab.research.google.com/drive/18HvFvZeIjOmbAV7KVL103PlWlFuIjdGj?authuser=1">Iris</a></p><p></p><p><br></p> |                                                                             |
-|                                          | [Breast Cancer](evidently/examples/breast\_cancer\_target\_and\_data\_drift.ipynb)           |  [Breast Cancer](https://colab.research.google.com/drive/157kTbk-uZKi4Q6Eea3yaEbLrpR\_h\_Pow?authuser=1)                                |                                                                             |
-| Numerical Target Drift                   | [Boston Housing ](evidently/examples/boston\_target\_and\_data\_drift.ipynb)                 |  [Boston Housing](https://colab.research.google.com/drive/1IDE02r-Xh-T4k5Yw3SpRGlewHOS8ZsmX?authuser=1)                                 |                                                                             |
-| Regression Performance                   | ****[Bike Sharing ](evidently/examples/bike\_sharing\_demand\_regression\_performance.ipynb) | [Bike Sharing](https://colab.research.google.com/drive/1VA1KjBYxMRfccSS5IXAClBGKB9Lw7WtP?authuser=1)                                    | UCI: [link](https://archive.ics.uci.edu/ml/datasets/bike+sharing+dataset)   |
-| Classification Performance               | [Iris](evidently/examples/iris\_classification\_performance.ipynb)                           |  [Iris](https://colab.research.google.com/drive/1SAsaUTUaIzg3FyI\_EbmO9hzuEu1hVl4v?authuser=1)                                          |                                                                             |
-| Probabilistic Classification Performance | [Iris](evidently/examples/iris\_probabilistic\_classification\_performance.ipynb)            | <p></p><p><a href="https://colab.research.google.com/drive/1uFN0ZWNLk3ExylBywq_M8oGkmac0lDrq?authuser=1">Iris</a></p><p><br></p>        |                                                                             |
-|                                          | [Breast Cancer](evidently/examples/breast\_cancer\_prob\_classification\_performance.ipynb)  |  [Breast Cancer](https://colab.research.google.com/drive/1vwEBgGnDVk5BJG2PXT1w41VfZ-\_bq\_Sw?authuser=1)                                |                                                                             |
+Report | Jupyter notebook | Colab notebook | Data source 
+--- | --- | --- | --- 
+Data Drift + Categorical Target Drift (Multiclass) | [link](../../../examples/sample_notebooks/multiclass_target_and_data_drift_iris.ipynb) | [link](https://colab.research.google.com/drive/1Dd6ZzIgeBYkD_4bqWZ0RAdUpCU0b6Y6H) | Iris plants sklearn.datasets 
+Data Drift + Categorical Target Drift (Binary) | [link](../../../examples/sample_notebooks/binary_target_and_data_drift_breast_cancer.ipynb) | [link](https://colab.research.google.com/drive/1gpzNuFbhoGc4-DLAPMJofQXrsX7Sqsl5) | Breast cancer sklearn.datasets
+Data Drift + Numerical Target Drift | [link](../../../examples/sample_notebooks/numerical_target_and_data_drift_california_housing.ipynb) | [link](https://colab.research.google.com/drive/1TGt-0rA7MiXsxwtKB4eaAGIUwnuZtyxc) | California housing sklearn.datasets 
+Regression Performance | [link](../../../examples/sample_notebooks/regression_performance_bike_sharing_demand.ipynb) | [link](https://colab.research.google.com/drive/1ONgyDXKMFyt9IYUwLpvfxz9VIZHw-qBJ) | Bike sharing UCI: [link](https://archive.ics.uci.edu/ml/datasets/bike+sharing+dataset)
+Classification Performance (Multiclass) | [link](../../../examples/sample_notebooks/classification_performance_multiclass_iris.ipynb) | [link](https://colab.research.google.com/drive/1pnYbVJEHBqvVmHUXzG-kw-Fr6PqhzRg3) | Iris plants sklearn.datasets 
+Probabilistic Classification Performance (Multiclass) | [link](../../../examples/sample_notebooks/probabilistic_classification_performance_multiclass_iris.ipynb) | [link](https://colab.research.google.com/drive/1UkFaBqOzBseB_UqisvNbsh9hX5w3dpYS) | Iris plants sklearn.datasets 
+Classification Performance (Binary) | [link](../../../examples/sample_notebooks/classification_performance_breast_cancer.ipynb) | [link](https://colab.research.google.com/drive/1b2kTLUIVJkKJybYeD3ZjpaREr_9dDTpz) | Breast cancer sklearn.datasets
+Probabilistic Classification Performance (Binary) | [link](../../../examples/sample_notebooks/probabilistic_classification_performance_breast_cancer.ipynb) | [link](https://colab.research.google.com/drive/1sE2H4mFSgtNe34JZMAeC3eLntid6oe1g) | Breast cancer sklearn.datasets
 
 ## Tutorials
 
 To better understand potential use cases (such as model evaluation and monitoring), refer to the **detailed tutorials** accompanied by the blog posts.&#x20;
 
-{% content-ref url="step-by-step-guides/tutorials/" %}
-[tutorials](step-by-step-guides/tutorials/)
+{% content-ref url="../step-by-step-guides/tutorials/" %}
+[tutorials](../step-by-step-guides/tutorials/)
 {% endcontent-ref %}
 
 ## Integrations
 
 To see how to integrate Evidently in your prediction pipelines and use it with other tools, refer to the **integrations**.&#x20;
 
-{% content-ref url="step-by-step-guides/integrations/" %}
-[integrations](step-by-step-guides/integrations/)
+{% content-ref url="../step-by-step-guides/integrations/" %}
+[integrations](../step-by-step-guides/integrations/)
 {% endcontent-ref %}
 
 

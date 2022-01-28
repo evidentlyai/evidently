@@ -51,7 +51,7 @@ The report returns **the share of drifting features** and an aggregate **Dataset
 Dataset Drift sets a rule on top of the results of the statistical tests for individual features. By default, Dataset Drift is detected if at least 50% of features drift at a 0.95 confidence level.&#x20;
 
 {% hint style="info" %}
-To set different Dataset Drift conditions, you can define [custom options](../step-by-step-guides/report-customization/options-for-data-target-drift.md).
+To set different Dataset Drift conditions, you can define [custom options](../../step-by-step-guides/report-customization/options-for-data-target-drift.md).
 {% endhint %}
 
 ### 2. Data Drift Table
@@ -76,16 +76,16 @@ You can also zoom on distributions to understand what has changed.
 ![](../../.gitbook/assets/data_distr_by_feature.png)
 
 {% hint style="info" %}
-To change the bins displayed, you can define [custom options](../step-by-step-guides/report-customization/options-for-data-target-drift.md).
+To change the bins displayed, you can define [custom options](../../step-by-step-guides/report-customization/options-for-data-target-drift.md).
 {% endhint %}
 
 ## Report customization
 
-As mentioned above, you can set different [options-for-data-target-drift.md](../step-by-step-guides/report-customization/options-for-data-target-drift.md "mention") to modify the existing components of the report. Use this to change the statistical tests used, define Dataset Drift conditions, or change histogram Bins.
+As mentioned above, you can set different [options-for-data-target-drift.md](../../step-by-step-guides/report-customization/options-for-data-target-drift.md "mention") to modify the existing components of the report. Use this to change the statistical tests used, define Dataset Drift conditions, or change histogram Bins.
 
-You can also select which components of the reports to display or choose to show the short version of the report: [select-widgets-to-display.md](../step-by-step-guides/report-customization/select-widgets-to-display.md "mention").&#x20;
+You can also select which components of the reports to display or choose to show the short version of the report: [select-widgets-to-display.md](../../step-by-step-guides/report-customization/select-widgets-to-display.md "mention").&#x20;
 
-If you want to create a new plot or metric, you can [add-a-custom-widget-or-tab.md](../step-by-step-guides/report-customization/add-a-custom-widget-or-tab.md "mention").
+If you want to create a new plot or metric, you can [add-a-custom-widget-or-tab.md](../../step-by-step-guides/report-customization/add-a-custom-widget-or-tab.md "mention").
 
 ## When to use this report
 
