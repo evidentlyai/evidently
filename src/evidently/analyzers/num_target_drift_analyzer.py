@@ -109,7 +109,7 @@ class NumTargetDriftAnalyzer(Analyzer):
         Raises:
             ValueError when target or predictions columns are not numerical.
         """
-        options = self.options_provider.get(DataDriftOptions)
+        data_drift_options = self.options_provider.get(DataDriftOptions)
         columns = process_columns(reference_data, column_mapping)
         result = NumTargetDriftAnalyzerResults(columns=columns)
 
@@ -120,7 +120,7 @@ class NumTargetDriftAnalyzer(Analyzer):
             raise ValueError(f'Some numerical features in current data {current_data.columns}'
                              f'are not present in columns.num_feature_names')
 
-        func = options.num_target_stattest_func or ks_stat_test
+        func = data_drift_options.num_target_stattest_func or ks_stat_test
         result.target_metrics = _compute_correlation(
             reference_data, current_data, 'target',
             columns.utility_columns.target, columns.num_feature_names, func

@@ -3,7 +3,7 @@ from typing import Optional, List, Dict, Type
 
 from dataclasses import dataclass
 
-from evidently.analyzers.data_drift_analyzer import DataDriftOptions
+from evidently.options import DataDriftOptions, QualityMetricsOptions
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.runner.loader import DataLoader, SamplingOptions, DataOptions
 
@@ -22,7 +22,8 @@ class RunnerOptions:
 
 
 options_mapping: Dict[str, Type] = {
-    'data_drift': DataDriftOptions
+    'data_drift': DataDriftOptions,
+    'quality_metrics': QualityMetricsOptions,
 }
 
 

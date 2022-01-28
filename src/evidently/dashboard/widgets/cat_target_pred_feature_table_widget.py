@@ -12,6 +12,8 @@ from evidently import ColumnMapping
 from evidently.analyzers.cat_target_drift_analyzer import CatTargetDriftAnalyzer
 from evidently.model.widget import BaseWidgetInfo, AdditionalGraphInfo
 from evidently.dashboard.widgets.widget import Widget
+from evidently.dashboard.widgets.utils import CutQuantileTransformer
+from evidently.options import QualityMetricsOptions
 
 
 class CatTargetPredFeatureTable(Widget):
@@ -29,13 +31,16 @@ class CatTargetPredFeatureTable(Widget):
                   analyzers_results) -> Optional[BaseWidgetInfo]:
 
         results = CatTargetDriftAnalyzer.get_results(analyzers_results)
+        quality_metrics_options = self.options_provider.get(QualityMetricsOptions)
+        cut_quantile = quality_metrics_options.cut_quantile
 
         if current_data is None:
             raise ValueError("current_data should be present")
 
         target_name = results.columns.utility_columns.target
+        prediction_name = results.columns.utility_columns.prediction
 
-        if results.columns.utility_columns.prediction is not None and target_name is not None:
+        if prediction_name is not None and target_name is not None:
             additional_graphs_data = []
             params_data = []
             for feature_name in results.columns.get_all_features_list(cat_before_num=False):
@@ -62,17 +67,26 @@ class CatTargetPredFeatureTable(Widget):
                 # create target plot
                 reference_data['dataset'] = 'Reference'
                 current_data['dataset'] = 'Current'
-                merged_data = pd.concat([reference_data, current_data])
+                if cut_quantile and quality_metrics_options.get_cut_quantile(feature_name):
+                    side, q = quality_metrics_options.get_cut_quantile(feature_name)
+                    cqt = CutQuantileTransformer(side=side, q=q)
+                    cqt.fit(reference_data[feature_name])
+                    reference_data_to_plot = cqt.transform_df(reference_data, feature_name)
+                    current_data_to_plot = cqt.transform_df(current_data, feature_name)
+                else:
+                    reference_data_to_plot = reference_data
+                    current_data_to_plot = current_data
+                merged_data = pd.concat([reference_data_to_plot, current_data_to_plot])
 
                 target_fig = px.histogram(merged_data, x=feature_name, color=target_name,
-                                          facet_col="dataset",
+                                          facet_col="dataset", barmode='overlay',
                                           category_orders={"dataset": ["Reference", "Current"]})
 
                 target_fig_json = json.loads(target_fig.to_json())
 
                 # create prediction plot
-                pred_fig = px.histogram(merged_data, x=feature_name, color=results.columns.utility_columns.prediction,
-                                        facet_col="dataset",
+                pred_fig = px.histogram(merged_data, x=feature_name, color=prediction_name,
+                                        facet_col="dataset", barmode='overlay',
                                         category_orders={"dataset": ["Reference", "Current"]})
 
                 pred_fig_json = json.loads(pred_fig.to_json())
@@ -140,10 +154,19 @@ class CatTargetPredFeatureTable(Widget):
                 # TO DO%: out pf the cycle
                 reference_data['dataset'] = 'Reference'
                 current_data['dataset'] = 'Current'
-                merged_data = pd.concat([reference_data, current_data])
+                if cut_quantile and quality_metrics_options.get_cut_quantile(feature_name):
+                    side, q = quality_metrics_options.get_cut_quantile(feature_name)
+                    cqt = CutQuantileTransformer(side=side, q=q)
+                    cqt.fit(reference_data[feature_name])
+                    reference_data_to_plot = cqt.transform_df(reference_data, feature_name)
+                    current_data_to_plot = cqt.transform_df(current_data, feature_name)
+                else:
+                    reference_data_to_plot = reference_data
+                    current_data_to_plot = current_data
+                merged_data = pd.concat([reference_data_to_plot, current_data_to_plot])
 
                 target_fig = px.histogram(merged_data, x=feature_name, color=target_name,
-                                          facet_col="dataset",
+                                          facet_col="dataset", barmode='overlay',
                                           category_orders={"dataset": ["Reference", "Current"]})
 
                 target_fig_json = json.loads(target_fig.to_json())
@@ -198,9 +221,18 @@ class CatTargetPredFeatureTable(Widget):
                 # create target plot
                 reference_data['dataset'] = 'Reference'
                 current_data['dataset'] = 'Current'
-                merged_data = pd.concat([reference_data, current_data])
+                if cut_quantile and quality_metrics_options.get_cut_quantile(feature_name):
+                    side, q = quality_metrics_options.get_cut_quantile(feature_name)
+                    cqt = CutQuantileTransformer(side=side, q=q)
+                    cqt.fit(reference_data[feature_name])
+                    reference_data_to_plot = cqt.transform_df(reference_data, feature_name)
+                    current_data_to_plot = cqt.transform_df(current_data, feature_name)
+                else:
+                    reference_data_to_plot = reference_data
+                    current_data_to_plot = current_data
+                merged_data = pd.concat([reference_data_to_plot, current_data_to_plot])
 
-                prediction_fig = px.histogram(merged_data, x=feature_name,
+                prediction_fig = px.histogram(merged_data, x=feature_name, barmode='overlay',
                                               color=results.columns.utility_columns.prediction, facet_col="dataset",
                                               category_orders={"dataset": ["Reference", "Current"]})
 

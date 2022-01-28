@@ -139,7 +139,7 @@ def _calculate_error_normality(error: ErrorWithQuantiles):
     }
 
 
-def _calculate_quality_metrics(dataset, prediction_column, target_column):
+def _calculate_quality_metrics(dataset, prediction_column, target_column, conf_interval_n_sigmas=1):
     me = np.mean(dataset[prediction_column] - dataset[target_column])
     sde = np.std(dataset[prediction_column] - dataset[target_column], ddof=1)
 
@@ -155,9 +155,9 @@ def _calculate_quality_metrics(dataset, prediction_column, target_column):
         'mean_error': float(me),
         'mean_abs_error': float(mae),
         'mean_abs_perc_error': float(mape),
-        'error_std': float(sde),
-        'abs_error_std': float(sdae),
-        'abs_perc_error_std': float(sdape)
+        'error_std': conf_interval_n_sigmas * float(sde),
+        'abs_error_std': conf_interval_n_sigmas * float(sdae),
+        'abs_perc_error_std': conf_interval_n_sigmas * float(sdape)
     }
 
 
@@ -166,7 +166,7 @@ def _prepare_dataset(dataset):
     dataset.dropna(axis=0, how='any', inplace=True)
 
 
-def _calculate_underperformance(err_quantiles: ErrorWithQuantiles):
+def _calculate_underperformance(err_quantiles: ErrorWithQuantiles, conf_interval_n_sigmas: int = 1):
     error = err_quantiles.error
     quantile_5 = err_quantiles.quantile_5
     quantile_95 = err_quantiles.quantile_95
@@ -179,9 +179,9 @@ def _calculate_underperformance(err_quantiles: ErrorWithQuantiles):
     sd_over = np.std(error[error >= quantile_95], ddof=1)
 
     return {
-        'majority': {'mean_error': float(mae_exp), 'std_error': float(sd_exp)},
-        'underestimation': {'mean_error': float(mae_under), 'std_error': float(sd_under)},
-        'overestimation': {'mean_error': float(mae_over), 'std_error': float(sd_over)}
+        'majority': {'mean_error': float(mae_exp), 'std_error': conf_interval_n_sigmas * float(sd_exp)},
+        'underestimation': {'mean_error': float(mae_under), 'std_error': conf_interval_n_sigmas * float(sd_under)},
+        'overestimation': {'mean_error': float(mae_over), 'std_error': conf_interval_n_sigmas * float(sd_over)}
     }
 
 

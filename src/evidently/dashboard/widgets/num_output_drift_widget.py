@@ -11,6 +11,8 @@ from evidently import ColumnMapping
 from evidently.analyzers.num_target_drift_analyzer import NumTargetDriftAnalyzer
 from evidently.model.widget import BaseWidgetInfo, AlertStats
 from evidently.dashboard.widgets.widget import Widget, GREY, RED
+from evidently.dashboard.widgets.utils import CutQuantileTransformer
+from evidently.options import QualityMetricsOptions
 
 
 class NumOutputDriftWidget(Widget):
@@ -28,6 +30,8 @@ class NumOutputDriftWidget(Widget):
                   analyzers_results) -> Optional[BaseWidgetInfo]:
 
         results = NumTargetDriftAnalyzer.get_results(analyzers_results)
+        quality_metrics_options = self.options_provider.get(QualityMetricsOptions)
+        cut_quantile = quality_metrics_options.cut_quantile
 
         if current_data is None:
             raise ValueError("current_data should be present")
@@ -60,9 +64,20 @@ class NumOutputDriftWidget(Widget):
         output_sim_test = "detected" if output_p_value < 0.05 else "not detected"
 
         # plot output distributions
+        if cut_quantile and quality_metrics_options.get_cut_quantile(column_name):
+            side, q = quality_metrics_options.get_cut_quantile(column_name)
+            cqt = CutQuantileTransformer(side=side, q=q)
+            cqt.fit(reference_data[column_name])
+            reference_data_to_plot = cqt.transform(reference_data[column_name])
+            current_data_to_plot = cqt.transform(current_data[column_name])
+        else:
+            reference_data_to_plot = reference_data[column_name]
+            current_data_to_plot = current_data[column_name]
         output_distr = ff.create_distplot(
             [reference_data[column_name],
              current_data[column_name]],
+            [reference_data_to_plot,
+             current_data_to_plot],
             ["Reference", "Current"],
             colors=[GREY, RED],
             show_rug=True)

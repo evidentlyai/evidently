@@ -33,7 +33,7 @@ from evidently.pipeline.column_mapping import ColumnMapping
 column_mapping = ColumnMapping()
 
 column_mapping.target = 'y'
-column_mapping.prediction = 'pred' predictions
+column_mapping.prediction = 'pred' # predictions
 column_mapping.id = None 
 column_mapping.datetime = 'date' 
 column_mapping.numerical_features = ['temp', 'atemp', 'humidity'] 

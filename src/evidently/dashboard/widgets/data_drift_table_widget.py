@@ -10,9 +10,11 @@ import numpy as np
 import plotly.graph_objs as go
 
 from evidently import ColumnMapping
-from evidently.analyzers.data_drift_analyzer import DataDriftAnalyzer, DataDriftOptions
+from evidently.analyzers.data_drift_analyzer import DataDriftAnalyzer
 from evidently.model.widget import BaseWidgetInfo, AlertStats, AdditionalGraphInfo
 from evidently.dashboard.widgets.widget import Widget, GREY, RED
+from evidently.dashboard.widgets.utils import CutQuantileTransformer
+from evidently.options import DataDriftOptions, QualityMetricsOptions
 
 
 class DataDriftTableWidget(Widget):
@@ -33,13 +35,15 @@ class DataDriftTableWidget(Widget):
 
         # set params data
         params_data = []
-        options = self.options_provider.get(DataDriftOptions)
+        data_drift_options = self.options_provider.get(DataDriftOptions)
+        quality_metrics_options = self.options_provider.get(QualityMetricsOptions)
+        conf_interval_n_sigmas = quality_metrics_options.conf_interval_n_sigmas
         for feature_name in all_features:
             current_small_hist = data_drift_results.metrics.features[feature_name].current_small_hist
             ref_small_hist = data_drift_results.metrics.features[feature_name].ref_small_hist
             feature_type = data_drift_results.metrics.features[feature_name].feature_type
             p_value = data_drift_results.metrics.features[feature_name].p_value
-            feature_confidence = options.get_confidence(feature_name)
+            feature_confidence = data_drift_options.get_confidence(feature_name)
             distr_sim_test = "Detected" if p_value < (1. - feature_confidence) else "Not Detected"
 
             params_data.append(
@@ -75,7 +79,8 @@ class DataDriftTableWidget(Widget):
 
         # set additionalGraphs
         additional_graphs_data = []
-        xbins = options.xbins
+        xbins = data_drift_options.xbins
+        cut_quantile = quality_metrics_options.cut_quantile
         for feature_name in all_features:
             # plot distributions
             fig = go.Figure()
@@ -84,8 +89,17 @@ class DataDriftTableWidget(Widget):
                 current_nbinsx = None
             else:
                 current_xbins = None
-                current_nbinsx = options.get_nbinsx(feature_name)
-            fig.add_trace(go.Histogram(x=reference_data[feature_name],
+                current_nbinsx = data_drift_options.get_nbinsx(feature_name)
+            if cut_quantile and quality_metrics_options.get_cut_quantile(feature_name):
+                side, q = quality_metrics_options.get_cut_quantile(feature_name)
+                cqt = CutQuantileTransformer(side=side, q=q)
+                cqt.fit(reference_data[feature_name])
+                reference_data_to_plot = cqt.transform(reference_data[feature_name])
+                current_data_to_plot = cqt.transform(current_data[feature_name])
+            else:
+                reference_data_to_plot = reference_data[feature_name]
+                current_data_to_plot = current_data[feature_name]
+            fig.add_trace(go.Histogram(x=reference_data_to_plot,
                                        marker_color=GREY,
                                        opacity=0.6,
                                        xbins=current_xbins,
@@ -93,7 +107,7 @@ class DataDriftTableWidget(Widget):
                                        name='Reference',
                                        histnorm='probability'))
 
-            fig.add_trace(go.Histogram(x=current_data[feature_name],
+            fig.add_trace(go.Histogram(x=current_data_to_plot,
                                        marker_color=RED,
                                        opacity=0.6,
                                        xbins=current_xbins,
@@ -132,6 +146,25 @@ class DataDriftTableWidget(Widget):
                 )
             ))
 
+            if date_column:
+                x0 = current_data[date_column].sort_values()[1]
+            else:
+                x0 = current_data.index.sort_values()[1]
+
+            fig.add_trace(go.Scatter(
+                x=[x0, x0],
+                y=[reference_mean - conf_interval_n_sigmas * reference_std,
+                    reference_mean + conf_interval_n_sigmas * reference_std],
+                mode='markers',
+                name='Current',
+                marker=dict(
+                    size=0.01,
+                    color='white',
+                    opacity=0.005
+                ),
+                showlegend=False
+            ))
+
             fig.update_layout(
                 xaxis_title=x_title,
                 yaxis_title=feature_name,
@@ -151,9 +184,9 @@ class DataDriftTableWidget(Widget):
                         # y-reference is assigned to the plot paper [0,1]
                         yref="y",
                         x0=0,
-                        y0=reference_mean - reference_std,
+                        y0=reference_mean - conf_interval_n_sigmas * reference_std,
                         x1=1,
-                        y1=reference_mean + reference_std,
+                        y1=reference_mean + conf_interval_n_sigmas * reference_std,
                         fillcolor="LightGreen",
                         opacity=0.5,
                         layer="below",
