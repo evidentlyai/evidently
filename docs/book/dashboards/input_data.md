@@ -1,3 +1,7 @@
+---
+description: How to prepare the data.
+---
+
 This section applies both to Dashboards and Profiles.
 
 ## Data preparation
