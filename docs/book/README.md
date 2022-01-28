@@ -18,7 +18,7 @@ Explore the examples of the Evidently reports on different datasets and code tut
 
 Evidently has a modular approach with 3 interfaces on top of the shared analyzer functionality. 
 
-## [Interactive visual reports](dashboards/README.md)
+## [1. Interactive visual reports](dashboards/README.md)
 
 Evidently generates interactive HTML reports from `pandas.DataFrame` or `csv` files. You can use them for visual model evaluation, debugging and documentation. 
 
