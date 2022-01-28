@@ -28,7 +28,6 @@ def test_single_dataset_with_two_classes() -> None:
     assert result.columns.num_feature_names == []
     assert result.columns.target_names is None
 
-
     reference_metrics = result.reference_metrics
     assert reference_metrics.accuracy == approx(1 / 6)
     assert reference_metrics.precision == approx(1 / 8)
@@ -242,14 +241,19 @@ def test_two_datasets_with_two_classes_when_dataset_is_same() -> None:
             'tpr': [0.0, 0.3333333333333333, 1.0, 1.0],
             'thrs': [1.6, 0.6, 0.4, 0.1]
         }
-        assert metrics.pr_curve == {'pr': [1.0, 1.0, 1.0, 1.0],
-                                                 'rcl': [1.0, 0.6666666666666666,
-                                                         0.3333333333333333,
-                                                         0.0],
-                                                 'thrs': [0.4, 0.5, 0.6]}
-        assert metrics.pr_table == [[16.7, 1, 0.5, 1, 0, 100.0, 33.3], [33.3, 2, 0.4, 2, 0, 100.0, 66.7],
-                                                 [50.0, 3, 0.3, 3, 0, 100.0, 100.0], [66.7, 4, 0.2, 3, 1, 75.0, 100.0],
-                                                 [83.3, 5, 0.1, 3, 2, 60.0, 100.0], [100.0, 6, 0.1, 3, 3, 50.0, 100.0]]
+        assert metrics.pr_curve == {
+            'pr': [1.0, 1.0, 1.0, 1.0],
+            'rcl': [1.0, 0.6666666666666666, 0.3333333333333333, 0.0],
+            'thrs': [0.4, 0.5, 0.6]
+        }
+        assert metrics.pr_table == [
+            [16.7, 1, 0.5, 1, 0, 100.0, 33.3],
+            [33.3, 2, 0.4, 2, 0, 100.0, 66.7],
+            [50.0, 3, 0.3, 3, 0, 100.0, 100.0],
+            [66.7, 4, 0.2, 3, 1, 75.0, 100.0],
+            [83.3, 5, 0.1, 3, 2, 60.0, 100.0],
+            [100.0, 6, 0.1, 3, 3, 50.0, 100.0]
+        ]
         ###
         metrics_matrix = metrics.metrics_matrix
         assert metrics_matrix['label_a'] == {'precision': 0.0, 'recall': 0.0, 'f1-score': 0.0, 'support': 3}

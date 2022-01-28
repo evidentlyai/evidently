@@ -39,4 +39,3 @@ def test_different_column_names(analyzer: ClassificationPerformanceAnalyzer) -> 
     assert result.current_metrics.f1 == approx(0.25974, 1e-4)
     assert isinstance(result.current_metrics.metrics_matrix, dict)
     assert result.current_metrics.metrics_matrix
-

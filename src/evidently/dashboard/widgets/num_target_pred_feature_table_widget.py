@@ -32,7 +32,7 @@ class NumTargetPredFeatureTable(Widget):
 
         target_column = results.columns.utility_columns.prediction
         prediction_column = results.columns.utility_columns.prediction
-        
+
         if target_column and prediction_column:
             return None
 

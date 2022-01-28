@@ -20,16 +20,16 @@ class ClassificationPerformanceProfileSection(ProfileSection):
     @staticmethod
     def _get_performance_metrics_as_dict(metrics: PerformanceMetrics):
         return {
-                'accuracy': metrics.accuracy,
-                'precision': metrics.precision,
-                'recall': metrics.recall,
-                'f1': metrics.f1,
-                'metrics_matrix': metrics.metrics_matrix,
-                'confusion_matrix': {
-                    'labels': metrics.confusion_matrix.labels,
-                    'values': metrics.confusion_matrix.values,
-                }
+            'accuracy': metrics.accuracy,
+            'precision': metrics.precision,
+            'recall': metrics.recall,
+            'f1': metrics.f1,
+            'metrics_matrix': metrics.metrics_matrix,
+            'confusion_matrix': {
+                'labels': metrics.confusion_matrix.labels,
+                'values': metrics.confusion_matrix.values,
             }
+        }
 
     def calculate(self, reference_data, current_data, column_mapping, analyzers_results):
         result = ClassificationPerformanceAnalyzer.get_results(analyzers_results)
