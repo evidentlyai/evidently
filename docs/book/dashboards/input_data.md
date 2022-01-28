@@ -27,9 +27,9 @@ If your dataset is large, we suggest taking a sample. If you work in the noteboo
 
 ## Reference and current datasets 
 
-We call the datasets "reference" and "current" which corresponds to the production model evaluation scenario. 
+We call the datasets "reference" and "current". This corresponds to the production model evaluation scenario. 
 
-In practice, you can use Evidently to compare any two datasets, for example: 
+In practice, you can use Evidently to compare two datasets in different scenarios, for example: 
 
 * **Training vs Test**
   * To compare the model performance on a hold-out **Test** to the **Training**.
