@@ -25,6 +25,28 @@ For some reports (e.g. model performance), the second dataset is optional. You c
 If your dataset is large, we suggest taking a sample. If you work in the notebook, you can do that with pandas before generating the dashboard. If you work using CLI, you can specify that in the configuration.
 {% endhint %}
 
+## Reference and current datasets 
+
+We call the datasets "reference" and "current" which corresponds to the production model evaluation scenario. 
+
+In practice, you can use Evidently to compare any two datasets, for example: 
+
+* **Training vs Test**
+  * To compare the model performance on a hold-out **Test** to the **Training**.
+  * Pass the training data as "Reference", and test data as "Current".
+* **Production vs Training**
+  * To compare the **Production** model performance to the **Training** period.
+  * Pass the training data as "Reference", and production data as "Current".
+* **Current perfromance vs Past**
+  * To compare the **Current** production performance to an **Earlier** period.
+  * For example, to compare the last week to the previous week or month.
+  * Pass the earlier data as "Reference", and newer data as "Current".
+* **Compare any two models or datasets**
+  * For example, to estimate the historical drift for different windows in your training data or to compare how two models perform in the test.
+  * Pass the first dataset as "Reference", and the second as "Current".
+
+If you are generating the performance report for a single dataset, pass it as "Reference". 
+
 ## Dataset structure
 
 The expected data schema is different depending on the report type.
