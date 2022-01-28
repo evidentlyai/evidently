@@ -22,7 +22,7 @@ Evidently has a modular approach with 3 interfaces on top of the shared analyzer
 
 Evidently generates interactive HTML reports from `pandas.DataFrame` or `csv` files. You can use them for visual model evaluation, debugging and documentation. 
 
-Each report covers a certain aspect of the model performance. You can display reports as Dashboard objects in Jupyter notebook or Colab or export as an HTML file.
+Each report covers a certain aspect of the model performance. You can display reports as `Dashboard` objects in Jupyter notebook or Colab or export as an HTML file.
 
 Evidently currently works with **tabular data**. 6 reports are available.
 
@@ -42,7 +42,7 @@ You can combine, customize the reports or contribute your own report.
 
 ## [2. Data and ML model profiling](profiling/README.md)
 
-Evidently also generates JSON profiles. You can use them to integrate the data or model evaluation step into the ML pipeline. 
+Evidently also generates JSON `Profiles`. You can use them to integrate the data or model evaluation step into the ML pipeline. 
 
 For example, you use it to perform scheduled batch checks of model health or log JSON profiles for further analysis. You can also build a conditional workflow based on the result of the check, e.g. to trigger alert, retraining, or generate a visual report. 
 
@@ -60,7 +60,7 @@ You can explore integrations with other tools:
 
 ## [3. Real-time ML monitoring](integrations/evidently-and-grafana.md)
 
-Evidently has a monitoring_service component that collects data and model metrics from a deployed ML service. You can use it to build live monitoring dashboards. 
+Evidently also has `Monitors` that collect data and model metrics from a deployed ML service. You can use them to build live monitoring dashboards. 
 Evidently configures the monitoring on top of the streaming data and emits the metrics. You can log and use the metrics elsewhere. 
 
 There is a lightweight [integration with Prometheus and Grafana](integrations/evidently-and-grafana.md) that comes with pre-built dashboards.
