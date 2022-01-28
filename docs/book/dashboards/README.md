@@ -4,7 +4,7 @@ description: How to generate visual reports on data and model performnace.
 
 # Dashboards 
 
-Dashboards help visually explore and evaluate the data and model performance.
+`Dashboard` helps visually explore and evaluate the data and model performance.
 
 You can generate dashboards in certain notebook environments (see full list below) or using the command-line interface. The dashboards can be displayed directly in the notebook, or exported as a separate HTML file. 
 
