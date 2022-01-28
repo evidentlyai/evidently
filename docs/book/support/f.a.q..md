@@ -16,7 +16,7 @@ If you want to change the default report, you can create a custom widget and tab
 
 ### **Can I export the report to display it elsewhere / integrate it into the prediction pipeline?**
 
-You can export the report summary as a JSON profile and integrate it with external tools. Refer to the [Integration section](/../integrations) to see examples.
+You can export the report summary as a JSON profile and integrate it with external tools. Refer to the [Integration section](../integrations) to see examples.
 
 ### **The HTML report size is too large. Can I decrease it?**
 
