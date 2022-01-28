@@ -377,8 +377,8 @@ def test_two_dataset_with_two_classes_when_dataset_is_different() -> None:
         'thrs': [1.8, 0.8, 0.5, 0.4]
     }
     assert reference_metrics.pr_curve == {
-        'pr': [0.5, 0.5, 0.0, 1.0],
-        'rcl': [1.0, 0.5, 0.0, 0.0],
+        'pr': [0.5, 0.5, 1.0, 1.0],
+        'rcl': [1.0, 0.5, 0.5, 0.0],
         'thrs': [0.4, 0.5, 0.8]
     }
     assert reference_metrics.pr_table == [

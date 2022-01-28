@@ -41,6 +41,7 @@ class ProbClassificationPerformanceProfileSection(ProfileSection):
     def calculate(self, reference_data, current_data, column_mapping, analyzers_results):
         result = ProbClassificationPerformanceAnalyzer.get_results(analyzers_results)
         result_json = result.columns.as_dict()
+        result_json['options'] = result.quality_metrics_options.as_dict()
         result_json['metrics'] = {}
 
         if result.reference_metrics is not None:

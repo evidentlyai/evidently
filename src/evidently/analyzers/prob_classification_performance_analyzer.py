@@ -11,9 +11,9 @@ from sklearn import metrics
 
 from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
-from evidently.analyzers.utils import process_columns
 from evidently.options import QualityMetricsOptions
-from evidently.analyzers.utils import process_columns, DatasetColumns
+from evidently.analyzers.utils import process_columns
+from evidently.analyzers.utils import DatasetColumns
 
 
 @dataclass
@@ -42,6 +42,7 @@ class ClassificationPerformanceMetrics:
 @dataclass
 class ProbClassificationPerformanceAnalyzerResults:
     columns: DatasetColumns
+    quality_metrics_options: QualityMetricsOptions
     reference_metrics: Optional[ClassificationPerformanceMetrics] = None
     current_metrics: Optional[ClassificationPerformanceMetrics] = None
 
@@ -56,24 +57,27 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
                   current_data: Optional[pd.DataFrame],
                   column_mapping: ColumnMapping) -> ProbClassificationPerformanceAnalyzerResults:
         columns = process_columns(reference_data, column_mapping)
-        result = ProbClassificationPerformanceAnalyzerResults(columns=columns)
+
 
         target_column = columns.utility_columns.target
         prediction_column = columns.utility_columns.prediction
         quality_metrics_options = self.options_provider.get(QualityMetricsOptions)
+        result = ProbClassificationPerformanceAnalyzerResults(
+            columns=columns,
+            quality_metrics_options=quality_metrics_options,
+        )
         classification_threshold = quality_metrics_options.classification_threshold
 
         if target_column is not None and prediction_column is not None:
             reference_data.replace([np.inf, -np.inf], np.nan, inplace=True)
             reference_data.dropna(axis=0, how='any', inplace=True)
-
             binaraized_target = (reference_data[target_column].values.reshape(-1, 1) == prediction_column).astype(int)
-
             array_prediction = reference_data[prediction_column].to_numpy()
 
             if len(prediction_column) > 2:
                 prediction_ids = np.argmax(array_prediction, axis=-1)
                 prediction_labels = [prediction_column[x] for x in prediction_ids]
+
             else:
                 maper = {True: prediction_column[0], False: prediction_column[1]}
                 prediction_labels = (reference_data[prediction_column[0]] >= classification_threshold).map(maper)
@@ -81,18 +85,6 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
             labels = sorted(set(reference_data[target_column]))
 
             # calculate quality metrics
-            if len(prediction_column) > 2:
-                roc_auc = metrics.roc_auc_score(binaraized_target, array_prediction, average='macro')
-                log_loss = metrics.log_loss(binaraized_target, array_prediction)
-
-            else:
-                # problem!!!
-                roc_auc = metrics.roc_auc_score(
-                    binaraized_target, reference_data[prediction_column[0]], average='macro'
-                )
-                # problem!!!
-                log_loss = metrics.log_loss(binaraized_target, reference_data[prediction_column[0]])
-
             roc_auc = metrics.roc_auc_score(binaraized_target, array_prediction, average='macro')
             log_loss = metrics.log_loss(binaraized_target, array_prediction)
             accuracy_score = metrics.accuracy_score(reference_data[target_column], prediction_labels)
@@ -125,7 +117,7 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
                 roc_aucs=roc_aucs
             )
 
-            # calulate ROC and PR curves, PR table
+            # calculate ROC and PR curves, PR table
             if len(prediction_column) <= 2:
                 binaraized_target = pd.DataFrame(binaraized_target[:, 0])
                 binaraized_target.columns = ['target']
@@ -219,21 +211,12 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
                 if len(prediction_column) > 2:
                     prediction_ids = np.argmax(array_prediction, axis=-1)
                     prediction_labels = [prediction_column[x] for x in prediction_ids]
+
                 else:
                     maper = {True: prediction_column[0], False: prediction_column[1]}
                     prediction_labels = (current_data[prediction_column[0]] >= classification_threshold).map(maper)
 
                 # calculate quality metrics
-                if len(prediction_column) > 2:
-                    roc_auc = metrics.roc_auc_score(binaraized_target, array_prediction, average='macro')
-                    log_loss = metrics.log_loss(binaraized_target, array_prediction)
-
-                else:
-                    # problem!!!
-                    roc_auc = metrics.roc_auc_score(binaraized_target, current_data[prediction_column[0]])
-                    # problem!!!
-                    log_loss = metrics.log_loss(binaraized_target, current_data[prediction_column[0]])
-
                 roc_auc = metrics.roc_auc_score(binaraized_target, array_prediction, average='macro')
                 log_loss = metrics.log_loss(binaraized_target, array_prediction)
                 accuracy_score = metrics.accuracy_score(current_data[target_column], prediction_labels)
@@ -266,7 +249,7 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
                     roc_aucs=roc_aucs
                 )
 
-                # calulate ROC and PR curves, PR table
+                # calculate ROC and PR curves, PR table
                 if len(prediction_column) <= 2:
                     binaraized_target = pd.DataFrame(binaraized_target[:, 0])
                     binaraized_target.columns = ['target']
