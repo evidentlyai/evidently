@@ -2,8 +2,6 @@
 description: How to generate dashboards in Evidently.
 ---
 
-## How to generate dashboards
-
 After [installation](../get-started/install-evidently.md), import `evidently` and the required tabs:
 
 ```python
