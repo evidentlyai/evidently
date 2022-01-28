@@ -32,7 +32,6 @@
   * [Column mapping](dashboards/column_mapping.md)
   * [Generate profiles](dashboards/generate_profiles.md)
   * [CLI](dashboards/cli.md)
-  * [Colab and other environments](dashboards/notebook_environments.md)
 * [Monitoring](integrations/evidently-and-grafana.md)
 
 ## User Guide
