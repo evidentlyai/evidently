@@ -2,7 +2,7 @@
 description: How to generate visual reports on data and model performnace.
 ---
 
-## Overview
+# Dashboards 
 
 Dashboards help visually explore and evaluate the data and model performance.
 
