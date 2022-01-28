@@ -2,6 +2,8 @@
 description: How to prepare the data.
 ---
 
+# Input Data 
+
 This section applies both to Dashboards and Profiles.
 
 ## Data preparation
@@ -23,7 +25,7 @@ For some reports (e.g. model performance), the second dataset is optional. You c
 If your dataset is large, we suggest taking a sample. If you work in the notebook, you can do that with pandas before generating the dashboard. If you work using CLI, you can specify that in the configuration.
 {% endhint %}
 
-### Dataset structure
+## Dataset structure
 
 The expected data schema is different depending on the report type.
 
@@ -46,7 +48,7 @@ Below is a summary of the data requirements:
 | ****[**Classification Performance**](../reports/classification-performance.md)****                             | Required         | Required                          | Required                          | Yes                         |
 | ****[**Probabilistic Classification Performance**](../reports/probabilistic-classification-performance.md)**** | Required         | Required                          | Required                          | Yes                         |
 
-### `DataFrame` requirements
+## `DataFrame` requirements
 
 Make sure the data complies with the following expectations.
 
