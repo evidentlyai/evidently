@@ -1,3 +1,7 @@
+---
+description: How to use column_mapping in Evidently.
+---
+
 This section applies both to Dashboards and Profiles.
 
 ## Column mapping 
