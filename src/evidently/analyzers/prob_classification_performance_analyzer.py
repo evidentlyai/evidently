@@ -57,8 +57,6 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
                   current_data: Optional[pd.DataFrame],
                   column_mapping: ColumnMapping) -> ProbClassificationPerformanceAnalyzerResults:
         columns = process_columns(reference_data, column_mapping)
-
-
         target_column = columns.utility_columns.target
         prediction_column = columns.utility_columns.prediction
         quality_metrics_options = self.options_provider.get(QualityMetricsOptions)
