@@ -1,32 +1,16 @@
 from typing import Any
 from typing import Dict
+from typing import Optional
 
 import pandas
 import pytest
 
-from evidently.analyzers.classification_performance_analyzer import ClassificationPerformanceAnalyzer
 from evidently.model_profile.sections.classification_performance_profile_section import \
     ClassificationPerformanceProfileSection
-from evidently.options import DataDriftOptions
-from evidently.options import OptionsProvider
-from evidently.pipeline.column_mapping import ColumnMapping
 
+from .helpers import calculate_section_results
 from .helpers import check_profile_section_result_common_part
-from .helpers import check_section_no_calculation_results
-
-
-def get_section_results(reference_data, current_data) -> dict:
-    options_provider = OptionsProvider()
-    options_provider.add(DataDriftOptions())
-    analyzer = ClassificationPerformanceAnalyzer()
-    analyzer.options_provider = options_provider
-    data_columns = ColumnMapping()
-    analyzers_results = {
-        ClassificationPerformanceAnalyzer: analyzer.calculate(reference_data, current_data, data_columns)
-    }
-    profile_section = ClassificationPerformanceProfileSection()
-    profile_section.calculate(reference_data, current_data, data_columns, analyzers_results)
-    return profile_section.get_results()
+from .helpers import check_section_without_calculation_results
 
 
 def check_classification_performance_metrics_dict(metrics: Dict[str, Any]) -> None:
@@ -49,7 +33,7 @@ def check_classification_performance_metrics_dict(metrics: Dict[str, Any]) -> No
 
 
 def test_no_calculation_results() -> None:
-    check_section_no_calculation_results(ClassificationPerformanceProfileSection, 'classification_performance')
+    check_section_without_calculation_results(ClassificationPerformanceProfileSection, 'classification_performance')
 
 
 @pytest.mark.parametrize(
@@ -62,7 +46,7 @@ def test_no_calculation_results() -> None:
     )
 )
 def test_profile_section_with_calculated_results(reference_data, current_data) -> None:
-    section_result = get_section_results(reference_data, current_data)
+    section_result = calculate_section_results(ClassificationPerformanceProfileSection, reference_data, current_data)
     check_profile_section_result_common_part(section_result, 'classification_performance')
     result_data = section_result['data']
 
@@ -104,8 +88,10 @@ def test_profile_section_with_calculated_results(reference_data, current_data) -
         )
     )
 )
-def test_profile_section_with_incorrect_data(reference_data, current_data) -> None:
-    section_result = get_section_results(reference_data, current_data)
+def test_profile_section_with_missed_target_and_prediction_columns(
+        reference_data: pandas.DataFrame, current_data: pandas.DataFrame
+) -> None:
+    section_result = calculate_section_results(ClassificationPerformanceProfileSection, reference_data, current_data)
     check_profile_section_result_common_part(section_result, 'classification_performance')
     result_data = section_result['data']
     assert 'metrics' in result_data
@@ -120,6 +106,8 @@ def test_profile_section_with_incorrect_data(reference_data, current_data) -> No
         (None, pandas.DataFrame({'target': [1, 1, 3, 3], 'prediction': [1, 2, 1, 4]})),
     )
 )
-def test_profile_section_with_missed_data(reference_data, current_data) -> None:
+def test_profile_section_with_missed_data(
+        reference_data: Optional[pandas.DataFrame], current_data: Optional[pandas.DataFrame]
+) -> None:
     with pytest.raises(ValueError):
-        get_section_results(reference_data, current_data)  # noqa
+        calculate_section_results(ClassificationPerformanceProfileSection, reference_data, current_data)

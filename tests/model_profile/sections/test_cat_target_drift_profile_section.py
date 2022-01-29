@@ -2,18 +2,15 @@ import pandas
 
 import pytest
 
-from evidently.analyzers.cat_target_drift_analyzer import CatTargetDriftAnalyzer
 from evidently.model_profile.sections.cat_target_drift_profile_section import CatTargetDriftProfileSection
-from evidently.options import DataDriftOptions
-from evidently.options import OptionsProvider
-from evidently.pipeline.column_mapping import ColumnMapping
 
+from .helpers import calculate_section_results
 from .helpers import check_profile_section_result_common_part
-from .helpers import check_section_no_calculation_results
+from .helpers import check_section_without_calculation_results
 
 
 def test_no_calculation_results() -> None:
-    check_section_no_calculation_results(CatTargetDriftProfileSection, 'cat_target_drift')
+    check_section_without_calculation_results(CatTargetDriftProfileSection, 'cat_target_drift')
 
 
 @pytest.mark.parametrize(
@@ -39,15 +36,8 @@ def test_no_calculation_results() -> None:
 def test_profile_section_with_calculated_results(reference_data, current_data) -> None:
     is_target_data_presented = 'target' in reference_data
     is_prediction_data_presented = 'prediction' in reference_data
-    options_provider: OptionsProvider = OptionsProvider()
-    options_provider.add(DataDriftOptions())
-    analyzer = CatTargetDriftAnalyzer()
-    analyzer.options_provider = options_provider
-    data_columns = ColumnMapping()
-    analyzers_results = {CatTargetDriftAnalyzer: analyzer.calculate(reference_data, current_data, data_columns)}
-    profile_section = CatTargetDriftProfileSection()
-    profile_section.calculate(reference_data, current_data, data_columns, analyzers_results)
-    section_result = profile_section.get_results()
+
+    section_result = calculate_section_results(CatTargetDriftProfileSection, reference_data, current_data)
     check_profile_section_result_common_part(section_result, 'cat_target_drift')
     result_data = section_result['data']
 
@@ -111,13 +101,5 @@ def test_profile_section_with_calculated_results(reference_data, current_data) -
     )
 )
 def test_profile_section_with_missed_data(reference_data, current_data) -> None:
-    options_provider: OptionsProvider = OptionsProvider()
-    options_provider.add(DataDriftOptions())
-    analyzer = CatTargetDriftAnalyzer()
-    analyzer.options_provider = options_provider
-    data_columns = ColumnMapping()
-    profile_section = CatTargetDriftProfileSection()
-
     with pytest.raises(ValueError):
-        analyzers_results = {CatTargetDriftAnalyzer: analyzer.calculate(reference_data, current_data, data_columns)}
-        profile_section.calculate(reference_data, current_data, data_columns, analyzers_results)
+        calculate_section_results(CatTargetDriftProfileSection, reference_data, current_data)

@@ -3,14 +3,12 @@ import json
 import pandas
 
 from evidently import ColumnMapping
-from evidently.analyzers.data_drift_analyzer import DataDriftAnalyzer
-from evidently.options import DataDriftOptions
-from evidently.options import OptionsProvider
 from evidently.model_profile.sections.data_drift_profile_section import DataDriftProfileSection
-from evidently.utils import NumpyEncoder
 
+from .helpers import calculate_section_results
+from .helpers import check_json_serialization
 from .helpers import check_profile_section_result_common_part
-from .helpers import check_section_no_calculation_results
+from .helpers import check_section_without_calculation_results
 
 
 def _check_feature_metrics(feature_metric: dict, feature_type: str):
@@ -22,32 +20,29 @@ def _check_feature_metrics(feature_metric: dict, feature_type: str):
 
 
 def test_no_calculation_results() -> None:
-    check_section_no_calculation_results(DataDriftProfileSection, 'data_drift')
+    check_section_without_calculation_results(DataDriftProfileSection, 'data_drift')
 
 
 def test_data_drift_profile_section_with_calculated_results():
-    # prepare calculated data
-    options_provider: OptionsProvider = OptionsProvider()
-    options_provider.add(DataDriftOptions())
-    data_drift_analyzer = DataDriftAnalyzer()
-    data_drift_analyzer.options_provider = options_provider
-    test_data = pandas.DataFrame({
+    current_data = pandas.DataFrame({
         'target': [1, 2, 3, 4],
         'numerical_feature': [0.5, 0.0, 4.8, 2.1],
         'categorical_feature': [1, 1, 0, 1],
     })
+    reference_data = current_data[:2]
     data_columns = ColumnMapping(
         numerical_features=['numerical_feature'],
         categorical_features=['categorical_feature'],
         target_names=['drift_target_result']
     )
-    data_drift_results = data_drift_analyzer.calculate(test_data[:2], test_data, data_columns)
-    analyzers_results = {DataDriftAnalyzer: data_drift_results}
+    data_drift_profile_section_result = calculate_section_results(DataDriftProfileSection, reference_data, current_data, data_columns)
 
-    # create data_drift_profile section with the calculated data
-    data_drift_profile_section = DataDriftProfileSection()
-    data_drift_profile_section.calculate(test_data[:2], test_data, data_columns, analyzers_results)
-    data_drift_profile_section_result = data_drift_profile_section.get_results()
+    data_columns = ColumnMapping(
+        numerical_features=['numerical_feature'],
+        categorical_features=['categorical_feature'],
+        target_names=['drift_target_result']
+    )
+
     check_profile_section_result_common_part(data_drift_profile_section_result, 'data_drift')
     result_data = data_drift_profile_section_result['data']
 
@@ -68,6 +63,3 @@ def test_data_drift_profile_section_with_calculated_results():
     _check_feature_metrics(result_data['metrics']['numerical_feature'], 'num')
     assert 'categorical_feature' in result_data['metrics']
     _check_feature_metrics(result_data['metrics']['categorical_feature'], 'cat')
-
-    # check json serialization
-    json.dumps(data_drift_profile_section_result, cls=NumpyEncoder)

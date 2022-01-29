@@ -1,5 +1,14 @@
 """Common methods for testing sections"""
+import json
 from typing import ClassVar
+from typing import Optional
+
+import pandas
+
+from evidently.options import OptionsProvider
+from evidently.options import DataDriftOptions
+from evidently.pipeline.column_mapping import ColumnMapping
+from evidently.utils import NumpyEncoder
 
 
 def check_profile_section_result_common_part(section_result: dict, section_result_name: str) -> None:
@@ -12,9 +21,41 @@ def check_profile_section_result_common_part(section_result: dict, section_resul
     assert isinstance(section_result['data'], dict)
 
 
-def check_section_no_calculation_results(profile_section_class: ClassVar, part_id: str) -> None:
+def check_section_without_calculation_results(profile_section_class: ClassVar, part_id: str) -> None:
     """Check creation of a section and results without calculations"""
     data_drift_profile_section = profile_section_class()
     assert data_drift_profile_section.part_id() == part_id
     empty_result = data_drift_profile_section.get_results()
     assert empty_result is None
+
+
+def calculate_section_results(
+        profile_section_class: ClassVar,
+        reference_data: Optional[pandas.DataFrame],
+        current_data: Optional[pandas.DataFrame],
+        data_columns: Optional[ColumnMapping] = None
+) -> Optional[dict]:
+    """Run profile section calculations, check json serialization and return the results"""
+    options_provider = OptionsProvider()
+    options_provider.add(DataDriftOptions())
+    profile_section = profile_section_class()
+
+    if data_columns is None:
+        data_columns = ColumnMapping()
+
+    analyzers_results = {}
+
+    for analyzer_class in profile_section.analyzers():
+        analyzer = analyzer_class()
+        analyzer.options_provider = options_provider
+        analyzers_results[analyzer_class] = analyzer.calculate(reference_data, current_data, data_columns)
+
+    profile_section.calculate(reference_data, current_data, data_columns, analyzers_results)
+    section_result = profile_section.get_results()
+    check_json_serialization(section_result)
+    return section_result
+
+
+def check_json_serialization(section_result: dict):
+    """Try to serialize the dict to json with custom Numpy encoder"""
+    json.dumps(section_result, cls=NumpyEncoder), section_result
