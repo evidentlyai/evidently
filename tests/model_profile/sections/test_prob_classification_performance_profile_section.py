@@ -96,11 +96,13 @@ def test_profile_section_with_calculated_results(reference_data, current_data) -
     'reference_data, current_data',
     (
         (None, None),
-        (None, pandas.DataFrame({
+        (None, pandas.DataFrame(
+            {
                 'my_target': ['prediction_1', 'prediction_2', 'prediction_1', 'prediction_2'],
                 'prediction_1': [1, 0, 1, 1],
                 'prediction_2': [1, 1, 1, 0]
-            })),
+            }
+        )),
     )
 )
 def test_profile_section_with_missed_data(reference_data, current_data) -> None:
