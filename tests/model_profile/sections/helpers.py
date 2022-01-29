@@ -33,24 +33,24 @@ def calculate_section_results(
         profile_section_class: ClassVar,
         reference_data: Optional[pandas.DataFrame],
         current_data: Optional[pandas.DataFrame],
-        data_columns: Optional[ColumnMapping] = None
+        columns_mapping: Optional[ColumnMapping] = None
 ) -> Optional[dict]:
     """Run profile section calculations, check json serialization and return the results"""
     options_provider = OptionsProvider()
     options_provider.add(DataDriftOptions())
     profile_section = profile_section_class()
 
-    if data_columns is None:
-        data_columns = ColumnMapping()
+    if columns_mapping is None:
+        columns_mapping = ColumnMapping()
 
     analyzers_results = {}
 
     for analyzer_class in profile_section.analyzers():
         analyzer = analyzer_class()
         analyzer.options_provider = options_provider
-        analyzers_results[analyzer_class] = analyzer.calculate(reference_data, current_data, data_columns)
+        analyzers_results[analyzer_class] = analyzer.calculate(reference_data, current_data, columns_mapping)
 
-    profile_section.calculate(reference_data, current_data, data_columns, analyzers_results)
+    profile_section.calculate(reference_data, current_data, columns_mapping, analyzers_results)
     section_result = profile_section.get_results()
     check_json_serialization(section_result)
     return section_result
