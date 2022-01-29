@@ -1,5 +1,7 @@
 from datetime import datetime
-from typing import Dict, Optional, Union
+from typing import Dict
+from typing import Optional
+from typing import Union
 
 from evidently.analyzers.data_drift_analyzer import DataDriftAnalyzer
 from evidently.model_profile.sections.base_profile_section import ProfileSection
