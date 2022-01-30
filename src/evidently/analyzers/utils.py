@@ -11,11 +11,13 @@ from evidently.pipeline.column_mapping import ColumnMapping
 
 
 class DatasetUtilityColumns:
-    def __init__(self,
-                 date: Optional[str],
-                 id_column: Optional[str],
-                 target: Optional[str],
-                 prediction: Optional[Union[str, Sequence[str]]]):
+    def __init__(
+            self,
+            date: Optional[str],
+            id_column: Optional[str],
+            target: Optional[str],
+            prediction: Optional[Union[str, Sequence[str]]],
+    ) -> None:
         self.date = date
         self.id_column = id_column
         self.target = target
@@ -31,17 +33,19 @@ class DatasetUtilityColumns:
 
 
 class DatasetColumns:
-    def __init__(self,
-                 utility_columns: DatasetUtilityColumns,
-                 num_feature_names,
-                 cat_feature_names,
-                 target_names):
+    def __init__(
+            self,
+            utility_columns: DatasetUtilityColumns,
+            num_feature_names: Optional[List[str]],
+            cat_feature_names: Optional[List[str]],
+            target_names: Optional[List[str]],
+    ) -> None:
         self.utility_columns = utility_columns
         self.num_feature_names = num_feature_names
         self.cat_feature_names = cat_feature_names
         self.target_names = target_names
 
-    def as_dict(self) -> Dict[str, Union[List[str], Dict]]:
+    def as_dict(self) -> Dict[str, Union[Optional[List[str]], Dict]]:
         return {
             'utility_columns': self.utility_columns.as_dict(),
             'cat_feature_names': self.cat_feature_names,
@@ -50,7 +54,7 @@ class DatasetColumns:
         }
 
 
-def process_columns(dataset: pandas.DataFrame, column_mapping: ColumnMapping) -> DatasetColumns:
+def process_columns(dataset: pandas.DataFrame, column_mapping: ColumnMapping):
     date_column = column_mapping.datetime if column_mapping.datetime in dataset else None
     id_column = column_mapping.id
     target_column = column_mapping.target if column_mapping.target in dataset else None

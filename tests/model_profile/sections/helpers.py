@@ -18,7 +18,17 @@ def check_profile_section_result_common_part(section_result: dict, section_resul
     assert 'datetime' in section_result
     assert isinstance(section_result['datetime'], str)
     assert 'data' in section_result
-    assert isinstance(section_result['data'], dict)
+    result_data = section_result['data']
+    assert isinstance(result_data, dict)
+
+    assert 'utility_columns' in result_data
+    assert isinstance(result_data['utility_columns'], dict)
+    assert 'cat_feature_names' in result_data
+    assert isinstance(result_data['cat_feature_names'], list)
+    assert 'num_feature_names' in result_data
+    assert isinstance(result_data['num_feature_names'], list)
+    assert 'target_names' in result_data
+    assert 'metrics' in result_data
 
 
 def check_section_without_calculation_results(profile_section_class: ClassVar, part_id: str) -> None:

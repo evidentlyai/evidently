@@ -9,6 +9,21 @@ from evidently.pipeline.column_mapping import ColumnMapping
     'test_dataset,column_mapping,expected_dict',
     (
         (
+            pandas.DataFrame({'missed_all': []}),
+            ColumnMapping(),
+            {
+                'cat_feature_names': [],
+                'num_feature_names': ['missed_all'],
+                'target_names': None,
+                'utility_columns': {
+                    'date': None,
+                    'id': None,
+                    'prediction': None,
+                    'target': None,
+                },
+            }
+        ),
+        (
             pandas.DataFrame({'target': []}),
             ColumnMapping(),
             {

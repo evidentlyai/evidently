@@ -42,15 +42,9 @@ def test_data_drift_profile_section_with_calculated_results():
 
     check_profile_section_result_common_part(data_drift_profile_section_result, 'data_drift')
     result_data = data_drift_profile_section_result['data']
-
-    assert 'cat_feature_names' in result_data
-    assert result_data['cat_feature_names'] == ['categorical_feature']
-    assert 'num_feature_names' in result_data
-    assert result_data['num_feature_names'] == ['numerical_feature']
     assert 'options' in result_data
-    assert 'target_names' in result_data
-    assert result_data['target_names'] == ['drift_target_result']
-    assert 'utility_columns' in result_data
+
+    # check metrics
     assert 'metrics' in result_data
     assert 'dataset_drift' in result_data['metrics']
     assert 'n_drifted_features' in result_data['metrics']

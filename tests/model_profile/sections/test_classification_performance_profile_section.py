@@ -50,16 +50,6 @@ def test_profile_section_with_calculated_results(reference_data, current_data) -
     check_profile_section_result_common_part(section_result, 'classification_performance')
     result_data = section_result['data']
 
-    assert 'utility_columns' in result_data
-    assert 'date' in result_data['utility_columns']
-    assert result_data['utility_columns']['date'] is None
-    assert 'id' in result_data['utility_columns']
-    assert result_data['utility_columns']['id'] is None
-    assert 'target' in result_data['utility_columns']
-    assert result_data['utility_columns']['target'] == 'target'
-    assert 'prediction' in result_data['utility_columns']
-    assert result_data['utility_columns']['prediction'] == 'prediction'
-
     # check metrics structure and types, ignore concrete metrics values
     assert 'metrics' in result_data
     metrics = result_data['metrics']

@@ -76,6 +76,7 @@ def test_profile_section_with_calculated_results(reference_data, current_data) -
     )
     check_profile_section_result_common_part(section_result, 'probabilistic_classification_performance')
     result_data = section_result['data']
+    assert 'options' in result_data
 
     # check metrics structure and types, ignore concrete metrics values
     assert 'metrics' in result_data
