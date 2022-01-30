@@ -24,22 +24,41 @@ class ProbClassPRTableWidget(Widget):
                   current_data: Optional[pd.DataFrame],
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
+        results = ProbClassificationPerformanceAnalyzer.get_results(analyzers_results)
+        utility_columns = results.columns.utility_columns
 
-        results = analyzers_results[ProbClassificationPerformanceAnalyzer]
-
-        if results['utility_columns']['target'] is None or results['utility_columns']['prediction'] is None:
+        if utility_columns.target is None or utility_columns.prediction is None:
             if self.dataset == 'reference':
                 raise ValueError(f"Widget [{self.title}] requires 'target' and 'prediction' columns")
+
             return None
-        if self.dataset not in results['metrics'].keys():
-            if self.dataset == 'reference':
+
+        if self.dataset == 'reference':
+            metrics = results.reference_metrics
+
+            if metrics is None:
                 raise ValueError(f"Widget [{self.title}] required 'reference' results from"
                                  f" {ProbClassificationPerformanceAnalyzer.__name__} but no data found")
+
+        elif self.dataset == 'current':
+            metrics = results.current_metrics
+
+        else:
+            raise ValueError(f"Widget [{self.title}] required 'current' or 'reference' dataset value")
+
+        if metrics is None:
             return None
-        widget_info = None
-        if len(results['utility_columns']['prediction']) <= 2:
-            pr_table_data = results['metrics'][self.dataset]['pr_table']
+
+        if len(utility_columns.prediction) <= 2:
+            if metrics.pr_table is None:
+                raise ValueError(f"Widget [{self.title}] got no pr_table value")
+
+            if not isinstance(metrics.pr_table, list):
+                raise ValueError(f"Widget [{self.title}] got incorrect tyoe for pr_table value")
+
+            pr_table_data: list = metrics.pr_table
             params_data = []
+
             for line in pr_table_data:
                 count = line[1]
                 prob = round(line[2], 2)
@@ -104,11 +123,18 @@ class ProbClassPRTableWidget(Widget):
             # create tables
             tabs = []
 
-            for label in results['utility_columns']['prediction']:
+            for label in utility_columns.prediction:
                 params_data = []
-                pr_table_data = results['metrics'][self.dataset]['pr_table'][label]
 
-                for line in pr_table_data:
+                if metrics.pr_table is None:
+                    raise ValueError(f"Widget [{self.title}] got no pr_table value")
+
+                if not isinstance(metrics.pr_table, dict):
+                    raise ValueError(f"Widget [{self.title}] got incorrect type of pr_table value")
+
+                pr_table_data_list = metrics.pr_table[label]
+
+                for line in pr_table_data_list:
                     count = line[1]
                     prob = round(line[2], 2)
                     top = round(line[0], 1)

@@ -28,21 +28,34 @@ class ProbClassConfMatrixWidget(Widget):
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
 
-        results = analyzers_results[ProbClassificationPerformanceAnalyzer]
+        results = ProbClassificationPerformanceAnalyzer.get_results(analyzers_results)
+        utility_columns = results.columns.utility_columns
 
-        if results['utility_columns']['target'] is None or results['utility_columns']['prediction'] is None:
+        if utility_columns.target is None or utility_columns.prediction is None:
             if self.dataset == 'reference':
                 raise ValueError(f"Widget [{self.title}] requires 'target' and 'prediction' columns")
+
             return None
-        if self.dataset not in results['metrics'].keys():
-            if self.dataset == 'reference':
+
+        if self.dataset == 'reference':
+            metrics = results.reference_metrics
+
+            if metrics is None:
                 raise ValueError(f"Widget [{self.title}] required 'reference' results from"
                                  f" {ProbClassificationPerformanceAnalyzer.__name__} but no data found")
-            return None
-        # plot confusion matrix
-        conf_matrix = results['metrics'][self.dataset]['confusion_matrix']['values']
 
-        labels = results['metrics'][self.dataset]['confusion_matrix']['labels']
+        elif self.dataset == 'current':
+            metrics = results.current_metrics
+
+        else:
+            raise ValueError(f"Widget [{self.title}] required 'current' or 'reference' dataset value")
+
+        if metrics is None:
+            return None
+
+        # plot confusion matrix
+        conf_matrix = metrics.confusion_matrix.values
+        labels = metrics.confusion_matrix.labels
 
         z = [[int(y) for y in x] for x in conf_matrix]
 

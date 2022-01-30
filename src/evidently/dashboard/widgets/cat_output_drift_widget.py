@@ -16,6 +16,7 @@ from evidently.dashboard.widgets.widget import Widget, RED, GREY
 class CatOutputDriftWidget(Widget):
     def __init__(self, title: str, kind: str = 'target'):
         super().__init__(title)
+        # check kind values and make private
         self.kind = kind  # target or prediction
 
     def analyzers(self):
@@ -26,17 +27,33 @@ class CatOutputDriftWidget(Widget):
                   current_data: Optional[pd.DataFrame],
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
-        results = analyzers_results[CatTargetDriftAnalyzer]
+        results = CatTargetDriftAnalyzer.get_results(analyzers_results)
 
         if current_data is None:
             raise ValueError("current_data should be present")
 
-        if results['utility_columns'][self.kind] is None:
+        if self.kind == 'target':
+            if results.columns.utility_columns.target is None:
+                result_metrics = None
+
+            else:
+                result_metrics = results.target_metrics
+
+        elif self.kind == 'prediction':
+            if results.columns.utility_columns.prediction is None:
+                result_metrics = None
+
+            else:
+                result_metrics = results.prediction_metrics
+
+        else:
+            raise ValueError('kind should be "target" or "prediction" value')
+
+        if not result_metrics:
             return None
 
-        output_name = results['metrics'][self.kind + '_name']
-        # output_type = results['metrics'][self.kind + '_type']
-        output_p_value = results['metrics'][self.kind + '_drift']
+        output_name = result_metrics.column_name
+        output_p_value = result_metrics.drift
         output_sim_test = "detected" if output_p_value < 0.05 else "not detected"
         # plot output distributions
         fig = go.Figure()
