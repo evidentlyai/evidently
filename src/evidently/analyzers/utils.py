@@ -36,8 +36,8 @@ class DatasetColumns:
     def __init__(
             self,
             utility_columns: DatasetUtilityColumns,
-            num_feature_names: Optional[List[str]],
-            cat_feature_names: Optional[List[str]],
+            num_feature_names,
+            cat_feature_names,
             target_names: Optional[List[str]],
     ) -> None:
         self.utility_columns = utility_columns

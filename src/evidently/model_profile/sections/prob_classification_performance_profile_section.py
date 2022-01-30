@@ -24,7 +24,10 @@ class ProbClassificationPerformanceProfileSection(ProfileSection):
             'precision': metrics.precision,
             'recall': metrics.recall,
             'f1': metrics.f1,
+            'pr_curve': metrics.pr_curve,
+            'pr_table': metrics.pr_table,
             'roc_auc': metrics.roc_auc,
+            'roc_curve': metrics.roc_curve,
             'log_loss': metrics.log_loss,
             'metrics_matrix': metrics.metrics_matrix,
             'confusion_matrix': {
