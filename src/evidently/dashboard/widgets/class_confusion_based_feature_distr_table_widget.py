@@ -19,26 +19,34 @@ class ClassConfusionBasedFeatureDistrTable(Widget):
     def analyzers(self):
         return [ClassificationPerformanceAnalyzer]
 
+    @staticmethod
+    def _get_rows_per_page(features_count: int) -> int:
+        """How mane rows of features we want to show on one page. If we have many features - show 10 on one page"""
+        return min(features_count, 10)
+
     def calculate(self,
                   reference_data: pd.DataFrame,
                   current_data: Optional[pd.DataFrame],
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
 
-        results = analyzers_results[ClassificationPerformanceAnalyzer]
+        results = ClassificationPerformanceAnalyzer.get_results(analyzers_results)
         quality_metrics_options = self.options_provider.get(QualityMetricsOptions)
         cut_quantile = quality_metrics_options.cut_quantile
+        target_name = results.columns.utility_columns.target
+        prediction_name = results.columns.utility_columns.prediction
+        rows_per_page = self._get_rows_per_page(results.columns.get_features_len())
 
-        if results['utility_columns']['target'] is None or results['utility_columns']['prediction'] is None:
+        if target_name is None or results.columns.utility_columns.prediction is None:
             raise ValueError(f"Widget {self.title} requires 'target' and 'prediction' columns.")
-        if current_data is not None:
 
+        if current_data is not None:
             additional_graphs_data = []
             params_data = []
 
-            for feature_name in results['num_feature_names'] + results['cat_feature_names']:
+            for feature_name in results.columns.get_all_features_list(cat_before_num=False):
                 # add data for table in params
-                labels = sorted(set(reference_data[results['utility_columns']['target']]))
+                labels = sorted(set(reference_data[target_name]))
 
                 params_data.append(
                     {
@@ -65,7 +73,7 @@ class ClassConfusionBasedFeatureDistrTable(Widget):
                     current_data_to_plot = current_data
                 merged_data = pd.concat([reference_data_to_plot, current_data_to_plot])
 
-                fig = px.histogram(merged_data, x=feature_name, color=results['utility_columns']['target'],
+                fig = px.histogram(merged_data, x=feature_name, color=target_name,
                                    facet_col="dataset", histnorm='', barmode='overlay',
                                    category_orders={"dataset": ["Reference", "Current"]})
 
@@ -84,15 +92,18 @@ class ClassConfusionBasedFeatureDistrTable(Widget):
 
                 for label in labels:
                     def confusion_func(row, label=label):
-                        return _confusion(row, results['utility_columns']['target'],
-                                          results['utility_columns']['prediction'], label)
+                        return _confusion(row, target_name, prediction_name, label)
 
                     merged_data['Confusion'] = merged_data.apply(confusion_func, axis=1)
 
-                    fig = px.histogram(merged_data, x=feature_name, color='Confusion', facet_col="dataset",
-                                       histnorm='', barmode='overlay',
-                                       category_orders={"dataset": ["Reference", "Current"],
-                                                        "Confusion": ["TP", "TN", "FP", "FN"]})
+                    fig = px.histogram(
+                        merged_data, x=feature_name, color='Confusion', facet_col="dataset",
+                        histnorm='', barmode='overlay',
+                        category_orders={
+                            "dataset": ["Reference", "Current"],
+                            "Confusion": ["TP", "TN", "FP", "FN"]
+                        }
+                    )
                     fig_json = json.loads(fig.to_json())
 
                     # write plot data in table as additional data
@@ -111,7 +122,7 @@ class ClassConfusionBasedFeatureDistrTable(Widget):
                 type="big_table",
                 size=2,
                 params={
-                    "rowsPerPage": min(len(results['num_feature_names']) + len(results['cat_feature_names']), 10),
+                    "rowsPerPage": rows_per_page,
                     "columns": [
                         {
                             "title": "Feature",
@@ -126,9 +137,9 @@ class ClassConfusionBasedFeatureDistrTable(Widget):
         additional_graphs_data = []
         params_data = []
 
-        for feature_name in results['num_feature_names'] + results['cat_feature_names']:
+        for feature_name in results.columns.get_all_features_list(cat_before_num=False):
             # add data for table in params
-            labels = sorted(set(reference_data[results['utility_columns']['target']]))
+            labels = sorted(set(reference_data[target_name]))
 
             params_data.append(
                 {
@@ -149,8 +160,10 @@ class ClassConfusionBasedFeatureDistrTable(Widget):
                 reference_data_to_plot = cqt.transform_df(reference_data, feature_name)
             else:
                 reference_data_to_plot = reference_data
-            fig = px.histogram(reference_data_to_plot, x=feature_name, color=results['utility_columns']['target'],
-                               histnorm='', barmode='overlay')
+
+            fig = px.histogram(
+                reference_data_to_plot, x=feature_name, color=target_name, histnorm='', barmode='overlay'
+            )
 
             fig_json = json.loads(fig.to_json())
 
@@ -167,13 +180,14 @@ class ClassConfusionBasedFeatureDistrTable(Widget):
 
             for label in labels:
                 def _confusion_func(row, label=label):
-                    return _confusion(row, results['utility_columns']['target'],
-                                      results['utility_columns']['prediction'], label)
+                    return _confusion(row, target_name, prediction_name, label)
 
                 reference_data['Confusion'] = reference_data.apply(_confusion_func, axis=1)
 
-                fig = px.histogram(reference_data_to_plot, x=feature_name, color='Confusion', histnorm='',
-                                   category_orders={"Confusion": ["TP", "TN", "FP", "FN"]})
+                fig = px.histogram(
+                    reference_data_to_plot, x=feature_name, color='Confusion', histnorm='', barmode='overlay',
+                    category_orders={"Confusion": ["TP", "TN", "FP", "FN"]}
+                )
 
                 fig_json = json.loads(fig.to_json())
 
@@ -193,7 +207,7 @@ class ClassConfusionBasedFeatureDistrTable(Widget):
             type="big_table",
             size=2,
             params={
-                "rowsPerPage": min(len(results['num_feature_names']) + len(results['cat_feature_names']), 10),
+                "rowsPerPage": rows_per_page,
                 "columns": [
                     {
                         "title": "Feature",

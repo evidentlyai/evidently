@@ -17,6 +17,10 @@ from evidently.options import QualityMetricsOptions
 
 
 class CatTargetPredFeatureTable(Widget):
+    @staticmethod
+    def _get_rows_per_page(columns) -> int:
+        return min(len(columns.num_feature_names) + len(columns.cat_feature_names), 10)
+
     def analyzers(self):
         return [CatTargetDriftAnalyzer]
 
@@ -26,17 +30,20 @@ class CatTargetPredFeatureTable(Widget):
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
 
-        results = analyzers_results[CatTargetDriftAnalyzer]
+        results = CatTargetDriftAnalyzer.get_results(analyzers_results)
         quality_metrics_options = self.options_provider.get(QualityMetricsOptions)
         cut_quantile = quality_metrics_options.cut_quantile
 
         if current_data is None:
             raise ValueError("current_data should be present")
 
-        if results['utility_columns']['prediction'] is not None and results['utility_columns']['target'] is not None:
+        target_name = results.columns.utility_columns.target
+        prediction_name = results.columns.utility_columns.prediction
+
+        if prediction_name is not None and target_name is not None:
             additional_graphs_data = []
             params_data = []
-            for feature_name in results['num_feature_names'] + results['cat_feature_names']:
+            for feature_name in results.columns.get_all_features_list(cat_before_num=False):
                 # add data for table in params
                 params_data.append(
                     {
@@ -71,14 +78,14 @@ class CatTargetPredFeatureTable(Widget):
                     current_data_to_plot = current_data
                 merged_data = pd.concat([reference_data_to_plot, current_data_to_plot])
 
-                target_fig = px.histogram(merged_data, x=feature_name, color=results['utility_columns']['target'],
+                target_fig = px.histogram(merged_data, x=feature_name, color=target_name,
                                           facet_col="dataset", barmode='overlay',
                                           category_orders={"dataset": ["Reference", "Current"]})
 
                 target_fig_json = json.loads(target_fig.to_json())
 
                 # create prediction plot
-                pred_fig = px.histogram(merged_data, x=feature_name, color=results['utility_columns']['prediction'],
+                pred_fig = px.histogram(merged_data, x=feature_name, color=prediction_name,
                                         facet_col="dataset", barmode='overlay',
                                         category_orders={"dataset": ["Reference", "Current"]})
 
@@ -110,7 +117,7 @@ class CatTargetPredFeatureTable(Widget):
                 type="big_table",
                 size=2,
                 params={
-                    "rowsPerPage": min(len(results['num_feature_names']) + len(results['cat_feature_names']), 10),
+                    "rowsPerPage": self._get_rows_per_page(results.columns),
                     "columns": [
                         {
                             "title": "Feature",
@@ -121,10 +128,12 @@ class CatTargetPredFeatureTable(Widget):
                 },
                 additionalGraphs=additional_graphs_data
             )
-        if results['utility_columns']['target'] is not None:
+
+        if target_name is not None:
             additional_graphs_data = []
             params_data = []
-            for feature_name in results['num_feature_names'] + results['cat_feature_names']:
+
+            for feature_name in results.columns.get_all_features_list(cat_before_num=False):
                 # add data for table in params
                 params_data.append(
                     {
@@ -156,7 +165,7 @@ class CatTargetPredFeatureTable(Widget):
                     current_data_to_plot = current_data
                 merged_data = pd.concat([reference_data_to_plot, current_data_to_plot])
 
-                target_fig = px.histogram(merged_data, x=feature_name, color=results['utility_columns']['target'],
+                target_fig = px.histogram(merged_data, x=feature_name, color=target_name,
                                           facet_col="dataset", barmode='overlay',
                                           category_orders={"dataset": ["Reference", "Current"]})
 
@@ -178,7 +187,7 @@ class CatTargetPredFeatureTable(Widget):
                 type="big_table",
                 size=2,
                 params={
-                    "rowsPerPage": min(len(results['num_feature_names']) + len(results['cat_feature_names']), 10),
+                    "rowsPerPage": self._get_rows_per_page(results.columns),
                     "columns": [
                         {
                             "title": "Feature",
@@ -189,10 +198,10 @@ class CatTargetPredFeatureTable(Widget):
                 },
                 additionalGraphs=additional_graphs_data
             )
-        if results['utility_columns']['prediction'] is not None:
+        if results.columns.utility_columns.prediction is not None:
             additional_graphs_data = []
             params_data = []
-            for feature_name in results['num_feature_names'] + results['cat_feature_names']:
+            for feature_name in results.columns.num_feature_names + results.columns.cat_feature_names:
                 # add data for table in params
                 params_data.append(
                     {
@@ -224,7 +233,7 @@ class CatTargetPredFeatureTable(Widget):
                 merged_data = pd.concat([reference_data_to_plot, current_data_to_plot])
 
                 prediction_fig = px.histogram(merged_data, x=feature_name, barmode='overlay',
-                                              color=results['utility_columns']['prediction'], facet_col="dataset",
+                                              color=results.columns.utility_columns.prediction, facet_col="dataset",
                                               category_orders={"dataset": ["Reference", "Current"]})
 
                 prediction_fig_json = json.loads(prediction_fig.to_json())
@@ -245,7 +254,7 @@ class CatTargetPredFeatureTable(Widget):
                 type="big_table",
                 size=2,
                 params={
-                    "rowsPerPage": min(len(results['num_feature_names']) + len(results['cat_feature_names']), 10),
+                    "rowsPerPage": self._get_rows_per_page(results.columns),
                     "columns": [
                         {
                             "title": "Feature",

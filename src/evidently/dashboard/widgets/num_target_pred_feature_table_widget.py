@@ -25,17 +25,21 @@ class NumTargetPredFeatureTable(Widget):
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
 
-        results = analyzers_results[NumTargetDriftAnalyzer]
+        results = NumTargetDriftAnalyzer.get_results(analyzers_results)
 
         if current_data is None:
             raise ValueError("current_data should be present")
 
-        if results['utility_columns']['prediction'] is None and results['utility_columns']['target'] is None:
+        target_column = results.columns.utility_columns.prediction
+        prediction_column = results.columns.utility_columns.prediction
+
+        if target_column and prediction_column:
             return None
 
         additional_graphs_data = []
         params_data = []
-        for feature_name in results['num_feature_names'] + results['cat_feature_names']:
+
+        for feature_name in results.columns.get_all_features_list(cat_before_num=False):
             # add data for table in params
             params_data.append(
                 {
@@ -55,11 +59,11 @@ class NumTargetPredFeatureTable(Widget):
             # create plot
             fig = make_subplots(rows=1, cols=2, subplot_titles=("Reference", "Current"))
 
-            if results['utility_columns']['prediction'] is not None:
+            if prediction_column is not None:
                 fig.add_trace(
                     go.Scatter(
                         x=reference_data[feature_name],
-                        y=reference_data[results['utility_columns']['prediction']],
+                        y=reference_data[prediction_column],
                         mode='markers',
                         name='Prediction (ref)',
                         marker=dict(
@@ -70,11 +74,11 @@ class NumTargetPredFeatureTable(Widget):
                     row=1, col=1
                 )
 
-            if results['utility_columns']['target'] is not None:
+            if target_column is not None:
                 fig.add_trace(
                     go.Scatter(
                         x=reference_data[feature_name],
-                        y=reference_data[results['utility_columns']['target']],
+                        y=reference_data[target_column],
                         mode='markers',
                         name='Target (ref)',
                         marker=dict(
@@ -85,11 +89,11 @@ class NumTargetPredFeatureTable(Widget):
                     row=1, col=1
                 )
 
-            if results['utility_columns']['prediction'] is not None:
+            if prediction_column is not None:
                 fig.add_trace(
                     go.Scatter(
                         x=current_data[feature_name],
-                        y=current_data[results['utility_columns']['prediction']],
+                        y=current_data[prediction_column],
                         mode='markers',
                         name='Prediction (curr)',
                         marker=dict(
@@ -100,11 +104,11 @@ class NumTargetPredFeatureTable(Widget):
                     row=1, col=2
                 )
 
-            if results['utility_columns']['target'] is not None:
+            if target_column is not None:
                 fig.add_trace(
                     go.Scatter(
                         x=current_data[feature_name],
-                        y=current_data[results['utility_columns']['target']],
+                        y=current_data[target_column],
                         mode='markers',
                         name='Target (curr)',
                         marker=dict(
@@ -141,7 +145,7 @@ class NumTargetPredFeatureTable(Widget):
             type="big_table",
             size=2,
             params={
-                "rowsPerPage": min(len(results['num_feature_names']) + len(results['cat_feature_names']), 10),
+                "rowsPerPage": min(results.columns.get_features_len(), 10),
                 "columns": [
                     {
                         "title": "Feature",

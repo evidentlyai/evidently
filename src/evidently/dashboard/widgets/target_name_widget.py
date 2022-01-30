@@ -32,19 +32,35 @@ class TargetNameWidget(Widget):
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
 
+        results_columns = None
+
         if self.kind == 'regression':
-            results = analyzers_results[RegressionPerformanceAnalyzer]
+            regression_results = RegressionPerformanceAnalyzer.get_results(analyzers_results)
+
+            if regression_results:
+                results_columns = regression_results.columns
+
         elif self.kind == 'classification':
-            results = analyzers_results[ClassificationPerformanceAnalyzer]
+            classification_results = ClassificationPerformanceAnalyzer.get_results(analyzers_results)
+
+            if classification_results:
+                results_columns = classification_results.columns
+
         elif self.kind == 'prob_classification':
-            results = analyzers_results[ProbClassificationPerformanceAnalyzer]
+            prob_classification_results = ProbClassificationPerformanceAnalyzer.get_results(analyzers_results)
+
+            if prob_classification_results:
+                results_columns = prob_classification_results.columns
+
         else:
             raise ValueError(f"Unexpected kind({self.kind}) of TagetNameWidget")
 
-        if not results:
+        if not results_columns:
             raise ValueError(f"Widget [{self.title}]: analyzer results not found")
-        if results['utility_columns']['target'] is None or results['utility_columns']['prediction'] is None:
+
+        if results_columns.utility_columns.target is None or results_columns.utility_columns.prediction is None:
             raise ValueError(f"Widget [{self.title}] requires 'target' and 'prediction' columns")
+
         return BaseWidgetInfo(
             title="",
             type="counter",
@@ -53,7 +69,7 @@ class TargetNameWidget(Widget):
                 "counters": [
                     {
                         "value": "",
-                        "label": self.title + " Target: '" + results['utility_columns']['target'] + "'"
+                        "label": self.title + " Target: '" + results_columns.utility_columns.target + "'"
                     }
                 ]
             },

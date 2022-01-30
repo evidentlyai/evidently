@@ -30,32 +30,38 @@ class ProbClassPredDistrWidget(Widget):
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
 
-        results = analyzers_results[ProbClassificationPerformanceAnalyzer]
+        results = ProbClassificationPerformanceAnalyzer.get_results(analyzers_results)
+        utility_columns = results.columns.utility_columns
 
-        if results['utility_columns']['target'] is None or results['utility_columns']['prediction'] is None:
+        if utility_columns.target is None or utility_columns.prediction is None:
             if self.dataset == 'reference':
                 raise ValueError(f"Widget [{self.title}] requires 'target' and 'prediction' columns")
+
             return None
+
         if self.dataset == 'current':
             dataset_to_plot = current_data.copy(deep=False) if current_data is not None else None
+
         else:
             dataset_to_plot = reference_data.copy(deep=False)
 
         if dataset_to_plot is None:
             if self.dataset == 'reference':
                 raise ValueError(f"Widget [{self.title}] requires reference dataset but it is None")
+
             return None
+
         dataset_to_plot.replace([np.inf, -np.inf], np.nan, inplace=True)
         dataset_to_plot.dropna(axis=0, how='any', inplace=True)
 
         # plot distributions
         graphs = []
 
-        for label in results['utility_columns']['prediction']:
+        for label in utility_columns.prediction:
             pred_distr = ff.create_distplot(
                 [
-                    dataset_to_plot[dataset_to_plot[results['utility_columns']['target']] == label][label],
-                    dataset_to_plot[dataset_to_plot[results['utility_columns']['target']] != label][label]
+                    dataset_to_plot[dataset_to_plot[utility_columns.target] == label][label],
+                    dataset_to_plot[dataset_to_plot[utility_columns.target] != label][label]
                 ],
                 [str(label), "other"],
                 colors=[RED, GREY],

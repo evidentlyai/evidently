@@ -28,15 +28,18 @@ class RegErrorTimeWidget(Widget):
                   current_data: Optional[pd.DataFrame],
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
+        results = RegressionPerformanceAnalyzer.get_results(analyzers_results)
+        results_utility_columns = results.columns.utility_columns
 
-        results = analyzers_results[RegressionPerformanceAnalyzer]
-
-        if results['utility_columns']['target'] is None or results['utility_columns']['prediction'] is None:
+        if results_utility_columns.target is None or results_utility_columns.prediction is None:
             if self.dataset == 'reference':
                 raise ValueError(f"Widget [{self.title}] requires 'target' and 'prediction' columns")
+
             return None
+
         if self.dataset == 'current':
             dataset_to_plot = current_data.copy(deep=False) if current_data is not None else None
+
         else:
             dataset_to_plot = reference_data.copy(deep=False)
 
@@ -52,10 +55,8 @@ class RegErrorTimeWidget(Widget):
         error_in_time = go.Figure()
 
         error_trace = go.Scatter(
-            x=dataset_to_plot[results['utility_columns']['date']] if results['utility_columns'][
-                'date'] else dataset_to_plot.index,
-            y=dataset_to_plot[results['utility_columns']['prediction']] - dataset_to_plot[
-                results['utility_columns']['target']],
+            x=dataset_to_plot[results_utility_columns.date] if results_utility_columns.date else dataset_to_plot.index,
+            y=dataset_to_plot[results_utility_columns.prediction] - dataset_to_plot[results_utility_columns.target],
             mode='lines',
             name='Predicted - Actual',
             marker=dict(
@@ -65,8 +66,7 @@ class RegErrorTimeWidget(Widget):
         )
 
         zero_trace = go.Scatter(
-            x=dataset_to_plot[results['utility_columns']['date']] if results['utility_columns'][
-                'date'] else dataset_to_plot.index,
+            x=dataset_to_plot[results_utility_columns.date] if results_utility_columns.date else dataset_to_plot.index,
             y=[0] * dataset_to_plot.shape[0],
             mode='lines',
             opacity=0.5,
@@ -81,7 +81,7 @@ class RegErrorTimeWidget(Widget):
         error_in_time.add_trace(zero_trace)
 
         error_in_time.update_layout(
-            xaxis_title="Timestamp" if results['utility_columns']['date'] else "Index",
+            xaxis_title="Timestamp" if results_utility_columns.date else "Index",
             yaxis_title="Error",
             legend=dict(
                 orientation="h",

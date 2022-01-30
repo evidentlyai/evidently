@@ -31,16 +31,19 @@ class RegErrorNormalityWidget(Widget):
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
 
-        results = analyzers_results[RegressionPerformanceAnalyzer]
+        results = RegressionPerformanceAnalyzer.get_results(analyzers_results)
 
-        prediction_column = results['utility_columns']['prediction']
-        target_column = results['utility_columns']['target']
+        prediction_column = results.columns.utility_columns.prediction
+        target_column = results.columns.utility_columns.target
+
         if target_column is None or prediction_column is None:
             if self.dataset == 'reference':
                 raise ValueError(f"Widget [{self.title}] requires 'target' and 'prediction' columns")
             return None
+
         if self.dataset == 'current':
             dataset_to_plot = current_data.copy(deep=False) if current_data is not None else None
+
         else:
             dataset_to_plot = reference_data.copy(deep=False)
 

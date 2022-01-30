@@ -17,11 +17,24 @@ class CatTargetDriftProfileSection(ProfileSection):
         return self.analyzers_types
 
     def calculate(self, reference_data, current_data, column_mapping, analyzers_results):
-        result = analyzers_results[CatTargetDriftAnalyzer]
+        result = CatTargetDriftAnalyzer.get_results(analyzers_results)
+        result_json = result.columns.as_dict()
+        result_json['metrics'] = {}
+
+        if result.target_metrics:
+            result_json['metrics']['target_name'] = result.target_metrics.column_name
+            result_json['metrics']['target_type'] = 'cat'
+            result_json['metrics']['target_drift'] = result.target_metrics.drift
+
+        if result.prediction_metrics:
+            result_json['metrics']['prediction_name'] = result.prediction_metrics.column_name
+            result_json['metrics']['prediction_type'] = 'cat'
+            result_json['metrics']['prediction_drift'] = result.prediction_metrics.drift
+
         self._result = {
             'name': self.part_id(),
             'datetime': str(datetime.now()),
-            'data': result
+            'data': result_json
         }
 
     def get_results(self):

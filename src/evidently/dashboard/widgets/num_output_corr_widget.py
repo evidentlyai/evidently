@@ -28,13 +28,29 @@ class NumOutputCorrWidget(Widget):
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
 
-        results = analyzers_results[NumTargetDriftAnalyzer]
+        results = NumTargetDriftAnalyzer.get_results(analyzers_results)
 
-        if results['utility_columns'][self.kind] is None:
+        if self.kind == 'target':
+            if results.columns.utility_columns.target is None:
+                return None
+
+            metrics = results.target_metrics
+
+        elif self.kind == 'prediction':
+            if results.columns.utility_columns.prediction is None:
+                return None
+
+            metrics = results.prediction_metrics
+
+        else:
+            raise ValueError(f"Widget [{self.title}] requires 'target' or 'prediction' kind parameter value")
+
+        if metrics is None:
             return None
+
         # calculate corr
-        ref_output_corr = results['metrics'][self.kind + '_correlations']['reference']
-        current_output_corr = results['metrics'][self.kind + '_correlations']['current']
+        ref_output_corr = metrics.reference_correlations
+        current_output_corr = metrics.current_correlations
 
         # plot output correlations
         output_corr = go.Figure()
