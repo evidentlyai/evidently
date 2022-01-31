@@ -28,6 +28,7 @@
   * [Select Widgets to display](step-by-step-guides/report-customization/select-widgets-to-display.md)
   * [Add a custom Widget or Tab](step-by-step-guides/report-customization/add-a-custom-widget-or-tab.md)
   * [Options for Data / Target drift](step-by-step-guides/report-customization/options-for-data-target-drift.md)
+  * [Options for Quality Metrics](step-by-step-guides/report-customization/options-for-quality-metrics.md)
   * [Options for Regression](step-by-step-guides/report-customization/options-for-regression.md)
   * [Options for Classification](step-by-step-guides/report-customization/options-for-classification.md)
   * [Options for Color Schema](step-by-step-guides/report-customization/options-for-color-schema.md)
