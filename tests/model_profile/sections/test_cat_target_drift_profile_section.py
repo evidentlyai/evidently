@@ -1,62 +1,77 @@
-import json
+import pandas
 
-from pandas import DataFrame
+import pytest
 
-from evidently import ColumnMapping
-from evidently.analyzers.cat_target_drift_analyzer import CatTargetDriftAnalyzer
-from evidently.options import DataDriftOptions, OptionsProvider
 from evidently.model_profile.sections.cat_target_drift_profile_section import CatTargetDriftProfileSection
-from evidently.utils import NumpyEncoder
+
+from .helpers import calculate_section_results
+from .helpers import check_profile_section_result_common_part
+from .helpers import check_section_without_calculation_results
 
 
-def test_category_target_drift_profile_section_empty_results():
-    profile_section = CatTargetDriftProfileSection()
-    assert profile_section.analyzers() == [CatTargetDriftAnalyzer]
-    assert profile_section.part_id() == 'cat_target_drift'
-
-    empty_result = profile_section.get_results()
-    assert empty_result is None
+def test_no_calculation_results() -> None:
+    check_section_without_calculation_results(CatTargetDriftProfileSection, 'cat_target_drift')
 
 
-def test_category_target_drift_profile_section_with_target_only():
-    # prepare calculated data
-    options_provider: OptionsProvider = OptionsProvider()
-    options_provider.add(DataDriftOptions())
-    data_drift_analyzer = CatTargetDriftAnalyzer()
-    data_drift_analyzer.options_provider = options_provider
-    test_data = DataFrame({
-        'my_data': [1, 2, 3, 4],
-    })
-    data_columns = ColumnMapping(target='my_data')
-    results = data_drift_analyzer.calculate(test_data[:2], test_data, data_columns)
-    analyzers_results = {CatTargetDriftAnalyzer: results}
+@pytest.mark.parametrize(
+    'reference_data,current_data', (
+        (
+            pandas.DataFrame({'target': [1, 2, 3, 4], 'prediction': [1, 2, 1, 4]}),
+            pandas.DataFrame({'target': [1, 1, 3, 3], 'prediction': [1, 2, 1, 4]}),
+        ),
+        (
+            pandas.DataFrame({'target': [1, 2, 3, 4]}),
+            pandas.DataFrame({'target': [1, 1, 3, 3]}),
+        ),
+        (
+            pandas.DataFrame({'prediction': [1, 2, 3, 4]}),
+            pandas.DataFrame({'prediction': [1, 1, 3, 3]}),
+        ),
+        (
+            pandas.DataFrame({'other_data': [1, 2, 3, 4]}),
+            pandas.DataFrame({'other_data': [1, 1, 3, 3]}),
+        )
+    )
+)
+def test_profile_section_with_calculated_results(reference_data, current_data) -> None:
+    is_target_data_presented = 'target' in reference_data
+    is_prediction_data_presented = 'prediction' in reference_data
 
-    # create the section with the calculated data
-    data_drift_profile_section = CatTargetDriftProfileSection()
-    data_drift_profile_section.calculate(test_data[:2], test_data, data_columns, analyzers_results)
-    data_drift_profile_section_result = data_drift_profile_section.get_results()
-    assert 'name' in data_drift_profile_section_result
-    assert data_drift_profile_section_result['name'] == 'cat_target_drift'
-    assert 'datetime' in data_drift_profile_section_result
-    assert isinstance(data_drift_profile_section_result['datetime'], str)
-    assert 'data' in data_drift_profile_section_result
-    assert isinstance(data_drift_profile_section_result['data'], dict)
+    section_result = calculate_section_results(CatTargetDriftProfileSection, reference_data, current_data)
+    check_profile_section_result_common_part(section_result, 'cat_target_drift')
+    result_data = section_result['data']
 
-    result_data = data_drift_profile_section_result['data']
-
-    assert 'cat_feature_names' in result_data
-    assert result_data['cat_feature_names'] == []
-    assert 'num_feature_names' in result_data
-    assert result_data['num_feature_names'] == []
-    assert 'target_names' in result_data
-    assert result_data['target_names'] is None
-    assert 'utility_columns' in result_data
+    # check metrics structure and types, ignore concrete metrics values
     assert 'metrics' in result_data
-    assert 'target_name' in result_data['metrics']
-    assert result_data['metrics']['target_name'] == 'my_data'
-    assert 'target_type' in result_data['metrics']
-    assert result_data['metrics']['target_type'] == 'cat'
-    assert 'target_drift' in result_data['metrics']
+    metrics = result_data['metrics']
 
-    # check json serialization
-    json.dumps(data_drift_profile_section_result, cls=NumpyEncoder)
+    if is_target_data_presented:
+        # check target metrics
+        assert 'target_drift' in metrics
+        assert isinstance(metrics['target_drift'], float)
+        assert 'target_name' in metrics
+        assert metrics['target_name'] == 'target'
+        assert 'target_type' in metrics
+        assert metrics['target_type'] == 'cat'
+
+    if is_prediction_data_presented:
+        # check prediction metrics
+        assert 'prediction_drift' in metrics
+        assert isinstance(metrics['prediction_drift'], float)
+        assert 'prediction_name' in metrics
+        assert metrics['prediction_name'] == 'prediction'
+        assert 'prediction_type' in metrics
+        assert metrics['prediction_type'] == 'cat'
+
+
+@pytest.mark.parametrize(
+    'reference_data, current_data',
+    (
+        (None, None),
+        (None, pandas.DataFrame({'target': [1, 1, 3, 3], 'prediction': [1, 2, 1, 4]})),
+        (pandas.DataFrame({'target': [1, 1, 3, 3], 'prediction': [1, 2, 1, 4]}), None),
+    )
+)
+def test_profile_section_with_missed_data(reference_data, current_data) -> None:
+    with pytest.raises(ValueError):
+        calculate_section_results(CatTargetDriftProfileSection, reference_data, current_data)

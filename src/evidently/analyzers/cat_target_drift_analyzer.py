@@ -91,6 +91,12 @@ class CatTargetDriftAnalyzer(Analyzer):
             A dictionary that contains some meta information as well as `metrics` for either target or prediction
             columns or both. The `*_drift` column in `metrics` contains a computed p_value from tests.
         """
+        if reference_data is None:
+            raise ValueError('reference_data should be present')
+
+        if current_data is None:
+            raise ValueError('current_data should be present')
+
         options = self.options_provider.get(DataDriftOptions)
         columns = process_columns(reference_data, column_mapping)
         result = CatTargetDriftAnalyzerResults(columns=columns)

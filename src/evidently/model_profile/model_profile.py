@@ -1,9 +1,16 @@
 import json
 from datetime import datetime
-from typing import Any, Dict, Sequence, Optional
+from typing import Any
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Type
+from typing import Sequence
+
 
 import pandas
 
+from evidently.analyzers.base_analyzer import Analyzer
 from evidently.pipeline.pipeline import Pipeline
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.model_profile.sections.base_profile_section import ProfileSection
@@ -14,25 +21,24 @@ class Profile(Pipeline):
     result: Dict[str, Any]
     stages: Sequence[ProfileSection]
 
-    def __init__(self, sections: Sequence[ProfileSection], options: Optional[list] = None):
+    def __init__(self, sections: Sequence[ProfileSection], options: Optional[list] = None) -> None:
         super().__init__(sections, options if options is not None else [])
 
     def calculate(self,
                   reference_data: pandas.DataFrame,
                   current_data: Optional[pandas.DataFrame],
-                  column_mapping: ColumnMapping = None):
-        column_mapping = column_mapping or ColumnMapping()
+                  column_mapping: Optional[ColumnMapping] = None) -> None:
         self.execute(reference_data, current_data, column_mapping)
 
-    def get_analyzers(self):
+    def get_analyzers(self) -> List[Type[Analyzer]]:
         return list({analyzer for tab in self.stages for analyzer in tab.analyzers()})
 
-    def json(self):
+    def json(self) -> str:
         return json.dumps(self.object(), cls=NumpyEncoder)
 
-    def object(self):
-        result = {
+    def object(self) -> Dict[str, Any]:
+        result: Dict[str, Any] = {
             part.part_id(): part.get_results() for part in self.stages
         }
-        result["timestamp"] = str(datetime.now())
+        result['timestamp'] = str(datetime.now())
         return result

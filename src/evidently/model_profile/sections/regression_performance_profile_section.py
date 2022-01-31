@@ -36,7 +36,7 @@ class RegressionPerformanceProfileSection(ProfileSection):
         result_json['metrics'] = {}
 
         if result.error_bias is not None:
-            result_json['metrics'] = result.error_bias
+            result_json['metrics']['error_bias'] = result.error_bias
 
         if result.reference_metrics is not None:
             result_json['metrics']['reference'] = self._get_regression_performance_metrics_as_dict(
