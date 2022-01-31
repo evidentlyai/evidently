@@ -56,6 +56,9 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
                   reference_data: pd.DataFrame,
                   current_data: Optional[pd.DataFrame],
                   column_mapping: ColumnMapping) -> ProbClassificationPerformanceAnalyzerResults:
+        if reference_data is None:
+            raise ValueError('reference_data should be present')
+
         columns = process_columns(reference_data, column_mapping)
         target_column = columns.utility_columns.target
         prediction_column = columns.utility_columns.prediction

@@ -88,7 +88,6 @@ def test_profile_section_with_missed_target_and_prediction_columns(
     assert result_data['metrics'] == {}
 
 
-@pytest.mark.skip('TODO: fix errors for analyzers and sections if reference_data is missed')
 @pytest.mark.parametrize(
     'reference_data, current_data',
     (

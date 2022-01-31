@@ -64,7 +64,6 @@ def test_profile_section_with_calculated_results(reference_data, current_data) -
         assert metrics['prediction_type'] == 'cat'
 
 
-@pytest.mark.skip('TODO: fix errors for analyzers and sections if reference_data or current_data is missed')
 @pytest.mark.parametrize(
     'reference_data, current_data',
     (

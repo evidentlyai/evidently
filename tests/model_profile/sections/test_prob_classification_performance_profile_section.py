@@ -41,7 +41,6 @@ def test_no_calculation_results() -> None:
     )
 
 
-# @pytest.mark.skip('TODO: fix after ProbClassificationPerformanceAnalyzer fix')
 @pytest.mark.parametrize(
     'reference_data,current_data', (
         (
@@ -92,7 +91,6 @@ def test_profile_section_with_calculated_results(reference_data, current_data) -
         assert 'current' not in metrics
 
 
-@pytest.mark.skip('TODO: fix errors for analyzers and sections if reference_data or current_data is missed')
 @pytest.mark.parametrize(
     'reference_data, current_data',
     (
