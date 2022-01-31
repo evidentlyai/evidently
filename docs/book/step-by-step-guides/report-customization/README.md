@@ -17,3 +17,7 @@ Explore the following customizations:
 {% content-ref url="options-for-data-target-drift.md" %}
 [options-for-data-target-drift.md](options-for-data-target-drift.md)
 {% endcontent-ref %}
+
+{% content-ref url="options-for-quality-metrics.md" %}
+[options-for-quality-metrics.md](options-for-quality-metrics.md)
+{% endcontent-ref %}
