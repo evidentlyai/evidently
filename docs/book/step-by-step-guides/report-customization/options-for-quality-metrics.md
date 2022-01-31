@@ -1,10 +1,7 @@
----
-description: You can modify certain options when calculating the Data and Target drift.
----
-
 # Quality Metrics Options
 
 **An example of setting custom options in Data Drift and Probabilistic Classification Performance reports on Wine Quality Dataset:**
+{% embed url="https://colab.research.google.com/drive/1W7l3iAILkMti-3qcBLrU5JrW24lSOMR3" %}
 
 ## Available Options
 
@@ -22,3 +19,19 @@ You can specify the following parameters:
   * Applies to all features (if passed as _tuple_) or certain features (if passed as _dictionary_).
 
 ### How to define Data/Target Drift options
+
+1\. Define a **QualityMetricsOptions** object.
+
+```python
+options = QualityMetricsOptions(
+                           conf_interval_n_sigmas=3, 
+                           classification_threshold=0.8, 
+                           cut_quantile={'feature_1': ('left': 0.01), 'feature_2': 0.95, 'feature_3': 'two-sided': 0.05})
+```
+
+2\. Pass it to the **Dashboard** class:
+
+```
+dashboard = Dashboard(tabs=[DataDriftTab(), ProbClassificationPerformanceTab()], 
+options=[options])
+```
