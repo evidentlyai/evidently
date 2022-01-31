@@ -30,7 +30,7 @@ class NumTargetPredFeatureTable(Widget):
         if current_data is None:
             raise ValueError("current_data should be present")
 
-        target_column = results.columns.utility_columns.prediction
+        target_column = results.columns.utility_columns.target
         prediction_column = results.columns.utility_columns.prediction
 
         if target_column and prediction_column:
