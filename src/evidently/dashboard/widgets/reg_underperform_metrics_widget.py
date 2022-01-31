@@ -39,10 +39,8 @@ class RegUnderperformMetricsWidget(Widget):
 
         if self.dataset == 'current':
             result_metrics = results.current_metrics
-
             if result_metrics is None:
-                raise ValueError(f"Widget [{self.title}] required 'current' results from"
-                                 f" {RegressionPerformanceAnalyzer.__name__} but no data found")
+                return None
 
         elif self.dataset == 'reference':
             result_metrics = results.reference_metrics
@@ -50,9 +48,6 @@ class RegUnderperformMetricsWidget(Widget):
             if result_metrics is None:
                 raise ValueError(f"Widget [{self.title}] required 'reference' results from"
                                  f" {RegressionPerformanceAnalyzer.__name__} but no data found")
-
-        if result_metrics is None:
-            return None
 
         return BaseWidgetInfo(
             title=self.title,
