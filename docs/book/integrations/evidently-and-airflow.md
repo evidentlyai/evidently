@@ -1,12 +1,12 @@
 ---
-description: Run model evaluation or data drift analysis as a batch job.
+description: Run model evaluation or data drift analysis as a part of Airflow DAG.
 ---
 
-# Evidently + Airflow
+# Evidently and Airflow
 
 Apache Airflow is an open-source [workflow management tool](https://airflow.apache.org).&#x20;
 
-You can use it to schedule Evidently HTML reports and JSON profiles as a step in the Airflow DAG.
+You can use this integration to generate JSON profiles or HTML reports and as a step in the Airflow DAG.
 
 **An integration example is available as a Docker container:**
 
