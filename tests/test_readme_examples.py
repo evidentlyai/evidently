@@ -108,14 +108,18 @@ def test_regression_performance_dashboard(iris_frame) -> None:
     assert len(actual['widgets']) == 20
 
 
-def test_regression_performance_single_frame_dashboard_value_error(iris_frame) -> None:
-    # when prediction column is not present in the dataset
-    # ValueError: [Widget Regression Model Performance Report.]
+def test_regression_performance_single_frame_dashboard(iris_frame) -> None:
+    # You can also generate a **Regression Model Performance** for a single `DataFrame`. In this case, run:
+    # FIXME: when prediction column is not present in the dataset
+    #   ValueError: [Widget Regression Model Performance Report.] wi is None,
+    #   no data available (forget to set it in widget?)
     iris_frame['prediction'] = iris_frame['target'][::-1]
     regression_single_model_performance = Dashboard(tabs=[RegressionPerformanceTab()])
+    regression_single_model_performance.calculate(iris_frame, None)
+    actual = json.loads(regression_single_model_performance._json())
+    assert 'name' in actual
+    assert len(actual['widgets']) == 11
 
-    with pytest.raises(ValueError):
-        regression_single_model_performance.calculate(iris_frame, None)
 
 
 def test_classification_performance_dashboard(iris_frame) -> None:

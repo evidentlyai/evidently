@@ -49,6 +49,9 @@ class RegUnderperformMetricsWidget(Widget):
                 raise ValueError(f"Widget [{self.title}] required 'reference' results from"
                                  f" {RegressionPerformanceAnalyzer.__name__} but no data found")
 
+        if result_metrics is None:
+            raise ValueError(f"Widget [{self.title}] unexpected behaviour. Var 'result_metrics should be set")
+
         return BaseWidgetInfo(
             title=self.title,
             type="counter",
