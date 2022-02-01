@@ -24,17 +24,31 @@ class ProbClassQualityMetricBarWidget(Widget):
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
 
-        results = analyzers_results[ProbClassificationPerformanceAnalyzer]
+        results = ProbClassificationPerformanceAnalyzer.get_results(analyzers_results)
+        utility_columns = results.columns.utility_columns
 
-        if results['utility_columns']['target'] is None or results['utility_columns']['prediction'] is None:
+        if utility_columns.target is None or utility_columns.prediction is None:
             if self.dataset == 'reference':
                 raise ValueError(f"Widget [{self.title}] requires 'target' and 'prediction' columns")
+
             return None
-        if self.dataset not in results['metrics'].keys():
-            if self.dataset == 'reference':
+
+        if self.dataset == 'reference':
+            metrics = results.reference_metrics
+
+            if metrics is None:
                 raise ValueError(f"Widget [{self.title}] required 'reference' results from"
                                  f" {ProbClassificationPerformanceAnalyzer.__name__} but no data found")
+
+        elif self.dataset == 'current':
+            metrics = results.current_metrics
+
+        else:
+            raise ValueError(f"Widget [{self.title}] required 'current' or 'reference' dataset value")
+
+        if metrics is None:
             return None
+
         return BaseWidgetInfo(
             title=self.title,
             type="counter",
@@ -42,27 +56,27 @@ class ProbClassQualityMetricBarWidget(Widget):
             params={
                 "counters": [
                     {
-                        "value": str(round(results['metrics'][self.dataset]['accuracy'], 3)),
+                        "value": str(round(metrics.accuracy, 3)),
                         "label": "Accuracy"
                     },
                     {
-                        "value": str(round(results['metrics'][self.dataset]['precision'], 3)),
+                        "value": str(round(metrics.precision, 3)),
                         "label": "Precision"
                     },
                     {
-                        "value": str(round(results['metrics'][self.dataset]['recall'], 3)),
+                        "value": str(round(metrics.recall, 3)),
                         "label": "Recall"
                     },
                     {
-                        "value": str(round(results['metrics'][self.dataset]['f1'], 3)),
+                        "value": str(round(metrics.f1, 3)),
                         "label": "F1"
                     },
                     {
-                        "value": str(round(results['metrics'][self.dataset]['roc_auc'], 3)),
+                        "value": str(round(metrics.roc_auc, 3)),
                         "label": "ROC AUC"
                     },
                     {
-                        "value": str(round(results['metrics'][self.dataset]['log_loss'], 3)),
+                        "value": str(round(metrics.log_loss, 3)),
                         "label": "LogLoss"
                     }
                 ]

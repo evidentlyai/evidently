@@ -121,6 +121,7 @@ def test_regression_performance_single_frame_dashboard(iris_frame) -> None:
     assert len(actual['widgets']) == 11
 
 
+
 def test_classification_performance_dashboard(iris_frame) -> None:
     # To generate the **Classification Model Performance** report, run:
     # FIXME: when prediction column is not present in the dataset
@@ -297,7 +298,7 @@ def test_probabilistic_classification_performance_profile() -> None:
     # we leave the actual content test to other tests for widgets
     assert 'timestamp' in actual
     assert len(actual) == 2
-    assert len(actual['probabilistic_classification_performance']['data']) == 5
+    assert len(actual['probabilistic_classification_performance']['data']) == 6
     assert len(actual['probabilistic_classification_performance']['data']['metrics']) == 2
     assert 'reference' in actual['probabilistic_classification_performance']['data']['metrics']
     assert 'current' in actual['probabilistic_classification_performance']['data']['metrics']
@@ -317,6 +318,6 @@ def test_probabilistic_classification_single_performance_profile() -> None:
     # we leave the actual content test to other tests for widgets
     assert 'timestamp' in actual
     assert len(actual) == 2
-    assert len(actual['probabilistic_classification_performance']['data']) == 5
+    assert len(actual['probabilistic_classification_performance']['data']) == 6
     assert len(actual['probabilistic_classification_performance']['data']['metrics']) == 1
     assert 'reference' in actual['probabilistic_classification_performance']['data']['metrics']

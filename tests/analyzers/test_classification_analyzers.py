@@ -3,6 +3,7 @@ import pandas as pd
 
 from evidently import ColumnMapping
 from evidently.analyzers.prob_classification_performance_analyzer import ProbClassificationPerformanceAnalyzer
+from evidently.options import OptionsProvider
 
 
 def test_single_dataset_with_two_classes() -> None:
@@ -18,47 +19,43 @@ def test_single_dataset_with_two_classes() -> None:
         prediction=['label_a', 'label_b'],
     )
     analyzer = ProbClassificationPerformanceAnalyzer()
+    analyzer.options_provider = OptionsProvider()
     result = analyzer.calculate(df, None, df_column_mapping)
 
-    assert result['utility_columns'] == {
-        'date': None,
-        'id': None,
-        'target': 'target',
-        'prediction': ['label_a', 'label_b']
-    }
-    assert result['cat_feature_names'] == []
-    assert result['num_feature_names'] == []
-    assert result['target_names'] is None
+    assert result.columns.utility_columns.date is None
+    assert result.columns.utility_columns.id_column is None
+    assert result.columns.utility_columns.target == 'target'
+    assert result.columns.utility_columns.prediction == ['label_a', 'label_b']
+    assert result.columns.cat_feature_names == []
+    assert result.columns.num_feature_names == []
+    assert result.columns.target_names is None
 
-    reference_metrics = result['metrics']['reference']
-    assert reference_metrics['accuracy'] == approx(1 / 6)
-    assert reference_metrics['precision'] == approx(1 / 8)
-    assert reference_metrics['recall'] == approx(1 / 6)
-    assert reference_metrics['f1'] == approx(0.14285714285714288)
-    # FIXME: as mentioned in comments, ROC and log_loss is currently buggy
-    assert reference_metrics['roc_auc'] == approx(1.0)
-    assert reference_metrics['log_loss'] == approx(0.46757375785181)
-    assert reference_metrics['confusion_matrix'] == {
-        'labels': ['label_a', 'label_b'],
-        'values': [[0, 3], [2, 1]]
-    }
-    assert reference_metrics['roc_curve'] == {
-        'fpr': [0.0, 0.0, 0.0, 1.0],
-        'tpr': [0.0, 0.3333333333333333, 1.0, 1.0],
+    reference_metrics = result.reference_metrics
+    assert reference_metrics.accuracy == approx(1 / 6)
+    assert reference_metrics.precision == approx(1 / 8)
+    assert reference_metrics.recall == approx(1 / 6)
+    assert reference_metrics.f1 == approx(0.14285714285714288)
+    assert reference_metrics.roc_auc == approx(0.0)
+    assert reference_metrics.log_loss == approx(1.2060432243256953)
+    assert reference_metrics.confusion_matrix.labels == ['label_a', 'label_b']
+    assert reference_metrics.confusion_matrix.values == [[0, 3], [2, 1]]
+    assert reference_metrics.roc_curve == {
+        'fpr': [0.0, 0.3333333333333333, 1.0, 1.0],
+        'tpr': [0.0, 0.0, 0.0, 1.0],
         'thrs': [1.6, 0.6, 0.4, 0.1]
     }
-    assert reference_metrics['pr_curve'] == {
-        'pr': [1.0, 1.0, 1.0, 1.0],
-        'rcl': [1.0, 0.6666666666666666, 0.3333333333333333, 0.0],
-        'thrs': [0.4, 0.5, 0.6]
+    assert reference_metrics.pr_curve == {
+        'pr': [0.5, 0.4, 0.25, 0.0, 0.0, 0.0, 1.0],
+        'rcl': [1.0, 0.6666666666666666, 0.3333333333333333, 0.0, 0.0, 0.0, 0.0],
+        'thrs': [0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
     }
-    assert reference_metrics['pr_table'] == [
-        [16.7, 1, 0.5, 1, 0, 100.0, 33.3], [33.3, 2, 0.4, 2, 0, 100.0, 66.7],
-        [50.0, 3, 0.3, 3, 0, 100.0, 100.0], [66.7, 4, 0.2, 3, 1, 75.0, 100.0],
-        [83.3, 5, 0.1, 3, 2, 60.0, 100.0], [100.0, 6, 0.1, 3, 3, 50.0, 100.0]
+    assert reference_metrics.pr_table == [
+        [16.7, 1, 0.5, 0, 1, 0.0, 0.0], [33.3, 2, 0.4, 0, 2, 0.0, 0.0],
+        [50.0, 3, 0.3, 0, 3, 0.0, 0.0], [66.7, 4, 0.2, 1, 3, 25.0, 33.3],
+        [83.3, 5, 0.1, 2, 3, 40.0, 66.7], [100.0, 6, 0.1, 3, 3, 50.0, 100.0]
     ]
     ###
-    metrics_matrix = result['metrics']['reference']['metrics_matrix']
+    metrics_matrix = result.reference_metrics.metrics_matrix
     assert metrics_matrix['label_a'], {
         'precision': 0.0,
         'recall': 0.0,
@@ -100,78 +97,75 @@ def test_single_dataset_with_three_classes() -> None:
         prediction=['label_a', 'label_c', 'label_b'],
     )
     analyzer = ProbClassificationPerformanceAnalyzer()
+    analyzer.options_provider = OptionsProvider()
     result = analyzer.calculate(df, None, df_column_mapping)
-    assert result['utility_columns'] == {
-        'date': None,
-        'id': None,
-        'target': 'target',
-        'prediction': ['label_a', 'label_c', 'label_b']
-    }
-    assert result['cat_feature_names'] == []
-    assert result['num_feature_names'] == []
-    assert result['target_names'] is None
+    assert result.columns.utility_columns.date is None
+    assert result.columns.utility_columns.id_column is None
+    assert result.columns.utility_columns.target == 'target'
+    assert result.columns.utility_columns.prediction == ['label_a', 'label_c', 'label_b']
+    assert result.columns.cat_feature_names == []
+    assert result.columns.num_feature_names == []
+    assert result.columns.target_names is None
 
-    reference_metrics = result['metrics']['reference']
-    assert reference_metrics['accuracy'] == .5
-    assert reference_metrics['precision'] == 1 / 3
-    assert reference_metrics['recall'] == .5
-    assert reference_metrics['f1'] == approx(.4)
-    assert reference_metrics['roc_auc'] == 0.20833333333333334
-    assert reference_metrics['log_loss'] == 7.323289521082586
-    assert reference_metrics['confusion_matrix'] == {
-        'labels': ['label_a', 'label_b', 'label_c'],
-        'values': [[0, 0, 2], [0, 2, 0], [0, 1, 1]]
-    }
-    assert reference_metrics['roc_curve'] == {
+    reference_metrics = result.reference_metrics
+    assert reference_metrics.accuracy == .5
+    assert reference_metrics.precision == 1 / 3
+    assert reference_metrics.recall == .5
+    assert reference_metrics.f1 == approx(.4)
+    assert reference_metrics.roc_auc == 0.5833333333333334
+    assert reference_metrics.log_loss == 1.2796990223072882
+    assert reference_metrics.confusion_matrix.labels == ['label_a', 'label_b', 'label_c']
+    assert reference_metrics.confusion_matrix.values == [[0, 0, 2], [0, 2, 0], [0, 1, 1]]
+    assert reference_metrics.roc_curve == {
         'label_a': {
             'fpr': [0.0, 0.5, 0.75, 0.75, 1.0],
-            'thrs': [1.4, 0.4, 0.3, 0.2, 0.1],
-            'tpr': [0.0, 0.0, 0.0, 0.5, 1.0]
+            'tpr': [0.0, 0.0, 0.0, 0.5, 1.0],
+            'thrs': [1.4, 0.4, 0.3, 0.2, 0.1]
         },
         'label_b': {
-            'fpr': [0.0, 0.25, 0.5, 0.75, 1.0],
-            'thrs': [1.7, 0.7, 0.5, 0.3, 0.1],
-            'tpr': [0.0, 0.0, 0.5, 0.5, 1.0]
+            'fpr': [0.0, 0.0, 0.25, 0.5, 1.0],
+            'tpr': [0.0, 0.5, 1.0, 1.0, 1.0],
+            'thrs': [1.7, 0.7, 0.5, 0.3, 0.1]
         },
         'label_c': {
-            'fpr': [0.0, 0.5, 0.75, 1.0, 1.0],
-            'thrs': [1.8, 0.8, 0.7, 0.1, 0.0],
-            'tpr': [0.0, 0.0, 0.0, 0.5, 1.0]
+            'fpr': [0.0, 0.25, 0.5, 0.75, 1.0],
+            'tpr': [0.0, 0.5, 0.5, 1.0, 1.0],
+            'thrs': [1.8, 0.8, 0.7, 0.1, 0.0]
         }
     }
-    assert reference_metrics['pr_curve'] == {
-        'label_a': {'pr': [1 / 3, 0.25, 0.0, 0.0, 1.0],
+    assert reference_metrics.pr_curve == {
+        'label_a': {'pr': [0.3333333333333333, 0.25, 0.0, 0.0, 1.0],
                     'rcl': [1.0, 0.5, 0.0, 0.0, 0.0],
                     'thrs': [0.1, 0.2, 0.3, 0.4]},
-        'label_b': {'pr': [1 / 3, 0.25, 1 / 3, 0.0, 1.0],
-                    'rcl': [1.0, 0.5, 0.5, 0.0, 0.0],
-                    'thrs': [0.1, 0.3, 0.5, 0.7]},
-        'label_c': {'pr': [1 / 3, 0.2, 0.0, 0.0, 1.0],
-                    'rcl': [1.0, 0.5, 0.0, 0.0, 0.0],
-                    'thrs': [0.0, 0.1, 0.7, 0.8]}
+        'label_c': {'pr': [0.4, 0.3333333333333333, 0.5, 1.0],
+                    'rcl': [1.0, 0.5, 0.5, 0.0],
+                    'thrs': [0.1, 0.7, 0.8]},
+        'label_b': {'pr': [0.6666666666666666, 1.0, 1.0],
+                    'rcl': [1.0, 0.5, 0.0],
+                    'thrs': [0.5, 0.7]}
     }
-    assert reference_metrics['pr_table'] == {
+    assert reference_metrics.pr_table == {
         'label_a': [[16.7, 1, 0.4, 0, 1, 0.0, 0.0],
                     [33.3, 2, 0.3, 0, 2, 0.0, 0.0],
                     [50.0, 3, 0.2, 0, 3, 0.0, 0.0],
                     [66.7, 4, 0.1, 1, 3, 25.0, 50.0],
                     [83.3, 5, 0.1, 2, 3, 40.0, 100.0],
                     [100.0, 6, 0.1, 2, 4, 33.3, 100.0]],
-        'label_b': [[16.7, 1, 0.5, 0, 1, 0.0, 0.0],
-                    [33.3, 2, 0.5, 0, 2, 0.0, 0.0],
-                    [50.0, 3, 0.3, 1, 2, 33.3, 50.0],
-                    [66.7, 4, 0.1, 1, 3, 25.0, 50.0],
-                    [83.3, 5, 0.1, 1, 4, 20.0, 50.0],
-                    [100.0, 6, 0.1, 2, 4, 33.3, 100.0]],
         'label_c': [[16.7, 1, 0.8, 0, 1, 0.0, 0.0],
-                    [33.3, 2, 0.7, 0, 2, 0.0, 0.0],
-                    [50.0, 3, 0.1, 0, 3, 0.0, 0.0],
+                    [33.3, 2, 0.7, 1, 1, 50.0, 50.0],
+                    [50.0, 3, 0.1, 1, 2, 33.3, 50.0],
                     [66.7, 4, 0.1, 1, 3, 25.0, 50.0],
-                    [83.3, 5, 0.0, 1, 4, 20.0, 50.0],
-                    [100.0, 6, 0.0, 2, 4, 33.3, 100.0]]
+                    [83.3, 5, 0.0, 2, 3, 40.0, 100.0],
+                    [100.0, 6, 0.0, 2, 4, 33.3, 100.0]],
+        'label_b': [[16.7, 1, 0.5, 1, 0, 100.0, 50.0],
+                    [33.3, 2, 0.5, 2, 0, 100.0, 100.0],
+                    [50.0, 3, 0.3, 2, 1, 66.7, 100.0],
+                    [66.7, 4, 0.1, 2, 2, 50.0, 100.0],
+                    [83.3, 5, 0.1, 2, 3, 40.0, 100.0],
+                    [100.0, 6, 0.1, 2, 4, 33.3, 100.0]]
     }
     ###
-    metrics_matrix = result['metrics']['reference']['metrics_matrix']
+    metrics_matrix = result.reference_metrics.metrics_matrix
     assert metrics_matrix['label_a'] == {
         'precision': 0.0,
         'recall': 0.0,
@@ -225,45 +219,45 @@ def test_two_datasets_with_two_classes_when_dataset_is_same() -> None:
         prediction=['label_a', 'label_b'],
     )
     analyzer = ProbClassificationPerformanceAnalyzer()
+    analyzer.options_provider = OptionsProvider()
     result = analyzer.calculate(df1, df2, df_column_mapping)
-    assert result['utility_columns'] == {
-        'date': None,
-        'id': None,
-        'target': 'target',
-        'prediction': ['label_a', 'label_b']
-    }
-    assert result['cat_feature_names'] == []
-    assert result['num_feature_names'] == []
-    assert result['target_names'] is None
+    assert result.columns.utility_columns.date is None
+    assert result.columns.utility_columns.id_column is None
+    assert result.columns.utility_columns.target == 'target'
+    assert result.columns.utility_columns.prediction == ['label_a', 'label_b']
+    assert result.columns.cat_feature_names == []
+    assert result.columns.num_feature_names == []
+    assert result.columns.target_names is None
 
-    for reference in ['reference', 'current']:
-        reference_metrics = result['metrics'][reference]
-        assert reference_metrics['accuracy'] == 1 / 6
-        assert reference_metrics['precision'] == 1 / 8
-        assert reference_metrics['recall'] == 1 / 6
-        assert reference_metrics['f1'] == 0.14285714285714288
-        # FIXME: as mentioned in comments, ROC and log_loss is currently buggy
-        assert reference_metrics['roc_auc'] == 1.0
-        assert reference_metrics['log_loss'] == 0.46757375785181
-        assert reference_metrics['confusion_matrix'] == {
-            'labels': ['label_a', 'label_b'],
-            'values': [[0, 3], [2, 1]]
-        }
-        assert reference_metrics['roc_curve'] == {
-            'fpr': [0.0, 0.0, 0.0, 1.0],
-            'tpr': [0.0, 0.3333333333333333, 1.0, 1.0],
+    for metrics in [result.reference_metrics, result.current_metrics]:
+        assert metrics.accuracy == 1 / 6
+        assert metrics.precision == 1 / 8
+        assert metrics.recall == 1 / 6
+        assert metrics.f1 == 0.14285714285714288
+        assert metrics.roc_auc == 0.0
+        assert metrics.log_loss == 1.2060432243256953
+        assert metrics.confusion_matrix.labels == ['label_a', 'label_b']
+        assert metrics.confusion_matrix.values == [[0, 3], [2, 1]]
+        assert metrics.roc_curve == {
+            'fpr': [0.0, 0.3333333333333333, 1.0, 1.0],
+            'tpr': [0.0, 0.0, 0.0, 1.0],
             'thrs': [1.6, 0.6, 0.4, 0.1]
         }
-        assert reference_metrics['pr_curve'] == {'pr': [1.0, 1.0, 1.0, 1.0],
-                                                 'rcl': [1.0, 0.6666666666666666,
-                                                         0.3333333333333333,
-                                                         0.0],
-                                                 'thrs': [0.4, 0.5, 0.6]}
-        assert reference_metrics['pr_table'] == [[16.7, 1, 0.5, 1, 0, 100.0, 33.3], [33.3, 2, 0.4, 2, 0, 100.0, 66.7],
-                                                 [50.0, 3, 0.3, 3, 0, 100.0, 100.0], [66.7, 4, 0.2, 3, 1, 75.0, 100.0],
-                                                 [83.3, 5, 0.1, 3, 2, 60.0, 100.0], [100.0, 6, 0.1, 3, 3, 50.0, 100.0]]
+        assert metrics.pr_curve == {
+            'pr': [0.5, 0.4, 0.25, 0.0, 0.0, 0.0, 1.0],
+            'rcl': [1.0, 0.6666666666666666, 0.3333333333333333, 0.0, 0.0, 0.0, 0.0],
+            'thrs': [0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
+        }
+        assert metrics.pr_table == [
+            [16.7, 1, 0.5, 0, 1, 0.0, 0.0],
+            [33.3, 2, 0.4, 0, 2, 0.0, 0.0],
+            [50.0, 3, 0.3, 0, 3, 0.0, 0.0],
+            [66.7, 4, 0.2, 1, 3, 25.0, 33.3],
+            [83.3, 5, 0.1, 2, 3, 40.0, 66.7],
+            [100.0, 6, 0.1, 3, 3, 50.0, 100.0]
+        ]
         ###
-        metrics_matrix = result['metrics'][reference]['metrics_matrix']
+        metrics_matrix = metrics.metrics_matrix
         assert metrics_matrix['label_a'] == {'precision': 0.0, 'recall': 0.0, 'f1-score': 0.0, 'support': 3}
         assert metrics_matrix['label_b'] == {
             'precision': 0.25,
@@ -298,42 +292,46 @@ def test_two_dataset_with_two_classes_when_dataset_is_different() -> None:
         prediction=['label_a', 'label_b'],
     )
     analyzer = ProbClassificationPerformanceAnalyzer()
+    analyzer.options_provider = OptionsProvider()
     result = analyzer.calculate(df1, df2, df_column_mapping)
 
-    assert result['utility_columns'] == {'date': None, 'id': None, 'target': 'target', 'prediction': ['label_a', 'label_b']}
-    assert result['cat_feature_names'] == []
-    assert result['num_feature_names'] == []
-    assert result['target_names'] is None
+    assert result.columns.utility_columns.date is None
+    assert result.columns.utility_columns.id_column is None
+    assert result.columns.utility_columns.target == 'target'
+    assert result.columns.utility_columns.prediction == ['label_a', 'label_b']
+    assert result.columns.cat_feature_names == []
+    assert result.columns.num_feature_names == []
+    assert result.columns.target_names is None
     ###
     # tests for 'reference'
     # should be the same values as in other tests
     ###
-    reference_metrics = result['metrics']['reference']
-    assert reference_metrics['accuracy'] == 1 / 6
-    assert reference_metrics['precision'] == 1 / 8
-    assert reference_metrics['recall'] == 1 / 6
-    assert reference_metrics['f1'] == 0.14285714285714288
-    # FIXME: as mentioned in comments, ROC and log_loss is currently buggy
-    assert reference_metrics['roc_auc'] == 1.0
-    assert reference_metrics['log_loss'] == 0.46757375785181
-    assert reference_metrics['confusion_matrix'] == {'labels': ['label_a', 'label_b'], 'values': [[0, 3], [2, 1]]}
-    assert reference_metrics['roc_curve'] == {
-        'fpr': [0.0, 0.0, 0.0, 1.0],
-        'tpr': [0.0, 0.3333333333333333, 1.0, 1.0],
+    reference_metrics = result.reference_metrics
+    assert reference_metrics.accuracy == 1 / 6
+    assert reference_metrics.precision == 1 / 8
+    assert reference_metrics.recall == 1 / 6
+    assert reference_metrics.f1 == 0.14285714285714288
+    assert reference_metrics.roc_auc == 0.
+    assert reference_metrics.log_loss == 1.2060432243256953
+    assert reference_metrics.confusion_matrix.labels == ['label_a', 'label_b']
+    assert reference_metrics.confusion_matrix.values == [[0, 3], [2, 1]]
+    assert reference_metrics.roc_curve == {
+        'fpr': [0.0, 0.3333333333333333, 1.0, 1.0],
+        'tpr': [0.0, 0.0, 0.0, 1.0],
         'thrs': [1.6, 0.6, 0.4, 0.1]
     }
-    assert reference_metrics['pr_curve'] == {
-        'pr': [1.0, 1.0, 1.0, 1.0],
-        'rcl': [1.0, 0.6666666666666666, 0.3333333333333333, 0.0],
-        'thrs': [0.4, 0.5, 0.6]
+    assert reference_metrics.pr_curve == {
+        'pr': [0.5, 0.4, 0.25, 0.0, 0.0, 0.0, 1.0],
+        'rcl': [1.0, 0.6666666666666666, 0.3333333333333333, 0.0, 0.0, 0.0, 0.0],
+        'thrs': [0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
     }
-    assert reference_metrics['pr_table'] == [
-        [16.7, 1, 0.5, 1, 0, 100.0, 33.3], [33.3, 2, 0.4, 2, 0, 100.0, 66.7],
-        [50.0, 3, 0.3, 3, 0, 100.0, 100.0], [66.7, 4, 0.2, 3, 1, 75.0, 100.0],
-        [83.3, 5, 0.1, 3, 2, 60.0, 100.0], [100.0, 6, 0.1, 3, 3, 50.0, 100.0]
+    assert reference_metrics.pr_table == [
+        [16.7, 1, 0.5, 0, 1, 0.0, 0.0], [33.3, 2, 0.4, 0, 2, 0.0, 0.0],
+        [50.0, 3, 0.3, 0, 3, 0.0, 0.0], [66.7, 4, 0.2, 1, 3, 25.0, 33.3],
+        [83.3, 5, 0.1, 2, 3, 40.0, 66.7], [100.0, 6, 0.1, 3, 3, 50.0, 100.0]
     ]
     ###
-    metrics_matrix = result['metrics']['reference']['metrics_matrix']
+    metrics_matrix = result.reference_metrics.metrics_matrix
     assert metrics_matrix['label_a'] == {
         'precision': 0.0,
         'recall': 0.0,
@@ -363,36 +361,34 @@ def test_two_dataset_with_two_classes_when_dataset_is_different() -> None:
     # tests for current
     # should be different from 'reference'
     ###
-    reference_metrics = result['metrics']['current']
-    assert reference_metrics['accuracy'] == .5
-    assert reference_metrics['precision'] == .5
-    assert reference_metrics['recall'] == .5
-    assert reference_metrics['f1'] == .5
-    # FIXME: as mentioned in comments, ROC and log_loss is currently buggy
-    assert reference_metrics['roc_auc'] == 0.375
-    assert reference_metrics['log_loss'] == 0.9324253621585479
-    assert reference_metrics['confusion_matrix'] == {
-        'labels': ['label_a', 'label_b'],
-        'values': [[1, 1], [1, 1]]
+    reference_metrics = result.current_metrics
+    assert reference_metrics.accuracy == .5
+    assert reference_metrics.precision == .5
+    assert reference_metrics.recall == .5
+    assert reference_metrics.f1 == .5
+    assert reference_metrics.roc_auc == 0.625
+    assert reference_metrics.log_loss == 0.5858517718785752
+    assert reference_metrics.confusion_matrix.labels == ['label_a', 'label_b']
+    assert reference_metrics.confusion_matrix.values == [[1, 1], [1, 1]]
+
+    assert reference_metrics.roc_curve == {
+        'fpr': [0.0, 0.0, 0.5, 1.0],
+        'tpr': [0.0, 0.5, 0.5, 1.0],
+        'thrs': [1.8, 0.8, 0.5, 0.4]
     }
-    assert reference_metrics['roc_curve'] == {
-        'fpr': [0.0, 0.5, 0.5, 1.0],
-        'thrs': [1.8, 0.8, 0.5, 0.4],
-        'tpr': [0.0, 0.0, 0.5, 1.0]
-    }
-    assert reference_metrics['pr_curve'] == {
-        'pr': [0.5, 0.5, 0.0, 1.0],
-        'rcl': [1.0, 0.5, 0.0, 0.0],
+    assert reference_metrics.pr_curve == {
+        'pr': [0.5, 0.5, 1.0, 1.0],
+        'rcl': [1.0, 0.5, 0.5, 0.0],
         'thrs': [0.4, 0.5, 0.8]
     }
-    assert reference_metrics['pr_table'] == [
-        [25.0, 1, 0.5, 0, 1, 0.0, 0.0],
+    assert reference_metrics.pr_table == [
+        [25.0, 1, 0.5, 1, 0, 100.0, 50.0],
         [50.0, 2, 0.4, 1, 1, 50.0, 50.0],
-        [75.0, 3, 0.4, 1, 2, 33.3, 50.0],
+        [75.0, 3, 0.4, 2, 1, 66.7, 100.0],
         [100.0, 4, 0.4, 2, 2, 50.0, 100.0]
     ]
     ###
-    metrics_matrix = result['metrics']['current']['metrics_matrix']
+    metrics_matrix = result.current_metrics.metrics_matrix
     assert metrics_matrix['label_a'] == {
         'f1-score': 0.5,
         'precision': 0.5,

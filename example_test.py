@@ -1,8 +1,7 @@
 import os
 import sys
 
-excludes = ['bicycle_demand_monitoring.py',
-            'historical_drift_visualization.py',
+excludes = ['historical_drift_visualization.py',
             'mlflow_integration.py',
             'ibm_hr_attrition_model_validation.py',
             ]

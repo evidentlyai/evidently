@@ -13,6 +13,7 @@ from evidently import ColumnMapping
 from evidently.analyzers.num_target_drift_analyzer import NumTargetDriftAnalyzer
 from evidently.model.widget import BaseWidgetInfo
 from evidently.dashboard.widgets.widget import Widget, GREY, RED
+from evidently.options import QualityMetricsOptions
 
 
 class NumOutputValuesWidget(Widget):
@@ -30,24 +31,42 @@ class NumOutputValuesWidget(Widget):
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
 
-        results = analyzers_results[NumTargetDriftAnalyzer]
+        results = NumTargetDriftAnalyzer.get_results(analyzers_results)
+        quality_metrics_options = self.options_provider.get(QualityMetricsOptions)
+        conf_interval_n_sigmas = quality_metrics_options.conf_interval_n_sigmas
 
         if current_data is None:
             raise ValueError("current_data should be present")
 
-        if results['utility_columns'][self.kind] is None:
-            return None
+        if self.kind == 'target':
+            if results.columns.utility_columns.target is None:
+                return None
+
+            column_name = results.columns.utility_columns.target
+
+        elif self.kind == 'prediction':
+            if results.columns.utility_columns.prediction is None:
+                return None
+
+            if not isinstance(results.columns.utility_columns.prediction, str):
+                raise ValueError(f"Widget [{self.title}] requires one str value for 'prediction' column")
+
+            column_name = results.columns.utility_columns.prediction
+
+        else:
+            raise ValueError(f"Widget [{self.title}] requires 'target' or 'prediction' kind parameter value")
+
+        utility_columns_date = results.columns.utility_columns.date
         # plot values
-        reference_mean = np.mean(reference_data[results['utility_columns'][self.kind]])
-        reference_std = np.std(reference_data[results['utility_columns'][self.kind]], ddof=1)
-        x_title = "Timestamp" if results['utility_columns']['date'] else "Index"
+        reference_mean = np.mean(reference_data[column_name])
+        reference_std = np.std(reference_data[column_name], ddof=1)
+        x_title = "Timestamp" if utility_columns_date else "Index"
 
         output_values = go.Figure()
 
         output_values.add_trace(go.Scatter(
-            x=reference_data[results['utility_columns']['date']] if results['utility_columns'][
-                'date'] else reference_data.index,
-            y=reference_data[results['utility_columns'][self.kind]],
+            x=reference_data[utility_columns_date] if utility_columns_date else reference_data.index,
+            y=reference_data[column_name],
             mode='markers',
             name='Reference',
             marker=dict(
@@ -57,15 +76,33 @@ class NumOutputValuesWidget(Widget):
         ))
 
         output_values.add_trace(go.Scatter(
-            x=current_data[results['utility_columns']['date']] if results['utility_columns'][
-                'date'] else current_data.index,
-            y=current_data[results['utility_columns'][self.kind]],
+            x=current_data[utility_columns_date] if utility_columns_date else current_data.index,
+            y=current_data[column_name],
             mode='markers',
             name='Current',
             marker=dict(
                 size=6,
                 color=RED
             )
+        ))
+
+        if utility_columns_date:
+            x0 = current_data[utility_columns_date].sort_values()[1]
+        else:
+            x0 = current_data.index.sort_values()[1]
+
+        output_values.add_trace(go.Scatter(
+            x=[x0, x0],
+            y=[reference_mean - conf_interval_n_sigmas * reference_std,
+                reference_mean + conf_interval_n_sigmas * reference_std],
+            mode='markers',
+            name='Current',
+            marker=dict(
+                size=0.01,
+                color='white',
+                opacity=0.005
+            ),
+            showlegend=False
         ))
 
         output_values.update_layout(
@@ -87,9 +124,9 @@ class NumOutputValuesWidget(Widget):
                     # y-reference is assigned to the plot paper [0,1]
                     yref="y",
                     x0=0,
-                    y0=reference_mean - reference_std,
+                    y0=reference_mean - conf_interval_n_sigmas * reference_std,
                     x1=1,
-                    y1=reference_mean + reference_std,
+                    y1=reference_mean + conf_interval_n_sigmas * reference_std,
                     fillcolor="LightGreen",
                     opacity=0.5,
                     layer="below",

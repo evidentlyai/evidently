@@ -11,6 +11,8 @@ from evidently import ColumnMapping
 from evidently.analyzers.num_target_drift_analyzer import NumTargetDriftAnalyzer
 from evidently.model.widget import BaseWidgetInfo, AlertStats
 from evidently.dashboard.widgets.widget import Widget, GREY, RED
+from evidently.dashboard.widgets.utils import CutQuantileTransformer
+from evidently.options import QualityMetricsOptions
 
 
 class NumOutputDriftWidget(Widget):
@@ -27,24 +29,58 @@ class NumOutputDriftWidget(Widget):
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
 
-        results = analyzers_results[NumTargetDriftAnalyzer]
+        results = NumTargetDriftAnalyzer.get_results(analyzers_results)
+        quality_metrics_options = self.options_provider.get(QualityMetricsOptions)
+        cut_quantile = quality_metrics_options.cut_quantile
 
         if current_data is None:
             raise ValueError("current_data should be present")
 
-        if results['utility_columns'][self.kind] is None:
+        if self.kind == 'target':
+            if results.columns.utility_columns.target is None:
+                return None
+
+            column_name = results.columns.utility_columns.target
+            metrics = results.target_metrics
+
+        elif self.kind == 'prediction':
+            if results.columns.utility_columns.prediction is None:
+                return None
+
+            if not isinstance(results.columns.utility_columns.prediction, str):
+                raise ValueError(f"Widget [{self.title}] requires one str value for 'prediction' column")
+
+            column_name = results.columns.utility_columns.prediction
+            metrics = results.prediction_metrics
+
+        else:
+            raise ValueError(f"Widget [{self.title}] requires 'target' or 'prediction' kind parameter value")
+
+        if metrics is None:
             return None
+
         # calculate output drift
-        output_p_value = results['metrics'][self.kind + '_drift']
+        output_p_value = metrics.drift
         output_sim_test = "detected" if output_p_value < 0.05 else "not detected"
 
         # plot output distributions
+        if cut_quantile and quality_metrics_options.get_cut_quantile(column_name):
+            side, q = quality_metrics_options.get_cut_quantile(column_name)
+            cqt = CutQuantileTransformer(side=side, q=q)
+            cqt.fit(reference_data[column_name])
+            reference_data_to_plot = cqt.transform(reference_data[column_name])
+            current_data_to_plot = cqt.transform(current_data[column_name])
+        else:
+            reference_data_to_plot = reference_data[column_name]
+            current_data_to_plot = current_data[column_name]
+
         output_distr = ff.create_distplot(
-            [reference_data[results['utility_columns'][self.kind]],
-             current_data[results['utility_columns'][self.kind]]],
+            [reference_data_to_plot,
+             current_data_to_plot],
             ["Reference", "Current"],
             colors=[GREY, RED],
-            show_rug=True)
+            show_rug=True
+        )
 
         output_distr.update_layout(
             xaxis_title="Value",

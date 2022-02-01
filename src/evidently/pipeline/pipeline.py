@@ -29,7 +29,7 @@ class Pipeline:
     def execute(self,
                 reference_data: pandas.DataFrame,
                 current_data: Optional[pandas.DataFrame],
-                column_mapping: ColumnMapping = None):
+                column_mapping: Optional[ColumnMapping] = None) -> None:
         if column_mapping is None:
             column_mapping = ColumnMapping()
 

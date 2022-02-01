@@ -7,6 +7,7 @@ import pandas as pd
 
 from evidently import ColumnMapping
 from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceAnalyzer
+from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceMetrics
 from evidently.model.widget import BaseWidgetInfo
 from evidently.dashboard.widgets.widget import Widget
 
@@ -26,17 +27,30 @@ class RegUnderperformMetricsWidget(Widget):
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
 
-        results = analyzers_results[RegressionPerformanceAnalyzer]
+        results = RegressionPerformanceAnalyzer.get_results(analyzers_results)
+        results_utility_columns = results.columns.utility_columns
 
-        if results['utility_columns']['target'] is None or results['utility_columns']['prediction'] is None:
+        if results_utility_columns.target is None or results_utility_columns.prediction is None:
             if self.dataset == 'reference':
                 raise ValueError(f"Widget [{self.title}] requires 'target' and 'prediction' columns")
             return None
-        if self.dataset not in results['metrics'].keys():
-            if self.dataset == 'reference':
+
+        result_metrics = None
+
+        if self.dataset == 'current':
+            result_metrics = results.current_metrics
+            if result_metrics is None:
+                return None
+
+        elif self.dataset == 'reference':
+            result_metrics = results.reference_metrics
+
+            if result_metrics is None:
                 raise ValueError(f"Widget [{self.title}] required 'reference' results from"
                                  f" {RegressionPerformanceAnalyzer.__name__} but no data found")
-            return None
+
+        if result_metrics is None:
+            raise ValueError(f"Widget [{self.title}] unexpected behaviour. Var 'result_metrics should be set")
 
         return BaseWidgetInfo(
             title=self.title,
@@ -45,15 +59,15 @@ class RegUnderperformMetricsWidget(Widget):
             params={
                 "counters": [
                     {
-                        "value": _format_value(results, self.dataset, 'majority'),
+                        "value": _format_value(result_metrics, 'majority'),
                         "label": "Majority(90%)"
                     },
                     {
-                        "value": _format_value(results, self.dataset, 'underestimation'),
+                        "value": _format_value(result_metrics, 'underestimation'),
                         "label": "Underestimation(5%)"
                     },
                     {
-                        "value": _format_value(results, self.dataset, 'overestimation'),
+                        "value": _format_value(result_metrics, 'overestimation'),
                         "label": "Overestimation(5%)"
                     }
                 ]
@@ -61,6 +75,6 @@ class RegUnderperformMetricsWidget(Widget):
         )
 
 
-def _format_value(results, dataset, counter_type):
-    return f"{round(results['metrics'][dataset]['underperformance'][counter_type]['mean_error'], 2)}" \
-           + f" ({round(results['metrics'][dataset]['underperformance'][counter_type]['std_error'], 2)})"
+def _format_value(results: RegressionPerformanceMetrics, counter_type):
+    return f"{round(results.underperformance[counter_type]['mean_error'], 2)}" \
+           f" ({round(results.underperformance[counter_type]['std_error'], 2)})"

@@ -29,32 +29,36 @@ class RegErrorDistrWidget(Widget):
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
 
-        results = analyzers_results[RegressionPerformanceAnalyzer]
+        results = RegressionPerformanceAnalyzer.get_results(analyzers_results)
+        results_utility_columns = results.columns.utility_columns
 
-        if results['utility_columns']['target'] is None or results['utility_columns']['prediction'] is None:
+        if results_utility_columns.target is None or results_utility_columns.prediction is None:
             if self.dataset == 'reference':
                 raise ValueError(f"Widget [{self.title}] requires 'target' and 'prediction' columns")
+
             return None
+
         if self.dataset == 'current':
             dataset_to_plot = current_data.copy(deep=False) if current_data is not None else None
+
         else:
             dataset_to_plot = reference_data.copy(deep=False)
 
         if dataset_to_plot is None:
             if self.dataset == 'reference':
                 raise ValueError(f"Widget [{self.title}] requires reference dataset but it is None")
+
             return None
+
         dataset_to_plot.replace([np.inf, -np.inf], np.nan, inplace=True)
         dataset_to_plot.dropna(axis=0, how='any', inplace=True)
 
         # plot distributions
         error_distr = go.Figure()
 
-        error = dataset_to_plot[results['utility_columns']['prediction']] - dataset_to_plot[
-            results['utility_columns']['target']]
+        error = dataset_to_plot[results_utility_columns.prediction] - dataset_to_plot[results_utility_columns.target]
 
-        error_distr.add_trace(go.Histogram(x=error,
-                                           marker_color=RED, name='error distribution', histnorm='percent'))
+        error_distr.add_trace(go.Histogram(x=error, marker_color=RED, name='error distribution', histnorm='percent'))
 
         error_distr.update_layout(
             xaxis_title="Error (Predicted - Actual)",
