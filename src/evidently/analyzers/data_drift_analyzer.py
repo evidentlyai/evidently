@@ -9,9 +9,10 @@ import numpy as np
 
 from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
+from evidently.analyzers.base_analyzer import BaseAnalyzerResult
 from evidently.options import DataDriftOptions
 from evidently.analyzers.stattests import chi_stat_test, ks_stat_test, z_stat_test
-from evidently.analyzers.utils import process_columns, DatasetUtilityColumns
+from evidently.analyzers.utils import process_columns
 
 
 def dataset_drift_evaluation(p_values, drift_share=0.5) -> Tuple[int, float, bool]:
@@ -42,17 +43,9 @@ class DataDriftAnalyzerMetrics:
 
 
 @dataclass
-class DataDriftAnalyzerResults:
-    utility_columns: DatasetUtilityColumns
-    cat_feature_names: List[str]
-    num_feature_names: List[str]
-    target_names: Optional[List[str]]
+class DataDriftAnalyzerResults(BaseAnalyzerResult):
     options: DataDriftOptions
     metrics: DataDriftAnalyzerMetrics
-
-    def get_all_features_list(self) -> List[str]:
-        """List all features names"""
-        return self.cat_feature_names + self.num_feature_names
 
 
 class DataDriftAnalyzer(Analyzer):
@@ -63,11 +56,11 @@ class DataDriftAnalyzer(Analyzer):
     def calculate(
             self, reference_data: pd.DataFrame, current_data: Optional[pd.DataFrame], column_mapping: ColumnMapping
     ) -> DataDriftAnalyzerResults:
-        data_drift_options = self.options_provider.get(DataDriftOptions)
-        columns = process_columns(reference_data, column_mapping)
         if current_data is None:
             raise ValueError("current_data should be present")
 
+        data_drift_options = self.options_provider.get(DataDriftOptions)
+        columns = process_columns(reference_data, column_mapping)
         num_feature_names = columns.num_feature_names
         cat_feature_names = columns.cat_feature_names
         drift_share = data_drift_options.drift_share
@@ -130,10 +123,7 @@ class DataDriftAnalyzer(Analyzer):
             features=features_metrics,
         )
         result = DataDriftAnalyzerResults(
-            utility_columns=columns.utility_columns,
-            cat_feature_names=columns.cat_feature_names,
-            num_feature_names=columns.num_feature_names,
-            target_names=columns.target_names,
+            columns=columns,
             options=data_drift_options,
             metrics=result_metrics,
         )

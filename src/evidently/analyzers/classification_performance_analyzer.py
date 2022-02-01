@@ -11,7 +11,8 @@ from sklearn import metrics
 
 from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
-from evidently.analyzers.utils import process_columns, DatasetColumns
+from evidently.analyzers.base_analyzer import BaseAnalyzerResult
+from evidently.analyzers.utils import process_columns
 
 
 @dataclass
@@ -32,8 +33,7 @@ class PerformanceMetrics:
 
 
 @dataclass
-class ClassificationPerformanceAnalyzerResults:
-    columns: DatasetColumns
+class ClassificationPerformanceAnalyzerResults(BaseAnalyzerResult):
     reference_metrics: Optional[PerformanceMetrics] = None
     current_metrics: Optional[PerformanceMetrics] = None
 

@@ -31,14 +31,11 @@ def test_data_drift_analyzer_as_dict_format(data_drift_analyzer: DataDriftAnalyz
     data_columns.target_names = ['drift_target']
     result = data_drift_analyzer.calculate(test_data[:2], test_data, data_columns)
     assert result.options is not None
-    assert result.utility_columns is not None
+    assert result.columns is not None
     # check features in results
     assert result.metrics.n_features == 4
-    assert result.cat_feature_names == ['categorical_feature_1', 'categorical_feature_2']
-    assert result.num_feature_names == ['numerical_feature_1', 'numerical_feature_2']
-    assert result.get_all_features_list() == [
-        'categorical_feature_1', 'categorical_feature_2', 'numerical_feature_1', 'numerical_feature_2'
-    ]
+    assert result.columns.cat_feature_names == ['categorical_feature_1', 'categorical_feature_2']
+    assert result.columns.num_feature_names == ['numerical_feature_1', 'numerical_feature_2']
     assert 'numerical_feature_1' in result.metrics.features
     assert 'numerical_feature_2' in result.metrics.features
     assert 'categorical_feature_1' in result.metrics.features
@@ -46,5 +43,5 @@ def test_data_drift_analyzer_as_dict_format(data_drift_analyzer: DataDriftAnalyz
     assert 'numerical_feature_3' not in result.metrics.features
 
     # check data drift results
-    assert result.target_names == ['drift_target']
+    assert result.columns.target_names == ['drift_target']
     assert result.metrics.dataset_drift is False

@@ -40,10 +40,10 @@ class DataDriftProfileSection(ProfileSection):
             'name': self.part_id(),
             'datetime': str(datetime.now()),
             'data': {
-                'utility_columns': data_drift_results.utility_columns.as_dict(),
-                'cat_feature_names': data_drift_results.cat_feature_names,
-                'num_feature_names': data_drift_results.num_feature_names,
-                'target_names': data_drift_results.target_names,
+                'utility_columns': data_drift_results.columns.utility_columns.as_dict(),
+                'cat_feature_names': data_drift_results.columns.cat_feature_names,
+                'num_feature_names': data_drift_results.columns.num_feature_names,
+                'target_names': data_drift_results.columns.target_names,
                 'options': data_drift_results.options.as_dict(),
                 'metrics': metrics_dict
             }
