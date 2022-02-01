@@ -14,9 +14,9 @@ The profiles calculate the same metrics and statistical tests as visual reports.
 
 To specify which analysis you want to perform, you should select a **Section**. You can combine several sections in a single Profile. Each section will contain a summary of metrics, results of statistical tests, and simple histograms that correspond to the chosen [Report](../reports/).
 
-You can generate JSON profiles in Jupyter notebook, Colab and other notebooks, or use the command-line interface. 
+You can generate JSON profiles in Jupyter notebook, Colab and certain other notebooks, or use the command-line interface. 
 
-To understand requirements for the data inputs and understand column mapping, explore the corresponding sections in the [Dashboards](../dashboards/) section of the documentation: it works just the same.
+The requirements for the data inputs and column_mapping are the same for Profiles and Dashboards.
 
 You can also explore specific [integrations](../integrations) to see how Evidently works with other ML tools.
 
