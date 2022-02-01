@@ -6,7 +6,7 @@ We suggest going through this tutorial once to understand the key tool functiona
 
 To complete the tutorial, you need basic knowledge of Python and familiarity with notebook environments. You should be able to complete it in under 10 minutes.
 
-You can reproduce the steps in Jupyter notebooks or Colab, or run the sample notebooks.
+You can reproduce the steps in Jupyter notebooks or Colab manually, or run the sample notebooks.
 
 Colab:
 {% embed url="https://colab.research.google.com/drive/1Dd6ZzIgeBYkD_4bqWZ0RAdUpCU0b6Y6H" %}
@@ -87,7 +87,7 @@ from evidently.dashboard.tabs import DataDriftTab, CatTargetDriftTab
 
 In this example, you will work with `pandas.DataFrames`. For simplicity, we take a toy dataset. In the real use case, you can swap it for the real model application logs. They can include the input data, model predictions and true lables, if available.  
 
-Create a `Pandas DataFrame` with the dataset to analyze:
+Create a `pandas.DataFrame` with the dataset to analyze:
 
 ```python
 iris = datasets.load_iris()
@@ -224,7 +224,7 @@ There is also [Command-line interface](../dashboards/cli.md) in case you want to
 
 While you can treat JSON profile as a "text version" of the report to look at, it is intended for use together with other tools as part of the ML pipeline. We suggest exploring [Integrations](../integrations) section of the documentation to see how you can **use it in your machine learning workflow** with tools like MLflow and Airflow to log and profile the models and data. 
 
-If you have a deployed ML service and want to **collect data and model metrics on top of the live data stream**, you can explore the [intgeration with Grafana and Prometheus](../integrations/evidently_and_grafana.md). In this case, Evidently acts as a monitoring service. You can configure the options to define more sophisticated logic as such size of the reference windows, moving reference, etc. It also comes with pre-built Grafana dashboards that act as a version of Evidently dashboards meant for real-time monitoring. 
+If you have a deployed ML service and want to **collect data and model metrics on top of the live data stream**, you can explore the [intgeration with Grafana and Prometheus](integrations/evidently_and_grafana.md). In this case, Evidently acts as a monitoring service. You can configure the options to define more sophisticated logic as such size of the reference windows, moving reference, etc. It also comes with pre-built Grafana dashboards that act as a version of Evidently dashboards meant for real-time monitoring. 
 
 Evidently is in active development, so expect things to change and evolve. You can subscribe to the [newsletter](https://evidentlyai.com/sign-up) or follow our [releases on GitHub](https://github.com/evidentlyai/evidently/releases) to stay updated about the latest functionality. 
 
