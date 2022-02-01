@@ -86,7 +86,9 @@ If you want to create a new plot or metric, you can [add-a-custom-widget-or-tab.
 Here are our suggestions on when to use it—best combined with the [Data Drift report.](data-drift.md)
 
 **1. Before model retraining.** Before feeding fresh data into the model, you might want to verify whether it even makes sense.
+
 **2. When you are debugging the model decay.** If you observe a drop in performance, this report can help see what has changed.
+
 **3. When you are flying blind, and no ground truth is available.** If you do not have immediate feedback, you can use this report to explore the changes in the model output and the relationship between the features and prediction. This can help anticipate [data and concept drift](https://evidentlyai.com/blog/machine-learning-monitoring-data-and-concept-drift).
 
 ## JSON Profile
