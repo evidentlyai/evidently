@@ -39,6 +39,7 @@
   * [Select Widgets](customization/select-widgets-to-display.md)
   * [Custom Widgets and Tabs](customization/add-a-custom-widget-or-tab.md)
   * [Options for Data / Target drift](customization/options-for-data-target-drift.md)
+  * [Options for Quality Metrics](customization/options-for-quality-metrics.md)
   * [Options for Regression](customization/options-for-regression.md)
   * [Options for Classification](customization/options-for-classification.md)
   * [Options for Color Schema](customization/options-for-color-schema.md)
