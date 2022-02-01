@@ -28,15 +28,15 @@ Evidently currently works with **tabular data**. 6 reports are available.
 
 |   |   |
 | :----: | :----: |
-| [Data Drift](get-started/reports/data-drift.md)| [Categorical Target Drift](get-started/reports/categorical-target-drift.md)|
+| [Data Drift](reports/data-drift.md)| [Categorical Target Drift](reports/categorical-target-drift.md)|
 | Detects changes in feature distribution. | Detects changes in categorical target and feature behavior. |
 | ![](../images/01\_data\_drift.png)| ![](../images/02\_cat\_target\_drift.png)|
-| [Numerical Target Drift](get-started/reports/num-target-drift.md)| [Regression Performance](get-started/reports/reg-performance.md)|
+| [Numerical Target Drift](reports/num-target-drift.md)| [Regression Performance](reports/reg-performance.md)|
 | Detects changes in numerical target and feature behavior.| Analyzes the performance and errors of a regression model.|
 | ![](../images/03\_num\_target\_drift.png)| ![](../images/04\_reg\_performance.png)|
-| [Classification Performance](get-started/reports/classification-performance.md)| [Probabilistic Classification Performance](get-started/reports/probabilistic-classification-performance.md)|
+| [Classification Performance](reports/classification-performance.md)| [Probabilistic Classification Performance](reports/probabilistic-classification-performance.md)|
 | Analyzes the performance and errors of a classification model.| Analyzes the performance and errors of a probabilistic classification model. |
-| [![Classification Performance](../images/05\_class\_performance.png)](get-started/reports/classification-performance.md) | [![Probabilistic Classification Performance](../images/06\_prob\_class\_performance.png)](get-started/reports/probabilistic-classification-performance.md) |
+| [![Classification Performance](../images/05\_class\_performance.png)](reports/classification-performance.md) | [![Probabilistic Classification Performance](../images/06\_prob\_class\_performance.png)](reports/probabilistic-classification-performance.md) |
 
 You can combine, customize the reports or contribute your own report. 
 
