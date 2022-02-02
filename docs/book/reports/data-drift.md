@@ -76,7 +76,7 @@ You can also zoom on distributions to understand what has changed.
 ![](../.gitbook/assets/data_distr_by_feature.png)
 
 {% hint style="info" %}
-To change the bins displayed, you can define [custom options](../../step-by-step-guides/report-customization/options-for-data-target-drift.md).
+To change the bins displayed, you can define [custom options](../customization/options-for-data-target-drift.md).
 {% endhint %}
 
 ## Report customization

@@ -31,9 +31,7 @@ You can also run this report for a **single** `DataFrame` , with no comparison p
 
 The report includes 5 components. All plots are interactive.
 
-**At the moment, you cannot change or add custom quality metrics or plots.** We expect to add this functionality in the future.&#x20;
-
-### **1. Model Quality Summary Metrics**&#x20;
+### **1. Model Quality Summary Metrics**
 
 We calculate a few standard model quality metrics: Accuracy, Precision, Recall, and F1-score.
 

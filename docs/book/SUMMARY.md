@@ -28,11 +28,11 @@
   * [CLI](dashboards/cli.md)
   * [Colab and other environments](dashboards/notebook_environments.md)
 * [Profiling](profiling/README.md)
-  * [Input data](dashboards/input_data.md)
-  * [Column mapping](dashboards/column_mapping.md)
+  * [Input data](profiling/input_data.md)
+  * [Column mapping](profiling/column_mapping.md)
   * [Generate profiles](profiling/generate_profiles.md)
-  * [CLI](dashboards/cli.md)
-* [Monitoring](integrations/evidently-and-grafana.md)
+  * [CLI](profiling/cli.md)
+* [Monitoring](monitoring/README.md)
 
 ## User Guide
 * [Customization](customization/README.md)
