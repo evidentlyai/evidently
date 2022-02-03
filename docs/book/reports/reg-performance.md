@@ -127,8 +127,10 @@ For each feature, we also show the Predicted vs Actual scatterplot. We use color
 ![](../.gitbook/assets/reg_perf_error_bias_predicted_actual_per_feature.png)
 
 ## Report customization
+  
+You can select which components of the reports to display or choose to show the short version of the report: [select-widgets-to-display.md](../customization/select-widgets-to-display.md "mention").
 
-You can select which components of the reports to display or choose to show the short version of the report: [select-widgets-to-display.md](../customization/select-widgets-to-display.md "mention").&#x20;
+You can set [options-for-quality-metrics.md](../customization/options-for-quality-metrics.md "mention") to сut the data above the given quantile from the histogram plots.
 
 If you want to create a new plot or metric, you can [add-a-custom-widget-or-tab.md](../customization/add-a-custom-widget-or-tab.md "mention").
 
