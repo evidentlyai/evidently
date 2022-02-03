@@ -1,10 +1,7 @@
 # Table of contents
 
 * [What is Evidently?](README.md)
-
-## GET STARTED
-
-* [Install Evidently](get-started/install-evidently.md)
+* [Installation](get-started/install-evidently.md)
 * [Get Started Tutorial](get-started/tutorial.md)
 * [Reports](reports/README.md)
   * [Data Drift](reports/data-drift.md)
