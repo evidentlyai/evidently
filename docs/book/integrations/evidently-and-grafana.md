@@ -2,11 +2,15 @@
 description: Create live dashboards for ML monitoring.
 ---
 
-Evidently has a monitoring_service component that can collect data and model metrics from an ML service. It is based on the shared analyzer functionality and can return the same output metrics and statistical tests as Dashboards and JSON profiles. 
+Evidently has a monitoring service component that can collect data and model metrics from an ML service. It is based on the shared analyzer functionality and can return the same output metrics and statistical tests as Dashboards and JSON profiles. 
 
 The core difference from JSON profiles is the ability to calculate metrics on top of the streaming data. It includes the configuration options that help define the monitoring logic by setting options like the size of the window, choice of moving reference, etc.    
 
-The monitoring service outputs the metrics that can be further logged elsewhere. It is currently recommended to use the Evidently monitoring service together with Grafana and Prometheus. 
+The `Monitors` output the metrics that can be further logged elsewhere. It is currently recommended to use the Evidently monitoring service together with Grafana and Prometheus. 
+
+{% hint style="info" %}
+**Monitoring functionality is in active developement and may be subject to API change.** If you integrate this in your production pipeline, we suggest explicitly specifying the Evidently package version. Feel free to ping us on Discord if you face any issues, and we'll help to figure them out. 
+{% endhint %}
 
 # Evidently and Grafana for real-time ML monitoring 
 
