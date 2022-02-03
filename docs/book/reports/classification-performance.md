@@ -3,11 +3,11 @@
 **TL;DR:** The report analyzes the performance of a classification model
 
 * Works for a **single model** or helps compare the **two**
-* Works for **binary** and **multi-class** classification&#x20;
-* Displays a variety of plots related to the model **performance**&#x20;
+* Works for **binary** and **multi-class** classification
+* Displays a variety of plots related to the model **performance**
 * Helps **explore regions** where the model makes different types of **errors**
 
-## Summary&#x20;
+## Summary
 
 **Classification Performance** report evaluates the quality of a classification model. It works both for binary and multi-class classification. If you have a probabilistic classification, refer to a [separate report](probabilistic-classification-performance.md).
 
@@ -77,7 +77,9 @@ It visualizes the regions where the model makes errors of each type and reveals 
 
 ## Report customization
 
-You can select which components of the reports to display or choose to show the short version of the report: [select-widgets-to-display.md](../customization/select-widgets-to-display.md "mention").&#x20;
+You can set [options-for-quality-metrics.md](../customization/options-for-quality-metrics.md "mention") to сut the data above the given quantile from the histogram plots.
+
+You can select which components of the reports to display or choose to show the short version of the report: [select-widgets-to-display.md](../customization/select-widgets-to-display.md "mention").
 
 If you want to create a new plot or metric, you can [add-a-custom-widget-or-tab.md](../customization/add-a-custom-widget-or-tab.md "mention").
 
