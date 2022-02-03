@@ -127,7 +127,9 @@ It visualizes the regions where the model makes errors of each type and reveals 
 
 ## Report customization
 
-You can select which components of the reports to display or choose to show the short version of the report: [select-widgets-to-display.md](../customization/select-widgets-to-display.md "mention").&#x20;
+You can set [options-for-quality-metrics.md](../customization/options-for-quality-metrics.md "mention") to set a custom classification threshold or сut the data above the given quantile from the histogram plots.
+
+You can select which components of the reports to display or choose to show the short version of the report: [select-widgets-to-display.md](../customization/select-widgets-to-display.md "mention").
 
 If you want to create a new plot or metric, you can [add-a-custom-widget-or-tab.md](../customization/add-a-custom-widget-or-tab.md "mention").
 
