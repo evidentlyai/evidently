@@ -5,7 +5,7 @@
 
 ## Available Options
 
-These options apply to different plots in the Evidently reports: Data Drift, Classification Performance, Probabilistic classification performance, Regression Performance. 
+These options apply to different plots in the Evidently reports: Data Drift, Categorical Target Drift, Classification Performance, Probabilistic classification performance. 
 
 You can specify the following parameters:
 
