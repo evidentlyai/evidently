@@ -127,7 +127,7 @@ It visualizes the regions where the model makes errors of each type and reveals 
 
 ## Report customization
 
-You can set [options-for-quality-metrics.md](../customization/options-for-quality-metrics.md "mention") to set a custom classification threshold or сut the data above the given quantile from the histogram plots.
+You can set [options-for-quality-metrics.md](../customization/options-for-quality-metrics.md "mention") to set a custom classification threshold or сut the data above the given quantile from the histogram plots in the "Classification Quality by Feature" table.
 
 You can select which components of the reports to display or choose to show the short version of the report: [select-widgets-to-display.md](../customization/select-widgets-to-display.md "mention").
 
@@ -149,7 +149,7 @@ Here are our suggestions on when to use it—you can also combine it with the [D
 
 ## JSON Profile
 
-If you choose to generate a JSON profile, it will contain the following information:&#x20;
+If you choose to generate a JSON profile, it will contain the following information:
 
 ```yaml
 {
