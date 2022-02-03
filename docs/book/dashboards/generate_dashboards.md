@@ -106,7 +106,7 @@ If you get a security alert, press "trust html". The HTML report does not open a
 To generate the **Regression Model Performance** report, run:
 
 ```python
-regression_model_performance = Dashboard(tabs=[RegressionPerfomanceTab]) 
+regression_model_performance = Dashboard(tabs=[RegressionPerformanceTab]) 
 regression_model_performance.calculate(reference_data, current_data, 
     column_mapping=column_mapping)
 regression_model_performance.show()
@@ -115,7 +115,7 @@ regression_model_performance.show()
 For **Regression Model Performance report** from a single`DataFrame` , run:
 
 ```python
-regression_single_model_performance = Dashboard(tabs=[RegressionPerfomanceTab])
+regression_single_model_performance = Dashboard(tabs=[RegressionPerformanceTab])
 regression_single_model_performance.calculate(reference_data, None, 
     column_mapping=column_mapping)
 regression_single_model_performance.show()
