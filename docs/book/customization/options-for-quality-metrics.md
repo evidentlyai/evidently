@@ -5,20 +5,23 @@
 
 ## Available Options
 
-These options apply to different plots in the Evidently reports: Data Drift, Categorical Target Drift, Classification Performance, Probabilistic classification performance. 
+These options apply to different plots in the Evidently reports: Data Drift, Categorical Target Drift, Numerical Target Drift, Classification Performance, Probabilistic classification performance. 
 
 You can specify the following parameters:
 
 * **conf_interval_n_sigmas**: _int_ Default = 1.
   * Defines the width of confidence interval depicted on plots. Confidence level indicated in sigmas (standard deviation).
+  * Works to the feature or target distribution plots in the Data Drift and Numerical Target Drift reports.
 * **classification_threshold**: _float._ Default = 0.5.
   * Defines classification threshold for binary probabilistic classification.
+  * Works to the Probabilistic Classification report.
 * **cut_quantile**: _tuple[str, float]_ or _dict[str, tuple[str, float]._ Default = None.
   * Cut the data above the given quantile from the histogram plot if side parameter == _'right'_. 
   * Cut the data below the given quantile from the histogram plot if side parameter == _'left'_. 
   * Cut the data below the given quantile and above _1 - the given quantile_ from the histogram plot if side parameter == _'two-sided'_. 
   * Data used for metric calculation doesn't change. 
   * Applies to all features (if passed as _tuple_) or certain features (if passed as _dictionary_).
+  * Works to the Caterical Target Drift, Probabilistic Classification and Classification reports, and affects tables with Target/Prediction behavior by feature, and Classification Quality by Feature.  
 
 ### How to define Quality Metrics Options
 
