@@ -62,7 +62,7 @@ We recommend paying attention to the behavior of the most important features sin
 
 ## Report customization
 
-You can set different [options-for-data-target-drift.md](../customization/options-for-data-target-drift.md "mention") to modify the report components.
+You can set different [options-for-data-target-drift.md](../customization/options-for-data-target-drift.md "mention") and [options-for-quality-metrics.md](../customization/options-for-quality-metrics.md "mention") to modify the report components.
 
 You can also select which components of the reports to display or choose to show the short version of the report: [select-widgets-to-display.md](../customization/select-widgets-to-display.md "mention").
 
