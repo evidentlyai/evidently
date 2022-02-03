@@ -5,20 +5,22 @@
 
 ## Available Options
 
+These options apply to different plots in the Evidently reports: Data Drift, Classification Performance, Probabilistic classification performance, Regression Performance. 
+
 You can specify the following parameters:
 
-* **conf_interval_n_sigmas**: _int_ Default = 1.&#x20;
+* **conf_interval_n_sigmas**: _int_ Default = 1.
   * Defines the width of confidence interval depicted on plots. Confidence level indicated in sigmas (standard deviation).
-* **classification_threshold**: _float._ Default = 0.5.&#x20;
-  * Defines classification threshold for binary probabilistic classification.&#x20;
-* **cut_quantile**: _tuple[str, float]_ or _dict[str, tuple[str, float]._ Default = None.&#x20;
+* **classification_threshold**: _float._ Default = 0.5.
+  * Defines classification threshold for binary probabilistic classification.
+* **cut_quantile**: _tuple[str, float]_ or _dict[str, tuple[str, float]._ Default = None.
   * Cut the data above the given quantile from the histogram plot if side parameter == _'right'_. 
   * Cut the data below the given quantile from the histogram plot if side parameter == _'left'_. 
   * Cut the data below the given quantile and above _1 - the given quantile_ from the histogram plot if side parameter == _'two-sided'_. 
-  * Data used for metric calculation doesn't change. &#x20;
+  * Data used for metric calculation doesn't change. 
   * Applies to all features (if passed as _tuple_) or certain features (if passed as _dictionary_).
 
-### How to define Data/Target Drift options
+### How to define Quality Metrics Options
 
 1\. Define a **QualityMetricsOptions** object.
 
