@@ -1,13 +1,11 @@
 <h1 align="center">Evidently</h1>
-
-![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/docs/images/evidently_4_reports_preview_small.png)
  
-<p align="center"><b>Interactive reports and JSON profiles to analyze, monitor and debug machine learning models.</b></p>
+<p align="center"><b>An open-source framework to evaluate, test and monitor ML models in production.</b></p>
 
 <p align="center">
   <a href="https://evidentlyai.gitbook.io/docs/">Docs</a>
   |
-  <a href="https://discord.gg/xZjKRaNp8b">Join Discord</a>
+  <a href="https://discord.gg/xZjKRaNp8b">Discord Community</a>
   |
   <a href="https://evidentlyai.com/sign-up">Newsletter</a>
   | 
@@ -18,35 +16,37 @@
 
 
 ## What is it?
-Evidently helps evaluate machine learning models during validation and monitor them in production. The tool generates interactive visual reports and JSON profiles from pandas `DataFrame` or `csv` files. 
 
-You can use **visual reports** for ad hoc analysis, debugging and team sharing, and **JSON profiles** to integrate Evidently in prediction pipelines or with other visualization tools.
+Evidently helps analyze and track data and ML model quality throughout the model lifecycle. You can think of it as an evaluation layer that fits into the existing ML stack.
 
-Currently 6 reports are available.  
+Evidently has a modular approach with 3 interfaces on top of the shared `analyzer` functionality. 
 
-### 1. Data Drift
-Detects changes in feature distribution. 
-![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/docs/images/evidently_github.png)
+# 1. Interactive visual reports 
 
-### 2. Numerical Target Drift
-Detects changes in numerical target and feature behavior.
-![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/docs/images/evidently_num_target_drift_github.png)
+![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/docs/images/evidently_4_reports_preview_small.png)
 
-### 3. Categorical Target Drift
-Detects changes in categorical target and feature behavior.
-![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/docs/images/evidently_cat_target_drift_github.png)
+Evidently generates interactive `dashboards` from pandas `DataFrame` or `csv` files. You can use them for model evaluation, debugging and documentation. 
 
-### 4. Regression Model Performance
-Analyzes the performance of a regression model and model errors.
-![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/docs/images/evidently_regression_performance_report_github.png)
+Each report covers a particular aspect of the model performance. You can display reports in Jupyter notebook or Colab or export as an HTML file. Currently 6 pre-built reports are available:
+* **Data Drift**. Detects changes in the input feature distribution. 
+* **Target Drift**: Numerical, Categorical. Detects changes in the model output.
+* **Model Performance**: Classification, Probabilistic Classification, Regression. Evaluates the quality of the model and model errors.
 
-### 5. Classification Model Performance
-Analyzes the performance and errors of a classification model. Works both for binary and multi-class models.
-![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/docs/images/evidently_classification_performance_report_github.png)
+# 2. Data and ML model profiling 
 
-### 6. Probabilistic Classification Model Performance
-Analyzes the performance of a probabilistic classification model, quality of model calibration, and model errors. Works both for binary and multi-class models.
-![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/docs/images/evidently_prob_classification_performance_report_github.png)
+Evidently also generates JSON `profiles`. You can use them to integrate the data or model evaluation step into the ML pipeline. 
+
+You can log and store JSON profiles for further analysis, or build a conditional workflow based on the result of the check (e.g. to trigger alert, retraining, or generate a visual report). The profiles calculate the same metrics and statistical tests as visual reports. 
+
+You can explore example integrations with tools like Airflow and Mlflow.
+
+# 3. Real-time ML monitoring 
+
+![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/docs/images/evidently_data_drift_grafana_dashboard_top.png)
+
+Evidently has `monitors` that collect the data and model metrics from a deployed ML service. You can use it to build live monitoring dashboards. Evidently configures the monitoring on top of the streaming data and emits the metrics. You can log and use the metrics elsewhere. 
+
+There is a lightweight integration with Prometheus and Grafana that comes with pre-built dashboards.
 
 ## Installing from PyPI
 ### MAC OS and Linux
