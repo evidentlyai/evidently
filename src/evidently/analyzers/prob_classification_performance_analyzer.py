@@ -11,9 +11,9 @@ from sklearn import metrics
 
 from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
+from evidently.analyzers.base_analyzer import BaseAnalyzerResult
 from evidently.options import QualityMetricsOptions
 from evidently.analyzers.utils import process_columns
-from evidently.analyzers.utils import DatasetColumns
 
 
 @dataclass
@@ -40,8 +40,7 @@ class ClassificationPerformanceMetrics:
 
 
 @dataclass
-class ProbClassificationPerformanceAnalyzerResults:
-    columns: DatasetColumns
+class ProbClassificationPerformanceAnalyzerResults(BaseAnalyzerResult):
     quality_metrics_options: QualityMetricsOptions
     reference_metrics: Optional[ClassificationPerformanceMetrics] = None
     current_metrics: Optional[ClassificationPerformanceMetrics] = None

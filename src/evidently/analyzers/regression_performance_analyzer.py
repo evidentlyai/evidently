@@ -9,8 +9,8 @@ from scipy.stats import probplot
 
 from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
+from evidently.analyzers.base_analyzer import BaseAnalyzerResult
 from evidently.analyzers.utils import process_columns
-from evidently.analyzers.utils import DatasetColumns
 
 
 class ErrorWithQuantiles:
@@ -50,8 +50,7 @@ class RegressionPerformanceMetrics:
 
 
 @dataclass
-class RegressionPerformanceAnalyzerResults:
-    columns: DatasetColumns
+class RegressionPerformanceAnalyzerResults(BaseAnalyzerResult):
     reference_metrics: Optional[RegressionPerformanceMetrics] = None
     current_metrics: Optional[RegressionPerformanceMetrics] = None
     error_bias: Optional[dict] = None

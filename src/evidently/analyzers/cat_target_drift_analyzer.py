@@ -8,8 +8,9 @@ from dataclasses import dataclass
 
 from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
+from evidently.analyzers.base_analyzer import BaseAnalyzerResult
 from evidently.analyzers.stattests import z_stat_test, chi_stat_test
-from evidently.analyzers.utils import process_columns, DatasetColumns
+from evidently.analyzers.utils import process_columns
 from evidently.options import DataDriftOptions
 
 
@@ -38,9 +39,8 @@ class DataDriftMetrics:
 
 
 @dataclass
-class CatTargetDriftAnalyzerResults:
+class CatTargetDriftAnalyzerResults(BaseAnalyzerResult):
     """Class for all results of category target drift calculations"""
-    columns: DatasetColumns
     target_metrics: Optional[DataDriftMetrics] = None
     prediction_metrics: Optional[DataDriftMetrics] = None
 

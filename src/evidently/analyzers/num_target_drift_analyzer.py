@@ -7,10 +7,10 @@ from dataclasses import dataclass
 
 from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
+from evidently.analyzers.base_analyzer import BaseAnalyzerResult
 from evidently.options import DataDriftOptions
 from evidently.analyzers.stattests import ks_stat_test
 from evidently.analyzers.utils import process_columns
-from evidently.analyzers.utils import DatasetColumns
 from typing import List, Callable
 
 
@@ -58,8 +58,7 @@ def _compute_correlation(
 
 
 @dataclass
-class NumTargetDriftAnalyzerResults:
-    columns: DatasetColumns
+class NumTargetDriftAnalyzerResults(BaseAnalyzerResult):
     target_metrics: Optional[NumDataDriftMetrics] = None
     prediction_metrics: Optional[NumDataDriftMetrics] = None
 

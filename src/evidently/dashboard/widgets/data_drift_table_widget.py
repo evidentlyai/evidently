@@ -27,8 +27,8 @@ class DataDriftTableWidget(Widget):
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
         data_drift_results = DataDriftAnalyzer.get_results(analyzers_results)
-        all_features = data_drift_results.get_all_features_list()
-        date_column = data_drift_results.utility_columns.date
+        all_features = data_drift_results.columns.get_all_features_list(cat_before_num=True)
+        date_column = data_drift_results.columns.utility_columns.date
 
         if current_data is None:
             raise ValueError("current_data should be present")
