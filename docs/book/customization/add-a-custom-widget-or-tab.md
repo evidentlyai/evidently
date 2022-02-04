@@ -49,7 +49,7 @@ fig.update_layout(
 )
 ```
 
-![](<../../.gitbook/assets/image (5).png>)
+![](<../.gitbook/assets/image (5).png>)
 
 **2. Now we need to write a class for our Widget**.&#x20;
 
