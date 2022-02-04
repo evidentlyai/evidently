@@ -69,5 +69,5 @@ There is a lightweight [integration with Prometheus and Grafana](integrations/ev
 
 ## Community and support 
 
-Evidently is in active development, and we are happy to receive and incorporate feedback. If you have any questions, ideas or want to hang out and chat about doing ML in prodiction, [join our Discord community](https://discord.com/invite/xZjKRaNp8b)!
+Evidently is in active development, and we are happy to receive and incorporate feedback. If you have any questions, ideas or want to hang out and chat about doing ML in production, [join our Discord community](https://discord.com/invite/xZjKRaNp8b)!
 
