@@ -41,7 +41,7 @@ You can log and store JSON profiles for further analysis, or build a conditional
 You can explore example integrations with tools like Airflow and Mlflow.
 
 # 3. Real-time ML monitoring 
-
+**Note**: this functionality is in active development and subject to API change.
 ![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/docs/images/evidently_data_drift_grafana_dashboard_top.png)
 
 Evidently has `monitors` that collect the data and model metrics from a deployed ML service. You can use it to build live monitoring dashboards. Evidently configures the monitoring on top of the streaming data and emits the metrics. You can log and use the metrics elsewhere. 
@@ -104,10 +104,7 @@ from sklearn import datasets
 from evidently.dashboard import Dashboard
 from evidently.dashboard.tabs import (
     DataDriftTab,
-    CatTargetDriftTab,
-    RegressionPerformanceTab,
-    ClassificationPerformanceTab,
-    ProbClassificationPerformanceTab,
+    CatTargetDriftTab
 )
 
 iris = datasets.load_iris()
@@ -132,41 +129,6 @@ iris_data_and_target_drift_report.save("reports/my_report_with_2_tabs.html")
 If you get a security alert, press "trust html".
 HTML report does not open automatically. To explore it, you should open it from the destination folder.
 
-To generate the **Regression Model Performance** report, run:
-```python
-regression_model_performance = Dashboard(tabs=[RegressionPerformanceTab()]) 
-regression_model_performance.calculate(reference_data, current_data, column_mapping = column_mapping) 
-```
-
-You can also generate a **Regression Model Performance** for a single `DataFrame`. In this case, run:
-```python
-regression_single_model_performance = Dashboard(tabs=[RegressionPerformanceTab()])
-regression_single_model_performance.calculate(reference_data, None, column_mapping=column_mapping)
-```
-
-To generate the **Classification Model Performance** report, run:
-```python
-classification_performance_report = Dashboard(tabs=[ClassificationPerformanceTab()])
-classification_performance_report.calculate(reference_data, current_data, column_mapping = column_mapping)
-```
- 
-For **Probabilistic Classification Model Performance** report, run:
-```python
-classification_performance_report = Dashboard(tabs=[ProbClassificationPerformanceTab()])
-classification_performance_report.calculate(reference_data, current_data, column_mapping = column_mapping)
-```
- 
-You can also generate either of the **Classification** reports for a single `DataFrame`. In this case, run:
-```python
-classification_single_model_performance = Dashboard(tabs=[ClassificationPerformanceTab()])
-classification_single_model_performance.calculate(reference_data, None, column_mapping=column_mapping)
-```
-or
-```python
-prob_classification_single_model_performance = Dashboard(tabs=[ProbClassificationPerformanceTab()])
-prob_classification_single_model_performance.calculate(reference_data, None, column_mapping=column_mapping)
-```
-
 #### Option 2: Profile
 
 After installing the tool, import Evidently **profile** and required sections:
@@ -178,10 +140,7 @@ from sklearn import datasets
 from evidently.model_profile import Profile
 from evidently.model_profile.sections import (
     DataDriftProfileSection,
-    CatTargetDriftProfileSection,
-    RegressionPerformanceProfileSection,
-    ClassificationPerformanceProfileSection,
-    ProbClassificationPerformanceProfileSection,
+    CatTargetDriftProfileSection
 )
 
 iris = datasets.load_iris()
@@ -200,35 +159,6 @@ To generate the **Data Drift** and the **Categorical Target Drift** profile, run
 iris_target_and_data_drift_profile = Profile(sections=[DataDriftProfileSection(), CatTargetDriftProfileSection()])
 iris_target_and_data_drift_profile.calculate(iris_frame[:75], iris_frame[75:], column_mapping = None) 
 iris_target_and_data_drift_profile.json() 
-```
-
-You can also generate a **Regression Model Performance** for a single `DataFrame`. In this case, run:
-```python
-regression_single_model_performance = Profile(sections=[RegressionPerformanceProfileSection()])
-regression_single_model_performance.calculate(reference_data, None, column_mapping=column_mapping)
-```
-
-To generate the **Classification Model Performance** profile, run:
-```python
-classification_performance_profile = Profile(sections=[ClassificationPerformanceProfileSection()])
-classification_performance_profile.calculate(reference_data, current_data, column_mapping = column_mapping)
-```
-
-For **Probabilistic Classification Model Performance** profile, run:
-```python
-classification_performance_report = Profile(sections=[ProbClassificationPerformanceProfileSection()])
-classification_performance_report.calculate(reference_data, current_data, column_mapping = column_mapping)
-```
-
-You can also generate either of the **Classification** profiles for a single `DataFrame`. In this case, run:
-```python
-classification_single_model_performance = Profile(sections=[ClassificationPerformanceProfileSection()])
-classification_single_model_performance.calculate(reference_data, None, column_mapping=column_mapping)
-```
-or
-```python
-prob_classification_single_model_performance = Profile(sections=[ProbClassificationPerformanceProfileSection()])
-prob_classification_single_model_performance.calculate(reference_data, None, column_mapping=column_mapping)
 ```
 
 ## Community Reports
@@ -273,13 +203,6 @@ The ```show()``` method has the argument ```mode```, which can take the followin
 When you use Evidently in the command-line interface, we collect basic telemetry (starting from 0.1.21.dev0 version). It includes data on the environment (e.g. Python version) and usage (type of report or profile generated). You can read more about what we collect [here](https://docs.evidentlyai.com/support/telemetry). 
 
 You can opt-out from telemetry collection by setting the environment variable EVIDENTLY_DISABLE_TELEMETRY=1
-
-## Large datasets
-As you can see from the above example, you can specify **sampling** parameters for large files. You can use different sampling strategies for reference and current data, or apply sampling only to one of the files. 
-Currently we have 3 sampling types available:
-* `none` - there will be no sampling for the file,
-* `nth` - each Nth row of the file will be taken. This option works together with `n` parameter (see the example with the Dashboard above)
-* `random` - random sampling will be applied. This option works together with `ratio` parameter (see the example with the Profile above)
 
 ## Documentation
 For more information, refer to a complete <a href="https://evidentlyai.gitbook.io/docs/">Documentation</a>.
