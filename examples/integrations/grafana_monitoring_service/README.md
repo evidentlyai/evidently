@@ -19,7 +19,7 @@ In this example we use:
 2. Prepare the datasets:
 - Go the example directory. In terminal, run the command ```cd evidently/examples/integrations/grafana_monitoring_service/``` 
 - Run the python script ```prepare_datasets.py``` from the example directory (examples/integrations/grafana_monitoring_service) to prepare the datasets: ```python prepare_datasets.py``` 
-- After the script is executed successfully, the two files should appear at the example directory: ```reference.csv``` and ```example.csv```.
+- After the script is executed successfully, the two files should appear at the example directory: ```reference.csv``` and ```production.csv```.
 
 *If you work in an empty environment, make sure you have the following Python packages installed: Sklearn, Numpy, Pandas, Requests.
 You can install these packages using command ```pip install sklearn, numpy, pandas, requests```.*
