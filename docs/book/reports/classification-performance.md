@@ -55,7 +55,7 @@ Visualizes the classification errors and their type.
 
 &#x20;Shows the model quality metrics for the individual classes.
 
-![](../../.gitbook/assets/class_perf_quality_by_class.png)
+![](../.gitbook/assets/class_perf_quality_by_class.png)
 
 ### 5. Classification Quality by Feature
 
