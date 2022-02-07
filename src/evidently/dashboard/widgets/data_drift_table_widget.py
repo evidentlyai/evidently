@@ -23,19 +23,20 @@ def _generate_feature_params(name: str, data: DataDriftAnalyzerFeatureMetrics, c
     feature_type = data.feature_type
     p_value = data.p_value
     distr_sim_test = "Detected" if p_value < (1. - confidence) else "Not Detected"
+    parts = []
+    if data.feature_type == "num":
+        parts.append({
+            "title": "Data drift",
+            "id": f"{name}_drift",
+            "type": "widget"
+        })
+    parts.append({
+        "title": "Data distribution",
+        "id": f"{name}_distr"
+    })
     return {
         "details": {
-            "parts": [
-                {
-                    "title": "Data drift",
-                    "id": f"{name}_drift",
-                    "type": "widget"
-                },
-                {
-                    "title": "Data distribution",
-                    "id": f"{name}_distr"
-                }
-            ],
+            "parts": parts,
             "insights": []
         },
         "f1": name,
@@ -56,8 +57,7 @@ def _generate_feature_params(name: str, data: DataDriftAnalyzerFeatureMetrics, c
 def _generate_additional_graph_num_feature(name: str,
                                            reference_data: pd.DataFrame,
                                            current_data: pd.DataFrame,
-                                           date_column: str,
-                                           data: DataDriftAnalyzerFeatureMetrics,
+                                           date_column: Optional[str],
                                            data_drift_options: DataDriftOptions,
                                            quality_metrics_options: QualityMetricsOptions) -> List[AdditionalGraphInfo]:
     # plot distributions
@@ -69,8 +69,9 @@ def _generate_additional_graph_num_feature(name: str,
     else:
         current_xbins = None
         current_nbinsx = data_drift_options.get_nbinsx(name)
-    if quality_metrics_options.cut_quantile and quality_metrics_options.get_cut_quantile(name):
-        side, q = quality_metrics_options.get_cut_quantile(name)
+    quantiles = quality_metrics_options.get_cut_quantile(name)
+    if quantiles:
+        side, q = quantiles
         cqt = CutQuantileTransformer(side=side, q=q)
         cqt.fit(reference_data[name])
         reference_data_to_plot = cqt.transform(reference_data[name])
@@ -217,13 +218,43 @@ def _generate_additional_graph_num_feature(name: str,
 
 def _generate_additional_graph_cat_feature(name: str,
                                            reference_data: pd.DataFrame,
-                                           current_data: pd.DataFrame,
-                                           date_column: str,
-                                           data: DataDriftAnalyzerFeatureMetrics,
-                                           data_drift_options: DataDriftOptions,
-                                           quality_metrics_options: QualityMetricsOptions) -> List[AdditionalGraphInfo]:
-    # TODO: implement additional graphs for categorical features
-    return []
+                                           current_data: pd.DataFrame) -> List[AdditionalGraphInfo]:
+    fig = go.Figure()
+    reference_data_to_plot = list(reversed([t.tolist() for t in np.unique(reference_data[name],
+                                                                          return_counts=True)]))
+    current_data_to_plot = list(reversed([t.tolist() for t in np.unique(current_data[name],
+                                                                        return_counts=True)]))
+    fig.add_trace(go.Bar(x=reference_data_to_plot[1],
+                         y=reference_data_to_plot[0],
+                         marker_color=GREY,
+                         opacity=0.6,
+                         name='Reference'))
+
+    fig.add_trace(go.Bar(x=current_data_to_plot[1],
+                         y=current_data_to_plot[0],
+                         marker_color=RED,
+                         opacity=0.6,
+                         name='Current'))
+    fig.update_layout(
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1
+        ),
+        xaxis_title=name,
+        yaxis_title="Share"
+    )
+
+    distr_figure = json.loads(fig.to_json())
+    return [AdditionalGraphInfo(
+        f'{name}_distr',
+        {
+            "data": distr_figure['data'],
+            "layout": distr_figure['layout']
+        }
+    )]
 
 
 class DataDriftTableWidget(Widget):
@@ -236,8 +267,8 @@ class DataDriftTableWidget(Widget):
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
         data_drift_results = DataDriftAnalyzer.get_results(analyzers_results)
-        all_features = data_drift_results.get_all_features_list()
-        date_column = data_drift_results.utility_columns.date
+        all_features = data_drift_results.columns.get_all_features_list()
+        date_column = data_drift_results.columns.utility_columns.date
 
         if current_data is None:
             raise ValueError("current_data should be present")
@@ -246,7 +277,6 @@ class DataDriftTableWidget(Widget):
         params_data = []
         data_drift_options = self.options_provider.get(DataDriftOptions)
         quality_metrics_options = self.options_provider.get(QualityMetricsOptions)
-        conf_interval_n_sigmas = quality_metrics_options.conf_interval_n_sigmas
         for feature_name in all_features:
             feature_confidence = data_drift_options.get_confidence(feature_name)
             params_data.append(_generate_feature_params(feature_name,
@@ -255,8 +285,6 @@ class DataDriftTableWidget(Widget):
 
         # set additionalGraphs
         additional_graphs_data = []
-        xbins = data_drift_options.xbins
-        cut_quantile = quality_metrics_options.cut_quantile
         for feature_name in all_features:
             # plot distributions
             if data_drift_results.metrics.features[feature_name].feature_type == "num":
@@ -265,18 +293,13 @@ class DataDriftTableWidget(Widget):
                     reference_data,
                     current_data,
                     date_column,
-                    data_drift_results.metrics.features[feature_name],
                     data_drift_options,
                     quality_metrics_options)
             elif data_drift_results.metrics.features[feature_name].feature_type == "cat":
                 additional_graphs_data += _generate_additional_graph_cat_feature(
                     feature_name,
                     reference_data,
-                    current_data,
-                    date_column,
-                    data_drift_results.metrics.features[feature_name],
-                    data_drift_options,
-                    quality_metrics_options)
+                    current_data)
         n_drifted_features = data_drift_results.metrics.n_drifted_features
         dataset_drift = data_drift_results.metrics.dataset_drift
         n_features = data_drift_results.metrics.n_features

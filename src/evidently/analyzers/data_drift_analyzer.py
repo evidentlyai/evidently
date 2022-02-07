@@ -105,8 +105,10 @@ class DataDriftAnalyzer(Analyzer):
             current_nbinsx = data_drift_options.get_nbinsx(feature_name)
             #  TODO: Add current_small_hist  / ref_small_hist calculation for cat features
             features_metrics[feature_name] = DataDriftAnalyzerFeatureMetrics(
-                current_small_hist=[[], []],
-                ref_small_hist=[[], []],
+                current_small_hist=list(reversed([t.tolist() for t in np.unique(reference_data[feature_name],
+                                                                                return_counts=True)])),
+                ref_small_hist=list(reversed([t.tolist() for t in np.unique(current_data[feature_name],
+                                                                            return_counts=True)])),
                 feature_type='cat',
                 p_value=p_value
             )
