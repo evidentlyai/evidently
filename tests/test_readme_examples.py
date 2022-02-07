@@ -121,7 +121,6 @@ def test_regression_performance_single_frame_dashboard(iris_frame) -> None:
     assert len(actual['widgets']) == 11
 
 
-
 def test_classification_performance_dashboard(iris_frame) -> None:
     # To generate the **Classification Model Performance** report, run:
     # FIXME: when prediction column is not present in the dataset
