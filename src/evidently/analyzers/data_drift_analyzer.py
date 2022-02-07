@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 import collections
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, Optional, Tuple
 from dataclasses import dataclass
 
 import pandas as pd
@@ -89,8 +89,8 @@ class DataDriftAnalyzer(Analyzer):
         for feature_name in cat_feature_names:
             confidence = data_drift_options.get_confidence(feature_name)
             func = data_drift_options.get_feature_stattest_func(feature_name, ks_stat_test)
-            keys = set(list(reference_data[feature_name][np.isfinite(reference_data[feature_name])].unique()) +
-                       list(current_data[feature_name][np.isfinite(current_data[feature_name])].unique()))
+            keys = set(list(reference_data[feature_name].unique()) +
+                       list(current_data[feature_name].unique()))
 
             if len(keys) > 2:
                 # CHI2 to be implemented for cases with different categories
@@ -103,13 +103,12 @@ class DataDriftAnalyzer(Analyzer):
             p_values[feature_name] = PValueWithConfidence(p_value, confidence)
 
             current_nbinsx = data_drift_options.get_nbinsx(feature_name)
+            #  TODO: Add current_small_hist  / ref_small_hist calculation for cat features
             features_metrics[feature_name] = DataDriftAnalyzerFeatureMetrics(
-                current_small_hist=[t.tolist() for t in
-                                    np.histogram(current_data[feature_name][np.isfinite(current_data[feature_name])],
-                                                 bins=current_nbinsx, density=True)],
-                ref_small_hist=[t.tolist() for t in
-                                np.histogram(reference_data[feature_name][np.isfinite(reference_data[feature_name])],
-                                             bins=current_nbinsx, density=True)],
+                current_small_hist=list(reversed([t.tolist() for t in np.unique(reference_data[feature_name],
+                                                                                return_counts=True)])),
+                ref_small_hist=list(reversed([t.tolist() for t in np.unique(current_data[feature_name],
+                                                                            return_counts=True)])),
                 feature_type='cat',
                 p_value=p_value
             )
