@@ -43,7 +43,7 @@ Detect changes in [Numerical](reports/num-target-drift.md) or [Categorical](repo
 
 #### Classification Performance
 
-Analyzes the performance and errors of a [Classification](reports/classification-performance.md) or [Probabilistic Classification](reports/probabilistic-classification-performance.md )model. Works both for binary and multi-class.
+Analyzes the performance and errors of a [Classification](reports/classification-performance.md) or [Probabilistic Classification](reports/probabilistic-classification-performance.md) model. Works both for binary and multi-class.
 
 ![Classification Performance](../images/05\_class\_performance.png) ![Probabilistic Classification Performance](../images/06\_prob\_class\_performance.png)
 
