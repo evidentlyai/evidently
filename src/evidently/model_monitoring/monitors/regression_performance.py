@@ -6,17 +6,18 @@ from evidently.analyzers.regression_performance_analyzer import RegressionPerfor
 from evidently.model_monitoring.monitoring import ModelMonitor, ModelMonitoringMetric, MetricsType
 
 
-class RegressionPerformanceMetricsMonitor:
-    _tag = "regression_performance"
-    quality = ModelMonitoringMetric(f"{_tag}:quality", ["dataset", "metric"])
-    normality = ModelMonitoringMetric(f"{_tag}:error_normality", ["dataset", "metric"])
-    underperformance = ModelMonitoringMetric(f"{_tag}:underperformance",
-                                             ["dataset", "metric", "type"])
-    feature_error_bias = ModelMonitoringMetric(f"{_tag}:feature_error_bias",
-                                               ["feature", "feature_type", "metric"])
+class RegressionPerformanceMonitorMetrics:
+    _tag = 'regression_performance'
+    quality = ModelMonitoringMetric(f'{_tag}:quality', ['dataset', 'metric'])
+    normality = ModelMonitoringMetric(f'{_tag}:error_normality', ['dataset', 'metric'])
+    underperformance = ModelMonitoringMetric(f'{_tag}:underperformance', ['dataset', 'metric', 'type'])
+    feature_error_bias = ModelMonitoringMetric(f'{_tag}:feature_error_bias', ['feature', 'feature_type', 'metric'])
 
 
 class RegressionPerformanceMonitor(ModelMonitor):
+    def monitor_id(self) -> str:
+        return 'regression_performance'
+
     def analyzers(self) -> List[Type[Analyzer]]:
         return [RegressionPerformanceAnalyzer]
 
@@ -49,34 +50,34 @@ class RegressionPerformanceMonitor(ModelMonitor):
 
         for feature in results.columns.num_feature_names:
             for field in fields:
-                yield RegressionPerformanceMetricsMonitor.feature_error_bias.create(
+                yield RegressionPerformanceMonitorMetrics.feature_error_bias.create(
                     results.error_bias[feature][field], dict(feature=feature, feature_type='num', metric=field))
 
         for feature in results.columns.cat_feature_names:
             for field in fields:
-                yield RegressionPerformanceMetricsMonitor.feature_error_bias.create(
+                yield RegressionPerformanceMonitorMetrics.feature_error_bias.create(
                     results.error_bias[feature][field], dict(feature=feature, feature_type='cat', metric=field))
 
     @staticmethod
     def _yield_quality(
             metrics: RegressionPerformanceMetrics, dataset: str
     ) -> Generator[MetricsType, None, None]:
-        yield RegressionPerformanceMetricsMonitor.quality.create(
+        yield RegressionPerformanceMonitorMetrics.quality.create(
             metrics.mean_error, dict(dataset=dataset, metric='mean_error')
         )
-        yield RegressionPerformanceMetricsMonitor.quality.create(
+        yield RegressionPerformanceMonitorMetrics.quality.create(
             metrics.mean_abs_error, dict(dataset=dataset, metric='mean_abs_error')
         )
-        yield RegressionPerformanceMetricsMonitor.quality.create(
+        yield RegressionPerformanceMonitorMetrics.quality.create(
             metrics.mean_abs_perc_error, dict(dataset=dataset, metric='mean_abs_perc_error')
         )
-        yield RegressionPerformanceMetricsMonitor.quality.create(
+        yield RegressionPerformanceMonitorMetrics.quality.create(
             metrics.error_std, dict(dataset=dataset, metric='error_std')
         )
-        yield RegressionPerformanceMetricsMonitor.quality.create(
+        yield RegressionPerformanceMonitorMetrics.quality.create(
             metrics.abs_error_std, dict(dataset=dataset, metric='abs_error_std')
         )
-        yield RegressionPerformanceMetricsMonitor.quality.create(
+        yield RegressionPerformanceMonitorMetrics.quality.create(
             metrics.abs_perc_error_std, dict(dataset=dataset, metric='abs_perc_error_std')
         )
 
@@ -84,7 +85,7 @@ class RegressionPerformanceMonitor(ModelMonitor):
     def _yield_error_normality(normality_data, dataset) -> Generator[MetricsType, None, None]:
         metric_labels = ['slope', 'intercept', 'r']
         for label in metric_labels:
-            yield RegressionPerformanceMetricsMonitor.normality.create(normality_data[label],
+            yield RegressionPerformanceMonitorMetrics.normality.create(normality_data[label],
                                                                        dict(dataset=dataset, metric=label))
 
     @staticmethod
@@ -93,10 +94,7 @@ class RegressionPerformanceMonitor(ModelMonitor):
         metric_labels = ['mean_error', 'std_error']
         for type_label in type_labels:
             for metric_label in metric_labels:
-                yield RegressionPerformanceMetricsMonitor.underperformance.create(
+                yield RegressionPerformanceMonitorMetrics.underperformance.create(
                     underperformance_data[type_label][metric_label],
                     dict(dataset=dataset, metric=metric_label, type=type_label)
                 )
-
-    def monitor_id(self) -> str:
-        return 'regression_performance'
