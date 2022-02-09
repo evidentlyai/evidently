@@ -43,6 +43,8 @@ class CatTargetDriftAnalyzerResults(BaseAnalyzerResult):
     """Class for all results of category target drift calculations"""
     target_metrics: Optional[DataDriftMetrics] = None
     prediction_metrics: Optional[DataDriftMetrics] = None
+    reference_data_count: int = 0
+    current_data_count: int = 0
 
 
 class CatTargetDriftAnalyzer(Analyzer):
@@ -99,7 +101,9 @@ class CatTargetDriftAnalyzer(Analyzer):
 
         options = self.options_provider.get(DataDriftOptions)
         columns = process_columns(reference_data, column_mapping)
-        result = CatTargetDriftAnalyzerResults(columns=columns)
+        result = CatTargetDriftAnalyzerResults(
+            columns=columns, reference_data_count=reference_data.shape[0], current_data_count=reference_data.shape[0]
+        )
         target_column = columns.utility_columns.target
         prediction_column = columns.utility_columns.prediction
 
