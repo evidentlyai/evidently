@@ -47,7 +47,6 @@ def test_model_monitoring_with_simple_data():
             model_monitoring.CatTargetDriftMonitor(),
             model_monitoring.NumTargetDriftMonitor(),
             model_monitoring.DataDriftMonitor(),
-            model_monitoring.DataDriftMonitor(),
             model_monitoring.RegressionPerformanceMonitor(),
             model_monitoring.ClassificationPerformanceMonitor(),
         ],
