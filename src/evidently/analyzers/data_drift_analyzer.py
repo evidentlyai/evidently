@@ -102,7 +102,6 @@ class DataDriftAnalyzer(Analyzer):
 
             p_values[feature_name] = PValueWithConfidence(p_value, confidence)
 
-            current_nbinsx = data_drift_options.get_nbinsx(feature_name)
             #  TODO: Add current_small_hist  / ref_small_hist calculation for cat features
             features_metrics[feature_name] = DataDriftAnalyzerFeatureMetrics(
                 current_small_hist=list(reversed([t.tolist() for t in np.unique(reference_data[feature_name],
