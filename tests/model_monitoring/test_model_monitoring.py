@@ -54,6 +54,9 @@ def test_model_monitoring_with_simple_data():
     assert 'regression_performance:quality' in result
     assert 'regression_performance:underperformance' in result
     assert 'classification_performance:quality' in result
+    assert 'classification_performance:class_representation' in result
+    assert 'classification_performance:class_quality' in result
+    assert 'classification_performance:confusion' in result
 
 
 def test_model_monitoring_with_classified_data():
