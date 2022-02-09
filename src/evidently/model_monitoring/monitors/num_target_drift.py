@@ -5,6 +5,16 @@ from evidently.model_monitoring import monitoring
 
 
 class NumTargetDriftMonitorMetrics:
+    """Class for numeric target grift metrics.
+
+    Metrics list:
+        - count: quantity of rows in `reference` and `current` datasets
+        - drift: p_value for the data drift
+        - current_correlations: correlation with `target` and `prediction` columns
+            for numeric features in `current` dataset
+        - reference_correlations: correlation with `target` and `prediction` columns
+            for numeric features in `reference` dataset
+    """
     _tag = 'num_target_drift'
     count = monitoring.ModelMonitoringMetric(f'{_tag}:count', ['dataset'])
     drift = monitoring.ModelMonitoringMetric(f'{_tag}:drift', ['kind'])
