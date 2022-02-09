@@ -4,7 +4,7 @@ from ast import Num
 import json
 import logging
 from numbers import Number
-from typing import Optional
+from typing import Optional, List
 
 import pandas as pd
 import numpy as np
@@ -169,7 +169,7 @@ class DataProfileFeaturesWidget(Widget):
             additionalGraphs=additional_graphs_data
         )
 
-    def assemble_parts(self, target_column: str, date_column: str, feature_name: str, feature_type: str) -> list:
+    def assemble_parts(self, target_column: str, date_column: str, feature_name: str, feature_type: str) -> List:
         parts = []
         if date_column and feature_type!='date':
             parts.append({
@@ -277,7 +277,7 @@ class DataProfileFeaturesWidget(Widget):
         feature_views_figure = json.loads(fig.to_json())
         return feature_views_figure
 
-    def _transform_cat_features(self, df: pd.DataFrame, cat_feature_names: list[str], target_column: str,
+    def _transform_cat_features(self, df: pd.DataFrame, cat_feature_names: List[str], target_column: str,
                                 target_type: str):
         if target_type == 'cat':
             cat_feature_names = cat_feature_names + [target_column]
