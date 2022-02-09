@@ -38,11 +38,13 @@ class DatasetColumns:
             utility_columns: DatasetUtilityColumns,
             num_feature_names,
             cat_feature_names,
+            datetime_feature_names,
             target_names: Optional[List[str]],
     ) -> None:
         self.utility_columns = utility_columns
         self.num_feature_names = num_feature_names
         self.cat_feature_names = cat_feature_names
+        self.datetime_feature_names = datetime_feature_names
         self.target_names = target_names
 
     def as_dict(self) -> Dict[str, Union[Optional[List[str]], Dict]]:
@@ -50,20 +52,29 @@ class DatasetColumns:
             'utility_columns': self.utility_columns.as_dict(),
             'cat_feature_names': self.cat_feature_names,
             'num_feature_names': self.num_feature_names,
+            'datetime_feature_names': self.datetime_feature_names,
             'target_names': self.target_names,
         }
 
-    def get_all_features_list(self, cat_before_num: bool = True) -> List[str]:
+    def get_all_features_list(self, cat_before_num: bool = True, include_time_columns: bool = False) -> List[str]:
         """List all features names"""
+        if include_time_columns:
+            add_time_columns = self.datetime_feature_names
+        else:
+            add_time_columns = []
         if cat_before_num:
-            return self.cat_feature_names + self.num_feature_names
+            return self.cat_feature_names + self.num_feature_names + add_time_columns
 
         else:
-            return self.num_feature_names + self.cat_feature_names
+            return self.num_feature_names + self.cat_feature_names + add_time_columns
 
-    def get_features_len(self) -> int:
+    def get_features_len(self, include_time_columns: bool = False) -> int:
         """How mane feature do we have. It is useful for pagination in widgets."""
-        return len(self.num_feature_names) + len(self.cat_feature_names)
+        if include_time_columns:
+            len_time_columns = len(self.datetime_feature_names)
+        else:
+            len_time_columns = 0
+        return len(self.num_feature_names) + len(self.cat_feature_names) + len_time_columns
 
 
 def process_columns(dataset: pandas.DataFrame, column_mapping: ColumnMapping):
@@ -72,6 +83,8 @@ def process_columns(dataset: pandas.DataFrame, column_mapping: ColumnMapping):
     target_column = column_mapping.target if column_mapping.target in dataset else None
     prediction_column = column_mapping.prediction
     num_feature_names = column_mapping.numerical_features
+    cat_feature_names = column_mapping.categorical_features
+    datetime_feature_names = column_mapping.datetime_features
     target_names = column_mapping.target_names
     utility_columns = [date_column, id_column, target_column]
 
@@ -99,10 +112,11 @@ def process_columns(dataset: pandas.DataFrame, column_mapping: ColumnMapping):
     else:
         num_feature_names = dataset[num_feature_names].select_dtypes([np.number]).columns.tolist()
 
-    cat_feature_names = column_mapping.categorical_features
+    if datetime_feature_names is None:
+        datetime_feature_names = list(set(dataset.select_dtypes(['datetime']).columns) - set(utility_columns))
 
     if cat_feature_names is None:
-        cat_feature_names = list(set(dataset.select_dtypes(exclude=[np.number]).columns) - set(utility_columns))
+        cat_feature_names = list(set(dataset.select_dtypes(exclude=[np.number, 'datetime']).columns) - set(utility_columns))
 
     else:
         cat_feature_names = dataset[cat_feature_names].columns.tolist()
@@ -111,5 +125,6 @@ def process_columns(dataset: pandas.DataFrame, column_mapping: ColumnMapping):
         DatasetUtilityColumns(date_column, id_column, target_column, prediction_column),
         num_feature_names,
         cat_feature_names,
+        datetime_feature_names,
         target_names,
     )
