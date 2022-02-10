@@ -23,7 +23,7 @@ Evidently has a modular approach with 3 interfaces on top of the shared `analyze
 
 ## 1. Interactive visual reports 
 
-![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/docs/images/evidently_4_reports_preview_small.png)
+![Dashboard example](docs/images/evidently_4_reports_preview_small.png)
 
 Evidently generates interactive `dashboards` from pandas `DataFrame` or `csv` files. You can use them for model evaluation, debugging and documentation. 
 
