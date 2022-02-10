@@ -15,13 +15,13 @@
 </p>
 
 
-## :bar_chart: What is Evidently?
+# :bar_chart: What is Evidently?
 
 Evidently helps analyze and track data and ML model quality throughout the model lifecycle. You can think of it as an evaluation layer that fits into the existing ML stack.
 
 Evidently has a modular approach with 3 interfaces on top of the shared `analyzer` functionality. 
 
-# 1. Interactive visual reports 
+## 1. Interactive visual reports 
 
 ![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/docs/images/evidently_4_reports_preview_small.png)
 
@@ -32,7 +32,7 @@ Each report covers a particular aspect of the model performance. You can display
 * **Target Drift**: [Numerical](https://docs.evidentlyai.com/reports/num-target-drift), [Categorical](https://docs.evidentlyai.com/reports/categorical-target-drift). Detects changes in the model output.
 * **Model Performance**: [Classification](https://docs.evidentlyai.com/reports/classification-performance), [Probabilistic Classification](https://docs.evidentlyai.com/reports/probabilistic-classification-performance), [Regression](https://docs.evidentlyai.com/reports/reg-performance). Evaluates the quality of the model and model errors.
 
-# 2. Data and ML model profiling 
+## 2. Data and ML model profiling 
 
 Evidently also generates JSON `profiles`. You can use them to integrate the data or model evaluation step into the ML pipeline. 
 
@@ -40,7 +40,7 @@ You can log and store JSON profiles for further analysis, or build a conditional
 
 You can explore example integrations with tools like Airflow and Mlflow.
 
-# 3. Real-time ML monitoring 
+## 3. Real-time ML monitoring 
 **Note**: this functionality is in active development and subject to API change.
 ![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/docs/images/evidently_data_drift_grafana_dashboard_top.png)
 
@@ -78,7 +78,7 @@ $ pip install evidently
 ```
 The tool allows building interactive reports both inside a Jupyter notebook and as a separate HTML file. Unfortunately, building reports inside a Jupyter notebook is not yet possible for Windows. The reason is Windows requires administrator privileges to create symlink. In later versions we will address this issue.
 
-## ::arrow_forward: Getting started
+## :arrow_forward: Getting started
 
 ### Jupyter Notebook
 To start, prepare your data as two pandas `DataFrames`. The first should include your reference data, the second - current production data. The structure of both datasets should be identical. 
