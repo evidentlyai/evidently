@@ -44,7 +44,7 @@ You can explore example integrations with tools like Airflow and Mlflow.
 **Note**: this functionality is in active development and subject to API change.
 ![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/docs/images/evidently_data_drift_grafana_dashboard_top.png)
 
-Evidently has `monitors` that collect the data and model metrics from a deployed ML service. You can use it to build live monitoring dashboards. Evidently configures the monitoring on top of the streaming data and emits the metrics. You can log and use the metrics elsewhere. 
+Evidently has `monitors` that collect the data and model metrics from a deployed ML service. You can use it to build live monitoring dashboards. Evidently configures the monitoring on top of the streaming data and emits the metrics. 
 
 There is a lightweight integration with Prometheus and Grafana that comes with pre-built dashboards.
 
