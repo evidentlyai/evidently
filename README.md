@@ -33,6 +33,7 @@ Each report covers a particular aspect of the model performance. You can display
 * **Model Performance**: [Classification](https://docs.evidentlyai.com/reports/classification-performance), [Probabilistic Classification](https://docs.evidentlyai.com/reports/probabilistic-classification-performance), [Regression](https://docs.evidentlyai.com/reports/reg-performance). Evaluates the quality of the model and model errors.
 
 ## 2. Data and ML model profiling 
+![Pipeline example](https://github.com/evidentlyai/evidently/blob/main/docs/images/evidently_drift_pipeline.png)
 
 Evidently also generates JSON `profiles`. You can use them to integrate the data or model evaluation step into the ML pipeline. 
 
