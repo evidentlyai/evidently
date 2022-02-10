@@ -205,7 +205,7 @@ You can contribute custom reports with a combination of own metrics and widgets.
 * A simple dashboard which contains two custom widgets with target distribution information [link to repository](https://github.com/0lgaF/my_tab_with_evidently)
 
 # :books: Documentation
-For more information, refer to a complete <a href="https://evidentlyai.gitbook.io/docs/">Documentation</a>.
+For more information, refer to a complete <a href="https://docs.evidentlyai.com">Documentation</a>. You can start with this [Tutorial](https://docs.evidentlyai.com/tutorial) for a quick introduction.
 
 # :card_index_dividers: Examples
 Here you can find simple examples on toy datasets to quickly explore what Evidently can do right out of the box.
