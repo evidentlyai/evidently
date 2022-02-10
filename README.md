@@ -204,8 +204,8 @@ The ```show()``` method has the argument ```mode```, which can take the followin
 We welcome contributions! Read the [Guide](CONTRIBUTING.md) to learn more. 
 
 # :framed_picture: Community Reports
-You can also contribute custom reports with a combination of own metrics and widgets. 
-* A simple dashboard which contains two custom widgets with target distribution information [link to repository](https://github.com/0lgaF/my_tab_with_evidently)
+You can also contribute custom reports with a combination of own metrics and widgets. We'll be glad to showcase some of them!
+* A simple dashboard which contains two custom widgets with target distribution information: [link to repository](https://github.com/0lgaF/my_tab_with_evidently)
 
 # :books: Documentation
 For more information, refer to a complete <a href="https://docs.evidentlyai.com">Documentation</a>. You can start with this [Tutorial](https://docs.evidentlyai.com/tutorial) for a quick introduction.
