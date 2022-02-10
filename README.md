@@ -55,7 +55,7 @@ Evidently is available as a PyPI package. To install it using pip package manage
 ```sh
 $ pip install evidently
 ```
-If you want to generate interactive reports as HTML files or export as JSON profiles, the installation is now complete.
+If you want to generate reports as HTML files or export as JSON profiles, the installation is now complete.
 
 If you want to display the dashboards directly in a Jupyter notebook, you should install `jupyter nbextension`. After installing `evidently`, run the two following commands in the terminal from the evidently directory.
 
