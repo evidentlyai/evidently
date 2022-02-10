@@ -15,7 +15,7 @@
 </p>
 
 
-## What is it?
+## What is Evidently?
 
 Evidently helps analyze and track data and ML model quality throughout the model lifecycle. You can think of it as an evaluation layer that fits into the existing ML stack.
 
@@ -28,9 +28,9 @@ Evidently has a modular approach with 3 interfaces on top of the shared `analyze
 Evidently generates interactive `dashboards` from pandas `DataFrame` or `csv` files. You can use them for model evaluation, debugging and documentation. 
 
 Each report covers a particular aspect of the model performance. You can display reports in Jupyter notebook or Colab or export as an HTML file. Currently 6 pre-built reports are available:
-* **Data Drift**. Detects changes in the input feature distribution. 
-* **Target Drift**: Numerical, Categorical. Detects changes in the model output.
-* **Model Performance**: Classification, Probabilistic Classification, Regression. Evaluates the quality of the model and model errors.
+* **[Data Drift]**(https://docs.evidentlyai.com/reports/data-drift). Detects changes in the input feature distribution. 
+* **Target Drift**: [Numerical](https://docs.evidentlyai.com/reports/num-target-drift), [Categorical](https://docs.evidentlyai.com/reports/categorical-target-drift). Detects changes in the model output.
+* **Model Performance**: [Classification](https://docs.evidentlyai.com/reports/classification-performance), [Probabilistic Classification](https://docs.evidentlyai.com/reports/probabilistic-classification-performance), [Regression](https://docs.evidentlyai.com/reports/reg-performance). Evaluates the quality of the model and model errors.
 
 # 2. Data and ML model profiling 
 
@@ -160,11 +160,14 @@ iris_target_and_data_drift_profile = Profile(sections=[DataDriftProfileSection()
 iris_target_and_data_drift_profile.calculate(iris_frame[:75], iris_frame[75:], column_mapping = None) 
 iris_target_and_data_drift_profile.json() 
 ```
+https://docs.evidentlyai.com/features/dashboards/notebook_environments
 
 ## Community Reports
 * A simple dashboard which contains two custom widgets with target distribution information [link to repository](https://github.com/0lgaF/my_tab_with_evidently)
 
-## Google Colab, Kaggle Kernel, Deepnote
+<details><summary>## Google Colab, Kaggle Kernel, Deepnote</summary>
+<p>
+
 You can run ```evidently``` in [Google Colab](https://colab.research.google.com/), [Kaggle Notebook](https://www.kaggle.com/code) and [Deepnote](https://deepnote.com/).
 
 First, install ```evidently```. Run the following command in the notebook cell:
@@ -203,6 +206,9 @@ The ```show()``` method has the argument ```mode```, which can take the followin
 When you use Evidently in the command-line interface, we collect basic telemetry (starting from 0.1.21.dev0 version). It includes data on the environment (e.g. Python version) and usage (type of report or profile generated). You can read more about what we collect [here](https://docs.evidentlyai.com/support/telemetry). 
 
 You can opt-out from telemetry collection by setting the environment variable EVIDENTLY_DISABLE_TELEMETRY=1
+ 
+</p>
+</details>
 
 ## Documentation
 For more information, refer to a complete <a href="https://evidentlyai.gitbook.io/docs/">Documentation</a>.
@@ -228,6 +234,7 @@ For more information, refer to a complete <a href="https://evidentlyai.gitbook.i
 - See **Probabilistic Classification Performance** Dashboard and Profile generation to explore the results both inside a Jupyter notebook and as a separate .html file:
 [Iris](https://colab.research.google.com/drive/1uFN0ZWNLk3ExylBywq_M8oGkmac0lDrq), 
 [Breast Cancer](https://colab.research.google.com/drive/1vwEBgGnDVk5BJG2PXT1w41VfZ-_bq_Sw)
+
 
 ## Stay updated
 We will be releasing more reports soon. If you want to receive updates, follow us on [Twitter](https://twitter.com/EvidentlyAI), or sign up for our [newsletter](https://evidentlyai.com/sign-up). You can also find more tutorials and explanations in our [Blog](https://evidentlyai.com/blog). If you want to chat and connect, join our [Discord community](https://discord.gg/xZjKRaNp8b)!
