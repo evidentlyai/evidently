@@ -41,25 +41,22 @@ class ClassificationPerformanceAnalyzerResults(BaseAnalyzerResult):
 def _calculate_performance_metrics(
         *, data: pd.DataFrame, target_column: str, prediction_column: str, target_names: List[str]
 ) -> PerformanceMetrics:
+    # remove all rows with infinite and NaN values from the dataset
     data.replace([np.inf, -np.inf], np.nan, inplace=True)
     data.dropna(axis=0, how='any', inplace=True)
 
-    # calculate quality metrics
-    accuracy_score = metrics.accuracy_score(data[target_column], data[prediction_column])
-    avg_precision = metrics.precision_score(data[target_column], data[prediction_column], average='macro')
-    avg_recall = metrics.recall_score(data[target_column], data[prediction_column], average='macro')
-    avg_f1 = metrics.f1_score(data[target_column], data[prediction_column], average='macro')
-
-    # calculate class support and metrics matrix
-    metrics_matrix = metrics.classification_report(
-        data[target_column],
-        data[prediction_column],
-        output_dict=True)
+    # calculate metrics matrix
+    metrics_matrix = metrics.classification_report(data[target_column], data[prediction_column], output_dict=True)
+    # get quality metrics from the metrics matrix, do not calculate them again
+    accuracy_score = metrics_matrix['accuracy']
+    avg_precision = metrics_matrix['macro avg']['precision']
+    avg_recall = metrics_matrix['macro avg']['recall']
+    avg_f1 = metrics_matrix['macro avg']['f1-score']
 
     # calculate confusion matrix
-    conf_matrix = metrics.confusion_matrix(data[target_column],
-                                           data[prediction_column])
-    labels = target_names if target_names else sorted(set(data[target_column]))
+    conf_matrix = metrics.confusion_matrix(data[target_column], data[prediction_column])
+    # get labels from data mapping or get all values kinds from target and prediction columns
+    labels = target_names if target_names else sorted(set(data[target_column]) | set(data[prediction_column]))
     return PerformanceMetrics(
         accuracy=accuracy_score,
         precision=avg_precision,

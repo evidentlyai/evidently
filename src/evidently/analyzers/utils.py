@@ -67,6 +67,10 @@ class DatasetColumns:
 
 
 def process_columns(dataset: pandas.DataFrame, column_mapping: ColumnMapping):
+    if column_mapping is None:
+        # data mapping should not be empy in this step
+        raise ValueError('column_mapping should be present')
+
     date_column = column_mapping.datetime if column_mapping.datetime in dataset else None
     id_column = column_mapping.id
     target_column = column_mapping.target if column_mapping.target in dataset else None
