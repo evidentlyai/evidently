@@ -48,7 +48,7 @@ Evidently has `monitors` that collect the data and model metrics from a deployed
 
 There is a lightweight integration with Prometheus and Grafana that comes with pre-built dashboards.
 
-## :woman_technologist: Installing from PyPI
+# :woman_technologist: Installing from PyPI
 
 ### MAC OS and Linux
 Evidently is available as a PyPI package. To install it using pip package manager, run:
@@ -78,9 +78,9 @@ $ pip install evidently
 ```
 The tool allows building interactive reports both inside a Jupyter notebook and as a separate HTML file. Unfortunately, building reports inside a Jupyter notebook is not yet possible for Windows. The reason is Windows requires administrator privileges to create symlink. In later versions we will address this issue.
 
-## :arrow_forward: Getting started
+# :arrow_forward: Getting started
 
-### Jupyter Notebook
+## Jupyter Notebook
 To start, prepare your data as two pandas `DataFrames`. The first should include your reference data, the second - current production data. The structure of both datasets should be identical. 
 
 * For **Data Drift** report, include the input features only.
@@ -91,7 +91,7 @@ Calculation results can be available in one of the two formats:
 * Option 1: an interactive **Dashboard** displayed inside the Jupyter notebook or exportable as a HTML report.
 * Option 2: a JSON **Profile** that includes the values of metrics and the results of statistical tests.  
 
-#### Option 1: Dashboard
+### Option 1: Dashboard
 
 After installing the tool, import Evidently **dashboard** and required tabs:
 
@@ -127,7 +127,7 @@ iris_data_and_target_drift_report.save("reports/my_report_with_2_tabs.html")
 If you get a security alert, press "trust html".
 HTML report does not open automatically. To explore it, you should open it from the destination folder.
 
-#### Option 2: Profile
+### Option 2: Profile
 
 After installing the tool, import Evidently **profile** and required sections:
 
@@ -200,14 +200,14 @@ The ```show()``` method has the argument ```mode```, which can take the followin
 </p>
 </details>
 
-## :framed_picture: Community Reports
+# :framed_picture: Community Reports
 You can contribute custom reports with a combination of own metrics and widgets.
 * A simple dashboard which contains two custom widgets with target distribution information [link to repository](https://github.com/0lgaF/my_tab_with_evidently)
 
-## :books: Documentation
+# :books: Documentation
 For more information, refer to a complete <a href="https://evidentlyai.gitbook.io/docs/">Documentation</a>.
 
-## :card_index_dividers: Examples
+# :card_index_dividers: Examples
 Here you can find simple examples on toy datasets to quickly explore what Evidently can do right out of the box.
 
 Report | Jupyter notebook | Colab notebook | Data source 
@@ -221,7 +221,7 @@ Probabilistic Classification Performance (Multiclass) | [link](sample_notebooks/
 Classification Performance (Binary) | [link](sample_notebooks/classification_performance_breast_cancer.ipynb) | [link](https://colab.research.google.com/drive/1b2kTLUIVJkKJybYeD3ZjpaREr_9dDTpz) | Breast cancer sklearn.datasets
 Probabilistic Classification Performance (Binary) | [link](sample_notebooks/probabilistic_classification_performance_breast_cancer.ipynb) | [link](https://colab.research.google.com/drive/1sE2H4mFSgtNe34JZMAeC3eLntid6oe1g) | Breast cancer sklearn.datasets
 
-### Integrations
+## Integrations
 See how to integrate Evidently in your prediction pipelines and use it with other tools. 
 
 Title | link to tutorial
@@ -230,7 +230,7 @@ Real-time ML monitoring with Grafana | [Evidently + Grafana](integrations/grafan
 Batch ML monitoring with Airflow | [Evidently + Airflow](integrations/airflow_drift_detection/)
 Log Evidently metrics in MLflow UI | [Evidently + MLflow](integrations/mlflow_logging/)
 
-## :white_check_mark: Stay updated
+# :white_check_mark: Stay updated
 - If you want to receive updates, follow us on [Twitter](https://twitter.com/EvidentlyAI), or sign up for our [newsletter](https://evidentlyai.com/sign-up). 
 - You can also find more tutorials and explanations in our [Blog](https://evidentlyai.com/blog). 
 - If you want to chat and connect, join our [Discord community](https://discord.gg/xZjKRaNp8b)!
