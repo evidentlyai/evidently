@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
+from typing import Dict
 from typing import Optional
 
 import pandas as pd
@@ -16,10 +17,10 @@ from typing import List, Callable
 
 @dataclass
 class NumDataDriftMetrics:
-    """Class for drift values"""
+    """Class numeric features drift values"""
     column_name: str
-    reference_correlations: dict
-    current_correlations: dict
+    reference_correlations: Dict[str, float]
+    current_correlations: Dict[str, float]
     drift: float
 
 
@@ -40,15 +41,9 @@ def _compute_correlation(
         raise ValueError(f'Column {main_column} should only contain numerical values.')
 
     target_p_value = stats_fun(reference_data[main_column], current_data[main_column])
-    metrics = {
-        prefix + '_name': main_column,
-        prefix + '_type': 'num',
-        prefix + '_drift': target_p_value
-    }
     ref_target_corr = reference_data[num_columns + [main_column]].corr()[main_column]
     curr_target_corr = current_data[num_columns + [main_column]].corr()[main_column]
-    target_corr = {'reference': ref_target_corr.to_dict(), 'current': curr_target_corr.to_dict()}
-    metrics[prefix + '_correlations'] = target_corr
+
     return NumDataDriftMetrics(
         column_name=main_column,
         reference_correlations=ref_target_corr.to_dict(),
@@ -59,6 +54,8 @@ def _compute_correlation(
 
 @dataclass
 class NumTargetDriftAnalyzerResults(BaseAnalyzerResult):
+    reference_data_count: int = 0
+    current_data_count: int = 0
     target_metrics: Optional[NumDataDriftMetrics] = None
     prediction_metrics: Optional[NumDataDriftMetrics] = None
 
@@ -108,16 +105,22 @@ class NumTargetDriftAnalyzer(Analyzer):
         Raises:
             ValueError when target or predictions columns are not numerical.
         """
-        data_drift_options = self.options_provider.get(DataDriftOptions)
-        columns = process_columns(reference_data, column_mapping)
-        result = NumTargetDriftAnalyzerResults(columns=columns)
+        if reference_data is None:
+            raise ValueError("reference_data should not be None")
 
         if current_data is None:
             raise ValueError("current_data should not be None")
 
+        columns = process_columns(reference_data, column_mapping)
+
         if set(columns.num_feature_names) - set(current_data.columns):
             raise ValueError(f'Some numerical features in current data {current_data.columns}'
                              f'are not present in columns.num_feature_names')
+
+        result = NumTargetDriftAnalyzerResults(
+            columns=columns, reference_data_count=reference_data.shape[0], current_data_count=reference_data.shape[0]
+        )
+        data_drift_options = self.options_provider.get(DataDriftOptions)
 
         func = data_drift_options.num_target_stattest_func or ks_stat_test
         result.target_metrics = _compute_correlation(
