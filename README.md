@@ -160,12 +160,9 @@ iris_target_and_data_drift_profile = Profile(sections=[DataDriftProfileSection()
 iris_target_and_data_drift_profile.calculate(iris_frame[:75], iris_frame[75:], column_mapping = None) 
 iris_target_and_data_drift_profile.json() 
 ```
-https://docs.evidentlyai.com/features/dashboards/notebook_environments
+## Google Colab, Kaggle Kernel, Deepnote
 
-## Community Reports
-* A simple dashboard which contains two custom widgets with target distribution information [link to repository](https://github.com/0lgaF/my_tab_with_evidently)
-
-<details><summary>## Google Colab, Kaggle Kernel, Deepnote</summary>
+<details><summary>Read instruction to run Evidently in other notebook environments.</summary>
 <p>
 
 You can run ```evidently``` in [Google Colab](https://colab.research.google.com/), [Kaggle Notebook](https://www.kaggle.com/code) and [Deepnote](https://deepnote.com/).
@@ -202,13 +199,11 @@ The ```show()``` method has the argument ```mode```, which can take the followin
 * **nbextension** - to show the UI using nbextension. Use this option to display dashboards in Jupyter notebooks (it should work automatically).
 * **inline** - to insert the UI directly into the cell. Use this option for PyLab, Google Colab, Kaggle Kernels and Deepnote. For Google Colab, this should work automatically, for **PyLab**, **Kaggle Kernels** and **Deepnote** the option should be specified explicitly.
 
-## Telemetry
-When you use Evidently in the command-line interface, we collect basic telemetry (starting from 0.1.21.dev0 version). It includes data on the environment (e.g. Python version) and usage (type of report or profile generated). You can read more about what we collect [here](https://docs.evidentlyai.com/support/telemetry). 
-
-You can opt-out from telemetry collection by setting the environment variable EVIDENTLY_DISABLE_TELEMETRY=1
- 
 </p>
 </details>
+
+## Community Reports
+* A simple dashboard which contains two custom widgets with target distribution information [link to repository](https://github.com/0lgaF/my_tab_with_evidently)
 
 ## Documentation
 For more information, refer to a complete <a href="https://evidentlyai.gitbook.io/docs/">Documentation</a>.
