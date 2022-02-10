@@ -200,8 +200,11 @@ The ```show()``` method has the argument ```mode```, which can take the followin
 </p>
 </details>
 
+# :computer: Contributions
+We welcome contributions! Read the [Guide](CONTRIBUTING.md) to learn more. 
+
 # :framed_picture: Community Reports
-You can contribute custom reports with a combination of own metrics and widgets.
+You can also contribute custom reports with a combination of own metrics and widgets. 
 * A simple dashboard which contains two custom widgets with target distribution information [link to repository](https://github.com/0lgaF/my_tab_with_evidently)
 
 # :books: Documentation
