@@ -21,14 +21,22 @@ def _collect_metrics_results(metrics: Generator[monitoring.MetricsType, None, No
     return result
 
 
-def test_model_monitoring_with_simple_data() -> None:
-    test_data = pd.DataFrame({
+def test_model_monitoring_with_simple_data():
+    reference_data = pd.DataFrame({
         'target': [1, 2, 3, 4, 5],
-        'prediction': [5, 4, 3, 2, 1],
+        'prediction': [1, 2, 7, 2, 1],
         'numerical_feature_1': [0.5, 0.0, 4.8, 2.1, 4.2],
         'numerical_feature_2': [0, 5, 6, 3, 6],
         'categorical_feature_1': [1, 1, 0, 1, 0],
         'categorical_feature_2': [0, 1, 0, 0, 0],
+    })
+    current_data = pd.DataFrame({
+        'target': [5, 4, 3, 2, 1],
+        'prediction': [1, 7, 2, 7, 1],
+        'numerical_feature_1': [0.6, 0.1, 45.3, 2.6, 4.2],
+        'numerical_feature_2': [0, 5, 3, 7, 6],
+        'categorical_feature_1': [1, 0, 1, 1, 0],
+        'categorical_feature_2': [0, 1, 0, 1, 1],
     })
     mapping = column_mapping.ColumnMapping(
         categorical_features=['categorical_feature_1', 'categorical_feature_2'],
@@ -36,15 +44,23 @@ def test_model_monitoring_with_simple_data() -> None:
     )
     evidently_monitoring = model_monitoring.ModelMonitoring(
         monitors=[
+            model_monitoring.CatTargetDriftMonitor(),
+            model_monitoring.NumTargetDriftMonitor(),
             model_monitoring.DataDriftMonitor(),
             model_monitoring.RegressionPerformanceMonitor(),
             model_monitoring.ClassificationPerformanceMonitor(),
         ],
         options=None,
     )
-    evidently_monitoring.execute(test_data, test_data, column_mapping=mapping)
+    evidently_monitoring.execute(reference_data=reference_data, current_data=current_data, column_mapping=mapping)
     result = _collect_metrics_results(evidently_monitoring.metrics())
 
+    assert 'cat_target_drift:count' in result
+    assert 'cat_target_drift:drift' in result
+    assert 'num_target_drift:count' in result
+    assert 'num_target_drift:drift' in result
+    assert 'num_target_drift:current_correlations' in result
+    assert 'num_target_drift:reference_correlations' in result
     assert 'data_drift:dataset_drift' in result
     assert 'data_drift:n_drifted_features' in result
     assert 'data_drift:p_value' in result

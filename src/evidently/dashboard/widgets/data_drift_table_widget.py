@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
-
+import collections
 import json
 from typing import Optional, List
 
@@ -220,10 +220,8 @@ def _generate_additional_graph_cat_feature(name: str,
                                            reference_data: pd.DataFrame,
                                            current_data: pd.DataFrame) -> List[AdditionalGraphInfo]:
     fig = go.Figure()
-    reference_data_to_plot = list(reversed([t.tolist() for t in np.unique(reference_data[name],
-                                                                          return_counts=True)]))
-    current_data_to_plot = list(reversed([t.tolist() for t in np.unique(current_data[name],
-                                                                        return_counts=True)]))
+    reference_data_to_plot = list(map(list, zip(*collections.Counter(reference_data[name].items()))))
+    current_data_to_plot = list(map(list, zip(*collections.Counter(current_data[name].items()))))
     fig.add_trace(go.Bar(x=reference_data_to_plot[1],
                          y=reference_data_to_plot[0],
                          marker_color=GREY,

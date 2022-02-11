@@ -88,26 +88,23 @@ class DataDriftAnalyzer(Analyzer):
 
         for feature_name in cat_feature_names:
             confidence = data_drift_options.get_confidence(feature_name)
-            func = data_drift_options.get_feature_stattest_func(feature_name, ks_stat_test)
-            keys = set(list(reference_data[feature_name].unique()) +
-                       list(current_data[feature_name].unique()))
+            feature_ref_data = reference_data[feature_name].dropna()
+            feature_cur_data = current_data[feature_name].dropna()
+            keys = set(list(feature_ref_data.unique()) +
+                       list(feature_cur_data.unique())) - {np.nan}
 
             if len(keys) > 2:
                 # CHI2 to be implemented for cases with different categories
-                func = chi_stat_test if func is None else func
-                p_value = func(reference_data[feature_name], current_data[feature_name])
+                func = data_drift_options.get_feature_stattest_func(feature_name, chi_stat_test)
             else:
-                func = z_stat_test if func is None else func
-                p_value = func(reference_data[feature_name], current_data[feature_name])
+                func = data_drift_options.get_feature_stattest_func(feature_name, z_stat_test)
+            p_value = func(feature_ref_data, feature_cur_data)
 
             p_values[feature_name] = PValueWithConfidence(p_value, confidence)
 
-            #  TODO: Add current_small_hist  / ref_small_hist calculation for cat features
             features_metrics[feature_name] = DataDriftAnalyzerFeatureMetrics(
-                current_small_hist=list(reversed([t.tolist() for t in np.unique(reference_data[feature_name],
-                                                                                return_counts=True)])),
-                ref_small_hist=list(reversed([t.tolist() for t in np.unique(current_data[feature_name],
-                                                                            return_counts=True)])),
+                current_small_hist=list(map(list, zip(*feature_ref_data.value_counts().items()))),
+                ref_small_hist=list(map(list, zip(*current_data[feature_name].value_counts().items()))),
                 feature_type='cat',
                 p_value=p_value
             )
