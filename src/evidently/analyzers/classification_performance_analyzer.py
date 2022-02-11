@@ -19,10 +19,6 @@ from evidently.analyzers.utils import process_columns
 class ConfusionMatrix:
     labels: List[str]
     values: list
-    # tp: int
-    # fp: int
-    # tn: int
-    # fn: int
 
 
 @dataclass
