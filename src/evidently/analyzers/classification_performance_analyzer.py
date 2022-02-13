@@ -2,7 +2,7 @@
 # coding: utf-8
 from typing import List
 from typing import Optional
-from typing import Union
+from typing import Dict
 
 import pandas as pd
 import numpy as np
@@ -28,8 +28,9 @@ class PerformanceMetrics:
     precision: float
     recall: float
     f1: float
-    metrics_matrix: Union[str, dict]
+    metrics_matrix: Dict[str, Dict]
     confusion_matrix: ConfusionMatrix
+    confusion_by_classes: Dict[str, Dict[str, int]]
 
 
 @dataclass
@@ -57,16 +58,32 @@ def _calculate_performance_metrics(
         output_dict=True)
 
     # calculate confusion matrix
-    conf_matrix = metrics.confusion_matrix(data[target_column],
-                                           data[prediction_column])
+    confusion_matrix = metrics.confusion_matrix(data[target_column], data[prediction_column])
     labels = target_names if target_names else sorted(set(data[target_column]))
+
+    # get TP, FP, TN, FN metrics for each class
+    false_positive = confusion_matrix.sum(axis=0) - np.diag(confusion_matrix)
+    false_negative = confusion_matrix.sum(axis=1) - np.diag(confusion_matrix)
+    true_positive = np.diag(confusion_matrix)
+    true_negative = confusion_matrix.sum() - (false_positive + false_negative + true_positive)
+    confusion_by_classes = {}
+
+    for idx, class_name in enumerate(labels):
+        confusion_by_classes[str(class_name)] = {
+            'tp': true_positive[idx],
+            'tn': true_negative[idx],
+            'fp': false_positive[idx],
+            'fn': false_negative[idx],
+        }
+
     return PerformanceMetrics(
         accuracy=accuracy_score,
         precision=avg_precision,
         recall=avg_recall,
         f1=avg_f1,
         metrics_matrix=metrics_matrix,
-        confusion_matrix=ConfusionMatrix(labels=labels, values=conf_matrix.tolist())
+        confusion_matrix=ConfusionMatrix(labels=labels, values=confusion_matrix.tolist()),
+        confusion_by_classes=confusion_by_classes
     )
 
 
