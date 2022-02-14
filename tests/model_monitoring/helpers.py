@@ -32,6 +32,9 @@ def collect_metrics_results(metrics: Generator[MetricsType, None, None]) -> Dict
 
     for metric, value, labels in metrics:
         result[metric.name].append(
-            {"value": value, "labels": labels,}
+            {
+                "value": value,
+                "labels": labels,
+            }
         )
     return result
