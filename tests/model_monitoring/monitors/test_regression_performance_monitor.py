@@ -7,6 +7,10 @@ from evidently.pipeline.column_mapping import ColumnMapping
 from tests.model_monitoring.helpers import collect_metrics_results
 
 
+def test_monitor_id():
+    assert ClassificationPerformanceMonitor().monitor_id() == "classification_performance"
+
+
 def test_classification_monitoring_metrics_with_binary_classification_data() -> None:
     reference_data = pd.DataFrame({"target": [1, 0, 1, 0], "prediction": [1, 1, 0, 1]})
     current_data = pd.DataFrame(

@@ -2,12 +2,15 @@
 
 import pandas as pd
 
+import pytest
+
 from evidently.model_monitoring import ModelMonitoring
 from evidently.model_monitoring import DataDriftMonitor
 from evidently.model_monitoring import CatTargetDriftMonitor
 from evidently.model_monitoring import NumTargetDriftMonitor
 from evidently.model_monitoring import RegressionPerformanceMonitor
 from evidently.model_monitoring import ClassificationPerformanceMonitor
+from evidently.model_monitoring.monitoring import ModelMonitoringMetric
 from evidently.pipeline.column_mapping import ColumnMapping
 
 from tests.model_monitoring.helpers import collect_metrics_results
@@ -69,3 +72,17 @@ def test_model_monitoring_with_simple_data():
     assert "classification_performance:class_representation" in result
     assert "classification_performance:class_quality" in result
     assert "classification_performance:confusion" in result
+
+
+def test_metric_creation_with_incorrect_labels():
+    metric = ModelMonitoringMetric("test_metric", ["option_1"])
+    metric.create(123, {"option_1": "value"})
+
+    with pytest.raises(ValueError):
+        metric.create(123)
+
+    with pytest.raises(ValueError):
+        metric.create(123, {"option_2": "value"})
+
+    with pytest.raises(ValueError):
+        metric.create(123, {"option_1": "value", "option_2": "value"})

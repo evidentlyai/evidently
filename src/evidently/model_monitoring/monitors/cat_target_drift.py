@@ -1,7 +1,9 @@
 from typing import Generator
 
 from evidently.analyzers import cat_target_drift_analyzer
-from evidently.model_monitoring import monitoring
+from evidently.model_monitoring.monitoring import MetricsType
+from evidently.model_monitoring.monitoring import ModelMonitor
+from evidently.model_monitoring.monitoring import ModelMonitoringMetric
 
 
 class CatTargetDriftMonitorMetrics:
@@ -13,18 +15,18 @@ class CatTargetDriftMonitorMetrics:
     """
 
     _tag = "cat_target_drift"
-    count = monitoring.ModelMonitoringMetric(f"{_tag}:count", ["dataset"])
-    drift = monitoring.ModelMonitoringMetric(f"{_tag}:drift", ["kind"])
+    count = ModelMonitoringMetric(f"{_tag}:count", ["dataset"])
+    drift = ModelMonitoringMetric(f"{_tag}:drift", ["kind"])
 
 
-class CatTargetDriftMonitor(monitoring.ModelMonitor):
+class CatTargetDriftMonitor(ModelMonitor):
     def monitor_id(self) -> str:
         return "cat_target_drift"
 
     def analyzers(self):
         return [cat_target_drift_analyzer.CatTargetDriftAnalyzer]
 
-    def metrics(self, analyzer_results) -> Generator[monitoring.MetricsType, None, None]:
+    def metrics(self, analyzer_results) -> Generator[MetricsType, None, None]:
         results = cat_target_drift_analyzer.CatTargetDriftAnalyzer.get_results(analyzer_results)
 
         # quantity of rows in income data

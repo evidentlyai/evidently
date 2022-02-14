@@ -7,7 +7,11 @@ from evidently.pipeline.column_mapping import ColumnMapping
 from tests.model_monitoring.helpers import collect_metrics_results
 
 
-def test_prob_classification_monitoring_metrics_multi_classes() -> None:
+def test_monitor_id():
+    assert ProbClassificationPerformanceMonitor().monitor_id() == "prob_classification_performance"
+
+
+def test_probability_classification_with_multi_classes() -> None:
     reference_data = pd.DataFrame(
         {
             "target": [
