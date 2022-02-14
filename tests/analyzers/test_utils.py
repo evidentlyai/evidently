@@ -7,14 +7,15 @@ from evidently.pipeline.column_mapping import ColumnMapping
 
 
 def test_process_columns() -> None:
-    dataset = pandas.DataFrame.from_dict([
-        dict(datetime=datetime.datetime.now(),
-             target=1,
-             prediction=1,
-             feature1=0,
-             feature2=1,
-             cat_feature1="o",
-             cat_feature2="b")])
+    dataset = pandas.DataFrame({
+        'datetime': [datetime.datetime.now()],
+        'target': [1],
+        'prediction': [1],
+        'feature1': [0],
+        'feature2': [1],
+        'cat_feature1': ['o'],
+        'cat_feature2': ['b'],
+    })
 
     columns = process_columns(dataset, ColumnMapping())
     assert columns.utility_columns.id_column is None

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
+from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Union
@@ -33,6 +34,7 @@ class ClassificationPerformanceMetrics:
     log_loss: float
     metrics_matrix: dict
     confusion_matrix: ConfusionMatrix
+    confusion_by_classes: Dict[str, Dict[str, int]]
     roc_aucs: Optional[list] = None
     roc_curve: Optional[dict] = None
     pr_curve: Optional[dict] = None
@@ -105,6 +107,21 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
             # calculate confusion matrix
             conf_matrix = metrics.confusion_matrix(reference_data[target_column], prediction_labels)
 
+            # get TP, FP, TN, FN metrics for each class
+            false_positive = conf_matrix.sum(axis=0) - np.diag(conf_matrix)
+            false_negative = conf_matrix.sum(axis=1) - np.diag(conf_matrix)
+            true_positive = np.diag(conf_matrix)
+            true_negative = conf_matrix.sum() - (false_positive + false_negative + true_positive)
+            confusion_by_classes = {}
+
+            for idx, class_name in enumerate(labels):
+                confusion_by_classes[str(class_name)] = {
+                    'tp': true_positive[idx],
+                    'tn': true_negative[idx],
+                    'fp': false_positive[idx],
+                    'fn': false_negative[idx],
+                }
+
             result.reference_metrics = ClassificationPerformanceMetrics(
                 accuracy=accuracy_score,
                 precision=avg_precision,
@@ -114,7 +131,8 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
                 log_loss=log_loss,
                 metrics_matrix=metrics_matrix,
                 confusion_matrix=ConfusionMatrix(labels=labels, values=conf_matrix.tolist()),
-                roc_aucs=roc_aucs
+                roc_aucs=roc_aucs,
+                confusion_by_classes=confusion_by_classes
             )
 
             # calculate ROC and PR curves, PR table
@@ -236,6 +254,20 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
 
                 # calculate confusion matrix
                 conf_matrix = metrics.confusion_matrix(current_data[target_column], prediction_labels)
+                # get TP, FP, TN, FN metrics for each class
+                false_positive = conf_matrix.sum(axis=0) - np.diag(conf_matrix)
+                false_negative = conf_matrix.sum(axis=1) - np.diag(conf_matrix)
+                true_positive = np.diag(conf_matrix)
+                true_negative = conf_matrix.sum() - (false_positive + false_negative + true_positive)
+                confusion_by_classes = {}
+
+                for idx, class_name in enumerate(labels):
+                    confusion_by_classes[str(class_name)] = {
+                        'tp': true_positive[idx],
+                        'tn': true_negative[idx],
+                        'fp': false_positive[idx],
+                        'fn': false_negative[idx],
+                    }
 
                 result.current_metrics = ClassificationPerformanceMetrics(
                     accuracy=accuracy_score,
@@ -246,7 +278,8 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
                     log_loss=log_loss,
                     metrics_matrix=metrics_matrix,
                     confusion_matrix=ConfusionMatrix(labels=labels, values=conf_matrix.tolist()),
-                    roc_aucs=roc_aucs
+                    roc_aucs=roc_aucs,
+                    confusion_by_classes=confusion_by_classes,
                 )
 
                 # calculate ROC and PR curves, PR table
