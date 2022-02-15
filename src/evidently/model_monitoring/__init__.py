@@ -1,3 +1,7 @@
 from .monitoring import ModelMonitoring
+from .monitors.cat_target_drift import CatTargetDriftMonitor
+from .monitors.num_target_drift import NumTargetDriftMonitor
 from .monitors.data_drift import DataDriftMonitor
 from .monitors.regression_performance import RegressionPerformanceMonitor
+from .monitors.classification_performance import ClassificationPerformanceMonitor
+from .monitors.prob_classification_performance import ProbClassificationPerformanceMonitor

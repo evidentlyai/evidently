@@ -32,8 +32,9 @@ def proportions_diff_z_test(z_stat, alternative='two-sided'):
                      "should be 'two-sided', 'less' or 'greater'")
 
 
-def z_stat_test(reference_data: pd.DataFrame, current_data: pd.DataFrame) -> float:
-    keys = set(list(reference_data.unique()) + list(current_data.unique()))
+def z_stat_test(reference_data: pd.Series, current_data: pd.Series) -> float:
+    #  TODO: simplify ignoring NaN values here, in chi_stat_test and data_drift_analyzer
+    keys = set(list(reference_data.unique()) + list(current_data.unique())) - {np.nan}
     ordered_keys = sorted(list(keys))
     return proportions_diff_z_test(
         proportions_diff_z_stat_ind(

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 import collections
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, Optional, Tuple
 from dataclasses import dataclass
 
 import pandas as pd
@@ -9,9 +9,10 @@ import numpy as np
 
 from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
+from evidently.analyzers.base_analyzer import BaseAnalyzerResult
 from evidently.options import DataDriftOptions
 from evidently.analyzers.stattests import chi_stat_test, ks_stat_test, z_stat_test
-from evidently.analyzers.utils import process_columns, DatasetUtilityColumns
+from evidently.analyzers.utils import process_columns
 
 
 def dataset_drift_evaluation(p_values, drift_share=0.5) -> Tuple[int, float, bool]:
@@ -42,17 +43,9 @@ class DataDriftAnalyzerMetrics:
 
 
 @dataclass
-class DataDriftAnalyzerResults:
-    utility_columns: DatasetUtilityColumns
-    cat_feature_names: List[str]
-    num_feature_names: List[str]
-    target_names: Optional[List[str]]
+class DataDriftAnalyzerResults(BaseAnalyzerResult):
     options: DataDriftOptions
     metrics: DataDriftAnalyzerMetrics
-
-    def get_all_features_list(self) -> List[str]:
-        """List all features names"""
-        return self.cat_feature_names + self.num_feature_names
 
 
 class DataDriftAnalyzer(Analyzer):
@@ -63,11 +56,11 @@ class DataDriftAnalyzer(Analyzer):
     def calculate(
             self, reference_data: pd.DataFrame, current_data: Optional[pd.DataFrame], column_mapping: ColumnMapping
     ) -> DataDriftAnalyzerResults:
-        data_drift_options = self.options_provider.get(DataDriftOptions)
-        columns = process_columns(reference_data, column_mapping)
         if current_data is None:
             raise ValueError("current_data should be present")
 
+        data_drift_options = self.options_provider.get(DataDriftOptions)
+        columns = process_columns(reference_data, column_mapping)
         num_feature_names = columns.num_feature_names
         cat_feature_names = columns.cat_feature_names
         drift_share = data_drift_options.drift_share
@@ -95,28 +88,23 @@ class DataDriftAnalyzer(Analyzer):
 
         for feature_name in cat_feature_names:
             confidence = data_drift_options.get_confidence(feature_name)
-            func = data_drift_options.get_feature_stattest_func(feature_name, ks_stat_test)
-            keys = set(list(reference_data[feature_name][np.isfinite(reference_data[feature_name])].unique()) +
-                       list(current_data[feature_name][np.isfinite(current_data[feature_name])].unique()))
+            feature_ref_data = reference_data[feature_name].dropna()
+            feature_cur_data = current_data[feature_name].dropna()
+            keys = set(list(feature_ref_data.unique()) +
+                       list(feature_cur_data.unique())) - {np.nan}
 
             if len(keys) > 2:
                 # CHI2 to be implemented for cases with different categories
-                func = chi_stat_test if func is None else func
-                p_value = func(reference_data[feature_name], current_data[feature_name])
+                func = data_drift_options.get_feature_stattest_func(feature_name, chi_stat_test)
             else:
-                func = z_stat_test if func is None else func
-                p_value = func(reference_data[feature_name], current_data[feature_name])
+                func = data_drift_options.get_feature_stattest_func(feature_name, z_stat_test)
+            p_value = func(feature_ref_data, feature_cur_data)
 
             p_values[feature_name] = PValueWithConfidence(p_value, confidence)
 
-            current_nbinsx = data_drift_options.get_nbinsx(feature_name)
             features_metrics[feature_name] = DataDriftAnalyzerFeatureMetrics(
-                current_small_hist=[t.tolist() for t in
-                                    np.histogram(current_data[feature_name][np.isfinite(current_data[feature_name])],
-                                                 bins=current_nbinsx, density=True)],
-                ref_small_hist=[t.tolist() for t in
-                                np.histogram(reference_data[feature_name][np.isfinite(reference_data[feature_name])],
-                                             bins=current_nbinsx, density=True)],
+                current_small_hist=list(reversed(list(map(list, zip(*feature_ref_data.value_counts().items()))))),
+                ref_small_hist=list(reversed(list(map(list, zip(*feature_cur_data.value_counts().items()))))),
                 feature_type='cat',
                 p_value=p_value
             )
@@ -130,10 +118,7 @@ class DataDriftAnalyzer(Analyzer):
             features=features_metrics,
         )
         result = DataDriftAnalyzerResults(
-            utility_columns=columns.utility_columns,
-            cat_feature_names=columns.cat_feature_names,
-            num_feature_names=columns.num_feature_names,
-            target_names=columns.target_names,
+            columns=columns,
             options=data_drift_options,
             metrics=result_metrics,
         )

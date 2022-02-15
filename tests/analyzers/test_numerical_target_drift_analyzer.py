@@ -30,16 +30,18 @@ def test_raises_error_when_target_non_numeric(analyzer: NumTargetDriftAnalyzer):
 
 
 def test_different_target_column_name(analyzer: NumTargetDriftAnalyzer):
-    df1 = DataFrame({
+    reference_data = DataFrame({
         'another_target': range(20)
     })
-    df2 = DataFrame({
+    current_data = DataFrame({
         'another_target': range(20)
     })
 
-    result = analyzer.calculate(df1, df2, ColumnMapping(target='another_target'))
+    result = analyzer.calculate(reference_data, current_data, ColumnMapping(target='another_target'))
     assert result.columns.utility_columns.target == 'another_target'
     assert result.target_metrics.drift == 1
+    assert result.reference_data_count == 20
+    assert result.current_data_count == 20
     assert result.target_metrics.reference_correlations == {'another_target': 1.0}
     assert result.target_metrics.current_correlations == {'another_target': 1.0}
 
@@ -274,3 +276,29 @@ def test_computing_of_correlations_between_columns_fails_for_second_data_when_co
 
     with pytest.raises(ValueError):
         analyzer.calculate(df1, df2, ColumnMapping())
+
+
+@pytest.mark.parametrize(
+    ('reference_data', 'current_data'),
+    (
+        (
+            None,
+            None,
+        ),
+        (
+            None,
+            DataFrame({'target': [4, 3, 2, 1]})
+        ),
+        (
+            DataFrame({'target': [1, 2, 3, 4]}),
+            None,
+        ),
+    )
+)
+def test_num_target_analyzer_fails_with_not_enough_data(
+    analyzer: NumTargetDriftAnalyzer,
+    reference_data: DataFrame,
+    current_data: DataFrame,
+) -> None:
+    with pytest.raises(ValueError):
+        analyzer.calculate(reference_data, current_data, ColumnMapping())

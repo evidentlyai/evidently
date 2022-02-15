@@ -1,10 +1,7 @@
 # Table of contents
 
 * [What is Evidently?](README.md)
-
-## GET STARTED
-
-* [Install Evidently](get-started/install-evidently.md)
+* [Installation](get-started/install-evidently.md)
 * [Get Started Tutorial](get-started/tutorial.md)
 * [Reports](reports/README.md)
   * [Data Drift](reports/data-drift.md)
@@ -40,8 +37,6 @@
   * [Custom Widgets and Tabs](customization/add-a-custom-widget-or-tab.md)
   * [Options for Data / Target drift](customization/options-for-data-target-drift.md)
   * [Options for Quality Metrics](customization/options-for-quality-metrics.md)
-  * [Options for Regression](customization/options-for-regression.md)
-  * [Options for Classification](customization/options-for-classification.md)
   * [Options for Color Schema](customization/options-for-color-schema.md)
   * [Options for Statistical Tests](customization/options-for-statistical-tests.md)
 * [Recipes](recipes/README.md)

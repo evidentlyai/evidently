@@ -17,6 +17,9 @@ Explore the examples of the Evidently reports on different datasets and code tut
 # How it works 
 
 Evidently has a modular approach with 3 interfaces on top of the shared `Analyzer` functionality. 
+1. Interactive visual reports
+2. Data and model profiling
+3. Real-time ML monitoring 
 
 ## [1. Interactive visual reports](dashboards/README.md)
 
@@ -24,21 +27,31 @@ Evidently generates interactive HTML reports from `pandas.DataFrame` or `csv` fi
 
 Each report covers a certain aspect of the model performance. You can display reports as `Dashboard` objects in Jupyter notebook or Colab or export as an HTML file.
 
-Evidently currently works with **tabular data**. 6 reports are available.
+Evidently currently works with **tabular data**. 6 reports are available. You can combine, customize the reports or contribute your own report. 
 
-|   |   |
-| :----: | :----: |
-| [Data Drift](reports/data-drift.md)| [Categorical Target Drift](reports/categorical-target-drift.md)|
-| Detects changes in feature distribution. | Detects changes in categorical target and feature behavior. |
-| ![](../images/01\_data\_drift.png)| ![](../images/02\_cat\_target\_drift.png)|
-| [Numerical Target Drift](reports/num-target-drift.md)| [Regression Performance](reports/reg-performance.md)|
-| Detects changes in numerical target and feature behavior.| Analyzes the performance and errors of a regression model.|
-| ![](../images/03\_num\_target\_drift.png)| ![](../images/04\_reg\_performance.png)|
-| [Classification Performance](reports/classification-performance.md)| [Probabilistic Classification Performance](reports/probabilistic-classification-performance.md)|
-| Analyzes the performance and errors of a classification model.| Analyzes the performance and errors of a probabilistic classification model. |
-| [![Classification Performance](../images/05\_class\_performance.png)](reports/classification-performance.md) | [![Probabilistic Classification Performance](../images/06\_prob\_class\_performance.png)](reports/probabilistic-classification-performance.md) |
+#### Data Drift and Quality
 
-You can combine, customize the reports or contribute your own report. 
+[Data Drift](reports/data-drift.md): detects changes in feature distribution. Data quality: provides the feature overview.
+
+![Data Drift](../images/01\_data\_drift.png) ![Data Quality](../images/07\_data\_quality.png)
+
+#### Categorical and Numerical Target Drift
+
+Detect changes in [Numerical](reports/num-target-drift.md) or [Categorical](reports/categorical-target-drift.md) target and feature behavior.
+
+![Categorical target drift](../images/02\_cat\_target\_drift.png) ![Numerical target drift](../images/03\_num\_target\_drift.png)
+
+#### Classification Performance
+
+Analyzes the performance and errors of a [Classification](reports/classification-performance.md) or [Probabilistic Classification](reports/probabilistic-classification-performance.md) model. Works both for binary and multi-class.
+
+![Classification Performance](../images/05\_class\_performance.png) ![Probabilistic Classification Performance](../images/06\_prob\_class\_performance.png)
+
+#### Regression Performance
+
+Analyzes the performance and errors of a [Regression](reports/reg-performance.md) model. Time series version coming soon.
+
+![Regression Performance](../images/04\_reg\_performance.png) ![Time Series](../images/08\_time\_series.png)
 
 ## [2. Data and ML model profiling](profiling/README.md)
 
@@ -69,5 +82,5 @@ There is a lightweight [integration with Prometheus and Grafana](integrations/ev
 
 ## Community and support 
 
-Evidently is in active development, and we are happy to receive and incorporate feedback. If you have any questions, ideas or want to hang out and chat about doing ML in prodiction, [join our Discord community](https://discord.com/invite/xZjKRaNp8b)!
+Evidently is in active development, and we are happy to receive and incorporate feedback. If you have any questions, ideas or want to hang out and chat about doing ML in production, [join our Discord community](https://discord.com/invite/xZjKRaNp8b)!
 
