@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Any
 from typing import Dict
 from typing import Optional
 from typing import Union
@@ -21,6 +22,8 @@ class DataDriftProfileSection(ProfileSection):
 
     def calculate(self, reference_data, current_data, column_mapping, analyzers_results) -> None:
         data_drift_results = DataDriftAnalyzer.get_results(analyzers_results)
+        result_json: Dict[str, Any] = data_drift_results.columns.as_dict()
+
         metrics_dict: Dict[str, Union[int, bool, float, Dict]] = {
             'n_features': data_drift_results.metrics.n_features,
             'n_drifted_features': data_drift_results.metrics.n_drifted_features,
@@ -36,17 +39,13 @@ class DataDriftProfileSection(ProfileSection):
                 'p_value': feature_metrics.p_value,
             }
 
+        result_json['options'] = data_drift_results.options.as_dict()
+        result_json['metrics'] = metrics_dict
+
         self._result = {
             'name': self.part_id(),
             'datetime': str(datetime.now()),
-            'data': {
-                'utility_columns': data_drift_results.columns.utility_columns.as_dict(),
-                'cat_feature_names': data_drift_results.columns.cat_feature_names,
-                'num_feature_names': data_drift_results.columns.num_feature_names,
-                'target_names': data_drift_results.columns.target_names,
-                'options': data_drift_results.options.as_dict(),
-                'metrics': metrics_dict
-            }
+            'data': result_json
         }
 
     def get_results(self) -> Optional[Dict[str, Union[str, Dict]]]:

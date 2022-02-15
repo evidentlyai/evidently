@@ -327,7 +327,7 @@ class DataProfileFeaturesWidget(Widget):
                                     subplot_titles=['reference', 'current'])
 
                 for i, val in enumerate(tmp_ref[target_column].unique()):
-                    trace = go.Bar(x=tmp_ref.loc[tmp_ref[target_column] == val, feature_name], 
+                    trace = go.Bar(x=tmp_ref.loc[tmp_ref[target_column] == val, feature_name],
                                 y=tmp_ref.loc[tmp_ref[target_column] == val, 'count_objects'],
                                 marker_color=COLOR_DISCRETE_SEQUENCE[i], opacity=0.6, showlegend=False)
                     fig.append_trace(trace, 1, 1)
