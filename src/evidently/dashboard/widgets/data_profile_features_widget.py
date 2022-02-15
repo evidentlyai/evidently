@@ -17,6 +17,8 @@ from evidently.dashboard.widgets.widget import Widget, GREY, RED, COLOR_DISCRETE
 
 
 class DataProfileFeaturesWidget(Widget):
+    period_prefix: str
+
     def analyzers(self):
         return [DataProfileAnalyzer]
 
@@ -25,17 +27,27 @@ class DataProfileFeaturesWidget(Widget):
                   current_data: Optional[pd.DataFrame],
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
-        self.period_prefix = None
+        self.period_prefix = ''
         data_profile_results = DataProfileAnalyzer.get_results(analyzers_results)
         columns = data_profile_results.columns.utility_columns
         target_column = columns.target
+
+        if target_column is None:
+            raise ValueError('target column should be present')
+
+        all_features: List[str] = [target_column]
+
         target_type = data_profile_results.reference_features_stats[target_column]['feature_type']
         cat_feature_names = data_profile_results.columns.cat_feature_names
         date_column = columns.date
+
+        if date_column is not None:
+            all_features += [date_column]
+
         self._transform_cat_features(reference_data, current_data, cat_feature_names, target_column, target_type)
         # set params data
         params_data = []
-        all_features = [target_column, date_column] + data_profile_results.columns.get_all_features_list(
+        all_features += data_profile_results.columns.get_all_features_list(
             cat_before_num=True,
             include_datetime_feature=True,
         )
@@ -79,7 +91,7 @@ class DataProfileFeaturesWidget(Widget):
 
                 additional_graphs_data.append(
                     AdditionalGraphInfo(
-                        feature_name + '_in_time',
+                        feature_name or '' + '_in_time',
                         {
                             "title": "",
                             "size": 2,
@@ -94,7 +106,7 @@ class DataProfileFeaturesWidget(Widget):
                     )
                 )
 
-            if target_column and feature_name != target_column:
+            if target_column and feature_name != target_column and feature_name:
                 if current_data is not None:
                     feature_and_target_figure = self._plot_feature_and_target_2_df(reference_data, current_data,
                                                                                    target_column, target_type,
@@ -105,7 +117,7 @@ class DataProfileFeaturesWidget(Widget):
                                                                                    feature_type)
                 additional_graphs_data.append(
                     AdditionalGraphInfo(
-                        feature_name + "_by_target",
+                        feature_name or '' + "_by_target",
                         {
                             "title": "",
                             "size": 2,
@@ -155,7 +167,7 @@ class DataProfileFeaturesWidget(Widget):
             additionalGraphs=additional_graphs_data
         )
 
-    def assemble_parts(self, target_column: str, date_column: str, feature_name: str, feature_type: str) -> List:
+    def assemble_parts(self, target_column: str, date_column: Optional[str], feature_name: str, feature_type: str) -> List:
         parts = []
         if date_column and feature_type != 'date':
             parts.append({
@@ -184,8 +196,10 @@ class DataProfileFeaturesWidget(Widget):
         return df
 
     def _plot_feature_in_time_1_df(self, reference_data: pd.DataFrame, date_column: str, feature_name: str,
-                                   feature_type: str) -> json:
+                                   feature_type: str) -> dict:
         tmp = reference_data[[date_column + '_period', feature_name]].copy()
+        feature_in_time_figure = {}
+
         if feature_type == 'num':
             tmp = self._transform_df_to_time_mean_view(tmp, date_column, feature_name)
 
@@ -214,9 +228,11 @@ class DataProfileFeaturesWidget(Widget):
         return feature_in_time_figure
 
     def _plot_feature_in_time_2_df(self, reference_data: pd.DataFrame, current_data: pd.DataFrame,
-                                   date_column: str, feature_name: str, feature_type: str) -> json:
+                                   date_column: str, feature_name: str, feature_type: str) -> dict:
         tmp_ref = reference_data[[date_column + '_period', feature_name]].copy()
         tmp_curr = current_data[[date_column + '_period', feature_name]].copy()
+        feature_in_time_figure = {}
+
         if feature_type == 'num':
             tmp_ref = self._transform_df_to_time_mean_view(tmp_ref, date_column, feature_name)
             tmp_curr = self._transform_df_to_time_mean_view(tmp_curr, date_column, feature_name)
@@ -251,7 +267,9 @@ class DataProfileFeaturesWidget(Widget):
                     name=str(val),
                     marker_color=COLOR_DISCRETE_SEQUENCE[i]), 1, 2)
             fig.update_traces(marker_line_width=0.01)
-            fig.update_layout(barmode='stack', bargap=0, yaxis_title='count category values per ' + self.period_prefix)
+            fig.update_layout(
+                barmode='stack', bargap=0, yaxis_title='count category values per ' + self.period_prefix
+            )
             feature_in_time_figure = json.loads(fig.to_json())
 
         return feature_in_time_figure
@@ -262,14 +280,14 @@ class DataProfileFeaturesWidget(Widget):
         ratio = np.round(d1 / (d1 + d2), 3)
         return ratio, 1 - ratio
 
-    def _transform_df_count_values(self, df: pd.DataFrame, target_column: str, feature_name: str):
+    def _transform_df_count_values(self, df: pd.DataFrame, target_column: str, feature_name: Optional[str]):
         df = df.groupby([target_column, feature_name]).size()
         df.name = 'count_objects'
         df = df.reset_index()
         return df
 
     def _plot_feature_and_target_1_df(self, reference_data: pd.DataFrame, target_column: str, target_type: str,
-                                      feature_name: Optional[str], feature_type: str) -> json:
+                                      feature_name: Optional[str], feature_type: str) -> dict:
         tmp = reference_data[[target_column, feature_name]].copy()
         if feature_type == 'cat':
             if target_type == 'num':
@@ -307,7 +325,7 @@ class DataProfileFeaturesWidget(Widget):
 
     def _plot_feature_and_target_2_df(self, reference_data: pd.DataFrame, current_data: pd.DataFrame,
                                       target_column: str, target_type: str, feature_name: str,
-                                      feature_type: str) -> json:
+                                      feature_type: str) -> dict:
         tmp_ref = reference_data[[target_column, feature_name]].copy()
         tmp_curr = current_data[[target_column, feature_name]].copy()
         tmp_ref['df'] = 'reference'
