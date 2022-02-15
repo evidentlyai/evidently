@@ -15,7 +15,9 @@ from werkzeug.middleware.dispatcher import DispatcherMiddleware
 
 from evidently import model_monitoring
 from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.model_monitoring import DataDriftMonitor, RegressionPerformanceMonitor
+from evidently.model_monitoring import DataDriftMonitor, RegressionPerformanceMonitor,\
+    ClassificationPerformanceMonitor,\
+    ProbClassificationPerformanceMonitor
 from evidently.runner.loader import DataLoader, DataOptions
 
 app = Flask(__name__)
@@ -39,7 +41,9 @@ class MonitoringServiceOptions:
 
 monitor_mapping = {
     "data_drift": DataDriftMonitor,
-    "regression_performance": RegressionPerformanceMonitor
+    "regression_performance": RegressionPerformanceMonitor,
+    "classification_performance": ClassificationPerformanceMonitor,
+    "prob_classification_performance": ProbClassificationPerformanceMonitor,
 }
 
 
@@ -115,7 +119,7 @@ def configure_service():
     options = MonitoringServiceOptions(**config['service'])
 
     reference_data = loader.load(options.reference_path,
-                                 DataOptions(date_column=config['data_format']['date_column'],
+                                 DataOptions(date_column=config['data_format'].get('date_column', None),
                                              separator=config['data_format']['separator'],
                                              header=config['data_format']['header']))
     logger.info(f"reference dataset loaded: {len(reference_data)} rows")

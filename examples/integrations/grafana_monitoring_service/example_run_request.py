@@ -12,7 +12,7 @@ if __name__ == '__main__':
     for idx in range(0, new_data.shape[0]):
         # to test request to service sending new data
         data = new_data.iloc[idx].to_dict()
-        requests.post('http://localhost:5000/iterate',
+        requests.post('http://127.0.0.1:5000/iterate',
                       data=json.dumps([data], cls=NumpyEncoder),
                       headers={"content-type": "application/json"})
         time.sleep(10)
