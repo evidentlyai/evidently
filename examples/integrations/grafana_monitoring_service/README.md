@@ -14,15 +14,17 @@ In this example we use:
 
 1. Clone the evidently repo using ```git clone git@github.com:evidentlyai/evidently.git``` command. 
 
-*Make sure you have evidently version v0.1.27.dev0 or above.* 
+*Make sure you have evidently version v0.1.40.dev0 or above.* 
 
 2. Prepare the datasets:
-- Go the example directory. In terminal, run the command ```cd evidently/examples/integrations/grafana_monitoring_service/``` 
-- Run the python script ```prepare_datasets.py``` from the example directory (examples/integrations/grafana_monitoring_service) to prepare the datasets: ```python prepare_datasets.py``` 
-- After the script is executed successfully, the two files should appear at the example directory: ```reference.csv``` and ```production.csv```.
+- Go the example directory. In terminal, run the command: ```cd evidently/examples/integrations/grafana_monitoring_service/``` 
+- Run the python script ```prepare_datasets.py``` from the example directory (examples/integrations/grafana_monitoring_service) to prepare the datasets and configuration:
+  - For generation datasets and configuration file for `data_drift` and `regression_performance`, you can use: `prepare_datasets.py --dataset bike`
+  - For generation datasets and configuration file for `classification_performance`: `prepare_datasets.py --dataset kddcup99`
+- After the script is executed successfully, the three files should appear at the example directory: ```config.yaml```, ```reference.csv``` and ```production.csv```
 
 *If you work in an empty environment, make sure you have the following Python packages installed: Sklearn, Numpy, Pandas, Requests.
-You can install these packages using command ```pip install sklearn, numpy, pandas, requests```.*
+You can install these packages using command ```pip install -r requirements.txt```.*
 
 3. Run the docker image from the example directory (examples/integrations/grafana_monitoring_service):```docker compose up``` . 
 
@@ -86,12 +88,12 @@ Then, take the following steps in the newly created directory:
 * ```column_mapping``` -  the information about the target, prediction names, lists of the numerical and categorical features. The format is similar to the column_mapping we use to calculate ```evidently``` interactive dashboards and profiles;
 * ```service```:
   * **reference_path** - path to the reference dataset
-  * **use_reference** - define if to use the provided reference dataset ("true") or collect the reference from the production data stream ("false"). Currently only ```true``` option is avaliable.
+  * **use_reference** - define if to use the provided reference dataset ("true") or collect the reference from the production data stream ("false"). Currently, only ```true``` option is available.
   * **min_reference_size** - the minimal number of objects in the reference dataset to start calculating the monitoring metrics. If the reference dataset is provided externally, but has less objects than defined, the required number of objects will be collected from the production data and added to the reference.  
-  * **moving_reference** - define if to move the reference in time during metrics calculation. Currently only ```false``` option is avaliable.
+  * **moving_reference** - define if to move the reference in time during metrics calculation. Currently, only ```false``` option is available.
   * **window_size** - the number of the new objects in the current production data stream required to calculate the new monitoring metrics.
   * **calculation_period_sec** - how often the monitoring service will check for the new values of monitoring metrics.
-  * **monitors** - the number of monitors to use. Currently only the ["data_drift"] option is avaliable.
+  * **monitors** - the number of monitors to use. Currently, only the ["data_drift"] option is available.
 
 2. Place the ```reference.csv``` inside the project folder (```grafana_monitoring_service``` in the initial example)
 
