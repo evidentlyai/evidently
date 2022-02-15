@@ -8,4 +8,3 @@ from .cat_target_drift_tab import CatTargetDriftTab
 from .regression_performance_tab import RegressionPerformanceTab
 from .classification_performance_tab import ClassificationPerformanceTab
 from .prob_classification_performance_tab import ProbClassificationPerformanceTab
-

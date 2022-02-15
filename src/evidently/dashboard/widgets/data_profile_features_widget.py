@@ -29,19 +29,21 @@ class DataProfileFeaturesWidget(Widget):
                   analyzers_results) -> Optional[BaseWidgetInfo]:
         self.period_prefix = None
         data_profile_results = DataProfileAnalyzer.get_results(analyzers_results)
-        columns = data_profile_results.utility_columns
+        columns = data_profile_results.columns.utility_columns
         target_column = columns.target
-        target_type = data_profile_results.ref_features_stats[target_column]['feature_type']
-        cat_feature_names = data_profile_results.cat_feature_names
+        target_type = data_profile_results.reference_features_stats[target_column]['feature_type']
+        cat_feature_names = data_profile_results.columns.cat_feature_names
         date_column = columns.date
         self._transform_cat_features(reference_data, current_data, cat_feature_names, target_column, target_type)
         # set params data
         params_data = []
+        all_features = [target_column, date_column] + data_profile_results.columns.get_all_features_list(
+            cat_before_num=True,
+            include_datetime_feature=True,
+        )
 
-        all_features = ([target_column, date_column] + cat_feature_names
-                        + data_profile_results.num_feature_names + data_profile_results.datetime_feature_names)
         for feature_name in all_features:
-            feature_type = data_profile_results.ref_features_stats[feature_name]['feature_type']
+            feature_type = data_profile_results.reference_features_stats[feature_name]['feature_type']
             if feature_name == target_column:
                 prefix = ', target'
             else:
@@ -65,7 +67,7 @@ class DataProfileFeaturesWidget(Widget):
 
         # additional graphs data
         for feature_name in all_features:
-            feature_type = data_profile_results.ref_features_stats[feature_name]['feature_type']
+            feature_type = data_profile_results.reference_features_stats[feature_name]['feature_type']
             if date_column and feature_type != 'date':
                 freq = self._choose_agg_period(date_column, reference_data, current_data)
                 reference_data[date_column + '_period'] = reference_data[date_column].dt.to_period(freq=freq)
@@ -94,7 +96,7 @@ class DataProfileFeaturesWidget(Widget):
                     )
                 )
 
-            if target_column and feature_name!=target_column:
+            if target_column and feature_name != target_column:
                 if current_data is not None:
                     feature_and_target_figure = self._plot_feature_and_target_2_df(reference_data, current_data, 
                                                                                    target_column, target_type,
@@ -272,15 +274,20 @@ class DataProfileFeaturesWidget(Widget):
         tmp = reference_data[[target_column, feature_name]].copy()
         if feature_type == 'cat':
             if target_type == 'num':
-                fig = px.strip(tmp.sample(2000, random_state=0), x=feature_name, y=target_column, color_discrete_sequence=COLOR_DISCRETE_SEQUENCE)
+                fig = px.strip(
+                    tmp.sample(2000, random_state=0), x=feature_name, y=target_column,
+                    color_discrete_sequence=COLOR_DISCRETE_SEQUENCE
+                )
                 fig.update_traces(marker=dict(size=2))
             else:
                 tmp = self._transform_df_count_values(tmp, target_column, feature_name)
                 fig = go.Figure()
                 for i, val in enumerate(tmp[target_column].unique()):
-                    trace = go.Bar(x=tmp.loc[tmp[target_column] == val, feature_name], 
-                                y=tmp.loc[tmp[target_column] == val, 'count_objects'],
-                                marker_color=COLOR_DISCRETE_SEQUENCE[i], name=str(val))
+                    trace = go.Bar(
+                        x=tmp.loc[tmp[target_column] == val, feature_name],
+                        y=tmp.loc[tmp[target_column] == val, 'count_objects'],
+                        marker_color=COLOR_DISCRETE_SEQUENCE[i], name=str(val)
+                    )
                     fig.add_trace(trace)
                 fig.update_layout(yaxis_title='count')
         else:
@@ -380,4 +387,3 @@ class DataProfileFeaturesWidget(Widget):
                                               abs(OPTIMAL_POINTS - days), abs(OPTIMAL_POINTS - days*24)])
         self.period_prefix = prefix_dict[time_points.idxmin()]
         return time_points.idxmin()
-

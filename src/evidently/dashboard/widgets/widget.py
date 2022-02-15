@@ -13,6 +13,7 @@ RED = "#ed0400"
 GREY = "#4d4d4d"
 COLOR_DISCRETE_SEQUENCE = ['#ed0400', '#0a5f38', '#6c3461', '#71aa34', '#d8dcd6', '#6b8ba4']
 
+
 class Widget:
     title: str
     wi: Optional[BaseWidgetInfo]
