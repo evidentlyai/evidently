@@ -23,6 +23,7 @@ class DataProfileAnalyzerResults:
     num_feature_names: List[str]
     datetime_feature_names: List[str]
     ref_features_stats: Dict[str, Dict]
+    curr_features_stats: Optional[Dict[str, Dict]]
 
 class DataProfileAnalyzer(Analyzer):
     @staticmethod
@@ -34,11 +35,18 @@ class DataProfileAnalyzer(Analyzer):
                   current_data: Optional[pd.DataFrame],
                   column_mapping: ColumnMapping) -> DataProfileAnalyzerResults:
         columns = process_columns(reference_data, column_mapping)
+        target_name = columns.utility_columns.target
         ref_features_stats = {}
+        curr_features_stats = {}
         for feature_name in columns.num_feature_names:
             ref_features_stats[feature_name] = self._get_num_columns_stats(reference_data[feature_name])
+            if current_data is not None:
+                curr_features_stats[feature_name] = self._get_num_columns_stats(current_data[feature_name])
+
         for feature_name in columns.cat_feature_names:
             ref_features_stats[feature_name] = self._get_cat_columns_stats(reference_data[feature_name])
+            if current_data is not None:
+                curr_features_stats[feature_name] = self._get_cat_columns_stats(current_data[feature_name])
         
         if columns.utility_columns.date:
             date_list = columns.datetime_feature_names + [columns.utility_columns.date]
@@ -46,19 +54,26 @@ class DataProfileAnalyzer(Analyzer):
             date_list = columns.datetime_feature_names
         for feature_name in date_list:
             ref_features_stats[feature_name] = self._get_dt_columns_stats(reference_data[feature_name])
+            if current_data is not None:
+                curr_features_stats[feature_name] = self._get_dt_columns_stats(current_data[feature_name])
         
-        if columns.utility_columns.target:
+        if target_name:
             if column_mapping.task == 'classification':
-                ref_features_stats[columns.utility_columns.target] = self._get_cat_columns_stats(reference_data[columns.utility_columns.target])
+                ref_features_stats[target_name] = self._get_cat_columns_stats(reference_data[target_name])
+                if current_data is not None:
+                    curr_features_stats[target_name] = self._get_cat_columns_stats(current_data[target_name])
             else:
-                ref_features_stats[columns.utility_columns.target] = self._get_num_columns_stats(reference_data[columns.utility_columns.target])
+                ref_features_stats[target_name] = self._get_num_columns_stats(reference_data[target_name])
+                if current_data is not None:
+                    curr_features_stats[target_name] = self._get_num_columns_stats(current_data[target_name])
             
         results = DataProfileAnalyzerResults(
                                              utility_columns=columns.utility_columns,
                                              cat_feature_names=columns.cat_feature_names,
                                              num_feature_names=columns.num_feature_names,
                                              datetime_feature_names=columns.datetime_feature_names,
-                                             ref_features_stats=ref_features_stats)
+                                             ref_features_stats=ref_features_stats,
+                                             curr_features_stats=curr_features_stats)
         return results
 
     def _get_num_columns_stats(self, feature: pd.Series) -> Dict:
