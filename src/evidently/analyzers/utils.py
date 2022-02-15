@@ -56,24 +56,39 @@ class DatasetColumns:
             'target_names': self.target_names,
         }
 
-    def get_all_features_list(self, cat_before_num: bool = True, include_time_columns: bool = False) -> List[str]:
-        """List all features names"""
-        if include_time_columns:
-            add_time_columns = self.datetime_feature_names
-        else:
-            add_time_columns = []
+    def get_all_features_list(self, cat_before_num: bool = True, include_datetime_feature: bool = False) -> List[str]:
+        """List all features names.
+
+        By default, returns cat features than num features and du not return other.
+
+        If you want to change the order - set  `cat_before_num` to False.
+
+        If you want to add date time columns - set `include_datetime_feature` to True.
+        """
         if cat_before_num:
-            return self.cat_feature_names + self.num_feature_names + add_time_columns
+            result = self.cat_feature_names + self.num_feature_names
 
         else:
-            return self.num_feature_names + self.cat_feature_names + add_time_columns
+            result = self.num_feature_names + self.cat_feature_names
+
+        if include_datetime_feature and self.datetime_feature_names:
+            result += self.datetime_feature_names
+
+        return result
 
     def get_features_len(self, include_time_columns: bool = False) -> int:
-        """How mane feature do we have. It is useful for pagination in widgets."""
-        if include_time_columns:
+        """How mane feature do we have. It is useful for pagination in widgets.
+
+        By default, we sum category nad numeric features.
+
+        If you want to include date time columns - set `include_datetime_feature` to True.
+        """
+        if include_time_columns and self.datetime_feature_names:
             len_time_columns = len(self.datetime_feature_names)
+
         else:
             len_time_columns = 0
+
         return len(self.num_feature_names) + len(self.cat_feature_names) + len_time_columns
 
 
