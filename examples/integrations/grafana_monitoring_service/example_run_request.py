@@ -1,18 +1,28 @@
-import json
+import argparse
+import os
 import time
 
-import pandas
+import csv
 import requests
 
-from evidently.utils import NumpyEncoder
+
+def main(csv_file_path):
+    print("Start send the data to the monitoring service one by one.")
+    with open(csv_file_path, encoding='utf-8') as csv_file:
+        production_data = csv.DictReader(csv_file)
+
+        for data in production_data:
+            print("Send a data item")
+            requests.post("http://127.0.0.1:5000/iterate", data=data, headers={"content-type": "application/json"})
+            print("Done.")
+            time.sleep(10)
 
 
-if __name__ == '__main__':
-    new_data = pandas.read_csv("production.csv")
-    for idx in range(0, new_data.shape[0]):
-        # to test request to service sending new data
-        data = new_data.iloc[idx].to_dict()
-        requests.post('http://localhost:5000/iterate',
-                      data=json.dumps([data], cls=NumpyEncoder),
-                      headers={"content-type": "application/json"})
-        time.sleep(10)
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Script for data and config generation for demo Evidently metrics integration with Grafana"
+    )
+    args = parser.parse_args()
+    production_data_file = os.path.abspath("production.csv")
+    print("Get production data from {production_data_file} and send it to monitoring service each 10 seconds")
+    main(production_data_file)

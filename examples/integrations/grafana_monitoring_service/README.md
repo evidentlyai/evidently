@@ -1,45 +1,74 @@
 ## Real-time ML monitoring with Evidently and Grafana
 
-This example shows how to run a real-time Grafana dashboard to monitor Data Drift. You can adapt this example to your production use case by replacing the data source for your production service data. 
+This example shows how to get real-time Grafana dashboards for monitoring data metrics with Evidently. 
+
+You can adapt this example to your purposes by replacing the data source and the service settings. 
 
 ### How to run an example
 
-In this example we use: 
-* Bike Sharing Demand dataset to build a regression model
-* Evidently to calculate the Data Drift metrics 
-* Prometheus to store the metrics
-* Grafana to build the Data Drift Dashboard
+In this example, we use: 
+* `Bike Sharing Demand` dataset for regression cases
+* `kddcup99` dataset for classification cases
+* `Evidently` library for the metrics calculations
+* `Prometheus` to store the metrics
+* `Grafana` to build the Data Drift Dashboard
+* `Docker` to rule them all
 
 **Follow the instructions below to run the example**:
+1. Create a new python virtual environment and activate it
+2. Get the `evidently` code example:
+ ```bash
+git clone git@github.com:evidentlyai/evidently.git
+```
+3. Prepare the datasets:
+- Go to the example directory:
+```bash
+cd evidently/examples/integrations/grafana_monitoring_service/
+```
+- install dependencies for the data preparation script
+```bash
+pip install -r requirements.txt
+```
+- Run the data preparation script `prepare_datasets.py` from the example directory 
+  - specify a dataset name with `--dataset` or `-d` option  
+  - use `bike` if you want to get data for `data_drift` and `regression_performance`
+  - use `kddcup99` if you want to get data for `classification_performance`
+  - the script will use `bike` as a default
+```
+prepare_datasets.py --dataset kddcup99
+```
+- After the script is executed successfully, the three files should appear in the directory: 
+  - `config.yaml` - a config for the metrics service
+  - `reference.csv` - a file with reference data
+  - `production.csv` - a file with current or production data that we will send to the service later
+The data is ready.
+4. Then run the docker image from the example directory:
+```bash
+docker compose up -d
+```
 
-1. Clone the evidently repo using ```git clone git@github.com:evidentlyai/evidently.git``` command. 
+This will run three services: Prometheus, Grafana, and the monitoring service.
 
-*Make sure you have evidently version v0.1.27.dev0 or above.* 
+The services will be available in your system: 
+  - Evidently monitoring service at port 5000
+  - Prometheus at port 9090. To access Prometheus web interface, go to your browser and open: http://localhost:9090/
+  - Grafana at port 3000. To access Grafana web interface, go to your browser and open: http://localhost:3000/
+ 
 
-2. Prepare the datasets:
-- Go the example directory. In terminal, run the command ```cd evidently/examples/integrations/grafana_monitoring_service/``` 
-- Run the python script ```prepare_datasets.py``` from the example directory (examples/integrations/grafana_monitoring_service) to prepare the datasets: ```python prepare_datasets.py``` 
-- After the script is executed successfully, the two files should appear at the example directory: ```reference.csv``` and ```production.csv```.
+There will be no data in the database and dashboard until you start to send a production data.
 
-*If you work in an empty environment, make sure you have the following Python packages installed: Sklearn, Numpy, Pandas, Requests.
-You can install these packages using command ```pip install sklearn, numpy, pandas, requests```.*
+Let's do it is the next step.
 
-3. Run the docker image from the example directory (examples/integrations/grafana_monitoring_service):```docker compose up``` . 
+5. Run the python script `example_run_request.py` to initiate the process of sending a data to the evidently service:
+```bash
+python example_run_request.py
+```
 
-This will install Evidently package, Prometheus and Grafana. The three services will be running at your system: Evidently service at port 5000, Prometheus at port 9090, Grafana at port 3000.
+In this example each row is sent with 10 seconds timeout. This is why at the very beginning no data will show at Grafana dashboard. It will start to appear in less than a minute.
 
-- To access Prometheus web interface, go to your browser and open: localhost:9090
-- To access Grafana web interface, go to your browser and open: localhost:3000 
+6. Go to the browser and access the Grafana dashboard at http://localhost:3000. At first, you will be asked for login and password. Both are `admin`. 
 
-There will be no data in the database and dashboard until you run the service, which is the next step.
-
-4. Run the python script ```example_run_request.py``` to initiate the process of sending data to the evidently service: ```python example_run_request.py```
-
-In this example each prediction is made with 10 seconds timeout. This is why at the very beginning no data will show at Grafana dashboard. It will start to appear in less than a minute.
-
-5. Go to the browser and access the Grafana dashboard at localhost:3000. At first, you will be asked for login and password. Both are “admin”. 
-
-6. To stop the execution, run ```docker compose down``` command.
+7. To stop the execution, run ```docker compose down``` command.
 
 ### How to customize the Grafana Dashboard view 
 
@@ -86,12 +115,12 @@ Then, take the following steps in the newly created directory:
 * ```column_mapping``` -  the information about the target, prediction names, lists of the numerical and categorical features. The format is similar to the column_mapping we use to calculate ```evidently``` interactive dashboards and profiles;
 * ```service```:
   * **reference_path** - path to the reference dataset
-  * **use_reference** - define if to use the provided reference dataset ("true") or collect the reference from the production data stream ("false"). Currently only ```true``` option is avaliable.
+  * **use_reference** - define if to use the provided reference dataset ("true") or collect the reference from the production data stream ("false"). Currently, only ```true``` option is available.
   * **min_reference_size** - the minimal number of objects in the reference dataset to start calculating the monitoring metrics. If the reference dataset is provided externally, but has less objects than defined, the required number of objects will be collected from the production data and added to the reference.  
-  * **moving_reference** - define if to move the reference in time during metrics calculation. Currently only ```false``` option is avaliable.
+  * **moving_reference** - define if to move the reference in time during metrics calculation. Currently, only ```false``` option is available.
   * **window_size** - the number of the new objects in the current production data stream required to calculate the new monitoring metrics.
   * **calculation_period_sec** - how often the monitoring service will check for the new values of monitoring metrics.
-  * **monitors** - the number of monitors to use. Currently only the ["data_drift"] option is avaliable.
+  * **monitors** - the number of monitors to use. Currently, only the ["data_drift"] option is available.
 
 2. Place the ```reference.csv``` inside the project folder (```grafana_monitoring_service``` in the initial example)
 
