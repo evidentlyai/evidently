@@ -25,7 +25,7 @@ class RegressionPerformanceMonitor(ModelMonitor):
     def analyzers(self) -> List[Type[Analyzer]]:
         return [RegressionPerformanceAnalyzer]
 
-    def metrics(self, analyzer_results):
+    def metrics(self, analyzer_results) -> Generator[MetricsType, None, None]:
         results = RegressionPerformanceAnalyzer.get_results(analyzer_results)
 
         for metric in self._yield_quality(results.reference_metrics, "reference"):

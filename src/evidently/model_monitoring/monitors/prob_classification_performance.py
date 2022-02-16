@@ -1,32 +1,47 @@
-from evidently.analyzers import prob_classification_performance_analyzer
-from evidently.analyzers import utils
-from evidently.model_monitoring import monitoring
+from typing import Generator
+
+from evidently.analyzers.prob_classification_performance_analyzer import ClassificationPerformanceMetrics
+from evidently.analyzers.prob_classification_performance_analyzer import ProbClassificationPerformanceAnalyzer
+from evidently.analyzers.utils import DatasetColumns
+from evidently.model_monitoring.monitoring import ModelMonitor
+from evidently.model_monitoring.monitoring import ModelMonitoringMetric
+from evidently.model_monitoring.monitoring import MetricsType
 
 
 class ProbClassificationPerformanceMonitorMetricsMonitor:
+    """Class for probabilistic classification performance metrics in monitor.
+
+    Metrics list:
+        - quality: model quality with macro-average metrics in `reference` and `current` datasets
+        Each metric name is marked as a `metric` label
+        - class_representation: quantity of items in each class
+        A class name is marked as a `class_name` label
+        `target` and `prediction` columns are marked as `type`
+       - class_quality: quality metrics for each class
+       - confusion: aggregated confusion metrics
+       - class_confusion: confusion (TP, TN, FP, FN) by class
+    """
     _tag = "prob_classification_performance"
-    quality = monitoring.ModelMonitoringMetric(f"{_tag}:quality", ["dataset", "metric"])
-    class_representation = monitoring.ModelMonitoringMetric(
-        f"{_tag}:class_representation", ["dataset", "class_name", "type"]
-    )
-    class_quality = monitoring.ModelMonitoringMetric(f"{_tag}:class_quality", ["dataset", "class_name", "metric"])
-    confusion = monitoring.ModelMonitoringMetric(f"{_tag}:confusion", ["dataset", "class_x_name", "class_y_name"])
-    class_confusion = monitoring.ModelMonitoringMetric(f"{_tag}:class_confusion", ["dataset", "class_name", "metric"])
+    quality = ModelMonitoringMetric(f"{_tag}:quality", ["dataset", "metric"])
+    class_representation = ModelMonitoringMetric(f"{_tag}:class_representation", ["dataset", "class_name", "type"])
+    class_quality = ModelMonitoringMetric(f"{_tag}:class_quality", ["dataset", "class_name", "metric"])
+    confusion = ModelMonitoringMetric(f"{_tag}:confusion", ["dataset", "class_x_name", "class_y_name"])
+    class_confusion = ModelMonitoringMetric(f"{_tag}:class_confusion", ["dataset", "class_name", "metric"])
 
 
-class ProbClassificationPerformanceMonitor(monitoring.ModelMonitor):
+class ProbClassificationPerformanceMonitor(ModelMonitor):
     def monitor_id(self) -> str:
         return "prob_classification_performance"
 
     def analyzers(self):
-        return [prob_classification_performance_analyzer.ProbClassificationPerformanceAnalyzer]
+        return [ProbClassificationPerformanceAnalyzer]
 
     @staticmethod
     def _yield_metrics(
-        metrics: prob_classification_performance_analyzer.ClassificationPerformanceMetrics,
+        metrics: ClassificationPerformanceMetrics,
         dataset: str,
-        columns: utils.DatasetColumns,
-    ):
+        columns: DatasetColumns,
+    ) -> Generator[MetricsType, None, None]:
         yield ProbClassificationPerformanceMonitorMetricsMonitor.quality.create(
             metrics.accuracy, dict(dataset=dataset, metric="accuracy")
         )
@@ -109,9 +124,7 @@ class ProbClassificationPerformanceMonitor(monitoring.ModelMonitor):
                 )
 
     def metrics(self, analyzer_results):
-        results = prob_classification_performance_analyzer.ProbClassificationPerformanceAnalyzer.get_results(
-            analyzer_results
-        )
+        results = ProbClassificationPerformanceAnalyzer.get_results(analyzer_results)
 
         for metric in self._yield_metrics(results.reference_metrics, "reference", columns=results.columns):
             yield metric

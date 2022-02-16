@@ -1,6 +1,6 @@
 from typing import Generator
 
-from evidently.analyzers import cat_target_drift_analyzer
+from evidently.analyzers.cat_target_drift_analyzer import CatTargetDriftAnalyzer
 from evidently.model_monitoring.monitoring import MetricsType
 from evidently.model_monitoring.monitoring import ModelMonitor
 from evidently.model_monitoring.monitoring import ModelMonitoringMetric
@@ -24,10 +24,10 @@ class CatTargetDriftMonitor(ModelMonitor):
         return "cat_target_drift"
 
     def analyzers(self):
-        return [cat_target_drift_analyzer.CatTargetDriftAnalyzer]
+        return [CatTargetDriftAnalyzer]
 
     def metrics(self, analyzer_results) -> Generator[MetricsType, None, None]:
-        results = cat_target_drift_analyzer.CatTargetDriftAnalyzer.get_results(analyzer_results)
+        results = CatTargetDriftAnalyzer.get_results(analyzer_results)
 
         # quantity of rows in income data
         yield CatTargetDriftMonitorMetrics.count.create(results.reference_data_count, dict(dataset="prediction"))

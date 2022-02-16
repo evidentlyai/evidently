@@ -1,10 +1,15 @@
-from evidently.analyzers import classification_performance_analyzer
-from evidently.model_monitoring import monitoring
+from typing import Generator
+
+from evidently.analyzers.classification_performance_analyzer import ClassificationPerformanceAnalyzer
+from evidently.analyzers.classification_performance_analyzer import PerformanceMetrics
+from evidently.model_monitoring.monitoring import MetricsType
+from evidently.model_monitoring.monitoring import ModelMonitor
+from evidently.model_monitoring.monitoring import ModelMonitoringMetric
 from evidently.analyzers import utils
 
 
 class ClassificationPerformanceMonitorMetricsMonitor:
-    """Class for classification performance metrics.
+    """Class for classification performance metrics in monitor.
 
     Metrics list:
         - quality: model quality with macro-average metrics in `reference` and `current` datasets
@@ -14,31 +19,30 @@ class ClassificationPerformanceMonitorMetricsMonitor:
         `target` and `prediction` columns are marked as `type`
        - class_quality: quality metrics for each class
        - confusion: aggregated confusion metrics
+       - class_confusion: confusion (TP, TN, FP, FN) by class
     """
 
     _tag = "classification_performance"
-    quality = monitoring.ModelMonitoringMetric(f"{_tag}:quality", ["dataset", "metric"])
-    class_representation = monitoring.ModelMonitoringMetric(
-        f"{_tag}:class_representation", ["dataset", "class_name", "type"]
-    )
-    class_quality = monitoring.ModelMonitoringMetric(f"{_tag}:class_quality", ["dataset", "class_name", "metric"])
-    confusion = monitoring.ModelMonitoringMetric(f"{_tag}:confusion", ["dataset", "class_x_name", "class_y_name"])
-    class_confusion = monitoring.ModelMonitoringMetric(f"{_tag}:class_confusion", ["dataset", "class_name", "metric"])
+    quality = ModelMonitoringMetric(f"{_tag}:quality", ["dataset", "metric"])
+    class_representation = ModelMonitoringMetric(f"{_tag}:class_representation", ["dataset", "class_name", "type"])
+    class_quality = ModelMonitoringMetric(f"{_tag}:class_quality", ["dataset", "class_name", "metric"])
+    confusion = ModelMonitoringMetric(f"{_tag}:confusion", ["dataset", "class_x_name", "class_y_name"])
+    class_confusion = ModelMonitoringMetric(f"{_tag}:class_confusion", ["dataset", "class_name", "metric"])
 
 
-class ClassificationPerformanceMonitor(monitoring.ModelMonitor):
+class ClassificationPerformanceMonitor(ModelMonitor):
     def monitor_id(self) -> str:
         return "classification_performance"
 
     def analyzers(self):
-        return [classification_performance_analyzer.ClassificationPerformanceAnalyzer]
+        return [ClassificationPerformanceAnalyzer]
 
     @staticmethod
     def _yield_metrics(
-        metrics: classification_performance_analyzer.PerformanceMetrics,
+        metrics: PerformanceMetrics,
         dataset: str,
         columns: utils.DatasetColumns,
-    ):
+    ) -> Generator[MetricsType, None, None]:
         yield ClassificationPerformanceMonitorMetricsMonitor.quality.create(
             metrics.accuracy, dict(dataset=dataset, metric="accuracy")
         )
@@ -114,8 +118,8 @@ class ClassificationPerformanceMonitor(monitoring.ModelMonitor):
                     dict(dataset=dataset, class_x_name=class_x_name, class_y_name=class_y_name),
                 )
 
-    def metrics(self, analyzer_results):
-        results = classification_performance_analyzer.ClassificationPerformanceAnalyzer.get_results(analyzer_results)
+    def metrics(self, analyzer_results) -> Generator[MetricsType, None, None]:
+        results = ClassificationPerformanceAnalyzer.get_results(analyzer_results)
 
         for metric in self._yield_metrics(results.reference_metrics, "reference", columns=results.columns):
             yield metric
