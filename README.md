@@ -15,24 +15,25 @@
 </p>
 
 
-## What is it?
+# :bar_chart: What is Evidently?
 
 Evidently helps analyze and track data and ML model quality throughout the model lifecycle. You can think of it as an evaluation layer that fits into the existing ML stack.
 
 Evidently has a modular approach with 3 interfaces on top of the shared `analyzer` functionality. 
 
-# 1. Interactive visual reports 
+## 1. Interactive visual reports 
 
-![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/docs/images/evidently_4_reports_preview_small.png)
+![Dashboard example](docs/images/evidently_4_reports_preview_small.png)
 
 Evidently generates interactive `dashboards` from pandas `DataFrame` or `csv` files. You can use them for model evaluation, debugging and documentation. 
 
 Each report covers a particular aspect of the model performance. You can display reports in Jupyter notebook or Colab or export as an HTML file. Currently 6 pre-built reports are available:
-* **Data Drift**. Detects changes in the input feature distribution. 
-* **Target Drift**: Numerical, Categorical. Detects changes in the model output.
-* **Model Performance**: Classification, Probabilistic Classification, Regression. Evaluates the quality of the model and model errors.
+* [**Data Drift**](https://docs.evidentlyai.com/reports/data-drift). Detects changes in the input feature distribution. 
+* **Target Drift**: [Numerical](https://docs.evidentlyai.com/reports/num-target-drift), [Categorical](https://docs.evidentlyai.com/reports/categorical-target-drift). Detects changes in the model output.
+* **Model Performance**: [Classification](https://docs.evidentlyai.com/reports/classification-performance), [Probabilistic Classification](https://docs.evidentlyai.com/reports/probabilistic-classification-performance), [Regression](https://docs.evidentlyai.com/reports/reg-performance). Evaluates the quality of the model and model errors.
 
-# 2. Data and ML model profiling 
+## 2. Data and ML model profiling 
+![Pipeline example](docs/images/evidently_drift_pipeline.png)
 
 Evidently also generates JSON `profiles`. You can use them to integrate the data or model evaluation step into the ML pipeline. 
 
@@ -40,24 +41,24 @@ You can log and store JSON profiles for further analysis, or build a conditional
 
 You can explore example integrations with tools like Airflow and Mlflow.
 
-# 3. Real-time ML monitoring 
+## 3. Real-time ML monitoring 
 **Note**: this functionality is in active development and subject to API change.
 ![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/docs/images/evidently_data_drift_grafana_dashboard_top.png)
 
-Evidently has `monitors` that collect the data and model metrics from a deployed ML service. You can use it to build live monitoring dashboards. Evidently configures the monitoring on top of the streaming data and emits the metrics. You can log and use the metrics elsewhere. 
+Evidently has `monitors` that collect the data and model metrics from a deployed ML service. You can use it to build live monitoring dashboards. Evidently configures the monitoring on top of the streaming data and emits the metrics. 
 
 There is a lightweight integration with Prometheus and Grafana that comes with pre-built dashboards.
 
-## Installing from PyPI
+# :woman_technologist: Installing from PyPI
+
 ### MAC OS and Linux
 Evidently is available as a PyPI package. To install it using pip package manager, run:
 ```sh
 $ pip install evidently
 ```
+If you want to generate reports as HTML files or export as JSON profiles, the installation is now complete.
 
-The tool allows building interactive reports both inside a Jupyter notebook and as a separate HTML file. If you only want to generate interactive reports as HTML files or export as JSON profiles, the installation is now complete.
-
-To enable building interactive reports inside a Jupyter notebook, we use jupyter nbextension. If you want to create reports inside a Jupyter notebook, then after installing `evidently` you should run the two following commands in the terminal from evidently directory.
+If you want to display the dashboards directly in a Jupyter notebook, you should install `jupyter nbextension`. After installing `evidently`, run the two following commands in the terminal from the evidently directory.
 
 To install jupyter nbextension, run:
 ```sh
@@ -67,11 +68,9 @@ To enable it, run:
 ```sh
 $ jupyter nbextension enable evidently --py --sys-prefix
 ```
-That's it!
+That's it! A single run after the installation is enough. 
 
-**Note**: a single run after the installation is enough. No need to repeat the last two commands every time.
-
-**Note 2**: if you use Jupyter Lab, you may experience difficulties with exploring report inside a Jupyter notebook. However, the report generation in a separate .html file will work correctly.
+**Note**: if you use Jupyter Lab, the dashboard might not display in the notebook. However, the report generation in a separate HTML file will work correctly.
 
 ### Windows
 Evidently is available as a PyPI package. To install it using pip package manager, run:
@@ -80,9 +79,9 @@ $ pip install evidently
 ```
 The tool allows building interactive reports both inside a Jupyter notebook and as a separate HTML file. Unfortunately, building reports inside a Jupyter notebook is not yet possible for Windows. The reason is Windows requires administrator privileges to create symlink. In later versions we will address this issue.
 
-## Getting started
+# :arrow_forward: Getting started
 
-### Jupyter Notebook
+## Jupyter Notebook
 To start, prepare your data as two pandas `DataFrames`. The first should include your reference data, the second - current production data. The structure of both datasets should be identical. 
 
 * For **Data Drift** report, include the input features only.
@@ -93,7 +92,7 @@ Calculation results can be available in one of the two formats:
 * Option 1: an interactive **Dashboard** displayed inside the Jupyter notebook or exportable as a HTML report.
 * Option 2: a JSON **Profile** that includes the values of metrics and the results of statistical tests.  
 
-#### Option 1: Dashboard
+### Option 1: Dashboard
 
 After installing the tool, import Evidently **dashboard** and required tabs:
 
@@ -129,7 +128,7 @@ iris_data_and_target_drift_report.save("reports/my_report_with_2_tabs.html")
 If you get a security alert, press "trust html".
 HTML report does not open automatically. To explore it, you should open it from the destination folder.
 
-#### Option 2: Profile
+### Option 2: Profile
 
 After installing the tool, import Evidently **profile** and required sections:
 
@@ -160,11 +159,11 @@ iris_target_and_data_drift_profile = Profile(sections=[DataDriftProfileSection()
 iris_target_and_data_drift_profile.calculate(iris_frame[:75], iris_frame[75:], column_mapping = None) 
 iris_target_and_data_drift_profile.json() 
 ```
-
-## Community Reports
-* A simple dashboard which contains two custom widgets with target distribution information [link to repository](https://github.com/0lgaF/my_tab_with_evidently)
-
 ## Google Colab, Kaggle Kernel, Deepnote
+
+<details><summary>Read instructions on how to run Evidently in other notebook environments.</summary>
+<p>
+
 You can run ```evidently``` in [Google Colab](https://colab.research.google.com/), [Kaggle Notebook](https://www.kaggle.com/code) and [Deepnote](https://deepnote.com/).
 
 First, install ```evidently```. Run the following command in the notebook cell:
@@ -199,36 +198,44 @@ The ```show()``` method has the argument ```mode```, which can take the followin
 * **nbextension** - to show the UI using nbextension. Use this option to display dashboards in Jupyter notebooks (it should work automatically).
 * **inline** - to insert the UI directly into the cell. Use this option for PyLab, Google Colab, Kaggle Kernels and Deepnote. For Google Colab, this should work automatically, for **PyLab**, **Kaggle Kernels** and **Deepnote** the option should be specified explicitly.
 
-## Telemetry
-When you use Evidently in the command-line interface, we collect basic telemetry (starting from 0.1.21.dev0 version). It includes data on the environment (e.g. Python version) and usage (type of report or profile generated). You can read more about what we collect [here](https://docs.evidentlyai.com/support/telemetry). 
+</p>
+</details>
 
-You can opt-out from telemetry collection by setting the environment variable EVIDENTLY_DISABLE_TELEMETRY=1
+# :computer: Contributions
+We welcome contributions! Read the [Guide](CONTRIBUTING.md) to learn more. 
 
-## Documentation
-For more information, refer to a complete <a href="https://evidentlyai.gitbook.io/docs/">Documentation</a>.
+# :framed_picture: Community Reports
+You can also contribute custom reports with a combination of own metrics and widgets. We'll be glad to showcase some of them!
+* A simple dashboard which contains two custom widgets with target distribution information: [link to repository](https://github.com/0lgaF/my_tab_with_evidently)
 
-## Examples
-- See **Data Drift** Dashboard and Profile generation to explore the results both inside a Jupyter notebook and as a separate .html file:
-[Iris](https://colab.research.google.com/drive/1TCdDjuiMzvSyjkIJOwYl2dkN8N56c00Z), 
-[Boston](https://colab.research.google.com/drive/1J8FvINy5nX47L5-iklsGD4C4y1Zi1Wlo)
+# :books: Documentation
+For more information, refer to a complete <a href="https://docs.evidentlyai.com">Documentation</a>. You can start with this [Tutorial](https://docs.evidentlyai.com/tutorial) for a quick introduction.
 
-- See **Categorical Target and Data Drift** Dashboard and Profile generation to explore the results both inside a Jupyter notebook and as a separate file:
-[Iris](https://colab.research.google.com/drive/18HvFvZeIjOmbAV7KVL103PlWlFuIjdGj),
-[Breast Cancer](https://colab.research.google.com/drive/157kTbk-uZKi4Q6Eea3yaEbLrpR_h_Pow)
+# :card_index_dividers: Examples
+Here you can find simple examples on toy datasets to quickly explore what Evidently can do right out of the box.
 
-- See **Numerical Target and Data Drift** Dashboard and Profile generation to explore the results both inside a Jupyter notebook and as a separate file:
-[Boston](https://colab.research.google.com/drive/1IDE02r-Xh-T4k5Yw3SpRGlewHOS8ZsmX) 
+Report | Jupyter notebook | Colab notebook | Data source 
+--- | --- | --- | --- 
+Data Drift + Categorical Target Drift (Multiclass) | [link](examples/sample_notebooks/multiclass_target_and_data_drift_iris.ipynb) | [link](https://colab.research.google.com/drive/1Dd6ZzIgeBYkD_4bqWZ0RAdUpCU0b6Y6H) | Iris plants sklearn.datasets 
+Data Drift + Categorical Target Drift (Binary) | [link](examples/sample_notebooks/binary_target_and_data_drift_breast_cancer.ipynb) | [link](https://colab.research.google.com/drive/1gpzNuFbhoGc4-DLAPMJofQXrsX7Sqsl5) | Breast cancer sklearn.datasets
+Data Drift + Numerical Target Drift | [link](examples/sample_notebooks/numerical_target_and_data_drift_california_housing.ipynb) | [link](https://colab.research.google.com/drive/1TGt-0rA7MiXsxwtKB4eaAGIUwnuZtyxc) | California housing sklearn.datasets 
+Regression Performance | [link](examples/sample_notebooks/regression_performance_bike_sharing_demand.ipynb) | [link](https://colab.research.google.com/drive/1ONgyDXKMFyt9IYUwLpvfxz9VIZHw-qBJ) | Bike sharing UCI: [link](https://archive.ics.uci.edu/ml/datasets/bike+sharing+dataset)
+Classification Performance (Multiclass) | [link](examples/sample_notebooks/classification_performance_multiclass_iris.ipynb) | [link](https://colab.research.google.com/drive/1pnYbVJEHBqvVmHUXzG-kw-Fr6PqhzRg3) | Iris plants sklearn.datasets 
+Probabilistic Classification Performance (Multiclass) | [link](examples/sample_notebooks/probabilistic_classification_performance_multiclass_iris.ipynb) | [link](https://colab.research.google.com/drive/1UkFaBqOzBseB_UqisvNbsh9hX5w3dpYS) | Iris plants sklearn.datasets 
+Classification Performance (Binary) | [link](examples/sample_notebooks/classification_performance_breast_cancer.ipynb) | [link](https://colab.research.google.com/drive/1b2kTLUIVJkKJybYeD3ZjpaREr_9dDTpz) | Breast cancer sklearn.datasets
+Probabilistic Classification Performance (Binary) | [link](examples/sample_notebooks/probabilistic_classification_performance_breast_cancer.ipynb) | [link](https://colab.research.google.com/drive/1sE2H4mFSgtNe34JZMAeC3eLntid6oe1g) | Breast cancer sklearn.datasets
 
-- See **Regression Performance** Dashboard and Profile generation to explore the results both inside a Jupyter notebook and as a separate file:
-[Bike Sharing Demand](https://colab.research.google.com/drive/1VA1KjBYxMRfccSS5IXAClBGKB9Lw7WtP)
+## Integrations
+See how to integrate Evidently in your prediction pipelines and use it with other tools. 
 
-- See **Classification Performance** Dashboard and Profile generation to explore the results both inside a Jupyter notebook and as a separate file:
-[Iris](https://colab.research.google.com/drive/1SAsaUTUaIzg3FyI_EbmO9hzuEu1hVl4v) 
- 
-- See **Probabilistic Classification Performance** Dashboard and Profile generation to explore the results both inside a Jupyter notebook and as a separate .html file:
-[Iris](https://colab.research.google.com/drive/1uFN0ZWNLk3ExylBywq_M8oGkmac0lDrq), 
-[Breast Cancer](https://colab.research.google.com/drive/1vwEBgGnDVk5BJG2PXT1w41VfZ-_bq_Sw)
+Title | link to tutorial
+--- | ---
+Real-time ML monitoring with Grafana | [Evidently + Grafana](examples/integrations/grafana_monitoring_service/)
+Batch ML monitoring with Airflow | [Evidently + Airflow](examples/integrations/airflow_drift_detection/)
+Log Evidently metrics in MLflow UI | [Evidently + MLflow](examples/integrations/mlflow_logging/)
 
-## Stay updated
-We will be releasing more reports soon. If you want to receive updates, follow us on [Twitter](https://twitter.com/EvidentlyAI), or sign up for our [newsletter](https://evidentlyai.com/sign-up). You can also find more tutorials and explanations in our [Blog](https://evidentlyai.com/blog). If you want to chat and connect, join our [Discord community](https://discord.gg/xZjKRaNp8b)!
+# :white_check_mark: Stay updated
+- If you want to receive updates, follow us on [Twitter](https://twitter.com/EvidentlyAI), or sign up for our [newsletter](https://evidentlyai.com/sign-up). 
+- You can also find more tutorials and explanations in our [Blog](https://evidentlyai.com/blog). 
+- If you want to chat and connect, join our [Discord community](https://discord.gg/xZjKRaNp8b)!
 
