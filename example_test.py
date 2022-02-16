@@ -2,19 +2,19 @@ import os
 import sys
 
 excludes = [
-    'historical_drift_visualization.py',
-    'mlflow_integration.py',
-    'ibm_hr_attrition_model_validation.py',
-    'bicycle_demand_monitoring_setup.py'
+    "historical_drift_visualization.py",
+    "mlflow_integration.py",
+    "ibm_hr_attrition_model_validation.py",
+    "bicycle_demand_monitoring_setup.py",
 ]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     failed_scripts = []
 
     for entry, _, files in os.walk("example_scripts"):
         for file in files:
-            if file.endswith('.py'):
+            if file.endswith(".py"):
                 if file in excludes:
                     continue
                 result = os.system(f"python example_scripts/{file}")
