@@ -121,9 +121,10 @@ class ClassificationPerformanceMonitor(ModelMonitor):
     def metrics(self, analyzer_results) -> Generator[MetricsType, None, None]:
         results = ClassificationPerformanceAnalyzer.get_results(analyzer_results)
 
-        for metric in self._yield_metrics(results.reference_metrics, "reference", columns=results.columns):
-            yield metric
+        if results.reference_metrics is not None:
+            for metric in self._yield_metrics(results.reference_metrics, "reference", columns=results.columns):
+                yield metric
 
-        if results.current_metrics:
+        if results.current_metrics is not None:
             for metric in self._yield_metrics(results.current_metrics, "current", columns=results.columns):
                 yield metric

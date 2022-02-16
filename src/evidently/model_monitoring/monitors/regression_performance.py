@@ -28,16 +28,17 @@ class RegressionPerformanceMonitor(ModelMonitor):
     def metrics(self, analyzer_results) -> Generator[MetricsType, None, None]:
         results = RegressionPerformanceAnalyzer.get_results(analyzer_results)
 
-        for metric in self._yield_quality(results.reference_metrics, "reference"):
-            yield metric
+        if results.reference_metrics is not None:
+            for metric in self._yield_quality(results.reference_metrics, "reference"):
+                yield metric
 
-        for metric in self._yield_error_normality(results.reference_metrics.error_normality, "reference"):
-            yield metric
+            for metric in self._yield_error_normality(results.reference_metrics.error_normality, "reference"):
+                yield metric
 
-        for metric in self._yield_underperformance(results.reference_metrics.underperformance, "reference"):
-            yield metric
+            for metric in self._yield_underperformance(results.reference_metrics.underperformance, "reference"):
+                yield metric
 
-        if results.current_metrics:
+        if results.current_metrics is not None:
             for metric in self._yield_quality(results.current_metrics, "current"):
                 yield metric
 
@@ -58,17 +59,19 @@ class RegressionPerformanceMonitor(ModelMonitor):
             "current_range",
         ]
 
-        for feature in results.columns.num_feature_names:
-            for field in fields:
-                yield RegressionPerformanceMonitorMetrics.feature_error_bias.create(
-                    results.error_bias[feature][field], dict(feature=feature, feature_type="num", metric=field)
-                )
+        if results.error_bias is not None:
+            for feature in results.columns.num_feature_names:
+                for field in fields:
+                    yield RegressionPerformanceMonitorMetrics.feature_error_bias.create(
+                        results.error_bias[feature][field], dict(feature=feature, feature_type="num", metric=field)
+                    )
 
-        for feature in results.columns.cat_feature_names:
-            for field in fields:
-                yield RegressionPerformanceMonitorMetrics.feature_error_bias.create(
-                    results.error_bias[feature][field], dict(feature=feature, feature_type="cat", metric=field)
-                )
+        if results.error_bias is not None:
+            for feature in results.columns.cat_feature_names:
+                for field in fields:
+                    yield RegressionPerformanceMonitorMetrics.feature_error_bias.create(
+                        results.error_bias[feature][field], dict(feature=feature, feature_type="cat", metric=field)
+                    )
 
     @staticmethod
     def _yield_quality(metrics: RegressionPerformanceMetrics, dataset: str) -> Generator[MetricsType, None, None]:
