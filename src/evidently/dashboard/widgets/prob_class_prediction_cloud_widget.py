@@ -12,7 +12,7 @@ import plotly.graph_objs as go
 
 from evidently import ColumnMapping
 from evidently.analyzers.prob_classification_performance_analyzer import ProbClassificationPerformanceAnalyzer
-from evidently.model.widget import BaseWidgetInfo, AlertStats
+from evidently.model.widget import BaseWidgetInfo
 from evidently.dashboard.widgets.widget import Widget, RED, GREY
 
 
@@ -104,7 +104,6 @@ class ProbClassPredictionCloudWidget(Widget):
             title=self.title,
             type="tabbed_graph",
             details="",
-            alertStats=AlertStats(),
             alerts=[],
             alertsPosition="row",
             insights=[],
