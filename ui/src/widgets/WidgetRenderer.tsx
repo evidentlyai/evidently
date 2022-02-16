@@ -3,7 +3,7 @@ import React from "react";
 import {
     BigGraphWidgetParams,
     BigTableWidgetParams,
-    CounterWidgetParams,
+    CounterWidgetParams, ExpandableListWidgetParams,
     MultiTabGraphWidgetParams, MultiTabWidgetParams,
     PercentWidgetParams,
     TableWidgetParams,
@@ -21,6 +21,7 @@ import TabbedGraphWidgetContent from "./TabbedGraphWidgetContent";
 import TableWidgetContent from "./TableWidgetContent";
 import BigTableWidgetContent from "./BigTableWidget/BigTableWidgetContent";
 import TabbedWidgetContent from "./TabbedWidgetContent";
+import ExpandableListContent from "./ExpandableListContent";
 
 function sizeTransform(size: WidgetSize) : (1 | 3 | 6 | 12) {
     if (size === WidgetSize.Small) {
@@ -53,6 +54,8 @@ export function WidgetRenderer(key: string, info: WidgetInfo) {
         content = <WidgetPanel>
             {((info as unknown) as WidgetGroupParams).widgets.map((wi, idx) => WidgetRenderer(`wi_${idx}`, wi))}
         </WidgetPanel>
+    } else if (info.type === "expandable_list") {
+        content = <ExpandableListContent {...(info.params as ExpandableListWidgetParams)} widgetSize={info.size} />
     }
     return <Widget key={key} size={sizeTransform(info.size)}>
         {{

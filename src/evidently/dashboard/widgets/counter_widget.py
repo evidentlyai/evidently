@@ -22,7 +22,7 @@ class CounterWidget(Widget):
         return BaseWidgetInfo(
             type="counter",
             title=self.title,
-            size=2,
+            size=1,
             params={
                 "counters": [
                     {

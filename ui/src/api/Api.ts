@@ -143,6 +143,20 @@ export interface BigTableWidgetParams {
     rowsPerPage?: number;
 }
 
+export interface Metric {
+    label: string;
+    values: (string | number)[];
+}
+
+export interface ExpandableListWidgetParams {
+    header: string;
+    description: string;
+    metrics: Metric[];
+    metricsValuesHeaders: string[];
+    graph: BigGraphWidgetParams;
+    details: BigTableRowDetails;
+}
+
 export interface WidgetInfo {
     type: string;
     title: string;
@@ -155,6 +169,7 @@ export interface WidgetInfo {
         | WidgetGroupParams
         | MultiTabGraphWidgetParams
         | BigTableWidgetParams
+        | ExpandableListWidgetParams
     ;
     alertsPosition?: "row" | "column";
     alertStats?: AlertStats;

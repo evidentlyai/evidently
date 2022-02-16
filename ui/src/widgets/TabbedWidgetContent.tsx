@@ -7,7 +7,6 @@ import {WidgetRenderer} from "./WidgetRenderer";
 
 const TabbedWidgetContent: React.FunctionComponent<MultiTabWidgetParams & {id: string, widgetSize: number}> =
     (props) => {
-    console.log(props)
         return (<AutoTabs
             tabs={props.tabs.map((g, idx) => ({
                 title: g.title,
