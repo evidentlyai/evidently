@@ -12,7 +12,7 @@ from plotly.subplots import make_subplots
 
 from evidently import ColumnMapping
 from evidently.analyzers.data_profile_analyzer import DataProfileAnalyzer
-from evidently.model.widget import BaseWidgetInfo, AlertStats, AdditionalGraphInfo
+from evidently.model.widget import BaseWidgetInfo, AdditionalGraphInfo
 from evidently.dashboard.widgets.widget import Widget, GREY, RED, COLOR_DISCRETE_SEQUENCE
 
 
@@ -28,6 +28,7 @@ class DataProfileFeaturesWidget(Widget):
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
         self.period_prefix = ''
+        is_current_data = current_data is not None
         data_profile_results = DataProfileAnalyzer.get_results(analyzers_results)
         columns = data_profile_results.columns.utility_columns
         target_column = columns.target
@@ -38,8 +39,7 @@ class DataProfileFeaturesWidget(Widget):
         cat_feature_names = data_profile_results.columns.cat_feature_names
         date_column = columns.date
         self._transform_cat_features(reference_data, current_data, cat_feature_names, target_column, target_type)
-        # set params data
-        params_data = []
+
         all_features = data_profile_results.columns.get_all_features_list(cat_before_num=True,
                                                                           include_datetime_feature=True)
         if target_column:
@@ -47,33 +47,18 @@ class DataProfileFeaturesWidget(Widget):
         if date_column:
             all_features += [date_column]
 
+        if is_current_data:
+            metricsValuesHeaders = ["reference", "current"]
+        else:
+            metricsValuesHeaders = ['']
+
+        widgets_list = []
         for feature_name in all_features:
             feature_type = data_profile_results.reference_features_stats[feature_name]['feature_type']
-            if feature_name == target_column:
-                prefix = ', target'
-            else:
-                prefix = ''
-
-            params_data.append(
-                {
-                    "details": {
-                        "parts": self.assemble_parts(target_column, date_column, feature_name, feature_type),
-                        "insights": []
-                    },
-                    "f1": feature_name + prefix,
-                    "f2": feature_type,
-                    "f3": ' ',  # data_profile_results.ref_features_stats[feature_name]['most common value'],
-                    "f4": 'graph'
-                }
-            )
-
-        # set additionalGraphs
-        additional_graphs_data = []
-
-        # additional graphs data
-        for feature_name in all_features:
-            feature_type = data_profile_results.reference_features_stats[feature_name]['feature_type']
-            if date_column and feature_type != 'date':
+            fig_main_distr = self._plot_main_distr_figure(reference_data, current_data, feature_name, feature_type)
+            parts = self.assemble_parts(target_column, date_column, feature_name, feature_type)
+            additional_graphs = []
+            if date_column and feature_type != 'datetime':
                 freq = self._choose_agg_period(date_column, reference_data, current_data)
                 reference_data[date_column + '_period'] = reference_data[date_column].dt.to_period(freq=freq)
                 if current_data is not None:
@@ -83,25 +68,13 @@ class DataProfileFeaturesWidget(Widget):
                 else:
                     feature_in_time_figure = self._plot_feature_in_time_1_df(reference_data, date_column, feature_name,
                                                                              feature_type)
+                additional_graphs.append(
+                    AdditionalGraphInfo(feature_name + "_in_time", {
+                    "data": feature_in_time_figure['data'],
+                    "layout": feature_in_time_figure['layout'],
+                    }))
 
-                additional_graphs_data.append(
-                    AdditionalGraphInfo(
-                        feature_name or '' + '_in_time',
-                        {
-                            "title": "",
-                            "size": 2,
-                            "text": "",
-                            "type": "big_graph",
-                            "params":
-                                {
-                                    "data": feature_in_time_figure['data'],
-                                    "layout": feature_in_time_figure['layout']
-                                }
-                        }
-                    )
-                )
-
-            if target_column and feature_name != target_column and feature_name:
+            if target_column and feature_name != target_column:
                 if current_data is not None:
                     feature_and_target_figure = self._plot_feature_and_target_2_df(reference_data, current_data,
                                                                                    target_column, target_type,
@@ -110,71 +83,162 @@ class DataProfileFeaturesWidget(Widget):
                     feature_and_target_figure = self._plot_feature_and_target_1_df(reference_data, target_column,
                                                                                    target_type, feature_name,
                                                                                    feature_type)
-                additional_graphs_data.append(
-                    AdditionalGraphInfo(
-                        feature_name or '' + "_by_target",
-                        {
-                            "title": "",
-                            "size": 2,
-                            "text": "",
-                            "type": "big_graph",
-                            "params":
-                                {
-                                    "data": feature_and_target_figure['data'],
-                                    "layout": feature_and_target_figure['layout']
-                                }
-                        }
-                    )
-                )
+                additional_graphs.append(
+                    AdditionalGraphInfo(feature_name + "_by_target", {
+                    "data": feature_and_target_figure['data'],
+                    "layout": feature_and_target_figure['layout'],
+                    }))
+
+
+            wi = BaseWidgetInfo(
+                type="expandable_list",
+                title="",
+                size=2,
+                params={
+                    "header": feature_name,
+                    "description": feature_type,
+                    "metricsValuesHeaders": metricsValuesHeaders,
+                    "metrics": self._metrics_for_table(feature_name, data_profile_results, is_current_data),
+                    "graph": {
+                        "data": fig_main_distr ['data'],
+                        "layout": fig_main_distr ['layout']
+                    },
+                    "details": {
+                        "parts": parts,
+                        "insights": []
+                    }
+                },
+                additionalGraphs=additional_graphs
+                
+            )
+
+            widgets_list.append(wi)
 
         return BaseWidgetInfo(
-            title='data profile report',
-            type="big_table",
-            details="",
-            alertStats=AlertStats(),
-            alerts=[],
-            alertsPosition="row",
-            insights=[],
+            title="",
             size=2,
-            params={
-                "rowsPerPage": min(len(all_features), 10),
-                "columns": [
-                    {
-                        "title": "Feature",
-                        "field": "f1"
-                    },
-                    {
-                        "title": "Type",
-                        "field": "f2"
-                    },
-                    {
-                        "title": "Characteristics",
-                        "field": "f3"
-                    },
-                    {
-                        "title": "Picture",
-                        "field": "f4"
-                    }
-                ],
-                "data": params_data
-            },
-
-            additionalGraphs=additional_graphs_data
+            type="group",
+            widgets=widgets_list
         )
 
-    def assemble_parts(self, target_column: str, date_column: Optional[str], feature_name: str, feature_type: str) -> List:
+    def _metrics_for_table(self, feature_name: str, data_profile_results, is_current_data: bool):
+        if is_current_data:
+            vals = [list(x) for x in zip(data_profile_results.reference_features_stats[feature_name].values(), 
+                                         data_profile_results.current_features_stats[feature_name].values())]
+        else:
+            vals = [list(x for x in data_profile_results.reference_features_stats[feature_name].values())]
+        metrics = []
+        for k, v in zip(data_profile_results.reference_features_stats[feature_name].keys(), vals):
+            metrics.append({"label": k, "values": v})
+
+        return metrics
+
+    def _plot_main_distr_figure(self, reference_data: pd.DataFrame, current_data: pd.DataFrame,
+                                feature_name: str, feature_type: str) -> dict:
+        if feature_type == 'num':
+            if current_data is None: 
+                trace1 = go.Histogram(x=reference_data[feature_name], marker_color=RED)
+                trace2 = go.Histogram(x=np.log10(reference_data.loc[reference_data[feature_name] > 0, feature_name]), 
+                                    marker_color=RED, visible=False)
+                data = [trace1, trace2]
+                updatemenus=[ dict(
+                            type="buttons",
+                    direction="right",
+                            x=1.0,
+                            yanchor="top",
+                            buttons=list([
+                                dict(
+                                    label='Linear Scale',
+                                    method='update',
+                                    args=[{'visible': [True, False]}]
+                                ),
+                                dict(
+                                    label='Log Scale',
+                                    method='update',
+                                    args=[{'visible': [False, True]}]
+                                )]))]
+
+            else:
+                trace1 = go.Histogram(x=reference_data[feature_name], marker_color=GREY)
+                trace2 = go.Histogram(x=np.log10(reference_data.loc[reference_data[feature_name] > 0, feature_name]), 
+                                    marker_color=GREY, visible=False)
+                trace3 = go.Histogram(x=current_data[feature_name], marker_color=RED)
+                trace4 = go.Histogram(x=np.log10(current_data.loc[current_data[feature_name] > 0, feature_name]), 
+                                    marker_color=RED, visible=False)
+                data = [trace1, trace2, trace3, trace4]
+                
+                updatemenus=[ dict(
+                            type="buttons",
+                    direction="right",
+                            x=1.0,
+                            yanchor="top",
+                            buttons=list([
+                                dict(
+                                    label='Linear Scale',
+                                    method='update',
+                                    args=[{'visible': [True, False, True, False]}]
+                                ),
+                                dict(
+                                    label='Log Scale',
+                                    method='update',
+                                    args=[{'visible': [False, True, False, True]}]
+                                )]))]
+            layout = dict(updatemenus=updatemenus)
+
+            fig = go.Figure(data=data, layout=layout)
+
+        elif feature_type == 'cat':
+            fig = go.Figure()
+            cats = list(reference_data[feature_name].value_counts().index.astype(str))
+            cats = cats[::-1]
+            if 'other' in cats:
+                cats.remove('other')
+                cats = ['other'] + cats
+            if current_data is None: 
+                fig.add_trace(go.Histogram(y=reference_data[feature_name], marker_color=RED))
+            else:
+                fig.add_trace(go.Histogram(y=reference_data[feature_name], marker_color=GREY, name='reference'))
+                fig.add_trace(go.Histogram(y=current_data[feature_name], marker_color=RED, name='current'))
+            fig.update_yaxes(categoryorder='array', categoryarray= cats)
+
+        elif feature_type == 'datetime':
+            freq = self._choose_agg_period(feature_name, reference_data, current_data)
+            tmp_ref = reference_data[feature_name].dt.to_period(freq=freq)
+            tmp_ref = tmp_ref.value_counts().reset_index()
+            tmp_ref.columns = [feature_name, 'number_of_items']
+            tmp_ref[feature_name] = tmp_ref[feature_name].dt.to_timestamp()
+            fig = go.Figure()
+            if current_data is None: 
+                fig.add_trace(go.Scatter(x=tmp_ref.sort_values(feature_name)[feature_name], 
+                                        y=tmp_ref.sort_values(feature_name)['number_of_items'],
+                                        line=dict(color=RED, shape="spline")))
+            else: 
+                tmp_curr = reference_data[feature_name].dt.to_period(freq=freq)
+                tmp_curr = tmp_curr.value_counts().reset_index()
+                tmp_curr.columns = [feature_name, 'number_of_items']
+                tmp_curr[feature_name] = tmp_curr[feature_name].dt.to_timestamp()
+                fig.add_trace(go.Scatter(x=tmp_ref.sort_values(feature_name)[feature_name], 
+                                        y=tmp_ref.sort_values(feature_name)['number_of_items'],
+                                    line=dict(color=GREY, shape="spline"), name='reference'))
+                fig.add_trace(go.Scatter(x=tmp_curr.sort_values(feature_name)[feature_name], 
+                                        y=tmp_curr.sort_values(feature_name)['number_of_items'],
+                                        line=dict(color=RED, shape="spline"), name='current'))
+            fig.update_layout(xaxis_title=feature_name)
+        fig_main_distr = json.loads(fig.to_json())
+        return fig_main_distr
+
+    def assemble_parts(self, target_column: Optional[str], date_column: Optional[str], feature_name: str, 
+                       feature_type: str) -> List:
         parts = []
-        if date_column and feature_type != 'date':
+        if date_column and feature_type != 'datetime':
             parts.append({
                 "title": feature_name + " in time",
-                "id": feature_name + "_in_time",
-                "type": "widget"
+                "id": feature_name + "_in_time"
             })
         if target_column and feature_name != target_column:
             parts.append({
                 "title": feature_name + " by target",
-                "id": feature_name + "_by_target",
-                "type": "widget"
+                "id": feature_name + "_by_target"
             })
         return parts
 
