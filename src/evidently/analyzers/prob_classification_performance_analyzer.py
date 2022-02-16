@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
+from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Union
@@ -14,6 +15,7 @@ from evidently.analyzers.base_analyzer import Analyzer
 from evidently.analyzers.base_analyzer import BaseAnalyzerResult
 from evidently.options import QualityMetricsOptions
 from evidently.analyzers.utils import process_columns
+from evidently.analyzers.utils import calculate_confusion_by_classes
 
 
 @dataclass
@@ -33,6 +35,7 @@ class ClassificationPerformanceMetrics:
     log_loss: float
     metrics_matrix: dict
     confusion_matrix: ConfusionMatrix
+    confusion_by_classes: Dict[str, Dict[str, int]]
     roc_aucs: Optional[list] = None
     roc_curve: Optional[dict] = None
     pr_curve: Optional[dict] = None
@@ -104,6 +107,7 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
 
             # calculate confusion matrix
             conf_matrix = metrics.confusion_matrix(reference_data[target_column], prediction_labels)
+            confusion_by_classes = calculate_confusion_by_classes(conf_matrix, labels)
 
             result.reference_metrics = ClassificationPerformanceMetrics(
                 accuracy=accuracy_score,
@@ -114,7 +118,8 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
                 log_loss=log_loss,
                 metrics_matrix=metrics_matrix,
                 confusion_matrix=ConfusionMatrix(labels=labels, values=conf_matrix.tolist()),
-                roc_aucs=roc_aucs
+                roc_aucs=roc_aucs,
+                confusion_by_classes=confusion_by_classes
             )
 
             # calculate ROC and PR curves, PR table
@@ -236,6 +241,8 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
 
                 # calculate confusion matrix
                 conf_matrix = metrics.confusion_matrix(current_data[target_column], prediction_labels)
+                # get TP, FP, TN, FN metrics for each class
+                confusion_by_classes = calculate_confusion_by_classes(conf_matrix, labels)
 
                 result.current_metrics = ClassificationPerformanceMetrics(
                     accuracy=accuracy_score,
@@ -246,7 +253,8 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
                     log_loss=log_loss,
                     metrics_matrix=metrics_matrix,
                     confusion_matrix=ConfusionMatrix(labels=labels, values=conf_matrix.tolist()),
-                    roc_aucs=roc_aucs
+                    roc_aucs=roc_aucs,
+                    confusion_by_classes=confusion_by_classes,
                 )
 
                 # calculate ROC and PR curves, PR table

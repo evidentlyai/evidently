@@ -13,6 +13,7 @@ from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.analyzers.base_analyzer import BaseAnalyzerResult
 from evidently.analyzers.utils import process_columns
+from evidently.analyzers.utils import calculate_confusion_by_classes
 
 
 @dataclass
@@ -60,21 +61,7 @@ def _calculate_performance_metrics(
     # calculate confusion matrix
     confusion_matrix = metrics.confusion_matrix(data[target_column], data[prediction_column])
     labels = target_names if target_names else sorted(set(data[target_column]))
-
-    # get TP, FP, TN, FN metrics for each class
-    false_positive = confusion_matrix.sum(axis=0) - np.diag(confusion_matrix)
-    false_negative = confusion_matrix.sum(axis=1) - np.diag(confusion_matrix)
-    true_positive = np.diag(confusion_matrix)
-    true_negative = confusion_matrix.sum() - (false_positive + false_negative + true_positive)
-    confusion_by_classes = {}
-
-    for idx, class_name in enumerate(labels):
-        confusion_by_classes[str(class_name)] = {
-            'tp': true_positive[idx],
-            'tn': true_negative[idx],
-            'fp': false_positive[idx],
-            'fn': false_negative[idx],
-        }
+    confusion_by_classes = calculate_confusion_by_classes(confusion_matrix, labels)
 
     return PerformanceMetrics(
         accuracy=accuracy_score,
