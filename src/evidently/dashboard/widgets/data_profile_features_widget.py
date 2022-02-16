@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 import json
-import logging
-from numbers import Number
 from typing import Optional, List
 
 import pandas as pd
@@ -19,6 +17,8 @@ from evidently.dashboard.widgets.widget import Widget, GREY, RED, COLOR_DISCRETE
 
 
 class DataProfileFeaturesWidget(Widget):
+    period_prefix: str
+
     def analyzers(self):
         return [DataProfileAnalyzer]
 
@@ -27,25 +27,46 @@ class DataProfileFeaturesWidget(Widget):
                   current_data: Optional[pd.DataFrame],
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
-        self.period_prefix = None
+        self.period_prefix = ''
         data_profile_results = DataProfileAnalyzer.get_results(analyzers_results)
         columns = data_profile_results.columns.utility_columns
         target_column = columns.target
+<<<<<<< HEAD
         if target_column:
             target_type = data_profile_results.reference_features_stats[target_column]['feature_type']
         else:
             target_type = None
+=======
+
+        if target_column is None:
+            raise ValueError('target column should be present')
+
+        all_features: List[str] = [target_column]
+
+        target_type = data_profile_results.reference_features_stats[target_column]['feature_type']
+>>>>>>> 95d129e6aa0db99d971d1c249b5aeaa0cf8ec5ad
         cat_feature_names = data_profile_results.columns.cat_feature_names
         date_column = columns.date
+
+        if date_column is not None:
+            all_features += [date_column]
+
         self._transform_cat_features(reference_data, current_data, cat_feature_names, target_column, target_type)
         # set params data
         params_data = []
+<<<<<<< HEAD
         all_features = data_profile_results.columns.get_all_features_list(cat_before_num=True, 
                                                                           include_datetime_feature=True)
         if target_column:
             all_features += [target_column]
         if date_column:
             all_features += [date_column]
+=======
+        all_features += data_profile_results.columns.get_all_features_list(
+            cat_before_num=True,
+            include_datetime_feature=True,
+        )
+>>>>>>> 95d129e6aa0db99d971d1c249b5aeaa0cf8ec5ad
 
         for feature_name in all_features:
             feature_type = data_profile_results.reference_features_stats[feature_name]['feature_type']
@@ -55,17 +76,17 @@ class DataProfileFeaturesWidget(Widget):
                 prefix = ''
 
             params_data.append(
-                    {
-                        "details": {
-                            "parts": self.assemble_parts(target_column, date_column, feature_name, feature_type),
-                            "insights": []
-                        },
-                        "f1": feature_name + prefix,
-                        "f2": feature_type,
-                        "f3": ' ', #data_profile_results.ref_features_stats[feature_name]['most common value'],
-                        "f4": 'graph'
-                    }
-                )
+                {
+                    "details": {
+                        "parts": self.assemble_parts(target_column, date_column, feature_name, feature_type),
+                        "insights": []
+                    },
+                    "f1": feature_name + prefix,
+                    "f2": feature_type,
+                    "f3": ' ',  # data_profile_results.ref_features_stats[feature_name]['most common value'],
+                    "f4": 'graph'
+                }
+            )
 
         # set additionalGraphs
         additional_graphs_data = []
@@ -78,15 +99,15 @@ class DataProfileFeaturesWidget(Widget):
                 reference_data[date_column + '_period'] = reference_data[date_column].dt.to_period(freq=freq)
                 if current_data is not None:
                     current_data[date_column + '_period'] = current_data[date_column].dt.to_period(freq=freq)
-                    feature_in_time_figure = self._plot_feature_in_time_2_df(reference_data, current_data, date_column, 
+                    feature_in_time_figure = self._plot_feature_in_time_2_df(reference_data, current_data, date_column,
                                                                              feature_name, feature_type)
                 else:
-                    feature_in_time_figure = self._plot_feature_in_time_1_df(reference_data, date_column, feature_name, 
+                    feature_in_time_figure = self._plot_feature_in_time_1_df(reference_data, date_column, feature_name,
                                                                              feature_type)
 
                 additional_graphs_data.append(
                     AdditionalGraphInfo(
-                        feature_name + '_in_time',
+                        feature_name or '' + '_in_time',
                         {
                             "title": "",
                             "size": 2,
@@ -101,18 +122,18 @@ class DataProfileFeaturesWidget(Widget):
                     )
                 )
 
-            if target_column and feature_name != target_column:
+            if target_column and feature_name != target_column and feature_name:
                 if current_data is not None:
-                    feature_and_target_figure = self._plot_feature_and_target_2_df(reference_data, current_data, 
+                    feature_and_target_figure = self._plot_feature_and_target_2_df(reference_data, current_data,
                                                                                    target_column, target_type,
                                                                                    feature_name, feature_type)
                 else:
-                    feature_and_target_figure = self._plot_feature_and_target_1_df(reference_data, target_column, 
-                                                                                   target_type, feature_name, 
+                    feature_and_target_figure = self._plot_feature_and_target_1_df(reference_data, target_column,
+                                                                                   target_type, feature_name,
                                                                                    feature_type)
                 additional_graphs_data.append(
                     AdditionalGraphInfo(
-                        feature_name + "_by_target",
+                        feature_name or '' + "_by_target",
                         {
                             "title": "",
                             "size": 2,
@@ -162,27 +183,27 @@ class DataProfileFeaturesWidget(Widget):
             additionalGraphs=additional_graphs_data
         )
 
-    def assemble_parts(self, target_column: str, date_column: str, feature_name: str, feature_type: str) -> List:
+    def assemble_parts(self, target_column: str, date_column: Optional[str], feature_name: str, feature_type: str) -> List:
         parts = []
-        if date_column and feature_type!='date':
+        if date_column and feature_type != 'date':
             parts.append({
-                            "title": feature_name + " in time",
-                            "id": feature_name + "_in_time",
-                            "type": "widget"
-                        })
-        if target_column and feature_name!=target_column:
+                "title": feature_name + " in time",
+                "id": feature_name + "_in_time",
+                "type": "widget"
+            })
+        if target_column and feature_name != target_column:
             parts.append({
-                            "title": feature_name + " by target",
-                            "id": feature_name + "_by_target",
-                            "type": "widget"
-                        })
+                "title": feature_name + " by target",
+                "id": feature_name + "_by_target",
+                "type": "widget"
+            })
         return parts
 
     def _transform_df_to_time_mean_view(self, df: pd.DataFrame, date_column: str, feature_name: str):
         df = df.groupby(date_column + '_period')[feature_name].mean().reset_index()
         df[date_column] = df[date_column + '_period'].dt.to_timestamp()
         return df
-    
+
     def _transform_df_to_time_count_view(self, df: pd.DataFrame, date_column: str, feature_name: str):
         df = df.groupby([date_column + '_period', feature_name]).size()
         df.name = 'num'
@@ -190,15 +211,18 @@ class DataProfileFeaturesWidget(Widget):
         df[date_column] = df[date_column + '_period'].dt.to_timestamp()
         return df
 
-    def _plot_feature_in_time_1_df(self, reference_data: pd.DataFrame, date_column: str, feature_name: str, 
-                                   feature_type: str) -> json:
+    def _plot_feature_in_time_1_df(self, reference_data: pd.DataFrame, date_column: str, feature_name: str,
+                                   feature_type: str) -> dict:
         tmp = reference_data[[date_column + '_period', feature_name]].copy()
+        feature_in_time_figure = {}
+
         if feature_type == 'num':
             tmp = self._transform_df_to_time_mean_view(tmp, date_column, feature_name)
 
             fig = go.Figure()
-            fig.add_trace(go.Scatter(x=tmp.sort_values(date_column)[date_column], 
-                          y=tmp.sort_values(date_column)[feature_name], line=dict(color=RED, shape="spline")))
+            fig.add_trace(go.Scatter(x=tmp.sort_values(date_column)[date_column],
+                                     y=tmp.sort_values(date_column)[feature_name],
+                                     line=dict(color=RED, shape="spline")))
             fig.update_layout(yaxis_title='Mean ' + feature_name + ' per ' + self.period_prefix)
             feature_in_time_figure = json.loads(fig.to_json())
 
@@ -208,10 +232,10 @@ class DataProfileFeaturesWidget(Widget):
             fig = go.Figure()
             for i, val in enumerate(tmp[feature_name].unique()):
                 fig.add_trace(go.Bar(
-                                x=tmp.loc[tmp[feature_name] == val, date_column],
-                                y=tmp.loc[tmp[feature_name] == val, 'num'],
-                                name=str(val),
-                                marker_color=COLOR_DISCRETE_SEQUENCE[i]))
+                    x=tmp.loc[tmp[feature_name] == val, date_column],
+                    y=tmp.loc[tmp[feature_name] == val, 'num'],
+                    name=str(val),
+                    marker_color=COLOR_DISCRETE_SEQUENCE[i]))
             fig.update_traces(marker_line_width=0.01)
             fig.update_layout(barmode='stack', bargap=0, yaxis_title='count category values per ' + self.period_prefix)
 
@@ -219,21 +243,23 @@ class DataProfileFeaturesWidget(Widget):
 
         return feature_in_time_figure
 
-    def _plot_feature_in_time_2_df(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, 
-                                date_column: str, feature_name: str, feature_type: str) -> json:
+    def _plot_feature_in_time_2_df(self, reference_data: pd.DataFrame, current_data: pd.DataFrame,
+                                   date_column: str, feature_name: str, feature_type: str) -> dict:
         tmp_ref = reference_data[[date_column + '_period', feature_name]].copy()
         tmp_curr = current_data[[date_column + '_period', feature_name]].copy()
+        feature_in_time_figure = {}
+
         if feature_type == 'num':
             tmp_ref = self._transform_df_to_time_mean_view(tmp_ref, date_column, feature_name)
             tmp_curr = self._transform_df_to_time_mean_view(tmp_curr, date_column, feature_name)
 
             fig = go.Figure()
-            fig.add_trace(go.Scatter(x=tmp_ref.sort_values(date_column)[date_column], 
-                                    y=tmp_ref.sort_values(date_column)[feature_name],
-                                    line=dict(color=GREY, shape="spline"), name='reference'))
-            fig.add_trace(go.Scatter(x=tmp_curr.sort_values(date_column)[date_column], 
-                                    y=tmp_curr.sort_values(date_column)[feature_name],
-                                    line=dict(color=RED, shape="spline"), name='current'))
+            fig.add_trace(go.Scatter(x=tmp_ref.sort_values(date_column)[date_column],
+                                     y=tmp_ref.sort_values(date_column)[feature_name],
+                                     line=dict(color=GREY, shape="spline"), name='reference'))
+            fig.add_trace(go.Scatter(x=tmp_curr.sort_values(date_column)[date_column],
+                                     y=tmp_curr.sort_values(date_column)[feature_name],
+                                     line=dict(color=RED, shape="spline"), name='current'))
             fig.update_layout(yaxis_title='Mean ' + feature_name + ' per ' + self.period_prefix)
             feature_in_time_figure = json.loads(fig.to_json())
 
@@ -247,17 +273,19 @@ class DataProfileFeaturesWidget(Widget):
 
             for i, val in enumerate(tmp_ref[feature_name].unique()):
                 fig.add_trace(go.Bar(
-                                x=tmp_ref.loc[tmp_ref[feature_name] == val, date_column],
-                                y=tmp_ref.loc[tmp_ref[feature_name] == val, 'num'],
-                                name=str(val),
-                                marker_color=COLOR_DISCRETE_SEQUENCE[i], opacity=0.6, showlegend=False), 1, 1)
+                    x=tmp_ref.loc[tmp_ref[feature_name] == val, date_column],
+                    y=tmp_ref.loc[tmp_ref[feature_name] == val, 'num'],
+                    name=str(val),
+                    marker_color=COLOR_DISCRETE_SEQUENCE[i], opacity=0.6, showlegend=False), 1, 1)
                 fig.add_trace(go.Bar(
-                                x=tmp_curr.loc[tmp_curr[feature_name] == val, date_column],
-                                y=tmp_curr.loc[tmp_curr[feature_name] == val, 'num'],
-                                name=str(val),
-                                marker_color=COLOR_DISCRETE_SEQUENCE[i]), 1, 2)
+                    x=tmp_curr.loc[tmp_curr[feature_name] == val, date_column],
+                    y=tmp_curr.loc[tmp_curr[feature_name] == val, 'num'],
+                    name=str(val),
+                    marker_color=COLOR_DISCRETE_SEQUENCE[i]), 1, 2)
             fig.update_traces(marker_line_width=0.01)
-            fig.update_layout(barmode='stack', bargap=0, yaxis_title='count category values per ' + self.period_prefix)
+            fig.update_layout(
+                barmode='stack', bargap=0, yaxis_title='count category values per ' + self.period_prefix
+            )
             feature_in_time_figure = json.loads(fig.to_json())
 
         return feature_in_time_figure
@@ -265,17 +293,17 @@ class DataProfileFeaturesWidget(Widget):
     def _get_subplots_ratio(self, s1: pd.Series, s2: pd.Series):
         d1 = (s1.max() - s1.min()).days
         d2 = (s2.max() - s2.min()).days
-        ratio = np.round(d1/(d1 + d2), 3)
-        return (ratio, 1 - ratio)
+        ratio = np.round(d1 / (d1 + d2), 3)
+        return ratio, 1 - ratio
 
-    def _transform_df_count_values(self, df: pd.DataFrame, target_column: str, feature_name: str):
+    def _transform_df_count_values(self, df: pd.DataFrame, target_column: str, feature_name: Optional[str]):
         df = df.groupby([target_column, feature_name]).size()
         df.name = 'count_objects'
         df = df.reset_index()
         return df
 
-    def _plot_feature_and_target_1_df(self, reference_data: pd.DataFrame, target_column: str, target_type:str, 
-                                      feature_name: str, feature_type: str) -> json:
+    def _plot_feature_and_target_1_df(self, reference_data: pd.DataFrame, target_column: str, target_type: str,
+                                      feature_name: Optional[str], feature_type: str) -> dict:
         tmp = reference_data[[target_column, feature_name]].copy()
         if feature_type == 'cat':
             if target_type == 'num':
@@ -298,22 +326,22 @@ class DataProfileFeaturesWidget(Widget):
         else:
             if target_type == 'num':
                 fig = go.Figure()
-                trace = go.Scatter(x=tmp.sample(2000, random_state=0)[feature_name], 
-                                y=tmp.sample(2000, random_state=0)[target_column], mode='markers', marker_color=RED)
+                trace = go.Scatter(x=tmp.sample(2000, random_state=0)[feature_name],
+                                   y=tmp.sample(2000, random_state=0)[target_column], mode='markers', marker_color=RED)
                 fig.add_trace(trace)
 
                 fig.update_layout(yaxis_title=target_column, xaxis_title=feature_name)
 
             else:
-                fig = px.strip(tmp.sample(2000, random_state=0), x=target_column, y=feature_name, 
+                fig = px.strip(tmp.sample(2000, random_state=0), x=target_column, y=feature_name,
                                color_discrete_sequence=COLOR_DISCRETE_SEQUENCE)
                 fig.update_traces(marker=dict(size=2))
         feature_and_target_figure = json.loads(fig.to_json())
         return feature_and_target_figure
 
     def _plot_feature_and_target_2_df(self, reference_data: pd.DataFrame, current_data: pd.DataFrame,
-                                      target_column: str, target_type:str, feature_name: str,
-                                      feature_type: str) -> json:
+                                      target_column: str, target_type: str, feature_name: str,
+                                      feature_type: str) -> dict:
         tmp_ref = reference_data[[target_column, feature_name]].copy()
         tmp_curr = current_data[[target_column, feature_name]].copy()
         tmp_ref['df'] = 'reference'
@@ -321,7 +349,7 @@ class DataProfileFeaturesWidget(Widget):
         if feature_type == 'cat':
             if target_type == 'num':
                 tmp = (tmp_ref.loc[:, [feature_name, target_column, 'df']].sample(2000)
-                              .append(tmp_curr.loc[:, [feature_name, target_column, 'df']].sample(2000)))
+                       .append(tmp_curr.loc[:, [feature_name, target_column, 'df']].sample(2000)))
                 fig = px.strip(tmp, x=feature_name, y=target_column, color='df', color_discrete_sequence=[GREY, RED])
                 fig.update_traces(marker=dict(size=2))
                 fig.update_layout(legend_title_text='')
@@ -332,25 +360,25 @@ class DataProfileFeaturesWidget(Widget):
                                     subplot_titles=['reference', 'current'])
 
                 for i, val in enumerate(tmp_ref[target_column].unique()):
-                    trace = go.Bar(x=tmp_ref.loc[tmp_ref[target_column] == val, feature_name], 
-                                y=tmp_ref.loc[tmp_ref[target_column] == val, 'count_objects'],
-                                marker_color=COLOR_DISCRETE_SEQUENCE[i], opacity=0.6, showlegend=False)
+                    trace = go.Bar(x=tmp_ref.loc[tmp_ref[target_column] == val, feature_name],
+                                   y=tmp_ref.loc[tmp_ref[target_column] == val, 'count_objects'],
+                                   marker_color=COLOR_DISCRETE_SEQUENCE[i], opacity=0.6, showlegend=False)
                     fig.append_trace(trace, 1, 1)
                 for i, val in enumerate(tmp_curr[target_column].unique()):
-                    trace = go.Bar(x=tmp_curr.loc[tmp_curr[target_column] == val, feature_name], 
-                                y=tmp_curr.loc[tmp_curr[target_column] == val, 'count_objects'],
-                                marker_color=COLOR_DISCRETE_SEQUENCE[i], name=str(val))
+                    trace = go.Bar(x=tmp_curr.loc[tmp_curr[target_column] == val, feature_name],
+                                   y=tmp_curr.loc[tmp_curr[target_column] == val, 'count_objects'],
+                                   marker_color=COLOR_DISCRETE_SEQUENCE[i], name=str(val))
                     fig.append_trace(trace, 1, 2)
                 fig.update_layout(yaxis_title='count')
         else:
             if target_type == 'num':
-                fig = make_subplots(rows=1, cols=2, shared_yaxes=True) 
-                trace = go.Scatter(x=tmp_ref.sample(2000, random_state=0)[feature_name], 
-                                   y=tmp_ref.sample(2000, random_state=0)[target_column], mode='markers', 
+                fig = make_subplots(rows=1, cols=2, shared_yaxes=True)
+                trace = go.Scatter(x=tmp_ref.sample(2000, random_state=0)[feature_name],
+                                   y=tmp_ref.sample(2000, random_state=0)[target_column], mode='markers',
                                    marker_color=GREY, name='reference')
                 fig.append_trace(trace, 1, 1)
-                trace = go.Scatter(x=tmp_curr.sample(2000, random_state=0)[feature_name], 
-                                   y=tmp_curr.sample(2000, random_state=0)[target_column], mode='markers', 
+                trace = go.Scatter(x=tmp_curr.sample(2000, random_state=0)[feature_name],
+                                   y=tmp_curr.sample(2000, random_state=0)[target_column], mode='markers',
                                    marker_color=RED, name="current")
                 fig.append_trace(trace, 1, 2)
                 fig.update_layout(yaxis_title=target_column)
@@ -359,7 +387,7 @@ class DataProfileFeaturesWidget(Widget):
 
             else:
                 tmp = (tmp_ref.loc[:, [feature_name, target_column, 'df']].sample(2000)
-                              .append(tmp_curr.loc[:, [feature_name, target_column, 'df']].sample(2000)))
+                       .append(tmp_curr.loc[:, [feature_name, target_column, 'df']].sample(2000)))
                 fig = px.strip(tmp, x=target_column, y=feature_name, color='df', color_discrete_sequence=[GREY, RED])
                 fig.update_traces(marker=dict(size=2))
                 fig.update_layout(legend_title_text='')
@@ -371,14 +399,14 @@ class DataProfileFeaturesWidget(Widget):
                                 target_type: Optional[str]):
         if target_column and target_type == 'cat':
             cat_feature_names = cat_feature_names + [target_column]
-        for feature_name in cat_feature_names: 
+        for feature_name in cat_feature_names:
             if reference_data[feature_name].nunique() > 6:
                 cats = reference_data[feature_name].value_counts()[:5].index.astype(str)
                 reference_data[feature_name] = reference_data[feature_name].apply(lambda x: x if x in cats else 'other')
                 if current_data is not None:
                     current_data[feature_name] = current_data[feature_name].apply(lambda x: x if x in cats else 'other')
 
-    def _choose_agg_period(self, date_column: str, reference_data: pd.DataFrame, 
+    def _choose_agg_period(self, date_column: str, reference_data: pd.DataFrame,
                            current_data: Optional[pd.DataFrame]) -> str:
         OPTIMAL_POINTS = 150
         prefix_dict = {'A': 'year', 'Q': 'quarter', 'M': 'month', 'W': 'week', 'D': 'day', 'H': 'hour'}
@@ -387,8 +415,8 @@ class DataProfileFeaturesWidget(Widget):
             datetime_feature = datetime_feature.append(current_data[date_column])
         days = (datetime_feature.max() - datetime_feature.min()).days
         time_points = pd.Series(index=['A', 'Q', 'M', 'W', 'D', 'H'],
-                                        data=[abs(OPTIMAL_POINTS - days/365), abs(OPTIMAL_POINTS - days/90),
-                                              abs(OPTIMAL_POINTS - days/30), abs(OPTIMAL_POINTS - days/7),
-                                              abs(OPTIMAL_POINTS - days), abs(OPTIMAL_POINTS - days*24)])
+                                data=[abs(OPTIMAL_POINTS - days / 365), abs(OPTIMAL_POINTS - days / 90),
+                                      abs(OPTIMAL_POINTS - days / 30), abs(OPTIMAL_POINTS - days / 7),
+                                      abs(OPTIMAL_POINTS - days), abs(OPTIMAL_POINTS - days * 24)])
         self.period_prefix = prefix_dict[time_points.idxmin()]
-        return time_points.idxmin()
+        return str(time_points.idxmin())
