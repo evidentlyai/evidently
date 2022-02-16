@@ -31,42 +31,21 @@ class DataProfileFeaturesWidget(Widget):
         data_profile_results = DataProfileAnalyzer.get_results(analyzers_results)
         columns = data_profile_results.columns.utility_columns
         target_column = columns.target
-<<<<<<< HEAD
         if target_column:
             target_type = data_profile_results.reference_features_stats[target_column]['feature_type']
         else:
             target_type = None
-=======
-
-        if target_column is None:
-            raise ValueError('target column should be present')
-
-        all_features: List[str] = [target_column]
-
-        target_type = data_profile_results.reference_features_stats[target_column]['feature_type']
->>>>>>> 95d129e6aa0db99d971d1c249b5aeaa0cf8ec5ad
         cat_feature_names = data_profile_results.columns.cat_feature_names
         date_column = columns.date
-
-        if date_column is not None:
-            all_features += [date_column]
-
         self._transform_cat_features(reference_data, current_data, cat_feature_names, target_column, target_type)
         # set params data
         params_data = []
-<<<<<<< HEAD
-        all_features = data_profile_results.columns.get_all_features_list(cat_before_num=True, 
+        all_features = data_profile_results.columns.get_all_features_list(cat_before_num=True,
                                                                           include_datetime_feature=True)
         if target_column:
             all_features += [target_column]
         if date_column:
             all_features += [date_column]
-=======
-        all_features += data_profile_results.columns.get_all_features_list(
-            cat_before_num=True,
-            include_datetime_feature=True,
-        )
->>>>>>> 95d129e6aa0db99d971d1c249b5aeaa0cf8ec5ad
 
         for feature_name in all_features:
             feature_type = data_profile_results.reference_features_stats[feature_name]['feature_type']
