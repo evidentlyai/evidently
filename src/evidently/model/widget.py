@@ -3,22 +3,46 @@
 # pylint: disable=invalid-name
 
 from dataclasses import dataclass
-from typing import Any, Optional, Iterable
+from typing import Any, Optional, Iterable, Union
+
+
+@dataclass()
+class TriggeredAlertStats:
+    period: int
+    last_24h: int
 
 
 @dataclass
 class AlertStats:
-    pass
+    """
+    Attributes:
+        active: Number of active alerts.
+        eggs: An integer count of the eggs we have laid.
+    """
+
+    active: int
+    triggered: TriggeredAlertStats
 
 
 @dataclass
 class Insight:
-    pass
+    """
+    Attributes:
+        title: Insight title
+        severity: Severity level for insight information (one of 'info', 'warning', 'error', 'success')
+        text: Insidght information
+    """
+    title: str
+    severity: str
+    text: str
 
 
 @dataclass
 class Alert:
-    pass
+    value: Union[str, int, float]
+    state: str
+    text: str
+    longText: str
 
 
 @dataclass
@@ -40,6 +64,7 @@ class BaseWidgetInfo:
     additionalGraphs: Iterable[AdditionalGraphInfo] = ()
     alerts: Iterable[Alert] = ()
     tabs: Iterable["TabInfo"] = ()
+    widgets: Iterable["BaseWidgetInfo"] = ()
 
 
 @dataclass

@@ -5,6 +5,7 @@ venv
 .DS_Store
 evidently/examples/.DS_Store
 evidently/nbextension/static/index.*
+example_scripts
 .ipynb_checkpoints
 .idea
 .mypy_cache

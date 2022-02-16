@@ -9,7 +9,7 @@ import plotly.figure_factory as ff
 
 from evidently import ColumnMapping
 from evidently.analyzers.num_target_drift_analyzer import NumTargetDriftAnalyzer
-from evidently.model.widget import BaseWidgetInfo, AlertStats
+from evidently.model.widget import BaseWidgetInfo
 from evidently.dashboard.widgets.widget import Widget, GREY, RED
 from evidently.dashboard.widgets.utils import CutQuantileTransformer
 from evidently.options import QualityMetricsOptions
@@ -101,7 +101,6 @@ class NumOutputDriftWidget(Widget):
                 round(output_p_value, 6)),
             type="big_graph",
             details="",
-            alertStats=AlertStats(),
             alerts=[],
             alertsPosition="row",
             insights=[],

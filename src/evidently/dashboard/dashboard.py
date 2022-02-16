@@ -41,6 +41,10 @@ def inline_template(params: TemplateParams):
   all: initial;
   font: initial;
 }}
+
+svg {{
+  height: intrinsic !important;
+}}
 </style>
 <script>
     var {params.dashboard_id} = {__dashboard_info_to_json(params.dashboard_info)};
