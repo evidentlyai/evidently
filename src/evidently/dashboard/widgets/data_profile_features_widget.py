@@ -363,11 +363,10 @@ class DataProfileFeaturesWidget(Widget):
         tmp = reference_data[[target_column, feature_name]].copy()
         if feature_type == 'cat':
             if target_type == 'num':
-                fig = px.strip(
-                    tmp.sample(2000, random_state=0), x=feature_name, y=target_column,
-                    color_discrete_sequence=COLOR_DISCRETE_SEQUENCE
-                )
-                fig.update_traces(marker=dict(size=2))
+                fig = go.Figure()
+                trace = go.Box(x=tmp[feature_name], y=tmp[target_column], boxpoints=False, marker_color=RED)
+                fig.add_trace(trace)
+                fig.update_layout(yaxis_title=target_column, xaxis_title=feature_name)
             else:
                 tmp = self._transform_df_count_values(tmp, target_column, feature_name)
                 fig = go.Figure()
@@ -389,9 +388,10 @@ class DataProfileFeaturesWidget(Widget):
                 fig.update_layout(yaxis_title=target_column, xaxis_title=feature_name)
 
             else:
-                fig = px.strip(tmp.sample(2000, random_state=0), x=target_column, y=feature_name,
-                               color_discrete_sequence=COLOR_DISCRETE_SEQUENCE)
-                fig.update_traces(marker=dict(size=2))
+                fig = go.Figure()
+                trace = go.Box(y=tmp[feature_name], x=tmp[target_column], boxpoints=False, marker_color=RED)
+                fig.add_trace(trace)
+                fig.update_layout(yaxis_title=feature_name, xaxis_title=target_column)
         feature_and_target_figure = json.loads(fig.to_json())
         return feature_and_target_figure
 
@@ -404,11 +404,15 @@ class DataProfileFeaturesWidget(Widget):
         tmp_curr['df'] = 'current'
         if feature_type == 'cat':
             if target_type == 'num':
-                tmp = (tmp_ref.loc[:, [feature_name, target_column, 'df']].sample(2000)
-                       .append(tmp_curr.loc[:, [feature_name, target_column, 'df']].sample(2000)))
-                fig = px.strip(tmp, x=feature_name, y=target_column, color='df', color_discrete_sequence=[GREY, RED])
-                fig.update_traces(marker=dict(size=2))
-                fig.update_layout(legend_title_text='')
+                fig = go.Figure()
+                trace1 = go.Box(x=tmp_ref[feature_name], y=tmp_ref[target_column], boxpoints=False, 
+                                marker_color=GREY, name='reference')
+                fig.add_trace(trace1)
+                trace2 = go.Box(x=tmp_curr[feature_name], y=tmp_curr[target_column], boxpoints=False, 
+                                marker_color=RED, name='current')
+                fig.add_trace(trace2)
+
+                fig.update_layout(yaxis_title=target_column, xaxis_title=feature_name, boxmode='group')
             else:
                 tmp_ref = self._transform_df_count_values(tmp_ref, target_column, feature_name)
                 tmp_curr = self._transform_df_count_values(tmp_curr, target_column, feature_name)
@@ -442,11 +446,15 @@ class DataProfileFeaturesWidget(Widget):
                 fig.update_xaxes(title_text=feature_name, row=1, col=2)
 
             else:
-                tmp = (tmp_ref.loc[:, [feature_name, target_column, 'df']].sample(2000)
-                       .append(tmp_curr.loc[:, [feature_name, target_column, 'df']].sample(2000)))
-                fig = px.strip(tmp, x=target_column, y=feature_name, color='df', color_discrete_sequence=[GREY, RED])
-                fig.update_traces(marker=dict(size=2))
-                fig.update_layout(legend_title_text='')
+                fig = go.Figure()
+                trace1 = go.Box(y=tmp_ref[feature_name], x=tmp_ref[target_column], boxpoints=False, 
+                                marker_color=GREY, name='reference')
+                fig.add_trace(trace1)
+                trace2 = go.Box(y=tmp_curr[feature_name], x=tmp_curr[target_column], boxpoints=False, 
+                                marker_color=RED, name='current')
+                fig.add_trace(trace2)
+
+                fig.update_layout(yaxis_title=feature_name, xaxis_title=target_column, boxmode='group')
         feature_and_target_figure = json.loads(fig.to_json())
         return feature_and_target_figure
 
