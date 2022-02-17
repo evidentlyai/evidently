@@ -65,5 +65,5 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     production_data_file = os.path.abspath("production.csv")
-    print("Get production data from {production_data_file} and send it to monitoring service each 10 seconds")
+    print(f"Get production data from {production_data_file} and send it to monitoring service each 10 seconds")
     main(production_data_file, args.timeout)
