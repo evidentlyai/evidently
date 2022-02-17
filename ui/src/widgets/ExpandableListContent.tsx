@@ -44,7 +44,7 @@ const ExpandableListContent: React.FunctionComponent<ExpandableListWidgetParams 
                     }>Details</Button>
                 </Grid>
             </Grid>
-            <Collapse in={details}>
+            <Collapse in={details} mountOnEnter={true} unmountOnExit={true}>
                 <BigTableDetails details={props.details} widgetSize={props.widgetSize}/>
             </Collapse>
         </React.Fragment>)
