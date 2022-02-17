@@ -21,6 +21,8 @@ The short report contains a reduced number of widgets.
 
 ### 2. Specify the exact list of widgets in the Tabs
 
+![](<../.gitbook/assets/customization_select_widgets.png>)
+
 You can also specify the individual widgets you want to include in a given Tab.&#x20;
 
 To select the widgets in the Tab, you should define the **include\_widgets** parameter in the Tab class. To see the available widgets, run the `list_widgets()` method of the Tab object:
