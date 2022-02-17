@@ -6,7 +6,7 @@ description: You can decide which components to include in the Dashboards or HTM
 
 There are two ways to modify the composition of the default Evidently [reports](../reports).
 
-### 1. Choose between the short and full version&#x20;
+### 1. Choose between the short and full version
 
 We have two type of detalization for each Tab. To change it, you need to specify the **verbose\_level** parameter when you define the Dashboard.
 
@@ -15,9 +15,9 @@ dashboard = Dashboard(tabs=[RegressionPerformanceTab(verbose_level=1)])
 ```
 
 * **verbose\_level==1** - full report
-* **verbose\_level==0** - short report&#x20;
+* **verbose\_level==0** - short report
 
-The short report contains a reduced number of widgets.&#x20;
+The short report contains a reduced number of widgets.
 
 ### 2. Specify the exact list of widgets in the Tabs
 
@@ -29,7 +29,7 @@ To select the widgets in the Tab, you should define the **include\_widgets** par
 RegressionPerformanceTab.list_widgets()
 ```
 
-![](<../../.gitbook/assets/image (10).png>)
+![](<../.gitbook/assets/image (10).png>)
 
 Next, choose the widgets you need (**include\_widgets** overwrites the **verbose\_level** parameter):
 
