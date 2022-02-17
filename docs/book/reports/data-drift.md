@@ -85,7 +85,7 @@ You can set different [options-for-data-target-drift.md](../customization/option
 
 ![](../.gitbook/assets/reports_data_drift_customization.png)
 
-You can also set [options-for-quality-metrics.md](../customization/options-for-quality-metrics.md "mention") to define the width of the confidence interval displayed.
+You can also set [options-for-quality-metrics.md](../customization/options-for-quality-metrics.md "mention") to define the width of the confidence interval displayed for individual feature drift.
 
 You can also select which components of the reports to display or choose to show the short version of the report: [select-widgets-to-display.md](../customization/select-widgets-to-display.md "mention").
 
