@@ -61,7 +61,7 @@ options=[options])
 
 ### **Customization using CLI**
 
-You can also set the options from the command-line interface. In this case, you cannot define the functions (e.g. change statistical tests). ****&#x20;
+You can also set the options from the command-line interface. In this case, you cannot define the functions (e.g. change statistical tests). 
 
 ```json
 "options": {
@@ -145,7 +145,7 @@ The Data Drift report has two sets of histograms:
 1. preview in the Data Drift table
 2. an interactive plot inside the Data Drift table that expands when you click on each feature
 
-![](<../../.gitbook/assets/Screenshot 2021-09-07 at 23.54.08.png>)
+![](<../.gitbook/assets/Screenshot 2021-09-07 at 23.54.08.png>)
 
 Only “**nbinsx**”, if specified, impacts the **histogram previews** in the DataDrift table. In case you set both parameters, “**xbins**” will define the interactive plot, while “**nbinsx**” will affect the preview.
 
