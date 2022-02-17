@@ -109,14 +109,14 @@ class DataProfileAnalyzer(Analyzer):
         res['unique'] = feature.nunique()
         res['unique (%)'] = np.round(res['unique'] / feature.shape[0], 2)
         value_counts = feature.value_counts(dropna=False)
-        res['most common value'] = value_counts.index[0]
+        res['most common value'] = str(value_counts.index[0])
         res['most common value (%)'] = np.round(value_counts.iloc[0] / feature.shape[0], 2)
         if pd.isnull(res['most common value']) and res['count'] > 0:
             res['most common not null value'] = value_counts.index[1]
             res['most common not null value (%)'] = np.round(value_counts.iloc[1] / feature.shape[0], 2)
         res['missing'] = feature.isnull().sum()
         res['missing (%)'] = np.round(res['missing'] / feature.shape[0], 2)
-        res['first'] = feature.min()
-        res['last'] = feature.max()
-        res['feature_type'] = 'date'
+        res['first'] = str(feature.min())
+        res['last'] = str(feature.max())
+        res['feature_type'] = 'datetime'
         return res

@@ -3,6 +3,8 @@
 import json
 from typing import Optional, List
 
+import logging
+
 import pandas as pd
 import numpy as np
 
@@ -42,10 +44,11 @@ class DataProfileFeaturesWidget(Widget):
 
         all_features = data_profile_results.columns.get_all_features_list(cat_before_num=True,
                                                                           include_datetime_feature=True)
-        if target_column:
-            all_features += [target_column]
         if date_column:
-            all_features += [date_column]
+            all_features = [date_column] + all_features
+        if target_column:
+            all_features = [target_column] + all_features
+        
 
         if is_current_data:
             metricsValuesHeaders = ["reference", "current"]
@@ -88,7 +91,12 @@ class DataProfileFeaturesWidget(Widget):
                     "data": feature_and_target_figure['data'],
                     "layout": feature_and_target_figure['layout'],
                     }))
+            # fig_tmp = go.Figure()
+            # fig_tmp.add_trace(go.Bar(x=[1, 2, 3, 4, 5], y=[0.1, 0.2, 0.3, 0.4, 0.5]))
 
+            # fig_dict = fig_tmp.to_dict()
+            # if feature_name=='date':
+            #     logging.warning(self._metrics_for_table(feature_name, data_profile_results, is_current_data))
 
             wi = BaseWidgetInfo(
                 type="expandable_list",
@@ -100,8 +108,8 @@ class DataProfileFeaturesWidget(Widget):
                     "metricsValuesHeaders": metricsValuesHeaders,
                     "metrics": self._metrics_for_table(feature_name, data_profile_results, is_current_data),
                     "graph": {
-                        "data": fig_main_distr ['data'],
-                        "layout": fig_main_distr ['layout']
+                        "data": fig_main_distr['data'],
+                        "layout": fig_main_distr['layout']
                     },
                     "details": {
                         "parts": parts,
@@ -122,14 +130,16 @@ class DataProfileFeaturesWidget(Widget):
         )
 
     def _metrics_for_table(self, feature_name: str, data_profile_results, is_current_data: bool):
+        metrics = []
         if is_current_data:
             vals = [list(x) for x in zip(data_profile_results.reference_features_stats[feature_name].values(), 
                                          data_profile_results.current_features_stats[feature_name].values())]
+            for k, v in zip(data_profile_results.reference_features_stats[feature_name].keys(), vals):
+                metrics.append({"label": k, "values": v})
         else:
-            vals = [list(x for x in data_profile_results.reference_features_stats[feature_name].values())]
-        metrics = []
-        for k, v in zip(data_profile_results.reference_features_stats[feature_name].keys(), vals):
-            metrics.append({"label": k, "values": v})
+            vals = [x for x in data_profile_results.reference_features_stats[feature_name].values()]
+            for k, v in zip(data_profile_results.reference_features_stats[feature_name].keys(), vals):
+                metrics.append({"label": k, "values": [v]})
 
         return metrics
 
@@ -223,7 +233,8 @@ class DataProfileFeaturesWidget(Widget):
                 fig.add_trace(go.Scatter(x=tmp_curr.sort_values(feature_name)[feature_name], 
                                         y=tmp_curr.sort_values(feature_name)['number_of_items'],
                                         line=dict(color=RED, shape="spline"), name='current'))
-            fig.update_layout(xaxis_title=feature_name)
+
+        fig.update_layout(xaxis_title=feature_name)
         fig_main_distr = json.loads(fig.to_json())
         return fig_main_distr
 
