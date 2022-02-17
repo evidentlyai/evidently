@@ -115,15 +115,16 @@ To **remove some metrics** from the Dashboard, you can simply do that from the G
 
 To **add, or change** the way metrics are calculated (for example, use a different statistical test), you need to change the code.
 
-We rely on the **core Evidently functionality** to define which metrics are calculated and how. If you want to modify the metrics, there are two components you might need to change: Analyzers and Monitors. 
+We rely on the **core Evidently functionality** to define which metrics are calculated and how. If you want to modify the metrics, there are two components you might need to change: 
+ers and Monitors. 
 
 To calculate the metrics and statistical tests, we use Evidently ```Analyzers```: https://github.com/evidentlyai/evidently/tree/main/src/evidently/analyzers 
 
 For example, we use the ```DataDriftAnalyzer``` to calculate the Data Drift metrics: https://github.com/evidentlyai/evidently/blob/main/src/evidently/analyzers/data_drift_analyzer.py
 
-There are corresponding Analyzers for other report types. Analyzers are shared components used across all Evidently interfaces. Depending on the report type, they might include a larger set of metrics that are actually displayed on a Grafana dashboard. 
+There are corresponding Analyzers for other report types. Analyzers are shared components used across all Evidently interfaces. Depending on the report type, they might include a larger set of metrics than displayed on a Grafana dashboard. 
 
-To define which exact metrics are computed during Monitoring, we use Evidently ```Monitors``: https://github.com/evidentlyai/evidently/blob/main/src/evidently/model_monitoring/monitors/
+To define which exact metrics are computed during Monitoring and logged to Prometheus, we use Evidently ```Monitors``: https://github.com/evidentlyai/evidently/blob/main/src/evidently/model_monitoring/monitors/
  
 For example, we use the ```DataDriftMonitor``` to define the Data Drift metrics collected from the live service: 
 https://github.com/evidentlyai/evidently/blob/main/src/evidently/model_monitoring/monitors/data_drift.py
