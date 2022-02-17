@@ -130,19 +130,36 @@ class DataProfileFeaturesWidget(Widget):
             widgets=widgets_list,
             additionalGraphs=additional_graphs
         )
+    def _get_dict_for_metrics(self, metric_name: str, reference_stats, current_stats, is_current_data):
+        if metric_name in ('unique', 'most common value', 'missing', 'infinite'):
+            val = str(reference_stats[metric_name]) + ' (' + str(reference_stats[metric_name + ' (%)']) + ')'
+            vals = [val]
+            if is_current_data:
+                val = str(current_stats[metric_name]) + ' (' + str(current_stats[metric_name + ' (%)']) + ')'
+                vals.append(val)
+        else:
+            vals = [reference_stats[metric_name]]
+            if is_current_data:
+                vals.append(current_stats[metric_name])
+        return {"label": metric_name + ' (%)', "values": vals}
 
     def _metrics_for_table(self, feature_name: str, data_profile_results, is_current_data: bool):
+        reference_stats = data_profile_results.reference_features_stats[feature_name]
+        current_stats = data_profile_results.current_features_stats[feature_name]
         metrics = []
-        if is_current_data:
-            vals = [list(x) for x in zip(data_profile_results.reference_features_stats[feature_name].values(), 
-                                         data_profile_results.current_features_stats[feature_name].values())]
-            for k, v in zip(data_profile_results.reference_features_stats[feature_name].keys(), vals):
-                metrics.append({"label": k, "values": v})
-        else:
-            vals = [x for x in data_profile_results.reference_features_stats[feature_name].values()]
-            for k, v in zip(data_profile_results.reference_features_stats[feature_name].keys(), vals):
-                metrics.append({"label": k, "values": [v]})
-
+        if reference_stats['feature_type'] == 'cat':
+            for metric_name in ['count', 'unique', 'most common value', 'missing']:
+                d = self._get_dict_for_metrics(metric_name, reference_stats, current_stats, is_current_data)
+                metrics.append(d)
+        elif reference_stats['feature_type'] == 'num':
+            for metric_name in ['count', 'mean', 'std', 'min', '25%', '50%', '75%', 'max', 'unique', 
+                                'most common value', 'missing', 'infinite']:
+                d = self._get_dict_for_metrics(metric_name, reference_stats, current_stats, is_current_data)
+                metrics.append(d)
+        elif reference_stats['feature_type'] == 'datetime':
+            for metric_name in ['count', 'unique', 'most common value', 'missing', 'first', 'last']:
+                d = self._get_dict_for_metrics(metric_name, reference_stats, current_stats, is_current_data)
+                metrics.append(d)
         return metrics
 
     def _plot_main_distr_figure(self, reference_data: pd.DataFrame, current_data: pd.DataFrame,
@@ -171,12 +188,12 @@ class DataProfileFeaturesWidget(Widget):
                                 )]))]
 
             else:
-                trace1 = go.Histogram(x=reference_data[feature_name], marker_color=GREY)
+                trace1 = go.Histogram(x=reference_data[feature_name], marker_color=GREY, name='reference')
                 trace2 = go.Histogram(x=np.log10(reference_data.loc[reference_data[feature_name] > 0, feature_name]), 
-                                    marker_color=GREY, visible=False)
-                trace3 = go.Histogram(x=current_data[feature_name], marker_color=RED)
+                                    marker_color=GREY, visible=False, name='reference')
+                trace3 = go.Histogram(x=current_data[feature_name], marker_color=RED, name='current')
                 trace4 = go.Histogram(x=np.log10(current_data.loc[current_data[feature_name] > 0, feature_name]), 
-                                    marker_color=RED, visible=False)
+                                    marker_color=RED, visible=False, name='current')
                 data = [trace1, trace2, trace3, trace4]
                 
                 updatemenus=[ dict(
@@ -202,16 +219,15 @@ class DataProfileFeaturesWidget(Widget):
         elif feature_type == 'cat':
             fig = go.Figure()
             cats = list(reference_data[feature_name].value_counts().index.astype(str))
-            cats = cats[::-1]
             if 'other' in cats:
                 cats.remove('other')
-                cats = ['other'] + cats
+                cats = cats + ['other']
             if current_data is None: 
                 fig.add_trace(go.Histogram(x=reference_data[feature_name], marker_color=RED))
             else:
                 fig.add_trace(go.Histogram(x=reference_data[feature_name], marker_color=GREY, name='reference'))
                 fig.add_trace(go.Histogram(x=current_data[feature_name], marker_color=RED, name='current'))
-            fig.update_yaxes(categoryorder='array', categoryarray= cats)
+            fig.update_xaxes(categoryorder='array', categoryarray=cats)
 
         elif feature_type == 'datetime':
             freq = self._choose_agg_period(feature_name, reference_data, current_data)
@@ -235,8 +251,13 @@ class DataProfileFeaturesWidget(Widget):
                 fig.add_trace(go.Scatter(x=tmp_curr.sort_values(feature_name)[feature_name], 
                                         y=tmp_curr.sort_values(feature_name)['number_of_items'],
                                         line=dict(color=RED, shape="spline"), name='current'))
-
-        fig.update_layout(xaxis_title=feature_name)
+        fig.update_layout(legend=dict(
+                orientation="h",
+                yanchor="bottom",
+                y=1.02,
+                xanchor="right",
+                x=1
+            ))
         fig_main_distr = json.loads(fig.to_json())
         return fig_main_distr
 
