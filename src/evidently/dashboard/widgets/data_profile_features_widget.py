@@ -207,10 +207,10 @@ class DataProfileFeaturesWidget(Widget):
                 cats.remove('other')
                 cats = ['other'] + cats
             if current_data is None: 
-                fig.add_trace(go.Histogram(y=reference_data[feature_name], marker_color=RED))
+                fig.add_trace(go.Histogram(x=reference_data[feature_name], marker_color=RED))
             else:
-                fig.add_trace(go.Histogram(y=reference_data[feature_name], marker_color=GREY, name='reference'))
-                fig.add_trace(go.Histogram(y=current_data[feature_name], marker_color=RED, name='current'))
+                fig.add_trace(go.Histogram(x=reference_data[feature_name], marker_color=GREY, name='reference'))
+                fig.add_trace(go.Histogram(x=current_data[feature_name], marker_color=RED, name='current'))
             fig.update_yaxes(categoryorder='array', categoryarray= cats)
 
         elif feature_type == 'datetime':
