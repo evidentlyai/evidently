@@ -83,7 +83,7 @@ To change the bins displayed, you can define [custom options](../customization/o
 
 You can set different [options-for-data-target-drift.md](../customization/options-for-data-target-drift.md "mention") to modify the existing components of the report. Use this to change the statistical tests used, define Dataset Drift conditions, or change histogram Bins.
 
-![](../.gitbook/assets/data_distr_by_feature.png)
+![](../.gitbook/assets/reports_data_drift_customization.png)
 
 You can also set [options-for-quality-metrics.md](../customization/options-for-quality-metrics.md "mention") to define the width of the confidence interval displayed.
 
