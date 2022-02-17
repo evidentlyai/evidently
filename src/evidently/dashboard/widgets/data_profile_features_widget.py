@@ -56,11 +56,12 @@ class DataProfileFeaturesWidget(Widget):
             metricsValuesHeaders = ['']
 
         widgets_list = []
+        additional_graphs = []
         for feature_name in all_features:
             feature_type = data_profile_results.reference_features_stats[feature_name]['feature_type']
             fig_main_distr = self._plot_main_distr_figure(reference_data, current_data, feature_name, feature_type)
             parts = self.assemble_parts(target_column, date_column, feature_name, feature_type)
-            additional_graphs = []
+            # additional_graphs = []
             if date_column and feature_type != 'datetime':
                 freq = self._choose_agg_period(date_column, reference_data, current_data)
                 reference_data[date_column + '_period'] = reference_data[date_column].dt.to_period(freq=freq)
@@ -116,7 +117,7 @@ class DataProfileFeaturesWidget(Widget):
                         "insights": []
                     }
                 },
-                additionalGraphs=additional_graphs
+                # additionalGraphs=additional_graphs
                 
             )
 
@@ -126,7 +127,8 @@ class DataProfileFeaturesWidget(Widget):
             title="",
             size=2,
             type="group",
-            widgets=widgets_list
+            widgets=widgets_list,
+            additionalGraphs=additional_graphs
         )
 
     def _metrics_for_table(self, feature_name: str, data_profile_results, is_current_data: bool):
@@ -223,7 +225,7 @@ class DataProfileFeaturesWidget(Widget):
                                         y=tmp_ref.sort_values(feature_name)['number_of_items'],
                                         line=dict(color=RED, shape="spline")))
             else: 
-                tmp_curr = reference_data[feature_name].dt.to_period(freq=freq)
+                tmp_curr = current_data[feature_name].dt.to_period(freq=freq)
                 tmp_curr = tmp_curr.value_counts().reset_index()
                 tmp_curr.columns = [feature_name, 'number_of_items']
                 tmp_curr[feature_name] = tmp_curr[feature_name].dt.to_timestamp()
