@@ -78,6 +78,8 @@ Evidently helps configure the monitoring on top of the streaming data and emits 
 
 There is a lightweight [integration with Prometheus and Grafana](integrations/evidently-and-grafana.md) that comes with pre-built dashboards.
 
+![](../images/evidently\_data\_drift\_grafana\_dashboard\_top.png)
+
 # Overview
 
 Here is a quick visual summary on how Evidently works. You can track and explore different facets of the ML model quality via reports, profiles or monitoring interface and flexibly fit it into your existing stack. 
