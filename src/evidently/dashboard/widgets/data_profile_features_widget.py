@@ -92,12 +92,6 @@ class DataProfileFeaturesWidget(Widget):
                     "data": feature_and_target_figure['data'],
                     "layout": feature_and_target_figure['layout'],
                     }))
-            # fig_tmp = go.Figure()
-            # fig_tmp.add_trace(go.Bar(x=[1, 2, 3, 4, 5], y=[0.1, 0.2, 0.3, 0.4, 0.5]))
-
-            # fig_dict = fig_tmp.to_dict()
-            # if feature_name=='date':
-            #     logging.warning(self._metrics_for_table(feature_name, data_profile_results, is_current_data))
 
             wi = BaseWidgetInfo(
                 type="expandable_list",
@@ -137,18 +131,22 @@ class DataProfileFeaturesWidget(Widget):
             if is_current_data:
                 val = str(current_stats[metric_name]) + ' (' + str(current_stats[metric_name + ' (%)']) + ')'
                 vals.append(val)
+            return {"label": metric_name + ' (%)', "values": vals}
         else:
             vals = [reference_stats[metric_name]]
             if is_current_data:
                 vals.append(current_stats[metric_name])
-        return {"label": metric_name + ' (%)', "values": vals}
+            return {"label": metric_name, "values": vals}
 
     def _metrics_for_table(self, feature_name: str, data_profile_results, is_current_data: bool):
         reference_stats = data_profile_results.reference_features_stats[feature_name]
         current_stats = data_profile_results.current_features_stats[feature_name]
         metrics = []
         if reference_stats['feature_type'] == 'cat':
-            for metric_name in ['count', 'unique', 'most common value', 'missing']:
+            metrics_list = ['count', 'unique', 'most common value', 'missing']
+            if is_current_data:
+                metrics_list = metrics_list + ['number of new values', 'number of unused values']
+            for metric_name in metrics_list:
                 d = self._get_dict_for_metrics(metric_name, reference_stats, current_stats, is_current_data)
                 metrics.append(d)
         elif reference_stats['feature_type'] == 'num':
@@ -343,25 +341,23 @@ class DataProfileFeaturesWidget(Widget):
         elif feature_type == 'cat':
             tmp_ref = self._transform_df_to_time_count_view(tmp_ref, date_column, feature_name)
             tmp_curr = self._transform_df_to_time_count_view(tmp_curr, date_column, feature_name)
+            tmp_curr = tmp_curr[tmp_curr[date_column] != tmp_ref[date_column].max()]
 
-            subplots_ratio = self._get_subplots_ratio(tmp_ref[date_column], tmp_curr[date_column])
-            fig = make_subplots(rows=1, cols=2, shared_yaxes=True, subplot_titles=("reference", "current"),
-                                column_widths=subplots_ratio, horizontal_spacing=0.03)
-
+            fig = go.Figure()
             for i, val in enumerate(tmp_ref[feature_name].unique()):
                 fig.add_trace(go.Bar(
                     x=tmp_ref.loc[tmp_ref[feature_name] == val, date_column],
                     y=tmp_ref.loc[tmp_ref[feature_name] == val, 'num'],
                     name=str(val),
-                    marker_color=COLOR_DISCRETE_SEQUENCE[i], opacity=0.6, showlegend=False), 1, 1)
+                    marker_color=COLOR_DISCRETE_SEQUENCE[i], opacity=0.6))
                 fig.add_trace(go.Bar(
                     x=tmp_curr.loc[tmp_curr[feature_name] == val, date_column],
                     y=tmp_curr.loc[tmp_curr[feature_name] == val, 'num'],
                     name=str(val),
-                    marker_color=COLOR_DISCRETE_SEQUENCE[i]), 1, 2)
+                    marker_color=COLOR_DISCRETE_SEQUENCE[i], showlegend=False))
             fig.update_traces(marker_line_width=0.01)
-            fig.update_layout(
-                barmode='stack', bargap=0, yaxis_title='count category values per ' + self.period_prefix
+            fig.update_layout(barmode='stack', bargap=0, yaxis_title='count category values per ' + self.period_prefix, 
+                              title="reference/current"
             )
             feature_in_time_figure = json.loads(fig.to_json())
 
@@ -385,9 +381,10 @@ class DataProfileFeaturesWidget(Widget):
         if feature_type == 'cat':
             if target_type == 'num':
                 fig = go.Figure()
-                trace = go.Box(x=tmp[feature_name], y=tmp[target_column], boxpoints=False, marker_color=RED)
+                trace = go.Box(x=tmp[feature_name], y=tmp[target_column], marker_color=RED)
                 fig.add_trace(trace)
                 fig.update_layout(yaxis_title=target_column, xaxis_title=feature_name)
+                fig.update_traces(marker_size=3)
             else:
                 tmp = self._transform_df_count_values(tmp, target_column, feature_name)
                 fig = go.Figure()
@@ -406,13 +403,16 @@ class DataProfileFeaturesWidget(Widget):
                                    y=tmp.sample(2000, random_state=0)[target_column], mode='markers', marker_color=RED)
                 fig.add_trace(trace)
 
-                fig.update_layout(yaxis_title=target_column, xaxis_title=feature_name)
+                fig.update_layout(yaxis_title=target_column, xaxis_title=feature_name, 
+                                  legend= {'itemsizing': 'constant'})
+                fig.update_traces(marker_size=4)
 
             else:
                 fig = go.Figure()
-                trace = go.Box(y=tmp[feature_name], x=tmp[target_column], boxpoints=False, marker_color=RED)
+                trace = go.Box(y=tmp[feature_name], x=tmp[target_column], marker_color=RED)
                 fig.add_trace(trace)
                 fig.update_layout(yaxis_title=feature_name, xaxis_title=target_column)
+                fig.update_traces(marker_size=3)
         feature_and_target_figure = json.loads(fig.to_json())
         return feature_and_target_figure
 
@@ -426,14 +426,15 @@ class DataProfileFeaturesWidget(Widget):
         if feature_type == 'cat':
             if target_type == 'num':
                 fig = go.Figure()
-                trace1 = go.Box(x=tmp_ref[feature_name], y=tmp_ref[target_column], boxpoints=False, 
+                trace1 = go.Box(x=tmp_ref[feature_name], y=tmp_ref[target_column], 
                                 marker_color=GREY, name='reference')
                 fig.add_trace(trace1)
-                trace2 = go.Box(x=tmp_curr[feature_name], y=tmp_curr[target_column], boxpoints=False, 
+                trace2 = go.Box(x=tmp_curr[feature_name], y=tmp_curr[target_column],  
                                 marker_color=RED, name='current')
                 fig.add_trace(trace2)
 
                 fig.update_layout(yaxis_title=target_column, xaxis_title=feature_name, boxmode='group')
+                fig.update_traces(marker_size=3)
             else:
                 tmp_ref = self._transform_df_count_values(tmp_ref, target_column, feature_name)
                 tmp_curr = self._transform_df_count_values(tmp_curr, target_column, feature_name)
@@ -462,20 +463,22 @@ class DataProfileFeaturesWidget(Widget):
                                    y=tmp_curr.sample(2000, random_state=0)[target_column], mode='markers',
                                    marker_color=RED, name="current")
                 fig.append_trace(trace, 1, 2)
-                fig.update_layout(yaxis_title=target_column)
+                fig.update_layout(yaxis_title=target_column, legend= {'itemsizing': 'constant'})
                 fig.update_xaxes(title_text=feature_name, row=1, col=1)
                 fig.update_xaxes(title_text=feature_name, row=1, col=2)
+                fig.update_traces(marker_size=4)
 
             else:
                 fig = go.Figure()
-                trace1 = go.Box(y=tmp_ref[feature_name], x=tmp_ref[target_column], boxpoints=False, 
+                trace1 = go.Box(y=tmp_ref[feature_name], x=tmp_ref[target_column],
                                 marker_color=GREY, name='reference')
                 fig.add_trace(trace1)
-                trace2 = go.Box(y=tmp_curr[feature_name], x=tmp_curr[target_column], boxpoints=False, 
+                trace2 = go.Box(y=tmp_curr[feature_name], x=tmp_curr[target_column],
                                 marker_color=RED, name='current')
                 fig.add_trace(trace2)
 
                 fig.update_layout(yaxis_title=feature_name, xaxis_title=target_column, boxmode='group')
+                fig.update_traces(marker_size=3)
         feature_and_target_figure = json.loads(fig.to_json())
         return feature_and_target_figure
 

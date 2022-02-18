@@ -43,6 +43,13 @@ class DataProfileAnalyzer(Analyzer):
             reference_features_stats[feature_name] = self._get_cat_columns_stats(reference_data[feature_name])
             if current_data is not None:
                 current_features_stats[feature_name] = self._get_cat_columns_stats(current_data[feature_name])
+                current_features_stats[feature_name]['number of new values'] = len(set(current_data[feature_name])
+                    -set(reference_data[feature_name]))
+                current_features_stats[feature_name]['number of unused values'] = len(set(reference_data[feature_name])
+                    -set(current_data[feature_name]))
+                reference_features_stats[feature_name]['number of new values'] = ''
+                reference_features_stats[feature_name]['number of unused values'] = ''
+
 
         if columns.utility_columns.date:
             date_list = columns.datetime_feature_names + [columns.utility_columns.date]
