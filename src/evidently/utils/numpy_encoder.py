@@ -5,25 +5,13 @@ import pandas as pd
 
 _TYPES_MAPPING = (
     (
-        (np.int_, np.intc, np.intp, np.int8,np.int16, np.int32, np.int64, np.uint8,np.uint16, np.uint32, np.uint64),
-        int
+        (np.int_, np.intc, np.intp, np.int8, np.int16, np.int32, np.int64, np.uint8, np.uint16, np.uint32, np.uint64),
+        int,
     ),
-    (
-        (np.float_, np.float16, np.float32, np.float64),
-        float
-    ),
-    (
-        (np.ndarray,),
-        lambda obj: obj.tolist()
-    ),
-    (
-        (np.bool, np.bool_),
-        bool
-    ),
-    (
-        (np.void, type(pd.NaT)),
-        lambda obj: None
-    ),
+    ((np.float_, np.float16, np.float32, np.float64), float),
+    ((np.ndarray,), lambda obj: obj.tolist()),
+    ((np.bool, np.bool_), bool),
+    ((np.void, type(pd.NaT)), lambda obj: None),
 )
 
 
