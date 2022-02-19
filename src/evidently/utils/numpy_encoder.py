@@ -3,6 +3,7 @@ import json
 import numpy as np
 import pandas as pd
 
+
 _TYPES_MAPPING = (
     (
         (np.int_, np.intc, np.intp, np.int8, np.int16, np.int32, np.int64, np.uint8, np.uint16, np.uint32, np.uint64),
