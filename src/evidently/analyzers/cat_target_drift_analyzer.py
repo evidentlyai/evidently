@@ -105,10 +105,10 @@ class CatTargetDriftAnalyzer(Analyzer):
         target_column = columns.utility_columns.target
         prediction_column = columns.utility_columns.prediction
 
-        if isinstance(target_column, Sequence):
+        if not isinstance(target_column, str) and isinstance(target_column, Sequence):
             raise ValueError("target should not be a sequence")
 
-        if isinstance(prediction_column, Sequence):
+        if not isinstance(prediction_column, str) and isinstance(prediction_column, Sequence):
             raise ValueError("prediction should not be a sequence")
 
         result = CatTargetDriftAnalyzerResults(

@@ -112,11 +112,13 @@ class NumTargetDriftAnalyzer(Analyzer):
             raise ValueError("current_data should not be None")
 
         columns = process_columns(reference_data, column_mapping)
+        target_column = columns.utility_columns.target
+        prediction_column = columns.utility_columns.prediction
 
-        if isinstance(columns.utility_columns.target, Sequence):
+        if not isinstance(target_column, str) and isinstance(columns.utility_columns.target, Sequence):
             raise ValueError("target should not be a sequence")
 
-        if isinstance(columns.utility_columns.prediction, Sequence):
+        if not isinstance(prediction_column, str) and isinstance(prediction_column, Sequence):
             raise ValueError("prediction should not be a sequence")
 
         if set(columns.num_feature_names) - set(current_data.columns):
@@ -130,10 +132,10 @@ class NumTargetDriftAnalyzer(Analyzer):
 
         func = data_drift_options.num_target_stattest_func or ks_stat_test
         result.target_metrics = _compute_correlation(
-            reference_data, current_data, columns.utility_columns.target, columns.num_feature_names, func
+            reference_data, current_data, target_column, columns.num_feature_names, func
         )
         result.prediction_metrics = _compute_correlation(
-            reference_data, current_data, columns.utility_columns.prediction, columns.num_feature_names, func
+            reference_data, current_data, prediction_column, columns.num_feature_names, func
         )
 
         return result
