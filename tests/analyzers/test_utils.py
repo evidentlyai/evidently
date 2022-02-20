@@ -76,11 +76,7 @@ from evidently.pipeline.column_mapping import ColumnMapping
 def test_process_columns(
     test_dataset: pd.DataFrame, data_mapping: ColumnMapping, expected_columns: DatasetColumns
 ) -> None:
-    """Test applying data mapping for a different datasets cases
-
-    `process_columns` has a problem with columns order - it returns not sorted list.
-    We have to before a fix use sorted for comparing with sorted expected data
-    """
+    """Test applying data mapping for a different datasets cases"""
     columns = process_columns(test_dataset, data_mapping)
     assert expected_columns == columns
 
