@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 from typing import Optional
+from typing import Sequence
 
 import numpy as np
 import pandas as pd
@@ -101,11 +102,18 @@ class CatTargetDriftAnalyzer(Analyzer):
 
         options = self.options_provider.get(DataDriftOptions)
         columns = process_columns(reference_data, column_mapping)
+        target_column = columns.utility_columns.target
+        prediction_column = columns.utility_columns.prediction
+
+        if isinstance(target_column, Sequence):
+            raise ValueError("target should not be a sequence")
+
+        if isinstance(prediction_column, Sequence):
+            raise ValueError("prediction should not be a sequence")
+
         result = CatTargetDriftAnalyzerResults(
             columns=columns, reference_data_count=reference_data.shape[0], current_data_count=reference_data.shape[0]
         )
-        target_column = columns.utility_columns.target
-        prediction_column = columns.utility_columns.prediction
 
         # consider replacing only values in target and prediction column, see comment above
         #   _remove_nans_and_infinities

@@ -1,118 +1,178 @@
 import datetime
 
-import pandas
+import numpy as np
+import pandas as pd
 import pytest
 
 from evidently.analyzers.utils import process_columns
+from evidently.analyzers.utils import DatasetColumns
+from evidently.analyzers.utils import DatasetUtilityColumns
 from evidently.pipeline.column_mapping import ColumnMapping
 
 
-def test_process_columns() -> None:
-    dataset = pandas.DataFrame({
-        'datetime': [datetime.datetime.now()],
-        'target': [1],
-        'prediction': [1],
-        'feature1': [0],
-        'feature2': [1],
-        'cat_feature1': ['o'],
-        'cat_feature2': ['b'],
-    })
+@pytest.mark.parametrize(
+    "test_dataset, data_mapping, expected_columns",
+    (
+        (
+            pd.DataFrame(
+                {
+                    "datetime_column": [
+                        datetime.datetime(year=2022, month=2, day=20),
+                        datetime.datetime(year=2021, month=2, day=20),
+                        datetime.datetime(year=2020, month=2, day=20),
+                    ],
+                    "my_target": [1, 0, 1],
+                    "my_prediction": [1, 1, 1],
+                    "num_feature_1": [0.4, 0.3, 234.2],
+                    "num_feature_2": [np.nan, np.nan, np.nan],
+                    "cat_feature_1": [1, 2, 3],
+                    "cat_feature_2": ["a", "b", "c"],
+                    "cat_feature_3": [np.nan, np.nan, np.nan],
+                    "cat_feature_4": ["apple", np.nan, "lemon"],
+                }
+            ),
+            ColumnMapping(
+                target="my_target",
+                prediction="my_prediction",
+                numerical_features=["num_feature_1", "num_feature_2"],
+                categorical_features=["cat_feature_1", "cat_feature_2", "cat_feature_3", "cat_feature_4"],
+                datetime="datetime_column",
+                id="some_id",
+                target_names=["apple", "lemon", "peach"],
+            ),
+            DatasetColumns(
+                utility_columns=DatasetUtilityColumns(
+                    date="datetime_column", id_column="some_id", target="my_target", prediction="my_prediction"
+                ),
+                num_feature_names=["num_feature_1", "num_feature_2"],
+                cat_feature_names=["cat_feature_1", "cat_feature_2", "cat_feature_3", "cat_feature_4"],
+                target_names=["apple", "lemon", "peach"],
+            ),
+        ),
+        (
+            pd.DataFrame(
+                {
+                    "index": [1, 2, 3],
+                    "datetime": [2001, 1994, 1854],
+                    "el_target": [4, 9, 8],
+                    "el_prediction": [6, 4, 8],
+                    "cat_feature_1": [1, 2, 3],
+                }
+            ),
+            ColumnMapping(
+                target="el_target", prediction="el_prediction", categorical_features=["cat_feature_1"], id="index"
+            ),
+            DatasetColumns(
+                utility_columns=DatasetUtilityColumns(
+                    date="datetime", id_column="index", target="el_target", prediction="el_prediction"
+                ),
+                num_feature_names=[],
+                cat_feature_names=["cat_feature_1"],
+                target_names=None,
+            ),
+        ),
+    ),
+)
+def test_process_columns(
+    test_dataset: pd.DataFrame, data_mapping: ColumnMapping, expected_columns: DatasetColumns
+) -> None:
+    """Test applying data mapping for a different datasets cases
 
-    columns = process_columns(dataset, ColumnMapping())
-    assert columns.utility_columns.id_column is None
-    # process_columns has a problem with columns order - it returns not sorted list
-    # we have to before a fix use sorted for comparing with sorted expected data
-    assert sorted(columns.num_feature_names) == ['feature1', 'feature2']
-    assert sorted(columns.cat_feature_names) == ['cat_feature1', 'cat_feature2']
+    `process_columns` has a problem with columns order - it returns not sorted list.
+    We have to before a fix use sorted for comparing with sorted expected data
+    """
+    columns = process_columns(test_dataset, data_mapping)
+    assert expected_columns == columns
 
 
 @pytest.mark.parametrize(
-    'test_dataset,column_mapping,expected_dict',
+    "test_dataset,column_mapping,expected_dict",
     (
         (
-            pandas.DataFrame({'missed_all': []}),
+            pd.DataFrame({"missed_all": []}),
             ColumnMapping(),
             {
-                'cat_feature_names': [],
-                'num_feature_names': ['missed_all'],
-                'target_names': None,
-                'utility_columns': {
-                    'date': None,
-                    'id': None,
-                    'prediction': None,
-                    'target': None,
+                "cat_feature_names": [],
+                "num_feature_names": ["missed_all"],
+                "target_names": None,
+                "utility_columns": {
+                    "date": None,
+                    "id": None,
+                    "prediction": None,
+                    "target": None,
                 },
-            }
+            },
         ),
         (
-            pandas.DataFrame({'target': []}),
+            pd.DataFrame({"target": []}),
             ColumnMapping(),
             {
-                'cat_feature_names': [],
-                'num_feature_names': [],
-                'target_names': None,
-                'utility_columns': {
-                    'date': None,
-                    'id': None,
-                    'prediction': None,
-                    'target': 'target',
+                "cat_feature_names": [],
+                "num_feature_names": [],
+                "target_names": None,
+                "utility_columns": {
+                    "date": None,
+                    "id": None,
+                    "prediction": None,
+                    "target": "target",
                 },
-            }
+            },
         ),
         (
-            pandas.DataFrame({'prediction': []}),
+            pd.DataFrame({"prediction": []}),
             ColumnMapping(),
             {
-                'cat_feature_names': [],
-                'num_feature_names': [],
-                'target_names': None,
-                'utility_columns': {
-                    'date': None,
-                    'id': None,
-                    'prediction': 'prediction',
-                    'target': None,
+                "cat_feature_names": [],
+                "num_feature_names": [],
+                "target_names": None,
+                "utility_columns": {
+                    "date": None,
+                    "id": None,
+                    "prediction": "prediction",
+                    "target": None,
                 },
-            }
+            },
         ),
         (
-            pandas.DataFrame({'my_target': [], 'predictions_1': [], 'predictions_2': []}),
+            pd.DataFrame({"my_target": [], "predictions_1": [], "predictions_2": []}),
+            ColumnMapping(target="my_target", prediction=["predictions_1", "predictions_2"], id="test_id"),
+            {
+                "cat_feature_names": [],
+                "num_feature_names": [],
+                "target_names": None,
+                "utility_columns": {
+                    "date": None,
+                    "id": "test_id",
+                    "prediction": ["predictions_1", "predictions_2"],
+                    "target": "my_target",
+                },
+            },
+        ),
+        (
+            pd.DataFrame({"target": [], "my_date": [], "num_1": [], "cat_1": []}),
             ColumnMapping(
-                target='my_target', prediction=['predictions_1', 'predictions_2'], id='test_id'
+                target="target",
+                prediction=None,
+                datetime="my_date",
+                numerical_features=["num_1"],
+                categorical_features=["target", "cat_1"],
             ),
             {
-                'cat_feature_names': [],
-                'num_feature_names': [],
-                'target_names': None,
-                'utility_columns': {
-                    'date': None,
-                    'id': 'test_id',
-                    'prediction': ['predictions_1', 'predictions_2'],
-                    'target': 'my_target',
+                "cat_feature_names": ["target", "cat_1"],
+                "num_feature_names": ["num_1"],
+                "target_names": None,
+                "utility_columns": {
+                    "date": "my_date",
+                    "id": None,
+                    "prediction": None,
+                    "target": "target",
                 },
-            }
+            },
         ),
-        (
-            pandas.DataFrame({'target': [], 'my_date': [], 'num_1': [], 'cat_1': []}),
-            ColumnMapping(
-                target='target', prediction=None, datetime='my_date',
-                numerical_features=['num_1'], categorical_features=['target', 'cat_1']
-            ),
-            {
-                'cat_feature_names': ['target', 'cat_1'],
-                'num_feature_names': ['num_1'],
-                'target_names': None,
-                'utility_columns': {
-                    'date': 'my_date',
-                    'id': None,
-                    'prediction': None,
-                    'target': 'target',
-                },
-            }
-        ),
-    )
+    ),
 )
 def test_dataset_column_default_to_dict(
-        test_dataset: pandas.DataFrame, column_mapping: ColumnMapping, expected_dict: dict
+    test_dataset: pd.DataFrame, column_mapping: ColumnMapping, expected_dict: dict
 ) -> None:
     columns = process_columns(test_dataset, column_mapping)
     columns_dict = columns.as_dict()

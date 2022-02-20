@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
+from typing import Dict
 from typing import List
 from typing import Optional
-from typing import Dict
+from typing import Sequence
+from typing import Union
 
 import pandas as pd
 import numpy as np
@@ -41,7 +43,7 @@ class ClassificationPerformanceAnalyzerResults(BaseAnalyzerResult):
 
 
 def _calculate_performance_metrics(
-        *, data: pd.DataFrame, target_column: str, prediction_column: str, target_names: List[str]
+        *, data: pd.DataFrame, target_column: Union[str, Sequence[str]], prediction_column: Union[str, Sequence[str]], target_names: Optional[List[str]]
 ) -> PerformanceMetrics:
     data.replace([np.inf, -np.inf], np.nan, inplace=True)
     data.dropna(axis=0, how='any', inplace=True)

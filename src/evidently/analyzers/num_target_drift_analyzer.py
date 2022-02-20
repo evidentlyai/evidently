@@ -2,6 +2,7 @@
 # coding: utf-8
 from typing import Dict
 from typing import Optional
+from typing import Sequence
 
 import pandas as pd
 from dataclasses import dataclass
@@ -27,8 +28,7 @@ class NumDataDriftMetrics:
 def _compute_correlation(
         reference_data: pd.DataFrame,
         current_data: pd.DataFrame,
-        prefix: str,
-        main_column: str,
+        main_column: Optional[str],
         num_columns: List[str],
         stats_fun: Callable
 ) -> Optional[NumDataDriftMetrics]:
@@ -113,6 +113,12 @@ class NumTargetDriftAnalyzer(Analyzer):
 
         columns = process_columns(reference_data, column_mapping)
 
+        if isinstance(columns.utility_columns.target, Sequence):
+            raise ValueError("target should not be a sequence")
+
+        if isinstance(columns.utility_columns.prediction, Sequence):
+            raise ValueError("prediction should not be a sequence")
+
         if set(columns.num_feature_names) - set(current_data.columns):
             raise ValueError(f'Some numerical features in current data {current_data.columns}'
                              f'are not present in columns.num_feature_names')
@@ -124,12 +130,10 @@ class NumTargetDriftAnalyzer(Analyzer):
 
         func = data_drift_options.num_target_stattest_func or ks_stat_test
         result.target_metrics = _compute_correlation(
-            reference_data, current_data, 'target',
-            columns.utility_columns.target, columns.num_feature_names, func
+            reference_data, current_data, columns.utility_columns.target, columns.num_feature_names, func
         )
         result.prediction_metrics = _compute_correlation(
-            reference_data, current_data, 'prediction',
-            columns.utility_columns.prediction, columns.num_feature_names, func
+            reference_data, current_data, columns.utility_columns.prediction, columns.num_feature_names, func
         )
 
         return result
