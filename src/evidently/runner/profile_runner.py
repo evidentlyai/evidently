@@ -4,6 +4,7 @@ from typing import Dict
 
 from evidently.model_profile import Profile
 from evidently.model_profile.sections.data_drift_profile_section import DataDriftProfileSection
+from evidently.model_profile.sections.data_profile_profile_section import DataProfileProfileSection
 from evidently.model_profile.sections.cat_target_drift_profile_section import CatTargetDriftProfileSection
 from evidently.model_profile.sections.num_target_drift_profile_section import NumTargetDriftProfileSection
 from evidently.model_profile.sections.classification_performance_profile_section import \
@@ -28,7 +29,7 @@ parts_mapping = dict(
     prob_classification_performance=ProbClassificationPerformanceProfileSection,
     num_target_drift=NumTargetDriftProfileSection,
     regression_performance=RegressionPerformanceProfileSection,
-
+    data_profile=DataProfileProfileSection,
 )
 
 

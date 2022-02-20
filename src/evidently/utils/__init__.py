@@ -11,4 +11,4 @@ class NumpyEncoder(json.JSONEncoder):
             return o.item()
         if isinstance(o, np.ndarray):
             return o.tolist()
-        return super().default(o)
+        return o
