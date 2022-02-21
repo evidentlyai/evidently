@@ -2,11 +2,11 @@
 description: Create live dashboards for ML monitoring.
 ---
 
-Evidently has a monitoring service component that can collect data and model metrics from an ML service. It is based on the shared analyzer functionality and can return the same output metrics and statistical tests as Dashboards and JSON profiles. 
-
-The core difference from JSON profiles is the ability to calculate metrics on top of the streaming data. It includes the configuration options that help define the monitoring logic by setting options like the size of the window, choice of moving reference, etc.    
+Evidently has a monitoring service component that collects data and model metrics from an ML service. It is based on the shared `Analyzer` functionality and can compute the same metrics and statistical tests as `Dashboards` and JSON `Profiles`. 
 
 The `Monitors` output the metrics that can be further logged elsewhere. It is currently recommended to use the Evidently monitoring service together with Grafana and Prometheus. 
+
+The core difference from JSON profiles is the ability to calculate metrics on top of the streaming data. Monitoring includes the configuration options that help define the monitoring logic by setting options like the size of the window, choice of moving reference, etc.    
 
 {% hint style="info" %}
 **Monitoring functionality is in active developement and may be subject to API change.** If you integrate this in your production pipeline, we suggest explicitly specifying the Evidently package version. Feel free to ping us on Discord if you face any issues, and we'll help to figure them out. 
@@ -27,12 +27,23 @@ You can use this same stack for ML monitoring. In this case, Evidently provides 
 
 Follow the readme to install and modify the example to adapt it to your use case.
 
-It contains pre-built dashboards to display Evidently reports in the Grafana interface.
+It contains pre-built dashboards to display Evidently reports in the Grafana interface. You can customize and modify dashboards to your needs.
 
 ## 1. Data Drift Dashboard
 
 ![](../.gitbook/assets/grafana\_dashboard.jpg)
 
-We plan to add more pre-built dashboards in the future.
+## 2. Classification Performance Dashboard
+
+![](../.gitbook/assets/grafana\_classification\_0-min.png)
+
+![](../.gitbook/assets/grafana\_classification\_2-min.png)
+
+## 3. Regression Performance Dashboard
+
+![](../.gitbook/assets/grafana\_regression\_1-min.png)
+
+We plan to add more pre-built dashboards in the future. 
 
 You can also read the [release blog post](https://evidentlyai.com/blog/evidently-and-grafana-ml-monitoring-live-dashboards).
+

@@ -38,15 +38,23 @@ const ExpandableListContent: React.FunctionComponent<ExpandableListWidgetParams 
                           style={{width: "100%", minHeight: 150 + 100 * (1 + (props.widgetSize / 2)), maxHeight: 250}}
                     />
                 </Grid>
-                <Grid item xs={12}>
-                    <Button variant="outlined" startIcon={details ? <ExpandLessSharp/> : <ExpandMoreSharp />} onClick={
-                        () => setDetails(prevState => !prevState)
-                    }>Details</Button>
-                </Grid>
+                {props.details === undefined || props.details.parts.length === 0 ? <></> :
+                    <>
+                        <Grid item xs={12}>
+                            <Button variant="outlined" startIcon={details ? <ExpandLessSharp/> : <ExpandMoreSharp/>}
+                                    onClick={
+                                        () => setDetails(prevState => !prevState)
+                                    }
+                            >Details</Button>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Collapse in={details} mountOnEnter={true} unmountOnExit={true}>
+                                <BigTableDetails details={props.details} widgetSize={props.widgetSize}/>
+                            </Collapse>
+                        </Grid>
+                    </>
+                }
             </Grid>
-            <Collapse in={details} mountOnEnter={true} unmountOnExit={true}>
-                <BigTableDetails details={props.details} widgetSize={props.widgetSize}/>
-            </Collapse>
         </React.Fragment>)
     }
 export default ExpandableListContent;

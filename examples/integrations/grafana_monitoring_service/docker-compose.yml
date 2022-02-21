@@ -13,6 +13,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    volumes:
+      - ./reference.csv:/app/reference.csv
+      - ./config.yaml:/app/config.yaml
     ports:
       - "5000:5000"
     networks:

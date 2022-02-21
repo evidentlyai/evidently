@@ -1,4 +1,14 @@
+"""
+This is a demo service for Evidently metrics integration with Prometheus and Grafana.
+
+Read `README.md` for proper setup and installation.
+
+The service gets a reference dataset from reference.csv file and process current data with HTTP API.
+
+Metrics calculation results are available with `GET /metrics` HTTP method in Prometheus compatible format.
+"""
 import hashlib
+import os.path
 
 import dataclasses
 import datetime
@@ -15,15 +25,18 @@ from werkzeug.middleware.dispatcher import DispatcherMiddleware
 
 from evidently import model_monitoring
 from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.model_monitoring import DataDriftMonitor, RegressionPerformanceMonitor
+from evidently.model_monitoring import (
+    DataDriftMonitor,
+    RegressionPerformanceMonitor,
+    ClassificationPerformanceMonitor,
+    ProbClassificationPerformanceMonitor,
+)
 from evidently.runner.loader import DataLoader, DataOptions
 
 app = Flask(__name__)
 logger = create_logger(app)
 # Add prometheus wsgi middleware to route /metrics requests
-app.wsgi_app = DispatcherMiddleware(app.wsgi_app, {
-    '/metrics': make_wsgi_app()
-})
+app.wsgi_app = DispatcherMiddleware(app.wsgi_app, {"/metrics": make_wsgi_app()})
 
 
 @dataclasses.dataclass
@@ -39,7 +52,9 @@ class MonitoringServiceOptions:
 
 monitor_mapping = {
     "data_drift": DataDriftMonitor,
-    "regression_performance": RegressionPerformanceMonitor
+    "regression_performance": RegressionPerformanceMonitor,
+    "classification_performance": ClassificationPerformanceMonitor,
+    "prob_classification_performance": ProbClassificationPerformanceMonitor,
 }
 
 
@@ -47,16 +62,16 @@ class MonitoringService:
     metric: Dict[str, Gauge]
     last_run: Optional[datetime.datetime]
 
-    def __init__(self,
-                 reference: pandas.DataFrame,
-                 options: MonitoringServiceOptions,
-                 column_mapping: ColumnMapping = None):
-        self.monitoring = model_monitoring.ModelMonitoring(monitors=[monitor_mapping[k]() for k in options.monitors],
-                                                           options=[])
+    def __init__(
+        self, reference: pandas.DataFrame, options: MonitoringServiceOptions, column_mapping: ColumnMapping = None
+    ):
+        self.monitoring = model_monitoring.ModelMonitoring(
+            monitors=[monitor_mapping[k]() for k in options.monitors], options=[]
+        )
 
         if options.use_reference:
-            self.reference = reference.iloc[:-options.window_size, :].copy()
-            self.current = reference.iloc[-options.window_size:, :].copy()
+            self.reference = reference.iloc[: -options.window_size, :].copy()
+            self.current = reference.iloc[-options.window_size :, :].copy()
         else:
             self.reference = reference.copy()
             self.current = pandas.DataFrame().reindex_like(reference).dropna()
@@ -80,8 +95,9 @@ class MonitoringService:
             self.current.reset_index(drop=True, inplace=True)
 
         if current_size < self.options.window_size:
-            logger.info(f"Not enough data for measurement: {current_size} of {self.options.window_size}."
-                        f" Waiting more data")
+            logger.info(
+                f"Not enough data for measurement: {current_size} of {self.options.window_size}." f" Waiting more data"
+            )
             return
         if self.next_run_time is not None and self.next_run_time > datetime.datetime.now():
             logger.info(f"Next run at {self.next_run_time}")
@@ -108,23 +124,33 @@ SERVICE: Optional[MonitoringService] = None
 def configure_service():
     # pylint: disable=global-statement
     global SERVICE
-    with open("config.yaml", 'rb') as config_file:
+    config_file_name = "config.yaml"
+    # try to find a config file, it should be generated via a data preparation script
+    if not os.path.exists(config_file_name):
+        exit("Cannot find config file for the metrics service. Try to check README.md for setup instructions.")
+
+    with open(config_file_name, "rb") as config_file:
         config = yaml.safe_load(config_file)
+
     loader = DataLoader()
     logger.info(f"config: {config}")
-    options = MonitoringServiceOptions(**config['service'])
+    options = MonitoringServiceOptions(**config["service"])
 
-    reference_data = loader.load(options.reference_path,
-                                 DataOptions(date_column=config['data_format']['date_column'],
-                                             separator=config['data_format']['separator'],
-                                             header=config['data_format']['header']))
+    reference_data = loader.load(
+        options.reference_path,
+        DataOptions(
+            date_column=config["data_format"].get("date_column", None),
+            separator=config["data_format"]["separator"],
+            header=config["data_format"]["header"],
+        ),
+    )
     logger.info(f"reference dataset loaded: {len(reference_data)} rows")
-    SERVICE = MonitoringService(reference_data,
-                                options=options,
-                                column_mapping=ColumnMapping(**config['column_mapping']))
+    SERVICE = MonitoringService(
+        reference_data, options=options, column_mapping=ColumnMapping(**config["column_mapping"])
+    )
 
 
-@app.route('/iterate', methods=["POST"])
+@app.route("/iterate", methods=["POST"])
 def iterate():
     item = flask.request.json
     if SERVICE is None:
@@ -133,5 +159,5 @@ def iterate():
     return "ok"
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run()
