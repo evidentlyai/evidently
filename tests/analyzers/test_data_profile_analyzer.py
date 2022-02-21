@@ -220,22 +220,10 @@ def test_data_profile_analyzer_cat_features(dataset: pd.DataFrame, expected_metr
     "reference_dataset, current_dataset, expected_new, expected_unused",
     [
         (
-            pd.DataFrame({"category_feature": ["", "a", "b"]}),
-            pd.DataFrame({"category_feature": ["a", "b"]}),
-            0,
-            1,
-        ),
-        (
             pd.DataFrame({"category_feature": [np.nan, 2, 2, 43]}),
             pd.DataFrame({"category_feature": [6, 2, 5, np.nan]}),
             2,
             1,
-        ),
-        (
-            pd.DataFrame({"category_feature": [1, 2, 3, 4]}),
-            pd.DataFrame({"category_feature": [6, 2, 5, np.nan]}),
-            3,
-            3,
         ),
         (
             pd.DataFrame({"category_feature": ["a", "b", "c", "d"]}),
@@ -248,30 +236,6 @@ def test_data_profile_analyzer_cat_features(dataset: pd.DataFrame, expected_metr
             pd.DataFrame({"category_feature": ["a", "a", "a"]}),
             1,
             1,
-        ),
-        (
-            pd.DataFrame({"category_feature": [1, 2, 3, np.nan]}),
-            pd.DataFrame({"category_feature": [np.nan, np.nan, np.nan]}),
-            0,
-            3,
-        ),
-        (
-            pd.DataFrame({"category_feature": [1, 2, 3, np.nan, None]}),
-            pd.DataFrame({"category_feature": [np.nan]}),
-            0,
-            3,
-        ),
-        (
-            pd.DataFrame({"category_feature": ["test1", np.nan, None, ""]}),
-            pd.DataFrame({"category_feature": [np.nan, None, ""]}),
-            0,
-            1,
-        ),
-        (
-            pd.DataFrame({"category_feature": ["test1", np.nan, None, ""]}),
-            pd.DataFrame({"category_feature": [np.nan, None, "value"]}),
-            1,
-            2,
         ),
     ],
 )
@@ -286,8 +250,8 @@ def test_data_profile_analyzer_new_and_unused_count_for_cat_features(
     result = data_profile_analyzer.calculate(reference_dataset, current_dataset, data_mapping)
     assert result.current_features_stats is not None
     assert result.current_features_stats.cat_features_stats is not None
-    assert "category_feature" in result.current_features_stats.cat_features_stats
-    metrics = result.current_features_stats.cat_features_stats["category_feature"]
+    assert "category_feature" in result.reference_features_stats.cat_features_stats
+    metrics = result.reference_features_stats.cat_features_stats["category_feature"]
     assert metrics.new_in_current_values_count == expected_new
     assert metrics.unused_in_current_values_count == expected_unused
 
