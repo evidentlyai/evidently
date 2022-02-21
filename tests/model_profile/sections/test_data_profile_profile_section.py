@@ -120,6 +120,8 @@ def test_no_calculation_results() -> None:
                         "most_common_value_fraction": 0.5,
                         "unique": 2,
                         "unique_fraction": 0.5,
+                        "new_in_current_values_count": 0,
+                        "unused_in_current_values_count": 1,
                     },
                     "datatime_feature": {
                         "count": 4,
@@ -180,10 +182,8 @@ def test_no_calculation_results() -> None:
                         "missing_fraction": 0.25,
                         "most_common_value": 1.0,
                         "most_common_value_fraction": 0.5,
-                        "new_in_current_values_count": 0,
                         "unique": 2,
                         "unique_fraction": 0.5,
-                        "unused_in_current_values_count": 1,
                     },
                     "datatime_feature": {
                         "count": 3,

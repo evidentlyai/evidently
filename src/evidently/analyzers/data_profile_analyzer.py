@@ -189,10 +189,9 @@ class DataProfileAnalyzer(Analyzer):
         if current_data is not None:
             current_features_stats = self._calculate_stats(current_data, columns, column_mapping.task)
 
-            if reference_features_stats.cat_features_stats is not None:
+            if current_features_stats.cat_features_stats is not None:
                 # calculate additional stats of representation reference dataset values in the current dataset
-                for feature_name in reference_features_stats.cat_features_stats:
-                    cat_feature_stats = reference_features_stats.cat_features_stats[feature_name]
+                for feature_name, cat_feature_stats in current_features_stats.cat_features_stats.items():
                     current_values_set = set(current_data[feature_name].unique())
 
                     if feature_name in reference_data:
@@ -201,10 +200,15 @@ class DataProfileAnalyzer(Analyzer):
                     else:
                         reference_values_set = set()
 
-                    new_in_current_values_count: int = len(current_values_set - reference_values_set)
-                    unused_in_current_values_count = len(reference_values_set - current_values_set)
+                    unique_in_current = current_values_set - reference_values_set
+                    new_in_current_values_count: int = len(unique_in_current)
+                    unique_in_reference = reference_values_set - current_values_set
+                    unused_in_current_values_count: int = len(unique_in_reference)
 
-                    if current_data[feature_name].hasnans and reference_data[feature_name].hasnans:
+                    # take into account that NaN values in Python sets do not support substitution correctly
+                    # {nan} - {nan} can be equals {nan}
+                    # use pd.isnull because it supports strings values correctly, np.isnan raises and exception
+                    if any(pd.isnull(list(unique_in_current))) and any(pd.isnull(list(unique_in_reference))):
                         new_in_current_values_count -= 1
                         unused_in_current_values_count -= 1
 
