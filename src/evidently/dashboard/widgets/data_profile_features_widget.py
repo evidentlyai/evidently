@@ -4,7 +4,6 @@ import json
 from typing import List
 from typing import Optional
 from typing import Tuple
-
 import pandas as pd
 import numpy as np
 
@@ -137,6 +136,7 @@ class DataProfileFeaturesWidget(Widget):
         current_stats: Optional[FeaturesProfileStats],
     ) -> List[dict]:
         def get_values_as_string(stats_dict, field_name, field_percentage_name) -> str:
+            
             if field_percentage_name is None:
                 return str(stats_dict[field_name])
             else:
@@ -184,13 +184,13 @@ class DataProfileFeaturesWidget(Widget):
             cat_features = [
                 ("count", "count", None),
                 ("unique", "unique_count", "unique_percentage"),
-                ("most common value", "most_common_value", "most_common_value_percentage"),
+                ("most common", "most_common_value", "most_common_value_percentage"),
                 ("missing", "missing_count", "missing_percentage"),
             ]
 
             if current_stats:
-                cat_features.append(("number of new values", "new_in_current_values_count", None))
-                cat_features.append(("number of unused values", "unused_in_current_values_count", None))
+                cat_features.append(("new categories", "new_in_current_values_count", None))
+                cat_features.append(("missing categories", "unused_in_current_values_count", None))
 
             metrics.extend(self._get_stats_with_names(cat_features, reference_stats, current_stats))
 
@@ -206,7 +206,7 @@ class DataProfileFeaturesWidget(Widget):
                 ("75%", "percentile_75", None),
                 ("max", "max", None),
                 ("unique", "unique_count", "unique_percentage"),
-                ("most common value", "most_common_value", "most_common_value_percentage"),
+                ("most common", "most_common_value", "most_common_value_percentage"),
                 ("missing", "missing_count", "missing_percentage"),
                 ("infinite", "infinite_count", "infinite_percentage"),
             ]
@@ -217,7 +217,7 @@ class DataProfileFeaturesWidget(Widget):
             datetime_features = [
                 ("count", "count", None),
                 ("unique", "unique_count", "unique_percentage"),
-                ("most common value", "most_common_value", "most_common_value_percentage"),
+                ("most common", "most_common_value", "most_common_value_percentage"),
                 ("missing", "missing_count", "missing_percentage"),
                 ("first", "min", None),
                 ("last", "max", None),
@@ -327,6 +327,22 @@ class DataProfileFeaturesWidget(Widget):
                 tmp_curr = tmp_curr.value_counts().reset_index()
                 tmp_curr.columns = [feature_name, "number_of_items"]
                 tmp_curr[feature_name] = tmp_curr[feature_name].dt.to_timestamp()
+
+                max_ref_date = tmp_ref[feature_name].max()
+                min_curr_date = tmp_curr[feature_name].min()
+                if max_ref_date == min_curr_date:
+                    if (tmp_curr.loc[tmp_curr[feature_name] == min_curr_date, "number_of_items"].iloc[0]
+                        > tmp_ref.loc[tmp_ref[feature_name] == max_ref_date, "number_of_items"].iloc[0]):
+                        tmp_curr.loc[tmp_curr[feature_name] == min_curr_date, "number_of_items"] = (
+                            tmp_curr.loc[tmp_curr[feature_name] == min_curr_date, "number_of_items"]
+                            + tmp_ref.loc[tmp_ref[feature_name] == max_ref_date, "number_of_items"])
+                        tmp_ref = tmp_ref[tmp_ref[feature_name] != max_ref_date]
+                    else:
+                        tmp_ref.loc[tmp_ref[feature_name] == max_ref_date, "number_of_items"] = (
+                            tmp_ref.loc[tmp_ref[feature_name] == max_ref_date, "number_of_items"] 
+                            + tmp_curr.loc[tmp_curr[feature_name] == min_curr_date, "number_of_items"])
+                        tmp_curr = tmp_curr[tmp_curr[feature_name] != min_curr_date ]
+
                 fig.add_trace(
                     go.Scatter(
                         x=tmp_ref.sort_values(feature_name)[feature_name],
@@ -454,7 +470,6 @@ class DataProfileFeaturesWidget(Widget):
         elif feature_type == "cat":
             tmp_ref = self._transform_df_to_time_count_view(tmp_ref, date_column, feature_name)
             tmp_curr = self._transform_df_to_time_count_view(tmp_curr, date_column, feature_name)
-            tmp_curr = tmp_curr[tmp_curr[date_column] != tmp_ref[date_column].max()]
 
             fig = go.Figure()
             for i, val in enumerate(tmp_ref[feature_name].unique()):
