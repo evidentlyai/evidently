@@ -37,30 +37,30 @@ import pytest
                 most_common_not_null_value_fraction=None,
             ),
         ),
-        (
-            pd.DataFrame({"numerical_feature": [np.nan, np.nan, np.nan, np.nan]}),
-            FeaturesProfileStats(
-                feature_type="num",
-                count=0,
-                percentile_25=None,
-                percentile_50=None,
-                percentile_75=None,
-                infinite_count=0,
-                infinite_fraction=0,
-                max=None,
-                min=None,
-                mean=None,
-                missing_count=4,
-                missing_fraction=1,
-                most_common_value=None,
-                most_common_value_fraction=None,
-                std=None,
-                unique=None,
-                unique_fraction=None,
-                most_common_not_null_value=None,
-                most_common_not_null_value_fraction=None,
-            ),
-        ),
+        # (
+        #     pd.DataFrame({"numerical_feature": [np.nan, np.nan, np.nan, np.nan]}),
+        #     FeaturesProfileStats(
+        #         feature_type="num",
+        #         count=0,
+        #         percentile_25=None,
+        #         percentile_50=None,
+        #         percentile_75=None,
+        #         infinite_count=0,
+        #         infinite_fraction=0,
+        #         max=None,
+        #         min=None,
+        #         mean=None,
+        #         missing_count=4,
+        #         missing_fraction=1,
+        #         most_common_value=None,
+        #         most_common_value_fraction=None,
+        #         std=None,
+        #         unique=None,
+        #         unique_fraction=None,
+        #         most_common_not_null_value=None,
+        #         most_common_not_null_value_fraction=None,
+        #     ),
+        # ),
         (
             pd.DataFrame({"numerical_feature": [np.nan, 2, 2, 432]}),
             FeaturesProfileStats(
@@ -129,27 +129,29 @@ def test_data_profile_analyzer_num_features(dataset: pd.DataFrame, expected_metr
             ),
         ),
         (
-            pd.DataFrame({"category_feature": [np.nan, np.nan, np.nan, np.nan]}),
+            pd.DataFrame({"category_feature": [None, None, None, None]}),
             FeaturesProfileStats(
                 feature_type="cat",
                 count=0,
+                infinite_count=None,
+                infinite_fraction=None,
+                missing_count=4,
+                missing_fraction=1.0,
+                unique=None,
+                unique_fraction=None,
                 percentile_25=None,
                 percentile_50=None,
                 percentile_75=None,
-                infinite_count=None,
-                infinite_fraction=None,
                 max=None,
                 min=None,
                 mean=None,
-                missing_count=4,
-                missing_fraction=1,
                 most_common_value=None,
-                most_common_value_fraction=None,
+                most_common_value_fraction=1.0,
                 std=None,
-                unique=None,
-                unique_fraction=None,
                 most_common_not_null_value=None,
                 most_common_not_null_value_fraction=None,
+                new_in_current_values_count=None,
+                unused_in_current_values_count=None,
             ),
         ),
         (
@@ -390,6 +392,45 @@ def test_data_profile_analyzer_datetime_features(dataset: pd.DataFrame, expected
     assert "datetime_feature" in result.reference_features_stats.datetime_features_stats
     metrics = result.reference_features_stats.datetime_features_stats["datetime_feature"]
     assert metrics == expected_metrics
+
+
+def test_data_profile_analyzer_empty_features() -> None:
+    data_profile_analyzer = DataProfileAnalyzer()
+    reference_data = pd.DataFrame(
+        {
+            "datetime_feature": [np.nan, np.nan, np.nan],
+        }
+    )
+    data_mapping = ColumnMapping(
+        datetime_features=["datetime_feature"],
+    )
+    result = data_profile_analyzer.calculate(reference_data, None, data_mapping)
+
+    assert "datetime_feature" in result.reference_features_stats.datetime_features_stats
+    datetime_feature = result.reference_features_stats.datetime_features_stats["datetime_feature"]
+    assert datetime_feature == FeaturesProfileStats(
+        feature_type="datetime",
+        count=0,
+        infinite_count=None,
+        infinite_fraction=None,
+        missing_count=3,
+        missing_fraction=1.0,
+        unique=None,
+        unique_fraction=None,
+        percentile_25=None,
+        percentile_50=None,
+        percentile_75=None,
+        max=None,
+        min=None,
+        mean=None,
+        most_common_value="nan",
+        most_common_value_fraction=1.0,
+        std=None,
+        most_common_not_null_value=None,
+        most_common_not_null_value_fraction=None,
+        new_in_current_values_count=None,
+        unused_in_current_values_count=None,
+    )
 
 
 def test_data_profile_analyzer_regression() -> None:

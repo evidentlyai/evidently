@@ -245,18 +245,17 @@ class DataProfileAnalyzer(Analyzer):
             result.infinite_fraction = np.round(result.infinite_count / all_values_count, 2)
 
         result.missing_fraction = np.round(result.missing_count / all_values_count, 2)
+        result.most_common_value = value_counts.index[0]
+        result.most_common_value_fraction = np.round(value_counts.iloc[0] / all_values_count, 2)
+
+        if feature_type == "datetime":
+            # cast datatime value to str for datetime features
+            result.most_common_value = str(result.most_common_value)
+
+        result.unique = feature.nunique()
+        result.unique_fraction = np.round(result.unique / all_values_count, 2)
 
         if result.count > 0:
-            result.most_common_value = value_counts.index[0]
-
-            if feature_type == "datetime":
-                # cast datatime value to str for datetime features
-                result.most_common_value = str(result.most_common_value)
-
-            result.most_common_value_fraction = np.round(value_counts.iloc[0] / all_values_count, 2)
-            result.unique = feature.nunique()
-            result.unique_fraction = np.round(result.unique / all_values_count, 2)
-
             if pd.isnull(result.most_common_value):
                 result.most_common_not_null_value = value_counts.index[1]
                 result.most_common_not_null_value_fraction = np.round(value_counts.iloc[1] / all_values_count, 2)
