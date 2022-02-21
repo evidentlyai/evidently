@@ -28,7 +28,7 @@ class FeaturesProfileStats:
         - count - quantity of a meaningful values (do not take into account NaN values)
         - missing_count - quantity of meaningless (NaN) values
         - missing_percentage - the percentage of the missed values
-        - unique - quantity of unique values
+        - unique_count - quantity of unique values
         - unique_percentage - the percentage of the unique values
         - max - maximum value (not applicable for category features)
         - min - minimum value (not applicable for category features)
@@ -62,7 +62,7 @@ class FeaturesProfileStats:
     infinite_percentage: Optional[float] = None
     missing_count: Optional[int] = None
     missing_percentage: Optional[float] = None
-    unique: Optional[int] = None
+    unique_count: Optional[int] = None
     unique_percentage: Optional[float] = None
     percentile_25: Optional[float] = None
     percentile_50: Optional[float] = None
@@ -268,23 +268,21 @@ class DataProfileAnalyzer(Analyzer):
             # cast datatime value to str for datetime features
             result.most_common_value = str(result.most_common_value)
 
-        result.unique = feature.nunique()
+        result.unique_count = feature.nunique()
 
-        if result.unique is not None:
-            result.unique_percentage = get_percentage_from_all_values(result.unique)
+        if result.unique_count is not None:
+            result.unique_percentage = get_percentage_from_all_values(result.unique_count)
 
         if result.count > 0 and pd.isnull(result.most_common_value):
             result.most_common_not_null_value = value_counts.index[1]
             result.most_common_not_null_value_percentage = get_percentage_from_all_values(value_counts.iloc[1])
 
         if feature_type == "num":
-            result.max = feature.max()
-            result.min = feature.min()
+            result.max = np.round(feature.max(), 2)
+            result.min = np.round(feature.min(), 2)
             common_stats = dict(feature.describe())
             std = common_stats["std"]
-
             result.std = np.round(std, 2)
-
             result.mean = np.round(common_stats["mean"], 2)
             result.percentile_25 = np.round(common_stats["25%"], 2)
             result.percentile_50 = np.round(common_stats["50%"], 2)

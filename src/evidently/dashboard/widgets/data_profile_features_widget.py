@@ -132,10 +132,16 @@ class DataProfileFeaturesWidget(Widget):
 
     @staticmethod
     def _get_stats_with_names(
-        stats_list: List[Tuple[str, str]],
+        stats_list: List[Tuple[str, str, Optional[str]]],
         reference_stats: FeaturesProfileStats,
         current_stats: Optional[FeaturesProfileStats],
     ) -> List[dict]:
+        def get_values_as_string(stats_dict, field_name, field_percentage_name) -> str:
+            if field_percentage_name is None:
+                return str(stats_dict[field_name])
+            else:
+                return f"{stats_dict[field_name]} ({stats_dict[field_percentage_name]} (%))"
+
         result = []
         reference_stats_dict = reference_stats.as_dict()
 
@@ -145,11 +151,11 @@ class DataProfileFeaturesWidget(Widget):
         else:
             current_stats_dict = current_stats.as_dict()
 
-        for stat_field, stat_label in stats_list:
-            values = [reference_stats_dict[stat_field]]
+        for stat_label, stat_field, stat_field_percentage in stats_list:
+            values = [get_values_as_string(reference_stats_dict, stat_field, stat_field_percentage)]
 
             if current_stats_dict is not None:
-                values.append(current_stats_dict[stat_field])
+                values.append(get_values_as_string(current_stats_dict, stat_field, stat_field_percentage))
 
             result.append(
                 {
@@ -173,53 +179,45 @@ class DataProfileFeaturesWidget(Widget):
         if reference_stats.is_category():
             # mapping for category stats: (field in analyser results name, label in widget table name)
             cat_features = [
-                ("count", "count"),
-                ("unique", "unique"),
-                ("most_common_value", "most common value"),
-                ("most_common_value_percentage", "most common value (%)"),
-                ("missing_count", "missing"),
-                ("missing_percentage", "missing (%)"),
+                ("count", "count", None),
+                ("unique", "unique_count", "unique_percentage"),
+                ("most common value", "most_common_value", "most_common_value_percentage"),
+                ("missing", "missing_count", "missing_percentage"),
             ]
 
             if current_stats:
-                cat_features.append(("new_in_current_values_count", "number of new values"))
-                cat_features.append(("unused_in_current_values_count", "number of unused values"))
+                cat_features.append(("number of new values", "new_in_current_values_count", None))
+                cat_features.append(("number of unused values", "unused_in_current_values_count", None))
 
             metrics.extend(self._get_stats_with_names(cat_features, reference_stats, current_stats))
 
         elif reference_stats.is_numeric():
-            # mapping for category stats: (field in analyser results name, label in widget table name)
+            # mapping for category stats: (label, field_name_for_main_value, field_name_for_percentage)
             num_features = [
-                ("count", "count"),
-                ("mean", "mean"),
-                ("std", "std"),
-                ("min", "min"),
-                ("percentile_25", "25%"),
-                ("percentile_50", "50%"),
-                ("percentile_75", "75%"),
-                ("max", "max"),
-                ("unique", "unique"),
-                ("unique_percentage", "unique (%)"),
-                ("most_common_value", "most common value"),
-                ("most_common_value_percentage", "most common value (%)"),
-                ("missing_count", "missing"),
-                ("missing_percentage", "missing (%)"),
-                ("infinite_count", "infinite"),
-                ("infinite_percentage", "infinite (%)"),
+                ("count", "count", None),
+                ("mean", "mean", None),
+                ("std", "std", None),
+                ("min", "min", None),
+                ("25%", "percentile_25", None),
+                ("50%", "percentile_50", None),
+                ("75%", "percentile_75", None),
+                ("max", "max", None),
+                ("unique", "unique_count", "unique_percentage"),
+                ("most common value", "most_common_value", "most_common_value_percentage"),
+                ("missing", "missing_count", "missing_percentage"),
+                ("infinite", "infinite_count", "infinite_percentage"),
             ]
             metrics.extend(self._get_stats_with_names(num_features, reference_stats, current_stats))
 
         elif reference_stats.is_datetime():
             # mapping for category stats: (field in analyser results name, label in widget table name)
             datetime_features = [
-                ("count", "count"),
-                ("unique", "unique"),
-                ("most_common_value", "most common value"),
-                ("most_common_value_percentage", "most common value (%)"),
-                ("missing_count", "missing"),
-                ("missing_percentage", "missing (%)"),
-                ("min", "first"),
-                ("max", "last"),
+                ("count", "count", None),
+                ("unique", "unique_count", "unique_percentage"),
+                ("most common value", "most_common_value", "most_common_value_percentage"),
+                ("missing", "missing_count", "missing_percentage"),
+                ("first", "min", None),
+                ("last", "max", None),
             ]
             metrics.extend(self._get_stats_with_names(datetime_features, reference_stats, current_stats))
 

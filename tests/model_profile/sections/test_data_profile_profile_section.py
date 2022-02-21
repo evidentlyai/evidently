@@ -38,7 +38,7 @@ def test_no_calculation_results() -> None:
                         "missing_percentage": 0.0,
                         "most_common_value": 1,
                         "most_common_value_percentage": 75,
-                        "unique": 2,
+                        "unique_count": 2,
                         "unique_percentage": 50,
                     },
                     "numerical_feature": {
@@ -57,7 +57,7 @@ def test_no_calculation_results() -> None:
                         "percentile_50": 1.3,
                         "percentile_75": 2.78,
                         "std": 2.16,
-                        "unique": 4,
+                        "unique_count": 4,
                         "unique_percentage": 100,
                     },
                     "target": {
@@ -76,7 +76,7 @@ def test_no_calculation_results() -> None:
                         "percentile_50": 2.5,
                         "percentile_75": 3.25,
                         "std": 1.29,
-                        "unique": 4,
+                        "unique_count": 4,
                         "unique_percentage": 100,
                     },
                 }
@@ -118,7 +118,7 @@ def test_no_calculation_results() -> None:
                         "missing_percentage": 0.0,
                         "most_common_value": 1,
                         "most_common_value_percentage": 50,
-                        "unique": 2,
+                        "unique_count": 2,
                         "unique_percentage": 50,
                         "new_in_current_values_count": 0,
                         "unused_in_current_values_count": 1,
@@ -132,7 +132,7 @@ def test_no_calculation_results() -> None:
                         "missing_percentage": 0.0,
                         "most_common_value": "2123-12-12 00:00:00",
                         "most_common_value_percentage": 50,
-                        "unique": 2,
+                        "unique_count": 2,
                         "unique_percentage": 50,
                     },
                     "numerical_feature": {
@@ -151,7 +151,7 @@ def test_no_calculation_results() -> None:
                         "percentile_50": 0.25,
                         "percentile_75": 53281.16,
                         "std": 106561.48,
-                        "unique": 3,
+                        "unique_count": 3,
                         "unique_percentage": 75,
                     },
                     "target": {
@@ -170,7 +170,7 @@ def test_no_calculation_results() -> None:
                         "percentile_50": 2.0,
                         "percentile_75": 2.0,
                         "std": 0.0,
-                        "unique": 1,
+                        "unique_count": 1,
                         "unique_percentage": 25,
                     },
                 },
@@ -182,7 +182,7 @@ def test_no_calculation_results() -> None:
                         "missing_percentage": 25,
                         "most_common_value": 1.0,
                         "most_common_value_percentage": 50,
-                        "unique": 2,
+                        "unique_count": 2,
                         "unique_percentage": 50,
                     },
                     "datatime_feature": {
@@ -194,7 +194,7 @@ def test_no_calculation_results() -> None:
                         "missing_percentage": 25,
                         "most_common_value": "2123-12-12 00:00:00",
                         "most_common_value_percentage": 50,
-                        "unique": 2,
+                        "unique_count": 2,
                         "unique_percentage": 50,
                     },
                     "numerical_feature": {
@@ -213,7 +213,7 @@ def test_no_calculation_results() -> None:
                         "percentile_50": 0.5,
                         "percentile_75": 0.75,
                         "std": 0.5,
-                        "unique": 3,
+                        "unique_count": 3,
                         "unique_percentage": 75,
                     },
                     "target": {
@@ -232,7 +232,7 @@ def test_no_calculation_results() -> None:
                         "percentile_50": 3.0,
                         "percentile_75": 3.0,
                         "std": 0.58,
-                        "unique": 2,
+                        "unique_count": 2,
                         "unique_percentage": 50,
                     },
                 },
