@@ -145,7 +145,7 @@ class DataProfileFeaturesWidget(Widget):
                 return str(field_value)
 
             else:
-                return f"{field_value} ({stats_dict[field_percentage_name]})"
+                return f"{field_value} ({stats_dict[field_percentage_name]}%)"
 
         result = []
         reference_stats_dict = reference_stats.as_dict()
@@ -161,9 +161,6 @@ class DataProfileFeaturesWidget(Widget):
 
             if current_stats_dict is not None:
                 values.append(get_values_as_string(current_stats_dict, stat_field, stat_field_percentage))
-
-            if stat_field_percentage:
-                stat_label = f"{stat_label} (%)"
 
             result.append(
                 {
