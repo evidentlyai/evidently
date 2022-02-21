@@ -29,10 +29,9 @@ class DataProfileProfileSection(ProfileSection):
         for feature_name, feature_stats in all_features.get_all_features().items():
             result[feature_name] = {}
 
-            for field in fields(FeaturesProfileStats):
-                stat_value = getattr(feature_stats, field.name, None)
+            for stat_name, stat_value in feature_stats.as_dict().items():
                 if stat_value is not None:
-                    result[feature_name][field.name] = stat_value
+                    result[feature_name][stat_name] = stat_value
 
         return result
 

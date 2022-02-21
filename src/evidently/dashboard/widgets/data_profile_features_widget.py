@@ -3,6 +3,7 @@
 import json
 from typing import List
 from typing import Optional
+from typing import Tuple
 
 import pandas as pd
 import numpy as np
@@ -13,6 +14,7 @@ from plotly.subplots import make_subplots
 from evidently import ColumnMapping
 from evidently.analyzers.data_profile_analyzer import DataProfileAnalyzer
 from evidently.analyzers.data_profile_analyzer import DataProfileAnalyzerResults
+from evidently.analyzers.data_profile_analyzer import FeaturesProfileStats
 from evidently.model.widget import BaseWidgetInfo, AdditionalGraphInfo
 from evidently.dashboard.widgets.widget import Widget, GREY, RED, COLOR_DISCRETE_SEQUENCE
 
@@ -129,54 +131,97 @@ class DataProfileFeaturesWidget(Widget):
         return BaseWidgetInfo(title="", size=2, type="group", widgets=widgets_list, additionalGraphs=additional_graphs)
 
     @staticmethod
-    def _metrics_for_table(feature_name: str, data_profile_results: DataProfileAnalyzerResults, is_current_data: bool):
+    def _get_stats_with_names(
+        stats_list: List[Tuple[str, str]],
+        reference_stats: FeaturesProfileStats,
+        current_stats: Optional[FeaturesProfileStats],
+    ) -> List[dict]:
+        result = []
+        reference_stats_dict = reference_stats.as_dict()
+
+        if current_stats is None:
+            current_stats_dict = None
+
+        else:
+            current_stats_dict = current_stats.as_dict()
+
+        for stat_field, stat_label in stats_list:
+            values = [reference_stats_dict[stat_field]]
+
+            if current_stats_dict is not None:
+                values.append(current_stats_dict[stat_field])
+
+            result.append(
+                {
+                    "label": stat_label,
+                    "values": values,
+                }
+            )
+        return result
+
+    def _metrics_for_table(
+        self, feature_name: str, data_profile_results: DataProfileAnalyzerResults, is_current_data: bool
+    ):
         reference_stats = data_profile_results.reference_features_stats[feature_name]
-        # if data_profile_results.current_features_stats is not None:
-        #     current_stats = data_profile_results.current_features_stats[feature_name]
+
+        current_stats: Optional[FeaturesProfileStats] = None
+
+        if data_profile_results.current_features_stats is not None and is_current_data:
+            current_stats = data_profile_results.current_features_stats[feature_name]
 
         metrics = []
-        if reference_stats.feature_type == "cat":
-            metrics.append({"label": "count", "values": [reference_stats.count]})
-            metrics.append({"label": "unique", "values": [reference_stats.unique]})
-            metrics.append({"label": "most common value", "values": [reference_stats.most_common_value]})
-            metrics.append({"label": "most common value (%)", "values": [reference_stats.most_common_value_fraction]})
-            metrics.append({"label": "missing", "values": [reference_stats.missing_count]})
-            metrics.append({"label": "missing (%)", "values": [reference_stats.missing_fraction]})
+        if reference_stats.is_category():
+            # mapping for category stats: (field in analyser results name, label in widget table name)
+            cat_features = [
+                ("count", "count"),
+                ("unique", "unique"),
+                ("most_common_value", "most common value"),
+                ("most_common_value_fraction", "most common value (%)"),
+                ("missing_count", "missing"),
+                ("missing_fraction", "missing (%)"),
+            ]
 
-            if is_current_data:
-                metrics.append(
-                    {"number of new values": "count", "values": [reference_stats.new_in_current_values_count]}
-                )
-                metrics.append(
-                    {"number of unused values": "count", "values": [reference_stats.unused_in_current_values_count]}
-                )
+            if current_stats:
+                cat_features.append(("new_in_current_values_count", "number of new values"))
+                cat_features.append(("unused_in_current_values_count", "number of unused values"))
 
-        elif reference_stats.feature_type == "num":
-            metrics.append({"label": "count", "values": [reference_stats.count]})
-            metrics.append({"label": "mean", "values": [reference_stats.mean]})
-            metrics.append({"label": "std", "values": [reference_stats.std]})
-            metrics.append({"label": "min", "values": [reference_stats.min]})
-            metrics.append({"label": "25%", "values": [reference_stats.percentile_25]})
-            metrics.append({"label": "50%", "values": [reference_stats.percentile_50]})
-            metrics.append({"label": "75%", "values": [reference_stats.percentile_75]})
-            metrics.append({"label": "max", "values": [reference_stats.max]})
-            metrics.append({"label": "unique", "values": [reference_stats.unique]})
-            metrics.append({"label": "most common value", "values": [reference_stats.most_common_value]})
-            metrics.append({"label": "most common value (%)", "values": [reference_stats.most_common_value_fraction]})
-            metrics.append({"label": "missing", "values": [reference_stats.missing_count]})
-            metrics.append({"label": "missing (%)", "values": [reference_stats.missing_fraction]})
-            metrics.append({"label": "infinite", "values": [reference_stats.infinite_count]})
-            metrics.append({"label": "infinite (%)", "values": [reference_stats.infinite_fraction]})
+            metrics.extend(self._get_stats_with_names(cat_features, reference_stats, current_stats))
+
+        elif reference_stats.is_numeric():
+            # mapping for category stats: (field in analyser results name, label in widget table name)
+            num_features = [
+                ("count", "count"),
+                ("mean", "mean"),
+                ("std", "std"),
+                ("min", "min"),
+                ("percentile_25", "25%"),
+                ("percentile_50", "50%"),
+                ("percentile_75", "75%"),
+                ("max", "max"),
+                ("unique", "unique"),
+                ("unique_fraction", "unique (%)"),
+                ("most_common_value", "most common value"),
+                ("most_common_value_fraction", "most common value (%)"),
+                ("missing_count", "missing"),
+                ("missing_fraction", "missing (%)"),
+                ("infinite_count", "infinite"),
+                ("infinite_fraction", "infinite (%)"),
+            ]
+            metrics.extend(self._get_stats_with_names(num_features, reference_stats, current_stats))
 
         elif reference_stats.is_datetime():
-            metrics.append({"label": "count", "values": [reference_stats.count]})
-            metrics.append({"label": "unique", "values": [reference_stats.unique]})
-            metrics.append({"label": "most common value", "values": [reference_stats.most_common_value]})
-            metrics.append({"label": "most common value (%)", "values": [reference_stats.most_common_value_fraction]})
-            metrics.append({"label": "missing", "values": [reference_stats.missing_count]})
-            metrics.append({"label": "missing (%)", "values": [reference_stats.missing_fraction]})
-            metrics.append({"label": "first", "values": [reference_stats.min]})
-            metrics.append({"label": "last", "values": [reference_stats.max]})
+            # mapping for category stats: (field in analyser results name, label in widget table name)
+            datetime_features = [
+                ("count", "count"),
+                ("unique", "unique"),
+                ("most_common_value", "most common value"),
+                ("most_common_value_fraction", "most common value (%)"),
+                ("missing_count", "missing"),
+                ("missing_fraction", "missing (%)"),
+                ("min", "first"),
+                ("max", "last"),
+            ]
+            metrics.extend(self._get_stats_with_names(datetime_features, reference_stats, current_stats))
 
         return metrics
 
@@ -297,6 +342,9 @@ class DataProfileFeaturesWidget(Widget):
                         name="current",
                     )
                 )
+        else:
+            return {}
+
         fig.update_layout(legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1))
         fig_main_distr = json.loads(fig.to_json())
         return fig_main_distr
@@ -563,8 +611,8 @@ class DataProfileFeaturesWidget(Widget):
                 )
                 fig.append_trace(trace, 1, 1)
                 trace = go.Scatter(
-                    x=tmp_curr.sample(min(2000, len(tmp_curr)), random_state=0, replace=True)[feature_name],
-                    y=tmp_curr.sample(min(2000, len(tmp_curr)), random_state=0, replace=True)[target_column],
+                    x=tmp_curr.sample(min(2000, len(tmp_curr)), random_state=0)[feature_name],
+                    y=tmp_curr.sample(min(2000, len(tmp_curr)), random_state=0)[target_column],
                     mode="markers",
                     marker_color=RED,
                     name="current",
@@ -577,13 +625,13 @@ class DataProfileFeaturesWidget(Widget):
 
             else:
                 fig = go.Figure()
-                trace1 = go.Box(y=tmp_ref[feature_name], x=tmp_ref[target_column], marker_color=GREY, name="reference")
+                trace1 = go.Box(x=tmp_ref[target_column], y=tmp_ref[feature_name], marker_color=GREY, name="reference")
                 fig.add_trace(trace1)
-                trace2 = go.Box(y=tmp_curr[feature_name], x=tmp_curr[target_column], marker_color=RED, name="current")
+                trace2 = go.Box(x=tmp_curr[target_column], y=tmp_curr[feature_name], marker_color=RED, name="current")
                 fig.add_trace(trace2)
-
                 fig.update_layout(yaxis_title=feature_name, xaxis_title=target_column, boxmode="group")
                 fig.update_traces(marker_size=3)
+
         feature_and_target_figure = json.loads(fig.to_json())
         return feature_and_target_figure
 

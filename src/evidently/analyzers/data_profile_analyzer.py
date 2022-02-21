@@ -5,7 +5,7 @@ from typing import Dict
 from typing import Optional
 from typing import Union
 
-from dataclasses import dataclass
+from dataclasses import dataclass, fields
 import numpy as np
 import pandas as pd
 
@@ -81,6 +81,17 @@ class FeaturesProfileStats:
     def is_datetime(self):
         """Checks that the object store stats for a datetime feature"""
         return self.feature_type == "datetime"
+
+    def is_numeric(self):
+        """Checks that the object store stats for a numeric feature"""
+        return self.feature_type == "num"
+
+    def is_category(self):
+        """Checks that the object store stats for a category feature"""
+        return self.feature_type == "cat"
+
+    def as_dict(self):
+        return {field.name: getattr(self, field.name) for field in fields(FeaturesProfileStats)}
 
 
 @dataclass
