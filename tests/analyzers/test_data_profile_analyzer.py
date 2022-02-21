@@ -202,20 +202,113 @@ def test_data_profile_analyzer_num_features(dataset: pd.DataFrame, expected_metr
                 most_common_not_null_value_percentage=None,
             ),
         ),
+        (
+            pd.DataFrame({"category_feature": ["n", "d", "p", "n"]}),
+            FeaturesProfileStats(
+                feature_type="cat",
+                count=4,
+                infinite_count=None,
+                infinite_percentage=None,
+                missing_count=0,
+                missing_percentage=0,
+                unique_count=3,
+                unique_percentage=75,
+                percentile_25=None,
+                percentile_50=None,
+                percentile_75=None,
+                max=None,
+                min=None,
+                mean=None,
+                most_common_value="n",
+                most_common_value_percentage=50,
+                std=None,
+                most_common_not_null_value=None,
+                most_common_not_null_value_percentage=None,
+            ),
+        ),
     ],
 )
 def test_data_profile_analyzer_cat_features(dataset: pd.DataFrame, expected_metrics: FeaturesProfileStats) -> None:
     data_profile_analyzer = DataProfileAnalyzer()
 
-    data_mapping = ColumnMapping(
-        categorical_features=["category_feature"],
+    for task_type in (None, "regression", "classification"):
+        result = data_profile_analyzer.calculate(
+            dataset, None, ColumnMapping(categorical_features=["category_feature"], task=task_type)
+        )
+        assert result.reference_features_stats is not None
+        assert result.reference_features_stats.cat_features_stats is not None
+        assert "category_feature" in result.reference_features_stats.cat_features_stats
+        metrics = result.reference_features_stats.cat_features_stats["category_feature"]
+        assert metrics == expected_metrics
+
+
+def test_data_profile_analyzer_classification_with_target() -> None:
+    reference_data = pd.DataFrame(
+        {
+            "target": ["cat_1", "cat_1", "cat_2", "cat_3", "cat_1"],
+            "prediction": ["cat_2", "cat_1", "cat_1", "cat_3", "cat_1"],
+        }
     )
-    result = data_profile_analyzer.calculate(dataset, None, data_mapping)
+    current_data = pd.DataFrame(
+        {
+            "target": ["cat_1", "cat_6", "cat_2", None, "cat_1"],
+            "prediction": ["cat_5", "cat_1", "cat_1", "cat_3", np.nan],
+        }
+    )
+    data_profile_analyzer = DataProfileAnalyzer()
+    data_mapping = ColumnMapping(task="classification")
+
+    result = data_profile_analyzer.calculate(reference_data, current_data, data_mapping)
     assert result.reference_features_stats is not None
-    assert result.reference_features_stats.cat_features_stats is not None
-    assert "category_feature" in result.reference_features_stats.cat_features_stats
-    metrics = result.reference_features_stats.cat_features_stats["category_feature"]
-    assert metrics == expected_metrics
+    assert result.reference_features_stats.target_stats is not None
+    assert result.reference_features_stats.target_stats["target"] == FeaturesProfileStats(
+        feature_type="cat",
+        count=5,
+        infinite_count=None,
+        infinite_percentage=None,
+        missing_count=0,
+        missing_percentage=0.0,
+        unique_count=3,
+        unique_percentage=60.0,
+        percentile_25=None,
+        percentile_50=None,
+        percentile_75=None,
+        max=None,
+        min=None,
+        mean=None,
+        most_common_value="cat_1",
+        most_common_value_percentage=60.0,
+        std=None,
+        most_common_not_null_value=None,
+        most_common_not_null_value_percentage=None,
+        new_in_current_values_count=None,
+        unused_in_current_values_count=None,
+    )
+    assert result.current_features_stats is not None
+    assert result.current_features_stats.target_stats is not None
+    assert result.current_features_stats.target_stats["target"] == FeaturesProfileStats(
+        feature_type="cat",
+        count=4,
+        infinite_count=None,
+        infinite_percentage=None,
+        missing_count=1,
+        missing_percentage=20.0,
+        unique_count=3,
+        unique_percentage=60.0,
+        percentile_25=None,
+        percentile_50=None,
+        percentile_75=None,
+        max=None,
+        min=None,
+        mean=None,
+        most_common_value="cat_1",
+        most_common_value_percentage=40.0,
+        std=None,
+        most_common_not_null_value=None,
+        most_common_not_null_value_percentage=None,
+        new_in_current_values_count=2,
+        unused_in_current_values_count=1,
+    )
 
 
 @pytest.mark.parametrize(

@@ -139,7 +139,7 @@ class DataProfileFeaturesWidget(Widget):
             field_value = stats_dict[field_name]
 
             if field_value is None:
-                field_value = ''
+                field_value = ""
 
             if field_percentage_name is None:
                 return str(field_value)
@@ -336,17 +336,21 @@ class DataProfileFeaturesWidget(Widget):
                 max_ref_date = tmp_ref[feature_name].max()
                 min_curr_date = tmp_curr[feature_name].min()
                 if max_ref_date == min_curr_date:
-                    if (tmp_curr.loc[tmp_curr[feature_name] == min_curr_date, "number_of_items"].iloc[0]
-                        > tmp_ref.loc[tmp_ref[feature_name] == max_ref_date, "number_of_items"].iloc[0]):
+                    if (
+                        tmp_curr.loc[tmp_curr[feature_name] == min_curr_date, "number_of_items"].iloc[0]
+                        > tmp_ref.loc[tmp_ref[feature_name] == max_ref_date, "number_of_items"].iloc[0]
+                    ):
                         tmp_curr.loc[tmp_curr[feature_name] == min_curr_date, "number_of_items"] = (
                             tmp_curr.loc[tmp_curr[feature_name] == min_curr_date, "number_of_items"]
-                            + tmp_ref.loc[tmp_ref[feature_name] == max_ref_date, "number_of_items"])
+                            + tmp_ref.loc[tmp_ref[feature_name] == max_ref_date, "number_of_items"]
+                        )
                         tmp_ref = tmp_ref[tmp_ref[feature_name] != max_ref_date]
                     else:
                         tmp_ref.loc[tmp_ref[feature_name] == max_ref_date, "number_of_items"] = (
-                            tmp_ref.loc[tmp_ref[feature_name] == max_ref_date, "number_of_items"] 
-                            + tmp_curr.loc[tmp_curr[feature_name] == min_curr_date, "number_of_items"])
-                        tmp_curr = tmp_curr[tmp_curr[feature_name] != min_curr_date ]
+                            tmp_ref.loc[tmp_ref[feature_name] == max_ref_date, "number_of_items"]
+                            + tmp_curr.loc[tmp_curr[feature_name] == min_curr_date, "number_of_items"]
+                        )
+                        tmp_curr = tmp_curr[tmp_curr[feature_name] != min_curr_date]
 
                 fig.add_trace(
                     go.Scatter(

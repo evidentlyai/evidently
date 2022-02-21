@@ -247,6 +247,7 @@ def test_data_profile_profile_section_with_calculated_results(
         numerical_features=["numerical_feature"],
         categorical_features=["categorical_feature"],
         target_names=["drift_target_result"],
+        task="regression"
     )
     data_drift_profile_section_result = calculate_section_results(
         DataProfileProfileSection, reference_data, current_data, data_columns

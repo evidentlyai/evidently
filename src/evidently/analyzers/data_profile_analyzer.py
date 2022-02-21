@@ -8,7 +8,6 @@ from typing import Union
 from dataclasses import dataclass, fields
 import numpy as np
 import pandas as pd
-from pandas.api.types import is_numeric_dtype
 
 from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
@@ -189,11 +188,14 @@ class DataProfileAnalyzer(Analyzer):
 
         return result
 
-    def _recognize_task(self, target_name: str, reference_data: pd.DataFrame):
-        if is_numeric_dtype(reference_data[target_name]) and reference_data[target_name].nunique()>=5:
-            task = 'regression'
+    @staticmethod
+    def _recognize_task(target_name: str, reference_data: pd.DataFrame) -> str:
+        if pd.api.types.is_numeric_dtype(reference_data[target_name]) and reference_data[target_name].nunique() >= 5:
+            task = "regression"
+
         else:
-            task = 'classification'
+            task = "classification"
+
         return task
 
     def calculate(
@@ -204,10 +206,14 @@ class DataProfileAnalyzer(Analyzer):
     ) -> DataProfileAnalyzerResults:
         columns = process_columns(reference_data, column_mapping)
         target_name = columns.utility_columns.target
+        task: Optional[str]
+
         if column_mapping.task is not None:
             task = column_mapping.task
+
         elif column_mapping.task is None and target_name:
             task = self._recognize_task(target_name, reference_data)
+
         else:
             task = None
 
@@ -218,9 +224,17 @@ class DataProfileAnalyzer(Analyzer):
         if current_data is not None:
             current_features_stats = self._calculate_stats(current_data, columns, task)
 
+            all_cat_features = {}
+
+            if current_features_stats.cat_features_stats is not None:
+                all_cat_features.update(current_features_stats.cat_features_stats)
+
+            if task == "classification" and current_features_stats.target_stats is not None:
+                all_cat_features.update(current_features_stats.target_stats)
+
             if current_features_stats.cat_features_stats is not None:
                 # calculate additional stats of representation reference dataset values in the current dataset
-                for feature_name, cat_feature_stats in current_features_stats.cat_features_stats.items():
+                for feature_name, cat_feature_stats in all_cat_features.items():
                     current_values_set = set(current_data[feature_name].unique())
 
                     if feature_name in reference_data:
@@ -272,29 +286,22 @@ class DataProfileAnalyzer(Analyzer):
         result.count = int(feature.count())
         all_values_count = feature.shape[0]
         value_counts = feature.value_counts(dropna=False)
-
-        if feature_type == "num":
-            result.infinite_count = int(np.sum(np.isinf(feature)))
-            result.infinite_percentage = get_percentage_from_all_values(result.infinite_count)
-
         result.missing_percentage = np.round(100 * result.missing_count / all_values_count, 2)
+        unique_count: int = feature.nunique()
+        result.unique_count = unique_count
+        result.unique_percentage = get_percentage_from_all_values(unique_count)
         result.most_common_value = value_counts.index[0]
         result.most_common_value_percentage = get_percentage_from_all_values(value_counts.iloc[0])
-
-        if feature_type == "datetime":
-            # cast datatime value to str for datetime features
-            result.most_common_value = str(result.most_common_value)
-
-        result.unique_count = feature.nunique()
-
-        if result.unique_count is not None:
-            result.unique_percentage = get_percentage_from_all_values(result.unique_count)
 
         if result.count > 0 and pd.isnull(result.most_common_value):
             result.most_common_not_null_value = value_counts.index[1]
             result.most_common_not_null_value_percentage = get_percentage_from_all_values(value_counts.iloc[1])
 
         if feature_type == "num":
+            # round most common feature value for numeric features to 1e-5
+            result.most_common_value = np.round(result.most_common_value, 5)
+            result.infinite_count = int(np.sum(np.isinf(feature)))
+            result.infinite_percentage = get_percentage_from_all_values(result.infinite_count)
             result.max = np.round(feature.max(), 2)
             result.min = np.round(feature.min(), 2)
             common_stats = dict(feature.describe())
@@ -306,6 +313,8 @@ class DataProfileAnalyzer(Analyzer):
             result.percentile_75 = np.round(common_stats["75%"], 2)
 
         if feature_type == "datetime":
+            # cast datatime value to str for datetime features
+            result.most_common_value = str(result.most_common_value)
             # cast datatime value to str for datetime features
             result.max = str(feature.max())
             result.min = str(feature.min())
