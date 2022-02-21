@@ -235,10 +235,8 @@ class DataProfileAnalyzer(Analyzer):
             # we have no data, return default stats for en empty dataset
             return result
 
-        common_stats = dict(feature.describe())
-
         result.missing_count = int(feature.isnull().sum())
-        result.count = int(common_stats["count"])
+        result.count = int(feature.count())
         all_values_count = feature.shape[0]
         value_counts = feature.value_counts(dropna=False)
 
@@ -266,6 +264,7 @@ class DataProfileAnalyzer(Analyzer):
             if feature_type == "num":
                 result.max = feature.max()
                 result.min = feature.min()
+                common_stats = dict(feature.describe())
                 std = common_stats["std"]
 
                 if np.isnan(std):
