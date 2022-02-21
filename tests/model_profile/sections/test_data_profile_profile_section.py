@@ -140,7 +140,7 @@ def test_no_calculation_results() -> None:
                         "feature_type": "num",
                         "infinite_count": 0,
                         "infinite_percentage": 0.0,
-                        "max": 213123.123123,
+                        "max": 213123.12,
                         "mean": 53280.91,
                         "min": 0.0,
                         "missing_count": 0,

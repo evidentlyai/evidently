@@ -136,11 +136,20 @@ class DataProfileFeaturesWidget(Widget):
         current_stats: Optional[FeaturesProfileStats],
     ) -> List[dict]:
         def get_values_as_string(stats_dict, field_name, field_percentage_name) -> str:
+<<<<<<< HEAD
             
+=======
+            field_value = stats_dict[field_name]
+
+            if field_value is None:
+                field_value = ''
+
+>>>>>>> 2b14d3750f9ab34513c6c051caa0fd4a082e9d88
             if field_percentage_name is None:
-                return str(stats_dict[field_name])
+                return str(field_value)
+
             else:
-                return f"{stats_dict[field_name]} ({stats_dict[field_percentage_name]})"
+                return f"{field_value} ({stats_dict[field_percentage_name]})"
 
         result = []
         reference_stats_dict = reference_stats.as_dict()
