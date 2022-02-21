@@ -176,9 +176,9 @@ class DataProfileFeaturesWidget(Widget):
                 ("count", "count"),
                 ("unique", "unique"),
                 ("most_common_value", "most common value"),
-                ("most_common_value_fraction", "most common value (%)"),
+                ("most_common_value_percentage", "most common value (%)"),
                 ("missing_count", "missing"),
-                ("missing_fraction", "missing (%)"),
+                ("missing_percentage", "missing (%)"),
             ]
 
             if current_stats:
@@ -199,13 +199,13 @@ class DataProfileFeaturesWidget(Widget):
                 ("percentile_75", "75%"),
                 ("max", "max"),
                 ("unique", "unique"),
-                ("unique_fraction", "unique (%)"),
+                ("unique_percentage", "unique (%)"),
                 ("most_common_value", "most common value"),
-                ("most_common_value_fraction", "most common value (%)"),
+                ("most_common_value_percentage", "most common value (%)"),
                 ("missing_count", "missing"),
-                ("missing_fraction", "missing (%)"),
+                ("missing_percentage", "missing (%)"),
                 ("infinite_count", "infinite"),
-                ("infinite_fraction", "infinite (%)"),
+                ("infinite_percentage", "infinite (%)"),
             ]
             metrics.extend(self._get_stats_with_names(num_features, reference_stats, current_stats))
 
@@ -215,9 +215,9 @@ class DataProfileFeaturesWidget(Widget):
                 ("count", "count"),
                 ("unique", "unique"),
                 ("most_common_value", "most common value"),
-                ("most_common_value_fraction", "most common value (%)"),
+                ("most_common_value_percentage", "most common value (%)"),
                 ("missing_count", "missing"),
-                ("missing_fraction", "missing (%)"),
+                ("missing_percentage", "missing (%)"),
                 ("min", "first"),
                 ("max", "last"),
             ]

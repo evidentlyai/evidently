@@ -27,20 +27,20 @@ class FeaturesProfileStats:
         - feature type - cat for category, num for numeric, datetime for datetime features
         - count - quantity of a meaningful values (do not take into account NaN values)
         - missing_count - quantity of meaningless (NaN) values
-        - missing_fraction - the proportion of the missed values
+        - missing_percentage - the percentage of the missed values
         - unique - quantity of unique values
-        - unique_fraction - the proportion of the unique values
+        - unique_percentage - the percentage of the unique values
         - max - maximum value (not applicable for category features)
         - min - minimum value (not applicable for category features)
         - most_common_value - the most common value in the feature values
-        - most_common_value_fraction - fraction of the most common value
+        - most_common_value_percentage - the percentage of the most common value
         - most_common_not_null_value - if `most_common_value` equals NaN - the next most common value. Otherwise - None
-        - most_common_not_null_value_fraction - fraction of `most_common_not_null_value` if it is defined.
+        - most_common_not_null_value_percentage - the percentage of `most_common_not_null_value` if it is defined.
             If `most_common_not_null_value` is not defined, equals None too.
 
     Metrics for numeric features only:
         - infinite_count - quantity infinite values (for numeric features only)
-        - infinite_fraction - fraction of infinite values (for numeric features only)
+        - infinite_percentage - the percentage of infinite values (for numeric features only)
         - percentile_25 - 25% percentile for meaningful values
         - percentile_50 - 50% percentile for meaningful values
         - percentile_75 - 75% percentile for meaningful values
@@ -59,11 +59,11 @@ class FeaturesProfileStats:
     # quantity on
     count: int = 0
     infinite_count: Optional[int] = None
-    infinite_fraction: Optional[float] = None
+    infinite_percentage: Optional[float] = None
     missing_count: Optional[int] = None
-    missing_fraction: Optional[float] = None
+    missing_percentage: Optional[float] = None
     unique: Optional[int] = None
-    unique_fraction: Optional[float] = None
+    unique_percentage: Optional[float] = None
     percentile_25: Optional[float] = None
     percentile_50: Optional[float] = None
     percentile_75: Optional[float] = None
@@ -71,10 +71,10 @@ class FeaturesProfileStats:
     min: Optional[Union[Number, str]] = None
     mean: Optional[float] = None
     most_common_value: Optional[Union[Number, str]] = None
-    most_common_value_fraction: Optional[float] = None
+    most_common_value_percentage: Optional[float] = None
     std: Optional[float] = None
     most_common_not_null_value: Optional[Union[Number, str]] = None
-    most_common_not_null_value_fraction: Optional[float] = None
+    most_common_not_null_value_percentage: Optional[float] = None
     new_in_current_values_count: Optional[int] = None
     unused_in_current_values_count: Optional[int] = None
 
@@ -92,6 +92,19 @@ class FeaturesProfileStats:
 
     def as_dict(self):
         return {field.name: getattr(self, field.name) for field in fields(FeaturesProfileStats)}
+
+    def __eq__(self, other):
+        for field in fields(FeaturesProfileStats):
+            other_field_value = getattr(other, field.name)
+            self_field_value = getattr(self, field.name)
+
+            if pd.isnull(other_field_value) and pd.isnull(self_field_value):
+                continue
+
+            if not other_field_value == self_field_value:
+                return False
+
+        return True
 
 
 @dataclass
@@ -228,6 +241,9 @@ class DataProfileAnalyzer(Analyzer):
 
     @staticmethod
     def _get_features_stats(feature: pd.Series, feature_type: str) -> FeaturesProfileStats:
+        def get_percentage_from_all_values(value: Union[int, float]) -> float:
+            return np.round(100 * value / all_values_count, 2)
+
         result = FeaturesProfileStats(feature_type=feature_type)
         all_values_count = feature.shape[0]
 
@@ -242,44 +258,41 @@ class DataProfileAnalyzer(Analyzer):
 
         if feature_type == "num":
             result.infinite_count = int(np.sum(np.isinf(feature)))
-            result.infinite_fraction = np.round(result.infinite_count / all_values_count, 2)
+            result.infinite_percentage = get_percentage_from_all_values(result.infinite_count)
 
-        result.missing_fraction = np.round(result.missing_count / all_values_count, 2)
+        result.missing_percentage = np.round(100 * result.missing_count / all_values_count, 2)
         result.most_common_value = value_counts.index[0]
-        result.most_common_value_fraction = np.round(value_counts.iloc[0] / all_values_count, 2)
+        result.most_common_value_percentage = get_percentage_from_all_values(value_counts.iloc[0])
 
         if feature_type == "datetime":
             # cast datatime value to str for datetime features
             result.most_common_value = str(result.most_common_value)
 
         result.unique = feature.nunique()
-        result.unique_fraction = np.round(result.unique / all_values_count, 2)
 
-        if result.count > 0:
-            if pd.isnull(result.most_common_value):
-                result.most_common_not_null_value = value_counts.index[1]
-                result.most_common_not_null_value_fraction = np.round(value_counts.iloc[1] / all_values_count, 2)
+        if result.unique is not None:
+            result.unique_percentage = get_percentage_from_all_values(result.unique)
 
-            if feature_type == "num":
-                result.max = feature.max()
-                result.min = feature.min()
-                common_stats = dict(feature.describe())
-                std = common_stats["std"]
+        if result.count > 0 and pd.isnull(result.most_common_value):
+            result.most_common_not_null_value = value_counts.index[1]
+            result.most_common_not_null_value_percentage = get_percentage_from_all_values(value_counts.iloc[1])
 
-                if np.isnan(std):
-                    result.std = None
+        if feature_type == "num":
+            result.max = feature.max()
+            result.min = feature.min()
+            common_stats = dict(feature.describe())
+            std = common_stats["std"]
 
-                else:
-                    result.std = np.round(std, 2)
+            result.std = np.round(std, 2)
 
-                result.mean = np.round(common_stats["mean"], 2)
-                result.percentile_25 = np.round(common_stats["25%"], 2)
-                result.percentile_50 = np.round(common_stats["50%"], 2)
-                result.percentile_75 = np.round(common_stats["75%"], 2)
+            result.mean = np.round(common_stats["mean"], 2)
+            result.percentile_25 = np.round(common_stats["25%"], 2)
+            result.percentile_50 = np.round(common_stats["50%"], 2)
+            result.percentile_75 = np.round(common_stats["75%"], 2)
 
-            if feature_type == "datetime":
-                # cast datatime value to str for datetime features
-                result.max = str(feature.max())
-                result.min = str(feature.min())
+        if feature_type == "datetime":
+            # cast datatime value to str for datetime features
+            result.max = str(feature.max())
+            result.min = str(feature.min())
 
         return result
