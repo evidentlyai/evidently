@@ -1,11 +1,7 @@
 import React from "react";
 
-import Plotly from 'plotly.js';
-import createPlotlyComponent from "react-plotly.js/factory";
-
 import {BigGraphWidgetParams} from "../api/Api";
-
-const Plot = createPlotlyComponent(Plotly);
+import Plot from "../components/Plot";
 
 interface BigGraphWidgetProps extends BigGraphWidgetParams {
     widgetSize: number;

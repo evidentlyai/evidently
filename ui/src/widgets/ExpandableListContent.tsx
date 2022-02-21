@@ -1,11 +1,12 @@
-import {Button, Collapse, Grid, Table, TableBody, TableCell, TableHead, TableRow} from "@material-ui/core";
 import React, {useState} from "react";
-import Plot from "react-plotly.js";
 
+import {Button, Collapse, Grid, Table, TableBody, TableCell, TableHead, TableRow} from "@material-ui/core";
 import {ExpandLessSharp, ExpandMoreSharp} from "@material-ui/icons";
+import Typography from "@material-ui/core/Typography";
 
 import {ExpandableListWidgetParams} from "../api/Api";
-import Typography from "@material-ui/core/Typography";
+
+import Plot from "../components/Plot";
 import {BigTableDetails} from "./BigTableWidget/BigTableDetails";
 
 const ExpandableListContent: React.FunctionComponent<ExpandableListWidgetParams & { widgetSize: number }> =
