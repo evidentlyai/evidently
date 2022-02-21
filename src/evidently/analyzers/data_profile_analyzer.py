@@ -8,6 +8,7 @@ from typing import Union
 from dataclasses import dataclass, fields
 import numpy as np
 import pandas as pd
+from pandas.api.types import is_numeric_dtype
 
 from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
@@ -188,6 +189,13 @@ class DataProfileAnalyzer(Analyzer):
 
         return result
 
+    def _recognize_task(self, target_name: str, reference_data: pd.DataFrame):
+        if is_numeric_dtype(reference_data[target_name]) and reference_data[target_name].nunique()>=5:
+            task = 'regression'
+        else:
+            task = 'classification'
+        return task
+
     def calculate(
         self,
         reference_data: pd.DataFrame,
@@ -195,12 +203,20 @@ class DataProfileAnalyzer(Analyzer):
         column_mapping: ColumnMapping,
     ) -> DataProfileAnalyzerResults:
         columns = process_columns(reference_data, column_mapping)
-        reference_features_stats = self._calculate_stats(reference_data, columns, column_mapping.task)
+        target_name = columns.utility_columns.target
+        if column_mapping.task is not None:
+            task = column_mapping.task
+        elif column_mapping.task is None and target_name:
+            task = self._recognize_task(target_name, reference_data)
+        else:
+            task = None
+
+        reference_features_stats = self._calculate_stats(reference_data, columns, task)
 
         current_features_stats: Optional[DataProfileStats]
 
         if current_data is not None:
-            current_features_stats = self._calculate_stats(current_data, columns, column_mapping.task)
+            current_features_stats = self._calculate_stats(current_data, columns, task)
 
             if current_features_stats.cat_features_stats is not None:
                 # calculate additional stats of representation reference dataset values in the current dataset
@@ -237,6 +253,7 @@ class DataProfileAnalyzer(Analyzer):
         )
         if current_features_stats is not None:
             results.current_features_stats = current_features_stats
+
         return results
 
     @staticmethod
