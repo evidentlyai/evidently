@@ -11,18 +11,18 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 from evidently import ColumnMapping
-from evidently.analyzers.data_profile_analyzer import DataProfileAnalyzer
-from evidently.analyzers.data_profile_analyzer import DataProfileAnalyzerResults
-from evidently.analyzers.data_profile_analyzer import FeaturesProfileStats
+from evidently.analyzers.data_quality_analyzer import DataQualityAnalyzer
+from evidently.analyzers.data_quality_analyzer import DataQualityAnalyzerResults
+from evidently.analyzers.data_quality_analyzer import FeatureQualityStats
 from evidently.model.widget import BaseWidgetInfo, AdditionalGraphInfo
 from evidently.dashboard.widgets.widget import Widget, GREY, RED, COLOR_DISCRETE_SEQUENCE
 
 
-class DataProfileFeaturesWidget(Widget):
+class DataQualityFeaturesWidget(Widget):
     period_prefix: str
 
     def analyzers(self):
-        return [DataProfileAnalyzer]
+        return [DataQualityAnalyzer]
 
     def calculate(
         self,
@@ -33,22 +33,22 @@ class DataProfileFeaturesWidget(Widget):
     ) -> Optional[BaseWidgetInfo]:
         self.period_prefix = ""
         is_current_data = current_data is not None
-        data_profile_results = DataProfileAnalyzer.get_results(analyzers_results)
-        columns = data_profile_results.columns.utility_columns
+        data_quality_results = DataQualityAnalyzer.get_results(analyzers_results)
+        columns = data_quality_results.columns.utility_columns
         target_column = columns.target
         target_type: Optional[str]
 
         if target_column:
-            target_type = data_profile_results.reference_features_stats[target_column].feature_type
+            target_type = data_quality_results.reference_features_stats[target_column].feature_type
 
         else:
             target_type = None
 
-        cat_feature_names = data_profile_results.columns.cat_feature_names
+        cat_feature_names = data_quality_results.columns.cat_feature_names
         date_column = columns.date
         self._transform_cat_features(reference_data, current_data, cat_feature_names, target_column, target_type)
 
-        all_features = data_profile_results.columns.get_all_features_list(
+        all_features = data_quality_results.columns.get_all_features_list(
             cat_before_num=True, include_datetime_feature=True
         )
         if date_column:
@@ -65,7 +65,7 @@ class DataProfileFeaturesWidget(Widget):
         widgets_list = []
         additional_graphs = []
         for feature_name in all_features:
-            feature_type = data_profile_results.reference_features_stats[feature_name].feature_type
+            feature_type = data_quality_results.reference_features_stats[feature_name].feature_type
             fig_main_distr = self._plot_main_distr_figure(reference_data, current_data, feature_name, feature_type)
             parts = self.assemble_parts(target_column, date_column, feature_name, feature_type)
             # additional_graphs = []
@@ -118,7 +118,7 @@ class DataProfileFeaturesWidget(Widget):
                     "header": feature_name,
                     "description": feature_type,
                     "metricsValuesHeaders": metrics_values_headers,
-                    "metrics": self._metrics_for_table(feature_name, data_profile_results, is_current_data),
+                    "metrics": self._metrics_for_table(feature_name, data_quality_results, is_current_data),
                     "graph": {"data": fig_main_distr["data"], "layout": fig_main_distr["layout"]},
                     "details": {"parts": parts, "insights": []},
                 },
@@ -132,8 +132,8 @@ class DataProfileFeaturesWidget(Widget):
     @staticmethod
     def _get_stats_with_names(
         stats_list: List[Tuple[str, str, Optional[str]]],
-        reference_stats: FeaturesProfileStats,
-        current_stats: Optional[FeaturesProfileStats],
+        reference_stats: FeatureQualityStats,
+        current_stats: Optional[FeatureQualityStats],
     ) -> List[dict]:
         def get_values_as_string(stats_dict, field_name, field_percentage_name) -> str:
             field_value = stats_dict[field_name]
@@ -171,14 +171,14 @@ class DataProfileFeaturesWidget(Widget):
         return result
 
     def _metrics_for_table(
-        self, feature_name: str, data_profile_results: DataProfileAnalyzerResults, is_current_data: bool
+        self, feature_name: str, data_quality_results: DataQualityAnalyzerResults, is_current_data: bool
     ):
-        reference_stats = data_profile_results.reference_features_stats[feature_name]
+        reference_stats = data_quality_results.reference_features_stats[feature_name]
 
-        current_stats: Optional[FeaturesProfileStats] = None
+        current_stats: Optional[FeatureQualityStats] = None
 
-        if data_profile_results.current_features_stats is not None and is_current_data:
-            current_stats = data_profile_results.current_features_stats[feature_name]
+        if data_quality_results.current_features_stats is not None and is_current_data:
+            current_stats = data_quality_results.current_features_stats[feature_name]
 
         metrics = []
         if reference_stats.is_category():

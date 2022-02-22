@@ -2,28 +2,25 @@ from datetime import datetime
 from typing import Any
 from typing import Dict
 
-from dataclasses import fields
-
-from evidently.analyzers.data_profile_analyzer import DataProfileAnalyzer
-from evidently.analyzers.data_profile_analyzer import DataProfileStats
-from evidently.analyzers.data_profile_analyzer import FeaturesProfileStats
+from evidently.analyzers.data_quality_analyzer import DataQualityAnalyzer
+from evidently.analyzers.data_quality_analyzer import DataQualityStats
 from evidently.model_profile.sections.base_profile_section import ProfileSection
 
 
-class DataProfileProfileSection(ProfileSection):
+class DataQualityProfileSection(ProfileSection):
     def part_id(self) -> str:
-        return "data_profile"
+        return "data_quality"
 
     def __init__(self):
         super().__init__()
-        self.analyzers_types = [DataProfileAnalyzer]
+        self.analyzers_types = [DataQualityAnalyzer]
         self._result = None
 
     def analyzers(self):
         return self.analyzers_types
 
     @staticmethod
-    def _get_stats_as_dict(all_features: DataProfileStats) -> Dict[str, Dict[str, Any]]:
+    def _get_stats_as_dict(all_features: DataQualityStats) -> Dict[str, Dict[str, Any]]:
         result: Dict[str, Dict[str, Any]] = {}
 
         for feature_name, feature_stats in all_features.get_all_features().items():
@@ -36,7 +33,7 @@ class DataProfileProfileSection(ProfileSection):
         return result
 
     def calculate(self, reference_data, current_data, column_mapping, analyzers_results):
-        result = DataProfileAnalyzer.get_results(analyzers_results)
+        result = DataQualityAnalyzer.get_results(analyzers_results)
         result_json = result.columns.as_dict()
         result_json["metrics"] = {}
 

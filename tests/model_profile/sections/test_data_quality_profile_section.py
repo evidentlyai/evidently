@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 
 from evidently.analyzers.utils import ColumnMapping
-from evidently.model_profile.sections.data_profile_profile_section import DataProfileProfileSection
+from evidently.model_profile.sections.data_quality_profile_section import DataQualityProfileSection
 
 from .helpers import calculate_section_results
 from .helpers import check_profile_section_result_common_part
@@ -14,7 +14,7 @@ from .helpers import check_section_without_calculation_results
 
 
 def test_no_calculation_results() -> None:
-    check_section_without_calculation_results(DataProfileProfileSection, "data_profile")
+    check_section_without_calculation_results(DataQualityProfileSection, "data_quality")
 
 
 @pytest.mark.parametrize(
@@ -240,7 +240,7 @@ def test_no_calculation_results() -> None:
         ),
     ),
 )
-def test_data_profile_profile_section_with_calculated_results(
+def test_data_quality_profile_section_with_calculated_results(
     reference_data: pd.DataFrame, current_data: pd.DataFrame, expected_metrics: dict
 ):
     data_columns = ColumnMapping(
@@ -249,11 +249,11 @@ def test_data_profile_profile_section_with_calculated_results(
         target_names=["drift_target_result"],
         task="regression"
     )
-    data_drift_profile_section_result = calculate_section_results(
-        DataProfileProfileSection, reference_data, current_data, data_columns
+    profile_section_result = calculate_section_results(
+        DataQualityProfileSection, reference_data, current_data, data_columns
     )
-    check_profile_section_result_common_part(data_drift_profile_section_result, "data_profile")
-    result_data = data_drift_profile_section_result["data"]
+    check_profile_section_result_common_part(profile_section_result, "data_quality")
+    result_data = profile_section_result["data"]
 
     # check metrics
     assert "metrics" in result_data

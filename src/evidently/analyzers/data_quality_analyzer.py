@@ -17,8 +17,8 @@ from evidently.analyzers.utils import process_columns
 
 
 @dataclass
-class FeaturesProfileStats:
-    """Class for all features data profile metrics store.
+class FeatureQualityStats:
+    """Class for all features data quality metrics store.
 
     A type of the feature is stored in `feature_type` field.
     Concrete stat kit depends on the feature type. Is a metric is not applicable - leave `None` value for it.
@@ -91,10 +91,10 @@ class FeaturesProfileStats:
         return self.feature_type == "cat"
 
     def as_dict(self):
-        return {field.name: getattr(self, field.name) for field in fields(FeaturesProfileStats)}
+        return {field.name: getattr(self, field.name) for field in fields(FeatureQualityStats)}
 
     def __eq__(self, other):
-        for field in fields(FeaturesProfileStats):
+        for field in fields(FeatureQualityStats):
             other_field_value = getattr(other, field.name)
             self_field_value = getattr(self, field.name)
 
@@ -108,13 +108,13 @@ class FeaturesProfileStats:
 
 
 @dataclass
-class DataProfileStats:
-    num_features_stats: Optional[Dict[str, FeaturesProfileStats]] = None
-    cat_features_stats: Optional[Dict[str, FeaturesProfileStats]] = None
-    datetime_features_stats: Optional[Dict[str, FeaturesProfileStats]] = None
-    target_stats: Optional[Dict[str, FeaturesProfileStats]] = None
+class DataQualityStats:
+    num_features_stats: Optional[Dict[str, FeatureQualityStats]] = None
+    cat_features_stats: Optional[Dict[str, FeatureQualityStats]] = None
+    datetime_features_stats: Optional[Dict[str, FeatureQualityStats]] = None
+    target_stats: Optional[Dict[str, FeatureQualityStats]] = None
 
-    def get_all_features(self) -> Dict[str, FeaturesProfileStats]:
+    def get_all_features(self) -> Dict[str, FeatureQualityStats]:
         result = {}
 
         for features in (
@@ -128,7 +128,7 @@ class DataProfileStats:
 
         return result
 
-    def __getitem__(self, item) -> FeaturesProfileStats:
+    def __getitem__(self, item) -> FeatureQualityStats:
         for features in (
             self.target_stats,
             self.datetime_features_stats,
@@ -142,18 +142,18 @@ class DataProfileStats:
 
 
 @dataclass
-class DataProfileAnalyzerResults(BaseAnalyzerResult):
-    reference_features_stats: DataProfileStats
-    current_features_stats: Optional[DataProfileStats] = None
+class DataQualityAnalyzerResults(BaseAnalyzerResult):
+    reference_features_stats: DataQualityStats
+    current_features_stats: Optional[DataQualityStats] = None
 
 
-class DataProfileAnalyzer(Analyzer):
+class DataQualityAnalyzer(Analyzer):
     @staticmethod
-    def get_results(analyzer_results) -> DataProfileAnalyzerResults:
-        return analyzer_results[DataProfileAnalyzer]
+    def get_results(analyzer_results) -> DataQualityAnalyzerResults:
+        return analyzer_results[DataQualityAnalyzer]
 
-    def _calculate_stats(self, dataset: pd.DataFrame, columns: DatasetColumns, task: Optional[str]) -> DataProfileStats:
-        result = DataProfileStats()
+    def _calculate_stats(self, dataset: pd.DataFrame, columns: DatasetColumns, task: Optional[str]) -> DataQualityStats:
+        result = DataQualityStats()
 
         result.num_features_stats = {
             feature_name: self._get_features_stats(dataset[feature_name], feature_type="num")
@@ -203,7 +203,7 @@ class DataProfileAnalyzer(Analyzer):
         reference_data: pd.DataFrame,
         current_data: Optional[pd.DataFrame],
         column_mapping: ColumnMapping,
-    ) -> DataProfileAnalyzerResults:
+    ) -> DataQualityAnalyzerResults:
         columns = process_columns(reference_data, column_mapping)
         target_name = columns.utility_columns.target
         task: Optional[str]
@@ -219,7 +219,7 @@ class DataProfileAnalyzer(Analyzer):
 
         reference_features_stats = self._calculate_stats(reference_data, columns, task)
 
-        current_features_stats: Optional[DataProfileStats]
+        current_features_stats: Optional[DataQualityStats]
 
         if current_data is not None:
             current_features_stats = self._calculate_stats(current_data, columns, task)
@@ -261,7 +261,7 @@ class DataProfileAnalyzer(Analyzer):
         else:
             current_features_stats = None
 
-        results = DataProfileAnalyzerResults(
+        results = DataQualityAnalyzerResults(
             columns=columns,
             reference_features_stats=reference_features_stats,
         )
@@ -271,11 +271,11 @@ class DataProfileAnalyzer(Analyzer):
         return results
 
     @staticmethod
-    def _get_features_stats(feature: pd.Series, feature_type: str) -> FeaturesProfileStats:
+    def _get_features_stats(feature: pd.Series, feature_type: str) -> FeatureQualityStats:
         def get_percentage_from_all_values(value: Union[int, float]) -> float:
             return np.round(100 * value / all_values_count, 2)
 
-        result = FeaturesProfileStats(feature_type=feature_type)
+        result = FeatureQualityStats(feature_type=feature_type)
         all_values_count = feature.shape[0]
 
         if not all_values_count > 0:

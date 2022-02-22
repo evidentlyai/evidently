@@ -4,8 +4,8 @@ import pytest
 from pandas import DataFrame
 
 from evidently import ColumnMapping
-from evidently.analyzers.data_profile_analyzer import DataProfileAnalyzer
-from evidently.dashboard.widgets.data_profile_features_widget import DataProfileFeaturesWidget
+from evidently.analyzers.data_quality_analyzer import DataQualityAnalyzer
+from evidently.dashboard.widgets.data_profile_features_widget import DataQualityFeaturesWidget
 from evidently.options import OptionsProvider
 
 
@@ -21,19 +21,19 @@ def sample_data(feature1, feature2, feature3):
         (sample_data([True, True], [1, 1], [1, 1]), sample_data([True, True], [1, 1], [1, 1]), ColumnMapping()),
     ])
 def test_data_profile_widget_no_exceptions(reference, current, column_mapping):
-    analyzer = DataProfileAnalyzer()
+    analyzer = DataQualityAnalyzer()
     analyzer.options_provider = OptionsProvider()
     results = analyzer.calculate(DataFrame(reference), DataFrame(current), column_mapping)
 
-    widget = DataProfileFeaturesWidget("test")
+    widget = DataQualityFeaturesWidget("test")
     widget.options_provider = OptionsProvider()
     widget.calculate(DataFrame(reference), DataFrame(current), column_mapping, {
-        DataProfileAnalyzer: results,
+        DataQualityAnalyzer: results,
     })
 
 
 def test_data_profile_widget_regression_data():
-    analyzer = DataProfileAnalyzer()
+    analyzer = DataQualityAnalyzer()
     reference_data = DataFrame(
         {
             "target": [1, 2, 3, 1],
@@ -58,8 +58,8 @@ def test_data_profile_widget_regression_data():
 
     results = analyzer.calculate(reference_data, reference_data, data_mapping)
 
-    widget = DataProfileFeaturesWidget("test")
+    widget = DataQualityFeaturesWidget("test")
     widget.options_provider = OptionsProvider()
     widget.calculate(reference_data, reference_data, data_mapping, {
-        DataProfileAnalyzer: results,
+        DataQualityAnalyzer: results,
     })

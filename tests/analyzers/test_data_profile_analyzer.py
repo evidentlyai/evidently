@@ -4,8 +4,8 @@ import numpy as np
 import pandas as pd
 
 from evidently import ColumnMapping
-from evidently.analyzers.data_profile_analyzer import DataProfileAnalyzer
-from evidently.analyzers.data_profile_analyzer import FeaturesProfileStats
+from evidently.analyzers.data_quality_analyzer import DataQualityAnalyzer
+from evidently.analyzers.data_quality_analyzer import FeatureQualityStats
 
 import pytest
 
@@ -14,8 +14,8 @@ import pytest
     "dataset, expected_metrics",
     [
         (
-            pd.DataFrame({"numerical_feature": []}),
-            FeaturesProfileStats(
+                pd.DataFrame({"numerical_feature": []}),
+                FeatureQualityStats(
                 feature_type="num",
                 count=0,
                 percentile_25=None,
@@ -38,8 +38,8 @@ import pytest
             ),
         ),
         (
-            pd.DataFrame({"numerical_feature": [np.nan, np.nan, np.nan, np.nan]}),
-            FeaturesProfileStats(
+                pd.DataFrame({"numerical_feature": [np.nan, np.nan, np.nan, np.nan]}),
+                FeatureQualityStats(
                 feature_type="num",
                 count=0,
                 percentile_25=np.nan,
@@ -62,8 +62,8 @@ import pytest
             ),
         ),
         (
-            pd.DataFrame({"numerical_feature": [np.nan, 2, 2, 432]}),
-            FeaturesProfileStats(
+                pd.DataFrame({"numerical_feature": [np.nan, 2, 2, 432]}),
+                FeatureQualityStats(
                 feature_type="num",
                 count=3,
                 infinite_count=0,
@@ -87,8 +87,8 @@ import pytest
         ),
     ],
 )
-def test_data_profile_analyzer_num_features(dataset: pd.DataFrame, expected_metrics: FeaturesProfileStats) -> None:
-    data_profile_analyzer = DataProfileAnalyzer()
+def test_data_profile_analyzer_num_features(dataset: pd.DataFrame, expected_metrics: FeatureQualityStats) -> None:
+    data_profile_analyzer = DataQualityAnalyzer()
 
     data_mapping = ColumnMapping(
         numerical_features=["numerical_feature"],
@@ -105,8 +105,8 @@ def test_data_profile_analyzer_num_features(dataset: pd.DataFrame, expected_metr
     "dataset, expected_metrics",
     [
         (
-            pd.DataFrame({"category_feature": []}),
-            FeaturesProfileStats(
+                pd.DataFrame({"category_feature": []}),
+                FeatureQualityStats(
                 feature_type="cat",
                 count=0,
                 percentile_25=None,
@@ -129,8 +129,8 @@ def test_data_profile_analyzer_num_features(dataset: pd.DataFrame, expected_metr
             ),
         ),
         (
-            pd.DataFrame({"category_feature": [None, None, None, None]}),
-            FeaturesProfileStats(
+                pd.DataFrame({"category_feature": [None, None, None, None]}),
+                FeatureQualityStats(
                 feature_type="cat",
                 count=0,
                 infinite_count=None,
@@ -155,8 +155,8 @@ def test_data_profile_analyzer_num_features(dataset: pd.DataFrame, expected_metr
             ),
         ),
         (
-            pd.DataFrame({"category_feature": [np.nan, 2, 2, 1]}),
-            FeaturesProfileStats(
+                pd.DataFrame({"category_feature": [np.nan, 2, 2, 1]}),
+                FeatureQualityStats(
                 feature_type="cat",
                 count=3,
                 infinite_count=None,
@@ -179,8 +179,8 @@ def test_data_profile_analyzer_num_features(dataset: pd.DataFrame, expected_metr
             ),
         ),
         (
-            pd.DataFrame({"category_feature": ["y", "n", "n/a", "n"]}),
-            FeaturesProfileStats(
+                pd.DataFrame({"category_feature": ["y", "n", "n/a", "n"]}),
+                FeatureQualityStats(
                 feature_type="cat",
                 count=4,
                 infinite_count=None,
@@ -203,8 +203,8 @@ def test_data_profile_analyzer_num_features(dataset: pd.DataFrame, expected_metr
             ),
         ),
         (
-            pd.DataFrame({"category_feature": ["n", "d", "p", "n"]}),
-            FeaturesProfileStats(
+                pd.DataFrame({"category_feature": ["n", "d", "p", "n"]}),
+                FeatureQualityStats(
                 feature_type="cat",
                 count=4,
                 infinite_count=None,
@@ -228,8 +228,8 @@ def test_data_profile_analyzer_num_features(dataset: pd.DataFrame, expected_metr
         ),
     ],
 )
-def test_data_profile_analyzer_cat_features(dataset: pd.DataFrame, expected_metrics: FeaturesProfileStats) -> None:
-    data_profile_analyzer = DataProfileAnalyzer()
+def test_data_profile_analyzer_cat_features(dataset: pd.DataFrame, expected_metrics: FeatureQualityStats) -> None:
+    data_profile_analyzer = DataQualityAnalyzer()
 
     for task_type in (None, "regression", "classification"):
         result = data_profile_analyzer.calculate(
@@ -255,13 +255,13 @@ def test_data_profile_analyzer_classification_with_target() -> None:
             "prediction": ["cat_5", "cat_1", "cat_1", "cat_3", np.nan],
         }
     )
-    data_profile_analyzer = DataProfileAnalyzer()
+    data_profile_analyzer = DataQualityAnalyzer()
     data_mapping = ColumnMapping(task="classification")
 
     result = data_profile_analyzer.calculate(reference_data, current_data, data_mapping)
     assert result.reference_features_stats is not None
     assert result.reference_features_stats.target_stats is not None
-    assert result.reference_features_stats.target_stats["target"] == FeaturesProfileStats(
+    assert result.reference_features_stats.target_stats["target"] == FeatureQualityStats(
         feature_type="cat",
         count=5,
         infinite_count=None,
@@ -286,7 +286,7 @@ def test_data_profile_analyzer_classification_with_target() -> None:
     )
     assert result.current_features_stats is not None
     assert result.current_features_stats.target_stats is not None
-    assert result.current_features_stats.target_stats["target"] == FeaturesProfileStats(
+    assert result.current_features_stats.target_stats["target"] == FeatureQualityStats(
         feature_type="cat",
         count=4,
         infinite_count=None,
@@ -373,7 +373,7 @@ def test_data_profile_analyzer_classification_with_target() -> None:
 def test_data_profile_analyzer_new_and_unused_count_for_cat_features(
     reference_dataset: pd.DataFrame, current_dataset: pd.DataFrame, expected_new: int, expected_unused: int
 ) -> None:
-    data_profile_analyzer = DataProfileAnalyzer()
+    data_profile_analyzer = DataQualityAnalyzer()
     data_mapping = ColumnMapping(
         categorical_features=["category_feature"],
         numerical_features=[],
@@ -391,8 +391,8 @@ def test_data_profile_analyzer_new_and_unused_count_for_cat_features(
     "dataset, expected_metrics",
     [
         (
-            pd.DataFrame({"datetime_feature": []}),
-            FeaturesProfileStats(
+                pd.DataFrame({"datetime_feature": []}),
+                FeatureQualityStats(
                 feature_type="datetime",
                 count=0,
                 percentile_25=None,
@@ -415,8 +415,8 @@ def test_data_profile_analyzer_new_and_unused_count_for_cat_features(
             ),
         ),
         (
-            pd.DataFrame({"datetime_feature": [np.nan, np.nan, np.nan, np.nan]}),
-            FeaturesProfileStats(
+                pd.DataFrame({"datetime_feature": [np.nan, np.nan, np.nan, np.nan]}),
+                FeatureQualityStats(
                 feature_type="datetime",
                 count=0,
                 percentile_25=None,
@@ -439,7 +439,7 @@ def test_data_profile_analyzer_new_and_unused_count_for_cat_features(
             ),
         ),
         (
-            pd.DataFrame(
+                pd.DataFrame(
                 {
                     "datetime_feature": [
                         pd.NaT,
@@ -449,7 +449,7 @@ def test_data_profile_analyzer_new_and_unused_count_for_cat_features(
                     ]
                 }
             ),
-            FeaturesProfileStats(
+                FeatureQualityStats(
                 feature_type="datetime",
                 count=3,
                 infinite_count=None,
@@ -473,8 +473,8 @@ def test_data_profile_analyzer_new_and_unused_count_for_cat_features(
         ),
     ],
 )
-def test_data_profile_analyzer_datetime_features(dataset: pd.DataFrame, expected_metrics: FeaturesProfileStats) -> None:
-    data_profile_analyzer = DataProfileAnalyzer()
+def test_data_profile_analyzer_datetime_features(dataset: pd.DataFrame, expected_metrics: FeatureQualityStats) -> None:
+    data_profile_analyzer = DataQualityAnalyzer()
 
     data_mapping = ColumnMapping(
         datetime_features=["datetime_feature"],
@@ -488,7 +488,7 @@ def test_data_profile_analyzer_datetime_features(dataset: pd.DataFrame, expected
 
 
 def test_data_profile_analyzer_empty_features() -> None:
-    data_profile_analyzer = DataProfileAnalyzer()
+    data_profile_analyzer = DataQualityAnalyzer()
     reference_data = pd.DataFrame(
         {
             "datetime_feature": [np.nan, np.nan, np.nan],
@@ -501,7 +501,7 @@ def test_data_profile_analyzer_empty_features() -> None:
 
     assert "datetime_feature" in result.reference_features_stats.datetime_features_stats
     datetime_feature = result.reference_features_stats.datetime_features_stats["datetime_feature"]
-    assert datetime_feature == FeaturesProfileStats(
+    assert datetime_feature == FeatureQualityStats(
         feature_type="datetime",
         count=0,
         infinite_count=None,
@@ -527,7 +527,7 @@ def test_data_profile_analyzer_empty_features() -> None:
 
 
 def test_data_profile_analyzer_regression() -> None:
-    data_profile_analyzer = DataProfileAnalyzer()
+    data_profile_analyzer = DataQualityAnalyzer()
     reference_data = pd.DataFrame(
         {
             "my_target": [1, 2, 3, 1],
@@ -563,7 +563,7 @@ def test_data_profile_analyzer_regression() -> None:
     assert result.reference_features_stats.num_features_stats is not None
     assert "numerical_feature_1" in result.reference_features_stats.num_features_stats
     numerical_feature_1 = result.reference_features_stats.num_features_stats["numerical_feature_1"]
-    assert numerical_feature_1 == FeaturesProfileStats(
+    assert numerical_feature_1 == FeatureQualityStats(
         feature_type="num",
         count=4,
         infinite_count=0,
@@ -586,7 +586,7 @@ def test_data_profile_analyzer_regression() -> None:
     )
     assert "numerical_feature_2" in result.reference_features_stats.num_features_stats
     numerical_feature_2 = result.reference_features_stats.num_features_stats["numerical_feature_2"]
-    assert numerical_feature_2 == FeaturesProfileStats(
+    assert numerical_feature_2 == FeatureQualityStats(
         feature_type="num",
         count=4,
         infinite_count=0,
@@ -611,7 +611,7 @@ def test_data_profile_analyzer_regression() -> None:
     assert result.reference_features_stats.cat_features_stats is not None
     assert "categorical_feature_1" in result.reference_features_stats.cat_features_stats
     categorical_feature_1 = result.reference_features_stats.cat_features_stats["categorical_feature_1"]
-    assert categorical_feature_1 == FeaturesProfileStats(
+    assert categorical_feature_1 == FeatureQualityStats(
         feature_type="cat",
         count=4,
         infinite_count=None,
@@ -635,7 +635,7 @@ def test_data_profile_analyzer_regression() -> None:
 
     assert "categorical_feature_2" in result.reference_features_stats.cat_features_stats
     categorical_feature_2 = result.reference_features_stats.cat_features_stats["categorical_feature_2"]
-    assert categorical_feature_2 == FeaturesProfileStats(
+    assert categorical_feature_2 == FeatureQualityStats(
         feature_type="cat",
         count=4,
         infinite_count=None,
@@ -660,7 +660,7 @@ def test_data_profile_analyzer_regression() -> None:
     assert result.reference_features_stats.datetime_features_stats is not None
     assert "datetime_feature_1" in result.reference_features_stats.datetime_features_stats
     datetime_feature_1 = result.reference_features_stats.datetime_features_stats["datetime_feature_1"]
-    assert datetime_feature_1 == FeaturesProfileStats(
+    assert datetime_feature_1 == FeatureQualityStats(
         feature_type="datetime",
         count=4,
         infinite_count=None,
@@ -683,7 +683,7 @@ def test_data_profile_analyzer_regression() -> None:
     )
     assert "datetime_feature_2" in result.reference_features_stats.datetime_features_stats
     datetime_feature_2 = result.reference_features_stats.datetime_features_stats["datetime_feature_2"]
-    assert datetime_feature_2 == FeaturesProfileStats(
+    assert datetime_feature_2 == FeatureQualityStats(
         feature_type="datetime",
         count=4,
         infinite_count=None,
@@ -708,7 +708,7 @@ def test_data_profile_analyzer_regression() -> None:
     assert result.reference_features_stats.target_stats is not None
     assert "my_target" in result.reference_features_stats.target_stats
     target_stats = result.reference_features_stats.target_stats["my_target"]
-    assert target_stats == FeaturesProfileStats(
+    assert target_stats == FeatureQualityStats(
         feature_type="num",
         count=4,
         infinite_count=0,
