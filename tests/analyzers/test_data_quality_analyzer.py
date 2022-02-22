@@ -14,8 +14,8 @@ import pytest
     "dataset, expected_metrics",
     [
         (
-                pd.DataFrame({"numerical_feature": []}),
-                FeatureQualityStats(
+            pd.DataFrame({"numerical_feature": []}),
+            FeatureQualityStats(
                 feature_type="num",
                 count=0,
                 percentile_25=None,
@@ -38,8 +38,8 @@ import pytest
             ),
         ),
         (
-                pd.DataFrame({"numerical_feature": [np.nan, np.nan, np.nan, np.nan]}),
-                FeatureQualityStats(
+            pd.DataFrame({"numerical_feature": [np.nan, np.nan, np.nan, np.nan]}),
+            FeatureQualityStats(
                 feature_type="num",
                 count=0,
                 percentile_25=np.nan,
@@ -62,8 +62,8 @@ import pytest
             ),
         ),
         (
-                pd.DataFrame({"numerical_feature": [np.nan, 2, 2, 432]}),
-                FeatureQualityStats(
+            pd.DataFrame({"numerical_feature": [np.nan, 2, 2, 432]}),
+            FeatureQualityStats(
                 feature_type="num",
                 count=3,
                 infinite_count=0,
@@ -105,8 +105,8 @@ def test_data_profile_analyzer_num_features(dataset: pd.DataFrame, expected_metr
     "dataset, expected_metrics",
     [
         (
-                pd.DataFrame({"category_feature": []}),
-                FeatureQualityStats(
+            pd.DataFrame({"category_feature": []}),
+            FeatureQualityStats(
                 feature_type="cat",
                 count=0,
                 percentile_25=None,
@@ -129,8 +129,8 @@ def test_data_profile_analyzer_num_features(dataset: pd.DataFrame, expected_metr
             ),
         ),
         (
-                pd.DataFrame({"category_feature": [None, None, None, None]}),
-                FeatureQualityStats(
+            pd.DataFrame({"category_feature": [None, None, None, None]}),
+            FeatureQualityStats(
                 feature_type="cat",
                 count=0,
                 infinite_count=None,
@@ -155,8 +155,8 @@ def test_data_profile_analyzer_num_features(dataset: pd.DataFrame, expected_metr
             ),
         ),
         (
-                pd.DataFrame({"category_feature": [np.nan, 2, 2, 1]}),
-                FeatureQualityStats(
+            pd.DataFrame({"category_feature": [np.nan, 2, 2, 1]}),
+            FeatureQualityStats(
                 feature_type="cat",
                 count=3,
                 infinite_count=None,
@@ -179,8 +179,8 @@ def test_data_profile_analyzer_num_features(dataset: pd.DataFrame, expected_metr
             ),
         ),
         (
-                pd.DataFrame({"category_feature": ["y", "n", "n/a", "n"]}),
-                FeatureQualityStats(
+            pd.DataFrame({"category_feature": ["y", "n", "n/a", "n"]}),
+            FeatureQualityStats(
                 feature_type="cat",
                 count=4,
                 infinite_count=None,
@@ -203,8 +203,8 @@ def test_data_profile_analyzer_num_features(dataset: pd.DataFrame, expected_metr
             ),
         ),
         (
-                pd.DataFrame({"category_feature": ["n", "d", "p", "n"]}),
-                FeatureQualityStats(
+            pd.DataFrame({"category_feature": ["n", "d", "p", "n"]}),
+            FeatureQualityStats(
                 feature_type="cat",
                 count=4,
                 infinite_count=None,
@@ -391,8 +391,8 @@ def test_data_profile_analyzer_new_and_unused_count_for_cat_features(
     "dataset, expected_metrics",
     [
         (
-                pd.DataFrame({"datetime_feature": []}),
-                FeatureQualityStats(
+            pd.DataFrame({"datetime_feature": []}),
+            FeatureQualityStats(
                 feature_type="datetime",
                 count=0,
                 percentile_25=None,
@@ -415,8 +415,8 @@ def test_data_profile_analyzer_new_and_unused_count_for_cat_features(
             ),
         ),
         (
-                pd.DataFrame({"datetime_feature": [np.nan, np.nan, np.nan, np.nan]}),
-                FeatureQualityStats(
+            pd.DataFrame({"datetime_feature": [np.nan, np.nan, np.nan, np.nan]}),
+            FeatureQualityStats(
                 feature_type="datetime",
                 count=0,
                 percentile_25=None,
@@ -439,7 +439,7 @@ def test_data_profile_analyzer_new_and_unused_count_for_cat_features(
             ),
         ),
         (
-                pd.DataFrame(
+            pd.DataFrame(
                 {
                     "datetime_feature": [
                         pd.NaT,
@@ -449,7 +449,7 @@ def test_data_profile_analyzer_new_and_unused_count_for_cat_features(
                     ]
                 }
             ),
-                FeatureQualityStats(
+            FeatureQualityStats(
                 feature_type="datetime",
                 count=3,
                 infinite_count=None,
