@@ -5,22 +5,22 @@
 * Calculate base statistics for numerical, categorical and datetime features
 * Displays interactive plots with data distribution
 * Plots interactions for features and target
-* Highlite behaviour of features in time 
+* Highlight behavior of features in time 
 * Can compare two datasets
 
 ## Summary
 
-**Data Quality** report can be use for exploration your data and undefstanding which features are stabel and useful enought for using it for modeling. Moreower 
-it can helps to compare two datasets: 
+**Data Quality** report can be used for exploration your data and understanding which features are stable and useful enough for using it for modeling. Moreover, it can help to compare two datasets:
 * train and test
 * referense and current 
 * subgroups of one dataset (for example your customers from Europe and from Asia)
 
 ## Requirements
 
-If you wanr to run this report for one dataset you need padndas DataFrame with features you want to explore. Pass it as reference_data.
-* if you have datetime column and want to learn how features change with time - specify datetime column in the Column Mapping parameter.
-* if you have a target column and want to see features distribution by target - specify target column in the Column Mapping parameter.
+If you want to run this report for one dataset you need pandas DataFrame with features you want to explore. Pass it as reference_data.
+* if you have a datetime column and want to learn how features change with time - specify the datetime column in the Column Mapping parameter.
+* if you have a target column and want to see features distribution by target - specify the target column in the Column Mapping parameter. For two dataset comparison, you need two pandas DataFrame. The schema of both datasets should be identical.
+
 For two dataset comparison you need two pandas DataFrame. The schema of both datasets should be identical.
 
 ## How it looks
