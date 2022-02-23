@@ -22,7 +22,7 @@ If you want to run this report for a single dataset, you need to prepare a `pand
 To compare two datastes, you need two data frames or csv files. The schema of both datasets should be identical.
 
 {% hint style="info" %}
-You can read more to understand [column mapping](../dashboards/column-mapping.md) and [data requirements](../dashboards/data-requirements.md) 
+You can read more to understand [column mapping](../dashboards/column_mapping.md) and [data requirements](../dashboards/data_requirements.md) 
 {% endhint %}
 
 ## How it looks
