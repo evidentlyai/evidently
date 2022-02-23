@@ -1,6 +1,6 @@
 # Data Quality
 
-**TL;DR:** The report provides the detailed feature overview.
+**TL;DR:** The report provides a detailed feature overview.
 
 * Calculates base statistics for numerical, categorical and datetime features
 * Displays interactive plots with data distribution and behavior in time
@@ -9,9 +9,9 @@
 
 ## Summary
 
-The Data Quality report provides detailed feature statistic and feature behavior overview. 
+The Data Quality report provides detailed feature statistics and feature behavior overview. 
 
-It can also compare any two datasets, e.g. train and test, reference and current data, or two subgroups of one dataset (e.g. customers in different regions).
+It can also compare any two datasets, e.g., train and test, reference and current data, or two subgroups of one dataset (e.g., customers in different regions).
 
 ## Requirements
 
@@ -35,7 +35,7 @@ The default report includes 3 components. All plots are interactive.
 
 The table shows relevant statistical summaries for each feature based on its type and a visualization of feature distribution. 
 
-#### Example for categorical feature
+#### Example for categorical feature:
 
 ![](../.gitbook/assets/reports_data_quality_overview_cat.png)
 
@@ -49,7 +49,7 @@ The table shows relevant statistical summaries for each feature based on its typ
 
 ### 2. Feature in time
 
-If you click on "details", each feature would include additional visualization to show feature behavior in time.
+If you click on "details" each feature would include additional visualization to show feature behavior in time.
 
 #### Example for categorical feature:
 
@@ -148,8 +148,8 @@ If you choose to generate a JSON profile, it will contain the following informat
 
 Here are a few ideas on how to use the report:
 
-1. **Exploratory data analysis.** You can use the visual report to explore your initial training dataset, understand which features are stable and useful enough to use in modeling. 
-2. **Dataset comparison.** You can use the report to compare two datasets to confirm similarity or understand the differences. For examples, you might compare training and test dataset, subgroups in the same dataset (e.g. customers from Europe and from Asia), or current production data against training.
+1. **Exploratory data analysis.** You can use the visual report to explore your initial training dataset and understand which features are stable and useful enough to use in modeling. 
+2. **Dataset comparison.** You can use the report to compare two datasets to confirm similarity or understand the differences. For example, you might compare training and test dataset, subgroups in the same dataset (e.g. customers from Europe and from Asia), or current production data against training.
 3. **Data profiling in production.** You can use the report to log and store JSON snapshots of your production data stats for future analysis. You can combine this with testing data distributions for drift using [Data Drift](data-drift.md) report.    
 4. **Production model debugging.** If your model is underperforming, you might use this report to explore and interpret the details of changes in the input data.
 
