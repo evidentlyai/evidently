@@ -35,15 +35,15 @@ The default report includes 3 components. All plots are interactive.
 
 The table shows relevant statistical summaries for each feature based on its type and a visualization of feature distribution. 
 
-Example for categorical feature:
+#### Example for categorical feature
 
 ![](../.gitbook/assets/reports_data_quality_overview_cat.png)
 
-Example for numerical feature:
+#### Example for numerical feature:
 
 ![](../.gitbook/assets/reports_data_quality_overview_num.png)
 
-Example for datetime feature:
+#### Example for datetime feature:
 
 ![](../.gitbook/assets/reports_data_quality_overview_datetime.png)
 
@@ -51,15 +51,15 @@ Example for datetime feature:
 
 If you click on "details", each feature would include additional visualization to show feature behavior in time.
 
-Example for categorical feature:
+#### Example for categorical feature:
 
 ![](../.gitbook/assets/reports_data_quality_in_time_cat.png)
 
-Example for numerical feature:
+#### Example for numerical feature:
 
 ![](../.gitbook/assets/reports_data_quality_in_time_num.png)
 
-Example for datetime feature:
+#### Example for datetime feature:
 
 ![](../.gitbook/assets/reports_data_quality_in_time_datetime.png)
 
@@ -67,11 +67,11 @@ Example for datetime feature:
 
 Categorical and numerical features include an additional visualization that plots the interaction between a given feature and the target. 
 
-Example for categorical feature:
+#### Example for categorical feature:
 
 ![](../.gitbook/assets/reports_data_quality_by_target_cat.png)
 
-Example for numerical feature:
+#### Example for numerical feature:
 
 ![](../.gitbook/assets/reports_data_quality_by_target_num.png)
 
