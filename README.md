@@ -27,8 +27,9 @@ Evidently has a modular approach with 3 interfaces on top of the shared `analyze
 
 Evidently generates interactive `dashboards` from pandas `DataFrame` or `csv` files. You can use them for model evaluation, debugging and documentation. 
 
-Each report covers a particular aspect of the model performance. You can display reports in Jupyter notebook or Colab or export as an HTML file. Currently 6 pre-built reports are available:
+Each report covers a particular aspect of the model performance. You can display reports in Jupyter notebook or Colab or export as an HTML file. Currently 7 pre-built reports are available:
 * [**Data Drift**](https://docs.evidentlyai.com/reports/data-drift). Detects changes in the input feature distribution. 
+* [**Data Quality**](https://docs.evidentlyai.com/reports/data-quality). Provides the detailed feature stats and behavior overview. 
 * **Target Drift**: [Numerical](https://docs.evidentlyai.com/reports/num-target-drift), [Categorical](https://docs.evidentlyai.com/reports/categorical-target-drift). Detects changes in the model output.
 * **Model Performance**: [Classification](https://docs.evidentlyai.com/reports/classification-performance), [Probabilistic Classification](https://docs.evidentlyai.com/reports/probabilistic-classification-performance), [Regression](https://docs.evidentlyai.com/reports/reg-performance). Evaluates the quality of the model and model errors.
 
