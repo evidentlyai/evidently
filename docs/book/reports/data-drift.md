@@ -46,7 +46,7 @@ The default report includes 4 components. All plots are interactive.
 
 The report returns **the share of drifting features** and an aggregate **Dataset Drift** result. For example:
 
-![](<../.gitbook/assets/Screenshot%202021-09-08%20at%2011.13.40.png>)
+![](<../.gitbook/assets/reports_data_drift_summary.png>)
 
 Dataset Drift sets a rule on top of the results of the statistical tests for individual features. By default, Dataset Drift is detected if at least 50% of features drift at a 0.95 confidence level.&#x20;
 
@@ -58,7 +58,7 @@ To set different Dataset Drift conditions, you can define [custom options](../..
 
 The table shows the drifting features first, sorting them by P-value. You can also choose to sort the rows by the feature name or type.
 
-![](../.gitbook/assets/data_drift.png)
+![](../.gitbook/assets/reports_data_drift_table.png)
 
 ### 3. Data Drift by Feature
 
@@ -67,13 +67,13 @@ By clicking on each feature, you can explore the values mapped in a plot.&#x20;
 * The dark green line is the **mean**, as seen in the reference dataset.&#x20;
 * The green area covers **one standard deviation** from the mean.&#x20;
 
-![](../.gitbook/assets/data_drift_by_feature.png)
+![](../.gitbook/assets/reports_data_drift_drift_by_feature.png)
 
 ### 4. Data Distribution by Feature
 
 You can also zoom on distributions to understand what has changed.
 
-![](../.gitbook/assets/data_distr_by_feature.png)
+![](../.gitbook/assets/reports_data_drift_distr_by_feature.png)
 
 {% hint style="info" %}
 To change the bins displayed, you can define [custom options](../customization/options-for-data-target-drift.md).
