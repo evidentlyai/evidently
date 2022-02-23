@@ -19,10 +19,12 @@ If you want to run this report for a single dataset, you need to prepare a `pand
 * If you have a **datetime** column and want to learn how features change with time, specify the datetime column in the `column_mapping` parameter.
 * If you have a **target** column and want to see features distribution by target - specify the target column in the `column_mapping` parameter. 
 
-To compare two datastes, you need two data frames or csv files. The schema of both datasets should be identical.
+To compare two datastes, you need two `DataFrames` or `cs`v files. The schema of both datasets should be identical.
+
+Feature types (numerical, categorical, datetime) will be parsed based on pandas column type. If you work with `csv` files in CLI, or want to specify a different feature mapping strategy, you can explicitly set this using `column_mapping`.
 
 {% hint style="info" %}
-You can read more to understand [column mapping](../dashboards/column_mapping.md) and [data requirements](../dashboards/data_requirements.md) 
+You can read more to understand [column mapping](../dashboards/column_mapping.md) and [data requirements](../dashboards/data_requirements.md) in the corresponding sections.  
 {% endhint %}
 
 ## How it looks
@@ -31,8 +33,7 @@ The default report includes 3 components. All plots are interactive.
 
 ### 1. Feature overview table
 
-The table shows statistical summaries for each feature and a visualization. 
-If you have two datasets, the visualization shows 
+The table shows relevant statistical summaries for each feature based on its type and a visualization of feature distribution. 
 
 Example for categorical feature:
 
@@ -48,8 +49,31 @@ Example for datetime feature:
 
 ### 2. Feature in time
 
+If you click on "details", each feature would include additional visualization to show feature behavior in time.
+
+Example for categorical feature:
+
+![](../.gitbook/assets/reports_data_quality_in_time_cat.png)
+
+Example for numerical feature:
+
+![](../.gitbook/assets/reports_data_quality_in_time_num.png)
+
+Example for datetime feature:
+
+![](../.gitbook/assets/reports_data_quality_in_time_datetime.png)
+
 ### 3. Feature by target 
 
+Categorical and numerical features include an additional visualization that plots the interaction between a given feature and the target. 
+
+Example for categorical feature:
+
+![](../.gitbook/assets/reports_data_quality_by_target_cat.png)
+
+Example for numerical feature:
+
+![](../.gitbook/assets/reports_data_quality_by_target_num.png)
 
 ## JSON Profile
 
