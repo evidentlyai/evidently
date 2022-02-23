@@ -10,6 +10,7 @@
 ## Summary
 
 The Data Quality report provides detailed feature statistic and feature behavior overview. 
+
 It can also compare any two datasets, e.g. train and test, reference and current data, or two subgroups of one dataset (e.g. customers in different regions).
 
 ## Requirements
