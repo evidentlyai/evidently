@@ -17,7 +17,7 @@ It can also compare any two datasets, e.g., train and test, reference and curren
 
 If you want to run this report for a single dataset, you need to prepare a `pandas.DataFrame` or `csv` file with features you want to explore. Pass it as **reference** data.
 * If you have a **datetime** column and want to learn how features change with time, specify the datetime column in the `column_mapping` parameter.
-* If you have a **target** column and want to see features distribution by target - specify the target column in the `column_mapping` parameter. 
+* If you have a **target** column and want to see features distribution by target, specify the target column in the `column_mapping` parameter. 
 
 To compare two datasets, you need two `DataFrames` or `cs`v files. The schema of both datasets should be identical.
 
