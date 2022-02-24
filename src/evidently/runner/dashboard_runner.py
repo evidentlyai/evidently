@@ -4,7 +4,7 @@ from typing import Dict
 from evidently.dashboard import Dashboard
 from evidently.runner.runner import RunnerOptions, Runner
 from evidently.dashboard.tabs import DataDriftTab, CatTargetDriftTab, ClassificationPerformanceTab, \
-    NumTargetDriftTab, ProbClassificationPerformanceTab, RegressionPerformanceTab
+    NumTargetDriftTab, ProbClassificationPerformanceTab, RegressionPerformanceTab, DataQualityTab
 
 
 @dataclass
@@ -19,6 +19,7 @@ tabs_mapping = dict(
     prob_classification_performance=ProbClassificationPerformanceTab,
     num_target_drift=NumTargetDriftTab,
     regression_performance=RegressionPerformanceTab,
+    data_quality=DataQualityTab,
 )
 
 

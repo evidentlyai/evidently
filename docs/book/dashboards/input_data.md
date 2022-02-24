@@ -69,6 +69,7 @@ Below is a summary of the data requirements:
 | ****[**Regression Performance**](../reports/reg-performance.md)****                                            | Required         | Required                          | Required                          | Yes                         |
 | ****[**Classification Performance**](../reports/classification-performance.md)****                             | Required         | Required                          | Required                          | Yes                         |
 | ****[**Probabilistic Classification Performance**](../reports/probabilistic-classification-performance.md)**** | Required         | Required                          | Required                          | Yes                         |
+| ****[**Data Quality**](../reports/data-quality.md)**** | Required         | Optional                          | No                          | Yes                         |
 
 ## `DataFrame` requirements
 

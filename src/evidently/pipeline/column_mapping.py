@@ -11,4 +11,6 @@ class ColumnMapping:
     id: Optional[str] = None
     numerical_features: Optional[List[str]] = None
     categorical_features: Optional[List[str]] = None
+    datetime_features: Optional[List[str]] = None
     target_names: Optional[List[str]] = None
+    task: Optional[str] = None
