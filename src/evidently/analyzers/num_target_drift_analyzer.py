@@ -126,7 +126,7 @@ class NumTargetDriftAnalyzer(Analyzer):
                              f'are not present in columns.num_feature_names')
 
         result = NumTargetDriftAnalyzerResults(
-            columns=columns, reference_data_count=reference_data.shape[0], current_data_count=reference_data.shape[0]
+            columns=columns, reference_data_count=reference_data.shape[0], current_data_count=current_data.shape[0]
         )
         data_drift_options = self.options_provider.get(DataDriftOptions)
 
