@@ -32,6 +32,7 @@ class DatasetColumns:
     utility_columns: DatasetUtilityColumns
     num_feature_names: List[str]
     cat_feature_names: List[str]
+    datetime_feature_names: List[str]
     target_names: Optional[List[str]]
 
     def as_dict(self) -> Dict[str, Union[Optional[List[str]], Dict]]:
@@ -39,20 +40,44 @@ class DatasetColumns:
             "utility_columns": self.utility_columns.as_dict(),
             "cat_feature_names": self.cat_feature_names,
             "num_feature_names": self.num_feature_names,
+            "datetime_feature_names": self.datetime_feature_names,
             "target_names": self.target_names,
         }
 
-    def get_all_features_list(self, cat_before_num: bool = True) -> List[str]:
-        """List all features names"""
+    def get_all_features_list(self, cat_before_num: bool = True, include_datetime_feature: bool = False) -> List[str]:
+        """List all features names.
+
+        By default, returns cat features than num features and du not return other.
+
+        If you want to change the order - set  `cat_before_num` to False.
+
+        If you want to add date time columns - set `include_datetime_feature` to True.
+        """
         if cat_before_num:
-            return self.cat_feature_names + self.num_feature_names
+            result = self.cat_feature_names + self.num_feature_names
 
         else:
-            return self.num_feature_names + self.cat_feature_names
+            result = self.num_feature_names + self.cat_feature_names
 
-    def get_features_len(self) -> int:
-        """How mane feature do we have. It is useful for pagination in widgets."""
-        return len(self.num_feature_names) + len(self.cat_feature_names)
+        if include_datetime_feature and self.datetime_feature_names:
+            result += self.datetime_feature_names
+
+        return result
+
+    def get_features_len(self, include_time_columns: bool = False) -> int:
+        """How mane feature do we have. It is useful for pagination in widgets.
+
+        By default, we sum category nad numeric features.
+
+        If you want to include date time columns - set `include_datetime_feature` to True.
+        """
+        if include_time_columns and self.datetime_feature_names:
+            len_time_columns = len(self.datetime_feature_names)
+
+        else:
+            len_time_columns = 0
+
+        return len(self.num_feature_names) + len(self.cat_feature_names) + len_time_columns
 
 
 def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping) -> DatasetColumns:
@@ -63,6 +88,7 @@ def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping) -> Dat
     prediction_column = column_mapping.prediction
     num_feature_names = column_mapping.numerical_features
     cat_feature_names = column_mapping.categorical_features
+    datetime_feature_names = column_mapping.datetime_features
     target_names = column_mapping.target_names
     utility_columns = [date_column, id_column, target_column]
 
@@ -97,10 +123,13 @@ def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping) -> Dat
     else:
         num_feature_names = dataset[num_feature_names].select_dtypes([np.number]).columns.tolist()
 
+    if datetime_feature_names is None:
+        datetime_feature_names = sorted(list(set(dataset.select_dtypes(['datetime']).columns) - utility_columns_set))
+
     cat_feature_names = column_mapping.categorical_features
 
     if cat_feature_names is None:
-        cat_feature_names = sorted(list(set(dataset.select_dtypes(exclude=[np.number]).columns) - utility_columns_set))
+        cat_feature_names = sorted(list(set(dataset.select_dtypes(exclude=[np.number, "datetime"]).columns) - utility_columns_set))
 
     else:
         cat_feature_names = dataset[cat_feature_names].columns.tolist()
@@ -109,6 +138,7 @@ def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping) -> Dat
         DatasetUtilityColumns(date_column, id_column, target_column, prediction_column),
         num_feature_names or [],
         cat_feature_names or [],
+        datetime_feature_names or [],
         target_names,
     )
 

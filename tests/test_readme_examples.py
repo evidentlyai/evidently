@@ -1,4 +1,5 @@
 import json
+from typing import List
 
 import pytest
 import pandas as pd
@@ -179,6 +180,33 @@ def test_probabilistic_classification_performance_on_single_frame_dashboard(iris
     assert len(actual['widgets']) == 11
 
 
+def _check_profile_high_level_fields(actual: dict, expected_profiles: List[str]) -> None:
+    """Test that all common fields and profile sections are presented in the first level of the JSON report"""
+    assert 'timestamp' in actual
+    # one for the `timestamp` field
+    fields_count = len(expected_profiles) + 1
+    assert len(actual) == fields_count
+
+    for expected_profile_name in expected_profiles:
+        assert expected_profile_name in actual, expected_profile_name
+
+
+def _check_profile_section_high_level_fields(profile_section: dict) -> None:
+    """Test all common fields in a separate profile section data"""
+    assert 'name' in profile_section
+    assert 'datetime' in profile_section
+    assert 'data' in profile_section
+
+
+def _check_columns_info_in_profile_section_data(section_data: dict) -> None:
+    """Test all columns mapping fields in a profile section data"""
+    assert 'utility_columns' in section_data
+    assert 'cat_feature_names' in section_data
+    assert 'num_feature_names' in section_data
+    assert 'datetime_feature_names' in section_data
+    assert 'target_names' in section_data
+
+
 ###
 # The following are extracted from the README.md file.
 ###
@@ -191,10 +219,13 @@ def test_data_drift_profile() -> None:
 
     actual = json.loads(iris_data_drift_profile.json())
     # we leave the actual content test to other tests for widgets
-    assert 'timestamp' in actual
-    assert len(actual) == 2
-    assert len(actual['data_drift']['data']) == 6
-    assert 'metrics' in actual['data_drift']['data']
+    _check_profile_high_level_fields(actual, expected_profiles=['data_drift'])
+    _check_profile_section_high_level_fields(actual['data_drift'])
+    data_drift_data = actual['data_drift']['data']
+    _check_columns_info_in_profile_section_data(data_drift_data)
+    assert len(data_drift_data) == 7
+    assert 'options' in data_drift_data
+    assert 'metrics' in data_drift_data
 
 
 def test_data_drift_categorical_target_drift_profile() -> None:
@@ -203,17 +234,23 @@ def test_data_drift_categorical_target_drift_profile() -> None:
     iris_frame['prediction'] = iris.target[::-1]
     iris_data_drift_profile = Profile(sections=[DataDriftProfileSection()])
     iris_data_drift_profile.calculate(iris_frame[:100], iris_frame[100:])
-    iris_target_and_data_drift_profile = Profile(
-        sections=[DataDriftProfileSection(), CatTargetDriftProfileSection()])
+    iris_target_and_data_drift_profile = Profile(sections=[DataDriftProfileSection(), CatTargetDriftProfileSection()])
     iris_target_and_data_drift_profile.calculate(iris_frame[:100], iris_frame[100:])
 
     actual = json.loads(iris_target_and_data_drift_profile.json())
     # we leave the actual content test to other tests for widgets
-    assert 'timestamp' in actual
-    assert len(actual) == 3
-    assert len(actual['data_drift']['data']) == 6
-    assert len(actual['cat_target_drift']['data']) == 5
-    assert actual['data_drift']['data'].get('metrics')
+    _check_profile_high_level_fields(actual, expected_profiles=['data_drift', 'cat_target_drift'])
+    _check_profile_section_high_level_fields(actual['data_drift'])
+    data_drift_data = actual['data_drift']['data']
+    # we have only 3 fields
+    assert len(data_drift_data) == 7
+    assert 'options' in data_drift_data
+    assert 'metrics' in data_drift_data
+
+    _check_profile_section_high_level_fields(actual['cat_target_drift'])
+    cat_target_drift_data = actual['cat_target_drift']['data']
+    assert len(cat_target_drift_data) == 6
+    assert 'metrics' in cat_target_drift_data
 
 
 def test_regression_performance_profile() -> None:
@@ -227,10 +264,11 @@ def test_regression_performance_profile() -> None:
 
     actual = json.loads(regression_single_model_performance.json())
     # we leave the actual content test to other tests for widgets
-    assert 'timestamp' in actual
-    assert len(actual) == 2
-    assert len(actual['regression_performance']['data']) == 5
-    assert actual['regression_performance']['data'].get('metrics')
+    _check_profile_high_level_fields(actual, expected_profiles=['regression_performance'])
+    _check_profile_section_high_level_fields(actual['regression_performance'])
+    regression_performance_data = actual['regression_performance']['data']
+    assert len(regression_performance_data) == 6
+    assert 'metrics' in regression_performance_data
 
 
 def test_regression_performance_single_frame_profile() -> None:
@@ -244,10 +282,11 @@ def test_regression_performance_single_frame_profile() -> None:
 
     actual = json.loads(regression_single_model_performance.json())
     # we leave the actual content test to other tests for widgets
-    assert 'timestamp' in actual
-    assert len(actual) == 2
-    assert len(actual['regression_performance']['data']) == 5
-    assert actual['regression_performance']['data'].get('metrics')
+    _check_profile_high_level_fields(actual, expected_profiles=['regression_performance'])
+    _check_profile_section_high_level_fields(actual['regression_performance'])
+    regression_performance_data = actual['regression_performance']['data']
+    assert len(regression_performance_data) == 6
+    assert 'metrics' in regression_performance_data
 
 
 def test_classification_performance_profile() -> None:
@@ -261,10 +300,11 @@ def test_classification_performance_profile() -> None:
 
     actual = json.loads(classification_performance_profile.json())
     # we leave the actual content test to other tests for widgets
-    assert 'timestamp' in actual
-    assert len(actual) == 2
-    assert len(actual['classification_performance']['data']) == 5
-    assert actual['classification_performance']['data'].get('metrics')
+    _check_profile_high_level_fields(actual, expected_profiles=['classification_performance'])
+    _check_profile_section_high_level_fields(actual['classification_performance'])
+    classification_performance_data = actual['classification_performance']['data']
+    assert len(classification_performance_data) == 6
+    assert 'metrics' in classification_performance_data
 
 
 def test_classification_performance_single_profile() -> None:
@@ -277,10 +317,11 @@ def test_classification_performance_single_profile() -> None:
 
     actual = json.loads(classification_performance_profile.json())
     # we leave the actual content test to other tests for widgets
-    assert 'timestamp' in actual
-    assert len(actual) == 2
-    assert len(actual['classification_performance']['data']) == 5
-    assert actual['classification_performance']['data'].get('metrics')
+    _check_profile_high_level_fields(actual, expected_profiles=['classification_performance'])
+    _check_profile_section_high_level_fields(actual['classification_performance'])
+    classification_performance_data = actual['classification_performance']['data']
+    assert len(classification_performance_data) == 6
+    assert 'metrics' in classification_performance_data
 
 
 def test_probabilistic_classification_performance_profile() -> None:
@@ -295,12 +336,15 @@ def test_probabilistic_classification_performance_profile() -> None:
 
     actual = json.loads(iris_prob_classification_profile.json())
     # we leave the actual content test to other tests for widgets
-    assert 'timestamp' in actual
-    assert len(actual) == 2
-    assert len(actual['probabilistic_classification_performance']['data']) == 6
-    assert len(actual['probabilistic_classification_performance']['data']['metrics']) == 2
-    assert 'reference' in actual['probabilistic_classification_performance']['data']['metrics']
-    assert 'current' in actual['probabilistic_classification_performance']['data']['metrics']
+    _check_profile_high_level_fields(actual, expected_profiles=['probabilistic_classification_performance'])
+    _check_profile_section_high_level_fields(actual['probabilistic_classification_performance'])
+    probabilistic_classification_performance_data = actual['probabilistic_classification_performance']['data']
+    assert len(probabilistic_classification_performance_data) == 7
+    assert 'options' in probabilistic_classification_performance_data
+    assert 'metrics' in probabilistic_classification_performance_data
+    assert len(probabilistic_classification_performance_data['metrics']) == 2
+    assert 'reference' in probabilistic_classification_performance_data['metrics']
+    assert 'current' in probabilistic_classification_performance_data['metrics']
 
 
 def test_probabilistic_classification_single_performance_profile() -> None:
@@ -309,14 +353,19 @@ def test_probabilistic_classification_single_performance_profile() -> None:
 
     iris_prob_classification_profile = Profile(sections=[ProbClassificationPerformanceProfileSection()])
     iris_prob_classification_profile.calculate(merged_reference, None, column_mapping)
+
     # FIXME: this does not work! why?
     # iris_prob_classification_profile.calculate(merged_reference[:100], None,
     #                                            column_mapping = iris_column_mapping)
 
     actual = json.loads(iris_prob_classification_profile.json())
     # we leave the actual content test to other tests for widgets
-    assert 'timestamp' in actual
-    assert len(actual) == 2
-    assert len(actual['probabilistic_classification_performance']['data']) == 6
-    assert len(actual['probabilistic_classification_performance']['data']['metrics']) == 1
-    assert 'reference' in actual['probabilistic_classification_performance']['data']['metrics']
+    _check_profile_high_level_fields(actual, expected_profiles=['probabilistic_classification_performance'])
+    _check_profile_section_high_level_fields(actual['probabilistic_classification_performance'])
+    probabilistic_classification_performance_data = actual['probabilistic_classification_performance']['data']
+    assert len(probabilistic_classification_performance_data) == 7
+    assert 'options' in probabilistic_classification_performance_data
+    assert 'metrics' in probabilistic_classification_performance_data
+    assert len(probabilistic_classification_performance_data['metrics']) == 1
+    assert 'reference' in probabilistic_classification_performance_data['metrics']
+    assert 'current' not in probabilistic_classification_performance_data

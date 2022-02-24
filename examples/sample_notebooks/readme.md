@@ -12,6 +12,7 @@ Classification Performance (Multiclass) | [link](classification_performance_mult
 Probabilistic Classification Performance (Multiclass) | [link](probabilistic_classification_performance_multiclass_iris.ipynb) | [link](https://colab.research.google.com/drive/1UkFaBqOzBseB_UqisvNbsh9hX5w3dpYS) | Iris plants sklearn.datasets 
 Classification Performance (Binary) | [link](classification_performance_breast_cancer.ipynb) | [link](https://colab.research.google.com/drive/1b2kTLUIVJkKJybYeD3ZjpaREr_9dDTpz) | Breast cancer sklearn.datasets
 Probabilistic Classification Performance (Binary) | [link](probabilistic_classification_performance_breast_cancer.ipynb) | [link](https://colab.research.google.com/drive/1sE2H4mFSgtNe34JZMAeC3eLntid6oe1g) | Breast cancer sklearn.datasets
+Data Quality | [link](data_quality_bike_sharing_demand.ipynb) | [link](https://colab.research.google.com/drive/1XDxs4k2wNHU9Xbxb9WI2rOgMkZFavyRd) | Bike sharing UCI: [link](https://archive.ics.uci.edu/ml/datasets/bike+sharing+dataset)
 
 To learn how to adjust evidently as you need, refer to the [how-to questions](../how_to_questions/).
 
