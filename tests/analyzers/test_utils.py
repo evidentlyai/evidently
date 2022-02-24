@@ -46,6 +46,7 @@ from evidently.pipeline.column_mapping import ColumnMapping
                 ),
                 num_feature_names=["num_feature_1", "num_feature_2"],
                 cat_feature_names=["cat_feature_1", "cat_feature_2", "cat_feature_3", "cat_feature_4"],
+                datetime_feature_names=[],
                 target_names=["apple", "lemon", "peach"],
             ),
         ),
@@ -68,6 +69,7 @@ from evidently.pipeline.column_mapping import ColumnMapping
                 ),
                 num_feature_names=[],
                 cat_feature_names=["cat_feature_1"],
+                datetime_feature_names=[],
                 target_names=None,
             ),
         ),
@@ -138,6 +140,7 @@ def test_process_columns(
             {
                 "cat_feature_names": [],
                 "num_feature_names": [],
+                "datetime_feature_names": [],
                 "target_names": None,
                 "utility_columns": {
                     "date": None,

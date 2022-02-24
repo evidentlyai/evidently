@@ -124,12 +124,14 @@ def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping) -> Dat
         num_feature_names = dataset[num_feature_names].select_dtypes([np.number]).columns.tolist()
 
     if datetime_feature_names is None:
-        datetime_feature_names = sorted(list(set(dataset.select_dtypes(['datetime']).columns) - utility_columns_set))
+        datetime_feature_names = sorted(list(set(dataset.select_dtypes(["datetime"]).columns) - utility_columns_set))
 
     cat_feature_names = column_mapping.categorical_features
 
     if cat_feature_names is None:
-        cat_feature_names = sorted(list(set(dataset.select_dtypes(exclude=[np.number, "datetime"]).columns) - utility_columns_set))
+        cat_feature_names = sorted(
+            list(set(dataset.select_dtypes(exclude=[np.number, "datetime"]).columns) - utility_columns_set)
+        )
 
     else:
         cat_feature_names = dataset[cat_feature_names].columns.tolist()
