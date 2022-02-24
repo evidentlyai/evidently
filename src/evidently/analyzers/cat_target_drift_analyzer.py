@@ -112,7 +112,7 @@ class CatTargetDriftAnalyzer(Analyzer):
             raise ValueError("prediction should not be a sequence")
 
         result = CatTargetDriftAnalyzerResults(
-            columns=columns, reference_data_count=reference_data.shape[0], current_data_count=reference_data.shape[0]
+            columns=columns, reference_data_count=reference_data.shape[0], current_data_count=current_data.shape[0]
         )
 
         # consider replacing only values in target and prediction column, see comment above
