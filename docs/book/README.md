@@ -27,11 +27,11 @@ Evidently generates interactive HTML reports from `pandas.DataFrame` or `csv` fi
 
 Each report covers a certain aspect of the model performance. You can display reports as `Dashboard` objects in Jupyter notebook or Colab or export as an HTML file.
 
-Evidently currently works with **tabular data**. 6 reports are available. You can combine, customize the reports or contribute your own report. 
+Evidently currently works with **tabular data**. 7 reports are available. You can combine, customize the reports or contribute your own report. 
 
 ## Data Drift and Quality
 
-[Data Drift](reports/data-drift.md): detects changes in feature distribution. Data quality: provides the feature overview.
+[Data Drift](reports/data-drift.md): detects changes in feature distribution. [Data Quality](reports/data-quality.md): provides the feature overview.
 
 ![Data Drift](../images/01\_data\_drift.png) ![Data Quality](../images/07\_data\_quality.png)
 
