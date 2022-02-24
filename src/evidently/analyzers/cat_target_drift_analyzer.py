@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
+from typing import Callable
 from typing import Optional
 from typing import Sequence
 
@@ -21,20 +22,29 @@ def _remove_nans_and_infinities(dataframe):
     #   somebody wants to compute number of nans, the results will be 0.
     #   Consider return copies of dataframes, even though it will drain memory for large datasets
     dataframe.replace([np.inf, -np.inf], np.nan, inplace=True)
-    dataframe.dropna(axis=0, how='any', inplace=True)
+    dataframe.dropna(axis=0, how="any", inplace=True)
     return dataframe
 
 
-def _compute_statistic(reference_data, current_data, column_name, statistic_fun):
-    labels = set(reference_data[column_name]) | set(current_data[column_name])
+def _compute_statistic(
+    reference_data: pd.DataFrame, current_data: pd.DataFrame, column_name: str, statistic_fun: Callable
+):
     if not statistic_fun:
-        statistic_fun = chi_stat_test if len(labels) > 2 else z_stat_test
+        labels = set(reference_data[column_name]) | set(current_data[column_name])
+
+        if len(labels) > 2:
+            statistic_fun = chi_stat_test
+
+        else:
+            statistic_fun = z_stat_test
+
     return statistic_fun(reference_data[column_name], current_data[column_name])
 
 
 @dataclass
 class DataDriftMetrics:
     """Class for drift values"""
+
     column_name: str
     drift: float
 
@@ -42,6 +52,7 @@ class DataDriftMetrics:
 @dataclass
 class CatTargetDriftAnalyzerResults(BaseAnalyzerResult):
     """Class for all results of category target drift calculations"""
+
     target_metrics: Optional[DataDriftMetrics] = None
     prediction_metrics: Optional[DataDriftMetrics] = None
     reference_data_count: int = 0
@@ -61,10 +72,9 @@ class CatTargetDriftAnalyzer(Analyzer):
     def get_results(analyzer_results) -> CatTargetDriftAnalyzerResults:
         return analyzer_results[CatTargetDriftAnalyzer]
 
-    def calculate(self,
-                  reference_data: pd.DataFrame,
-                  current_data: Optional[pd.DataFrame],
-                  column_mapping: ColumnMapping) -> CatTargetDriftAnalyzerResults:
+    def calculate(
+        self, reference_data: pd.DataFrame, current_data: Optional[pd.DataFrame], column_mapping: ColumnMapping
+    ) -> CatTargetDriftAnalyzerResults:
         """Calculate the target and prediction drifts.
 
         With default options, uses a chi² test when number of labels is greater than 2.
@@ -95,10 +105,10 @@ class CatTargetDriftAnalyzer(Analyzer):
             columns or both. The `*_drift` column in `metrics` contains a computed p_value from tests.
         """
         if reference_data is None:
-            raise ValueError('reference_data should be present')
+            raise ValueError("reference_data should be present")
 
         if current_data is None:
-            raise ValueError('current_data should be present')
+            raise ValueError("current_data should be present")
 
         options = self.options_provider.get(DataDriftOptions)
         columns = process_columns(reference_data, column_mapping)
@@ -124,17 +134,11 @@ class CatTargetDriftAnalyzer(Analyzer):
         # target drift
         if target_column is not None:
             p_value = _compute_statistic(reference_data, current_data, target_column, stattest_func)
-            result.target_metrics = DataDriftMetrics(
-                column_name=target_column,
-                drift=p_value
-            )
+            result.target_metrics = DataDriftMetrics(column_name=target_column, drift=p_value)
 
         # prediction drift
         if prediction_column is not None:
             p_value = _compute_statistic(reference_data, current_data, prediction_column, stattest_func)
-            result.prediction_metrics = DataDriftMetrics(
-                column_name=prediction_column,
-                drift=p_value
-            )
+            result.prediction_metrics = DataDriftMetrics(column_name=prediction_column, drift=p_value)
 
         return result
