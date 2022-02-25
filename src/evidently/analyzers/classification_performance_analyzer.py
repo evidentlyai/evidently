@@ -25,8 +25,9 @@ class ConfusionMatrix:
 
 
 @dataclass
-class PerformanceMetrics:
-    """Class for performance metrics values"""
+class ClassificationPerformanceMetrics:
+    """Class for classification performance metrics values"""
+
     accuracy: float
     precision: float
     recall: float
@@ -38,28 +39,28 @@ class PerformanceMetrics:
 
 @dataclass
 class ClassificationPerformanceAnalyzerResults(BaseAnalyzerResult):
-    reference_metrics: Optional[PerformanceMetrics] = None
-    current_metrics: Optional[PerformanceMetrics] = None
+    reference_metrics: Optional[ClassificationPerformanceMetrics] = None
+    current_metrics: Optional[ClassificationPerformanceMetrics] = None
 
 
 def _calculate_performance_metrics(
-        *, data: pd.DataFrame, target_column: Union[str, Sequence[str]], prediction_column: Union[str, Sequence[str]], target_names: Optional[List[str]]
-) -> PerformanceMetrics:
+    *,
+    data: pd.DataFrame,
+    target_column: Union[str, Sequence[str]],
+    prediction_column: Union[str, Sequence[str]],
+    target_names: Optional[List[str]],
+) -> ClassificationPerformanceMetrics:
     # remove all rows with infinite and NaN values from the dataset
     data.replace([np.inf, -np.inf], np.nan, inplace=True)
-    data.dropna(axis=0, how='any', inplace=True)
+    data.dropna(axis=0, how="any", inplace=True)
 
-    # calculate quality metrics
-    accuracy_score = metrics.accuracy_score(data[target_column], data[prediction_column])
-    avg_precision = metrics.precision_score(data[target_column], data[prediction_column], average='macro')
-    avg_recall = metrics.recall_score(data[target_column], data[prediction_column], average='macro')
-    avg_f1 = metrics.f1_score(data[target_column], data[prediction_column], average='macro')
-
-    # calculate class support and metrics matrix
-    metrics_matrix = metrics.classification_report(
-        data[target_column],
-        data[prediction_column],
-        output_dict=True)
+    # calculate metrics matrix
+    metrics_matrix = metrics.classification_report(data[target_column], data[prediction_column], output_dict=True)
+    # get quality metrics from the metrics matrix, do not calculate them again
+    accuracy_score = metrics_matrix["accuracy"]
+    avg_precision = metrics_matrix["macro avg"]["precision"]
+    avg_recall = metrics_matrix["macro avg"]["recall"]
+    avg_f1 = metrics_matrix["macro avg"]["f1-score"]
 
     # calculate confusion matrix
     confusion_matrix = metrics.confusion_matrix(data[target_column], data[prediction_column])
@@ -67,14 +68,14 @@ def _calculate_performance_metrics(
     labels = target_names if target_names else sorted(set(data[target_column]) | set(data[prediction_column]))
     confusion_by_classes = calculate_confusion_by_classes(confusion_matrix, labels)
 
-    return PerformanceMetrics(
+    return ClassificationPerformanceMetrics(
         accuracy=accuracy_score,
         precision=avg_precision,
         recall=avg_recall,
         f1=avg_f1,
         metrics_matrix=metrics_matrix,
         confusion_matrix=ConfusionMatrix(labels=labels, values=confusion_matrix.tolist()),
-        confusion_by_classes=confusion_by_classes
+        confusion_by_classes=confusion_by_classes,
     )
 
 
@@ -83,12 +84,11 @@ class ClassificationPerformanceAnalyzer(Analyzer):
     def get_results(analyzer_results) -> ClassificationPerformanceAnalyzerResults:
         return analyzer_results[ClassificationPerformanceAnalyzer]
 
-    def calculate(self,
-                  reference_data: pd.DataFrame,
-                  current_data: Optional[pd.DataFrame],
-                  column_mapping: ColumnMapping) -> ClassificationPerformanceAnalyzerResults:
+    def calculate(
+        self, reference_data: pd.DataFrame, current_data: Optional[pd.DataFrame], column_mapping: ColumnMapping
+    ) -> ClassificationPerformanceAnalyzerResults:
         if reference_data is None:
-            raise ValueError('reference_data should be present')
+            raise ValueError("reference_data should be present")
 
         columns = process_columns(reference_data, column_mapping)
         result = ClassificationPerformanceAnalyzerResults(columns=columns)
@@ -101,7 +101,7 @@ class ClassificationPerformanceAnalyzer(Analyzer):
                 data=reference_data,
                 target_column=target_column,
                 prediction_column=prediction_column,
-                target_names=target_names
+                target_names=target_names,
             )
 
             if current_data is not None:
@@ -109,7 +109,7 @@ class ClassificationPerformanceAnalyzer(Analyzer):
                     data=current_data,
                     target_column=target_column,
                     prediction_column=prediction_column,
-                    target_names=target_names
+                    target_names=target_names,
                 )
 
         return result
