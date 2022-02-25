@@ -19,8 +19,10 @@ class ModelMonitoringMetric:
         if len(_labels) == 0 and len(self.labels) == 0:
             return self, value, None
         if set(_labels.keys()) != set(self.labels):
-            raise ValueError(f"Trying to create metric with"
-                             f" incorrect labels got {set(_labels.keys())} expected {set(self.labels)}")
+            raise ValueError(
+                f"Trying to create metric with"
+                f" incorrect labels got {set(_labels.keys())} expected {set(self.labels)}"
+            )
         return self, value, _labels
 
 
@@ -28,11 +30,13 @@ MetricsType = Tuple[ModelMonitoringMetric, float, Optional[Dict[str, str]]]
 
 
 class ModelMonitor(PipelineStage):
-    def calculate(self,
-                  reference_data: pandas.DataFrame,
-                  current_data: pandas.DataFrame,
-                  column_mapping: ColumnMapping,
-                  analyzers_results: Dict[Type[Analyzer], Any]):
+    def calculate(
+        self,
+        reference_data: pandas.DataFrame,
+        current_data: pandas.DataFrame,
+        column_mapping: ColumnMapping,
+        analyzers_results: Dict[Type[Analyzer], Any],
+    ):
         pass
 
     @abc.abstractmethod

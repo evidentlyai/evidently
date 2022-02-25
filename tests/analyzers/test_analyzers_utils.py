@@ -14,6 +14,7 @@ from evidently.pipeline.column_mapping import ColumnMapping
             {
                 'cat_feature_names': [],
                 'num_feature_names': ['missed_all'],
+                'datetime_feature_names': [],
                 'target_names': None,
                 'utility_columns': {
                     'date': None,
@@ -29,6 +30,7 @@ from evidently.pipeline.column_mapping import ColumnMapping
             {
                 'cat_feature_names': [],
                 'num_feature_names': [],
+                'datetime_feature_names': [],
                 'target_names': None,
                 'utility_columns': {
                     'date': None,
@@ -44,6 +46,7 @@ from evidently.pipeline.column_mapping import ColumnMapping
             {
                 'cat_feature_names': [],
                 'num_feature_names': [],
+                'datetime_feature_names': [],
                 'target_names': None,
                 'utility_columns': {
                     'date': None,
@@ -61,6 +64,7 @@ from evidently.pipeline.column_mapping import ColumnMapping
             {
                 'cat_feature_names': [],
                 'num_feature_names': [],
+                'datetime_feature_names': [],
                 'target_names': None,
                 'utility_columns': {
                     'date': None,
@@ -79,6 +83,7 @@ from evidently.pipeline.column_mapping import ColumnMapping
             {
                 'cat_feature_names': ['target', 'cat_1'],
                 'num_feature_names': ['num_1'],
+                'datetime_feature_names': [],
                 'target_names': None,
                 'utility_columns': {
                     'date': 'my_date',

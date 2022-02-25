@@ -1,49 +1,102 @@
-## Real-time ML monitoring with Evidently and Grafana
+# Real-time ML monitoring with Evidently and Grafana
 
-This example shows how to run a real-time Grafana dashboard to monitor Data Drift. You can adapt this example to your production use case by replacing the data source for your production service data. 
+This example shows how to get real-time Grafana dashboards for monitoring data and model metrics with Evidently. 
 
-### How to run an example
+## What's inside
 
-In this example we use: 
-* Bike Sharing Demand dataset to build a regression model
-* Evidently to calculate the Data Drift metrics 
-* Prometheus to store the metrics
-* Grafana to build the Data Drift Dashboard
+We use two toy datasets and treat them as model application logs. Then, we configure Evidently `Monitors` to read the data from the logs at a certain interval (to simulate production service where data appears sequentually). Evidently calculates the metrics for Data Drift, Regression Performance and Classification Performance and sends them to Prometheus. The metrics are displayed on a pre-built Grafana dashboard.
 
-**Follow the instructions below to run the example**:
+Here is the one for Data Drift. Two more inside!
 
-1. Clone the evidently repo using ```git clone git@github.com:evidentlyai/evidently.git``` command. 
+![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/docs/images/evidently_data_drift_grafana_dashboard_top.png)
 
-*Make sure you have evidently version v0.1.27.dev0 or above.* 
+You can reproduce the example locally following the instructions below and choose one or more dashboards.
 
-2. Prepare the datasets:
-- Go the example directory. In terminal, run the command ```cd evidently/examples/integrations/grafana_monitoring_service/``` 
-- Run the python script ```prepare_datasets.py``` from the example directory (examples/integrations/grafana_monitoring_service) to prepare the datasets: ```python prepare_datasets.py``` 
-- After the script is executed successfully, the two files should appear at the example directory: ```reference.csv``` and ```production.csv```.
+You can also adapt this example to your purposes by replacing the data source and the service settings. 
 
-*If you work in an empty environment, make sure you have the following Python packages installed: Sklearn, Numpy, Pandas, Requests.
-You can install these packages using command ```pip install sklearn, numpy, pandas, requests```.*
+## How to run an example
 
-3. Run the docker image from the example directory (examples/integrations/grafana_monitoring_service):```docker compose up``` . 
+In this example, we use: 
+* `Bike Sharing Demand` dataset for regression cases
+* `kddcup99` dataset for classification cases
+* `Evidently` library for the metrics calculations
+* `Prometheus` to store the metrics
+* `Grafana` to build the dashboards
+* `Docker` to rule them all
 
-This will install Evidently package, Prometheus and Grafana. The three services will be running at your system: Evidently service at port 5000, Prometheus at port 9090, Grafana at port 3000.
+Follow the instructions below to run the example:
 
-- To access Prometheus web interface, go to your browser and open: localhost:9090
-- To access Grafana web interface, go to your browser and open: localhost:3000 
+1. **Install Docker** if haven't used it before. 
 
-There will be no data in the database and dashboard until you run the service, which is the next step.
+2. **Create a new Python virtual environment and activate it**
 
-4. Run the python script ```example_run_request.py``` to initiate the process of sending data to the evidently service: ```python example_run_request.py```
+3. **Get the `evidently` code example**:
+ ```bash
+git clone git@github.com:evidentlyai/evidently.git
+```
 
-In this example each prediction is made with 10 seconds timeout. This is why at the very beginning no data will show at Grafana dashboard. It will start to appear in less than a minute.
+4. **Prepare the datasets**. You can choose which example you want to run at this step.
 
-5. Go to the browser and access the Grafana dashboard at localhost:3000. At first, you will be asked for login and password. Both are “admin”. 
+- Go to the example directory:
+```bash
+cd evidently/examples/integrations/grafana_monitoring_service/
+```
+- install dependencies for the data preparation script
+```bash
+pip install -r requirements.txt
+```
+- Run the data preparation script `prepare_datasets.py` from the example directory 
+  - specify a dataset name with `--dataset` or `-d` option  
+  - use `bike` if you want to get data for `data_drift` and `regression_performance`
+  - use `kddcup99` if you want to get data for `classification_performance`
+  - the script will use `bike` as a default
+```
+prepare_datasets.py --dataset kddcup99
+```
+- After the script is executed successfully, the three files should appear in the directory: 
+  - `config.yaml` - a config for the metrics service
+  - `reference.csv` - a file with reference data
+  - `production.csv` - a file with current or production data that we will send to the service later
+The data is ready.
 
-6. To stop the execution, run ```docker compose down``` command.
+5. **Then run the docker image from the example directory**:
+```bash
+docker compose up -d
+```
 
-### How to customize the Grafana Dashboard view 
+This will run three services: Prometheus, Grafana, and the monitoring service.
 
-The Grafana Dashboard view is determined by the JSON config. In our example, the config for a Data Drift Dashboard is stored in the examples/integrations/grafana_monitoring_service folder: https://github.com/evidentlyai/evidently/blob/main/examples/integrations/grafana_monitoring_service/dashboards/data_drift.json
+The services will be available in your system: 
+  - Evidently monitoring service at port 5000
+  - Prometheus at port 9090. To access Prometheus web interface, go to your browser and open: http://localhost:9090/
+  - Grafana at port 3000. To access Grafana web interface, go to your browser and open: http://localhost:3000/
+ 
+There will be no data in the database and dashboard until you start to send a production data.
+
+Let's do it is the next step.
+
+6. **Start sending the data to the service**.  
+ 
+Run the python script `example_run_request.py` to initiate the process of sending a data to the evidently service:
+```bash
+python example_run_request.py
+```
+
+In this example each row is sent with 10 seconds timeout. This is why at the very beginning no data will show at Grafana dashboard. It will start to appear in less than a minute.
+
+7. **Explore the dashboard**.
+ 
+Go to the browser and access the Grafana dashboard at http://localhost:3000. At first, you will be asked for login and password. Both are `admin`. 
+
+8. **Stop the example**.
+
+To stop the execution, run ```docker compose down``` command.
+
+## How to customize the Grafana Dashboard view 
+
+We rely on **existing Grafana functionality** to visualize the metrics. We pre-built several dashboards to organize how metrics are displayed. You can use them as a starting point for Data Drift, Classification Performance or Regression Performance monitoring. 
+
+The Grafana Dashboard view is determined by the JSON config. In our example, each config is stored in the examples/integrations/grafana_monitoring_service folder. For example, here is the one for the Data Drift Dashboard: https://github.com/evidentlyai/evidently/blob/main/examples/integrations/grafana_monitoring_service/dashboards/data_drift.json
 
 If you want to continue using the same source data and metrics, but **change the way the plots are displayed** in the Garafana interface, take the following steps:
 
@@ -52,31 +105,44 @@ If you want to continue using the same source data and metrics, but **change the
 3. Customize the visuals in the Grafana interface. 
 4. Apply your changes to the Dashboard and check that you like what you see :)
 5. Click the button "save" from the Grafana Top Menu. This will open a dialog window. Select the option "Download JSON" to save the configurations in the JSON file.
-6. Replace the initial configiration file (data_drift.JSON) with the newly generated one.
+6. Replace the initial configiration file (for example, data_drift.JSON) with the newly generated one.
 
-You can refer to the Grafana documentation to learn more about UI customization.  
+You can refer to the [Grafana documentation](https://grafana.com/docs/grafana/latest/dashboards/) to learn more about UI customization.  
 
-### How to customize metrics displayed in the Grafana Dashboard 
+## How to customize which metrics are displayed in the Grafana Dashboard 
 
 To **remove some metrics** from the Dashboard, you can simply do that from the Grafana interface following the steps above. 
 
 To **add, or change** the way metrics are calculated (for example, use a different statistical test), you need to change the code.
 
-To calculate the metrics we use Evidently ```Analyzers```: https://github.com/evidentlyai/evidently/tree/main/src/evidently/analyzers 
+We rely on the **core Evidently functionality** to define which metrics are calculated and how. If you want to modify the metrics, there are two components you might need to change: Analyzers and Monitors. 
+
+To calculate the metrics and statistical tests, we use Evidently ```Analyzers```: https://github.com/evidentlyai/evidently/tree/main/src/evidently/analyzers 
 
 For example, we use the ```DataDriftAnalyzer``` to calculate the Data Drift metrics: https://github.com/evidentlyai/evidently/blob/main/src/evidently/analyzers/data_drift_analyzer.py
+
+There are corresponding Analyzers for other report types. Analyzers are shared components used across all Evidently interfaces. Depending on the report type, they might include a larger set of metrics than displayed on a Grafana dashboard. 
+
+To define which exact metrics are computed during Monitoring and logged to Prometheus, we use Evidently ```Monitors```: https://github.com/evidentlyai/evidently/blob/main/src/evidently/model_monitoring/monitors/
+ 
+For example, we use the ```DataDriftMonitor``` to define the Data Drift metrics collected from the live service: 
+https://github.com/evidentlyai/evidently/blob/main/src/evidently/model_monitoring/monitors/data_drift.py
 
 If you want to add or customize metrics, you need to check the implemendation of the corresponding ```Analyzer``` and ```Monitor```:
 - If the statistic you need **is calculated** in the Analyzer, but **not used** in Monitor, you can add it there by updating the Monitor code
 - If the statistic you need **is not calculated** in the Analyzer, than you should first add the metric to the Analyzer and than to Monitor
 
-For example, to add something to the Data Drift Dashboard: 
+For example, to add something to the Data Drift monitoring dashboard: 
 - Check if the metric you need is calculated in the ```DataDriftAnalyzer```: https://github.com/evidentlyai/evidently/blob/main/src/evidently/analyzers/data_drift_analyzer.py
 - If the metric is not implemented in ```Analyzer```, update the analyzer code and add this metric to the ```result``` dictionary
 - Update the ```metric``` method in ```DataDriftMonitor``` in order to yield the new metric 
 - Visit the Grafana web interface and create a visual Dashboard for a new metric
 
-### How to adapt the example to work with your ML service
+## How to adapt the example to work with your ML service
+
+If you want to adapt this example to use with your ML service, you will need two more things:
+- **Change the data source** for your live production data and reference data. For demo purposes, in this example we read the current data from the file. In production use, we suggest to POST the data directly from the ML service to the Evidently service. 
+- **Configure Evidently monitoring parameters**. See the instructions below.
 
 To adapt the example for a custom ML service, we recommend to copy the ```grafana_monitoring_service``` folder and rename it. 
 Then, take the following steps in the newly created directory:
@@ -86,12 +152,12 @@ Then, take the following steps in the newly created directory:
 * ```column_mapping``` -  the information about the target, prediction names, lists of the numerical and categorical features. The format is similar to the column_mapping we use to calculate ```evidently``` interactive dashboards and profiles;
 * ```service```:
   * **reference_path** - path to the reference dataset
-  * **use_reference** - define if to use the provided reference dataset ("true") or collect the reference from the production data stream ("false"). Currently only ```true``` option is avaliable.
+  * **use_reference** - define if to use the provided reference dataset ("true") or collect the reference from the production data stream ("false"). Currently, only ```true``` option is available.
   * **min_reference_size** - the minimal number of objects in the reference dataset to start calculating the monitoring metrics. If the reference dataset is provided externally, but has less objects than defined, the required number of objects will be collected from the production data and added to the reference.  
-  * **moving_reference** - define if to move the reference in time during metrics calculation. Currently only ```false``` option is avaliable.
+  * **moving_reference** - define if to move the reference in time during metrics calculation. Currently, only ```false``` option is available.
   * **window_size** - the number of the new objects in the current production data stream required to calculate the new monitoring metrics.
   * **calculation_period_sec** - how often the monitoring service will check for the new values of monitoring metrics.
-  * **monitors** - the number of monitors to use. Currently only the ["data_drift"] option is avaliable.
+  * **monitors** - the list of monitors to use. Currently, 6 monitors are is available: Data Drift, Categorical Target Drift, Numerical Target Drift, Regression Performance, Classification Performance, Probabilistic Classification Performance https://github.com/evidentlyai/evidently/blob/main/src/evidently/model_monitoring/monitors/
 
 2. Place the ```reference.csv``` inside the project folder (```grafana_monitoring_service``` in the initial example)
 
@@ -99,3 +165,4 @@ Then, take the following steps in the newly created directory:
 
 3.2 (option 2) If you do have a live service, then you should update the ```app.py``` script to make it use your service instead of the toy example. Update the ```iterate()``` method from ```@app.route('/iterate', methods=["POST"])``` to send the data from your service to the monitoring.
 
+**Note**: the monitoring functionality is in active development and subject to API change. If you integrate Evidently Monitoring in your production pipeline, we suggest explicitly specifying the Evidently package version. Feel free to ping us on [Discord](https://discord.com/invite/xZjKRaNp8b) if you face any issues, and we'll help to figure them out.

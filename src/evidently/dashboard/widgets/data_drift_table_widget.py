@@ -10,7 +10,7 @@ import plotly.graph_objs as go
 
 from evidently import ColumnMapping
 from evidently.analyzers.data_drift_analyzer import DataDriftAnalyzer, DataDriftAnalyzerFeatureMetrics
-from evidently.model.widget import BaseWidgetInfo, AlertStats, AdditionalGraphInfo
+from evidently.model.widget import BaseWidgetInfo, AdditionalGraphInfo
 from evidently.dashboard.widgets.widget import Widget, GREY, RED
 from evidently.dashboard.widgets.utils import CutQuantileTransformer
 from evidently.options import DataDriftOptions, QualityMetricsOptions
@@ -312,7 +312,6 @@ class DataDriftTableWidget(Widget):
             title=title_prefix + title_suffix,
             type="big_table",
             details="",
-            alertStats=AlertStats(),
             alerts=[],
             alertsPosition="row",
             insights=[],

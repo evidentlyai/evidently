@@ -6,7 +6,7 @@ from typing import Optional
 import pandas as pd
 
 from evidently import ColumnMapping
-from evidently.model.widget import BaseWidgetInfo, AlertStats
+from evidently.model.widget import BaseWidgetInfo
 from evidently.dashboard.widgets.widget import Widget
 
 
@@ -30,8 +30,8 @@ class BarWidget(Widget):
                             "color": "#ed0400"
                         },
                         "type": "bar",
-                        "x": reference_data[0].tolist(),
-                        "y": reference_data[1].tolist()
+                        "x": [1, 2, 3, 4, 5],
+                        "y": [2, 5, 3, 1, 2],
                     }
                 ],
                 "layout": {
@@ -153,7 +153,9 @@ class BarWidget(Widget):
                                     "type": "contourcarpet"
                                 }
                             ],
-                            "heatmap": [
+                            "heatma"
+                            ""
+                            "p": [
                                 {
                                     "colorbar": {
                                         "outlinewidth": 0,
@@ -846,10 +848,6 @@ class BarWidget(Widget):
                         }
                     },
                     "yaxis": {
-                        "range": [
-                            -1,
-                            1
-                        ],
                         "showticklabels": True,
                         "title": {
                             "text": "Correlation"
@@ -861,6 +859,5 @@ class BarWidget(Widget):
             insights=[],
             details="",
             alertsPosition="row",
-            alertStats=AlertStats(),
             additionalGraphs=[],
         )

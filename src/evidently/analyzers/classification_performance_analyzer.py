@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
+from typing import Dict
 from typing import List
 from typing import Optional
-from typing import Dict
+from typing import Sequence
+from typing import Union
 
 import pandas as pd
 import numpy as np
@@ -13,6 +15,7 @@ from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.analyzers.base_analyzer import BaseAnalyzerResult
 from evidently.analyzers.utils import process_columns
+from evidently.analyzers.utils import calculate_confusion_by_classes
 
 
 @dataclass
@@ -40,39 +43,29 @@ class ClassificationPerformanceAnalyzerResults(BaseAnalyzerResult):
 
 
 def _calculate_performance_metrics(
-        *, data: pd.DataFrame, target_column: str, prediction_column: str, target_names: List[str]
+        *, data: pd.DataFrame, target_column: Union[str, Sequence[str]], prediction_column: Union[str, Sequence[str]], target_names: Optional[List[str]]
 ) -> PerformanceMetrics:
     # remove all rows with infinite and NaN values from the dataset
     data.replace([np.inf, -np.inf], np.nan, inplace=True)
     data.dropna(axis=0, how='any', inplace=True)
 
-    # calculate metrics matrix
-    metrics_matrix = metrics.classification_report(data[target_column], data[prediction_column], output_dict=True)
-    # get quality metrics from the metrics matrix, do not calculate them again
-    accuracy_score = metrics_matrix['accuracy']
-    avg_precision = metrics_matrix['macro avg']['precision']
-    avg_recall = metrics_matrix['macro avg']['recall']
-    avg_f1 = metrics_matrix['macro avg']['f1-score']
+    # calculate quality metrics
+    accuracy_score = metrics.accuracy_score(data[target_column], data[prediction_column])
+    avg_precision = metrics.precision_score(data[target_column], data[prediction_column], average='macro')
+    avg_recall = metrics.recall_score(data[target_column], data[prediction_column], average='macro')
+    avg_f1 = metrics.f1_score(data[target_column], data[prediction_column], average='macro')
+
+    # calculate class support and metrics matrix
+    metrics_matrix = metrics.classification_report(
+        data[target_column],
+        data[prediction_column],
+        output_dict=True)
 
     # calculate confusion matrix
     confusion_matrix = metrics.confusion_matrix(data[target_column], data[prediction_column])
     # get labels from data mapping or get all values kinds from target and prediction columns
     labels = target_names if target_names else sorted(set(data[target_column]) | set(data[prediction_column]))
-
-    # get TP, FP, TN, FN metrics for each class
-    false_positive = confusion_matrix.sum(axis=0) - np.diag(confusion_matrix)
-    false_negative = confusion_matrix.sum(axis=1) - np.diag(confusion_matrix)
-    true_positive = np.diag(confusion_matrix)
-    true_negative = confusion_matrix.sum() - (false_positive + false_negative + true_positive)
-    confusion_by_classes = {}
-
-    for idx, class_name in enumerate(labels):
-        confusion_by_classes[str(class_name)] = {
-            'tp': true_positive[idx],
-            'tn': true_negative[idx],
-            'fp': false_positive[idx],
-            'fn': false_negative[idx],
-        }
+    confusion_by_classes = calculate_confusion_by_classes(confusion_matrix, labels)
 
     return PerformanceMetrics(
         accuracy=accuracy_score,
