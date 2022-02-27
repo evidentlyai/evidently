@@ -74,6 +74,12 @@ export interface WidgetGroupParams
     widgets: WidgetInfo[];
 }
 
+export interface WidgetListParams
+{
+    widgets: WidgetInfo[];
+    pageSize: number;
+}
+
 export enum WidgetSize
 {
     Small,
@@ -148,7 +154,7 @@ export interface Metric {
     values: (string | number)[];
 }
 
-export interface ExpandableListWidgetParams {
+export interface RichDataParams {
     header: string;
     description: string;
     metrics: Metric[];
@@ -169,7 +175,7 @@ export interface WidgetInfo {
         | WidgetGroupParams
         | MultiTabGraphWidgetParams
         | BigTableWidgetParams
-        | ExpandableListWidgetParams
+        | RichDataParams
     ;
     alertsPosition?: "row" | "column";
     alertStats?: AlertStats;

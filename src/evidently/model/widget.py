@@ -65,7 +65,7 @@ class BaseWidgetInfo:
     alerts: Iterable[Alert] = ()
     tabs: Iterable["TabInfo"] = ()
     widgets: Iterable["BaseWidgetInfo"] = ()
-
+    pageSize: int = 5
 
 @dataclass
 class TabInfo:

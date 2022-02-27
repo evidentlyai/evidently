@@ -25,7 +25,7 @@ class ExpandableListWidget(Widget):
         fig_dict = fig.to_dict()
 
         wi = BaseWidgetInfo(
-            type="expandable_list",
+            type="rich_data",
             title="",
             size=2,
             params={
@@ -67,6 +67,7 @@ class ExpandableListWidget(Widget):
         return BaseWidgetInfo(
             title="",
             size=2,
-            type="group",
-            widgets=[wi, wi]
+            type="list",
+            widgets=[wi, wi, wi, wi, wi, wi, wi],
+            pageSize=2,
         )

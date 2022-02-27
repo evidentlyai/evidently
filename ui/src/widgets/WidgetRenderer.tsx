@@ -3,11 +3,14 @@ import React from "react";
 import {
     BigGraphWidgetParams,
     BigTableWidgetParams,
-    CounterWidgetParams, ExpandableListWidgetParams,
-    MultiTabGraphWidgetParams, MultiTabWidgetParams,
+    CounterWidgetParams,
+    RichDataParams,
+    MultiTabGraphWidgetParams,
+    MultiTabWidgetParams,
     PercentWidgetParams,
     TableWidgetParams,
     WidgetGroupParams,
+    WidgetListParams,
     WidgetInfo,
     WidgetSize
 } from "../api/Api";
@@ -21,7 +24,8 @@ import TabbedGraphWidgetContent from "./TabbedGraphWidgetContent";
 import TableWidgetContent from "./TableWidgetContent";
 import BigTableWidgetContent from "./BigTableWidget/BigTableWidgetContent";
 import TabbedWidgetContent from "./TabbedWidgetContent";
-import ExpandableListContent from "./ExpandableListContent";
+import RichDataWidget from "./RichDataWidget";
+import WidgetList from "./WidgetList";
 
 function sizeTransform(size: WidgetSize) : (1 | 3 | 6 | 12) {
     if (size === WidgetSize.Small) {
@@ -54,8 +58,11 @@ export function WidgetRenderer(key: string, info: WidgetInfo) {
         content = <WidgetPanel>
             {((info as unknown) as WidgetGroupParams).widgets.map((wi, idx) => WidgetRenderer(`wi_${idx}`, wi))}
         </WidgetPanel>
-    } else if (info.type === "expandable_list") {
-        content = <ExpandableListContent {...(info.params as ExpandableListWidgetParams)} widgetSize={info.size} />
+    } else if (info.type === "rich_data") {
+        content = <RichDataWidget {...(info.params as RichDataParams)} widgetSize={info.size} />
+    } else if (info.type === "list") {
+        let listInfo = (info as unknown) as WidgetListParams;
+        content = <WidgetList widgets={listInfo.widgets} pageSize={listInfo.pageSize} widgetSize={info.size} />
     }
     return <Widget key={key} size={sizeTransform(info.size)}>
         {{
