@@ -26,10 +26,12 @@ class Pipeline:
     def get_analyzers(self) -> List[Type[Analyzer]]:
         return self._analyzers
 
-    def execute(self,
-                reference_data: pandas.DataFrame,
-                current_data: Optional[pandas.DataFrame],
-                column_mapping: Optional[ColumnMapping] = None) -> None:
+    def execute(
+        self,
+        reference_data: pandas.DataFrame,
+        current_data: Optional[pandas.DataFrame] = None,
+        column_mapping: Optional[ColumnMapping] = None,
+    ) -> None:
         if column_mapping is None:
             column_mapping = ColumnMapping()
 
@@ -41,11 +43,9 @@ class Pipeline:
         for analyzer in self.get_analyzers():
             instance = analyzer()
             instance.options_provider = self.options_provider
-            self.analyzers_results[analyzer] =\
-                instance.calculate(rdata, cdata, column_mapping)
+            self.analyzers_results[analyzer] = instance.calculate(rdata, cdata, column_mapping)
         for stage in self.stages:
             stage.options_provider = self.options_provider
-            stage.calculate(rdata.copy(),
-                            None if cdata is None else cdata.copy(),
-                            column_mapping,
-                            self.analyzers_results)
+            stage.calculate(
+                rdata.copy(), None if cdata is None else cdata.copy(), column_mapping, self.analyzers_results
+            )

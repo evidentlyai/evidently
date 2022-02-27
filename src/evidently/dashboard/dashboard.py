@@ -145,7 +145,7 @@ class Dashboard(Pipeline):
 
     def calculate(self,
                   reference_data: pandas.DataFrame,
-                  current_data: Optional[pandas.DataFrame],
+                  current_data: Optional[pandas.DataFrame] = None,
                   column_mapping: Optional[ColumnMapping] = None):
         column_mapping = column_mapping or ColumnMapping()
         self.execute(reference_data, current_data, column_mapping)
