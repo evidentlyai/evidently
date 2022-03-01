@@ -80,6 +80,7 @@ def file_html_template(params: TemplateParams):
     return f"""
 <html>
 <head>
+<meta charset="utf-8">
 <style>
 /* fallback */
 @font-face {{
