@@ -6,6 +6,7 @@ import pandas as pd
 from evidently import ColumnMapping
 from evidently.analyzers.data_quality_analyzer import DataQualityAnalyzer
 from evidently.analyzers.data_quality_analyzer import FeatureQualityStats
+from evidently.analyzers.utils import process_columns
 
 import pytest
 
@@ -731,3 +732,47 @@ def test_data_profile_analyzer_regression() -> None:
     )
 
     assert result.current_features_stats is None
+
+def test_select_features_for_corr() -> None:
+    data_profile_analyzer = DataQualityAnalyzer()
+    reference_data = pd.DataFrame(
+        {
+            "my_target": [1, 2, 3, 1],
+            "reference": [2, 1, 1, 1],
+            "numerical_feature_1": [0, 2, -1, 5],
+            "numerical_feature_2": [0.3, 5, 0.3, 3.4],
+            "numerical_feature_empty": [np.nan]*4,
+            "numerical_feature_constant": [1]*4,
+            "categorical_feature_1": [1, 1, 5, 2],
+            "categorical_feature_2": ["y", "y", "n", "y"],
+            "categorical_feature_empty": [np.nan]*4,
+            "categorical_feature_constant": [1, 1, 1, np.nan],
+            "datetime_feature_1": [
+                datetime(year=2012, month=1, day=5),
+                datetime(year=2002, month=12, day=5),
+                datetime(year=2012, month=1, day=5),
+                datetime(year=2012, month=1, day=6),
+            ],
+            "datetime_feature_2": [
+                datetime(year=2022, month=1, day=5, hour=13, minute=23),
+                datetime(year=2022, month=1, day=5, hour=10, minute=23),
+                datetime(year=2022, month=1, day=5, hour=13),
+                datetime(year=2022, month=1, day=5, hour=10, minute=23),
+            ],
+        }
+    )
+    column_mapping = ColumnMapping(
+        target="my_target",
+        numerical_features=["numerical_feature_1", "numerical_feature_2", "numerical_feature_empty", 
+        "numerical_feature_constant"],
+        categorical_features=["categorical_feature_1", "categorical_feature_2", "categorical_feature_empty",
+        "categorical_feature_constant"],
+        datetime_features=["datetime_feature_1", "datetime_feature_2"],
+        task="regression",
+    )
+    columns = process_columns(reference_data, column_mapping)
+    reference_features_stats = data_profile_analyzer._calculate_stats(reference_data, columns, "regression")
+    num_for_corr, cat_for_corr = data_profile_analyzer._select_features_for_corr(reference_features_stats, 
+                                                                                 target_name="my_target")
+    assert num_for_corr == ["numerical_feature_1", "numerical_feature_2", "my_target"]
+    assert cat_for_corr == ["categorical_feature_1", "categorical_feature_2"]
