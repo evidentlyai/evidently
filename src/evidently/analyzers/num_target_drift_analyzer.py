@@ -106,10 +106,10 @@ class NumTargetDriftAnalyzer(Analyzer):
             ValueError when target or predictions columns are not numerical.
         """
         if reference_data is None:
-            raise ValueError("reference_data should not be None")
+            raise ValueError("reference_data should be present")
 
         if current_data is None:
-            raise ValueError("current_data should not be None")
+            raise ValueError("current_data should be present")
 
         columns = process_columns(reference_data, column_mapping)
         target_column = columns.utility_columns.target

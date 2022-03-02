@@ -1,5 +1,6 @@
 """Test common-cases with different dataset types and a few monitors"""
 
+from typing import ClassVar
 import pandas as pd
 
 import pytest
@@ -10,7 +11,9 @@ from evidently.model_monitoring import CatTargetDriftMonitor
 from evidently.model_monitoring import NumTargetDriftMonitor
 from evidently.model_monitoring import RegressionPerformanceMonitor
 from evidently.model_monitoring import ClassificationPerformanceMonitor
+from evidently.model_monitoring import ProbClassificationPerformanceMonitor
 from evidently.model_monitoring.monitoring import ModelMonitoringMetric
+from evidently.model_monitoring.monitoring import ModelMonitor
 from evidently.pipeline.column_mapping import ColumnMapping
 
 from tests.model_monitoring.helpers import collect_metrics_results
@@ -86,3 +89,59 @@ def test_metric_creation_with_incorrect_labels():
 
     with pytest.raises(ValueError):
         metric.create(123, {"option_1": "value", "option_2": "value"})
+
+
+@pytest.mark.parametrize(
+    "monitor_class, raises_value_error",
+    (
+        (RegressionPerformanceMonitor, False),
+        (ClassificationPerformanceMonitor, False),
+        (DataDriftMonitor, True),
+        (CatTargetDriftMonitor, True),
+        (NumTargetDriftMonitor, True),
+    ),
+)
+def test_model_monitoring_without_current_data(monitor_class: ClassVar[ModelMonitor], raises_value_error: bool) -> None:
+    """Check that monitors
+    - that can be executed with one dataset only do not get an error
+    - that cannot be executed with one dataset raise correct error
+    """
+    test_data = pd.DataFrame(
+        {"target": [1, 0, 1], "prediction": [1, 0, 0], "num_feature": [1, 2, 3], "cat_feature": [3, 2, 1]}
+    )
+    data_mapping = ColumnMapping(numerical_features=["num_feature"], categorical_features=["cat_feature"])
+    evidently_monitoring = ModelMonitoring([monitor_class()])
+
+    if raises_value_error:
+        with pytest.raises(ValueError) as error:
+            evidently_monitoring.execute(test_data, column_mapping=data_mapping)
+
+        assert error.value.args[0] == "current_data should be present"
+
+    else:
+        evidently_monitoring.execute(test_data, column_mapping=data_mapping)
+        assert evidently_monitoring.analyzers_results is not None
+
+    evidently_monitoring.execute(test_data, test_data, data_mapping)
+    assert evidently_monitoring.analyzers_results is not None
+
+
+def test_model_monitoring_without_current_data_prob_classification() -> None:
+    test_data = pd.DataFrame(
+        {
+            "target": ["0", "1", "0", "1"],
+            "0": [0.1, 0.2, 0.3, 0.4],
+            "1": [0.5, 0.6, 0.7, 0.8],
+        }
+    )
+    data_mapping = ColumnMapping(
+        target="target",
+        prediction=["0", "1"],
+    )
+    evidently_monitoring = ModelMonitoring([ProbClassificationPerformanceMonitor()])
+
+    evidently_monitoring.execute(test_data, column_mapping=data_mapping)
+    assert evidently_monitoring.analyzers_results is not None
+
+    evidently_monitoring.execute(test_data, test_data, data_mapping)
+    assert evidently_monitoring.analyzers_results is not None
