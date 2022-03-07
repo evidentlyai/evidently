@@ -67,6 +67,10 @@ class BaseWidgetInfo:
     widgets: Iterable["BaseWidgetInfo"] = ()
     pageSize: int = 5
 
+    def get_additional_graphs(self) -> Iterable[AdditionalGraphInfo]:
+        return list(self.additionalGraphs) + [graph for widget in self.widgets for graph in widget.additionalGraphs]
+
+
 @dataclass
 class TabInfo:
     id: str

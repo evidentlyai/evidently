@@ -159,7 +159,7 @@ class Dashboard(Pipeline):
         for widget in [item for tab in tab_widgets for item in tab]:
             if widget is None:
                 continue
-            for graph in widget.additionalGraphs:
+            for graph in widget.get_additional_graphs():
                 additional_graphs[graph.id] = graph.params
         return template(TemplateParams(dashboard_id, dashboard_info, additional_graphs))
 

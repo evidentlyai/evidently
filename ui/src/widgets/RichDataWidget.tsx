@@ -18,7 +18,7 @@ const RichDataWidget: React.FunctionComponent<RichDataParams & { widgetSize: num
                     <Typography variant={"h5"}>{props.header}</Typography>
                     <Typography variant={"subtitle1"}>{props.description}</Typography>
                 </Grid>
-                <Grid item xs={5}>
+                <Grid item xs={props.graph === undefined ? 10: 5}>
                     <Table><TableHead><TableRow>
                         <TableCell/>
                         {props.metricsValuesHeaders.map(header => <TableCell>{header}</TableCell>)}
@@ -30,15 +30,22 @@ const RichDataWidget: React.FunctionComponent<RichDataParams & { widgetSize: num
                             </TableRow>)}
                         </TableBody></Table>
                 </Grid>
-                <Grid item xs={5}>
-                    <Plot data={props.graph.data} layout={{
-                        ...props.graph.layout,
-                        title: undefined,
-                    }}
-                          config={{responsive: true}}
-                          style={{width: "100%", minHeight: 150 + 100 * (1 + (props.widgetSize / 2)), maxHeight: 250}}
-                    />
-                </Grid>
+                {props.graph === undefined ? <></>
+                    :
+                    <Grid item xs={5}>
+                        <Plot data={props.graph.data} layout={{
+                            ...props.graph.layout,
+                            title: undefined,
+                        }}
+                              config={{responsive: true}}
+                              style={{
+                                  width: "100%",
+                                  minHeight: 150 + 100 * (1 + (props.widgetSize / 2)),
+                                  maxHeight: 250
+                              }}
+                        />
+                    </Grid>
+                }
                 {props.details === undefined || props.details.parts.length === 0 ? <></> :
                     <>
                         <Grid item xs={12}>

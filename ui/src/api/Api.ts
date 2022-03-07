@@ -159,8 +159,8 @@ export interface RichDataParams {
     description: string;
     metrics: Metric[];
     metricsValuesHeaders: string[];
-    graph: BigGraphWidgetParams;
-    details: BigTableRowDetails;
+    graph?: BigGraphWidgetParams;
+    details?: BigTableRowDetails;
 }
 
 export interface WidgetInfo {
