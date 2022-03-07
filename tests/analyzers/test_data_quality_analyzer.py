@@ -776,3 +776,32 @@ def test_select_features_for_corr() -> None:
                                                                                  target_name="my_target")
     assert num_for_corr == ["numerical_feature_1", "numerical_feature_2", "my_target"]
     assert cat_for_corr == ["categorical_feature_1", "categorical_feature_2"]
+
+
+def test_cramer_v() -> None:
+    x = pd.Series(['a'] * 15 + ['b'] * 13)
+    y = pd.Series(['c'] * 7 + ['d'] * 8 + ['c'] * 11 + ['d'] * 2)
+    data_profile_analyzer = DataQualityAnalyzer()
+    v = data_profile_analyzer._cramer_v(x, y)
+
+    assert v == 0.3949827793858816
+
+def test_corr_matrix() -> None:
+    df = pd.DataFrame(
+        {
+            'x': ['a'] * 15 + ['b'] * 13,
+            'y': ['c'] * 7 + ['d'] * 8 + ['c'] * 11 + ['d'] * 2,
+            'z': ['f'] * 14 + ['e'] * 14
+        }
+    )
+    data_profile_analyzer = DataQualityAnalyzer()
+    corr_matrix = data_profile_analyzer._corr_matrix(df, data_profile_analyzer._cramer_v)
+    expected = np.array(
+        [[1.        , 0.39498278, 0.93094934],
+        [0.39498278, 1.        , 0.2981424 ],
+        [0.93094934, 0.2981424 , 1.        ]]
+    )
+
+    assert np.allclose(corr_matrix.values, expected)
+
+

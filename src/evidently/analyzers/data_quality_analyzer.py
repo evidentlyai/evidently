@@ -8,6 +8,7 @@ from typing import Union
 from dataclasses import dataclass, fields
 import numpy as np
 import pandas as pd
+import scipy.stats as stats
 
 from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
@@ -140,12 +141,12 @@ class DataQualityStats:
 
         raise KeyError(item)
 
-
 @dataclass
 class DataQualityAnalyzerResults(BaseAnalyzerResult):
     reference_features_stats: DataQualityStats
+    reference_correlations: dict[str, pd.DataFrame]
     current_features_stats: Optional[DataQualityStats] = None
-
+    current_correlations: Optional[dict[str, pd.DataFrame]] = None
 
 class DataQualityAnalyzer(Analyzer):
     @staticmethod
@@ -261,12 +262,25 @@ class DataQualityAnalyzer(Analyzer):
         else:
             current_features_stats = None
 
+        # calculate correlations
+
+        num_for_corr, cat_for_corr = self._select_features_for_corr(reference_features_stats, target_name)
+        reference_correlations = {}
+        current_correlations = {}
+        for kind in ['pearson', 'spearman', 'kendall', 'cramer_v']:
+            reference_correlations[kind] = self._calculate_correlations(reference_data, num_for_corr, cat_for_corr, 
+                                                                         kind)
+            if current_data is not None:
+                current_correlations[kind] = self._calculate_correlations(current_data, num_for_corr, cat_for_corr, 
+                                                                          kind)
         results = DataQualityAnalyzerResults(
             columns=columns,
             reference_features_stats=reference_features_stats,
+            reference_correlations=reference_correlations
         )
         if current_features_stats is not None:
             results.current_features_stats = current_features_stats
+            results.current_correlations = current_correlations
 
         return results
 
@@ -331,9 +345,43 @@ class DataQualityAnalyzer(Analyzer):
             if reference_features_stats[featurue].unique_count > 1:
                 cat_for_corr.append(featurue)
         if target_name is not None:
-            target_type = reference_features_stats.target_stats[target_name]['feature_type']
+            target_type = reference_features_stats.target_stats[target_name].feature_type
             if target_type == 'num' and reference_features_stats.target_stats[target_name].unique_count > 1:
                 num_for_corr.append(target_name)
             elif target_type == 'cat' and reference_features_stats.target_stats[target_name].unique_count > 1:
                 cat_for_corr.append(target_name)
         return num_for_corr, cat_for_corr
+
+    def _cramer_v(self, x, y):
+        arr = pd.crosstab(x, y).values
+        chi2_stat = stats.chi2_contingency(arr, correction=False)
+        phi2 = chi2_stat[0] / arr.sum()
+        n_rows, n_cols = arr.shape
+        value = phi2 / min(n_cols - 1, n_rows - 1)
+        
+        return np.sqrt(value)
+    
+    def _corr_matrix(self, df, func): 
+        columns = df.columns
+        K = df.shape[1]
+        corr_array = np.eye(K)
+        
+        for i in range(K):
+            for j in range(K):
+                if i <= j: 
+                    continue
+                c = func(df[columns[i]], df[columns[j]])
+                corr_array[i, j] = c
+                corr_array[j, i] = c
+        return pd.DataFrame(data=corr_array, columns=columns, index=columns)
+
+    def _calculate_correlations(self, df, num_for_corr, cat_for_corr, kind):
+        if kind == 'pearson':
+            return df[num_for_corr].corr('pearson')
+        elif kind == 'spearman':
+            return df[num_for_corr].corr('spearman')
+        elif kind == 'kendall':
+            return df[num_for_corr].corr('kendall')
+        elif kind == 'cramer_v':
+            return self._corr_matrix(df[cat_for_corr], self._cramer_v)
+
