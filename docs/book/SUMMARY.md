@@ -5,6 +5,7 @@
 * [Get Started Tutorial](get-started/tutorial.md)
 * [Reports](reports/README.md)
   * [Data Drift](reports/data-drift.md)
+  * [Data Quality](reports/data-quality.md)
   * [Numerical Target Drift](reports/num-target-drift.md)
   * [Categorical Target Drift](reports/categorical-target-drift.md)
   * [Regression Performance](reports/reg-performance.md)

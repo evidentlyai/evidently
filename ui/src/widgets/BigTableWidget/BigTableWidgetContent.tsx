@@ -8,7 +8,7 @@ import {createStyles, Theme, withStyles, WithStyles} from "@material-ui/core/sty
 
 import WarningIcon from "@material-ui/icons/Warning";
 
-import MaterialTable, {Column, Options} from "material-table";
+import MaterialTable, {Column, Options} from "@material-table/core";
 
 import {
     BigTableDataRow,
@@ -62,11 +62,15 @@ const GraphMapping =
             : <div/>]
     ])
 
-const GenerateColumns = <RowData extends object, >(columns: ColumnDefinition[], classes: any): Column<RowData>[] =>
+interface RowDataType extends ColumnDefinition {
+    render: (row: BigTableDataRow) => React.ReactNode,
+}
+
+const GenerateColumns = (columns: ColumnDefinition[], classes: any): Column<ColumnDefinition>[] =>
     columns.map(def => ({def: def, gen: GraphMapping.get(def.type ?? "string")}))
         .map(({def, gen}) => gen
             ? ({...def, type: undefined, render: (row: BigTableDataRow) => gen(def, row, classes)})
-            : ({...def, sorting: true, defaultSort: def.sort, type: "string"} as Column<RowData>))
+            : ({...def, sorting: true, defaultSort: def.sort, type: "string"}))
 
 
 interface InsightAlertProps {
@@ -93,7 +97,7 @@ const BigTableWidgetContent: React.FunctionComponent<BigTableWidgetProps & WithS
     const {columns, data} = props;
     const options = {search: true, showTitle: false, minBodyHeight: "10vh", pageSize: props.rowsPerPage ?? 5} as Options<any>;
     return <React.Fragment>
-        <MaterialTable
+        <MaterialTable<BigTableDataRow>
             columns={(props.showInfoColumn ?? false)
                 ? [...GenerateColumns(columns, props.classes),
                     {
@@ -111,7 +115,7 @@ const BigTableWidgetContent: React.FunctionComponent<BigTableWidgetProps & WithS
                 : [...GenerateColumns(columns, props.classes)]}
             data={data}
 
-            detailPanel={rowData => (rowData.graphId
+            detailPanel={({rowData}) => (rowData.graphId
                 ? <GraphDetails graphId={rowData.graphId} widgetSize={props.widgetSize}/>
                 : rowData.details
                     ? <BigTableDetails details={rowData.details} widgetSize={props.widgetSize}/>

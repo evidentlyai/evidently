@@ -17,10 +17,14 @@ The calculation results can be available in one of the following formats:
 
 ## Reports by type
 
-Currently, you can choose between 6 different Report types.
+Currently, you can choose between 7 different Report types.
 
 {% content-ref url="data-drift.md" %}
 [data-drift.md](data-drift.md)
+{% endcontent-ref %}
+
+{% content-ref url="data-quality.md" %}
+[data-quality.md](data-quality.md)
 {% endcontent-ref %}
 
 {% content-ref url="categorical-target-drift.md" %}
