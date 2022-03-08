@@ -97,6 +97,7 @@ def test_metric_creation_with_incorrect_labels():
 @pytest.mark.parametrize(
     "monitor_class, raises_value_error",
     (
+        (DataQualityMonitor, False),
         (RegressionPerformanceMonitor, False),
         (ClassificationPerformanceMonitor, False),
         (DataDriftMonitor, True),
