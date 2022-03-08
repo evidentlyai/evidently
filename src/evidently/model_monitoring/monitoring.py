@@ -53,8 +53,11 @@ class ModelMonitor(PipelineStage):
 
 
 class ModelMonitoring(Pipeline):
-    def __init__(self, monitors: Sequence[ModelMonitor], options: Optional[list]):
-        super().__init__(monitors, options if options is not None else [])
+    def __init__(self, monitors: Sequence[ModelMonitor], options: Optional[list] = None):
+        if options is None:
+            options = []
+
+        super().__init__(monitors, options)
         self.monitors = list(monitors)
 
     def get_analyzers(self):
