@@ -144,9 +144,9 @@ class DataQualityStats:
 @dataclass
 class DataQualityAnalyzerResults(BaseAnalyzerResult):
     reference_features_stats: DataQualityStats
-    reference_correlations: dict[str, pd.DataFrame]
+    reference_correlations: Dict[str, pd.DataFrame]
     current_features_stats: Optional[DataQualityStats] = None
-    current_correlations: Optional[dict[str, pd.DataFrame]] = None
+    current_correlations: Optional[Dict[str, pd.DataFrame]] = None
 
 class DataQualityAnalyzer(Analyzer):
     @staticmethod
