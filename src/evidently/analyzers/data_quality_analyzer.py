@@ -8,7 +8,7 @@ from typing import Union
 from dataclasses import dataclass, fields
 import numpy as np
 import pandas as pd
-from scipy import stats
+from scipy.stats import chi2_contingency
 
 from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
