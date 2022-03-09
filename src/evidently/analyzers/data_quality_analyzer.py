@@ -342,16 +342,16 @@ class DataQualityAnalyzer(Analyzer):
     def _select_features_for_corr(self, reference_features_stats: DataQualityStats, target_name: Optional[str]) -> tuple:
         num_for_corr = []
         if reference_features_stats.num_features_stats is not None:
-            for featurue in reference_features_stats.num_features_stats:
-                unique_count = reference_features_stats[featurue].unique_count
+            for feature in reference_features_stats.num_features_stats:
+                unique_count = reference_features_stats[feature].unique_count
                 if unique_count and unique_count > 1:
-                    num_for_corr.append(featurue)
+                    num_for_corr.append(feature)
         cat_for_corr = []
         if reference_features_stats.cat_features_stats is not None:
-            for featurue in reference_features_stats.cat_features_stats:
-                unique_count = reference_features_stats[featurue].unique_count
+            for feature in reference_features_stats.cat_features_stats:
+                unique_count = reference_features_stats[feature].unique_count
                 if unique_count and unique_count > 1:
-                    cat_for_corr.append(featurue)
+                    cat_for_corr.append(feature)
         if target_name is not None and reference_features_stats.target_stats is not None:
             target_type = reference_features_stats.target_stats[target_name].feature_type
             unique_count = reference_features_stats.target_stats[target_name].unique_count
@@ -363,7 +363,7 @@ class DataQualityAnalyzer(Analyzer):
 
     def _cramer_v(self, x, y):
         arr = pd.crosstab(x, y).values
-        chi2_stat = stats.chi2_contingency(arr, correction=False)
+        chi2_stat = chi2_contingency(arr, correction=False)
         phi2 = chi2_stat[0] / arr.sum()
         n_rows, n_cols = arr.shape
         value = phi2 / min(n_cols - 1, n_rows - 1)
