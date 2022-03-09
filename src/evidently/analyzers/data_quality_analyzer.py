@@ -8,7 +8,7 @@ from typing import Union
 from dataclasses import dataclass, fields
 import numpy as np
 import pandas as pd
-import scipy.stats as stats
+from scipy import stats
 
 from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
@@ -341,16 +341,18 @@ class DataQualityAnalyzer(Analyzer):
 
     def _select_features_for_corr(self, reference_features_stats: DataQualityStats, target_name: Optional[str]) -> tuple:
         num_for_corr = []
-        for featurue in reference_features_stats.num_features_stats:
-            unique_count = reference_features_stats[featurue].unique_count
-            if unique_count and unique_count > 1:
-                num_for_corr.append(featurue)
+        if reference_features_stats.num_features_stats is not None:
+            for featurue in reference_features_stats.num_features_stats:
+                unique_count = reference_features_stats[featurue].unique_count
+                if unique_count and unique_count > 1:
+                    num_for_corr.append(featurue)
         cat_for_corr = []
-        for featurue in reference_features_stats.cat_features_stats:
-            unique_count = reference_features_stats[featurue].unique_count
-            if unique_count and unique_count > 1:
-                cat_for_corr.append(featurue)
-        if target_name is not None:
+        if reference_features_stats.cat_features_stats is not None:
+            for featurue in reference_features_stats.cat_features_stats:
+                unique_count = reference_features_stats[featurue].unique_count
+                if unique_count and unique_count > 1:
+                    cat_for_corr.append(featurue)
+        if target_name is not None and reference_features_stats.target_stats is not None:
             target_type = reference_features_stats.target_stats[target_name].feature_type
             unique_count = reference_features_stats.target_stats[target_name].unique_count
             if target_type == 'num' and unique_count and unique_count > 1:

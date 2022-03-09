@@ -70,7 +70,7 @@ class DataQualitySummaryWidget(Widget):
         }
         return res
 
-    def _get_df_stats(self, data_quality_results, df: pd.DataFrame, df_stats: FeatureQualityStats):
+    def _get_df_stats(self, data_quality_results, df, df_stats):
         result = {}
         all_features = data_quality_results.columns.get_all_features_list(
             cat_before_num=True, include_datetime_feature=True
