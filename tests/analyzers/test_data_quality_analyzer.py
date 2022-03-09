@@ -391,30 +391,30 @@ def test_data_profile_analyzer_new_and_unused_count_for_cat_features(
 @pytest.mark.parametrize(
     "dataset, expected_metrics",
     [
-        (
-            pd.DataFrame({"datetime_feature": []}),
-            FeatureQualityStats(
-                feature_type="datetime",
-                count=0,
-                percentile_25=None,
-                percentile_50=None,
-                percentile_75=None,
-                infinite_count=None,
-                infinite_percentage=None,
-                max=None,
-                min=None,
-                mean=None,
-                missing_count=None,
-                missing_percentage=None,
-                most_common_value=None,
-                most_common_value_percentage=None,
-                std=None,
-                unique_count=None,
-                unique_percentage=None,
-                most_common_not_null_value=None,
-                most_common_not_null_value_percentage=None,
-            ),
-        ),
+        # (
+        #     pd.DataFrame({"datetime_feature": []}),
+        #     FeatureQualityStats(
+        #         feature_type="datetime",
+        #         count=0,
+        #         percentile_25=None,
+        #         percentile_50=None,
+        #         percentile_75=None,
+        #         infinite_count=None,
+        #         infinite_percentage=None,
+        #         max=None,
+        #         min=None,
+        #         mean=None,
+        #         missing_count=None,
+        #         missing_percentage=None,
+        #         most_common_value=None,
+        #         most_common_value_percentage=None,
+        #         std=None,
+        #         unique_count=None,
+        #         unique_percentage=None,
+        #         most_common_not_null_value=None,
+        #         most_common_not_null_value_percentage=None,
+        #     ),
+        # ),
         (
             pd.DataFrame({"datetime_feature": [np.nan, np.nan, np.nan, np.nan]}),
             FeatureQualityStats(
@@ -486,6 +486,16 @@ def test_data_profile_analyzer_datetime_features(dataset: pd.DataFrame, expected
     assert "datetime_feature" in result.reference_features_stats.datetime_features_stats
     metrics = result.reference_features_stats.datetime_features_stats["datetime_feature"]
     assert metrics == expected_metrics
+
+def test_data_profile_analyzer_datetime_features_zero_lenth() -> None:
+    reference_data = pd.DataFrame({"datetime_feature": []})
+    data_profile_analyzer = DataQualityAnalyzer()
+
+    data_mapping = ColumnMapping(
+        datetime_features=["datetime_feature"],
+    )
+    result = data_profile_analyzer.calculate(reference_data, None, data_mapping)
+    assert "datetime_feature" not in result.reference_features_stats.datetime_features_stats
 
 
 def test_data_profile_analyzer_empty_features() -> None:
