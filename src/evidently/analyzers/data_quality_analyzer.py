@@ -344,17 +344,20 @@ class DataQualityAnalyzer(Analyzer):
     def _select_features_for_corr(self, reference_features_stats: DataQualityStats, target_name: Optional[str]) -> tuple:
         num_for_corr = []
         for featurue in reference_features_stats.num_features_stats:
-            if reference_features_stats[featurue].unique_count > 1:
+            unique_count = reference_features_stats[featurue].unique_count
+            if unique_count and unique_count > 1:
                 num_for_corr.append(featurue)
         cat_for_corr = []
         for featurue in reference_features_stats.cat_features_stats:
-            if reference_features_stats[featurue].unique_count > 1:
+            unique_count = reference_features_stats[featurue].unique_count
+            if unique_count and unique_count > 1:
                 cat_for_corr.append(featurue)
         if target_name is not None:
             target_type = reference_features_stats.target_stats[target_name].feature_type
-            if target_type == 'num' and reference_features_stats.target_stats[target_name].unique_count > 1:
+            unique_count = reference_features_stats.target_stats[target_name].unique_count
+            if target_type == 'num' and unique_count and unique_count > 1:
                 num_for_corr.append(target_name)
-            elif target_type == 'cat' and reference_features_stats.target_stats[target_name].unique_count > 1:
+            elif target_type == 'cat' and unique_count and unique_count > 1:
                 cat_for_corr.append(target_name)
         return num_for_corr, cat_for_corr
 
@@ -370,16 +373,19 @@ class DataQualityAnalyzer(Analyzer):
     def _corr_matrix(self, df, func): 
         columns = df.columns
         K = df.shape[1]
-        corr_array = np.eye(K)
-        
-        for i in range(K):
-            for j in range(K):
-                if i <= j: 
-                    continue
-                c = func(df[columns[i]], df[columns[j]])
-                corr_array[i, j] = c
-                corr_array[j, i] = c
-        return pd.DataFrame(data=corr_array, columns=columns, index=columns)
+        if K <= 1:
+            return pd.DataFrame()
+        else:
+            corr_array = np.eye(K)
+            
+            for i in range(K):
+                for j in range(K):
+                    if i <= j: 
+                        continue
+                    c = func(df[columns[i]], df[columns[j]])
+                    corr_array[i, j] = c
+                    corr_array[j, i] = c
+            return pd.DataFrame(data=corr_array, columns=columns, index=columns)
 
     def _calculate_correlations(self, df, num_for_corr, cat_for_corr, kind):
         if kind == 'pearson':

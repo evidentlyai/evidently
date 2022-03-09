@@ -126,8 +126,11 @@ def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping) -> Dat
     else:
         empty_cols = dataset[num_feature_names].isnull().mean()
         empty_cols = empty_cols[empty_cols==1.].index
-        num_feature_names = (dataset[num_feature_names].select_dtypes([np.number]).columns.tolist() 
-                             + empty_cols.to_list())
+        num_feature_names = sorted(
+            list(
+                set(dataset[num_feature_names].select_dtypes([np.number]).columns).union(set(empty_cols))
+            )
+        )
 
     if datetime_feature_names is None:
         datetime_feature_names = sorted(list(set(dataset.select_dtypes(["datetime"]).columns) - utility_columns_set))
@@ -135,8 +138,11 @@ def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping) -> Dat
     else:
         empty_cols = dataset[datetime_feature_names].isnull().mean()
         empty_cols = empty_cols[empty_cols==1.].index
-        datetime_feature_names = (dataset[datetime_feature_names].select_dtypes(["datetime"]).columns.tolist() 
-                             + empty_cols.to_list())
+        datetime_feature_names = sorted(
+            list(
+                set(dataset[datetime_feature_names].select_dtypes(["datetime"]).columns).union(set(empty_cols))
+            )
+        )
 
     cat_feature_names = column_mapping.categorical_features
 

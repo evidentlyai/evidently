@@ -148,12 +148,12 @@ class DataQualityCorrelationsWidget(Widget):
                                                                    current_correlations['cramer_v'])
             for i in range(5):
                 values = ['-', '-', '-', '-', '-', '-', '-', '-']
-                if i <= com_cat_corr.shape[0]:
+                if i < com_cat_corr.shape[0]:
                     values[0] = com_cat_corr.iloc[i, 0]
                     values[1] = com_cat_corr.iloc[i, 1]
                     values[2] = com_cat_corr.iloc[i, 2]
                     values[3] = com_cat_corr.iloc[i, 3]
-                if i <= com_num_corr.shape[0]:
+                if i < com_num_corr.shape[0]:
                     values[4] = com_num_corr.iloc[i, 0]
                     values[5] = com_num_corr.iloc[i, 1]
                     values[6] = com_num_corr.iloc[i, 2]
@@ -166,10 +166,10 @@ class DataQualityCorrelationsWidget(Widget):
             ref_cat_corr = self._get_df_corr_features_sorted(reference_correlations['cramer_v'])
             for i in range(5):
                 values = ['-', '-', '-', '-']
-                if i <= ref_cat_corr.shape[0]:
+                if i < ref_cat_corr.shape[0]:
                     values[0] = ref_cat_corr.iloc[i, 0]
                     values[1] = ref_cat_corr.iloc[i, 1]
-                if i <= ref_num_corr.shape[0]:
+                if i < ref_num_corr.shape[0]:
                     values[2] = ref_num_corr.iloc[i, 0]
                     values[3] = ref_num_corr.iloc[i, 1]
                 metrics.append(
