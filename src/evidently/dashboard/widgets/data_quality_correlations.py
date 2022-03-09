@@ -42,14 +42,15 @@ class DataQualityCorrelationsWidget(Widget):
             if reference_correlations[kind].shape[0] > 1:
                 correlation_figure = self._plot_correlation_figure(kind, reference_correlations, current_correlations)
                 additional_graphs.append(
-                            AdditionalGraphInfo(
-                                kind,
-                                {
-                                    "data": correlation_figure["data"],
-                                    "layout": correlation_figure["layout"],
-                                },
-                            )
-                        )
+                    AdditionalGraphInfo(
+                        kind,
+                        {
+                            "data": correlation_figure["data"],
+                            "layout": correlation_figure["layout"],
+                        },
+                    )
+                )
+
                 parts.append(
                     {
                         "title": kind,
@@ -59,7 +60,8 @@ class DataQualityCorrelationsWidget(Widget):
 
         if is_current_data:
             metrics_values_headers = ["top 5 correlation diff category (Cramer_V)", "value ref", "value curr",
-            "difference", "top 5 correlation diff numerical (Spearman)", "value ref", "value curr", "difference"]
+                                      "difference", "top 5 correlation diff numerical (Spearman)", "value ref",
+                                      "value curr", "difference"]
 
         else:
             metrics_values_headers = ["top 5 correlated category (Cramer_V)", "Value",
@@ -68,48 +70,48 @@ class DataQualityCorrelationsWidget(Widget):
         metrics = self._make_metrics(reference_correlations, current_correlations)
 
         wi = BaseWidgetInfo(
-                type="rich_data",
-                title="",
-                size=2,
-                params={
-                    "header": "Correlations",
-                    "description": "",
-                    "metricsValuesHeaders": metrics_values_headers,
-                    "metrics": metrics,
-                    "details": {
-                        "parts": parts,
-                        "insights": []
-                    }
-                },
-                additionalGraphs=additional_graphs
-            )
+            type="rich_data",
+            title="",
+            size=2,
+            params={
+                "header": "Correlations",
+                "description": "",
+                "metricsValuesHeaders": metrics_values_headers,
+                "metrics": metrics,
+                "details": {
+                    "parts": parts,
+                    "insights": []
+                }
+            },
+            additionalGraphs=additional_graphs
+        )
 
         return wi
 
     def _plot_correlation_figure(self, kind: str, reference_correlations: dict,
-    current_correlations: Optional[dict]) -> dict:
+                                 current_correlations: Optional[dict]) -> dict:
         if current_correlations is not None:
             cols = 2
-            subplot_titles=["reference", "current"]
+            subplot_titles = ["reference", "current"]
         else:
             cols = 1
-            subplot_titles=[""]
+            subplot_titles = [""]
 
         columns = reference_correlations[kind].columns
 
         fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
         trace = go.Heatmap(
-                   z=reference_correlations[kind],
-                   x=columns,
-                   y=columns,
-                   colorscale='RdBu')
+            z=reference_correlations[kind],
+            x=columns,
+            y=columns,
+            colorscale='RdBu')
         fig.append_trace(trace, 1, 1)
         if current_correlations is not None:
             trace = go.Heatmap(
-                   z=current_correlations[kind],
-                   x=columns,
-                   y=columns,
-                   colorscale='RdBu')
+                z=current_correlations[kind],
+                x=columns,
+                y=columns,
+                colorscale='RdBu')
             fig.append_trace(trace, 1, 2)
         correlation_figure = json.loads(fig.to_json())
         return correlation_figure
@@ -118,7 +120,7 @@ class DataQualityCorrelationsWidget(Widget):
         df_corr = df_corr.stack().reset_index()
         df_corr.columns = ['col_1', 'col_2', 'value']
         df_corr['value'] = np.round(df_corr['value'], 3)
-        df_corr['abs_value'] = np.abs(df_corr['value'] )
+        df_corr['abs_value'] = np.abs(df_corr['value'])
         df_corr = df_corr.sort_values(['col_1', 'col_2'])
         df_corr['keep'] = df_corr['col_1'].str.get(0) < df_corr['col_2'].str.get(0)
         df_corr = df_corr[df_corr['keep']]
@@ -140,12 +142,12 @@ class DataQualityCorrelationsWidget(Widget):
         if current_correlations is not None:
             if reference_correlations['spearman'].shape[0] > 1:
                 com_num_corr = self._get_rel_diff_corr_features_sorted(reference_correlations['spearman'],
-                                                                    current_correlations['spearman'])
+                                                                       current_correlations['spearman'])
             else:
                 com_num_corr = pd.DataFrame()
             if reference_correlations['cramer_v'].shape[0] > 1:
                 com_cat_corr = self._get_rel_diff_corr_features_sorted(reference_correlations['cramer_v'],
-                                                                    current_correlations['cramer_v'])
+                                                                       current_correlations['cramer_v'])
             else:
                 com_cat_corr = pd.DataFrame()
             for i in range(5):

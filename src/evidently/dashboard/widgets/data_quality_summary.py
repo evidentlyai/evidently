@@ -12,6 +12,7 @@ from evidently.analyzers.data_quality_analyzer import FeatureQualityStats
 from evidently.model.widget import BaseWidgetInfo
 from evidently.dashboard.widgets.widget import Widget
 
+
 class DataQualitySummaryWidget(Widget):
 
     def analyzers(self):
@@ -29,7 +30,7 @@ class DataQualitySummaryWidget(Widget):
                                              data_quality_results.reference_features_stats)
         if current_data is not None:
             current_stats = self._get_df_stats(data_quality_results, current_data,
-                                             data_quality_results.current_features_stats)
+                                               data_quality_results.current_features_stats)
         else:
             current_stats = None
 
@@ -45,16 +46,16 @@ class DataQualitySummaryWidget(Widget):
         metrics = self._get_stats_with_names(stats_list, reference_stats, current_stats)
 
         wi = BaseWidgetInfo(
-                type="rich_data",
-                title="",
-                size=2,
-                params={
-                    "header": "Data Summary",
-                    "description": "",
-                    "metricsValuesHeaders": metrics_values_headers,
-                    "metrics": metrics,
-                },
-            )
+            type="rich_data",
+            title="",
+            size=2,
+            params={
+                "header": "Data Summary",
+                "description": "",
+                "metricsValuesHeaders": metrics_values_headers,
+                "metrics": metrics,
+            },
+        )
 
         return wi
 

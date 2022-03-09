@@ -8,7 +8,7 @@ from evidently.dashboard.widgets.data_quality_correlations import DataQualityCor
 
 class DataQualityTab(Tab):
     widgets = [
-        (DataQualitySummaryWidget(""), Verbose.ALWAYS),
-        (DataQualityFeaturesWidget(""), Verbose.ALWAYS),
-        (DataQualityCorrelationsWidget(""), Verbose.ALWAYS)
+        (DataQualitySummaryWidget("Data Summary"), Verbose.ALWAYS),
+        (DataQualityFeaturesWidget("Features"), Verbose.ALWAYS),
+        (DataQualityCorrelationsWidget("Correlations"), Verbose.ALWAYS)
     ]

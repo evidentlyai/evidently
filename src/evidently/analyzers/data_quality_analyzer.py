@@ -141,12 +141,14 @@ class DataQualityStats:
 
         raise KeyError(item)
 
+
 @dataclass
 class DataQualityAnalyzerResults(BaseAnalyzerResult):
     reference_features_stats: DataQualityStats
     reference_correlations: Dict[str, pd.DataFrame]
     current_features_stats: Optional[DataQualityStats] = None
     current_correlations: Optional[Dict[str, pd.DataFrame]] = None
+
 
 class DataQualityAnalyzer(Analyzer):
     @staticmethod
@@ -268,10 +270,10 @@ class DataQualityAnalyzer(Analyzer):
         reference_correlations = {}
         current_correlations = {}
         for kind in ['pearson', 'spearman', 'kendall', 'cramer_v']:
-            reference_correlations[kind] = self._calculate_correlations(reference_data, num_for_corr, cat_for_corr, 
-                                                                         kind)
+            reference_correlations[kind] = self._calculate_correlations(reference_data, num_for_corr, cat_for_corr,
+                                                                        kind)
             if current_data is not None:
-                current_correlations[kind] = self._calculate_correlations(current_data, num_for_corr, cat_for_corr, 
+                current_correlations[kind] = self._calculate_correlations(current_data, num_for_corr, cat_for_corr,
                                                                           kind)
         results = DataQualityAnalyzerResults(
             columns=columns,
@@ -313,10 +315,6 @@ class DataQualityAnalyzer(Analyzer):
 
         if feature_type == "num":
             # round most common feature value for numeric features to 1e-5
-            # import logging
-            # logging.warning(result.most_common_value)
-            # logging.warning(type(result.most_common_value))
-            # if result.most_common_value:
             if not np.issubdtype(feature, np.number):
                 feature = feature.astype(float)
             result.most_common_value = np.round(result.most_common_value, 5)
@@ -367,20 +365,20 @@ class DataQualityAnalyzer(Analyzer):
         phi2 = chi2_stat[0] / arr.sum()
         n_rows, n_cols = arr.shape
         value = phi2 / min(n_cols - 1, n_rows - 1)
-        
+
         return np.sqrt(value)
-    
-    def _corr_matrix(self, df, func): 
+
+    def _corr_matrix(self, df, func):
         columns = df.columns
         K = df.shape[1]
         if K <= 1:
             return pd.DataFrame()
         else:
             corr_array = np.eye(K)
-            
+
             for i in range(K):
                 for j in range(K):
-                    if i <= j: 
+                    if i <= j:
                         continue
                     c = func(df[columns[i]], df[columns[j]])
                     corr_array[i, j] = c
@@ -396,4 +394,3 @@ class DataQualityAnalyzer(Analyzer):
             return df[num_for_corr].corr('kendall')
         elif kind == 'cramer_v':
             return self._corr_matrix(df[cat_for_corr], self._cramer_v)
-
