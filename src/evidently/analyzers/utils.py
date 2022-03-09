@@ -134,7 +134,6 @@ def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping) -> Dat
 
     if datetime_feature_names is None:
         datetime_feature_names = sorted(list(set(dataset.select_dtypes(["datetime"]).columns) - utility_columns_set))
-    
     else:
         empty_cols = dataset[datetime_feature_names].isnull().mean()
         empty_cols = empty_cols[empty_cols==1.].index

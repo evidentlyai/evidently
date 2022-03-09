@@ -1,10 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 import json
-from tkinter import TRUE
-from typing import List
 from typing import Optional
-from typing import Tuple
 import pandas as pd
 import numpy as np
 
@@ -13,10 +10,8 @@ from plotly.subplots import make_subplots
 
 from evidently import ColumnMapping
 from evidently.analyzers.data_quality_analyzer import DataQualityAnalyzer
-from evidently.analyzers.data_quality_analyzer import DataQualityAnalyzerResults
-from evidently.analyzers.data_quality_analyzer import FeatureQualityStats
 from evidently.model.widget import BaseWidgetInfo, AdditionalGraphInfo
-from evidently.dashboard.widgets.widget import Widget, GREY, RED, COLOR_DISCRETE_SEQUENCE
+from evidently.dashboard.widgets.widget import Widget
 
 
 class DataQualityCorrelationsWidget(Widget):
@@ -60,15 +55,15 @@ class DataQualityCorrelationsWidget(Widget):
                     "id": kind
                 }
             )
-            
+
         if is_current_data:
-            metrics_values_headers = ["top 5 correlation diff category (Cramer_V)", "value ref", "value curr", 
+            metrics_values_headers = ["top 5 correlation diff category (Cramer_V)", "value ref", "value curr",
             "difference", "top 5 correlation diff numerical (Spearman)", "value ref", "value curr", "difference"]
 
         else:
-            metrics_values_headers = ["top 5 correlated category (Cramer_V)", "Value", 
+            metrics_values_headers = ["top 5 correlated category (Cramer_V)", "Value",
                                       "top 5 correlated numerical (Spearman)", "Value"]
-        
+
         metrics = self._make_metrics(reference_correlations, current_correlations)
 
         wi = BaseWidgetInfo(
@@ -138,13 +133,13 @@ class DataQualityCorrelationsWidget(Widget):
         com_corr['abs_value_diff'] = np.abs(com_corr['value_diff'])
         com_corr = com_corr.sort_values('abs_value_diff', ascending=False)
         return com_corr[['features', 'value_ref', 'value_curr', 'value_diff']]
-    
+
     def _make_metrics(self, reference_correlations: dict, current_correlations: Optional[dict]):
         metrics = []
         if current_correlations is not None:
-            com_num_corr = self._get_rel_diff_corr_features_sorted(reference_correlations['spearman'], 
+            com_num_corr = self._get_rel_diff_corr_features_sorted(reference_correlations['spearman'],
                                                                    current_correlations['spearman'])
-            com_cat_corr = self._get_rel_diff_corr_features_sorted(reference_correlations['cramer_v'], 
+            com_cat_corr = self._get_rel_diff_corr_features_sorted(reference_correlations['cramer_v'],
                                                                    current_correlations['cramer_v'])
             for i in range(5):
                 values = ['-', '-', '-', '-', '-', '-', '-', '-']

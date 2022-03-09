@@ -773,7 +773,7 @@ def test_select_features_for_corr() -> None:
     )
     column_mapping = ColumnMapping(
         target="my_target",
-        numerical_features=["numerical_feature_1", "numerical_feature_2", "numerical_feature_empty", 
+        numerical_features=["numerical_feature_1", "numerical_feature_2", "numerical_feature_empty",
         "numerical_feature_constant"],
         categorical_features=["categorical_feature_1", "categorical_feature_2", "categorical_feature_empty",
         "categorical_feature_constant"],
