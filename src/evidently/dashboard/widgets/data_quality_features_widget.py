@@ -63,8 +63,8 @@ class DataQualityFeaturesWidget(Widget):
             metrics_values_headers = [""]
 
         widgets_list = []
-        additional_graphs = []
         for feature_name in all_features:
+            additional_graphs = []
             feature_type = data_quality_results.reference_features_stats[feature_name].feature_type
             fig_main_distr = self._plot_main_distr_figure(reference_data, current_data, feature_name, feature_type)
             parts = self.assemble_parts(target_column, date_column, feature_name, feature_type)
@@ -111,7 +111,7 @@ class DataQualityFeaturesWidget(Widget):
                 )
 
             wi = BaseWidgetInfo(
-                type="expandable_list",
+                type="rich_data",
                 title="",
                 size=2,
                 params={
@@ -122,12 +122,12 @@ class DataQualityFeaturesWidget(Widget):
                     "graph": {"data": fig_main_distr["data"], "layout": fig_main_distr["layout"]},
                     "details": {"parts": parts, "insights": []},
                 },
-                # additionalGraphs=additional_graphs
+                additionalGraphs=additional_graphs
             )
 
             widgets_list.append(wi)
 
-        return BaseWidgetInfo(title="", size=2, type="group", widgets=widgets_list, additionalGraphs=additional_graphs)
+        return BaseWidgetInfo(title="", size=2, type="list", widgets=widgets_list, pageSize=10)
 
     @staticmethod
     def _get_stats_with_names(

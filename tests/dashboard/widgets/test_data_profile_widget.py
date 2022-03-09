@@ -5,7 +5,7 @@ from pandas import DataFrame
 
 from evidently import ColumnMapping
 from evidently.analyzers.data_quality_analyzer import DataQualityAnalyzer
-from evidently.dashboard.widgets.data_profile_features_widget import DataQualityFeaturesWidget
+from evidently.dashboard.widgets.data_quality_features_widget import DataQualityFeaturesWidget
 from evidently.options import OptionsProvider
 
 

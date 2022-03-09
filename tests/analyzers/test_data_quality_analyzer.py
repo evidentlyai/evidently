@@ -6,6 +6,7 @@ import pandas as pd
 from evidently import ColumnMapping
 from evidently.analyzers.data_quality_analyzer import DataQualityAnalyzer
 from evidently.analyzers.data_quality_analyzer import FeatureQualityStats
+from evidently.analyzers.utils import process_columns
 
 import pytest
 
@@ -391,30 +392,6 @@ def test_data_profile_analyzer_new_and_unused_count_for_cat_features(
     "dataset, expected_metrics",
     [
         (
-            pd.DataFrame({"datetime_feature": []}),
-            FeatureQualityStats(
-                feature_type="datetime",
-                count=0,
-                percentile_25=None,
-                percentile_50=None,
-                percentile_75=None,
-                infinite_count=None,
-                infinite_percentage=None,
-                max=None,
-                min=None,
-                mean=None,
-                missing_count=None,
-                missing_percentage=None,
-                most_common_value=None,
-                most_common_value_percentage=None,
-                std=None,
-                unique_count=None,
-                unique_percentage=None,
-                most_common_not_null_value=None,
-                most_common_not_null_value_percentage=None,
-            ),
-        ),
-        (
             pd.DataFrame({"datetime_feature": [np.nan, np.nan, np.nan, np.nan]}),
             FeatureQualityStats(
                 feature_type="datetime",
@@ -485,6 +462,16 @@ def test_data_profile_analyzer_datetime_features(dataset: pd.DataFrame, expected
     assert "datetime_feature" in result.reference_features_stats.datetime_features_stats
     metrics = result.reference_features_stats.datetime_features_stats["datetime_feature"]
     assert metrics == expected_metrics
+
+def test_data_profile_analyzer_datetime_features_zero_lenth() -> None:
+    reference_data = pd.DataFrame({"datetime_feature": []})
+    data_profile_analyzer = DataQualityAnalyzer()
+
+    data_mapping = ColumnMapping(
+        datetime_features=["datetime_feature"],
+    )
+    result = data_profile_analyzer.calculate(reference_data, None, data_mapping)
+    assert "datetime_feature" not in result.reference_features_stats.datetime_features_stats
 
 
 def test_data_profile_analyzer_empty_features() -> None:
@@ -731,3 +718,76 @@ def test_data_profile_analyzer_regression() -> None:
     )
 
     assert result.current_features_stats is None
+
+def test_select_features_for_corr() -> None:
+    data_profile_analyzer = DataQualityAnalyzer()
+    reference_data = pd.DataFrame(
+        {
+            "my_target": [1, 2, 3, 1],
+            "reference": [2, 1, 1, 1],
+            "numerical_feature_1": [0, 2, -1, 5],
+            "numerical_feature_2": [0.3, 5, 0.3, 3.4],
+            "numerical_feature_empty": [np.nan]*4,
+            "numerical_feature_constant": [1]*4,
+            "categorical_feature_1": [1, 1, 5, 2],
+            "categorical_feature_2": ["y", "y", "n", "y"],
+            "categorical_feature_empty": [np.nan]*4,
+            "categorical_feature_constant": [1, 1, 1, np.nan],
+            "datetime_feature_1": [
+                datetime(year=2012, month=1, day=5),
+                datetime(year=2002, month=12, day=5),
+                datetime(year=2012, month=1, day=5),
+                datetime(year=2012, month=1, day=6),
+            ],
+            "datetime_feature_2": [
+                datetime(year=2022, month=1, day=5, hour=13, minute=23),
+                datetime(year=2022, month=1, day=5, hour=10, minute=23),
+                datetime(year=2022, month=1, day=5, hour=13),
+                datetime(year=2022, month=1, day=5, hour=10, minute=23),
+            ],
+        }
+    )
+    column_mapping = ColumnMapping(
+        target="my_target",
+        numerical_features=["numerical_feature_1", "numerical_feature_2", "numerical_feature_empty",
+        "numerical_feature_constant"],
+        categorical_features=["categorical_feature_1", "categorical_feature_2", "categorical_feature_empty",
+        "categorical_feature_constant"],
+        datetime_features=["datetime_feature_1", "datetime_feature_2"],
+        task="regression",
+    )
+    columns = process_columns(reference_data, column_mapping)
+    reference_features_stats = data_profile_analyzer._calculate_stats(reference_data, columns, "regression")
+    num_for_corr, cat_for_corr = data_profile_analyzer._select_features_for_corr(reference_features_stats, 
+                                                                                 target_name="my_target")
+    assert num_for_corr == ["numerical_feature_1", "numerical_feature_2", "my_target"]
+    assert cat_for_corr == ["categorical_feature_1", "categorical_feature_2"]
+
+
+def test_cramer_v() -> None:
+    x = pd.Series(['a'] * 15 + ['b'] * 13)
+    y = pd.Series(['c'] * 7 + ['d'] * 8 + ['c'] * 11 + ['d'] * 2)
+    data_profile_analyzer = DataQualityAnalyzer()
+    v = data_profile_analyzer._cramer_v(x, y)
+
+    assert v == 0.3949827793858816
+
+def test_corr_matrix() -> None:
+    df = pd.DataFrame(
+        {
+            'x': ['a'] * 15 + ['b'] * 13,
+            'y': ['c'] * 7 + ['d'] * 8 + ['c'] * 11 + ['d'] * 2,
+            'z': ['f'] * 14 + ['e'] * 14
+        }
+    )
+    data_profile_analyzer = DataQualityAnalyzer()
+    corr_matrix = data_profile_analyzer._corr_matrix(df, data_profile_analyzer._cramer_v)
+    expected = np.array(
+        [[1.        , 0.39498278, 0.93094934],
+        [0.39498278, 1.        , 0.2981424 ],
+        [0.93094934, 0.2981424 , 1.        ]]
+    )
+
+    assert np.allclose(corr_matrix.values, expected)
+
+
