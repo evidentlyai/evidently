@@ -12,6 +12,7 @@ from evidently.model_monitoring import NumTargetDriftMonitor
 from evidently.model_monitoring import RegressionPerformanceMonitor
 from evidently.model_monitoring import ClassificationPerformanceMonitor
 from evidently.model_monitoring import ProbClassificationPerformanceMonitor
+from evidently.model_monitoring import DataQualityMonitor
 from evidently.model_monitoring.monitoring import ModelMonitoringMetric
 from evidently.model_monitoring.monitoring import ModelMonitor
 from evidently.pipeline.column_mapping import ColumnMapping
@@ -51,6 +52,7 @@ def test_model_monitoring_with_simple_data():
             DataDriftMonitor(),
             RegressionPerformanceMonitor(),
             ClassificationPerformanceMonitor(),
+            DataQualityMonitor(),
         ],
         options=None,
     )
@@ -75,6 +77,7 @@ def test_model_monitoring_with_simple_data():
     assert "classification_performance:class_representation" in result
     assert "classification_performance:class_quality" in result
     assert "classification_performance:confusion" in result
+    assert "data_quality:quality_stat" in result
 
 
 def test_metric_creation_with_incorrect_labels():
@@ -94,6 +97,7 @@ def test_metric_creation_with_incorrect_labels():
 @pytest.mark.parametrize(
     "monitor_class, raises_value_error",
     (
+        (DataQualityMonitor, False),
         (RegressionPerformanceMonitor, False),
         (ClassificationPerformanceMonitor, False),
         (DataDriftMonitor, True),
