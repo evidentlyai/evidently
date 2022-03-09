@@ -39,22 +39,23 @@ class DataQualityCorrelationsWidget(Widget):
         additional_graphs = []
         parts = []
         for kind in ['pearson', 'spearman', 'kendall', 'cramer_v']:
-            correlation_figure = self._plot_correlation_figure(kind, reference_correlations, current_correlations)
-            additional_graphs.append(
-                        AdditionalGraphInfo(
-                            kind,
-                            {
-                                "data": correlation_figure["data"],
-                                "layout": correlation_figure["layout"],
-                            },
+            if reference_correlations[kind].shape[0] > 1:
+                correlation_figure = self._plot_correlation_figure(kind, reference_correlations, current_correlations)
+                additional_graphs.append(
+                            AdditionalGraphInfo(
+                                kind,
+                                {
+                                    "data": correlation_figure["data"],
+                                    "layout": correlation_figure["layout"],
+                                },
+                            )
                         )
-                    )
-            parts.append(
-                {
-                    "title": kind,
-                    "id": kind
-                }
-            )
+                parts.append(
+                    {
+                        "title": kind,
+                        "id": kind
+                    }
+                )
 
         if is_current_data:
             metrics_values_headers = ["top 5 correlation diff category (Cramer_V)", "value ref", "value curr",
@@ -129,7 +130,7 @@ class DataQualityCorrelationsWidget(Widget):
         ref_corr = self._get_df_corr_features_sorted(ref_corr).rename(columns={'value': 'value_ref'})
         curr_corr = self._get_df_corr_features_sorted(curr_corr).rename(columns={'value': 'value_curr'})
         com_corr = ref_corr.merge(curr_corr, on='features', how='left')
-        com_corr['value_diff'] = np.round((ref_corr['value_ref'] - curr_corr['value_curr']), 3)
+        com_corr['value_diff'] = np.round((com_corr['value_ref'] - com_corr['value_curr']), 3)
         com_corr['abs_value_diff'] = np.abs(com_corr['value_diff'])
         com_corr = com_corr.sort_values('abs_value_diff', ascending=False)
         return com_corr[['features', 'value_ref', 'value_curr', 'value_diff']]
@@ -137,10 +138,16 @@ class DataQualityCorrelationsWidget(Widget):
     def _make_metrics(self, reference_correlations: dict, current_correlations: Optional[dict]):
         metrics = []
         if current_correlations is not None:
-            com_num_corr = self._get_rel_diff_corr_features_sorted(reference_correlations['spearman'],
-                                                                   current_correlations['spearman'])
-            com_cat_corr = self._get_rel_diff_corr_features_sorted(reference_correlations['cramer_v'],
-                                                                   current_correlations['cramer_v'])
+            if reference_correlations['spearman'].shape[0] > 1:
+                com_num_corr = self._get_rel_diff_corr_features_sorted(reference_correlations['spearman'],
+                                                                    current_correlations['spearman'])
+            else:
+                com_num_corr = pd.DataFrame()
+            if reference_correlations['cramer_v'].shape[0] > 1:
+                com_cat_corr = self._get_rel_diff_corr_features_sorted(reference_correlations['cramer_v'],
+                                                                    current_correlations['cramer_v'])
+            else:
+                com_cat_corr = pd.DataFrame()
             for i in range(5):
                 values = ['-', '-', '-', '-', '-', '-', '-', '-']
                 if i < com_cat_corr.shape[0]:
