@@ -313,6 +313,12 @@ class DataQualityAnalyzer(Analyzer):
 
         if feature_type == "num":
             # round most common feature value for numeric features to 1e-5
+            # import logging
+            # logging.warning(result.most_common_value)
+            # logging.warning(type(result.most_common_value))
+            # if result.most_common_value:
+            if not np.issubdtype(feature, np.number):
+                feature = feature.astype(float)
             result.most_common_value = np.round(result.most_common_value, 5)
             result.infinite_count = int(np.sum(np.isinf(feature)))
             result.infinite_percentage = get_percentage_from_all_values(result.infinite_count)
@@ -335,7 +341,7 @@ class DataQualityAnalyzer(Analyzer):
 
         return result
 
-    def _select_features_for_corr(self, reference_features_stats: DataQualityStats, target_name: Optional[str]):
+    def _select_features_for_corr(self, reference_features_stats: DataQualityStats, target_name: Optional[str]) -> tuple:
         num_for_corr = []
         for featurue in reference_features_stats.num_features_stats:
             if reference_features_stats[featurue].unique_count > 1:

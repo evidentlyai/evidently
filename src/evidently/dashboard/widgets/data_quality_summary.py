@@ -41,25 +41,23 @@ class DataQualitySummaryWidget(Widget):
         else:
             metrics_values_headers = [""]
 
-        stats_list = ['number of variables', 'number of observations', 'missing cells', 'categorical features', 
-                      'numeric features', 'datetime features', 'constant features', 'empty features', 
-                      'almost constant features', 'almost empty features']
+        stats_list = ['target column', 'date column', 'number of variables', 'number of observations', 'missing cells',
+                      'categorical features', 'numeric features', 'datetime features', 'constant features', 
+                      'empty features', 'almost constant features', 'almost empty features']
         metrics = self._get_stats_with_names(stats_list, reference_stats, current_stats)
 
         wi = BaseWidgetInfo(
-                type="expandable_list",
+                type="rich_data",
                 title="",
                 size=2,
                 params={
-                    "header": "Summary",
+                    "header": "Data Summary",
                     "description": "",
                     "metricsValuesHeaders": metrics_values_headers,
                     "metrics": metrics,
-                    "graph": {},
-                    "details": {},
                 },
-                # additionalGraphs=additional_graphs
             )
+
         return wi
 
     @staticmethod
@@ -78,24 +76,43 @@ class DataQualitySummaryWidget(Widget):
         all_features = data_quality_results.columns.get_all_features_list(
             cat_before_num=True, include_datetime_feature=True
         )
-        if data_quality_results.columns.utility_columns.date:
-            all_features = [data_quality_results.columns.utility_columns.date] + all_features
         if data_quality_results.columns.utility_columns.target:
-            all_features = [data_quality_results.columns.utility_columns.target] + all_features
+            target_name = data_quality_results.columns.utility_columns.target
+            # target_type = df_stats[target_name].feature_type
+            # all_features = [target_name] + all_features
+        else:
+            target_name = None
+        if data_quality_results.columns.utility_columns.date:
+            date_name = data_quality_results.columns.utility_columns.date
+            all_features = [date_name] + all_features
+        else:
+            date_name = None
+        
+        if target_name:
+            result['target column'] = target_name
+        else:
+            result['target column'] = 'None'
+        if date_name: 
+            result['date column'] = date_name
+        else:
+            result['date column'] = 'None'
         result['number of variables'] = len(all_features)
         result['number of observations'] = df.shape[0]
-        missing_cells = df[all_features].isnull().sum()
-        missing_cells_percentage = np.round(missing_cells / (df.shape[0]*df.shape[1]), 2)
+        missing_cells = df[all_features].isnull().sum().sum()
+        missing_cells_percentage = np.round(
+            missing_cells / (result['number of variables'] * result['number of observations']), 2)
         result['missing cells'] = f'{missing_cells} ({missing_cells_percentage}%)'
         result['categorical features'] = len(data_quality_results.columns.cat_feature_names)
         result['numeric features'] = len(data_quality_results.columns.num_feature_names)
         result['datetime features'] = len(data_quality_results.columns.datetime_feature_names)
+        if date_name:
+            result['datetime features'] = result['datetime features'] + 1
         constant_values = pd.Series([df_stats[x].most_common_value_percentage for x in all_features])
         empty_values = pd.Series([df_stats[x].missing_percentage for x in all_features])
-        result['constant features'] = (constant_values==1).sum()
-        result['empty features'] = (empty_values==1).sum()
-        result['almost constant features'] = (constant_values>=0.95).sum()
-        result['almost empty features'] = (empty_values>=0.95).sum()
+        result['constant features'] = (constant_values == 100).sum()
+        result['empty features'] = (empty_values == 100).sum()
+        result['almost constant features'] = (constant_values >= 95).sum()
+        result['almost empty features'] = (empty_values >= 95).sum()
         return result
 
     @staticmethod
