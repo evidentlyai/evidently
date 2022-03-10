@@ -88,6 +88,8 @@ In this example each row is sent with 10 seconds timeout. This is why at the ver
  
 Go to the browser and access the Grafana dashboard at http://localhost:3000. At first, you will be asked for login and password. Both are `admin`. 
 
+To see the monitoring dashboard in Grafana interface, click "General" and navigate to the chosen dashboard (e.g. "Evidently Data Drift").
+
 8. **Stop the example**.
 
 To stop the execution, run ```docker compose down``` command.
