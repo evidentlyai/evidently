@@ -366,7 +366,7 @@ class DataQualityAnalyzer(Analyzer):
         chi2_stat = chi2_contingency(arr, correction=False)
         phi2 = chi2_stat[0] / arr.sum()
         n_rows, n_cols = arr.shape
-        if min(n_cols - 1, n_rows - 1) == 1:
+        if min(n_cols - 1, n_rows - 1) == 0:
             value = np.nan
         else:
             value = np.sqrt(phi2 / min(n_cols - 1, n_rows - 1))
