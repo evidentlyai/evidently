@@ -104,16 +104,16 @@ class DataQualityCorrelationsWidget(Widget):
             z=reference_correlations[kind],
             x=columns,
             y=columns,
-            coloraxis = "coloraxis")
+            coloraxis="coloraxis")
         fig.append_trace(trace, 1, 1)
         if current_correlations is not None:
             trace = go.Heatmap(
                 z=current_correlations[kind],
                 x=columns,
                 y=columns,
-                coloraxis = "coloraxis")
+                coloraxis="coloraxis")
             fig.append_trace(trace, 1, 2)
-        fig.update_layout(coloraxis = {'colorscale': 'RdBu'})
+        fig.update_layout(coloraxis={'colorscale': 'RdBu'})
         correlation_figure = json.loads(fig.to_json())
         return correlation_figure
 
