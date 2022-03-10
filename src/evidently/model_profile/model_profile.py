@@ -7,7 +7,6 @@ from typing import Optional
 from typing import Type
 from typing import Sequence
 
-
 import pandas
 
 from evidently.analyzers.base_analyzer import Analyzer
@@ -22,12 +21,16 @@ class Profile(Pipeline):
     stages: Sequence[ProfileSection]
 
     def __init__(self, sections: Sequence[ProfileSection], options: Optional[list] = None) -> None:
+        if options is None:
+            options = []
         super().__init__(sections, options if options is not None else [])
 
-    def calculate(self,
-                  reference_data: pandas.DataFrame,
-                  current_data: Optional[pandas.DataFrame],
-                  column_mapping: Optional[ColumnMapping] = None) -> None:
+    def calculate(
+        self,
+        reference_data: pandas.DataFrame,
+        current_data: Optional[pandas.DataFrame] = None,
+        column_mapping: Optional[ColumnMapping] = None,
+    ) -> None:
         self.execute(reference_data, current_data, column_mapping)
 
     def get_analyzers(self) -> List[Type[Analyzer]]:
@@ -37,8 +40,6 @@ class Profile(Pipeline):
         return json.dumps(self.object(), cls=NumpyEncoder)
 
     def object(self) -> Dict[str, Any]:
-        result: Dict[str, Any] = {
-            part.part_id(): part.get_results() for part in self.stages
-        }
-        result['timestamp'] = str(datetime.now())
+        result: Dict[str, Any] = {part.part_id(): part.get_results() for part in self.stages}
+        result["timestamp"] = str(datetime.now())
         return result

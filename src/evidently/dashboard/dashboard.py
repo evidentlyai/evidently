@@ -80,6 +80,7 @@ def file_html_template(params: TemplateParams):
     return f"""
 <html>
 <head>
+<meta charset="utf-8">
 <style>
 /* fallback */
 @font-face {{
@@ -145,7 +146,7 @@ class Dashboard(Pipeline):
 
     def calculate(self,
                   reference_data: pandas.DataFrame,
-                  current_data: Optional[pandas.DataFrame],
+                  current_data: Optional[pandas.DataFrame] = None,
                   column_mapping: Optional[ColumnMapping] = None):
         column_mapping = column_mapping or ColumnMapping()
         self.execute(reference_data, current_data, column_mapping)
@@ -159,7 +160,7 @@ class Dashboard(Pipeline):
         for widget in [item for tab in tab_widgets for item in tab]:
             if widget is None:
                 continue
-            for graph in widget.additionalGraphs:
+            for graph in widget.get_additional_graphs():
                 additional_graphs[graph.id] = graph.params
         return template(TemplateParams(dashboard_id, dashboard_info, additional_graphs))
 
