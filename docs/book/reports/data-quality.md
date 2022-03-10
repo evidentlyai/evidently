@@ -6,6 +6,8 @@
 * Displays interactive plots with data distribution and behavior in time
 * Plots interactions for features and target
 * Works for a single dataset or compares the two 
+* Provides general information about dataset
+* Calculate correlations between features and target
 
 ## Summary
 
@@ -29,51 +31,74 @@ You can read more to understand [column mapping](../dashboards/column_mapping.md
 
 ## How it looks
 
-The default report includes 3 components. All plots are interactive.
+The default report includes 3 widgets. All plots are interactive.
 
-### 1. Feature overview table
+### Summary widget
+
+The table content general information about dataset
+
+### Features widget
+
+There are 3 components:
+
+#### 1. Feature overview table
 
 The table shows relevant statistical summaries for each feature based on its type and a visualization of feature distribution. 
 
-#### Example for categorical feature:
+##### Example for categorical feature:
 
 ![](../.gitbook/assets/reports_data_quality_overview_cat.png)
 
-#### Example for numerical feature:
+##### Example for numerical feature:
 
 ![](../.gitbook/assets/reports_data_quality_overview_num.png)
 
-#### Example for datetime feature:
+##### Example for datetime feature:
 
 ![](../.gitbook/assets/reports_data_quality_overview_datetime.png)
 
-### 2. Feature in time
+#### 2. Feature in time
 
 If you click on "details" each feature would include additional visualization to show feature behavior in time.
 
-#### Example for categorical feature:
+##### Example for categorical feature:
 
 ![](../.gitbook/assets/reports_data_quality_in_time_cat.png)
 
-#### Example for numerical feature:
+##### Example for numerical feature:
 
 ![](../.gitbook/assets/reports_data_quality_in_time_num.png)
 
-#### Example for datetime feature:
+##### Example for datetime feature:
 
 ![](../.gitbook/assets/reports_data_quality_in_time_datetime.png)
 
-### 3. Feature by target 
+#### 3. Feature by target 
 
 Categorical and numerical features include an additional visualization that plots the interaction between a given feature and the target. 
 
-#### Example for categorical feature:
+##### Example for categorical feature:
 
 ![](../.gitbook/assets/reports_data_quality_by_target_cat.png)
 
-#### Example for numerical feature:
+##### Example for numerical feature:
 
 ![](../.gitbook/assets/reports_data_quality_by_target_num.png)
+
+### Correlation widget
+
+There are 2 components:
+
+#### 1. Insites
+
+For a single dataset we list top-5 of highly correlated variables from Cramer's v correlation matrix and from Spearman correlation matrix.
+For two datasets we list top-5 pairs of variables where correlation changes the most berween reference and current matrices. Likewise, from Cramer's v correlation matrix and from Spearman correlation matrix.
+
+#### 2. Correlation heatmaps
+
+For categorical features we calculate Cramer's v correlation matrix.
+For numerical features we calculate Pearson, Spearman and Kendall matrices. 
+Target included in the correlation matrix according to it's type. 
 
 ## JSON Profile
 
