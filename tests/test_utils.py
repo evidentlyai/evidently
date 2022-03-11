@@ -44,6 +44,9 @@ from evidently.utils.numpy_encoder import NumpyEncoder
         (np.array([[0, 1, 2.1], [0, 1, 2.1], [0, 1, 2.1]]), "[[0.0, 1.0, 2.1], [0.0, 1.0, 2.1], [0.0, 1.0, 2.1]]"),
         (np.ones((2, 3)), "[[1.0, 1.0, 1.0], [1.0, 1.0, 1.0]]"),
         (np.void(3), "null"),
+        # pandas date classes
+        ([pd.Timestamp(2022, 2, 3, 12)], '["2022-02-03 12:00:00"]'),
+        ([pd.Timedelta(days=1)], '["1 days 00:00:00"]'),
         # python types
         (
             [321123321123, 0.56, True, False, None, "test", {1: 4}],
