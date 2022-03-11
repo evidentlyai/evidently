@@ -1,7 +1,7 @@
 """Common methods for testing sections"""
 import json
-from typing import Type
 from typing import Optional
+from typing import Type
 
 import pandas
 
