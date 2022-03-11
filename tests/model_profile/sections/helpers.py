@@ -1,10 +1,11 @@
 """Common methods for testing sections"""
 import json
-from typing import ClassVar
 from typing import Optional
+from typing import Type
 
 import pandas
 
+from evidently.model_profile.sections.base_profile_section import ProfileSection
 from evidently.options import OptionsProvider
 from evidently.options import DataDriftOptions
 from evidently.pipeline.column_mapping import ColumnMapping
@@ -31,7 +32,7 @@ def check_profile_section_result_common_part(section_result: dict, section_resul
     assert 'metrics' in result_data
 
 
-def check_section_without_calculation_results(profile_section_class: ClassVar, part_id: str) -> None:
+def check_section_without_calculation_results(profile_section_class: Type[ProfileSection], part_id: str) -> None:
     """Check creation of a section and results without calculations"""
     data_drift_profile_section = profile_section_class()
     assert data_drift_profile_section.part_id() == part_id
@@ -40,7 +41,7 @@ def check_section_without_calculation_results(profile_section_class: ClassVar, p
 
 
 def calculate_section_results(
-        profile_section_class: ClassVar,
+        profile_section_class: Type[ProfileSection],
         reference_data: Optional[pandas.DataFrame],
         current_data: Optional[pandas.DataFrame],
         columns_mapping: Optional[ColumnMapping] = None

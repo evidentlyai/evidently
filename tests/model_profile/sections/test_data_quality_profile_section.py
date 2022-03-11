@@ -259,3 +259,169 @@ def test_data_quality_profile_section_with_calculated_results(
     assert "metrics" in result_data
     result_metrics: dict = result_data["metrics"]
     assert result_metrics == expected_metrics
+
+@pytest.mark.parametrize(
+    "kind, expected_corr_dict",
+    [
+        (
+            "pearson",
+            {
+                'num_feature_1': {
+                    'num_feature_2': 0.831246511091087,
+                    'num_feature_3': 0.8703882797784892,
+                    'num_feature_4': 1.0,
+                    'target': 0.06286946134619315
+                },
+                'num_feature_2': {
+                    'num_feature_1': 0.831246511091087,
+                    'num_feature_3': 0.6387140179060972,
+                    'num_feature_4': 1.0,
+                    'target': -0.1354766133889617
+                },
+                'num_feature_3': {
+                    'num_feature_1': 0.8703882797784892,
+                    'num_feature_2': 0.6387140179060972,
+                    'num_feature_4': np.nan,
+                    'target': 0.1203858530857692
+                },
+                'num_feature_4': {
+                    'num_feature_1': 1.0,
+                    'num_feature_2': 1.0,
+                    'num_feature_3': np.nan,
+                    'target': 1.0
+                },
+                'target': {
+                    'num_feature_1': 0.06286946134619315,
+                    'num_feature_2': -0.1354766133889617,
+                    'num_feature_3': 0.1203858530857692,
+                    'num_feature_4': 1.0}
+            }
+        ),
+        (
+            "spearman",
+            {
+                'num_feature_1': {
+                    'num_feature_2': 0.791470623690405,
+                    'num_feature_3': 0.8703882797784891,
+                    'num_feature_4': 1.0,
+                    'target': 0.057788559639706465
+                },
+                'num_feature_2': {
+                    'num_feature_1': 0.791470623690405,
+                    'num_feature_3': 0.5991712703227052,
+                    'num_feature_4': 1.0,
+                    'target': -0.19500675222569575
+                },
+                'num_feature_3': {
+                    'num_feature_1': 0.8703882797784891,
+                    'num_feature_2': 0.5991712703227052,
+                    'num_feature_4': np.nan,
+                    'target': 0.11065666703449763
+                },
+                'num_feature_4': {
+                    'num_feature_1': 1.0,
+                    'num_feature_2': 1.0,
+                    'num_feature_3': np.nan,
+                    'target': 1.0
+                },
+                'target': {
+                    'num_feature_1': 0.057788559639706465,
+                    'num_feature_2': -0.19500675222569575,
+                    'num_feature_3': 0.11065666703449763,
+                    'num_feature_4': 1.0
+                }
+            }
+        ),
+        (
+            "kendall",
+            {
+                'num_feature_1': {
+                    'num_feature_2': 0.7360699299651778,
+                    'num_feature_3': 0.7453559924999299,
+                    'num_feature_4': 1.0,
+                    'target': 0.0778498944161523
+                },
+                'num_feature_2': {
+                    'num_feature_1': 0.7360699299651778,
+                    'num_feature_3': 0.5246313898711125,
+                    'num_feature_4': 1.0,
+                    'target': -0.13430382733756338
+                },
+                'num_feature_3': {
+                    'num_feature_1': 0.7453559924999299,
+                    'num_feature_2': 0.5246313898711125,
+                    'num_feature_4': np.nan,
+                    'target': 0.1044465935734187
+                },
+                'num_feature_4': {
+                    'num_feature_1': 1.0,
+                    'num_feature_2': 1.0,
+                    'num_feature_3': np.nan,
+                    'target': 1.0
+                },
+                'target': {
+                    'num_feature_1': 0.0778498944161523,
+                    'num_feature_2': -0.13430382733756338,
+                    'num_feature_3': 0.1044465935734187,
+                    'num_feature_4': 1.0
+                }
+            }
+        ),
+        (
+            'cramer_v',
+            {
+                'cat_feature_1': {
+                    'cat_feature_2': 0.7211102550927979,
+                    'cat_feature_3': 0.816496580927726,
+                    'cat_feature_4': np.nan
+                },
+                'cat_feature_2': {
+                    'cat_feature_1': 0.7211102550927979,
+                    'cat_feature_3': 0.7071067811865476,
+                    'cat_feature_4': 1.0
+                },
+                'cat_feature_3': {
+                    'cat_feature_1': 0.816496580927726,
+                    'cat_feature_2': 0.7071067811865476,
+                    'cat_feature_4': np.nan
+                },
+                'cat_feature_4': {
+                    'cat_feature_1': np.nan,
+                    'cat_feature_2': 1.0,
+                    'cat_feature_3': np.nan
+                }
+            }
+        )
+    ]
+)
+def test_data_quality_profile_section_correlations(kind: str, expected_corr_dict: dict) -> None:
+    df = pd.DataFrame(
+        {"num_feature_1": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+        "num_feature_2": [0.1, 0.2, 0.3, 1, 0.5, 0.6, 0.7, 1, 0.9, 1],
+        "num_feature_3": [1, 1, 1, 1, 1, 2, 2, 2, 2, 2],
+        "num_feature_4": [1, 2, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan],
+        "num_feature_constant": [1] * 10,
+        "num_feature_empty": [np.nan] * 10,
+        "cat_feature_1": ['a', 'a', 'a', 'a', 'a', 'b', 'b', 'b', 'b', 'b'],
+        "cat_feature_2": ['c', 'd', 'c', 'f', 'c', 'g', 'c', 'h', 'c', 'j'],
+        "cat_feature_3": [1, 1, 1, 1, 2, 2, 2, 2, 2, 2],
+        "cat_feature_4": [1, 2, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan],
+        "cat_feature_constant": [1] * 10,
+        "cat_feature_empty": [np.nan] * 10,
+        "datetime_feature": [datetime(year=2123, month=12, day=12)] * 10,
+        "target": [1, 2, 3, 1, 2, 3, 1, 2, 3, 1]
+        }
+    )
+    column_mapping = ColumnMapping(
+        target="target",
+        numerical_features=["num_feature_1", "num_feature_2", "num_feature_3", "num_feature_4", "num_feature_constant", 
+        "num_feature_empty"],
+        categorical_features=["cat_feature_1", "cat_feature_2", "cat_feature_3", "cat_feature_4", 
+        "cat_feature_constant", "cat_feature_empty"],
+        datetime_features=["datetime_feature"],
+        task="regression",
+    )
+    profile_section_result = calculate_section_results(
+        DataQualityProfileSection, df, None, column_mapping
+    )
+    np.testing.assert_equal(profile_section_result['data']['correlations']['reference'][kind], expected_corr_dict)
