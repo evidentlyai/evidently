@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 
 import numpy as np
 import pandas as pd
@@ -12,6 +13,7 @@ _TYPES_MAPPING = (
     ((np.float_, np.float16, np.float32, np.float64), float),
     ((np.ndarray,), lambda obj: obj.tolist()),
     ((np.bool, np.bool_), bool),
+    ((pd.Timestamp, pd.Timedelta), str),
     ((np.void, type(pd.NaT)), lambda obj: None),
 )
 
