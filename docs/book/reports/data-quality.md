@@ -12,9 +12,9 @@ The report works for a single dataset or compares the two.
 
 The Data Quality report provides detailed feature statistics and feature behavior overview. 
 
-It can also compare any two datasets, e.g., train and test, reference and current data, or two subgroups of one dataset (e.g., customers in different regions).
+It can also compare any two datasets. You can use it to compare train and test data, reference and current data, or two subgroups of one dataset (e.g., customers in different regions).
 
-## Requirements
+## Data requirements and column mapping
 
 If you want to run this report for a single dataset, you need to prepare a `pandas.DataFrame` or `csv` file with features you want to explore. Pass it as **reference** data.
 * If you have a **datetime** column and want to learn how features change with time, specify the datetime column in the `column_mapping` parameter.
@@ -22,25 +22,27 @@ If you want to run this report for a single dataset, you need to prepare a `pand
 
 To compare two datastes, you need two `DataFrames` or `csv` files. The schema of both datasets should be identical.
 
-Feature types (numerical, categorical, datetime) will be parsed based on pandas column type. If you work with `csv` files in CLI, or want to specify a different feature mapping strategy, you can explicitly set this using `column_mapping`.
+Feature types (numerical, categorical, datetime) will be parsed based on pandas column type. If you work with `csv` files in CLI, or want to specify a different feature mapping strategy, you can explicitly set the feature type using `column_mapping`.
+
+The report contains the section that plots interactions between the features and the target. It will look slightly different for classification and regression tasks. By default, if the target has a numeric type and has >5 unique values, Evidently will treat it as a regression problem. Everything else is treated as a classification problem. If you want to explicitly define your task as `regression` or `classification`, you should set the `task` parameter in the `column_mapping` object. 
 
 {% hint style="info" %}
-You can read more to understand [column mapping](../dashboards/column_mapping.md) and [data requirements](../dashboards/data_requirements.md) in the corresponding sections.  
+You can read more to understand [column mapping](../dashboards/column_mapping.md) and [data requirements](../dashboards/data_requirements.md) for Evidently reports in the corresponding sections of documentation.  
 {% endhint %}
 
 ## How it looks
 
 The default report includes 3 widgets. All plots are interactive.
 
-### Summary widget
+### 1. Summary widget
 
-The table content general information about dataset
+The table gives an overview of the dataset, including missing or empty features and other general information. It also shows the share of almost empty and almost constant features. This applies to cases when 99% or more features are missing or constant.    
 
-### Features widget
+### 2. Features widget
 
 There are 3 components:
 
-#### 1. Feature overview table
+#### 2.1. Feature overview table
 
 The table shows relevant statistical summaries for each feature based on its type and a visualization of feature distribution. 
 
@@ -56,7 +58,7 @@ The table shows relevant statistical summaries for each feature based on its typ
 
 ![](../.gitbook/assets/reports_data_quality_overview_datetime.png)
 
-#### 2. Feature in time
+#### 2.2. Feature in time
 
 If you click on "details" each feature would include additional visualization to show feature behavior in time.
 
@@ -72,7 +74,7 @@ If you click on "details" each feature would include additional visualization to
 
 ![](../.gitbook/assets/reports_data_quality_in_time_datetime.png)
 
-#### 3. Feature by target 
+#### 2.3. Feature by target 
 
 Categorical and numerical features include an additional visualization that plots the interaction between a given feature and the target. 
 
@@ -84,16 +86,16 @@ Categorical and numerical features include an additional visualization that plot
 
 ![](../.gitbook/assets/reports_data_quality_by_target_num.png)
 
-### Correlation widget
+### 3. Correlation widget
 
 There are 2 components:
 
-#### 1. Insites
+#### 3.1. Insites
 
 For a single dataset we list top-5 of highly correlated variables from Cramer's v correlation matrix and from Spearman correlation matrix.
 For two datasets we list top-5 pairs of variables where correlation changes the most berween reference and current matrices. Likewise, from Cramer's v correlation matrix and from Spearman correlation matrix.
 
-#### 2. Correlation heatmaps
+#### 3.2. Correlation heatmaps
 
 For categorical features we calculate Cramer's v correlation matrix.
 For numerical features we calculate Pearson, Spearman and Kendall matrices. 
