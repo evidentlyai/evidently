@@ -176,6 +176,60 @@ If you choose to generate a JSON profile, it will contain the following informat
           'target': 'target'
           }
         },
+      'correlations': {
+        'reference': {
+          'pearson': {
+            'feature_name_1': {
+              'feature_name_2': value,
+              'feature_name_3': value
+              },
+            'feature_name_2': {
+              'feature_name_1': value,
+              'feature_name_3': value
+              },
+            'feature_name_3': {
+              'feature_name_1': value,
+              'feature_name_2': value
+              }
+            },
+          'spearman': {
+            'feature_name_1': {
+              'feature_name_2': value,
+              'feature_name_3': value
+              },
+            'feature_name_2': {
+              'feature_name_1': value,
+              'feature_name_3': value
+              },
+            'feature_name_3': {
+              'feature_name_1': value,
+              'feature_name_2': value
+              }
+            },
+          'kendall': {
+            'feature_name_1': {
+              'feature_name_2': value,
+              'feature_name_3': value
+              },
+            'feature_name_2': {
+              'feature_name_1': value,
+              'feature_name_3': value
+              },
+            'feature_name_3': {
+              'feature_name_1': value,
+              'feature_name_2': value
+              }
+            },
+          'cramer_v': {
+            'feature_name_4': {
+              'feature_name_5': value
+              },
+            'feature_name_5': {
+              'feature_name_4': value
+              }
+            }  
+          }
+        }  
     'datetime': '2022-02-22 16:35:15.529404',
     'name': 'data_quality'
     },
