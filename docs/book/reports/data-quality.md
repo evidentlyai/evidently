@@ -1,13 +1,12 @@
 # Data Quality
 
-**TL;DR:** The report provides a detailed feature overview.
+**TL;DR:** The report provides a detailed dataset overview.
 
-* Calculates base statistics for numerical, categorical and datetime features
+* Calculates base statistics for numerical, categorical and datetime features 
 * Displays interactive plots with data distribution and behavior in time
-* Plots interactions for features and target
-* Works for a single dataset or compares the two 
-* Provides general information about dataset
-* Calculate correlations between features and target
+* Plots interactions and correlations between features and target
+
+The report works for a single dataset or compares the two. 
 
 ## Summary
 
@@ -21,7 +20,7 @@ If you want to run this report for a single dataset, you need to prepare a `pand
 * If you have a **datetime** column and want to learn how features change with time, specify the datetime column in the `column_mapping` parameter.
 * If you have a **target** column and want to see features distribution by target - specify the target column in the `column_mapping` parameter. 
 
-To compare two datastes, you need two `DataFrames` or `cs`v files. The schema of both datasets should be identical.
+To compare two datastes, you need two `DataFrames` or `csv` files. The schema of both datasets should be identical.
 
 Feature types (numerical, categorical, datetime) will be parsed based on pandas column type. If you work with `csv` files in CLI, or want to specify a different feature mapping strategy, you can explicitly set this using `column_mapping`.
 
