@@ -36,41 +36,43 @@ The default report includes 3 widgets. All plots are interactive.
 
 ### 1. Summary widget
 
-The table gives an overview of the dataset, including missing or empty features and other general information. It also shows the share of almost empty and almost constant features. This applies to cases when 99% or more features are missing or constant.    
+The table gives an overview of the dataset, including missing or empty features and other general information. It also shows the share of almost empty and almost constant features. This applies to cases when 95% or more features are missing or constant.
+
+![](../.gitbook/assets/reports_data_quality_summary.png)
 
 ### 2. Features widget
 
-There are 3 components:
+For each feature, this widget generates a set of visualizations. They vary depending on the feature type. There are 3 components:
 
 #### 2.1. Feature overview table
 
 The table shows relevant statistical summaries for each feature based on its type and a visualization of feature distribution. 
 
-##### Example for categorical feature:
+##### Example for a categorical feature:
 
 ![](../.gitbook/assets/reports_data_quality_overview_cat.png)
 
-##### Example for numerical feature:
+##### Example for a numerical feature:
 
 ![](../.gitbook/assets/reports_data_quality_overview_num.png)
 
-##### Example for datetime feature:
+##### Example for a datetime feature:
 
 ![](../.gitbook/assets/reports_data_quality_overview_datetime.png)
 
 #### 2.2. Feature in time
 
-If you click on "details" each feature would include additional visualization to show feature behavior in time.
+If you click on "details" for each feature, you will see additional visualizations to show the feature behavior in time.
 
-##### Example for categorical feature:
+##### Example for a categorical feature:
 
 ![](../.gitbook/assets/reports_data_quality_in_time_cat.png)
 
-##### Example for numerical feature:
+##### Example for a numerical feature:
 
 ![](../.gitbook/assets/reports_data_quality_in_time_num.png)
 
-##### Example for datetime feature:
+##### Example for a datetime feature:
 
 ![](../.gitbook/assets/reports_data_quality_in_time_datetime.png)
 
@@ -78,28 +80,38 @@ If you click on "details" each feature would include additional visualization to
 
 Categorical and numerical features include an additional visualization that plots the interaction between a given feature and the target. 
 
-##### Example for categorical feature:
+##### Example for a categorical feature:
 
 ![](../.gitbook/assets/reports_data_quality_by_target_cat.png)
 
-##### Example for numerical feature:
+##### Example for a numerical feature:
 
 ![](../.gitbook/assets/reports_data_quality_by_target_num.png)
 
 ### 3. Correlation widget
 
-There are 2 components:
+This widget shows the correlations between different features. 
 
-#### 3.1. Insites
+#### 3.1. Insights
 
-For a single dataset we list top-5 of highly correlated variables from Cramer's v correlation matrix and from Spearman correlation matrix.
-For two datasets we list top-5 pairs of variables where correlation changes the most berween reference and current matrices. Likewise, from Cramer's v correlation matrix and from Spearman correlation matrix.
+This table shows a summary of pairwise feature correlations.  
+
+For a single dataset, it lists the top-5 highly correlated variables from Cramer's v correlation matrix (categorical features) and from Spearman correlation matrix (numerical features).
+
+For two datasets, it lists the top-5 pairs of variables **where correlation changes** the most between the reference and current datasets. Similarly, it uses categorical features from Cramer's v correlation matrix and numerical features from Spearman correlation matrix.
+
+![](../.gitbook/assets/reports_data_quality_correlations.png)
 
 #### 3.2. Correlation heatmaps
 
-For categorical features we calculate Cramer's v correlation matrix.
-For numerical features we calculate Pearson, Spearman and Kendall matrices. 
-Target included in the correlation matrix according to it's type. 
+This section includes four heatmaps. 
+
+For categorical features, Evidently calculates the [Cramer's v](https://en.wikipedia.org/wiki/Cramér%27s_V) correlation matrix.
+For numerical features, Evidently calculates the [Pearson](https://en.wikipedia.org/wiki/Pearson_correlation_coefficient), [Spearman](https://en.wikipedia.org/wiki/Spearman%27s_rank_correlation_coefficient) and [Kendall](https://en.wikipedia.org/wiki/Kendall_rank_correlation_coefficient) matrices. 
+
+If your dataset includes the target, the target will be also shown in the matrix according to its type. 
+
+![](../.gitbook/assets/reports_data_quality_correlation_heatmaps.png)
 
 ## JSON Profile
 
