@@ -14,7 +14,7 @@ The Data Quality report provides detailed feature statistics and feature behavio
 
 It can also compare any two datasets. You can use it to compare train and test data, reference and current data, or two subgroups of one dataset (e.g., customers in different regions).
 
-## Data requirements and column mapping
+## Requirements 
 
 If you want to run this report for a single dataset, you need to prepare a `pandas.DataFrame` or `csv` file with features you want to explore. Pass it as **reference** data.
 * If you have a **datetime** column and want to learn how features change with time, specify the datetime column in the `column_mapping` parameter.
