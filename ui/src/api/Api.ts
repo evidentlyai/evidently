@@ -163,6 +163,10 @@ export interface RichDataParams {
     details?: BigTableRowDetails;
 }
 
+export interface TextWidgetParams {
+    text: string;
+}
+
 export interface WidgetInfo {
     type: string;
     title: string;
@@ -176,6 +180,7 @@ export interface WidgetInfo {
         | MultiTabGraphWidgetParams
         | BigTableWidgetParams
         | RichDataParams
+        | TextWidgetParams
     ;
     alertsPosition?: "row" | "column";
     alertStats?: AlertStats;
