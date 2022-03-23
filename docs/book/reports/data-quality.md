@@ -10,7 +10,7 @@ The report works for a single dataset or compares the two.
 
 ## Summary
 
-The Data Quality report provides detailed feature statistics and feature behavior overview. 
+The Data Quality report provides detailed feature statistics and a feature behavior overview. 
 
 It can also compare any two datasets. You can use it to compare train and test data, reference and current data, or two subgroups of one dataset (e.g., customers in different regions).
 
@@ -18,7 +18,7 @@ It can also compare any two datasets. You can use it to compare train and test d
 
 If you want to run this report for a single dataset, you need to prepare a `pandas.DataFrame` or `csv` file with features you want to explore. Pass it as **reference** data.
 * If you have a **datetime** column and want to learn how features change with time, specify the datetime column in the `column_mapping` parameter.
-* If you have a **target** column and want to see features distribution by target - specify the target column in the `column_mapping` parameter. 
+* If you have a **target** column and want to see features distribution by target, specify the target column in the `column_mapping` parameter. 
 
 To compare two datastes, you need two `DataFrames` or `csv` files. The schema of both datasets should be identical.
 
@@ -62,7 +62,7 @@ The table shows relevant statistical summaries for each feature based on its typ
 
 #### 2.2. Feature in time
 
-If you click on "details" for each feature, you will see additional visualizations to show the feature behavior in time.
+If you click on "details", each feature would include additional visualization to show feature behavior in time.
 
 ##### Example for a categorical feature:
 

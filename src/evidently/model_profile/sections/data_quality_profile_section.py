@@ -2,6 +2,8 @@ from datetime import datetime
 from typing import Any
 from typing import Dict
 
+import pandas as pd
+
 from evidently.analyzers.data_quality_analyzer import DataQualityAnalyzer
 from evidently.analyzers.data_quality_analyzer import DataQualityStats
 from evidently.model_profile.sections.base_profile_section import ProfileSection
@@ -32,16 +34,36 @@ class DataQualityProfileSection(ProfileSection):
 
         return result
 
+    @staticmethod
+    def _get_corr_matrices_as_dict(correlations: Dict[str, pd.DataFrame]) -> Dict[str, Any]:
+        result: Dict[str, Dict[str, Any]] = {}
+
+        for kind, corr_df in correlations.items():
+            result[kind] = {}
+            for feature in corr_df.columns:
+                result[kind][feature] = {
+                    k: v for (k, v) in zip(corr_df[feature].index, corr_df[feature]) if k != feature
+                }
+
+        return result
+
     def calculate(self, reference_data, current_data, column_mapping, analyzers_results):
         result = DataQualityAnalyzer.get_results(analyzers_results)
         result_json = result.columns.as_dict()
         result_json["metrics"] = {}
+        result_json["correlations"] = {}
 
         if result.reference_features_stats:
             result_json["metrics"]["reference"] = self._get_stats_as_dict(result.reference_features_stats)
 
         if result.current_features_stats:
             result_json["metrics"]["current"] = self._get_stats_as_dict(result.current_features_stats)
+
+        if result.reference_correlations:
+            result_json["correlations"]["reference"] = self._get_corr_matrices_as_dict(result.reference_correlations)
+
+        if result.current_correlations:
+            result_json["correlations"]["current"] = self._get_corr_matrices_as_dict(result.current_correlations)
 
         self._result = {"name": self.part_id(), "datetime": str(datetime.now()), "data": result_json}
 

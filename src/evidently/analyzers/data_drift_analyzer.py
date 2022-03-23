@@ -103,8 +103,8 @@ class DataDriftAnalyzer(Analyzer):
             p_values[feature_name] = PValueWithConfidence(p_value, confidence)
 
             features_metrics[feature_name] = DataDriftAnalyzerFeatureMetrics(
-                current_small_hist=list(reversed(list(map(list, zip(*feature_ref_data.value_counts().items()))))),
-                ref_small_hist=list(reversed(list(map(list, zip(*feature_cur_data.value_counts().items()))))),
+                ref_small_hist=list(reversed(list(map(list, zip(*feature_ref_data.value_counts().items()))))),
+                current_small_hist=list(reversed(list(map(list, zip(*feature_cur_data.value_counts().items()))))),
                 feature_type='cat',
                 p_value=p_value
             )
