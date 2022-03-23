@@ -669,10 +669,10 @@ class DataQualityFeaturesWidget(Widget):
             cat_feature_names = cat_feature_names + [target_column]
         for feature_name in cat_feature_names:
             if reference_data[feature_name].nunique() > 6:
-                cats = reference_data[feature_name].value_counts()[:5].index.astype(str)
-                reference_data[feature_name] = reference_data[feature_name].apply(lambda x: x if x in cats else "other")
+                cats = reference_data[feature_name].value_counts().iloc[:5].index.astype(str)
+                reference_data[feature_name] = reference_data[feature_name].apply(lambda x: x if str(x) in cats else "other")
                 if current_data is not None:
-                    current_data[feature_name] = current_data[feature_name].apply(lambda x: x if x in cats else "other")
+                    current_data[feature_name] = current_data[feature_name].apply(lambda x: x if str(x) in cats else "other")
 
     def _choose_agg_period(
         self, date_column: str, reference_data: pd.DataFrame, current_data: Optional[pd.DataFrame]
