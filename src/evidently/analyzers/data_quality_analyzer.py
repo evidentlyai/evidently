@@ -2,6 +2,7 @@
 # coding: utf-8
 from numbers import Number
 from typing import Dict
+from typing import Callable
 from typing import Optional
 from typing import Union
 
@@ -144,6 +145,8 @@ class DataQualityStats:
 
 @dataclass
 class DataQualityAnalyzerResults(BaseAnalyzerResult):
+    """Class for all results of data quality calculations"""
+
     reference_features_stats: DataQualityStats
     reference_correlations: Dict[str, pd.DataFrame]
     current_features_stats: Optional[DataQualityStats] = None
@@ -151,6 +154,10 @@ class DataQualityAnalyzerResults(BaseAnalyzerResult):
 
 
 class DataQualityAnalyzer(Analyzer):
+    """Data quality analyzer
+    provides detailed feature statistics and feature behavior overview
+    """
+
     @staticmethod
     def get_results(analyzer_results) -> DataQualityAnalyzerResults:
         return analyzer_results[DataQualityAnalyzer]
@@ -193,6 +200,17 @@ class DataQualityAnalyzer(Analyzer):
 
     @staticmethod
     def _recognize_task(target_name: str, reference_data: pd.DataFrame) -> str:
+        """Try to guess about the target type:
+        if the target has a numeric type and number of unique values > 5: task == ‘regression’
+        in all other cases task == ‘classification’.
+
+        Args:
+            target_name: name of target column.
+            reference_data: usually the data which you used in training.
+
+        Returns:
+            Task parameter.
+        """
         if pd.api.types.is_numeric_dtype(reference_data[target_name]) and reference_data[target_name].nunique() >= 5:
             task = "regression"
 
@@ -207,6 +225,22 @@ class DataQualityAnalyzer(Analyzer):
         current_data: Optional[pd.DataFrame],
         column_mapping: ColumnMapping,
     ) -> DataQualityAnalyzerResults:
+        """Calculates base statistics for numerical, categorical and datetime features.
+        For categorical features, calculates the Cramer's v correlation matrix. 
+        For numerical features, Evidently calculates the Pearson, Spearman and Kendall matrices.
+
+        Args:
+            reference_data: usually the data which you used in training.
+            current_data: new, unseen data to which we compare the reference data.
+            column_mapping: a `ColumnMapping` object that contains references to the name of target and prediction
+                columns
+        Returns:
+            A dictionary that contains:
+                - some meta information
+                - data quality metrics for all features
+                - correlation matrices
+        """
+
         columns = process_columns(reference_data, column_mapping)
         target_name = columns.utility_columns.target
         task: Optional[str]
@@ -340,6 +374,17 @@ class DataQualityAnalyzer(Analyzer):
         return result
 
     def _select_features_for_corr(self, reference_features_stats: DataQualityStats, target_name: Optional[str]) -> tuple:
+        """Define which features should be used for calculating correlation matrices:
+            - for pearson, spearman, and kendall correlation matrices we select numerical features which have > 1 
+                unique values;
+            - for kramer_v correlation matrix, we select categorical features which have > 1 unique values.
+        Args:
+            reference_features_stats: all features data quality metrics.
+            target_name: name of target column.
+        Returns:
+            num_for_corr: list of feature names for pearson, spearman, and kendall correlation matrices.
+            cat_for_corr: list of feature names for kramer_v correlation matrix.
+        """
         num_for_corr = []
         if reference_features_stats.num_features_stats is not None:
             for feature in reference_features_stats.num_features_stats:
@@ -361,7 +406,14 @@ class DataQualityAnalyzer(Analyzer):
                 cat_for_corr.append(target_name)
         return num_for_corr, cat_for_corr
 
-    def _cramer_v(self, x, y):
+    def _cramer_v(self, x: pd.Series, y: pd.Series) -> float:
+        """Calculate Cramér's V: a measure of association between two nominal variables.
+        Args:
+            x: The array of observed values.
+            y: The array of observed values.
+        Returns:
+            Value of the Cramér's V
+        """
         arr = pd.crosstab(x, y).values
         chi2_stat = chi2_contingency(arr, correction=False)
         phi2 = chi2_stat[0] / arr.sum()
@@ -373,7 +425,14 @@ class DataQualityAnalyzer(Analyzer):
 
         return value
 
-    def _corr_matrix(self, df, func):
+    def _corr_matrix(self, df: pd.Series, func: Callable[[pd.Series, pd.Series], float]) -> pd.DataFrame:
+        """Compute pairwise correlation of columns
+        Args:
+            df: initial data frame.
+            func: function for computing pairwise correlation.
+        Returns:
+            Correlation matrix.
+        """
         columns = df.columns
         K = df.shape[1]
         if K <= 1:
