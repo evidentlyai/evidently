@@ -450,6 +450,19 @@ class DataQualityAnalyzer(Analyzer):
             return pd.DataFrame(data=corr_array, columns=columns, index=columns)
 
     def _calculate_correlations(self, df, num_for_corr, cat_for_corr, kind):
+        """Calculate correlation matrix depending on the kind parameter
+        Args:
+            df: initial data frame.
+            num_for_corr: list of feature names for pearson, spearman, and kendall correlation matrices.
+            cat_for_corr: list of feature names for kramer_v correlation matrix.
+            kind: Method of correlation:
+                - pearson - standard correlation coefficient
+                - kendall - Kendall Tau correlation coefficient
+                - spearman - Spearman rank correlation
+                - cramer_v - Cramer’s V measure of association
+        Returns:
+            Correlation matrix.
+        """
         if kind == 'pearson':
             return df[num_for_corr].corr('pearson')
         elif kind == 'spearman':
