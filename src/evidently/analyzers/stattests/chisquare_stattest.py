@@ -5,7 +5,10 @@ import pandas as pd
 
 from scipy.stats import chisquare
 
+from evidently.analyzers.stattests.registry import stattest
 
+
+@stattest("chisquare", allowed_feature_types=["cat"])
 def chi_stat_test(reference_data: pd.Series, current_data: pd.Series) -> float:
     #  TODO: simplify ignoring NaN values here, in z_stat_test and data_drift_analyzer
     keys = list((set(reference_data) | set(current_data)) - {np.nan})

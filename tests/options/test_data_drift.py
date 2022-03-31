@@ -41,15 +41,20 @@ def _another_stattest():
 
 
 @pytest.mark.parametrize("feature_func,expected", [
-    (None, {"feature1": _default_stattest, "feature2": _default_stattest}),
-    ({"feature1": _custom_stattest}, {"feature1": _custom_stattest, "feature2": _default_stattest}),
-    ({"feature2": _custom_stattest}, {"feature1": _default_stattest, "feature2": _custom_stattest}),
-    ({"feature2": _custom_stattest}, {"feature1": _default_stattest, "feature2": _custom_stattest}),
+    (None, {"feature1": "def_st", "feature2": "def_st"}),
+    ({"feature1": _custom_stattest}, {"feature1": _custom_stattest, "feature2": "def_st"}),
+    ({"feature2": _custom_stattest}, {"feature1": "def_st", "feature2": _custom_stattest}),
+    ({"feature1": _another_stattest, "feature2": _custom_stattest},
+     {"feature1": _another_stattest, "feature2": _custom_stattest}),
+    ({"feature1": "st1"}, {"feature1": "st1", "feature2": "def_st"}),
+    ({"feature2": "st2"}, {"feature1": "def_st", "feature2": "st2"}),
+    ({"feature1": "st1", "feature2": "st2"}, {"feature1": "st1", "feature2": "st2"}),
+    ({"feature1": _another_stattest, "feature2": "st2"}, {"feature1": _another_stattest, "feature2": "st2"}),
 ])
 def test_stattest_function_valid(feature_func, expected):
     options = DataDriftOptions(feature_stattest_func=feature_func)
     for feature, expected_func in expected.items():
-        assert options.get_feature_stattest_func(feature, _default_stattest) == expected_func
+        assert options.get_feature_stattest_func(feature, "def_st") == expected_func
 
 
 @pytest.mark.parametrize("nbinsx,expected", [
