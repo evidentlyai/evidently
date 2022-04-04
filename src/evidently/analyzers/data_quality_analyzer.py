@@ -226,7 +226,7 @@ class DataQualityAnalyzer(Analyzer):
         column_mapping: ColumnMapping,
     ) -> DataQualityAnalyzerResults:
         """Calculates base statistics for numerical, categorical and datetime features.
-        For categorical features, calculates the Cramer's v correlation matrix. 
+        For categorical features, calculates the Cramer's v correlation matrix.
         For numerical features, Evidently calculates the Pearson, Spearman and Kendall matrices.
 
         Args:
@@ -375,7 +375,7 @@ class DataQualityAnalyzer(Analyzer):
 
     def _select_features_for_corr(self, reference_features_stats: DataQualityStats, target_name: Optional[str]) -> tuple:
         """Define which features should be used for calculating correlation matrices:
-            - for pearson, spearman, and kendall correlation matrices we select numerical features which have > 1 
+            - for pearson, spearman, and kendall correlation matrices we select numerical features which have > 1
                 unique values;
             - for kramer_v correlation matrix, we select categorical features which have > 1 unique values.
         Args:
