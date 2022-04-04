@@ -1,5 +1,5 @@
-# coding: utf-8
 #!/usr/bin/env python
+# coding: utf-8
 
 from typing import Callable
 from typing import Dict

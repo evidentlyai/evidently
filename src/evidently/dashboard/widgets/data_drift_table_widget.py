@@ -40,6 +40,7 @@ def _generate_feature_params(name: str, data: DataDriftAnalyzerFeatureMetrics, c
         },
         "f1": name,
         "f6": feature_type,
+        "stattest_name": data.stattest_name,
         "f3": {
             "x": list(ref_small_hist[1]),
             "y": list(ref_small_hist[0])
@@ -326,6 +327,10 @@ class DataDriftTableWidget(Widget):
                     {
                         "title": "Type",
                         "field": "f6"
+                    },
+                    {
+                        "title": "Stat test name",
+                        "field": "stattest_name"
                     },
                     {
                         "title": "Reference Distribution",

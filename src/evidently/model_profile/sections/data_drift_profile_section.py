@@ -36,6 +36,7 @@ class DataDriftProfileSection(ProfileSection):
                 'current_small_hist': feature_metrics.current_small_hist,
                 'ref_small_hist': feature_metrics.ref_small_hist,
                 'feature_type': feature_metrics.feature_type,
+                'stattest_name': feature_metrics.stattest_name,
                 'p_value': feature_metrics.p_value,
             }
 
