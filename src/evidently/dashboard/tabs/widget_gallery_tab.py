@@ -4,7 +4,6 @@ from evidently.dashboard.widgets.counter_widget import CounterWidget
 from evidently.dashboard.widgets.expandable_list_widget import ExpandableListWidget
 from evidently.dashboard.widgets.percent_widget import PercentWidget
 from evidently.dashboard.widgets.text_widget import TextWidget
-from evidently.dashboard.widgets.table_widget import TableWidget
 
 
 class WidgetGalleryTab(Tab):
@@ -14,5 +13,4 @@ class WidgetGalleryTab(Tab):
         (PercentWidget(""), Verbose.ALWAYS),
         (ExpandableListWidget("Some title"), Verbose.ALWAYS),
         (TextWidget("Some title"), Verbose.ALWAYS),
-        (TableWidget("Example Table Widget"), Verbose.ALWAYS)
     ]
