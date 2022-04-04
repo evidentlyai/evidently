@@ -103,8 +103,8 @@ class DataQualityCorrelationsWidget(Widget):
             text = np.round(reference_correlations[kind], 2).astype(str)
             texttemplate = "%{text}"
         else:
-            text = ""
-            texttemplate = ""
+            text = None
+            texttemplate = None
         trace = go.Heatmap(
             z=reference_correlations[kind],
             x=columns,
@@ -118,8 +118,8 @@ class DataQualityCorrelationsWidget(Widget):
                 text = np.round(current_correlations[kind], 2).astype(str)
                 texttemplate = "%{text}"
             else:
-                text = ""
-                texttemplate = ""
+                text = None
+                texttemplate = None
             trace = go.Heatmap(
                 z=current_correlations[kind],
                 x=columns,
@@ -128,7 +128,7 @@ class DataQualityCorrelationsWidget(Widget):
                 texttemplate=texttemplate,
                 coloraxis="coloraxis")
             fig.append_trace(trace, 1, 2)
-        fig.update_layout(coloraxis={'colorscale': 'RdBu'})
+        fig.update_layout(coloraxis={'colorscale': 'RdBu_r'})
         correlation_figure = json.loads(fig.to_json())
         return correlation_figure
 
@@ -182,8 +182,14 @@ class DataQualityCorrelationsWidget(Widget):
                     {"label": "", "values": values},
                 )
         else:
-            ref_num_corr = self._get_df_corr_features_sorted(reference_correlations['spearman'])
-            ref_cat_corr = self._get_df_corr_features_sorted(reference_correlations['cramer_v'])
+            if reference_correlations['spearman'].shape[0] > 0:
+                ref_num_corr = self._get_df_corr_features_sorted(reference_correlations['spearman'])
+            else:
+                ref_num_corr = pd.DataFrame()
+            if reference_correlations['cramer_v'].shape[0] > 0:
+                ref_cat_corr = self._get_df_corr_features_sorted(reference_correlations['cramer_v'])
+            else:
+                ref_cat_corr = pd.DataFrame()
             for i in range(5):
                 values = ['-', '-', '-', '-']
                 if i < ref_cat_corr.shape[0]:
