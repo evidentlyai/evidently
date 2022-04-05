@@ -12,7 +12,8 @@ from plotly.subplots import make_subplots
 from evidently import ColumnMapping
 from evidently.analyzers.num_target_drift_analyzer import NumTargetDriftAnalyzer
 from evidently.model.widget import BaseWidgetInfo, AdditionalGraphInfo
-from evidently.dashboard.widgets.widget import Widget, RED, GREY
+from evidently.dashboard.widgets.widget import Widget
+from evidently.options import ColorOptions
 
 
 class NumTargetPredFeatureTable(Widget):
@@ -24,7 +25,7 @@ class NumTargetPredFeatureTable(Widget):
                   current_data: Optional[pd.DataFrame],
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
-
+        color_options = self.options_provider.get(ColorOptions)
         results = NumTargetDriftAnalyzer.get_results(analyzers_results)
 
         if current_data is None:
@@ -68,7 +69,7 @@ class NumTargetPredFeatureTable(Widget):
                         name='Prediction (ref)',
                         marker=dict(
                             size=6,
-                            color=GREY
+                            color=color_options.reference_data_color
                         )
                     ),
                     row=1, col=1
@@ -83,7 +84,7 @@ class NumTargetPredFeatureTable(Widget):
                         name='Target (ref)',
                         marker=dict(
                             size=6,
-                            color=RED
+                            color=color_options.current_data_color
                         )
                     ),
                     row=1, col=1
@@ -98,7 +99,7 @@ class NumTargetPredFeatureTable(Widget):
                         name='Prediction (curr)',
                         marker=dict(
                             size=6,
-                            color=GREY
+                            color=color_options.reference_data_color
                         )
                     ),
                     row=1, col=2
@@ -113,7 +114,7 @@ class NumTargetPredFeatureTable(Widget):
                         name='Target (curr)',
                         marker=dict(
                             size=6,
-                            color=RED
+                            color=color_options.current_data_color
                         )
                     ),
                     row=1, col=2

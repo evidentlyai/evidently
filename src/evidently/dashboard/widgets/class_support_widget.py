@@ -10,7 +10,8 @@ import plotly.graph_objs as go
 from evidently import ColumnMapping
 from evidently.analyzers.classification_performance_analyzer import ClassificationPerformanceAnalyzer
 from evidently.model.widget import BaseWidgetInfo
-from evidently.dashboard.widgets.widget import Widget, RED
+from evidently.dashboard.widgets.widget import Widget
+from evidently.options import ColorOptions
 
 
 class ClassSupportWidget(Widget):
@@ -26,7 +27,7 @@ class ClassSupportWidget(Widget):
                   current_data: Optional[pd.DataFrame],
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
-
+        color_options = self.options_provider.get(ColorOptions)
         results = ClassificationPerformanceAnalyzer.get_results(analyzers_results)
         target_name = results.columns.utility_columns.target
         prediction_name = results.columns.utility_columns.prediction
@@ -59,7 +60,7 @@ class ClassSupportWidget(Widget):
 
         fig.add_trace(go.Bar(
             x=results.columns.target_names if results.columns.target_names else metrics_frame.columns.tolist()[:-3],
-            y=metrics_frame.iloc[-1:, :-3].values[0], marker_color=RED, name='Support'))
+            y=metrics_frame.iloc[-1:, :-3].values[0], marker_color=color_options.current_data_color, name='Support'))
 
         fig.update_layout(
             xaxis_title="Class",

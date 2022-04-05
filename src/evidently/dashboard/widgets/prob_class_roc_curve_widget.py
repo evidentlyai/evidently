@@ -11,7 +11,8 @@ import plotly.graph_objs as go
 from evidently import ColumnMapping
 from evidently.analyzers.prob_classification_performance_analyzer import ProbClassificationPerformanceAnalyzer
 from evidently.model.widget import BaseWidgetInfo
-from evidently.dashboard.widgets.widget import Widget, RED
+from evidently.dashboard.widgets.widget import Widget
+from evidently.options import ColorOptions
 
 
 class ProbClassRocCurveWidget(Widget):
@@ -27,7 +28,7 @@ class ProbClassRocCurveWidget(Widget):
                   current_data: Optional[pd.DataFrame],
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
-
+        color_options = self.options_provider.get(ColorOptions)
         results = ProbClassificationPerformanceAnalyzer.get_results(analyzers_results)
         utility_columns = results.columns.utility_columns
 
@@ -71,7 +72,7 @@ class ProbClassRocCurveWidget(Widget):
                 name='ROC',
                 marker=dict(
                     size=6,
-                    color=RED,
+                    color=color_options.current_data_color,
                 )
             ))
 
@@ -115,7 +116,7 @@ class ProbClassRocCurveWidget(Widget):
                     name='ROC',
                     marker=dict(
                         size=6,
-                        color=RED,
+                        color=color_options.current_data_color,
                     )
                 ))
 

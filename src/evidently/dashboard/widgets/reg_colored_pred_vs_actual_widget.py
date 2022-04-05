@@ -13,6 +13,7 @@ from evidently import ColumnMapping
 from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceAnalyzer
 from evidently.model.widget import BaseWidgetInfo
 from evidently.dashboard.widgets.widget import Widget
+from evidently.options import ColorOptions
 
 
 class RegColoredPredActualWidget(Widget):
@@ -28,7 +29,7 @@ class RegColoredPredActualWidget(Widget):
                   current_data: Optional[pd.DataFrame],
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
-
+        color_options = self.options_provider.get(ColorOptions)
         results = RegressionPerformanceAnalyzer.get_results(analyzers_results)
         results_utility_columns = results.columns.utility_columns
 
@@ -71,7 +72,7 @@ class RegColoredPredActualWidget(Widget):
             mode='markers',
             name='Underestimation',
             marker=dict(
-                color='#6574f7',
+                color=color_options.underestimation_color,
                 showscale=False
             )
         ))
@@ -82,7 +83,7 @@ class RegColoredPredActualWidget(Widget):
             mode='markers',
             name='Overestimation',
             marker=dict(
-                color='#ee5540',
+                color=color_options.overestimation_color,
                 showscale=False
             )
         ))
@@ -93,7 +94,7 @@ class RegColoredPredActualWidget(Widget):
             mode='markers',
             name='Majority',
             marker=dict(
-                color='#1acc98',
+                color=color_options.majority_color,
                 showscale=False
             )
         ))

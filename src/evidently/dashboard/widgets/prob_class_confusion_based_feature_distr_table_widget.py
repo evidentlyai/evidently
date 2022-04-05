@@ -13,8 +13,9 @@ from plotly.subplots import make_subplots
 from evidently import ColumnMapping
 from evidently.analyzers.prob_classification_performance_analyzer import ProbClassificationPerformanceAnalyzer
 from evidently.model.widget import BaseWidgetInfo, AdditionalGraphInfo
-from evidently.dashboard.widgets.widget import Widget, RED, GREY
+from evidently.dashboard.widgets.widget import Widget
 from evidently.dashboard.widgets.utils import CutQuantileTransformer
+from evidently.options import ColorOptions
 from evidently.options import QualityMetricsOptions
 
 
@@ -27,7 +28,7 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                   current_data: Optional[pd.DataFrame],
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
-
+        color_options = self.options_provider.get(ColorOptions)
         results = ProbClassificationPerformanceAnalyzer.get_results(analyzers_results)
         quality_metrics_options = self.options_provider.get(QualityMetricsOptions)
         cut_quantile = quality_metrics_options.cut_quantile
@@ -109,7 +110,7 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                         name=str(label) + ' (ref)',
                         marker=dict(
                             size=6,
-                            color=RED
+                            color=color_options.current_data_color
                         )
                     ),
                         row=1, col=1
@@ -123,7 +124,7 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                         name='other (ref)',
                         marker=dict(
                             size=6,
-                            color=GREY
+                            color=color_options.reference_data_color
                         )
                     ),
                         row=1, col=1
@@ -149,7 +150,7 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                         name=str(label) + ' (curr)',
                         marker=dict(
                             size=6,
-                            color=RED  # set color equal to a variable
+                            color=color_options.current_data_color  # set color equal to a variable
                         )
                     ),
                         row=1, col=2
@@ -162,7 +163,7 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                         name='other (curr)',
                         marker=dict(
                             size=6,
-                            color=GREY  # set color equal to a variable
+                            color=color_options.reference_data_color  # set color equal to a variable
                         )
                     ),
                         row=1, col=2
@@ -262,7 +263,7 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                         name=str(label),
                         marker=dict(
                             size=6,
-                            color=RED  # set color equal to a variable
+                            color=color_options.current_data_color  # set color equal to a variable
                         )
                     ))
 
@@ -274,7 +275,7 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                         name='other',
                         marker=dict(
                             size=6,
-                            color=GREY
+                            color=color_options.reference_data_color
                         )
                     ))
 

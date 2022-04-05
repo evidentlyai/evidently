@@ -1,5 +1,6 @@
 from typing import TypeVar, Generic, Type, Dict, Any
 
+from .color_scheme import ColorOptions
 from .data_drift import DataDriftOptions
 from .quality_metrics import QualityMetricsOptions
 

@@ -14,7 +14,8 @@ from evidently import ColumnMapping
 from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceAnalyzer
 
 from evidently.model.widget import BaseWidgetInfo
-from evidently.dashboard.widgets.widget import Widget, RED, GREY
+from evidently.dashboard.widgets.widget import Widget
+from evidently.options import ColorOptions
 
 
 class RegErrorNormalityWidget(Widget):
@@ -30,7 +31,7 @@ class RegErrorNormalityWidget(Widget):
                   current_data: Optional[pd.DataFrame],
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
-
+        color_options = self.options_provider.get(ColorOptions)
         results = RegressionPerformanceAnalyzer.get_results(analyzers_results)
 
         prediction_column = results.columns.utility_columns.prediction
@@ -69,7 +70,7 @@ class RegErrorNormalityWidget(Widget):
             name='Dataset Quantiles',
             marker=dict(
                 size=6,
-                color=RED
+                color=color_options.color_sequence
             )
         )
 
@@ -80,7 +81,7 @@ class RegErrorNormalityWidget(Widget):
             name='Theoretical Quantiles',
             marker=dict(
                 size=6,
-                color=GREY
+                color=color_options.reference_data_color
             )
         )
 

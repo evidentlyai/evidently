@@ -13,7 +13,8 @@ import plotly.figure_factory as ff
 from evidently import ColumnMapping
 from evidently.analyzers.prob_classification_performance_analyzer import ProbClassificationPerformanceAnalyzer
 from evidently.model.widget import BaseWidgetInfo
-from evidently.dashboard.widgets.widget import Widget, RED, GREY
+from evidently.dashboard.widgets.widget import Widget
+from evidently.options import ColorOptions
 
 
 class ProbClassPredDistrWidget(Widget):
@@ -29,7 +30,7 @@ class ProbClassPredDistrWidget(Widget):
                   current_data: Optional[pd.DataFrame],
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
-
+        color_options = self.options_provider.get(ColorOptions)
         results = ProbClassificationPerformanceAnalyzer.get_results(analyzers_results)
         utility_columns = results.columns.utility_columns
 
@@ -64,7 +65,7 @@ class ProbClassPredDistrWidget(Widget):
                     dataset_to_plot[dataset_to_plot[utility_columns.target] != label][label]
                 ],
                 [str(label), "other"],
-                colors=[RED, GREY],
+                colors=[color_options.current_data_color, color_options.reference_data_color],
                 bin_size=0.05,
                 show_curve=False,
                 show_rug=True
