@@ -70,7 +70,7 @@ class RegErrorNormalityWidget(Widget):
             name='Dataset Quantiles',
             marker=dict(
                 size=6,
-                color=color_options.color_sequence
+                color=color_options.current_data_color
             )
         )
 
