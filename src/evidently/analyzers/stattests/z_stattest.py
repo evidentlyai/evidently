@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 # coding: utf-8
+from typing import Tuple
+
 import numpy as np
 import pandas as pd
 
 from scipy.stats import norm
 
-from evidently.analyzers.stattests.registry import stattest
+from evidently.analyzers.stattests.registry import StatTest, register_stattest
 
 
 def proportions_diff_z_stat_ind(ref: pd.DataFrame, curr: pd.DataFrame):
@@ -34,14 +36,24 @@ def proportions_diff_z_test(z_stat, alternative='two-sided'):
                      "should be 'two-sided', 'less' or 'greater'")
 
 
-@stattest("z", allowed_feature_types=["cat"])
-def z_stat_test(reference_data: pd.Series, current_data: pd.Series) -> float:
+def _z_stat_test(reference_data: pd.Series, current_data: pd.Series, threshold: float) -> Tuple[float, bool]:
     #  TODO: simplify ignoring NaN values here, in chi_stat_test and data_drift_analyzer
     keys = set(list(reference_data.unique()) + list(current_data.unique())) - {np.nan}
     ordered_keys = sorted(list(keys))
-    return proportions_diff_z_test(
+    p_value = proportions_diff_z_test(
         proportions_diff_z_stat_ind(
             reference_data.apply(lambda x, key=ordered_keys[0]: 0 if x == key else 1),
             current_data.apply(lambda x, key=ordered_keys[0]: 0 if x == key else 1)
         )
     )
+    return p_value, p_value < (1. - threshold)
+
+
+z_stat_test = StatTest(
+    name="z",
+    display_name="Z-test (p_value)",
+    func=_z_stat_test,
+    allowed_feature_types=["cat"],
+)
+
+register_stattest(z_stat_test)

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
-from typing import Callable
+from typing import Callable, Tuple
 from typing import Optional
 from typing import Sequence
 
@@ -13,6 +13,7 @@ import pandas as pd
 from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.analyzers.base_analyzer import BaseAnalyzerResult
+from evidently.analyzers.stattests import chi_stat_test, z_stat_test
 from evidently.analyzers.stattests.registry import get_stattest
 from evidently.analyzers.utils import process_columns
 from evidently.options import DataDriftOptions
@@ -32,9 +33,9 @@ def _compute_statistic(
     reference_data: pd.DataFrame,
     current_data: pd.DataFrame,
     column_name: str,
-    statistic_fun: Callable,
+    statistic_fun: Callable[[pd.Series, pd.Series, float], Tuple[float, bool]],
 ):
-    return statistic_fun(reference_data[column_name], current_data[column_name])
+    return statistic_fun(reference_data[column_name], current_data[column_name], 0)[0]
 
 
 @dataclass
@@ -134,40 +135,30 @@ class CatTargetDriftAnalyzer(Analyzer):
                 target_labels = set(reference_data[target_column]) | set(
                     current_data[target_column]
                 )
-                target_st_name, target_st_func = get_stattest(
-                    "chisquare" if len(target_labels) > 2 else "z", "cat"
-                )
+                target_test = get_stattest(chi_stat_test if len(target_labels) > 2 else z_stat_test, "cat")
             else:
-                stattest_name, stattest_func = get_stattest(
-                    options.cat_target_stattest_func, "cat"
-                )
-                target_st_name, target_st_func = stattest_name, stattest_func
+                target_test = get_stattest(options.cat_target_stattest_func, "cat")
 
             p_value = _compute_statistic(
-                reference_data, current_data, target_column, target_st_func
+                reference_data, current_data, target_column, target_test.func
             )
             result.target_metrics = DataDriftMetrics(
-                column_name=target_column, stattest_name=target_st_name, drift=p_value
+                column_name=target_column, stattest_name=target_test.display_name, drift=p_value
             )
         if prediction_column is not None:
             if not options.cat_target_stattest_func:
                 prediction_labels = set(reference_data[prediction_column]) | set(
                     current_data[prediction_column]
                 )
-                pred_st_name, pred_st_func = get_stattest(
-                    "chisquare" if len(prediction_labels) > 2 else "z", "cat"
-                )
+                pred_test = get_stattest(chi_stat_test if len(prediction_labels) > 2 else z_stat_test, "cat")
             else:
-                stattest_name, stattest_func = get_stattest(
-                    options.cat_target_stattest_func, "cat"
-                )
-                pred_st_name, pred_st_func = stattest_name, stattest_func
+                pred_test = get_stattest(options.cat_target_stattest_func, "cat")
 
             p_value = _compute_statistic(
-                reference_data, current_data, prediction_column, pred_st_func
+                reference_data, current_data, prediction_column, pred_test.func
             )
             result.prediction_metrics = DataDriftMetrics(
-                column_name=prediction_column, stattest_name=pred_st_name, drift=p_value
+                column_name=prediction_column, stattest_name=pred_test.display_name, drift=p_value
             )
 
         return result

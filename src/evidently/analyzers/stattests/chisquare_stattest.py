@@ -1,15 +1,16 @@
 #!/usr/bin/env python
 # coding: utf-8
+from typing import Tuple
+
 import numpy as np
 import pandas as pd
 
 from scipy.stats import chisquare
 
-from evidently.analyzers.stattests.registry import stattest
+from evidently.analyzers.stattests.registry import StatTest, register_stattest
 
 
-@stattest("chisquare", allowed_feature_types=["cat"])
-def chi_stat_test(reference_data: pd.Series, current_data: pd.Series) -> float:
+def _chi_stat_test(reference_data: pd.Series, current_data: pd.Series, threshold: float) -> Tuple[float, bool]:
     #  TODO: simplify ignoring NaN values here, in z_stat_test and data_drift_analyzer
     keys = list((set(reference_data) | set(current_data)) - {np.nan})
 
@@ -20,4 +21,15 @@ def chi_stat_test(reference_data: pd.Series, current_data: pd.Series) -> float:
 
     f_exp = [ref_feature_dict[key] * k_norm for key in keys]
     f_obs = [current_feature_dict[key] for key in keys]
-    return chisquare(f_exp, f_obs)[1]
+    p_value = chisquare(f_exp, f_obs)[1]
+    return p_value, p_value < (1. - threshold)
+
+
+chi_stat_test = StatTest(
+    name="chisquare",
+    display_name="chi-square (p_value)",
+    func=_chi_stat_test,
+    allowed_feature_types=["cat"]
+)
+
+register_stattest(chi_stat_test)

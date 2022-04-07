@@ -10,19 +10,19 @@ import numpy as np
 from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.analyzers.base_analyzer import BaseAnalyzerResult
-from evidently.analyzers.stattests.registry import get_stattest
+from evidently.analyzers.stattests import chi_stat_test, z_stat_test, ks_stat_test, get_stattest
 from evidently.options import DataDriftOptions
 from evidently.analyzers.utils import process_columns
 
 
 def dataset_drift_evaluation(p_values, drift_share=0.5) -> Tuple[int, float, bool]:
-    n_drifted_features = sum([1 if x.p_value < (1. - x.confidence) else 0 for _, x in p_values.items()])
+    n_drifted_features = sum([1 if x.drifted else 0 for _, x in p_values.items()])
     share_drifted_features = n_drifted_features / len(p_values)
     dataset_drift = bool(share_drifted_features >= drift_share)
     return n_drifted_features, share_drifted_features, dataset_drift
 
 
-PValueWithConfidence = collections.namedtuple("PValueWithConfidence", ["p_value", "confidence"])
+PValueWithConfidence = collections.namedtuple("PValueWithConfidence", ["p_value", "drifted"])
 
 
 @dataclass
@@ -72,9 +72,9 @@ class DataDriftAnalyzer(Analyzer):
 
         for feature_name in num_feature_names:
             confidence = data_drift_options.get_confidence(feature_name)
-            stattest_name, func = get_stattest(data_drift_options.get_feature_stattest_func(feature_name, "ks"), "num")
-            p_value = func(reference_data[feature_name], current_data[feature_name])
-            p_values[feature_name] = PValueWithConfidence(p_value, confidence)
+            test = get_stattest(data_drift_options.get_feature_stattest_func(feature_name, ks_stat_test), "num")
+            p_value, drifted = test.func(reference_data[feature_name], current_data[feature_name], confidence)
+            p_values[feature_name] = PValueWithConfidence(p_value, drifted)
             current_nbinsx = data_drift_options.get_nbinsx(feature_name)
             features_metrics[feature_name] = DataDriftAnalyzerFeatureMetrics(
                 current_small_hist=[t.tolist() for t in
@@ -84,7 +84,7 @@ class DataDriftAnalyzer(Analyzer):
                                 np.histogram(reference_data[feature_name][np.isfinite(reference_data[feature_name])],
                                              bins=current_nbinsx, density=True)],
                 feature_type='num',
-                stattest_name=stattest_name,
+                stattest_name=test.display_name,
                 p_value=p_value
             )
 
@@ -94,18 +94,17 @@ class DataDriftAnalyzer(Analyzer):
             feature_cur_data = current_data[feature_name].dropna()
             keys = set(list(feature_ref_data.unique()) +
                        list(feature_cur_data.unique())) - {np.nan}
-            default_stattest = "chisquare" if len(keys) > 2 else "z"
-            stattest_name, func = get_stattest(data_drift_options.get_feature_stattest_func(feature_name,
-                                                                                            default_stattest), "cat")
-            p_value = func(feature_ref_data, feature_cur_data)
+            default_test = chi_stat_test if len(keys) > 2 else z_stat_test
+            stat_test = get_stattest(data_drift_options.get_feature_stattest_func(feature_name, default_test), "cat")
+            p_value, drifted = stat_test.func(feature_ref_data, feature_cur_data, confidence)
 
-            p_values[feature_name] = PValueWithConfidence(p_value, confidence)
+            p_values[feature_name] = PValueWithConfidence(p_value, drifted)
 
             features_metrics[feature_name] = DataDriftAnalyzerFeatureMetrics(
                 ref_small_hist=list(reversed(list(map(list, zip(*feature_ref_data.value_counts().items()))))),
                 current_small_hist=list(reversed(list(map(list, zip(*feature_cur_data.value_counts().items()))))),
                 feature_type='cat',
-                stattest_name=stattest_name,
+                stattest_name=stat_test.display_name,
                 p_value=p_value
             )
 

@@ -45,7 +45,7 @@ def _compute_correlation(
 
         raise ValueError(f'Column {main_column} should only contain numerical values.')
 
-    target_p_value = stattest_func(reference_data[main_column], current_data[main_column])
+    target_p_value = stattest_func(reference_data[main_column], current_data[main_column], 0)[0]
     ref_target_corr = reference_data[num_columns + [main_column]].corr()[main_column]
     curr_target_corr = current_data[num_columns + [main_column]].corr()[main_column]
 
@@ -136,12 +136,12 @@ class NumTargetDriftAnalyzer(Analyzer):
         )
         data_drift_options = self.options_provider.get(DataDriftOptions)
 
-        stattest_name, func = get_stattest(data_drift_options.num_target_stattest_func or "ks", "num")
+        test = get_stattest(data_drift_options.num_target_stattest_func or "ks", "num")
         result.target_metrics = _compute_correlation(
-            reference_data, current_data, target_column, columns.num_feature_names, stattest_name, func
+            reference_data, current_data, target_column, columns.num_feature_names, test.display_name, test.func
         )
         result.prediction_metrics = _compute_correlation(
-            reference_data, current_data, prediction_column, columns.num_feature_names, stattest_name, func
+            reference_data, current_data, prediction_column, columns.num_feature_names, test.display_name, test.func
         )
 
         return result
