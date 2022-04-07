@@ -57,10 +57,10 @@ class NumOutputCorrWidget(Widget):
         output_corr = go.Figure()
 
         output_corr.add_trace(go.Bar(y=list(ref_output_corr.values()), x=list(ref_output_corr.keys()),
-                                     marker_color=color_options.reference_data_color, name='Reference'))
+                                     marker_color=color_options.get_reference_data_color(), name='Reference'))
 
         output_corr.add_trace(go.Bar(y=list(current_output_corr.values()), x=list(ref_output_corr.keys()),
-                                     marker_color=color_options.current_data_color, name='Current'))
+                                     marker_color=color_options.get_current_data_color(), name='Current'))
 
         output_corr.update_layout(xaxis_title="Features", yaxis_title="Correlation",
                                   yaxis=dict(

@@ -69,7 +69,7 @@ class ProbClassPRCurveWidget(Widget):
                 name='PR',
                 marker=dict(
                     size=6,
-                    color=color_options.current_data_color,
+                    color=color_options.primary_color,
                 )
             ))
 
@@ -109,7 +109,7 @@ class ProbClassPRCurveWidget(Widget):
                     name='PR',
                     marker=dict(
                         size=6,
-                        color=color_options.current_data_color,
+                        color=color_options.primary_color,
                     )
                 ))
 

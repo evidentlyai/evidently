@@ -69,7 +69,7 @@ class NumTargetPredFeatureTable(Widget):
                         name='Prediction (ref)',
                         marker=dict(
                             size=6,
-                            color=color_options.reference_data_color
+                            color=color_options.secondary_color
                         )
                     ),
                     row=1, col=1
@@ -84,7 +84,7 @@ class NumTargetPredFeatureTable(Widget):
                         name='Target (ref)',
                         marker=dict(
                             size=6,
-                            color=color_options.current_data_color
+                            color=color_options.primary_color
                         )
                     ),
                     row=1, col=1
@@ -99,7 +99,7 @@ class NumTargetPredFeatureTable(Widget):
                         name='Prediction (curr)',
                         marker=dict(
                             size=6,
-                            color=color_options.reference_data_color
+                            color=color_options.secondary_color
                         )
                     ),
                     row=1, col=2
@@ -114,7 +114,7 @@ class NumTargetPredFeatureTable(Widget):
                         name='Target (curr)',
                         marker=dict(
                             size=6,
-                            color=color_options.current_data_color
+                            color=color_options.primary_color
                         )
                     ),
                     row=1, col=2

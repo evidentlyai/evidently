@@ -61,7 +61,7 @@ class RegErrorDistrWidget(Widget):
 
         error_distr.add_trace(go.Histogram(
             x=error,
-            marker_color=color_options.current_data_color,
+            marker_color=color_options.primary_color,
             name='error distribution',
             histnorm='percent'
         ))

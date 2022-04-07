@@ -72,7 +72,7 @@ class NumOutputValuesWidget(Widget):
             name='Reference',
             marker=dict(
                 size=6,
-                color=color_options.reference_data_color
+                color=color_options.get_reference_data_color()
             )
         ))
 
@@ -83,7 +83,7 @@ class NumOutputValuesWidget(Widget):
             name='Current',
             marker=dict(
                 size=6,
-                color=color_options.current_data_color
+                color=color_options.get_current_data_color()
             )
         ))
 

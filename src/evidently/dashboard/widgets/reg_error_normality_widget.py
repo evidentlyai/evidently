@@ -70,7 +70,7 @@ class RegErrorNormalityWidget(Widget):
             name='Dataset Quantiles',
             marker=dict(
                 size=6,
-                color=color_options.current_data_color
+                color=color_options.primary_color
             )
         )
 
@@ -81,7 +81,7 @@ class RegErrorNormalityWidget(Widget):
             name='Theoretical Quantiles',
             marker=dict(
                 size=6,
-                color=color_options.reference_data_color
+                color=color_options.secondary_color
             )
         )
 

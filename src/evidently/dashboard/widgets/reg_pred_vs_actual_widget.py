@@ -65,7 +65,7 @@ class RegPredActualWidget(Widget):
             mode='markers',
             name=self.dataset.title(),
             marker=dict(
-                color=color_options.current_data_color,
+                color=color_options.primary_color,
                 showscale=False
             )
         ))

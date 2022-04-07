@@ -62,7 +62,7 @@ class ProbClassSupportWidget(Widget):
         fig.add_trace(go.Bar(
             x=metrics_frame.columns.tolist()[:-3],
             y=metrics_frame.iloc[-1:, :-3].values[0],
-            marker_color=color_options.current_data_color,
+            marker_color=color_options.primary_color,
             name='Support'
         ))
 

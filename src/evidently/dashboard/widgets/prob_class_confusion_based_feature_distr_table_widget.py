@@ -110,7 +110,7 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                         name=str(label) + ' (ref)',
                         marker=dict(
                             size=6,
-                            color=color_options.current_data_color
+                            color=color_options.get_current_data_color()
                         )
                     ),
                         row=1, col=1
@@ -124,7 +124,7 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                         name='other (ref)',
                         marker=dict(
                             size=6,
-                            color=color_options.reference_data_color
+                            color=color_options.get_reference_data_color()
                         )
                     ),
                         row=1, col=1
@@ -150,7 +150,8 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                         name=str(label) + ' (curr)',
                         marker=dict(
                             size=6,
-                            color=color_options.current_data_color  # set color equal to a variable
+                            # set color equal to a variable
+                            color=color_options.get_current_data_color()
                         )
                     ),
                         row=1, col=2
@@ -163,7 +164,8 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                         name='other (curr)',
                         marker=dict(
                             size=6,
-                            color=color_options.reference_data_color  # set color equal to a variable
+                            # set color equal to a variable
+                            color=color_options.get_reference_data_color()
                         )
                     ),
                         row=1, col=2
@@ -263,7 +265,7 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                         name=str(label),
                         marker=dict(
                             size=6,
-                            color=color_options.current_data_color  # set color equal to a variable
+                            color=color_options.get_current_data_color()  # set color equal to a variable
                         )
                     ))
 
@@ -275,7 +277,7 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                         name='other',
                         marker=dict(
                             size=6,
-                            color=color_options.reference_data_color
+                            color=color_options.get_reference_data_color()
                         )
                     ))
 

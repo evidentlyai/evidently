@@ -60,7 +60,7 @@ class ClassSupportWidget(Widget):
 
         fig.add_trace(go.Bar(
             x=results.columns.target_names if results.columns.target_names else metrics_frame.columns.tolist()[:-3],
-            y=metrics_frame.iloc[-1:, :-3].values[0], marker_color=color_options.current_data_color, name='Support'))
+            y=metrics_frame.iloc[-1:, :-3].values[0], marker_color=color_options.primary_color, name='Support'))
 
         fig.update_layout(
             xaxis_title="Class",

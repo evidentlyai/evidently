@@ -64,7 +64,7 @@ class RegPredActualTimeWidget(Widget):
             name='Actual',
             marker=dict(
                 size=6,
-                color=color_options.reference_data_color
+                color=color_options.secondary_color
             )
         )
 
@@ -75,7 +75,7 @@ class RegPredActualTimeWidget(Widget):
             name='Predicted',
             marker=dict(
                 size=6,
-                color=color_options.current_data_color
+                color=color_options.primary_color
             )
         )
 

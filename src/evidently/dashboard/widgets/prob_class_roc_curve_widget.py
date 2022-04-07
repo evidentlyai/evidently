@@ -72,7 +72,7 @@ class ProbClassRocCurveWidget(Widget):
                 name='ROC',
                 marker=dict(
                     size=6,
-                    color=color_options.current_data_color,
+                    color=color_options.primary_color,
                 )
             ))
 
@@ -116,7 +116,7 @@ class ProbClassRocCurveWidget(Widget):
                     name='ROC',
                     marker=dict(
                         size=6,
-                        color=color_options.current_data_color,
+                        color=color_options.primary_color,
                     )
                 ))
 

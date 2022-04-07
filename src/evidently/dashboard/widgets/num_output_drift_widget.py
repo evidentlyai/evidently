@@ -79,7 +79,7 @@ class NumOutputDriftWidget(Widget):
             [reference_data_to_plot,
              current_data_to_plot],
             ["Reference", "Current"],
-            colors=[color_options.reference_data_color, color_options.current_data_color],
+            colors=[color_options.get_reference_data_color(), color_options.get_current_data_color()],
             show_rug=True
         )
 

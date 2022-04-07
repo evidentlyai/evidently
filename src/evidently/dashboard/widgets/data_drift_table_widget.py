@@ -70,7 +70,7 @@ def _generate_additional_graph_num_feature(
     fig.add_trace(
         go.Histogram(
             x=reference_data_to_plot,
-            marker_color=color_options.reference_data_color,
+            marker_color=color_options.get_reference_data_color(),
             opacity=0.6,
             xbins=current_xbins,
             nbinsx=current_nbinsx,
@@ -82,7 +82,7 @@ def _generate_additional_graph_num_feature(
     fig.add_trace(
         go.Histogram(
             x=current_data_to_plot,
-            marker_color=color_options.current_data_color,
+            marker_color=color_options.get_current_data_color(),
             opacity=0.6,
             xbins=current_xbins,
             nbinsx=current_nbinsx,
@@ -111,7 +111,7 @@ def _generate_additional_graph_num_feature(
             y=current_data[name],
             mode="markers",
             name="Current",
-            marker=dict(size=6, color=color_options.current_data_color),
+            marker=dict(size=6, color=color_options.get_current_data_color()),
         )
     )
 
@@ -199,7 +199,7 @@ def _generate_additional_graph_cat_feature(
         go.Bar(
             x=reference_data_to_plot[1],
             y=reference_data_to_plot[0],
-            marker_color=color_options.reference_data_color,
+            marker_color=color_options.get_reference_data_color(),
             opacity=0.6,
             name="Reference",
         )
@@ -209,7 +209,7 @@ def _generate_additional_graph_cat_feature(
         go.Bar(
             x=current_data_to_plot[1],
             y=current_data_to_plot[0],
-            marker_color=color_options.current_data_color,
+            marker_color=color_options.get_current_data_color(),
             opacity=0.6,
             name="Current",
         )
@@ -301,13 +301,13 @@ class DataDriftTableWidget(Widget):
                         "title": "Reference Distribution",
                         "field": "f3",
                         "type": "histogram",
-                        "options": {"xField": "x", "yField": "y", "color": color_options.current_data_color},
+                        "options": {"xField": "x", "yField": "y", "color": color_options.primary_color},
                     },
                     {
                         "title": "Current Distribution",
                         "field": "f4",
                         "type": "histogram",
-                        "options": {"xField": "x", "yField": "y", "color": color_options.current_data_color},
+                        "options": {"xField": "x", "yField": "y", "color": color_options.primary_color},
                     },
                     {"title": "Data drift", "field": "f2"},
                     {"title": "P-Value for Similarity Test", "field": "f5", "sort": "asc"},

@@ -248,10 +248,10 @@ class DataQualityFeaturesWidget(Widget):
     ) -> dict:
         if feature_type == "num":
             if current_data is None:
-                trace1 = go.Histogram(x=reference_data[feature_name], marker_color=color_options.current_data_color)
+                trace1 = go.Histogram(x=reference_data[feature_name], marker_color=color_options.primary_color)
                 trace2 = go.Histogram(
                     x=np.log10(reference_data.loc[reference_data[feature_name] > 0, feature_name]),
-                    marker_color=color_options.current_data_color,
+                    marker_color=color_options.primary_color,
                     visible=False,
                 )
                 data = [trace1, trace2]
@@ -272,20 +272,24 @@ class DataQualityFeaturesWidget(Widget):
 
             else:
                 trace1 = go.Histogram(
-                    x=reference_data[feature_name], marker_color=color_options.reference_data_color, name="reference"
+                    x=reference_data[feature_name],
+                    marker_color=color_options.get_reference_data_color(),
+                    name="reference"
                 )
                 trace2 = go.Histogram(
                     x=np.log10(reference_data.loc[reference_data[feature_name] > 0, feature_name]),
-                    marker_color=color_options.reference_data_color,
+                    marker_color=color_options.get_reference_data_color(),
                     visible=False,
                     name="reference",
                 )
                 trace3 = go.Histogram(
-                    x=current_data[feature_name], marker_color=color_options.current_data_color, name="current"
+                    x=current_data[feature_name],
+                    marker_color=color_options.get_current_data_color(),
+                    name="current"
                 )
                 trace4 = go.Histogram(
                     x=np.log10(current_data.loc[current_data[feature_name] > 0, feature_name]),
-                    marker_color=color_options.current_data_color,
+                    marker_color=color_options.get_current_data_color(),
                     visible=False,
                     name="current",
                 )
@@ -322,15 +326,21 @@ class DataQualityFeaturesWidget(Widget):
                 cats.remove("other")
                 cats = cats + ["other"]
             if current_data is None:
-                fig.add_trace(go.Histogram(x=reference_data[feature_name], marker_color=color_options.current_data_color))
+                fig.add_trace(go.Histogram(x=reference_data[feature_name], marker_color=color_options.primary_color))
             else:
                 fig.add_trace(
                     go.Histogram(
-                        x=reference_data[feature_name], marker_color=color_options.reference_data_color, name="reference"
+                        x=reference_data[feature_name],
+                        marker_color=color_options.get_reference_data_color(),
+                        name="reference"
                     )
                 )
                 fig.add_trace(
-                    go.Histogram(x=current_data[feature_name], marker_color=color_options.current_data_color, name="current")
+                    go.Histogram(
+                        x=current_data[feature_name],
+                        marker_color=color_options.get_current_data_color(),
+                        name="current"
+                    )
                 )
             fig.update_xaxes(categoryorder="array", categoryarray=cats)
 
@@ -346,7 +356,7 @@ class DataQualityFeaturesWidget(Widget):
                     go.Scatter(
                         x=tmp_ref.sort_values(feature_name)[feature_name],
                         y=tmp_ref.sort_values(feature_name)["number_of_items"],
-                        line=dict(color=color_options.current_data_color, shape="spline"),
+                        line=dict(color=color_options.primary_color, shape="spline"),
                     )
                 )
             else:
@@ -378,7 +388,7 @@ class DataQualityFeaturesWidget(Widget):
                     go.Scatter(
                         x=tmp_ref.sort_values(feature_name)[feature_name],
                         y=tmp_ref.sort_values(feature_name)["number_of_items"],
-                        line=dict(color=color_options.reference_data_color, shape="spline"),
+                        line=dict(color=color_options.get_reference_data_color(), shape="spline"),
                         name="reference",
                     )
                 )
@@ -386,7 +396,7 @@ class DataQualityFeaturesWidget(Widget):
                     go.Scatter(
                         x=tmp_curr.sort_values(feature_name)[feature_name],
                         y=tmp_curr.sort_values(feature_name)["number_of_items"],
-                        line=dict(color=color_options.current_data_color, shape="spline"),
+                        line=dict(color=color_options.get_current_data_color(), shape="spline"),
                         name="current",
                     )
                 )
@@ -441,7 +451,7 @@ class DataQualityFeaturesWidget(Widget):
                 go.Scatter(
                     x=tmp.sort_values(date_column)[date_column],
                     y=tmp.sort_values(date_column)[feature_name],
-                    line=dict(color=color_options.current_data_color, shape="spline"),
+                    line=dict(color=color_options.primary_color, shape="spline"),
                 )
             )
             fig.update_layout(yaxis_title="Mean " + feature_name + " per " + self.period_prefix)
@@ -489,7 +499,7 @@ class DataQualityFeaturesWidget(Widget):
                 go.Scatter(
                     x=tmp_ref.sort_values(date_column)[date_column],
                     y=tmp_ref.sort_values(date_column)[feature_name],
-                    line=dict(color=color_options.reference_data_color, shape="spline"),
+                    line=dict(color=color_options.get_reference_data_color(), shape="spline"),
                     name="reference",
                 )
             )
@@ -497,7 +507,7 @@ class DataQualityFeaturesWidget(Widget):
                 go.Scatter(
                     x=tmp_curr.sort_values(date_column)[date_column],
                     y=tmp_curr.sort_values(date_column)[feature_name],
-                    line=dict(color=color_options.current_data_color, shape="spline"),
+                    line=dict(color=color_options.get_current_data_color(), shape="spline"),
                     name="current",
                 )
             )
@@ -566,7 +576,7 @@ class DataQualityFeaturesWidget(Widget):
         if feature_type == "cat":
             if target_type == "num":
                 fig = go.Figure()
-                trace = go.Box(x=tmp[feature_name], y=tmp[target_column], marker_color=color_options.current_data_color)
+                trace = go.Box(x=tmp[feature_name], y=tmp[target_column], marker_color=color_options.primary_color)
                 fig.add_trace(trace)
                 fig.update_layout(yaxis_title=target_column, xaxis_title=feature_name)
                 fig.update_traces(marker_size=3)
@@ -589,7 +599,7 @@ class DataQualityFeaturesWidget(Widget):
                     x=tmp.sample(min(2000, len(tmp)), random_state=0)[feature_name],
                     y=tmp.sample(min(2000, len(tmp)), random_state=0)[target_column],
                     mode="markers",
-                    marker_color=color_options.current_data_color,
+                    marker_color=color_options.primary_color,
                 )
                 fig.add_trace(trace)
 
@@ -600,7 +610,7 @@ class DataQualityFeaturesWidget(Widget):
 
             else:
                 fig = go.Figure()
-                trace = go.Box(y=tmp[feature_name], x=tmp[target_column], marker_color=color_options.current_data_color)
+                trace = go.Box(y=tmp[feature_name], x=tmp[target_column], marker_color=color_options.primary_color)
                 fig.add_trace(trace)
                 fig.update_layout(yaxis_title=feature_name, xaxis_title=target_column)
                 fig.update_traces(marker_size=3)
@@ -627,14 +637,14 @@ class DataQualityFeaturesWidget(Widget):
                 trace1 = go.Box(
                     x=tmp_ref[feature_name],
                     y=tmp_ref[target_column],
-                    marker_color=color_options.reference_data_color,
+                    marker_color=color_options.get_reference_data_color(),
                     name="reference",
                 )
                 fig.add_trace(trace1)
                 trace2 = go.Box(
                     x=tmp_curr[feature_name],
                     y=tmp_curr[target_column],
-                    marker_color=color_options.current_data_color,
+                    marker_color=color_options.get_reference_data_color(),
                     name="current",
                 )
                 fig.add_trace(trace2)
@@ -671,7 +681,7 @@ class DataQualityFeaturesWidget(Widget):
                     x=tmp_ref.sample(min(2000, len(tmp_ref)), random_state=0)[feature_name],
                     y=tmp_ref.sample(min(2000, len(tmp_ref)), random_state=0)[target_column],
                     mode="markers",
-                    marker_color=color_options.reference_data_color,
+                    marker_color=color_options.get_reference_data_color(),
                     name="reference",
                 )
                 fig.append_trace(trace, 1, 1)
@@ -679,7 +689,7 @@ class DataQualityFeaturesWidget(Widget):
                     x=tmp_curr.sample(min(2000, len(tmp_curr)), random_state=0)[feature_name],
                     y=tmp_curr.sample(min(2000, len(tmp_curr)), random_state=0)[target_column],
                     mode="markers",
-                    marker_color=color_options.current_data_color,
+                    marker_color=color_options.get_current_data_color(),
                     name="current",
                 )
                 fig.append_trace(trace, 1, 2)
@@ -693,14 +703,14 @@ class DataQualityFeaturesWidget(Widget):
                 trace1 = go.Box(
                     x=tmp_ref[target_column],
                     y=tmp_ref[feature_name],
-                    marker_color=color_options.reference_data_color,
+                    marker_color=color_options.get_reference_data_color(),
                     name="reference",
                 )
                 fig.add_trace(trace1)
                 trace2 = go.Box(
                     x=tmp_curr[target_column],
                     y=tmp_curr[feature_name],
-                    marker_color=color_options.current_data_color,
+                    marker_color=color_options.get_current_data_color(),
                     name="current",
                 )
                 fig.add_trace(trace2)

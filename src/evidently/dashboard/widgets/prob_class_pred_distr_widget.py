@@ -65,7 +65,7 @@ class ProbClassPredDistrWidget(Widget):
                     dataset_to_plot[dataset_to_plot[utility_columns.target] != label][label]
                 ],
                 [str(label), "other"],
-                colors=[color_options.current_data_color, color_options.reference_data_color],
+                colors=[color_options.primary_color, color_options.secondary_color],
                 bin_size=0.05,
                 show_curve=False,
                 show_rug=True

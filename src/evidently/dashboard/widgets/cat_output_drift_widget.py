@@ -65,7 +65,7 @@ class CatOutputDriftWidget(Widget):
         fig.add_trace(
             go.Histogram(
                 x=reference_data[output_name],
-                marker_color=color_options.reference_data_color,
+                marker_color=color_options.get_reference_data_color(),
                 opacity=0.6,
                 nbinsx=10,
                 name="Reference",
@@ -76,7 +76,7 @@ class CatOutputDriftWidget(Widget):
         fig.add_trace(
             go.Histogram(
                 x=current_data[output_name],
-                marker_color=color_options.current_data_color,
+                marker_color=color_options.get_current_data_color(),
                 opacity=0.6,
                 nbinsx=10,
                 name="Current",
