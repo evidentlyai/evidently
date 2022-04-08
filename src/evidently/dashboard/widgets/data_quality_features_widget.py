@@ -644,7 +644,7 @@ class DataQualityFeaturesWidget(Widget):
                 trace2 = go.Box(
                     x=tmp_curr[feature_name],
                     y=tmp_curr[target_column],
-                    marker_color=color_options.get_reference_data_color(),
+                    marker_color=color_options.get_current_data_color(),
                     name="current",
                 )
                 fig.add_trace(trace2)
