@@ -11,7 +11,8 @@ import plotly.graph_objs as go
 from evidently import ColumnMapping
 from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceAnalyzer
 from evidently.model.widget import BaseWidgetInfo
-from evidently.dashboard.widgets.widget import Widget, RED
+from evidently.dashboard.widgets.widget import Widget
+from evidently.options import ColorOptions
 
 
 class RegErrorDistrWidget(Widget):
@@ -28,7 +29,7 @@ class RegErrorDistrWidget(Widget):
                   current_data: Optional[pd.DataFrame],
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
-
+        color_options = self.options_provider.get(ColorOptions)
         results = RegressionPerformanceAnalyzer.get_results(analyzers_results)
         results_utility_columns = results.columns.utility_columns
 
@@ -58,7 +59,12 @@ class RegErrorDistrWidget(Widget):
 
         error = dataset_to_plot[results_utility_columns.prediction] - dataset_to_plot[results_utility_columns.target]
 
-        error_distr.add_trace(go.Histogram(x=error, marker_color=RED, name='error distribution', histnorm='percent'))
+        error_distr.add_trace(go.Histogram(
+            x=error,
+            marker_color=color_options.primary_color,
+            name='error distribution',
+            histnorm='percent'
+        ))
 
         error_distr.update_layout(
             xaxis_title="Error (Predicted - Actual)",

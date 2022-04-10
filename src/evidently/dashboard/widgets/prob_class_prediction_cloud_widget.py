@@ -13,7 +13,8 @@ import plotly.graph_objs as go
 from evidently import ColumnMapping
 from evidently.analyzers.prob_classification_performance_analyzer import ProbClassificationPerformanceAnalyzer
 from evidently.model.widget import BaseWidgetInfo
-from evidently.dashboard.widgets.widget import Widget, RED, GREY
+from evidently.dashboard.widgets.widget import Widget
+from evidently.options import ColorOptions
 
 
 class ProbClassPredictionCloudWidget(Widget):
@@ -29,7 +30,7 @@ class ProbClassPredictionCloudWidget(Widget):
                   current_data: Optional[pd.DataFrame],
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
-
+        color_options = self.options_provider.get(ColorOptions)
         results = ProbClassificationPerformanceAnalyzer.get_results(analyzers_results)
         utility_columns = results.columns.utility_columns
 
@@ -65,7 +66,7 @@ class ProbClassPredictionCloudWidget(Widget):
                 name=str(label),
                 marker=dict(
                     size=6,
-                    color=RED
+                    color=color_options.primary_color
                 )
             ))
 
@@ -77,7 +78,7 @@ class ProbClassPredictionCloudWidget(Widget):
                 name='other',
                 marker=dict(
                     size=6,
-                    color=GREY
+                    color=color_options.secondary_color
                 )
             ))
 

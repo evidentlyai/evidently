@@ -12,6 +12,7 @@ def _check_feature_metrics(feature_metric: dict, feature_type: str):
     assert 'current_small_hist' in feature_metric
     assert 'feature_type' in feature_metric
     assert feature_metric['feature_type'] == feature_type
+    assert 'stattest_name' in feature_metric
     assert 'p_value' in feature_metric
     assert 'ref_small_hist' in feature_metric
 
@@ -32,12 +33,12 @@ def test_data_drift_profile_section_with_calculated_results():
         categorical_features=['categorical_feature'],
         target_names=['drift_target_result']
     )
-    data_drift_profile_section_result = calculate_section_results(DataDriftProfileSection, reference_data, current_data, data_columns)
 
-    data_columns = ColumnMapping(
-        numerical_features=['numerical_feature'],
-        categorical_features=['categorical_feature'],
-        target_names=['drift_target_result']
+    data_drift_profile_section_result = calculate_section_results(
+        DataDriftProfileSection,
+        reference_data,
+        current_data,
+        data_columns
     )
 
     check_profile_section_result_common_part(data_drift_profile_section_result, 'data_drift')

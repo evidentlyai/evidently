@@ -19,7 +19,7 @@ const _HistogramGraphColumn: React.FunctionComponent<HistogramGraphColumnProps &
             margin={{top: 3, right: 3, bottom: 3, left: 3}}
             indexBy={"id"}
             keys={["x"]}
-            colors={[props.theme.palette.primary.main]}
+            colors={[props.color]}
             axisTop={null}
             axisRight={null}
             enableGridX={false}

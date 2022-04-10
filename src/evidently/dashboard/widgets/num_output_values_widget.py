@@ -12,7 +12,8 @@ import plotly.graph_objs as go
 from evidently import ColumnMapping
 from evidently.analyzers.num_target_drift_analyzer import NumTargetDriftAnalyzer
 from evidently.model.widget import BaseWidgetInfo
-from evidently.dashboard.widgets.widget import Widget, GREY, RED
+from evidently.dashboard.widgets.widget import Widget
+from evidently.options import ColorOptions
 from evidently.options import QualityMetricsOptions
 
 
@@ -30,7 +31,7 @@ class NumOutputValuesWidget(Widget):
                   current_data: Optional[pd.DataFrame],
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
-
+        color_options = self.options_provider.get(ColorOptions)
         results = NumTargetDriftAnalyzer.get_results(analyzers_results)
         quality_metrics_options = self.options_provider.get(QualityMetricsOptions)
         conf_interval_n_sigmas = quality_metrics_options.conf_interval_n_sigmas
@@ -71,7 +72,7 @@ class NumOutputValuesWidget(Widget):
             name='Reference',
             marker=dict(
                 size=6,
-                color=GREY
+                color=color_options.get_reference_data_color()
             )
         ))
 
@@ -82,7 +83,7 @@ class NumOutputValuesWidget(Widget):
             name='Current',
             marker=dict(
                 size=6,
-                color=RED
+                color=color_options.get_current_data_color()
             )
         ))
 
@@ -99,7 +100,7 @@ class NumOutputValuesWidget(Widget):
             name='Current',
             marker=dict(
                 size=0.01,
-                color='white',
+                color=color_options.non_visible_color,
                 opacity=0.005
             ),
             showlegend=False
@@ -127,7 +128,7 @@ class NumOutputValuesWidget(Widget):
                     y0=reference_mean - conf_interval_n_sigmas * reference_std,
                     x1=1,
                     y1=reference_mean + conf_interval_n_sigmas * reference_std,
-                    fillcolor="LightGreen",
+                    fillcolor=color_options.fill_color,
                     opacity=0.5,
                     layer="below",
                     line_width=0,
@@ -142,7 +143,7 @@ class NumOutputValuesWidget(Widget):
                     x1=1,  # max(testset_agg_by_date.index),
                     y1=reference_mean,
                     line=dict(
-                        color="Green",
+                        color=color_options.zero_line_color,
                         width=3
                     )
                 ),

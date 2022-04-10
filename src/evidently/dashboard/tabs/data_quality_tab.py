@@ -10,5 +10,5 @@ class DataQualityTab(Tab):
     widgets = [
         (DataQualitySummaryWidget("Data Summary"), Verbose.ALWAYS),
         (DataQualityFeaturesWidget("Features"), Verbose.ALWAYS),
-        (DataQualityCorrelationsWidget("Correlations"), Verbose.ALWAYS)
+        (DataQualityCorrelationsWidget("Correlations"), Verbose.FULL)
     ]

@@ -213,7 +213,7 @@ def test_computing_uses_a_custom_function(analyzer: NumTargetDriftAnalyzer):
         'target': range(10)
     })
 
-    options = DataDriftOptions(num_target_stattest_func=lambda x, y: np.pi)
+    options = DataDriftOptions(num_target_stattest_func=lambda x, y, threshold: (np.pi, False))
     analyzer.options_provider.add(options)
     result = analyzer.calculate(df1, df2, ColumnMapping())
     assert result.target_metrics.column_name == 'target'

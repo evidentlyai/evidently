@@ -26,7 +26,7 @@ const _ScatterGraphColumn: React.FunctionComponent<ScatterGraphColumnProps & Wit
             margin={{top: 3, right: 3, bottom: 3, left: 3}}
             xScale={{type: 'linear', min: 0, max: 1000}}
             nodeSize={4}
-            colors={[props.theme.palette.primary.main]}
+            colors={[props.color]}
             useMesh={false}
             axisTop={null}
             axisRight={null}

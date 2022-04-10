@@ -1,17 +1,20 @@
 #!/usr/bin/env python
 # coding: utf-8
-from typing import Callable
+from typing import Callable, Tuple
 from typing import Optional
 from typing import Sequence
 
+
+from dataclasses import dataclass
+
 import numpy as np
 import pandas as pd
-from dataclasses import dataclass
 
 from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.analyzers.base_analyzer import BaseAnalyzerResult
-from evidently.analyzers.stattests import z_stat_test, chi_stat_test
+from evidently.analyzers.stattests import chi_stat_test, z_stat_test
+from evidently.analyzers.stattests.registry import get_stattest
 from evidently.analyzers.utils import process_columns
 from evidently.options import DataDriftOptions
 
@@ -27,18 +30,12 @@ def _remove_nans_and_infinities(dataframe):
 
 
 def _compute_statistic(
-    reference_data: pd.DataFrame, current_data: pd.DataFrame, column_name: str, statistic_fun: Callable
+    reference_data: pd.DataFrame,
+    current_data: pd.DataFrame,
+    column_name: str,
+    statistic_fun: Callable[[pd.Series, pd.Series, float], Tuple[float, bool]],
 ):
-    if not statistic_fun:
-        labels = set(reference_data[column_name]) | set(current_data[column_name])
-
-        if len(labels) > 2:
-            statistic_fun = chi_stat_test
-
-        else:
-            statistic_fun = z_stat_test
-
-    return statistic_fun(reference_data[column_name], current_data[column_name])
+    return statistic_fun(reference_data[column_name], current_data[column_name], 0)[0]
 
 
 @dataclass
@@ -46,6 +43,7 @@ class DataDriftMetrics:
     """Class for drift values"""
 
     column_name: str
+    stattest_name: str
     drift: float
 
 
@@ -73,7 +71,10 @@ class CatTargetDriftAnalyzer(Analyzer):
         return analyzer_results[CatTargetDriftAnalyzer]
 
     def calculate(
-        self, reference_data: pd.DataFrame, current_data: Optional[pd.DataFrame], column_mapping: ColumnMapping
+        self,
+        reference_data: pd.DataFrame,
+        current_data: Optional[pd.DataFrame],
+        column_mapping: ColumnMapping,
     ) -> CatTargetDriftAnalyzerResults:
         """Calculate the target and prediction drifts.
 
@@ -129,16 +130,35 @@ class CatTargetDriftAnalyzer(Analyzer):
         #   _remove_nans_and_infinities
         reference_data = _remove_nans_and_infinities(reference_data)
         current_data = _remove_nans_and_infinities(current_data)
-
-        stattest_func = options.cat_target_stattest_func
-        # target drift
         if target_column is not None:
-            p_value = _compute_statistic(reference_data, current_data, target_column, stattest_func)
-            result.target_metrics = DataDriftMetrics(column_name=target_column, drift=p_value)
+            if not options.cat_target_stattest_func:
+                target_labels = set(reference_data[target_column]) | set(
+                    current_data[target_column]
+                )
+                target_test = get_stattest(chi_stat_test if len(target_labels) > 2 else z_stat_test, "cat")
+            else:
+                target_test = get_stattest(options.cat_target_stattest_func, "cat")
 
-        # prediction drift
+            p_value = _compute_statistic(
+                reference_data, current_data, target_column, target_test.func
+            )
+            result.target_metrics = DataDriftMetrics(
+                column_name=target_column, stattest_name=target_test.display_name, drift=p_value
+            )
         if prediction_column is not None:
-            p_value = _compute_statistic(reference_data, current_data, prediction_column, stattest_func)
-            result.prediction_metrics = DataDriftMetrics(column_name=prediction_column, drift=p_value)
+            if not options.cat_target_stattest_func:
+                prediction_labels = set(reference_data[prediction_column]) | set(
+                    current_data[prediction_column]
+                )
+                pred_test = get_stattest(chi_stat_test if len(prediction_labels) > 2 else z_stat_test, "cat")
+            else:
+                pred_test = get_stattest(options.cat_target_stattest_func, "cat")
+
+            p_value = _compute_statistic(
+                reference_data, current_data, prediction_column, pred_test.func
+            )
+            result.prediction_metrics = DataDriftMetrics(
+                column_name=prediction_column, stattest_name=pred_test.display_name, drift=p_value
+            )
 
         return result
