@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 
+
 def get_binned_data(reference: pd.Series, current: pd.Series, n: int):
     """Split variable into n buckets based on reference quantiles
     Args:

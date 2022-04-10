@@ -18,15 +18,13 @@ def _ks_stat_test(reference_data: pd.Series, current_data: pd.Series, threshold:
         p_value: two-tailed p-value
         test_result: wether the drift is detected
     """
-    # long_name ks_stat_test p_value
-    # short_name ks_stat_test
     p_value = ks_2samp(reference_data, current_data)[1]
     return p_value, p_value <= threshold
 
 
 ks_stat_test = StatTest(
     name="ks",
-    display_name="K-S (p_value)",
+    display_name="K-S p_value)",
     func=_ks_stat_test,
     allowed_feature_types=["num"],
 )
