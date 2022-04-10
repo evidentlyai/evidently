@@ -772,23 +772,40 @@ def test_cramer_v() -> None:
 
     assert v == 0.3949827793858816
 
-def test_corr_matrix() -> None:
-    df = pd.DataFrame(
-        {
-            'x': ['a'] * 15 + ['b'] * 13,
-            'y': ['c'] * 7 + ['d'] * 8 + ['c'] * 11 + ['d'] * 2,
-            'z': ['f'] * 14 + ['e'] * 14
-        }
-    )
-    data_quality_analyzer = DataQualityAnalyzer()
-    corr_matrix = data_quality_analyzer._corr_matrix(df, data_quality_analyzer._cramer_v)
-    expected = np.array(
-        [[1.        , 0.39498278, 0.93094934],
-        [0.39498278, 1.        , 0.2981424 ],
-        [0.93094934, 0.2981424 , 1.        ]]
-    )
+@pytest.mark.parametrize(
+    "df, expected",
+    [
+        (
+            pd.DataFrame(
+                {
+                    'x': ['a'] * 15 + ['b'] * 13,
+                    'y': ['c'] * 7 + ['d'] * 8 + ['c'] * 11 + ['d'] * 2,
+                    'z': ['f'] * 14 + ['e'] * 14
+                }
+            ),
+            np.array(
+                [[1.        , 0.39498278, 0.93094934],
+                [0.39498278, 1.        , 0.2981424 ],
+                [0.93094934, 0.2981424 , 1.        ]]
+            )
+        ),
+        (
+            pd.DataFrame({}),
+            np.array([])
+        ),
+        (
+            pd.DataFrame({'x': ['a', 'b', 'c']}),
+            np.array([])
+        ),
+    ]
+)
+def test_corr_matrix(df: pd.DataFrame, expected: np.array) -> None:
+    
+    data_profile_analyzer = DataQualityAnalyzer()
+    corr_matrix = data_profile_analyzer._corr_matrix(df, data_profile_analyzer._cramer_v)
 
     assert np.allclose(corr_matrix.values, expected)
+
 @pytest.mark.parametrize(
     "kind, expected_corr_df",
     [

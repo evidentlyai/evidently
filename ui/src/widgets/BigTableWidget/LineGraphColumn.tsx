@@ -24,7 +24,7 @@ const _LineGraphColumn: React.FunctionComponent<LineGraphColumnProps & WithStyle
             margin={{top: 0, right: 0, bottom: 0, left: 0}}
             xScale={{type: 'linear', min: 0, max: 25}}
             axisTop={null}
-            colors={[props.theme.palette.primary.main]}
+            colors={[props.color]}
             axisRight={null}
             enableGridX={false}
             enableGridY={false}

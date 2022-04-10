@@ -91,6 +91,8 @@ class DataQualityCorrelationsWidget(Widget):
     def _plot_correlation_figure(self, kind: str, reference_correlations: dict,
                                  current_correlations: Optional[dict]) -> dict:
         columns = reference_correlations[kind].columns
+        heatmap_text = None
+        heatmap_texttemplate = None
         if current_correlations is not None:
             cols = 2
             subplot_titles = ["reference", "current"]
@@ -100,35 +102,31 @@ class DataQualityCorrelationsWidget(Widget):
 
         fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
         if len(columns) < 15:
-            text = np.round(reference_correlations[kind], 2).astype(str)
-            texttemplate = "%{text}"
-        else:
-            text = ""
-            texttemplate = ""
+            heatmap_text = np.round(reference_correlations[kind], 2).astype(str)
+            heatmap_texttemplate = "%{text}"
+
         trace = go.Heatmap(
             z=reference_correlations[kind],
             x=columns,
             y=columns,
-            text=text,
-            texttemplate=texttemplate,
+            text=heatmap_text,
+            texttemplate=heatmap_texttemplate,
             coloraxis="coloraxis")
         fig.append_trace(trace, 1, 1)
         if current_correlations is not None:
             if len(columns) < 15:
-                text = np.round(current_correlations[kind], 2).astype(str)
-                texttemplate = "%{text}"
-            else:
-                text = ""
-                texttemplate = ""
+                heatmap_text = np.round(current_correlations[kind], 2).astype(str)
+                heatmap_texttemplate = "%{text}"
+
             trace = go.Heatmap(
                 z=current_correlations[kind],
                 x=columns,
                 y=columns,
-                text=text,
-                texttemplate=texttemplate,
+                text=heatmap_text,
+                texttemplate=heatmap_texttemplate,
                 coloraxis="coloraxis")
             fig.append_trace(trace, 1, 2)
-        fig.update_layout(coloraxis={'colorscale': 'RdBu'})
+        fig.update_layout(coloraxis={'colorscale': 'RdBu_r'})
         correlation_figure = json.loads(fig.to_json())
         return correlation_figure
 
@@ -182,8 +180,14 @@ class DataQualityCorrelationsWidget(Widget):
                     {"label": "", "values": values},
                 )
         else:
-            ref_num_corr = self._get_df_corr_features_sorted(reference_correlations['spearman'])
-            ref_cat_corr = self._get_df_corr_features_sorted(reference_correlations['cramer_v'])
+            if reference_correlations['spearman'].shape[0] > 0:
+                ref_num_corr = self._get_df_corr_features_sorted(reference_correlations['spearman'])
+            else:
+                ref_num_corr = pd.DataFrame()
+            if reference_correlations['cramer_v'].shape[0] > 0:
+                ref_cat_corr = self._get_df_corr_features_sorted(reference_correlations['cramer_v'])
+            else:
+                ref_cat_corr = pd.DataFrame()
             for i in range(5):
                 values = ['-', '-', '-', '-']
                 if i < ref_cat_corr.shape[0]:

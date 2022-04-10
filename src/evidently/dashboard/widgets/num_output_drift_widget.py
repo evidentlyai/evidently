@@ -10,8 +10,9 @@ import plotly.figure_factory as ff
 from evidently import ColumnMapping
 from evidently.analyzers.num_target_drift_analyzer import NumTargetDriftAnalyzer
 from evidently.model.widget import BaseWidgetInfo
-from evidently.dashboard.widgets.widget import Widget, GREY, RED
+from evidently.dashboard.widgets.widget import Widget
 from evidently.dashboard.widgets.utils import CutQuantileTransformer
+from evidently.options import ColorOptions
 from evidently.options import QualityMetricsOptions
 
 
@@ -28,7 +29,7 @@ class NumOutputDriftWidget(Widget):
                   current_data: Optional[pd.DataFrame],
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
-
+        color_options = self.options_provider.get(ColorOptions)
         results = NumTargetDriftAnalyzer.get_results(analyzers_results)
         quality_metrics_options = self.options_provider.get(QualityMetricsOptions)
         cut_quantile = quality_metrics_options.cut_quantile
@@ -78,7 +79,7 @@ class NumOutputDriftWidget(Widget):
             [reference_data_to_plot,
              current_data_to_plot],
             ["Reference", "Current"],
-            colors=[GREY, RED],
+            colors=[color_options.get_reference_data_color(), color_options.get_current_data_color()],
             show_rug=True
         )
 

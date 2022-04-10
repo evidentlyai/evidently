@@ -115,16 +115,19 @@ export interface GraphOptions {
 export interface LineGraphOptions {
     xField: string;
     yField: string;
+    color: string;
 }
 
 export interface ScatterGraphOptions {
     xField: string;
     yField: string;
+    color: string;
 }
 
 export interface HistogramGraphOptions {
     xField: string;
     yField: string;
+    color: string;
 }
 
 export interface ColumnDefinition {
