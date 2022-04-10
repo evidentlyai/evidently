@@ -5,16 +5,21 @@ import dataclasses
 import pandas as pd
 
 
+StatTestFuncType = Callable[[pd.Series, pd.Series, float], Tuple[float, bool]]
+
+
 @dataclasses.dataclass
 class StatTest:
     name: str
     display_name: str
-    func: Callable[[pd.Series, pd.Series, float], Tuple[float, bool]]
+    func: StatTestFuncType
     allowed_feature_types: List[str]
 
 
+PossibleStatTestType = Union[str, StatTestFuncType, StatTest]
+
 _registered_stat_tests: Dict[str, Dict[str, StatTest]] = {}
-_registered_stat_test_funcs: Dict[Callable, str] = {}
+_registered_stat_test_funcs: Dict[StatTestFuncType, str] = {}
 
 
 def register_stattest(stat_test: StatTest):
@@ -22,7 +27,7 @@ def register_stattest(stat_test: StatTest):
     _registered_stat_test_funcs[stat_test.func] = stat_test.name
 
 
-def get_stattest(stattest_func: Union[str, Callable, StatTest], feature_type: str) -> StatTest:
+def get_stattest(stattest_func: PossibleStatTestType, feature_type: str) -> StatTest:
     if isinstance(stattest_func, StatTest):
         return stattest_func
     if callable(stattest_func) and stattest_func not in _registered_stat_test_funcs:

@@ -3,4 +3,4 @@
 from .ks_stattest import ks_stat_test
 from .z_stattest import z_stat_test
 from .chisquare_stattest import chi_stat_test
-from .registry import get_stattest, register_stattest, StatTest
+from .registry import get_stattest, register_stattest, StatTest, PossibleStatTestType, StatTestFuncType

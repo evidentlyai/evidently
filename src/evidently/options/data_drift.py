@@ -1,6 +1,7 @@
 from dataclasses import dataclass
-from typing import Optional, Dict, Callable, Union
+from typing import Optional, Dict, Union
 
+from evidently.analyzers.stattests import StatTest, PossibleStatTestType
 
 DEFAULT_CONFIDENCE = 0.95
 DEFAULT_NBINSX = 10
@@ -12,9 +13,9 @@ class DataDriftOptions:
     drift_share: float = 0.5
     nbinsx: Union[int, Dict[str, int]] = DEFAULT_NBINSX
     xbins: Optional[Dict[str, int]] = None
-    feature_stattest_func: Union[None, str, Callable, Dict[str, Union[str, Callable]]] = None
-    cat_target_stattest_func: Optional[Union[str, Callable]] = None
-    num_target_stattest_func: Optional[Union[str, Callable]] = None
+    feature_stattest_func: Optional[Union[PossibleStatTestType, Dict[str, PossibleStatTestType]]] = None
+    cat_target_stattest_func: Optional[PossibleStatTestType] = None
+    num_target_stattest_func: Optional[PossibleStatTestType] = None
 
     def as_dict(self):
         return {
@@ -38,8 +39,8 @@ class DataDriftOptions:
             return self.nbinsx.get(feature_name, DEFAULT_NBINSX)
         raise ValueError(f"DataDriftOptions.nbinsx is incorrect type {type(self.nbinsx)}")
 
-    def get_feature_stattest_func(self, feature_name: str, default: Union[str, Callable]) -> Union[str, Callable]:
-        if callable(self.feature_stattest_func):
+    def get_feature_stattest_func(self, feature_name: str, default: PossibleStatTestType) -> PossibleStatTestType:
+        if callable(self.feature_stattest_func) or isinstance(self.feature_stattest_func, StatTest):
             return self.feature_stattest_func
         if isinstance(self.feature_stattest_func, dict):
             return self.feature_stattest_func.get(feature_name, default)
