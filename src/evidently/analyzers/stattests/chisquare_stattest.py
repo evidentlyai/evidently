@@ -22,7 +22,7 @@ def _chi_stat_test(reference_data: pd.Series, current_data: pd.Series, threshold
     f_exp = [ref_feature_dict[key] * k_norm for key in keys]
     f_obs = [current_feature_dict[key] for key in keys]
     p_value = chisquare(f_exp, f_obs)[1]
-    return p_value, p_value < (1. - threshold)
+    return p_value, p_value < threshold
 
 
 chi_stat_test = StatTest(

@@ -22,7 +22,7 @@ def dataset_drift_evaluation(p_values, drift_share=0.5) -> Tuple[int, float, boo
     return n_drifted_features, share_drifted_features, dataset_drift
 
 
-PValueWithConfidence = collections.namedtuple("PValueWithConfidence", ["p_value", "drifted"])
+PValueWithDrift = collections.namedtuple("PValueWithDrift", ["p_value", "drifted"])
 
 
 @dataclass
@@ -32,6 +32,7 @@ class DataDriftAnalyzerFeatureMetrics:
     feature_type: str
     stattest_name: str
     p_value: float
+    drift_detected: bool
 
 
 @dataclass
@@ -71,10 +72,10 @@ class DataDriftAnalyzer(Analyzer):
         p_values = {}
 
         for feature_name in num_feature_names:
-            confidence = data_drift_options.get_confidence(feature_name)
+            threshold = data_drift_options.get_threshold(feature_name)
             test = get_stattest(data_drift_options.get_feature_stattest_func(feature_name, ks_stat_test), "num")
-            p_value, drifted = test.func(reference_data[feature_name], current_data[feature_name], confidence)
-            p_values[feature_name] = PValueWithConfidence(p_value, drifted)
+            p_value, drifted = test.func(reference_data[feature_name], current_data[feature_name], threshold)
+            p_values[feature_name] = PValueWithDrift(p_value, drifted)
             current_nbinsx = data_drift_options.get_nbinsx(feature_name)
             features_metrics[feature_name] = DataDriftAnalyzerFeatureMetrics(
                 current_small_hist=[t.tolist() for t in
@@ -85,27 +86,29 @@ class DataDriftAnalyzer(Analyzer):
                                              bins=current_nbinsx, density=True)],
                 feature_type='num',
                 stattest_name=test.display_name,
-                p_value=p_value
+                p_value=p_value,
+                drift_detected=drifted,
             )
 
         for feature_name in cat_feature_names:
-            confidence = data_drift_options.get_confidence(feature_name)
+            threshold = data_drift_options.get_threshold(feature_name)
             feature_ref_data = reference_data[feature_name].dropna()
             feature_cur_data = current_data[feature_name].dropna()
             keys = set(list(feature_ref_data.unique()) +
                        list(feature_cur_data.unique())) - {np.nan}
             default_test = chi_stat_test if len(keys) > 2 else z_stat_test
             stat_test = get_stattest(data_drift_options.get_feature_stattest_func(feature_name, default_test), "cat")
-            p_value, drifted = stat_test.func(feature_ref_data, feature_cur_data, confidence)
+            p_value, drifted = stat_test.func(feature_ref_data, feature_cur_data, threshold)
 
-            p_values[feature_name] = PValueWithConfidence(p_value, drifted)
+            p_values[feature_name] = PValueWithDrift(p_value, drifted)
 
             features_metrics[feature_name] = DataDriftAnalyzerFeatureMetrics(
                 ref_small_hist=list(reversed(list(map(list, zip(*feature_ref_data.value_counts().items()))))),
                 current_small_hist=list(reversed(list(map(list, zip(*feature_cur_data.value_counts().items()))))),
                 feature_type='cat',
                 stattest_name=stat_test.display_name,
-                p_value=p_value
+                p_value=p_value,
+                drift_detected=drifted,
             )
 
         n_drifted_features, share_drifted_features, dataset_drift = dataset_drift_evaluation(p_values, drift_share)

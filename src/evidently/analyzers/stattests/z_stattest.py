@@ -46,7 +46,7 @@ def _z_stat_test(reference_data: pd.Series, current_data: pd.Series, threshold: 
             current_data.apply(lambda x, key=ordered_keys[0]: 0 if x == key else 1)
         )
     )
-    return p_value, p_value < (1. - threshold)
+    return p_value, p_value < threshold
 
 
 z_stat_test = StatTest(

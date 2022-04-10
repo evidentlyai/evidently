@@ -1,31 +1,45 @@
 import pytest
+from numpy.ma.testutils import approx
 
 from evidently.options import DataDriftOptions
+from evidently.options.data_drift import DEFAULT_THRESHOLD
 
 
 @pytest.mark.parametrize("confidence,expected", [
-    (0.5, {"feature1": 0.5, "feature2": 0.5}),
-    ({"feature1": 0.5}, {"feature1": 0.5, "feature2": DataDriftOptions.confidence}),
-    ({"feature2": 0.5}, {"feature1": DataDriftOptions.confidence, "feature2": 0.5}),
-    ({}, {"feature1": DataDriftOptions.confidence, "feature2": DataDriftOptions.confidence}),
+    (0.1, {"feature1": 0.9, "feature2": 0.9}),
+    ({"feature1": 0.1}, {"feature1": 0.9, "feature2": DEFAULT_THRESHOLD}),
+    ({"feature2": 0.1}, {"feature1": DEFAULT_THRESHOLD, "feature2": 0.9}),
+    ({}, {"feature1": DEFAULT_THRESHOLD, "feature2": DEFAULT_THRESHOLD}),
 ])
-def test_confidence_valid(confidence, expected):
+def test_confidence_threshold_valid(confidence, expected):
     options = DataDriftOptions(confidence=confidence)
-    for feature, expected_confidence in expected.items():
-        assert options.get_confidence(feature) == expected_confidence
+    for feature, expected_threshold in expected.items():
+        assert approx(options.get_threshold(feature), expected_threshold)
 
 
-def test_confidence_default():
+@pytest.mark.parametrize("threshold,expected", [
+    (0.1, {"feature1": 0.1, "feature2": 0.1}),
+    ({"feature1": 0.1}, {"feature1": 0.1, "feature2": DEFAULT_THRESHOLD}),
+    ({"feature2": 0.1}, {"feature1": DEFAULT_THRESHOLD, "feature2": 0.1}),
+    ({}, {"feature1": DEFAULT_THRESHOLD, "feature2": DEFAULT_THRESHOLD}),
+])
+def test_threshold_valid(threshold, expected):
+    options = DataDriftOptions(threshold=threshold)
+    for feature, expected_threshold in expected.items():
+        assert approx(options.get_threshold(feature), expected_threshold)
+
+
+def test_threshold_default():
     options = DataDriftOptions()
-    assert options.get_confidence("feature") == DataDriftOptions.confidence
+    assert options.get_threshold("feature") == DEFAULT_THRESHOLD
 
 
-def test_confidence_invalid():
+def test_threshold_invalid():
     # special check if passed totally incorrect value
     # noinspection PyTypeChecker
     options = DataDriftOptions(confidence="")
     with pytest.raises(ValueError):
-        options.get_confidence("feature1")
+        options.get_threshold("feature1")
 
 
 def _default_stattest():

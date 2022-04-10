@@ -16,12 +16,12 @@ from evidently.dashboard.widgets.utils import CutQuantileTransformer
 from evidently.options import DataDriftOptions, QualityMetricsOptions
 
 
-def _generate_feature_params(name: str, data: DataDriftAnalyzerFeatureMetrics, confidence: float) -> dict:
+def _generate_feature_params(name: str, data: DataDriftAnalyzerFeatureMetrics) -> dict:
     current_small_hist = data.current_small_hist
     ref_small_hist = data.ref_small_hist
     feature_type = data.feature_type
     p_value = data.p_value
-    distr_sim_test = "Detected" if p_value < (1. - confidence) else "Not Detected"
+    distr_sim_test = "Detected" if data.drift_detected else "Not Detected"
     parts = []
     if data.feature_type == "num":
         parts.append({
@@ -278,10 +278,8 @@ class DataDriftTableWidget(Widget):
         data_drift_options = self.options_provider.get(DataDriftOptions)
         quality_metrics_options = self.options_provider.get(QualityMetricsOptions)
         for feature_name in all_features:
-            feature_confidence = data_drift_options.get_confidence(feature_name)
             params_data.append(_generate_feature_params(feature_name,
-                                                        data_drift_results.metrics.features[feature_name],
-                                                        feature_confidence))
+                                                        data_drift_results.metrics.features[feature_name]))
 
         # set additionalGraphs
         additional_graphs_data = []
