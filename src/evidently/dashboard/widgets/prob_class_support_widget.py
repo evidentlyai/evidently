@@ -11,7 +11,8 @@ import plotly.graph_objs as go
 from evidently import ColumnMapping
 from evidently.analyzers.prob_classification_performance_analyzer import ProbClassificationPerformanceAnalyzer
 from evidently.model.widget import BaseWidgetInfo
-from evidently.dashboard.widgets.widget import Widget, RED
+from evidently.dashboard.widgets.widget import Widget
+from evidently.options import ColorOptions
 
 
 class ProbClassSupportWidget(Widget):
@@ -27,7 +28,7 @@ class ProbClassSupportWidget(Widget):
                   current_data: Optional[pd.DataFrame],
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
-
+        color_options = self.options_provider.get(ColorOptions)
         results = ProbClassificationPerformanceAnalyzer.get_results(analyzers_results)
         utility_columns = results.columns.utility_columns
 
@@ -58,8 +59,12 @@ class ProbClassSupportWidget(Widget):
 
         fig = go.Figure()
 
-        fig.add_trace(go.Bar(x=metrics_frame.columns.tolist()[:-3],
-                             y=metrics_frame.iloc[-1:, :-3].values[0], marker_color=RED, name='Support'))
+        fig.add_trace(go.Bar(
+            x=metrics_frame.columns.tolist()[:-3],
+            y=metrics_frame.iloc[-1:, :-3].values[0],
+            marker_color=color_options.primary_color,
+            name='Support'
+        ))
 
         fig.update_layout(
             xaxis_title="Class",

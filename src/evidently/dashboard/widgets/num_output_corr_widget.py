@@ -10,7 +10,8 @@ import plotly.graph_objs as go
 from evidently import ColumnMapping
 from evidently.analyzers.num_target_drift_analyzer import NumTargetDriftAnalyzer
 from evidently.model.widget import BaseWidgetInfo
-from evidently.dashboard.widgets.widget import Widget, RED, GREY
+from evidently.dashboard.widgets.widget import Widget
+from evidently.options import ColorOptions
 
 
 class NumOutputCorrWidget(Widget):
@@ -27,7 +28,7 @@ class NumOutputCorrWidget(Widget):
                   current_data: Optional[pd.DataFrame],
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
-
+        color_options = self.options_provider.get(ColorOptions)
         results = NumTargetDriftAnalyzer.get_results(analyzers_results)
 
         if self.kind == 'target':
@@ -56,10 +57,10 @@ class NumOutputCorrWidget(Widget):
         output_corr = go.Figure()
 
         output_corr.add_trace(go.Bar(y=list(ref_output_corr.values()), x=list(ref_output_corr.keys()),
-                                     marker_color=GREY, name='Reference'))
+                                     marker_color=color_options.get_reference_data_color(), name='Reference'))
 
         output_corr.add_trace(go.Bar(y=list(current_output_corr.values()), x=list(ref_output_corr.keys()),
-                                     marker_color=RED, name='Current'))
+                                     marker_color=color_options.get_current_data_color(), name='Current'))
 
         output_corr.update_layout(xaxis_title="Features", yaxis_title="Correlation",
                                   yaxis=dict(

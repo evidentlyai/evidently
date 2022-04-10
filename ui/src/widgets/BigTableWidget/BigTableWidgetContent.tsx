@@ -48,16 +48,19 @@ const GraphMapping =
         ["line", (def, row, classes) => row[def.field]
             ? <LineGraphColumn xField={(def.options as LineGraphOptions).xField}
                                yField={(def.options as LineGraphOptions).yField}
+                               color={(def.options as LineGraphOptions).color}
                                data={row[def.field]} classes={classes}/>
             : <div/>],
         ["scatter", (def, row, classes) => row[def.field]
             ? <ScatterGraphColumn xField={(def.options as ScatterGraphOptions).xField}
                                   yField={(def.options as ScatterGraphOptions).yField}
+                                  color={(def.options as LineGraphOptions).color}
                                   data={row[def.field]} classes={classes}/>
             : <div/>],
         ["histogram", (def, row, classes) => row[def.field]
             ? <HistogramGraphColumn xField={(def.options as HistogramGraphOptions).xField}
                                     yField={(def.options as HistogramGraphOptions).yField}
+                                    color={(def.options as LineGraphOptions).color}
                                     data={row[def.field]} classes={classes}/>
             : <div/>]
     ])

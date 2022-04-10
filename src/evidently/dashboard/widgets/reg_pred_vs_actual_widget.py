@@ -12,7 +12,8 @@ import plotly.graph_objs as go
 from evidently import ColumnMapping
 from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceAnalyzer
 from evidently.model.widget import BaseWidgetInfo
-from evidently.dashboard.widgets.widget import Widget, RED
+from evidently.dashboard.widgets.widget import Widget
+from evidently.options import ColorOptions
 
 
 class RegPredActualWidget(Widget):
@@ -28,7 +29,7 @@ class RegPredActualWidget(Widget):
                   current_data: Optional[pd.DataFrame],
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
-
+        color_options = self.options_provider.get(ColorOptions)
         results = RegressionPerformanceAnalyzer.get_results(analyzers_results)
 
         target_name = results.columns.utility_columns.target
@@ -64,7 +65,7 @@ class RegPredActualWidget(Widget):
             mode='markers',
             name=self.dataset.title(),
             marker=dict(
-                color=RED,
+                color=color_options.primary_color,
                 showscale=False
             )
         ))

@@ -13,7 +13,8 @@ from evidently import ColumnMapping
 from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceAnalyzer
 
 from evidently.model.widget import BaseWidgetInfo
-from evidently.dashboard.widgets.widget import Widget, RED
+from evidently.dashboard.widgets.widget import Widget
+from evidently.options import ColorOptions
 
 
 class RegAbsPercErrorTimeWidget(Widget):
@@ -29,7 +30,7 @@ class RegAbsPercErrorTimeWidget(Widget):
                   current_data: Optional[pd.DataFrame],
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
-
+        color_options = self.options_provider.get(ColorOptions)
         results = RegressionPerformanceAnalyzer.get_results(analyzers_results)
         results_utility_columns = results.columns.utility_columns
 
@@ -64,7 +65,7 @@ class RegAbsPercErrorTimeWidget(Widget):
             name='Absolute Percentage Error',
             marker=dict(
                 size=6,
-                color=RED
+                color=color_options.primary_color
             )
         )
 
@@ -75,7 +76,7 @@ class RegAbsPercErrorTimeWidget(Widget):
             opacity=0.5,
             marker=dict(
                 size=6,
-                color='green',
+                color=color_options.zero_line_color,
             ),
             showlegend=False,
         )
