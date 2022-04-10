@@ -18,12 +18,12 @@ from evidently.options import DataDriftOptions
 from evidently.options import QualityMetricsOptions
 
 
-def _generate_feature_params(name: str, data: DataDriftAnalyzerFeatureMetrics, confidence: float) -> dict:
+def _generate_feature_params(name: str, data: DataDriftAnalyzerFeatureMetrics) -> dict:
     current_small_hist = data.current_small_hist
     ref_small_hist = data.ref_small_hist
     feature_type = data.feature_type
     p_value = data.p_value
-    distr_sim_test = "Detected" if p_value < (1.0 - confidence) else "Not Detected"
+    distr_sim_test = "Detected" if data.drift_detected else "Not Detected"
     parts = []
     if data.feature_type == "num":
         parts.append({"title": "Data drift", "id": f"{name}_drift", "type": "widget"})
@@ -32,6 +32,7 @@ def _generate_feature_params(name: str, data: DataDriftAnalyzerFeatureMetrics, c
         "details": {"parts": parts, "insights": []},
         "f1": name,
         "f6": feature_type,
+        "stattest_name": data.stattest_name,
         "f3": {"x": list(ref_small_hist[1]), "y": list(ref_small_hist[0])},
         "f4": {"x": list(current_small_hist[1]), "y": list(current_small_hist[0])},
         "f2": distr_sim_test,
@@ -248,10 +249,10 @@ class DataDriftTableWidget(Widget):
         data_drift_options = self.options_provider.get(DataDriftOptions)
         quality_metrics_options = self.options_provider.get(QualityMetricsOptions)
         for feature_name in all_features:
-            feature_confidence = data_drift_options.get_confidence(feature_name)
             params_data.append(
                 _generate_feature_params(
-                    feature_name, data_drift_results.metrics.features[feature_name], feature_confidence
+                    feature_name,
+                    data_drift_results.metrics.features[feature_name]
                 )
             )
 
@@ -297,6 +298,10 @@ class DataDriftTableWidget(Widget):
                 "columns": [
                     {"title": "Feature", "field": "f1"},
                     {"title": "Type", "field": "f6"},
+                    {
+                        "title": "Stat test name",
+                        "field": "stattest_name"
+                    },
                     {
                         "title": "Reference Distribution",
                         "field": "f3",
