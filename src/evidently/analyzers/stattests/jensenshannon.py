@@ -6,6 +6,7 @@ from scipy.spatial import distance
 from evidently.analyzers.stattests.utils import get_binned_data
 from evidently.analyzers.stattests.registry import StatTest, register_stattest
 
+
 def _jensenshannon(
         reference_data: pd.Series,
         current_data: pd.Series,

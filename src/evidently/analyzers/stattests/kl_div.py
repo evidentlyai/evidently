@@ -6,6 +6,7 @@ from scipy import stats
 from evidently.analyzers.stattests.registry import StatTest, register_stattest
 from evidently.analyzers.stattests.utils import get_binned_data
 
+
 def kl_div(
         reference_data: pd.Series,
         current_data: pd.Series,
