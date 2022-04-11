@@ -1,6 +1,12 @@
 import pytest
 
-from evidently.analyzers.stattests import ks_stat_test, chi_stat_test, z_stat_test
+from evidently.analyzers.stattests import ks_stat_test
+from evidently.analyzers.stattests import chi_stat_test
+from evidently.analyzers.stattests import z_stat_test
+from evidently.analyzers.stattests import jensenshannon_stat_test
+from evidently.analyzers.stattests import kl_div_stat_test
+from evidently.analyzers.stattests import psi_stat_test
+from evidently.analyzers.stattests import wasserstein_stat_test
 from evidently.analyzers.stattests.registry import get_stattest, StatTestInvalidFeatureTypeError, \
     StatTestNotFoundError
 
@@ -13,9 +19,13 @@ def _custom_stattest():
     "stattest_func, feature_type, expected_name, expected_func",
     [
         (_custom_stattest, "num", "custom function '_custom_stattest'", _custom_stattest),
-        ("ks", "num", "K-S (p_value)", ks_stat_test.func),
-        ("z", "cat", "Z-test (p_value)", z_stat_test.func),
-        ("chisquare", "cat", "chi-square (p_value)", chi_stat_test.func),
+        ("ks", "num", ks_stat_test.display_name, ks_stat_test.func),
+        ("z", "cat", z_stat_test.display_name, z_stat_test.func),
+        ("chisquare", "cat", chi_stat_test.display_name, chi_stat_test.func),
+        ("jensenshannon", "num", jensenshannon_stat_test.display_name, jensenshannon_stat_test.func),
+        ("kl_div", "num", kl_div_stat_test.display_name, kl_div_stat_test.func),
+        ("psi", "num", psi_stat_test.display_name, psi_stat_test.func),
+        ("wasserstein", "num", wasserstein_stat_test.display_name, wasserstein_stat_test.func)
      ])
 def test_get_stattest_valid(stattest_func, feature_type, expected_name, expected_func):
     test = get_stattest(stattest_func, feature_type)
