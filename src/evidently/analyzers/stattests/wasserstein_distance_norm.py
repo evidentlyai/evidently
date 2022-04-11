@@ -29,7 +29,7 @@ wasserstein_stat_test = StatTest(
     name="wasserstein",
     display_name="Wasserstein distance (normed)",
     func=_wasserstein_distance_norm,
-    allowed_feature_types=["cat", "num"]
+    allowed_feature_types=["num"]
 )
 
 register_stattest(wasserstein_stat_test)
