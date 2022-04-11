@@ -4,7 +4,7 @@ This example shows how to get real-time Grafana dashboards for monitoring data a
 
 ## What's inside
 
-We use two toy datasets and treat them as model application logs. Then, we configure Evidently `Monitors` to read the data from the logs at a certain interval (to simulate production service where data appears sequentually). Evidently calculates the metrics for Data Drift, Regression Performance and Classification Performance and sends them to Prometheus. The metrics are displayed on a pre-built Grafana dashboard.
+We use two toy datasets and treat them as model application logs. Then, we configure Evidently `Monitors` to read the data from the logs at a certain interval (to simulate production service where data appears sequentially). Evidently calculates the metrics for Data Drift, Regression Performance and Classification Performance and sends them to Prometheus. The metrics are displayed on a pre-built Grafana dashboard.
 
 Here is the one for Data Drift. Two more inside!
 
@@ -107,7 +107,7 @@ If you want to continue using the same source data and metrics, but **change the
 3. Customize the visuals in the Grafana interface. 
 4. Apply your changes to the Dashboard and check that you like what you see :)
 5. Click the button "save" from the Grafana Top Menu. This will open a dialog window. Select the option "Download JSON" to save the configurations in the JSON file.
-6. Replace the initial configiration file (for example, data_drift.JSON) with the newly generated one.
+6. Replace the initial configuration file (for example, data_drift.JSON) with the newly generated one.
 
 You can refer to the [Grafana documentation](https://grafana.com/docs/grafana/latest/dashboards/) to learn more about UI customization.  
 
@@ -130,9 +130,9 @@ To define which exact metrics are computed during Monitoring and logged to Prome
 For example, we use the ```DataDriftMonitor``` to define the Data Drift metrics collected from the live service: 
 https://github.com/evidentlyai/evidently/blob/main/src/evidently/model_monitoring/monitors/data_drift.py
 
-If you want to add or customize metrics, you need to check the implemendation of the corresponding ```Analyzer``` and ```Monitor```:
+If you want to add or customize metrics, you need to check the implementation of the corresponding ```Analyzer``` and ```Monitor```:
 - If the statistic you need **is calculated** in the Analyzer, but **not used** in Monitor, you can add it there by updating the Monitor code
-- If the statistic you need **is not calculated** in the Analyzer, than you should first add the metric to the Analyzer and than to Monitor
+- If the statistic you need **is not calculated** in the Analyzer, then you should first add the metric to the Analyzer and then to Monitor
 
 For example, to add something to the Data Drift monitoring dashboard: 
 - Check if the metric you need is calculated in the ```DataDriftAnalyzer```: https://github.com/evidentlyai/evidently/blob/main/src/evidently/analyzers/data_drift_analyzer.py
