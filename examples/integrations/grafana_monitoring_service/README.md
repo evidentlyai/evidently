@@ -51,7 +51,7 @@ pip install -r requirements.txt
   - use `kddcup99` if you want to get data for `classification_performance`
   - the script will use `bike` as a default
 ```
-prepare_datasets.py --dataset kddcup99
+python prepare_datasets.py --dataset kddcup99
 ```
 - After the script is executed successfully, the three files should appear in the directory: 
   - `config.yaml` - a config for the metrics service
