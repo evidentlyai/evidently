@@ -98,7 +98,13 @@ const InsightAlert: React.FunctionComponent<InsightAlertProps> = (props) => {
 
 const BigTableWidgetContent: React.FunctionComponent<BigTableWidgetProps & WithStyles> = (props) => {
     const {columns, data} = props;
-    const options = {search: true, showTitle: false, minBodyHeight: "10vh", pageSize: props.rowsPerPage ?? 5} as Options<any>;
+    const options = {
+        search: true,
+        showTitle: false,
+        minBodyHeight: "10vh",
+        pageSize: props.rowsPerPage ?? 5,
+        detailPanelColumnStyle: {minWidth: 42}
+    } as Options<any>;
     return <React.Fragment>
         <MaterialTable<BigTableDataRow>
             columns={(props.showInfoColumn ?? false)

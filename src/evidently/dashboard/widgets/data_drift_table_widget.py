@@ -299,10 +299,6 @@ class DataDriftTableWidget(Widget):
                     {"title": "Feature", "field": "f1"},
                     {"title": "Type", "field": "f6"},
                     {
-                        "title": "Stat test name",
-                        "field": "stattest_name"
-                    },
-                    {
                         "title": "Reference Distribution",
                         "field": "f3",
                         "type": "histogram",
@@ -314,7 +310,8 @@ class DataDriftTableWidget(Widget):
                         "type": "histogram",
                         "options": {"xField": "x", "yField": "y", "color": color_options.primary_color},
                     },
-                    {"title": "Data drift", "field": "f2"},
+                    {"title": "Data Drift", "field": "f2"},
+                    {"title": "Stat Test", "field": "stattest_name"},
                     {"title": "Drift Score", "field": "f5", "sort": "asc"},
                 ],
                 "data": params_data,

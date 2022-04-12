@@ -37,7 +37,7 @@ class DataDriftProfileSection(ProfileSection):
                 'ref_small_hist': feature_metrics.ref_small_hist,
                 'feature_type': feature_metrics.feature_type,
                 'stattest_name': feature_metrics.stattest_name,
-                'p_value': feature_metrics.p_value,
+                'drift_score': feature_metrics.p_value,
             }
 
         result_json['options'] = data_drift_results.options.as_dict()
