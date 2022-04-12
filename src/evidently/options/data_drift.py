@@ -54,7 +54,7 @@ class DataDriftOptions:
         raise ValueError(f"DataDriftOptions.nbinsx is incorrect type {type(self.nbinsx)}")
 
     def get_feature_stattest_func(self, feature_name: str, default: PossibleStatTestType) -> PossibleStatTestType:
-        if callable(self.feature_stattest_func) or isinstance(self.feature_stattest_func, StatTest):
+        if callable(self.feature_stattest_func) or isinstance(self.feature_stattest_func, (StatTest, str)):
             return self.feature_stattest_func
         if isinstance(self.feature_stattest_func, dict):
             return self.feature_stattest_func.get(feature_name, default)
