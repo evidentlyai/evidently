@@ -24,7 +24,7 @@ def _ks_stat_test(reference_data: pd.Series, current_data: pd.Series, threshold:
 
 ks_stat_test = StatTest(
     name="ks",
-    display_name="K-S p_value)",
+    display_name="K-S p_value",
     func=_ks_stat_test,
     allowed_feature_types=["num"],
 )

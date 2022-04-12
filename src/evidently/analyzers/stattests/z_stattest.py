@@ -51,7 +51,7 @@ def _z_stat_test(reference_data: pd.Series, current_data: pd.Series, threshold: 
 
 z_stat_test = StatTest(
     name="z",
-    display_name="Z-test (p_value)",
+    display_name="Z-test p_value",
     func=_z_stat_test,
     allowed_feature_types=["cat"],
 )

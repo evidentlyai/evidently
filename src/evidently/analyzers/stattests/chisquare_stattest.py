@@ -27,7 +27,7 @@ def _chi_stat_test(reference_data: pd.Series, current_data: pd.Series, threshold
 
 chi_stat_test = StatTest(
     name="chisquare",
-    display_name="chi-square (p_value)",
+    display_name="chi-square p_value",
     func=_chi_stat_test,
     allowed_feature_types=["cat"]
 )

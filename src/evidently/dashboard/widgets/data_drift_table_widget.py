@@ -315,7 +315,7 @@ class DataDriftTableWidget(Widget):
                         "options": {"xField": "x", "yField": "y", "color": color_options.primary_color},
                     },
                     {"title": "Data drift", "field": "f2"},
-                    {"title": "P-Value for Similarity Test", "field": "f5", "sort": "asc"},
+                    {"title": "Drift Score", "field": "f5", "sort": "asc"},
                 ],
                 "data": params_data,
             },
