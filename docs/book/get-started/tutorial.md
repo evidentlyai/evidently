@@ -112,7 +112,7 @@ Data drift dashboard runs statistical tests to compare the data distributions fo
 To generate the Data Drift dashboard, run:
 
 ```python
-iris_data_drift_report = Dashboard(tabs=[DataDriftTab])
+iris_data_drift_report = Dashboard(tabs=[DataDriftTab()])
 iris_data_drift_report.calculate(iris_frame[:75], iris_frame[75:], 
     column_mapping = None)
 iris_data_drift_report.show()
@@ -147,7 +147,7 @@ This toy dataset is meant to perform a classification task, and the target is ca
 To generate the Target Drift report, run:
 
 ```python
-iris_data_and_target_drift_report = Dashboard(tabs=[DataDriftTab, CatTargetDriftTab])
+iris_data_and_target_drift_report = Dashboard(tabs=[DataDriftTab(), CatTargetDriftTab()])
 iris_data_and_target_drift_report.calculate(iris_frame[:75], iris_frame[75:], 
     column_mapping=None)
 iris_data_and_target_drift_report.show()
@@ -207,7 +207,7 @@ from evidently.model_profile.sections import DataDriftProfileSection, CatTargetD
 To generate the **Data Drift** and the **Categorical Target Drift** profiles, run:
 
 ```python
-iris_target_and_data_drift_profile = Profile(sections=[DataDriftProfileSection, CatTargetDriftProfileSection])
+iris_target_and_data_drift_profile = Profile(sections=[DataDriftProfileSection(), CatTargetDriftProfileSection()])
 iris_target_and_data_drift_profile.calculate(iris_frame[:75], iris_frame[75:], column_mapping=None) 
 iris_target_and_data_drift_profile.json() 
 ```
