@@ -13,7 +13,7 @@ def _check_feature_metrics(feature_metric: dict, feature_type: str):
     assert 'feature_type' in feature_metric
     assert feature_metric['feature_type'] == feature_type
     assert 'stattest_name' in feature_metric
-    assert 'p_value' in feature_metric
+    assert 'drift_score' in feature_metric
     assert 'ref_small_hist' in feature_metric
 
 
