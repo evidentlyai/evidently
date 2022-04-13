@@ -38,7 +38,7 @@
   * [Custom Widgets and Tabs](customization/add-a-custom-widget-or-tab.md)
   * [Options for Data / Target drift](customization/options-for-data-target-drift.md)
   * [Options for Quality Metrics](customization/options-for-quality-metrics.md)
-  * [Options for Quality Metrics](customization/options-for-statistical-tests.md)
+  * [Options for Statistical Test](customization/options-for-statistical-tests.md)
 * [Recipes](recipes/README.md)
 
 ## SUPPORT
