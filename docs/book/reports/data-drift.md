@@ -35,7 +35,7 @@ We use **statistical tests** to detect if the distribution has changed significa
 All tests use a 0.95 confidence level by default.
 
 {% hint style="info" %}
-To set a different confidence level or tests you use, you can define [custom options](../customization/options-for-data-target-drift.md).
+To set a different confidence level or implement a custom test, you can define [custom options](../customization/options-for-data-target-drift.md). You can also select a different statistical test already available in the library, including PSI, K–L divergence, Jensen-Shannon distance, Wasserstein distance. See more details about [available tests](../customization/options-for-statistical-tests.md). 
 {% endhint %}
 
 ## How it looks
