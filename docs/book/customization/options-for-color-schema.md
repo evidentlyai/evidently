@@ -26,8 +26,6 @@ iris_data_drift_dashboard = Dashboard(tabs=[DataDriftTab()], options=[color_sche
 And your reports will be looks like
 ![Data Drift](../../images/09\_color\_scheme\_example.png)
 
-If you want just change main colors,
-
 As values for the colors you can use CSS and Plotly compatible strings, for example:
 - colors names: "blue", "orange", "green"
 - RGB values: #fff4f2, #ee00aa
