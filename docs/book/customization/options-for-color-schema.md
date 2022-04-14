@@ -10,7 +10,7 @@ For example, here is how the Data Drift report looks:
 
 ![Data Drift](../../images/01\_data\_drift.png)
 
-To change the colors in the widgets, you can create an object `ColorOptions` from the `evidently.options.color_scheme`, replace the values you need, and use it in options list when you create a dashboard.
+To change the colors in the widgets, you can create an object `ColorOptions` from the `evidently.options.color_scheme`, replace the values you need, and use it in the options list when you create a dashboard.
 
 ```python
 from evidently.options import ColorOptions
@@ -37,7 +37,7 @@ and so on.
 ## Available Options
 Here is the list of all color scheme options with the type and meaning of each:
  
-| Variable in ColorOptions object | Option type      | Option description                                                                                                                         |
+| A Variable in the ColorOptions object | Option type      | Option description                                                                                                                         |
 |---------------------------------|------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
 | primary_color                   | string           | A basic color for data visualization. Used by default for all bars and lines in widgets with one dataset. Used as the default for the current data in widgets with two datasets. |
 | secondary_color                 | string           | A basic color to visualize the second dataset in the widgets with two datasets. For example, the reference data.                                            |
@@ -45,9 +45,9 @@ Here is the list of all color scheme options with the type and meaning of each:
 | reference_data_color            | string           | A color for the reference data. By default, the secondary color is used.                                                                               |
 | color_sequence                  | array of strings | A set of colors to draw a number of lines in one graph. For example, in the Data Quality dashboard.                                                 |
 | fill_color                      | string           | A fill color for areas in line graphs.                                                                                                        |
-| zero_line_color                 | string           | A color for base, zero line in line graphs.                                                                                                   |
+| zero_line_color                 | string           | A color for the base, zero line in line graphs.                                                                                                   |
 | non_visible_color               | string           | A color for technical, not visible dots or points for better scalability.                                                                     |
 | underestimation_color           | string           | A color for the "underestimation" line in the Regression Performance dashboard.                                                                                               |
-| overestimation_color            | string           | A color for the "overestimation" line in Regression Performance dashboard.                                                                                                |
+| overestimation_color            | string           | A color for the "overestimation" line in the Regression Performance dashboard.                                                                                                |
 | majority_color                  | string           | A color for the majority line in the Regression Performance dashboard.                                                                                                      |
 --- 
