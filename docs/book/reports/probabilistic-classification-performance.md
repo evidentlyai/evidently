@@ -61,7 +61,7 @@ Shows the number of objects of each class.
 
 Visualizes the classification errors and their type.
 
-![](../../.gitbook/assets/prob_class_perf_confusion_matrix.png)
+![](../.gitbook/assets/prob_class_perf_confusion_matrix.png)
 
 ### 4. Quality Metrics by Class
 
