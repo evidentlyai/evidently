@@ -2,19 +2,19 @@
 
 ## Available Options
 
-- `feature_stattest_func` (default: `None`): define Stat Test for features in DataDrift:
-  - `None` - use default Stat Tests for all features (chosen by internal logic)
-  - Redefine Stat Test for all features:
-    - `str` - name of Stat Test to use across all features (available names see below)
-    - `Callable[[pd.Series, pd.Series, float], Tuple[float, bool]]` - custom function (requirements for custom function for StatTest see below)
-    - `StatTest` - instance of `StatTest`
-  - Also, Stat Test can be set per feature, by passing `dict` object, where key is feature name and value is one from previous options (`str`, `Callable` or `StatTest`)  
-- `cat_target_stattest_func` (default: `None`): defines a custom statistical test to detect target drift in the Categorical Target Drift report. Follows same logic as `feature_stattest_func`, but without `dict` option. 
-- `num_target_stattest_func` (default: `None`): defines a custom statistical test to detect target drift in the Numerical Target Drift report. Follows same logic as `feature_stattest_func`, but without `dict` option.
+- `feature_stattest_func` (default: `None`): define the Statistical Test for features in the DataDrift Dashboard or Profile:
+  - `None` - use default Statistical Tests for all features (based on internal logic)
+  - You can define a Statistical Test to be used for all the features in the dataset:
+    - `str` - the name of StatTest to use across all features (see the available names below)
+    - `Callable[[pd.Series, pd.Series, float], Tuple[float, bool]]` - custom StatTest function added (see the requirements for the custom StatTest function below)
+    - `StatTest` - an instance of `StatTest`
+  - You can define a Statistical Test to be used for individual features by passing a `dict` object where the key is a feature name and the value is one from the previous options (`str`, `Callable` or `StatTest`)  
+- `cat_target_stattest_func` (default: `None`): defines a custom statistical test to detect target drift in the Categorical Target Drift report. It follows the same logic as the `feature_stattest_func`, but without the `dict` option. 
+- `num_target_stattest_func` (default: `None`): defines a custom statistical test to detect target drift in the Numerical Target Drift report. It follows the same logic as the `feature_stattest_func`, but without the `dict` option.
 - 
 
 ### Example:
-Change Stat Test for all features if DataDrift
+Change the StatTest for all the features in the Data Drift report:
 ```python
 from evidently.options.data_drift import DataDriftOptions
 
@@ -23,7 +23,7 @@ options = DataDriftOptions(
 ) 
 ```
 
-Change Stat Test for single feature to Custom function:
+Change the StatTest for a single feature to a Custom (user-defined) function:
 ```python
 from evidently.options.data_drift import DataDriftOptions
 
@@ -37,7 +37,7 @@ options = DataDriftOptions(
 )
 ```
 
-Change Stat Test for single feature to Custom function (using StatTest object):
+Change the StatTest for a single feature to Custom function (using a StatTest object):
 ```python
 from evidently.analyzers.stattests import StatTest
 from evidently.options.data_drift import DataDriftOptions
@@ -61,11 +61,9 @@ options = DataDriftOptions(
 ```
 
 
+## Custom StatTest function requirements:
 
-
-## Stat Test function requirements:
-
-Stat Test function should match `(reference_data: pd.Series, current_data: pd.Series, threshold: float) -> Tuple[float, bool]` signature:
+The StatTest function should match `(reference_data: pd.Series, current_data: pd.Series, threshold: float) -> Tuple[float, bool]` signature:
 - `reference_data: pd.Series` - reference data series
 - `current_data: pd.Series` - current data series to compare
 - `threshold: float` - Stat Test threshold for drift detection
@@ -90,15 +88,15 @@ def anderson_stat_test(reference_data: pd.Series, current_data: pd.Series, thres
 ```
 
 
-## Stat Test Meta information (StatTest class):
+## StatTest meta information (StatTest class):
 
-For better usage of Stat Test function it is recommended to write specific instance of StatTest class for that function:
+To use the StatTest function, we recommended writing a specific instance of the StatTest class for that function:
 
-For creating instance of `StatTest` class required:
-- `name: str` - short name, used for referencing this Stat Test from options by (Stat Test should be registered globally) 
-- `display_name: str` - long name for displaying in Dashboard and Profile 
-- `func: Callable` - Stat Test function
-- `allowed_feature_types: List[str]` - list of allowed feature types to which this function can be applied (avaiable values `cat`, `num`)
+To create the instance of the `StatTest` class, you need:
+- `name: str` - a short name used to reference the Stat Test from the options (the StatTest should be registered globally) 
+- `display_name: str` - a long name displayed in the Dashboard and Profile 
+- `func: Callable` - a StatTest function
+- `allowed_feature_types: List[str]` - the list of allowed feature types to which this function can be applied (available values: `cat`, `num`)
 
 
 ### Example:
@@ -118,20 +116,20 @@ example_stat_test = StatTest(
 ```
 
 
-## Available Stat Test Functions:
+## Available StatTest Functions:
 
-- `ks` - K-S test
+- `ks` - Kolmogorov–Smirnov (K-S) test
   - default for numerical features
   - only for numerical features
   - returns `p_value`
   - drift detected when `p_value < threshold`
 - `chisquare` - Chi-Square test
-  - default for categorical features if amount of labels for feature > 2
+  - default for categorical features if the number of labels for feature > 2
   - only for categorical features
   - returns `p_value`
   - drift detected when `p_value < threshold`
 - `z` - Z-test
-  - default for categorical features if amount of labels for feature < 2
+  - default for categorical features if the number of labels for feature <= 2
   - only for categorical features
   - returns `p_value`
   - drift detected when `p_value < threshold`
@@ -143,7 +141,7 @@ example_stat_test = StatTest(
   - only for numerical features
   - returns `divergence`
   - drift detected when `divergence >= threshold`
-- `psi` - PSI
+- `psi` - Population Stability Index (PSI)
   - only for numerical features
   - returns `psi_value`
   - drift detected when `psi_value >= threshold`
