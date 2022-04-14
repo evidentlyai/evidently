@@ -26,6 +26,6 @@ Explore the following customizations:
 [options-for-statistical-tests.md](options-for-statistical-tests.md)
 {% endcontent-ref %}
 
-{% content-ref url="customization/options-for-color-schema.md" %}
-[customization/options-for-color-schema.md](customization/options-for-color-schema.md)
+{% content-ref url="options-for-color-schema.md" %}
+[options-for-color-schema.md](options-for-color-schema.md)
 {% endcontent-ref %}
