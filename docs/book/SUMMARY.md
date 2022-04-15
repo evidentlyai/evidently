@@ -39,6 +39,7 @@
   * [Options for Data / Target drift](customization/options-for-data-target-drift.md)
   * [Options for Quality Metrics](customization/options-for-quality-metrics.md)
   * [Options for Statistical Tests](customization/options-for-statistical-tests.md)
+  * [Options for Color Schema](customization/options-for-color-schema.md)
 * [Recipes](recipes/README.md)
 
 ## SUPPORT

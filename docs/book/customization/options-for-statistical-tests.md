@@ -1,3 +1,7 @@
+---
+description: You can modify the statistical tests used to calculate Data and Target Drift.
+---
+
 # Options for Statistical Tests
 
 ## Available Options
@@ -10,8 +14,7 @@
     - `StatTest` - an instance of `StatTest`
   - You can define a Statistical Test to be used for individual features by passing a `dict` object where the key is a feature name and the value is one from the previous options (`str`, `Callable` or `StatTest`)  
 - `cat_target_stattest_func` (default: `None`): defines a custom statistical test to detect target drift in the Categorical Target Drift report. It follows the same logic as the `feature_stattest_func`, but without the `dict` option. 
-- `num_target_stattest_func` (default: `None`): defines a custom statistical test to detect target drift in the Numerical Target Drift report. It follows the same logic as the `feature_stattest_func`, but without the `dict` option.
-- 
+- `num_target_stattest_func` (default: `None`): defines a custom statistical test to detect target drift in the Numerical Target Drift report. It follows the same logic as the `feature_stattest_func`, but without the `dict` option. 
 
 ### Example:
 Change the StatTest for all the features in the Data Drift report:
