@@ -18,7 +18,7 @@ pd.options.mode.chained_assignment = None
 
 BIKE_DATA_SOURCE_URL = "https://archive.ics.uci.edu/ml/machine-learning-databases/00275/Bike-Sharing-Dataset.zip"
 BIKE_DATASET_NAME = "bike"
-KDD_DATASET_NAME = "kdd"
+KDD_DATASET_NAME = "kddcup99"
 DATA_SOURCES = (BIKE_DATASET_NAME, KDD_DATASET_NAME)
 
 
