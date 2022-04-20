@@ -9,7 +9,8 @@ from typing import Tuple
 import pandas as pd
 import requests
 import yaml
-from sklearn import neighbors, model_selection
+from sklearn import neighbors
+from sklearn import model_selection
 from sklearn.ensemble import RandomForestRegressor
 
 
