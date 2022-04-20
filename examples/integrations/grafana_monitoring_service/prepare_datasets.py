@@ -4,6 +4,7 @@ import argparse
 import io
 import json
 import zipfile
+from typing import Tuple
 
 import pandas as pd
 import requests
@@ -39,7 +40,7 @@ base_configuration = {
 }
 
 
-def get_data_bike() -> (pd.DataFrame, pd.DataFrame):
+def get_data_bike() -> Tuple[pd.DataFrame, pd.DataFrame]:
     print(f"Load data for dataset: {BIKE_DATASET_NAME}")
 
     content = requests.get(BIKE_DATA_SOURCE_URL).content
@@ -75,7 +76,7 @@ def get_data_bike() -> (pd.DataFrame, pd.DataFrame):
     return reference_bike_data, production_bike__data, configuration
 
 
-def get_data_kdd_classification() -> (pd.DataFrame, pd.DataFrame):
+def get_data_kdd_classification() -> Tuple[pd.DataFrame, pd.DataFrame]:
     print(f"Load data for dataset: {KDD_DATASET_NAME}")
 
     # local import for make other cases faster
