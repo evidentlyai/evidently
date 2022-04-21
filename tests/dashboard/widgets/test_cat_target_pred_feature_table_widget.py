@@ -36,78 +36,90 @@ def test_cat_target_pred_feature_table_widget_analyzer_list(widget: CatTargetPre
             ColumnMapping(),
             BaseWidgetInfo(type="big_table", title="test_widget", size=2),
         ),
-(
+        (
             pd.DataFrame({"target": [1, 2, 3, 4], "prediction": [1, 2, 3, 4]}),
             pd.DataFrame({"target": [1, 2, 3, 1], "prediction": [1, 2, 3, 4]}),
             ColumnMapping(),
             BaseWidgetInfo(type="big_table", title="test_widget", size=2),
         ),
         (
-            pd.DataFrame({
-                "my_target": [1, 2, 3, 4],
-                "my_prediction": [1, 2, 3, 1],
-                "num_feature": [2, 4, 3, 5],
-                "cat_feature_1": [2, 4, 3, 5],
-                "cat_feature_2": ["a", "b", "a", "d"]
-            }),
-            pd.DataFrame({
-                "my_target": [1, 2, 1, 4],
-                "my_prediction": [1, 2, 1, 4],
-                "num_feature": [2, 2, 3, 5],
-                "cat_feature_1": [2, 4, 3, 5],
-                "cat_feature_2": ["a", "b", "b", "d"]
-            }),
+            pd.DataFrame(
+                {
+                    "my_target": [1, 2, 3, 4],
+                    "my_prediction": [1, 2, 3, 1],
+                    "num_feature": [2, 4, 3, 5],
+                    "cat_feature_1": [2, 4, 3, 5],
+                    "cat_feature_2": ["a", "b", "a", "d"],
+                }
+            ),
+            pd.DataFrame(
+                {
+                    "my_target": [1, 2, 1, 4],
+                    "my_prediction": [1, 2, 1, 4],
+                    "num_feature": [2, 2, 3, 5],
+                    "cat_feature_1": [2, 4, 3, 5],
+                    "cat_feature_2": ["a", "b", "b", "d"],
+                }
+            ),
             ColumnMapping(
                 target="my_target",
                 prediction="my_prediction",
                 numerical_features=["num_feature"],
-                categorical_features=["cat_feature_1", "cat_feature_2"]
+                categorical_features=["cat_feature_1", "cat_feature_2"],
             ),
             BaseWidgetInfo(type="big_table", title="test_widget", size=2),
         ),
         (
-            pd.DataFrame({
-                "my_target": [1, 2, 3, 4],
-                "my_prediction": [1, 2, 3, 1],
-                "num_feature": [2, 4, 3, 5],
-                "cat_feature_1": [2, 4, 3, 5],
-                "cat_feature_2": ["a", "b", "a", "d"]
-            }),
-            pd.DataFrame({
-                "my_target": [1, 2, 1, 4],
-                "my_prediction": [1, 2, 1, 4],
-                "num_feature": [2, 2, 3, 5],
-                "cat_feature_1": [2, 4, 3, 5],
-                "cat_feature_2": ["a", "b", "b", "d"]
-            }),
+            pd.DataFrame(
+                {
+                    "my_target": [1, 2, 3, 4],
+                    "my_prediction": [1, 2, 3, 1],
+                    "num_feature": [2, 4, 3, 5],
+                    "cat_feature_1": [2, 4, 3, 5],
+                    "cat_feature_2": ["a", "b", "a", "d"],
+                }
+            ),
+            pd.DataFrame(
+                {
+                    "my_target": [1, 2, 1, 4],
+                    "my_prediction": [1, 2, 1, 4],
+                    "num_feature": [2, 2, 3, 5],
+                    "cat_feature_1": [2, 4, 3, 5],
+                    "cat_feature_2": ["a", "b", "b", "d"],
+                }
+            ),
             ColumnMapping(
                 target=None,
                 prediction="my_prediction",
                 numerical_features=["num_feature"],
-                categorical_features=["cat_feature_1", "cat_feature_2"]
+                categorical_features=["cat_feature_1", "cat_feature_2"],
             ),
             BaseWidgetInfo(type="big_table", title="test_widget", size=2),
         ),
         (
-            pd.DataFrame({
-                "my_target": [1, 2, 3, 4],
-                "my_prediction": [1, 2, 3, 1],
-                "num_feature": [2, 4, 3, 5],
-                "cat_feature_1": [2, 4, 3, 5],
-                "cat_feature_2": ["a", "b", "a", "d"]
-            }),
-            pd.DataFrame({
-                "my_target": [1, 2, 1, 4],
-                "my_prediction": [1, 2, 1, 4],
-                "num_feature": [2, 2, 3, 5],
-                "cat_feature_1": [2, 4, 3, 5],
-                "cat_feature_2": ["a", "b", "b", "d"]
-            }),
+            pd.DataFrame(
+                {
+                    "my_target": [1, 2, 3, 4],
+                    "my_prediction": [1, 2, 3, 1],
+                    "num_feature": [2, 4, 3, 5],
+                    "cat_feature_1": [2, 4, 3, 5],
+                    "cat_feature_2": ["a", "b", "a", "d"],
+                }
+            ),
+            pd.DataFrame(
+                {
+                    "my_target": [1, 2, 1, 4],
+                    "my_prediction": [1, 2, 1, 4],
+                    "num_feature": [2, 2, 3, 5],
+                    "cat_feature_1": [2, 4, 3, 5],
+                    "cat_feature_2": ["a", "b", "b", "d"],
+                }
+            ),
             ColumnMapping(
                 target="my_target",
                 prediction=None,
                 numerical_features=["num_feature"],
-                categorical_features=["cat_feature_1", "cat_feature_2"]
+                categorical_features=["cat_feature_1", "cat_feature_2"],
             ),
             BaseWidgetInfo(type="big_table", title="test_widget", size=2),
         ),
@@ -126,16 +138,10 @@ def test_cat_target_pred_feature_table_widget(
     analyzer_results = analyzer.calculate(reference_data, current_data, data_mapping)
     result = widget.calculate(reference_data, current_data, data_mapping, {CatTargetDriftAnalyzer: analyzer_results})
 
-    if expected_result is not None:
-        # we have some widget for visualization
-        assert result.type == expected_result.type
-        assert result.title == expected_result.title
-        assert result.size == expected_result.size
-        assert result.params is not None
-
-    else:
-        # no widget data, show nothing
-        assert result is None
+    assert result.type == expected_result.type
+    assert result.title == expected_result.title
+    assert result.size == expected_result.size
+    assert result.params is not None
 
 
 @pytest.mark.parametrize(

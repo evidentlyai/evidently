@@ -26,26 +26,25 @@ def test_class_target_name_widget_simple_case() -> None:
 @pytest.mark.parametrize(
     "reference_data, column_mapping",
     (
-
         (
-                pd.DataFrame(
-                    {
-                        "target": [1, 2, 3, 1],
-                        "prediction": [2, 2, 3, 1],
-                    }
-                ),
-                ColumnMapping(target=None)
+            pd.DataFrame(
+                {
+                    "target": [1, 2, 3, 1],
+                    "prediction": [2, 2, 3, 1],
+                }
+            ),
+            ColumnMapping(target=None),
         ),
         (
-                pd.DataFrame(
-                    {
-                        "target": [1, 2, 3, 1],
-                        "prediction": [2, 2, 3, 1],
-                    }
-                ),
-                ColumnMapping(prediction=None)
-        )
-    )
+            pd.DataFrame(
+                {
+                    "target": [1, 2, 3, 1],
+                    "prediction": [2, 2, 3, 1],
+                }
+            ),
+            ColumnMapping(prediction=None),
+        ),
+    ),
 )
 def test_class_target_name_widget_value_error(reference_data: pd.DataFrame, column_mapping: ColumnMapping) -> None:
     widget = ClassTargetNameWidget("test_widget")

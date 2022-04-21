@@ -11,28 +11,30 @@ import pytest
 
 
 @pytest.mark.parametrize(
-    "kind, analyzer_class, test_data, column_mapping", (
+    "kind, analyzer_class, test_data, column_mapping",
+    (
         (
-                "regression",
-                RegressionPerformanceAnalyzer,
-                pd.DataFrame(
-                    {
-                        "target": [1, 2, 3, 4],
-                        "prediction": [1, 2, 2, 4],
-                    }
-                ),
-                ColumnMapping()
+            "regression",
+            RegressionPerformanceAnalyzer,
+            pd.DataFrame(
+                {
+                    "target": [1, 2, 3, 4],
+                    "prediction": [1, 2, 2, 4],
+                }
+            ),
+            ColumnMapping(),
         ),
         (
-                "classification",
-                ClassificationPerformanceAnalyzer,
-                pd.DataFrame(
-                    {
-                        "target": ["a", "b", "c", "a"],
-                        "prediction": ["a", "b", "a", "a"],
-                    }
-                ),
-                ColumnMapping()),
+            "classification",
+            ClassificationPerformanceAnalyzer,
+            pd.DataFrame(
+                {
+                    "target": ["a", "b", "c", "a"],
+                    "prediction": ["a", "b", "a", "a"],
+                }
+            ),
+            ColumnMapping(),
+        ),
         (
             "prob_classification",
             ProbClassificationPerformanceAnalyzer,
@@ -43,12 +45,12 @@ import pytest
                     "label_b": [0.9, 0.8, 0.7, 0.6, 0.5, 0.4],
                 }
             ),
-            ColumnMapping(prediction=["label_a", "label_b"])
+            ColumnMapping(prediction=["label_a", "label_b"]),
         ),
-    )
+    ),
 )
 def test_target_name_widget_simple_case(
-        kind: str, analyzer_class, test_data: pd.DataFrame, column_mapping: ColumnMapping
+    kind: str, analyzer_class, test_data: pd.DataFrame, column_mapping: ColumnMapping
 ) -> None:
     analyzer = analyzer_class()
     analyzer.options_provider = OptionsProvider()
