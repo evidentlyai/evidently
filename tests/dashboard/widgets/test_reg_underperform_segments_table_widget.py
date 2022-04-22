@@ -26,15 +26,36 @@ def test_reg_underperform_segments_table_widget_analyzer_list(widget: Underperfo
     "reference_data, current_data, data_mapping, expected_result",
     (
         (
-            pd.DataFrame({"target": [1, 2, 3, 4], "prediction": [1, 2, 3, 4]}),
+            pd.DataFrame(
+                {
+                    "target": [1, 2, 3, 4],
+                    "prediction": [1, 2, 3, 4],
+                    "num_feature": [2, 4, 3, 5],
+                    "cat_feature": [2, 4, 3, 5],
+                }
+            ),
             None,
-            ColumnMapping(),
+            ColumnMapping(numerical_features=["num_feature"], categorical_features=["cat_feature"]),
             BaseWidgetInfo(type="big_table", title="test_widget", size=2),
         ),
         (
-            pd.DataFrame({"target": [1, 2, 3, 4], "prediction": [1, 2, 3, 4]}),
-            pd.DataFrame({"target": [1, 2, 3, 4], "prediction": [1, 2, 3, 4]}),
-            ColumnMapping(),
+            pd.DataFrame(
+                {
+                    "target": [1, 2, 3, 4],
+                    "prediction": [1, 2, 3, 4],
+                    "num_feature": [3, 5, 3, 1],
+                    "cat_feature": [3, 5, 1, 2],
+                }
+            ),
+            pd.DataFrame(
+                {
+                    "target": [1, 2, 3, 4],
+                    "prediction": [1, 2, 3, 4],
+                    "num_feature": [2, 4, 3, 1],
+                    "cat_feature": [2, 5, 1, 2],
+                }
+            ),
+            ColumnMapping(numerical_features=["num_feature"], categorical_features=["cat_feature"]),
             BaseWidgetInfo(type="big_table", title="test_widget", size=2),
         ),
     ),

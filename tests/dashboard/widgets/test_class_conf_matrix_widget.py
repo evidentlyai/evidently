@@ -32,7 +32,9 @@ def test_class_quality_metrics_bar_widget_simple_case(widget: ClassConfMatrixWid
 
     widget.dataset = dataset
     assert widget.analyzers() == [ClassificationPerformanceAnalyzer]
-    result = widget.calculate(reference_data, reference_data, column_mapping, {ClassificationPerformanceAnalyzer: results})
+    result = widget.calculate(
+        reference_data, reference_data, column_mapping, {ClassificationPerformanceAnalyzer: results}
+    )
     assert result is not None
     assert result.title == "test_widget"
     assert result.params is not None

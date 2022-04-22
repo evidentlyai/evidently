@@ -28,32 +28,38 @@ def test_reg_pred_actual_widget_analyzer_list(widget: ClassConfusionBasedFeature
     "reference_data, current_data, data_mapping, expected_result",
     (
         (
-            pd.DataFrame({
-                "target": [1, 2, 3, 4],
-                "prediction": [1, 2, 3, 4],
-                "num_feature": [2, 4, 3, 5],
-                "cat_feature_1": [2, 4, 3, 5],
-                "cat_feature_2": ["a", "b", "a", "d"],
-            }),
+            pd.DataFrame(
+                {
+                    "target": [1, 2, 3, 4],
+                    "prediction": [1, 2, 3, 4],
+                    "num_feature": [2, 4, 3, 5],
+                    "cat_feature_1": [2, 4, 3, 5],
+                    "cat_feature_2": ["a", "b", "a", "d"],
+                }
+            ),
             None,
             ColumnMapping(),
             BaseWidgetInfo(type="big_graph", title="test_widget", size=1),
         ),
         (
-            pd.DataFrame({
-                "target": [1, 2, 3, 4],
-                "prediction": [1, 2, 3, 4],
-                "num_feature": [2, 1, 2, 5],
-                "cat_feature_1": [2, 3, 5, 5],
-                "cat_feature_2": ["a", "c", "a", "b"],
-            }),
-            pd.DataFrame({
-                "target": [1, 2, 3, 4],
-                "prediction": [1, 2, 3, 4],
-                "num_feature": [2, 1, 2, 5],
-                "cat_feature_1": [2, 3, 5, 5],
-                "cat_feature_2": ["c", "a", "d", "b"],
-            }),
+            pd.DataFrame(
+                {
+                    "target": [1, 2, 3, 4],
+                    "prediction": [1, 2, 3, 4],
+                    "num_feature": [2, 1, 2, 5],
+                    "cat_feature_1": [2, 3, 5, 5],
+                    "cat_feature_2": ["a", "c", "a", "b"],
+                }
+            ),
+            pd.DataFrame(
+                {
+                    "target": [1, 2, 3, 4],
+                    "prediction": [1, 2, 3, 4],
+                    "num_feature": [2, 1, 2, 5],
+                    "cat_feature_1": [2, 3, 5, 5],
+                    "cat_feature_2": ["c", "a", "d", "b"],
+                }
+            ),
             ColumnMapping(),
             BaseWidgetInfo(type="big_graph", title="test_widget", size=1),
         ),

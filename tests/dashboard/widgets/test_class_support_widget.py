@@ -32,7 +32,9 @@ def test_class_support_widget_simple_case(widget: ClassSupportWidget, dataset: s
 
     widget.dataset = dataset
     assert widget.analyzers() == [ClassificationPerformanceAnalyzer]
-    result = widget.calculate(reference_data, reference_data, column_mapping, {ClassificationPerformanceAnalyzer: results})
+    result = widget.calculate(
+        reference_data, reference_data, column_mapping, {ClassificationPerformanceAnalyzer: results}
+    )
     assert result is not None
     assert result.title == "test_widget"
     assert result.params is not None
