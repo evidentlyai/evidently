@@ -10,11 +10,13 @@ from evidently.analyzers.stattests.registry import StatTest, register_stattest
 def _wasserstein_distance_norm(
         reference_data: pd.Series,
         current_data: pd.Series,
+        _feature_type: str,
         threshold: float) -> Tuple[float, bool]:
     """Compute the first Wasserstein distance between two arrays normed by mean value of reference data
     Args:
         reference_data: reference data
         current_data: current data
+        _feature_type: feature type
         threshold: all walues above this threshold means data drift
     Returns:
         wasserstein_distance_norm: normed Wasserstein distance

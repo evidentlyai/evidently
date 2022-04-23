@@ -5,7 +5,7 @@ import dataclasses
 import pandas as pd
 
 
-StatTestFuncType = Callable[[pd.Series, pd.Series, float], Tuple[float, bool]]
+StatTestFuncType = Callable[[pd.Series, pd.Series, str, float], Tuple[float, bool]]
 
 
 @dataclasses.dataclass

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-from typing import Callable
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -14,7 +13,7 @@ import pandas as pd
 from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.analyzers.base_analyzer import BaseAnalyzerResult
-from evidently.analyzers.stattests.registry import get_stattest
+from evidently.analyzers.stattests.registry import get_stattest, StatTest
 from evidently.options import DataDriftOptions
 from evidently.analyzers.utils import process_columns
 
@@ -34,8 +33,8 @@ def _compute_correlation(
         current_data: pd.DataFrame,
         main_column: Optional[str],
         num_columns: List[str],
-        stattest_name: str,
-        stattest_func: Callable
+        feature_type: str,
+        stattest: StatTest
 ) -> Optional[NumDataDriftMetrics]:
     if main_column is None:
         return None
@@ -45,7 +44,7 @@ def _compute_correlation(
 
         raise ValueError(f'Column {main_column} should only contain numerical values.')
 
-    target_p_value = stattest_func(reference_data[main_column], current_data[main_column], 0)[0]
+    target_p_value = stattest.func(reference_data[main_column], current_data[main_column], feature_type, 0)[0]
     ref_target_corr = reference_data[num_columns + [main_column]].corr()[main_column]
     curr_target_corr = current_data[num_columns + [main_column]].corr()[main_column]
 
@@ -53,7 +52,7 @@ def _compute_correlation(
         column_name=main_column,
         reference_correlations=ref_target_corr.to_dict(),
         current_correlations=curr_target_corr.to_dict(),
-        stattest_name=stattest_name,
+        stattest_name=stattest.display_name,
         drift=target_p_value,
     )
 
@@ -136,12 +135,13 @@ class NumTargetDriftAnalyzer(Analyzer):
         )
         data_drift_options = self.options_provider.get(DataDriftOptions)
 
-        test = get_stattest(data_drift_options.num_target_stattest_func or "ks", "num")
+        feature_type = "num"
+        test = get_stattest(data_drift_options.num_target_stattest_func or "ks", feature_type)
         result.target_metrics = _compute_correlation(
-            reference_data, current_data, target_column, columns.num_feature_names, test.display_name, test.func
+            reference_data, current_data, target_column, columns.num_feature_names, feature_type, test
         )
         result.prediction_metrics = _compute_correlation(
-            reference_data, current_data, prediction_column, columns.num_feature_names, test.display_name, test.func
+            reference_data, current_data, prediction_column, columns.num_feature_names, feature_type, test
         )
 
         return result
