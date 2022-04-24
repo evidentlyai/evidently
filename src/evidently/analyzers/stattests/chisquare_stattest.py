@@ -13,7 +13,7 @@ from evidently.analyzers.stattests.registry import StatTest, register_stattest
 def _chi_stat_test(
         reference_data: pd.Series,
         current_data: pd.Series,
-        _feature_type: str,
+        feature_type: str,
         threshold: float) -> Tuple[float, bool]:
     #  TODO: simplify ignoring NaN values here, in z_stat_test and data_drift_analyzer
     keys = list((set(reference_data) | set(current_data)) - {np.nan})

@@ -10,7 +10,7 @@ from evidently.analyzers.stattests.registry import StatTest, register_stattest
 def _jensenshannon(
         reference_data: pd.Series,
         current_data: pd.Series,
-        _feature_type: str,
+        feature_type: str,
         threshold: float,
         n_bins: int = 30) -> Tuple[float, bool]:
     """Compute the Jensen-Shannon distance between two arrays

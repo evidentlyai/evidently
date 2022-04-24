@@ -10,7 +10,7 @@ from evidently.analyzers.stattests.utils import get_binned_data
 def kl_div(
         reference_data: pd.Series,
         current_data: pd.Series,
-        _feature_type: str,
+        feature_type: str,
         threshold: float,
         n_bins: int = 30) -> Tuple[float, bool]:
     """Compute the Kullback-Leibler divergence between two arrays
@@ -18,7 +18,7 @@ def kl_div(
         reference_data: reference data
         current_data: current data
         n_bins: number of bins
-        _feature_type: feature type
+        feature_type: feature type
         threshold: all walues above this threshold means data drift
     Returns:
         kl_div: calculated Kullback-Leibler divergence value

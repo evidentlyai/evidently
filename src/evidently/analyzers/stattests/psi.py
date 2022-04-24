@@ -10,14 +10,14 @@ from evidently.analyzers.stattests.utils import get_binned_data
 def psi(
         reference_data: pd.Series,
         current_data: pd.Series,
-        _feature_type: str,
+        feature_type: str,
         threshold: float,
         n_bins: int = 30) -> Tuple[float, bool]:
     """Calculate the PSI
     Args:
         reference_data: reference data
         current_data: current data
-        _feature_type: feature type
+        feature_type: feature type
         n_bins: number of bins
         threshold: all values above this threshold means data drift
     Returns:
