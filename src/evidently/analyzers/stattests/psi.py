@@ -18,13 +18,13 @@ def psi(
         reference_data: reference data
         current_data: current data
         _feature_type: feature type
-        n_bins: number of bins
         threshold: all values above this threshold means data drift
+        n_bins: number of bins
     Returns:
         psi_value: calculated PSI
         test_result: wether the drift is detected
     """
-    reference_percents, current_percents = get_binned_data(reference_data, current_data, n_bins)
+    reference_percents, current_percents = get_binned_data(reference_data, current_data, _feature_type, n_bins)
 
     def sub_psi(ref_perc, curr_perc):
         """Calculate the actual PSI value from comparing the values.
@@ -44,7 +44,7 @@ psi_stat_test = StatTest(
     name="psi",
     display_name="PSI",
     func=psi,
-    allowed_feature_types=["num"]
+    allowed_feature_types=["cat", "num"]
 )
 
 register_stattest(psi_stat_test)
