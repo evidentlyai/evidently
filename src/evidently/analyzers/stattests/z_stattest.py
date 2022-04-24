@@ -39,7 +39,7 @@ def proportions_diff_z_test(z_stat, alternative='two-sided'):
 def _z_stat_test(
         reference_data: pd.Series,
         current_data: pd.Series,
-        _feature_type: str,
+        feature_type: str,
         threshold: float) -> Tuple[float, bool]:
     #  TODO: simplify ignoring NaN values here, in chi_stat_test and data_drift_analyzer
     keys = set(list(reference_data.unique()) + list(current_data.unique())) - {np.nan}

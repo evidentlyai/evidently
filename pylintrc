@@ -166,7 +166,8 @@ disable=print-statement,
         too-many-statements,
         too-many-arguments,
         too-many-instance-attributes,
-        no-else-raise
+        no-else-raise,
+        unused-argument
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
@@ -468,7 +469,11 @@ good-names=i,
            n,
            z,
            x,
+           x0,
+           x1,
+           x2,
            y,
+           f1,
            ex,
            Run,
            me,

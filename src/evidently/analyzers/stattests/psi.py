@@ -10,21 +10,21 @@ from evidently.analyzers.stattests.utils import get_binned_data
 def psi(
         reference_data: pd.Series,
         current_data: pd.Series,
-        _feature_type: str,
+        feature_type: str,
         threshold: float,
         n_bins: int = 30) -> Tuple[float, bool]:
     """Calculate the PSI
     Args:
         reference_data: reference data
         current_data: current data
-        _feature_type: feature type
+        feature_type: feature type
         threshold: all values above this threshold means data drift
         n_bins: number of bins
     Returns:
         psi_value: calculated PSI
         test_result: wether the drift is detected
     """
-    reference_percents, current_percents = get_binned_data(reference_data, current_data, _feature_type, n_bins)
+    reference_percents, current_percents = get_binned_data(reference_data, current_data, feature_type, n_bins)
 
     def sub_psi(ref_perc, curr_perc):
         """Calculate the actual PSI value from comparing the values.
