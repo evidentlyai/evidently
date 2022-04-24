@@ -15,14 +15,14 @@ def _jensenshannon(
         n_bins: int = 30) -> Tuple[float, bool]:
     """Compute the Jensen-Shannon distance between two arrays
     Args:
-            reference_data: reference data
-            current_data: current data
-            feature_type: feature type
-            threshold: all walues above this threshold means data drift
-            n_bins: number of bins
+        reference_data: reference data
+        current_data: current data
+        feature_type: feature type
+        threshold: all walues above this threshold means data drift
+        n_bins: number of bins
     Returns:
-            jensenshannon: calculated Jensen-Shannon distance
-            test_result: wether the drift is detected
+        jensenshannon: calculated Jensen-Shannon distance
+        test_result: wether the drift is detected
     """
     reference_percents, current_percents = get_binned_data(reference_data, current_data, feature_type, n_bins)
     jensenshannon_value = distance.jensenshannon(reference_percents, current_percents)

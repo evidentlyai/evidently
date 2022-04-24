@@ -5,13 +5,13 @@ import numpy as np
 def get_binned_data(reference: pd.Series, current: pd.Series, feature_type: str, n: int):
     """Split variable into n buckets based on reference quantiles
     Args:
-      reference: reference data
-      current: current data
-      feature_type: feature type
-      n: number of quantiles
+        reference: reference data
+        current: current data
+        feature_type: feature type
+        n: number of quantiles
     Returns:
-      reference_percents: % of records in each bucket for reference
-      current_percents: % of records in each bucket for reference
+        reference_percents: % of records in each bucket for reference
+        current_percents: % of records in each bucket for reference
     """
     n_vals = reference.nunique()
     if feature_type == 'num' and n_vals > 20:
