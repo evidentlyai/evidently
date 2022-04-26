@@ -43,8 +43,8 @@ def _z_stat_test(
         threshold: float) -> Tuple[float, bool]:
     #  TODO: simplify ignoring NaN values here, in chi_stat_test and data_drift_analyzer
     if (reference_data.nunique() == 1
-        and current_data.nunique() == 1
-        and reference_data.unique()[0] == current_data.unique()[0]):
+            and current_data.nunique() == 1
+            and reference_data.unique()[0] == current_data.unique()[0]):
         p_value = 1
     else:
         keys = set(list(reference_data.unique()) + list(current_data.unique())) - {np.nan}
