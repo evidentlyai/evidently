@@ -43,12 +43,12 @@ def _detect_dataset_drift(reference, production, column_mapping, get_ratio=False
     json_report = json.loads(report)
 
     if get_ratio:
-        n_features = json_report["data_drift"]["data"]["n_features"]
-        n_drifted_features = json_report["data_drift"]["data"]["n_drifted_features"]
+        n_features = json_report["data_drift"]["data"]["metrics"]["n_features"]
+        n_drifted_features = json_report["data_drift"]["data"]["metrics"]["n_drifted_features"]
         return n_drifted_features / n_features
 
     else:
-        return json_report["data_drift"]["data"]["dataset_drift"]
+        return json_report["data_drift"]["data"]["metrics"]["dataset_drift"]
 
 
 def load_data_execute(**context):
