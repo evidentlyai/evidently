@@ -13,9 +13,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    depends_on:
+      - grafana
     volumes:
-      - ./reference.csv:/app/reference.csv
-      - ./config.yaml:/app/config.yaml
+      - ./datasets:/app/datasets
     ports:
       - "5000:5000"
     networks:
@@ -31,7 +32,7 @@ services:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
     ports:
-      - 9090:9090
+      - "9090:9090"
     networks:
       - back-tier
     restart: always

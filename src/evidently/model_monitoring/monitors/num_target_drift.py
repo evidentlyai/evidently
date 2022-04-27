@@ -53,7 +53,7 @@ class NumTargetDriftMonitor(ModelMonitor):
         results = NumTargetDriftAnalyzer.get_results(analyzer_results)
 
         # quantity of rows in income data
-        yield NumTargetDriftMonitorMetrics.count.create(results.reference_data_count, dict(dataset="prediction"))
+        yield NumTargetDriftMonitorMetrics.count.create(results.reference_data_count, dict(dataset="reference"))
         yield NumTargetDriftMonitorMetrics.count.create(results.current_data_count, dict(dataset="current"))
 
         if results.prediction_metrics:
