@@ -20,13 +20,12 @@
   },
   "editable": true,
   "fiscalYearStartMonth": 0,
-  "gnetId": null,
   "graphTooltip": 0,
+  "iteration": 1651157034829,
   "links": [],
   "liveNow": false,
   "panels": [
     {
-      "datasource": null,
       "gridPos": {
         "h": 3,
         "w": 24,
@@ -38,12 +37,11 @@
         "content": "# Evidently Data Drift Monitoring\n\n  Here can be your information about dashboard and its usage.\n",
         "mode": "markdown"
       },
-      "pluginVersion": "8.2.1",
+      "pluginVersion": "8.3.6",
       "type": "text"
     },
     {
       "collapsed": false,
-      "datasource": null,
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -56,7 +54,10 @@
       "type": "row"
     },
     {
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -122,8 +123,13 @@
       },
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "exemplar": true,
-          "expr": "evidently:data_drift:dataset_drift",
+          "expr": "evidently:data_drift:dataset_drift{dataset_name=\"${dataset_name:raw}\"}",
+          "instant": false,
           "interval": "",
           "legendFormat": "dataset drift",
           "refId": "A"
@@ -133,7 +139,10 @@
       "type": "state-timeline"
     },
     {
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -206,8 +215,12 @@
       },
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "exemplar": true,
-          "expr": "evidently:data_drift:share_drifted_features",
+          "expr": "evidently:data_drift:share_drifted_features{dataset_name=\"${dataset_name:raw}\"}",
           "interval": "",
           "legendFormat": "share",
           "refId": "A"
@@ -217,7 +230,10 @@
       "type": "timeseries"
     },
     {
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -263,11 +279,15 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.2.1",
+      "pluginVersion": "8.3.6",
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "exemplar": true,
-          "expr": "evidently:data_drift:n_drifted_features",
+          "expr": "evidently:data_drift:n_drifted_features{dataset_name=\"${dataset_name:raw}\"}",
           "format": "time_series",
           "hide": false,
           "instant": false,
@@ -281,7 +301,10 @@
       "type": "stat"
     },
     {
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -327,11 +350,15 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.2.1",
+      "pluginVersion": "8.3.6",
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "exemplar": true,
-          "expr": "evidently:data_drift:n_drifted_features / evidently:data_drift:share_drifted_features",
+          "expr": "evidently:data_drift:n_drifted_features{dataset_name=\"${dataset_name:raw}\"} / evidently:data_drift:share_drifted_features{dataset_name=\"${dataset_name:raw}\"}",
           "format": "time_series",
           "hide": false,
           "instant": false,
@@ -346,7 +373,6 @@
     },
     {
       "collapsed": false,
-      "datasource": null,
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -359,7 +385,10 @@
       "type": "row"
     },
     {
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -461,13 +490,21 @@
       },
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "exemplar": true,
-          "expr": "evidently:data_drift:p_value",
+          "expr": "evidently:data_drift:p_value{dataset_name=\"${dataset_name:raw}\"}",
           "interval": "",
           "legendFormat": "{{feature}}",
           "refId": "A"
         },
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "exemplar": true,
           "expr": "evidently:reference_dataset_hash",
           "hide": false,
@@ -482,11 +519,38 @@
     }
   ],
   "refresh": "10s",
-  "schemaVersion": 31,
+  "schemaVersion": 34,
   "style": "dark",
   "tags": [],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "current": {
+          "selected": true,
+          "text": "bike_other",
+          "value": "bike_other"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
+        },
+        "definition": "label_values(dataset_name)",
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "name": "dataset_name",
+        "options": [],
+        "query": {
+          "query": "label_values(dataset_name)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      }
+    ]
   },
   "time": {
     "from": "now-30m",
@@ -496,5 +560,6 @@
   "timezone": "",
   "title": "Evidently Data Drift Dashboard",
   "uid": "U54hsxv7k",
-  "version": 1
+  "version": 2,
+  "weekStart": ""
 }

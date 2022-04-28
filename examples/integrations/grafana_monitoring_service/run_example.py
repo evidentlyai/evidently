@@ -12,11 +12,6 @@ from typing import Callable
 
 import pandas as pd
 import requests
-from sklearn import neighbors
-from sklearn import model_selection
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.ensemble import BaggingRegressor
-
 
 # suppress SettingWithCopyWarning: warning
 pd.options.mode.chained_assignment = None
@@ -69,6 +64,7 @@ def check_dataset(
 
 
 def get_data_bike():
+    from sklearn.ensemble import RandomForestRegressor
     logging.info(f"Load data for dataset bike")
     data_url = "https://archive.ics.uci.edu/ml/machine-learning-databases/00275/Bike-Sharing-Dataset.zip"
     content = requests.get(data_url).content
@@ -91,7 +87,7 @@ def get_data_bike():
     logging.info(f"target: {target}")
 
     # get predictions
-    model = BaggingRegressor(random_state=0)
+    model = RandomForestRegressor(random_state=0)
     model.fit(reference_bike_data[features], reference_bike_data[target])
     reference_bike_data["prediction"] = model.predict(reference_bike_data[features])
     production_bike_data["prediction"] = model.predict(production_bike_data[features])
@@ -99,6 +95,8 @@ def get_data_bike():
 
 
 def get_data_iris_classification():
+    from sklearn import neighbors
+    from sklearn import model_selection
     logging.info(f"Load data for dataset iris")
     from sklearn import datasets
     iris = datasets.load_iris()
@@ -115,6 +113,8 @@ def get_data_iris_classification():
 
 
 def get_data_kdd_classification():
+    from sklearn import neighbors
+    from sklearn import model_selection
     logging.info(f"Load data for dataset kddcup99")
 
     # local import for make other cases faster
@@ -159,16 +159,33 @@ def download_test_datasets(force: bool):
         check_dataset(force, datasets_path, dataset_name, get_dataset_method)
 
 
-def run_applications():
-    with subprocess.Popen("docker compose up", stdout=subprocess.PIPE, shell=True):
-        os.system("./example_run_request.py")
+def run_docker_compose():
+    logging.info("RUn docker compose")
+    docker_process = subprocess.Popen("docker compose up -d", stdout=subprocess.PIPE, shell=True)
+    docker_process.wait()
+
+    if docker_process.returncode != 0:
+        exit("Cannot run applications in docker")
+
+
+def send_data_requests():
+    os.system("scripts/example_run_request.py")
+
+
+def stop_docker_compose():
+    os.system("docker compose down")
 
 
 def main(force: bool):
     setup_logger()
     check_docker_installation()
     download_test_datasets(force=force)
-    run_applications()
+    run_docker_compose()
+    try:
+        send_data_requests()
+
+    except:
+        stop_docker_compose()
 
 
 if __name__ == "__main__":
