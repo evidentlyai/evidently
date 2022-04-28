@@ -32,10 +32,11 @@ def _remove_nans_and_infinities(dataframe):
 def _compute_statistic(
     reference_data: pd.DataFrame,
     current_data: pd.DataFrame,
+    feature_type: str,
     column_name: str,
-    statistic_fun: Callable[[pd.Series, pd.Series, float], Tuple[float, bool]],
+    statistic_fun: Callable[[pd.Series, pd.Series, str, float], Tuple[float, bool]],
 ):
-    return statistic_fun(reference_data[column_name], current_data[column_name], 0)[0]
+    return statistic_fun(reference_data[column_name], current_data[column_name], feature_type, 0)[0]
 
 
 @dataclass
@@ -130,17 +131,18 @@ class CatTargetDriftAnalyzer(Analyzer):
         #   _remove_nans_and_infinities
         reference_data = _remove_nans_and_infinities(reference_data)
         current_data = _remove_nans_and_infinities(current_data)
+        feature_type = "cat"
         if target_column is not None:
             if not options.cat_target_stattest_func:
                 target_labels = set(reference_data[target_column]) | set(
                     current_data[target_column]
                 )
-                target_test = get_stattest(chi_stat_test if len(target_labels) > 2 else z_stat_test, "cat")
+                target_test = get_stattest(chi_stat_test if len(target_labels) > 2 else z_stat_test, feature_type)
             else:
-                target_test = get_stattest(options.cat_target_stattest_func, "cat")
+                target_test = get_stattest(options.cat_target_stattest_func, feature_type)
 
             p_value = _compute_statistic(
-                reference_data, current_data, target_column, target_test.func
+                reference_data, current_data, feature_type, target_column, target_test.func
             )
             result.target_metrics = DataDriftMetrics(
                 column_name=target_column, stattest_name=target_test.display_name, drift=p_value
@@ -150,12 +152,12 @@ class CatTargetDriftAnalyzer(Analyzer):
                 prediction_labels = set(reference_data[prediction_column]) | set(
                     current_data[prediction_column]
                 )
-                pred_test = get_stattest(chi_stat_test if len(prediction_labels) > 2 else z_stat_test, "cat")
+                pred_test = get_stattest(chi_stat_test if len(prediction_labels) > 2 else z_stat_test, feature_type)
             else:
-                pred_test = get_stattest(options.cat_target_stattest_func, "cat")
+                pred_test = get_stattest(options.cat_target_stattest_func, feature_type)
 
             p_value = _compute_statistic(
-                reference_data, current_data, prediction_column, pred_test.func
+                reference_data, current_data, feature_type, prediction_column, pred_test.func
             )
             result.prediction_metrics = DataDriftMetrics(
                 column_name=prediction_column, stattest_name=pred_test.display_name, drift=p_value

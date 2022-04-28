@@ -192,7 +192,7 @@ def test_computing_uses_a_custom_function(analyzer: CatTargetDriftAnalyzer) -> N
     })
 
     options = DataDriftOptions()
-    options.cat_target_stattest_func = lambda x, y, threshold: (np.pi, False)
+    options.cat_target_stattest_func = lambda x, y, feature_type, threshold: (np.pi, False)
     analyzer.options_provider.add(options)
     result = analyzer.calculate(df1, df2, ColumnMapping(target='some_column'))
     assert result.target_metrics is not None
