@@ -91,13 +91,8 @@ class CatOutputDriftWidget(Widget):
         )
 
         output_drift_json = json.loads(fig.to_json())
-
         return BaseWidgetInfo(
-            title=self.kind.title()
-            + " drift: ".title()
-            + output_sim_test
-            + ", p_value="
-            + str(round(output_p_value, 6)),
+            title=f"{self.kind.title()} Drift: {output_sim_test}, p_value={round(output_p_value, 6)}",
             type="big_graph",
             size=2,
             params={"data": output_drift_json["data"], "layout": output_drift_json["layout"]},

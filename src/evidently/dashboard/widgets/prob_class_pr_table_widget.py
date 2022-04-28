@@ -54,7 +54,7 @@ class ProbClassPRTableWidget(Widget):
                 raise ValueError(f"Widget [{self.title}] got no pr_table value")
 
             if not isinstance(metrics.pr_table, list):
-                raise ValueError(f"Widget [{self.title}] got incorrect tyoe for pr_table value")
+                raise ValueError(f"Widget [{self.title}] got incorrect type for pr_table value")
 
             pr_table_data: list = metrics.pr_table
             params_data = []

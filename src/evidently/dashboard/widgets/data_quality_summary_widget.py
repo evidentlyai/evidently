@@ -58,17 +58,6 @@ class DataQualitySummaryWidget(Widget):
 
         return wi
 
-    @staticmethod
-    def _dict_for_metrics(label, ref_value, curr_value):
-        values = [ref_value]
-        if curr_value is not None:
-            values.append(curr_value)
-        res = {
-            "label": label,
-            "values": values,
-        }
-        return res
-
     def _get_df_stats(self, data_quality_results, df, df_stats):
         result = {}
         all_features = data_quality_results.columns.get_all_features_list(
