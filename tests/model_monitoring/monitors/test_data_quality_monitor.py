@@ -264,72 +264,67 @@ def test_data_quality_monitor_regression() -> None:
             "value": 25.0,
         },
         {"labels": {"dataset": "reference", "feature": "num", "feature_type": "num", "metric": "std"}, "value": 2.65},
-        {"labels": {"dataset": "reference", "feature": "num", "feature_type": "num", "metric": "count"}, "value": 1},
+        {"labels": {"dataset": "current", "feature": "num", "feature_type": "num", "metric": "count"}, "value": 1},
         {
-            "labels": {"dataset": "reference", "feature": "num", "feature_type": "num", "metric": "infinite_count"},
+            "labels": {"dataset": "current", "feature": "num", "feature_type": "num", "metric": "infinite_count"},
             "value": 0,
         },
         {
-            "labels": {
-                "dataset": "reference",
-                "feature": "num",
-                "feature_type": "num",
-                "metric": "infinite_percentage",
-            },
+            "labels": {"dataset": "current", "feature": "num", "feature_type": "num", "metric": "infinite_percentage"},
             "value": 0.0,
         },
         {
-            "labels": {"dataset": "reference", "feature": "num", "feature_type": "num", "metric": "missing_count"},
+            "labels": {"dataset": "current", "feature": "num", "feature_type": "num", "metric": "missing_count"},
             "value": 0,
         },
         {
-            "labels": {"dataset": "reference", "feature": "num", "feature_type": "num", "metric": "missing_percentage"},
+            "labels": {"dataset": "current", "feature": "num", "feature_type": "num", "metric": "missing_percentage"},
             "value": 0.0,
         },
         {
-            "labels": {"dataset": "reference", "feature": "num", "feature_type": "num", "metric": "unique_count"},
+            "labels": {"dataset": "current", "feature": "num", "feature_type": "num", "metric": "unique_count"},
             "value": 1,
         },
         {
-            "labels": {"dataset": "reference", "feature": "num", "feature_type": "num", "metric": "unique_percentage"},
+            "labels": {"dataset": "current", "feature": "num", "feature_type": "num", "metric": "unique_percentage"},
             "value": 100.0,
         },
         {
-            "labels": {"dataset": "reference", "feature": "num", "feature_type": "num", "metric": "percentile_25"},
+            "labels": {"dataset": "current", "feature": "num", "feature_type": "num", "metric": "percentile_25"},
             "value": 1.0,
         },
         {
-            "labels": {"dataset": "reference", "feature": "num", "feature_type": "num", "metric": "percentile_50"},
+            "labels": {"dataset": "current", "feature": "num", "feature_type": "num", "metric": "percentile_50"},
             "value": 1.0,
         },
         {
-            "labels": {"dataset": "reference", "feature": "num", "feature_type": "num", "metric": "percentile_75"},
+            "labels": {"dataset": "current", "feature": "num", "feature_type": "num", "metric": "percentile_75"},
             "value": 1.0,
         },
-        {"labels": {"dataset": "reference", "feature": "num", "feature_type": "num", "metric": "max"}, "value": 1},
-        {"labels": {"dataset": "reference", "feature": "num", "feature_type": "num", "metric": "min"}, "value": 1},
-        {"labels": {"dataset": "reference", "feature": "num", "feature_type": "num", "metric": "mean"}, "value": 1.0},
+        {"labels": {"dataset": "current", "feature": "num", "feature_type": "num", "metric": "max"}, "value": 1},
+        {"labels": {"dataset": "current", "feature": "num", "feature_type": "num", "metric": "min"}, "value": 1},
+        {"labels": {"dataset": "current", "feature": "num", "feature_type": "num", "metric": "mean"}, "value": 1.0},
         {
-            "labels": {"dataset": "reference", "feature": "num", "feature_type": "num", "metric": "most_common_value"},
+            "labels": {"dataset": "current", "feature": "num", "feature_type": "num", "metric": "most_common_value"},
             "value": 1,
         },
         {
             "labels": {
-                "dataset": "reference",
+                "dataset": "current",
                 "feature": "num",
                 "feature_type": "num",
                 "metric": "most_common_value_percentage",
             },
             "value": 100.0,
         },
-        {"labels": {"dataset": "reference", "feature": "num", "feature_type": "num", "metric": "std"}, "value": None},
+        {"labels": {"dataset": "current", "feature": "num", "feature_type": "num", "metric": "std"}, "value": None},
         {
-            "labels": {"dataset": "reference", "feature": "datetime", "feature_type": "datetime", "metric": "count"},
+            "labels": {"dataset": "current", "feature": "datetime", "feature_type": "datetime", "metric": "count"},
             "value": 1,
         },
         {
             "labels": {
-                "dataset": "reference",
+                "dataset": "current",
                 "feature": "datetime",
                 "feature_type": "datetime",
                 "metric": "missing_count",
@@ -338,7 +333,7 @@ def test_data_quality_monitor_regression() -> None:
         },
         {
             "labels": {
-                "dataset": "reference",
+                "dataset": "current",
                 "feature": "datetime",
                 "feature_type": "datetime",
                 "metric": "missing_percentage",
@@ -347,7 +342,7 @@ def test_data_quality_monitor_regression() -> None:
         },
         {
             "labels": {
-                "dataset": "reference",
+                "dataset": "current",
                 "feature": "datetime",
                 "feature_type": "datetime",
                 "metric": "unique_count",
@@ -356,7 +351,7 @@ def test_data_quality_monitor_regression() -> None:
         },
         {
             "labels": {
-                "dataset": "reference",
+                "dataset": "current",
                 "feature": "datetime",
                 "feature_type": "datetime",
                 "metric": "unique_percentage",
@@ -364,16 +359,16 @@ def test_data_quality_monitor_regression() -> None:
             "value": 100.0,
         },
         {
-            "labels": {"dataset": "reference", "feature": "datetime", "feature_type": "datetime", "metric": "max"},
+            "labels": {"dataset": "current", "feature": "datetime", "feature_type": "datetime", "metric": "max"},
             "value": "2012-01-05 00:00:00",
         },
         {
-            "labels": {"dataset": "reference", "feature": "datetime", "feature_type": "datetime", "metric": "min"},
+            "labels": {"dataset": "current", "feature": "datetime", "feature_type": "datetime", "metric": "min"},
             "value": "2012-01-05 00:00:00",
         },
         {
             "labels": {
-                "dataset": "reference",
+                "dataset": "current",
                 "feature": "datetime",
                 "feature_type": "datetime",
                 "metric": "most_common_value",
@@ -382,37 +377,37 @@ def test_data_quality_monitor_regression() -> None:
         },
         {
             "labels": {
-                "dataset": "reference",
+                "dataset": "current",
                 "feature": "datetime",
                 "feature_type": "datetime",
                 "metric": "most_common_value_percentage",
             },
             "value": 100.0,
         },
-        {"labels": {"dataset": "reference", "feature": "cat", "feature_type": "cat", "metric": "count"}, "value": 1},
+        {"labels": {"dataset": "current", "feature": "cat", "feature_type": "cat", "metric": "count"}, "value": 1},
         {
-            "labels": {"dataset": "reference", "feature": "cat", "feature_type": "cat", "metric": "missing_count"},
+            "labels": {"dataset": "current", "feature": "cat", "feature_type": "cat", "metric": "missing_count"},
             "value": 0,
         },
         {
-            "labels": {"dataset": "reference", "feature": "cat", "feature_type": "cat", "metric": "missing_percentage"},
+            "labels": {"dataset": "current", "feature": "cat", "feature_type": "cat", "metric": "missing_percentage"},
             "value": 0.0,
         },
         {
-            "labels": {"dataset": "reference", "feature": "cat", "feature_type": "cat", "metric": "unique_count"},
+            "labels": {"dataset": "current", "feature": "cat", "feature_type": "cat", "metric": "unique_count"},
             "value": 1,
         },
         {
-            "labels": {"dataset": "reference", "feature": "cat", "feature_type": "cat", "metric": "unique_percentage"},
+            "labels": {"dataset": "current", "feature": "cat", "feature_type": "cat", "metric": "unique_percentage"},
             "value": 100.0,
         },
         {
-            "labels": {"dataset": "reference", "feature": "cat", "feature_type": "cat", "metric": "most_common_value"},
+            "labels": {"dataset": "current", "feature": "cat", "feature_type": "cat", "metric": "most_common_value"},
             "value": "y",
         },
         {
             "labels": {
-                "dataset": "reference",
+                "dataset": "current",
                 "feature": "cat",
                 "feature_type": "cat",
                 "metric": "most_common_value_percentage",
@@ -421,7 +416,7 @@ def test_data_quality_monitor_regression() -> None:
         },
         {
             "labels": {
-                "dataset": "reference",
+                "dataset": "current",
                 "feature": "cat",
                 "feature_type": "cat",
                 "metric": "new_in_current_values_count",
@@ -430,70 +425,65 @@ def test_data_quality_monitor_regression() -> None:
         },
         {
             "labels": {
-                "dataset": "reference",
+                "dataset": "current",
                 "feature": "cat",
                 "feature_type": "cat",
                 "metric": "unused_in_current_values_count",
             },
             "value": 2,
         },
-        {"labels": {"dataset": "reference", "feature": "num", "feature_type": "num", "metric": "count"}, "value": 1},
+        {"labels": {"dataset": "current", "feature": "num", "feature_type": "num", "metric": "count"}, "value": 1},
         {
-            "labels": {"dataset": "reference", "feature": "num", "feature_type": "num", "metric": "infinite_count"},
+            "labels": {"dataset": "current", "feature": "num", "feature_type": "num", "metric": "infinite_count"},
             "value": 0,
         },
         {
-            "labels": {
-                "dataset": "reference",
-                "feature": "num",
-                "feature_type": "num",
-                "metric": "infinite_percentage",
-            },
+            "labels": {"dataset": "current", "feature": "num", "feature_type": "num", "metric": "infinite_percentage"},
             "value": 0.0,
         },
         {
-            "labels": {"dataset": "reference", "feature": "num", "feature_type": "num", "metric": "missing_count"},
+            "labels": {"dataset": "current", "feature": "num", "feature_type": "num", "metric": "missing_count"},
             "value": 0,
         },
         {
-            "labels": {"dataset": "reference", "feature": "num", "feature_type": "num", "metric": "missing_percentage"},
+            "labels": {"dataset": "current", "feature": "num", "feature_type": "num", "metric": "missing_percentage"},
             "value": 0.0,
         },
         {
-            "labels": {"dataset": "reference", "feature": "num", "feature_type": "num", "metric": "unique_count"},
+            "labels": {"dataset": "current", "feature": "num", "feature_type": "num", "metric": "unique_count"},
             "value": 1,
         },
         {
-            "labels": {"dataset": "reference", "feature": "num", "feature_type": "num", "metric": "unique_percentage"},
+            "labels": {"dataset": "current", "feature": "num", "feature_type": "num", "metric": "unique_percentage"},
             "value": 100.0,
         },
         {
-            "labels": {"dataset": "reference", "feature": "num", "feature_type": "num", "metric": "percentile_25"},
+            "labels": {"dataset": "current", "feature": "num", "feature_type": "num", "metric": "percentile_25"},
             "value": 5.0,
         },
         {
-            "labels": {"dataset": "reference", "feature": "num", "feature_type": "num", "metric": "percentile_50"},
+            "labels": {"dataset": "current", "feature": "num", "feature_type": "num", "metric": "percentile_50"},
             "value": 5.0,
         },
         {
-            "labels": {"dataset": "reference", "feature": "num", "feature_type": "num", "metric": "percentile_75"},
+            "labels": {"dataset": "current", "feature": "num", "feature_type": "num", "metric": "percentile_75"},
             "value": 5.0,
         },
-        {"labels": {"dataset": "reference", "feature": "num", "feature_type": "num", "metric": "max"}, "value": 5},
-        {"labels": {"dataset": "reference", "feature": "num", "feature_type": "num", "metric": "min"}, "value": 5},
-        {"labels": {"dataset": "reference", "feature": "num", "feature_type": "num", "metric": "mean"}, "value": 5.0},
+        {"labels": {"dataset": "current", "feature": "num", "feature_type": "num", "metric": "max"}, "value": 5},
+        {"labels": {"dataset": "current", "feature": "num", "feature_type": "num", "metric": "min"}, "value": 5},
+        {"labels": {"dataset": "current", "feature": "num", "feature_type": "num", "metric": "mean"}, "value": 5.0},
         {
-            "labels": {"dataset": "reference", "feature": "num", "feature_type": "num", "metric": "most_common_value"},
+            "labels": {"dataset": "current", "feature": "num", "feature_type": "num", "metric": "most_common_value"},
             "value": 5,
         },
         {
             "labels": {
-                "dataset": "reference",
+                "dataset": "current",
                 "feature": "num",
                 "feature_type": "num",
                 "metric": "most_common_value_percentage",
             },
             "value": 100.0,
         },
-        {"labels": {"dataset": "reference", "feature": "num", "feature_type": "num", "metric": "std"}, "value": None},
+        {"labels": {"dataset": "current", "feature": "num", "feature_type": "num", "metric": "std"}, "value": None},
     ]

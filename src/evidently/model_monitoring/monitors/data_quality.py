@@ -52,5 +52,5 @@ class DataQualityMonitor(ModelMonitor):
                 yield metric
 
         if results.current_features_stats is not None:
-            for metric in self._yield_metrics(results.current_features_stats, "reference"):
+            for metric in self._yield_metrics(results.current_features_stats, "current"):
                 yield metric
