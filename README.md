@@ -98,7 +98,6 @@ Calculation results can be available in one of the two formats:
 After installing the tool, import Evidently **dashboard** and required tabs:
 
 ```python
-import pandas as pd
 from sklearn import datasets
 
 from evidently.dashboard import Dashboard
@@ -107,9 +106,8 @@ from evidently.dashboard.tabs import (
     CatTargetDriftTab
 )
 
-iris = datasets.load_iris()
-iris_frame = pd.DataFrame(iris.data, columns = iris.feature_names)
-iris_frame['target'] = iris.target
+iris = datasets.load_iris(as_frame=True)
+iris_frame, iris_frame["target"] = iris.data, iris.target
 ```
 
 To generate the **Data Drift** report, run:
@@ -134,7 +132,6 @@ HTML report does not open automatically. To explore it, you should open it from 
 After installing the tool, import Evidently **profile** and required sections:
 
 ```python
-import pandas as pd
 from sklearn import datasets
 
 from evidently.model_profile import Profile
@@ -143,8 +140,8 @@ from evidently.model_profile.sections import (
     CatTargetDriftProfileSection
 )
 
-iris = datasets.load_iris()
-iris_frame = pd.DataFrame(iris.data, columns = iris.feature_names)
+iris = datasets.load_iris(as_frame=True)
+iris_frame = iris.data
 ```
 
 To generate the **Data Drift** profile, run:
@@ -175,14 +172,13 @@ There is no need to enable nbextension for this case, because ```evidently``` us
 To build a ```Dashboard``` or a ```Profile``` simply repeat the steps described in the previous paragraph. For example, to build the **Data Drift** dashboard, run:
 
 ```python
-import pandas as pd
 from sklearn import datasets
 
 from evidently.dashboard import Dashboard
 from evidently.dashboard.tabs import DataDriftTab
 
-iris = datasets.load_iris()
-iris_frame = pd.DataFrame(iris.data, columns = iris.feature_names)
+iris = datasets.load_iris(as_frame=True)
+iris_frame = iris.data
 
 iris_data_drift_report = Dashboard(tabs=[DataDriftTab()])
 iris_data_drift_report.calculate(iris_frame[:100], iris_frame[100:], column_mapping = None)
@@ -215,29 +211,30 @@ For more information, refer to a complete <a href="https://docs.evidentlyai.com"
 # :card_index_dividers: Examples
 Here you can find simple examples on toy datasets to quickly explore what Evidently can do right out of the box.
 
-Report | Jupyter notebook | Colab notebook | Data source 
---- | --- | --- | --- 
-Data Drift + Categorical Target Drift (Multiclass) | [link](examples/sample_notebooks/multiclass_target_and_data_drift_iris.ipynb) | [link](https://colab.research.google.com/drive/1Dd6ZzIgeBYkD_4bqWZ0RAdUpCU0b6Y6H) | Iris plants sklearn.datasets 
-Data Drift + Categorical Target Drift (Binary) | [link](examples/sample_notebooks/binary_target_and_data_drift_breast_cancer.ipynb) | [link](https://colab.research.google.com/drive/1gpzNuFbhoGc4-DLAPMJofQXrsX7Sqsl5) | Breast cancer sklearn.datasets
-Data Drift + Numerical Target Drift | [link](examples/sample_notebooks/numerical_target_and_data_drift_california_housing.ipynb) | [link](https://colab.research.google.com/drive/1TGt-0rA7MiXsxwtKB4eaAGIUwnuZtyxc) | California housing sklearn.datasets 
-Regression Performance | [link](examples/sample_notebooks/regression_performance_bike_sharing_demand.ipynb) | [link](https://colab.research.google.com/drive/1ONgyDXKMFyt9IYUwLpvfxz9VIZHw-qBJ) | Bike sharing UCI: [link](https://archive.ics.uci.edu/ml/datasets/bike+sharing+dataset)
-Classification Performance (Multiclass) | [link](examples/sample_notebooks/classification_performance_multiclass_iris.ipynb) | [link](https://colab.research.google.com/drive/1pnYbVJEHBqvVmHUXzG-kw-Fr6PqhzRg3) | Iris plants sklearn.datasets 
-Probabilistic Classification Performance (Multiclass) | [link](examples/sample_notebooks/probabilistic_classification_performance_multiclass_iris.ipynb) | [link](https://colab.research.google.com/drive/1UkFaBqOzBseB_UqisvNbsh9hX5w3dpYS) | Iris plants sklearn.datasets 
-Classification Performance (Binary) | [link](examples/sample_notebooks/classification_performance_breast_cancer.ipynb) | [link](https://colab.research.google.com/drive/1b2kTLUIVJkKJybYeD3ZjpaREr_9dDTpz) | Breast cancer sklearn.datasets
-Probabilistic Classification Performance (Binary) | [link](examples/sample_notebooks/probabilistic_classification_performance_breast_cancer.ipynb) | [link](https://colab.research.google.com/drive/1sE2H4mFSgtNe34JZMAeC3eLntid6oe1g) | Breast cancer sklearn.datasets
-Data Quality | [link](sample_notebooks/data_quality_bike_sharing_demand.ipynb) | [link](https://colab.research.google.com/drive/1XDxs4k2wNHU9Xbxb9WI2rOgMkZFavyRd) | Bike sharing UCI: [link](https://archive.ics.uci.edu/ml/datasets/bike+sharing+dataset)
+| Report                                                | Jupyter notebook                                                                                 | Colab notebook                                                                    | Data source                                                                            |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| Data Drift + Categorical Target Drift (Multiclass)    | [link](examples/sample_notebooks/multiclass_target_and_data_drift_iris.ipynb)                    | [link](https://colab.research.google.com/drive/1Dd6ZzIgeBYkD_4bqWZ0RAdUpCU0b6Y6H) | Iris plants sklearn.datasets                                                           |
+| Data Drift + Categorical Target Drift (Binary)        | [link](examples/sample_notebooks/binary_target_and_data_drift_breast_cancer.ipynb)               | [link](https://colab.research.google.com/drive/1gpzNuFbhoGc4-DLAPMJofQXrsX7Sqsl5) | Breast cancer sklearn.datasets                                                         |
+| Data Drift + Numerical Target Drift                   | [link](examples/sample_notebooks/numerical_target_and_data_drift_california_housing.ipynb)       | [link](https://colab.research.google.com/drive/1TGt-0rA7MiXsxwtKB4eaAGIUwnuZtyxc) | California housing sklearn.datasets                                                    |
+| Regression Performance                                | [link](examples/sample_notebooks/regression_performance_bike_sharing_demand.ipynb)               | [link](https://colab.research.google.com/drive/1ONgyDXKMFyt9IYUwLpvfxz9VIZHw-qBJ) | Bike sharing UCI: [link](https://archive.ics.uci.edu/ml/datasets/bike+sharing+dataset) |
+| Classification Performance (Multiclass)               | [link](examples/sample_notebooks/classification_performance_multiclass_iris.ipynb)               | [link](https://colab.research.google.com/drive/1pnYbVJEHBqvVmHUXzG-kw-Fr6PqhzRg3) | Iris plants sklearn.datasets                                                           |
+| Probabilistic Classification Performance (Multiclass) | [link](examples/sample_notebooks/probabilistic_classification_performance_multiclass_iris.ipynb) | [link](https://colab.research.google.com/drive/1UkFaBqOzBseB_UqisvNbsh9hX5w3dpYS) | Iris plants sklearn.datasets                                                           |
+| Classification Performance (Binary)                   | [link](examples/sample_notebooks/classification_performance_breast_cancer.ipynb)                 | [link](https://colab.research.google.com/drive/1b2kTLUIVJkKJybYeD3ZjpaREr_9dDTpz) | Breast cancer sklearn.datasets                                                         |
+| Probabilistic Classification Performance (Binary)     | [link](examples/sample_notebooks/probabilistic_classification_performance_breast_cancer.ipynb)   | [link](https://colab.research.google.com/drive/1sE2H4mFSgtNe34JZMAeC3eLntid6oe1g) | Breast cancer sklearn.datasets                                                         |
+| Data Quality                                          | [link](sample_notebooks/data_quality_bike_sharing_demand.ipynb)                                  | [link](https://colab.research.google.com/drive/1XDxs4k2wNHU9Xbxb9WI2rOgMkZFavyRd) | Bike sharing UCI: [link](https://archive.ics.uci.edu/ml/datasets/bike+sharing+dataset) |
 
 ## Integrations
 See how to integrate Evidently in your prediction pipelines and use it with other tools. 
 
-Title | link to tutorial
---- | ---
-Real-time ML monitoring with Grafana | [Evidently + Grafana](examples/integrations/grafana_monitoring_service/)
-Batch ML monitoring with Airflow | [Evidently + Airflow](examples/integrations/airflow_drift_detection/)
-Log Evidently metrics in MLflow UI | [Evidently + MLflow](examples/integrations/mlflow_logging/)
+| Title                                | link to tutorial                                                         |
+| ------------------------------------ | ------------------------------------------------------------------------ |
+| Real-time ML monitoring with Grafana | [Evidently + Grafana](examples/integrations/grafana_monitoring_service/) |
+| Batch ML monitoring with Airflow     | [Evidently + Airflow](examples/integrations/airflow_drift_detection/)    |
+| Log Evidently metrics in MLflow UI   | [Evidently + MLflow](examples/integrations/mlflow_logging/)              |
 
 # :white_check_mark: Stay updated
 - If you want to receive updates, follow us on [Twitter](https://twitter.com/EvidentlyAI), or sign up for our [newsletter](https://evidentlyai.com/sign-up). 
 - You can also find more tutorials and explanations in our [Blog](https://evidentlyai.com/blog). 
 - If you want to chat and connect, join our [Discord community](https://discord.gg/xZjKRaNp8b)!
+
 
