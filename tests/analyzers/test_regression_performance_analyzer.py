@@ -139,8 +139,9 @@ def analyzer() -> RegressionPerformanceAnalyzer:
                 {
                     "test_target": [1, 0, 1, 1],
                     "test_prediction": [1, 1, 0, 0],
-                    "numeric_feature": [2, 2, 3, 10],
-                    "category_feature_1": [1, 2, 3, 1],
+                    "numeric_feature_1": [10, 10, 10, 10],
+                    "numeric_feature_2": [2, 2, 3, 10],
+                    "category_feature_1": [1, 1, 1, 1],
                     "category_feature_2": [1, 2, 3, 4],
                 }
             ),
@@ -148,15 +149,16 @@ def analyzer() -> RegressionPerformanceAnalyzer:
                 {
                     "test_target": [1, 0],
                     "test_prediction": [0, 1],
-                    "numeric_feature": [2, 4],
-                    "category_feature_1": [1, 2],
-                    "category_feature_2": [1, 3],
+                    "numeric_feature_1": [10, 10],
+                    "numeric_feature_2": [2, 4],
+                    "category_feature_1": [1, 1],
+                    "category_feature_2": [1, 2],
                 }
             ),
             ColumnMapping(
                 target="test_target",
                 prediction="test_prediction",
-                numerical_features=["numeric_feature"],
+                numerical_features=["numeric_feature_1", "numeric_feature_2"],
                 categorical_features=["category_feature_1", "category_feature_2"],
             ),
             RegressionPerformanceAnalyzerResults(
@@ -164,7 +166,7 @@ def analyzer() -> RegressionPerformanceAnalyzer:
                     utility_columns=DatasetUtilityColumns(
                         date=None, id_column=None, target="test_target", prediction="test_prediction"
                     ),
-                    num_feature_names=["numeric_feature"],
+                    num_feature_names=["numeric_feature_1", "numeric_feature_2"],
                     cat_feature_names=["category_feature_1", "category_feature_2"],
                     datetime_feature_names=[],
                     target_names=None,
@@ -218,7 +220,18 @@ def analyzer() -> RegressionPerformanceAnalyzer:
                     },
                 ),
                 error_bias={
-                    "numeric_feature": {
+                    "numeric_feature_1": {
+                        "feature_type": "num",
+                        "ref_majority": 10.0,
+                        "ref_under": 10.0,
+                        "ref_over": 10.0,
+                        "ref_range": 0.0,
+                        "current_majority": 10.0,
+                        "current_under": 10.0,
+                        "current_over": 10.0,
+                        "current_range": 0.0,
+                    },
+                    "numeric_feature_2": {
                         "feature_type": "num",
                         "ref_majority": 4.25,
                         "ref_under": 6.5,
@@ -232,13 +245,13 @@ def analyzer() -> RegressionPerformanceAnalyzer:
                     "category_feature_1": {
                         "feature_type": "cat",
                         "ref_majority": 1.0,
-                        "ref_under": 3.0,
-                        "ref_over": 2.0,
-                        "ref_range": 1.0,
-                        "current_majority": 2.0,
+                        "ref_under": 1.0,
+                        "ref_over": 1.0,
+                        "ref_range": 0.0,
+                        "current_majority": 1.0,
                         "current_under": 1.0,
-                        "current_over": 2.0,
-                        "current_range": 1.0,
+                        "current_over": 1.0,
+                        "current_range": 0.0,
                     },
                     "category_feature_2": {
                         "feature_type": "cat",
@@ -246,9 +259,9 @@ def analyzer() -> RegressionPerformanceAnalyzer:
                         "ref_under": 3.0,
                         "ref_over": 2.0,
                         "ref_range": 1.0,
-                        "current_majority": 3.0,
+                        "current_majority": 2.0,
                         "current_under": 1.0,
-                        "current_over": 3.0,
+                        "current_over": 2.0,
                         "current_range": 1.0,
                     },
                 },
