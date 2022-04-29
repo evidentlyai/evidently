@@ -2,6 +2,7 @@ import os
 import sys
 
 excludes = [
+    "nyc_taxi_data_drift_dashboard_customization.py",
     "historical_drift_visualization.py",
     "mlflow_integration.py",
     "ibm_hr_attrition_model_validation.py",

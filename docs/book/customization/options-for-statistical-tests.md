@@ -10,7 +10,7 @@ description: You can modify the statistical tests used to calculate Data and Tar
   - `None` - use default Statistical Tests for all features (based on internal logic)
   - You can define a Statistical Test to be used for all the features in the dataset:
     - `str` - the name of StatTest to use across all features (see the available names below)
-    - `Callable[[pd.Series, pd.Series, float], Tuple[float, bool]]` - custom StatTest function added (see the requirements for the custom StatTest function below)
+    - `Callable[[pd.Series, pd.Series, str, float], Tuple[float, bool]]` - custom StatTest function added (see the requirements for the custom StatTest function below)
     - `StatTest` - an instance of `StatTest`
   - You can define a Statistical Test to be used for individual features by passing a `dict` object where the key is a feature name and the value is one from the previous options (`str`, `Callable` or `StatTest`)  
 - `cat_target_stattest_func` (default: `None`): defines a custom statistical test to detect target drift in the Categorical Target Drift report. It follows the same logic as the `feature_stattest_func`, but without the `dict` option. 
@@ -31,7 +31,7 @@ Change the StatTest for a single feature to a Custom (user-defined) function:
 from evidently.options.data_drift import DataDriftOptions
 
 
-def my_stat_test(reference_data, current_data, threshold):
+def my_stat_test(reference_data, current_data, feature_type, threshold):
   return 0.0, False
 
 
@@ -46,7 +46,7 @@ from evidently.analyzers.stattests import StatTest
 from evidently.options.data_drift import DataDriftOptions
 
 
-def _my_stat_test(reference_data, current_data, threshold):
+def _my_stat_test(reference_data, current_data, feature_type, threshold):
   return 0.0, False
 
 
@@ -69,6 +69,7 @@ options = DataDriftOptions(
 The StatTest function should match `(reference_data: pd.Series, current_data: pd.Series, threshold: float) -> Tuple[float, bool]` signature:
 - `reference_data: pd.Series` - reference data series
 - `current_data: pd.Series` - current data series to compare
+- `feature_type: str` - feature type
 - `threshold: float` - Stat Test threshold for drift detection
 
 Returns:
@@ -85,7 +86,7 @@ import pandas as pd
 from scipy.stats import anderson_ksamp
 
 
-def anderson_stat_test(reference_data: pd.Series, current_data: pd.Series, threshold: float) -> Tuple[float, bool]:
+def anderson_stat_test(reference_data: pd.Series, current_data: pd.Series, _feature_type: str, threshold: float) -> Tuple[float, bool]:
   p_value = anderson_ksamp(np.array([reference_data, current_data]))[2]
   return p_value, p_value < threshold
 ```
@@ -107,7 +108,7 @@ To create the instance of the `StatTest` class, you need:
 from evidently.analyzers.stattests import StatTest
 
 
-def example_stat_test(reference_data, current_data, threshold):
+def example_stat_test(reference_data, current_data, feature_type, threshold):
     return 0.1, False
 
 example_stat_test = StatTest(

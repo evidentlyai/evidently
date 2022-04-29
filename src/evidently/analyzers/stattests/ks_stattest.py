@@ -8,11 +8,16 @@ from scipy.stats import ks_2samp
 from evidently.analyzers.stattests.registry import StatTest, register_stattest
 
 
-def _ks_stat_test(reference_data: pd.Series, current_data: pd.Series, threshold: float) -> Tuple[float, bool]:
+def _ks_stat_test(
+        reference_data: pd.Series,
+        current_data: pd.Series,
+        feature_type: str,
+        threshold: float) -> Tuple[float, bool]:
     """Run the two-sample Kolmogorov-Smirnov test of two samples. Alternative: two-sided
     Args:
         reference_data: reference data
         current_data: current data
+        feature_type: feature type
         threshold: level of significance
     Returns:
         p_value: two-tailed p-value
