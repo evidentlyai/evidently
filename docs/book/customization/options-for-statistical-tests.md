@@ -142,14 +142,14 @@ example_stat_test = StatTest(
   - returns `distance`
   - drift detected when `distance >= threshold`
 - `kl_div` - Kullback-Leibler divergence
-  - only for numerical features
+  - for numerical and categorical features
   - returns `divergence`
   - drift detected when `divergence >= threshold`
 - `psi` - Population Stability Index (PSI)
-  - only for numerical features
+  - for numerical and categorical features
   - returns `psi_value`
   - drift detected when `psi_value >= threshold`
 - `jensenshannon` - Jensen-Shannon distance
-  - only for numerical features
+  - for numerical and categorical features
   - returns `distance`
   - drift detected when `distance >= threshold`
