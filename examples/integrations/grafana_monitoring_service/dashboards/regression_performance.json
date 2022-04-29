@@ -21,7 +21,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "iteration": 1651157453275,
+  "iteration": 1651157972098,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -474,6 +474,32 @@
       {
         "current": {
           "selected": true,
+          "text": "bike_other",
+          "value": "bike_other"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
+        },
+        "definition": "label_values(dataset_name)",
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "name": "dataset_name",
+        "options": [],
+        "query": {
+          "query": "label_values(dataset_name)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": true,
           "text": [
             "All"
           ],
@@ -500,43 +526,17 @@
         "skipUrlSync": false,
         "sort": 0,
         "type": "query"
-      },
-      {
-        "current": {
-          "selected": true,
-          "text": "bike_other",
-          "value": "bike_other"
-        },
-        "datasource": {
-          "type": "prometheus",
-          "uid": "PBFA97CFB590B2093"
-        },
-        "definition": "label_values(dataset_name)",
-        "hide": 0,
-        "includeAll": false,
-        "multi": false,
-        "name": "dataset_name",
-        "options": [],
-        "query": {
-          "query": "label_values(dataset_name)",
-          "refId": "StandardVariableQuery"
-        },
-        "refresh": 1,
-        "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
-        "type": "query"
       }
     ]
   },
   "time": {
-    "from": "now-30m",
+    "from": "now-5m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Regression Performance",
   "uid": "-GLqhe-nz",
-  "version": 2,
+  "version": 3,
   "weekStart": ""
 }
