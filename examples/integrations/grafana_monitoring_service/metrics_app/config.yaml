@@ -20,7 +20,7 @@ datasets:
     monitors:
       - data_drift
       - regression_performance
-  bike_other:
+  bike_gradient_boosting:
     column_mapping:
       categorical_features:
         - season
@@ -85,20 +85,6 @@ datasets:
         - hot
         - dst_host_srv_rerror_rate
       target: labels
-    data_format:
-      header: true
-      separator: ','
-    monitors:
-      - classification_performance
-      - cat_target_drift
-  iris:
-    column_mapping:
-      categorical_features: [ ]
-      numerical_features:
-        - sepal length (cm)
-        - sepal width (cm)
-        - petal length (cm)
-        - petal width (cm)
     data_format:
       header: true
       separator: ','

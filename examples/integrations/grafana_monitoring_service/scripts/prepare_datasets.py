@@ -2,16 +2,14 @@
 
 import argparse
 import io
-import json
+import logging
+import os
+import shutil
 import zipfile
 from typing import Tuple
 
 import pandas as pd
 import requests
-import yaml
-from sklearn import neighbors
-from sklearn import model_selection
-from sklearn.ensemble import RandomForestRegressor
 
 
 # suppress SettingWithCopyWarning: warning
@@ -19,37 +17,37 @@ pd.options.mode.chained_assignment = None
 
 
 BIKE_DATA_SOURCE_URL = "https://archive.ics.uci.edu/ml/machine-learning-databases/00275/Bike-Sharing-Dataset.zip"
-BIKE_DATASET_NAME = "bike"
-KDD_DATASET_NAME = "kddcup99"
-DATA_SOURCES = (BIKE_DATASET_NAME, KDD_DATASET_NAME)
 
 
-base_configuration = {
-    "data_format": {
-        "separator": ",",
-        "header": True,
-    },
-    "column_mapping": {},
-    "service": {
-        "reference_path": "./reference.csv",
-        "min_reference_size": 30,
-        "use_reference": True,
-        "moving_reference": False,
-        "window_size": 30,
-        "calculation_period_sec": 10,
-    },
-}
+def setup_logger() -> None:
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s [%(levelname)s] %(message)s",
+        handlers=[
+            logging.StreamHandler()
+        ]
+    )
 
 
-def get_data_bike() -> Tuple[pd.DataFrame, pd.DataFrame]:
-    print(f"Load data for dataset: {BIKE_DATASET_NAME}")
+def get_data_bike_random_forest() -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """Get bike dataset with random forest model prediction"""
+    return get_data_bike(True)
 
+
+def get_data_bike_gradient_boosting() -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """Get bike dataset with gradient boosting model"""
+    return get_data_bike(False)
+
+
+def get_data_bike(use_model: bool) -> Tuple[pd.DataFrame, pd.DataFrame]:
     content = requests.get(BIKE_DATA_SOURCE_URL).content
+
     with zipfile.ZipFile(io.BytesIO(content)) as arc:
         with arc.open("day.csv") as datafile:
             raw_data = pd.read_csv(datafile, header=0, sep=",", parse_dates=["dteday"])
+
     reference_bike_data = raw_data[:120]
-    production_bike__data = raw_data[120:]
+    production_bike_data = raw_data[120:]
 
     target = "cnt"
     numerical_features = ["mnth", "temp", "atemp", "hum", "windspeed"]
@@ -57,28 +55,25 @@ def get_data_bike() -> Tuple[pd.DataFrame, pd.DataFrame]:
 
     features = numerical_features + categorical_features
 
-    print(f"num features: {json.dumps(numerical_features)}")
-    print(f"cat features: {json.dumps(categorical_features)}")
-    print(f"target: {target}")
+    if use_model:
+        from sklearn.ensemble import RandomForestRegressor
+        # get predictions with random forest
+        model = RandomForestRegressor(random_state=0)
 
-    # get predictions
-    model = RandomForestRegressor(random_state=0)
+    else:
+        from sklearn.ensemble import GradientBoostingRegressor
+        model = GradientBoostingRegressor(random_state=0)
+
     model.fit(reference_bike_data[features], reference_bike_data[target])
     reference_bike_data["prediction"] = model.predict(reference_bike_data[features])
-    production_bike__data["prediction"] = model.predict(production_bike__data[features])
+    production_bike_data["prediction"] = model.predict(production_bike_data[features])
 
-    # setup service configuration
-    configuration = base_configuration
-    configuration["column_mapping"]["target"] = target
-    configuration["column_mapping"]["numerical_features"] = numerical_features
-    configuration["column_mapping"]["categorical_features"] = categorical_features
-    configuration["service"]["monitors"] = ["data_drift", "regression_performance"]
-
-    return reference_bike_data, production_bike__data, configuration
+    return reference_bike_data, production_bike_data
 
 
 def get_data_kdd_classification() -> Tuple[pd.DataFrame, pd.DataFrame]:
-    print(f"Load data for dataset: {KDD_DATASET_NAME}")
+    from sklearn import neighbors
+    from sklearn import model_selection
 
     # local import for make other cases faster
     from sklearn.datasets import fetch_kddcup99
@@ -100,38 +95,33 @@ def get_data_kdd_classification() -> Tuple[pd.DataFrame, pd.DataFrame]:
     reference_kdd_data["prediction"] = classification_model.predict(reference_kdd_data[features])
     production_kdd_data["prediction"] = classification_model.predict(production_kdd_data[features])
 
-    # setup service configuration
-    configuration = base_configuration
-    configuration["column_mapping"]["target"] = target
-    configuration["column_mapping"]["numerical_features"] = features
-    configuration["column_mapping"]["categorical_features"] = []
-    configuration["service"]["monitors"] = ["classification_performance"]
-
-    return reference_kdd_data[features + [target, "prediction"]], production_kdd_data, configuration
+    return reference_kdd_data[features + [target, "prediction"]], production_kdd_data
 
 
-def main(dataset: str) -> None:
-    print(f'Generate test data for dataset "{dataset}"')
+def main(dataset_name: str, dataset_path: str) -> None:
+    logging.info("Generate test data for dataset %s", dataset_name)
+    dataset_path = os.path.abspath(dataset_path)
 
-    if dataset == BIKE_DATASET_NAME:
-        ref_data, prod_data, configuration = get_data_bike()
+    if os.path.exists(dataset_path):
+        logging.info("Path %s already exists, remove it", dataset_path)
+        shutil.rmtree(dataset_path)
 
-    elif dataset == KDD_DATASET_NAME:
-        ref_data, prod_data, configuration = get_data_kdd_classification()
+    os.makedirs(dataset_path)
 
-    else:
-        raise ValueError(f"Unexpected dataset: {dataset}, available datasets: {DATA_SOURCES}")
+    reference_data, production_data = DATA_SOURCES[dataset_name]()
+    logging.info("Save datasets to %s", dataset_path)
+    reference_data.to_csv(os.path.join(dataset_path, "reference.csv"), index=False)
+    production_data.to_csv(os.path.join(dataset_path, "production.csv"), index=False)
 
-    ref_data.to_csv("reference.csv", index=False)
-    prod_data.to_csv("production.csv", index=False)
+    logging.info("Reference dataset was created with %s rows", reference_data.shape[0])
+    logging.info("Production dataset was created with %s rows", production_data.shape[0])
 
-    print("Generate config file...")
-    with open("config.yaml", "w", encoding="utf8") as conf_file:
-        yaml.dump(configuration, conf_file)
-    print("Done.")
 
-    print(f"Reference dataset was created with {ref_data.shape[0]} rows")
-    print(f"Production dataset was created with {prod_data.shape[0]} rows")
+DATA_SOURCES = {
+    "bike_random_forest": get_data_bike_random_forest,
+    "bike_gradient_boosting": get_data_bike_gradient_boosting,
+    "kdd_k_neighbors_classifier": get_data_kdd_classification,
+}
 
 
 if __name__ == "__main__":
@@ -141,11 +131,19 @@ if __name__ == "__main__":
     parser.add_argument(
         "-d",
         "--dataset",
-        choices=DATA_SOURCES,
+        choices=DATA_SOURCES.keys(),
         type=str,
-        default=BIKE_DATASET_NAME,
-        help="Dataset for reference.csv, current.csv and config.yaml generation.",
+        help="Dataset name for reference.csv= and production.csv files generation.",
+    )
+    parser.add_argument(
+        "-p",
+        "--path",
+        type=str,
+        help="Path for saving dataset files.",
     )
 
     args = parser.parse_args()
-    main(args.dataset)
+    setup_logger()
+    if args.dataset not in DATA_SOURCES:
+        exit(f"Incorrect dataset name {args.dataset}, try to see correct names with --help")
+    main(args.dataset, args.path)
