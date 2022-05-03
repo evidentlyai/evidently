@@ -112,7 +112,7 @@ class MonitoringService:
             self.column_mapping[dataset_info.name] = dataset_info.column_mapping
 
         self.metrics = {}
-        self.next_run_time = None
+        self.next_run_time = {}
         self.hash = hashlib.sha256(pd.util.hash_pandas_object(self.reference["bike_random_forest"]).values).hexdigest()
         self.hash_metric = prometheus_client.Gauge("evidently:reference_dataset_hash", "", labelnames=["hash"])
 
@@ -139,11 +139,15 @@ class MonitoringService:
             logging.info(f"Not enough data for measurement: {current_size} of {window_size}." f" Waiting more data")
             return
 
-        if self.next_run_time is not None and self.next_run_time > datetime.datetime.now():
-            logging.info(f"Next run at {self.next_run_time}")
+        next_run_time = self.next_run_time.get(dataset_name)
+
+        if next_run_time is not None and next_run_time > datetime.datetime.now():
+            logging.info("Next run for dataset %s at %s", dataset_name, next_run_time)
             return
 
-        self.next_run_time = datetime.datetime.now() + datetime.timedelta(seconds=self.calculation_period_sec)
+        self.next_run_time[dataset_name] = datetime.datetime.now() + datetime.timedelta(
+            seconds=self.calculation_period_sec
+        )
         self.monitoring[dataset_name].execute(
             self.reference[dataset_name], current_data, self.column_mapping[dataset_name]
         )
