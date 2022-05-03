@@ -27,7 +27,7 @@ class NumpyEncoder(json.JSONEncoder):
 
 
 def send_data_row(dataset_name: str, data: Dict) -> None:
-    print(f"Send a data item for {dataset_name}: {data}")
+    print(f"Send a data item for {dataset_name}")
 
     try:
         response = requests.post(
@@ -65,8 +65,6 @@ def main(sleep_timeout: int) -> None:
         new_data = pd.read_csv(production_data_path)
         datasets[dataset_name] = new_data
         max_index = max(max_index, new_data.shape[0])
-
-    time.sleep(5)
 
     for idx in range(0, max_index):
         for dataset_name, dataset in datasets.items():
