@@ -90,6 +90,7 @@ datasets:
       header: true
       separator: ','
     monitors:
+      - data_drift
       - classification_performance
       - cat_target_drift
 service:
