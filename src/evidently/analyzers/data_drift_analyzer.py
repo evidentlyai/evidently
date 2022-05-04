@@ -74,7 +74,8 @@ class DataDriftAnalyzer(Analyzer):
         for feature_name in num_feature_names:
             threshold = data_drift_options.get_threshold(feature_name)
             feature_type = "num"
-            test = get_stattest(data_drift_options.get_feature_stattest_func(feature_name, ks_stat_test), feature_type)
+            test = get_stattest(data_drift_options.get_feature_stattest_func(feature_name, feature_type, ks_stat_test),
+                                feature_type)
             p_value, drifted = test.func(reference_data[feature_name],
                                          current_data[feature_name],
                                          feature_type,
@@ -102,8 +103,13 @@ class DataDriftAnalyzer(Analyzer):
                        list(feature_cur_data.unique())) - {np.nan}
             default_test = chi_stat_test if len(keys) > 2 else z_stat_test
             feature_type = "cat"
-            stat_test = get_stattest(data_drift_options.get_feature_stattest_func(feature_name, default_test),
-                                     feature_type)
+            stat_test = get_stattest(
+                data_drift_options.get_feature_stattest_func(
+                    feature_name,
+                    feature_type,
+                    default_test
+                ),
+                feature_type)
             p_value, drifted = stat_test.func(feature_ref_data, feature_cur_data, feature_type, threshold)
 
             p_values[feature_name] = PValueWithDrift(p_value, drifted)
