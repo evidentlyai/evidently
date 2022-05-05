@@ -29,9 +29,14 @@ Follow the instructions below to run the example:
 1. **Install Docker** if you haven't used it before. 
 
 2. **Create a new Python virtual environment and activate it**.
-
+For example, for Linux/MacOS:
+```bash
+pip install virtualenv
+virtualenv venv
+source venv/bin/activate 
+```
 3. **Get the `evidently` code example**:
- ```bash
+```bash
 git clone git@github.com:evidentlyai/evidently.git
 ```
 

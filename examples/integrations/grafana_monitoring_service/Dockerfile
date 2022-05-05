@@ -12,4 +12,4 @@ RUN pip3 install evidently
 
 COPY metrics_app .
 
-CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0"]
+CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0", "--port=8085"]
