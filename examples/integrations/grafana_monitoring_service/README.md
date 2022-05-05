@@ -6,7 +6,7 @@ This example shows how to get real-time Grafana dashboards for monitoring data a
 
 We use two toy datasets and treat them as model application logs. Then, we configure Evidently `Monitors` to read the data from the logs at a certain interval (to simulate production service where data appears sequentially). Evidently calculates the metrics for Data Drift, Regression Performance and Classification Performance and sends them to Prometheus. The metrics are displayed on a pre-built Grafana dashboard.
 
-Here is the one for Data Drift. Two more inside!
+Here is the one for Data Drift. And more inside!
 
 ![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/docs/images/evidently_data_drift_grafana_dashboard_top.png)
 
@@ -17,82 +17,67 @@ You can also adapt this example to your purposes by replacing the data source an
 ## How to run an example
 
 In this example, we use: 
-* `Bike Sharing Demand` dataset for regression cases
-* `kddcup99` dataset for classification cases
-* `Evidently` library for the metrics calculations
-* `Prometheus` to store the metrics
-* `Grafana` to build the dashboards
-* `Docker` to rule them all
+* `Bike Sharing Demand` (aka `bike`) - data for regression cases
+* `kddcup99` - data for classification cases
+* `Evidently` - library for the metrics calculations
+* `Prometheus` - service to store the metrics
+* `Grafana` - service to build the dashboards
+* `Docker` - service to rule them all
 
 Follow the instructions below to run the example:
 
-1. **Install Docker** if haven't used it before. 
+1. **Install Docker** if you haven't used it before. 
 
-2. **Create a new Python virtual environment and activate it**
+2. **Create a new Python virtual environment and activate it**.
 
 3. **Get the `evidently` code example**:
  ```bash
 git clone git@github.com:evidentlyai/evidently.git
 ```
 
-4. **Prepare the datasets**. You can choose which example you want to run at this step.
+4. **Install dependencies**.
 
 - Go to the example directory:
 ```bash
 cd evidently/examples/integrations/grafana_monitoring_service/
 ```
-- install dependencies for the data preparation script
+- install dependencies for the example run script
 ```bash
 pip install -r requirements.txt
 ```
-- Run the data preparation script `prepare_datasets.py` from the example directory 
-  - specify a dataset name with `--dataset` or `-d` option  
-  - use `bike` if you want to get data for `data_drift` and `regression_performance`
-  - use `kddcup99` if you want to get data for `classification_performance`
-  - the script will use `bike` as a default
-```
-python prepare_datasets.py --dataset kddcup99
-```
-- After the script is executed successfully, the three files should appear in the directory: 
-  - `config.yaml` - a config for the metrics service
-  - `reference.csv` - a file with reference data
-  - `production.csv` - a file with current or production data that we will send to the service later
-The data is ready.
 
 5. **Then run the docker image from the example directory**:
 ```bash
-docker compose up -d
+./run_example.py
 ```
-
-This will run three services: Prometheus, Grafana, and the monitoring service.
+This will:
+- download and prepare test data - `bike` and `kddcup99` on the first run.
+- run Prometheus, Grafana, and Evidently monitoring service in Docker
 
 The services will be available in your system: 
-  - Evidently monitoring service at port 5000
-  - Prometheus at port 9090. To access Prometheus web interface, go to your browser and open: http://localhost:9090/
-  - Grafana at port 3000. To access Grafana web interface, go to your browser and open: http://localhost:3000/
- 
-There will be no data in the database and dashboard until you start to send a production data.
+  - **Evidently monitoring service** at port 8085
+  - **Prometheus** at port 9090. To access Prometheus web interface, go to your browser and open: http://localhost:9090/
+  - **Grafana** at port 3000. To access Grafana web interface, go to your browser and open: http://localhost:3000/
 
-Let's do it is the next step.
+- send production data from tests datasets rows to Evidently monitoring service
 
-6. **Start sending the data to the service**.  
- 
-Run the python script `example_run_request.py` to initiate the process of sending a data to the evidently service:
-```bash
-python example_run_request.py
-```
 
-In this example each row is sent with 10 seconds timeout. This is why at the very beginning no data will show at Grafana dashboard. It will start to appear in less than a minute.
-
-7. **Explore the dashboard**.
+6. **Explore the dashboard**.
  
 Go to the browser and access the Grafana dashboard at http://localhost:3000. At first, you will be asked for login and password. Both are `admin`. 
 
 To see the monitoring dashboard in Grafana interface, click "General" and navigate to the chosen dashboard (e.g. "Evidently Data Drift").
 
-8. **Stop the example**.
 
-To stop the execution, run ```docker compose down``` command.
+7. **Stop the example**.
+
+To stop send data process, cansel the example script execution (press CTRL-C).
+
+If Docker containers were not stopped after that, run a command:
+
+```bash
+docker compose down
+```
 
 ## How to customize the Grafana Dashboard view 
 
@@ -100,7 +85,7 @@ We rely on **existing Grafana functionality** to visualize the metrics. We pre-b
 
 The Grafana Dashboard view is determined by the JSON config. In our example, each config is stored in the examples/integrations/grafana_monitoring_service folder. For example, here is the one for the Data Drift Dashboard: https://github.com/evidentlyai/evidently/blob/main/examples/integrations/grafana_monitoring_service/dashboards/data_drift.json
 
-If you want to continue using the same source data and metrics, but **change the way the plots are displayed** in the Garafana interface, take the following steps:
+If you want to continue using the same source data and metrics, but **change the way the plots are displayed** in the Grafana interface, take the following steps:
 
 1. Run the example using the above instructions
 2. Open the Grafana web interface (localhost:3000)
