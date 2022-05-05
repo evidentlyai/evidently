@@ -11,6 +11,33 @@ DEFAULT_NBINSX = 10
 
 @dataclass
 class DataDriftOptions:
+    """ Configuration for Data Drift analyzer, Dashboard and Profile.
+
+    Attributes:
+        confidence: Defines the confidence level for statistical tests.
+                    Applies to all features (if passed as float) or certain features (if passed as dictionary).
+                    (Deprecated) Use `threshold` to define confidence level for statistical
+                     tests as more universal solution.
+        threshold: Defines thresholds for statistical tests.
+                   Applies to all features (if passed as float) or certain features (if passed as dictionary).
+        drift_share: Sets the share of drifting features as a condition for Dataset Drift in the Data Drift report.
+        nbinsx: Defines the number of bins in a histogram.
+                Applies to all features (if passed as int) or certain features (if passed as dictionary).
+        xbins: Defines the boundaries for the size of a specific bin in a histogram.
+        feature_stattest_func: Defines a custom statistical test for drift detection in the Data Drift report.
+                               Applies to all features (if passed as a function) or individual features (if a dict).
+                               (Deprecated) Use `all_features_stattest` or `per_feature_stattest`.
+        all_features_stattest: Defines a custom statistical test for drift detection in the Data Drift report
+                               for all features.
+        cat_features_stattest: Defines a custom statistical test for drift detection in the Data Drift report
+                               for categorical features only.
+        num_features_stattest: Defines a custom statistical test for drift detection in the Data Drift report
+                               for numerical features only.
+        per_feature_stattest: Defines a custom statistical test for drift detection in the Data Drift report
+                              per feature.
+        cat_target_stattest_func: Defines a custom statistical test to detect target drift in CatTargetDrift.
+        num_target_stattest_func: Defines a custom statistical test to detect target drift in NumTargetDrift.
+    """
     confidence: Optional[Union[float, Dict[str, float]]] = None
     threshold: Optional[Union[float, Dict[str, float]]] = None
     drift_share: float = 0.5
@@ -19,9 +46,10 @@ class DataDriftOptions:
 
     feature_stattest_func: Optional[Union[PossibleStatTestType, Dict[str, PossibleStatTestType]]] = None
 
-    stattest: Optional[PossibleStatTestType] = None
-    cat_stattest: Optional[PossibleStatTestType] = None
-    num_stattest: Optional[PossibleStatTestType] = None
+    """"""
+    all_features_stattest: Optional[PossibleStatTestType] = None
+    cat_features_stattest: Optional[PossibleStatTestType] = None
+    num_features_stattest: Optional[PossibleStatTestType] = None
     per_feature_stattest: Optional[Dict[str, PossibleStatTestType]] = None
 
     cat_target_stattest_func: Optional[PossibleStatTestType] = None
@@ -65,9 +93,9 @@ class DataDriftOptions:
             feature_name: str,
             feature_type: str,
             default: PossibleStatTestType) -> PossibleStatTestType:
-        if self.feature_stattest_func is not None and any([self.stattest,
-                                                           self.cat_stattest,
-                                                           self.num_stattest,
+        if self.feature_stattest_func is not None and any([self.all_features_stattest,
+                                                           self.cat_features_stattest,
+                                                           self.num_features_stattest,
                                                            self.per_feature_stattest]):
             raise ValueError("Cannot use DataDriftOptions.feature_stattest_func along with any "
                              "of DataDriftOptions.cat_stattest_func,"
@@ -81,11 +109,11 @@ class DataDriftOptions:
             if isinstance(self.feature_stattest_func, dict):
                 return self.feature_stattest_func.get(feature_name, default)
             return default
-        func = default if self.stattest is None else self.stattest
+        func = default if self.all_features_stattest is None else self.all_features_stattest
         if feature_type == "cat":
-            type_func = self.cat_stattest
+            type_func = self.cat_features_stattest
         elif feature_type == "num":
-            type_func = self.num_stattest
+            type_func = self.num_features_stattest
         else:
             raise ValueError(f"Unexpected feature type {feature_type}.")
         func = func if type_func is None else type_func

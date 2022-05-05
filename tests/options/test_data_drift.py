@@ -149,9 +149,9 @@ def test_stattest_function_valid(feature_func, expected):
      _features_st("st2", "st4", "st3", "st5")),
 ])
 def test_stattest_function_valid_v2(global_st, cat_st, num_st, per_feature_st, expected):
-    options = DataDriftOptions(stattest=global_st,
-                               cat_stattest=cat_st,
-                               num_stattest=num_st,
+    options = DataDriftOptions(all_features_stattest=global_st,
+                               cat_features_stattest=cat_st,
+                               num_features_stattest=num_st,
                                per_feature_stattest=per_feature_st)
     for feature, expected_func in expected.items():
         assert options.get_feature_stattest_func(feature, _features[feature], "def_st") == expected_func
@@ -167,9 +167,9 @@ def test_stattest_function_valid_v2(global_st, cat_st, num_st, per_feature_st, e
 ))
 def test_stattest_function_deprecated(feature_st, global_st, cat_st, num_st, per_feature_st):
     options = DataDriftOptions(feature_stattest_func=feature_st,
-                               stattest=global_st,
-                               cat_stattest=cat_st,
-                               num_stattest=num_st,
+                               all_features_stattest=global_st,
+                               cat_features_stattest=cat_st,
+                               num_features_stattest=num_st,
                                per_feature_stattest=per_feature_st)
     with pytest.raises(ValueError):
         options.get_feature_stattest_func("f1", "cat", "def_st")
