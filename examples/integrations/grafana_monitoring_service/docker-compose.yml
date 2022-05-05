@@ -18,7 +18,7 @@ services:
     volumes:
       - ./datasets:/app/datasets
     ports:
-      - "5000:5000"
+      - "8085:8085"
     networks:
       - back-tier
       - front-tier

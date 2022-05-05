@@ -31,7 +31,7 @@ def send_data_row(dataset_name: str, data: Dict) -> None:
 
     try:
         response = requests.post(
-            f"http://localhost:5000/iterate/{dataset_name}",
+            f"http://localhost:8085/iterate/{dataset_name}",
             data=json.dumps([data], cls=NumpyEncoder),
             headers={"content-type": "application/json"},
         )
