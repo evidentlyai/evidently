@@ -433,7 +433,7 @@
           "exemplar": true,
           "expr": "evidently:regression_performance:feature_error_bias{feature=\"${feature:raw}\", metric=\"current_over\", dataset_name=\"${dataset_name:raw}\"}",
           "interval": "",
-          "legendFormat": "Overperformance",
+          "legendFormat": "Overestimation",
           "refId": "A"
         },
         {
@@ -445,7 +445,7 @@
           "expr": "evidently:regression_performance:feature_error_bias{feature=\"${feature:raw}\", metric=\"current_under\", dataset_name=\"${dataset_name:raw}\"}",
           "hide": false,
           "interval": "",
-          "legendFormat": "Underperformance",
+          "legendFormat": "Underestimation",
           "refId": "B"
         },
         {
