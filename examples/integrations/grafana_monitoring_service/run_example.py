@@ -49,9 +49,6 @@ def check_dataset(
             logging.info("Dataset %s already exists", dataset_name)
             return
 
-    else:
-        os.makedirs(dataset_path)
-
     logging.info("Download dataset %s", dataset_name)
     run_script(cmd=["scripts/prepare_datasets.py", "-d", dataset_name, "-p", dataset_path], wait=True)
 
