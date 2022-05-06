@@ -200,7 +200,7 @@
           "refId": "A"
         }
       ],
-      "title": "Target Drift Score (p-value)",
+      "title": "Drift Score (p-value)",
       "type": "timeseries"
     },
     {
