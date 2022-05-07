@@ -54,15 +54,6 @@ def _another_stattest():
     pass
 
 
-_features = dict([("cat1", "cat"), ("cat2", "cat"), ("num1", "num"), ("num2", "num")])
-
-
-def _features_st(*feature_func):
-    return {t[0]: t[1] for t in
-            zip([f[0] for f in _features.items()], feature_func)
-            if t[1] is not None}
-
-
 @pytest.mark.parametrize("feature_func,expected", [
     (None, {"feature1": "def_st", "feature2": "def_st"}),
     ("st1", {"feature1": "st1", "feature2": "st1"}),
@@ -86,75 +77,71 @@ def test_stattest_function_valid(feature_func, expected):
      None,
      None,
      None,
-     _features_st("def_st", "def_st", "def_st", "def_st")),
+     {"cat1": "def_st", "cat2": "def_st", "num1": "def_st", "num2": "def_st"}),
     ("st1",
      None,
      None,
      None,
-     _features_st("st1", "st1", "st1", "st1")),
+     {"cat1": "st1", "cat2": "st1", "num1": "st1", "num2": "st1"}),
     (None,
      None,
      None,
-     _features_st("st1"),
-     _features_st("st1", "def_st", "def_st", "def_st")),
+     {"cat1": "st1"},
+     {"cat1": "st1", "cat2": "def_st", "num1": "def_st", "num2": "def_st"}),
     (None,
      None,
      None,
-     _features_st(None, _custom_stattest),
-     _features_st("def_st", _custom_stattest, "def_st", "def_st")),
+     {"cat2": _custom_stattest},
+     {"cat1": "def_st", "cat2": _custom_stattest, "num1": "def_st", "num2": "def_st"}),
     (None,
      None,
      None,
-     _features_st(_another_stattest, None, _custom_stattest),
-     _features_st(_another_stattest, "def_st", _custom_stattest, "def_st")),
+     {"cat1": _custom_stattest, "num1": _another_stattest},
+     {"cat1": _custom_stattest, "cat2": "def_st", "num1": _another_stattest, "num2": "def_st"}),
     (None,
      "st1",
      None,
      None,
-     _features_st("st1", "st1", "def_st", "def_st")),
+     {"cat1": "st1", "cat2": "st1", "num1": "def_st", "num2": "def_st"}),
     (None,
      _custom_stattest,
      None,
      None,
-     _features_st(_custom_stattest, _custom_stattest, "def_st", "def_st")),
+     {"cat1": _custom_stattest, "cat2": _custom_stattest, "num1": "def_st", "num2": "def_st"}),
     (None,
      None,
      _custom_stattest,
      None,
-     _features_st("def_st", "def_st", _custom_stattest, _custom_stattest)),
+     {"cat1": "def_st", "cat2": "def_st", "num1": _custom_stattest, "num2": _custom_stattest}),
     ("st1",
      "st2",
      None,
      None,
-     _features_st("st2", "st2", "st1", "st1")),
+     {"cat1": "st2", "cat2": "st2", "num1": "st1", "num2": "st1"}),
     ("st1",
      None,
      "st2",
      None,
-     _features_st("st1", "st1", "st2", "st2")),
-    (_custom_stattest,
-     "st1",
-     None,
-     None,
-     _features_st("st1", "st1", _custom_stattest, _custom_stattest)),
+     {"cat1": "st1", "cat2": "st1", "num1": "st2", "num2": "st2"}),
     ("st1",
      None,
      None,
-     _features_st(None, "st2", None, "st2"),
-     _features_st("st1", "st2", "st1", "st2")),
+     {"cat2": "st2", "num2": "st2"},
+     {"cat1": "st1", "cat2": "st2", "num1": "st1", "num2": "st2"}),
     ("st1",
      "st2",
      "st3",
-     _features_st(None, "st4", None, "st5"),
-     _features_st("st2", "st4", "st3", "st5")),
+     {"cat2": "st4", "num2": "st5"},
+     {"cat1": "st2", "cat2": "st4", "num1": "st3", "num2": "st5"}),
 ])
 def test_stattest_function_valid_v2(global_st, cat_st, num_st, per_feature_st, expected):
+    features_with_types = {"cat1": "cat", "cat2": "cat", "num1": "num", "num2": "num"}
     options = DataDriftOptions(all_features_stattest=global_st,
                                cat_features_stattest=cat_st,
                                num_features_stattest=num_st,
                                per_feature_stattest=per_feature_st)
     for feature, expected_func in expected.items():
-        assert options.get_feature_stattest_func(feature, _features[feature], "def_st") == expected_func
+        assert options.get_feature_stattest_func(feature, features_with_types[feature], "def_st") == expected_func
 
 
 @pytest.mark.parametrize("feature_st,global_st,cat_st,num_st,per_feature_st", (
