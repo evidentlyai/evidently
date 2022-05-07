@@ -4,6 +4,7 @@ import argparse
 import json
 import os
 import time
+from typing import Dict
 
 import numpy as np
 import pandas as pd
@@ -25,16 +26,12 @@ class NumpyEncoder(json.JSONEncoder):
         return obj
 
 
-def main(csv_file_path, sleep_timeout: int) -> None:
-    print("Start send the data to the monitoring service one by one.")
-    new_data = pd.read_csv(csv_file_path)
+def send_data_row(dataset_name: str, data: Dict) -> None:
+    print(f"Send a data item for {dataset_name}")
 
-    for idx in range(0, new_data.shape[0]):
-        data = new_data.iloc[idx].to_dict()
-        print("Send a data item")
-
+    try:
         response = requests.post(
-            "http://localhost:5000/iterate",
+            f"http://localhost:8085/iterate/{dataset_name}",
             data=json.dumps([data], cls=NumpyEncoder),
             headers={"content-type": "application/json"},
         )
@@ -48,6 +45,33 @@ def main(csv_file_path, sleep_timeout: int) -> None:
                 f"Reason: {response.reason}, error text: {response.text}"
             )
 
+    except requests.exceptions.ConnectionError as error:
+        print(f"Cannot reach a metrics application, error: {error}, data: {data}")
+
+
+def main(sleep_timeout: int) -> None:
+    datasets_path = os.path.abspath("datasets")
+    if not os.path.exists(datasets_path):
+        exit("Cannot find datasets, try to run run_example.py script for initial setup")
+
+    print(
+        f"Get production data from {datasets_path} and send the data to monitoring service each {args.timeout} seconds"
+    )
+    datasets = {}
+    max_index = 0
+
+    for dataset_name in os.listdir(datasets_path):
+        production_data_path = os.path.join(datasets_path, dataset_name, "production.csv")
+        new_data = pd.read_csv(production_data_path)
+        datasets[dataset_name] = new_data
+        max_index = max(max_index, new_data.shape[0])
+
+    for idx in range(0, max_index):
+        for dataset_name, dataset in datasets.items():
+            dataset_size = dataset.shape[0]
+            data = dataset.iloc[idx % dataset_size].to_dict()
+            send_data_row(dataset_name, data)
+
         print(f"Wait {sleep_timeout} seconds till the next try.")
         time.sleep(sleep_timeout)
 
@@ -60,12 +84,8 @@ if __name__ == "__main__":
         "-t",
         "--timeout",
         type=float,
-        default=10,
+        default=2,
         help="Sleep timeout between data send tries in seconds.",
     )
     args = parser.parse_args()
-    production_data_file = os.path.abspath("production.csv")
-    print(
-        f"Get production data from {production_data_file} and send it to monitoring service each {args.timeout} seconds"
-    )
-    main(production_data_file, args.timeout)
+    main(args.timeout)

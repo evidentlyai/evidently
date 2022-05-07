@@ -4,12 +4,12 @@ FROM python:3.8-slim-buster
 
 WORKDIR /app
 
-COPY app_requirements.txt requirements.txt
+COPY metrics_app/requirements.txt requirements.txt
 
 RUN pip3 install -r requirements.txt
 
 RUN pip3 install evidently
 
-COPY . .
+COPY metrics_app .
 
-CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0"]
+CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0", "--port=8085"]

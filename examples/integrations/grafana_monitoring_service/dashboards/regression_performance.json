@@ -19,15 +19,14 @@
     ]
   },
   "editable": true,
-  "gnetId": null,
+  "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 4,
-  "iteration": 1644862058722,
+  "iteration": 1651157972098,
   "links": [],
+  "liveNow": false,
   "panels": [
     {
       "collapsed": false,
-      "datasource": null,
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -40,7 +39,10 @@
       "type": "row"
     },
     {
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -81,11 +83,15 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.3.6",
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "exemplar": true,
-          "expr": "evidently:regression_performance:quality{dataset=\"current\", metric=\"mean_error\"}",
+          "expr": "evidently:regression_performance:quality{dataset=\"current\", metric=\"mean_error\", dataset_name=\"${dataset_name:raw}\"}",
           "interval": "",
           "legendFormat": "ME",
           "refId": "A"
@@ -95,7 +101,10 @@
       "type": "stat"
     },
     {
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -136,11 +145,15 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.3.6",
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "exemplar": true,
-          "expr": "evidently:regression_performance:quality{dataset=\"current\", metric=\"mean_abs_error\"}",
+          "expr": "evidently:regression_performance:quality{dataset=\"current\", metric=\"mean_abs_error\", dataset_name=\"${dataset_name:raw}\"}",
           "interval": "",
           "legendFormat": "ME",
           "refId": "A"
@@ -150,7 +163,10 @@
       "type": "stat"
     },
     {
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -191,11 +207,15 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.1.5",
+      "pluginVersion": "8.3.6",
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "exemplar": true,
-          "expr": "evidently:regression_performance:quality{dataset=\"current\", metric=\"mean_abs_perc_error\"}",
+          "expr": "evidently:regression_performance:quality{dataset=\"current\", metric=\"mean_abs_perc_error\", dataset_name=\"${dataset_name:raw}\"}",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -205,7 +225,10 @@
       "type": "stat"
     },
     {
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -275,23 +298,35 @@
       },
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "exemplar": true,
-          "expr": "evidently:regression_performance:quality{dataset=\"current\", metric=\"mean_error\"}",
+          "expr": "evidently:regression_performance:quality{dataset=\"current\", metric=\"mean_error\", dataset_name=\"${dataset_name:raw}\"}",
           "interval": "",
           "legendFormat": "ME",
           "refId": "A"
         },
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "exemplar": true,
-          "expr": "evidently:regression_performance:quality{dataset=\"current\", metric=\"mean_abs_error\"}",
+          "expr": "evidently:regression_performance:quality{dataset=\"current\", metric=\"mean_abs_error\", dataset_name=\"${dataset_name:raw}\"}",
           "hide": false,
           "interval": "",
           "legendFormat": "MAE",
           "refId": "B"
         },
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "exemplar": true,
-          "expr": "evidently:regression_performance:quality{dataset=\"current\", metric=\"mean_abs_perc_error\"}",
+          "expr": "evidently:regression_performance:quality{dataset=\"current\", metric=\"mean_abs_perc_error\", dataset_name=\"${dataset_name:raw}\"}",
           "hide": false,
           "interval": "",
           "legendFormat": "MAPE",
@@ -303,7 +338,6 @@
     },
     {
       "collapsed": false,
-      "datasource": null,
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -316,7 +350,10 @@
       "type": "row"
     },
     {
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -389,23 +426,35 @@
       "repeatDirection": "h",
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "exemplar": true,
-          "expr": "evidently:regression_performance:feature_error_bias{feature=\"${feature:raw}\", metric=\"current_over\"}",
+          "expr": "evidently:regression_performance:feature_error_bias{feature=\"${feature:raw}\", metric=\"current_over\", dataset_name=\"${dataset_name:raw}\"}",
           "interval": "",
-          "legendFormat": "Overperformance",
+          "legendFormat": "Overestimation",
           "refId": "A"
         },
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "exemplar": true,
-          "expr": "evidently:regression_performance:feature_error_bias{feature=\"${feature:raw}\", metric=\"current_under\"}",
+          "expr": "evidently:regression_performance:feature_error_bias{feature=\"${feature:raw}\", metric=\"current_under\", dataset_name=\"${dataset_name:raw}\"}",
           "hide": false,
           "interval": "",
-          "legendFormat": "Underperformance",
+          "legendFormat": "Underestimation",
           "refId": "B"
         },
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "exemplar": true,
-          "expr": "evidently:regression_performance:feature_error_bias{feature=\"${feature:raw}\", metric=\"current_majority\"}",
+          "expr": "evidently:regression_performance:feature_error_bias{feature=\"${feature:raw}\", metric=\"current_majority\", dataset_name=\"${dataset_name:raw}\"}",
           "hide": false,
           "interval": "",
           "legendFormat": "Majority",
@@ -417,13 +466,38 @@
     }
   ],
   "refresh": false,
-  "schemaVersion": 30,
+  "schemaVersion": 34,
   "style": "dark",
   "tags": [],
   "templating": {
     "list": [
       {
-        "allValue": null,
+        "current": {
+          "selected": true,
+          "text": "bike_other",
+          "value": "bike_other"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
+        },
+        "definition": "label_values(dataset_name)",
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "name": "dataset_name",
+        "options": [],
+        "query": {
+          "query": "label_values(dataset_name)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
         "current": {
           "selected": true,
           "text": [
@@ -433,13 +507,13 @@
             "$__all"
           ]
         },
-        "datasource": "Prometheus",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
+        },
         "definition": "label_values(evidently:regression_performance:feature_error_bias, feature)",
-        "description": null,
-        "error": null,
         "hide": 0,
         "includeAll": true,
-        "label": null,
         "multi": true,
         "name": "feature",
         "options": [],
@@ -456,12 +530,13 @@
     ]
   },
   "time": {
-    "from": "2022-02-14T17:42:52.719Z",
-    "to": "2022-02-14T18:21:06.642Z"
+    "from": "now-5m",
+    "to": "now"
   },
   "timepicker": {},
   "timezone": "",
-  "title": "Regression Performance",
+  "title": "Evidently Regression Performance Dashboard",
   "uid": "-GLqhe-nz",
-  "version": 2
+  "version": 3,
+  "weekStart": ""
 }
