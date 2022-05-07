@@ -2,9 +2,9 @@
 # coding: utf-8
 from typing import Dict, Optional
 
+from dataclasses import dataclass
 import pandas as pd
 import numpy as np
-from dataclasses import dataclass
 from scipy.stats import probplot
 
 from evidently import ColumnMapping
@@ -244,9 +244,9 @@ def _error_cat_feature_bias(dataset, feature_name, err_quantiles: ErrorWithQuant
 
     return FeatureBias(
         feature_type="cat",
-        majority=float(ref_overal_value),
-        under=float(ref_under_value),
-        over=float(ref_over_value),
+        majority=ref_overal_value,
+        under=ref_under_value,
+        over=ref_over_value,
         range=float(ref_range_value),
     )
 

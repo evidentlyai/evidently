@@ -1,15 +1,15 @@
 import numpy as np
 import pandas as pd
 
+import pytest
+from pytest import approx
+
 from evidently.analyzers.utils import DatasetColumns
 from evidently.analyzers.utils import DatasetUtilityColumns
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceAnalyzer
 from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceMetrics
 from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceAnalyzerResults
-
-import pytest
-from pytest import approx
 
 
 @pytest.fixture
@@ -142,7 +142,7 @@ def analyzer() -> RegressionPerformanceAnalyzer:
                     "numeric_feature_1": [10, 10, 10, 10],
                     "numeric_feature_2": [2, 2, 3, 10],
                     "category_feature_1": [1, 1, 1, 1],
-                    "category_feature_2": [1, 2, 3, 4],
+                    "category_feature_2": ["v1", "v2", "v3", "v4"],
                 }
             ),
             pd.DataFrame(
@@ -152,7 +152,7 @@ def analyzer() -> RegressionPerformanceAnalyzer:
                     "numeric_feature_1": [10, 10],
                     "numeric_feature_2": [2, 4],
                     "category_feature_1": [1, 1],
-                    "category_feature_2": [1, 2],
+                    "category_feature_2": ["v1", "v2"],
                 }
             ),
             ColumnMapping(
@@ -244,24 +244,24 @@ def analyzer() -> RegressionPerformanceAnalyzer:
                     },
                     "category_feature_1": {
                         "feature_type": "cat",
-                        "ref_majority": 1.0,
-                        "ref_under": 1.0,
-                        "ref_over": 1.0,
+                        "ref_majority": 1,
+                        "ref_under": 1,
+                        "ref_over": 1,
                         "ref_range": 0.0,
-                        "current_majority": 1.0,
-                        "current_under": 1.0,
-                        "current_over": 1.0,
+                        "current_majority": 1,
+                        "current_under": 1,
+                        "current_over": 1,
                         "current_range": 0.0,
                     },
                     "category_feature_2": {
                         "feature_type": "cat",
-                        "ref_majority": 4.0,
-                        "ref_under": 3.0,
-                        "ref_over": 2.0,
+                        "ref_majority": "v4",
+                        "ref_under": "v3",
+                        "ref_over": "v2",
                         "ref_range": 1.0,
-                        "current_majority": 2.0,
-                        "current_under": 1.0,
-                        "current_over": 2.0,
+                        "current_majority": "v2",
+                        "current_under": "v1",
+                        "current_over": "v2",
                         "current_range": 1.0,
                     },
                 },
