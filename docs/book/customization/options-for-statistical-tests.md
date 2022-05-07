@@ -6,13 +6,18 @@ description: You can modify the statistical tests used to calculate Data and Tar
 
 ## Available Options
 
-- `feature_stattest_func` (default: `None`): define the Statistical Test for features in the DataDrift Dashboard or Profile:
+- (deprecated)`feature_stattest_func` (default: `None`): define the Statistical Test for features in the DataDrift Dashboard or Profile:
   - `None` - use default Statistical Tests for all features (based on internal logic)
   - You can define a Statistical Test to be used for all the features in the dataset:
     - `str` - the name of StatTest to use across all features (see the available names below)
     - `Callable[[pd.Series, pd.Series, str, float], Tuple[float, bool]]` - custom StatTest function added (see the requirements for the custom StatTest function below)
     - `StatTest` - an instance of `StatTest`
-  - You can define a Statistical Test to be used for individual features by passing a `dict` object where the key is a feature name and the value is one from the previous options (`str`, `Callable` or `StatTest`)  
+  - You can define a Statistical Test to be used for individual features by passing a `dict` object where the key is a feature name and the value is one from the previous options (`str`, `Callable` or `StatTest`)
+  - **Deprecated:** Use `all_features_stattest` or `per_feature_statttest` options.
+- `all_features_stattest`(default: `None`): defines a custom statistical test for all features in DataDrift Dashboard or Profile.
+- `cat_features_stattest` (default: `None`): defines a custom statistical test for categorical features in DataDrift Dashboard or Profile.
+- `num_features_stattest` (default: `None`): defines a custom statistical test for numerical features in DataDrift Dashboard or Profile.
+- `per_feature_stattest` (default: `None`): defines a custom statistical test per feature in DataDrift Dashboard or Profile as `dict` object where key is feature name and values is statistical test. 
 - `cat_target_stattest_func` (default: `None`): defines a custom statistical test to detect target drift in the Categorical Target Drift report. It follows the same logic as the `feature_stattest_func`, but without the `dict` option. 
 - `num_target_stattest_func` (default: `None`): defines a custom statistical test to detect target drift in the Numerical Target Drift report. It follows the same logic as the `feature_stattest_func`, but without the `dict` option. 
 
