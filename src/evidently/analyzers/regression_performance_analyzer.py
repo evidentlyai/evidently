@@ -226,13 +226,17 @@ def _error_num_feature_bias(dataset, feature_name, err_quantiles: ErrorWithQuant
     )
 
 
+def _stable_value_counts(series: pd.Series):
+    return series.value_counts().reindex(pd.unique(series))
+
+
 def _error_cat_feature_bias(dataset, feature_name, err_quantiles: ErrorWithQuantiles) -> FeatureBias:
     error = err_quantiles.error
     quantile_5 = err_quantiles.quantile_5
     quantile_95 = err_quantiles.quantile_95
-    ref_overal_value = dataset[feature_name].value_counts().idxmax()
-    ref_under_value = dataset[error <= quantile_5][feature_name].value_counts().idxmax()
-    ref_over_value = dataset[error >= quantile_95][feature_name].value_counts().idxmax()
+    ref_overal_value = _stable_value_counts(dataset[feature_name]).idxmax()
+    ref_under_value = _stable_value_counts(dataset[error <= quantile_5][feature_name]).idxmax()
+    ref_over_value = _stable_value_counts(dataset[error >= quantile_95][feature_name]).idxmax()
     if (
         (ref_overal_value != ref_under_value)
         or (ref_over_value != ref_overal_value)

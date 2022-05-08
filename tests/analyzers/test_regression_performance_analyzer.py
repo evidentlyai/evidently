@@ -255,11 +255,11 @@ def analyzer() -> RegressionPerformanceAnalyzer:
                     },
                     "category_feature_2": {
                         "feature_type": "cat",
-                        "ref_majority": "v4",
+                        "ref_majority": "v1",
                         "ref_under": "v3",
                         "ref_over": "v2",
                         "ref_range": 1.0,
-                        "current_majority": "v2",
+                        "current_majority": "v1",
                         "current_under": "v1",
                         "current_over": "v2",
                         "current_range": 1.0,
