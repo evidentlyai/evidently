@@ -43,10 +43,6 @@ The example includes several pre-built dashboards to display Evidently reports i
 
 ![](../.gitbook/assets/grafana\_regression\_1-min.png)
 
-We plan to add more pre-built dashboards in the future. 
-
-You can also read the [release blog post](https://evidentlyai.com/blog/evidently-and-grafana-ml-monitoring-live-dashboards).
-
 ## 4. Categorical Target Drift Dashboard
 
 ![](../.gitbook/assets/grafana_cat_target_1-min.png)
@@ -57,3 +53,7 @@ You can also read the [release blog post](https://evidentlyai.com/blog/evidently
 
 Go to example:
 {% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/integrations/grafana_monitoring_service" %}
+
+We plan to add more pre-built dashboards in the future. 
+
+You can also read the [release blog post](https://evidentlyai.com/blog/evidently-and-grafana-ml-monitoring-live-dashboards).
