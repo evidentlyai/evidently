@@ -25,13 +25,13 @@ You can use this same stack for ML monitoring. In this case, Evidently provides 
 **An integration example is available as a Docker container:**
 {% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/integrations/grafana_monitoring_service" %}
 
-Follow the readme to install and modify the example to adapt it to your use case.
+It contains a script that will spin up the example locally. Follow the readme to install and modify the example to adapt it to your use case.
 
-It contains pre-built dashboards to display Evidently reports in the Grafana interface. You can customize and modify dashboards to your needs.
+The example includes several pre-built dashboards to display Evidently reports in the Grafana interface. You can customize and modify dashboards to your needs. The example also shows how you can set up several dashboards to monitor multiple models, and switch between the views.
 
 ## 1. Data Drift Dashboard
 
-![](../.gitbook/assets/grafana\_dashboard.jpg)
+![](../.gitbook/assets/grafana\grafana_data_drift_1-min.png)
 
 ## 2. Classification Performance Dashboard
 
@@ -43,7 +43,17 @@ It contains pre-built dashboards to display Evidently reports in the Grafana int
 
 ![](../.gitbook/assets/grafana\_regression\_1-min.png)
 
+## 4. Categorical Target Drift Dashboard
+
+![](../.gitbook/assets/grafana_cat_target_1-min.png)
+
+## 5. Numerical Target Drift Dashboard
+
+![](../.gitbook/assets/grafana_num_target_1-min.png)
+
+Go to example:
+{% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/integrations/grafana_monitoring_service" %}
+
 We plan to add more pre-built dashboards in the future. 
 
 You can also read the [release blog post](https://evidentlyai.com/blog/evidently-and-grafana-ml-monitoring-live-dashboards).
-
