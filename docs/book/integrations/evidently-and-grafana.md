@@ -31,7 +31,7 @@ The example includes several pre-built dashboards to display Evidently reports i
 
 ## 1. Data Drift Dashboard
 
-![](../.gitbook/assets/grafana\grafana_data_drift_1-min.png)
+![](../.gitbook/assets/grafana\_data\_drift\_1-min.png)
 
 ## 2. Classification Performance Dashboard
 
