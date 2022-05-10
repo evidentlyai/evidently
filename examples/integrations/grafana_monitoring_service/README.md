@@ -56,7 +56,7 @@ pip install -r requirements.txt
 ./run_example.py
 ```
 This will:
-- download and prepare test data - `bike` and `kddcup99` on the first run.
+- download and prepare the test data - `bike` and `kddcup99` on the first run.
 - run Prometheus, Grafana, and Evidently monitoring service in Docker
 
 The services will be available in your system: 
@@ -64,21 +64,21 @@ The services will be available in your system:
   - **Prometheus** at port 9090. To access Prometheus web interface, go to your browser and open: http://localhost:9090/
   - **Grafana** at port 3000. To access Grafana web interface, go to your browser and open: http://localhost:3000/
 
-- send production data from tests datasets rows to Evidently monitoring service
+- send the production data from the test datasets to the Evidently monitoring service (row by row)
 
 
 6. **Explore the dashboard**.
  
 Go to the browser and access the Grafana dashboard at http://localhost:3000. At first, you will be asked for login and password. Both are `admin`. 
 
-To see the monitoring dashboard in Grafana interface, click "General" and navigate to the chosen dashboard (e.g. "Evidently Data Drift").
+To see the monitoring dashboard in the Grafana interface, click "General" and navigate to the chosen dashboard (e.g. "Evidently Data Drift").
 
 
 7. **Stop the example**.
 
-To stop send data process, cansel the example script execution (press CTRL-C).
+To stop the process of sending data, cancel the execution of the example script (press CTRL-C).
 
-If Docker containers were not stopped after that, run a command:
+If the Docker containers were not stopped after that, run a command:
 
 ```bash
 docker compose down
@@ -86,7 +86,7 @@ docker compose down
 
 ## How to customize the Grafana Dashboard view 
 
-We rely on **existing Grafana functionality** to visualize the metrics. We pre-built several dashboards to organize how metrics are displayed. You can use them as a starting point for Data Drift, Classification Performance or Regression Performance monitoring. 
+We rely on the **existing Grafana functionality** to visualize the metrics. We pre-built several dashboards to organize how metrics are displayed. You can use them as a starting point for Data Drift, Target Drift, Classification Performance or Regression Performance monitoring. 
 
 The Grafana Dashboard view is determined by the JSON config. In our example, each config is stored in the examples/integrations/grafana_monitoring_service folder. For example, here is the one for the Data Drift Dashboard: https://github.com/evidentlyai/evidently/blob/main/examples/integrations/grafana_monitoring_service/dashboards/data_drift.json
 
