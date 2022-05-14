@@ -31,14 +31,11 @@ class NumDataDriftMetrics:
 def _compute_correlation(
         reference_data: pd.DataFrame,
         current_data: pd.DataFrame,
-        main_column: Optional[str],
+        main_column: str,
         num_columns: List[str],
         feature_type: str,
         stattest: StatTest
 ) -> Optional[NumDataDriftMetrics]:
-    if main_column is None:
-        return None
-
     if not pd.api.types.is_numeric_dtype(reference_data[main_column]) or \
             not pd.api.types.is_numeric_dtype(current_data[main_column]):
 
@@ -136,12 +133,25 @@ class NumTargetDriftAnalyzer(Analyzer):
         data_drift_options = self.options_provider.get(DataDriftOptions)
 
         feature_type = "num"
-        test = get_stattest(data_drift_options.num_target_stattest_func or "ks", feature_type)
-        result.target_metrics = _compute_correlation(
-            reference_data, current_data, target_column, columns.num_feature_names, feature_type, test
-        )
-        result.prediction_metrics = _compute_correlation(
-            reference_data, current_data, prediction_column, columns.num_feature_names, feature_type, test
-        )
+        if target_column is not None:
+            test = get_stattest(reference_data[target_column],
+                                current_data[target_column],
+                                feature_type,
+                                data_drift_options.num_target_stattest_func)
+            result.target_metrics = _compute_correlation(
+                reference_data, current_data, target_column, columns.num_feature_names, feature_type, test
+            )
+        else:
+            result.target_metrics = None
+        if prediction_column is not None:
+            test = get_stattest(reference_data[prediction_column],
+                                current_data[prediction_column],
+                                feature_type,
+                                data_drift_options.num_target_stattest_func)
+            result.prediction_metrics = _compute_correlation(
+                reference_data, current_data, prediction_column, columns.num_feature_names, feature_type, test
+            )
+        else:
+            result.prediction_metrics = None
 
         return result

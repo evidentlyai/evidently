@@ -55,21 +55,21 @@ def _another_stattest():
 
 
 @pytest.mark.parametrize("feature_func,expected", [
-    (None, {"feature1": "def_st", "feature2": "def_st"}),
+    (None, {"feature1": None, "feature2": None}),
     ("st1", {"feature1": "st1", "feature2": "st1"}),
-    ({"feature1": _custom_stattest}, {"feature1": _custom_stattest, "feature2": "def_st"}),
-    ({"feature2": _custom_stattest}, {"feature1": "def_st", "feature2": _custom_stattest}),
+    ({"feature1": _custom_stattest}, {"feature1": _custom_stattest, "feature2": None}),
+    ({"feature2": _custom_stattest}, {"feature1": None, "feature2": _custom_stattest}),
     ({"feature1": _another_stattest, "feature2": _custom_stattest},
      {"feature1": _another_stattest, "feature2": _custom_stattest}),
-    ({"feature1": "st1"}, {"feature1": "st1", "feature2": "def_st"}),
-    ({"feature2": "st2"}, {"feature1": "def_st", "feature2": "st2"}),
+    ({"feature1": "st1"}, {"feature1": "st1", "feature2": None}),
+    ({"feature2": "st2"}, {"feature1": None, "feature2": "st2"}),
     ({"feature1": "st1", "feature2": "st2"}, {"feature1": "st1", "feature2": "st2"}),
     ({"feature1": _another_stattest, "feature2": "st2"}, {"feature1": _another_stattest, "feature2": "st2"}),
 ])
 def test_stattest_function_valid(feature_func, expected):
     options = DataDriftOptions(feature_stattest_func=feature_func)
     for feature, expected_func in expected.items():
-        assert options.get_feature_stattest_func(feature, "cat", "def_st") == expected_func
+        assert options.get_feature_stattest_func(feature, "cat") == expected_func
 
 
 @pytest.mark.parametrize("global_st,cat_st,num_st,per_feature_st,expected", [
@@ -77,7 +77,7 @@ def test_stattest_function_valid(feature_func, expected):
      None,
      None,
      None,
-     {"cat1": "def_st", "cat2": "def_st", "num1": "def_st", "num2": "def_st"}),
+     {"cat1": None, "cat2": None, "num1": None, "num2": None}),
     ("st1",
      None,
      None,
@@ -87,32 +87,32 @@ def test_stattest_function_valid(feature_func, expected):
      None,
      None,
      {"cat1": "st1"},
-     {"cat1": "st1", "cat2": "def_st", "num1": "def_st", "num2": "def_st"}),
+     {"cat1": "st1", "cat2": None, "num1":None, "num2": None}),
     (None,
      None,
      None,
      {"cat2": _custom_stattest},
-     {"cat1": "def_st", "cat2": _custom_stattest, "num1": "def_st", "num2": "def_st"}),
+     {"cat1": None, "cat2": _custom_stattest, "num1": None, "num2": None}),
     (None,
      None,
      None,
      {"cat1": _custom_stattest, "num1": _another_stattest},
-     {"cat1": _custom_stattest, "cat2": "def_st", "num1": _another_stattest, "num2": "def_st"}),
+     {"cat1": _custom_stattest, "cat2": None, "num1": _another_stattest, "num2": None}),
     (None,
      "st1",
      None,
      None,
-     {"cat1": "st1", "cat2": "st1", "num1": "def_st", "num2": "def_st"}),
+     {"cat1": "st1", "cat2": "st1", "num1": None, "num2": None}),
     (None,
      _custom_stattest,
      None,
      None,
-     {"cat1": _custom_stattest, "cat2": _custom_stattest, "num1": "def_st", "num2": "def_st"}),
+     {"cat1": _custom_stattest, "cat2": _custom_stattest, "num1": None, "num2": None}),
     (None,
      None,
      _custom_stattest,
      None,
-     {"cat1": "def_st", "cat2": "def_st", "num1": _custom_stattest, "num2": _custom_stattest}),
+     {"cat1": None, "cat2": None, "num1": _custom_stattest, "num2": _custom_stattest}),
     ("st1",
      "st2",
      None,
@@ -141,7 +141,7 @@ def test_stattest_function_valid_v2(global_st, cat_st, num_st, per_feature_st, e
                                num_features_stattest=num_st,
                                per_feature_stattest=per_feature_st)
     for feature, expected_func in expected.items():
-        assert options.get_feature_stattest_func(feature, features_with_types[feature], "def_st") == expected_func
+        assert options.get_feature_stattest_func(feature, features_with_types[feature]) == expected_func
 
 
 @pytest.mark.parametrize("feature_st,global_st,cat_st,num_st,per_feature_st", (
@@ -159,7 +159,7 @@ def test_stattest_function_deprecated(feature_st, global_st, cat_st, num_st, per
                                num_features_stattest=num_st,
                                per_feature_stattest=per_feature_st)
     with pytest.raises(ValueError):
-        options.get_feature_stattest_func("f1", "cat", "def_st")
+        options.get_feature_stattest_func("f1", "cat")
 
 
 @pytest.mark.parametrize("nbinsx,expected", [
