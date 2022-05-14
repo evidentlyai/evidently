@@ -39,9 +39,16 @@ def test_get_stattest_valid_resolve(stattest_func, feature_type, expected):
 @pytest.mark.parametrize(
     "reference_data, current_data, feature_type, expected",
     [
-        (pd.Series([1.0] * 10), pd.Series([1.0] * 10), "num", ks_stat_test),
+        (pd.Series([1.0] * 10), pd.Series([1.0] * 10), "num", z_stat_test),
+        (pd.Series([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]), 
+         pd.Series([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]), "num", ks_stat_test),
+        (pd.Series([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] * 1000), 
+         pd.Series([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] * 1000), "num", wasserstein_stat_test),
+        (pd.Series([1, 2, 3, 4, 5] * 1000), 
+         pd.Series([1, 2, 3, 4, 5] * 1000), "num", jensenshannon_stat_test),
         (pd.Series(["a", "b", "c"] * 10), pd.Series(["a", "b", "c"] * 10), "cat", chi_stat_test),
         (pd.Series(["a", "b"] * 10), pd.Series(["a", "b"] * 10), "cat", z_stat_test),
+        (pd.Series(["a", "b"] * 10000), pd.Series(["a", "b"] * 10000), "cat", jensenshannon_stat_test),
      ])
 def test_get_default_stattest(reference_data, current_data, feature_type, expected):
     test = get_stattest(reference_data, current_data, feature_type, None)

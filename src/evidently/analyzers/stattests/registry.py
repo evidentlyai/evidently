@@ -29,11 +29,24 @@ def register_stattest(stat_test: StatTest):
 
 
 def _get_default_stattest(reference_data: pd.Series, current_data: pd.Series, feature_type: str) -> StatTest:
-    if feature_type == "num":
-        return stattests.ks_stat_test
-    if feature_type == "cat":
-        labels = set(reference_data) | set(current_data)
-        return stattests.chi_stat_test if len(labels) > 2 else stattests.z_stat_test
+    n_values = reference_data.append(current_data).nunique()
+    if reference_data.shape[0] <= 1000:
+        if feature_type == "num":
+            if n_values <= 5:
+                return stattests.chi_stat_test if n_values > 2 else stattests.z_stat_test
+            elif n_values > 5:
+                return stattests.ks_stat_test
+        elif feature_type == "cat":
+            return stattests.chi_stat_test if n_values > 2 else stattests.z_stat_test
+    elif reference_data.shape[0] > 1000:
+        if feature_type == "num":
+            n_values = reference_data.append(current_data).nunique()
+            if n_values <= 5:
+                return stattests.jensenshannon_stat_test
+            elif n_values > 5:
+                return stattests.wasserstein_stat_test
+        elif feature_type == "cat":
+            return stattests.jensenshannon_stat_test
     raise ValueError(f"Unexpected feature_type {feature_type}")
 
 

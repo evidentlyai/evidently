@@ -117,7 +117,7 @@ def test_small_sample_size_1(analyzer: NumTargetDriftAnalyzer):
 
     result = analyzer.calculate(df1, df2, ColumnMapping())
     assert result.target_metrics.column_name == 'target'
-    assert result.target_metrics.drift == 1.
+    assert result.target_metrics.drift == approx(0.157, abs=1e-3)
     assert np.isnan(result.target_metrics.reference_correlations['target'])
     assert np.isnan(result.target_metrics.current_correlations['target'])
 

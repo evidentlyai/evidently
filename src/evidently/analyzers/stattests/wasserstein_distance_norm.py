@@ -12,7 +12,7 @@ def _wasserstein_distance_norm(
         current_data: pd.Series,
         feature_type: str,
         threshold: float) -> Tuple[float, bool]:
-    """Compute the first Wasserstein distance between two arrays normed by mean value of reference data
+    """Compute the first Wasserstein distance between two arrays normed by std of reference data
     Args:
         reference_data: reference data
         current_data: current data
@@ -22,8 +22,8 @@ def _wasserstein_distance_norm(
         wasserstein_distance_norm: normed Wasserstein distance
         test_result: wether the drift is detected
     """
-    norm = np.mean(reference_data) if np.mean(reference_data) != 0 else 0.0001
-    wd_norm_value = stats.wasserstein_distance(reference_data, current_data) / np.abs(norm)
+    norm = max(np.std(reference_data), 0.001)
+    wd_norm_value = stats.wasserstein_distance(reference_data, current_data) / norm
     return wd_norm_value, wd_norm_value >= threshold
 
 
