@@ -30,16 +30,12 @@ To estimate the **categorical target (prediction) drift**, we compare the distri
 * the number of unique values in the target (n_unique)
 
 For **small data with <= 1000 observations** in the reference dataset:
-* For categorical target with **n_unique <= 5**: [chi-squared test](https://en.wikipedia.org/wiki/Chi-squared\_test).
+* For categorical target with **n_unique > 2**: [chi-squared test](https://en.wikipedia.org/wiki/Chi-squared\_test).
 * For **binary** categorical target (n_unique <= 2), we use the proportion difference test for independent samples based on Z-score.
-
-For **larger data with > 1000 observations** in the reference dataset:
-* For categorical target: [Jensen–Shannon divergence](https://en.wikipedia.org/wiki/Jensen–Shannon_divergence).
-
-* We use the [chi-squared test](https://en.wikipedia.org/wiki/Chi-squared\_test) with 0.95 confidence level to detect if the distribution has changed significantly.
-* If the categorical target is **binary**, we use the proportion difference test for independent samples based on Z-score.
-
 All tests use a 0.95 confidence level by default.
+
+For **larger data with > 1000 observations** in the reference dataset we use [Jensen–Shannon divergence](https://en.wikipedia.org/wiki/Jensen–Shannon_divergence) with threshold 0.1.
+
 
 {% hint style="info" %}
 You can modify the drift detection logic by selecting a statistical test already available in the library, including PSI, K–L divergence, Jensen-Shannon distance, Wasserstein distance. See more details about [available tests](../customization/options-for-statistical-tests.md). You can also set a different confidence level or implement a custom test, by defining [custom options](../customization/options-for-data-target-drift.md). 
