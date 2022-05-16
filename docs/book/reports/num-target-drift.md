@@ -26,12 +26,26 @@ We estimate the drift for the **target** (actual values) and **predictions** in 
 
 If only one of them (either target or predictions) is provided, we build one set of plots. If neither target nor predictions column is available, you will get an error.
 
-To **estimate the numerical target (prediction) drift**, we compare the distribution of the target (prediction) in the two datasets. We use the [two-sample Kolmogorov-Smirnov test](https://en.wikipedia.org/wiki/Kolmogorov%E2%80%93Smirnov\_test) at a 0.95 confidence level to detect if the distribution has changed significantly.
+To **estimate the numerical target (prediction) drift**, we compare the distribution of the target (prediction) in the two datasets. 
+
+There is a default logic to choosing the appropriate statistical test, based on:
+* the number of observations in the reference dataset, 
+* the number of unique values in the feature (n_unique).
+
+For **small data with <= 1000 observations** in the reference dataset:
+* For features with **n_unique > 5**: [two-sample Kolmogorov-Smirnov test](https://en.wikipedia.org/wiki/Kolmogorov%E2%80%93Smirnov\_test).
+* For features with **n_unique <= 5**: [chi-squared test](https://en.wikipedia.org/wiki/Chi-squared\_test).
+
+For **larger data with > 1000 observations** in the reference dataset:
+* For features with **n_unique > 5**: [Wasserstein Distance](https://en.wikipedia.org/wiki/Wasserstein_metric).
+* For features with **n_unique <= 5**: [Jensen–Shannon divergence](https://en.wikipedia.org/wiki/Jensen–Shannon_divergence).
+
+All tests use a 0.95 confidence level by default.
 
 We also calculate the [Pearson correlation](https://en.wikipedia.org/wiki/Pearson\_correlation\_coefficient) between the target (prediction) and each individual feature in the two datasets to detect a **change in the relationship.**
 
 {% hint style="info" %}
-To set a different confidence level or tests you use, you can define [custom options](../customization/options-for-data-target-drift.md).
+You can modify the drift detection logic by selecting a statistical test already available in the library, including PSI, K–L divergence, Jensen-Shannon distance, Wasserstein distance. See more details about [available tests](../customization/options-for-statistical-tests.md). You can also set a different confidence level or implement a custom test, by defining [custom options](../customization/options-for-data-target-drift.md). 
 {% endhint %}
 
 ## How it looks
