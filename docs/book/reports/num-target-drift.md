@@ -30,15 +30,15 @@ To **estimate the numerical target (prediction) drift**, we compare the distribu
 
 There is a default logic to choosing the appropriate statistical test, based on:
 * the number of observations in the reference dataset, 
-* the number of unique values in the feature (n_unique).
+* the number of unique values in the target (n_unique).
 
 For **small data with <= 1000 observations** in the reference dataset:
-* For features with **n_unique > 5**: [two-sample Kolmogorov-Smirnov test](https://en.wikipedia.org/wiki/Kolmogorov%E2%80%93Smirnov\_test).
-* For features with **n_unique <= 5**: [chi-squared test](https://en.wikipedia.org/wiki/Chi-squared\_test).
+* For target with **n_unique > 5**: [two-sample Kolmogorov-Smirnov test](https://en.wikipedia.org/wiki/Kolmogorov%E2%80%93Smirnov\_test).
+* For target with **n_unique <= 5**: [chi-squared test](https://en.wikipedia.org/wiki/Chi-squared\_test).
 
 For **larger data with > 1000 observations** in the reference dataset:
-* For features with **n_unique > 5**: [Wasserstein Distance](https://en.wikipedia.org/wiki/Wasserstein_metric).
-* For features with **n_unique <= 5**: [Jensen–Shannon divergence](https://en.wikipedia.org/wiki/Jensen–Shannon_divergence).
+* For target with **n_unique > 5**: [Wasserstein Distance](https://en.wikipedia.org/wiki/Wasserstein_metric).
+* For target with **n_unique <= 5**: [Jensen–Shannon divergence](https://en.wikipedia.org/wiki/Jensen–Shannon_divergence).
 
 All tests use a 0.95 confidence level by default.
 
