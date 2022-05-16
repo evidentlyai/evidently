@@ -32,9 +32,10 @@ To estimate the **categorical target (prediction) drift**, we compare the distri
 For **small data with <= 1000 observations** in the reference dataset:
 * For categorical target with **n_unique > 2**: [chi-squared test](https://en.wikipedia.org/wiki/Chi-squared\_test).
 * For **binary** categorical target (n_unique <= 2), we use the proportion difference test for independent samples based on Z-score.
+* 
 All tests use a 0.95 confidence level by default.
 
-For **larger data with > 1000 observations** in the reference dataset we use [Jensen–Shannon divergence](https://en.wikipedia.org/wiki/Jensen–Shannon_divergence) with threshold 0.1.
+For **larger data with > 1000 observations** in the reference dataset we use [Jensen–Shannon divergence](https://en.wikipedia.org/wiki/Jensen–Shannon_divergence) with a threshold = 0.1.
 
 
 {% hint style="info" %}
