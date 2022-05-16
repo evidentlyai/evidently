@@ -1,9 +1,10 @@
-from typing import List, Union, Callable, Tuple, Dict
+from typing import List, Union, Callable, Tuple, Dict, Optional
 
 import dataclasses
 
 import pandas as pd
 
+from evidently.analyzers import stattests
 
 StatTestFuncType = Callable[[pd.Series, pd.Series, str, float], Tuple[float, bool]]
 
@@ -27,7 +28,34 @@ def register_stattest(stat_test: StatTest):
     _registered_stat_test_funcs[stat_test.func] = stat_test.name
 
 
-def get_stattest(stattest_func: PossibleStatTestType, feature_type: str) -> StatTest:
+def _get_default_stattest(reference_data: pd.Series, current_data: pd.Series, feature_type: str) -> StatTest:
+    n_values = reference_data.append(current_data).nunique()
+    if reference_data.shape[0] <= 1000:
+        if feature_type == "num":
+            if n_values <= 5:
+                return stattests.chi_stat_test if n_values > 2 else stattests.z_stat_test
+            elif n_values > 5:
+                return stattests.ks_stat_test
+        elif feature_type == "cat":
+            return stattests.chi_stat_test if n_values > 2 else stattests.z_stat_test
+    elif reference_data.shape[0] > 1000:
+        if feature_type == "num":
+            n_values = reference_data.append(current_data).nunique()
+            if n_values <= 5:
+                return stattests.jensenshannon_stat_test
+            elif n_values > 5:
+                return stattests.wasserstein_stat_test
+        elif feature_type == "cat":
+            return stattests.jensenshannon_stat_test
+    raise ValueError(f"Unexpected feature_type {feature_type}")
+
+
+def get_stattest(reference_data: pd.Series,
+                 current_data: pd.Series,
+                 feature_type: str,
+                 stattest_func: Optional[PossibleStatTestType]) -> StatTest:
+    if stattest_func is None:
+        return _get_default_stattest(reference_data, current_data, feature_type)
     if isinstance(stattest_func, StatTest):
         return stattest_func
     if callable(stattest_func) and stattest_func not in _registered_stat_test_funcs:
@@ -42,7 +70,7 @@ def get_stattest(stattest_func: PossibleStatTestType, feature_type: str) -> Stat
     elif isinstance(stattest_func, str):
         stattest_name = stattest_func
     else:
-        raise ValueError(f"Unexpected type of stattest argument ({type(stattest_func)}), exptected: str or Callable")
+        raise ValueError(f"Unexpected type of stattest argument ({type(stattest_func)}), expected: str or Callable")
     funcs = _registered_stat_tests.get(stattest_name, None)
     if funcs is None:
         raise StatTestNotFoundError(stattest_name)

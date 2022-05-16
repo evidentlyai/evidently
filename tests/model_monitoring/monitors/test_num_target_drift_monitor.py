@@ -16,8 +16,8 @@ def test_monitor_id():
 def test_num_target_drift_monitor() -> None:
     reference_data = pd.DataFrame(
         {
-            "target": [1, 2, 2, 4],
-            "prediction": [1, 2, 3, 4],
+            "target": [1, 2, 2, 4, 5, 6],
+            "prediction": [1, 2, 3, 4, 5, 6],
         }
     )
     current_data = pd.DataFrame(
@@ -32,13 +32,13 @@ def test_num_target_drift_monitor() -> None:
     result = collect_metrics_results(evidently_monitoring.metrics())
     assert "num_target_drift:count" in result
     assert result["num_target_drift:count"] == [
-        {"labels": {"dataset": "reference"}, "value": 4},
+        {"labels": {"dataset": "reference"}, "value": 6},
         {"labels": {"dataset": "current"}, "value": 2},
     ]
     assert "num_target_drift:drift" in result
     assert result["num_target_drift:drift"] == [
-        {"labels": {"kind": "prediction"}, "value": approx(0.933, 1e-3)},
-        {"labels": {"kind": "target"}, "value": 0.4},
+        {"labels": {"kind": "prediction"}, "value": approx(0.4285, 1e-3)},
+        {"labels": {"kind": "target"}, "value": approx(0.2142, 1e-3)},
     ]
 
     assert "num_target_drift:current_correlations" in result

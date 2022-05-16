@@ -91,8 +91,7 @@ class DataDriftOptions:
     def get_feature_stattest_func(
             self,
             feature_name: str,
-            feature_type: str,
-            default: PossibleStatTestType) -> PossibleStatTestType:
+            feature_type: str) -> Optional[PossibleStatTestType]:
         if self.feature_stattest_func is not None and any([self.all_features_stattest,
                                                            self.cat_features_stattest,
                                                            self.num_features_stattest,
@@ -107,9 +106,9 @@ class DataDriftOptions:
             if callable(self.feature_stattest_func) or isinstance(self.feature_stattest_func, (StatTest, str)):
                 return self.feature_stattest_func
             if isinstance(self.feature_stattest_func, dict):
-                return self.feature_stattest_func.get(feature_name, default)
-            return default
-        func = default if self.all_features_stattest is None else self.all_features_stattest
+                return self.feature_stattest_func.get(feature_name)
+            return None
+        func = None if self.all_features_stattest is None else self.all_features_stattest
         if feature_type == "cat":
             type_func = self.cat_features_stattest
         elif feature_type == "num":

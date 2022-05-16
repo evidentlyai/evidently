@@ -13,7 +13,6 @@ import pandas as pd
 from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.analyzers.base_analyzer import BaseAnalyzerResult
-from evidently.analyzers.stattests import chi_stat_test, z_stat_test
 from evidently.analyzers.stattests.registry import get_stattest
 from evidently.analyzers.utils import process_columns
 from evidently.options import DataDriftOptions
@@ -133,14 +132,10 @@ class CatTargetDriftAnalyzer(Analyzer):
         current_data = _remove_nans_and_infinities(current_data)
         feature_type = "cat"
         if target_column is not None:
-            if not options.cat_target_stattest_func:
-                target_labels = set(reference_data[target_column]) | set(
-                    current_data[target_column]
-                )
-                target_test = get_stattest(chi_stat_test if len(target_labels) > 2 else z_stat_test, feature_type)
-            else:
-                target_test = get_stattest(options.cat_target_stattest_func, feature_type)
-
+            target_test = get_stattest(reference_data[target_column],
+                                       current_data[target_column],
+                                       feature_type,
+                                       options.cat_target_stattest_func)
             p_value = _compute_statistic(
                 reference_data, current_data, feature_type, target_column, target_test.func
             )
@@ -148,13 +143,10 @@ class CatTargetDriftAnalyzer(Analyzer):
                 column_name=target_column, stattest_name=target_test.display_name, drift=p_value
             )
         if prediction_column is not None:
-            if not options.cat_target_stattest_func:
-                prediction_labels = set(reference_data[prediction_column]) | set(
-                    current_data[prediction_column]
-                )
-                pred_test = get_stattest(chi_stat_test if len(prediction_labels) > 2 else z_stat_test, feature_type)
-            else:
-                pred_test = get_stattest(options.cat_target_stattest_func, feature_type)
+            pred_test = get_stattest(reference_data[prediction_column],
+                                     current_data[prediction_column],
+                                     feature_type,
+                                     options.cat_target_stattest_func)
 
             p_value = _compute_statistic(
                 reference_data, current_data, feature_type, prediction_column, pred_test.func
