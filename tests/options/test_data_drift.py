@@ -2,14 +2,13 @@ import pytest
 from numpy.ma.testutils import approx
 
 from evidently.options import DataDriftOptions
-from evidently.options.data_drift import DEFAULT_THRESHOLD
 
 
 @pytest.mark.parametrize("confidence,expected", [
     (0.1, {"feature1": 0.9, "feature2": 0.9}),
-    ({"feature1": 0.1}, {"feature1": 0.9, "feature2": DEFAULT_THRESHOLD}),
-    ({"feature2": 0.1}, {"feature1": DEFAULT_THRESHOLD, "feature2": 0.9}),
-    ({}, {"feature1": DEFAULT_THRESHOLD, "feature2": DEFAULT_THRESHOLD}),
+    ({"feature1": 0.1}, {"feature1": 0.9, "feature2": None}),
+    ({"feature2": 0.1}, {"feature1": None, "feature2": 0.9}),
+    ({}, {"feature1": None, "feature2": None}),
 ])
 def test_confidence_threshold_valid(confidence, expected):
     options = DataDriftOptions(confidence=confidence)
@@ -19,9 +18,9 @@ def test_confidence_threshold_valid(confidence, expected):
 
 @pytest.mark.parametrize("threshold,expected", [
     (0.1, {"feature1": 0.1, "feature2": 0.1}),
-    ({"feature1": 0.1}, {"feature1": 0.1, "feature2": DEFAULT_THRESHOLD}),
-    ({"feature2": 0.1}, {"feature1": DEFAULT_THRESHOLD, "feature2": 0.1}),
-    ({}, {"feature1": DEFAULT_THRESHOLD, "feature2": DEFAULT_THRESHOLD}),
+    ({"feature1": 0.1}, {"feature1": 0.1, "feature2": None}),
+    ({"feature2": 0.1}, {"feature1": None, "feature2": 0.1}),
+    ({}, {"feature1": None, "feature2": None}),
 ])
 def test_threshold_valid(threshold, expected):
     options = DataDriftOptions(threshold=threshold)
@@ -31,7 +30,7 @@ def test_threshold_valid(threshold, expected):
 
 def test_threshold_default():
     options = DataDriftOptions()
-    assert options.get_threshold("feature") == DEFAULT_THRESHOLD
+    assert options.get_threshold("feature") is None
 
 
 def test_threshold_invalid():

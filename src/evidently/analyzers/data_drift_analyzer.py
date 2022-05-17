@@ -78,10 +78,10 @@ class DataDriftAnalyzer(Analyzer):
                                 current_data[feature_name],
                                 feature_type,
                                 data_drift_options.get_feature_stattest_func(feature_name, feature_type))
-            p_value, drifted = test.func(reference_data[feature_name],
-                                         current_data[feature_name],
-                                         feature_type,
-                                         threshold)
+            p_value, drifted = test(reference_data[feature_name],
+                                    current_data[feature_name],
+                                    feature_type,
+                                    threshold)
             p_values[feature_name] = PValueWithDrift(p_value, drifted)
             current_nbinsx = data_drift_options.get_nbinsx(feature_name)
             features_metrics[feature_name] = DataDriftAnalyzerFeatureMetrics(
@@ -107,7 +107,7 @@ class DataDriftAnalyzer(Analyzer):
                                      feature_cur_data,
                                      feature_type,
                                      data_drift_options.get_feature_stattest_func(feature_name, feature_type))
-            p_value, drifted = stat_test.func(feature_ref_data, feature_cur_data, feature_type, threshold)
+            p_value, drifted = stat_test(feature_ref_data, feature_cur_data, feature_type, threshold)
 
             p_values[feature_name] = PValueWithDrift(p_value, drifted)
 

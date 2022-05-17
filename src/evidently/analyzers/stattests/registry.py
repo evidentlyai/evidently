@@ -15,6 +15,17 @@ class StatTest:
     display_name: str
     func: StatTestFuncType
     allowed_feature_types: List[str]
+    default_threshold: float = 0.05
+
+    def __call__(self,
+                 reference_data: pd.Series,
+                 current_data: pd.Series,
+                 feature_type: str,
+                 threshold: Optional[float]) -> Tuple[float, bool]:
+        return self.func(reference_data,
+                         current_data,
+                         feature_type,
+                         self.default_threshold if threshold is None else threshold)
 
 
 PossibleStatTestType = Union[str, StatTestFuncType, StatTest]

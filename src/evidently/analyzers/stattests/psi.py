@@ -44,7 +44,8 @@ psi_stat_test = StatTest(
     name="psi",
     display_name="PSI",
     func=psi,
-    allowed_feature_types=["cat", "num"]
+    allowed_feature_types=["cat", "num"],
+    default_threshold=0.1,
 )
 
 register_stattest(psi_stat_test)

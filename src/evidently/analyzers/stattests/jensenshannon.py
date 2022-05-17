@@ -33,7 +33,8 @@ jensenshannon_stat_test = StatTest(
     name="jensenshannon",
     display_name="Jensen-Shannon distance",
     func=_jensenshannon,
-    allowed_feature_types=["cat", "num"]
+    allowed_feature_types=["cat", "num"],
+    default_threshold=0.1,
 )
 
 register_stattest(jensenshannon_stat_test)

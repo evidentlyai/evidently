@@ -33,7 +33,8 @@ kl_div_stat_test = StatTest(
     name="kl_div",
     display_name="Kullback-Leibler divergence",
     func=kl_div,
-    allowed_feature_types=["cat", "num"]
+    allowed_feature_types=["cat", "num"],
+    default_threshold=0.1,
 )
 
 register_stattest(kl_div_stat_test)

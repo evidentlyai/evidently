@@ -41,7 +41,7 @@ def _compute_correlation(
 
         raise ValueError(f'Column {main_column} should only contain numerical values.')
 
-    target_p_value = stattest.func(reference_data[main_column], current_data[main_column], feature_type, 0)[0]
+    target_p_value = stattest(reference_data[main_column], current_data[main_column], feature_type, None)[0]
     ref_target_corr = reference_data[num_columns + [main_column]].corr()[main_column]
     curr_target_corr = current_data[num_columns + [main_column]].corr()[main_column]
 
