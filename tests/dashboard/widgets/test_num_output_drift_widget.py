@@ -33,7 +33,7 @@ def test_num_target_drift_widget_analyzer_list(widget: NumOutputDriftWidget) -> 
             ColumnMapping(),
             None,
             BaseWidgetInfo(type="big_graph",
-                           title="Target Drift(K-S p_value): not detected, drift score=0.999961",
+                           title="Target Drift: not detected, drift score=0.999961 (K-S p_value)",
                            size=2),
         ),
         (
@@ -42,7 +42,7 @@ def test_num_target_drift_widget_analyzer_list(widget: NumOutputDriftWidget) -> 
             ColumnMapping(),
             "target",
             BaseWidgetInfo(type="big_graph",
-                           title="Target Drift(K-S p_value): not detected, drift score=0.999961",
+                           title="Target Drift: not detected, drift score=0.999961 (K-S p_value)",
                            size=2),
         ),
         (
@@ -58,7 +58,7 @@ def test_num_target_drift_widget_analyzer_list(widget: NumOutputDriftWidget) -> 
             ColumnMapping(),
             "prediction",
             BaseWidgetInfo(type="big_graph",
-                           title="Prediction Drift(K-S p_value): not detected, drift score=0.999961",
+                           title="Prediction Drift: not detected, drift score=0.999961 (K-S p_value)",
                            size=2),
         ),
         (

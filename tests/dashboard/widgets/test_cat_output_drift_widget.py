@@ -33,7 +33,7 @@ def test_cat_output_widget_analyzer_list(widget: CatOutputDriftWidget) -> None:
             ColumnMapping(),
             None,
             BaseWidgetInfo(type="big_graph",
-                           title="Target Drift(chi-square p_value): detected, drift score=0.0",
+                           title="Target Drift: detected, drift score=0.0 (chi-square p_value)",
                            size=2),
         ),
         (
@@ -42,7 +42,7 @@ def test_cat_output_widget_analyzer_list(widget: CatOutputDriftWidget) -> None:
             ColumnMapping(),
             "target",
             BaseWidgetInfo(type="big_graph",
-                           title="Target Drift(chi-square p_value): detected, drift score=0.0",
+                           title="Target Drift: detected, drift score=0.0 (chi-square p_value)",
                            size=2),
         ),
         (
@@ -58,7 +58,7 @@ def test_cat_output_widget_analyzer_list(widget: CatOutputDriftWidget) -> None:
             ColumnMapping(),
             "prediction",
             BaseWidgetInfo(type="big_graph",
-                           title="Prediction Drift(chi-square p_value): detected, drift score=0.0",
+                           title="Prediction Drift: detected, drift score=0.0 (chi-square p_value)",
                            size=2),
         ),
         (
