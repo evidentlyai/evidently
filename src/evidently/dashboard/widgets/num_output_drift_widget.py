@@ -100,7 +100,7 @@ class NumOutputDriftWidget(Widget):
         output_drift_json = json.loads(output_distr.to_json())
 
         return BaseWidgetInfo(
-            title=f"{self.kind.title()} Drift({stattest_name}): {output_sim_test}, drift score={round(drift_score, 6)}",
+            title=f"{self.kind.title()} Drift: {output_sim_test}, drift score={round(drift_score, 6)} ({stattest_name})",
             type="big_graph",
             details="",
             alerts=[],
