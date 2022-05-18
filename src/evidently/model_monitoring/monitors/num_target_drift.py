@@ -37,7 +37,7 @@ class NumTargetDriftMonitor(ModelMonitor):
 
     @staticmethod
     def _yield_metrics(metrics: NumDataDriftMetrics, kind: str) -> Generator[MetricsType, None, None]:
-        yield NumTargetDriftMonitorMetrics.drift.create(metrics.drift, dict(kind=kind))
+        yield NumTargetDriftMonitorMetrics.drift.create(metrics.drift_score, dict(kind=kind))
 
         for feature_name, correlation_value in metrics.reference_correlations.items():
             yield NumTargetDriftMonitorMetrics.reference_correlations.create(

@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # coding: utf-8
-from typing import Callable, Tuple
 from typing import Optional
 from typing import Sequence
 
@@ -13,7 +12,7 @@ import pandas as pd
 from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.analyzers.base_analyzer import BaseAnalyzerResult
-from evidently.analyzers.stattests.registry import get_stattest
+from evidently.analyzers.stattests.registry import get_stattest, StatTest
 from evidently.analyzers.utils import process_columns
 from evidently.options import DataDriftOptions
 
@@ -33,9 +32,10 @@ def _compute_statistic(
     current_data: pd.DataFrame,
     feature_type: str,
     column_name: str,
-    statistic_fun: Callable[[pd.Series, pd.Series, str, float], Tuple[float, bool]],
+    stattest: StatTest,
+    threshold: Optional[float]
 ):
-    return statistic_fun(reference_data[column_name], current_data[column_name], feature_type, 0)[0]
+    return stattest(reference_data[column_name], current_data[column_name], feature_type, threshold)
 
 
 @dataclass
@@ -44,7 +44,8 @@ class DataDriftMetrics:
 
     column_name: str
     stattest_name: str
-    drift: float
+    drift_score: float
+    drift_detected: bool
 
 
 @dataclass
@@ -112,6 +113,7 @@ class CatTargetDriftAnalyzer(Analyzer):
             raise ValueError("current_data should be present")
 
         options = self.options_provider.get(DataDriftOptions)
+        threshold = options.cat_target_threshold
         columns = process_columns(reference_data, column_mapping)
         target_column = columns.utility_columns.target
         prediction_column = columns.utility_columns.prediction
@@ -136,11 +138,14 @@ class CatTargetDriftAnalyzer(Analyzer):
                                        current_data[target_column],
                                        feature_type,
                                        options.cat_target_stattest_func)
-            p_value = _compute_statistic(
-                reference_data, current_data, feature_type, target_column, target_test.func
+            drift_score, drift_detected = _compute_statistic(
+                reference_data, current_data, feature_type, target_column, target_test, threshold
             )
             result.target_metrics = DataDriftMetrics(
-                column_name=target_column, stattest_name=target_test.display_name, drift=p_value
+                column_name=target_column,
+                stattest_name=target_test.display_name,
+                drift_score=drift_score,
+                drift_detected=drift_detected,
             )
         if prediction_column is not None:
             pred_test = get_stattest(reference_data[prediction_column],
@@ -148,11 +153,14 @@ class CatTargetDriftAnalyzer(Analyzer):
                                      feature_type,
                                      options.cat_target_stattest_func)
 
-            p_value = _compute_statistic(
-                reference_data, current_data, feature_type, prediction_column, pred_test.func
+            drift_score, drift_detected = _compute_statistic(
+                reference_data, current_data, feature_type, prediction_column, pred_test, threshold
             )
             result.prediction_metrics = DataDriftMetrics(
-                column_name=prediction_column, stattest_name=pred_test.display_name, drift=p_value
+                column_name=prediction_column,
+                stattest_name=pred_test.display_name,
+                drift_score=drift_score,
+                drift_detected=drift_detected,
             )
 
         return result

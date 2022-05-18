@@ -40,11 +40,11 @@ def test_get_stattest_valid_resolve(stattest_func, feature_type, expected):
     "reference_data, current_data, feature_type, expected",
     [
         (pd.Series([1.0] * 10), pd.Series([1.0] * 10), "num", z_stat_test),
-        (pd.Series([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]), 
+        (pd.Series([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]),
          pd.Series([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]), "num", ks_stat_test),
-        (pd.Series([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] * 1000), 
+        (pd.Series([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] * 1000),
          pd.Series([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] * 1000), "num", wasserstein_stat_test),
-        (pd.Series([1, 2, 3, 4, 5] * 1000), 
+        (pd.Series([1, 2, 3, 4, 5] * 1000),
          pd.Series([1, 2, 3, 4, 5] * 1000), "num", jensenshannon_stat_test),
         (pd.Series(["a", "b", "c"] * 10), pd.Series(["a", "b", "c"] * 10), "cat", chi_stat_test),
         (pd.Series(["a", "b"] * 10), pd.Series(["a", "b"] * 10), "cat", z_stat_test),
@@ -78,3 +78,15 @@ def test_get_stattest_invalid_type(stattest_func, feature_type):
 def test_get_stattest_missing_stattest(stattest_func, feature_type):
     with pytest.raises(StatTestNotFoundError):
         get_stattest(pd.Series(), pd.Series(), feature_type, stattest_func)
+
+
+@pytest.mark.parametrize(
+    "stat_test, override_threshold, expected_threshold",
+    [
+        (StatTest("", "", lambda rd, cd, ft, thr: thr, []), None, 0.05),
+        (StatTest("", "", lambda rd, cd, ft, thr: thr, [], 0.1), None, 0.1),
+        (StatTest("", "", lambda rd, cd, ft, thr: thr, []), 0.5, 0.5),
+    ]
+)
+def test_stattest_default_threshold(stat_test, override_threshold, expected_threshold):
+    assert stat_test(pd.Series(), pd.Series(), "", override_threshold) == expected_threshold

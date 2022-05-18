@@ -4,8 +4,6 @@ import warnings
 
 from evidently.analyzers.stattests import StatTest, PossibleStatTestType
 
-DEFAULT_CONFIDENCE = 0.95
-DEFAULT_THRESHOLD = 0.05
 DEFAULT_NBINSX = 10
 
 
@@ -46,11 +44,13 @@ class DataDriftOptions:
 
     feature_stattest_func: Optional[Union[PossibleStatTestType, Dict[str, PossibleStatTestType]]] = None
 
-    """"""
     all_features_stattest: Optional[PossibleStatTestType] = None
     cat_features_stattest: Optional[PossibleStatTestType] = None
     num_features_stattest: Optional[PossibleStatTestType] = None
     per_feature_stattest: Optional[Dict[str, PossibleStatTestType]] = None
+
+    cat_target_threshold: Optional[float] = None
+    num_target_threshold: Optional[float] = None
 
     cat_target_stattest_func: Optional[PossibleStatTestType] = None
     num_target_stattest_func: Optional[PossibleStatTestType] = None
@@ -63,7 +63,7 @@ class DataDriftOptions:
             "xbins": self.xbins
         }
 
-    def get_threshold(self, feature_name: str) -> float:
+    def get_threshold(self, feature_name: str) -> Optional[float]:
         if self.confidence is not None and self.threshold is not None:
             raise ValueError("Only DataDriftOptions.confidence or DataDriftOptions.threshold can be set")
         if self.confidence is not None:
@@ -71,15 +71,16 @@ class DataDriftOptions:
             if isinstance(self.confidence, float):
                 return 1. - self.confidence
             if isinstance(self.confidence, dict):
-                return 1. - self.confidence.get(feature_name, DEFAULT_CONFIDENCE)
+                override = self.confidence.get(feature_name)
+                return None if override is None else 1. - override
             raise ValueError(f"DataDriftOptions.confidence is incorrect type {type(self.confidence)}")
         if self.threshold is not None:
             if isinstance(self.threshold, float):
                 return self.threshold
             if isinstance(self.threshold, dict):
-                return self.threshold.get(feature_name, DEFAULT_THRESHOLD)
+                return self.threshold.get(feature_name)
             raise ValueError(f"DataDriftOptions.threshold is incorrect type {type(self.threshold)}")
-        return DEFAULT_THRESHOLD
+        return None
 
     def get_nbinsx(self, feature_name: str) -> int:
         if isinstance(self.nbinsx, int):
