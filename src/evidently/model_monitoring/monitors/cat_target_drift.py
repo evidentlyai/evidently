@@ -34,7 +34,9 @@ class CatTargetDriftMonitor(ModelMonitor):
         yield CatTargetDriftMonitorMetrics.count.create(results.current_data_count, dict(dataset="current"))
 
         if results.prediction_metrics:
-            yield CatTargetDriftMonitorMetrics.drift.create(results.prediction_metrics.drift, dict(kind="prediction"))
+            yield CatTargetDriftMonitorMetrics.drift.create(
+                results.prediction_metrics.drift_score,
+                dict(kind="prediction"))
 
         if results.target_metrics:
-            yield CatTargetDriftMonitorMetrics.drift.create(results.target_metrics.drift, dict(kind="target"))
+            yield CatTargetDriftMonitorMetrics.drift.create(results.target_metrics.drift_score, dict(kind="target"))

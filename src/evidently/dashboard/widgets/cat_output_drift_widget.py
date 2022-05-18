@@ -57,8 +57,10 @@ class CatOutputDriftWidget(Widget):
             return None
 
         output_name = result_metrics.column_name
-        output_p_value = result_metrics.drift
-        output_sim_test = "detected" if output_p_value < 0.05 else "not detected"
+        stattest_name = result_metrics.stattest_name
+        drift_score = result_metrics.drift_score
+        drift_detected = result_metrics.drift_detected
+        output_sim_test = "detected" if drift_detected else "not detected"
         # plot output distributions
         fig = go.Figure()
 
@@ -92,7 +94,7 @@ class CatOutputDriftWidget(Widget):
 
         output_drift_json = json.loads(fig.to_json())
         return BaseWidgetInfo(
-            title=f"{self.kind.title()} Drift: {output_sim_test}, p_value={round(output_p_value, 6)}",
+            title=f"{self.kind.title()} Drift({stattest_name}): {output_sim_test}, drift score={round(drift_score, 6)}",
             type="big_graph",
             size=2,
             params={"data": output_drift_json["data"], "layout": output_drift_json["layout"]},

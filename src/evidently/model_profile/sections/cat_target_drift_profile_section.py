@@ -30,12 +30,12 @@ class CatTargetDriftProfileSection(ProfileSection):
         if result.target_metrics:
             result_json['metrics']['target_name'] = result.target_metrics.column_name
             result_json['metrics']['target_type'] = 'cat'
-            result_json['metrics']['target_drift'] = result.target_metrics.drift
+            result_json['metrics']['target_drift'] = result.target_metrics.drift_score
 
         if result.prediction_metrics:
             result_json['metrics']['prediction_name'] = result.prediction_metrics.column_name
             result_json['metrics']['prediction_type'] = 'cat'
-            result_json['metrics']['prediction_drift'] = result.prediction_metrics.drift
+            result_json['metrics']['prediction_drift'] = result.prediction_metrics.drift_score
 
         self._result = {
             'name': self.part_id(),

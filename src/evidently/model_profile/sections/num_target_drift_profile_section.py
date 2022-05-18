@@ -24,7 +24,7 @@ class NumTargetDriftProfileSection(ProfileSection):
         if result.target_metrics:
             result_json['metrics']['target_name'] = result.target_metrics.column_name
             result_json['metrics']['target_type'] = 'num'
-            result_json['metrics']['target_drift'] = result.target_metrics.drift
+            result_json['metrics']['target_drift'] = result.target_metrics.drift_score
             result_json['metrics']['target_correlations'] = {
                 'current': result.target_metrics.current_correlations,
                 'reference': result.target_metrics.reference_correlations,
@@ -33,7 +33,7 @@ class NumTargetDriftProfileSection(ProfileSection):
         if result.prediction_metrics:
             result_json['metrics']['prediction_name'] = result.prediction_metrics.column_name
             result_json['metrics']['prediction_type'] = 'num'
-            result_json['metrics']['prediction_drift'] = result.prediction_metrics.drift
+            result_json['metrics']['prediction_drift'] = result.prediction_metrics.drift_score
             result_json['metrics']['prediction_correlations'] = {
                 'current': result.prediction_metrics.current_correlations,
                 'reference': result.prediction_metrics.reference_correlations,

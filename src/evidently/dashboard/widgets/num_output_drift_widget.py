@@ -61,8 +61,10 @@ class NumOutputDriftWidget(Widget):
             return None
 
         # calculate output drift
-        output_p_value = metrics.drift
-        output_sim_test = "detected" if output_p_value < 0.05 else "not detected"
+        stattest_name = metrics.stattest_name
+        drift_score = metrics.drift_score
+        drift_detected = metrics.drift_detected
+        output_sim_test = "detected" if drift_detected else "not detected"
 
         # plot output distributions
         if cut_quantile and quality_metrics_options.get_cut_quantile(column_name):
@@ -98,8 +100,7 @@ class NumOutputDriftWidget(Widget):
         output_drift_json = json.loads(output_distr.to_json())
 
         return BaseWidgetInfo(
-            title=self.kind.title() + " drift: ".title() + output_sim_test + ", p_value=" + str(
-                round(output_p_value, 6)),
+            title=f"{self.kind.title()} Drift({stattest_name}): {output_sim_test}, drift score={round(drift_score, 6)}",
             type="big_graph",
             details="",
             alerts=[],

@@ -44,11 +44,13 @@ class DataDriftOptions:
 
     feature_stattest_func: Optional[Union[PossibleStatTestType, Dict[str, PossibleStatTestType]]] = None
 
-    """"""
     all_features_stattest: Optional[PossibleStatTestType] = None
     cat_features_stattest: Optional[PossibleStatTestType] = None
     num_features_stattest: Optional[PossibleStatTestType] = None
     per_feature_stattest: Optional[Dict[str, PossibleStatTestType]] = None
+
+    cat_target_threshold: Optional[float] = None
+    num_target_threshold: Optional[float] = None
 
     cat_target_stattest_func: Optional[PossibleStatTestType] = None
     num_target_stattest_func: Optional[PossibleStatTestType] = None
