@@ -24,18 +24,28 @@ You can potentially choose any two datasets for comparison. But keep in mind tha
 
 ## How it works
 
-To estimate the data drift, we compare distributions of each individual feature in the two datasets.
+To estimate the data drift Evidently compares the distributions of each feature in the two datasets.
 
-We use **statistical tests** to detect if the distribution has changed significantly.;
+Evidently applies **statistical tests** to detect if the distribution has changed significantly. There is a default logic to choosing the appropriate statistical test based on:
+* feature type: categorical or numerical
+* the number of observations in the reference dataset 
+* the number of unique values in the feature (n_unique)
 
-* For **numerical** features, we use the [two-sample Kolmogorov-Smirnov test](https://en.wikipedia.org/wiki/Kolmogorov%E2%80%93Smirnov\_test).
-* For **categorical** features, we use the [chi-squared test](https://en.wikipedia.org/wiki/Chi-squared\_test).
-  * For **binary categorical** features, we use the proportion difference test for independent samples based on Z-score.
+For **small data with <= 1000 observations** in the reference dataset:
+* For **numerical** features (n_unique > 5): [two-sample Kolmogorov-Smirnov test](https://en.wikipedia.org/wiki/Kolmogorov%E2%80%93Smirnov\_test).
+* For **categorical features** or numerical features with **n_unique <= 5**: [chi-squared test](https://en.wikipedia.org/wiki/Chi-squared\_test).
+* For **binary categorical features** (n_unique <= 2), we use the proportion difference test for independent samples based on Z-score.
 
 All tests use a 0.95 confidence level by default.
 
+For **larger data with > 1000 observations** in the reference dataset:
+* For numerical features (n_unique > 5): [Wasserstein Distance](https://en.wikipedia.org/wiki/Wasserstein_metric).
+* For categorical features or numerical with n_unique <= 5): [Jensen–Shannon divergence](https://en.wikipedia.org/wiki/Jensen–Shannon_divergence).
+
+All tests use a threshold = 0.1 by default.
+
 {% hint style="info" %}
-To set a different confidence level or implement a custom test, you can define [custom options](../customization/options-for-data-target-drift.md). You can also select a different statistical test already available in the library, including PSI, K–L divergence, Jensen-Shannon distance, Wasserstein distance. See more details about [available tests](../customization/options-for-statistical-tests.md). 
+You can modify the drift detection logic by selecting a statistical test already available in the library, including PSI, K–L divergence, Jensen-Shannon distance, Wasserstein distance. See more details about [available tests](../customization/options-for-statistical-tests.md). You can also set a different confidence level or implement a custom test, by defining [custom options](../customization/options-for-data-target-drift.md).
 {% endhint %}
 
 ## How it looks
