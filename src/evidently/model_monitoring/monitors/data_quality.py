@@ -38,7 +38,7 @@ class DataQualityMonitor(ModelMonitor):
                         stat_value,
                         {
                             "dataset": dataset,
-                            "feature": feature_type,
+                            "feature": feature_name,
                             "feature_type": feature_type,
                             "metric": stat_name,
                         },
