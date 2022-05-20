@@ -1,14 +1,14 @@
 from dataclasses import dataclass
 from typing import Optional
 from evidently.suites.metrics.base_metrics import BaseTest
-from evidently.suites.metrics.base_metrics import SourceOneDatasetAnalyzer
+from evidently.suites.metrics.base_metrics import OneSourceDatasetMetric
 from evidently.suites.metrics.source_metadata_metrics import DatasetMetadataMetric
 
 
 @dataclass
 class TestNumber(BaseTest):
-    required_analyzer = SourceOneDatasetAnalyzer
-    calculated_analyzer: Optional[SourceOneDatasetAnalyzer] = None
+    required_analyzer = OneSourceDatasetMetric
+    calculated_analyzer: Optional[OneSourceDatasetMetric] = None
 
     exact: Optional[int] = None
     gt: Optional[int] = None

@@ -8,16 +8,16 @@ from typing import Type
 
 import pandas as pd
 
-from evidently.suites.metrics.base_metrics import BaseDataMetric
+from evidently.suites.metrics.base_metrics import BaseCalculation
 from evidently.suites.metrics.base_metrics import BaseTest
-from evidently.suites.metrics.base_metrics import SourceOneDatasetAnalyzer
+from evidently.suites.metrics.base_metrics import OneSourceDatasetMetric
 
 
 @dataclass
 class BaseSuit:
-    _calculated_metrics = Dict[str, BaseDataMetric]
+    _calculated_metrics = Dict[str, BaseCalculation]
     _calculated_tests = List[BaseTest]
-    metrics: ClassVar[List[Type[BaseDataMetric]]]
+    metrics: ClassVar[List[Type[BaseCalculation]]]
     tests: Optional[List[BaseTest]] = None
 
     def add_tests(self, *args):
@@ -32,7 +32,7 @@ class BaseSuit:
         for metric_class in self.metrics:
             metric = metric_class()
 
-            if issubclass(metric_class, SourceOneDatasetAnalyzer):
+            if issubclass(metric_class, OneSourceDatasetMetric):
                 metric.dataset = reference_data
 
             metric.result = metric.calculate()

@@ -7,11 +7,11 @@ from typing import Optional
 import pandas as pd
 
 
-class BaseDataMetric:
-    """Base class for all metrics"""
+class BaseCalculation:
+    """Base class for all calculations - metrics, tests, etc."""
     name: str
     description: str
-    parent: Optional["BaseDataMetric"] = None
+    parent: Optional["BaseCalculation"] = None
     result: Optional[Any] = None
 
     @property
@@ -40,20 +40,20 @@ class BaseDataMetric:
         return result
 
 
-class SourceOneDatasetAnalyzer(BaseDataMetric):
-    """Analyzer with calculations on one source dataset"""
+class OneSourceDatasetMetric(BaseCalculation):
+    """Metric with calculations with one source dataset"""
     dataset: pd.DataFrame
 
 
-class SourceBothDatasetsAnalyzer(BaseDataMetric):
+class BothSourceDatasetMetric(BaseCalculation):
     """Analyzer with calculations on both source datasets"""
     reference_dataset: pd.DataFrame
     current_dataset: pd.DataFrame
 
 
-class BaseTest(BaseDataMetric):
-    required_analyzer = ClassVar[SourceOneDatasetAnalyzer]
-    calculated_analyzer: Optional[SourceOneDatasetAnalyzer] = None
+class BaseTest(BaseCalculation):
+    required_analyzer = ClassVar[OneSourceDatasetMetric]
+    calculated_analyzer: Optional[OneSourceDatasetMetric] = None
     result: bool
 
     def get_details(self) -> str:

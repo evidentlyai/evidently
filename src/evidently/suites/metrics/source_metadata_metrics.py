@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from typing import List
-from evidently.suites.metrics.base_metrics import SourceOneDatasetAnalyzer
+from evidently.suites.metrics.base_metrics import OneSourceDatasetMetric
 
 
 @dataclass
@@ -10,7 +10,7 @@ class DatasetMetadataMetricResult:
     column_names: List[str]
 
 
-class DatasetMetadataMetric(SourceOneDatasetAnalyzer):
+class DatasetMetadataMetric(OneSourceDatasetMetric):
     name = "dataset_metadata_metrics"
     description = "Quantity of all row in the dataset, with NaN values"
     result: DatasetMetadataMetricResult
