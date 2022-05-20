@@ -1,0 +1,1 @@
+from evidently.suites.predefined_suites.data_integrity_suite import DataQualitySuite
