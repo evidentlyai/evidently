@@ -9,6 +9,3 @@ class DataQualitySuite(BaseSuit):
     metrics = [
         DatasetMetadataMetric
     ]
-    tests = [
-        TestNumberOfRows(reference_gt=0)
-    ]
