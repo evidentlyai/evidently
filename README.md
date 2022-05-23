@@ -236,6 +236,10 @@ Real-time ML monitoring with Grafana | [Evidently + Grafana](examples/integratio
 Batch ML monitoring with Airflow | [Evidently + Airflow](examples/integrations/airflow_drift_detection/)
 Log Evidently metrics in MLflow UI | [Evidently + MLflow](examples/integrations/mlflow_logging/)
 
+# :phone: Community Call 
+
+We host monthly community call for users and contributors. [Sign up](https://evidentlyai.com/community-call-sign-up) to join the next one. 
+
 # :white_check_mark: Stay updated
 - If you want to receive updates, follow us on [Twitter](https://twitter.com/EvidentlyAI), or sign up for our [newsletter](https://evidentlyai.com/sign-up). 
 - You can also find more tutorials and explanations in our [Blog](https://evidentlyai.com/blog). 
