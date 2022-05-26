@@ -16,6 +16,7 @@ from evidently.dashboard.widgets.utils import CutQuantileTransformer
 from evidently.options import ColorOptions
 from evidently.options import DataDriftOptions
 from evidently.options import QualityMetricsOptions
+import logging
 
 
 def _generate_feature_params(name: str, data: DataDriftAnalyzerFeatureMetrics) -> dict:
@@ -240,6 +241,8 @@ class DataDriftTableWidget(Widget):
         data_drift_results = DataDriftAnalyzer.get_results(analyzers_results)
         all_features = data_drift_results.columns.get_all_features_list()
         date_column = data_drift_results.columns.utility_columns.date
+        target_column = data_drift_results.columns.utility_columns.target
+        prediction_column = data_drift_results.columns.utility_columns.prediction
 
         if current_data is None:
             raise ValueError("current_data should be present")
@@ -248,7 +251,17 @@ class DataDriftTableWidget(Widget):
         params_data = []
         data_drift_options = self.options_provider.get(DataDriftOptions)
         quality_metrics_options = self.options_provider.get(QualityMetricsOptions)
-        for feature_name in all_features:
+        columns = []
+        if target_column:
+            columns.append(target_column)
+            all_features.remove(target_column)
+        if prediction_column:
+            columns.append(prediction_column)
+            all_features.remove(prediction_column)
+        columns = columns + all_features
+        logging.warning(columns)
+
+        for feature_name in columns:
             params_data.append(
                 _generate_feature_params(
                     feature_name,
@@ -258,7 +271,7 @@ class DataDriftTableWidget(Widget):
 
         # set additionalGraphs
         additional_graphs_data = []
-        for feature_name in all_features:
+        for feature_name in columns:
             # plot distributions
             if data_drift_results.metrics.features[feature_name].feature_type == "num":
                 additional_graphs_data += _generate_additional_graph_num_feature(
