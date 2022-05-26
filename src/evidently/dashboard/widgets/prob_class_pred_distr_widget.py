@@ -11,7 +11,7 @@ import numpy as np
 import plotly.figure_factory as ff
 
 from evidently import ColumnMapping
-from evidently.analyzers.prob_classification_performance_analyzer import ProbClassificationPerformanceAnalyzer
+from evidently.analyzers.prob_distribution_analyzer import ProbDistributionAnalyzer
 from evidently.model.widget import BaseWidgetInfo
 from evidently.dashboard.widgets.widget import Widget
 from evidently.options import ColorOptions
@@ -23,7 +23,7 @@ class ProbClassPredDistrWidget(Widget):
         self.dataset = dataset  # reference or current
 
     def analyzers(self):
-        return [ProbClassificationPerformanceAnalyzer]
+        return [ProbDistributionAnalyzer]
 
     def calculate(self,
                   reference_data: pd.DataFrame,
@@ -31,7 +31,7 @@ class ProbClassPredDistrWidget(Widget):
                   column_mapping: ColumnMapping,
                   analyzers_results) -> Optional[BaseWidgetInfo]:
         color_options = self.options_provider.get(ColorOptions)
-        results = ProbClassificationPerformanceAnalyzer.get_results(analyzers_results)
+        results = ProbDistributionAnalyzer.get_results(analyzers_results)
         utility_columns = results.columns.utility_columns
 
         if utility_columns.target is None or utility_columns.prediction is None:
