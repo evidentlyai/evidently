@@ -34,7 +34,7 @@ class ProbClassPredDistrWidget(Widget):
         results = ProbDistributionAnalyzer.get_results(analyzers_results)
         utility_columns = results.columns.utility_columns
 
-        if isinstance(utility_columns.prediction, str):
+        if isinstance(utility_columns.prediction, str) or utility_columns.prediction is None:
             return None
 
         if utility_columns.target is None or utility_columns.prediction is None:

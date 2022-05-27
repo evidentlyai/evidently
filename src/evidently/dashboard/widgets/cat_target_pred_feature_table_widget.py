@@ -38,7 +38,9 @@ class CatTargetPredFeatureTable(Widget):
             raise ValueError("current_data should be present")
 
         target_name = results.columns.utility_columns.target
-        prediction_name = results.prediction_metrics.column_name
+        prediction_name = None
+        if results.prediction_metrics:
+            prediction_name = results.prediction_metrics.column_name
 
         if prediction_name is not None and target_name is not None:
             additional_graphs_data = []

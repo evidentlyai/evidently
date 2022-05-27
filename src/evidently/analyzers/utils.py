@@ -197,6 +197,7 @@ def calculate_confusion_by_classes(confusion_matrix: pd.DataFrame, class_names: 
 
     return confusion_by_classes
 
+
 def recognize_task(target_name: str, reference_data: pd.DataFrame) -> str:
     """Try to guess about the target type:
     if the target has a numeric type and number of unique values > 5: task == ‘regression’

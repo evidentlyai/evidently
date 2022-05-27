@@ -7,7 +7,6 @@ import pandas as pd
 import numpy as np
 
 import plotly.graph_objs as go
-from sqlalchemy import asc
 
 from evidently import ColumnMapping
 from evidently.analyzers.data_drift_analyzer import DataDriftAnalyzer, DataDriftAnalyzerFeatureMetrics
@@ -261,7 +260,7 @@ class DataDriftTableWidget(Widget):
         if target_column:
             columns.append(target_column)
             all_features.remove(target_column)
-        if prediction_column:
+        if prediction_column and isinstance(prediction_column, str):
             columns.append(prediction_column)
             all_features.remove(prediction_column)
         columns = columns + all_features

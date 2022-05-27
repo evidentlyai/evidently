@@ -118,25 +118,24 @@ class CatTargetDriftAnalyzer(Analyzer):
         classification_threshold = quality_metrics_options.classification_threshold
         columns = process_columns(reference_data, column_mapping)
         target_column = columns.utility_columns.target
-        prediction_column = columns.utility_columns.prediction
+        prediction_column_raw = columns.utility_columns.prediction
 
         if not isinstance(target_column, str) and isinstance(target_column, Sequence):
             raise ValueError("target should not be a sequence")
 
-        # if not isinstance(prediction_column, str) and isinstance(prediction_column, Sequence):
-        #     raise ValueError("prediction should not be a sequence")
+        prediction_column = None
+        if prediction_column_raw is not None:
+            if isinstance(prediction_column_raw, list) and len(prediction_column_raw) > 2:
+                reference_data['predicted_labels'] = self._get_pred_labels_from_prob(reference_data, prediction_column_raw)
+                current_data['predicted_labels'] = self._get_pred_labels_from_prob(current_data, prediction_column_raw)
+                prediction_column = 'predicted_labels'
+            elif isinstance(prediction_column_raw, list) and len(prediction_column_raw) == 2:
+                reference_data['predicted_labels'] = (reference_data[prediction_column_raw[0]] > classification_threshold).astype(int)
+                current_data['predicted_labels'] = (current_data[prediction_column_raw[0]] > classification_threshold).astype(int)
+                prediction_column = 'predicted_labels'
+            elif isinstance(prediction_column_raw, str):
+                prediction_column = prediction_column_raw
 
-        if prediction_column is not None:
-            if isinstance(prediction_column, list) and len(prediction_column) > 2:
-                reference_data['predicted_labels'] = self._get_pred_labels_from_prob(reference_data, prediction_column)
-                current_data['predicted_labels'] = self._get_pred_labels_from_prob(current_data, prediction_column)
-                # columns.utility_columns.prediction = 'predicted_labels'
-                prediction_column = 'predicted_labels'
-            elif isinstance(prediction_column, list) and len(prediction_column) == 2:
-                reference_data['predicted_labels'] = (reference_data[prediction_column[0]] > classification_threshold).astype(int) 
-                current_data['predicted_labels'] = (current_data[prediction_column[0]] > classification_threshold).astype(int) 
-                # columns.utility_columns.prediction = 'predicted_labels'
-                prediction_column = 'predicted_labels'
         result = CatTargetDriftAnalyzerResults(
             columns=columns, reference_data_count=reference_data.shape[0], current_data_count=current_data.shape[0]
         )
