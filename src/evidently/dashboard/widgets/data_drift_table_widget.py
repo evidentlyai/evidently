@@ -7,6 +7,7 @@ import pandas as pd
 import numpy as np
 
 import plotly.graph_objs as go
+from sqlalchemy import asc
 
 from evidently import ColumnMapping
 from evidently.analyzers.data_drift_analyzer import DataDriftAnalyzer, DataDriftAnalyzerFeatureMetrics
@@ -16,7 +17,6 @@ from evidently.dashboard.widgets.utils import CutQuantileTransformer
 from evidently.options import ColorOptions
 from evidently.options import DataDriftOptions
 from evidently.options import QualityMetricsOptions
-import logging
 
 
 def _generate_feature_params(name: str, data: DataDriftAnalyzerFeatureMetrics) -> dict:
@@ -251,6 +251,12 @@ class DataDriftTableWidget(Widget):
         params_data = []
         data_drift_options = self.options_provider.get(DataDriftOptions)
         quality_metrics_options = self.options_provider.get(QualityMetricsOptions)
+
+        # sort columns by drift score
+        df_for_sort = pd.DataFrame()
+        df_for_sort['features'] = all_features
+        df_for_sort['scores'] = [data_drift_results.metrics.features[feature].p_value for feature in all_features]
+        all_features = df_for_sort.sort_values('scores', ascending=False).features.tolist()
         columns = []
         if target_column:
             columns.append(target_column)
@@ -259,7 +265,6 @@ class DataDriftTableWidget(Widget):
             columns.append(prediction_column)
             all_features.remove(prediction_column)
         columns = columns + all_features
-        logging.warning(columns)
 
         for feature_name in columns:
             params_data.append(
@@ -325,7 +330,7 @@ class DataDriftTableWidget(Widget):
                     },
                     {"title": "Data Drift", "field": "f2"},
                     {"title": "Stat Test", "field": "stattest_name"},
-                    {"title": "Drift Score", "field": "f5", "sort": "asc"},
+                    {"title": "Drift Score", "field": "f5"},
                 ],
                 "data": params_data,
             },

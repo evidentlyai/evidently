@@ -14,7 +14,7 @@ from evidently.analyzers.base_analyzer import Analyzer
 from evidently.analyzers.base_analyzer import BaseAnalyzerResult
 from evidently.analyzers.stattests.registry import get_stattest, StatTest
 from evidently.analyzers.utils import process_columns
-from evidently.options import DataDriftOptions
+from evidently.options import DataDriftOptions, QualityMetricsOptions
 
 
 def _remove_nans_and_infinities(dataframe):
@@ -112,8 +112,10 @@ class CatTargetDriftAnalyzer(Analyzer):
         if current_data is None:
             raise ValueError("current_data should be present")
 
-        options = self.options_provider.get(DataDriftOptions)
-        threshold = options.cat_target_threshold
+        data_drift_options = self.options_provider.get(DataDriftOptions)
+        threshold = data_drift_options.cat_target_threshold
+        quality_metrics_options = self.options_provider.get(QualityMetricsOptions)
+        classification_threshold = quality_metrics_options.classification_threshold
         columns = process_columns(reference_data, column_mapping)
         target_column = columns.utility_columns.target
         prediction_column = columns.utility_columns.prediction
@@ -121,9 +123,20 @@ class CatTargetDriftAnalyzer(Analyzer):
         if not isinstance(target_column, str) and isinstance(target_column, Sequence):
             raise ValueError("target should not be a sequence")
 
-        if not isinstance(prediction_column, str) and isinstance(prediction_column, Sequence):
-            raise ValueError("prediction should not be a sequence")
+        # if not isinstance(prediction_column, str) and isinstance(prediction_column, Sequence):
+        #     raise ValueError("prediction should not be a sequence")
 
+        if prediction_column is not None:
+            if isinstance(prediction_column, list) and len(prediction_column) > 2:
+                reference_data['predicted_labels'] = self._get_pred_labels_from_prob(reference_data, prediction_column)
+                current_data['predicted_labels'] = self._get_pred_labels_from_prob(current_data, prediction_column)
+                # columns.utility_columns.prediction = 'predicted_labels'
+                prediction_column = 'predicted_labels'
+            elif isinstance(prediction_column, list) and len(prediction_column) == 2:
+                reference_data['predicted_labels'] = (reference_data[prediction_column[0]] > classification_threshold).astype(int) 
+                current_data['predicted_labels'] = (current_data[prediction_column[0]] > classification_threshold).astype(int) 
+                # columns.utility_columns.prediction = 'predicted_labels'
+                prediction_column = 'predicted_labels'
         result = CatTargetDriftAnalyzerResults(
             columns=columns, reference_data_count=reference_data.shape[0], current_data_count=current_data.shape[0]
         )
@@ -137,7 +150,7 @@ class CatTargetDriftAnalyzer(Analyzer):
             target_test = get_stattest(reference_data[target_column],
                                        current_data[target_column],
                                        feature_type,
-                                       options.cat_target_stattest_func)
+                                       data_drift_options.cat_target_stattest_func)
             drift_score, drift_detected = _compute_statistic(
                 reference_data, current_data, feature_type, target_column, target_test, threshold
             )
@@ -151,7 +164,7 @@ class CatTargetDriftAnalyzer(Analyzer):
             pred_test = get_stattest(reference_data[prediction_column],
                                      current_data[prediction_column],
                                      feature_type,
-                                     options.cat_target_stattest_func)
+                                     data_drift_options.cat_target_stattest_func)
 
             drift_score, drift_detected = _compute_statistic(
                 reference_data, current_data, feature_type, prediction_column, pred_test, threshold
@@ -164,3 +177,9 @@ class CatTargetDriftAnalyzer(Analyzer):
             )
 
         return result
+
+    def _get_pred_labels_from_prob(self, df: pd.DataFrame, prediction_column: list):
+        array_prediction = df[prediction_column].to_numpy()
+        prediction_ids = np.argmax(array_prediction, axis=-1)
+        prediction_labels = [prediction_column[x] for x in prediction_ids]
+        return prediction_labels

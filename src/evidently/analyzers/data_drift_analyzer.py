@@ -83,7 +83,9 @@ class DataDriftAnalyzer(Analyzer):
                 columns.utility_columns.prediction = 'predicted_labels'
                 cat_feature_names += [columns.utility_columns.prediction]
             elif isinstance(prediction_column, list) and len(prediction_column) == 2:
-                columns.utility_columns.prediction = prediction_column[0]
+                reference_data['prediction'] = reference_data[prediction_column[0]].values
+                current_data['prediction'] = current_data[prediction_column[0]].values
+                columns.utility_columns.prediction = 'prediction'
                 num_feature_names += [columns.utility_columns.prediction]
             elif isinstance(prediction_column, str):
                 if reference_data[prediction_column].nunique() > 5:
