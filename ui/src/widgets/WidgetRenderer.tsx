@@ -12,7 +12,7 @@ import {
     WidgetGroupParams,
     WidgetListParams,
     WidgetInfo,
-    WidgetSize, TextWidgetParams
+    WidgetSize, TextWidgetParams, TestSuiteWidgetParams
 } from "../api/Api";
 import Widget from "./Widget";
 import CounterWidgetContent from "./CounterWidgetContent";
@@ -27,6 +27,7 @@ import TabbedWidgetContent from "./TabbedWidgetContent";
 import RichDataWidget from "./RichDataWidget";
 import WidgetList from "./WidgetList";
 import TextWidgetContent from "./TextWidgetContent";
+import TestSuiteWidgetContent from "./TestSuiteWidget/TestSuiteWidgetContent";
 
 function sizeTransform(size: WidgetSize) : (1 | 3 | 6 | 12) {
     if (size === WidgetSize.Small) {
@@ -66,6 +67,8 @@ export function WidgetRenderer(key: string, info: WidgetInfo) {
         content = <WidgetList widgets={listInfo.widgets} pageSize={listInfo.pageSize} widgetSize={info.size} />
     } else if (info.type === "text") {
         content = <TextWidgetContent {...(info.params as TextWidgetParams)} />
+    } else if (info.type === "test_suite") {
+        content = <TestSuiteWidgetContent {...(info.params as TestSuiteWidgetParams)} />
     }
     return <Widget key={key} size={sizeTransform(info.size)}>
         {{
