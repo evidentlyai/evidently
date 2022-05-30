@@ -1,10 +1,12 @@
 import pytest
+import re
 import numpy as np
 from pandas import DataFrame
 from pytest import approx
 
 from evidently import ColumnMapping
-from evidently.analyzers.cat_target_drift_analyzer import CatTargetDriftAnalyzer
+from evidently.analyzers.cat_target_drift_analyzer import \
+    CatTargetDriftAnalyzer
 from evidently.options import DataDriftOptions, OptionsProvider
 
 
@@ -17,7 +19,8 @@ def analyzer() -> CatTargetDriftAnalyzer:
     return analyzer
 
 
-def test_different_target_column_name(analyzer: CatTargetDriftAnalyzer) -> None:
+def test_different_target_column_name(
+        analyzer: CatTargetDriftAnalyzer) -> None:
     df1 = DataFrame({
         'another_target': ['a'] * 10 + ['b'] * 10
     })
@@ -25,7 +28,8 @@ def test_different_target_column_name(analyzer: CatTargetDriftAnalyzer) -> None:
         'another_target': ['a'] * 10 + ['b'] * 10
     })
 
-    result = analyzer.calculate(df1, df2, ColumnMapping(target='another_target'))
+    result = analyzer.calculate(df1, df2,
+                                ColumnMapping(target='another_target'))
     assert result.target_metrics is not None
     assert result.target_metrics.column_name == 'another_target'
     assert result.prediction_metrics is None
@@ -108,7 +112,8 @@ def test_different_labels_2(analyzer: CatTargetDriftAnalyzer) -> None:
     assert result.prediction_metrics is None
 
 
-def test_computation_of_categories_as_numbers(analyzer: CatTargetDriftAnalyzer) -> None:
+def test_computation_of_categories_as_numbers(
+        analyzer: CatTargetDriftAnalyzer) -> None:
     df1 = DataFrame({
         'target': [0, 1] * 10
     })
@@ -124,7 +129,8 @@ def test_computation_of_categories_as_numbers(analyzer: CatTargetDriftAnalyzer) 
     assert result.prediction_metrics is None
 
 
-def test_computing_of_target_and_prediction(analyzer: CatTargetDriftAnalyzer) -> None:
+def test_computing_of_target_and_prediction(
+        analyzer: CatTargetDriftAnalyzer) -> None:
     df1 = DataFrame({
         'target': ['a', 'b'] * 10,
         'prediction': ['b', 'c'] * 10
@@ -142,7 +148,8 @@ def test_computing_of_target_and_prediction(analyzer: CatTargetDriftAnalyzer) ->
     assert result.prediction_metrics.column_name == 'prediction'
 
 
-def test_computing_of_only_prediction(analyzer: CatTargetDriftAnalyzer) -> None:
+def test_computing_of_only_prediction(
+        analyzer: CatTargetDriftAnalyzer) -> None:
     df1 = DataFrame({
         'another_prediction': ['b', 'c'] * 10
     })
@@ -150,7 +157,8 @@ def test_computing_of_only_prediction(analyzer: CatTargetDriftAnalyzer) -> None:
         'another_prediction': ['a', 'b'] * 5
     })
     # FIXME: wtf: RuntimeWarning: divide by zero encountered in true_divide ?
-    result = analyzer.calculate(df1, df2, ColumnMapping(prediction='another_prediction'))
+    result = analyzer.calculate(df1, df2,
+                                ColumnMapping(prediction='another_prediction'))
     assert result.prediction_metrics is not None
     assert result.prediction_metrics.column_name == 'another_prediction'
     assert result.prediction_metrics.drift_score == approx(0., abs=1e-3)
@@ -183,7 +191,8 @@ def test_computing_with_nans(analyzer: CatTargetDriftAnalyzer) -> None:
     assert result.prediction_metrics.drift_score == approx(0.29736, abs=1e-4)
 
 
-def test_computing_uses_a_custom_function(analyzer: CatTargetDriftAnalyzer) -> None:
+def test_computing_uses_a_custom_function(
+        analyzer: CatTargetDriftAnalyzer) -> None:
     df1 = DataFrame({
         'some_column': ['a'] * 10 + ['b'] * 10
     })
@@ -192,9 +201,80 @@ def test_computing_uses_a_custom_function(analyzer: CatTargetDriftAnalyzer) -> N
     })
 
     options = DataDriftOptions()
-    options.cat_target_stattest_func = lambda x, y, feature_type, threshold: (np.pi, False)
+    options.cat_target_stattest_func = lambda x, y, feature_type, threshold: (
+    np.pi, False)
     analyzer.options_provider.add(options)
     result = analyzer.calculate(df1, df2, ColumnMapping(target='some_column'))
     assert result.target_metrics is not None
     assert result.target_metrics.drift_score == approx(np.pi, abs=1e-4)
     assert result.target_metrics.column_name == 'some_column'
+
+
+def test_drift_with_null_colums(analyzer: CatTargetDriftAnalyzer) -> None:
+    """Test drift with columns with nulls.
+
+    Test that not used columns with nulls does not change
+    target drift.
+    """
+    data = {
+        "target": ["a"] * 10 + ["b"] * 10,
+        "prediction": ["a"] * 10 + ["b"] * 10,
+        "foo": [1.] * 10 + [np.nan] * 10,
+        "bar": [np.nan] * 10 + [1.] * 10,
+    }
+    df1 = DataFrame(data)
+    df2 = DataFrame(data)
+
+    result = analyzer.calculate(df1, df2, ColumnMapping())
+    assert result.target_metrics is not None
+    assert result.target_metrics.column_name == 'target'
+    assert result.target_metrics.drift_score == approx(1)
+    assert result.prediction_metrics.drift_score == approx(1)
+
+
+def test_catch_empty_reference(analyzer: CatTargetDriftAnalyzer) -> None:
+    """Test drift with columns with nulls.
+
+    Test that not used columns with nulls does not change
+    target drift.
+    """
+
+    data = {
+        "target": [np.nan] * 20,
+        "prediction": ["a"] * 10 + ["b"] * 10,
+    }
+    df1 = DataFrame(data)
+
+    data["target"] = ["a"] * 10 + ["b"] * 10
+    df2 = DataFrame(data)
+    expected_msg = re.escape(
+                f"After removing invalid values, the target "
+                f"column is empty in the following data sets: "
+                f"\n    - reference_data"
+            )
+    with pytest.raises(ValueError, match=expected_msg):
+        analyzer.calculate(df1, df2, ColumnMapping())
+
+
+def test_catch_empty_current(analyzer: CatTargetDriftAnalyzer) -> None:
+    """Test drift with columns with nulls.
+
+    Test that not used columns with nulls does not change
+    target drift.
+    """
+
+    data = {
+        "target": ["a"] * 10 + ["b"] * 10,
+        "prediction": ["a"] * 10 + ["b"] * 10,
+    }
+    df1 = DataFrame(data)
+
+    data["target"] = [np.nan] * 20
+    df2 = DataFrame(data)
+    expected_msg = re.escape(
+        f"After removing invalid values, the target "
+        f"column is empty in the following data sets: "
+        f"\n    - current_data"
+    )
+    with pytest.raises(ValueError, match=expected_msg):
+        analyzer.calculate(df1, df2, ColumnMapping())

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
-from typing import Optional
+from typing import Optional, Dict
 from typing import Sequence
 
 
@@ -15,27 +15,6 @@ from evidently.analyzers.base_analyzer import BaseAnalyzerResult
 from evidently.analyzers.stattests.registry import get_stattest, StatTest
 from evidently.analyzers.utils import process_columns
 from evidently.options import DataDriftOptions, QualityMetricsOptions
-
-
-def _remove_nans_and_infinities(dataframe):
-    #   document somewhere, that all analyzers are mutators, i.e. they will change
-    #   the dataframe, like here: replace inf and nan values. That means if far down the pipeline
-    #   somebody wants to compute number of nans, the results will be 0.
-    #   Consider return copies of dataframes, even though it will drain memory for large datasets
-    dataframe.replace([np.inf, -np.inf], np.nan, inplace=True)
-    dataframe.dropna(axis=0, how="any", inplace=True)
-    return dataframe
-
-
-def _compute_statistic(
-    reference_data: pd.DataFrame,
-    current_data: pd.DataFrame,
-    feature_type: str,
-    column_name: str,
-    stattest: StatTest,
-    threshold: Optional[float]
-):
-    return stattest(reference_data[column_name], current_data[column_name], feature_type, threshold)
 
 
 @dataclass
@@ -112,8 +91,6 @@ class CatTargetDriftAnalyzer(Analyzer):
         if current_data is None:
             raise ValueError("current_data should be present")
 
-        data_drift_options = self.options_provider.get(DataDriftOptions)
-        threshold = data_drift_options.cat_target_threshold
         quality_metrics_options = self.options_provider.get(QualityMetricsOptions)
         classification_threshold = quality_metrics_options.classification_threshold
         columns = process_columns(reference_data, column_mapping)
@@ -140,45 +117,118 @@ class CatTargetDriftAnalyzer(Analyzer):
             columns=columns, reference_data_count=reference_data.shape[0], current_data_count=current_data.shape[0]
         )
 
-        # consider replacing only values in target and prediction column, see comment above
-        #   _remove_nans_and_infinities
-        reference_data = _remove_nans_and_infinities(reference_data)
-        current_data = _remove_nans_and_infinities(current_data)
         feature_type = "cat"
-        if target_column is not None:
-            target_test = get_stattest(reference_data[target_column],
-                                       current_data[target_column],
-                                       feature_type,
-                                       data_drift_options.cat_target_stattest_func)
-            drift_score, drift_detected = _compute_statistic(
-                reference_data, current_data, feature_type, target_column, target_test, threshold
-            )
-            result.target_metrics = DataDriftMetrics(
+        data_mapping = {
+            "reference_data": reference_data,
+            "current_data": current_data,
+        }
+        if target_column:
+            metrics = self._get_cat_column_drift(
                 column_name=target_column,
-                stattest_name=target_test.display_name,
-                drift_score=drift_score,
-                drift_detected=drift_detected,
+                data_mapping=data_mapping,
+                feature_type=feature_type,
             )
-        if prediction_column is not None:
-            pred_test = get_stattest(reference_data[prediction_column],
-                                     current_data[prediction_column],
-                                     feature_type,
-                                     data_drift_options.cat_target_stattest_func)
-
-            drift_score, drift_detected = _compute_statistic(
-                reference_data, current_data, feature_type, prediction_column, pred_test, threshold
-            )
-            result.prediction_metrics = DataDriftMetrics(
+            result.target_metrics = metrics
+        if prediction_column:
+            metrics = self._get_cat_column_drift(
                 column_name=prediction_column,
-                stattest_name=pred_test.display_name,
-                drift_score=drift_score,
-                drift_detected=drift_detected,
+                data_mapping=data_mapping,
+                feature_type=feature_type
             )
+            result.prediction_metrics = metrics
 
         return result
 
-    def _get_pred_labels_from_prob(self, df: pd.DataFrame, prediction_column: list):
+    @staticmethod
+    def _get_pred_labels_from_prob(df: pd.DataFrame,
+                                   prediction_column: list):
         array_prediction = df[prediction_column].to_numpy()
         prediction_ids = np.argmax(array_prediction, axis=-1)
         prediction_labels = [prediction_column[x] for x in prediction_ids]
         return prediction_labels
+
+    def _get_cat_column_drift(
+            self,
+            column_name: str,
+            data_mapping: Dict[str, pd.DataFrame],
+            feature_type: str
+    ) -> DataDriftMetrics:
+        columns = {
+            data_name: self._get_clean_column(column_name, data)
+            for data_name, data in data_mapping.items()
+        }
+        self._check_columns_not_empty(
+            columns=columns, column_name=column_name
+        )
+        display_name, statistics = self._compute_statistic(
+            columns,
+            feature_type,
+        )
+        drift_score, drift_detected = statistics
+        metrics = DataDriftMetrics(
+            column_name=column_name,
+            stattest_name=display_name,
+            drift_score=drift_score,
+            drift_detected=drift_detected,
+        )
+        return metrics
+
+    def _get_clean_column(
+            self,
+            column_name: str,
+            data: pd.DataFrame,
+    ) -> pd.Series:
+        column = data[column_name]
+        column = self._remove_nans_and_infinities(column)
+        return column
+
+    @staticmethod
+    def _check_columns_not_empty(
+            columns: Dict[str, pd.Series], column_name: str):
+        empty_columns = [
+            data_name for data_name, column in columns.items() if column.empty
+        ]
+        if empty_columns:
+            msg = (
+                f"After removing invalid values, the {column_name} "
+                f"column is empty in the following data sets: \n    - "
+            )
+            msg += "\n    - ".join(empty_columns)
+            raise ValueError(msg)
+
+    def _compute_statistic(
+            self,
+            column_mapping: Dict[str, pd.Series],
+            feature_type: str,
+    ):
+        reference_column = column_mapping["reference_data"]
+        current_column = column_mapping["current_data"]
+        data_drift_options = self.options_provider.get(DataDriftOptions)
+
+        stat_test = get_stattest(
+            reference_data=reference_column,
+            current_data=current_column,
+            feature_type=feature_type,
+            stattest_func=data_drift_options.cat_target_stattest_func,
+        )
+
+        threshold = data_drift_options.cat_target_threshold
+        statistic = stat_test(
+            reference_data=reference_column,
+            current_data=current_column,
+            feature_type=feature_type,
+            threshold=threshold,
+        )
+        return stat_test.display_name, statistic
+
+    def _remove_nans_and_infinities(self, column: pd.Series) -> pd.Series:
+        keep_mask = self._get_keep_mask(column)
+        column = column.loc[keep_mask]
+        return column
+
+    @staticmethod
+    def _get_keep_mask(column: pd.Series) -> pd.Series:
+        finite_mask = ~column.isin([np.inf, -np.inf])
+        non_nan_masks = column.notna()
+        keep_mask = finite_mask & non_nan_masks
+        return keep_mask
