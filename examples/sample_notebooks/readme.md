@@ -5,7 +5,9 @@ Here you can find simple examples on toy datasets to quickly explore what Eviden
 Report | Jupyter notebook | Colab notebook | Data source 
 --- | --- | --- | --- 
 Data Drift + Categorical Target Drift (Multiclass) | [link](multiclass_target_and_data_drift_iris.ipynb) | [link](https://colab.research.google.com/drive/1Dd6ZzIgeBYkD_4bqWZ0RAdUpCU0b6Y6H) | Iris plants sklearn.datasets 
+Data Drift + Categorical Target Drift (Multiclass, Probabilistic predictions) | [link](prob_multiclass_target_and_data_drift_iris.ipynb) | [link](https://colab.research.google.com/drive/1zJ0-_keElHzM6Uaj-RnVPfTYoBO8fQ6H) | Iris plants sklearn.datasets 
 Data Drift + Categorical Target Drift (Binary) | [link](binary_target_and_data_drift_breast_cancer.ipynb) | [link](https://colab.research.google.com/drive/1gpzNuFbhoGc4-DLAPMJofQXrsX7Sqsl5) | Breast cancer sklearn.datasets
+Data Drift + Categorical Target Drift (Binary, Probabilistic predictions) | [link](prob_binary_target_and_data_drift_breast_cancer.ipynb) | [link](https://colab.research.google.com/drive/1MTkNE43ILDbu-SfVTLPBC4mkXSZ-BCA8) | Breast cancer sklearn.datasets
 Data Drift + Numerical Target Drift | [link](numerical_target_and_data_drift_california_housing.ipynb) | [link](https://colab.research.google.com/drive/1TGt-0rA7MiXsxwtKB4eaAGIUwnuZtyxc) | California housing sklearn.datasets 
 Regression Performance | [link](regression_performance_bike_sharing_demand.ipynb) | [link](https://colab.research.google.com/drive/1ONgyDXKMFyt9IYUwLpvfxz9VIZHw-qBJ) | Bike sharing UCI: [link](https://archive.ics.uci.edu/ml/datasets/bike+sharing+dataset)
 Classification Performance (Multiclass) | [link](classification_performance_multiclass_iris.ipynb) | [link](https://colab.research.google.com/drive/1pnYbVJEHBqvVmHUXzG-kw-Fr6PqhzRg3) | Iris plants sklearn.datasets 
