@@ -12,7 +12,7 @@ from evidently.analyzers.base_analyzer import Analyzer
 from evidently.analyzers.base_analyzer import BaseAnalyzerResult
 from evidently.analyzers.stattests import get_stattest
 from evidently.options import DataDriftOptions
-from evidently.analyzers.utils import process_columns
+from evidently.analyzers.utils import process_columns, recognize_task
 
 
 def dataset_drift_evaluation(p_values, drift_share=0.5) -> Tuple[int, float, bool]:
@@ -65,7 +65,33 @@ class DataDriftAnalyzer(Analyzer):
         columns = process_columns(reference_data, column_mapping)
         num_feature_names = columns.num_feature_names
         cat_feature_names = columns.cat_feature_names
+        target_column = columns.utility_columns.target
+        prediction_column = columns.utility_columns.prediction
         drift_share = data_drift_options.drift_share
+
+        # define type of target and prediction
+        if target_column is not None:
+            task = recognize_task(target_column, reference_data)
+            if task == 'regression':
+                num_feature_names += [target_column]
+            else:
+                cat_feature_names += [target_column]
+        if prediction_column is not None:
+            if isinstance(prediction_column, list) and len(prediction_column) > 2:
+                reference_data['predicted_labels'] = self._get_pred_labels_from_prob(reference_data, prediction_column)
+                current_data['predicted_labels'] = self._get_pred_labels_from_prob(current_data, prediction_column)
+                columns.utility_columns.prediction = 'predicted_labels'
+                cat_feature_names += [columns.utility_columns.prediction]
+            elif isinstance(prediction_column, list) and len(prediction_column) == 2:
+                reference_data['prediction'] = reference_data[prediction_column[0]].values
+                current_data['prediction'] = current_data[prediction_column[0]].values
+                columns.utility_columns.prediction = 'prediction'
+                num_feature_names += [columns.utility_columns.prediction]
+            elif isinstance(prediction_column, str):
+                if reference_data[prediction_column].nunique() > 5:
+                    num_feature_names += [prediction_column]
+                else:
+                    cat_feature_names += [prediction_column]
 
         # calculate result
         features_metrics = {}
@@ -134,3 +160,9 @@ class DataDriftAnalyzer(Analyzer):
             metrics=result_metrics,
         )
         return result
+
+    def _get_pred_labels_from_prob(self, df: pd.DataFrame, prediction_column: list):
+        array_prediction = df[prediction_column].to_numpy()
+        prediction_ids = np.argmax(array_prediction, axis=-1)
+        prediction_labels = [prediction_column[x] for x in prediction_ids]
+        return prediction_labels

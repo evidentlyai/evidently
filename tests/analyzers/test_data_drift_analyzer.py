@@ -51,8 +51,8 @@ def test_data_drift_analyzer_as_dict_format(data_drift_analyzer: DataDriftAnalyz
     assert result.options is not None
     assert result.columns is not None
     # check features in results
-    assert result.metrics.n_features == 4
-    assert result.columns.cat_feature_names == ['categorical_feature_1', 'categorical_feature_2']
+    assert result.metrics.n_features == 5
+    assert result.columns.cat_feature_names == ['categorical_feature_1', 'categorical_feature_2', 'target']
     assert result.columns.num_feature_names == ['numerical_feature_1', 'numerical_feature_2']
     assert 'numerical_feature_1' in result.metrics.features
     assert 'numerical_feature_2' in result.metrics.features

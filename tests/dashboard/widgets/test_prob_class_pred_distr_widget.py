@@ -4,7 +4,6 @@ import pandas as pd
 
 import pytest
 
-from evidently.analyzers.prob_classification_performance_analyzer import ProbClassificationPerformanceAnalyzer
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import OptionsProvider
 from evidently.pipeline.column_mapping import ColumnMapping
@@ -18,10 +17,6 @@ def widget() -> ProbClassPredDistrWidget:
     widget = ProbClassPredDistrWidget("test_widget")
     widget.options_provider = options_provider
     return widget
-
-
-def test_prob_class_pred_distr_widget_analyzer_list(widget: ProbClassPredDistrWidget) -> None:
-    assert widget.analyzers() == [ProbClassificationPerformanceAnalyzer]
 
 
 @pytest.mark.parametrize(
@@ -78,12 +73,13 @@ def test_prob_class_pred_distr_widget_simple_case(
     if dataset is not None:
         widget.dataset = dataset
 
-    analyzer = ProbClassificationPerformanceAnalyzer()
-    analyzer.options_provider = widget.options_provider
-    analyzer_results = analyzer.calculate(reference_data, current_data, data_mapping)
-    result = widget.calculate(
-        reference_data, current_data, data_mapping, {ProbClassificationPerformanceAnalyzer: analyzer_results}
-    )
+    analyzers = {}
+    for analyzer_type in widget.analyzers():
+        analyzer = analyzer_type()
+        analyzer.options_provider = widget.options_provider
+        analyzer_results = analyzer.calculate(reference_data, current_data, data_mapping)
+        analyzers[analyzer_type] = analyzer_results
+    result = widget.calculate(reference_data, current_data, data_mapping, analyzers)
 
     assert result.type == expected_result.type
     assert result.title == expected_result.title

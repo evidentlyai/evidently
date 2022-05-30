@@ -240,6 +240,8 @@ class DataDriftTableWidget(Widget):
         data_drift_results = DataDriftAnalyzer.get_results(analyzers_results)
         all_features = data_drift_results.columns.get_all_features_list()
         date_column = data_drift_results.columns.utility_columns.date
+        target_column = data_drift_results.columns.utility_columns.target
+        prediction_column = data_drift_results.columns.utility_columns.prediction
 
         if current_data is None:
             raise ValueError("current_data should be present")
@@ -248,7 +250,22 @@ class DataDriftTableWidget(Widget):
         params_data = []
         data_drift_options = self.options_provider.get(DataDriftOptions)
         quality_metrics_options = self.options_provider.get(QualityMetricsOptions)
-        for feature_name in all_features:
+
+        # sort columns by drift score
+        df_for_sort = pd.DataFrame()
+        df_for_sort['features'] = all_features
+        df_for_sort['scores'] = [data_drift_results.metrics.features[feature].p_value for feature in all_features]
+        all_features = df_for_sort.sort_values('scores', ascending=False).features.tolist()
+        columns = []
+        if target_column:
+            columns.append(target_column)
+            all_features.remove(target_column)
+        if prediction_column and isinstance(prediction_column, str):
+            columns.append(prediction_column)
+            all_features.remove(prediction_column)
+        columns = columns + all_features
+
+        for feature_name in columns:
             params_data.append(
                 _generate_feature_params(
                     feature_name,
@@ -258,7 +275,7 @@ class DataDriftTableWidget(Widget):
 
         # set additionalGraphs
         additional_graphs_data = []
-        for feature_name in all_features:
+        for feature_name in columns:
             # plot distributions
             if data_drift_results.metrics.features[feature_name].feature_type == "num":
                 additional_graphs_data += _generate_additional_graph_num_feature(
@@ -312,7 +329,7 @@ class DataDriftTableWidget(Widget):
                     },
                     {"title": "Data Drift", "field": "f2"},
                     {"title": "Stat Test", "field": "stattest_name"},
-                    {"title": "Drift Score", "field": "f5", "sort": "asc"},
+                    {"title": "Drift Score", "field": "f5"},
                 ],
                 "data": params_data,
             },

@@ -15,7 +15,7 @@ from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.analyzers.base_analyzer import BaseAnalyzerResult
 from evidently.analyzers.utils import DatasetColumns
-from evidently.analyzers.utils import process_columns
+from evidently.analyzers.utils import process_columns, recognize_task
 
 
 @dataclass
@@ -198,27 +198,6 @@ class DataQualityAnalyzer(Analyzer):
 
         return result
 
-    @staticmethod
-    def _recognize_task(target_name: str, reference_data: pd.DataFrame) -> str:
-        """Try to guess about the target type:
-        if the target has a numeric type and number of unique values > 5: task == ‘regression’
-        in all other cases task == ‘classification’.
-
-        Args:
-            target_name: name of target column.
-            reference_data: usually the data which you used in training.
-
-        Returns:
-            Task parameter.
-        """
-        if pd.api.types.is_numeric_dtype(reference_data[target_name]) and reference_data[target_name].nunique() >= 5:
-            task = "regression"
-
-        else:
-            task = "classification"
-
-        return task
-
     def calculate(
         self,
         reference_data: pd.DataFrame,
@@ -249,7 +228,7 @@ class DataQualityAnalyzer(Analyzer):
             task = column_mapping.task
 
         elif column_mapping.task is None and target_name:
-            task = self._recognize_task(target_name, reference_data)
+            task = recognize_task(target_name, reference_data)
 
         else:
             task = None

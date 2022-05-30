@@ -50,7 +50,7 @@ def test_data_drift_profile_section_with_calculated_results():
     assert 'dataset_drift' in result_data['metrics']
     assert 'n_drifted_features' in result_data['metrics']
     assert 'n_features' in result_data['metrics']
-    assert result_data['metrics']['n_features'] == 2
+    assert result_data['metrics']['n_features'] == 3
     assert 'numerical_feature' in result_data['metrics']
     _check_feature_metrics(result_data['metrics']['numerical_feature'], 'num')
     assert 'categorical_feature' in result_data['metrics']
