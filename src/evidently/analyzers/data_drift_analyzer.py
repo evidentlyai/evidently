@@ -137,9 +137,19 @@ class DataDriftAnalyzer(Analyzer):
 
             p_values[feature_name] = PValueWithDrift(p_value, drifted)
 
+            ref_counts = feature_ref_data.value_counts(sort=False)
+            cur_counts = feature_cur_data.value_counts(sort=False)
+            keys = set(ref_counts.keys()).union(set(cur_counts.keys()))
+            for key in keys:
+                if key not in ref_counts:
+                    ref_counts[key] = 0
+                if key not in cur_counts:
+                    cur_counts[key] = 0
+            ref_small_hist = list(reversed(list(map(list, zip(*sorted(ref_counts.items(), key=lambda x: x[0]))))))
+            cur_small_hist = list(reversed(list(map(list, zip(*sorted(cur_counts.items(), key=lambda x: x[0]))))))
             features_metrics[feature_name] = DataDriftAnalyzerFeatureMetrics(
-                ref_small_hist=list(reversed(list(map(list, zip(*feature_ref_data.value_counts().items()))))),
-                current_small_hist=list(reversed(list(map(list, zip(*feature_cur_data.value_counts().items()))))),
+                ref_small_hist=ref_small_hist,
+                current_small_hist=cur_small_hist,
                 feature_type='cat',
                 stattest_name=stat_test.display_name,
                 p_value=p_value,
@@ -161,8 +171,8 @@ class DataDriftAnalyzer(Analyzer):
         )
         return result
 
-    def _get_pred_labels_from_prob(self, df: pd.DataFrame, prediction_column: list):
-        array_prediction = df[prediction_column].to_numpy()
+    def _get_pred_labels_from_prob(self, data: pd.DataFrame, prediction_column: list):
+        array_prediction = data[prediction_column].to_numpy()
         prediction_ids = np.argmax(array_prediction, axis=-1)
         prediction_labels = [prediction_column[x] for x in prediction_ids]
         return prediction_labels
