@@ -81,7 +81,7 @@ To stop the process of sending data, cancel the execution of the example script 
 If the Docker containers were not stopped after that, run a command:
 
 ```bash
-docker compose down
+docker-compose down
 ```
 
 ## How to customize the Grafana Dashboard view 
