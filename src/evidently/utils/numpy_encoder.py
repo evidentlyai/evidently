@@ -13,9 +13,9 @@ _TYPES_MAPPING = (
     ((np.float_, np.float16, np.float32, np.float64), float),
     ((np.ndarray,), lambda obj: obj.tolist()),
     ((np.bool, np.bool_), bool),
-    ((pd.Timestamp, pd.Timedelta), str),
-    ((datetime.datetime, datetime.date), lambda obj: obj.isoformat()),
-    ((np.void, type(pd.NaT)), lambda obj: None),
+    ((pd.Timedelta, ), str),
+    ((np.void, type(pd.NaT)), lambda obj: None),  # should be before datetime as NaT is subclass of datetime.
+    ((pd.Timestamp, datetime.datetime, datetime.date), lambda obj: obj.isoformat()),
 )
 
 
