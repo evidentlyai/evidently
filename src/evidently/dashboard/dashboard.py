@@ -36,8 +36,8 @@ class TemplateParams:
 
 def _dashboard_info_to_json(dashboard_info: DashboardInfo):
     asdict_result = asdict(dashboard_info)
-    # for widget in asdict_result['widgets']:
-    #     widget.pop('additionalGraphs', None)
+    for widget in asdict_result['widgets']:
+        widget.pop('additionalGraphs', None)
     return json.dumps(asdict_result, cls=NumpyEncoder)
 
 
@@ -59,7 +59,7 @@ svg {{
 </style>
 <script>
     var {params.dashboard_id} = {_dashboard_info_to_json(params.dashboard_info)};
-    var additional_graphs_{params.dashboard_id} = {json.dumps(params.additional_graphs)};
+    var additional_graphs_{params.dashboard_id} = {json.dumps(params.additional_graphs, cls=NumpyEncoder)};
 </script>
 <script>
 function domReady(fn) {{
@@ -91,7 +91,7 @@ def file_html_template(params: TemplateParams):
     lib_block = f"""<script>{__load_js()}</script>""" if params.embed_lib else "<!-- no embedded lib -->"
     data_block = f"""<script>
     var {params.dashboard_id} = {_dashboard_info_to_json(params.dashboard_info)};
-    var additional_graphs_{params.dashboard_id} = {json.dumps(params.additional_graphs)};
+    var additional_graphs_{params.dashboard_id} = {json.dumps(params.additional_graphs, cls=NumpyEncoder)};
 </script>""" if params.embed_data else "<!-- no embedded data -->"
     js_files_block = "\n".join([f'<script src="{file}"></script>' for file in params.include_js_files])
     return f"""
