@@ -1,10 +1,10 @@
 from typing import TypeVar, Generic, Type, Dict, Any
 
-from .color_scheme import ColorOptions
+from .color_scheme import ColorOptions, solarized_color_options
 from .data_drift import DataDriftOptions
 from .quality_metrics import QualityMetricsOptions
 
-TypeParam = TypeVar('TypeParam')
+TypeParam = TypeVar("TypeParam")
 
 
 class OptionsProvider(Generic[TypeParam]):

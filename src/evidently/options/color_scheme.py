@@ -2,7 +2,14 @@ from dataclasses import dataclass
 
 RED = "#ed0400"
 GREY = "#4d4d4d"
-COLOR_DISCRETE_SEQUENCE = ["#ed0400", "#0a5f38", "#6c3461", "#71aa34", "#d8dcd6", "#6b8ba4"]
+COLOR_DISCRETE_SEQUENCE = [
+    "#ed0400",
+    "#0a5f38",
+    "#6c3461",
+    "#71aa34",
+    "#d8dcd6",
+    "#6b8ba4",
+]
 
 
 @dataclass
@@ -39,3 +46,27 @@ class ColorOptions:
 
     def get_reference_data_color(self):
         return self.reference_data_color or self.secondary_color
+
+
+def _set_color_options(_self, **kwargs):
+    for k, v in kwargs.items():
+        setattr(_self, k, v)
+
+
+solarized_color_options = ColorOptions()
+
+_set_color_options(
+    solarized_color_options,
+    primary_color="#268bd2",
+    secondary_color="#073642",
+    current_data_color="#268bd2",
+    reference_data_color="#073642",
+    color_sequence=[
+        "#268bd2",
+        "#2aa198",
+        "#859900",
+        "#b58900",
+        "#cb4b16",
+        "#dc322f",
+    ],
+)
