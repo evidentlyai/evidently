@@ -3,7 +3,7 @@
 Thank you for considering contributing to Evidently!
 
 ## How can you contribute?
-We welcome both code and none-code contributions. You can:
+We welcome both code and non-code contributions. You can:
 * Report a bug
 * Improve documentation
 * Submit a bug fix
@@ -17,15 +17,15 @@ Here is the general workflow:
 * Clone the repository 
 * Make the changes and commit them 
 * Push the branch to your local fork
-* Make sure that all the tests are passed sucessfully 
+* Make sure that all the tests are passing sucessfully 
 * Submit a Pull Request with described changes 
 
 ### Additional information
 - Evidently is under active development. 
-- We are happy to receive a pull request for bug fixes or new functions for any section of the library. If you need help or guidance, you can open an Issue first.
+- We are happy to receive a Pull Request for bug fixes or new functions for any section of the library. If you need help or guidance, you can open an Issue first.
 - The only exception is UI, because it is in the process of significant refactoring! If you want to contribute to UI, please first come to our [Discord channel](https://discord.gg/xZjKRaNp8b) for a quick chat.  
-- We highly recommend that you open an issue, describe your contribution, share all needed information there and link it to a pull request.
-- We evaluate pull requests taking into account: code architecture and quality, code style, comments & docstrings and coverage by tests.
+- We highly recommend that you open an issue, describe your contribution, share all needed information there and link it to a Pull Request.
+- We evaluate Pull Requests taking into account: code architecture and quality, code style, comments & docstrings and coverage by tests.
 
 ## 1. Clone repository
 ```sh
@@ -67,7 +67,7 @@ pip install -e .[dev]
 ### Running flake8 
 We use flake8 for code style checks.
 ```sh
-flake8 evidently
+flake8 src
 ```
 
 ### Running mypy
