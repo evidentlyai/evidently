@@ -21,7 +21,7 @@ def _ks_stat_test(
         threshold: level of significance
     Returns:
         p_value: two-tailed p-value
-        test_result: wether the drift is detected
+        test_result: whether the drift is detected
     """
     p_value = ks_2samp(reference_data, current_data)[1]
     return p_value, p_value <= threshold

@@ -17,10 +17,10 @@ def _wasserstein_distance_norm(
         reference_data: reference data
         current_data: current data
         feature_type: feature type
-        threshold: all walues above this threshold means data drift
+        threshold: all values above this threshold means data drift
     Returns:
         wasserstein_distance_norm: normed Wasserstein distance
-        test_result: wether the drift is detected
+        test_result: whether the drift is detected
     """
     norm = max(np.std(reference_data), 0.001)
     wd_norm_value = stats.wasserstein_distance(reference_data, current_data) / norm
