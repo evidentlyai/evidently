@@ -73,6 +73,7 @@ flake8 src
 ### Running mypy
 We use mypy for object types checks.
 ```sh
+# if you are running for the first time, use `mypy --install-types` instead
 mypy
 ```
 
