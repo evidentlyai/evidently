@@ -72,7 +72,7 @@ Quantile-quantile plot ([Q-Q plot](https://en.wikipedia.org/wiki/Q%E2%80%93Q\_pl
 
 ![](../.gitbook/assets/reg_perf_error_normality.png)
 
-**Next, we explore in detail the two segments in the dataset: 5% of predictions with the highest negative and positive errors. We refer to them as "underesimation" and "overestimation" groups. We refer to the rest of the predictions as "majority".**
+**Next, we explore in detail the two segments in the dataset: 5% of predictions with the highest negative and positive errors. We refer to them as "underestimation" and "overestimation" groups. We refer to the rest of the predictions as "majority".**
 
 ### **8. Mean Error per Group**
 
