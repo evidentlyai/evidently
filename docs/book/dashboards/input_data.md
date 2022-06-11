@@ -12,7 +12,7 @@ If you work in the notebook, you should prepare the data as a `pandas.DataFrame`
 
 To generate the dashboards and profiles, Evidently usually performs comparison between two datasets. 
 
-* The first dataset is the **reference**. This can be training or earlier production data that serves as a baseline for comparoson.
+* The first dataset is the **reference**. This can be training or earlier production data that serves as a baseline for comparison.
 * The second dataset is **current**. It can include the recent production data. 
 
 ![](<../.gitbook/assets/two\_datasets\_classification (1).png>)
@@ -37,7 +37,7 @@ In practice, you can use Evidently to compare two datasets in different scenario
 * **Production vs Training**
   * To compare the **Production** model performance to the **Training** period.
   * Pass the training data as "Reference", and production data as "Current".
-* **Current perfromance vs Past**
+* **Current performance vs Past**
   * To compare the **Current** production performance to an **Earlier** period.
   * For example, to compare the last week to the previous week or month.
   * Pass the earlier data as "Reference", and newer data as "Current".

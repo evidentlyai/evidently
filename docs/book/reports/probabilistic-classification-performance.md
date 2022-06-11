@@ -113,7 +113,7 @@ In this table, we show a number of plots for each feature. To expand the plots, 
 
 ![](../.gitbook/assets/prob_class_perf_classification_quality_by_feature.png)
 
-In the tab “ALL”, we plot the distribution of classes against the values of the feature. This is the “Target Behavior by Feature” plot from the [Categorial Target Drift ](categorical-target-drift.md)report.&#x20;
+In the tab “ALL”, we plot the distribution of classes against the values of the feature. This is the “Target Behavior by Feature” plot from the [Categorical Target Drift ](categorical-target-drift.md)report.&#x20;
 
 If you compare the two datasets, it visually shows the changes in the feature distribution and in the relationship between the values of the feature and the target.&#x20;
 

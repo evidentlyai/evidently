@@ -21,7 +21,7 @@ You can specify the following parameters:
   * Cut the data below the given quantile and above _1 - the given quantile_ from the histogram plot if side parameter == _'two-sided'_. 
   * Data used for metric calculation doesn't change. 
   * Applies to all features (if passed as _tuple_) or certain features (if passed as _dictionary_).
-  * Works to the Caterical Target Drift, Probabilistic Classification and Classification reports, and affects tables with Target/Prediction behavior by feature, and Classification Quality by Feature.  
+  * Works to the Categorical Target Drift, Probabilistic Classification and Classification reports, and affects tables with Target/Prediction behavior by feature, and Classification Quality by Feature.  
 
 ### How to define Quality Metrics Options
 

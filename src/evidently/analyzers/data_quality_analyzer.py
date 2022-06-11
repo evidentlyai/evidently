@@ -344,9 +344,9 @@ class DataQualityAnalyzer(Analyzer):
             result.percentile_75 = np.round(common_stats["75%"], 2)
 
         if feature_type == "datetime":
-            # cast datatime value to str for datetime features
+            # cast datetime value to str for datetime features
             result.most_common_value = str(result.most_common_value)
-            # cast datatime value to str for datetime features
+            # cast datetime value to str for datetime features
             result.max = str(feature.max())
             result.min = str(feature.min())
 

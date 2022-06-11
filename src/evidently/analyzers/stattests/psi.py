@@ -22,7 +22,7 @@ def psi(
         n_bins: number of bins
     Returns:
         psi_value: calculated PSI
-        test_result: wether the drift is detected
+        test_result: whether the drift is detected
     """
     reference_percents, current_percents = get_binned_data(reference_data, current_data, feature_type, n_bins)
 
