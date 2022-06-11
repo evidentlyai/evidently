@@ -70,7 +70,8 @@ def download_test_datasets(force: bool):
 
 def run_docker_compose():
     logging.info("Run docker compose")
-    run_script(cmd=["docker", "compose", "up", "-d"], wait=True)
+    run_script(cmd=["docker-compose", "up"], wait=True)
+    
 
 
 def run_script(cmd: list, wait: bool) -> None:
