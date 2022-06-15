@@ -11,5 +11,5 @@ class DataIntegrityMetricsResults:
 class DataIntegrityMetrics(Metric[DataIntegrityMetricsResults]):
     def calculate(self, data: InputData, metrics: dict) -> DataIntegrityMetricsResults:
         return DataIntegrityMetricsResults(
-            number_of_columns=len(data.current_data.columns)
+            number_of_columns=len(data.current_data.columns),
         )
