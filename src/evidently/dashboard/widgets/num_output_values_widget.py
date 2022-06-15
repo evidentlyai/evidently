@@ -65,7 +65,7 @@ class NumOutputValuesWidget(Widget):
 
         output_values = go.Figure()
 
-        output_values.add_trace(go.Scatter(
+        output_values.add_trace(go.Scattergl(
             x=reference_data[utility_columns_date] if utility_columns_date else reference_data.index,
             y=reference_data[column_name],
             mode='markers',
@@ -76,7 +76,7 @@ class NumOutputValuesWidget(Widget):
             )
         ))
 
-        output_values.add_trace(go.Scatter(
+        output_values.add_trace(go.Scattergl(
             x=current_data[utility_columns_date] if utility_columns_date else current_data.index,
             y=current_data[column_name],
             mode='markers',

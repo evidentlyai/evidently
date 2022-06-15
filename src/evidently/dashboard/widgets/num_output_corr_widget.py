@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-import json
 from typing import Optional
 
 import pandas as pd
@@ -9,6 +8,7 @@ import plotly.graph_objs as go
 
 from evidently import ColumnMapping
 from evidently.analyzers.num_target_drift_analyzer import NumTargetDriftAnalyzer
+from evidently.dashboard.widgets.utils import fig_to_json
 from evidently.model.widget import BaseWidgetInfo
 from evidently.dashboard.widgets.widget import Widget
 from evidently.options import ColorOptions
@@ -59,7 +59,7 @@ class NumOutputCorrWidget(Widget):
         output_corr.add_trace(go.Bar(y=list(ref_output_corr.values()), x=list(ref_output_corr.keys()),
                                      marker_color=color_options.get_reference_data_color(), name='Reference'))
 
-        output_corr.add_trace(go.Bar(y=list(current_output_corr.values()), x=list(ref_output_corr.keys()),
+        output_corr.add_trace(go.Bar(y=list(current_output_corr.values()), x=list(current_output_corr.keys()),
                                      marker_color=color_options.get_current_data_color(), name='Current'))
 
         output_corr.update_layout(xaxis_title="Features", yaxis_title="Correlation",
@@ -68,7 +68,8 @@ class NumOutputCorrWidget(Widget):
                                       showticklabels=True
                                   ))
 
-        output_corr_json = json.loads(output_corr.to_json())
+        # output_corr_json = json.loads(output_corr.to_json())
+        output_corr_json = fig_to_json(output_corr)
 
         return BaseWidgetInfo(
             title=self.title,

@@ -40,7 +40,7 @@ export const BigTableDetails: React.FunctionComponent<BigTableDetailsProps> = (p
                 : <LoadableView func={() => dashboardContext.getAdditionGraphData(props.details.parts[0].id)}>
                         {params => <BigGraphWidgetContent {...params} widgetSize={props.widgetSize} />}
                     </LoadableView>}
-                {props.details.insights.map(row => <InsightBlock data={row} />)}
+                {props.details.insights === undefined ? <></> : props.details.insights.map(row => <InsightBlock data={row} />)}
             </Box>
     }</DashboardContext.Consumer>;
 }

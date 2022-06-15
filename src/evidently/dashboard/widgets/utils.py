@@ -1,4 +1,11 @@
 import pandas as pd
+from plotly.graph_objs import Figure
+
+
+def fig_to_json(figure: Figure) -> dict:
+    result = figure.to_plotly_json()
+    result['layout'].pop('template', None)
+    return result
 
 
 class CutQuantileTransformer:
