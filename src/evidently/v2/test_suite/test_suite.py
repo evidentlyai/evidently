@@ -1,10 +1,10 @@
 import uuid
-from typing import List, Optional
+from typing import List, Optional, Union
 
 import pandas as pd
 
 from evidently import ColumnMapping
-from evidently.dashboard.dashboard import TemplateParams
+from evidently.dashboard.dashboard import TemplateParams, SaveMode, SaveModeMap, save_lib_files, save_data_file
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
 from evidently.v2.metrics.base_metric import InputData, Metric
@@ -32,17 +32,65 @@ class TestSuite:
         self._inner_suite.run_checks()
 
     def _repr_html_(self):
-        return self._render(determine_template("inline"))
+        dashboard_id, dashboard_info, graphs = self._build_dashboard_info()
+        template_params = TemplateParams(
+            dashboard_id=dashboard_id,
+            dashboard_info=dashboard_info,
+            additional_graphs=graphs)
+        return self._render(determine_template("inline"), template_params)
 
     def show(self, mode='auto'):
+        dashboard_id, dashboard_info, graphs = self._build_dashboard_info()
+        template_params = TemplateParams(
+            dashboard_id=dashboard_id,
+            dashboard_info=dashboard_info,
+            additional_graphs=graphs)
         # pylint: disable=import-outside-toplevel
         try:
             from IPython.display import HTML
-            return HTML(self._render(determine_template(mode)))
+            return HTML(self._render(determine_template(mode), template_params))
         except ImportError as err:
             raise Exception("Cannot import HTML from IPython.display, no way to show html") from err
 
-    def _render(self, temple_func):
+    def save_html(self, filename: str, mode: Union[str, SaveMode] = SaveMode.SINGLE_FILE):
+        dashboard_id, dashboard_info, graphs = self._build_dashboard_info()
+        if isinstance(mode, str):
+            _mode = SaveModeMap.get(mode)
+            if _mode is None:
+                raise ValueError(f"Unexpected save mode {mode}. Expected [{','.join(SaveModeMap.keys())}]")
+            mode = _mode
+        if mode == SaveMode.SINGLE_FILE:
+            template_params = TemplateParams(
+                dashboard_id=dashboard_id,
+                dashboard_info=dashboard_info,
+                additional_graphs=graphs,
+            )
+            with open(filename, 'w', encoding='utf-8') as out_file:
+                out_file.write(self._render(determine_template("inline"), template_params))
+        else:
+            font_file, lib_file = save_lib_files(filename, mode)
+            data_file = save_data_file(filename,
+                                       mode,
+                                       dashboard_id,
+                                       dashboard_info,
+                                       graphs)
+            template_params = TemplateParams(
+                dashboard_id=dashboard_id,
+                dashboard_info=dashboard_info,
+                additional_graphs=graphs,
+                embed_lib=False,
+                embed_data=False,
+                embed_font=False,
+                font_file=font_file,
+                include_js_files=[lib_file, data_file],
+            )
+            with open(filename, 'w', encoding='utf-8') as out_file:
+                out_file.write(self._render(determine_template("inline"), template_params))
+
+    def _render(self, temple_func, template_params: TemplateParams):
+        return temple_func(params=template_params)
+
+    def _build_dashboard_info(self):
         test_results = []
         for _, test_result in self._inner_suite.context.test_results.items():
             renderer = find_test_renderer(test_result, self._inner_suite.context.renderers)
@@ -61,7 +109,6 @@ class TestSuite:
             },
             additionalGraphs=[item.info for info in test_results for item in info.details]
         )
-        return temple_func(params=TemplateParams(
-            dashboard_id="evidently_dashboard_" + str(uuid.uuid4()).replace("-", ""),
-            dashboard_info=DashboardInfo("Test Suite", widgets=[test_suite_widget]),
-            additional_graphs={}))
+        return "evidently_dashboard_" + str(uuid.uuid4()).replace("-", ""), \
+               DashboardInfo("Test Suite", widgets=[test_suite_widget]), \
+               {}
