@@ -1,15 +1,16 @@
 from dataclasses import dataclass
+from typing import Optional, Tuple
 
 RED = "#ed0400"
 GREY = "#4d4d4d"
-COLOR_DISCRETE_SEQUENCE = [
+COLOR_DISCRETE_SEQUENCE = (
     "#ed0400",
     "#0a5f38",
     "#6c3461",
     "#71aa34",
     "#d8dcd6",
     "#6b8ba4",
-]
+)
 
 
 @dataclass
@@ -29,17 +30,18 @@ class ColorOptions:
     - overestimation_color - color for overestimation line in regression
     - majority_color - color for majority line in regression
     """
-    primary_color = RED
-    secondary_color = GREY
-    current_data_color = None
-    reference_data_color = None
-    color_sequence = COLOR_DISCRETE_SEQUENCE
-    fill_color = "LightGreen"
-    zero_line_color = "green"
-    non_visible_color = "white"
-    underestimation_color = "#6574f7"
-    overestimation_color = "#ee5540"
-    majority_color = "#1acc98"
+
+    primary_color: str = RED
+    secondary_color: str = GREY
+    current_data_color: Optional[str] = None
+    reference_data_color: Optional[str] = None
+    color_sequence: Tuple[str] = COLOR_DISCRETE_SEQUENCE
+    fill_color: str = "LightGreen"
+    zero_line_color: str = "green"
+    non_visible_color: str = "white"
+    underestimation_color: str = "#6574f7"
+    overestimation_color: str = "#ee5540"
+    majority_color: str = "#1acc98"
 
     def get_current_data_color(self):
         return self.current_data_color or self.primary_color
@@ -48,25 +50,17 @@ class ColorOptions:
         return self.reference_data_color or self.secondary_color
 
 
-def _set_color_options(_self, **kwargs):
-    for k, v in kwargs.items():
-        setattr(_self, k, v)
-
-
-solarized_color_options = ColorOptions()
-
-_set_color_options(
-    solarized_color_options,
+solarized_color_options = ColorOptions(
     primary_color="#268bd2",
     secondary_color="#073642",
     current_data_color="#268bd2",
     reference_data_color="#073642",
-    color_sequence=[
+    color_sequence=(
         "#268bd2",
         "#2aa198",
         "#859900",
         "#b58900",
         "#cb4b16",
         "#dc322f",
-    ],
+    ),
 )
