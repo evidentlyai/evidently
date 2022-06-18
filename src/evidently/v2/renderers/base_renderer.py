@@ -7,7 +7,7 @@ from evidently.model.widget import BaseWidgetInfo, AdditionalGraphInfo
 from evidently.v2.tests.base_test import TestResult
 
 
-class HtmlRenderer:
+class MetricRenderer:
     @abc.abstractmethod
     def render(self, obj) -> BaseWidgetInfo:
         raise NotImplementedError()
@@ -28,6 +28,15 @@ class TestHtmlInfo:
     details: List[DetailsInfo]
 
 
-class TestHtmlRenderer:
-    def render(self, obj: TestResult) -> TestHtmlInfo:
+class TestRenderer:
+    @abc.abstractmethod
+    def render_html(self, obj: TestResult) -> TestHtmlInfo:
         return TestHtmlInfo(name=obj.name, description=obj.description, status=obj.status, details=[])
+
+    @abc.abstractmethod
+    def render_json(self, obj: TestResult) -> dict:
+        return {
+            "name": obj.name,
+            "description": obj.description,
+            "status": obj.status,
+        }

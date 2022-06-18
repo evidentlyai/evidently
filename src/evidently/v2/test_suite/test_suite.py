@@ -1,3 +1,4 @@
+import json
 import uuid
 from typing import List, Optional, Union
 
@@ -7,6 +8,7 @@ from evidently import ColumnMapping
 from evidently.dashboard.dashboard import TemplateParams, SaveMode, SaveModeMap, save_lib_files, save_data_file
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
+from evidently.utils import NumpyEncoder
 from evidently.v2.metrics.base_metric import InputData, Metric
 from evidently.v2.renderers.notebook_utils import determine_template
 from evidently.v2.suite.base_suite import Suite, find_test_renderer
@@ -26,7 +28,7 @@ class TestSuite:
                     self._inner_suite.add_tests(dependency)
         self._inner_suite.add_tests(*tests)
 
-    def run(self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping: ColumnMapping):
+    def run(self, *, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping: ColumnMapping):
         self._inner_suite.verify()
         self._inner_suite.run_calculate(InputData(reference_data, current_data, column_mapping))
         self._inner_suite.run_checks()
@@ -87,6 +89,17 @@ class TestSuite:
             with open(filename, 'w', encoding='utf-8') as out_file:
                 out_file.write(self._render(determine_template("inline"), template_params))
 
+    def json(self) -> dict:
+        test_results = []
+        for _, test_result in self._inner_suite.context.test_results.items():
+            renderer = find_test_renderer(test_result, self._inner_suite.context.renderers)
+            test_results.append(renderer.render_json(test_result))
+        return dict(tests=test_results)
+
+    def save_json(self, filename):
+        with open(filename, 'w', encoding='utf-8') as out_file:
+            json.dump(self.json(), out_file, cls=NumpyEncoder)
+
     def _render(self, temple_func, template_params: TemplateParams):
         return temple_func(params=template_params)
 
@@ -94,7 +107,7 @@ class TestSuite:
         test_results = []
         for _, test_result in self._inner_suite.context.test_results.items():
             renderer = find_test_renderer(test_result, self._inner_suite.context.renderers)
-            test_results.append(renderer.render(test_result))
+            test_results.append(renderer.render_html(test_result))
         test_suite_widget = BaseWidgetInfo(
             title="",
             type="test_suite",
