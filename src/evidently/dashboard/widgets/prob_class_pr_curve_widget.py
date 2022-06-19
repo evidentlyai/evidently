@@ -63,8 +63,8 @@ class ProbClassPRCurveWidget(Widget):
             pr_curve = metrics.pr_curve
             fig = go.Figure()
             fig.add_trace(go.Scatter(
-                x=pr_curve['pr'],
-                y=pr_curve['rcl'],
+                x=pr_curve['rcl'],
+                y=pr_curve['pr'],
                 mode='lines',
                 name='PR',
                 marker=dict(
