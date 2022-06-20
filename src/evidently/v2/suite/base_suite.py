@@ -53,6 +53,7 @@ class Context:
 class ExecutionError(Exception):
     pass
 
+
 class Suite:
     context: Context
 
@@ -68,6 +69,8 @@ class Suite:
         )
 
     def add_metrics(self, *metrics: Metric):
+        for metric in metrics:
+            metric.set_context(self.context)
         self.context.metrics.extend(metrics)
         self.context.state = States.Init
 
@@ -86,7 +89,7 @@ class Suite:
             return
         results = {}
         for metric in self.context.execution_graph.get_metric_execution_iterator():
-            results[type(metric)] = metric.calculate(data, results)
+            results[metric] = metric.calculate(data, results)
 
         self.context.metric_results = results
         self.context.state = States.Calculated
@@ -96,6 +99,6 @@ class Suite:
             raise ExecutionError("No calculation was made, run 'run_calculate' first'")
         test_results = {}
         for test in self.context.execution_graph.get_test_execution_iterator():
-            test_results[test] = test.check(self.context.metric_results, test_results)
+            test_results[test] = test.check()
         self.context.test_results = test_results
         self.context.state = States.Tested

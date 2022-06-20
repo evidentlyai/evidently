@@ -17,13 +17,22 @@ class InputData:
 
 
 class Metric(Generic[TResult]):
+    context = None
+
     @abc.abstractmethod
     def calculate(self, data: InputData, metrics: dict) -> TResult:
         raise NotImplementedError()
 
-    @classmethod
-    def get_results(cls, results) -> TResult:
-        return results[cls]
+    def set_context(self, context):
+        self.context = context
+
+    def get_result(self) -> TResult:
+        if self.context is None:
+            raise ValueError("No context is set")
+        result = self.context.metric_results.get(self, None)
+        if result is None:
+            raise ValueError(f"No result found for metric {self} of type {type(self).__name__}")
+        return result
 
 
 @dataclass

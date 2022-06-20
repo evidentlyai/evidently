@@ -1,3 +1,5 @@
+from typing import Optional
+
 from evidently.v2.metrics.base_metric import NumberRange
 from evidently.v2.metrics.data_integrity import DataIntegrityMetrics
 
@@ -5,14 +7,19 @@ from .base_test import Test, TestResult
 
 
 class TestNumberOfColumns(Test):
-    def __init__(self, count_range: NumberRange):
+    data_integrity: DataIntegrityMetrics
+
+    def __init__(self,
+                 count_range: NumberRange,
+                 data_integrity_metric: Optional[DataIntegrityMetrics] = None):
         self.range = count_range.get_range()
+        if data_integrity_metric is None:
+            self.data_integrity = DataIntegrityMetrics()
+        else:
+            self.data_integrity = data_integrity_metric
 
-    def dependencies(self):
-        return [DataIntegrityMetrics()]
-
-    def check(self, metrics: dict, tests: dict):
-        results = DataIntegrityMetrics.get_results(metrics)
+    def check(self):
+        results = self.data_integrity.get_result()
         passed = (True if self.range[0] is None else results.number_of_columns >= self.range[0]) and \
                  (True if self.range[1] is None else results.number_of_columns <= self.range[1])
         return TestResult("Test Number of Columns",

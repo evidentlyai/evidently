@@ -1,6 +1,6 @@
 import json
 import uuid
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Iterator
 
 import pandas as pd
 
@@ -15,13 +15,19 @@ from evidently.v2.suite.base_suite import Suite, find_test_renderer
 from evidently.v2.tests.base_test import Test
 
 
+def _discover_dependencies(test: Test) -> Iterator[Union[Metric, Test]]:
+    for _, field in test.__dict__.items():
+        if issubclass(type(field), (Metric, Test)):
+            yield field
+
+
 class TestSuite:
     _inner_suite: Suite
 
     def __init__(self, tests: Optional[List[Test]]):
         self._inner_suite = Suite()
         for test in tests:
-            for dependency in test.dependencies():
+            for dependency in _discover_dependencies(test):
                 if issubclass(type(dependency), Metric):
                     self._inner_suite.add_metrics(dependency)
                 if issubclass(type(dependency), Test):
