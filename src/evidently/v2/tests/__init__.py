@@ -1,3 +1,5 @@
-from .data_integrity import TestNumberOfColumns
-
 from .data_drift import TestNumberOfDriftedFeatures
+from .data_integrity import TestNumberOfColumns
+from .data_quality_tests import TestConflictTarget
+from .data_quality_tests import TestConflictPrediction
+from .data_quality_tests import TestValueMin
