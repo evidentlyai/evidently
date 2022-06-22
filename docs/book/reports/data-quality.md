@@ -20,7 +20,7 @@ If you want to run this report for a single dataset, you need to prepare a `pand
 * If you have a **datetime** column and want to learn how features change with time, specify the datetime column in the `column_mapping` parameter.
 * If you have a **target** column and want to see features distribution by target, specify the target column in the `column_mapping` parameter. 
 
-To compare two datastes, you need two `DataFrames` or `csv` files. The schema of both datasets should be identical.
+To compare two datasets, you need two `DataFrames` or `csv` files. The schema of both datasets should be identical.
 
 Feature types (numerical, categorical, datetime) will be parsed based on pandas column type. If you work with `csv` files in CLI, or want to specify a different feature mapping strategy, you can explicitly set the feature type using `column_mapping`.
 

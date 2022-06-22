@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # coding: utf-8
-import json
 from typing import Optional, List
 
 import pandas as pd
@@ -12,7 +11,7 @@ from evidently import ColumnMapping
 from evidently.analyzers.data_drift_analyzer import DataDriftAnalyzer, DataDriftAnalyzerFeatureMetrics
 from evidently.model.widget import BaseWidgetInfo, AdditionalGraphInfo
 from evidently.dashboard.widgets.widget import Widget
-from evidently.dashboard.widgets.utils import CutQuantileTransformer
+from evidently.dashboard.widgets.utils import CutQuantileTransformer, fig_to_json
 from evidently.options import ColorOptions
 from evidently.options import DataDriftOptions
 from evidently.options import QualityMetricsOptions
@@ -97,7 +96,7 @@ def _generate_additional_graph_num_feature(
         yaxis_title="Share",
     )
 
-    distr_figure = json.loads(fig.to_json())
+    distr_figure = fig_to_json(fig)
 
     # plot drift
     reference_mean = np.mean(reference_data[name][np.isfinite(reference_data[name])])
@@ -107,7 +106,7 @@ def _generate_additional_graph_num_feature(
     fig = go.Figure()
 
     fig.add_trace(
-        go.Scatter(
+        go.Scattergl(
             x=current_data[date_column] if date_column else current_data.index,
             y=current_data[name],
             mode="markers",
@@ -122,7 +121,7 @@ def _generate_additional_graph_num_feature(
         x0 = current_data.index.sort_values()[1]
 
     fig.add_trace(
-        go.Scatter(
+        go.Scattergl(
             x=[x0, x0],
             y=[
                 reference_mean - conf_interval_n_sigmas * reference_std,
@@ -170,7 +169,7 @@ def _generate_additional_graph_num_feature(
         ],
     )
 
-    drift_figure = json.loads(fig.to_json())
+    drift_figure = fig_to_json(fig)
 
     # add distributions data
     return [
@@ -221,7 +220,7 @@ def _generate_additional_graph_cat_feature(
         yaxis_title="Share",
     )
 
-    distr_figure = json.loads(fig.to_json())
+    distr_figure = fig_to_json(fig)
     return [AdditionalGraphInfo(f"{name}_distr", {"data": distr_figure["data"], "layout": distr_figure["layout"]})]
 
 

@@ -9,7 +9,7 @@ The `Monitors` output the metrics that can be further logged elsewhere. It is cu
 The core difference from JSON profiles is the ability to calculate metrics on top of the streaming data. Monitoring includes the configuration options that help define the monitoring logic by setting options like the size of the window, choice of moving reference, etc.    
 
 {% hint style="info" %}
-**Monitoring functionality is in active developement and may be subject to API change.** If you integrate this in your production pipeline, we suggest explicitly specifying the Evidently package version. Feel free to ping us on Discord if you face any issues, and we'll help to figure them out. 
+**Monitoring functionality is in active development and may be subject to API change.** If you integrate this in your production pipeline, we suggest explicitly specifying the Evidently package version. Feel free to ping us on Discord if you face any issues, and we'll help to figure them out. 
 {% endhint %}
 
 # Evidently and Grafana for real-time ML monitoring 

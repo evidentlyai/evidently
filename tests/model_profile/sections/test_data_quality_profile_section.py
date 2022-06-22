@@ -88,7 +88,7 @@ def test_no_calculation_results() -> None:
                     "target": [np.nan, 2, 3, 3],
                     "numerical_feature": [np.nan, 0.0, 1, 0.5],
                     "categorical_feature": [1, np.nan, 0, 1],
-                    "datatime_feature": [
+                    "datetime_feature": [
                         datetime(year=2123, month=12, day=12),
                         datetime(year=2123, month=12, day=12),
                         datetime(year=2123, month=12, day=14),
@@ -101,7 +101,7 @@ def test_no_calculation_results() -> None:
                     "target": [2, 2, 2, np.nan],
                     "numerical_feature": [0, 0.0, 213123.123123, 0.5],
                     "categorical_feature": [1, 0, 0, 1],
-                    "datatime_feature": [
+                    "datetime_feature": [
                         datetime(year=2123, month=12, day=12),
                         datetime(year=2123, month=12, day=12),
                         datetime(year=2123, month=12, day=14),
@@ -123,7 +123,7 @@ def test_no_calculation_results() -> None:
                         "new_in_current_values_count": 0,
                         "unused_in_current_values_count": 1,
                     },
-                    "datatime_feature": {
+                    "datetime_feature": {
                         "count": 4,
                         "feature_type": "datetime",
                         "max": "2123-12-14 00:00:00",
@@ -185,7 +185,7 @@ def test_no_calculation_results() -> None:
                         "unique_count": 2,
                         "unique_percentage": 50,
                     },
-                    "datatime_feature": {
+                    "datetime_feature": {
                         "count": 3,
                         "feature_type": "datetime",
                         "max": "2123-12-14 00:00:00",

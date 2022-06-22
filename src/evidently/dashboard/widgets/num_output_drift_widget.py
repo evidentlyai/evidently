@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-import json
 from typing import Optional
 
 import pandas as pd
@@ -11,7 +10,7 @@ from evidently import ColumnMapping
 from evidently.analyzers.num_target_drift_analyzer import NumTargetDriftAnalyzer
 from evidently.model.widget import BaseWidgetInfo
 from evidently.dashboard.widgets.widget import Widget
-from evidently.dashboard.widgets.utils import CutQuantileTransformer
+from evidently.dashboard.widgets.utils import CutQuantileTransformer, fig_to_json
 from evidently.options import ColorOptions
 from evidently.options import QualityMetricsOptions
 
@@ -97,10 +96,12 @@ class NumOutputDriftWidget(Widget):
             )
         )
 
-        output_drift_json = json.loads(output_distr.to_json())
+        # output_drift_json = json.loads(output_distr.to_json())
+        output_drift_json = fig_to_json(output_distr)
 
         return BaseWidgetInfo(
-            title=f"{self.kind.title()} Drift: {output_sim_test}, drift score={round(drift_score, 6)} ({stattest_name})",
+            title=f"{self.kind.title()} Drift: {output_sim_test},"
+                  f" drift score={round(drift_score, 6)} ({stattest_name})",
             type="big_graph",
             details="",
             alerts=[],

@@ -18,11 +18,11 @@ def kl_div(
         reference_data: reference data
         current_data: current data
         feature_type: feature type
-        threshold: all walues above this threshold means data drift
+        threshold: all values above this threshold means data drift
         n_bins: number of bins
     Returns:
         kl_div: calculated Kullback-Leibler divergence value
-        test_result: wether the drift is detected
+        test_result: whether the drift is detected
     """
     reference_percents, current_percents = get_binned_data(reference_data, current_data, feature_type, n_bins)
     kl_div_value = stats.entropy(reference_percents, current_percents)

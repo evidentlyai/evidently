@@ -62,7 +62,7 @@ class NumTargetPredFeatureTable(Widget):
 
             if prediction_column is not None:
                 fig.add_trace(
-                    go.Scatter(
+                    go.Scattergl(
                         x=reference_data[feature_name],
                         y=reference_data[prediction_column],
                         mode='markers',
@@ -77,7 +77,7 @@ class NumTargetPredFeatureTable(Widget):
 
             if target_column is not None:
                 fig.add_trace(
-                    go.Scatter(
+                    go.Scattergl(
                         x=reference_data[feature_name],
                         y=reference_data[target_column],
                         mode='markers',

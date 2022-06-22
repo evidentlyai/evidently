@@ -1,5 +1,5 @@
 ---
-description: How to generate visual reports on data and model performnace.
+description: How to generate visual reports on data and model performance.
 ---
 
 # Dashboards 

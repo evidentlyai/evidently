@@ -170,6 +170,19 @@ export interface TextWidgetParams {
     text: string;
 }
 
+export type TestState = "unknown" | "success" | "warning" | "fail";
+
+export interface TestData {
+    title: string;
+    description: string;
+    state: TestState;
+    details?: BigTableRowDetails;
+}
+
+export interface TestSuiteWidgetParams {
+    tests: TestData[];
+}
+
 export interface WidgetInfo {
     type: string;
     title: string;
@@ -184,6 +197,7 @@ export interface WidgetInfo {
         | BigTableWidgetParams
         | RichDataParams
         | TextWidgetParams
+        | TestSuiteWidgetParams
     ;
     alertsPosition?: "row" | "column";
     alertStats?: AlertStats;

@@ -8,7 +8,7 @@ There are two ways to modify the composition of the default Evidently [reports](
 
 ### 1. Choose between the short and full version
 
-We have two type of detalization for each Tab. To change it, you need to specify the **verbose\_level** parameter when you define the Dashboard.
+We have two levels of verbosity for each Tab. To change it, you need to specify the **verbose\_level** parameter when you define the Dashboard.
 
 ```
 dashboard = Dashboard(tabs=[RegressionPerformanceTab(verbose_level=1)])
