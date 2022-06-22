@@ -50,7 +50,7 @@ class ColorOptions:
         return self.reference_data_color or self.secondary_color
 
 
-solarized_color_options = ColorOptions(
+SOLARIZED_COLOR_OPTIONS = ColorOptions(
     primary_color="#268bd2",
     secondary_color="#073642",
     current_data_color="#268bd2",
@@ -62,5 +62,47 @@ solarized_color_options = ColorOptions(
         "#b58900",
         "#cb4b16",
         "#dc322f",
+    ),
+)
+
+KARACHI_SUNRISE_COLOR_OPTIONS = ColorOptions(
+    primary_color="#000000",
+    secondary_color="#14213d",
+    current_data_color="#fca311",
+    reference_data_color="#e5e5e5",
+    color_sequence=(
+        "#dad7cd",
+        "#a3b18a",
+        "#588157",
+        "#3a5a40",
+        "#344e41",
+    ),
+)
+
+BERLIN_AUTUMN_COLOR_OPTIONS = ColorOptions(
+    primary_color="#3d348b",
+    secondary_color="#7678ed",
+    current_data_color="#f7b801",
+    reference_data_color="#f18701",
+    color_sequence=(
+        "#f35b04",
+        "#4e598c",
+        "#f9c784",
+        "#fcaf58",
+        "#ff8c42",
+    ),
+)
+
+NIGHTOWL_COLOR_OPTIONS = ColorOptions(
+    primary_color="#003049",
+    secondary_color="#d62828",
+    current_data_color="#f77f00",
+    reference_data_color="#fcbf49",
+    color_sequence=(
+        "#eae2b7",
+        "#f08080",
+        "#84a59d",
+        "#f28482",
+        "#f6bd60",
     ),
 )
