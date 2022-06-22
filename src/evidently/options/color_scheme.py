@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional, Tuple
+from typing import Optional, Sequence
 
 RED = "#ed0400"
 GREY = "#4d4d4d"
@@ -35,7 +35,7 @@ class ColorOptions:
     secondary_color: str = GREY
     current_data_color: Optional[str] = None
     reference_data_color: Optional[str] = None
-    color_sequence: Tuple[str] = COLOR_DISCRETE_SEQUENCE
+    color_sequence: Sequence[str] = COLOR_DISCRETE_SEQUENCE
     fill_color: str = "LightGreen"
     zero_line_color: str = "green"
     non_visible_color: str = "white"
