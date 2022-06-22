@@ -48,6 +48,8 @@ All tests use a threshold = 0.1 by default.
 You can modify the drift detection logic by selecting a statistical test already available in the library, including PSI, K–L divergence, Jensen-Shannon distance, Wasserstein distance. See more details about [available tests](../customization/options-for-statistical-tests.md). You can also set a different confidence level or implement a custom test, by defining [custom options](../customization/options-for-data-target-drift.md).
 {% endhint %}
 
+To build up a better intuition for which tests are better in different kinds of use cases, visit our blog to read [our in-depth guide](https://evidentlyai.com/blog/data-drift-detection-large-datasets) to the tradeoffs when choosing the statistical test for data drift.
+
 ## How it looks
 
 The default report includes 4 components. All plots are interactive.
