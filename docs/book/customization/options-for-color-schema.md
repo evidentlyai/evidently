@@ -36,7 +36,7 @@ and so on.
 
 ## Available Options
 Here is the list of all color scheme options with the type and meaning of each:
- 
+
 | A Variable in the ColorOptions object | Option type      | Option description                                                                                                                         |
 |---------------------------------|------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
 | primary_color                   | string           | A basic color for data visualization. Used by default for all bars and lines in widgets with one dataset. Used as the default for the current data in widgets with two datasets. |
@@ -50,4 +50,30 @@ Here is the list of all color scheme options with the type and meaning of each:
 | underestimation_color           | string           | A color for the "underestimation" line in the Regression Performance dashboard.                                                                                               |
 | overestimation_color            | string           | A color for the "overestimation" line in the Regression Performance dashboard.                                                                                                |
 | majority_color                  | string           | A color for the majority line in the Regression Performance dashboard.                                                                                                      |
---- 
+---
+
+Evidently also provides some sensible alternative default schemas that have been
+pre-selected for your convenience:
+
+- 'Solarised'
+- 'Karachi Sunrise'
+- 'Berlin Autumn'
+- 'Nightowl'
+
+To use them, simply import them directly and pass them into your `Dashboard`
+options as follows (taking the Berlin Autumn scheme as an example):
+
+```python
+from evidently.options import BERLIN_AUTUMN_COLOR_OPTIONS
+
+# import the data as usual...
+iris_data_drift_report = Dashboard(
+    tabs=[DataDriftTab()], options=[BERLIN_AUTUMN_COLOR_OPTIONS]
+)
+
+iris_data_drift_report.calculate(
+    iris_frame[:75], iris_frame[75:], column_mapping=None
+)
+
+iris_data_drift_report.save("output.html")
+```
