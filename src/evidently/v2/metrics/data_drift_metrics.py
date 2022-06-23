@@ -1,6 +1,10 @@
-from evidently.analyzers.data_drift_analyzer import DataDriftAnalyzer, DataDriftAnalyzerResults
-from evidently.options import OptionsProvider, DataDriftOptions
-from evidently.v2.metrics.base_metric import Metric, InputData
+from evidently.analyzers.data_drift_analyzer import DataDriftAnalyzer
+from evidently.analyzers.data_drift_analyzer import DataDriftAnalyzerResults
+from evidently.options import DataDriftOptions
+from evidently.options import OptionsProvider
+
+from evidently.v2.metrics.base_metric import InputData
+from evidently.v2.metrics.base_metric import Metric
 
 
 DataDriftResults = DataDriftAnalyzerResults

@@ -5,7 +5,7 @@ from typing import Union
 
 from evidently.v2.metrics import DataQualityMetrics
 from evidently.v2.metrics import DataStabilityMetrics
-from evidently.v2.tests.base_test import BaseValueTest
+from evidently.v2.tests.base_test import BaseCheckValueTest
 from evidently.v2.tests.base_test import Test
 from evidently.v2.tests.base_test import TestResult
 
@@ -65,7 +65,7 @@ class TestConflictPrediction(Test):
         )
 
 
-class BaseFeatureDataQualityMetricsTest(BaseValueTest):
+class BaseFeatureDataQualityMetricsTest(BaseCheckValueTest):
     metric: DataQualityMetrics
     feature_name: str
 

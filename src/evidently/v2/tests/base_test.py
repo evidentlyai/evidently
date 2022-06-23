@@ -51,7 +51,12 @@ class Test:
 
 
 @dataclass
-class FeatureValueCondition:
+class TestValueCondition:
+    """
+    Class for processing a value conditions - should it be less, greater than, equals and so on.
+
+    An object of the class stores specified conditions and can be used for checking a value by them.
+    """
     eq: Optional[Number] = None
     gt: Optional[Number] = None
     gte: Optional[Number] = None
@@ -85,10 +90,16 @@ class FeatureValueCondition:
         if self.not_eq is not None and result:
             result = value != self.not_eq
 
+        if self.not_in is not None and result:
+            result = value not in self.not_in
+
         return result
 
 
-class BaseValueTest(Test):
+class BaseCheckValueTest(Test):
+    """
+    Base class for all tests with checking a value condition
+    """
     value: Number
 
     def __init__(
@@ -102,15 +113,24 @@ class BaseValueTest(Test):
             not_eq: Optional[Number] = None,
             not_in: Optional[List[Union[Number, str, bool]]] = None,
     ):
-        self.condition = FeatureValueCondition(
+        self.condition = TestValueCondition(
             eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in
         )
 
+    @abc.abstractmethod
     def calculate_value_for_test(self) -> Number:
-        raise NotImplementedError
+        """Method for getting the checking value.
 
+        Define it in a child class"""
+        raise NotImplementedError()
+
+    @abc.abstractmethod
     def get_description(self, value: Number) -> str:
-        raise NotImplementedError
+        """Method for getting a description that we can use.
+        The description can use the checked value.
+
+        Define it in a child class"""
+        raise NotImplementedError()
 
     def check(self):
         result = TestResult(name=self.name, description="The test was not launched", status=TestResult.SKIPPED)

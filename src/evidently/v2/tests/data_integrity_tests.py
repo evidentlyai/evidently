@@ -5,10 +5,10 @@ from typing import Union
 
 from evidently.v2.metrics.data_integrity_metrics import DataIntegrityMetrics
 
-from .base_test import BaseValueTest
+from .base_test import BaseCheckValueTest
 
 
-class BaseIntegrityValueTest(BaseValueTest):
+class BaseIntegrityValueTest(BaseCheckValueTest):
     data_integrity_metric: DataIntegrityMetrics
 
     def __init__(

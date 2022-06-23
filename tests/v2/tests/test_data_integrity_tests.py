@@ -1,9 +1,6 @@
 import pandas as pd
 
-from evidently.v2.tests import TestNumberOfColumns
-
 from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.v2.metrics.base_metric import InputData
 from evidently.v2.tests import TestNumberOfColumns
 from evidently.v2.tests import TestNumberOfRows
 from evidently.v2.test_suite import TestSuite

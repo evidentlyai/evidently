@@ -1,7 +1,8 @@
 from typing import Optional
 
 from evidently.v2.metrics import DataDriftMetrics
-from evidently.v2.tests.base_test import Test, TestResult
+from evidently.v2.tests.base_test import Test
+from evidently.v2.tests.base_test import TestResult
 
 
 class TestNumberOfDriftedFeatures(Test):
