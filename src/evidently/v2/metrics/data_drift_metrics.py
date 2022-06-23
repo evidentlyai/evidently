@@ -3,8 +3,7 @@ from evidently.options import OptionsProvider, DataDriftOptions
 from evidently.v2.metrics.base_metric import Metric, InputData
 
 
-class DataDriftResults(DataDriftAnalyzerResults):
-    pass
+DataDriftResults = DataDriftAnalyzerResults
 
 
 class DataDriftMetrics(Metric[DataDriftResults]):
@@ -14,6 +13,6 @@ class DataDriftMetrics(Metric[DataDriftResults]):
         if options is not None:
             self.analyzer.options_provider.add(options)
 
-    def calculate(self, data: InputData, metrics: dict):
+    def calculate(self, data: InputData, metrics: dict) -> DataDriftResults:
         results = self.analyzer.calculate(data.reference_data, data.current_data, data.column_mapping)
         return results
