@@ -40,11 +40,12 @@ class TestNumberOfDriftedFeatures(Test):
                           test_status,
                           features={feature: (data.stattest_name, data.p_value, data.threshold)
                                     for feature, data in metrics.features.items()})
-        )
 
     class Renderer(TestRenderer):
         def render_json(self, obj: 'TestNumberOfDriftedFeatures.Result') -> dict:
-            return super().render_json(obj)
+            base = super().render_json(obj)
+            base['features'] = {feature: dict(stattest=data[0], score=data[1], threshold=data[2])
+                                for feature, data in obj.features.items()}
 
         def render_html(self, obj: 'TestNumberOfDriftedFeatures.Result') -> TestHtmlInfo:
             info = super().render_html(obj)

@@ -13,7 +13,7 @@ from evidently.utils import NumpyEncoder
 from evidently.v2.metrics.base_metric import InputData, Metric
 from evidently.v2.renderers.notebook_utils import determine_template
 from evidently.v2.suite.base_suite import Suite, find_test_renderer
-from evidently.v2.tests.base_test import Test
+from evidently.v2.tests.base_test import Test, TestResult
 
 
 def _discover_dependencies(test: Test) -> Iterator[Union[Metric, Test]]:
@@ -36,7 +36,7 @@ class TestSuite:
         self._inner_suite.add_tests(*tests)
 
     def __bool__(self):
-        return all([test.is_passed() for _, test in self._inner_suite.context.test_results.items()])
+        return all(test.is_passed() for _, test in self._inner_suite.context.test_results.items())
 
     def run(self, *, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping: ColumnMapping):
         self._inner_suite.verify()
@@ -115,9 +115,29 @@ class TestSuite:
 
     def _build_dashboard_info(self):
         test_results = []
+        total_tests = len(self._inner_suite.context.test_results)
+        by_status = {}
         for _, test_result in self._inner_suite.context.test_results.items():
             renderer = find_test_renderer(test_result, self._inner_suite.context.renderers)
+            by_status[test_result.status] = by_status.get(test_result.status, 0) + 1
             test_results.append(renderer.render_html(test_result))
+        summary_widget = BaseWidgetInfo(
+            title="Test Summary",
+            size=2,
+            type="counter",
+            params={
+                "counters": [{
+                    "value": f"{total_tests}",
+                    "label": "Total Tests"
+                }] + [
+                    {
+                        "value": f"{by_status.get(status, 0)}",
+                        "label": f"{status.title()} Tests"
+                    } for status in [TestResult.SUCCESS, TestResult.WARNING, TestResult.FAIL, TestResult.ERROR]
+                ]
+            },
+
+        )
         test_suite_widget = BaseWidgetInfo(
             title="",
             type="test_suite",
@@ -134,5 +154,5 @@ class TestSuite:
             additionalGraphs=[]
         )
         return "evidently_dashboard_" + str(uuid.uuid4()).replace("-", ""), \
-               DashboardInfo("Test Suite", widgets=[test_suite_widget]), \
+               DashboardInfo("Test Suite", widgets=[summary_widget, test_suite_widget]), \
                {item.id: dataclasses.asdict(item.info) for info in test_results for item in info.details}

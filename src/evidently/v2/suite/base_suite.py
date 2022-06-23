@@ -2,7 +2,7 @@ import dataclasses
 from typing import Optional
 
 from evidently.v2.metrics.base_metric import Metric, InputData
-from evidently.v2.renderers.base_renderer import TestRenderer, MetricRenderer
+from evidently.v2.renderers.base_renderer import TestRenderer, RenderersDefinitions, DEFAULT_RENDERERS
 from evidently.v2.suite.execution_graph import ExecutionGraph, SimpleExecutionGraph
 from evidently.v2.tests.base_test import Test, TestResult
 
@@ -17,16 +17,6 @@ class States:
     Verified = State("Verified")
     Calculated = State("Calculated")
     Tested = State("Tested")
-
-
-@dataclasses.dataclass
-class RenderersDefinitions:
-    typed_renderers: dict = dataclasses.field(default_factory=dict)
-    default_html_test_renderer: Optional[TestRenderer] = None
-    default_html_metric_renderer: Optional[MetricRenderer] = None
-
-
-DEFAULT_RENDERERS = RenderersDefinitions(default_html_test_renderer=TestRenderer())
 
 
 def find_test_renderer(obj, renderers: RenderersDefinitions) -> TestRenderer:

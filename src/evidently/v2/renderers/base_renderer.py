@@ -1,10 +1,9 @@
 import abc
 
 import dataclasses
-from typing import List
+from typing import List, Optional
 
 from evidently.model.widget import BaseWidgetInfo
-from evidently.v2.tests.base_test import TestResult
 
 
 class MetricRenderer:
@@ -30,13 +29,23 @@ class TestHtmlInfo:
 
 class TestRenderer:
     @abc.abstractmethod
-    def render_html(self, obj: TestResult) -> TestHtmlInfo:
+    def render_html(self, obj) -> TestHtmlInfo:
         return TestHtmlInfo(name=obj.name, description=obj.description, status=obj.status, details=[])
 
     @abc.abstractmethod
-    def render_json(self, obj: TestResult) -> dict:
+    def render_json(self, obj) -> dict:
         return {
             "name": obj.name,
             "description": obj.description,
             "status": obj.status,
         }
+
+
+@dataclasses.dataclass
+class RenderersDefinitions:
+    typed_renderers: dict = dataclasses.field(default_factory=dict)
+    default_html_test_renderer: Optional[TestRenderer] = None
+    default_html_metric_renderer: Optional[MetricRenderer] = None
+
+
+DEFAULT_RENDERERS = RenderersDefinitions(default_html_test_renderer=TestRenderer())
