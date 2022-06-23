@@ -1,3 +1,4 @@
+import dataclasses
 import json
 import uuid
 from typing import List, Optional, Union, Iterator
@@ -126,11 +127,12 @@ class TestSuite:
                                description=test_info.description,
                                state=test_info.status.lower(),
                                details=dict(
-                                   parts=[dict(id=item.id, title=item.title) for item in test_info.details]
+                                   parts=[dict(id=item.id, title=item.title, type="widget")
+                                          for item in test_info.details]
                                )) for test_info in test_results]
             },
-            additionalGraphs=[item.info for info in test_results for item in info.details]
+            additionalGraphs=[]
         )
         return "evidently_dashboard_" + str(uuid.uuid4()).replace("-", ""), \
                DashboardInfo("Test Suite", widgets=[test_suite_widget]), \
-               {}
+               {item.id: dataclasses.asdict(item.info) for info in test_results for item in info.details}

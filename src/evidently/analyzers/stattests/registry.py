@@ -21,11 +21,10 @@ class StatTest:
                  reference_data: pd.Series,
                  current_data: pd.Series,
                  feature_type: str,
-                 threshold: Optional[float]) -> Tuple[float, bool]:
-        return self.func(reference_data,
-                         current_data,
-                         feature_type,
-                         self.default_threshold if threshold is None else threshold)
+                 threshold: Optional[float]) -> Tuple[float, bool, float]:
+        actual_threshold = self.default_threshold if threshold is None else threshold
+        drift_score, drifted = self.func(reference_data, current_data, feature_type, actual_threshold)
+        return drift_score, drifted, actual_threshold
 
 
 PossibleStatTestType = Union[str, StatTestFuncType, StatTest]

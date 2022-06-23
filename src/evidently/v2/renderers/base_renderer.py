@@ -3,7 +3,7 @@ import abc
 import dataclasses
 from typing import List
 
-from evidently.model.widget import BaseWidgetInfo, AdditionalGraphInfo
+from evidently.model.widget import BaseWidgetInfo
 from evidently.v2.tests.base_test import TestResult
 
 
@@ -17,7 +17,7 @@ class MetricRenderer:
 class DetailsInfo:
     id: str
     title: str
-    info: AdditionalGraphInfo
+    info: BaseWidgetInfo
 
 
 @dataclasses.dataclass
