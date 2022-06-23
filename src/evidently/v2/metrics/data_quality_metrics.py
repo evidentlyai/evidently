@@ -29,7 +29,7 @@ class DataQualityMetrics(Metric[DataQualityMetricsResults]):
 
     def calculate(self, data: InputData, metrics: dict) -> DataQualityMetricsResults:
         if data.current_data is None:
-            raise ValueError("current_data should be present")
+            raise ValueError("Current dataset should be present")
 
         elif data.reference_data is None:
             analyzer_results = self.analyzer.calculate(

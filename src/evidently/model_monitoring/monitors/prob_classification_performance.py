@@ -1,6 +1,6 @@
 from typing import Generator
 
-from evidently.analyzers.prob_classification_performance_analyzer import ClassificationPerformanceMetrics
+from evidently.analyzers.prob_classification_performance_analyzer import ProbClassificationPerformanceMetrics
 from evidently.analyzers.prob_classification_performance_analyzer import ProbClassificationPerformanceAnalyzer
 from evidently.analyzers.utils import DatasetColumns
 from evidently.model_monitoring.monitoring import ModelMonitor
@@ -38,7 +38,7 @@ class ProbClassificationPerformanceMonitor(ModelMonitor):
 
     @staticmethod
     def _yield_metrics(
-        metrics: ClassificationPerformanceMetrics,
+        metrics: ProbClassificationPerformanceMetrics,
         dataset: str,
         columns: DatasetColumns,
     ) -> Generator[MetricsType, None, None]:
