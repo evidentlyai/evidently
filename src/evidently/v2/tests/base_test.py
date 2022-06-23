@@ -69,7 +69,7 @@ class TestValueCondition:
     def check_value(self, value: Number) -> bool:
         result = True
 
-        if self.eq is not None:
+        if self.eq is not None and result:
             result = value == self.eq
 
         if self.gt is not None and result:
