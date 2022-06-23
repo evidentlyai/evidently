@@ -1,8 +1,11 @@
 from numbers import Number
+from typing import List
 from typing import Optional
+from typing import Union
 
 from evidently.v2.metrics import DataQualityMetrics
 from evidently.v2.metrics import DataStabilityMetrics
+from evidently.v2.tests.base_test import BaseValueTest
 from evidently.v2.tests.base_test import Test
 from evidently.v2.tests.base_test import TestResult
 
@@ -10,21 +13,23 @@ from evidently.v2.tests.base_test import TestResult
 class TestConflictTarget(Test):
     data_stability_metrics: DataStabilityMetrics
 
-    def __init__(self,
-                 data_stability_metrics: Optional[DataStabilityMetrics] = None):
-        self.data_stability_metrics = data_stability_metrics if data_stability_metrics is not None \
-            else DataStabilityMetrics()
+    def __init__(self, data_stability_metrics: Optional[DataStabilityMetrics] = None):
+        if data_stability_metrics is not None:
+            self.data_stability_metrics = data_stability_metrics
+
+        else:
+            self.data_stability_metrics = DataStabilityMetrics()
 
     def check(self):
         conflict_target = self.data_stability_metrics.get_result().target_not_stable
         if conflict_target is None:
-            test_result = "ERROR"
+            test_result = TestResult.ERROR
 
         elif conflict_target == 0:
-            test_result = "SUCCESS"
+            test_result = TestResult.SUCCESS
 
         else:
-            test_result = "FAIL"
+            test_result = TestResult.FAIL
 
         return TestResult(
             "Test number of conflicts in target",
@@ -45,13 +50,13 @@ class TestConflictPrediction(Test):
         conflict_prediction = self.data_stability_metrics.get_result().target_not_stable
 
         if conflict_prediction is None:
-            test_result = "ERROR"
+            test_result = TestResult.ERROR
 
         elif conflict_prediction == 0:
-            test_result = "SUCCESS"
+            test_result = TestResult.SUCCESS
 
         else:
-            test_result = "FAIL"
+            test_result = TestResult.FAIL
 
         return TestResult(
             "Test number of conflicts in prediction",
@@ -60,43 +65,70 @@ class TestConflictPrediction(Test):
         )
 
 
-class TestValueMin(Test):
-    data_quality_metrics: DataQualityMetrics
+class BaseFeatureDataQualityMetricsTest(BaseValueTest):
+    metric: DataQualityMetrics
     feature_name: str
-    gte: Number
 
-    def __init__(self, feature_name: str, gte: Number, data_quality_metrics: Optional[DataQualityMetrics] = None):
-        self.data_quality_metrics = data_quality_metrics if data_quality_metrics is not None else DataQualityMetrics()
+    def __init__(
+        self,
+        feature_name: Union[str, List[str]],
+        eq: Optional[Number] = None,
+        gt: Optional[Number] = None,
+        gte: Optional[Number] = None,
+        is_in: Optional[List[Union[Number, str, bool]]] = None,
+        lt: Optional[Number] = None,
+        lte: Optional[Number] = None,
+        not_eq: Optional[Number] = None,
+        not_in: Optional[List[Union[Number, str, bool]]] = None,
+        metric: Optional[DataQualityMetrics] = None
+    ):
+        if metric is not None:
+            self.metric = metric
+
+        else:
+            self.metric = DataQualityMetrics()
+
         self.feature_name = feature_name
-        self.gte = gte
+        super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
 
     def check(self):
-        features_stats = self.data_quality_metrics.get_result().features_stats.get_all_features()
-        
-        if self.feature_name in features_stats:
-            min_value = features_stats[self.feature_name].min
-            details = f"Min value for feature '{self.feature_name}' is {min_value}"
-    
-            if min_value is None:
-                test_result = "ERROR"
-                details = f"No min value for a feature '{self.feature_name}'"
+        result = TestResult(name=self.name, description="The test was not launched", status=TestResult.SKIPPED)
+        features_stats = self.metric.get_result().features_stats.get_all_features()
 
-            elif not isinstance(min_value, Number):
-                test_result = "ERROR"
-                details = f"Feature '{self.feature_name}' is not numeric"
-    
-            elif min_value >= self.gte:
-                test_result = "SUCCESS"
-    
+        if self.feature_name not in features_stats:
+            result.mark_as_fail()
+            result.description = f"Feature '{self.feature_name}' was not found"
+            return result
+
+        value = self.calculate_value_for_test()
+
+        if value is None:
+            result.mark_as_error(f"No value for the feature '{self.feature_name}'")
+            return result
+
+        result.description = self.get_description(value)
+
+        try:
+            condition_check_result = self.condition.check_value(value)
+
+            if condition_check_result:
+                result.mark_as_success()
+
             else:
-                test_result = "FAIL"
-        
-        else:
-            test_result = "ERROR"
-            details = f"Feature '{self.feature_name}' was not found"
+                result.mark_as_fail()
 
-        return TestResult(
-            "Test min value of a feature",
-            details,
-            test_result
-        )
+        except ValueError:
+            result.mark_as_error("Cannot calculate the condition")
+
+        return result
+
+
+class TestFeatureValueMin(BaseFeatureDataQualityMetricsTest):
+    name = "Test a feature min value"
+
+    def calculate_value_for_test(self) -> Number:
+        features_stats = self.metric.get_result().features_stats.get_all_features()
+        return features_stats[self.feature_name].min
+
+    def get_description(self, value: Number) -> str:
+        return f"Min value for feature '{self.feature_name}' is {value}"
