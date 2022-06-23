@@ -46,6 +46,7 @@ class TestNumberOfDriftedFeatures(Test):
             base = super().render_json(obj)
             base['features'] = {feature: dict(stattest=data[0], score=data[1], threshold=data[2])
                                 for feature, data in obj.features.items()}
+            return base
 
         def render_html(self, obj: 'TestNumberOfDriftedFeatures.Result') -> TestHtmlInfo:
             info = super().render_html(obj)
