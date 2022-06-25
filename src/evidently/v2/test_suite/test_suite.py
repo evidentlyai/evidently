@@ -38,7 +38,7 @@ class TestSuite:
     def __bool__(self):
         return all(test.is_passed() for _, test in self._inner_suite.context.test_results.items())
 
-    def run(self, *, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping: ColumnMapping):
+    def run(self, *, reference_data: Optional[pd.DataFrame], current_data: pd.DataFrame, column_mapping: ColumnMapping):
         self._inner_suite.verify()
         self._inner_suite.run_calculate(InputData(reference_data, current_data, column_mapping))
         self._inner_suite.run_checks()
