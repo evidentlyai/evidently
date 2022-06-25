@@ -16,8 +16,11 @@ class TestResult:
     ERROR = "ERROR"  # cannot calculate the test result, no data
     SKIPPED = "SKIPPED"  # the test was skipped
 
+    # short name/title from the test class
     name: str
+    # what was checked, what threshold (current value 13 is not ok with condition less than 5)
     description: str
+    # status of the test result
     status: str
 
     def set_status(self, status: str, description: Optional[str] = None) -> None:
@@ -34,6 +37,9 @@ class TestResult:
 
     def mark_as_success(self, description: Optional[str] = None):
         self.set_status(self.SUCCESS, description=description)
+
+    def mark_as_warning(self, description: Optional[str] = None):
+        self.set_status(self.WARNING, description=description)
 
     def is_passed(self):
         return self.status in [self.SUCCESS, self.WARNING]
