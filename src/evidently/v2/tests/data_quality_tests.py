@@ -132,3 +132,25 @@ class TestFeatureValueMin(BaseFeatureDataQualityMetricsTest):
 
     def get_description(self, value: Number) -> str:
         return f"Min value for feature '{self.feature_name}' is {value}"
+
+
+class TestFeatureValueMax(BaseFeatureDataQualityMetricsTest):
+    name = "Test a feature max value"
+
+    def calculate_value_for_test(self) -> Number:
+        features_stats = self.metric.get_result().features_stats.get_all_features()
+        return features_stats[self.feature_name].max
+
+    def get_description(self, value: Number) -> str:
+        return f"Max value for feature '{self.feature_name}' is {value}"
+
+
+class TestFeatureValueMean(BaseFeatureDataQualityMetricsTest):
+    name = "Test a feature mean value"
+
+    def calculate_value_for_test(self) -> Number:
+        features_stats = self.metric.get_result().features_stats.get_all_features()
+        return features_stats[self.feature_name].mean
+
+    def get_description(self, value: Number) -> str:
+        return f"Mean value for feature '{self.feature_name}' is {value}"
