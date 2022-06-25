@@ -4,7 +4,7 @@ from typing import Optional
 from evidently.v2.metrics.base_metric import Metric, InputData
 from evidently.v2.renderers.base_renderer import TestRenderer, RenderersDefinitions, DEFAULT_RENDERERS
 from evidently.v2.suite.execution_graph import ExecutionGraph, SimpleExecutionGraph
-from evidently.v2.tests.base_test import Test, TestResult
+from evidently.v2.tests.base_test import Test
 
 
 @dataclasses.dataclass
@@ -20,12 +20,12 @@ class States:
 
 
 def find_test_renderer(obj, renderers: RenderersDefinitions) -> TestRenderer:
-    predefined = renderers.typed_renderers.get(type(obj), None)
+    predefined = renderers.typed_renderers.get(obj, None)
     if predefined:
         return predefined
-    if issubclass(type(obj), TestResult) and renderers.default_html_test_renderer:
+    if issubclass(obj, Test) and renderers.default_html_test_renderer:
         return renderers.default_html_test_renderer
-    raise KeyError(f"No renderer found for {type(obj)}")
+    raise KeyError(f"No renderer found for {obj}")
 
 
 @dataclasses.dataclass
@@ -65,6 +65,8 @@ class Suite:
         self.context.state = States.Init
 
     def add_tests(self, *tests: Test):
+        for test in tests:
+            test.set_context(self.context)
         self.context.tests.extend(tests)
         self.context.state = States.Init
 

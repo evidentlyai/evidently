@@ -4,8 +4,7 @@ import dataclasses
 
 from evidently.model.widget import BaseWidgetInfo
 from evidently.v2.metrics import DataDriftMetrics
-from evidently.v2.renderers.base_renderer import TestRenderer, TestHtmlInfo, DetailsInfo
-from evidently.v2.suite.base_suite import DEFAULT_RENDERERS
+from evidently.v2.renderers.base_renderer import TestRenderer, TestHtmlInfo, DetailsInfo, default_renderer
 from evidently.v2.tests.base_test import Test, TestResult
 
 
@@ -41,31 +40,30 @@ class TestNumberOfDriftedFeatures(Test):
                           features={feature: (data.stattest_name, data.p_value, data.threshold)
                                     for feature, data in metrics.features.items()})
 
-    class Renderer(TestRenderer):
-        def render_json(self, obj: 'TestNumberOfDriftedFeatures.Result') -> dict:
-            base = super().render_json(obj)
-            base['features'] = {feature: dict(stattest=data[0], score=data[1], threshold=data[2])
-                                for feature, data in obj.features.items()}
-            return base
 
-        def render_html(self, obj: 'TestNumberOfDriftedFeatures.Result') -> TestHtmlInfo:
-            info = super().render_html(obj)
-            info.details = [
-                DetailsInfo(
-                    id="t1",
+@default_renderer(test_type=TestNumberOfDriftedFeatures)
+class TestNumberOfDriftedFeaturesRenderer(TestRenderer):
+    def render_json(self, obj: TestNumberOfDriftedFeatures) -> dict:
+        base = super().render_json(obj)
+        base['features'] = {feature: dict(stattest=data[0], score=data[1], threshold=data[2])
+                            for feature, data in obj.get_result().features.items()}
+        return base
+
+    def render_html(self, obj: TestNumberOfDriftedFeatures) -> TestHtmlInfo:
+        info = super().render_html(obj)
+        info.details = [
+            DetailsInfo(
+                id="t1",
+                title="",
+                info=BaseWidgetInfo(
                     title="",
-                    info=BaseWidgetInfo(
-                        title="",
-                        type="table",
-                        params={
-                            "header": ["Feature name", "Stattest", "Drift score", "Threshold"],
-                            "data": [[feature] + list(data) for feature, data in obj.features.items()]
-                        },
-                        size=2,
-                    )
-                ),
-            ]
-            return info
-
-
-DEFAULT_RENDERERS.typed_renderers[TestNumberOfDriftedFeatures.Result] = TestNumberOfDriftedFeatures.Renderer()
+                    type="table",
+                    params={
+                        "header": ["Feature name", "Stattest", "Drift score", "Threshold"],
+                        "data": [[feature] + list(data) for feature, data in obj.get_result().features.items()]
+                    },
+                    size=2,
+                )
+            ),
+        ]
+        return info

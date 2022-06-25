@@ -50,10 +50,22 @@ class Test:
     all fields in test class with type that is subclass of Metric would be used as dependencies of test.
     """
     name: str
+    context = None
 
     @abc.abstractmethod
     def check(self):
         raise NotImplementedError()
+
+    def set_context(self, context):
+        self.context = context
+
+    def get_result(self):
+        if self.context is None:
+            raise ValueError("No context is set")
+        result = self.context.test_results.get(self, None)
+        if result is None:
+            raise ValueError(f"No result found for metric {self} of type {type(self).__name__}")
+        return result
 
 
 @dataclass

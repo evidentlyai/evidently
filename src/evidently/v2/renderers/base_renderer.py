@@ -28,16 +28,16 @@ class TestHtmlInfo:
 
 
 class TestRenderer:
-    @abc.abstractmethod
     def render_html(self, obj) -> TestHtmlInfo:
-        return TestHtmlInfo(name=obj.name, description=obj.description, status=obj.status, details=[])
+        result = obj.get_result()
+        return TestHtmlInfo(name=result.name, description=result.description, status=result.status, details=[])
 
-    @abc.abstractmethod
     def render_json(self, obj) -> dict:
+        result = obj.get_result()
         return {
-            "name": obj.name,
-            "description": obj.description,
-            "status": obj.status,
+            "name": result.name,
+            "description": result.description,
+            "status": result.status,
         }
 
 
@@ -46,6 +46,13 @@ class RenderersDefinitions:
     typed_renderers: dict = dataclasses.field(default_factory=dict)
     default_html_test_renderer: Optional[TestRenderer] = None
     default_html_metric_renderer: Optional[MetricRenderer] = None
+
+
+def default_renderer(test_type):
+    def wrapper(cls):
+        DEFAULT_RENDERERS.typed_renderers[test_type] = cls()
+        return cls
+    return wrapper
 
 
 DEFAULT_RENDERERS = RenderersDefinitions(default_html_test_renderer=TestRenderer())

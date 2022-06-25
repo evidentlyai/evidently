@@ -101,9 +101,9 @@ class TestSuite:
 
     def json(self) -> dict:
         test_results = []
-        for _, test_result in self._inner_suite.context.test_results.items():
-            renderer = find_test_renderer(test_result, self._inner_suite.context.renderers)
-            test_results.append(renderer.render_json(test_result))
+        for test, _ in self._inner_suite.context.test_results.items():
+            renderer = find_test_renderer(type(test), self._inner_suite.context.renderers)
+            test_results.append(renderer.render_json(test))
         return dict(tests=test_results)
 
     def save_json(self, filename):
@@ -117,12 +117,12 @@ class TestSuite:
         test_results = []
         total_tests = len(self._inner_suite.context.test_results)
         by_status = {}
-        for _, test_result in self._inner_suite.context.test_results.items():
-            renderer = find_test_renderer(test_result, self._inner_suite.context.renderers)
+        for test, test_result in self._inner_suite.context.test_results.items():
+            renderer = find_test_renderer(type(test), self._inner_suite.context.renderers)
             by_status[test_result.status] = by_status.get(test_result.status, 0) + 1
-            test_results.append(renderer.render_html(test_result))
+            test_results.append(renderer.render_html(test))
         summary_widget = BaseWidgetInfo(
-            title="Test Summary",
+            title="",
             size=2,
             type="counter",
             params={
