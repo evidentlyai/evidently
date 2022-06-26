@@ -55,14 +55,26 @@ class TestValueMAERenderer(TestRenderer):
     def render_html(self, obj: TestValueMAE) -> TestHtmlInfo:
         info = super().render_html(obj)
         mae_distr = obj.metric.get_result().mae_distr
+        ref_mae_distr = obj.metric.get_result().ref_mae_distr
         fig = make_subplots(rows=2, cols=1, shared_xaxes=True)
         trace = go.Scatter(x=[str(idx) for idx, _, _ in mae_distr], y=[mae for _, mae, _ in mae_distr],
                            mode='lines+markers',
                            name='MAE', marker_color=RED)
         fig.append_trace(trace, 1, 1)
+        if ref_mae_distr:
+            trace_ref = go.Scatter(x=[str(idx) for idx, _, _ in mae_distr], y=[mae for _, mae, _ in ref_mae_distr],
+                                   mode='lines+markers',
+                                   name='MAE', marker_color=GREY)
+            fig.append_trace(trace_ref, 1, 1)
 
         trace = go.Bar(name='current', x=[str(idx) for idx, _, _ in mae_distr], y=[hist for _, _, hist in mae_distr],
                        marker_color=RED)
+        if ref_mae_distr:
+            trace_ref = go.Bar(name='current',
+                               x=[str(idx) for idx, _, _ in ref_mae_distr],
+                               y=[hist for _, _, hist in ref_mae_distr],
+                               marker_color=GREY)
+            fig.append_trace(trace_ref, 2, 1)
         fig.append_trace(trace, 2, 1)
         fig.update_yaxes(title_text='MAE', row=1, col=1)
         fig.update_yaxes(title_text='count', row=2, col=1)
@@ -108,12 +120,22 @@ class TestValueMeanErrorRenderer(TestRenderer):
     def render_html(self, obj: TestValueMeanError) -> TestHtmlInfo:
         info = super().render_html(obj)
         me_distr = obj.metric.get_result().me_distr
-        fig = go.Figure(data=[
-            go.Bar(name='current', x=[x for x, _ in me_distr], y=[y for _, y in me_distr], marker_color=RED)
-
-        ])
-        fig = plot_check(fig, gt=-0.05, lt=0.05)
-        fig = plot_metric_value(fig, obj.metric.get_result().mean_error, 'ME')
+        ref_me_distr = obj.metric.get_result().ref_me_distr
+        cur_bar = go.Bar(name='current', x=[x for x, _ in me_distr], y=[y for _, y in me_distr], marker_color=RED)
+        if ref_me_distr is None:
+            fig = go.Figure(data=[
+                go.Bar(name='current', x=[x for x, _ in me_distr], y=[y for _, y in me_distr], marker_color=RED)
+            ])
+            fig = plot_check(fig, gt=-0.05, lt=0.05)
+            fig = plot_metric_value(fig, obj.metric.get_result().mean_error, 'ME')
+        else:
+            ref_bar = go.Bar(name='reference',
+                             x=[x for x, _ in ref_me_distr],
+                             y=[y for _, y in ref_me_distr],
+                             marker_color=GREY)
+            fig = make_subplots(rows=1, cols=2, shared_yaxes=True)
+            fig.append_trace(ref_bar, 1, 1)
+            fig.append_trace(cur_bar, 1, 2)
         fig_json = fig.to_plotly_json()
         info.details.append(
             DetailsInfo(
