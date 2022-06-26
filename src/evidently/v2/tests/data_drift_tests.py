@@ -53,7 +53,7 @@ class TestNumberOfDriftedFeaturesRenderer(TestRenderer):
         info = super().render_html(obj)
         info.details = [
             DetailsInfo(
-                id="t1",
+                id="drift_table",
                 title="",
                 info=BaseWidgetInfo(
                     title="",

@@ -108,7 +108,6 @@ class TestValueMeanErrorRenderer(TestRenderer):
     def render_html(self, obj: TestValueMeanError) -> TestHtmlInfo:
         info = super().render_html(obj)
         me_distr = obj.metric.get_result().me_distr
-        fig = go.Figure()
         fig = go.Figure(data=[
             go.Bar(name='current', x=[x for x, _ in me_distr], y=[y for _, y in me_distr], marker_color=RED)
 
