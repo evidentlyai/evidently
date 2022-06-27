@@ -21,6 +21,7 @@ class RegressionPerformanceMetricsResults:
     mae_distr: List[Tuple[object, float, int]]
     ref_mae_distr: Optional[List[Tuple[object, float, int]]]
     mean_abs_perc_error: float
+    abs_error_max: float
     error_std: float
     abs_error_std: float
     abs_perc_error_std: float
@@ -62,6 +63,7 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
             mae_distr=mae_distr,
             ref_mae_distr=ref_mae_distr,
             mean_abs_perc_error=analyzer_results.reference_metrics.mean_abs_perc_error,
+            abs_error_max=analyzer_results.reference_metrics.abs_error_max,
             error_std=analyzer_results.reference_metrics.error_std,
             abs_error_std=analyzer_results.reference_metrics.abs_error_std,
             abs_perc_error_std=analyzer_results.reference_metrics.abs_perc_error_std,

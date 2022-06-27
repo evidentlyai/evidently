@@ -199,3 +199,13 @@ def plot_metric_value(fig, metric_val, metric_name):
                              name=metric_name))
     fig.update_layout(showlegend=True)
     return fig
+
+
+class TestAbsMaxError(BaseRegressionPerformanceMetricsTest):
+    name = "Abs value of max error"
+
+    def calculate_value_for_test(self) -> Number:
+        return self.metric.get_result().abs_error_max
+
+    def get_description(self, value: Number) -> str:
+        return f"Value of max error is {value}"

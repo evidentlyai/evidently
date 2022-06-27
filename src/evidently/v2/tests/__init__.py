@@ -20,3 +20,4 @@ from .data_quality_tests import TestFeatureValueMean
 from .regression_performance_tests import TestValueMAE
 from .regression_performance_tests import TestValueMAPE
 from .regression_performance_tests import TestValueMeanError
+from .regression_performance_tests import TestAbsMaxError
