@@ -33,6 +33,7 @@ class BaseIntegrityValueTest(BaseCheckValueTest):
 
 
 class TestNumberOfColumns(BaseIntegrityValueTest):
+    """Number of all columns in the dataframe, including utility columns (id/index, datetime, target, predictions)"""
     name = "Test Number of Columns"
 
     def calculate_value_for_test(self) -> Number:
@@ -44,6 +45,7 @@ class TestNumberOfColumns(BaseIntegrityValueTest):
 
 
 class TestNumberOfRows(BaseIntegrityValueTest):
+    """Number of rows in the dataframe"""
     name = "Test Number of Rows"
 
     def calculate_value_for_test(self) -> Number:
@@ -52,3 +54,111 @@ class TestNumberOfRows(BaseIntegrityValueTest):
 
     def get_description(self, value: Number) -> str:
         return f"Number of rows is {value}"
+
+
+class TestNumberOfNulls(BaseIntegrityValueTest):
+    """Number of NAN values in the dataframe without aggregation by rows or columns"""
+    name = "Test Number of Null Values"
+
+    def calculate_value_for_test(self) -> Number:
+        self.value = self.data_integrity_metric.get_result().number_of_nulls
+        return self.value
+
+    def get_description(self, value: Number) -> str:
+        return f"Number of nulls is {value}"
+
+
+class TestNumberOfColumnsWithNulls(BaseIntegrityValueTest):
+    """Number of columns contained at least one NAN value"""
+    name = "Test Number Of Columns With Nulls"
+
+    def calculate_value_for_test(self) -> Number:
+        self.value = self.data_integrity_metric.get_result().number_of_columns_with_nulls
+        return self.value
+
+    def get_description(self, value: Number) -> str:
+        return f"Number of columns with nulls is {value}"
+
+
+class TestNumberOfRowsWithNulls(BaseIntegrityValueTest):
+    """Number of rows contained at least one NAN value"""
+    name = "Test Number Of Rows With Nulls"
+
+    def calculate_value_for_test(self) -> Number:
+        self.value = self.data_integrity_metric.get_result().number_of_rows_with_nulls
+        return self.value
+
+    def get_description(self, value: Number) -> str:
+        return f"Number of rows with nulls is {value}"
+
+
+class TestNumberOfDifferentNulls(BaseIntegrityValueTest):
+    """Number of differently encoded empty values"""
+    name = "Test Number Of Differently Encoded Empty Values"
+
+    def calculate_value_for_test(self) -> Number:
+        self.value = self.data_integrity_metric.get_result().number_of_differently_encoded_nulls
+        return self.value
+
+    def get_description(self, value: Number) -> str:
+        return f"Number of differently encoded empty values: {value}"
+
+
+class TestNumberOfConstantColumns(BaseIntegrityValueTest):
+    """Number of columns contained only one unique value"""
+    name = "Test Number Of Constant Columns"
+
+    def calculate_value_for_test(self) -> Number:
+        self.value = self.data_integrity_metric.get_result().number_of_constant_columns
+        return self.value
+
+    def get_description(self, value: Number) -> str:
+        return f"Number of constant columns: {value}"
+
+
+class TestNumberOfEmptyRows(BaseIntegrityValueTest):
+    """Number of rows contained all NAN values"""
+    name = "Test Number Of Empty Rows"
+
+    def calculate_value_for_test(self) -> Number:
+        self.value = self.data_integrity_metric.get_result().number_of_empty_rows
+        return self.value
+
+    def get_description(self, value: Number) -> str:
+        return f"Number of empty rows: {value}"
+
+
+class TestNumberOfEmptyColumns(BaseIntegrityValueTest):
+    """Number of columns contained all NAN values"""
+    name = "Test Number Of Empty Columns"
+
+    def calculate_value_for_test(self) -> Number:
+        self.value = self.data_integrity_metric.get_result().number_of_empty_columns
+        return self.value
+
+    def get_description(self, value: Number) -> str:
+        return f"Number of empty columns: {value}"
+
+
+class TestNumberOfDuplicatedRows(BaseIntegrityValueTest):
+    """How many rows have duplicates in the dataset"""
+    name = "Test Number Of Duplicated Rows"
+
+    def calculate_value_for_test(self) -> Number:
+        self.value = self.data_integrity_metric.get_result().number_of_duplicated_rows
+        return self.value
+
+    def get_description(self, value: Number) -> str:
+        return f"Number of duplicated rows: {value}"
+
+
+class TestNumberOfDuplicatedColumns(BaseIntegrityValueTest):
+    """How many columns have duplicates in the dataset"""
+    name = "Test Number Of Duplicated Columns"
+
+    def calculate_value_for_test(self) -> Number:
+        self.value = self.data_integrity_metric.get_result().number_of_duplicated_columns
+        return self.value
+
+    def get_description(self, value: Number) -> str:
+        return f"Number of duplicated columns: {value}"
