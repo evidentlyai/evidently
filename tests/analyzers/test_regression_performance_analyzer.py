@@ -54,6 +54,7 @@ def analyzer() -> RegressionPerformanceAnalyzer:
                         "intercept": -5.125216895110457e-17,
                         "r": 0.9599832820197256,
                     },
+                    abs_error_max=1,
                     underperformance={
                         "majority": {"mean_error": 0.0, "std_error": 0.0},
                         "underestimation": {"mean_error": -1.0, "std_error": approx(np.nan, nan_ok=True)},
@@ -98,6 +99,7 @@ def analyzer() -> RegressionPerformanceAnalyzer:
                         "intercept": 0.0,
                         "r": 0.0,
                     },
+                    abs_error_max=0,
                     underperformance={
                         "majority": {
                             "mean_error": approx(np.nan, nan_ok=True),
@@ -121,6 +123,7 @@ def analyzer() -> RegressionPerformanceAnalyzer:
                         "intercept": 0.0,
                         "r": 0.0,
                     },
+                    abs_error_max=0,
                     underperformance={
                         "majority": {
                             "mean_error": approx(np.nan, nan_ok=True),
@@ -190,6 +193,7 @@ def analyzer() -> RegressionPerformanceAnalyzer:
                         "intercept": -0.25000000000000006,
                         "r": 0.9380933329232763,
                     },
+                    abs_error_max=1,
                     underperformance={
                         "majority": {"mean_error": 0.0, "std_error": approx(np.nan, nan_ok=True)},
                         "underestimation": {"mean_error": -1.0, "std_error": 0.0},
@@ -210,6 +214,7 @@ def analyzer() -> RegressionPerformanceAnalyzer:
                         "intercept": 0.0,
                         "r": 1.0,
                     },
+                    abs_error_max=1,
                     underperformance={
                         "majority": {
                             "mean_error": approx(np.nan, nan_ok=True),

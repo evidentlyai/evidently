@@ -21,5 +21,6 @@ from .data_quality_tests import TestFeatureValueMean
 from .regression_performance_tests import TestValueMAE
 from .regression_performance_tests import TestValueMAPE
 from .regression_performance_tests import TestValueMeanError
-from .regression_performance_tests import TestAbsMaxError
-from .regression_performance_tests import TestR2Score
+from .regression_performance_tests import TestValueAbsMaxError
+from .regression_performance_tests import TestValueRMSE
+from .regression_performance_tests import TestValueR2Score

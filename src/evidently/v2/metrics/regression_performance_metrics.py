@@ -4,6 +4,7 @@ from typing import Optional, Tuple, List
 import numpy as np
 import pandas as pd
 from sklearn.metrics import mean_absolute_error
+from sklearn.metrics import mean_squared_error
 from sklearn.metrics import r2_score
 
 from evidently import ColumnMapping
@@ -16,6 +17,7 @@ from evidently.v2.metrics.base_metric import Metric
 @dataclass
 class RegressionPerformanceMetricsResults:
     r2_score: float
+    rmsa: float
     mean_error: float
     me_distr: List[Tuple[object, float]]
     ref_me_distr: Optional[List[Tuple[object, float]]]
@@ -57,12 +59,17 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
             y_true=data.current_data[data.column_mapping.target],
             y_pred=data.current_data[data.column_mapping.prediction]
         )
+        rmsa_score_value = mean_squared_error(
+            y_true=data.current_data[data.column_mapping.target],
+            y_pred=data.current_data[data.column_mapping.prediction]
+        )
         me_distr, mae_distr = _me_mae_distr(data.current_data, data.column_mapping)
         ref_me_distr, ref_mae_distr = _me_mae_distr(data.reference_data, data.column_mapping)\
             if data.reference_data is not None else (None, None)
 
         return RegressionPerformanceMetricsResults(
             r2_score=r2_score_value,
+            rmsa=rmsa_score_value,
             mean_error=analyzer_results.reference_metrics.mean_error,
             me_distr=me_distr,
             ref_me_distr=ref_me_distr,
@@ -82,13 +89,16 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
 
 def _me_mae_distr(df: pd.DataFrame, column_mapping: ColumnMapping):
     df = df.copy()
-    df['target_binned'] = pd.cut(df[column_mapping.target], 10)
+    count_uniq_values = df[column_mapping.target].nunique(dropna=True)
+    df['target_binned'] = pd.cut(df[column_mapping.target],  min(count_uniq_values, 10))
 
     data = df[column_mapping.target] - df[column_mapping.prediction]
     me_bins = np.histogram_bin_edges(data, bins="doane")
     me_hist = np.histogram(data, bins=me_bins)
 
-    mae = df.groupby('target_binned').apply(lambda x: mean_absolute_error(x.target, x.preds))
+    mae = df.groupby('target_binned').apply(
+        lambda x: mean_absolute_error(x[column_mapping.target], x[column_mapping.prediction])
+    )
     mae_hist = df.target_binned.value_counts().sort_index()
     return ([(y, x) for x, y in zip(me_hist[0], me_hist[1])],
             [(idx, mae[idx], value) for idx, value in mae_hist.items()])
