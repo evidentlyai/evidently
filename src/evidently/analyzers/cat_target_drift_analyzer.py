@@ -150,29 +150,30 @@ class CatTargetDriftAnalyzer(Analyzer):
                                        current_data[target_column],
                                        feature_type,
                                        data_drift_options.cat_target_stattest_func)
-            drift_score, drift_detected = _compute_statistic(
+            drift_result = _compute_statistic(
                 reference_data, current_data, feature_type, target_column, target_test, threshold
             )
             result.target_metrics = DataDriftMetrics(
                 column_name=target_column,
                 stattest_name=target_test.display_name,
-                drift_score=drift_score,
-                drift_detected=drift_detected,
+                drift_score=drift_result.drift_score,
+                drift_detected=drift_result.drifted,
             )
+
         if prediction_column is not None:
             pred_test = get_stattest(reference_data[prediction_column],
                                      current_data[prediction_column],
                                      feature_type,
                                      data_drift_options.cat_target_stattest_func)
 
-            drift_score, drift_detected = _compute_statistic(
+            drift_result = _compute_statistic(
                 reference_data, current_data, feature_type, prediction_column, pred_test, threshold
             )
             result.prediction_metrics = DataDriftMetrics(
                 column_name=prediction_column,
                 stattest_name=pred_test.display_name,
-                drift_score=drift_score,
-                drift_detected=drift_detected,
+                drift_score=drift_result.drift_score,
+                drift_detected=drift_result.drifted,
             )
 
         return result

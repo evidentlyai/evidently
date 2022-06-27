@@ -83,10 +83,11 @@ def test_get_stattest_missing_stattest(stattest_func, feature_type):
 @pytest.mark.parametrize(
     "stat_test, override_threshold, expected_threshold",
     [
-        (StatTest("", "", lambda rd, cd, ft, thr: thr, []), None, 0.05),
-        (StatTest("", "", lambda rd, cd, ft, thr: thr, [], 0.1), None, 0.1),
-        (StatTest("", "", lambda rd, cd, ft, thr: thr, []), 0.5, 0.5),
+        (StatTest("", "", lambda rd, cd, ft, thr: (thr, False), []), None, 0.05),
+        (StatTest("", "", lambda rd, cd, ft, thr: (thr, False), [], 0.1), None, 0.1),
+        (StatTest("", "", lambda rd, cd, ft, thr: (thr, False), []), 0.5, 0.5),
     ]
 )
 def test_stattest_default_threshold(stat_test, override_threshold, expected_threshold):
-    assert stat_test(pd.Series(), pd.Series(), "", override_threshold) == expected_threshold
+    result = stat_test(pd.Series(), pd.Series(), "", override_threshold)
+    assert result.drift_score == expected_threshold
