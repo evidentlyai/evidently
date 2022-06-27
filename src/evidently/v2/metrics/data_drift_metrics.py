@@ -19,5 +19,8 @@ class DataDriftMetrics(Metric[DataDriftMetricsResults]):
             self.analyzer.options_provider.add(options)
 
     def calculate(self, data: InputData, metrics: dict) -> DataDriftMetricsResults:
+        if data.reference_data is None:
+            raise ValueError("Reference dataset should be present")
+
         results = self.analyzer.calculate(data.reference_data, data.current_data, data.column_mapping)
         return results
