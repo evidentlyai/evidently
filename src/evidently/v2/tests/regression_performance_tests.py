@@ -209,3 +209,13 @@ class TestAbsMaxError(BaseRegressionPerformanceMetricsTest):
 
     def get_description(self, value: Number) -> str:
         return f"Value of max error is {value}"
+
+
+class TestR2Score(BaseRegressionPerformanceMetricsTest):
+    name = "Test R2 Score"
+
+    def calculate_value_for_test(self) -> Number:
+        return self.metric.get_result().r2_score
+
+    def get_description(self, value: Number) -> str:
+        return f"R2 score is {value}"

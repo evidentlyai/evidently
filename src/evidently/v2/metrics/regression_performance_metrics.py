@@ -4,6 +4,7 @@ from typing import Optional, Tuple, List
 import numpy as np
 import pandas as pd
 from sklearn.metrics import mean_absolute_error
+from sklearn.metrics import r2_score
 
 from evidently import ColumnMapping
 from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceAnalyzer
@@ -14,6 +15,7 @@ from evidently.v2.metrics.base_metric import Metric
 
 @dataclass
 class RegressionPerformanceMetricsResults:
+    r2_score: float
     mean_error: float
     me_distr: List[Tuple[object, float]]
     ref_me_distr: Optional[List[Tuple[object, float]]]
@@ -51,11 +53,16 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
                 column_mapping=data.column_mapping
             )
 
+        r2_score_value = r2_score(
+            y_true=data.current_data[data.column_mapping.target],
+            y_pred=data.current_data[data.column_mapping.prediction]
+        )
         me_distr, mae_distr = _me_mae_distr(data.current_data, data.column_mapping)
         ref_me_distr, ref_mae_distr = _me_mae_distr(data.reference_data, data.column_mapping)\
             if data.reference_data is not None else (None, None)
 
         return RegressionPerformanceMetricsResults(
+            r2_score=r2_score_value,
             mean_error=analyzer_results.reference_metrics.mean_error,
             me_distr=me_distr,
             ref_me_distr=ref_me_distr,
