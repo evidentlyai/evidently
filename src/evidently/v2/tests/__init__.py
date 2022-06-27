@@ -3,10 +3,9 @@ from .data_drift_tests import TestShareOfDriftedFeatures
 from .data_drift_tests import TestFeatureValueDrift
 from .data_integrity_tests import TestNumberOfColumns
 from .data_integrity_tests import TestNumberOfRows
-from .data_integrity_tests import TestNumberOfNulls
-from .data_integrity_tests import TestNumberOfColumnsWithNulls
-from .data_integrity_tests import TestNumberOfRowsWithNulls
-from .data_integrity_tests import TestNumberOfDifferentNulls
+from .data_integrity_tests import TestNumberOfNANs
+from .data_integrity_tests import TestNumberOfColumnsWithNANs
+from .data_integrity_tests import TestNumberOfRowsWithNANs
 from .data_integrity_tests import TestNumberOfConstantColumns
 from .data_integrity_tests import TestNumberOfEmptyRows
 from .data_integrity_tests import TestNumberOfEmptyColumns

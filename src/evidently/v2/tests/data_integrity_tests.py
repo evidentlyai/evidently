@@ -56,52 +56,40 @@ class TestNumberOfRows(BaseIntegrityValueTest):
         return f"Number of rows is {value}"
 
 
-class TestNumberOfNulls(BaseIntegrityValueTest):
+class TestNumberOfNANs(BaseIntegrityValueTest):
     """Number of NAN values in the dataframe without aggregation by rows or columns"""
-    name = "Test Number of Null Values"
+    name = "Test Number of NAN Values"
 
     def calculate_value_for_test(self) -> Number:
-        self.value = self.data_integrity_metric.get_result().number_of_nulls
+        self.value = self.data_integrity_metric.get_result().number_of_nans
         return self.value
 
     def get_description(self, value: Number) -> str:
-        return f"Number of nulls is {value}"
+        return f"Number of NANs is {value}"
 
 
-class TestNumberOfColumnsWithNulls(BaseIntegrityValueTest):
+class TestNumberOfColumnsWithNANs(BaseIntegrityValueTest):
     """Number of columns contained at least one NAN value"""
     name = "Test Number Of Columns With Nulls"
 
     def calculate_value_for_test(self) -> Number:
-        self.value = self.data_integrity_metric.get_result().number_of_columns_with_nulls
+        self.value = self.data_integrity_metric.get_result().number_of_columns_with_nans
         return self.value
 
     def get_description(self, value: Number) -> str:
-        return f"Number of columns with nulls is {value}"
+        return f"Number of columns with NANs is {value}"
 
 
-class TestNumberOfRowsWithNulls(BaseIntegrityValueTest):
+class TestNumberOfRowsWithNANs(BaseIntegrityValueTest):
     """Number of rows contained at least one NAN value"""
-    name = "Test Number Of Rows With Nulls"
+    name = "Test Number Of Rows With NANs"
 
     def calculate_value_for_test(self) -> Number:
-        self.value = self.data_integrity_metric.get_result().number_of_rows_with_nulls
+        self.value = self.data_integrity_metric.get_result().number_of_rows_with_nans
         return self.value
 
     def get_description(self, value: Number) -> str:
-        return f"Number of rows with nulls is {value}"
-
-
-class TestNumberOfDifferentNulls(BaseIntegrityValueTest):
-    """Number of differently encoded empty values"""
-    name = "Test Number Of Differently Encoded Empty Values"
-
-    def calculate_value_for_test(self) -> Number:
-        self.value = self.data_integrity_metric.get_result().number_of_differently_encoded_nulls
-        return self.value
-
-    def get_description(self, value: Number) -> str:
-        return f"Number of differently encoded empty values: {value}"
+        return f"Number of rows with NANs is {value}"
 
 
 class TestNumberOfConstantColumns(BaseIntegrityValueTest):
