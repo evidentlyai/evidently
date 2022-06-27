@@ -4,74 +4,16 @@ from typing import Optional
 from typing import Union
 
 from evidently.v2.metrics import DataQualityMetrics
-from evidently.v2.metrics import DataStabilityMetrics
 from evidently.v2.tests.base_test import BaseCheckValueTest
 from evidently.v2.tests.base_test import Test
 from evidently.v2.tests.base_test import TestResult
 
 
-class TestConflictTarget(Test):
-    data_stability_metrics: DataStabilityMetrics
-
-    def __init__(self, data_stability_metrics: Optional[DataStabilityMetrics] = None):
-        if data_stability_metrics is not None:
-            self.data_stability_metrics = data_stability_metrics
-
-        else:
-            self.data_stability_metrics = DataStabilityMetrics()
-
-    def check(self):
-        conflict_target = self.data_stability_metrics.get_result().target_not_stable
-        if conflict_target is None:
-            test_result = TestResult.ERROR
-
-        elif conflict_target == 0:
-            test_result = TestResult.SUCCESS
-
-        else:
-            test_result = TestResult.FAIL
-
-        return TestResult(
-            "Test number of conflicts in target",
-            f"Number of conflict target values: {conflict_target}",
-            test_result
-        )
-
-
-class TestConflictPrediction(Test):
-    data_stability_metrics: DataStabilityMetrics
-
-    def __init__(self,
-                 data_stability_metrics: Optional[DataStabilityMetrics] = None):
-        self.data_stability_metrics = data_stability_metrics if data_stability_metrics is not None \
-            else DataStabilityMetrics()
-
-    def check(self):
-        conflict_prediction = self.data_stability_metrics.get_result().target_not_stable
-
-        if conflict_prediction is None:
-            test_result = TestResult.ERROR
-
-        elif conflict_prediction == 0:
-            test_result = TestResult.SUCCESS
-
-        else:
-            test_result = TestResult.FAIL
-
-        return TestResult(
-            "Test number of conflicts in prediction",
-            f"Number of conflict prediction values: {conflict_prediction}",
-            test_result
-        )
-
-
-class BaseFeatureDataQualityMetricsTest(BaseCheckValueTest):
+class BaseDataQualityMetricsValueTest(BaseCheckValueTest):
     metric: DataQualityMetrics
-    feature_name: str
 
     def __init__(
         self,
-        feature_name: Union[str, List[str]],
         eq: Optional[Number] = None,
         gt: Optional[Number] = None,
         gte: Optional[Number] = None,
@@ -88,8 +30,59 @@ class BaseFeatureDataQualityMetricsTest(BaseCheckValueTest):
         else:
             self.metric = DataQualityMetrics()
 
-        self.feature_name = feature_name
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
+
+
+class TestConflictTarget(BaseDataQualityMetricsValueTest):
+    name = "Test number of conflicts in target"
+
+    def calculate_value_for_test(self) -> Number:
+        return self.metric.get_result().target_not_stable
+
+    def get_description(self, value: Number) -> str:
+        return f"Number of conflict target value is {value}"
+
+
+class TestConflictPrediction(BaseDataQualityMetricsValueTest):
+    name = "Test number of conflicts in prediction"
+
+    def calculate_value_for_test(self) -> Number:
+        return self.metric.get_result().prediction_not_stable
+
+    def get_description(self, value: Number) -> str:
+        return f"Number of conflict prediction value is {value}"
+
+
+class TestTargetPredictionCorrelation(BaseDataQualityMetricsValueTest):
+    name = "Test correlation between target and prediction"
+
+    def calculate_value_for_test(self) -> Number:
+        return self.metric.get_result().target_prediction_correlation
+
+    def get_description(self, value: Number) -> str:
+        return f"Correlation between target and prediction is {value}"
+
+
+class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest):
+    feature_name: str
+
+    def __init__(
+        self,
+        feature_name: Union[str, List[str]],
+        eq: Optional[Number] = None,
+        gt: Optional[Number] = None,
+        gte: Optional[Number] = None,
+        is_in: Optional[List[Union[Number, str, bool]]] = None,
+        lt: Optional[Number] = None,
+        lte: Optional[Number] = None,
+        not_eq: Optional[Number] = None,
+        not_in: Optional[List[Union[Number, str, bool]]] = None,
+        metric: Optional[DataQualityMetrics] = None
+    ):
+        self.feature_name = feature_name
+        super().__init__(
+            eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in, metric=metric
+        )
 
     def check(self):
         result = TestResult(name=self.name, description="The test was not launched", status=TestResult.SKIPPED)

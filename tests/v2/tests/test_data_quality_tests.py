@@ -4,6 +4,9 @@ from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.v2.tests import TestFeatureValueMin
 from evidently.v2.tests import TestFeatureValueMax
 from evidently.v2.tests import TestFeatureValueMean
+from evidently.v2.tests import TestConflictTarget
+from evidently.v2.tests import TestConflictPrediction
+from evidently.v2.tests import TestTargetPredictionCorrelation
 from evidently.v2.test_suite import TestSuite
 
 
@@ -58,5 +61,46 @@ def test_data_quality_test_mean() -> None:
     assert suite
 
     suite = TestSuite(tests=[TestFeatureValueMean(feature_name="numerical_feature", eq=2)])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    assert suite
+
+
+def test_data_quality_test_conflict_target() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "category_feature": ["n", "d", "p", "n"],
+            "numerical_feature": [0, 1, 2, 5],
+            "target": [0, 0, 0, 1]
+        }
+    )
+    suite = TestSuite(tests=[TestConflictTarget(lt=5)])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    assert suite
+
+
+def test_data_quality_test_conflict_prediction() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "category_feature": ["n", "d", "p", "n"],
+            "numerical_feature": [0, 1, 2, 5],
+            "target": [0, 0, 0, 1],
+            "prediction": [0, 0, 0, 1],
+        }
+    )
+    suite = TestSuite(tests=[TestConflictPrediction(lt=5)])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    assert suite
+
+
+def test_data_quality_test_target_prediction_correlation() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "category_feature": ["n", "d", "p", "n"],
+            "numerical_feature": [0, 1, 2, 5],
+            "target": [0, 0, 0, 1],
+            "prediction": [0, 0, 1, 1],
+        }
+    )
+    suite = TestSuite(tests=[TestTargetPredictionCorrelation(gt=0.5)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite

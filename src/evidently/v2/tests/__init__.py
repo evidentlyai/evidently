@@ -14,6 +14,7 @@ from .data_integrity_tests import TestNumberOfDuplicatedRows
 from .data_integrity_tests import TestNumberOfDuplicatedColumns
 from .data_quality_tests import TestConflictTarget
 from .data_quality_tests import TestConflictPrediction
+from .data_quality_tests import TestTargetPredictionCorrelation
 from .data_quality_tests import TestFeatureValueMin
 from .data_quality_tests import TestFeatureValueMax
 from .data_quality_tests import TestFeatureValueMean
