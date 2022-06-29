@@ -23,3 +23,4 @@ from .regression_performance_tests import TestValueMeanError
 from .regression_performance_tests import TestValueAbsMaxError
 from .regression_performance_tests import TestValueRMSE
 from .regression_performance_tests import TestValueR2Score
+from .classification_performance_tests import TestAccuracyScore
