@@ -37,7 +37,7 @@ class BaseIntegrityValueTest(BaseCheckValueTest, ABC):
 
 
 class TestNumberOfColumns(BaseIntegrityValueTest):
-    """Number of all columns in the dataframe, including utility columns (id/index, datetime, target, predictions)"""
+    """Number of all columns in the data, including utility columns (id/index, datetime, target, predictions)"""
     name = "Test Number of Columns"
 
     def calculate_value_for_test(self) -> Number:
@@ -49,7 +49,7 @@ class TestNumberOfColumns(BaseIntegrityValueTest):
 
 
 class TestNumberOfRows(BaseIntegrityValueTest):
-    """Number of rows in the dataframe"""
+    """Number of rows in the data"""
     name = "Test Number of Rows"
 
     def calculate_value_for_test(self) -> Number:
@@ -61,7 +61,7 @@ class TestNumberOfRows(BaseIntegrityValueTest):
 
 
 class TestNumberOfNANs(BaseIntegrityValueTest):
-    """Number of NAN values in the dataframe without aggregation by rows or columns"""
+    """Number of NAN values in the data without aggregation by rows or columns"""
     name = "Test Number of NAN Values"
 
     def calculate_value_for_test(self) -> Number:
@@ -156,7 +156,7 @@ class TestNumberOfDuplicatedColumns(BaseIntegrityValueTest):
         return f"Number of duplicated columns: {value}"
 
 
-class BaseIntegrityByColumnsTest(BaseConditionsTest, ABC):
+class BaseIntegrityByColumnsConditionTest(BaseConditionsTest, ABC):
     data_integrity_metric: DataIntegrityMetrics
     columns: Optional[List[str]]
 
@@ -183,7 +183,7 @@ class BaseIntegrityByColumnsTest(BaseConditionsTest, ABC):
             self.data_integrity_metric = data_integrity_metric
 
 
-class TestColumnNANShare(BaseIntegrityByColumnsTest):
+class TestColumnNANShare(BaseIntegrityByColumnsConditionTest):
     """Test the share of NANs in a column"""
     name = "Test Share of NANs in a Column"
 
@@ -203,7 +203,7 @@ class TestColumnNANShare(BaseIntegrityByColumnsTest):
         for column_name in check_columns:
             if column_name not in nans_by_columns:
                 status = TestResult.ERROR
-                description = f"No column '{column_name}' in the dataframe"
+                description = f"No column '{column_name}' in the metrics data"
                 break
 
             else:
@@ -217,9 +217,29 @@ class TestColumnNANShare(BaseIntegrityByColumnsTest):
         return TestResult(name=self.name, description=description, status=status)
 
 
+class BaseIntegrityByColumnsTest(Test, ABC):
+    data_integrity_metric: DataIntegrityMetrics
+    columns: Optional[List[str]]
+
+    def __init__(
+        self,
+        columns: Optional[List[str]] = None,
+        data_integrity_metric: Optional[DataIntegrityMetrics] = None
+    ):
+        self.columns = columns
+
+        if data_integrity_metric is None:
+            self.data_integrity_metric = DataIntegrityMetrics()
+
+        else:
+            self.data_integrity_metric = data_integrity_metric
+
+
 class TestAllConstantValues(BaseIntegrityByColumnsTest):
     """Test that there is only one unique value in a column"""
+
     name = "Test Column Has One Constant Value"
+    data_integrity_metric: DataIntegrityMetrics
 
     def check(self):
         description = "All tested columns have constant values"
@@ -236,7 +256,7 @@ class TestAllConstantValues(BaseIntegrityByColumnsTest):
         for column_name in check_columns:
             if column_name not in uniques_by_columns:
                 status = TestResult.ERROR
-                description = f"No column '{column_name}' in the dataframe"
+                description = f"No column '{column_name}' in the metrics data"
                 break
 
             else:
@@ -245,6 +265,42 @@ class TestAllConstantValues(BaseIntegrityByColumnsTest):
                 if uniques_by_column != 1:
                     status = TestResult.FAIL
                     description = f"Column '{column_name}' has {uniques_by_column} unique values"
+                    break
+
+        return TestResult(name=self.name, description=description, status=status)
+
+
+class TestAllUniqueValues(BaseIntegrityByColumnsTest):
+    """Test that there is only uniques values in a column"""
+    name = "Test Column Has Unique Values Only"
+
+    def check(self):
+        description = "All tested columns have unique values"
+        status = TestResult.SUCCESS
+
+        uniques_by_columns = self.data_integrity_metric.get_result().uniques_by_columns
+        number_of_rows = self.data_integrity_metric.get_result().number_of_rows
+        nans_by_columns = self.data_integrity_metric.get_result().nans_by_columns
+
+        if not self.columns:
+            check_columns = uniques_by_columns.keys()
+
+        else:
+            check_columns = self.columns
+
+        for column_name in check_columns:
+            if column_name not in uniques_by_columns or column_name not in nans_by_columns:
+                status = TestResult.ERROR
+                description = f"No column '{column_name}' in the metrics data"
+                break
+
+            else:
+                uniques_in_column = uniques_by_columns[column_name]
+                nans_in_column = nans_by_columns[column_name]
+
+                if uniques_in_column != number_of_rows - nans_in_column:
+                    status = TestResult.FAIL
+                    description = f"Column '{column_name}' has {uniques_in_column} unique values"
                     break
 
         return TestResult(name=self.name, description=description, status=status)
@@ -283,7 +339,7 @@ class TestColumnsType(Test):
 
                 if real_column_type is None:
                     status = TestResult.ERROR
-                    description = f"No column '{column_name}' in the dataframe"
+                    description = f"No column '{column_name}' in the metrics data"
                     break
 
                 elif column_type != real_column_type:
