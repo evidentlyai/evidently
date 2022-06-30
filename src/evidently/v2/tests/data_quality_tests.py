@@ -157,3 +157,14 @@ class TestFeatureValueMedian(BaseFeatureDataQualityMetricsTest):
 
     def get_description(self, value: Number) -> str:
         return f"Median (50 percentile) value for feature '{self.feature_name}' is {value}"
+
+
+class TestFeatureValueStd(BaseFeatureDataQualityMetricsTest):
+    name = "Test a feature std value"
+
+    def calculate_value_for_test(self) -> Number:
+        features_stats = self.metric.get_result().features_stats.get_all_features()
+        return features_stats[self.feature_name].std
+
+    def get_description(self, value: Number) -> str:
+        return f"Std value for feature '{self.feature_name}' is {value}"
