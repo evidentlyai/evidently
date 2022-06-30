@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 
 import pytest
@@ -14,6 +15,7 @@ from evidently.v2.tests import TestNumberOfEmptyColumns
 from evidently.v2.tests import TestNumberOfDuplicatedRows
 from evidently.v2.tests import TestNumberOfDuplicatedColumns
 from evidently.v2.tests import TestColumnsType
+from evidently.v2.tests import TestColumnNANShare
 from evidently.v2.test_suite import TestSuite
 
 
@@ -215,5 +217,30 @@ def test_data_integrity_test_columns_type() -> None:
     assert not suite
 
     suite = TestSuite(tests=[TestColumnsType(columns_type={"numerical_feature": "int64"})])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    assert suite
+
+
+def test_data_integrity_test_columns_nan_share() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "feature1": [1, 2, np.nan],
+            "feature2": [1, 2, np.nan],
+            "target": ["1", "1", "1"]
+        }
+    )
+    suite = TestSuite(tests=[TestColumnNANShare(columns=[])])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    assert not suite
+
+    suite = TestSuite(tests=[TestColumnNANShare(columns=["not_exists_feature"])])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    assert not suite
+
+    suite = TestSuite(tests=[TestColumnNANShare(columns=["feature1", "feature2"], lt=0.1)])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    assert not suite
+
+    suite = TestSuite(tests=[TestColumnNANShare(columns=["feature1", "feature2"], lt=0.5)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite

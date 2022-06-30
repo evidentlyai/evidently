@@ -1,4 +1,5 @@
 import abc
+from abc import ABC
 
 from dataclasses import dataclass
 from numbers import Number
@@ -114,12 +115,10 @@ class TestValueCondition:
         return result
 
 
-class BaseCheckValueTest(Test):
+class BaseConditionsTest(Test, ABC):
     """
-    Base class for all tests with checking a value condition
+    Base class for all tests with a condition
     """
-    value: Number
-
     def __init__(
             self,
             eq: Optional[Number] = None,
@@ -134,6 +133,13 @@ class BaseCheckValueTest(Test):
         self.condition = TestValueCondition(
             eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in
         )
+
+
+class BaseCheckValueTest(BaseConditionsTest):
+    """
+    Base class for all tests with checking a value condition
+    """
+    value: Number
 
     @abc.abstractmethod
     def calculate_value_for_test(self) -> Number:

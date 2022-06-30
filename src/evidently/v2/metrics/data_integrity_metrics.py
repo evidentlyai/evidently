@@ -19,6 +19,7 @@ class DataIntegrityMetricsResults:
     number_of_duplicated_rows: int
     number_of_duplicated_columns: int
     columns_type: dict
+    nans_by_columns: dict
 
 
 class DataIntegrityMetrics(Metric[DataIntegrityMetricsResults]):
@@ -36,5 +37,6 @@ class DataIntegrityMetrics(Metric[DataIntegrityMetricsResults]):
             number_of_duplicated_columns=sum([
                 1 for i, j in combinations(data.current_data, 2) if data.current_data[i].equals(data.current_data[j])
             ]),
-            columns_type=dict(data.current_data.dtypes.to_dict())
+            columns_type=dict(data.current_data.dtypes.to_dict()),
+            nans_by_columns=data.current_data.isna().sum().to_dict()
         )

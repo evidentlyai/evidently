@@ -1,3 +1,4 @@
+from abc import ABC
 from numbers import Number
 from typing import List
 from typing import Optional
@@ -6,11 +7,12 @@ from typing import Union
 from evidently.v2.metrics.data_integrity_metrics import DataIntegrityMetrics
 
 from evidently.v2.tests.base_test import BaseCheckValueTest
+from evidently.v2.tests.base_test import BaseConditionsTest
 from evidently.v2.tests.base_test import Test
 from evidently.v2.tests.base_test import TestResult
 
 
-class BaseIntegrityValueTest(BaseCheckValueTest):
+class BaseIntegrityValueTest(BaseCheckValueTest, ABC):
     data_integrity_metric: DataIntegrityMetrics
 
     def __init__(
@@ -154,6 +156,64 @@ class TestNumberOfDuplicatedColumns(BaseIntegrityValueTest):
         return f"Number of duplicated columns: {value}"
 
 
+class BaseIntegrityByColumnsTest(BaseConditionsTest, ABC):
+    data_integrity_metric: DataIntegrityMetrics
+    columns: List[str]
+
+    def __init__(
+        self,
+        columns: List[str],
+        eq: Optional[Number] = None,
+        gt: Optional[Number] = None,
+        gte: Optional[Number] = None,
+        is_in: Optional[List[Union[Number, str, bool]]] = None,
+        lt: Optional[Number] = None,
+        lte: Optional[Number] = None,
+        not_eq: Optional[Number] = None,
+        not_in: Optional[List[Union[Number, str, bool]]] = None,
+        data_integrity_metric: Optional[DataIntegrityMetrics] = None
+    ):
+        super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
+        self.columns = columns
+
+        if data_integrity_metric is None:
+            self.data_integrity_metric = DataIntegrityMetrics()
+
+        else:
+            self.data_integrity_metric = data_integrity_metric
+
+
+class TestColumnNANShare(BaseIntegrityByColumnsTest):
+    """Test the share of NANs in a column"""
+    name = "Test Share of NANs in a Column"
+
+    def check(self):
+        description = "Share of NANs in the columns is ok"
+        status = TestResult.SUCCESS
+
+        nans_by_columns = self.data_integrity_metric.get_result().nans_by_columns
+        number_of_rows = self.data_integrity_metric.get_result().number_of_rows
+
+        if not self.columns:
+            status = TestResult.ERROR
+            description = "Check columns list is empty"
+
+        for column_name in self.columns:
+            if column_name not in nans_by_columns:
+                status = TestResult.ERROR
+                description = f"No column '{column_name}' in the dataframe"
+                break
+
+            else:
+                nans_share = nans_by_columns[column_name] / number_of_rows
+
+                if not self.condition.check_value(nans_share):
+                    status = TestResult.FAIL
+                    description = f"For column '{column_name}' share of NANs is {nans_share}"
+
+        return TestResult(name=self.name, description=description, status=status)
+
+
 class TestColumnsType(Test):
     """This test compares a column type against the specified type"""
     name = "Test Columns Type"
@@ -181,18 +241,17 @@ class TestColumnsType(Test):
             status = TestResult.ERROR
             description = "Columns type condition is empty"
 
-        for column_name, column_type in self.columns_type.items():
-            real_column_type = data_columns_type.get(column_name)
+        else:
+            for column_name, column_type in self.columns_type.items():
+                real_column_type = data_columns_type.get(column_name)
 
-            if real_column_type is None:
-                status = TestResult.ERROR
-                description = f"No column '{column_name}' in the dataframe"
-                break
+                if real_column_type is None:
+                    status = TestResult.ERROR
+                    description = f"No column '{column_name}' in the dataframe"
+                    break
 
-            elif column_type != real_column_type:
-                status = TestResult.FAIL
-                description = f"Column '{column_name}' type is {real_column_type}, but expected {column_type}"
+                elif column_type != real_column_type:
+                    status = TestResult.FAIL
+                    description = f"Column '{column_name}' type is {real_column_type}, but expected {column_type}"
 
         return TestResult(name=self.name, description=description, status=status)
-
-
