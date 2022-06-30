@@ -6,7 +6,6 @@ from dataclasses import dataclass
 
 from evidently.analyzers.data_quality_analyzer import DataQualityStats
 from evidently.analyzers.data_quality_analyzer import DataQualityAnalyzer
-from evidently.analyzers.utils import process_columns
 from evidently.options.quality_metrics import QualityMetricsOptions
 from evidently.options import OptionsProvider
 from evidently.v2.metrics.base_metric import InputData
@@ -22,6 +21,7 @@ class DataQualityMetricsResults:
     target_not_stable: Optional[int] = None
     # quantity of not-stable prediction values. None value if there is no target in the dataset.
     prediction_not_stable: Optional[int] = None
+    reference_features_stats: Optional[DataQualityStats] = None
 
 
 class DataQualityMetrics(Metric[DataQualityMetricsResults]):
@@ -54,6 +54,7 @@ class DataQualityMetrics(Metric[DataQualityMetricsResults]):
             )
             features_stats = analyzer_results.reference_features_stats
             correlations = analyzer_results.reference_correlations
+            reference_features_stats = None
 
         else:
             analyzer_results = self.analyzer.calculate(
@@ -63,6 +64,7 @@ class DataQualityMetrics(Metric[DataQualityMetricsResults]):
             )
             features_stats = analyzer_results.current_features_stats
             correlations = analyzer_results.current_correlations
+            reference_features_stats = analyzer_results.reference_features_stats
 
         return DataQualityMetricsResults(
             target_prediction_correlation=target_prediction_correlation,
@@ -71,4 +73,5 @@ class DataQualityMetrics(Metric[DataQualityMetricsResults]):
             # TODO: implement stability calculations
             target_not_stable=0,
             prediction_not_stable=0,
+            reference_features_stats=reference_features_stats
         )

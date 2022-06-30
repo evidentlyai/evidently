@@ -142,6 +142,15 @@ class DataQualityStats:
 
         raise KeyError(item)
 
+    def __in__(self, feature_name) -> FeatureQualityStats:
+        return feature_name in (
+            *self.target_stats,
+            *self.datetime_features_stats,
+            *self.cat_features_stats,
+            *self.num_features_stats,
+        )
+
+
 
 @dataclass
 class DataQualityAnalyzerResults(BaseAnalyzerResult):

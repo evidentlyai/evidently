@@ -12,6 +12,7 @@ from evidently.v2.tests import TestFeatureValueStd
 from evidently.v2.tests import TestNumberOfUniqueValues
 from evidently.v2.tests import TestUniqueValuesShare
 from evidently.v2.tests import TestMostCommonValueShare
+from evidently.v2.tests import TestMeanInNSigmas
 from evidently.v2.test_suite import TestSuite
 
 
@@ -200,4 +201,32 @@ def test_data_quality_test_most_common_value_share() -> None:
     assert not suite
     suite = TestSuite(tests=[TestMostCommonValueShare(feature_name="feature1", eq=0.5)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    assert suite
+
+
+def test_data_quality_test_value_in_n_sigmas() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "feature1": [0, 1, 1, 20],
+            "target": [0, 0, 0, 1],
+            "prediction": [0, 0, 1, 1],
+        }
+    )
+    reference_dataset = pd.DataFrame(
+        {
+            "feature1": [0, 1, 1, 3],
+            "target": [0, 0, 0, 1],
+            "prediction": [0, 0, 1, 1],
+        }
+    )
+    suite = TestSuite(tests=[TestMeanInNSigmas(column="feature1")])
+    suite.run(current_data=test_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
+    assert not suite
+
+    suite = TestSuite(tests=[TestMeanInNSigmas(column="not_exist_feature", n_sigmas=3)])
+    suite.run(current_data=test_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
+    assert not suite
+
+    suite = TestSuite(tests=[TestMeanInNSigmas(column="feature1", n_sigmas=4)])
+    suite.run(current_data=test_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
     assert suite

@@ -6,6 +6,7 @@ from typing import Union
 
 from evidently.v2.metrics import DataQualityMetrics
 from evidently.v2.tests.base_test import BaseCheckValueTest
+from evidently.v2.tests.base_test import Test
 from evidently.v2.tests.base_test import TestResult
 
 
@@ -64,7 +65,7 @@ class TestTargetPredictionCorrelation(BaseDataQualityMetricsValueTest):
 
 
 class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest, ABC):
-    feature_name: str
+    feature_name: Union[str, List[str]]
 
     def __init__(
         self,
@@ -202,3 +203,57 @@ class TestMostCommonValueShare(BaseFeatureDataQualityMetricsTest):
 
     def get_description(self, value: Number) -> str:
         return f"Share of most common value for feature '{self.feature_name}' is {value}"
+
+
+class TestMeanInNSigmas(Test):
+    name = "Test mean value in N sigmas by reference"
+    metric: DataQualityMetrics
+    column: str
+    n_sigmas: int
+
+    def __init__(
+            self,
+            column: str,
+            n_sigmas: int = 2,
+            metric: Optional[DataQualityMetrics] = None
+    ):
+        self.column = column
+        self.n_sigmas = n_sigmas
+        if metric is not None:
+            self.metric = metric
+
+        else:
+            self.metric = DataQualityMetrics()
+
+    def check(self):
+        reference_feature_stats = self.metric.get_result().reference_features_stats
+        features_stats = self.metric.get_result().features_stats
+
+        if not reference_feature_stats:
+            raise ValueError("Reference should be present")
+
+        if self.column not in features_stats.get_all_features():
+            description = f"Column {self.column} should be in current data"
+            test_result = TestResult.ERROR
+
+        elif self.column not in reference_feature_stats.get_all_features():
+            description = f"Column {self.column} should be in reference data"
+            test_result = TestResult.ERROR
+
+        else:
+            current_mean = features_stats[self.column].mean
+            reference_mean = reference_feature_stats[self.column].mean
+            reference_std = reference_feature_stats[self.column].std
+            sigmas_value = reference_std * self.n_sigmas
+            left_condition = reference_mean - sigmas_value
+            right_condition = reference_mean + sigmas_value
+
+            if left_condition < current_mean < right_condition:
+                description = f"Mean {current_mean} is in range from {left_condition} to {right_condition}"
+                test_result = TestResult.SUCCESS
+
+            else:
+                description = f"Mean {current_mean} is not in range from {left_condition} to {right_condition}"
+                test_result = TestResult.FAIL
+
+        return TestResult(name=self.name, description=description, status=test_result)
