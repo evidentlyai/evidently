@@ -23,10 +23,10 @@ def test_classification_performance_metrics() -> None:
         metrics={}
     )
     assert result is not None
-    assert result.accuracy == 1
-    assert result.f1 == 1
-    assert result.precision == 1
-    assert result.recall == 1
+    assert result.current_metrics.accuracy == 1
+    assert result.current_metrics.f1 == 1
+    assert result.current_metrics.precision == 1
+    assert result.current_metrics.recall == 1
 
 
 def test_prob_classification_performance_metrics() -> None:
