@@ -16,6 +16,7 @@ from evidently.v2.tests import TestNumberOfDuplicatedRows
 from evidently.v2.tests import TestNumberOfDuplicatedColumns
 from evidently.v2.tests import TestColumnsType
 from evidently.v2.tests import TestColumnNANShare
+from evidently.v2.tests import TestAllConstantValues
 from evidently.v2.test_suite import TestSuite
 
 
@@ -246,5 +247,34 @@ def test_data_integrity_test_columns_nan_share() -> None:
     assert not suite
 
     suite = TestSuite(tests=[TestColumnNANShare(columns=["feature1", "feature2", "target"], lt=0.5)])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    assert suite
+
+
+def test_data_integrity_test_columns_all_constant_values() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "feature1": [1, 1, np.nan],
+            "feature2": [1, 2, np.nan],
+            "target": ["1", "1", "1"]
+        }
+    )
+    suite = TestSuite(tests=[TestAllConstantValues(columns=[])])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    assert not suite
+
+    suite = TestSuite(tests=[TestAllConstantValues(columns=["not_exists_feature", "feature1", "feature2", "target"])])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    assert not suite
+
+    suite = TestSuite(tests=[TestAllConstantValues(columns=["feature1"])])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    assert suite
+
+    suite = TestSuite(tests=[TestAllConstantValues(columns=["feature1", "feature2"])])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    assert not suite
+
+    suite = TestSuite(tests=[TestAllConstantValues(columns=["target"])])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite

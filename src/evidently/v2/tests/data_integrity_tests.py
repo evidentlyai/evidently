@@ -212,6 +212,40 @@ class TestColumnNANShare(BaseIntegrityByColumnsTest):
                 if not self.condition.check_value(nans_share):
                     status = TestResult.FAIL
                     description = f"For column '{column_name}' share of NANs is {nans_share}"
+                    break
+
+        return TestResult(name=self.name, description=description, status=status)
+
+
+class TestAllConstantValues(BaseIntegrityByColumnsTest):
+    """Test that there is only one unique value in a column"""
+    name = "Test Column Has One Constant Value"
+
+    def check(self):
+        description = "All tested columns have constant values"
+        status = TestResult.SUCCESS
+
+        uniques_by_columns = self.data_integrity_metric.get_result().uniques_by_columns
+
+        if not self.columns:
+            check_columns = uniques_by_columns.keys()
+
+        else:
+            check_columns = self.columns
+
+        for column_name in check_columns:
+            if column_name not in uniques_by_columns:
+                status = TestResult.ERROR
+                description = f"No column '{column_name}' in the dataframe"
+                break
+
+            else:
+                uniques_by_column = uniques_by_columns[column_name]
+
+                if uniques_by_column != 1:
+                    status = TestResult.FAIL
+                    description = f"Column '{column_name}' has {uniques_by_column} unique values"
+                    break
 
         return TestResult(name=self.name, description=description, status=status)
 
@@ -255,5 +289,6 @@ class TestColumnsType(Test):
                 elif column_type != real_column_type:
                     status = TestResult.FAIL
                     description = f"Column '{column_name}' type is {real_column_type}, but expected {column_type}"
+                    break
 
         return TestResult(name=self.name, description=description, status=status)
