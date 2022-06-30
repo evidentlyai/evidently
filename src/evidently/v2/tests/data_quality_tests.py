@@ -257,3 +257,70 @@ class TestMeanInNSigmas(Test):
                 test_result = TestResult.FAIL
 
         return TestResult(name=self.name, description=description, status=test_result)
+
+
+class TestValueRange(Test):
+    name = "Checks that all values of certain column belong to the interval"
+    metric: DataQualityMetrics
+    column: str
+    gt: Optional[int]
+    lt: Optional[int]
+
+    def __init__(
+            self,
+            column: str,
+            gt: Optional[int] = None,
+            lt: Optional[int] = None,
+            metric: Optional[DataQualityMetrics] = None
+    ):
+        self.column = column
+        self.gt = gt
+        self.lt = lt
+
+        if metric is not None:
+            self.metric = metric
+
+        else:
+            self.metric = DataQualityMetrics()
+
+    def check(self):
+        reference_feature_stats = self.metric.get_result().reference_features_stats
+        features_stats = self.metric.get_result().features_stats
+
+        if (self.gt is None or self.lt is None) and reference_feature_stats is None:
+            raise ValueError("Reference should be present")
+
+        if self.column not in features_stats.get_all_features():
+            description = f"Column {self.column} should be in current data"
+            test_result = TestResult.ERROR
+
+        elif reference_feature_stats and self.column not in reference_feature_stats.get_all_features():
+            description = f"Column {self.column} should be in reference data"
+            test_result = TestResult.ERROR
+
+        else:
+            if self.gt is None:
+                min_condition = reference_feature_stats[self.column].min
+
+            else:
+                min_condition = self.gt
+
+            if self.lt is None:
+                max_condition = reference_feature_stats[self.column].max
+
+            else:
+                max_condition = self.lt
+
+            current_min = features_stats[self.column].min
+            current_max = features_stats[self.column].max
+
+            if current_min >= min_condition and current_max <= max_condition:
+                description = f"Column {self.column} values are in range from {min_condition} to {max_condition}"
+                test_result = TestResult.SUCCESS
+
+            else:
+                description = f"Column {self.column} values are not in range from {min_condition} to {max_condition}. " \
+                              f"Column min value is {current_min}. And max value is {current_max}"
+                test_result = TestResult.FAIL
+
+        return TestResult(name=self.name, description=description, status=test_result)

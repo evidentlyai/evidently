@@ -13,6 +13,7 @@ from evidently.v2.tests import TestNumberOfUniqueValues
 from evidently.v2.tests import TestUniqueValuesShare
 from evidently.v2.tests import TestMostCommonValueShare
 from evidently.v2.tests import TestMeanInNSigmas
+from evidently.v2.tests import TestValueRange
 from evidently.v2.test_suite import TestSuite
 
 
@@ -228,5 +229,41 @@ def test_data_quality_test_value_in_n_sigmas() -> None:
     assert not suite
 
     suite = TestSuite(tests=[TestMeanInNSigmas(column="feature1", n_sigmas=4)])
+    suite.run(current_data=test_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
+    assert suite
+
+
+def test_data_quality_test_value_in_range() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "feature1": [0, 1, 1, 20],
+            "target": [0, 0, 0, 1],
+            "prediction": [0, 0, 1, 1],
+        }
+    )
+    suite = TestSuite(tests=[TestValueRange(column="feature1", gt=0, lt=10)])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    assert not suite
+
+    suite = TestSuite(tests=[TestValueRange(column="not_exist_feature", gt=0, lt=100)])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    assert not suite
+
+    suite = TestSuite(tests=[TestValueRange(column="feature1", gt=0, lt=100)])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    assert suite
+
+    reference_dataset = pd.DataFrame(
+        {
+            "feature1": [0, 1, 1, 3],
+            "target": [0, 0, 0, 1],
+            "prediction": [0, 0, 1, 1],
+        }
+    )
+    suite = TestSuite(tests=[TestValueRange(column="feature1")])
+    suite.run(current_data=test_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
+    assert not suite
+
+    suite = TestSuite(tests=[TestValueRange(column="feature1", lt=100)])
     suite.run(current_data=test_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
     assert suite
