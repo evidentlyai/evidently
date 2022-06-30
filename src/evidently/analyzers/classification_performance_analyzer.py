@@ -43,8 +43,9 @@ class ClassificationPerformanceAnalyzerResults(BaseAnalyzerResult):
     current_metrics: Optional[ClassificationPerformanceMetrics] = None
 
 
-def classification_performance_metrics(target: pd.Series,prediction: pd.Series, target_names: Optional[List[str]]) \
-        -> ClassificationPerformanceMetrics:
+def classification_performance_metrics(
+        target: pd.Series, prediction: pd.Series, target_names: Optional[List[str]]
+) -> ClassificationPerformanceMetrics:
     # calculate metrics matrix
     metrics_matrix = metrics.classification_report(target, prediction, output_dict=True)
     # get quality metrics from the metrics matrix, do not calculate them again

@@ -90,7 +90,7 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
 def _me_mae_distr(df: pd.DataFrame, column_mapping: ColumnMapping):
     df = df.copy()
     count_uniq_values = df[column_mapping.target].nunique(dropna=True)
-    df['target_binned'] = pd.cut(df[column_mapping.target],  min(count_uniq_values, 10))
+    df['target_binned'] = pd.cut(df[column_mapping.target], min(count_uniq_values, 10))
 
     data = df[column_mapping.target] - df[column_mapping.prediction]
     me_bins = np.histogram_bin_edges(data, bins="doane")

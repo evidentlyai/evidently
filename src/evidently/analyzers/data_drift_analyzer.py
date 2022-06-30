@@ -105,10 +105,12 @@ class DataDriftAnalyzer(Analyzer):
                                 current_data[feature_name],
                                 feature_type,
                                 data_drift_options.get_feature_stattest_func(feature_name, feature_type))
-            drift_result = test(reference_data[feature_name],
-                                               current_data[feature_name],
-                                               feature_type,
-                                               threshold)
+            drift_result = test(
+                reference_data[feature_name],
+                current_data[feature_name],
+                feature_type,
+                threshold
+            )
             p_value = drift_result.drift_score
             drifted = drift_result.drifted
             threshold = drift_result.actual_threshold
@@ -180,7 +182,8 @@ class DataDriftAnalyzer(Analyzer):
         )
         return result
 
-    def _get_pred_labels_from_prob(self, data: pd.DataFrame, prediction_column: list):
+    @staticmethod
+    def _get_pred_labels_from_prob(data: pd.DataFrame, prediction_column: list):
         array_prediction = data[prediction_column].to_numpy()
         prediction_ids = np.argmax(array_prediction, axis=-1)
         prediction_labels = [prediction_column[x] for x in prediction_ids]
