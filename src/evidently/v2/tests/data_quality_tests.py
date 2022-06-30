@@ -1,3 +1,4 @@
+from abc import ABC
 from numbers import Number
 from typing import List
 from typing import Optional
@@ -8,7 +9,7 @@ from evidently.v2.tests.base_test import BaseCheckValueTest
 from evidently.v2.tests.base_test import TestResult
 
 
-class BaseDataQualityMetricsValueTest(BaseCheckValueTest):
+class BaseDataQualityMetricsValueTest(BaseCheckValueTest, ABC):
     metric: DataQualityMetrics
 
     def __init__(
@@ -62,7 +63,7 @@ class TestTargetPredictionCorrelation(BaseDataQualityMetricsValueTest):
         return f"Correlation between target and prediction is {value}"
 
 
-class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest):
+class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest, ABC):
     feature_name: str
 
     def __init__(
