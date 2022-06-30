@@ -18,6 +18,7 @@ from evidently.v2.tests import TestColumnsType
 from evidently.v2.tests import TestColumnNANShare
 from evidently.v2.tests import TestAllConstantValues
 from evidently.v2.tests import TestAllUniqueValues
+from evidently.v2.tests import TestColumnValueRegexp
 from evidently.v2.test_suite import TestSuite
 
 
@@ -306,5 +307,36 @@ def test_data_integrity_test_columns_all_unique_values() -> None:
     assert not suite
 
     suite = TestSuite(tests=[TestAllUniqueValues(columns=["target"])])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    assert suite
+
+
+def test_data_integrity_test_column_values_match_regexp() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "feature1": ["a", "aa", "baa"],
+            "feature2": ["b", "bb", "baa"],
+            "target": [1, 2, 3]
+        }
+    )
+    suite = TestSuite(tests=[TestColumnValueRegexp(columns="feature1", reg_exp=r"a.*", eq=2)])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    assert suite
+
+    suite = TestSuite(tests=[TestColumnValueRegexp(columns=["feature1", "feature2"], reg_exp=r"c.*", lt=1)])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    assert suite
+
+    suite = TestSuite(tests=[
+        TestColumnValueRegexp(columns=["feature1"], reg_exp=r"a.*", eq=2),
+        TestColumnValueRegexp(columns=["feature2"], reg_exp=r"b.*", eq=2)
+    ])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    assert not suite
+
+    suite = TestSuite(tests=[
+        TestColumnValueRegexp(columns=["feature1"], reg_exp=r"a.*", eq=2),
+        TestColumnValueRegexp(columns=["feature2"], reg_exp=r"b.*", eq=3)
+    ])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite

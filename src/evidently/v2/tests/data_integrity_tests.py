@@ -5,7 +5,7 @@ from typing import Optional
 from typing import Union
 
 from evidently.v2.metrics.data_integrity_metrics import DataIntegrityMetrics
-
+from evidently.v2.metrics.data_integrity_metrics import DataIntegrityValueByRegexpMetrics
 from evidently.v2.tests.base_test import BaseCheckValueTest
 from evidently.v2.tests.base_test import BaseConditionsTest
 from evidently.v2.tests.base_test import Test
@@ -346,5 +346,48 @@ class TestColumnsType(Test):
                     status = TestResult.FAIL
                     description = f"Column '{column_name}' type is {real_column_type}, but expected {column_type}"
                     break
+
+        return TestResult(name=self.name, description=description, status=status)
+
+
+class TestColumnValueRegexp(BaseConditionsTest):
+    name = "Test count number of values in a column or in columns matched a regexp"
+    metric: DataIntegrityValueByRegexpMetrics
+
+    def __init__(
+        self,
+        columns: Optional[Union[str, List[str]]] = None,
+        reg_exp: Optional[str] = None,
+        eq: Optional[Number] = None,
+        gt: Optional[Number] = None,
+        gte: Optional[Number] = None,
+        is_in: Optional[List[Union[Number, str, bool]]] = None,
+        lt: Optional[Number] = None,
+        lte: Optional[Number] = None,
+        not_eq: Optional[Number] = None,
+        not_in: Optional[List[Union[Number, str, bool]]] = None,
+        metric: Optional[DataIntegrityValueByRegexpMetrics] = None
+    ):
+        super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
+
+        if (columns is None or reg_exp is None) and metric is None:
+            raise ValueError("Not enough parameters for the test")
+
+        if metric is None:
+            self.metric = DataIntegrityValueByRegexpMetrics(columns=columns, reg_exp=reg_exp)
+
+        else:
+            self.metric = metric
+
+    def check(self):
+        status = TestResult.SUCCESS
+        description = "All match numbers are in conditions"
+        matched_values = self.metric.get_result().matched_values
+
+        for column_name, matched_number in matched_values.items():
+            if not self.condition.check_value(matched_number):
+                status = TestResult.FAIL
+                description = f"Count of matched values for column {column_name} is {matched_number}"
+                break
 
         return TestResult(name=self.name, description=description, status=status)

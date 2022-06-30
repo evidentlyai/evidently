@@ -1,5 +1,11 @@
+import re
+
+import pandas as pd
 from dataclasses import dataclass
 from itertools import combinations
+from typing import Dict
+from typing import List
+from typing import Union
 
 from evidently.v2.metrics.base_metric import InputData
 from evidently.v2.metrics.base_metric import Metric
@@ -42,3 +48,34 @@ class DataIntegrityMetrics(Metric[DataIntegrityMetricsResults]):
             nans_by_columns=data.current_data.isna().sum().to_dict(),
             number_uniques_by_columns=dict(data.current_data.nunique().to_dict())
         )
+
+
+@dataclass
+class DataIntegrityValueByRegexpMetricResult:
+    # mapping column_name: matched_count
+    matched_values: Dict[str, int]
+
+
+class DataIntegrityValueByRegexpMetrics(Metric[DataIntegrityValueByRegexpMetricResult]):
+    """Count number of values in a column or in columns matched a regexp"""
+    def __init__(self, columns: Union[str, List[str]], reg_exp: str):
+        self.reg_exp = reg_exp
+
+        if isinstance(columns, str):
+            columns = [columns]
+
+        self.columns = columns
+        self.reg_exp_compiled = re.compile(reg_exp)
+
+    def _calculate_matched_for_dataset(self, dataset: pd.DataFrame) -> Dict[str, int]:
+        matched_values = {}
+
+        for column_name in self.columns:
+            n = dataset[column_name].apply(lambda x: bool(self.reg_exp_compiled.match(str(x)))).sum()
+            matched_values[column_name] = n
+
+        return matched_values
+
+    def calculate(self, data: InputData, metrics: dict) -> DataIntegrityValueByRegexpMetricResult:
+        matched_values = self._calculate_matched_for_dataset(data.current_data)
+        return DataIntegrityValueByRegexpMetricResult(matched_values=matched_values)

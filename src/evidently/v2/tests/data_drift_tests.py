@@ -1,3 +1,4 @@
+from abc import ABC
 from numbers import Number
 from typing import Dict
 from typing import List
@@ -8,6 +9,7 @@ from typing import Union
 import dataclasses
 
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options import DataDriftOptions
 from evidently.v2.metrics import DataDriftMetrics
 from evidently.v2.renderers.base_renderer import TestRenderer, TestHtmlInfo, DetailsInfo, default_renderer
 from evidently.v2.tests.base_test import BaseCheckValueTest, TestResult
@@ -18,7 +20,7 @@ class TestDataDriftResult(TestResult):
     features: Dict[str, Tuple[str, float, float]]
 
 
-class BaseDataDriftMetricsTest(BaseCheckValueTest):
+class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
     metric: DataDriftMetrics
 
     def __init__(
@@ -31,13 +33,14 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest):
         lte: Optional[Number] = None,
         not_eq: Optional[Number] = None,
         not_in: Optional[List[Union[Number, str, bool]]] = None,
-        metric: Optional[DataDriftMetrics] = None
+        metric: Optional[DataDriftMetrics] = None,
+        options: Optional[DataDriftOptions] = None
     ):
         if metric is not None:
             self.metric = metric
 
         else:
-            self.metric = DataDriftMetrics()
+            self.metric = DataDriftMetrics(options=options)
 
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
 
@@ -88,11 +91,13 @@ class TestFeatureValueDrift(BaseDataDriftMetricsTest):
         lte: Optional[Number] = None,
         not_eq: Optional[Number] = None,
         not_in: Optional[List[Union[Number, str, bool]]] = None,
-        metric: Optional[DataDriftMetrics] = None
+        metric: Optional[DataDriftMetrics] = None,
+        options: Optional[DataDriftOptions] = None
     ):
         self.feature_name = feature_name
         super().__init__(
-            eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in, metric=metric
+            eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in,
+            metric=metric, options=options
         )
 
     def calculate_value_for_test(self) -> Number:

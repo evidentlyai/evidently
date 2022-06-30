@@ -1,3 +1,5 @@
+from typing import Optional
+
 from evidently.analyzers.data_drift_analyzer import DataDriftAnalyzer
 from evidently.analyzers.data_drift_analyzer import DataDriftAnalyzerResults
 from evidently.options import DataDriftOptions
@@ -11,7 +13,7 @@ DataDriftMetricsResults = DataDriftAnalyzerResults
 
 
 class DataDriftMetrics(Metric[DataDriftMetricsResults]):
-    def __init__(self, options: DataDriftOptions = None):
+    def __init__(self, options: Optional[DataDriftOptions] = None):
         self.analyzer = DataDriftAnalyzer()
         self.analyzer.options_provider = OptionsProvider()
 
