@@ -21,6 +21,7 @@ from .data_quality_tests import TestTargetPredictionCorrelation
 from .data_quality_tests import TestFeatureValueMin
 from .data_quality_tests import TestFeatureValueMax
 from .data_quality_tests import TestFeatureValueMean
+from .data_quality_tests import TestFeatureValueMedian
 from .regression_performance_tests import TestValueMAE
 from .regression_performance_tests import TestValueMAPE
 from .regression_performance_tests import TestValueMeanError
