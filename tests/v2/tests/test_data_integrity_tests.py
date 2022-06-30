@@ -229,18 +229,22 @@ def test_data_integrity_test_columns_nan_share() -> None:
             "target": ["1", "1", "1"]
         }
     )
-    suite = TestSuite(tests=[TestColumnNANShare(columns=[])])
+    suite = TestSuite(tests=[TestColumnNANShare(columns=[], lte=0.5)])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    assert suite
+
+    suite = TestSuite(tests=[TestColumnNANShare(lte=0.1)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
 
-    suite = TestSuite(tests=[TestColumnNANShare(columns=["not_exists_feature"])])
+    suite = TestSuite(tests=[TestColumnNANShare(columns=["not_exists_feature", "feature1", "feature2", "target"])])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
 
-    suite = TestSuite(tests=[TestColumnNANShare(columns=["feature1", "feature2"], lt=0.1)])
+    suite = TestSuite(tests=[TestColumnNANShare(columns=["feature1", "feature2", "target"], lt=0.1)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
 
-    suite = TestSuite(tests=[TestColumnNANShare(columns=["feature1", "feature2"], lt=0.5)])
+    suite = TestSuite(tests=[TestColumnNANShare(columns=["feature1", "feature2", "target"], lt=0.5)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite

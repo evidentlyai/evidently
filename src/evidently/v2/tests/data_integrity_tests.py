@@ -158,11 +158,11 @@ class TestNumberOfDuplicatedColumns(BaseIntegrityValueTest):
 
 class BaseIntegrityByColumnsTest(BaseConditionsTest, ABC):
     data_integrity_metric: DataIntegrityMetrics
-    columns: List[str]
+    columns: Optional[List[str]]
 
     def __init__(
         self,
-        columns: List[str],
+        columns: Optional[List[str]] = None,
         eq: Optional[Number] = None,
         gt: Optional[Number] = None,
         gte: Optional[Number] = None,
@@ -195,10 +195,12 @@ class TestColumnNANShare(BaseIntegrityByColumnsTest):
         number_of_rows = self.data_integrity_metric.get_result().number_of_rows
 
         if not self.columns:
-            status = TestResult.ERROR
-            description = "Check columns list is empty"
+            check_columns = nans_by_columns.keys()
 
-        for column_name in self.columns:
+        else:
+            check_columns = self.columns
+
+        for column_name in check_columns:
             if column_name not in nans_by_columns:
                 status = TestResult.ERROR
                 description = f"No column '{column_name}' in the dataframe"
