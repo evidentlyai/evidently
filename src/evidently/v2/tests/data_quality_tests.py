@@ -168,3 +168,25 @@ class TestFeatureValueStd(BaseFeatureDataQualityMetricsTest):
 
     def get_description(self, value: Number) -> str:
         return f"Std value for feature '{self.feature_name}' is {value}"
+
+
+class TestNumberOfUniqueValues(BaseFeatureDataQualityMetricsTest):
+    name = "Test a feature for number of unique values"
+
+    def calculate_value_for_test(self) -> Number:
+        features_stats = self.metric.get_result().features_stats.get_all_features()
+        return features_stats[self.feature_name].unique_count
+
+    def get_description(self, value: Number) -> str:
+        return f"Number of unique values for feature '{self.feature_name}' is {value}"
+
+
+class TestUniqueValuesShare(BaseFeatureDataQualityMetricsTest):
+    name = "Test a feature for share of unique values"
+
+    def calculate_value_for_test(self) -> Number:
+        features_stats = self.metric.get_result().features_stats.get_all_features()
+        return features_stats[self.feature_name].unique_percentage / 100.
+
+    def get_description(self, value: Number) -> str:
+        return f"Share of unique values for feature '{self.feature_name}' is {value}"
