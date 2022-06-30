@@ -191,3 +191,14 @@ class TestUniqueValuesShare(BaseFeatureDataQualityMetricsTest):
 
     def get_description(self, value: Number) -> str:
         return f"Share of unique values for feature '{self.feature_name}' is {value}"
+
+
+class TestMostCommonValueShare(BaseFeatureDataQualityMetricsTest):
+    name = "Test a feature for share of most common value"
+
+    def calculate_value_for_test(self) -> Number:
+        features_stats = self.metric.get_result().features_stats.get_all_features()
+        return features_stats[self.feature_name].most_common_value_percentage / 100.
+
+    def get_description(self, value: Number) -> str:
+        return f"Share of most common value for feature '{self.feature_name}' is {value}"

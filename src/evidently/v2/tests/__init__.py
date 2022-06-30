@@ -25,6 +25,7 @@ from .data_quality_tests import TestFeatureValueMedian
 from .data_quality_tests import TestFeatureValueStd
 from .data_quality_tests import TestNumberOfUniqueValues
 from .data_quality_tests import TestUniqueValuesShare
+from .data_quality_tests import TestMostCommonValueShare
 from .regression_performance_tests import TestValueMAE
 from .regression_performance_tests import TestValueMAPE
 from .regression_performance_tests import TestValueMeanError
