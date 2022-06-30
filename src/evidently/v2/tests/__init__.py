@@ -11,6 +11,7 @@ from .data_integrity_tests import TestNumberOfEmptyRows
 from .data_integrity_tests import TestNumberOfEmptyColumns
 from .data_integrity_tests import TestNumberOfDuplicatedRows
 from .data_integrity_tests import TestNumberOfDuplicatedColumns
+from .data_integrity_tests import TestColumnsType
 from .data_quality_tests import TestConflictTarget
 from .data_quality_tests import TestConflictPrediction
 from .data_quality_tests import TestTargetPredictionCorrelation

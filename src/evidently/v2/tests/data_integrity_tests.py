@@ -5,7 +5,9 @@ from typing import Union
 
 from evidently.v2.metrics.data_integrity_metrics import DataIntegrityMetrics
 
-from .base_test import BaseCheckValueTest
+from evidently.v2.tests.base_test import BaseCheckValueTest
+from evidently.v2.tests.base_test import Test
+from evidently.v2.tests.base_test import TestResult
 
 
 class BaseIntegrityValueTest(BaseCheckValueTest):
@@ -150,3 +152,47 @@ class TestNumberOfDuplicatedColumns(BaseIntegrityValueTest):
 
     def get_description(self, value: Number) -> str:
         return f"Number of duplicated columns: {value}"
+
+
+class TestColumnsType(Test):
+    """This test compares a column type against the specified type"""
+    name = "Test Columns Type"
+    columns_type: dict
+    data_integrity_metric: DataIntegrityMetrics
+
+    def __init__(
+        self,
+        columns_type: dict,
+        data_integrity_metric: Optional[DataIntegrityMetrics] = None
+    ):
+        self.columns_type = columns_type
+        if data_integrity_metric is None:
+            self.data_integrity_metric = DataIntegrityMetrics()
+
+        else:
+            self.data_integrity_metric = data_integrity_metric
+
+    def check(self):
+        description = "All columns types are ok"
+        status = TestResult.SUCCESS
+        data_columns_type = self.data_integrity_metric.get_result().columns_type
+
+        if not self.columns_type:
+            status = TestResult.ERROR
+            description = "Columns type condition is empty"
+
+        for column_name, column_type in self.columns_type.items():
+            real_column_type = data_columns_type.get(column_name)
+
+            if real_column_type is None:
+                status = TestResult.ERROR
+                description = f"No column '{column_name}' in the dataframe"
+                break
+
+            elif column_type != real_column_type:
+                status = TestResult.FAIL
+                description = f"Column '{column_name}' type is {real_column_type}, but expected {column_type}"
+
+        return TestResult(name=self.name, description=description, status=status)
+
+

@@ -13,6 +13,7 @@ from evidently.v2.tests import TestNumberOfEmptyRows
 from evidently.v2.tests import TestNumberOfEmptyColumns
 from evidently.v2.tests import TestNumberOfDuplicatedRows
 from evidently.v2.tests import TestNumberOfDuplicatedColumns
+from evidently.v2.tests import TestColumnsType
 from evidently.v2.test_suite import TestSuite
 
 
@@ -194,5 +195,25 @@ def test_data_integrity_test_duplicated_columns() -> None:
     assert not suite
 
     suite = TestSuite(tests=[TestNumberOfDuplicatedColumns(eq=1)])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    assert suite
+
+
+def test_data_integrity_test_columns_type() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "numerical_feature": [1, 2, 3],
+            "target": ["1", "1", "1"]
+        }
+    )
+    suite = TestSuite(tests=[TestColumnsType(columns_type={})])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    assert not suite
+
+    suite = TestSuite(tests=[TestColumnsType(columns_type={"not_exists": "int64"})])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    assert not suite
+
+    suite = TestSuite(tests=[TestColumnsType(columns_type={"numerical_feature": "int64"})])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
