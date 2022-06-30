@@ -245,7 +245,7 @@ class TestAllConstantValues(BaseIntegrityByColumnsTest):
         description = "All tested columns have constant values"
         status = TestResult.SUCCESS
 
-        uniques_by_columns = self.data_integrity_metric.get_result().uniques_by_columns
+        uniques_by_columns = self.data_integrity_metric.get_result().number_uniques_by_columns
 
         if not self.columns:
             check_columns = uniques_by_columns.keys()
@@ -278,7 +278,7 @@ class TestAllUniqueValues(BaseIntegrityByColumnsTest):
         description = "All tested columns have unique values"
         status = TestResult.SUCCESS
 
-        uniques_by_columns = self.data_integrity_metric.get_result().uniques_by_columns
+        uniques_by_columns = self.data_integrity_metric.get_result().number_uniques_by_columns
         number_of_rows = self.data_integrity_metric.get_result().number_of_rows
         nans_by_columns = self.data_integrity_metric.get_result().nans_by_columns
 
