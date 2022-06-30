@@ -13,7 +13,8 @@ from evidently.options.color_scheme import RED, GREY
 from evidently.v2.metrics import RegressionPerformanceMetrics
 from evidently.v2.renderers.base_renderer import default_renderer, TestRenderer, TestHtmlInfo, DetailsInfo
 from evidently.v2.tests.base_test import BaseCheckValueTest
-
+from evidently.v2.tests.utils import plot_check, plot_metric_value, regression_perf_plot
+import logging
 
 class BaseRegressionPerformanceMetricsTest(BaseCheckValueTest, ABC):
     metric: RegressionPerformanceMetrics
@@ -47,42 +48,28 @@ class TestValueMAE(BaseRegressionPerformanceMetricsTest):
         return self.metric.get_result().mean_abs_error
 
     def get_description(self, value: Number) -> str:
-        return f"MAE value is {value}"
+        return f"MAE value is {np.round(value, 3)}"
 
 
 @default_renderer(test_type=TestValueMAE)
 class TestValueMAERenderer(TestRenderer):
     def render_html(self, obj: TestValueMAE) -> TestHtmlInfo:
         info = super().render_html(obj)
-        mae_distr = obj.metric.get_result().mae_distr
-        ref_mae_distr = obj.metric.get_result().ref_mae_distr
-        fig = make_subplots(rows=2, cols=1, shared_xaxes=True)
-        trace = go.Scatter(x=[str(idx) for idx, _, _ in mae_distr], y=[mae for _, mae, _ in mae_distr],
-                           mode='lines+markers',
-                           name='MAE', marker_color=RED)
-        fig.append_trace(trace, 1, 1)
-        if ref_mae_distr:
-            trace_ref = go.Scatter(x=[str(idx) for idx, _, _ in mae_distr], y=[mae for _, mae, _ in ref_mae_distr],
-                                   mode='lines+markers',
-                                   name='MAE', marker_color=GREY)
-            fig.append_trace(trace_ref, 1, 1)
-
-        trace = go.Bar(name='current', x=[str(idx) for idx, _, _ in mae_distr], y=[hist for _, _, hist in mae_distr],
-                       marker_color=RED)
-        if ref_mae_distr:
-            trace_ref = go.Bar(name='current',
-                               x=[str(idx) for idx, _, _ in ref_mae_distr],
-                               y=[hist for _, _, hist in ref_mae_distr],
-                               marker_color=GREY)
-            fig.append_trace(trace_ref, 2, 1)
-        fig.append_trace(trace, 2, 1)
-        fig.update_yaxes(title_text='MAE', row=1, col=1)
-        fig.update_yaxes(title_text='count', row=2, col=1)
-        fig.update_layout(title=f'MAE: {np.round(obj.metric.get_result().mean_abs_error, 3)}')
+        is_ref_data = False
+        if 'reference' in obj.metric.get_result().hist_for_plot.keys():
+            is_ref_data = True
+        fig = regression_perf_plot(
+            val_for_plot=obj.metric.get_result().vals_for_plots['mean_abs_error'],
+            hist_for_plot=obj.metric.get_result().hist_for_plot,
+            name='MAE', 
+            curr_mertic=obj.metric.get_result().mean_abs_error, 
+            ref_metric=obj.metric.get_result().mean_abs_error_ref, 
+            is_ref_data=is_ref_data
+        )
         fig_json = fig.to_plotly_json()
         info.details.append(
             DetailsInfo(
-                "",
+                'MAE',
                 "",
                 BaseWidgetInfo(
                     title="",
@@ -104,6 +91,36 @@ class TestValueMAPE(BaseRegressionPerformanceMetricsTest):
     def get_description(self, value: Number) -> str:
         return f"MAPE value is {value}"
 
+@default_renderer(test_type=TestValueMAPE)
+class TestValueMAPERenderer(TestRenderer):
+    def render_html(self, obj: TestValueMAPE) -> TestHtmlInfo:
+        info = super().render_html(obj)
+        is_ref_data = False
+        if 'reference' in obj.metric.get_result().hist_for_plot.keys():
+            is_ref_data = True
+        fig = regression_perf_plot(
+            val_for_plot=obj.metric.get_result().vals_for_plots['mean_abs_perc_error'],
+            hist_for_plot=obj.metric.get_result().hist_for_plot,
+            name='MAPE',
+            curr_mertic=obj.metric.get_result().mean_abs_perc_error,
+            ref_metric=obj.metric.get_result().mean_abs_perc_error_ref,
+            is_ref_data=is_ref_data
+        )
+        fig_json = fig.to_plotly_json()
+        info.details.append(
+            DetailsInfo(
+                'MAPE',
+                "",
+                BaseWidgetInfo(
+                    title="",
+                    size=2,
+                    type="big_graph",
+                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
+                )
+            )
+        )
+        return info
+
 
 class TestValueRMSE(BaseRegressionPerformanceMetricsTest):
     name = "Test RMSE"
@@ -114,6 +131,35 @@ class TestValueRMSE(BaseRegressionPerformanceMetricsTest):
     def get_description(self, value: Number) -> str:
         return f"RMSE value is {value}"
 
+@default_renderer(test_type=TestValueRMSE)
+class TestValueRMSERenderer(TestRenderer):
+    def render_html(self, obj: TestValueRMSE) -> TestHtmlInfo:
+        info = super().render_html(obj)
+        is_ref_data = False
+        if 'reference' in obj.metric.get_result().hist_for_plot.keys():
+            is_ref_data = True
+        fig = regression_perf_plot(
+            val_for_plot=obj.metric.get_result().vals_for_plots['rmse'],
+            hist_for_plot=obj.metric.get_result().hist_for_plot,
+            name='RMSE', 
+            curr_mertic=obj.metric.get_result().rmse, 
+            ref_metric=obj.metric.get_result().rmse_ref, 
+            is_ref_data=is_ref_data
+        )
+        fig_json = fig.to_plotly_json()
+        info.details.append(
+            DetailsInfo(
+                'RMSE',
+                "",
+                BaseWidgetInfo(
+                    title="",
+                    size=2,
+                    type="big_graph",
+                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
+                )
+            )
+        )
+        return info
 
 class TestValueMeanError(BaseRegressionPerformanceMetricsTest):
     name = "Test mean error"
@@ -143,6 +189,66 @@ class TestValueR2Score(BaseRegressionPerformanceMetricsTest):
 
     def get_description(self, value: Number) -> str:
         return f"R2 score is {value}"
+
+@default_renderer(test_type=TestValueR2Score)
+class TestValueR2ScoreRenderer(TestRenderer):
+    def render_html(self, obj: TestValueR2Score) -> TestHtmlInfo:
+        info = super().render_html(obj)
+        is_ref_data = False
+        if 'reference' in obj.metric.get_result().hist_for_plot.keys():
+            is_ref_data = True
+        fig = regression_perf_plot(
+            val_for_plot=obj.metric.get_result().vals_for_plots['r2_score'],
+            hist_for_plot=obj.metric.get_result().hist_for_plot,
+            name='R2_score', 
+            curr_mertic=obj.metric.get_result().r2_score, 
+            ref_metric=obj.metric.get_result().r2_score_ref, 
+            is_ref_data=is_ref_data
+        )
+        fig_json = fig.to_plotly_json()
+        info.details.append(
+            DetailsInfo(
+                'R2_score',
+                "",
+                BaseWidgetInfo(
+                    title="",
+                    size=2,
+                    type="big_graph",
+                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
+                )
+            )
+        )
+        return info
+
+@default_renderer(test_type=TestValueR2Score)
+class TestValueR2Renderer(TestRenderer):
+    def render_html(self, obj: TestValueR2Score) -> TestHtmlInfo:
+        info = super().render_html(obj)
+        is_ref_data = False
+        if 'reference' in obj.metric.get_result().hist_for_plot.keys():
+            is_ref_data = True
+        fig = regression_perf_plot(
+            val_for_plot=obj.metric.get_result().vals_for_plots['r2_score'],
+            hist_for_plot=obj.metric.get_result().hist_for_plot,
+            name='r2 score', 
+            curr_mertic=obj.metric.get_result().mean_abs_error, 
+            ref_metric=obj.metric.get_result().mean_abs_error_ref, 
+            is_ref_data=is_ref_data
+        )
+        fig_json = fig.to_plotly_json()
+        info.details.append(
+            DetailsInfo(
+                'r2 score',
+                "",
+                BaseWidgetInfo(
+                    title="",
+                    size=2,
+                    type="big_graph",
+                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
+                )
+            )
+        )
+        return info
 
 
 @default_renderer(test_type=TestValueMeanError)
@@ -180,52 +286,3 @@ class TestValueMeanErrorRenderer(TestRenderer):
             )
         )
         return info
-
-
-def plot_check(fig, gt=None, lt=None, the_approx=None, the_exact=None):
-    fig = go.Figure(fig)
-    max_y = np.max([np.max(x['y']) for x in fig.data])
-    min_y = np.min([np.min(x['y']) for x in fig.data])
-    if gt:
-        fig.add_trace(go.Scatter(x=(gt, gt),
-                                 y=(min_y, max_y),
-                                 mode='lines',
-                                 line=dict(color=GREY, width=3, dash='dash'),
-                                 name='gt'))
-    if lt:
-        fig.add_trace(go.Scatter(x=(lt, lt),
-                                 y=(min_y, max_y),
-                                 mode='lines',
-                                 line=dict(color=GREY, width=3, dash='dash'),
-                                 name='lt'))
-    if the_exact:
-        fig.add_trace(go.Scatter(x=(the_exact, the_exact),
-                                 y=(min_y, max_y),
-                                 mode='lines',
-                                 line=dict(color=GREY, width=3, dash='dash'),
-                                 name='the_exact'))
-    if gt and lt:
-        fig.add_vrect(x0=gt, x1=lt, fillcolor='green', opacity=0.25, line_width=0)
-    if the_approx:
-        fig.add_trace(go.Scatter(x=(the_approx[0], the_approx[0]),
-                                 y=(min_y, max_y),
-                                 mode='lines',
-                                 line=dict(color=GREY, width=3, dash='dash'),
-                                 name='the_approx'))
-        fig.add_vrect(x0=the_approx[0] - the_approx[0] * the_approx[1],
-                      x1=the_approx[0] + the_approx[0] * the_approx[1], fillcolor='green', opacity=0.25, line_width=0)
-    fig.update_layout(showlegend=True)
-    return fig
-
-
-def plot_metric_value(fig, metric_val, metric_name):
-    fig = go.Figure(fig)
-    max_y = np.max([np.max(x['y']) for x in fig.data])
-    min_y = np.min([np.min(x['y']) for x in fig.data])
-    fig.add_trace(go.Scatter(x=(metric_val, metric_val),
-                             y=(min_y, max_y),
-                             mode='lines',
-                             line=dict(color='green', width=3),
-                             name=metric_name))
-    fig.update_layout(showlegend=True)
-    return fig

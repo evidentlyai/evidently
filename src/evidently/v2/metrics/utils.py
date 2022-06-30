@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 
 import plotly.graph_objs as go
-
+import logging
 from evidently.options import ColorOptions
 
 def make_hist_df(hist):
@@ -36,8 +36,33 @@ def make_hist_for_cat_plot(curr: pd.Series, ref: pd.Series=None):
     hist_df = curr.value_counts().reset_index()
     hist_df.columns = ["x", "count"]
     result['current'] = hist_df
-    if ref is  not None:
+    if ref is not None:
         hist_df = ref.value_counts().reset_index()
         hist_df.columns = ["x", "count"]
         result['reference'] = hist_df
     return result
+
+def make_target_bins_for_reg_plots(curr: pd.DataFrame, target_column, preds_column, ref: pd.DataFrame=None) -> pd.DataFrame:
+    df_for_bins = pd.DataFrame({'data': 'curr', 'target': curr[target_column], 'preds': curr[preds_column]})
+    if ref is not None:
+        df_for_bins = df_for_bins.append(pd.DataFrame({'data': 'ref', 'target': ref[target_column], 'preds': ref[preds_column]}))
+    df_for_bins['target_binned'] = pd.cut(df_for_bins[target_column], min(df_for_bins[target_column].nunique(), 10))
+    return df_for_bins
+
+def apply_func_to_binned_data(df_for_bins, func, target_column, preds_column, is_ref_data=False):
+    result = {}
+    result['current'] = (
+        df_for_bins[df_for_bins.data=='curr']
+        .groupby('target_binned')
+        .apply(lambda x: func(x[target_column], x[preds_column]))
+    )
+
+    if is_ref_data:
+        result['reference'] = (
+            df_for_bins[df_for_bins.data=='ref']
+            .groupby('target_binned')
+            .apply(lambda x: func(x[target_column], x[preds_column]))
+        )
+    return result
+    
+

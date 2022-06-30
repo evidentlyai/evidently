@@ -8,20 +8,21 @@ import numpy as np
 import pandas as pd
 
 import plotly.graph_objs as go
+from plotly.subplots import make_subplots
 
 from evidently.options import ColorOptions
-
+import logging
 RED = "#ed0400"
 GREY = "#4d4d4d"
 
 def plot_check(fig, gt=None, gte=None, lt=None, lte=None, ap=None, eq=None, not_eq=None):
 
     lines = []
-    left_line = max(gt, gte)
+    left_line = np.max(gt, gte)
     if left_line:
         left_line_name = ['gt', 'gte'][np.argmax(gt, gte)]
         lines.append((left_line, left_line_name))
-    right_line = min(lt, lte)
+    right_line = np.min(lt, lte)
     if right_line:
         right_line_name = ['lt', 'lte'][np.argmin(lt, lte)]
         lines.append((right_line, right_line_name))
@@ -87,4 +88,39 @@ def plot_distr(hist_curr, hist_ref=None):
 
     return fig
 
+def regression_perf_plot(val_for_plot: Dict[str, pd.Series], hist_for_plot: Dict[str, pd.Series], name: str, 
+                         curr_mertic: float, ref_metric: float=None, is_ref_data: bool=False):
+    fig = make_subplots(rows=2, cols=1, shared_xaxes=True)
+    
+    s = val_for_plot['current'].sort_index()
+    x = [str(idx) for idx in s.index]
+    y = [val for val in s]
+    trace = go.Scatter(x=x, y=y, mode='lines+markers', name=name, marker_color=RED)
+    fig.append_trace(trace, 1, 1)
 
+    df = hist_for_plot['current'].sort_values('x')
+    x = [str(x) for x in df.x]
+    y = [val for val in df['count']]
+    trace = go.Bar(name='current', x=x, y=y, marker_color=RED)
+    fig.append_trace(trace, 2, 1)
+
+    if is_ref_data:
+        s = val_for_plot['reference'].sort_index()
+        x = [str(idx) for idx in s.index]
+        y = [val for val in s]
+        trace = go.Scatter(x=x, y=y, mode='lines+markers', name=name, marker_color=GREY)
+        fig.append_trace(trace, 1, 1)
+ 
+        df = hist_for_plot['reference'].sort_values('x')
+        x = [str(x) for x in df.x]
+        y = [val for val in df['count']]
+        trace = go.Bar(name='reference', x=x, y=y, marker_color=GREY)
+        fig.append_trace(trace, 2, 1)
+    fig.update_yaxes(title_text=name, row=1, col=1)
+    fig.update_yaxes(title_text='count', row=2, col=1)
+    title = f'current {name}: {np.round(curr_mertic, 3)} '
+    if is_ref_data:
+        title += f'<br>reference {name}: {np.round(ref_metric, 3)}'
+    fig.update_layout(title=title)
+    return fig
+    

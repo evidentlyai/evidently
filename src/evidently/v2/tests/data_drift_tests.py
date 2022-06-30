@@ -117,7 +117,6 @@ class TestNumberOfDriftedFeaturesRenderer(TestRenderer):
 
     def render_html(self, obj: TestNumberOfDriftedFeatures) -> TestHtmlInfo:
         info = super().render_html(obj)
-        logging.warning(obj.get_result().features['capital-gain'])
         info.details = [
             DetailsInfo(
                 id="drift_table",
@@ -154,7 +153,7 @@ class TestFeatureValueDriftRenderer(TestRenderer):
         fig_json = fig.to_plotly_json()
         info.details.append(
             DetailsInfo(
-                id="",
+                id=feature_name,
                 title="",
                 info=BaseWidgetInfo(
                     title="",
