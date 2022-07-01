@@ -6,7 +6,7 @@ import pandas as pd
 from numpy import dtype
 
 from evidently import ColumnMapping
-from evidently.analyzers.classification_performance_analyzer import classification_performance_metrics
+from evidently.analyzers import classification_performance_analyzer as cpa
 from evidently.analyzers import prob_classification_performance_analyzer as pcpa
 from evidently.options import QualityMetricsOptions
 from evidently.options import OptionsProvider
@@ -32,21 +32,21 @@ class ClassificationPerformanceMetrics(Metric[ClassificationPerformanceMetricsRe
         results = ClassificationPerformanceMetricsResults()
         current_data = _cleanup_data(data.current_data)
         target_data = current_data[data.column_mapping.target]
-        prediction_data, pred_probas = get_prediction_data(current_data, data.column_mapping)
-        results.current_metrics = classification_performance_metrics(target_data,
+        prediction_data, _ = get_prediction_data(current_data, data.column_mapping)
+        results.current_metrics = cpa.classification_performance_metrics(target_data,
                                                                      prediction_data,
                                                                      data.column_mapping.target_names)
 
-        if data.reference_data:
+        if data.reference_data is not None:
             reference_data = _cleanup_data(data.reference_data)
-            ref_prediction_data, ref_pred_probas = get_prediction_data(reference_data, data.column_mapping)
-            results.reference_metrics = classification_performance_metrics(
+            ref_prediction_data, _ = get_prediction_data(reference_data, data.column_mapping)
+            results.reference_metrics = cpa.classification_performance_metrics(
                 reference_data[data.column_mapping.target],
                 ref_prediction_data,
                 data.column_mapping.target_names)
 
-        dummy_preds = pd.Series([target_data.value_counts().argmax()] * len(target_data))
-        results.dummy_metrics = classification_performance_metrics(target_data,
+        dummy_preds = pd.Series([target_data.value_counts().idxmax()] * len(target_data))
+        results.dummy_metrics = cpa.classification_performance_metrics(target_data,
                                                                    dummy_preds,
                                                                    data.column_mapping.target_names)
         return results
@@ -71,7 +71,11 @@ def get_prediction_data(data: pd.DataFrame, mapping: ColumnMapping) -> Tuple[pd.
     return data[mapping.prediction], None
 
 
-ProbClassificationPerformanceMetricsResults = pcpa.ProbClassificationPerformanceMetrics
+@dataclasses.dataclass
+class ProbClassificationPerformanceMetricsResults:
+    reference_metrics: Optional[pcpa.ProbClassificationPerformanceMetrics]
+    current_metrics: Optional[pcpa.ProbClassificationPerformanceMetrics]
+    dummy_metrics: Optional[pcpa.ProbClassificationPerformanceMetrics]
 
 
 class ProbClassificationPerformanceMetrics(Metric[ProbClassificationPerformanceMetricsResults]):
@@ -91,4 +95,8 @@ class ProbClassificationPerformanceMetrics(Metric[ProbClassificationPerformanceM
             current_data=None,
             column_mapping=data.column_mapping
         )
-        return analyzer_results.reference_metrics
+        return ProbClassificationPerformanceMetricsResults(
+            reference_metrics=analyzer_results.reference_metrics,
+            current_metrics=analyzer_results.current_metrics,
+            dummy_metrics=None,
+        )
