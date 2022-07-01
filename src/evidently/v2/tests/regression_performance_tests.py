@@ -208,6 +208,32 @@ class TestValueAbsMaxError(BaseRegressionPerformanceMetricsTest):
     def get_description(self, value: Number) -> str:
         return f"Absolute value of max error is {np.round(value, 3)}"
 
+@default_renderer(test_type=TestValueAbsMaxError)
+class TestValueAbsMaxErrorRenderer(TestRenderer):
+    def render_html(self, obj: TestValueAbsMaxError) -> TestHtmlInfo:
+        info = super().render_html(obj)
+        me_hist_for_plot = obj.metric.get_result().me_hist_for_plot
+        hist_curr = me_hist_for_plot['current']
+        hist_ref = None
+        if 'reference' in obj.metric.get_result().me_hist_for_plot.keys():
+            hist_ref = me_hist_for_plot['reference']
+        fig = plot_distr(hist_curr, hist_ref)
+
+        fig_json = fig.to_plotly_json()
+        info.details.append(
+            DetailsInfo(
+                id="",
+                title="",
+                info=BaseWidgetInfo(
+                    title="",
+                    size=2,
+                    type="big_graph",
+                    params={"data": fig_json['data'], "layout": fig_json['layout']},
+                )
+            )
+        )
+        return info
+
 
 class TestValueR2Score(BaseRegressionPerformanceMetricsTest):
     name = "Test R2 Score"

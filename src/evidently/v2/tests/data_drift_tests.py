@@ -8,6 +8,7 @@ from typing import Union
 import dataclasses
 
 import numpy as np
+import pandas as pd
 
 from evidently.model.widget import BaseWidgetInfo
 from evidently.v2.metrics import DataDriftMetrics
@@ -51,7 +52,8 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest):
             name=result.name,
             description=result.description,
             status=result.status,
-            features={feature: (data.stattest_name, np.round(data.p_value, 3), data.threshold, str(data.drift_detected))
+            features={feature: (data.stattest_name, np.round(data.p_value, 3), data.threshold,
+                                "Detected" if data.drift_detected else "Not Detected")
                       for feature, data in metrics.features.items()}
         )
 
@@ -73,7 +75,7 @@ class TestShareOfDriftedFeatures(BaseDataDriftMetricsTest):
         return self.metric.get_result().analyzer_result.metrics.share_drifted_features
 
     def get_description(self, value: Number) -> str:
-        return f"Share drifted features is {value}"
+        return f"Share drifted features is {np.round(value, 3)}"
 
 
 class TestFeatureValueDrift(BaseDataDriftMetricsTest):
@@ -116,6 +118,9 @@ class TestNumberOfDriftedFeaturesRenderer(TestRenderer):
 
     def render_html(self, obj: TestNumberOfDriftedFeatures) -> TestHtmlInfo:
         info = super().render_html(obj)
+        df = pd.DataFrame(data=[[feature] + list(data) for feature, data in obj.get_result().features.items()], 
+                          columns=["Feature name", "Stattest", "Drift score", "Threshold", "Data Drift"])
+        df = df.sort_values("Data Drift")
         info.details = [
             DetailsInfo(
                 id="drift_table",
@@ -124,8 +129,8 @@ class TestNumberOfDriftedFeaturesRenderer(TestRenderer):
                     title="",
                     type="table",
                     params={
-                        "header": ["Feature name", "Stattest", "Drift score", "Threshold", "Data Drift"],
-                        "data": [[feature] + list(data) for feature, data in obj.get_result().features.items()]
+                        "header": df.columns.to_list(),
+                        "data": df.values
                     },
                     size=2,
                 )
@@ -144,6 +149,9 @@ class TestShareOfDriftedFeaturesRenderer(TestRenderer):
 
     def render_html(self, obj: TestShareOfDriftedFeatures) -> TestHtmlInfo:
         info = super().render_html(obj)
+        df = pd.DataFrame(data=[[feature] + list(data) for feature, data in obj.get_result().features.items()], 
+                          columns=["Feature name", "Stattest", "Drift score", "Threshold", "Data Drift"])
+        df = df.sort_values("Data Drift")
         info.details = [
             DetailsInfo(
                 id="drift_table",
@@ -152,8 +160,8 @@ class TestShareOfDriftedFeaturesRenderer(TestRenderer):
                     title="",
                     type="table",
                     params={
-                        "header": ["Feature name", "Stattest", "Drift score", "Threshold", "Data Drift"],
-                        "data": [[feature] + list(data) for feature, data in obj.get_result().features.items()]
+                        "header": df.columns.to_list(),
+                        "data": df.values
                     },
                     size=2,
                 )
