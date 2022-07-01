@@ -112,7 +112,7 @@ class DataQualityValueListMetrics(Metric[DataQualityValueListMetricsResults]):
     column: str
     values: Optional[list]
 
-    def __init__(self, column: str,  values: Optional[list] = None) -> None:
+    def __init__(self, column: str, values: Optional[list] = None) -> None:
         self.values = values
         self.column = column
 

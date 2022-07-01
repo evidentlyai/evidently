@@ -365,8 +365,8 @@ class TestValueRange(Test):
                 test_result = TestResult.SUCCESS
 
             else:
-                description = f"Column {self.column} values are not in range from {min_condition} to {max_condition}. " \
-                              f"Column min value is {current_min}. And max value is {current_max}"
+                description = f"Column {self.column} values are not in range from {min_condition} to {max_condition}." \
+                              f" Column min value is {current_min}. And max value is {current_max}"
                 test_result = TestResult.FAIL
 
         return TestResult(name=self.name, description=description, status=test_result)
@@ -386,6 +386,7 @@ class TestValueList(Test):
     ):
         self.column = column
         self.values = values
+
         if metric is not None:
             self.metric = metric
 
@@ -404,3 +405,54 @@ class TestValueList(Test):
             description = "All values is in the values list"
 
         return TestResult(name=self.name, description=description, status=test_result)
+
+
+class BaseDataQualityValueListMetricsTest(BaseCheckValueTest, ABC):
+    metric: DataQualityValueListMetrics
+    column: str
+    values: Optional[list]
+
+    def __init__(
+        self,
+        column: str,
+        values: Optional[list] = None,
+        eq: Optional[Number] = None,
+        gt: Optional[Number] = None,
+        gte: Optional[Number] = None,
+        is_in: Optional[List[Union[Number, str, bool]]] = None,
+        lt: Optional[Number] = None,
+        lte: Optional[Number] = None,
+        not_eq: Optional[Number] = None,
+        not_in: Optional[List[Union[Number, str, bool]]] = None,
+        metric: Optional[DataQualityValueListMetrics] = None
+    ):
+        self.column = column
+        self.values = values
+
+        if metric is not None:
+            self.metric = metric
+
+        else:
+            self.metric = DataQualityValueListMetrics(column=column, values=values)
+
+        super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
+
+
+class TestNumberOfOutListValues(BaseDataQualityValueListMetricsTest):
+    name = "Test the number of out list values for a given feature and compares it against the threshold"
+
+    def calculate_value_for_test(self) -> Number:
+        return self.metric.get_result().number_not_in_list
+
+    def get_description(self, value: Number) -> str:
+        return f"Number of out of the list values for feature '{self.column}' is {value}"
+
+
+class TestShareOfOutListValues(BaseDataQualityValueListMetricsTest):
+    name = "Test the share of out list values for a given feature and compares it against the threshold"
+
+    def calculate_value_for_test(self) -> Number:
+        return self.metric.get_result().share_not_in_list
+
+    def get_description(self, value: Number) -> str:
+        return f"Share of out of the list values for feature '{self.column}' is {value}"
