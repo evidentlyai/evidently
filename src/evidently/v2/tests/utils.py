@@ -1,8 +1,4 @@
 from typing import Dict
-from typing import List
-from typing import Optional
-from typing import Sequence
-from typing import Union
 
 import numpy as np
 import pandas as pd
@@ -10,28 +6,26 @@ import pandas as pd
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
 
-from evidently.options import ColorOptions
-import logging
 RED = "#ed0400"
 GREY = "#4d4d4d"
 
-def plot_check(fig, gt=None, gte=None, lt=None, lte=None, ap=None, eq=None, not_eq=None):
+def plot_check(fig, condition):
 
     lines = []
-    left_line = np.max(gt, gte)
-    if left_line:
-        left_line_name = ['gt', 'gte'][np.argmax(gt, gte)]
+    left_line = pd.Series([condition.gt, condition.gte]).max()
+    if not pd.isnull(left_line):
+        left_line_name = ['gt', 'gte'][pd.Series([condition.gt, condition.gte]).argmax()]
         lines.append((left_line, left_line_name))
-    right_line = np.min(lt, lte)
-    if right_line:
-        right_line_name = ['lt', 'lte'][np.argmin(lt, lte)]
+    right_line = pd.Series([condition.lt, condition.lte]).min()
+    if not pd.isnull(right_line):
+        right_line_name = ['lt', 'lte'][pd.Series([condition.lt, condition.lte]).argmin()]
         lines.append((right_line, right_line_name))
-    if eq:
-        lines.append((eq, 'eq'))
-    if not_eq:
-        lines.append((not_eq, 'not_eq'))
-    if ap:
-        lines.append((ap.value, 'ap'))
+    if condition.eq:
+        lines.append((condition.eq, 'eq'))
+    if condition.not_eq:
+        lines.append((condition.not_eq, 'not_eq'))
+    # if condition.ap:
+    #     lines.append((condition.ap.value, 'ap'))
 
 
     fig = go.Figure(fig)
@@ -48,16 +42,16 @@ def plot_check(fig, gt=None, gte=None, lt=None, lte=None, ap=None, eq=None, not_
     if left_line and right_line:
         fig.add_vrect(x0=left_line, x1=right_line, fillcolor='green', opacity=0.25, line_width=0)
 
-    if ap:
-        left_border=0
-        right_border=0
-        if ap.rel:
-            left_border =  ap.value - ap.value * ap.rel
-            right_border =  ap.value + ap.value * ap.rel
-        elif ap.abs:
-            left_border =  ap.value - ap.abs
-            right_border =  ap.value + ap.abs
-        fig.add_vrect(x0=left_border, x1=right_border, fillcolor='green', opacity=0.25, line_width=0)
+    # if condition.ap:
+    #     left_border=0
+    #     right_border=0
+    #     if condition.ap.rel:
+    #         left_border =  condition.ap.value - condition.ap.value * condition.ap.rel
+    #         right_border =  condition.ap.value + condition.ap.value * condition.ap.rel
+    #     elif condition.ap.abs:
+    #         left_border =  condition.ap.value - condition.ap.abs
+    #         right_border =  condition.ap.value + condition.ap.abs
+    #     fig.add_vrect(x0=left_border, x1=right_border, fillcolor='green', opacity=0.25, line_width=0)
 
     fig.update_layout(showlegend=True)
 
@@ -91,7 +85,7 @@ def plot_distr(hist_curr, hist_ref=None):
 def regression_perf_plot(val_for_plot: Dict[str, pd.Series], hist_for_plot: Dict[str, pd.Series], name: str, 
                          curr_mertic: float, ref_metric: float=None, is_ref_data: bool=False):
     fig = make_subplots(rows=2, cols=1, shared_xaxes=True)
-    
+
     s = val_for_plot['current'].sort_index()
     x = [str(idx) for idx in s.index]
     y = [val for val in s]

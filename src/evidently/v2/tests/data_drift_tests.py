@@ -14,7 +14,6 @@ from evidently.v2.metrics import DataDriftMetrics
 from evidently.v2.renderers.base_renderer import TestRenderer, TestHtmlInfo, DetailsInfo, default_renderer
 from evidently.v2.tests.base_test import BaseCheckValueTest, TestResult
 from evidently.v2.tests.utils import plot_distr
-import logging
 
 @dataclasses.dataclass
 class TestDataDriftResult(TestResult):
@@ -116,6 +115,34 @@ class TestNumberOfDriftedFeaturesRenderer(TestRenderer):
         return base
 
     def render_html(self, obj: TestNumberOfDriftedFeatures) -> TestHtmlInfo:
+        info = super().render_html(obj)
+        info.details = [
+            DetailsInfo(
+                id="drift_table",
+                title="",
+                info=BaseWidgetInfo(
+                    title="",
+                    type="table",
+                    params={
+                        "header": ["Feature name", "Stattest", "Drift score", "Threshold", "Data Drift"],
+                        "data": [[feature] + list(data) for feature, data in obj.get_result().features.items()]
+                    },
+                    size=2,
+                )
+            ),
+        ]
+        return info
+
+@default_renderer(test_type=TestShareOfDriftedFeatures)
+class TestShareOfDriftedFeaturesRenderer(TestRenderer):
+    def render_json(self, obj: TestShareOfDriftedFeatures) -> dict:
+        base = super().render_json(obj)
+        base['features'] = {feature: dict(stattest=data[0], score=np.round(data[1],  3), threshold=data[2], 
+                            data_drift=data[3])
+                            for feature, data in obj.get_result().features.items()}
+        return base
+
+    def render_html(self, obj: TestShareOfDriftedFeatures) -> TestHtmlInfo:
         info = super().render_html(obj)
         info.details = [
             DetailsInfo(

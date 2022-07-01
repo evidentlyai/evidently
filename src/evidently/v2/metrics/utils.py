@@ -1,15 +1,5 @@
-from typing import Dict
-from typing import List
-from typing import Optional
-from typing import Sequence
-from typing import Union
-
 import numpy as np
 import pandas as pd
-
-import plotly.graph_objs as go
-import logging
-from evidently.options import ColorOptions
 
 def make_hist_df(hist):
     hist_df = pd.DataFrame(np.array([hist[1][:-1],
