@@ -19,6 +19,7 @@ from evidently.v2.tests import TestShareOfOutRangeValues
 from evidently.v2.tests import TestValueList
 from evidently.v2.tests import TestNumberOfOutListValues
 from evidently.v2.tests import TestShareOfOutListValues
+from evidently.v2.tests import TestValueQuantile
 from evidently.v2.test_suite import TestSuite
 
 
@@ -415,5 +416,23 @@ def test_data_quality_test_share_of_values_not_in_list() -> None:
     assert not suite
 
     suite = TestSuite(tests=[TestShareOfOutListValues(column="feature1", values=[0, 1], lt=0.5)])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    assert suite
+
+
+def test_data_quality_test_value_quantile() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "feature1": [0, 1, 2, 3],
+            "target": [0, 0, 0, 1],
+            "prediction": [0, 0, 1, 1],
+        }
+    )
+
+    suite = TestSuite(tests=[TestValueQuantile(column="feature1", quantile=0.7, lt=1)])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    assert not suite
+
+    suite = TestSuite(tests=[TestValueQuantile(column="feature1", quantile=0.2, lt=0.7)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite

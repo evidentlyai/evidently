@@ -34,6 +34,7 @@ from .data_quality_tests import TestShareOfOutRangeValues
 from .data_quality_tests import TestValueList
 from .data_quality_tests import TestNumberOfOutListValues
 from .data_quality_tests import TestShareOfOutListValues
+from .data_quality_tests import TestValueQuantile
 from .regression_performance_tests import TestValueMAE
 from .regression_performance_tests import TestValueMAPE
 from .regression_performance_tests import TestValueMeanError

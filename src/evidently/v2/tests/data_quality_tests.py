@@ -8,6 +8,7 @@ from evidently.v2.metrics import DataQualityMetrics
 from evidently.v2.metrics import DataQualityStabilityMetrics
 from evidently.v2.metrics import DataQualityValueListMetrics
 from evidently.v2.metrics import DataQualityValueRangeMetrics
+from evidently.v2.metrics import DataQualityValueQuantileMetrics
 from evidently.v2.tests.base_test import BaseCheckValueTest
 from evidently.v2.tests.base_test import Test
 from evidently.v2.tests.base_test import TestResult
@@ -482,3 +483,44 @@ class TestShareOfOutListValues(BaseDataQualityValueListMetricsTest):
 
     def get_description(self, value: Number) -> str:
         return f"Share of out of the list values for feature '{self.column}' is {value}"
+
+
+class TestValueQuantile(BaseCheckValueTest):
+    name = "Test calculates quantile value of a given column and compares it against the threshold"
+    metric: DataQualityValueQuantileMetrics
+    column: str
+    quantile: Optional[float]
+
+    def __init__(
+        self,
+        column: str,
+        quantile: Optional[float],
+        eq: Optional[Number] = None,
+        gt: Optional[Number] = None,
+        gte: Optional[Number] = None,
+        is_in: Optional[List[Union[Number, str, bool]]] = None,
+        lt: Optional[Number] = None,
+        lte: Optional[Number] = None,
+        not_eq: Optional[Number] = None,
+        not_in: Optional[List[Union[Number, str, bool]]] = None,
+        metric: Optional[DataQualityValueQuantileMetrics] = None
+    ):
+        self.column = column
+        self.quantile = quantile
+
+        if metric is not None:
+            if column is not None or quantile is not None:
+                raise ValueError("Test parameters and given  metric conflict")
+
+            self.metric = metric
+
+        else:
+            self.metric = DataQualityValueQuantileMetrics(column=column, quantile=quantile)
+
+        super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
+
+    def calculate_value_for_test(self) -> Number:
+        return self.metric.get_result().value
+
+    def get_description(self, value: Number) -> str:
+        return f"Quantile {self.quantile} for column '{self.column}' is {value}"

@@ -6,6 +6,7 @@ from evidently.v2.metrics import DataQualityMetrics
 from evidently.v2.metrics import DataQualityStabilityMetrics
 from evidently.v2.metrics import DataQualityValueListMetrics
 from evidently.v2.metrics import DataQualityValueRangeMetrics
+from evidently.v2.metrics import DataQualityValueQuantileMetrics
 
 
 def test_data_quality_metrics() -> None:
@@ -138,3 +139,20 @@ def test_data_quality_values_in_range_metrics() -> None:
     assert result.number_not_in_range == 1
     assert result.share_in_range == 0.75
     assert result.share_not_in_range == 0.25
+
+
+def test_data_quality_quantile_metrics() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "numerical_feature": [0, 2, 2, 2, 0]
+        }
+    )
+    data_mapping = ColumnMapping()
+    metric = DataQualityValueQuantileMetrics(column="numerical_feature", quantile=0.5)
+    result = metric.calculate(
+        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping),
+        metrics={}
+    )
+    assert result is not None
+    assert result.quantile == 0.5
+    assert result.value == 2

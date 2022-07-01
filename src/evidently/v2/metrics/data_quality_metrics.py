@@ -175,3 +175,27 @@ class DataQualityValueRangeMetrics(Metric[DataQualityValueRangeMetricsResults]):
             share_in_range=number_in_range / rows_count,
             share_not_in_range=number_not_in_range / rows_count
         )
+
+
+@dataclass
+class DataQualityValueQuantileMetricsResults:
+    # calculated value of the quantile
+    value: float
+    # range of the quantile (from 0 to 1)
+    quantile: float
+
+
+class DataQualityValueQuantileMetrics(Metric[DataQualityValueQuantileMetricsResults]):
+    """Calculates quantile with specified range"""
+    column: str
+    quantile: float
+
+    def __init__(self, column: str, quantile: float) -> None:
+        self.column = column
+        self.quantile = quantile
+
+    def calculate(self, data: InputData, metrics: dict) -> DataQualityValueQuantileMetricsResults:
+        return DataQualityValueQuantileMetricsResults(
+            value=data.current_data[self.column].quantile(self.quantile),
+            quantile=self.quantile,
+        )
