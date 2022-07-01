@@ -22,4 +22,4 @@ def test_data_drift_metrics() -> None:
         metrics={}
     )
     assert result is not None
-    assert result.metrics.n_drifted_features == 0
+    assert result.analyzer_result.metrics.n_drifted_features == 0

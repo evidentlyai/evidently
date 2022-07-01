@@ -126,10 +126,11 @@ class TestValueRMSE(BaseRegressionPerformanceMetricsTest):
     name = "Test RMSE"
 
     def calculate_value_for_test(self) -> Number:
-        return self.metric.get_result().rmsa
+        return self.metric.get_result().rmse
 
     def get_description(self, value: Number) -> str:
         return f"RMSE value is {np.round(value, 3)}"
+
 
 @default_renderer(test_type=TestValueRMSE)
 class TestValueRMSERenderer(TestRenderer):
