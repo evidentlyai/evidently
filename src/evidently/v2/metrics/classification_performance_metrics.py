@@ -70,6 +70,7 @@ def get_prediction_data(data: pd.DataFrame, mapping: ColumnMapping) -> Tuple[pd.
         return predictions, prediction_probas
     return data[mapping.prediction], None
 
+
 ProbClassificationPerformanceMetricsResults = pcpa.ProbClassificationPerformanceMetrics
 
 
