@@ -37,14 +37,7 @@ def test_prediction_data(data: pd.DataFrame,
 
 
 def test_classification_performance_metrics() -> None:
-    test_dataset = pd.DataFrame(
-        {
-            "category_feature": ["1", "2", "3"],
-            "numerical_feature": [3, 2, 1],
-            "target": [None, np.NAN, 1],
-            "prediction": [1, np.NAN, 1],
-        }
-    )
+    test_dataset = pd.DataFrame({"target": [1, 1, 1, 1], "prediction": [1, 1, 1, 0]})
     data_mapping = ColumnMapping()
     metric = ClassificationPerformanceMetrics()
     result = metric.calculate(
@@ -52,7 +45,7 @@ def test_classification_performance_metrics() -> None:
         metrics={}
     )
     assert result is not None
-    assert result.current_metrics.accuracy == 1
-    assert result.current_metrics.f1 == 1
-    assert result.current_metrics.precision == 1
-    assert result.current_metrics.recall == 1
+    assert result.current_metrics.accuracy == 0.75
+    assert result.current_metrics.f1 < 0.5
+    assert result.current_metrics.precision == 0.5
+    assert result.current_metrics.recall == 0.375
