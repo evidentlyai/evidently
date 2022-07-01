@@ -29,6 +29,8 @@ from .data_quality_tests import TestUniqueValuesShare
 from .data_quality_tests import TestMostCommonValueShare
 from .data_quality_tests import TestMeanInNSigmas
 from .data_quality_tests import TestValueRange
+from .data_quality_tests import TestNumberOfOutRangeValues
+from .data_quality_tests import TestShareOfOutRangeValues
 from .data_quality_tests import TestValueList
 from .data_quality_tests import TestNumberOfOutListValues
 from .data_quality_tests import TestShareOfOutListValues

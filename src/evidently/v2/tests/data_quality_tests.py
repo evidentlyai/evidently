@@ -7,6 +7,7 @@ from typing import Union
 from evidently.v2.metrics import DataQualityMetrics
 from evidently.v2.metrics import DataQualityStabilityMetrics
 from evidently.v2.metrics import DataQualityValueListMetrics
+from evidently.v2.metrics import DataQualityValueRangeMetrics
 from evidently.v2.tests.base_test import BaseCheckValueTest
 from evidently.v2.tests.base_test import Test
 from evidently.v2.tests.base_test import TestResult
@@ -307,69 +308,94 @@ class TestMeanInNSigmas(Test):
 
 class TestValueRange(Test):
     name = "Checks that all values of certain column belong to the interval"
-    metric: DataQualityMetrics
+    metric: DataQualityValueRangeMetrics
     column: str
-    gt: Optional[int]
-    lt: Optional[int]
+    left: Optional[float]
+    right: Optional[float]
 
     def __init__(
             self,
             column: str,
-            gt: Optional[int] = None,
-            lt: Optional[int] = None,
-            metric: Optional[DataQualityMetrics] = None
+            left: Optional[float] = None,
+            right: Optional[float] = None,
+            metric: Optional[DataQualityValueRangeMetrics] = None
     ):
         self.column = column
-        self.gt = gt
-        self.lt = lt
+        self.left = left
+        self.right = right
 
         if metric is not None:
             self.metric = metric
 
         else:
-            self.metric = DataQualityMetrics()
+            self.metric = DataQualityValueRangeMetrics(column=column, left=left, right=right)
 
     def check(self):
-        reference_feature_stats = self.metric.get_result().reference_features_stats
-        features_stats = self.metric.get_result().features_stats
+        number_not_in_range = self.metric.get_result().number_not_in_range
 
-        if (self.gt is None or self.lt is None) and reference_feature_stats is None:
-            raise ValueError("Reference should be present")
-
-        if self.column not in features_stats.get_all_features():
-            description = f"Column {self.column} should be in current data"
-            test_result = TestResult.ERROR
-
-        elif reference_feature_stats and self.column not in reference_feature_stats.get_all_features():
-            description = f"Column {self.column} should be in reference data"
-            test_result = TestResult.ERROR
-
+        if number_not_in_range > 0:
+            description = f"Column {self.column} has {number_not_in_range} values that are " \
+                          f"not in range from {self.left} to {self.right}."
+            test_result = TestResult.FAIL
         else:
-            if self.gt is None:
-                min_condition = reference_feature_stats[self.column].min
-
-            else:
-                min_condition = self.gt
-
-            if self.lt is None:
-                max_condition = reference_feature_stats[self.column].max
-
-            else:
-                max_condition = self.lt
-
-            current_min = features_stats[self.column].min
-            current_max = features_stats[self.column].max
-
-            if current_min >= min_condition and current_max <= max_condition:
-                description = f"Column {self.column} values are in range from {min_condition} to {max_condition}"
-                test_result = TestResult.SUCCESS
-
-            else:
-                description = f"Column {self.column} values are not in range from {min_condition} to {max_condition}." \
-                              f" Column min value is {current_min}. And max value is {current_max}"
-                test_result = TestResult.FAIL
+            description = f"Column {self.column} values are in range from {self.left} to {self.right}"
+            test_result = TestResult.SUCCESS
 
         return TestResult(name=self.name, description=description, status=test_result)
+
+
+class BaseDataQualityValueRangeMetricsTest(BaseCheckValueTest, ABC):
+    metric: DataQualityValueRangeMetrics
+    column: str
+    left: Optional[float]
+    right: Optional[float]
+
+    def __init__(
+        self,
+        column: str,
+        left: Optional[float] = None,
+        right: Optional[float] = None,
+        eq: Optional[Number] = None,
+        gt: Optional[Number] = None,
+        gte: Optional[Number] = None,
+        is_in: Optional[List[Union[Number, str, bool]]] = None,
+        lt: Optional[Number] = None,
+        lte: Optional[Number] = None,
+        not_eq: Optional[Number] = None,
+        not_in: Optional[List[Union[Number, str, bool]]] = None,
+        metric: Optional[DataQualityValueRangeMetrics] = None
+    ):
+        self.column = column
+        self.left = left
+        self.right = right
+
+        if metric is not None:
+            self.metric = metric
+
+        else:
+            self.metric = DataQualityValueRangeMetrics(column=column, left=left, right=right)
+
+        super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
+
+
+class TestNumberOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
+    name = "Test the number of out range values for a given feature and compares it against the threshold"
+
+    def calculate_value_for_test(self) -> Number:
+        return self.metric.get_result().number_not_in_range
+
+    def get_description(self, value: Number) -> str:
+        return f"Number of out of the range values for feature '{self.column}' is {value}"
+
+
+class TestShareOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
+    name = "Test the share of out of the range values for a given feature and compares it against the threshold"
+
+    def calculate_value_for_test(self) -> Number:
+        return self.metric.get_result().share_not_in_range
+
+    def get_description(self, value: Number) -> str:
+        return f"Share of out of the range values for feature '{self.column}' is {value}"
 
 
 class TestValueList(Test):

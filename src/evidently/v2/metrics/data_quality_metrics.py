@@ -103,8 +103,8 @@ class DataQualityStabilityMetrics(Metric[DataQualityStabilityMetricsResults]):
 class DataQualityValueListMetricsResults:
     number_in_list: int
     number_not_in_list: int
-    share_in_list: int
-    share_not_in_list: int
+    share_in_list: float
+    share_not_in_list: float
 
 
 class DataQualityValueListMetrics(Metric[DataQualityValueListMetricsResults]):
@@ -131,4 +131,47 @@ class DataQualityValueListMetrics(Metric[DataQualityValueListMetricsResults]):
             number_not_in_list=rows_count - values_in_list,
             share_in_list=values_in_list / rows_count,
             share_not_in_list=number_not_in_list / rows_count
+        )
+
+
+@dataclass
+class DataQualityValueRangeMetricsResults:
+    number_in_range: int
+    number_not_in_range: int
+    share_in_range: float
+    share_not_in_range: float
+
+
+class DataQualityValueRangeMetrics(Metric[DataQualityValueRangeMetricsResults]):
+    """Calculates count and shares of values in the predefined values range"""
+    column: str
+    left: Optional[float]
+    right: Optional[float]
+
+    def __init__(self, column: str, left: Optional[float] = None, right: Optional[float] = None) -> None:
+        self.left = left
+        self.right = right
+        self.column = column
+
+    def calculate(self, data: InputData, metrics: dict) -> DataQualityValueRangeMetricsResults:
+        if (self.left is None or self.right is None) and data.reference_data is None:
+            raise ValueError("Reference should be present")
+
+        if self.left is None:
+            self.left = data.reference_data[self.column].min()
+
+        if self.right is None:
+            self.right = data.reference_data[self.column].max()
+
+        rows_count = data.current_data.shape[0]
+        number_in_range = data.current_data[self.column].between(
+            left=float(self.left), right=float(self.right), inclusive="both"
+        ).sum()
+        number_not_in_range = rows_count - number_in_range
+
+        return DataQualityValueRangeMetricsResults(
+            number_in_range=number_in_range,
+            number_not_in_range=rows_count - number_in_range,
+            share_in_range=number_in_range / rows_count,
+            share_not_in_range=number_not_in_range / rows_count
         )
