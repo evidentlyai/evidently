@@ -29,6 +29,7 @@ from .data_quality_tests import TestUniqueValuesShare
 from .data_quality_tests import TestMostCommonValueShare
 from .data_quality_tests import TestMeanInNSigmas
 from .data_quality_tests import TestValueRange
+from .data_quality_tests import TestValueList
 from .regression_performance_tests import TestValueMAE
 from .regression_performance_tests import TestValueMAPE
 from .regression_performance_tests import TestValueMeanError

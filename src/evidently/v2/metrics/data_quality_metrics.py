@@ -97,3 +97,38 @@ class DataQualityStabilityMetrics(Metric[DataQualityStabilityMetricsResults]):
             ).shape[0]
 
         return result
+
+
+@dataclass
+class DataQualityValueListMetricsResults:
+    number_in_list: int
+    number_not_in_list: int
+    share_in_list: int
+    share_not_in_list: int
+
+
+class DataQualityValueListMetrics(Metric[DataQualityValueListMetricsResults]):
+    """Calculates count and shares of values in the predefined values list"""
+    column: str
+    values: Optional[list]
+
+    def __init__(self, column: str,  values: Optional[list] = None) -> None:
+        self.values = values
+        self.column = column
+
+    def calculate(self, data: InputData, metrics: dict) -> DataQualityValueListMetricsResults:
+        if self.values is None:
+            if data.reference_data is None:
+                raise ValueError("Reference or values list should be present")
+            self.values = data.reference_data[self.column].unique()
+
+        rows_count = data.current_data.shape[0]
+        values_in_list = data.current_data[self.column].isin(self.values).sum()
+        number_not_in_list = rows_count - values_in_list
+
+        return DataQualityValueListMetricsResults(
+            number_in_list=values_in_list,
+            number_not_in_list=rows_count - values_in_list,
+            share_in_list=values_in_list / rows_count,
+            share_not_in_list=number_not_in_list / rows_count
+        )

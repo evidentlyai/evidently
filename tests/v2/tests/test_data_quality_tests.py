@@ -14,6 +14,7 @@ from evidently.v2.tests import TestUniqueValuesShare
 from evidently.v2.tests import TestMostCommonValueShare
 from evidently.v2.tests import TestMeanInNSigmas
 from evidently.v2.tests import TestValueRange
+from evidently.v2.tests import TestValueList
 from evidently.v2.test_suite import TestSuite
 
 
@@ -286,5 +287,29 @@ def test_data_quality_test_value_in_range() -> None:
     assert not suite
 
     suite = TestSuite(tests=[TestValueRange(column="feature1", lt=100)])
+    suite.run(current_data=test_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
+    assert suite
+
+
+def test_data_quality_test_value_in_list() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "feature1": [0, 1, 1, 20],
+            "target": [0, 0, 0, 1],
+            "prediction": [0, 0, 1, 1],
+        }
+    )
+    reference_dataset = pd.DataFrame(
+        {
+            "feature1": [0, 1, 1, 0],
+            "target": [0, 0, 0, 1],
+            "prediction": [0, 0, 1, 1],
+        }
+    )
+    suite = TestSuite(tests=[TestValueList(column="feature1")])
+    suite.run(current_data=test_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
+    assert not suite
+
+    suite = TestSuite(tests=[TestValueList(column="target")])
     suite.run(current_data=test_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
     assert suite

@@ -6,6 +6,7 @@ from typing import Union
 
 from evidently.v2.metrics import DataQualityMetrics
 from evidently.v2.metrics import DataQualityStabilityMetrics
+from evidently.v2.metrics import DataQualityValueListMetrics
 from evidently.v2.tests.base_test import BaseCheckValueTest
 from evidently.v2.tests.base_test import Test
 from evidently.v2.tests.base_test import TestResult
@@ -367,5 +368,39 @@ class TestValueRange(Test):
                 description = f"Column {self.column} values are not in range from {min_condition} to {max_condition}. " \
                               f"Column min value is {current_min}. And max value is {current_max}"
                 test_result = TestResult.FAIL
+
+        return TestResult(name=self.name, description=description, status=test_result)
+
+
+class TestValueList(Test):
+    name = "Test checks whether a feature values is in some list of values"
+    metric: DataQualityValueListMetrics
+    column: str
+    values: Optional[list]
+
+    def __init__(
+        self,
+        column: str,
+        values: Optional[list] = None,
+        metric: Optional[DataQualityValueListMetrics] = None
+    ):
+        self.column = column
+        self.values = values
+        if metric is not None:
+            self.metric = metric
+
+        else:
+            self.metric = DataQualityValueListMetrics(column=column, values=values)
+
+    def check(self):
+        metric_result = self.metric.get_result()
+
+        if metric_result.number_not_in_list > 0:
+            test_result = TestResult.FAIL
+            description = f"Number values not in the values list is {metric_result.number_not_in_list}"
+
+        else:
+            test_result = TestResult.SUCCESS
+            description = "All values is in the values list"
 
         return TestResult(name=self.name, description=description, status=test_result)
