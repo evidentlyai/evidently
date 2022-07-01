@@ -1,4 +1,5 @@
-from typing import Dict,  Optional
+from typing import Dict
+from typing import Optional
 from dataclasses import dataclass
 
 import pandas as pd
@@ -10,15 +11,15 @@ from evidently.options import OptionsProvider
 
 from evidently.v2.metrics.base_metric import InputData
 from evidently.v2.metrics.base_metric import Metric
-from evidently.v2.metrics.utils import make_hist_for_num_plot,  make_hist_for_cat_plot
+from evidently.v2.metrics.utils import make_hist_for_num_plot
+from evidently.v2.metrics.utils import make_hist_for_cat_plot
+
 
 @dataclass
 class DataDriftMetricsResults:
     analyzer_result: DataDriftAnalyzerResults
     distr_for_plots: Dict[str, Dict[str, pd.DataFrame]]
 
-
-# DataDriftMetricsResults = DataDriftAnalyzerResults
 
 class DataDriftMetrics(Metric[DataDriftMetricsResults]):
     def __init__(self, options: Optional[DataDriftOptions] = None):

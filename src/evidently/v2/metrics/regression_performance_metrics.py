@@ -1,6 +1,7 @@
-from cmath import log
 from dataclasses import dataclass
-from typing import Optional, List, Dict
+from typing import Dict
+from typing import Optional
+
 
 import numpy as np
 import pandas as pd
@@ -13,8 +14,10 @@ from evidently.analyzers.regression_performance_analyzer import RegressionPerfor
 
 from evidently.v2.metrics.base_metric import InputData
 from evidently.v2.metrics.base_metric import Metric
-from evidently.v2.metrics.utils import make_target_bins_for_reg_plots, make_hist_for_cat_plot, \
-     apply_func_to_binned_data, make_hist_for_num_plot
+from evidently.v2.metrics.utils import make_target_bins_for_reg_plots
+from evidently.v2.metrics.utils import make_hist_for_cat_plot
+from evidently.v2.metrics.utils import apply_func_to_binned_data
+from evidently.v2.metrics.utils import make_hist_for_num_plot
 
 
 @dataclass
@@ -41,7 +44,6 @@ class RegressionPerformanceMetricsResults:
     mean_abs_perc_error_ref: float = None
     rmse_ref: float = None
     r2_score_ref: float = None
-    
 
 
 class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
@@ -122,31 +124,39 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
 
         # visualisation
 
-        df_target_binned = make_target_bins_for_reg_plots(data.current_data, data.column_mapping.target, 
-                                                       data.column_mapping.prediction, data.reference_data)
-        curr_target_bins = df_target_binned.loc[df_target_binned.data=='curr', 'target_binned']
+        df_target_binned = make_target_bins_for_reg_plots(
+            data.current_data, data.column_mapping.target,
+            data.column_mapping.prediction, data.reference_data
+        )
+        curr_target_bins = df_target_binned.loc[df_target_binned.data == 'curr', 'target_binned']
         ref_target_bins = None
         if data.reference_data is not None:
-            ref_target_bins = df_target_binned.loc[df_target_binned.data=='ref', 'target_binned']
+            ref_target_bins = df_target_binned.loc[df_target_binned.data == 'ref', 'target_binned']
         hist_for_plot = make_hist_for_cat_plot(curr_target_bins, ref_target_bins)
 
         vals_for_plots = {}
+
         if data.reference_data is not None:
             is_ref_data = True
+
         else:
             is_ref_data = False
-        
+
         for name, func in zip(
-            ['r2_score', 'rmse', 'mean_abs_error', 'mean_abs_perc_error'], 
-            [r2_score, mean_squared_error, mean_absolute_error, mean_absolute_percentage_error]):
-            vals_for_plots[name] = apply_func_to_binned_data(df_target_binned, func, data.column_mapping.target, 
-                                                             data.column_mapping.prediction, is_ref_data)
+                ['r2_score', 'rmse', 'mean_abs_error', 'mean_abs_perc_error'],
+                [r2_score, mean_squared_error, mean_absolute_error, mean_absolute_percentage_error]
+        ):
+            vals_for_plots[name] = apply_func_to_binned_data(
+                df_target_binned, func, data.column_mapping.target, data.column_mapping.prediction, is_ref_data
+            )
 
         # me plot
         err_curr = data.current_data[data.column_mapping.prediction] - data.current_data[data.column_mapping.target]
         err_ref = None
-        if is_ref_data: 
-            err_ref = data.reference_data[data.column_mapping.prediction] - data.reference_data[data.column_mapping.target]
+
+        if is_ref_data:
+            err_ref = data.reference_data[data.column_mapping.prediction] - \
+                data.reference_data[data.column_mapping.target]
         me_hist_for_plot = make_hist_for_num_plot(err_curr, err_ref)
 
         return RegressionPerformanceMetricsResults(

@@ -5,15 +5,12 @@ from typing import Optional
 from typing import Union
 
 import numpy as np
-from plotly.subplots import make_subplots
-import plotly.graph_objs as go
-
 from evidently.model.widget import BaseWidgetInfo
-from evidently.options.color_scheme import RED, GREY
 from evidently.v2.metrics import RegressionPerformanceMetrics
 from evidently.v2.renderers.base_renderer import default_renderer, TestRenderer, TestHtmlInfo, DetailsInfo
 from evidently.v2.tests.base_test import BaseCheckValueTest
 from evidently.v2.tests.utils import plot_check, plot_metric_value, regression_perf_plot, plot_distr
+
 
 class BaseRegressionPerformanceMetricsTest(BaseCheckValueTest, ABC):
     metric: RegressionPerformanceMetrics
@@ -60,13 +57,13 @@ class TestValueMAERenderer(TestRenderer):
         fig = regression_perf_plot(
             val_for_plot=obj.metric.get_result().vals_for_plots['mean_abs_error'],
             hist_for_plot=obj.metric.get_result().hist_for_plot,
-            name='MAE', 
-            curr_mertic=obj.metric.get_result().mean_abs_error, 
-            ref_metric=obj.metric.get_result().mean_abs_error_ref, 
+            name='MAE',
+            curr_mertic=obj.metric.get_result().mean_abs_error,
+            ref_metric=obj.metric.get_result().mean_abs_error_ref,
             is_ref_data=is_ref_data
         )
         fig_json = fig.to_plotly_json()
-  
+
         info.details.append(
             DetailsInfo(
                 'MAE',
@@ -90,6 +87,7 @@ class TestValueMAPE(BaseRegressionPerformanceMetricsTest):
 
     def get_description(self, value: Number) -> str:
         return f"MAPE value is {np.round(value, 3)}"
+
 
 @default_renderer(test_type=TestValueMAPE)
 class TestValueMAPERenderer(TestRenderer):
@@ -142,9 +140,9 @@ class TestValueRMSERenderer(TestRenderer):
         fig = regression_perf_plot(
             val_for_plot=obj.metric.get_result().vals_for_plots['rmse'],
             hist_for_plot=obj.metric.get_result().hist_for_plot,
-            name='RMSE', 
-            curr_mertic=obj.metric.get_result().rmse, 
-            ref_metric=obj.metric.get_result().rmse_ref, 
+            name='RMSE',
+            curr_mertic=obj.metric.get_result().rmse,
+            ref_metric=obj.metric.get_result().rmse_ref,
             is_ref_data=is_ref_data
         )
         fig_json = fig.to_plotly_json()
@@ -162,6 +160,7 @@ class TestValueRMSERenderer(TestRenderer):
         )
         return info
 
+
 class TestValueMeanError(BaseRegressionPerformanceMetricsTest):
     name = "Test mean error"
 
@@ -170,6 +169,7 @@ class TestValueMeanError(BaseRegressionPerformanceMetricsTest):
 
     def get_description(self, value: Number) -> str:
         return f"Mean error value is {np.round(value, 3)}"
+
 
 @default_renderer(test_type=TestValueMeanError)
 class TestValueMeanErrorRenderer(TestRenderer):
@@ -209,6 +209,7 @@ class TestValueAbsMaxError(BaseRegressionPerformanceMetricsTest):
     def get_description(self, value: Number) -> str:
         return f"Absolute value of max error is {np.round(value, 3)}"
 
+
 @default_renderer(test_type=TestValueAbsMaxError)
 class TestValueAbsMaxErrorRenderer(TestRenderer):
     def render_html(self, obj: TestValueAbsMaxError) -> TestHtmlInfo:
@@ -245,6 +246,7 @@ class TestValueR2Score(BaseRegressionPerformanceMetricsTest):
     def get_description(self, value: Number) -> str:
         return f"R2 score is {np.round(value, 3)}"
 
+
 @default_renderer(test_type=TestValueR2Score)
 class TestValueR2ScoreRenderer(TestRenderer):
     def render_html(self, obj: TestValueR2Score) -> TestHtmlInfo:
@@ -255,9 +257,9 @@ class TestValueR2ScoreRenderer(TestRenderer):
         fig = regression_perf_plot(
             val_for_plot=obj.metric.get_result().vals_for_plots['r2_score'],
             hist_for_plot=obj.metric.get_result().hist_for_plot,
-            name='R2_score', 
-            curr_mertic=obj.metric.get_result().r2_score, 
-            ref_metric=obj.metric.get_result().r2_score_ref, 
+            name='R2_score',
+            curr_mertic=obj.metric.get_result().r2_score,
+            ref_metric=obj.metric.get_result().r2_score_ref,
             is_ref_data=is_ref_data
         )
         fig_json = fig.to_plotly_json()

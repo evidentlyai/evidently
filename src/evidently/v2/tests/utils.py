@@ -9,8 +9,8 @@ from plotly.subplots import make_subplots
 RED = "#ed0400"
 GREY = "#4d4d4d"
 
-def plot_check(fig, condition):
 
+def plot_check(fig, condition):
     lines = []
     left_line = pd.Series([condition.gt, condition.gte]).max()
     if not pd.isnull(left_line):
@@ -27,17 +27,16 @@ def plot_check(fig, condition):
     # if condition.ap:
     #     lines.append((condition.ap.value, 'ap'))
 
-
     fig = go.Figure(fig)
     max_y = np.max([np.max(x['y']) for x in fig.data])
     min_y = np.min([np.min(x['y']) for x in fig.data])
-    if len(lines) >0 :
+    if len(lines) > 0:
         for line, name in lines:
             fig.add_trace(go.Scatter(x=(line, line),
-                                    y=(min_y, max_y),
-                                    mode='lines',
-                                    line=dict(color=GREY, width=3, dash='dash'),
-                                    name=name))
+                                     y=(min_y, max_y),
+                                     mode='lines',
+                                     line=dict(color=GREY, width=3, dash='dash'),
+                                     name=name))
 
     if left_line and right_line:
         fig.add_vrect(x0=left_line, x1=right_line, fillcolor='green', opacity=0.25, line_width=0)
@@ -57,6 +56,7 @@ def plot_check(fig, condition):
 
     return fig
 
+
 def plot_metric_value(fig, metric_val: float, metric_name: str):
     fig = go.Figure(fig)
     max_y = np.max([np.max(x['y']) for x in fig.data])
@@ -69,21 +69,23 @@ def plot_metric_value(fig, metric_val: float, metric_name: str):
     fig.update_layout(showlegend=True)
     return fig
 
+
 def plot_distr(hist_curr, hist_ref=None):
-    fig= go.Figure()
+    fig = go.Figure()
 
     fig.add_trace(
         go.Bar(name='current', x=hist_curr['x'], y=hist_curr['count'], marker_color=RED)
-        )
+    )
     if hist_ref is not None:
         fig.add_trace(
             go.Bar(name='reference', x=hist_ref['x'], y=hist_ref['count'], marker_color=GREY)
-            )
+        )
 
     return fig
 
-def regression_perf_plot(val_for_plot: Dict[str, pd.Series], hist_for_plot: Dict[str, pd.Series], name: str, 
-                         curr_mertic: float, ref_metric: float=None, is_ref_data: bool=False):
+
+def regression_perf_plot(val_for_plot: Dict[str, pd.Series], hist_for_plot: Dict[str, pd.Series], name: str,
+                         curr_mertic: float, ref_metric: float = None, is_ref_data: bool = False):
     fig = make_subplots(rows=2, cols=1, shared_xaxes=True)
 
     s = val_for_plot['current'].sort_index()
@@ -104,7 +106,7 @@ def regression_perf_plot(val_for_plot: Dict[str, pd.Series], hist_for_plot: Dict
         y = [val for val in s]
         trace = go.Scatter(x=x, y=y, mode='lines+markers', name=name, marker_color=GREY)
         fig.append_trace(trace, 1, 1)
- 
+
         df = hist_for_plot['reference'].sort_values('x')
         x = [str(x) for x in df.x]
         y = [val for val in df['count']]
@@ -117,4 +119,3 @@ def regression_perf_plot(val_for_plot: Dict[str, pd.Series], hist_for_plot: Dict
         title += f'<br>reference {name}: {np.round(ref_metric, 3)}'
     fig.update_layout(title=title)
     return fig
-    
