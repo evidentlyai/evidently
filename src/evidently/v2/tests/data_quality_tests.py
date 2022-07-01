@@ -5,6 +5,7 @@ from typing import Optional
 from typing import Union
 
 from evidently.v2.metrics import DataQualityMetrics
+from evidently.v2.metrics import DataQualityStabilityMetrics
 from evidently.v2.tests.base_test import BaseCheckValueTest
 from evidently.v2.tests.base_test import Test
 from evidently.v2.tests.base_test import TestResult
@@ -34,24 +35,68 @@ class BaseDataQualityMetricsValueTest(BaseCheckValueTest, ABC):
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
 
 
-class TestConflictTarget(BaseDataQualityMetricsValueTest):
+class TestConflictTarget(Test):
     name = "Test number of conflicts in target"
+    metric: DataQualityStabilityMetrics
 
-    def calculate_value_for_test(self) -> Number:
-        return self.metric.get_result().target_not_stable
+    def __init__(
+        self,
+        metric: Optional[DataQualityStabilityMetrics] = None
+    ):
+        if metric is not None:
+            self.metric = metric
 
-    def get_description(self, value: Number) -> str:
-        return f"Number of conflict target value is {value}"
+        else:
+            self.metric = DataQualityStabilityMetrics()
+
+    def check(self):
+        metric_result = self.metric.get_result()
+
+        if metric_result.number_not_stable_target is None:
+            test_result = TestResult.ERROR
+            description = "No target in the dataset"
+
+        elif metric_result.number_not_stable_target > 0:
+            test_result = TestResult.FAIL
+            description = f"Not stable target rows count is {metric_result.number_not_stable_target}"
+
+        else:
+            test_result = TestResult.SUCCESS
+            description = "Target is stable"
+
+        return TestResult(name=self.name, description=description, status=test_result)
 
 
-class TestConflictPrediction(BaseDataQualityMetricsValueTest):
+class TestConflictPrediction(Test):
     name = "Test number of conflicts in prediction"
+    metric: DataQualityStabilityMetrics
 
-    def calculate_value_for_test(self) -> Number:
-        return self.metric.get_result().prediction_not_stable
+    def __init__(
+            self,
+            metric: Optional[DataQualityStabilityMetrics] = None
+    ):
+        if metric is not None:
+            self.metric = metric
 
-    def get_description(self, value: Number) -> str:
-        return f"Number of conflict prediction value is {value}"
+        else:
+            self.metric = DataQualityStabilityMetrics()
+
+    def check(self):
+        metric_result = self.metric.get_result()
+
+        if metric_result.number_not_stable_prediction is None:
+            test_result = TestResult.ERROR
+            description = "No prediction in the dataset"
+
+        elif metric_result.number_not_stable_prediction > 0:
+            test_result = TestResult.FAIL
+            description = f"Not stable prediction rows count is {metric_result.number_not_stable_prediction}"
+
+        else:
+            test_result = TestResult.SUCCESS
+            description = "Prediction is stable"
+
+        return TestResult(name=self.name, description=description, status=test_result)
 
 
 class TestTargetPredictionCorrelation(BaseDataQualityMetricsValueTest):

@@ -75,12 +75,23 @@ def test_data_quality_test_mean() -> None:
 def test_data_quality_test_conflict_target() -> None:
     test_dataset = pd.DataFrame(
         {
+            "category_feature": ["n", "n", "p", "n"],
+            "numerical_feature": [0, 0, 2, 5],
+            "target": [0, 1, 0, 1]
+        }
+    )
+    suite = TestSuite(tests=[TestConflictTarget()])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    assert not suite
+
+    test_dataset = pd.DataFrame(
+        {
             "category_feature": ["n", "d", "p", "n"],
             "numerical_feature": [0, 1, 2, 5],
             "target": [0, 0, 0, 1]
         }
     )
-    suite = TestSuite(tests=[TestConflictTarget(lt=5)])
+    suite = TestSuite(tests=[TestConflictTarget()])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
 
@@ -88,13 +99,23 @@ def test_data_quality_test_conflict_target() -> None:
 def test_data_quality_test_conflict_prediction() -> None:
     test_dataset = pd.DataFrame(
         {
-            "category_feature": ["n", "d", "p", "n"],
-            "numerical_feature": [0, 1, 2, 5],
-            "target": [0, 0, 0, 1],
-            "prediction": [0, 0, 0, 1],
+            "category_feature": ["n", "n", "p", "n"],
+            "numerical_feature": [0, 0, 2, 5],
+            "prediction": [0, 1, 0, 1]
         }
     )
-    suite = TestSuite(tests=[TestConflictPrediction(lt=5)])
+    suite = TestSuite(tests=[TestConflictPrediction()])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    assert not suite
+
+    test_dataset = pd.DataFrame(
+        {
+            "category_feature": ["n", "d", "p", "n"],
+            "numerical_feature": [0, 1, 2, 5],
+            "prediction": [0, 0, 0, 1]
+        }
+    )
+    suite = TestSuite(tests=[TestConflictPrediction()])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
 

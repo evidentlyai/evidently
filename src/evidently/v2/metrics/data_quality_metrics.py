@@ -17,10 +17,6 @@ class DataQualityMetricsResults:
     features_stats: DataQualityStats
     target_prediction_correlation: Optional[float]
     correlations: Dict[str, pd.DataFrame] = None
-    # quantity of not-stable target values. None value if there is no target in the dataset.
-    target_not_stable: Optional[int] = None
-    # quantity of not-stable prediction values. None value if there is no target in the dataset.
-    prediction_not_stable: Optional[int] = None
     reference_features_stats: Optional[DataQualityStats] = None
 
 
@@ -70,8 +66,34 @@ class DataQualityMetrics(Metric[DataQualityMetricsResults]):
             target_prediction_correlation=target_prediction_correlation,
             features_stats=features_stats,
             correlations=correlations,
-            # TODO: implement stability calculations
-            target_not_stable=0,
-            prediction_not_stable=0,
             reference_features_stats=reference_features_stats
         )
+
+
+@dataclass
+class DataQualityStabilityMetricsResults:
+    number_not_stable_target: Optional[int] = None
+    number_not_stable_prediction: Optional[int] = None
+
+
+class DataQualityStabilityMetrics(Metric[DataQualityStabilityMetricsResults]):
+    """Calculates stability by target and prediction"""
+
+    def calculate(self, data: InputData, metrics: dict) -> DataQualityStabilityMetricsResults:
+        result = DataQualityStabilityMetricsResults()
+        target_name = data.column_mapping.target
+        prediction_name = data.column_mapping.prediction
+        columns = [column for column in data.current_data.columns if column not in (target_name, prediction_name)]
+        duplicates = data.current_data[data.current_data.duplicated(subset=columns, keep=False)]
+
+        if target_name in data.current_data:
+            result.number_not_stable_target = duplicates.drop(
+                data.current_data[data.current_data.duplicated(subset=columns + [target_name], keep=False)].index
+            ).shape[0]
+
+        if prediction_name in data.current_data:
+            result.number_not_stable_prediction = duplicates.drop(
+                data.current_data[data.current_data.duplicated(subset=columns + [prediction_name], keep=False)].index
+            ).shape[0]
+
+        return result
