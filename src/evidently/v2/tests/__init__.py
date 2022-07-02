@@ -42,3 +42,8 @@ from .regression_performance_tests import TestValueAbsMaxError
 from .regression_performance_tests import TestValueRMSE
 from .regression_performance_tests import TestValueR2Score
 from .classification_performance_tests import TestAccuracyScore
+from .classification_performance_tests import TestF1Score
+from .classification_performance_tests import TestPrecisionScore
+from .classification_performance_tests import TestRecallScore
+from .classification_performance_tests import TestRocAuc
+from .classification_performance_tests import TestLogLoss

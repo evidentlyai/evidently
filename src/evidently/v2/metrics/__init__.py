@@ -7,5 +7,4 @@ from .data_quality_metrics import DataQualityValueListMetrics
 from .data_quality_metrics import DataQualityValueRangeMetrics
 from .data_quality_metrics import DataQualityValueQuantileMetrics
 from .classification_performance_metrics import ClassificationPerformanceMetrics
-from .classification_performance_metrics import ProbClassificationPerformanceMetrics
 from .regression_performance_metrics import RegressionPerformanceMetrics
