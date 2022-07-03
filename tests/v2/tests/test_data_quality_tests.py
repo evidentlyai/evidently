@@ -31,11 +31,11 @@ def test_data_quality_test_min() -> None:
             "target": [0, 0, 0, 1]
         }
     )
-    suite = TestSuite(tests=[TestFeatureValueMin(feature_name="numerical_feature", gte=10)])
+    suite = TestSuite(tests=[TestFeatureValueMin(column_name="numerical_feature", gte=10)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
 
-    suite = TestSuite(tests=[TestFeatureValueMin(feature_name="numerical_feature", eq=0)])
+    suite = TestSuite(tests=[TestFeatureValueMin(column_name="numerical_feature", eq=0)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
 
@@ -48,11 +48,11 @@ def test_data_quality_test_max() -> None:
             "target": [0, 0, 0, 1]
         }
     )
-    suite = TestSuite(tests=[TestFeatureValueMax(feature_name="numerical_feature", gt=10)])
+    suite = TestSuite(tests=[TestFeatureValueMax(column_name="numerical_feature", gt=10)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
 
-    suite = TestSuite(tests=[TestFeatureValueMax(feature_name="numerical_feature", eq=5)])
+    suite = TestSuite(tests=[TestFeatureValueMax(column_name="numerical_feature", eq=5)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
 
@@ -65,15 +65,15 @@ def test_data_quality_test_mean() -> None:
             "target": [0, 0, 0, 1]
         }
     )
-    suite = TestSuite(tests=[TestFeatureValueMean(feature_name="numerical_feature", eq=5)])
+    suite = TestSuite(tests=[TestFeatureValueMean(column_name="numerical_feature", eq=5)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
 
-    suite = TestSuite(tests=[TestFeatureValueMean(feature_name="numerical_feature", gt=0, lt=10)])
+    suite = TestSuite(tests=[TestFeatureValueMean(column_name="numerical_feature", gt=0, lt=10)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
 
-    suite = TestSuite(tests=[TestFeatureValueMean(feature_name="numerical_feature", eq=2)])
+    suite = TestSuite(tests=[TestFeatureValueMean(column_name="numerical_feature", eq=2)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
 
@@ -148,10 +148,10 @@ def test_data_quality_test_median() -> None:
             "prediction": [0, 0, 1, 1],
         }
     )
-    suite = TestSuite(tests=[TestFeatureValueMedian(feature_name="no_existing_feature", eq=1.5)])
+    suite = TestSuite(tests=[TestFeatureValueMedian(column_name="no_existing_feature", eq=1.5)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
-    suite = TestSuite(tests=[TestFeatureValueMedian(feature_name="feature1", eq=1.5)])
+    suite = TestSuite(tests=[TestFeatureValueMedian(column_name="feature1", eq=1.5)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
 
@@ -164,13 +164,13 @@ def test_data_quality_test_std() -> None:
             "prediction": [0, 0, 1, 1],
         }
     )
-    suite = TestSuite(tests=[TestFeatureValueStd(feature_name="no_existing_feature", eq=1.5)])
+    suite = TestSuite(tests=[TestFeatureValueStd(column_name="no_existing_feature", eq=1.5)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
-    suite = TestSuite(tests=[TestFeatureValueStd(feature_name="feature1", lt=2)])
+    suite = TestSuite(tests=[TestFeatureValueStd(column_name="feature1", lt=2)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
-    suite = TestSuite(tests=[TestFeatureValueStd(feature_name="feature1", gt=2, lt=3)])
+    suite = TestSuite(tests=[TestFeatureValueStd(column_name="feature1", gt=2, lt=3)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
 
@@ -183,13 +183,13 @@ def test_data_quality_test_unique_number() -> None:
             "prediction": [0, 0, 1, 1],
         }
     )
-    suite = TestSuite(tests=[TestNumberOfUniqueValues(feature_name="no_existing_feature", eq=4)])
+    suite = TestSuite(tests=[TestNumberOfUniqueValues(column_name="no_existing_feature", eq=4)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
-    suite = TestSuite(tests=[TestNumberOfUniqueValues(feature_name="feature1", lt=2)])
+    suite = TestSuite(tests=[TestNumberOfUniqueValues(column_name="feature1", lt=2)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
-    suite = TestSuite(tests=[TestNumberOfUniqueValues(feature_name="feature1", eq=4)])
+    suite = TestSuite(tests=[TestNumberOfUniqueValues(column_name="feature1", eq=4)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
 
@@ -202,13 +202,13 @@ def test_data_quality_test_unique_share() -> None:
             "prediction": [0, 0, 1, 1],
         }
     )
-    suite = TestSuite(tests=[TestUniqueValuesShare(feature_name="no_existing_feature", eq=1.5)])
+    suite = TestSuite(tests=[TestUniqueValuesShare(column_name="no_existing_feature", eq=1.5)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
-    suite = TestSuite(tests=[TestUniqueValuesShare(feature_name="feature1", lt=0.5)])
+    suite = TestSuite(tests=[TestUniqueValuesShare(column_name="feature1", lt=0.5)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
-    suite = TestSuite(tests=[TestUniqueValuesShare(feature_name="feature1", eq=1)])
+    suite = TestSuite(tests=[TestUniqueValuesShare(column_name="feature1", eq=1)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
 
@@ -221,13 +221,13 @@ def test_data_quality_test_most_common_value_share() -> None:
             "prediction": [0, 0, 1, 1],
         }
     )
-    suite = TestSuite(tests=[TestMostCommonValueShare(feature_name="no_existing_feature", eq=0.5)])
+    suite = TestSuite(tests=[TestMostCommonValueShare(column_name="no_existing_feature", eq=0.5)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
-    suite = TestSuite(tests=[TestMostCommonValueShare(feature_name="feature1", lt=0.5)])
+    suite = TestSuite(tests=[TestMostCommonValueShare(column_name="feature1", lt=0.5)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
-    suite = TestSuite(tests=[TestMostCommonValueShare(feature_name="feature1", eq=0.5)])
+    suite = TestSuite(tests=[TestMostCommonValueShare(column_name="feature1", eq=0.5)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
 
@@ -247,15 +247,15 @@ def test_data_quality_test_value_in_n_sigmas() -> None:
             "prediction": [0, 0, 1, 1],
         }
     )
-    suite = TestSuite(tests=[TestMeanInNSigmas(column="feature1")])
+    suite = TestSuite(tests=[TestMeanInNSigmas(column_name="feature1")])
     suite.run(current_data=test_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
     assert not suite
 
-    suite = TestSuite(tests=[TestMeanInNSigmas(column="not_exist_feature", n_sigmas=3)])
+    suite = TestSuite(tests=[TestMeanInNSigmas(column_name="not_exist_feature", n_sigmas=3)])
     suite.run(current_data=test_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
     assert not suite
 
-    suite = TestSuite(tests=[TestMeanInNSigmas(column="feature1", n_sigmas=4)])
+    suite = TestSuite(tests=[TestMeanInNSigmas(column_name="feature1", n_sigmas=4)])
     suite.run(current_data=test_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
     assert suite
 
@@ -268,11 +268,11 @@ def test_data_quality_test_value_in_range() -> None:
             "prediction": [0, 0, 1, 1],
         }
     )
-    suite = TestSuite(tests=[TestValueRange(column="feature1", left=0, right=10)])
+    suite = TestSuite(tests=[TestValueRange(column_name="feature1", left=0, right=10)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
 
-    suite = TestSuite(tests=[TestValueRange(column="feature1", left=0, right=100)])
+    suite = TestSuite(tests=[TestValueRange(column_name="feature1", left=0, right=100)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
 
@@ -283,11 +283,11 @@ def test_data_quality_test_value_in_range() -> None:
             "prediction": [0, 0, 1, 1],
         }
     )
-    suite = TestSuite(tests=[TestValueRange(column="feature1")])
+    suite = TestSuite(tests=[TestValueRange(column_name="feature1")])
     suite.run(current_data=test_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
     assert not suite
 
-    suite = TestSuite(tests=[TestValueRange(column="feature1", right=100)])
+    suite = TestSuite(tests=[TestValueRange(column_name="feature1", right=100)])
     suite.run(current_data=test_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
     assert suite
 
@@ -299,11 +299,11 @@ def test_data_quality_test_number_of_values_not_in_range() -> None:
             "target": [0, 0, 5, 1],
         }
     )
-    suite = TestSuite(tests=[TestNumberOfOutRangeValues(column="feature1", left=0, right=10, lt=1)])
+    suite = TestSuite(tests=[TestNumberOfOutRangeValues(column_name="feature1", left=0, right=10, lt=1)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
 
-    suite = TestSuite(tests=[TestNumberOfOutRangeValues(column="feature1", left=0, right=10, lte=1)])
+    suite = TestSuite(tests=[TestNumberOfOutRangeValues(column_name="feature1", left=0, right=10, lte=1)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
 
@@ -314,11 +314,11 @@ def test_data_quality_test_number_of_values_not_in_range() -> None:
             "prediction": [0, 0, 1, 1],
         }
     )
-    suite = TestSuite(tests=[TestNumberOfOutRangeValues(column="feature1", lt=1)])
+    suite = TestSuite(tests=[TestNumberOfOutRangeValues(column_name="feature1", lt=1)])
     suite.run(current_data=test_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
     assert not suite
 
-    suite = TestSuite(tests=[TestNumberOfOutRangeValues(column="feature1", lte=1)])
+    suite = TestSuite(tests=[TestNumberOfOutRangeValues(column_name="feature1", lte=1)])
     suite.run(current_data=test_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
     assert suite
 
@@ -330,11 +330,11 @@ def test_data_quality_test_share_of_values_not_in_range() -> None:
             "target": [0, 0, 5, 1],
         }
     )
-    suite = TestSuite(tests=[TestShareOfOutRangeValues(column="feature1", left=0, right=10, lt=0.2)])
+    suite = TestSuite(tests=[TestShareOfOutRangeValues(column_name="feature1", left=0, right=10, lt=0.2)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
 
-    suite = TestSuite(tests=[TestShareOfOutRangeValues(column="feature1", left=0, right=10, lt=0.5)])
+    suite = TestSuite(tests=[TestShareOfOutRangeValues(column_name="feature1", left=0, right=10, lt=0.5)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
 
@@ -345,11 +345,11 @@ def test_data_quality_test_share_of_values_not_in_range() -> None:
             "prediction": [0, 0, 1, 1],
         }
     )
-    suite = TestSuite(tests=[TestShareOfOutRangeValues(column="feature1", lt=0.2)])
+    suite = TestSuite(tests=[TestShareOfOutRangeValues(column_name="feature1", lt=0.2)])
     suite.run(current_data=test_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
     assert not suite
 
-    suite = TestSuite(tests=[TestShareOfOutRangeValues(column="feature1", lte=0.5)])
+    suite = TestSuite(tests=[TestShareOfOutRangeValues(column_name="feature1", lte=0.5)])
     suite.run(current_data=test_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
     assert suite
 
@@ -369,11 +369,11 @@ def test_data_quality_test_value_in_list() -> None:
             "prediction": [0, 0, 1, 1],
         }
     )
-    suite = TestSuite(tests=[TestValueList(column="feature1")])
+    suite = TestSuite(tests=[TestValueList(column_name="feature1")])
     suite.run(current_data=test_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
     assert not suite
 
-    suite = TestSuite(tests=[TestValueList(column="target")])
+    suite = TestSuite(tests=[TestValueList(column_name="target")])
     suite.run(current_data=test_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
     assert suite
 
@@ -393,11 +393,11 @@ def test_data_quality_test_number_of_values_not_in_list() -> None:
             "prediction": [0, 0, 1, 1],
         }
     )
-    suite = TestSuite(tests=[TestNumberOfOutListValues(column="feature1", gt=10)])
+    suite = TestSuite(tests=[TestNumberOfOutListValues(column_name="feature1", gt=10)])
     suite.run(current_data=test_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
     assert not suite
 
-    suite = TestSuite(tests=[TestNumberOfOutListValues(column="feature1", lt=2)])
+    suite = TestSuite(tests=[TestNumberOfOutListValues(column_name="feature1", lt=2)])
     suite.run(current_data=test_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
     assert suite
 
@@ -411,11 +411,11 @@ def test_data_quality_test_share_of_values_not_in_list() -> None:
         }
     )
 
-    suite = TestSuite(tests=[TestShareOfOutListValues(column="feature1", values=[0], lt=0.5)])
+    suite = TestSuite(tests=[TestShareOfOutListValues(column_name="feature1", values=[0], lt=0.5)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
 
-    suite = TestSuite(tests=[TestShareOfOutListValues(column="feature1", values=[0, 1], lt=0.5)])
+    suite = TestSuite(tests=[TestShareOfOutListValues(column_name="feature1", values=[0, 1], lt=0.5)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
 
@@ -429,10 +429,10 @@ def test_data_quality_test_value_quantile() -> None:
         }
     )
 
-    suite = TestSuite(tests=[TestValueQuantile(column="feature1", quantile=0.7, lt=1)])
+    suite = TestSuite(tests=[TestValueQuantile(column_name="feature1", quantile=0.7, lt=1)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
 
-    suite = TestSuite(tests=[TestValueQuantile(column="feature1", quantile=0.2, lt=0.7)])
+    suite = TestSuite(tests=[TestValueQuantile(column_name="feature1", quantile=0.2, lt=0.7)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite

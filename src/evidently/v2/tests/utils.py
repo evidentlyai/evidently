@@ -10,6 +10,7 @@ from plotly.subplots import make_subplots
 from evidently.model.widget import BaseWidgetInfo
 from evidently.v2.renderers.base_renderer import DetailsInfo
 
+
 RED = "#ed0400"
 GREY = "#4d4d4d"
 
@@ -36,11 +37,13 @@ def plot_check(fig, condition):
     min_y = np.min([np.min(x['y']) for x in fig.data])
     if len(lines) > 0:
         for line, name in lines:
-            fig.add_trace(go.Scatter(x=(line, line),
-                                     y=(min_y, max_y),
-                                     mode='lines',
-                                     line=dict(color=GREY, width=3, dash='dash'),
-                                     name=name))
+            fig.add_trace(go.Scatter(
+                x=(line, line),
+                y=(min_y, max_y),
+                mode='lines',
+                line=dict(color=GREY, width=3, dash='dash'),
+                name=name)
+            )
 
     if left_line and right_line:
         fig.add_vrect(x0=left_line, x1=right_line, fillcolor='green', opacity=0.25, line_width=0)
@@ -73,16 +76,17 @@ def plot_metric_value(fig, metric_val: float, metric_name: str):
     fig.update_layout(showlegend=True)
     return fig
 
+
 def plot_distr(hist_curr, hist_ref=None, orientation='v'):
-    fig= go.Figure()
+    fig = go.Figure()
 
     fig.add_trace(
         go.Bar(name='current', x=hist_curr['x'], y=hist_curr['count'], marker_color=RED, orientation=orientation)
-        )
+    )
     if hist_ref is not None:
         fig.add_trace(
             go.Bar(name='reference', x=hist_ref['x'], y=hist_ref['count'], marker_color=GREY, orientation=orientation)
-            )
+        )
 
     return fig
 
@@ -115,11 +119,14 @@ def regression_perf_plot(val_for_plot: Dict[str, pd.Series], hist_for_plot: Dict
         y = [val for val in df['count']]
         trace = go.Bar(name='reference', x=x, y=y, marker_color=GREY)
         fig.append_trace(trace, 2, 1)
+
     fig.update_yaxes(title_text=name, row=1, col=1)
     fig.update_yaxes(title_text='count', row=2, col=1)
     title = f'current {name}: {np.round(curr_mertic, 3)} '
+
     if is_ref_data:
         title += f'<br>reference {name}: {np.round(ref_metric, 3)}'
+
     fig.update_layout(title=title)
     return fig
 
@@ -177,57 +184,58 @@ def plot_value_counts_tables(feature_name, values, curr_df, ref_df, id_prfx):
         new_values_data = curr_df[curr_df.x.isin(new_values)].sort_values('count', ascending=False)
         missed_values_data = ref_df[ref_df.x.isin(missed_values)].sort_values('count', ascending=False)
         additional_plots.append(
-                DetailsInfo(
-                    id=f"{id_prfx}_new_{feature_name}",
-                    title="New values (top 10)",
-                    info=BaseWidgetInfo(
-                        title="",
-                        type="table",
-                        params={
-                            "header": ['value', 'count'],
-                            "data": new_values_data[:10].values
-                        },
-                        size=2,
-                    )
+            DetailsInfo(
+                id=f"{id_prfx}_new_{feature_name}",
+                title="New values (top 10)",
+                info=BaseWidgetInfo(
+                    title="",
+                    type="table",
+                    params={
+                        "header": ['value', 'count'],
+                        "data": new_values_data[:10].values
+                    },
+                    size=2,
                 )
             )
+        )
         additional_plots.append(
-                DetailsInfo(
-                    id=f"{id_prfx}_missed_{feature_name}",
-                    title="Missed values (top 10)",
-                    info=BaseWidgetInfo(
-                        title="",
-                        type="table",
-                        params={
-                            "header": ['value', 'count'],
-                            "data": missed_values_data[:10].values
-                        },
-                        size=2,
-                    )
+            DetailsInfo(
+                id=f"{id_prfx}_missed_{feature_name}",
+                title="Missed values (top 10)",
+                info=BaseWidgetInfo(
+                    title="",
+                    type="table",
+                    params={
+                        "header": ['value', 'count'],
+                        "data": missed_values_data[:10].values
+                    },
+                    size=2,
                 )
             )
-    
+        )
+
     return additional_plots
+
 
 def plot_value_counts_tables_ref_curr(feature_name, curr_df, ref_df, id_prfx):
     additional_plots = []
     curr_df = curr_df[curr_df['count'] != 0]
 
     additional_plots.append(
-                DetailsInfo(
-                    id=f"{id_prfx}_curr_{feature_name}",
-                    title="Current value counts (top 10)",
-                    info=BaseWidgetInfo(
-                        title="C",
-                        type="table",
-                        params={
-                            "header": ['value', 'count'],
-                            "data": curr_df[:10].values
-                        },
-                        size=2,
-                    )
-                )
+        DetailsInfo(
+            id=f"{id_prfx}_curr_{feature_name}",
+            title="Current value counts (top 10)",
+            info=BaseWidgetInfo(
+                title="C",
+                type="table",
+                params={
+                    "header": ['value', 'count'],
+                    "data": curr_df[:10].values
+                },
+                size=2,
             )
+        )
+    )
     if ref_df is not None:
         ref_df = ref_df[ref_df['count'] != 0]
         additional_plots.append(
@@ -246,5 +254,3 @@ def plot_value_counts_tables_ref_curr(feature_name, curr_df, ref_df, id_prfx):
             )
         )
     return additional_plots
-
-    

@@ -12,12 +12,20 @@ from evidently.v2.metrics import DataQualityStabilityMetrics
 from evidently.v2.metrics import DataQualityValueListMetrics
 from evidently.v2.metrics import DataQualityValueRangeMetrics
 from evidently.v2.metrics import DataQualityValueQuantileMetrics
-from evidently.v2.renderers.base_renderer import default_renderer, TestRenderer, TestHtmlInfo, DetailsInfo
+from evidently.v2.renderers.base_renderer import default_renderer
+from evidently.v2.renderers.base_renderer import TestRenderer
+from evidently.v2.renderers.base_renderer import TestHtmlInfo
+from evidently.v2.renderers.base_renderer import DetailsInfo
+from evidently.v2.metrics import DataQualityCorrelationMetrics
 from evidently.v2.tests.base_test import BaseCheckValueTest
 from evidently.v2.tests.base_test import TestValueCondition
 from evidently.v2.tests.base_test import Test
 from evidently.v2.tests.base_test import TestResult
-from evidently.v2.tests.utils import plot_check, plot_metric_value, plot_distr, plot_value_counts_tables, plot_value_counts_tables_ref_curr
+from evidently.v2.tests.utils import plot_check
+from evidently.v2.tests.utils import plot_metric_value
+from evidently.v2.tests.utils import plot_distr
+from evidently.v2.tests.utils import plot_value_counts_tables
+from evidently.v2.tests.utils import plot_value_counts_tables_ref_curr
 
 
 class BaseDataQualityMetricsValueTest(BaseCheckValueTest, ABC):
@@ -108,7 +116,34 @@ class TestConflictPrediction(Test):
         return TestResult(name=self.name, description=description, status=test_result)
 
 
-class TestTargetPredictionCorrelation(BaseDataQualityMetricsValueTest):
+class BaseDataQualityCorrelationsMetricsValueTest(BaseCheckValueTest, ABC):
+    metric: DataQualityCorrelationMetrics
+    method: str
+
+    def __init__(
+        self,
+        method: str = "pearson",
+        eq: Optional[Number] = None,
+        gt: Optional[Number] = None,
+        gte: Optional[Number] = None,
+        is_in: Optional[List[Union[Number, str, bool]]] = None,
+        lt: Optional[Number] = None,
+        lte: Optional[Number] = None,
+        not_eq: Optional[Number] = None,
+        not_in: Optional[List[Union[Number, str, bool]]] = None,
+        metric: Optional[DataQualityCorrelationMetrics] = None
+    ):
+        self.method = method
+        if metric is not None:
+            self.metric = metric
+
+        else:
+            self.metric = DataQualityCorrelationMetrics(method=method)
+
+        super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
+
+
+class TestTargetPredictionCorrelation(BaseDataQualityCorrelationsMetricsValueTest):
     name = "Test correlation between target and prediction"
 
     def calculate_value_for_test(self) -> Number:
@@ -116,6 +151,26 @@ class TestTargetPredictionCorrelation(BaseDataQualityMetricsValueTest):
 
     def get_description(self, value: Number) -> str:
         return f"Correlation between target and prediction is {value}"
+
+
+class HighlyCorrelatedFeatures(BaseDataQualityCorrelationsMetricsValueTest):
+    name = "Test max correlation between numerical features and compares it against the threshold"
+
+    def calculate_value_for_test(self) -> Number:
+        return self.metric.get_result().abs_max_num_features_correlation
+
+    def get_description(self, value: Number) -> str:
+        return f"Max numeric features correlation is {value}"
+
+
+class CorrelationChanges(BaseDataQualityCorrelationsMetricsValueTest):
+    name = "Test max correlation between numerical features and target, prediction for regression tasks"
+
+    def calculate_value_for_test(self) -> Number:
+        return self.metric.get_result().abs_max_num_features_correlation
+
+    def get_description(self, value: Number) -> str:
+        return f"Max numeric features correlation is {value}"
 
 
 class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest, ABC):
@@ -193,8 +248,9 @@ class TestFeatureValueMinRenderer(TestRenderer):
             ref_distr = obj.metric.get_result().distr_for_plots[column_name]['reference']
         fig = plot_distr(curr_distr, ref_distr)
         fig = plot_check(fig, obj.condition)
-        fig = plot_metric_value(fig, obj.metric.get_result().features_stats[column_name].min, 
-                                f'current {column_name} min value')
+        fig = plot_metric_value(
+            fig, obj.metric.get_result().features_stats[column_name].min, f'current {column_name} min value'
+        )
 
         fig_json = fig.to_plotly_json()
         info.details.append(
@@ -234,8 +290,9 @@ class TestFeatureValueMaxRenderer(TestRenderer):
             ref_distr = obj.metric.get_result().distr_for_plots[column_name]['reference']
         fig = plot_distr(curr_distr, ref_distr)
         fig = plot_check(fig, obj.condition)
-        fig = plot_metric_value(fig, obj.metric.get_result().features_stats[column_name].max, 
-                                f'current {column_name} max value')
+        fig = plot_metric_value(
+            fig, obj.metric.get_result().features_stats[column_name].max, f'current {column_name} max value'
+        )
 
         fig_json = fig.to_plotly_json()
         info.details.append(
@@ -275,8 +332,9 @@ class TestFeatureValueMeanRenderer(TestRenderer):
             ref_distr = obj.metric.get_result().distr_for_plots[column_name]['reference']
         fig = plot_distr(curr_distr, ref_distr)
         fig = plot_check(fig, obj.condition)
-        fig = plot_metric_value(fig, obj.metric.get_result().features_stats[column_name].mean, 
-                                f'current {column_name} mean value')
+        fig = plot_metric_value(
+            fig, obj.metric.get_result().features_stats[column_name].mean, f'current {column_name} mean value'
+        )
 
         fig_json = fig.to_plotly_json()
         info.details.append(
@@ -312,12 +370,17 @@ class TestFeatureValueMedianRenderer(TestRenderer):
         info = super().render_html(obj)
         curr_distr = obj.metric.get_result().distr_for_plots[column_name]['current']
         ref_distr = None
+
         if 'reference' in obj.metric.get_result().distr_for_plots[column_name].keys():
             ref_distr = obj.metric.get_result().distr_for_plots[column_name]['reference']
+
         fig = plot_distr(curr_distr, ref_distr)
         fig = plot_check(fig, obj.condition)
-        fig = plot_metric_value(fig, obj.metric.get_result().features_stats[column_name].percentile_50, 
-                                f'current {column_name} median value')
+        fig = plot_metric_value(
+            fig,
+            obj.metric.get_result().features_stats[column_name].percentile_50,
+            f'current {column_name} median value'
+        )
 
         fig_json = fig.to_plotly_json()
         info.details.append(
@@ -396,6 +459,7 @@ class TestNumberOfUniqueValuesRenderer(TestRenderer):
         additional_plots = plot_value_counts_tables_ref_curr(column_name, curr_df, ref_df, 'num_of_unique_vals')
         info.details = additional_plots
         return info
+
 
 class TestUniqueValuesShare(BaseFeatureDataQualityMetricsTest):
     name = "Test a feature for share of unique values"
@@ -515,12 +579,17 @@ class TestMeanInNSigmasRenderer(TestRenderer):
         info = super().render_html(obj)
         curr_distr = obj.metric.get_result().distr_for_plots[column_name]['current']
         ref_distr = None
+
         if 'reference' in obj.metric.get_result().distr_for_plots[column_name].keys():
             ref_distr = obj.metric.get_result().distr_for_plots[column_name]['reference']
+
         fig = plot_distr(curr_distr, ref_distr)
         fig = plot_check(fig, ref_condition)
-        fig = plot_metric_value(fig, obj.metric.get_result().features_stats[column_name].mean, 
-                                f'current {column_name} mean value')
+        fig = plot_metric_value(
+            fig,
+            obj.metric.get_result().features_stats[column_name].mean,
+            f'current {column_name} mean value'
+        )
 
         fig_json = fig.to_plotly_json()
         info.details.append(
@@ -836,12 +905,12 @@ class TestShareOfOutListValues(BaseDataQualityValueListMetricsTest):
 class TestValueQuantile(BaseCheckValueTest):
     name = "Test calculates quantile value of a given column and compares it against the threshold"
     metric: DataQualityValueQuantileMetrics
-    column: str
+    column_name: str
     quantile: Optional[float]
 
     def __init__(
         self,
-        column: str,
+        column_name: str,
         quantile: Optional[float],
         eq: Optional[Number] = None,
         gt: Optional[Number] = None,
@@ -853,17 +922,17 @@ class TestValueQuantile(BaseCheckValueTest):
         not_in: Optional[List[Union[Number, str, bool]]] = None,
         metric: Optional[DataQualityValueQuantileMetrics] = None
     ):
-        self.column = column
+        self.column_name = column_name
         self.quantile = quantile
 
         if metric is not None:
-            if column is not None or quantile is not None:
+            if column_name is not None or quantile is not None:
                 raise ValueError("Test parameters and given  metric conflict")
 
             self.metric = metric
 
         else:
-            self.metric = DataQualityValueQuantileMetrics(column=column, quantile=quantile)
+            self.metric = DataQualityValueQuantileMetrics(column=column_name, quantile=quantile)
 
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
 
@@ -871,7 +940,7 @@ class TestValueQuantile(BaseCheckValueTest):
         return self.metric.get_result().value
 
     def get_description(self, value: Number) -> str:
-        return f"Quantile {self.quantile} for column '{self.column}' is {value}"
+        return f"Quantile {self.quantile} for column '{self.column_name}' is {value}"
 
 
 @default_renderer(test_type=TestShareOfOutListValues)

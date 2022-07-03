@@ -44,6 +44,6 @@ def test_data_drift_test_feature_value_drift() -> None:
             "prediction": [0, 0, 0, 1]
         }
     )
-    suite = TestSuite(tests=[TestFeatureValueDrift(feature_name="feature_1", lt=1)])
+    suite = TestSuite(tests=[TestFeatureValueDrift(column_name="feature_1", lt=1)])
     suite.run(current_data=test_current_dataset, reference_data=test_reference_dataset, column_mapping=ColumnMapping())
     assert suite

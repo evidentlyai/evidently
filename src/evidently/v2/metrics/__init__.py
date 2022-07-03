@@ -6,5 +6,6 @@ from .data_quality_metrics import DataQualityStabilityMetrics
 from .data_quality_metrics import DataQualityValueListMetrics
 from .data_quality_metrics import DataQualityValueRangeMetrics
 from .data_quality_metrics import DataQualityValueQuantileMetrics
+from .data_quality_metrics import DataQualityCorrelationMetrics
 from .classification_performance_metrics import ClassificationPerformanceMetrics
 from .regression_performance_metrics import RegressionPerformanceMetrics

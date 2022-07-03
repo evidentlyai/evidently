@@ -2,22 +2,22 @@ from typing import Dict
 from typing import Optional
 
 import pandas as pd
+import numpy as np
 from dataclasses import dataclass
 
 from evidently.analyzers.data_quality_analyzer import DataQualityStats
 from evidently.analyzers.data_quality_analyzer import DataQualityAnalyzer
-from evidently.analyzers.utils import process_columns
 from evidently.options.quality_metrics import QualityMetricsOptions
 from evidently.options import OptionsProvider
 from evidently.v2.metrics.base_metric import InputData
 from evidently.v2.metrics.base_metric import Metric
-from evidently.v2.metrics.utils import make_hist_for_num_plot,  make_hist_for_cat_plot
+from evidently.v2.metrics.utils import make_hist_for_num_plot
+from evidently.v2.metrics.utils import make_hist_for_cat_plot
 
 
 @dataclass
 class DataQualityMetricsResults:
     features_stats: DataQualityStats
-    target_prediction_correlation: Optional[float]
     distr_for_plots: Dict[str, Dict[str, pd.DataFrame]]
     counts_of_values: Dict[str, Dict[str, pd.DataFrame]]
     correlations: Dict[str, pd.DataFrame] = None
@@ -35,16 +35,6 @@ class DataQualityMetrics(Metric[DataQualityMetricsResults]):
     def calculate(self, data: InputData, metrics: dict) -> DataQualityMetricsResults:
         if data.current_data is None:
             raise ValueError("Current dataset should be present")
-
-        if data.column_mapping.target and data.column_mapping.prediction and \
-                data.column_mapping.target in data.current_data and \
-                data.column_mapping.prediction in data.current_data:
-            target_prediction_correlation = data.current_data[data.column_mapping.target].corr(
-                data.current_data[data.column_mapping.prediction]
-            )
-
-        else:
-            target_prediction_correlation = None
 
         if data.reference_data is None:
             analyzer_results = self.analyzer.calculate(
@@ -77,19 +67,19 @@ class DataQualityMetrics(Metric[DataQualityMetricsResults]):
         for feature in analyzer_results.columns.num_feature_names:
             counts_of_value_feature = {}
             curr_feature = data.current_data[feature]
-            
             current_counts = data.current_data[feature].value_counts(dropna=False).reset_index()
             current_counts.columns = ['x', 'count']
             counts_of_value_feature['current'] = current_counts
 
             ref_feature = None
+
             if reference_data is not None:
                 ref_feature = reference_data[feature]
 
-            reference_counts = ref_feature.value_counts(dropna=False).reset_index()
-            reference_counts.columns = ['x', 'count']
-            counts_of_value_feature['reference'] = reference_counts
-            
+                reference_counts = ref_feature.value_counts(dropna=False).reset_index()
+                reference_counts.columns = ['x', 'count']
+                counts_of_value_feature['reference'] = reference_counts
+
             counts_of_values[feature] = counts_of_value_feature
             distr_for_plots[feature] = make_hist_for_num_plot(curr_feature, ref_feature)
 
@@ -102,7 +92,6 @@ class DataQualityMetrics(Metric[DataQualityMetricsResults]):
             distr_for_plots[feature] = counts_of_values[feature]
 
         return DataQualityMetricsResults(
-            target_prediction_correlation=target_prediction_correlation,
             features_stats=features_stats,
             distr_for_plots=distr_for_plots,
             counts_of_values=counts_of_values,
@@ -222,7 +211,6 @@ class DataQualityValueRangeMetrics(Metric[DataQualityValueRangeMetricsResults]):
         number_not_in_range = rows_count - number_in_range
 
         # visualisation
-        
         curr_feature = data.current_data[self.column]
 
         ref_feature = None
@@ -261,4 +249,116 @@ class DataQualityValueQuantileMetrics(Metric[DataQualityValueQuantileMetricsResu
         return DataQualityValueQuantileMetricsResults(
             value=data.current_data[self.column].quantile(self.quantile),
             quantile=self.quantile,
+        )
+
+
+@dataclass
+class DataQualityCorrelationMetricsResults:
+    target_prediction_correlation: Optional[float]
+    abs_max_target_features_correlation: Optional[float]
+    abs_max_prediction_features_correlation: Optional[float]
+    abs_max_correlation: Optional[float]
+    abs_max_num_features_correlation: Optional[float]
+    reference_target_prediction_correlation: Optional[float]
+    reference_abs_max_target_features_correlation: Optional[float]
+    reference_abs_max_prediction_features_correlation: Optional[float]
+    reference_abs_max_correlation: Optional[float]
+    reference_abs_max_num_features_correlation: Optional[float]
+
+
+class DataQualityCorrelationMetrics(Metric[DataQualityCorrelationMetricsResults]):
+    """Calculate different correlations with target, predictions and features"""
+    method: str
+
+    def __init__(self, method: str = "pearson") -> None:
+        self.method = method
+
+    def calculate(self, data: InputData, metrics: dict) -> DataQualityCorrelationMetricsResults:
+        target_name = data.column_mapping.target
+        prediction_name = data.column_mapping.prediction
+        num_features = data.column_mapping.numerical_features
+
+        if not target_name:
+            raise ValueError("Target should be present")
+
+        if not data.column_mapping.prediction:
+            raise ValueError("Prediction should be present")
+
+        if target_name not in data.current_data:
+            raise ValueError("Target column should be present in current data")
+
+        if data.column_mapping.prediction not in data.current_data:
+            raise ValueError("Prediction column should be present in current data")
+
+        reference_correlations = None
+        current_correlations = data.current_data.corr(method=self.method)
+
+        if data.reference_data:
+            reference_correlations = data.reference_data.corr(method=self.method)
+
+        if num_features is None:
+            num_features = [i for i in current_correlations if i not in [target_name, prediction_name]]
+
+        # we will get 1 for all column/column correlation in the diagonal, fill it with 0
+        np.fill_diagonal(current_correlations.values, 0)
+        target_prediction_correlation = current_correlations.loc[prediction_name, target_name]
+
+        if reference_correlations:
+            reference_target_prediction_correlation = reference_correlations.loc[prediction_name, target_name]
+
+        else:
+            reference_target_prediction_correlation = None
+
+        abs_max_target_features_correlation = current_correlations.loc[target_name, num_features].abs().max()
+
+        if reference_correlations:
+            reference_abs_max_target_features_correlation = \
+                current_correlations.loc[target_name, num_features].abs().max()
+
+        else:
+            reference_abs_max_target_features_correlation = None
+
+        abs_max_prediction_features_correlation = current_correlations.loc[prediction_name, num_features].abs().max()
+
+        if reference_correlations:
+            reference_abs_max_prediction_features_correlation = \
+                current_correlations.loc[prediction_name, num_features].abs().max()
+
+        else:
+            reference_abs_max_prediction_features_correlation = None
+
+        if data.column_mapping.is_classification_task():
+            corr_features = num_features
+
+        else:
+            corr_features = num_features + [target_name, prediction_name]
+
+        abs_max_correlation = current_correlations.loc[corr_features, corr_features].abs().max().max()
+
+        if reference_correlations:
+            reference_abs_max_correlation = reference_correlations.loc[corr_features, corr_features].abs().max().max()
+
+        else:
+            reference_abs_max_correlation = None
+
+        abs_max_num_features_correlation = current_correlations.loc[num_features, num_features].abs().max().max()
+
+        if reference_correlations:
+            reference_abs_max_num_features_correlation = \
+                reference_correlations.loc[num_features, num_features].abs().max().max()
+
+        else:
+            reference_abs_max_num_features_correlation = None
+
+        return DataQualityCorrelationMetricsResults(
+            target_prediction_correlation=target_prediction_correlation,
+            abs_max_target_features_correlation=abs_max_target_features_correlation,
+            abs_max_prediction_features_correlation=abs_max_prediction_features_correlation,
+            abs_max_correlation=abs_max_correlation,
+            abs_max_num_features_correlation=abs_max_num_features_correlation,
+            reference_target_prediction_correlation=reference_target_prediction_correlation,
+            reference_abs_max_target_features_correlation=reference_abs_max_target_features_correlation,
+            reference_abs_max_prediction_features_correlation=reference_abs_max_prediction_features_correlation,
+            reference_abs_max_correlation=reference_abs_max_correlation,
+            reference_abs_max_num_features_correlation=reference_abs_max_num_features_correlation,
         )

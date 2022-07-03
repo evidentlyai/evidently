@@ -56,7 +56,6 @@ def classification_performance_metrics(
         target, prediction_labels, output_dict=True
     )
 
-
     # calculate confusion matrix
     conf_matrix = sklearn.metrics.confusion_matrix(target, prediction_labels)
     confusion_by_classes = calculate_confusion_by_classes(conf_matrix, labels)

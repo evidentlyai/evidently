@@ -2,11 +2,16 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 
+
 def make_hist_df(hist: Tuple[np.array, np.array]) -> pd.DataFrame:
-    hist_df = pd.DataFrame(np.array([hist[1][:-1],
-                            hist[0],
-                            [f"{x[0]}-{x[1]}" for x in zip(hist[1][:-1], hist[1][1:])]]).T,
-                            columns=["x", "count", "range"])
+    hist_df = pd.DataFrame(
+        np.array([
+            hist[1][:-1],
+            hist[0],
+            [f"{x[0]}-{x[1]}" for x in zip(hist[1][:-1], hist[1][1:])]
+        ]).T,
+        columns=["x", "count", "range"]
+    )
 
     hist_df['x'] = hist_df['x'].astype(float)
     hist_df['count'] = hist_df['count'].astype(int)
