@@ -3,8 +3,8 @@ from typing import Optional
 
 import numpy as np
 
-from evidently.analyzers.prob_classification_performance_analyzer import ProbClassificationPerformanceMetrics
-from evidently.v2.metrics import ClassificationPerformanceMetrics
+from evidently.v2.metrics.classification_performance_metrics import ClassificationPerformanceMetrics
+from evidently.v2.metrics.classification_performance_metrics import DatasetClassificationPerformanceMetrics
 from evidently.v2.tests.base_test import Test, TestResult
 
 
@@ -29,7 +29,7 @@ class SimpleClassificationTest(Test):
         return self._compare(self.get_value(metrics), self.get_value(dummy_metrics))
 
     @abc.abstractmethod
-    def get_value(self, result: ProbClassificationPerformanceMetrics):
+    def get_value(self, result: DatasetClassificationPerformanceMetrics):
         raise NotImplementedError()
 
     @abc.abstractmethod
@@ -70,7 +70,7 @@ class SimpleClassificationTest(Test):
 class TestAccuracyScore(SimpleClassificationTest):
     name = "Test Accuracy Score"
 
-    def get_value(self, result: ProbClassificationPerformanceMetrics):
+    def get_value(self, result: DatasetClassificationPerformanceMetrics):
         return result.accuracy
 
     def _success_description(self, actual_value: float, threshold: float):
@@ -89,7 +89,7 @@ class TestAccuracyScore(SimpleClassificationTest):
 class TestPrecisionScore(SimpleClassificationTest):
     name = "Test Precision Score"
 
-    def get_value(self, result: ProbClassificationPerformanceMetrics):
+    def get_value(self, result: DatasetClassificationPerformanceMetrics):
         return result.precision
 
     def _success_description(self, actual_value: float, threshold: float):
@@ -108,7 +108,7 @@ class TestPrecisionScore(SimpleClassificationTest):
 class TestF1Score(SimpleClassificationTest):
     name = "Test F1 Score"
 
-    def get_value(self, result: ProbClassificationPerformanceMetrics):
+    def get_value(self, result: DatasetClassificationPerformanceMetrics):
         return result.f1
 
     def _success_description(self, actual_value: float, threshold: float):
@@ -127,7 +127,7 @@ class TestF1Score(SimpleClassificationTest):
 class TestRecallScore(SimpleClassificationTest):
     name = "Test Recall Score"
 
-    def get_value(self, result: ProbClassificationPerformanceMetrics):
+    def get_value(self, result: DatasetClassificationPerformanceMetrics):
         return result.recall
 
     def _success_description(self, actual_value: float, threshold: float):
@@ -144,9 +144,9 @@ class TestRecallScore(SimpleClassificationTest):
 
 
 class TestRocAuc(SimpleClassificationTest):
-    name = "Test RocAuc"
+    name = "Test ROC AUC Score"
 
-    def get_value(self, result: ProbClassificationPerformanceMetrics):
+    def get_value(self, result: DatasetClassificationPerformanceMetrics):
         return result.roc_auc
 
     def _success_description(self, actual_value: float, threshold: float):
@@ -163,9 +163,9 @@ class TestRocAuc(SimpleClassificationTest):
 
 
 class TestLogLoss(SimpleClassificationTest):
-    name = "Test LogLoss"
+    name = "Test Logarithmic Loss"
 
-    def get_value(self, result: ProbClassificationPerformanceMetrics):
+    def get_value(self, result: DatasetClassificationPerformanceMetrics):
         return result.log_loss
 
     def _success_description(self, actual_value: float, threshold: float):
@@ -179,3 +179,87 @@ class TestLogLoss(SimpleClassificationTest):
 
     def _fail_description_reference(self, actual_value: float, reference_value: float):
         return f"LogLoss differs from LogLoss on reference: {actual_value} <> {reference_value}"
+
+
+class TestTPR(SimpleClassificationTest):
+    name = "Test TPR"
+
+    def get_value(self, result: DatasetClassificationPerformanceMetrics):
+        tp_total = sum([data['tp'] for label, data in result.confusion_by_classes.items()])
+        fn_total = sum([data['fn'] for label, data in result.confusion_by_classes.items()])
+        return tp_total / (tp_total + fn_total)
+
+    def _success_description(self, actual_value: float, threshold: float):
+        return f"TPR is {actual_value} > {threshold}"
+
+    def _fail_description(self, actual_value: float, threshold: float):
+        return f"TPR is lower than threshold: {actual_value} < {threshold}"
+
+    def _success_description_reference(self, actual_value: float, reference_value: float):
+        return f"TPR is close to TPR on reference: {actual_value} ~ {reference_value}"
+
+    def _fail_description_reference(self, actual_value: float, reference_value: float):
+        return f"TPR differs from TPR on reference: {actual_value} <> {reference_value}"
+
+
+class TestTNR(SimpleClassificationTest):
+    name = "Test TNR"
+
+    def get_value(self, result: DatasetClassificationPerformanceMetrics):
+        tn_total = sum([data['tn'] for label, data in result.confusion_by_classes.items()])
+        fp_total = sum([data['fp'] for label, data in result.confusion_by_classes.items()])
+        return tn_total / (tn_total + fp_total)
+
+    def _success_description(self, actual_value: float, threshold: float):
+        return f"TNR is {actual_value} > {threshold}"
+
+    def _fail_description(self, actual_value: float, threshold: float):
+        return f"TNR is lower than threshold: {actual_value} < {threshold}"
+
+    def _success_description_reference(self, actual_value: float, reference_value: float):
+        return f"TNR is close to TNR on reference: {actual_value} ~ {reference_value}"
+
+    def _fail_description_reference(self, actual_value: float, reference_value: float):
+        return f"TNR differs from TNR on reference: {actual_value} <> {reference_value}"
+
+
+class TestFPR(SimpleClassificationTest):
+    name = "Test FPR"
+
+    def get_value(self, result: DatasetClassificationPerformanceMetrics):
+        tn_total = sum([data['tn'] for label, data in result.confusion_by_classes.items()])
+        fp_total = sum([data['fp'] for label, data in result.confusion_by_classes.items()])
+        return fp_total / (tn_total + fp_total)
+
+    def _success_description(self, actual_value: float, threshold: float):
+        return f"FPR is {actual_value} > {threshold}"
+
+    def _fail_description(self, actual_value: float, threshold: float):
+        return f"FPR is lower than threshold: {actual_value} < {threshold}"
+
+    def _success_description_reference(self, actual_value: float, reference_value: float):
+        return f"FPR is close to FPR on reference: {actual_value} ~ {reference_value}"
+
+    def _fail_description_reference(self, actual_value: float, reference_value: float):
+        return f"FPR differs from FPR on reference: {actual_value} <> {reference_value}"
+
+
+class TestFNR(SimpleClassificationTest):
+    name = "Test FNR"
+
+    def get_value(self, result: DatasetClassificationPerformanceMetrics):
+        tp_total = sum([data['tp'] for label, data in result.confusion_by_classes.items()])
+        fn_total = sum([data['fn'] for label, data in result.confusion_by_classes.items()])
+        return fn_total / (tp_total + fn_total)
+
+    def _success_description(self, actual_value: float, threshold: float):
+        return f"FNR is {actual_value} > {threshold}"
+
+    def _fail_description(self, actual_value: float, threshold: float):
+        return f"FNR is lower than threshold: {actual_value} < {threshold}"
+
+    def _success_description_reference(self, actual_value: float, reference_value: float):
+        return f"FNR is close to FNR on reference: {actual_value} ~ {reference_value}"
+
+    def _fail_description_reference(self, actual_value: float, reference_value: float):
+        return f"FNR differs from FNR on reference: {actual_value} <> {reference_value}"

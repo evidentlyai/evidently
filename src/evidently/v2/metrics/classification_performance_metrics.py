@@ -1,5 +1,5 @@
 import dataclasses
-from typing import Optional, Tuple, List
+from typing import Optional, Tuple, List, Dict, Union
 
 import numpy as np
 import pandas as pd
@@ -7,7 +7,6 @@ from numpy import dtype
 import sklearn
 
 from evidently import ColumnMapping
-from evidently.analyzers import prob_classification_performance_analyzer as pcpa
 from evidently.analyzers.classification_performance_analyzer import ConfusionMatrix
 from evidently.analyzers.utils import calculate_confusion_by_classes
 from evidently.v2.metrics.base_metric import InputData
@@ -15,10 +14,28 @@ from evidently.v2.metrics.base_metric import Metric
 
 
 @dataclasses.dataclass
+class DatasetClassificationPerformanceMetrics:
+    """Class for performance metrics values"""
+    accuracy: float
+    precision: float
+    recall: float
+    f1: float
+    roc_auc: float
+    log_loss: float
+    metrics_matrix: dict
+    confusion_matrix: ConfusionMatrix
+    confusion_by_classes: Dict[str, Dict[str, int]]
+    roc_aucs: Optional[list] = None
+    roc_curve: Optional[dict] = None
+    pr_curve: Optional[dict] = None
+    pr_table: Optional[Union[dict, list]] = None
+
+
+@dataclasses.dataclass
 class ClassificationPerformanceMetricsResults:
-    reference_metrics: Optional[pcpa.ProbClassificationPerformanceMetrics] = None
-    current_metrics: Optional[pcpa.ProbClassificationPerformanceMetrics] = None
-    dummy_metrics: Optional[pcpa.ProbClassificationPerformanceMetrics] = None
+    reference_metrics: Optional[DatasetClassificationPerformanceMetrics] = None
+    current_metrics: Optional[DatasetClassificationPerformanceMetrics] = None
+    dummy_metrics: Optional[DatasetClassificationPerformanceMetrics] = None
 
 
 def classification_performance_metrics(
@@ -26,7 +43,7 @@ def classification_performance_metrics(
         prediction: pd.Series,
         prediction_probas: Optional[pd.DataFrame],
         target_names: Optional[List[str]]
-) -> pcpa.ProbClassificationPerformanceMetrics:
+) -> DatasetClassificationPerformanceMetrics:
     # calculate metrics matrix
     labels = target_names if target_names else sorted(set(target) | set(prediction))
     binaraized_target = (target.values.reshape(-1, 1) == labels).astype(int)
@@ -60,7 +77,7 @@ def classification_performance_metrics(
     conf_matrix = sklearn.metrics.confusion_matrix(target, prediction_labels)
     confusion_by_classes = calculate_confusion_by_classes(conf_matrix, labels)
 
-    return pcpa.ProbClassificationPerformanceMetrics(
+    return DatasetClassificationPerformanceMetrics(
         accuracy=accuracy_score,
         precision=avg_precision,
         recall=avg_recall,

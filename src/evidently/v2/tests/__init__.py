@@ -47,3 +47,7 @@ from .classification_performance_tests import TestPrecisionScore
 from .classification_performance_tests import TestRecallScore
 from .classification_performance_tests import TestRocAuc
 from .classification_performance_tests import TestLogLoss
+from .classification_performance_tests import TestTPR
+from .classification_performance_tests import TestTNR
+from .classification_performance_tests import TestFPR
+from .classification_performance_tests import TestFNR
