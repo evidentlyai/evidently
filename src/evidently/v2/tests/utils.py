@@ -2,9 +2,13 @@ from typing import Dict
 
 import numpy as np
 import pandas as pd
+from pandas.api.types import is_numeric_dtype
 
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
+
+from evidently.model.widget import BaseWidgetInfo
+from evidently.v2.renderers.base_renderer import DetailsInfo
 
 RED = "#ed0400"
 GREY = "#4d4d4d"
@@ -69,15 +73,15 @@ def plot_metric_value(fig, metric_val: float, metric_name: str):
     fig.update_layout(showlegend=True)
     return fig
 
-def plot_distr(hist_curr, hist_ref=None):
+def plot_distr(hist_curr, hist_ref=None, orientation='v'):
     fig= go.Figure()
 
     fig.add_trace(
-        go.Bar(name='current', x=hist_curr['x'], y=hist_curr['count'], marker_color=RED)
+        go.Bar(name='current', x=hist_curr['x'], y=hist_curr['count'], marker_color=RED, orientation=orientation)
         )
     if hist_ref is not None:
         fig.add_trace(
-            go.Bar(name='reference', x=hist_ref['x'], y=hist_ref['count'], marker_color=GREY)
+            go.Bar(name='reference', x=hist_ref['x'], y=hist_ref['count'], marker_color=GREY, orientation=orientation)
             )
 
     return fig
@@ -117,4 +121,129 @@ def regression_perf_plot(val_for_plot: Dict[str, pd.Series], hist_for_plot: Dict
         title += f'<br>reference {name}: {np.round(ref_metric, 3)}'
     fig.update_layout(title=title)
     return fig
+
+
+def plot_value_counts_tables(feature_name, values, curr_df, ref_df, id_prfx):
+    additional_plots = []
+    if values is not None:
+        curr_df = curr_df[curr_df['count'] != 0]
+        curr_vals_inside_lst = curr_df[curr_df.x.isin(values)].sort_values('count', ascending=False)
+        if curr_vals_inside_lst.shape[0] > 0:
+            additional_plots.append(
+                DetailsInfo(
+                    id=f"{id_prfx}_incide_{feature_name}",
+                    title="Values inside the list (top 10)",
+                    info=BaseWidgetInfo(
+                        title="",
+                        type="table",
+                        params={
+                            "header": ['value', 'count'],
+                            "data": curr_vals_inside_lst[:10].values
+                        },
+                        size=2,
+                    )
+                )
+            )
+        curr_vals_outside_lst = curr_df[~curr_df.x.isin(values)].sort_values('count', ascending=False)
+        if curr_vals_outside_lst.shape[0] > 0:
+            additional_plots.append(
+                DetailsInfo(
+                    id=f"{id_prfx}_outside_{feature_name}",
+                    title="Values outside the list (top 10)",
+                    info=BaseWidgetInfo(
+                        title="",
+                        type="table",
+                        params={
+                            "header": ['value', 'count'],
+                            "data": curr_vals_outside_lst[:10].values
+                        },
+                        size=2,
+                    )
+                )
+            )
+    elif ref_df is not None:
+        curr_df = curr_df[curr_df['count'] != 0]
+        ref_df = ref_df[ref_df['count'] != 0]
+
+        if is_numeric_dtype(curr_df.x):
+            new_values = np.setdiff1d(curr_df.x.values, ref_df.x.values)
+            missed_values = np.setdiff1d(ref_df.x.values, curr_df.x.values)
+        else:
+            curr_df['x'] = curr_df['x'].astype(str)
+            ref_df['x'] = ref_df['x'].astype(str)
+            new_values = np.setdiff1d(curr_df.x.values, ref_df.x.values)
+            missed_values = np.setdiff1d(ref_df.x.values, curr_df.x.values)
+        new_values_data = curr_df[curr_df.x.isin(new_values)].sort_values('count', ascending=False)
+        missed_values_data = ref_df[ref_df.x.isin(missed_values)].sort_values('count', ascending=False)
+        additional_plots.append(
+                DetailsInfo(
+                    id=f"{id_prfx}_new_{feature_name}",
+                    title="New values (top 10)",
+                    info=BaseWidgetInfo(
+                        title="",
+                        type="table",
+                        params={
+                            "header": ['value', 'count'],
+                            "data": new_values_data[:10].values
+                        },
+                        size=2,
+                    )
+                )
+            )
+        additional_plots.append(
+                DetailsInfo(
+                    id=f"{id_prfx}_missed_{feature_name}",
+                    title="Missed values (top 10)",
+                    info=BaseWidgetInfo(
+                        title="",
+                        type="table",
+                        params={
+                            "header": ['value', 'count'],
+                            "data": missed_values_data[:10].values
+                        },
+                        size=2,
+                    )
+                )
+            )
+    
+    return additional_plots
+
+def plot_value_counts_tables_ref_curr(feature_name, curr_df, ref_df, id_prfx):
+    additional_plots = []
+    curr_df = curr_df[curr_df['count'] != 0]
+
+    additional_plots.append(
+                DetailsInfo(
+                    id=f"{id_prfx}_curr_{feature_name}",
+                    title="Current value counts (top 10)",
+                    info=BaseWidgetInfo(
+                        title="C",
+                        type="table",
+                        params={
+                            "header": ['value', 'count'],
+                            "data": curr_df[:10].values
+                        },
+                        size=2,
+                    )
+                )
+            )
+    if ref_df is not None:
+        ref_df = ref_df[ref_df['count'] != 0]
+        additional_plots.append(
+            DetailsInfo(
+                id=f"{id_prfx}_ref_{feature_name}",
+                title="Reference value counts (top 10)",
+                info=BaseWidgetInfo(
+                    title="",
+                    type="table",
+                    params={
+                        "header": ['value', 'count'],
+                        "data": ref_df[:10].values
+                    },
+                    size=2,
+                )
+            )
+        )
+    return additional_plots
+
     

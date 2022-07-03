@@ -83,11 +83,11 @@ class TestShareOfDriftedFeatures(BaseDataDriftMetricsTest):
 
 class TestFeatureValueDrift(BaseDataDriftMetricsTest):
     name = "Test a Feature Drift Value"
-    feature_name: str
+    column_name: str
 
     def __init__(
         self,
-        feature_name: str,
+        column_name: str,
         eq: Optional[Number] = None,
         gt: Optional[Number] = None,
         gte: Optional[Number] = None,
@@ -99,17 +99,17 @@ class TestFeatureValueDrift(BaseDataDriftMetricsTest):
         metric: Optional[DataDriftMetrics] = None,
         options: Optional[DataDriftOptions] = None
     ):
-        self.feature_name = feature_name
+        self.column_name = column_name
         super().__init__(
             eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in,
             metric=metric, options=options
         )
 
     def calculate_value_for_test(self) -> Number:
-        return self.metric.get_result().analyzer_result.metrics.features[self.feature_name].p_value
+        return self.metric.get_result().analyzer_result.metrics.features[self.column_name].p_value
 
     def get_description(self, value: Number) -> str:
-        return f"Drift score for feature {self.feature_name} is {np.round(value, 3)}"
+        return f"Drift score for feature {self.column_name} is {np.round(value, 3)}"
 
 
 @default_renderer(test_type=TestNumberOfDriftedFeatures)
@@ -177,7 +177,7 @@ class TestShareOfDriftedFeaturesRenderer(TestRenderer):
 @default_renderer(test_type=TestFeatureValueDrift)
 class TestFeatureValueDriftRenderer(TestRenderer):
     def render_json(self, obj: TestFeatureValueDrift) -> dict:
-        feature_name = obj.feature_name
+        feature_name = obj.column_name
         data = obj.get_result().features[feature_name]
         base = super().render_json(obj)
         base = {feature_name: dict(stattest=data[0], score=np.round(data[1],  3), threshold=data[2], 
@@ -185,7 +185,7 @@ class TestFeatureValueDriftRenderer(TestRenderer):
         return base
 
     def render_html(self, obj: TestNumberOfDriftedFeatures) -> TestHtmlInfo:
-        feature_name = obj.feature_name
+        feature_name = obj.column_name
         info = super().render_html(obj)
         curr_distr = obj.metric.get_result().distr_for_plots[feature_name]['current']
         ref_distr = obj.metric.get_result().distr_for_plots[feature_name]['reference']
