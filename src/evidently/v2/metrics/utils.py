@@ -15,7 +15,9 @@ def make_hist_df(hist: Tuple[np.array, np.array]) -> pd.DataFrame:
 
 def make_hist_for_num_plot(curr: pd.Series, ref: pd.Series = None):
     result = {}
-    bins = np.histogram_bin_edges(curr.dropna().append(ref.dropna()), bins='doane')
+    if ref is not None:
+        ref = ref.dropna()
+    bins = np.histogram_bin_edges(curr.dropna().append(ref), bins='doane')
     curr_hist = np.histogram(curr, bins=bins)
     result['current'] = make_hist_df(curr_hist)
     if ref is not None:
