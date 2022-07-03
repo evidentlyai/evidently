@@ -1,13 +1,12 @@
+from typing import Tuple
 import numpy as np
 import pandas as pd
 
-
-def make_hist_df(hist):
-    hist_df = pd.DataFrame(
-        np.array([hist[1][:-1],
-                  hist[0],
-                  [f"{x[0]}-{x[1]}" for x in zip(hist[1][:-1], hist[1][1:])]]).T,
-        columns=["x", "count", "range"])
+def make_hist_df(hist: Tuple[np.array, np.array]) -> pd.DataFrame:
+    hist_df = pd.DataFrame(np.array([hist[1][:-1],
+                            hist[0],
+                            [f"{x[0]}-{x[1]}" for x in zip(hist[1][:-1], hist[1][1:])]]).T,
+                            columns=["x", "count", "range"])
 
     hist_df['x'] = hist_df['x'].astype(float)
     hist_df['count'] = hist_df['count'].astype(int)
@@ -16,7 +15,7 @@ def make_hist_df(hist):
 
 def make_hist_for_num_plot(curr: pd.Series, ref: pd.Series = None):
     result = {}
-    bins = np.histogram_bin_edges(curr.append(ref), bins='doane')
+    bins = np.histogram_bin_edges(curr.dropna().append(ref.dropna()), bins='doane')
     curr_hist = np.histogram(curr, bins=bins)
     result['current'] = make_hist_df(curr_hist)
     if ref is not None:
@@ -27,7 +26,7 @@ def make_hist_for_num_plot(curr: pd.Series, ref: pd.Series = None):
 
 def make_hist_for_cat_plot(curr: pd.Series, ref: pd.Series = None):
     result = {}
-    hist_df = curr.value_counts().reset_index()
+    hist_df = curr.value_counts(dropna=False).reset_index()
     hist_df.columns = ["x", "count"]
     result['current'] = hist_df
     if ref is not None:

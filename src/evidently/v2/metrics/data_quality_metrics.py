@@ -6,16 +6,20 @@ from dataclasses import dataclass
 
 from evidently.analyzers.data_quality_analyzer import DataQualityStats
 from evidently.analyzers.data_quality_analyzer import DataQualityAnalyzer
+from evidently.analyzers.utils import process_columns
 from evidently.options.quality_metrics import QualityMetricsOptions
 from evidently.options import OptionsProvider
 from evidently.v2.metrics.base_metric import InputData
 from evidently.v2.metrics.base_metric import Metric
+from evidently.v2.metrics.utils import make_hist_for_num_plot,  make_hist_for_cat_plot
 
 
 @dataclass
 class DataQualityMetricsResults:
     features_stats: DataQualityStats
     target_prediction_correlation: Optional[float]
+    distr_for_plots: Dict[str, Dict[str, pd.DataFrame]]
+    counts_of_values: Dict[str, Dict[str, pd.DataFrame]]
     correlations: Dict[str, pd.DataFrame] = None
     reference_features_stats: Optional[DataQualityStats] = None
 
@@ -62,9 +66,46 @@ class DataQualityMetrics(Metric[DataQualityMetricsResults]):
             correlations = analyzer_results.current_correlations
             reference_features_stats = analyzer_results.reference_features_stats
 
+        # data for visualisation
+
+        reference_data = None
+        if data.reference_data is not None:
+            reference_data = data.reference_data
+
+        distr_for_plots = {}
+        counts_of_values = {}
+        for feature in analyzer_results.columns.num_feature_names:
+            counts_of_value_feature = {}
+            curr_feature = data.current_data[feature]
+            
+            current_counts = data.current_data[feature].value_counts(dropna=False).reset_index()
+            current_counts.columns = ['x', 'count']
+            counts_of_value_feature['current'] = current_counts
+
+            ref_feature = None
+            if reference_data is not None:
+                ref_feature = reference_data[feature]
+
+            reference_counts = ref_feature.value_counts(dropna=False).reset_index()
+            reference_counts.columns = ['x', 'count']
+            counts_of_value_feature['reference'] = reference_counts
+            
+            counts_of_values[feature] = counts_of_value_feature
+            distr_for_plots[feature] = make_hist_for_num_plot(curr_feature, ref_feature)
+
+        for feature in analyzer_results.columns.cat_feature_names:
+            curr_feature = data.current_data[feature]
+            ref_feature = None
+            if reference_data is not None:
+                ref_feature = reference_data[feature]
+            counts_of_values[feature] = make_hist_for_cat_plot(curr_feature, ref_feature)
+            distr_for_plots[feature] = counts_of_values[feature]
+
         return DataQualityMetricsResults(
             target_prediction_correlation=target_prediction_correlation,
             features_stats=features_stats,
+            distr_for_plots=distr_for_plots,
+            counts_of_values=counts_of_values,
             correlations=correlations,
             reference_features_stats=reference_features_stats
         )
@@ -105,6 +146,7 @@ class DataQualityValueListMetricsResults:
     number_not_in_list: int
     share_in_list: float
     share_not_in_list: float
+    counts_of_value: Dict[str, pd.DataFrame]
 
 
 class DataQualityValueListMetrics(Metric[DataQualityValueListMetricsResults]):
@@ -125,12 +167,21 @@ class DataQualityValueListMetrics(Metric[DataQualityValueListMetricsResults]):
         rows_count = data.current_data.shape[0]
         values_in_list = data.current_data[self.column].isin(self.values).sum()
         number_not_in_list = rows_count - values_in_list
+        counts_of_value = {}
+        current_counts = data.current_data[self.column].value_counts(dropna=False).reset_index()
+        current_counts.columns = ['x', 'count']
+        counts_of_value['current'] = current_counts
+        if data.reference_data is not None:
+            reference_counts = data.reference_data[self.column].value_counts(dropna=False).reset_index()
+            reference_counts.columns = ['x', 'count']
+            counts_of_value['reference'] = reference_counts
 
         return DataQualityValueListMetricsResults(
             number_in_list=values_in_list,
             number_not_in_list=rows_count - values_in_list,
             share_in_list=values_in_list / rows_count,
-            share_not_in_list=number_not_in_list / rows_count
+            share_not_in_list=number_not_in_list / rows_count,
+            counts_of_value=counts_of_value
         )
 
 
@@ -140,6 +191,7 @@ class DataQualityValueRangeMetricsResults:
     number_not_in_range: int
     share_in_range: float
     share_not_in_range: float
+    distr_for_plot: Dict[str, pd.DataFrame]
 
 
 class DataQualityValueRangeMetrics(Metric[DataQualityValueRangeMetricsResults]):
@@ -169,11 +221,22 @@ class DataQualityValueRangeMetrics(Metric[DataQualityValueRangeMetricsResults]):
         ).sum()
         number_not_in_range = rows_count - number_in_range
 
+        # visualisation
+        
+        curr_feature = data.current_data[self.column]
+
+        ref_feature = None
+        if data.reference_data is not None:
+            ref_feature = data.reference_data[self.column]
+
+        distr_for_plot = make_hist_for_num_plot(curr_feature, ref_feature)
+
         return DataQualityValueRangeMetricsResults(
             number_in_range=number_in_range,
             number_not_in_range=rows_count - number_in_range,
             share_in_range=number_in_range / rows_count,
-            share_not_in_range=number_not_in_range / rows_count
+            share_not_in_range=number_not_in_range / rows_count,
+            distr_for_plot=distr_for_plot
         )
 
 

@@ -14,7 +14,7 @@ from evidently.v2.tests.utils import plot_check, plot_metric_value, regression_p
 
 class BaseRegressionPerformanceMetricsTest(BaseCheckValueTest, ABC):
     metric: RegressionPerformanceMetrics
-    feature_name: str
+    column_name: str
 
     def __init__(
             self,
