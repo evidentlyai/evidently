@@ -18,8 +18,7 @@ def test_data_drift_metrics() -> None:
     data_mapping = ColumnMapping()
     metric = DataDriftMetrics()
     result = metric.calculate(
-        data=InputData(current_data=test_dataset, reference_data=test_dataset, column_mapping=data_mapping),
-        metrics={}
+        data=InputData(current_data=test_dataset, reference_data=test_dataset, column_mapping=data_mapping), metrics={}
     )
     assert result is not None
     assert result.analyzer_result.metrics.n_drifted_features == 0

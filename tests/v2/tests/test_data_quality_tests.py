@@ -31,71 +31,59 @@ from evidently.v2.tests.utils import approx
     (
         (
             pd.DataFrame(
-                {
-                    "category_feature": ["n", "d", "p", "n"],
-                    "numerical_feature": [0, 1, 2, 5],
-                    "target": [0, 0, 0, 1]
-                }
+                {"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 1, 2, 5], "target": [0, 0, 0, 1]}
             ),
             None,
             TestFeatureValueMin(column_name="numerical_feature", gte=10),
-            False
+            False,
         ),
         (
             pd.DataFrame(
-                {
-                    "category_feature": ["n", "d", "p", "n"],
-                    "numerical_feature": [0, 1, 2, 5],
-                    "target": [0, 0, 0, 1]
-                }
+                {"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 1, 2, 5], "target": [0, 0, 0, 1]}
             ),
             None,
             TestFeatureValueMin(column_name="numerical_feature", eq=0),
-            True
+            True,
         ),
         (
             pd.DataFrame(
                 {
                     "category_feature": ["n", "d", "p", "n"],
                     "numerical_feature": [0.4, 0.1, -1.45, 5],
-                    "target": [0, 0, 0, 1]
+                    "target": [0, 0, 0, 1],
                 }
             ),
             None,
             TestFeatureValueMin(column_name="numerical_feature", eq=approx(-1, absolute=0.5)),
-            True
+            True,
         ),
         (
             pd.DataFrame(
                 {
                     "category_feature": ["n", "d", "p", "n"],
                     "numerical_feature": [10, 7, 5.1, 4.9],
-                    "target": [0, 0, 0, 1]
+                    "target": [0, 0, 0, 1],
                 }
             ),
             None,
             TestFeatureValueMin(column_name="numerical_feature", lt=approx(10, relative=0.5)),
-            True
+            True,
         ),
         (
             pd.DataFrame(
-                {
-                    "category_feature": ["n", "d", "p", "n"],
-                    "numerical_feature": [10, 7, 5.1, 5],
-                    "target": [0, 0, 0, 1]
-                }
+                {"category_feature": ["n", "d", "p", "n"], "numerical_feature": [10, 7, 5.1, 5], "target": [0, 0, 0, 1]}
             ),
             None,
             TestFeatureValueMin(column_name="numerical_feature", lt=approx(10, relative=0.5)),
-            False
-        )
-    )
+            False,
+        ),
+    ),
 )
 def test_data_quality_test_min(
-        test_dataset: pd.DataFrame,
-        reference_dataset: pd.DataFrame,
-        test_object: TestFeatureValueMin,
-        expected_success: bool
+    test_dataset: pd.DataFrame,
+    reference_dataset: pd.DataFrame,
+    test_object: TestFeatureValueMin,
+    expected_success: bool,
 ) -> None:
     suite = TestSuite(tests=[test_object])
     suite.run(current_data=test_dataset, reference_data=reference_dataset)
@@ -104,11 +92,7 @@ def test_data_quality_test_min(
 
 def test_data_quality_test_max() -> None:
     test_dataset = pd.DataFrame(
-        {
-            "category_feature": ["n", "d", "p", "n"],
-            "numerical_feature": [0, 1, 2, 5],
-            "target": [0, 0, 0, 1]
-        }
+        {"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 1, 2, 5], "target": [0, 0, 0, 1]}
     )
     suite = TestSuite(tests=[TestFeatureValueMax(column_name="numerical_feature", gt=10)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
@@ -121,11 +105,7 @@ def test_data_quality_test_max() -> None:
 
 def test_data_quality_test_mean() -> None:
     test_dataset = pd.DataFrame(
-        {
-            "category_feature": ["n", "d", "p", "n"],
-            "numerical_feature": [0, 1, 2, 5],
-            "target": [0, 0, 0, 1]
-        }
+        {"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 1, 2, 5], "target": [0, 0, 0, 1]}
     )
     suite = TestSuite(tests=[TestFeatureValueMean(column_name="numerical_feature", eq=5)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
@@ -142,22 +122,14 @@ def test_data_quality_test_mean() -> None:
 
 def test_data_quality_test_conflict_target() -> None:
     test_dataset = pd.DataFrame(
-        {
-            "category_feature": ["n", "n", "p", "n"],
-            "numerical_feature": [0, 0, 2, 5],
-            "target": [0, 1, 0, 1]
-        }
+        {"category_feature": ["n", "n", "p", "n"], "numerical_feature": [0, 0, 2, 5], "target": [0, 1, 0, 1]}
     )
     suite = TestSuite(tests=[TestConflictTarget()])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
 
     test_dataset = pd.DataFrame(
-        {
-            "category_feature": ["n", "d", "p", "n"],
-            "numerical_feature": [0, 1, 2, 5],
-            "target": [0, 0, 0, 1]
-        }
+        {"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 1, 2, 5], "target": [0, 0, 0, 1]}
     )
     suite = TestSuite(tests=[TestConflictTarget()])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
@@ -166,22 +138,14 @@ def test_data_quality_test_conflict_target() -> None:
 
 def test_data_quality_test_conflict_prediction() -> None:
     test_dataset = pd.DataFrame(
-        {
-            "category_feature": ["n", "n", "p", "n"],
-            "numerical_feature": [0, 0, 2, 5],
-            "prediction": [0, 1, 0, 1]
-        }
+        {"category_feature": ["n", "n", "p", "n"], "numerical_feature": [0, 0, 2, 5], "prediction": [0, 1, 0, 1]}
     )
     suite = TestSuite(tests=[TestConflictPrediction()])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
 
     test_dataset = pd.DataFrame(
-        {
-            "category_feature": ["n", "d", "p", "n"],
-            "numerical_feature": [0, 1, 2, 5],
-            "prediction": [0, 0, 0, 1]
-        }
+        {"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 1, 2, 5], "prediction": [0, 0, 0, 1]}
     )
     suite = TestSuite(tests=[TestConflictPrediction()])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())

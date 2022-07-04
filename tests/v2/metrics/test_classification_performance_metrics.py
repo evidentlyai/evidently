@@ -10,24 +10,26 @@ from evidently.v2.metrics import ClassificationPerformanceMetrics
 from evidently.v2.metrics.classification_performance_metrics import get_prediction_data
 
 
-@pytest.mark.parametrize("data,mapping,expected_predictions,expected_probas", [
-    (
-            pd.DataFrame([dict(target='a', prediction='a')]),
-            ColumnMapping(prediction='prediction'),
-            pd.Series(['a']),
+@pytest.mark.parametrize(
+    "data,mapping,expected_predictions,expected_probas",
+    [
+        (
+            pd.DataFrame([dict(target="a", prediction="a")]),
+            ColumnMapping(prediction="prediction"),
+            pd.Series(["a"]),
             None,
-    ),
-    (
-            pd.DataFrame([dict(target='a', pos_proba=0.9)]),
-            ColumnMapping(prediction='pos_proba', target_names=['b', 'a']),
-            pd.Series(['a']),
+        ),
+        (
+            pd.DataFrame([dict(target="a", pos_proba=0.9)]),
+            ColumnMapping(prediction="pos_proba", target_names=["b", "a"]),
+            pd.Series(["a"]),
             pd.DataFrame([dict(a=0.9, b=0.1)]),
-    ),
-])
-def test_prediction_data(data: pd.DataFrame,
-                         mapping: ColumnMapping,
-                         expected_predictions: pd.Series,
-                         expected_probas: Optional[pd.DataFrame]):
+        ),
+    ],
+)
+def test_prediction_data(
+    data: pd.DataFrame, mapping: ColumnMapping, expected_predictions: pd.Series, expected_probas: Optional[pd.DataFrame]
+):
     predictions, predictions_probas = get_prediction_data(data, mapping)
     assert predictions.equals(expected_predictions)
     if predictions_probas is None:
@@ -41,8 +43,7 @@ def test_classification_performance_metrics() -> None:
     data_mapping = ColumnMapping()
     metric = ClassificationPerformanceMetrics()
     result = metric.calculate(
-        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping),
-        metrics={}
+        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping), metrics={}
     )
     assert result is not None
     assert result.current_metrics.accuracy == 0.75

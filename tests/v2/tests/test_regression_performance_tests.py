@@ -16,7 +16,7 @@ def test_value_mae_test() -> None:
             "category_feature": ["n", "d", "p", "n"],
             "numerical_feature": [0, 1, 2, 5],
             "target": [0, 0, 0, 1],
-            "prediction": [0, 1, 0, 0]
+            "prediction": [0, 1, 0, 0],
         }
     )
     suite = TestSuite(tests=[TestValueMAE(gte=10)])
@@ -34,7 +34,7 @@ def test_value_mape_test() -> None:
             "category_feature": ["n", "d", "p", "n"],
             "numerical_feature": [0, 1, 2, 5],
             "target": [0, 0, 0, 1],
-            "prediction": [0, 0, 0, 0]
+            "prediction": [0, 0, 0, 0],
         }
     )
     suite = TestSuite(tests=[TestValueMAPE(lt=10)])
@@ -52,7 +52,7 @@ def test_value_mean_error_test() -> None:
             "category_feature": ["n", "d", "p", "n"],
             "numerical_feature": [0, 1, 2, 5],
             "target": [0, 0, 0, 1],
-            "prediction": [0, 1, 0, 0]
+            "prediction": [0, 1, 0, 0],
         }
     )
     suite = TestSuite(tests=[TestValueMeanError(gt=1)])
@@ -70,7 +70,7 @@ def test_abs_max_error_test() -> None:
             "category_feature": ["n", "d", "p", "n"],
             "numerical_feature": [0, 1, 2, 5],
             "target": [1, 2, 3, 4],
-            "preds": [1, 2, 3, 4]
+            "preds": [1, 2, 3, 4],
         }
     )
     suite = TestSuite(tests=[TestValueAbsMaxError(lt=1)])
@@ -84,7 +84,7 @@ def test_r2_score_test() -> None:
             "category_feature": ["n", "d", "p", "n"],
             "numerical_feature": [0, 1, 2, 5],
             "target": [1, 2, 3, 4],
-            "preds": [1, 2, 3, 3]
+            "preds": [1, 2, 3, 3],
         }
     )
     suite = TestSuite(tests=[TestValueR2Score(lt=1)])
@@ -98,7 +98,7 @@ def test_rmse_score_test() -> None:
             "category_feature": ["n", "d", "p", "n"],
             "numerical_feature": [0, 1, 2, 5],
             "target": [1, 2, 3, 4],
-            "preds": [1, 2, 3, 3]
+            "preds": [1, 2, 3, 3],
         }
     )
     suite = TestSuite(tests=[TestValueRMSE(lt=1)])

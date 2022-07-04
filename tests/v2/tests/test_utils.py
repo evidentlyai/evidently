@@ -15,7 +15,7 @@ from evidently.v2.tests.utils import approx
         (approx(10, absolute=0.5), 9.5, True),
         (approx(10, absolute=0.5), 10.51, False),
         (approx(10, absolute=0.5), 9.49, False),
-    )
+    ),
 )
 def test_approx_equals(value, test_value, expected_result):
     assert (value == test_value) is expected_result
@@ -29,7 +29,7 @@ def test_approx_equals(value, test_value, expected_result):
         (approx(1, absolute=0.2), 1.21, True),
         (approx(1, absolute=0.2), 1.2, False),
         (approx(10, relative=0.1, absolute=0.2), 12.1, True),
-    )
+    ),
 )
 def test_approx_lt(value, condition_value, expected_result):
     assert (value < condition_value) is expected_result, value
@@ -44,7 +44,7 @@ def test_approx_lt(value, condition_value, expected_result):
         (approx(1, absolute=0.2), 1.21, True),
         (approx(1, absolute=0.2), 1.2, True),
         (approx(1, absolute=0.2), 1.19, False),
-    )
+    ),
 )
 def test_approx_lte(value, condition_value, expected_result):
     assert (value <= condition_value) is expected_result
@@ -59,7 +59,7 @@ def test_approx_lte(value, condition_value, expected_result):
         (approx(1, absolute=0.2), 0.79, True),
         (approx(1, absolute=0.2), 0.8, False),
         (approx(1, absolute=0.2), 0.81, False),
-    )
+    ),
 )
 def test_approx_gt(value, condition_value, expected_result):
     assert (value > condition_value) is expected_result
@@ -74,7 +74,7 @@ def test_approx_gt(value, condition_value, expected_result):
         (approx(1, absolute=0.2), 0.79, True),
         (approx(1, absolute=0.2), 0.8, True),
         (approx(1, absolute=0.2), 0.81, False),
-    )
+    ),
 )
 def test_approx_gte(value, condition_value, expected_result):
     assert (value >= condition_value) is expected_result

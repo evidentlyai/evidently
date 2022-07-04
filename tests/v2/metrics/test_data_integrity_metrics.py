@@ -18,8 +18,7 @@ def test_data_integrity_metrics() -> None:
     data_mapping = ColumnMapping()
     metric = DataIntegrityMetrics()
     result = metric.calculate(
-        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping),
-        metrics={}
+        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping), metrics={}
     )
     assert result is not None
     assert result.number_of_columns == 4

@@ -4,7 +4,8 @@ from evidently.v2.tests.base_test import TestValueCondition
 
 
 @pytest.mark.parametrize(
-    "condition_args, value, expected_result", (
+    "condition_args, value, expected_result",
+    (
         ({"gte": 10}, 5, False),
         ({"gte": 10}, 12, True),
         ({"gte": 10}, 10, True),
@@ -25,7 +26,7 @@ from evidently.v2.tests.base_test import TestValueCondition
         ({"is_in": [10, 20, 30]}, 20, True),
         ({"not_in": [10, 20, 30]}, 5, True),
         ({"not_in": [10, 20, 30]}, 10, False),
-    )
+    ),
 )
 def test_value_condition_class(condition_args, value, expected_result):
     conditions = TestValueCondition(**condition_args)
