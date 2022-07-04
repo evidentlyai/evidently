@@ -119,6 +119,8 @@ class BaseConditionsTest(Test, ABC):
     """
     Base class for all tests with a condition
     """
+    condition: TestValueCondition
+
     def __init__(
             self,
             eq: Optional[Number] = None,

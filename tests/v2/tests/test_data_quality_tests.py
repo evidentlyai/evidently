@@ -1,5 +1,7 @@
 import pandas as pd
 
+import pytest
+
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.v2.tests import TestConflictTarget
 from evidently.v2.tests import TestConflictPrediction
@@ -21,23 +23,83 @@ from evidently.v2.tests import TestNumberOfOutListValues
 from evidently.v2.tests import TestShareOfOutListValues
 from evidently.v2.tests import TestValueQuantile
 from evidently.v2.test_suite import TestSuite
+from evidently.v2.tests.utils import approx
 
 
-def test_data_quality_test_min() -> None:
-    test_dataset = pd.DataFrame(
-        {
-            "category_feature": ["n", "d", "p", "n"],
-            "numerical_feature": [0, 1, 2, 5],
-            "target": [0, 0, 0, 1]
-        }
+@pytest.mark.parametrize(
+    "test_dataset, reference_dataset, test_object, expected_success",
+    (
+        (
+            pd.DataFrame(
+                {
+                    "category_feature": ["n", "d", "p", "n"],
+                    "numerical_feature": [0, 1, 2, 5],
+                    "target": [0, 0, 0, 1]
+                }
+            ),
+            None,
+            TestFeatureValueMin(column_name="numerical_feature", gte=10),
+            False
+        ),
+        (
+            pd.DataFrame(
+                {
+                    "category_feature": ["n", "d", "p", "n"],
+                    "numerical_feature": [0, 1, 2, 5],
+                    "target": [0, 0, 0, 1]
+                }
+            ),
+            None,
+            TestFeatureValueMin(column_name="numerical_feature", eq=0),
+            True
+        ),
+        (
+            pd.DataFrame(
+                {
+                    "category_feature": ["n", "d", "p", "n"],
+                    "numerical_feature": [0.4, 0.1, -1.45, 5],
+                    "target": [0, 0, 0, 1]
+                }
+            ),
+            None,
+            TestFeatureValueMin(column_name="numerical_feature", eq=approx(-1, absolute=0.5)),
+            True
+        ),
+        (
+            pd.DataFrame(
+                {
+                    "category_feature": ["n", "d", "p", "n"],
+                    "numerical_feature": [10, 7, 5.1, 4.9],
+                    "target": [0, 0, 0, 1]
+                }
+            ),
+            None,
+            TestFeatureValueMin(column_name="numerical_feature", lt=approx(10, relative=0.5)),
+            True
+        ),
+        (
+            pd.DataFrame(
+                {
+                    "category_feature": ["n", "d", "p", "n"],
+                    "numerical_feature": [10, 7, 5.1, 5],
+                    "target": [0, 0, 0, 1]
+                }
+            ),
+            None,
+            TestFeatureValueMin(column_name="numerical_feature", lt=approx(10, relative=0.5)),
+            False
+        )
     )
-    suite = TestSuite(tests=[TestFeatureValueMin(column_name="numerical_feature", gte=10)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
-    assert not suite
-
-    suite = TestSuite(tests=[TestFeatureValueMin(column_name="numerical_feature", eq=0)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
-    assert suite
+)
+def test_data_quality_test_min(
+        test_dataset: pd.DataFrame,
+        reference_dataset: pd.DataFrame,
+        test_object: TestFeatureValueMin,
+        expected_success: bool
+) -> None:
+    suite = TestSuite(tests=[test_object])
+    suite.run(current_data=test_dataset, reference_data=reference_dataset)
+    assert bool(suite) is expected_success
 
 
 def test_data_quality_test_max() -> None:
