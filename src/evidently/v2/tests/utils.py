@@ -315,3 +315,47 @@ class ApproxValue:
 def approx(value, relative=None, absolute=None):
     """Get approximate value for checking a value is equal to other within some tolerance"""
     return ApproxValue(value=value, relative=relative, absolute=absolute)
+
+
+def plot_dicts_to_table(dict_curr: dict, dict_ref: dict, columns: list, id_prfx: str, sort_by: str='curr', asc:bool=False):
+    dict_for_df = {}
+    dict_ref_keys = []
+    if dict_ref is not None:
+        dict_ref_keys = list(dict_ref.keys())
+    keys = np.union1d(list(dict_curr.keys()), dict_ref_keys)
+    dict_for_df[columns[0]] = keys
+    dict_for_df[columns[1]]  = [dict_curr.get(x, 'NA') for x in keys]
+
+    if dict_ref is not None:
+        dict_for_df[columns[2]]  = [dict_ref.get(x, 'NA') for x in keys]
+    df = pd.DataFrame(dict_for_df)
+    if dict_ref is not None:
+        if sort_by == 'diff':
+            df = df.astype(str)
+            df['eq'] = (df[columns[1]] == df[columns[2]]).astype(int)
+            df = df.sort_values('eq')
+            df.drop('eq', axis=1, inplace=True)
+    if sort_by == 'curr':
+        df_na = df[df[columns[1]] == 'NA']
+        df_not_na = df[df[columns[1]] != 'NA']
+        df_not_na = df_not_na.sort_values(columns[1], ascending=asc)
+        df = df_na.append(df_not_na)
+    df = df.astype(str)
+    additional_plots = []
+    additional_plots.append(
+        DetailsInfo(
+            id=id_prfx,
+            title="",
+            info=BaseWidgetInfo(
+                title="",
+                type="table",
+                params={
+                    "header": list(df.columns),
+                    "data": df.values
+                },
+                size=2,
+            )
+        )
+    )
+
+    return additional_plots

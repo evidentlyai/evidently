@@ -943,6 +943,36 @@ class TestValueQuantile(BaseCheckValueTest):
         return f"Quantile {self.quantile} for column '{self.column_name}' is {value}"
 
 
+@default_renderer(test_type=TestValueQuantile)
+class TestValueQuantileRenderer(TestRenderer):
+    def render_html(self, obj: TestValueQuantile) -> TestHtmlInfo:
+        column_name = obj.column_name
+        info = super().render_html(obj)
+        curr_distr = obj.metric.get_result().distr_for_plot['current']
+        ref_distr = None
+        if 'reference' in obj.metric.get_result().distr_for_plot.keys():
+            ref_distr = obj.metric.get_result().distr_for_plot['reference']
+        fig = plot_distr(curr_distr, ref_distr)
+        fig = plot_check(fig, obj.condition)
+        fig = plot_metric_value(fig, obj.metric.get_result().value, 
+                                f'current {column_name} {obj.quantile} quantile')
+
+        fig_json = fig.to_plotly_json()
+        info.details.append(
+            DetailsInfo(
+                id=f"{obj.quantile}_quantile_{column_name}",
+                title="",
+                info=BaseWidgetInfo(
+                    title="",
+                    size=2,
+                    type="big_graph",
+                    params={"data": fig_json['data'], "layout": fig_json['layout']},
+                )
+            )
+        )
+        return info
+
+
 @default_renderer(test_type=TestShareOfOutListValues)
 class TestShareOfOutListValuesRenderer(TestRenderer):
     def render_html(self, obj: TestShareOfOutListValues) -> TestHtmlInfo:
