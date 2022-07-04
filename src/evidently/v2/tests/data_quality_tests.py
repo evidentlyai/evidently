@@ -836,12 +836,12 @@ class TestShareOfOutListValues(BaseDataQualityValueListMetricsTest):
 class TestValueQuantile(BaseCheckValueTest):
     name = "Test calculates quantile value of a given column and compares it against the threshold"
     metric: DataQualityValueQuantileMetrics
-    column: str
+    column_name: str
     quantile: Optional[float]
 
     def __init__(
         self,
-        column: str,
+        column_name: str,
         quantile: Optional[float],
         eq: Optional[Number] = None,
         gt: Optional[Number] = None,
@@ -853,17 +853,17 @@ class TestValueQuantile(BaseCheckValueTest):
         not_in: Optional[List[Union[Number, str, bool]]] = None,
         metric: Optional[DataQualityValueQuantileMetrics] = None
     ):
-        self.column = column
+        self.column_name = column_name
         self.quantile = quantile
 
         if metric is not None:
-            if column is not None or quantile is not None:
+            if column_name is not None or quantile is not None:
                 raise ValueError("Test parameters and given  metric conflict")
 
             self.metric = metric
 
         else:
-            self.metric = DataQualityValueQuantileMetrics(column=column, quantile=quantile)
+            self.metric = DataQualityValueQuantileMetrics(column=column_name, quantile=quantile)
 
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
 
@@ -871,7 +871,37 @@ class TestValueQuantile(BaseCheckValueTest):
         return self.metric.get_result().value
 
     def get_description(self, value: Number) -> str:
-        return f"Quantile {self.quantile} for column '{self.column}' is {value}"
+        return f"Quantile {self.quantile} for column '{self.column_name}' is {value}"
+
+
+@default_renderer(test_type=TestValueQuantile)
+class TestValueQuantileRenderer(TestRenderer):
+    def render_html(self, obj: TestValueQuantile) -> TestHtmlInfo:
+        column_name = obj.column_name
+        info = super().render_html(obj)
+        curr_distr = obj.metric.get_result().distr_for_plot['current']
+        ref_distr = None
+        if 'reference' in obj.metric.get_result().distr_for_plot.keys():
+            ref_distr = obj.metric.get_result().distr_for_plot['reference']
+        fig = plot_distr(curr_distr, ref_distr)
+        fig = plot_check(fig, obj.condition)
+        fig = plot_metric_value(fig, obj.metric.get_result().value, 
+                                f'current {column_name} {obj.quantile} quantile')
+
+        fig_json = fig.to_plotly_json()
+        info.details.append(
+            DetailsInfo(
+                id=f"{obj.quantile}_quantile_{column_name}",
+                title="",
+                info=BaseWidgetInfo(
+                    title="",
+                    size=2,
+                    type="big_graph",
+                    params={"data": fig_json['data'], "layout": fig_json['layout']},
+                )
+            )
+        )
+        return info
 
 
 @default_renderer(test_type=TestShareOfOutListValues)

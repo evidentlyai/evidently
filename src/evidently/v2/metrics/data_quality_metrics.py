@@ -246,6 +246,7 @@ class DataQualityValueQuantileMetricsResults:
     value: float
     # range of the quantile (from 0 to 1)
     quantile: float
+    distr_for_plot: Dict[str, pd.DataFrame]
 
 
 class DataQualityValueQuantileMetrics(Metric[DataQualityValueQuantileMetricsResults]):
@@ -258,7 +259,17 @@ class DataQualityValueQuantileMetrics(Metric[DataQualityValueQuantileMetricsResu
         self.quantile = quantile
 
     def calculate(self, data: InputData, metrics: dict) -> DataQualityValueQuantileMetricsResults:
+        # visualisation
+        
+        curr_feature = data.current_data[self.column]
+
+        ref_feature = None
+        if data.reference_data is not None:
+            ref_feature = data.reference_data[self.column]
+
+        distr_for_plot = make_hist_for_num_plot(curr_feature, ref_feature)
         return DataQualityValueQuantileMetricsResults(
             value=data.current_data[self.column].quantile(self.quantile),
             quantile=self.quantile,
+            distr_for_plot=distr_for_plot
         )
