@@ -7,6 +7,7 @@ from typing import List
 from typing import Optional
 from typing import Union
 from typing import Iterator
+from typing import Tuple
 
 import pandas as pd
 
@@ -24,10 +25,10 @@ from evidently.v2.suite.base_suite import Suite, find_test_renderer
 from evidently.v2.tests.base_test import Test, TestResult
 
 
-def _discover_dependencies(test: Test) -> Iterator[Union[Metric, Test]]:
-    for _, field in test.__dict__.items():
+def _discover_dependencies(test: Test) -> Iterator[Tuple[str, Union[Metric, Test]]]:
+    for field_name, field in test.__dict__.items():
         if issubclass(type(field), (Metric, Test)):
-            yield field
+            yield field_name, field
 
 
 class TestSuite:
@@ -36,13 +37,16 @@ class TestSuite:
 
     def __init__(self, tests: Optional[List[Test]]):
         self._inner_suite = Suite()
-        for test in tests:
-            for dependency in _discover_dependencies(test):
+        for original_test in tests:
+            test = copy.copy(original_test)
+            for field_name, dependency in _discover_dependencies(test):
                 if issubclass(type(dependency), Metric):
                     self._inner_suite.add_metrics(dependency)
                 if issubclass(type(dependency), Test):
-                    self._inner_suite.add_tests(dependency)
-        self._inner_suite.add_tests(*tests)
+                    dependency_copy = copy.copy(dependency)
+                    test.__setattr__(field_name, dependency_copy)
+                    self._inner_suite.add_tests(dependency_copy)
+            self._inner_suite.add_tests(test)
 
     def __bool__(self):
         return all(test_result.is_passed() for _, test_result in self._inner_suite.context.test_results.items())
@@ -152,6 +156,7 @@ class TestSuite:
         total_tests = len(self._inner_suite.context.test_results)
         by_status = {}
         for test, test_result in self._inner_suite.context.test_results.items():
+            # renderer = find_test_renderer(type(test.obj), self._inner_suite.context.renderers)
             renderer = find_test_renderer(type(test), self._inner_suite.context.renderers)
             by_status[test_result.status] = by_status.get(test_result.status, 0) + 1
             test_results.append(renderer.render_html(test))
