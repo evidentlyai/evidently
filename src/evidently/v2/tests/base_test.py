@@ -140,7 +140,7 @@ class TestValueCondition:
 
     def __str__(self) -> str:
         operations = ['eq', 'gt', 'gte', 'lt', 'lte', 'is_in', 'not_in', 'not_eq']
-        conditions = [f'{op}={getattr(self, op)}' for op in operations if getattr(self, op) is not None]
+        conditions = [f'{op}={getattr(self, op):.3f}' for op in operations if getattr(self, op) is not None]
         return f"{' and '.join(conditions)}"
 
 

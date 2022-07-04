@@ -100,28 +100,28 @@ def regression_perf_plot(val_for_plot: Dict[str, pd.Series], hist_for_plot: Dict
                          curr_mertic: float, ref_metric: float = None, is_ref_data: bool = False):
     fig = make_subplots(rows=2, cols=1, shared_xaxes=True)
 
-    s = val_for_plot['current'].sort_index()
-    x = [str(idx) for idx in s.index]
-    y = [val for val in s]
+    sorted_index = val_for_plot['current'].sort_index()
+    x = [str(idx) for idx in sorted_index.index]
+    y = list(sorted_index)
     trace = go.Scatter(x=x, y=y, mode='lines+markers', name=name, marker_color=RED)
     fig.append_trace(trace, 1, 1)
 
     df = hist_for_plot['current'].sort_values('x')
     x = [str(x) for x in df.x]
-    y = [val for val in df['count']]
+    y = list(df['count'])
     trace = go.Bar(name='current', x=x, y=y, marker_color=RED)
     fig.append_trace(trace, 2, 1)
 
     if is_ref_data:
-        s = val_for_plot['reference'].sort_index()
-        x = [str(idx) for idx in s.index]
-        y = [val for val in s]
+        sorted_index = val_for_plot['reference'].sort_index()
+        x = [str(idx) for idx in sorted_index.index]
+        y = list(sorted_index)
         trace = go.Scatter(x=x, y=y, mode='lines+markers', name=name, marker_color=GREY)
         fig.append_trace(trace, 1, 1)
 
         df = hist_for_plot['reference'].sort_values('x')
         x = [str(x) for x in df.x]
-        y = [val for val in df['count']]
+        y = list(df['count'])
         trace = go.Bar(name='reference', x=x, y=y, marker_color=GREY)
         fig.append_trace(trace, 2, 1)
 
@@ -291,6 +291,9 @@ class ApproxValue:
     def tolerance(self) -> Numeric:
         relative_value = abs(self.value) * self._relative
         return max(relative_value, self._absolute)
+
+    def __format__(self, format_spec):
+        return f"{format(self.value, format_spec)} ± {format(self.tolerance, format_spec)}"
 
     def __repr__(self):
         return f"{self.value} ± {self.tolerance}"
