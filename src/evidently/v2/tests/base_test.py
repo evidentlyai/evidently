@@ -69,6 +69,27 @@ class Test:
         return result
 
 
+class TestContextWrapper:
+    context = None
+
+    def __init__(self, obj: Test):
+        self.obj = obj
+
+    def __getattr__(self, attr):
+        return getattr(self.obj, attr)
+
+    def set_context(self, context):
+        self.context = context
+
+    def get_result(self):
+        if self.context is None:
+            raise ValueError("No context is set")
+        result = self.context.test_results.get(self, None)
+        if result is None:
+            raise ValueError(f"No result found for metric {self} of type {type(self).__name__}")
+        return result
+
+
 @dataclass
 class TestValueCondition:
     """
@@ -84,6 +105,9 @@ class TestValueCondition:
     lte: Optional[Number] = None
     not_eq: Optional[Number] = None
     not_in: Optional[List[Union[Number, str, bool]]] = None
+
+    def is_set(self) -> bool:
+        return any([self.eq, self.gt, self.gte, self.is_in, self.lt, self.lte, self.not_in, self.not_eq])
 
     def check_value(self, value: Number) -> bool:
         result = True
@@ -113,6 +137,11 @@ class TestValueCondition:
             result = value not in self.not_in
 
         return result
+
+    def __str__(self) -> str:
+        operations = ['eq', 'gt', 'gte', 'lt', 'lte', 'is_in', 'not_in', 'not_eq']
+        conditions = [f'{op}={getattr(self, op)}' for op in operations if getattr(self, op) is not None]
+        return f"{' and '.join(conditions)}"
 
 
 class BaseConditionsTest(Test, ABC):
@@ -158,13 +187,16 @@ class BaseCheckValueTest(BaseConditionsTest):
         Define it in a child class"""
         raise NotImplementedError()
 
+    def get_condition(self) -> TestValueCondition:
+        return self.condition
+
     def check(self):
         result = TestResult(name=self.name, description="The test was not launched", status=TestResult.SKIPPED)
         value = self.calculate_value_for_test()
         result.description = self.get_description(value)
 
         try:
-            condition_check_result = self.condition.check_value(value)
+            condition_check_result = self.get_condition().check_value(value)
 
             if condition_check_result:
                 result.mark_as_success()

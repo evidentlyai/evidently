@@ -8,8 +8,8 @@ import numpy as np
 from evidently.model.widget import BaseWidgetInfo
 from evidently.v2.metrics import RegressionPerformanceMetrics
 from evidently.v2.renderers.base_renderer import default_renderer, TestRenderer, TestHtmlInfo, DetailsInfo
-from evidently.v2.tests.base_test import BaseCheckValueTest
-from evidently.v2.tests.utils import plot_check, plot_metric_value, regression_perf_plot, plot_distr
+from evidently.v2.tests.base_test import BaseCheckValueTest, TestValueCondition
+from evidently.v2.tests.utils import plot_check, plot_metric_value, regression_perf_plot, plot_distr, approx
 
 
 class BaseRegressionPerformanceMetricsTest(BaseCheckValueTest, ABC):
@@ -40,11 +40,19 @@ class BaseRegressionPerformanceMetricsTest(BaseCheckValueTest, ABC):
 class TestValueMAE(BaseRegressionPerformanceMetricsTest):
     name = "Test MAE"
 
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.is_set():
+            return self.condition
+        ref_mae = self.metric.get_result().mean_abs_error_ref
+        if ref_mae is not None:
+            return TestValueCondition(eq=approx(ref_mae, relative=0.1))
+        return TestValueCondition(gt=self.metric.get_result().mean_abs_error_default)
+
     def calculate_value_for_test(self) -> Number:
         return self.metric.get_result().mean_abs_error
 
     def get_description(self, value: Number) -> str:
-        return f"MAE value is {np.round(value, 3)}"
+        return f"MAE value is {np.round(value, 3)} Threshold: [{self.get_condition()}]"
 
 
 @default_renderer(test_type=TestValueMAE)
