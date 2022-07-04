@@ -77,9 +77,12 @@ class Suite:
     def run_calculate(self, data: InputData):
         if self.context.state in [States.Init]:
             self.verify()
+
         if self.context.state in [States.Calculated, States.Tested]:
             return
+
         results = {}
+
         for metric in self.context.execution_graph.get_metric_execution_iterator():
             results[metric] = metric.calculate(data, results)
 

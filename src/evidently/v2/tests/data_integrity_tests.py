@@ -356,7 +356,7 @@ class TestColumnValueRegexp(BaseConditionsTest):
 
     def __init__(
         self,
-        columns: Optional[Union[str, List[str]]] = None,
+        column_name: Optional[Union[str, List[str]]] = None,
         reg_exp: Optional[str] = None,
         eq: Optional[Number] = None,
         gt: Optional[Number] = None,
@@ -370,11 +370,11 @@ class TestColumnValueRegexp(BaseConditionsTest):
     ):
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
 
-        if (columns is None or reg_exp is None) and metric is None:
+        if (column_name is None or reg_exp is None) and metric is None:
             raise ValueError("Not enough parameters for the test")
 
         if metric is None:
-            self.metric = DataIntegrityValueByRegexpMetrics(columns=columns, reg_exp=reg_exp)
+            self.metric = DataIntegrityValueByRegexpMetrics(column_name=column_name, reg_exp=reg_exp)
 
         else:
             self.metric = metric

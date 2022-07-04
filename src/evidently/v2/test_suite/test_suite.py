@@ -1,11 +1,19 @@
 import dataclasses
 import json
+import time
 import uuid
-from typing import List, Optional, Union, Iterator
+from collections import Counter
+from typing import List
+from typing import Optional
+from typing import Union
+from typing import Iterator
 
 import pandas as pd
 
+import evidently
 from evidently import ColumnMapping
+from evidently.analyzers.utils import process_columns
+from evidently.analyzers.utils import DatasetColumns
 from evidently.dashboard.dashboard import TemplateParams, SaveMode, SaveModeMap, save_lib_files, save_data_file
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
@@ -24,6 +32,7 @@ def _discover_dependencies(test: Test) -> Iterator[Union[Metric, Test]]:
 
 class TestSuite:
     _inner_suite: Suite
+    _columns_info: DatasetColumns
 
     def __init__(self, tests: Optional[List[Test]]):
         self._inner_suite = Suite()
@@ -36,7 +45,7 @@ class TestSuite:
         self._inner_suite.add_tests(*tests)
 
     def __bool__(self):
-        return all(test.is_passed() for _, test in self._inner_suite.context.test_results.items())
+        return all(test_result.is_passed() for _, test_result in self._inner_suite.context.test_results.items())
 
     def run(
             self, *, reference_data: Optional[pd.DataFrame], current_data: pd.DataFrame,
@@ -45,6 +54,7 @@ class TestSuite:
         if column_mapping is None:
             column_mapping = ColumnMapping()
 
+        self._columns_info = process_columns(current_data, column_mapping)
         self._inner_suite.verify()
         self._inner_suite.run_calculate(InputData(reference_data, current_data, column_mapping))
         self._inner_suite.run_checks()
@@ -105,16 +115,34 @@ class TestSuite:
             with open(filename, 'w', encoding='utf-8') as out_file:
                 out_file.write(self._render(determine_template("inline"), template_params))
 
-    def json(self) -> dict:
+    def as_dict(self) -> dict:
         test_results = []
-        for test, _ in self._inner_suite.context.test_results.items():
+        counter = Counter(test_result.status for test_result in self._inner_suite.context.test_results.values())
+
+        for test in self._inner_suite.context.test_results:
             renderer = find_test_renderer(type(test), self._inner_suite.context.renderers)
             test_results.append(renderer.render_json(test))
-        return dict(tests=test_results)
+
+        return {
+            "version": evidently.__version__,
+            "timestamp": time.time(),
+            "tests": test_results,
+            "summary": {
+                "all_passed": bool(self),
+                "total_tests": len(self._inner_suite.context.test_results),
+                "success_tests": len(self._inner_suite.context.test_results),
+                "failed_tests": len(self._inner_suite.context.test_results),
+                "by_status": counter,
+            },
+            "columns_info": dataclasses.asdict(self._columns_info),
+        }
+
+    def json(self) -> str:
+        return json.dumps(self.as_dict(), cls=NumpyEncoder)
 
     def save_json(self, filename):
         with open(filename, 'w', encoding='utf-8') as out_file:
-            json.dump(self.json(), out_file, cls=NumpyEncoder)
+            json.dump(self.as_dict(), out_file, cls=NumpyEncoder)
 
     def _render(self, temple_func, template_params: TemplateParams):
         return temple_func(params=template_params)

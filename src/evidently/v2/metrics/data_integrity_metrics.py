@@ -58,19 +58,21 @@ class DataIntegrityValueByRegexpMetricResult:
 
 class DataIntegrityValueByRegexpMetrics(Metric[DataIntegrityValueByRegexpMetricResult]):
     """Count number of values in a column or in columns matched a regexp"""
-    def __init__(self, columns: Union[str, List[str]], reg_exp: str):
+    column_name: List[str]
+
+    def __init__(self, column_name: Union[str, List[str]], reg_exp: str):
         self.reg_exp = reg_exp
 
-        if isinstance(columns, str):
-            columns = [columns]
+        if isinstance(column_name, str):
+            column_name = [column_name]
 
-        self.columns = columns
+        self.column_name = column_name
         self.reg_exp_compiled = re.compile(reg_exp)
 
     def _calculate_matched_for_dataset(self, dataset: pd.DataFrame) -> Dict[str, int]:
         matched_values = {}
 
-        for column_name in self.columns:
+        for column_name in self.column_name:
             n = dataset[column_name].apply(lambda x: bool(self.reg_exp_compiled.match(str(x)))).sum()
             matched_values[column_name] = n
 

@@ -242,6 +242,10 @@ class DataQualityValueQuantileMetrics(Metric[DataQualityValueQuantileMetricsResu
     quantile: float
 
     def __init__(self, column: str, quantile: float) -> None:
+        if quantile is not None:
+            if not 0 <= quantile <= 1:
+                raise ValueError("Quantile should all be in the interval [0, 1].")
+
         self.column = column
         self.quantile = quantile
 
