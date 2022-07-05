@@ -268,6 +268,8 @@ class DataQualityValueQuantileMetrics(Metric[DataQualityValueQuantileMetricsResu
 
 @dataclass
 class DataQualityCorrelationMetricsResults:
+    current_correlation_matrix: pd.DataFrame
+    num_features: list
     target_prediction_correlation: Optional[float]
     abs_max_target_features_correlation: Optional[float]
     abs_max_prediction_features_correlation: Optional[float]
@@ -278,6 +280,7 @@ class DataQualityCorrelationMetricsResults:
     reference_abs_max_prediction_features_correlation: Optional[float]
     reference_abs_max_correlation: Optional[float]
     reference_abs_max_num_features_correlation: Optional[float]
+    reference_correlation_matrix: pd.DataFrame = None
 
 
 class DataQualityCorrelationMetrics(Metric[DataQualityCorrelationMetricsResults]):
@@ -308,7 +311,7 @@ class DataQualityCorrelationMetrics(Metric[DataQualityCorrelationMetricsResults]
         reference_correlations = None
         current_correlations = data.current_data.corr(method=self.method)
 
-        if data.reference_data:
+        if data.reference_data is not None:
             reference_correlations = data.reference_data.corr(method=self.method)
 
         if num_features is None:
@@ -318,7 +321,7 @@ class DataQualityCorrelationMetrics(Metric[DataQualityCorrelationMetricsResults]
         np.fill_diagonal(current_correlations.values, 0)
         target_prediction_correlation = current_correlations.loc[prediction_name, target_name]
 
-        if reference_correlations:
+        if reference_correlations is not None:
             reference_target_prediction_correlation = reference_correlations.loc[prediction_name, target_name]
 
         else:
@@ -326,7 +329,7 @@ class DataQualityCorrelationMetrics(Metric[DataQualityCorrelationMetricsResults]
 
         abs_max_target_features_correlation = current_correlations.loc[target_name, num_features].abs().max()
 
-        if reference_correlations:
+        if reference_correlations is not None:
             reference_abs_max_target_features_correlation = (
                 current_correlations.loc[target_name, num_features].abs().max()
             )
@@ -336,7 +339,7 @@ class DataQualityCorrelationMetrics(Metric[DataQualityCorrelationMetricsResults]
 
         abs_max_prediction_features_correlation = current_correlations.loc[prediction_name, num_features].abs().max()
 
-        if reference_correlations:
+        if reference_correlations is not None:
             reference_abs_max_prediction_features_correlation = (
                 current_correlations.loc[prediction_name, num_features].abs().max()
             )
@@ -344,7 +347,7 @@ class DataQualityCorrelationMetrics(Metric[DataQualityCorrelationMetricsResults]
         else:
             reference_abs_max_prediction_features_correlation = None
 
-        if data.column_mapping.is_classification_task():
+        if data.column_mapping.is_classification_task() is not None:
             corr_features = num_features
 
         else:
@@ -352,15 +355,15 @@ class DataQualityCorrelationMetrics(Metric[DataQualityCorrelationMetricsResults]
 
         abs_max_correlation = current_correlations.loc[corr_features, corr_features].abs().max().max()
 
-        if reference_correlations:
+        if reference_correlations is not None:
             reference_abs_max_correlation = reference_correlations.loc[corr_features, corr_features].abs().max().max()
 
         else:
             reference_abs_max_correlation = None
-
+        
         abs_max_num_features_correlation = current_correlations.loc[num_features, num_features].abs().max().max()
-
-        if reference_correlations:
+ 
+        if reference_correlations is not None:
             reference_abs_max_num_features_correlation = (
                 reference_correlations.loc[num_features, num_features].abs().max().max()
             )
@@ -369,6 +372,8 @@ class DataQualityCorrelationMetrics(Metric[DataQualityCorrelationMetricsResults]
             reference_abs_max_num_features_correlation = None
 
         return DataQualityCorrelationMetricsResults(
+            current_correlation_matrix=current_correlations,
+            num_features=num_features,
             target_prediction_correlation=target_prediction_correlation,
             abs_max_target_features_correlation=abs_max_target_features_correlation,
             abs_max_prediction_features_correlation=abs_max_prediction_features_correlation,
@@ -379,4 +384,5 @@ class DataQualityCorrelationMetrics(Metric[DataQualityCorrelationMetricsResults]
             reference_abs_max_prediction_features_correlation=reference_abs_max_prediction_features_correlation,
             reference_abs_max_correlation=reference_abs_max_correlation,
             reference_abs_max_num_features_correlation=reference_abs_max_num_features_correlation,
+            reference_correlation_matrix=reference_correlations
         )

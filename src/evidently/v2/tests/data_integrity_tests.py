@@ -181,14 +181,22 @@ class TestNumberOfRowsWithNANs(BaseIntegrityValueTest):
 class TestNumberOfConstantColumns(BaseIntegrityValueTest):
     """Number of columns contained only one unique value"""
 
-    name = "Test Number Of Constant Columns"
+    name = "Test Number of Constant Columns"
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.is_set():
+            return self.condition
+        if self.data_integrity_metric.get_result().reference_stats is not None:
+            ref_num_of_constant_columns = self.data_integrity_metric.get_result().reference_stats.number_of_constant_columns
+            return TestValueCondition(lte=ref_num_of_constant_columns)
+        return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Number:
         self.value = self.data_integrity_metric.get_result().current_stats.number_of_constant_columns
         return self.value
 
     def get_description(self, value: Number) -> str:
-        return f"Number of constant columns: {value}"
+        return f"Number of Constant Columns is {value}. Test Threshold is [{self.get_condition()}]."
 
 
 @default_renderer(test_type=TestNumberOfConstantColumns)
@@ -252,27 +260,46 @@ class TestNumberOfEmptyColumnsRenderer(TestRenderer):
 class TestNumberOfDuplicatedRows(BaseIntegrityValueTest):
     """How many rows have duplicates in the dataset"""
 
-    name = "Test Number Of Duplicated Rows"
+    name = "Test Number of Duplicated Rows"
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.is_set():
+            return self.condition
+        if self.data_integrity_metric.get_result().reference_stats is not None:
+            ref_num_of_duplicates = self.data_integrity_metric.get_result().reference_stats.number_of_duplicated_rows
+            curr_number_of_rows = self.data_integrity_metric.get_result().current_stats.number_of_rows 
+            ref_number_of_rows = self.data_integrity_metric.get_result().reference_stats.number_of_rows 
+            mult = ref_num_of_duplicates * curr_number_of_rows / ref_number_of_rows
+            return TestValueCondition(eq=approx(ref_num_of_duplicates * mult, 0.1))
+        return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Number:
         self.value = self.data_integrity_metric.get_result().current_stats.number_of_duplicated_rows
         return self.value
 
     def get_description(self, value: Number) -> str:
-        return f"Number of duplicated rows: {value}"
+        return f"Number of Duplicated Rows is {value}. Test Threshold is [{self.get_condition()}]."
 
 
 class TestNumberOfDuplicatedColumns(BaseIntegrityValueTest):
     """How many columns have duplicates in the dataset"""
 
-    name = "Test Number Of Duplicated Columns"
+    name = "Test Number of Duplicated Columns"
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.is_set():
+            return self.condition
+        if self.data_integrity_metric.get_result().reference_stats is not None:
+            ref_num_of_duplicated_cols = self.data_integrity_metric.get_result().reference_stats.number_of_duplicated_columns
+            return TestValueCondition(lte=ref_num_of_duplicated_cols)
+        return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Number:
         self.value = self.data_integrity_metric.get_result().current_stats.number_of_duplicated_columns
         return self.value
 
     def get_description(self, value: Number) -> str:
-        return f"Number of duplicated columns: {value}"
+        return f"Number of Duplicated Columns is  {value}. Test Threshold is [{self.get_condition()}]."
 
 
 class BaseIntegrityByColumnsConditionTest(BaseCheckValueTest, ABC):
