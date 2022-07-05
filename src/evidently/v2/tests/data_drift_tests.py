@@ -197,8 +197,10 @@ class TestFeatureValueDriftRenderer(TestRenderer):
     def render_json(self, obj: TestFeatureValueDrift) -> dict:
         feature_name = obj.column_name
         data = obj.get_result().features[feature_name]
-        super().render_json(obj)
-        base = {feature_name: dict(stattest=data[0], score=np.round(data[1], 3), threshold=data[2], data_drift=data[3])}
+        base = super().render_json(obj)
+        base["features"] = {
+            feature_name: dict(stattest=data[0], score=np.round(data[1], 3), threshold=data[2], data_drift=data[3])
+        }
         return base
 
     def render_html(self, obj: TestNumberOfDriftedFeatures) -> TestHtmlInfo:

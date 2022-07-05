@@ -25,7 +25,6 @@ from evidently.v2.tests import TestAllUniqueValues
 from evidently.v2.tests import TestColumnValueRegexp
 from evidently.v2.tests import TestConflictTarget
 from evidently.v2.tests import TestConflictPrediction
-from evidently.v2.tests import TestTargetPredictionCorrelation
 from evidently.v2.tests import TestFeatureValueMin
 from evidently.v2.tests import TestFeatureValueMax
 from evidently.v2.tests import TestFeatureValueMean
@@ -94,7 +93,6 @@ def test_export_to_json():
         TestColumnValueRegexp(column_name="cat_feature_2", reg_exp=r"[n|y|n//a]"),
         TestConflictTarget(),
         TestConflictPrediction(),
-        # TestTargetPredictionCorrelation(),
         TestFeatureValueMin(column_name="num_feature_1"),
         TestFeatureValueMax(column_name="num_feature_1"),
         TestFeatureValueMean(column_name="num_feature_1"),
@@ -125,6 +123,13 @@ def test_export_to_json():
 
     assert "tests" in json_result
     assert len(json_result["tests"]) == len(tests)
+
+    for test_info in json_result["tests"]:
+        assert "description" in test_info, test_info
+        assert "name" in test_info, test_info
+        assert "status" in test_info, test_info
+        assert "group" in test_info, test_info
+
     assert "datetime" in json_result
     assert isinstance(json_result["datetime"], str)
     assert "version" in json_result
