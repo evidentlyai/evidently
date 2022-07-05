@@ -30,12 +30,12 @@ def plot_check(fig, condition):
     if not pd.isnull(right_line):
         right_line_name = ["lt", "lte"][pd.Series([condition.lt, condition.lte]).argmin()]
         lines.append((right_line, right_line_name))
-    if condition.eq:
-        lines.append((condition.eq, "eq"))
+    if condition.eq and not isinstance(condition.eq, ApproxValue):
+        lines.append((condition.eq, 'eq'))
+    if condition.eq and isinstance(condition.eq, ApproxValue):
+        lines.append((condition.eq.value, 'approx'))
     if condition.not_eq:
-        lines.append((condition.not_eq, "not_eq"))
-    # if condition.ap:
-    #     lines.append((condition.ap.value, 'ap'))
+        lines.append((condition.not_eq, 'not_eq'))
 
     fig = go.Figure(fig)
     max_y = np.max([np.max(x["y"]) for x in fig.data])
@@ -55,16 +55,19 @@ def plot_check(fig, condition):
     if left_line and right_line:
         fig.add_vrect(x0=left_line, x1=right_line, fillcolor="green", opacity=0.25, line_width=0)
 
-    # if condition.ap:
-    #     left_border=0
-    #     right_border=0
-    #     if condition.ap.rel:
-    #         left_border =  condition.ap.value - condition.ap.value * condition.ap.rel
-    #         right_border =  condition.ap.value + condition.ap.value * condition.ap.rel
-    #     elif condition.ap.abs:
-    #         left_border =  condition.ap.value - condition.ap.abs
-    #         right_border =  condition.ap.value + condition.ap.abs
-    #     fig.add_vrect(x0=left_border, x1=right_border, fillcolor='green', opacity=0.25, line_width=0)
+    if condition.eq and isinstance(condition.eq, ApproxValue):
+        left_border=0
+        right_border=0
+
+        if condition.eq._relative > 1e-6:
+            left_border =  condition.eq.value - condition.eq.value * condition.eq._relative
+            right_border =  condition.eq.value + condition.eq.value * condition.eq._relative
+            fig.add_vrect(x0=left_border, x1=right_border, fillcolor='green', opacity=0.25, line_width=0)
+        elif condition.eq._absolute > 1e-12:
+            left_border =  condition.eq.value - condition.eq._absolute
+            right_border =  condition.eq.value + condition.eq._absolute
+            fig.add_vrect(x0=left_border, x1=right_border, fillcolor='green', opacity=0.25, line_width=0)
+        fig.add_vrect(x0=left_border, x1=right_border, fillcolor='green', opacity=0.25, line_width=0)
 
     fig.update_layout(showlegend=True)
 

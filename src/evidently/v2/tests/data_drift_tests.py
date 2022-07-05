@@ -15,7 +15,7 @@ from evidently.model.widget import BaseWidgetInfo
 from evidently.options import DataDriftOptions
 from evidently.v2.metrics import DataDriftMetrics
 from evidently.v2.renderers.base_renderer import TestRenderer, TestHtmlInfo, DetailsInfo, default_renderer
-from evidently.v2.tests.base_test import BaseCheckValueTest, TestResult
+from evidently.v2.tests.base_test import BaseCheckValueTest, TestResult, TestValueCondition
 from evidently.v2.tests.utils import plot_distr
 
 
@@ -72,25 +72,40 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
 class TestNumberOfDriftedFeatures(BaseDataDriftMetricsTest):
     name = "Test Number of Drifted Features"
 
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.is_set():
+            return self.condition
+        else:
+            return TestValueCondition(lt=max(0, self.metric.get_result().analyzer_result.metrics.n_features//3))
+
     def calculate_value_for_test(self) -> Number:
         return self.metric.get_result().analyzer_result.metrics.n_drifted_features
 
     def get_description(self, value: Number) -> str:
-        return f"Number of drifted features is {value}"
+        return f"Drift is detected for {value} out of {self.metric.get_result().analyzer_result.metrics.n_features} \
+            features. Threshold: [{self.get_condition()}]"
 
 
 class TestShareOfDriftedFeatures(BaseDataDriftMetricsTest):
     name = "Test Share of Drifted Features"
 
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.is_set():
+            return self.condition
+        else:
+            return TestValueCondition(lt=0.3)
+
     def calculate_value_for_test(self) -> Number:
         return self.metric.get_result().analyzer_result.metrics.share_drifted_features
 
     def get_description(self, value: Number) -> str:
-        return f"Share drifted features is {np.round(value, 3)}"
+        return f"Drift is detected for {np.round(value, 3) * 100}% features \
+        ({self.metric.get_result().analyzer_result.metrics.n_drifted_features} out of \
+        {self.metric.get_result().analyzer_result.metrics.n_features}). Threshold: [{self.get_condition()}]"
 
 
 class TestFeatureValueDrift(BaseDataDriftMetricsTest):
-    name = "Test a Feature Drift Value"
+    name = "Test Drift Per Feature"
     column_name: str
 
     def __init__(
@@ -121,11 +136,19 @@ class TestFeatureValueDrift(BaseDataDriftMetricsTest):
             options=options,
         )
 
+    def get_condition(self) -> TestValueCondition:
+        return TestValueCondition(eq=True)
+
     def calculate_value_for_test(self) -> Number:
-        return self.metric.get_result().analyzer_result.metrics.features[self.column_name].p_value
+        return self.metric.get_result().analyzer_result.metrics.features[self.column_name].drift_detected
 
     def get_description(self, value: Number) -> str:
-        return f"Drift score for feature {self.column_name} is {np.round(value, 3)}"
+        return f"Drift score for feature {self.column_name} is \
+            {np.round(self.metric.get_result().analyzer_result.metrics.features[self.column_name].p_value, 3)}. \
+                {self.metric.get_result().analyzer_result.metrics.features[self.column_name].stattest_name}. \
+                     Drift Detection Threshold is \
+                        {self.metric.get_result().analyzer_result.metrics.features[self.column_name].threshold}."
+       
 
 
 @default_renderer(test_type=TestNumberOfDriftedFeatures)

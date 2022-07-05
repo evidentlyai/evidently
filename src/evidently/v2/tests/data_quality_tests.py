@@ -21,6 +21,7 @@ from evidently.v2.tests.base_test import BaseCheckValueTest
 from evidently.v2.tests.base_test import TestValueCondition
 from evidently.v2.tests.base_test import Test
 from evidently.v2.tests.base_test import TestResult
+from evidently.v2.tests.utils import approx
 from evidently.v2.tests.utils import plot_check
 from evidently.v2.tests.utils import plot_metric_value
 from evidently.v2.tests.utils import plot_distr
@@ -485,7 +486,7 @@ class TestUniqueValuesShareRenderer(TestRenderer):
 
 
 class TestMostCommonValueShare(BaseFeatureDataQualityMetricsTest):
-    name = "Test a feature for share of most common value"
+    name = "Test Share of the Most Common Value"
 
     def calculate_value_for_test(self) -> Number:
         features_stats = self.metric.get_result().features_stats.get_all_features()
@@ -511,7 +512,7 @@ class TestMostCommonValueShareRenderer(TestRenderer):
 
 class TestMeanInNSigmas(Test):
     group = "data_quality"
-    name = "Test mean value in N sigmas by reference"
+    name = "Test Mean Value Stability"
     metric: DataQualityMetrics
     column_name: str
     n_sigmas: int
@@ -549,12 +550,12 @@ class TestMeanInNSigmas(Test):
             right_condition = reference_mean + sigmas_value
 
             if left_condition < current_mean < right_condition:
-                description = f"Mean {np.round(current_mean, 3)} is in range from {np.round(left_condition, 3)} \
+                description = f"Mean value of column {self.column_name} {np.round(current_mean, 3)} is in range from {np.round(left_condition, 3)} \
                                 to {np.round(right_condition, 3)}"
                 test_result = TestResult.SUCCESS
 
             else:
-                description = f"Mean {np.round(current_mean, 3)} is not in range from {np.round(left_condition, 3)} \
+                description = f"Mean value of column {self.column_name} {np.round(current_mean, 3)} is not in range from {np.round(left_condition, 3)} \
                                 to {np.round(right_condition, 3)}"
                 test_result = TestResult.FAIL
 
@@ -744,13 +745,19 @@ class TestNumberOfOutRangeValuesRenderer(TestRenderer):
 
 
 class TestShareOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
-    name = "Test the share of out of the range values for a given feature and compares it against the threshold"
+    name = "Test Share of Out-Of-Range Values"
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.is_set():
+            return self.condition
+        return TestValueCondition(eq=approx(0))
 
     def calculate_value_for_test(self) -> Number:
         return self.metric.get_result().share_not_in_range
 
     def get_description(self, value: Number) -> str:
-        return f"Share of out of the range values for feature '{self.column_name}' is {value}"
+        return f"Share of Out-Of-Range Values for feature {self.column_name} is {np.round(value, 3)}. \
+        Test Threshold is [{self.get_condition()}]."
 
 
 @default_renderer(test_type=TestShareOfOutRangeValues)
@@ -888,13 +895,19 @@ class TestNumberOfOutListValuesRenderer(TestRenderer):
 
 
 class TestShareOfOutListValues(BaseDataQualityValueListMetricsTest):
-    name = "Test the share of out list values for a given feature and compares it against the threshold"
+    name = "Test Share of Out-Of-List Values"
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.is_set():
+            return self.condition
+        return TestValueCondition(eq=approx(0))
 
     def calculate_value_for_test(self) -> Number:
         return self.metric.get_result().share_not_in_list
 
     def get_description(self, value: Number) -> str:
-        return f"Share of out of the list values for feature '{self.column_name}' is {value}"
+        return f"Share of Out-Of-List Values for feature {self.column_name} is {np.round(value, 3)}. Test Threshold \
+            is [{self.get_condition()}]."
 
 
 class TestValueQuantile(BaseCheckValueTest):

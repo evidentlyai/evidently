@@ -16,7 +16,8 @@ from evidently.v2.tests.base_test import BaseCheckValueTest
 from evidently.v2.tests.base_test import BaseConditionsTest
 from evidently.v2.tests.base_test import Test
 from evidently.v2.tests.base_test import TestResult
-from evidently.v2.tests.utils import plot_dicts_to_table
+from evidently.v2.tests.base_test import TestValueCondition
+from evidently.v2.tests.utils import plot_dicts_to_table, approx
 
 
 class BaseIntegrityValueTest(BaseCheckValueTest, ABC):
@@ -49,12 +50,19 @@ class TestNumberOfColumns(BaseIntegrityValueTest):
 
     name = "Test Number of Columns"
 
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.is_set():
+            return self.condition
+        if self.data_integrity_metric.get_result().reference_stats is not None:
+            return TestValueCondition(eq=self.data_integrity_metric.get_result().reference_stats.number_of_columns)
+        return TestValueCondition(gt=0)
+
     def calculate_value_for_test(self) -> Number:
         self.value = self.data_integrity_metric.get_result().current_stats.number_of_columns
         return self.value
 
     def get_description(self, value: Number) -> str:
-        return f"Number of columns is {value}"
+        return f"Number of Columns is {value}. Test Threshold is [{self.get_condition()}]."
 
 
 @default_renderer(test_type=TestNumberOfColumns)
@@ -79,12 +87,22 @@ class TestNumberOfRows(BaseIntegrityValueTest):
 
     name = "Test Number of Rows"
 
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.is_set():
+            return self.condition
+        if self.data_integrity_metric.get_result().reference_stats is not None:
+            return TestValueCondition(eq=approx(
+                self.data_integrity_metric.get_result().reference_stats.number_of_rows, 
+                relative=0.1
+            ))
+        return TestValueCondition(gt=30)
+
     def calculate_value_for_test(self) -> Number:
         self.value = self.data_integrity_metric.get_result().current_stats.number_of_rows
         return self.value
 
     def get_description(self, value: Number) -> str:
-        return f"Number of rows is {value}"
+        return f"Number of Rows is {value}. Test Threshold is [{self.get_condition()}]."
 
 
 class TestNumberOfNANs(BaseIntegrityValueTest):
@@ -257,7 +275,7 @@ class TestNumberOfDuplicatedColumns(BaseIntegrityValueTest):
         return f"Number of duplicated columns: {value}"
 
 
-class BaseIntegrityByColumnsConditionTest(BaseConditionsTest, ABC):
+class BaseIntegrityByColumnsConditionTest(BaseCheckValueTest, ABC):
     group = "data_integrity"
     data_integrity_metric: DataIntegrityMetrics
     column_name: str
@@ -287,28 +305,24 @@ class BaseIntegrityByColumnsConditionTest(BaseConditionsTest, ABC):
 
 class TestColumnNANShare(BaseIntegrityByColumnsConditionTest):
     """Test the share of NANs in a column"""
+    name = "Test Share of NA Values"
 
-    name = "Test Share of NANs in a Column"
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.is_set():
+            return self.condition
+        if self.data_integrity_metric.get_result().reference_stats is not None:
+            ref_nans = self.data_integrity_metric.get_result().reference_stats.nans_by_columns[self.column_name]
+            ref_num_of_rows = self.data_integrity_metric.get_result().reference_stats.number_of_rows
+            return TestValueCondition(eq=approx(ref_nans/ref_num_of_rows, relative=0.1))
+        return TestValueCondition(eq=approx(0))
 
-    def check(self):
+    def calculate_value_for_test(self) -> Number:
         nans_by_columns = self.data_integrity_metric.get_result().current_stats.nans_by_columns
         number_of_rows = self.data_integrity_metric.get_result().current_stats.number_of_rows
-
-        if self.column_name not in nans_by_columns:
-            status = TestResult.ERROR
-            description = f"No column '{self.column_name}' in the metrics data"
-
-        else:
-            nans_share = nans_by_columns[self.column_name] / number_of_rows
-
-            if not self.condition.check_value(nans_share):
-                status = TestResult.FAIL
-                description = f"For column '{self.column_name}' share of NANs is {np.round(nans_share, 3)}"
-            else:
-                description = f"For column '{self.column_name}' share of NANs is {np.round(nans_share, 3)}"
-                status = TestResult.SUCCESS
-
-        return TestResult(name=self.name, description=description, status=status)
+        return nans_by_columns[self.column_name] / number_of_rows
+    
+    def get_description(self, value: Number) -> str:
+        return f"Share of NAs for {self.column_name} column is {np.round(value, 3)}. Test Threshold is [{self.get_condition()}]."
 
 
 class BaseIntegrityByColumnsTest(Test, ABC):

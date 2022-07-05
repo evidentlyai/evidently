@@ -101,13 +101,15 @@ class DataDriftAnalyzer(Analyzer):
         for feature_name in num_feature_names:
             threshold = data_drift_options.get_threshold(feature_name)
             feature_type = "num"
-            test = get_stattest(reference_data[feature_name],
-                                current_data[feature_name],
+            ref_feature = reference_data[feature_name].replace([-np.inf, np.inf], np.nan).dropna()
+            curr_feature = current_data[feature_name].replace([-np.inf, np.inf], np.nan).dropna()
+            test = get_stattest(ref_feature,
+                                curr_feature,
                                 feature_type,
                                 data_drift_options.get_feature_stattest_func(feature_name, feature_type))
             drift_result = test(
-                reference_data[feature_name],
-                current_data[feature_name],
+                ref_feature,
+                curr_feature,
                 feature_type,
                 threshold
             )
