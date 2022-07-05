@@ -38,7 +38,8 @@ class TestRenderer:
             "name": result.name,
             "description": result.description,
             "status": result.status,
-            "group": obj.group
+            "group": obj.group,
+            "parameters": {},
         }
 
 
@@ -53,6 +54,7 @@ def default_renderer(test_type):
     def wrapper(cls):
         DEFAULT_RENDERERS.typed_renderers[test_type] = cls()
         return cls
+
     return wrapper
 
 

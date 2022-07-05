@@ -91,10 +91,9 @@ class TestNumberOfRows(BaseIntegrityValueTest):
         if self.condition.is_set():
             return self.condition
         if self.data_integrity_metric.get_result().reference_stats is not None:
-            return TestValueCondition(eq=approx(
-                self.data_integrity_metric.get_result().reference_stats.number_of_rows, 
-                relative=0.1
-            ))
+            return TestValueCondition(
+                eq=approx(self.data_integrity_metric.get_result().reference_stats.number_of_rows, relative=0.1)
+            )
         return TestValueCondition(gt=30)
 
     def calculate_value_for_test(self) -> Number:
@@ -305,6 +304,7 @@ class BaseIntegrityByColumnsConditionTest(BaseCheckValueTest, ABC):
 
 class TestColumnNANShare(BaseIntegrityByColumnsConditionTest):
     """Test the share of NANs in a column"""
+
     name = "Test Share of NA Values"
 
     def get_condition(self) -> TestValueCondition:
@@ -313,14 +313,14 @@ class TestColumnNANShare(BaseIntegrityByColumnsConditionTest):
         if self.data_integrity_metric.get_result().reference_stats is not None:
             ref_nans = self.data_integrity_metric.get_result().reference_stats.nans_by_columns[self.column_name]
             ref_num_of_rows = self.data_integrity_metric.get_result().reference_stats.number_of_rows
-            return TestValueCondition(eq=approx(ref_nans/ref_num_of_rows, relative=0.1))
+            return TestValueCondition(eq=approx(ref_nans / ref_num_of_rows, relative=0.1))
         return TestValueCondition(eq=approx(0))
 
     def calculate_value_for_test(self) -> Number:
         nans_by_columns = self.data_integrity_metric.get_result().current_stats.nans_by_columns
         number_of_rows = self.data_integrity_metric.get_result().current_stats.number_of_rows
         return nans_by_columns[self.column_name] / number_of_rows
-    
+
     def get_description(self, value: Number) -> str:
         return f"Share of NAs for {self.column_name} column is {np.round(value, 3)}. Test Threshold is [{self.get_condition()}]."
 
@@ -416,13 +416,15 @@ class TestAllUniqueValues(BaseIntegrityByColumnsTest):
 
 class TestColumnsType(Test):
     """This test compares columns type against the specified ones or a reference dataframe"""
+
     group = "data_integrity"
     name = "Test Columns Type"
     columns_type: Optional[dict]
     data_integrity_metric: DataIntegrityMetrics
+    columns_type_from_reference: bool
 
     def __init__(
-            self, columns_type: Optional[dict] = None, data_integrity_metric: Optional[DataIntegrityMetrics] = None
+        self, columns_type: Optional[dict] = None, data_integrity_metric: Optional[DataIntegrityMetrics] = None
     ):
         self.columns_type = columns_type
 
@@ -438,23 +440,25 @@ class TestColumnsType(Test):
         data_columns_type = self.data_integrity_metric.get_result().current_stats.columns_type
 
         if self.columns_type is None:
+            self.columns_type_from_reference = True
+
             if self.data_integrity_metric.get_result().reference_stats is None:
                 status = TestResult.ERROR
                 description = "Cannot compare column types without conditions or a reference"
                 return TestResult(name=self.name, description=description, status=status)
 
             # get types from reference
-            columns_type = self.data_integrity_metric.get_result().reference_stats.columns_type
+            self.columns_type = self.data_integrity_metric.get_result().reference_stats.columns_type
 
         else:
-            columns_type = self.columns_type
+            self.columns_type_from_reference = False
 
-            if not columns_type:
-                status = TestResult.ERROR
-                description = "Columns type condition is empty"
-                return TestResult(name=self.name, description=description, status=status)
+        if not self.columns_type:
+            status = TestResult.ERROR
+            description = "Columns type condition is empty"
+            return TestResult(name=self.name, description=description, status=status)
 
-        for column_name, expected_type_object in columns_type.items():
+        for column_name, expected_type_object in self.columns_type.items():
             real_column_type_object = data_columns_type.get(column_name)
 
             if real_column_type_object is None:
@@ -476,6 +480,15 @@ class TestColumnsType(Test):
                     break
 
         return TestResult(name=self.name, description=description, status=status)
+
+
+@default_renderer(test_type=TestColumnsType)
+class TestColumnsTypeRenderer(TestRenderer):
+    def render_json(self, obj: TestColumnsType) -> dict:
+        base = super().render_json(obj)
+        base["parameters"]["columns_type"] = {k: str(v) for k, v in obj.columns_type.items()}
+        base["parameters"]["columns_type_from_reference"] = obj.columns_type_from_reference
+        return base
 
 
 class TestColumnValueRegexp(BaseConditionsTest):

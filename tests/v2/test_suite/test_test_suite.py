@@ -87,7 +87,7 @@ def test_export_to_json():
         TestNumberOfDuplicatedRows(),
         TestNumberOfDuplicatedColumns(),
         TestColumnsType({"num_feature_1": int, "cat_feature_2": str}),
-        TestColumnNANShare(),
+        TestColumnNANShare(column_name="num_feature_1", gt=5),
         TestAllConstantValues(),
         TestAllUniqueValues(),
         TestColumnValueRegexp(column_name="cat_feature_2", reg_exp=r"[n|y|n//a]"),
@@ -129,6 +129,7 @@ def test_export_to_json():
         assert "name" in test_info, test_info
         assert "status" in test_info, test_info
         assert "group" in test_info, test_info
+        assert "parameters" in test_info, test_info
 
     assert "datetime" in json_result
     assert isinstance(json_result["datetime"], str)
@@ -152,4 +153,4 @@ def test_export_to_json():
     assert summary_result["total_tests"] == 36
 
     assert "by_status" in summary_result
-    assert summary_result["by_status"] == {"ERROR": 1, "FAIL": 5, "SUCCESS": 30}
+    assert summary_result["by_status"] == {"FAIL": 7, "SUCCESS": 29}

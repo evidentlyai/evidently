@@ -203,9 +203,12 @@ class DataQualityValueRangeMetrics(Metric[DataQualityValueRangeMetricsResults]):
             self.right = data.reference_data[self.column].max()
 
         rows_count = data.current_data[self.column].dropna().shape[0]
-        number_in_range = data.current_data[self.column].dropna().between(
-            left=float(self.left), right=float(self.right), inclusive="both"
-        ).sum()
+        number_in_range = (
+            data.current_data[self.column]
+            .dropna()
+            .between(left=float(self.left), right=float(self.right), inclusive="both")
+            .sum()
+        )
         number_not_in_range = rows_count - number_in_range
 
         # visualisation
@@ -214,7 +217,7 @@ class DataQualityValueRangeMetrics(Metric[DataQualityValueRangeMetricsResults]):
         ref_feature = None
         if data.reference_data is not None:
             ref_feature = data.reference_data[self.column]
-  
+
         distr_for_plot = make_hist_for_num_plot(curr_feature, ref_feature)
 
         return DataQualityValueRangeMetricsResults(

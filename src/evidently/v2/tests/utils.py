@@ -31,11 +31,11 @@ def plot_check(fig, condition):
         right_line_name = ["lt", "lte"][pd.Series([condition.lt, condition.lte]).argmin()]
         lines.append((right_line, right_line_name))
     if condition.eq and not isinstance(condition.eq, ApproxValue):
-        lines.append((condition.eq, 'eq'))
+        lines.append((condition.eq, "eq"))
     if condition.eq and isinstance(condition.eq, ApproxValue):
-        lines.append((condition.eq.value, 'approx'))
+        lines.append((condition.eq.value, "approx"))
     if condition.not_eq:
-        lines.append((condition.not_eq, 'not_eq'))
+        lines.append((condition.not_eq, "not_eq"))
 
     fig = go.Figure(fig)
     max_y = np.max([np.max(x["y"]) for x in fig.data])
@@ -56,18 +56,18 @@ def plot_check(fig, condition):
         fig.add_vrect(x0=left_line, x1=right_line, fillcolor="green", opacity=0.25, line_width=0)
 
     if condition.eq and isinstance(condition.eq, ApproxValue):
-        left_border=0
-        right_border=0
+        left_border = 0
+        right_border = 0
 
         if condition.eq._relative > 1e-6:
-            left_border =  condition.eq.value - condition.eq.value * condition.eq._relative
-            right_border =  condition.eq.value + condition.eq.value * condition.eq._relative
-            fig.add_vrect(x0=left_border, x1=right_border, fillcolor='green', opacity=0.25, line_width=0)
+            left_border = condition.eq.value - condition.eq.value * condition.eq._relative
+            right_border = condition.eq.value + condition.eq.value * condition.eq._relative
+            fig.add_vrect(x0=left_border, x1=right_border, fillcolor="green", opacity=0.25, line_width=0)
         elif condition.eq._absolute > 1e-12:
-            left_border =  condition.eq.value - condition.eq._absolute
-            right_border =  condition.eq.value + condition.eq._absolute
-            fig.add_vrect(x0=left_border, x1=right_border, fillcolor='green', opacity=0.25, line_width=0)
-        fig.add_vrect(x0=left_border, x1=right_border, fillcolor='green', opacity=0.25, line_width=0)
+            left_border = condition.eq.value - condition.eq._absolute
+            right_border = condition.eq.value + condition.eq._absolute
+            fig.add_vrect(x0=left_border, x1=right_border, fillcolor="green", opacity=0.25, line_width=0)
+        fig.add_vrect(x0=left_border, x1=right_border, fillcolor="green", opacity=0.25, line_width=0)
 
     fig.update_layout(showlegend=True)
 

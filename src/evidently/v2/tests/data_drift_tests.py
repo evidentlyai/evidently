@@ -14,8 +14,14 @@ import pandas as pd
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import DataDriftOptions
 from evidently.v2.metrics import DataDriftMetrics
-from evidently.v2.renderers.base_renderer import TestRenderer, TestHtmlInfo, DetailsInfo, default_renderer
-from evidently.v2.tests.base_test import BaseCheckValueTest, TestResult, TestValueCondition
+from evidently.v2.renderers.base_renderer import TestRenderer
+from evidently.v2.renderers.base_renderer import TestHtmlInfo
+from evidently.v2.renderers.base_renderer import DetailsInfo
+from evidently.v2.renderers.base_renderer import default_renderer
+from evidently.v2.tests.base_test import BaseCheckValueTest
+from evidently.v2.tests.base_test import Test
+from evidently.v2.tests.base_test import TestResult
+from evidently.v2.tests.base_test import TestValueCondition
 from evidently.v2.tests.utils import plot_distr
 
 
@@ -76,7 +82,7 @@ class TestNumberOfDriftedFeatures(BaseDataDriftMetricsTest):
         if self.condition.is_set():
             return self.condition
         else:
-            return TestValueCondition(lt=max(0, self.metric.get_result().analyzer_result.metrics.n_features//3))
+            return TestValueCondition(lt=max(0, self.metric.get_result().analyzer_result.metrics.n_features // 3))
 
     def calculate_value_for_test(self) -> Number:
         return self.metric.get_result().analyzer_result.metrics.n_drifted_features
@@ -104,51 +110,49 @@ class TestShareOfDriftedFeatures(BaseDataDriftMetricsTest):
         {self.metric.get_result().analyzer_result.metrics.n_features}). Threshold: [{self.get_condition()}]"
 
 
-class TestFeatureValueDrift(BaseDataDriftMetricsTest):
+class TestFeatureValueDrift(Test):
     name = "Test Drift Per Feature"
+    group = "data_drift"
+    metric: DataDriftMetrics
     column_name: str
 
     def __init__(
         self,
         column_name: str,
-        eq: Optional[Number] = None,
-        gt: Optional[Number] = None,
-        gte: Optional[Number] = None,
-        is_in: Optional[List[Union[Number, str, bool]]] = None,
-        lt: Optional[Number] = None,
-        lte: Optional[Number] = None,
-        not_eq: Optional[Number] = None,
-        not_in: Optional[List[Union[Number, str, bool]]] = None,
         metric: Optional[DataDriftMetrics] = None,
         options: Optional[DataDriftOptions] = None,
     ):
         self.column_name = column_name
-        super().__init__(
-            eq=eq,
-            gt=gt,
-            gte=gte,
-            is_in=is_in,
-            lt=lt,
-            lte=lte,
-            not_eq=not_eq,
-            not_in=not_in,
-            metric=metric,
-            options=options,
-        )
 
-    def get_condition(self) -> TestValueCondition:
-        return TestValueCondition(eq=True)
+        if metric is not None:
+            self.metric = metric
 
-    def calculate_value_for_test(self) -> Number:
-        return self.metric.get_result().analyzer_result.metrics.features[self.column_name].drift_detected
+        else:
+            self.metric = DataDriftMetrics(options=options)
 
-    def get_description(self, value: Number) -> str:
-        return f"Drift score for feature {self.column_name} is \
-            {np.round(self.metric.get_result().analyzer_result.metrics.features[self.column_name].p_value, 3)}. \
-                {self.metric.get_result().analyzer_result.metrics.features[self.column_name].stattest_name}. \
-                     Drift Detection Threshold is \
-                        {self.metric.get_result().analyzer_result.metrics.features[self.column_name].threshold}."
-       
+    def check(self):
+        drift_info = self.metric.get_result().analyzer_result.metrics
+
+        if self.column_name not in drift_info.features:
+            result_status = TestResult.ERROR
+            description = f"Cannot find column {self.column_name} in the dataset"
+
+        else:
+            p_value = np.round(drift_info.features[self.column_name].p_value, 3)
+            stattest_name = drift_info.features[self.column_name].stattest_name
+            threshold = drift_info.features[self.column_name].threshold
+            description = (
+                f"Drift score for feature {self.column_name} is {p_value}. {stattest_name}. "
+                f"Drift Detection Threshold is {threshold}."
+            )
+
+            if drift_info.features[self.column_name].drift_detected:
+                result_status = TestResult.SUCCESS
+
+            else:
+                result_status = TestResult.FAIL
+
+        return TestResult(name=self.name, description=description, status=result_status)
 
 
 @default_renderer(test_type=TestNumberOfDriftedFeatures)
@@ -218,15 +222,20 @@ class TestShareOfDriftedFeaturesRenderer(TestRenderer):
 @default_renderer(test_type=TestFeatureValueDrift)
 class TestFeatureValueDriftRenderer(TestRenderer):
     def render_json(self, obj: TestFeatureValueDrift) -> dict:
-        feature_name = obj.column_name
-        data = obj.get_result().features[feature_name]
         base = super().render_json(obj)
+        feature_name = obj.column_name
+        drift_data = obj.metric.get_result().analyzer_result.metrics.features[feature_name]
         base["features"] = {
-            feature_name: dict(stattest=data[0], score=np.round(data[1], 3), threshold=data[2], data_drift=data[3])
+            feature_name: {
+                "stattest": drift_data.stattest_name,
+                "score": drift_data.p_value,
+                "threshold": drift_data.threshold,
+                "data_drift": drift_data.drift_detected,
+            }
         }
         return base
 
-    def render_html(self, obj: TestNumberOfDriftedFeatures) -> TestHtmlInfo:
+    def render_html(self, obj: TestFeatureValueDrift) -> TestHtmlInfo:
         feature_name = obj.column_name
         info = super().render_html(obj)
         curr_distr = obj.metric.get_result().distr_for_plots[feature_name]["current"]

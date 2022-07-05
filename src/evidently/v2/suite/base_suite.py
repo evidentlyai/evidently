@@ -31,6 +31,7 @@ def find_test_renderer(obj, renderers: RenderersDefinitions) -> TestRenderer:
 @dataclasses.dataclass
 class Context:
     """Pipeline execution context tracks pipeline execution and lifecycle"""
+
     execution_graph: Optional[ExecutionGraph]
     metrics: list
     tests: list
