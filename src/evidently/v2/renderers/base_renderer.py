@@ -38,6 +38,7 @@ class TestRenderer:
             "name": result.name,
             "description": result.description,
             "status": result.status,
+            "group": obj.group
         }
 
 

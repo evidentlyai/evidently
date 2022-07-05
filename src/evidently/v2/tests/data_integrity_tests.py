@@ -19,6 +19,7 @@ from evidently.v2.tests.utils import plot_dicts_to_table
 
 
 class BaseIntegrityValueTest(BaseCheckValueTest, ABC):
+    group = "data_integrity"
     data_integrity_metric: DataIntegrityMetrics
 
     def __init__(
@@ -256,6 +257,7 @@ class TestNumberOfDuplicatedColumns(BaseIntegrityValueTest):
 
 
 class BaseIntegrityByColumnsConditionTest(BaseConditionsTest, ABC):
+    group = "data_integrity"
     data_integrity_metric: DataIntegrityMetrics
     column_name: str
 
@@ -309,6 +311,7 @@ class TestColumnNANShare(BaseIntegrityByColumnsConditionTest):
 
 
 class BaseIntegrityByColumnsTest(Test, ABC):
+    group = "data_integrity"
     data_integrity_metric: DataIntegrityMetrics
     columns: Optional[List[str]]
 
@@ -398,7 +401,7 @@ class TestAllUniqueValues(BaseIntegrityByColumnsTest):
 
 class TestColumnsType(Test):
     """This test compares a column type against the specified type"""
-
+    group = "data_integrity"
     name = "Test Columns Type"
     columns_type: dict
     data_integrity_metric: DataIntegrityMetrics
@@ -438,6 +441,7 @@ class TestColumnsType(Test):
 
 
 class TestColumnValueRegexp(BaseConditionsTest):
+    group = "data_integrity"
     name = "Test count number of values in a column or in columns matched a regexp"
     metric: DataIntegrityValueByRegexpMetrics
 

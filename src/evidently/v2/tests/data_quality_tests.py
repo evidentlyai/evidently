@@ -29,6 +29,7 @@ from evidently.v2.tests.utils import plot_value_counts_tables_ref_curr
 
 
 class BaseDataQualityMetricsValueTest(BaseCheckValueTest, ABC):
+    group = "data_quality"
     metric: DataQualityMetrics
 
     def __init__(
@@ -53,6 +54,7 @@ class BaseDataQualityMetricsValueTest(BaseCheckValueTest, ABC):
 
 
 class TestConflictTarget(Test):
+    group = "data_quality"
     name = "Test number of conflicts in target"
     metric: DataQualityStabilityMetrics
 
@@ -82,6 +84,7 @@ class TestConflictTarget(Test):
 
 
 class TestConflictPrediction(Test):
+    group = "data_quality"
     name = "Test number of conflicts in prediction"
     metric: DataQualityStabilityMetrics
 
@@ -111,6 +114,7 @@ class TestConflictPrediction(Test):
 
 
 class BaseDataQualityCorrelationsMetricsValueTest(BaseCheckValueTest, ABC):
+    group = "data_quality"
     metric: DataQualityCorrelationMetrics
     method: str
 
@@ -506,6 +510,7 @@ class TestMostCommonValueShareRenderer(TestRenderer):
 
 
 class TestMeanInNSigmas(Test):
+    group = "data_quality"
     name = "Test mean value in N sigmas by reference"
     metric: DataQualityMetrics
     column_name: str
@@ -595,6 +600,7 @@ class TestMeanInNSigmasRenderer(TestRenderer):
 
 
 class TestValueRange(Test):
+    group = "data_quality"
     name = "Checks that all values of certain column belong to the interval"
     metric: DataQualityValueRangeMetrics
     column: str
@@ -664,6 +670,7 @@ class TestValueRangeRenderer(TestRenderer):
 
 
 class BaseDataQualityValueRangeMetricsTest(BaseCheckValueTest, ABC):
+    group = "data_quality"
     metric: DataQualityValueRangeMetrics
     column: str
     left: Optional[float]
@@ -776,6 +783,7 @@ class TestShareOfOutRangeValuesRenderer(TestRenderer):
 
 
 class TestValueList(Test):
+    group = "data_quality"
     name = "Test checks whether a feature values is in some list of values"
     metric: DataQualityValueListMetrics
     column_name: str
@@ -823,8 +831,9 @@ class TestValueListRenderer(TestRenderer):
 
 
 class BaseDataQualityValueListMetricsTest(BaseCheckValueTest, ABC):
+    group = "data_quality"
     metric: DataQualityValueListMetrics
-    column: str
+    column_name: str
     values: Optional[list]
 
     def __init__(
@@ -889,6 +898,7 @@ class TestShareOfOutListValues(BaseDataQualityValueListMetricsTest):
 
 
 class TestValueQuantile(BaseCheckValueTest):
+    group = "data_quality"
     name = "Test calculates quantile value of a given column and compares it against the threshold"
     metric: DataQualityValueQuantileMetrics
     column_name: str

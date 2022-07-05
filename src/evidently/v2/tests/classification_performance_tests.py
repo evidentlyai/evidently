@@ -9,6 +9,7 @@ from evidently.v2.tests.base_test import Test, TestResult
 
 
 class SimpleClassificationTest(Test):
+    group = "classification"
     name: str
     metric: ClassificationPerformanceMetrics
 

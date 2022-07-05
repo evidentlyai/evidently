@@ -25,6 +25,7 @@ class TestDataDriftResult(TestResult):
 
 
 class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
+    group = "data_drift"
     metric: DataDriftMetrics
 
     def __init__(

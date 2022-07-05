@@ -52,6 +52,7 @@ class Test:
     """
 
     name: str
+    group: str
     context = None
 
     @abc.abstractmethod
