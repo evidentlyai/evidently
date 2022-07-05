@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import numpy as np
 import pandas as pd
 
@@ -164,7 +166,11 @@ def test_data_integrity_test_duplicated_columns() -> None:
 
 def test_data_integrity_test_columns_type() -> None:
     current_dataset = pd.DataFrame({"numerical_feature": [1, 2, 3], "target": ["1", "1", "1"]})
-    reference_dataset = pd.DataFrame({"numerical_feature": [1., 2.4, 3.], "target": [True, False, True]})
+    reference_dataset = pd.DataFrame({
+        "numerical_feature": [1., 2.4, 3.],
+        "target": [True, False, True],
+        "datetime": [datetime.now(), datetime.now(), datetime.now()]
+    })
     suite = TestSuite(tests=[TestColumnsType()])
     suite.run(current_data=current_dataset, reference_data=current_dataset, column_mapping=ColumnMapping())
     assert suite
@@ -185,6 +191,7 @@ def test_data_integrity_test_columns_type() -> None:
         TestColumnsType(columns_type={
             "numerical_feature": np.float64,
             "target": "bool",
+            "datetime": "datetime"
         })
     ])
     suite.run(current_data=reference_dataset, reference_data=None, column_mapping=ColumnMapping())
