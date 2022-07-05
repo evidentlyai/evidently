@@ -38,9 +38,7 @@ class DataQualityMetrics(Metric[DataQualityMetricsResults]):
 
         if data.reference_data is None:
             analyzer_results = self.analyzer.calculate(
-                reference_data=data.current_data,
-                current_data=None,
-                column_mapping=data.column_mapping
+                reference_data=data.current_data, current_data=None, column_mapping=data.column_mapping
             )
             features_stats = analyzer_results.reference_features_stats
             correlations = analyzer_results.reference_correlations
@@ -48,9 +46,7 @@ class DataQualityMetrics(Metric[DataQualityMetricsResults]):
 
         else:
             analyzer_results = self.analyzer.calculate(
-                reference_data=data.reference_data,
-                current_data=data.current_data,
-                column_mapping=data.column_mapping
+                reference_data=data.reference_data, current_data=data.current_data, column_mapping=data.column_mapping
             )
             features_stats = analyzer_results.current_features_stats
             correlations = analyzer_results.current_correlations
@@ -68,8 +64,8 @@ class DataQualityMetrics(Metric[DataQualityMetricsResults]):
             counts_of_value_feature = {}
             curr_feature = data.current_data[feature]
             current_counts = data.current_data[feature].value_counts(dropna=False).reset_index()
-            current_counts.columns = ['x', 'count']
-            counts_of_value_feature['current'] = current_counts
+            current_counts.columns = ["x", "count"]
+            counts_of_value_feature["current"] = current_counts
 
             ref_feature = None
 
@@ -77,8 +73,8 @@ class DataQualityMetrics(Metric[DataQualityMetricsResults]):
                 ref_feature = reference_data[feature]
 
                 reference_counts = ref_feature.value_counts(dropna=False).reset_index()
-                reference_counts.columns = ['x', 'count']
-                counts_of_value_feature['reference'] = reference_counts
+                reference_counts.columns = ["x", "count"]
+                counts_of_value_feature["reference"] = reference_counts
 
             counts_of_values[feature] = counts_of_value_feature
             distr_for_plots[feature] = make_hist_for_num_plot(curr_feature, ref_feature)
@@ -96,7 +92,7 @@ class DataQualityMetrics(Metric[DataQualityMetricsResults]):
             distr_for_plots=distr_for_plots,
             counts_of_values=counts_of_values,
             correlations=correlations,
-            reference_features_stats=reference_features_stats
+            reference_features_stats=reference_features_stats,
         )
 
 
@@ -140,6 +136,7 @@ class DataQualityValueListMetricsResults:
 
 class DataQualityValueListMetrics(Metric[DataQualityValueListMetricsResults]):
     """Calculates count and shares of values in the predefined values list"""
+
     column: str
     values: Optional[list]
 
@@ -158,19 +155,19 @@ class DataQualityValueListMetrics(Metric[DataQualityValueListMetricsResults]):
         number_not_in_list = rows_count - values_in_list
         counts_of_value = {}
         current_counts = data.current_data[self.column].value_counts(dropna=False).reset_index()
-        current_counts.columns = ['x', 'count']
-        counts_of_value['current'] = current_counts
+        current_counts.columns = ["x", "count"]
+        counts_of_value["current"] = current_counts
         if data.reference_data is not None:
             reference_counts = data.reference_data[self.column].value_counts(dropna=False).reset_index()
-            reference_counts.columns = ['x', 'count']
-            counts_of_value['reference'] = reference_counts
+            reference_counts.columns = ["x", "count"]
+            counts_of_value["reference"] = reference_counts
 
         return DataQualityValueListMetricsResults(
             number_in_list=values_in_list,
             number_not_in_list=rows_count - values_in_list,
             share_in_list=values_in_list / rows_count,
             share_not_in_list=number_not_in_list / rows_count,
-            counts_of_value=counts_of_value
+            counts_of_value=counts_of_value,
         )
 
 
@@ -185,6 +182,7 @@ class DataQualityValueRangeMetricsResults:
 
 class DataQualityValueRangeMetrics(Metric[DataQualityValueRangeMetricsResults]):
     """Calculates count and shares of values in the predefined values range"""
+
     column: str
     left: Optional[float]
     right: Optional[float]
@@ -205,9 +203,11 @@ class DataQualityValueRangeMetrics(Metric[DataQualityValueRangeMetricsResults]):
             self.right = data.reference_data[self.column].max()
 
         rows_count = data.current_data.shape[0]
-        number_in_range = data.current_data[self.column].between(
-            left=float(self.left), right=float(self.right), inclusive="both"
-        ).sum()
+        number_in_range = (
+            data.current_data[self.column]
+            .between(left=float(self.left), right=float(self.right), inclusive="both")
+            .sum()
+        )
         number_not_in_range = rows_count - number_in_range
 
         # visualisation
@@ -224,7 +224,7 @@ class DataQualityValueRangeMetrics(Metric[DataQualityValueRangeMetricsResults]):
             number_not_in_range=rows_count - number_in_range,
             share_in_range=number_in_range / rows_count,
             share_not_in_range=number_not_in_range / rows_count,
-            distr_for_plot=distr_for_plot
+            distr_for_plot=distr_for_plot,
         )
 
 
@@ -239,6 +239,7 @@ class DataQualityValueQuantileMetricsResults:
 
 class DataQualityValueQuantileMetrics(Metric[DataQualityValueQuantileMetricsResults]):
     """Calculates quantile with specified range"""
+
     column: str
     quantile: float
 
@@ -252,7 +253,7 @@ class DataQualityValueQuantileMetrics(Metric[DataQualityValueQuantileMetricsResu
 
     def calculate(self, data: InputData, metrics: dict) -> DataQualityValueQuantileMetricsResults:
         # visualisation
-        
+
         curr_feature = data.current_data[self.column]
 
         ref_feature = None
@@ -263,7 +264,7 @@ class DataQualityValueQuantileMetrics(Metric[DataQualityValueQuantileMetricsResu
         return DataQualityValueQuantileMetricsResults(
             value=data.current_data[self.column].quantile(self.quantile),
             quantile=self.quantile,
-            distr_for_plot=distr_for_plot
+            distr_for_plot=distr_for_plot,
         )
 
 
@@ -283,6 +284,7 @@ class DataQualityCorrelationMetricsResults:
 
 class DataQualityCorrelationMetrics(Metric[DataQualityCorrelationMetricsResults]):
     """Calculate different correlations with target, predictions and features"""
+
     method: str
 
     def __init__(self, method: str = "pearson") -> None:
@@ -327,8 +329,9 @@ class DataQualityCorrelationMetrics(Metric[DataQualityCorrelationMetricsResults]
         abs_max_target_features_correlation = current_correlations.loc[target_name, num_features].abs().max()
 
         if reference_correlations:
-            reference_abs_max_target_features_correlation = \
+            reference_abs_max_target_features_correlation = (
                 current_correlations.loc[target_name, num_features].abs().max()
+            )
 
         else:
             reference_abs_max_target_features_correlation = None
@@ -336,8 +339,9 @@ class DataQualityCorrelationMetrics(Metric[DataQualityCorrelationMetricsResults]
         abs_max_prediction_features_correlation = current_correlations.loc[prediction_name, num_features].abs().max()
 
         if reference_correlations:
-            reference_abs_max_prediction_features_correlation = \
+            reference_abs_max_prediction_features_correlation = (
                 current_correlations.loc[prediction_name, num_features].abs().max()
+            )
 
         else:
             reference_abs_max_prediction_features_correlation = None
@@ -359,8 +363,9 @@ class DataQualityCorrelationMetrics(Metric[DataQualityCorrelationMetricsResults]
         abs_max_num_features_correlation = current_correlations.loc[num_features, num_features].abs().max().max()
 
         if reference_correlations:
-            reference_abs_max_num_features_correlation = \
+            reference_abs_max_num_features_correlation = (
                 reference_correlations.loc[num_features, num_features].abs().max().max()
+            )
 
         else:
             reference_abs_max_num_features_correlation = None

@@ -50,6 +50,7 @@ class Test:
     """
     all fields in test class with type that is subclass of Metric would be used as dependencies of test.
     """
+
     name: str
     context = None
 
@@ -97,6 +98,7 @@ class TestValueCondition:
 
     An object of the class stores specified conditions and can be used for checking a value by them.
     """
+
     eq: Optional[Number] = None
     gt: Optional[Number] = None
     gte: Optional[Number] = None
@@ -140,7 +142,7 @@ class TestValueCondition:
 
     def __str__(self) -> str:
         conditions = []
-        operations = ['eq', 'gt', 'gte', 'lt', 'lte', 'not_eq', 'is_in', 'not_in']
+        operations = ["eq", "gt", "gte", "lt", "lte", "not_eq", "is_in", "not_in"]
 
         for op in operations:
             value = getattr(self, op)
@@ -149,10 +151,10 @@ class TestValueCondition:
                 continue
 
             if isinstance(value, float):
-                conditions.append(f'{op}={value:.3f}')
+                conditions.append(f"{op}={value:.3f}")
 
             else:
-                conditions.append(f'{op}={value}')
+                conditions.append(f"{op}={value}")
 
         return f"{' and '.join(conditions)}"
 
@@ -161,18 +163,19 @@ class BaseConditionsTest(Test, ABC):
     """
     Base class for all tests with a condition
     """
+
     condition: TestValueCondition
 
     def __init__(
-            self,
-            eq: Optional[Number] = None,
-            gt: Optional[Number] = None,
-            gte: Optional[Number] = None,
-            is_in: Optional[List[Union[Number, str, bool]]] = None,
-            lt: Optional[Number] = None,
-            lte: Optional[Number] = None,
-            not_eq: Optional[Number] = None,
-            not_in: Optional[List[Union[Number, str, bool]]] = None,
+        self,
+        eq: Optional[Number] = None,
+        gt: Optional[Number] = None,
+        gte: Optional[Number] = None,
+        is_in: Optional[List[Union[Number, str, bool]]] = None,
+        lt: Optional[Number] = None,
+        lte: Optional[Number] = None,
+        not_eq: Optional[Number] = None,
+        not_in: Optional[List[Union[Number, str, bool]]] = None,
     ):
         self.condition = TestValueCondition(
             eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in
@@ -183,6 +186,7 @@ class BaseCheckValueTest(BaseConditionsTest):
     """
     Base class for all tests with checking a value condition
     """
+
     value: Number
 
     @abc.abstractmethod

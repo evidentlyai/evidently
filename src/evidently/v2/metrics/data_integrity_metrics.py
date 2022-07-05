@@ -38,7 +38,6 @@ class DataIntegrityMetricsResults:
 
 
 class DataIntegrityMetrics(Metric[DataIntegrityMetricsResults]):
-
     @staticmethod
     def _get_integrity_metrics_values(dataset: pd.DataFrame, columns: tuple) -> DataIntegrityMetricsValues:
         return DataIntegrityMetricsValues(
@@ -51,9 +50,7 @@ class DataIntegrityMetrics(Metric[DataIntegrityMetricsResults]):
             number_of_empty_rows=dataset.isna().all(1).sum(),
             number_of_empty_columns=dataset.isna().all().sum(),
             number_of_duplicated_rows=dataset.duplicated().sum(),
-            number_of_duplicated_columns=sum([
-                1 for i, j in combinations(dataset, 2) if dataset[i].equals(dataset[j])
-            ]),
+            number_of_duplicated_columns=sum([1 for i, j in combinations(dataset, 2) if dataset[i].equals(dataset[j])]),
             columns_type=dict(dataset.dtypes.to_dict()),
             nans_by_columns=dataset.isna().sum().to_dict(),
             number_uniques_by_columns=dict(dataset.nunique().to_dict()),
@@ -62,18 +59,14 @@ class DataIntegrityMetrics(Metric[DataIntegrityMetricsResults]):
     def calculate(self, data: InputData, metrics: dict) -> DataIntegrityMetricsResults:
         columns = []
 
-        for col in [
-            data.column_mapping.target,
-            data.column_mapping.datetime,
-            data.column_mapping.id
-        ]:
+        for col in [data.column_mapping.target, data.column_mapping.datetime, data.column_mapping.id]:
             if col is not None:
                 columns.append(col)
 
         for features in [
             data.column_mapping.numerical_features,
             data.column_mapping.categorical_features,
-            data.column_mapping.datetime_features
+            data.column_mapping.datetime_features,
         ]:
             if features is not None:
                 columns += features
@@ -105,10 +98,7 @@ class DataIntegrityMetrics(Metric[DataIntegrityMetricsResults]):
         else:
             reference_stats = None
 
-        return DataIntegrityMetricsResults(
-            current_stats=current_stats,
-            reference_stats=reference_stats
-        )
+        return DataIntegrityMetricsResults(current_stats=current_stats, reference_stats=reference_stats)
 
 
 @dataclass
@@ -119,6 +109,7 @@ class DataIntegrityValueByRegexpMetricResult:
 
 class DataIntegrityValueByRegexpMetrics(Metric[DataIntegrityValueByRegexpMetricResult]):
     """Count number of values in a column or in columns matched a regexp"""
+
     column_name: List[str]
 
     def __init__(self, column_name: Union[str, List[str]], reg_exp: str):

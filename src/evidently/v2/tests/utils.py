@@ -24,34 +24,36 @@ def plot_check(fig, condition):
     lines = []
     left_line = pd.Series([condition.gt, condition.gte]).max()
     if not pd.isnull(left_line):
-        left_line_name = ['gt', 'gte'][pd.Series([condition.gt, condition.gte]).argmax()]
+        left_line_name = ["gt", "gte"][pd.Series([condition.gt, condition.gte]).argmax()]
         lines.append((left_line, left_line_name))
     right_line = pd.Series([condition.lt, condition.lte]).min()
     if not pd.isnull(right_line):
-        right_line_name = ['lt', 'lte'][pd.Series([condition.lt, condition.lte]).argmin()]
+        right_line_name = ["lt", "lte"][pd.Series([condition.lt, condition.lte]).argmin()]
         lines.append((right_line, right_line_name))
     if condition.eq:
-        lines.append((condition.eq, 'eq'))
+        lines.append((condition.eq, "eq"))
     if condition.not_eq:
-        lines.append((condition.not_eq, 'not_eq'))
+        lines.append((condition.not_eq, "not_eq"))
     # if condition.ap:
     #     lines.append((condition.ap.value, 'ap'))
 
     fig = go.Figure(fig)
-    max_y = np.max([np.max(x['y']) for x in fig.data])
-    min_y = np.min([np.min(x['y']) for x in fig.data])
+    max_y = np.max([np.max(x["y"]) for x in fig.data])
+    min_y = np.min([np.min(x["y"]) for x in fig.data])
     if len(lines) > 0:
         for line, name in lines:
-            fig.add_trace(go.Scatter(
-                x=(line, line),
-                y=(min_y, max_y),
-                mode='lines',
-                line=dict(color=GREY, width=3, dash='dash'),
-                name=name)
+            fig.add_trace(
+                go.Scatter(
+                    x=(line, line),
+                    y=(min_y, max_y),
+                    mode="lines",
+                    line=dict(color=GREY, width=3, dash="dash"),
+                    name=name,
+                )
             )
 
     if left_line and right_line:
-        fig.add_vrect(x0=left_line, x1=right_line, fillcolor='green', opacity=0.25, line_width=0)
+        fig.add_vrect(x0=left_line, x1=right_line, fillcolor="green", opacity=0.25, line_width=0)
 
     # if condition.ap:
     #     left_border=0
@@ -71,66 +73,76 @@ def plot_check(fig, condition):
 
 def plot_metric_value(fig, metric_val: float, metric_name: str):
     fig = go.Figure(fig)
-    max_y = np.max([np.max(x['y']) for x in fig.data])
-    min_y = np.min([np.min(x['y']) for x in fig.data])
-    fig.add_trace(go.Scatter(x=(metric_val, metric_val),
-                             y=(min_y, max_y),
-                             mode='lines',
-                             line=dict(color='green', width=3),
-                             name=metric_name))
+    max_y = np.max([np.max(x["y"]) for x in fig.data])
+    min_y = np.min([np.min(x["y"]) for x in fig.data])
+    fig.add_trace(
+        go.Scatter(
+            x=(metric_val, metric_val),
+            y=(min_y, max_y),
+            mode="lines",
+            line=dict(color="green", width=3),
+            name=metric_name,
+        )
+    )
     fig.update_layout(showlegend=True)
     return fig
 
 
-def plot_distr(hist_curr, hist_ref=None, orientation='v'):
+def plot_distr(hist_curr, hist_ref=None, orientation="v"):
     fig = go.Figure()
 
     fig.add_trace(
-        go.Bar(name='current', x=hist_curr['x'], y=hist_curr['count'], marker_color=RED, orientation=orientation)
+        go.Bar(name="current", x=hist_curr["x"], y=hist_curr["count"], marker_color=RED, orientation=orientation)
     )
     if hist_ref is not None:
         fig.add_trace(
-            go.Bar(name='reference', x=hist_ref['x'], y=hist_ref['count'], marker_color=GREY, orientation=orientation)
+            go.Bar(name="reference", x=hist_ref["x"], y=hist_ref["count"], marker_color=GREY, orientation=orientation)
         )
 
     return fig
 
 
-def regression_perf_plot(val_for_plot: Dict[str, pd.Series], hist_for_plot: Dict[str, pd.Series], name: str,
-                         curr_mertic: float, ref_metric: float = None, is_ref_data: bool = False):
+def regression_perf_plot(
+    val_for_plot: Dict[str, pd.Series],
+    hist_for_plot: Dict[str, pd.Series],
+    name: str,
+    curr_mertic: float,
+    ref_metric: float = None,
+    is_ref_data: bool = False,
+):
     fig = make_subplots(rows=2, cols=1, shared_xaxes=True)
 
-    sorted_index = val_for_plot['current'].sort_index()
+    sorted_index = val_for_plot["current"].sort_index()
     x = [str(idx) for idx in sorted_index.index]
     y = list(sorted_index)
-    trace = go.Scatter(x=x, y=y, mode='lines+markers', name=name, marker_color=RED)
+    trace = go.Scatter(x=x, y=y, mode="lines+markers", name=name, marker_color=RED)
     fig.append_trace(trace, 1, 1)
 
-    df = hist_for_plot['current'].sort_values('x')
+    df = hist_for_plot["current"].sort_values("x")
     x = [str(x) for x in df.x]
-    y = list(df['count'])
-    trace = go.Bar(name='current', x=x, y=y, marker_color=RED)
+    y = list(df["count"])
+    trace = go.Bar(name="current", x=x, y=y, marker_color=RED)
     fig.append_trace(trace, 2, 1)
 
     if is_ref_data:
-        sorted_index = val_for_plot['reference'].sort_index()
+        sorted_index = val_for_plot["reference"].sort_index()
         x = [str(idx) for idx in sorted_index.index]
         y = list(sorted_index)
-        trace = go.Scatter(x=x, y=y, mode='lines+markers', name=name, marker_color=GREY)
+        trace = go.Scatter(x=x, y=y, mode="lines+markers", name=name, marker_color=GREY)
         fig.append_trace(trace, 1, 1)
 
-        df = hist_for_plot['reference'].sort_values('x')
+        df = hist_for_plot["reference"].sort_values("x")
         x = [str(x) for x in df.x]
-        y = list(df['count'])
-        trace = go.Bar(name='reference', x=x, y=y, marker_color=GREY)
+        y = list(df["count"])
+        trace = go.Bar(name="reference", x=x, y=y, marker_color=GREY)
         fig.append_trace(trace, 2, 1)
 
     fig.update_yaxes(title_text=name, row=1, col=1)
-    fig.update_yaxes(title_text='count', row=2, col=1)
-    title = f'current {name}: {np.round(curr_mertic, 3)} '
+    fig.update_yaxes(title_text="count", row=2, col=1)
+    title = f"current {name}: {np.round(curr_mertic, 3)} "
 
     if is_ref_data:
-        title += f'<br>reference {name}: {np.round(ref_metric, 3)}'
+        title += f"<br>reference {name}: {np.round(ref_metric, 3)}"
 
     fig.update_layout(title=title)
     return fig
@@ -139,8 +151,8 @@ def regression_perf_plot(val_for_plot: Dict[str, pd.Series], hist_for_plot: Dict
 def plot_value_counts_tables(feature_name, values, curr_df, ref_df, id_prfx):
     additional_plots = []
     if values is not None:
-        curr_df = curr_df[curr_df['count'] != 0]
-        curr_vals_inside_lst = curr_df[curr_df.x.isin(values)].sort_values('count', ascending=False)
+        curr_df = curr_df[curr_df["count"] != 0]
+        curr_vals_inside_lst = curr_df[curr_df.x.isin(values)].sort_values("count", ascending=False)
         if curr_vals_inside_lst.shape[0] > 0:
             additional_plots.append(
                 DetailsInfo(
@@ -149,15 +161,12 @@ def plot_value_counts_tables(feature_name, values, curr_df, ref_df, id_prfx):
                     info=BaseWidgetInfo(
                         title="",
                         type="table",
-                        params={
-                            "header": ['value', 'count'],
-                            "data": curr_vals_inside_lst[:10].values
-                        },
+                        params={"header": ["value", "count"], "data": curr_vals_inside_lst[:10].values},
                         size=2,
-                    )
+                    ),
                 )
             )
-        curr_vals_outside_lst = curr_df[~curr_df.x.isin(values)].sort_values('count', ascending=False)
+        curr_vals_outside_lst = curr_df[~curr_df.x.isin(values)].sort_values("count", ascending=False)
         if curr_vals_outside_lst.shape[0] > 0:
             additional_plots.append(
                 DetailsInfo(
@@ -166,28 +175,25 @@ def plot_value_counts_tables(feature_name, values, curr_df, ref_df, id_prfx):
                     info=BaseWidgetInfo(
                         title="",
                         type="table",
-                        params={
-                            "header": ['value', 'count'],
-                            "data": curr_vals_outside_lst[:10].values
-                        },
+                        params={"header": ["value", "count"], "data": curr_vals_outside_lst[:10].values},
                         size=2,
-                    )
+                    ),
                 )
             )
     elif ref_df is not None:
-        curr_df = curr_df[curr_df['count'] != 0]
-        ref_df = ref_df[ref_df['count'] != 0]
+        curr_df = curr_df[curr_df["count"] != 0]
+        ref_df = ref_df[ref_df["count"] != 0]
 
         if is_numeric_dtype(curr_df.x):
             new_values = np.setdiff1d(curr_df.x.values, ref_df.x.values)
             missed_values = np.setdiff1d(ref_df.x.values, curr_df.x.values)
         else:
-            curr_df['x'] = curr_df['x'].astype(str)
-            ref_df['x'] = ref_df['x'].astype(str)
+            curr_df["x"] = curr_df["x"].astype(str)
+            ref_df["x"] = ref_df["x"].astype(str)
             new_values = np.setdiff1d(curr_df.x.values, ref_df.x.values)
             missed_values = np.setdiff1d(ref_df.x.values, curr_df.x.values)
-        new_values_data = curr_df[curr_df.x.isin(new_values)].sort_values('count', ascending=False)
-        missed_values_data = ref_df[ref_df.x.isin(missed_values)].sort_values('count', ascending=False)
+        new_values_data = curr_df[curr_df.x.isin(new_values)].sort_values("count", ascending=False)
+        missed_values_data = ref_df[ref_df.x.isin(missed_values)].sort_values("count", ascending=False)
         additional_plots.append(
             DetailsInfo(
                 id=f"{id_prfx}_new_{feature_name}",
@@ -195,12 +201,9 @@ def plot_value_counts_tables(feature_name, values, curr_df, ref_df, id_prfx):
                 info=BaseWidgetInfo(
                     title="",
                     type="table",
-                    params={
-                        "header": ['value', 'count'],
-                        "data": new_values_data[:10].values
-                    },
+                    params={"header": ["value", "count"], "data": new_values_data[:10].values},
                     size=2,
-                )
+                ),
             )
         )
         additional_plots.append(
@@ -210,12 +213,9 @@ def plot_value_counts_tables(feature_name, values, curr_df, ref_df, id_prfx):
                 info=BaseWidgetInfo(
                     title="",
                     type="table",
-                    params={
-                        "header": ['value', 'count'],
-                        "data": missed_values_data[:10].values
-                    },
+                    params={"header": ["value", "count"], "data": missed_values_data[:10].values},
                     size=2,
-                )
+                ),
             )
         )
 
@@ -224,7 +224,7 @@ def plot_value_counts_tables(feature_name, values, curr_df, ref_df, id_prfx):
 
 def plot_value_counts_tables_ref_curr(feature_name, curr_df, ref_df, id_prfx):
     additional_plots = []
-    curr_df = curr_df[curr_df['count'] != 0]
+    curr_df = curr_df[curr_df["count"] != 0]
 
     additional_plots.append(
         DetailsInfo(
@@ -233,16 +233,13 @@ def plot_value_counts_tables_ref_curr(feature_name, curr_df, ref_df, id_prfx):
             info=BaseWidgetInfo(
                 title="C",
                 type="table",
-                params={
-                    "header": ['value', 'count'],
-                    "data": curr_df[:10].values
-                },
+                params={"header": ["value", "count"], "data": curr_df[:10].values},
                 size=2,
-            )
+            ),
         )
     )
     if ref_df is not None:
-        ref_df = ref_df[ref_df['count'] != 0]
+        ref_df = ref_df[ref_df["count"] != 0]
         additional_plots.append(
             DetailsInfo(
                 id=f"{id_prfx}_ref_{feature_name}",
@@ -250,12 +247,9 @@ def plot_value_counts_tables_ref_curr(feature_name, curr_df, ref_df, id_prfx):
                 info=BaseWidgetInfo(
                     title="",
                     type="table",
-                    params={
-                        "header": ['value', 'count'],
-                        "data": ref_df[:10].values
-                    },
+                    params={"header": ["value", "count"], "data": ref_df[:10].values},
                     size=2,
-                )
+                ),
             )
         )
     return additional_plots
@@ -263,6 +257,7 @@ def plot_value_counts_tables_ref_curr(feature_name, curr_df, ref_df, id_prfx):
 
 class ApproxValue:
     """Class for approximate scalar value calculations"""
+
     DEFAULT_RELATIVE = 1e-6
     DEFAULT_ABSOLUTE = 1e-12
     value: Numeric
@@ -320,27 +315,29 @@ def approx(value, relative=None, absolute=None):
     return ApproxValue(value=value, relative=relative, absolute=absolute)
 
 
-def plot_dicts_to_table(dict_curr: dict, dict_ref: dict, columns: list, id_prfx: str, sort_by: str='curr', asc:bool=False):
+def plot_dicts_to_table(
+    dict_curr: dict, dict_ref: dict, columns: list, id_prfx: str, sort_by: str = "curr", asc: bool = False
+):
     dict_for_df = {}
     dict_ref_keys = []
     if dict_ref is not None:
         dict_ref_keys = list(dict_ref.keys())
     keys = np.union1d(list(dict_curr.keys()), dict_ref_keys)
     dict_for_df[columns[0]] = keys
-    dict_for_df[columns[1]]  = [dict_curr.get(x, 'NA') for x in keys]
+    dict_for_df[columns[1]] = [dict_curr.get(x, "NA") for x in keys]
 
     if dict_ref is not None:
-        dict_for_df[columns[2]]  = [dict_ref.get(x, 'NA') for x in keys]
+        dict_for_df[columns[2]] = [dict_ref.get(x, "NA") for x in keys]
     df = pd.DataFrame(dict_for_df)
     if dict_ref is not None:
-        if sort_by == 'diff':
+        if sort_by == "diff":
             df = df.astype(str)
-            df['eq'] = (df[columns[1]] == df[columns[2]]).astype(int)
-            df = df.sort_values('eq')
-            df.drop('eq', axis=1, inplace=True)
-    if sort_by == 'curr':
-        df_na = df[df[columns[1]] == 'NA']
-        df_not_na = df[df[columns[1]] != 'NA']
+            df["eq"] = (df[columns[1]] == df[columns[2]]).astype(int)
+            df = df.sort_values("eq")
+            df.drop("eq", axis=1, inplace=True)
+    if sort_by == "curr":
+        df_na = df[df[columns[1]] == "NA"]
+        df_not_na = df[df[columns[1]] != "NA"]
         df_not_na = df_not_na.sort_values(columns[1], ascending=asc)
         df = df_na.append(df_not_na)
     df = df.astype(str)
@@ -352,12 +349,9 @@ def plot_dicts_to_table(dict_curr: dict, dict_ref: dict, columns: list, id_prfx:
             info=BaseWidgetInfo(
                 title="",
                 type="table",
-                params={
-                    "header": list(df.columns),
-                    "data": df.values
-                },
+                params={"header": list(df.columns), "data": df.values},
                 size=2,
-            )
+            ),
         )
     )
 

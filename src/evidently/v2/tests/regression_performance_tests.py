@@ -17,16 +17,16 @@ class BaseRegressionPerformanceMetricsTest(BaseCheckValueTest, ABC):
     column_name: str
 
     def __init__(
-            self,
-            eq: Optional[Number] = None,
-            gt: Optional[Number] = None,
-            gte: Optional[Number] = None,
-            is_in: Optional[List[Union[Number, str, bool]]] = None,
-            lt: Optional[Number] = None,
-            lte: Optional[Number] = None,
-            not_eq: Optional[Number] = None,
-            not_in: Optional[List[Union[Number, str, bool]]] = None,
-            metric: Optional[RegressionPerformanceMetrics] = None
+        self,
+        eq: Optional[Number] = None,
+        gt: Optional[Number] = None,
+        gte: Optional[Number] = None,
+        is_in: Optional[List[Union[Number, str, bool]]] = None,
+        lt: Optional[Number] = None,
+        lte: Optional[Number] = None,
+        not_eq: Optional[Number] = None,
+        not_in: Optional[List[Union[Number, str, bool]]] = None,
+        metric: Optional[RegressionPerformanceMetrics] = None,
     ):
         if metric is not None:
             self.metric = metric
@@ -60,28 +60,28 @@ class TestValueMAERenderer(TestRenderer):
     def render_html(self, obj: TestValueMAE) -> TestHtmlInfo:
         info = super().render_html(obj)
         is_ref_data = False
-        if 'reference' in obj.metric.get_result().hist_for_plot.keys():
+        if "reference" in obj.metric.get_result().hist_for_plot.keys():
             is_ref_data = True
         fig = regression_perf_plot(
-            val_for_plot=obj.metric.get_result().vals_for_plots['mean_abs_error'],
+            val_for_plot=obj.metric.get_result().vals_for_plots["mean_abs_error"],
             hist_for_plot=obj.metric.get_result().hist_for_plot,
-            name='MAE',
+            name="MAE",
             curr_mertic=obj.metric.get_result().mean_abs_error,
             ref_metric=obj.metric.get_result().mean_abs_error_ref,
-            is_ref_data=is_ref_data
+            is_ref_data=is_ref_data,
         )
         fig_json = fig.to_plotly_json()
 
         info.details.append(
             DetailsInfo(
-                'MAE',
+                "MAE",
                 "",
                 BaseWidgetInfo(
-                    title=fig_json['layout']['title']['text'],
+                    title=fig_json["layout"]["title"]["text"],
                     size=2,
                     type="big_graph",
                     params={"data": fig_json["data"], "layout": fig_json["layout"]},
-                )
+                ),
             )
         )
         return info
@@ -102,27 +102,27 @@ class TestValueMAPERenderer(TestRenderer):
     def render_html(self, obj: TestValueMAPE) -> TestHtmlInfo:
         info = super().render_html(obj)
         is_ref_data = False
-        if 'reference' in obj.metric.get_result().hist_for_plot.keys():
+        if "reference" in obj.metric.get_result().hist_for_plot.keys():
             is_ref_data = True
         fig = regression_perf_plot(
-            val_for_plot=obj.metric.get_result().vals_for_plots['mean_abs_perc_error'],
+            val_for_plot=obj.metric.get_result().vals_for_plots["mean_abs_perc_error"],
             hist_for_plot=obj.metric.get_result().hist_for_plot,
-            name='MAPE',
+            name="MAPE",
             curr_mertic=obj.metric.get_result().mean_abs_perc_error,
             ref_metric=obj.metric.get_result().mean_abs_perc_error_ref,
-            is_ref_data=is_ref_data
+            is_ref_data=is_ref_data,
         )
         fig_json = fig.to_plotly_json()
         info.details.append(
             DetailsInfo(
-                'MAPE',
+                "MAPE",
                 "",
                 BaseWidgetInfo(
-                    title=fig_json['layout']['title']['text'],
+                    title=fig_json["layout"]["title"]["text"],
                     size=2,
                     type="big_graph",
                     params={"data": fig_json["data"], "layout": fig_json["layout"]},
-                )
+                ),
             )
         )
         return info
@@ -143,27 +143,27 @@ class TestValueRMSERenderer(TestRenderer):
     def render_html(self, obj: TestValueRMSE) -> TestHtmlInfo:
         info = super().render_html(obj)
         is_ref_data = False
-        if 'reference' in obj.metric.get_result().hist_for_plot.keys():
+        if "reference" in obj.metric.get_result().hist_for_plot.keys():
             is_ref_data = True
         fig = regression_perf_plot(
-            val_for_plot=obj.metric.get_result().vals_for_plots['rmse'],
+            val_for_plot=obj.metric.get_result().vals_for_plots["rmse"],
             hist_for_plot=obj.metric.get_result().hist_for_plot,
-            name='RMSE',
+            name="RMSE",
             curr_mertic=obj.metric.get_result().rmse,
             ref_metric=obj.metric.get_result().rmse_ref,
-            is_ref_data=is_ref_data
+            is_ref_data=is_ref_data,
         )
         fig_json = fig.to_plotly_json()
         info.details.append(
             DetailsInfo(
-                'RMSE',
+                "RMSE",
                 "",
                 BaseWidgetInfo(
-                    title=fig_json['layout']['title']['text'],
+                    title=fig_json["layout"]["title"]["text"],
                     size=2,
                     type="big_graph",
                     params={"data": fig_json["data"], "layout": fig_json["layout"]},
-                )
+                ),
             )
         )
         return info
@@ -184,13 +184,13 @@ class TestValueMeanErrorRenderer(TestRenderer):
     def render_html(self, obj: TestValueMeanError) -> TestHtmlInfo:
         info = super().render_html(obj)
         me_hist_for_plot = obj.metric.get_result().me_hist_for_plot
-        hist_curr = me_hist_for_plot['current']
+        hist_curr = me_hist_for_plot["current"]
         hist_ref = None
-        if 'reference' in obj.metric.get_result().me_hist_for_plot.keys():
-            hist_ref = me_hist_for_plot['reference']
+        if "reference" in obj.metric.get_result().me_hist_for_plot.keys():
+            hist_ref = me_hist_for_plot["reference"]
         fig = plot_distr(hist_curr, hist_ref)
         fig = plot_check(fig, obj.condition)
-        fig = plot_metric_value(fig, obj.metric.get_result().mean_error, 'current mean error')
+        fig = plot_metric_value(fig, obj.metric.get_result().mean_error, "current mean error")
 
         fig_json = fig.to_plotly_json()
         info.details.append(
@@ -201,8 +201,8 @@ class TestValueMeanErrorRenderer(TestRenderer):
                     title="",
                     size=2,
                     type="big_graph",
-                    params={"data": fig_json['data'], "layout": fig_json['layout']},
-                )
+                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
+                ),
             )
         )
         return info
@@ -223,10 +223,10 @@ class TestValueAbsMaxErrorRenderer(TestRenderer):
     def render_html(self, obj: TestValueAbsMaxError) -> TestHtmlInfo:
         info = super().render_html(obj)
         me_hist_for_plot = obj.metric.get_result().me_hist_for_plot
-        hist_curr = me_hist_for_plot['current']
+        hist_curr = me_hist_for_plot["current"]
         hist_ref = None
-        if 'reference' in obj.metric.get_result().me_hist_for_plot.keys():
-            hist_ref = me_hist_for_plot['reference']
+        if "reference" in obj.metric.get_result().me_hist_for_plot.keys():
+            hist_ref = me_hist_for_plot["reference"]
         fig = plot_distr(hist_curr, hist_ref)
 
         fig_json = fig.to_plotly_json()
@@ -238,8 +238,8 @@ class TestValueAbsMaxErrorRenderer(TestRenderer):
                     title="",
                     size=2,
                     type="big_graph",
-                    params={"data": fig_json['data'], "layout": fig_json['layout']},
-                )
+                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
+                ),
             )
         )
         return info
@@ -260,27 +260,27 @@ class TestValueR2ScoreRenderer(TestRenderer):
     def render_html(self, obj: TestValueR2Score) -> TestHtmlInfo:
         info = super().render_html(obj)
         is_ref_data = False
-        if 'reference' in obj.metric.get_result().hist_for_plot.keys():
+        if "reference" in obj.metric.get_result().hist_for_plot.keys():
             is_ref_data = True
         fig = regression_perf_plot(
-            val_for_plot=obj.metric.get_result().vals_for_plots['r2_score'],
+            val_for_plot=obj.metric.get_result().vals_for_plots["r2_score"],
             hist_for_plot=obj.metric.get_result().hist_for_plot,
-            name='R2_score',
+            name="R2_score",
             curr_mertic=obj.metric.get_result().r2_score,
             ref_metric=obj.metric.get_result().r2_score_ref,
-            is_ref_data=is_ref_data
+            is_ref_data=is_ref_data,
         )
         fig_json = fig.to_plotly_json()
         info.details.append(
             DetailsInfo(
-                'R2_score',
+                "R2_score",
                 "",
                 BaseWidgetInfo(
                     title="",
                     size=2,
                     type="big_graph",
                     params={"data": fig_json["data"], "layout": fig_json["layout"]},
-                )
+                ),
             )
         )
         return info

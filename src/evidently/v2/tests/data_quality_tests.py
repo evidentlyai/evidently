@@ -41,7 +41,7 @@ class BaseDataQualityMetricsValueTest(BaseCheckValueTest, ABC):
         lte: Optional[Number] = None,
         not_eq: Optional[Number] = None,
         not_in: Optional[List[Union[Number, str, bool]]] = None,
-        metric: Optional[DataQualityMetrics] = None
+        metric: Optional[DataQualityMetrics] = None,
     ):
         if metric is not None:
             self.metric = metric
@@ -56,10 +56,7 @@ class TestConflictTarget(Test):
     name = "Test number of conflicts in target"
     metric: DataQualityStabilityMetrics
 
-    def __init__(
-        self,
-        metric: Optional[DataQualityStabilityMetrics] = None
-    ):
+    def __init__(self, metric: Optional[DataQualityStabilityMetrics] = None):
         if metric is not None:
             self.metric = metric
 
@@ -88,10 +85,7 @@ class TestConflictPrediction(Test):
     name = "Test number of conflicts in prediction"
     metric: DataQualityStabilityMetrics
 
-    def __init__(
-            self,
-            metric: Optional[DataQualityStabilityMetrics] = None
-    ):
+    def __init__(self, metric: Optional[DataQualityStabilityMetrics] = None):
         if metric is not None:
             self.metric = metric
 
@@ -131,7 +125,7 @@ class BaseDataQualityCorrelationsMetricsValueTest(BaseCheckValueTest, ABC):
         lte: Optional[Number] = None,
         not_eq: Optional[Number] = None,
         not_in: Optional[List[Union[Number, str, bool]]] = None,
-        metric: Optional[DataQualityCorrelationMetrics] = None
+        metric: Optional[DataQualityCorrelationMetrics] = None,
     ):
         self.method = method
         if metric is not None:
@@ -187,7 +181,7 @@ class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest, ABC):
         lte: Optional[Number] = None,
         not_eq: Optional[Number] = None,
         not_in: Optional[List[Union[Number, str, bool]]] = None,
-        metric: Optional[DataQualityMetrics] = None
+        metric: Optional[DataQualityMetrics] = None,
     ):
         self.column_name = column_name
         super().__init__(
@@ -242,14 +236,14 @@ class TestFeatureValueMinRenderer(TestRenderer):
     def render_html(self, obj: TestFeatureValueMin) -> TestHtmlInfo:
         column_name = obj.column_name
         info = super().render_html(obj)
-        curr_distr = obj.metric.get_result().distr_for_plots[column_name]['current']
+        curr_distr = obj.metric.get_result().distr_for_plots[column_name]["current"]
         ref_distr = None
-        if 'reference' in obj.metric.get_result().distr_for_plots[column_name].keys():
-            ref_distr = obj.metric.get_result().distr_for_plots[column_name]['reference']
+        if "reference" in obj.metric.get_result().distr_for_plots[column_name].keys():
+            ref_distr = obj.metric.get_result().distr_for_plots[column_name]["reference"]
         fig = plot_distr(curr_distr, ref_distr)
         fig = plot_check(fig, obj.condition)
         fig = plot_metric_value(
-            fig, obj.metric.get_result().features_stats[column_name].min, f'current {column_name} min value'
+            fig, obj.metric.get_result().features_stats[column_name].min, f"current {column_name} min value"
         )
 
         fig_json = fig.to_plotly_json()
@@ -261,8 +255,8 @@ class TestFeatureValueMinRenderer(TestRenderer):
                     title="",
                     size=2,
                     type="big_graph",
-                    params={"data": fig_json['data'], "layout": fig_json['layout']},
-                )
+                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
+                ),
             )
         )
         return info
@@ -284,14 +278,14 @@ class TestFeatureValueMaxRenderer(TestRenderer):
     def render_html(self, obj: TestFeatureValueMax) -> TestHtmlInfo:
         column_name = obj.column_name
         info = super().render_html(obj)
-        curr_distr = obj.metric.get_result().distr_for_plots[column_name]['current']
+        curr_distr = obj.metric.get_result().distr_for_plots[column_name]["current"]
         ref_distr = None
-        if 'reference' in obj.metric.get_result().distr_for_plots[column_name].keys():
-            ref_distr = obj.metric.get_result().distr_for_plots[column_name]['reference']
+        if "reference" in obj.metric.get_result().distr_for_plots[column_name].keys():
+            ref_distr = obj.metric.get_result().distr_for_plots[column_name]["reference"]
         fig = plot_distr(curr_distr, ref_distr)
         fig = plot_check(fig, obj.condition)
         fig = plot_metric_value(
-            fig, obj.metric.get_result().features_stats[column_name].max, f'current {column_name} max value'
+            fig, obj.metric.get_result().features_stats[column_name].max, f"current {column_name} max value"
         )
 
         fig_json = fig.to_plotly_json()
@@ -303,8 +297,8 @@ class TestFeatureValueMaxRenderer(TestRenderer):
                     title="",
                     size=2,
                     type="big_graph",
-                    params={"data": fig_json['data'], "layout": fig_json['layout']},
-                )
+                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
+                ),
             )
         )
         return info
@@ -326,14 +320,14 @@ class TestFeatureValueMeanRenderer(TestRenderer):
     def render_html(self, obj: TestFeatureValueMean) -> TestHtmlInfo:
         column_name = obj.column_name
         info = super().render_html(obj)
-        curr_distr = obj.metric.get_result().distr_for_plots[column_name]['current']
+        curr_distr = obj.metric.get_result().distr_for_plots[column_name]["current"]
         ref_distr = None
-        if 'reference' in obj.metric.get_result().distr_for_plots[column_name].keys():
-            ref_distr = obj.metric.get_result().distr_for_plots[column_name]['reference']
+        if "reference" in obj.metric.get_result().distr_for_plots[column_name].keys():
+            ref_distr = obj.metric.get_result().distr_for_plots[column_name]["reference"]
         fig = plot_distr(curr_distr, ref_distr)
         fig = plot_check(fig, obj.condition)
         fig = plot_metric_value(
-            fig, obj.metric.get_result().features_stats[column_name].mean, f'current {column_name} mean value'
+            fig, obj.metric.get_result().features_stats[column_name].mean, f"current {column_name} mean value"
         )
 
         fig_json = fig.to_plotly_json()
@@ -345,8 +339,8 @@ class TestFeatureValueMeanRenderer(TestRenderer):
                     title="",
                     size=2,
                     type="big_graph",
-                    params={"data": fig_json['data'], "layout": fig_json['layout']},
-                )
+                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
+                ),
             )
         )
         return info
@@ -368,18 +362,18 @@ class TestFeatureValueMedianRenderer(TestRenderer):
     def render_html(self, obj: TestFeatureValueMedian) -> TestHtmlInfo:
         column_name = obj.column_name
         info = super().render_html(obj)
-        curr_distr = obj.metric.get_result().distr_for_plots[column_name]['current']
+        curr_distr = obj.metric.get_result().distr_for_plots[column_name]["current"]
         ref_distr = None
 
-        if 'reference' in obj.metric.get_result().distr_for_plots[column_name].keys():
-            ref_distr = obj.metric.get_result().distr_for_plots[column_name]['reference']
+        if "reference" in obj.metric.get_result().distr_for_plots[column_name].keys():
+            ref_distr = obj.metric.get_result().distr_for_plots[column_name]["reference"]
 
         fig = plot_distr(curr_distr, ref_distr)
         fig = plot_check(fig, obj.condition)
         fig = plot_metric_value(
             fig,
             obj.metric.get_result().features_stats[column_name].percentile_50,
-            f'current {column_name} median value'
+            f"current {column_name} median value",
         )
 
         fig_json = fig.to_plotly_json()
@@ -391,8 +385,8 @@ class TestFeatureValueMedianRenderer(TestRenderer):
                     title="",
                     size=2,
                     type="big_graph",
-                    params={"data": fig_json['data'], "layout": fig_json['layout']},
-                )
+                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
+                ),
             )
         )
         return info
@@ -414,10 +408,10 @@ class TestFeatureValueStdRenderer(TestRenderer):
     def render_html(self, obj: TestFeatureValueStd) -> TestHtmlInfo:
         column_name = obj.column_name
         info = super().render_html(obj)
-        curr_distr = obj.metric.get_result().distr_for_plots[column_name]['current']
+        curr_distr = obj.metric.get_result().distr_for_plots[column_name]["current"]
         ref_distr = None
-        if 'reference' in obj.metric.get_result().distr_for_plots[column_name].keys():
-            ref_distr = obj.metric.get_result().distr_for_plots[column_name]['reference']
+        if "reference" in obj.metric.get_result().distr_for_plots[column_name].keys():
+            ref_distr = obj.metric.get_result().distr_for_plots[column_name]["reference"]
         fig = plot_distr(curr_distr, ref_distr)
 
         fig_json = fig.to_plotly_json()
@@ -429,8 +423,8 @@ class TestFeatureValueStdRenderer(TestRenderer):
                     title="",
                     size=2,
                     type="big_graph",
-                    params={"data": fig_json['data'], "layout": fig_json['layout']},
-                )
+                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
+                ),
             )
         )
         return info
@@ -452,11 +446,11 @@ class TestNumberOfUniqueValuesRenderer(TestRenderer):
     def render_html(self, obj: TestNumberOfUniqueValues) -> TestHtmlInfo:
         info = super().render_html(obj)
         column_name = obj.column_name
-        curr_df = obj.metric.get_result().counts_of_values[column_name]['current']
+        curr_df = obj.metric.get_result().counts_of_values[column_name]["current"]
         ref_df = None
-        if 'reference' in obj.metric.get_result().counts_of_values[column_name].keys():
-            ref_df = obj.metric.get_result().counts_of_values[column_name]['reference']
-        additional_plots = plot_value_counts_tables_ref_curr(column_name, curr_df, ref_df, 'num_of_unique_vals')
+        if "reference" in obj.metric.get_result().counts_of_values[column_name].keys():
+            ref_df = obj.metric.get_result().counts_of_values[column_name]["reference"]
+        additional_plots = plot_value_counts_tables_ref_curr(column_name, curr_df, ref_df, "num_of_unique_vals")
         info.details = additional_plots
         return info
 
@@ -466,7 +460,7 @@ class TestUniqueValuesShare(BaseFeatureDataQualityMetricsTest):
 
     def calculate_value_for_test(self) -> Number:
         features_stats = self.metric.get_result().features_stats.get_all_features()
-        return features_stats[self.column_name].unique_percentage / 100.
+        return features_stats[self.column_name].unique_percentage / 100.0
 
     def get_description(self, value: Number) -> str:
         return f"Share of unique values for feature '{self.column_name}' is {value}"
@@ -477,11 +471,11 @@ class TestUniqueValuesShareRenderer(TestRenderer):
     def render_html(self, obj: TestUniqueValuesShare) -> TestHtmlInfo:
         info = super().render_html(obj)
         column_name = obj.column_name
-        curr_df = obj.metric.get_result().counts_of_values[column_name]['current']
+        curr_df = obj.metric.get_result().counts_of_values[column_name]["current"]
         ref_df = None
-        if 'reference' in obj.metric.get_result().counts_of_values[column_name].keys():
-            ref_df = obj.metric.get_result().counts_of_values[column_name]['reference']
-        additional_plots = plot_value_counts_tables_ref_curr(column_name, curr_df, ref_df, 'unique_vals_sare')
+        if "reference" in obj.metric.get_result().counts_of_values[column_name].keys():
+            ref_df = obj.metric.get_result().counts_of_values[column_name]["reference"]
+        additional_plots = plot_value_counts_tables_ref_curr(column_name, curr_df, ref_df, "unique_vals_sare")
         info.details = additional_plots
         return info
 
@@ -491,7 +485,7 @@ class TestMostCommonValueShare(BaseFeatureDataQualityMetricsTest):
 
     def calculate_value_for_test(self) -> Number:
         features_stats = self.metric.get_result().features_stats.get_all_features()
-        return features_stats[self.column_name].most_common_value_percentage / 100.
+        return features_stats[self.column_name].most_common_value_percentage / 100.0
 
     def get_description(self, value: Number) -> str:
         return f"Share of most common value for feature '{self.column_name}' is {value}"
@@ -502,11 +496,11 @@ class TestMostCommonValueShareRenderer(TestRenderer):
     def render_html(self, obj: TestMostCommonValueShare) -> TestHtmlInfo:
         info = super().render_html(obj)
         column_name = obj.column_name
-        curr_df = obj.metric.get_result().counts_of_values[column_name]['current']
+        curr_df = obj.metric.get_result().counts_of_values[column_name]["current"]
         ref_df = None
-        if 'reference' in obj.metric.get_result().counts_of_values[column_name].keys():
-            ref_df = obj.metric.get_result().counts_of_values[column_name]['reference']
-        additional_plots = plot_value_counts_tables_ref_curr(column_name, curr_df, ref_df, 'most_common_value_sare')
+        if "reference" in obj.metric.get_result().counts_of_values[column_name].keys():
+            ref_df = obj.metric.get_result().counts_of_values[column_name]["reference"]
+        additional_plots = plot_value_counts_tables_ref_curr(column_name, curr_df, ref_df, "most_common_value_sare")
         info.details = additional_plots
         return info
 
@@ -517,12 +511,7 @@ class TestMeanInNSigmas(Test):
     column_name: str
     n_sigmas: int
 
-    def __init__(
-            self,
-            column_name: str,
-            n_sigmas: int = 2,
-            metric: Optional[DataQualityMetrics] = None
-    ):
+    def __init__(self, column_name: str, n_sigmas: int = 2, metric: Optional[DataQualityMetrics] = None):
         self.column_name = column_name
         self.n_sigmas = n_sigmas
         if metric is not None:
@@ -577,18 +566,16 @@ class TestMeanInNSigmasRenderer(TestRenderer):
         lt = ref_mean + obj.n_sigmas * ref_std
         ref_condition = TestValueCondition(gt=gt, lt=lt)
         info = super().render_html(obj)
-        curr_distr = obj.metric.get_result().distr_for_plots[column_name]['current']
+        curr_distr = obj.metric.get_result().distr_for_plots[column_name]["current"]
         ref_distr = None
 
-        if 'reference' in obj.metric.get_result().distr_for_plots[column_name].keys():
-            ref_distr = obj.metric.get_result().distr_for_plots[column_name]['reference']
+        if "reference" in obj.metric.get_result().distr_for_plots[column_name].keys():
+            ref_distr = obj.metric.get_result().distr_for_plots[column_name]["reference"]
 
         fig = plot_distr(curr_distr, ref_distr)
         fig = plot_check(fig, ref_condition)
         fig = plot_metric_value(
-            fig,
-            obj.metric.get_result().features_stats[column_name].mean,
-            f'current {column_name} mean value'
+            fig, obj.metric.get_result().features_stats[column_name].mean, f"current {column_name} mean value"
         )
 
         fig_json = fig.to_plotly_json()
@@ -600,8 +587,8 @@ class TestMeanInNSigmasRenderer(TestRenderer):
                     title="",
                     size=2,
                     type="big_graph",
-                    params={"data": fig_json['data'], "layout": fig_json['layout']},
-                )
+                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
+                ),
             )
         )
         return info
@@ -615,11 +602,11 @@ class TestValueRange(Test):
     right: Optional[float]
 
     def __init__(
-            self,
-            column_name: str,
-            left: Optional[float] = None,
-            right: Optional[float] = None,
-            metric: Optional[DataQualityValueRangeMetrics] = None
+        self,
+        column_name: str,
+        left: Optional[float] = None,
+        right: Optional[float] = None,
+        metric: Optional[DataQualityValueRangeMetrics] = None,
     ):
         self.column_name = column_name
         self.left = left
@@ -635,8 +622,10 @@ class TestValueRange(Test):
         number_not_in_range = self.metric.get_result().number_not_in_range
 
         if number_not_in_range > 0:
-            description = f"Column {self.column_name} has {number_not_in_range} values that are " \
-                          f"not in range from {self.left} to {self.right}."
+            description = (
+                f"Column {self.column_name} has {number_not_in_range} values that are "
+                f"not in range from {self.left} to {self.right}."
+            )
             test_result = TestResult.FAIL
         else:
             description = f"Column {self.column_name} values are in range from {self.left} to {self.right}"
@@ -651,10 +640,10 @@ class TestValueRangeRenderer(TestRenderer):
         column_name = obj.column_name
         condition_ = TestValueCondition(gt=obj.left, lt=obj.right)
         info = super().render_html(obj)
-        curr_distr = obj.metric.get_result().distr_for_plot['current']
+        curr_distr = obj.metric.get_result().distr_for_plot["current"]
         ref_distr = None
-        if 'reference' in obj.metric.get_result().distr_for_plot.keys():
-            ref_distr = obj.metric.get_result().distr_for_plot['reference']
+        if "reference" in obj.metric.get_result().distr_for_plot.keys():
+            ref_distr = obj.metric.get_result().distr_for_plot["reference"]
         fig = plot_distr(curr_distr, ref_distr)
         fig = plot_check(fig, condition_)
 
@@ -667,8 +656,8 @@ class TestValueRangeRenderer(TestRenderer):
                     title="",
                     size=2,
                     type="big_graph",
-                    params={"data": fig_json['data'], "layout": fig_json['layout']},
-                )
+                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
+                ),
             )
         )
         return info
@@ -693,7 +682,7 @@ class BaseDataQualityValueRangeMetricsTest(BaseCheckValueTest, ABC):
         lte: Optional[Number] = None,
         not_eq: Optional[Number] = None,
         not_in: Optional[List[Union[Number, str, bool]]] = None,
-        metric: Optional[DataQualityValueRangeMetrics] = None
+        metric: Optional[DataQualityValueRangeMetrics] = None,
     ):
         self.column_name = column_name
         self.left = left
@@ -724,10 +713,10 @@ class TestNumberOfOutRangeValuesRenderer(TestRenderer):
         column_name = obj.column_name
         condition_ = TestValueCondition(gt=obj.left, lt=obj.right)
         info = super().render_html(obj)
-        curr_distr = obj.metric.get_result().distr_for_plot['current']
+        curr_distr = obj.metric.get_result().distr_for_plot["current"]
         ref_distr = None
-        if 'reference' in obj.metric.get_result().distr_for_plot.keys():
-            ref_distr = obj.metric.get_result().distr_for_plot['reference']
+        if "reference" in obj.metric.get_result().distr_for_plot.keys():
+            ref_distr = obj.metric.get_result().distr_for_plot["reference"]
         fig = plot_distr(curr_distr, ref_distr)
         fig = plot_check(fig, condition_)
 
@@ -740,8 +729,8 @@ class TestNumberOfOutRangeValuesRenderer(TestRenderer):
                     title="",
                     size=2,
                     type="big_graph",
-                    params={"data": fig_json['data'], "layout": fig_json['layout']},
-                )
+                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
+                ),
             )
         )
         return info
@@ -763,10 +752,10 @@ class TestShareOfOutRangeValuesRenderer(TestRenderer):
         column_name = obj.column_name
         condition_ = TestValueCondition(gt=obj.left, lt=obj.right)
         info = super().render_html(obj)
-        curr_distr = obj.metric.get_result().distr_for_plot['current']
+        curr_distr = obj.metric.get_result().distr_for_plot["current"]
         ref_distr = None
-        if 'reference' in obj.metric.get_result().distr_for_plot.keys():
-            ref_distr = obj.metric.get_result().distr_for_plot['reference']
+        if "reference" in obj.metric.get_result().distr_for_plot.keys():
+            ref_distr = obj.metric.get_result().distr_for_plot["reference"]
         fig = plot_distr(curr_distr, ref_distr)
         fig = plot_check(fig, condition_)
 
@@ -779,8 +768,8 @@ class TestShareOfOutRangeValuesRenderer(TestRenderer):
                     title="",
                     size=2,
                     type="big_graph",
-                    params={"data": fig_json['data'], "layout": fig_json['layout']},
-                )
+                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
+                ),
             )
         )
         return info
@@ -793,10 +782,7 @@ class TestValueList(Test):
     values: Optional[list]
 
     def __init__(
-        self,
-        column_name: str,
-        values: Optional[list] = None,
-        metric: Optional[DataQualityValueListMetrics] = None
+        self, column_name: str, values: Optional[list] = None, metric: Optional[DataQualityValueListMetrics] = None
     ):
         self.column_name = column_name
         self.values = values
@@ -827,11 +813,11 @@ class TestValueListRenderer(TestRenderer):
         info = super().render_html(obj)
         column_name = obj.column_name
         values = obj.values
-        curr_df = obj.metric.get_result().counts_of_value['current']
+        curr_df = obj.metric.get_result().counts_of_value["current"]
         ref_df = None
-        if 'reference' in obj.metric.get_result().counts_of_value.keys():
-            ref_df = obj.metric.get_result().counts_of_value['reference']
-        additional_plots = plot_value_counts_tables(column_name, values, curr_df, ref_df, 'value_list')
+        if "reference" in obj.metric.get_result().counts_of_value.keys():
+            ref_df = obj.metric.get_result().counts_of_value["reference"]
+        additional_plots = plot_value_counts_tables(column_name, values, curr_df, ref_df, "value_list")
         info.details = additional_plots
         return info
 
@@ -853,7 +839,7 @@ class BaseDataQualityValueListMetricsTest(BaseCheckValueTest, ABC):
         lte: Optional[Number] = None,
         not_eq: Optional[Number] = None,
         not_in: Optional[List[Union[Number, str, bool]]] = None,
-        metric: Optional[DataQualityValueListMetrics] = None
+        metric: Optional[DataQualityValueListMetrics] = None,
     ):
         self.column_name = column_name
         self.values = values
@@ -883,11 +869,11 @@ class TestNumberOfOutListValuesRenderer(TestRenderer):
         info = super().render_html(obj)
         column_name = obj.column_name
         values = obj.values
-        curr_df = obj.metric.get_result().counts_of_value['current']
+        curr_df = obj.metric.get_result().counts_of_value["current"]
         ref_df = None
-        if 'reference' in obj.metric.get_result().counts_of_value.keys():
-            ref_df = obj.metric.get_result().counts_of_value['reference']
-        additional_plots = plot_value_counts_tables(column_name, values, curr_df, ref_df, 'number_value_list')
+        if "reference" in obj.metric.get_result().counts_of_value.keys():
+            ref_df = obj.metric.get_result().counts_of_value["reference"]
+        additional_plots = plot_value_counts_tables(column_name, values, curr_df, ref_df, "number_value_list")
         info.details = additional_plots
         return info
 
@@ -920,7 +906,7 @@ class TestValueQuantile(BaseCheckValueTest):
         lte: Optional[Number] = None,
         not_eq: Optional[Number] = None,
         not_in: Optional[List[Union[Number, str, bool]]] = None,
-        metric: Optional[DataQualityValueQuantileMetrics] = None
+        metric: Optional[DataQualityValueQuantileMetrics] = None,
     ):
         self.column_name = column_name
         self.quantile = quantile
@@ -948,14 +934,13 @@ class TestValueQuantileRenderer(TestRenderer):
     def render_html(self, obj: TestValueQuantile) -> TestHtmlInfo:
         column_name = obj.column_name
         info = super().render_html(obj)
-        curr_distr = obj.metric.get_result().distr_for_plot['current']
+        curr_distr = obj.metric.get_result().distr_for_plot["current"]
         ref_distr = None
-        if 'reference' in obj.metric.get_result().distr_for_plot.keys():
-            ref_distr = obj.metric.get_result().distr_for_plot['reference']
+        if "reference" in obj.metric.get_result().distr_for_plot.keys():
+            ref_distr = obj.metric.get_result().distr_for_plot["reference"]
         fig = plot_distr(curr_distr, ref_distr)
         fig = plot_check(fig, obj.condition)
-        fig = plot_metric_value(fig, obj.metric.get_result().value, 
-                                f'current {column_name} {obj.quantile} quantile')
+        fig = plot_metric_value(fig, obj.metric.get_result().value, f"current {column_name} {obj.quantile} quantile")
 
         fig_json = fig.to_plotly_json()
         info.details.append(
@@ -966,8 +951,8 @@ class TestValueQuantileRenderer(TestRenderer):
                     title="",
                     size=2,
                     type="big_graph",
-                    params={"data": fig_json['data'], "layout": fig_json['layout']},
-                )
+                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
+                ),
             )
         )
         return info
@@ -979,10 +964,10 @@ class TestShareOfOutListValuesRenderer(TestRenderer):
         info = super().render_html(obj)
         column_name = obj.column_name
         values = obj.values
-        curr_df = obj.metric.get_result().counts_of_value['current']
+        curr_df = obj.metric.get_result().counts_of_value["current"]
         ref_df = None
-        if 'reference' in obj.metric.get_result().counts_of_value.keys():
-            ref_df = obj.metric.get_result().counts_of_value['reference']
-        additional_plots = plot_value_counts_tables(column_name, values, curr_df, ref_df, 'share_value_list')
+        if "reference" in obj.metric.get_result().counts_of_value.keys():
+            ref_df = obj.metric.get_result().counts_of_value["reference"]
+        additional_plots = plot_value_counts_tables(column_name, values, curr_df, ref_df, "share_value_list")
         info.details = additional_plots
         return info

@@ -50,21 +50,27 @@ class SimpleClassificationTest(Test):
 
     def _compare(self, actual_value: float, threshold: float):
         if actual_value > threshold:
-            return TestResult(name=self.name,
-                              description=self._success_description(actual_value, threshold),
-                              status=TestResult.SUCCESS)
-        return TestResult(name=self.name,
-                          description=self._fail_description(actual_value, threshold),
-                          status=TestResult.FAIL)
+            return TestResult(
+                name=self.name,
+                description=self._success_description(actual_value, threshold),
+                status=TestResult.SUCCESS,
+            )
+        return TestResult(
+            name=self.name, description=self._fail_description(actual_value, threshold), status=TestResult.FAIL
+        )
 
     def _compare_with_reference(self, actual_value: float, reference_value: float):
         if np.isclose(actual_value, reference_value, atol=0.1):
-            return TestResult(name=self.name,
-                              description=self._success_description_reference(actual_value, reference_value),
-                              status=TestResult.SUCCESS)
-        return TestResult(name=self.name,
-                          description=self._fail_description_reference(actual_value, reference_value),
-                          status=TestResult.FAIL)
+            return TestResult(
+                name=self.name,
+                description=self._success_description_reference(actual_value, reference_value),
+                status=TestResult.SUCCESS,
+            )
+        return TestResult(
+            name=self.name,
+            description=self._fail_description_reference(actual_value, reference_value),
+            status=TestResult.FAIL,
+        )
 
 
 class TestAccuracyScore(SimpleClassificationTest):
@@ -185,8 +191,8 @@ class TestTPR(SimpleClassificationTest):
     name = "Test TPR"
 
     def get_value(self, result: DatasetClassificationPerformanceMetrics):
-        tp_total = sum([data['tp'] for label, data in result.confusion_by_classes.items()])
-        fn_total = sum([data['fn'] for label, data in result.confusion_by_classes.items()])
+        tp_total = sum([data["tp"] for label, data in result.confusion_by_classes.items()])
+        fn_total = sum([data["fn"] for label, data in result.confusion_by_classes.items()])
         return tp_total / (tp_total + fn_total)
 
     def _success_description(self, actual_value: float, threshold: float):
@@ -206,8 +212,8 @@ class TestTNR(SimpleClassificationTest):
     name = "Test TNR"
 
     def get_value(self, result: DatasetClassificationPerformanceMetrics):
-        tn_total = sum([data['tn'] for label, data in result.confusion_by_classes.items()])
-        fp_total = sum([data['fp'] for label, data in result.confusion_by_classes.items()])
+        tn_total = sum([data["tn"] for label, data in result.confusion_by_classes.items()])
+        fp_total = sum([data["fp"] for label, data in result.confusion_by_classes.items()])
         return tn_total / (tn_total + fp_total)
 
     def _success_description(self, actual_value: float, threshold: float):
@@ -227,8 +233,8 @@ class TestFPR(SimpleClassificationTest):
     name = "Test FPR"
 
     def get_value(self, result: DatasetClassificationPerformanceMetrics):
-        tn_total = sum([data['tn'] for label, data in result.confusion_by_classes.items()])
-        fp_total = sum([data['fp'] for label, data in result.confusion_by_classes.items()])
+        tn_total = sum([data["tn"] for label, data in result.confusion_by_classes.items()])
+        fp_total = sum([data["fp"] for label, data in result.confusion_by_classes.items()])
         return fp_total / (tn_total + fp_total)
 
     def _success_description(self, actual_value: float, threshold: float):
@@ -248,8 +254,8 @@ class TestFNR(SimpleClassificationTest):
     name = "Test FNR"
 
     def get_value(self, result: DatasetClassificationPerformanceMetrics):
-        tp_total = sum([data['tp'] for label, data in result.confusion_by_classes.items()])
-        fn_total = sum([data['fn'] for label, data in result.confusion_by_classes.items()])
+        tp_total = sum([data["tp"] for label, data in result.confusion_by_classes.items()])
+        fn_total = sum([data["fn"] for label, data in result.confusion_by_classes.items()])
         return fn_total / (tp_total + fn_total)
 
     def _success_description(self, actual_value: float, threshold: float):

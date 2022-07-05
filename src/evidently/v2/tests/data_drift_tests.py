@@ -28,17 +28,17 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
     metric: DataDriftMetrics
 
     def __init__(
-            self,
-            eq: Optional[Number] = None,
-            gt: Optional[Number] = None,
-            gte: Optional[Number] = None,
-            is_in: Optional[List[Union[Number, str, bool]]] = None,
-            lt: Optional[Number] = None,
-            lte: Optional[Number] = None,
-            not_eq: Optional[Number] = None,
-            not_in: Optional[List[Union[Number, str, bool]]] = None,
-            metric: Optional[DataDriftMetrics] = None,
-            options: Optional[DataDriftOptions] = None
+        self,
+        eq: Optional[Number] = None,
+        gt: Optional[Number] = None,
+        gte: Optional[Number] = None,
+        is_in: Optional[List[Union[Number, str, bool]]] = None,
+        lt: Optional[Number] = None,
+        lte: Optional[Number] = None,
+        not_eq: Optional[Number] = None,
+        not_in: Optional[List[Union[Number, str, bool]]] = None,
+        metric: Optional[DataDriftMetrics] = None,
+        options: Optional[DataDriftOptions] = None,
     ):
         if metric is not None:
             self.metric = metric
@@ -56,9 +56,15 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
             name=result.name,
             description=result.description,
             status=result.status,
-            features={feature: (data.stattest_name, np.round(data.p_value, 3), data.threshold,
-                                "Detected" if data.drift_detected else "Not Detected")
-                      for feature, data in metrics.features.items()}
+            features={
+                feature: (
+                    data.stattest_name,
+                    np.round(data.p_value, 3),
+                    data.threshold,
+                    "Detected" if data.drift_detected else "Not Detected",
+                )
+                for feature, data in metrics.features.items()
+            },
         )
 
 
@@ -98,12 +104,20 @@ class TestFeatureValueDrift(BaseDataDriftMetricsTest):
         not_eq: Optional[Number] = None,
         not_in: Optional[List[Union[Number, str, bool]]] = None,
         metric: Optional[DataDriftMetrics] = None,
-        options: Optional[DataDriftOptions] = None
+        options: Optional[DataDriftOptions] = None,
     ):
         self.column_name = column_name
         super().__init__(
-            eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in,
-            metric=metric, options=options
+            eq=eq,
+            gt=gt,
+            gte=gte,
+            is_in=is_in,
+            lt=lt,
+            lte=lte,
+            not_eq=not_eq,
+            not_in=not_in,
+            metric=metric,
+            options=options,
         )
 
     def calculate_value_for_test(self) -> Number:
@@ -117,15 +131,18 @@ class TestFeatureValueDrift(BaseDataDriftMetricsTest):
 class TestNumberOfDriftedFeaturesRenderer(TestRenderer):
     def render_json(self, obj: TestNumberOfDriftedFeatures) -> dict:
         base = super().render_json(obj)
-        base['features'] = {feature: dict(stattest=data[0], score=np.round(data[1], 3), threshold=data[2],
-                                          data_drift=data[3])
-                            for feature, data in obj.get_result().features.items()}
+        base["features"] = {
+            feature: dict(stattest=data[0], score=np.round(data[1], 3), threshold=data[2], data_drift=data[3])
+            for feature, data in obj.get_result().features.items()
+        }
         return base
 
     def render_html(self, obj: TestNumberOfDriftedFeatures) -> TestHtmlInfo:
         info = super().render_html(obj)
-        df = pd.DataFrame(data=[[feature] + list(data) for feature, data in obj.get_result().features.items()],
-                          columns=["Feature name", "Stattest", "Drift score", "Threshold", "Data Drift"])
+        df = pd.DataFrame(
+            data=[[feature] + list(data) for feature, data in obj.get_result().features.items()],
+            columns=["Feature name", "Stattest", "Drift score", "Threshold", "Data Drift"],
+        )
         df = df.sort_values("Data Drift")
         info.details = [
             DetailsInfo(
@@ -134,12 +151,9 @@ class TestNumberOfDriftedFeaturesRenderer(TestRenderer):
                 info=BaseWidgetInfo(
                     title="",
                     type="table",
-                    params={
-                        "header": df.columns.to_list(),
-                        "data": df.values
-                    },
+                    params={"header": df.columns.to_list(), "data": df.values},
                     size=2,
-                )
+                ),
             ),
         ]
         return info
@@ -149,15 +163,18 @@ class TestNumberOfDriftedFeaturesRenderer(TestRenderer):
 class TestShareOfDriftedFeaturesRenderer(TestRenderer):
     def render_json(self, obj: TestShareOfDriftedFeatures) -> dict:
         base = super().render_json(obj)
-        base['features'] = {feature: dict(stattest=data[0], score=np.round(data[1], 3), threshold=data[2],
-                                          data_drift=data[3])
-                            for feature, data in obj.get_result().features.items()}
+        base["features"] = {
+            feature: dict(stattest=data[0], score=np.round(data[1], 3), threshold=data[2], data_drift=data[3])
+            for feature, data in obj.get_result().features.items()
+        }
         return base
 
     def render_html(self, obj: TestShareOfDriftedFeatures) -> TestHtmlInfo:
         info = super().render_html(obj)
-        df = pd.DataFrame(data=[[feature] + list(data) for feature, data in obj.get_result().features.items()],
-                          columns=["Feature name", "Stattest", "Drift score", "Threshold", "Data Drift"])
+        df = pd.DataFrame(
+            data=[[feature] + list(data) for feature, data in obj.get_result().features.items()],
+            columns=["Feature name", "Stattest", "Drift score", "Threshold", "Data Drift"],
+        )
         df = df.sort_values("Data Drift")
         info.details = [
             DetailsInfo(
@@ -166,12 +183,9 @@ class TestShareOfDriftedFeaturesRenderer(TestRenderer):
                 info=BaseWidgetInfo(
                     title="",
                     type="table",
-                    params={
-                        "header": df.columns.to_list(),
-                        "data": df.values
-                    },
+                    params={"header": df.columns.to_list(), "data": df.values},
                     size=2,
-                )
+                ),
             ),
         ]
         return info
@@ -183,18 +197,14 @@ class TestFeatureValueDriftRenderer(TestRenderer):
         feature_name = obj.column_name
         data = obj.get_result().features[feature_name]
         super().render_json(obj)
-        base = {
-            feature_name: dict(
-                stattest=data[0], score=np.round(data[1], 3), threshold=data[2], data_drift=data[3]
-            )
-        }
+        base = {feature_name: dict(stattest=data[0], score=np.round(data[1], 3), threshold=data[2], data_drift=data[3])}
         return base
 
     def render_html(self, obj: TestNumberOfDriftedFeatures) -> TestHtmlInfo:
         feature_name = obj.column_name
         info = super().render_html(obj)
-        curr_distr = obj.metric.get_result().distr_for_plots[feature_name]['current']
-        ref_distr = obj.metric.get_result().distr_for_plots[feature_name]['reference']
+        curr_distr = obj.metric.get_result().distr_for_plots[feature_name]["current"]
+        ref_distr = obj.metric.get_result().distr_for_plots[feature_name]["reference"]
         fig = plot_distr(curr_distr, ref_distr)
         fig_json = fig.to_plotly_json()
         info.details.append(
@@ -205,8 +215,8 @@ class TestFeatureValueDriftRenderer(TestRenderer):
                     title="",
                     size=2,
                     type="big_graph",
-                    params={"data": fig_json['data'], "layout": fig_json['layout']},
-                )
+                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
+                ),
             )
         )
         return info

@@ -56,47 +56,41 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
 
         if data.reference_data is None:
             analyzer_results = self.analyzer.calculate(
-                reference_data=data.current_data,
-                current_data=None,
-                column_mapping=data.column_mapping
+                reference_data=data.current_data, current_data=None, column_mapping=data.column_mapping
             )
             current_metrics = analyzer_results.reference_metrics
             reference_metrics = None
         else:
             analyzer_results = self.analyzer.calculate(
-                reference_data=data.reference_data,
-                current_data=data.current_data,
-                column_mapping=data.column_mapping
+                reference_data=data.reference_data, current_data=data.current_data, column_mapping=data.column_mapping
             )
             current_metrics = analyzer_results.current_metrics
             reference_metrics = analyzer_results.reference_metrics
 
         r2_score_value = r2_score(
             y_true=data.current_data[data.column_mapping.target],
-            y_pred=data.current_data[data.column_mapping.prediction]
+            y_pred=data.current_data[data.column_mapping.prediction],
         )
         rmse_score_value = mean_squared_error(
             y_true=data.current_data[data.column_mapping.target],
-            y_pred=data.current_data[data.column_mapping.prediction]
+            y_pred=data.current_data[data.column_mapping.prediction],
         )
 
         # mae default values
         dummy_preds = data.current_data[data.column_mapping.target].median()
         mean_abs_error_default = mean_absolute_error(
-            y_true=data.current_data[data.column_mapping.target],
-            y_pred=[dummy_preds] * data.current_data.shape[0]
+            y_true=data.current_data[data.column_mapping.target], y_pred=[dummy_preds] * data.current_data.shape[0]
         )
         # rmse default values
         rmse_ref = None
         if data.reference_data is not None:
             rmse_ref = mean_squared_error(
                 y_true=data.reference_data[data.column_mapping.target],
-                y_pred=data.reference_data[data.column_mapping.prediction]
+                y_pred=data.reference_data[data.column_mapping.prediction],
             )
         dummy_preds = data.current_data[data.column_mapping.target].mean()
         rmse_default = mean_squared_error(
-            y_true=data.current_data[data.column_mapping.target],
-            y_pred=[dummy_preds] * data.current_data.shape[0]
+            y_true=data.current_data[data.column_mapping.target], y_pred=[dummy_preds] * data.current_data.shape[0]
         )
         # mape default values
         # optimal constant for mape
@@ -111,27 +105,25 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
         dummy_preds = s[s != 0].values[pos]
 
         mean_abs_perc_error_default = mean_absolute_percentage_error(
-            y_true=data.current_data[data.column_mapping.target],
-            y_pred=[dummy_preds] * data.current_data.shape[0]
+            y_true=data.current_data[data.column_mapping.target], y_pred=[dummy_preds] * data.current_data.shape[0]
         )
         #  r2_score default values
         r2_score_ref = None
         if data.reference_data is not None:
             r2_score_ref = r2_score(
                 y_true=data.reference_data[data.column_mapping.target],
-                y_pred=data.reference_data[data.column_mapping.prediction]
+                y_pred=data.reference_data[data.column_mapping.prediction],
             )
 
         # visualisation
 
         df_target_binned = make_target_bins_for_reg_plots(
-            data.current_data, data.column_mapping.target,
-            data.column_mapping.prediction, data.reference_data
+            data.current_data, data.column_mapping.target, data.column_mapping.prediction, data.reference_data
         )
-        curr_target_bins = df_target_binned.loc[df_target_binned.data == 'curr', 'target_binned']
+        curr_target_bins = df_target_binned.loc[df_target_binned.data == "curr", "target_binned"]
         ref_target_bins = None
         if data.reference_data is not None:
-            ref_target_bins = df_target_binned.loc[df_target_binned.data == 'ref', 'target_binned']
+            ref_target_bins = df_target_binned.loc[df_target_binned.data == "ref", "target_binned"]
         hist_for_plot = make_hist_for_cat_plot(curr_target_bins, ref_target_bins)
 
         vals_for_plots = {}
@@ -143,8 +135,8 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
             is_ref_data = False
 
         for name, func in zip(
-                ['r2_score', 'rmse', 'mean_abs_error', 'mean_abs_perc_error'],
-                [r2_score, mean_squared_error, mean_absolute_error, mean_absolute_percentage_error]
+            ["r2_score", "rmse", "mean_abs_error", "mean_abs_perc_error"],
+            [r2_score, mean_squared_error, mean_absolute_error, mean_absolute_percentage_error],
         ):
             vals_for_plots[name] = apply_func_to_binned_data(
                 df_target_binned, func, data.column_mapping.target, data.column_mapping.prediction, is_ref_data
@@ -155,8 +147,9 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
         err_ref = None
 
         if is_ref_data:
-            err_ref = data.reference_data[data.column_mapping.prediction] - \
-                data.reference_data[data.column_mapping.target]
+            err_ref = (
+                data.reference_data[data.column_mapping.prediction] - data.reference_data[data.column_mapping.target]
+            )
         me_hist_for_plot = make_hist_for_num_plot(err_curr, err_ref)
 
         return RegressionPerformanceMetricsResults(
@@ -181,5 +174,5 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
             mean_abs_error_ref=reference_metrics.mean_abs_error if reference_metrics is not None else None,
             mean_abs_perc_error_ref=reference_metrics.mean_abs_perc_error if reference_metrics is not None else None,
             rmse_ref=rmse_ref,
-            r2_score_ref=r2_score_ref
+            r2_score_ref=r2_score_ref,
         )
