@@ -2,8 +2,7 @@ from evidently.analyzers.utils import DatasetColumns
 from evidently.v2.metrics.base_metric import InputData
 from evidently.v2.test_preset.test_preset import TestPreset
 from evidently.v2.tests import TestColumnNANShare, TestMostCommonValueShare, TestNumberOfConstantColumns, \
-    TestNumberOfDuplicatedColumns, TestNumberOfDuplicatedRows
-from evidently.v2.tests.data_quality_tests import HighlyCorrelatedFeatures
+    TestNumberOfDuplicatedColumns, TestNumberOfDuplicatedRows, TestHighlyCorrelatedFeatures
 
 
 class DataQuality(TestPreset):
@@ -20,5 +19,5 @@ class DataQuality(TestPreset):
             TestNumberOfConstantColumns(),
             TestNumberOfDuplicatedColumns(),
             TestNumberOfDuplicatedRows(),
-            HighlyCorrelatedFeatures(),
+            TestHighlyCorrelatedFeatures(),
         ]

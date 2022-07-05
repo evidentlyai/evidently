@@ -99,7 +99,7 @@ class TestShareOfDriftedFeatures(BaseDataDriftMetricsTest):
         return self.metric.get_result().analyzer_result.metrics.share_drifted_features
 
     def get_description(self, value: Number) -> str:
-        return f"Drift is detected for {np.round(value, 3) * 100}% features \
+        return f"Drift is detected for {value * 100:.3g}% features \
         ({self.metric.get_result().analyzer_result.metrics.n_drifted_features} out of \
         {self.metric.get_result().analyzer_result.metrics.n_features}). Threshold: [{self.get_condition()}]"
 
@@ -140,15 +140,14 @@ class TestFeatureValueDrift(BaseDataDriftMetricsTest):
         return TestValueCondition(eq=True)
 
     def calculate_value_for_test(self) -> Number:
-        return self.metric.get_result().analyzer_result.metrics.features[self.column_name].drift_detected
+        return not self.metric.get_result().analyzer_result.metrics.features[self.column_name].drift_detected
 
     def get_description(self, value: Number) -> str:
         return f"Drift score for feature {self.column_name} is \
-            {np.round(self.metric.get_result().analyzer_result.metrics.features[self.column_name].p_value, 3)}. \
+            {self.metric.get_result().analyzer_result.metrics.features[self.column_name].p_value:.3g}. \
                 {self.metric.get_result().analyzer_result.metrics.features[self.column_name].stattest_name}. \
                      Drift Detection Threshold is \
-                        {self.metric.get_result().analyzer_result.metrics.features[self.column_name].threshold}."
-       
+                        {self.metric.get_result().analyzer_result.metrics.features[self.column_name].threshold:.3g}."
 
 
 @default_renderer(test_type=TestNumberOfDriftedFeatures)

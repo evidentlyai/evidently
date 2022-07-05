@@ -155,7 +155,7 @@ class TestTargetPredictionCorrelation(BaseDataQualityCorrelationsMetricsValueTes
 
 class TestHighlyCorrelatedFeatures(BaseDataQualityCorrelationsMetricsValueTest):
     name = "Test Highly Correlated Features"
-    
+
     def get_condition(self) -> TestValueCondition:
         if self.condition.is_set():
             return self.condition
@@ -170,6 +170,7 @@ class TestHighlyCorrelatedFeatures(BaseDataQualityCorrelationsMetricsValueTest):
     def get_description(self, value: Number) -> str:
         return f"Max Correlation is {np.round(value)}. Test Threshold is [{self.get_condition()}]."
 
+
 @default_renderer(test_type=TestHighlyCorrelatedFeatures)
 class TestHighlyCorrelatedFeaturesRenderer(TestRenderer):
     def render_html(self, obj: TestHighlyCorrelatedFeatures) -> TestHtmlInfo:
@@ -183,7 +184,7 @@ class TestHighlyCorrelatedFeaturesRenderer(TestRenderer):
         fig_json = fig.to_plotly_json()
         info.details.append(
             DetailsInfo(
-                id=f"HighlyCorrelatedFeatures",
+                id="HighlyCorrelatedFeatures",
                 title="",
                 info=BaseWidgetInfo(
                     title="",
@@ -198,12 +199,13 @@ class TestHighlyCorrelatedFeaturesRenderer(TestRenderer):
 
 class TestTargetFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValueTest):
     name = "Test Correlation Between Target and Features"
-    
+
     def get_condition(self) -> TestValueCondition:
         if self.condition.is_set():
             return self.condition
         if self.metric.get_result().reference_abs_max_target_features_correlation is not None:
-            ref_abs_max_num_target_features_corr = self.metric.get_result().reference_abs_max_target_features_correlation
+            ref_abs_max_num_target_features_corr = \
+                self.metric.get_result().reference_abs_max_target_features_correlation
             return TestValueCondition(eq=approx(ref_abs_max_num_target_features_corr, relative=0.1))
         return TestValueCondition(lt=0.9)
 
@@ -211,7 +213,8 @@ class TestTargetFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValueTest
         return self.metric.get_result().abs_max_target_features_correlation
 
     def get_description(self, value: Number) -> str:
-        return f"Max Correlation is {np.round(value)}. Test Threshold is [{self.get_condition()}]."
+        return f"Max Correlation is {value:.3g}. Test Threshold is [{self.get_condition()}]."
+
 
 @default_renderer(test_type=TestTargetFeaturesCorrelations)
 class TestTargetFeaturesCorrelationsRenderer(TestRenderer):
@@ -225,7 +228,7 @@ class TestTargetFeaturesCorrelationsRenderer(TestRenderer):
         fig_json = fig.to_plotly_json()
         info.details.append(
             DetailsInfo(
-                id=f"TestTargetFeaturesCorrelations",
+                id="TestTargetFeaturesCorrelations",
                 title="",
                 info=BaseWidgetInfo(
                     title="",
@@ -246,7 +249,7 @@ class CorrelationChanges(BaseDataQualityCorrelationsMetricsValueTest):
         return self.metric.get_result().abs_max_num_features_correlation
 
     def get_description(self, value: Number) -> str:
-        return f"Max numeric features correlation is {value}"
+        return f"Max numeric features correlation is {value:.3g}"
 
 
 class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest, ABC):
@@ -580,7 +583,7 @@ class TestMostCommonValueShare(BaseFeatureDataQualityMetricsTest):
         return features_stats[self.column_name].most_common_value_percentage / 100.0
 
     def get_description(self, value: Number) -> str:
-        return f"Share of the Most Common Value for column {self.column_name} is {np.round(value, 3)}. \
+        return f"Share of the Most Common Value for column {self.column_name} is {value:.3g}. \
             Test Threshold is [{self.get_condition()}]."
 
 
@@ -638,13 +641,15 @@ class TestMeanInNSigmas(Test):
             right_condition = reference_mean + sigmas_value
 
             if left_condition < current_mean < right_condition:
-                description = f"Mean value of column {self.column_name} {np.round(current_mean, 3)} is in range from {np.round(left_condition, 3)} \
-                                to {np.round(right_condition, 3)}"
+                description = f"Mean value of column {self.column_name} {current_mean:.3g} is " \
+                              f"in range from {left_condition:.3g} \
+                                to {right_condition:.3g}"
                 test_result = TestResult.SUCCESS
 
             else:
-                description = f"Mean value of column {self.column_name} {np.round(current_mean, 3)} is not in range from {np.round(left_condition, 3)} \
-                                to {np.round(right_condition, 3)}"
+                description = f"Mean value of column {self.column_name} {current_mean:.3g} is" \
+                              f" not in range from {left_condition:.3g} \
+                                to {right_condition:.3g}"
                 test_result = TestResult.FAIL
 
         return TestResult(name=self.name, description=description, status=test_result)
