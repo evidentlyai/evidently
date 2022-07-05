@@ -163,17 +163,35 @@ def test_data_integrity_test_duplicated_columns() -> None:
 
 
 def test_data_integrity_test_columns_type() -> None:
-    test_dataset = pd.DataFrame({"numerical_feature": [1, 2, 3], "target": ["1", "1", "1"]})
+    current_dataset = pd.DataFrame({"numerical_feature": [1, 2, 3], "target": ["1", "1", "1"]})
+    reference_dataset = pd.DataFrame({"numerical_feature": [1., 2.4, 3.], "target": [True, False, True]})
+    suite = TestSuite(tests=[TestColumnsType()])
+    suite.run(current_data=current_dataset, reference_data=current_dataset, column_mapping=ColumnMapping())
+    assert suite
+
+    suite = TestSuite(tests=[TestColumnsType()])
+    suite.run(current_data=current_dataset, reference_data=None, column_mapping=ColumnMapping())
+    assert not suite
+
     suite = TestSuite(tests=[TestColumnsType(columns_type={})])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(current_data=current_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
     assert not suite
 
     suite = TestSuite(tests=[TestColumnsType(columns_type={"not_exists": "int64"})])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(current_data=current_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
 
-    suite = TestSuite(tests=[TestColumnsType(columns_type={"numerical_feature": "int64"})])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite = TestSuite(tests=[
+        TestColumnsType(columns_type={
+            "numerical_feature": np.float64,
+            "target": "bool",
+        })
+    ])
+    suite.run(current_data=reference_dataset, reference_data=None, column_mapping=ColumnMapping())
+    assert suite
+
+    suite = TestSuite(tests=[TestColumnsType(columns_type={"numerical_feature": "number"})])
+    suite.run(current_data=current_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
 
 

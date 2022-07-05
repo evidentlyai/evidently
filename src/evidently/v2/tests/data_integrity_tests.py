@@ -5,6 +5,7 @@ from typing import Optional
 from typing import Union
 
 import numpy as np
+from pandas.core.dtypes.common import infer_dtype_from_object
 
 from evidently.v2.metrics.data_integrity_metrics import DataIntegrityMetrics
 from evidently.v2.metrics.data_integrity_metrics import DataIntegrityValueByRegexpMetrics
@@ -400,14 +401,17 @@ class TestAllUniqueValues(BaseIntegrityByColumnsTest):
 
 
 class TestColumnsType(Test):
-    """This test compares a column type against the specified type"""
+    """This test compares columns type against the specified ones or a reference dataframe"""
     group = "data_integrity"
     name = "Test Columns Type"
-    columns_type: dict
+    columns_type: Optional[dict]
     data_integrity_metric: DataIntegrityMetrics
 
-    def __init__(self, columns_type: dict, data_integrity_metric: Optional[DataIntegrityMetrics] = None):
+    def __init__(
+            self, columns_type: Optional[dict] = None, data_integrity_metric: Optional[DataIntegrityMetrics] = None
+    ):
         self.columns_type = columns_type
+
         if data_integrity_metric is None:
             self.data_integrity_metric = DataIntegrityMetrics()
 
@@ -419,22 +423,42 @@ class TestColumnsType(Test):
         status = TestResult.SUCCESS
         data_columns_type = self.data_integrity_metric.get_result().current_stats.columns_type
 
-        if not self.columns_type:
-            status = TestResult.ERROR
-            description = "Columns type condition is empty"
+        if self.columns_type is None:
+            if self.data_integrity_metric.get_result().reference_stats is None:
+                status = TestResult.ERROR
+                description = "Cannot compare column types without conditions or a reference"
+                return TestResult(name=self.name, description=description, status=status)
+
+            # get types from reference
+            columns_type = self.data_integrity_metric.get_result().reference_stats.columns_type
 
         else:
-            for column_name, column_type in self.columns_type.items():
-                real_column_type = data_columns_type.get(column_name)
+            columns_type = self.columns_type
 
-                if real_column_type is None:
-                    status = TestResult.ERROR
-                    description = f"No column '{column_name}' in the metrics data"
-                    break
+            if not columns_type:
+                status = TestResult.ERROR
+                description = "Columns type condition is empty"
+                return TestResult(name=self.name, description=description, status=status)
 
-                elif column_type != real_column_type:
+        for column_name, expected_type_object in columns_type.items():
+            real_column_type_object = data_columns_type.get(column_name)
+
+            if real_column_type_object is None:
+                status = TestResult.ERROR
+                description = f"No column '{column_name}' in the metrics data"
+                break
+
+            else:
+                expected_type = infer_dtype_from_object(expected_type_object)
+                real_column_type = infer_dtype_from_object(real_column_type_object)
+
+                if expected_type == real_column_type or issubclass(real_column_type, expected_type):
+                    # types are matched or expected type is a parent
+                    continue
+
+                else:
                     status = TestResult.FAIL
-                    description = f"Column '{column_name}' type is {real_column_type}, but expected {column_type}"
+                    description = f"Column '{column_name}' type is {real_column_type}, but expected is {expected_type}"
                     break
 
         return TestResult(name=self.name, description=description, status=status)
