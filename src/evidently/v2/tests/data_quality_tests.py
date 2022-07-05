@@ -488,12 +488,25 @@ class TestUniqueValuesShareRenderer(TestRenderer):
 class TestMostCommonValueShare(BaseFeatureDataQualityMetricsTest):
     name = "Test Share of the Most Common Value"
 
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.is_set():
+            return self.condition
+        if self.metric.get_result().reference_features_stats is not None:
+            return TestValueCondition(
+                eq=approx(
+                    self.metric.get_result().reference_features_stats[self.column_name].most_common_value_percentage / 100.0,
+                    relative=0.1
+                )
+            )
+        return TestValueCondition(lt=0.8)
+
     def calculate_value_for_test(self) -> Number:
         features_stats = self.metric.get_result().features_stats.get_all_features()
         return features_stats[self.column_name].most_common_value_percentage / 100.0
 
     def get_description(self, value: Number) -> str:
-        return f"Share of most common value for feature '{self.column_name}' is {value}"
+        return f"Share of the Most Common Value for column {self.column_name} is {np.round(value, 3)}. \
+            Test Threshold is [{self.get_condition()}]."
 
 
 @default_renderer(test_type=TestMostCommonValueShare)
