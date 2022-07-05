@@ -23,6 +23,7 @@ from evidently.utils import NumpyEncoder
 from evidently.v2.metrics.base_metric import InputData, Metric
 from evidently.v2.renderers.notebook_utils import determine_template
 from evidently.v2.suite.base_suite import Suite, find_test_renderer
+from evidently.v2.test_preset.test_preset import TestPreset
 from evidently.v2.tests.base_test import Test, TestResult
 
 
@@ -35,31 +36,45 @@ def _discover_dependencies(test: Test) -> Iterator[Tuple[str, Union[Metric, Test
 class TestSuite:
     _inner_suite: Suite
     _columns_info: DatasetColumns
+    _test_presets: List[TestPreset]
 
-    def __init__(self, tests: Optional[List[Test]]):
+    def __init__(self, tests: Optional[List[Union[Test, TestPreset]]]):
         self._inner_suite = Suite()
+        self._test_presets = []
         for original_test in tests:
-            test = copy.copy(original_test)
-            for field_name, dependency in _discover_dependencies(test):
-                if issubclass(type(dependency), Metric):
-                    self._inner_suite.add_metrics(dependency)
-                if issubclass(type(dependency), Test):
-                    dependency_copy = copy.copy(dependency)
-                    test.__setattr__(field_name, dependency_copy)
-                    self._inner_suite.add_tests(dependency_copy)
-            self._inner_suite.add_tests(test)
+            if issubclass(type(original_test), TestPreset):
+                self._test_presets.append(original_test)
+                continue
+            self._add_test(original_test)
+
+    def _add_test(self, test: Test):
+        new_test = copy.copy(test)
+        for field_name, dependency in _discover_dependencies(new_test):
+            if issubclass(type(dependency), Metric):
+                self._inner_suite.add_metrics(dependency)
+            if issubclass(type(dependency), Test):
+                dependency_copy = copy.copy(dependency)
+                new_test.__setattr__(field_name, dependency_copy)
+                self._inner_suite.add_tests(dependency_copy)
+        self._inner_suite.add_tests(new_test)
 
     def __bool__(self):
         return all(test_result.is_passed() for _, test_result in self._inner_suite.context.test_results.items())
 
     def run(
-            self, *, reference_data: Optional[pd.DataFrame], current_data: pd.DataFrame,
+            self, *,
+            reference_data: Optional[pd.DataFrame],
+            current_data: pd.DataFrame,
             column_mapping: Optional[ColumnMapping] = None
     ) -> None:
         if column_mapping is None:
             column_mapping = ColumnMapping()
 
         self._columns_info = process_columns(current_data, column_mapping)
+        for preset in self._test_presets:
+            tests = preset.generate_tests(InputData(reference_data, current_data, column_mapping), self._columns_info)
+            for test in tests:
+                self._add_test(test)
         self._inner_suite.verify()
         self._inner_suite.run_calculate(InputData(reference_data, current_data, column_mapping))
         self._inner_suite.run_checks()

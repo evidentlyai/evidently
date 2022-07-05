@@ -1,12 +1,14 @@
+from dataclasses import dataclass
 from typing import Dict
 from typing import Optional
 
 import pandas as pd
 import numpy as np
-from dataclasses import dataclass
 
+from evidently import ColumnMapping
 from evidently.analyzers.data_quality_analyzer import DataQualityStats
 from evidently.analyzers.data_quality_analyzer import DataQualityAnalyzer
+from evidently.analyzers.utils import recognize_task
 from evidently.options.quality_metrics import QualityMetricsOptions
 from evidently.options import OptionsProvider
 from evidently.v2.metrics.base_metric import InputData
@@ -60,7 +62,28 @@ class DataQualityMetrics(Metric[DataQualityMetricsResults]):
 
         distr_for_plots = {}
         counts_of_values = {}
-        for feature in analyzer_results.columns.num_feature_names:
+
+        if data.column_mapping.task is not None:
+            task = data.column_mapping.task
+
+        elif data.column_mapping.task is None and analyzer_results.columns.utility_columns.target:
+            task = recognize_task(analyzer_results.columns.utility_columns.target, reference_data)
+
+        else:
+            task = None
+
+        target_prediction_columns = [t for t in [analyzer_results.columns.utility_columns.target,
+                                                 analyzer_results.columns.utility_columns.prediction]
+                                     if t is not None]
+        num_columns = analyzer_results.columns.num_feature_names
+        cat_columns = analyzer_results.columns.cat_feature_names
+        if task == ColumnMapping.REGRESSION_TASK:
+            num_columns.extend(target_prediction_columns)
+        if task == ColumnMapping.CLASSIFICATION_TASK:
+            cat_columns.extend(target_prediction_columns)
+
+
+        for feature in num_columns:
             counts_of_value_feature = {}
             curr_feature = data.current_data[feature]
             current_counts = data.current_data[feature].value_counts(dropna=False).reset_index()
@@ -79,7 +102,7 @@ class DataQualityMetrics(Metric[DataQualityMetricsResults]):
             counts_of_values[feature] = counts_of_value_feature
             distr_for_plots[feature] = make_hist_for_num_plot(curr_feature, ref_feature)
 
-        for feature in analyzer_results.columns.cat_feature_names:
+        for feature in cat_columns:
             curr_feature = data.current_data[feature]
             ref_feature = None
             if reference_data is not None:
@@ -214,7 +237,7 @@ class DataQualityValueRangeMetrics(Metric[DataQualityValueRangeMetricsResults]):
         ref_feature = None
         if data.reference_data is not None:
             ref_feature = data.reference_data[self.column]
-  
+
         distr_for_plot = make_hist_for_num_plot(curr_feature, ref_feature)
 
         return DataQualityValueRangeMetricsResults(
@@ -323,7 +346,6 @@ class DataQualityCorrelationMetrics(Metric[DataQualityCorrelationMetricsResults]
 
         if reference_correlations is not None:
             reference_target_prediction_correlation = reference_correlations.loc[prediction_name, target_name]
-
         else:
             reference_target_prediction_correlation = None
 
@@ -360,9 +382,9 @@ class DataQualityCorrelationMetrics(Metric[DataQualityCorrelationMetricsResults]
 
         else:
             reference_abs_max_correlation = None
-        
+
         abs_max_num_features_correlation = current_correlations.loc[num_features, num_features].abs().max().max()
- 
+
         if reference_correlations is not None:
             reference_abs_max_num_features_correlation = (
                 reference_correlations.loc[num_features, num_features].abs().max().max()
