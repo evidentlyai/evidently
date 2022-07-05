@@ -125,7 +125,8 @@ def test_export_to_json():
 
     assert "tests" in json_result
     assert len(json_result["tests"]) == len(tests)
-    assert "timestamp" in json_result
+    assert "datetime" in json_result
+    assert isinstance(json_result["datetime"], str)
     assert "version" in json_result
 
     assert "columns_info" in json_result
@@ -146,4 +147,4 @@ def test_export_to_json():
     assert summary_result["total_tests"] == 36
 
     assert "by_status" in summary_result
-    assert summary_result["by_status"] == {"FAIL": 5, "SUCCESS": 31}
+    assert summary_result["by_status"] == {"ERROR": 1, "FAIL": 5, "SUCCESS": 30}

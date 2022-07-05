@@ -21,5 +21,5 @@ def test_data_integrity_metrics() -> None:
         data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping), metrics={}
     )
     assert result is not None
-    assert result.number_of_columns == 4
-    assert result.number_of_rows == 3
+    assert result.current_stats.number_of_columns == 4
+    assert result.current_stats.number_of_rows == 3

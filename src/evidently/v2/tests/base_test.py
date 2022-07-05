@@ -139,8 +139,21 @@ class TestValueCondition:
         return result
 
     def __str__(self) -> str:
-        operations = ['eq', 'gt', 'gte', 'lt', 'lte', 'is_in', 'not_in', 'not_eq']
-        conditions = [f'{op}={getattr(self, op):.3f}' for op in operations if getattr(self, op) is not None]
+        conditions = []
+        operations = ['eq', 'gt', 'gte', 'lt', 'lte', 'not_eq', 'is_in', 'not_in']
+
+        for op in operations:
+            value = getattr(self, op)
+
+            if value is None:
+                continue
+
+            if isinstance(value, float):
+                conditions.append(f'{op}={value:.3f}')
+
+            else:
+                conditions.append(f'{op}={value}')
+
         return f"{' and '.join(conditions)}"
 
 

@@ -1,7 +1,8 @@
+import copy
 import dataclasses
 import json
-import time
 import uuid
+from datetime import datetime
 from collections import Counter
 from typing import List
 from typing import Optional
@@ -129,7 +130,7 @@ class TestSuite:
 
         return {
             "version": evidently.__version__,
-            "timestamp": time.time(),
+            "datetime": datetime.now().isoformat(),
             "tests": test_results,
             "summary": {
                 "all_passed": bool(self),

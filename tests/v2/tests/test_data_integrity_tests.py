@@ -179,23 +179,20 @@ def test_data_integrity_test_columns_type() -> None:
 
 def test_data_integrity_test_columns_nan_share() -> None:
     test_dataset = pd.DataFrame({"feature1": [1, 2, np.nan], "feature2": [1, 2, np.nan], "target": ["1", "1", "1"]})
-    suite = TestSuite(tests=[TestColumnNANShare(columns=[], lte=0.5)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
-    assert suite
 
     suite = TestSuite(tests=[TestColumnNANShare(lte=0.1)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
 
-    suite = TestSuite(tests=[TestColumnNANShare(columns=["not_exists_feature", "feature1", "feature2", "target"])])
+    suite = TestSuite(tests=[TestColumnNANShare(column_name="not_exists_feature")])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
 
-    suite = TestSuite(tests=[TestColumnNANShare(columns=["feature1", "feature2", "target"], lt=0.1)])
+    suite = TestSuite(tests=[TestColumnNANShare(column_name="feature1", lt=0.1)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
 
-    suite = TestSuite(tests=[TestColumnNANShare(columns=["feature1", "feature2", "target"], lt=0.5)])
+    suite = TestSuite(tests=[TestColumnNANShare(column_name="feature1", lt=0.5)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
 
@@ -250,18 +247,18 @@ def test_data_integrity_test_columns_all_unique_values() -> None:
 
 def test_data_integrity_test_column_values_match_regexp() -> None:
     test_dataset = pd.DataFrame({"feature1": ["a", "aa", "baa"], "feature2": ["b", "bb", "baa"], "target": [1, 2, 3]})
-    suite = TestSuite(tests=[TestColumnValueRegexp(columns="feature1", reg_exp=r"a.*", eq=2)])
+    suite = TestSuite(tests=[TestColumnValueRegexp(column_name="feature1", reg_exp=r"a.*", eq=2)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
 
-    suite = TestSuite(tests=[TestColumnValueRegexp(columns=["feature1", "feature2"], reg_exp=r"c.*", lt=1)])
+    suite = TestSuite(tests=[TestColumnValueRegexp(column_name="feature2", reg_exp=r"c.*", lt=1)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
 
     suite = TestSuite(
         tests=[
-            TestColumnValueRegexp(columns=["feature1"], reg_exp=r"a.*", eq=2),
-            TestColumnValueRegexp(columns=["feature2"], reg_exp=r"b.*", eq=2),
+            TestColumnValueRegexp(column_name="feature1", reg_exp=r"a.*", eq=2),
+            TestColumnValueRegexp(column_name="feature2", reg_exp=r"b.*", eq=2),
         ]
     )
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
@@ -269,8 +266,8 @@ def test_data_integrity_test_column_values_match_regexp() -> None:
 
     suite = TestSuite(
         tests=[
-            TestColumnValueRegexp(columns=["feature1"], reg_exp=r"a.*", eq=2),
-            TestColumnValueRegexp(columns=["feature2"], reg_exp=r"b.*", eq=3),
+            TestColumnValueRegexp(column_name="feature1", reg_exp=r"a.*", eq=2),
+            TestColumnValueRegexp(column_name="feature2", reg_exp=r"b.*", eq=3),
         ]
     )
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
