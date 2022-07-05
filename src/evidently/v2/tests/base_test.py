@@ -7,6 +7,8 @@ from typing import List
 from typing import Optional
 from typing import Union
 
+from evidently.v2.tests.utils import ApproxValue
+
 
 @dataclass
 class TestResult:
@@ -58,27 +60,6 @@ class Test:
     @abc.abstractmethod
     def check(self):
         raise NotImplementedError()
-
-    def set_context(self, context):
-        self.context = context
-
-    def get_result(self):
-        if self.context is None:
-            raise ValueError("No context is set")
-        result = self.context.test_results.get(self, None)
-        if result is None:
-            raise ValueError(f"No result found for metric {self} of type {type(self).__name__}")
-        return result
-
-
-class TestContextWrapper:
-    context = None
-
-    def __init__(self, obj: Test):
-        self.obj = obj
-
-    def __getattr__(self, attr):
-        return getattr(self.obj, attr)
 
     def set_context(self, context):
         self.context = context
@@ -151,8 +132,8 @@ class TestValueCondition:
             if value is None:
                 continue
 
-            if isinstance(value, float):
-                conditions.append(f"{op}={value:.3f}")
+            if isinstance(value, (float, ApproxValue)):
+                conditions.append(f"{op}={value:.3g}")
 
             else:
                 conditions.append(f"{op}={value}")

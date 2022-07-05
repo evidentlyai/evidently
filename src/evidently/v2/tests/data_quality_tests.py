@@ -211,7 +211,7 @@ class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest, ABC):
         result.description = self.get_description(value)
 
         try:
-            condition_check_result = self.condition.check_value(value)
+            condition_check_result = self.get_condition().check_value(value)
 
             if condition_check_result:
                 result.mark_as_success()
