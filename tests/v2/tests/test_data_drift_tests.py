@@ -56,21 +56,21 @@ def test_data_drift_test_number_of_drifted_features_json_render() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "Drift is detected for 0 out of 4 features. Threshold: [lt=1]",
+        "description": "The drift is detected for 0 out of 4 features. The test " "threshold is lt=1.",
         "group": "data_drift",
-        "name": "Test Number of Drifted Features",
+        "name": "Number of Drifted Features",
         "parameters": {
             "features": {
                 "category_feature": {
                     "data_drift": "Not Detected",
                     "score": 1.0,
-                    "stattest": "chi-square p_value",
+                    "stattest": "chi-square " "p_value",
                     "threshold": 0.05,
                 },
                 "numerical_feature": {
                     "data_drift": "Not Detected",
                     "score": 1.0,
-                    "stattest": "chi-square p_value",
+                    "stattest": "chi-square " "p_value",
                     "threshold": 0.05,
                 },
                 "prediction": {
@@ -130,21 +130,21 @@ def test_data_drift_test_share_of_drifted_features_json_render() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "Drift is detected for 0% features (0 out of 4). Threshold: [lt=0.3]",
+        "description": "The drift is detected for 0% features (0 out of 4). The test " "threshold is lt=0.3",
         "group": "data_drift",
-        "name": "Test Share of Drifted Features",
+        "name": "Share of Drifted Features",
         "parameters": {
             "features": {
                 "category_feature": {
                     "data_drift": "Not Detected",
                     "score": 1.0,
-                    "stattest": "chi-square p_value",
+                    "stattest": "chi-square " "p_value",
                     "threshold": 0.05,
                 },
                 "numerical_feature": {
                     "data_drift": "Not Detected",
                     "score": 1.0,
-                    "stattest": "chi-square p_value",
+                    "stattest": "chi-square " "p_value",
                     "threshold": 0.05,
                 },
                 "prediction": {
@@ -183,10 +183,11 @@ def test_data_drift_test_feature_value_drift_json_render() -> None:
     assert result_from_json["summary"]["all_passed"] is False
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "Drift score for feature feature_1 is 0.0. chi-square p_value. "
-        "Drift Detection Threshold is 0.05.",
+        "description": "The drift score for the feature feature_1 is 0. The drift "
+        "detection method is chi-square p_value. The drift detection "
+        "threshold is 0.05.",
         "group": "data_drift",
-        "name": "Test Drift Per Feature",
+        "name": "Drift per Feature",
         "parameters": {
             "features": {
                 "feature_1": {"data_drift": True, "score": 0.0, "stattest": "chi-square p_value", "threshold": 0.05}

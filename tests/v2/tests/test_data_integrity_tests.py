@@ -52,13 +52,10 @@ def test_data_integrity_test_number_of_columns_json_render() -> None:
     json_str = suite.json()
     json_result = json.loads(json_str)
     assert json_result["tests"][0] == {
-        "description": "Number of Columns is 3. Test Threshold is [eq=3].",
+        "description": "The number of columns is 3. The test threshold is eq=3.",
         "group": "data_integrity",
-        "name": "Test Number of Columns",
-        "parameters": {
-            "condition": {"eq": 3},
-            "number_of_columns": 3,
-        },
+        "name": "Number of Columns",
+        "parameters": {"condition": {"eq": 3}, "number_of_columns": 3},
         "status": "SUCCESS",
     }
 
@@ -68,13 +65,10 @@ def test_data_integrity_test_number_of_columns_json_render() -> None:
     json_str = suite.json()
     json_result = json.loads(json_str)
     assert json_result["tests"][0] == {
-        "description": "Number of Columns is 3. Test Threshold is [lt=5].",
+        "description": "The number of columns is 3. The test threshold is lt=5.",
         "group": "data_integrity",
-        "name": "Test Number of Columns",
-        "parameters": {
-            "condition": {"lt": 5},
-            "number_of_columns": 3,
-        },
+        "name": "Number of Columns",
+        "parameters": {"condition": {"lt": 5}, "number_of_columns": 3},
         "status": "SUCCESS",
     }
 
@@ -106,9 +100,9 @@ def test_data_integrity_test_number_of_rows_json_report() -> None:
     json_str = suite.json()
     json_result = json.loads(json_str)
     assert json_result["tests"][0] == {
-        "description": "Number of Rows is 4. Test Threshold is [eq=4 ± 0.4].",
+        "description": "The number of rows is 4. The test threshold is eq=4 ± 0.4.",
         "group": "data_integrity",
-        "name": "Test Number of Rows",
+        "name": "Number of Rows",
         "parameters": {"condition": {"eq": {"absolute": 1e-12, "relative": 0.1, "value": 4}}, "number_of_rows": 4},
         "status": "SUCCESS",
     }
@@ -182,9 +176,9 @@ def test_data_integrity_test_constant_columns_json_render() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "Number of Constant Columns is 1. Test Threshold is [lte=1].",
+        "description": "The number of constant columns is 1. The test threshold is " "lte=1.",
         "group": "data_integrity",
-        "name": "Test Number of Constant Columns",
+        "name": "Number of Constant Columns",
         "parameters": {"condition": {}, "number_of_constant_columns": 1},
         "status": "SUCCESS",
     }
@@ -261,9 +255,9 @@ def test_data_integrity_test_duplicated_rows_json_render() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "Number of Duplicated Rows is 3. Test Threshold is [eq=3 ± 0.3].",
+        "description": "The number of duplicate rows is 3. The test threshold is eq=3 " "± 0.3.",
         "group": "data_integrity",
-        "name": "Test Number of Duplicated Rows",
+        "name": "Number of Duplicate Rows",
         "parameters": {
             "condition": {"eq": {"absolute": 1e-12, "relative": 0.1, "value": 3.0}},
             "number_of_duplicated_rows": 3,
@@ -298,9 +292,9 @@ def test_data_integrity_test_duplicated_columns_json_render() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "Number of Duplicated Columns is  1. Test Threshold is " "[lte=1].",
+        "description": "The number of duplicate columns is 1. The test threshold is " "lte=1.",
         "group": "data_integrity",
-        "name": "Test Number of Duplicated Columns",
+        "name": "Number of Duplicate Columns",
         "parameters": {"condition": {"lte": 1}, "number_of_duplicated_columns": 1},
         "status": "SUCCESS",
     }
@@ -354,9 +348,9 @@ def test_data_integrity_test_columns_type_to_json() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "Number of columns with a type mismatch is 0 out of 2.",
+        "description": "The number of columns with a type mismatch is 0 out of 2.",
         "group": "data_integrity",
-        "name": "Test Columns Type",
+        "name": "Column Types",
         "parameters": {
             "columns": [
                 {"actual_type": "bool_", "column_name": "my_target", "expected_type": "bool_"},
@@ -394,9 +388,9 @@ def test_data_integrity_test_columns_nan_share_json_render() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "Share of NAs for feature1 column is 0.25. Test Threshold is [eq=0.25 ± 0.025].",
+        "description": "The share of NA values in feature1 is 0.25. The test " "threshold is eq=0.25 ± 0.025.",
         "group": "data_integrity",
-        "name": "Test Share of NA Values",
+        "name": "Share of NA Values in Columns",
         "parameters": {
             "condition": {"eq": {"absolute": 1e-12, "relative": 0.1, "value": 0.25}},
             "nans_by_columns": {"feature1": 1, "feature2": 1},

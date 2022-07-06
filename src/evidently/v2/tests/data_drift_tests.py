@@ -92,7 +92,7 @@ class TestNumberOfDriftedFeatures(BaseDataDriftMetricsTest):
         return (
             f"The drift is detected for {value} out of {n_features} features. "
             f"The test threshold is {self.get_condition()}."
-        ) 
+        )
 
 
 class TestShareOfDriftedFeatures(BaseDataDriftMetricsTest):
