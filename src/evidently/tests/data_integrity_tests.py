@@ -85,7 +85,7 @@ class TestNumberOfColumnsRenderer(TestRenderer):
         info = super().render_html(obj)
         columns = ["column name", "current dtype"]
         dict_curr = obj.data_integrity_metric.get_result().current_stats.columns_type
-        dict_ref = {}
+        dict_ref = None
         reference_stats = obj.data_integrity_metric.get_result().reference_stats
 
         if reference_stats is not None:

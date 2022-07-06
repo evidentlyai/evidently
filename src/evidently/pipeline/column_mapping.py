@@ -3,10 +3,13 @@ from typing import Optional, List, Union, Sequence
 from dataclasses import dataclass
 
 
-@dataclass
-class ColumnMapping:
+class TaskType:
     REGRESSION_TASK: str = "regression"
     CLASSIFICATION_TASK: str = "classification"
+
+
+@dataclass
+class ColumnMapping:
     target: Optional[str] = "target"
     prediction: Optional[Union[str, Sequence[str]]] = "prediction"
     datetime: Optional[str] = "datetime"
@@ -18,7 +21,7 @@ class ColumnMapping:
     task: Optional[str] = None
 
     def is_classification_task(self):
-        return self.task == self.CLASSIFICATION_TASK
+        return self.task == TaskType.CLASSIFICATION_TASK
 
     def is_regression_task(self):
-        return self.task == self.is_regression_task()
+        return self.task == TaskType.REGRESSION_TASK

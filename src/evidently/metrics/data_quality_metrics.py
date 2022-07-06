@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from typing import Dict
-from typing import Iterable
 from typing import List
 from typing import Optional
 from typing import Sequence
@@ -9,7 +8,7 @@ from typing import Union
 import pandas as pd
 import numpy as np
 
-from evidently import ColumnMapping
+from evidently import TaskType
 from evidently.analyzers.data_quality_analyzer import DataQualityStats
 from evidently.analyzers.data_quality_analyzer import DataQualityAnalyzer
 from evidently.analyzers.utils import recognize_task
@@ -101,10 +100,10 @@ class DataQualityMetrics(Metric[DataQualityMetricsResults]):
         num_columns = analyzer_results.columns.num_feature_names
         cat_columns = analyzer_results.columns.cat_feature_names
 
-        if task == ColumnMapping.REGRESSION_TASK:
+        if task == TaskType.REGRESSION_TASK:
             num_columns.extend(target_prediction_columns)
 
-        if task == ColumnMapping.CLASSIFICATION_TASK:
+        if task == TaskType.CLASSIFICATION_TASK:
             cat_columns.extend(target_prediction_columns)
 
         for feature in num_columns:
