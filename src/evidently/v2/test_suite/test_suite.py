@@ -84,10 +84,13 @@ class TestSuite:
             column_mapping = ColumnMapping()
 
         self._columns_info = process_columns(current_data, column_mapping)
+
         for preset in self._test_presets:
             tests = preset.generate_tests(InputData(reference_data, current_data, column_mapping), self._columns_info)
+
             for test in tests:
                 self._add_test(test)
+
         self._inner_suite.verify()
         self._inner_suite.run_calculate(InputData(reference_data, current_data, column_mapping))
         self._inner_suite.run_checks()
