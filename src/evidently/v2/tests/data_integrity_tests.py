@@ -63,8 +63,7 @@ class TestNumberOfColumns(BaseIntegrityValueTest):
         return TestValueCondition(gt=0)
 
     def calculate_value_for_test(self) -> Numeric:
-        self.value = self.data_integrity_metric.get_result().current_stats.number_of_columns
-        return self.value
+        return self.data_integrity_metric.get_result().current_stats.number_of_columns
 
     def get_description(self, value: Numeric) -> str:
         return f"Number of Columns is {value}. Test Threshold is [{self.get_condition()}]."
@@ -108,8 +107,7 @@ class TestNumberOfRows(BaseIntegrityValueTest):
         return TestValueCondition(gt=30)
 
     def calculate_value_for_test(self) -> Numeric:
-        self.value = self.data_integrity_metric.get_result().current_stats.number_of_rows
-        return self.value
+        return self.data_integrity_metric.get_result().current_stats.number_of_rows
 
     def get_description(self, value: Numeric) -> str:
         return f"Number of Rows is {value}. Test Threshold is [{self.get_condition()}]."
@@ -130,8 +128,7 @@ class TestNumberOfNANs(BaseIntegrityValueTest):
     name = "Test Number of NAN Values"
 
     def calculate_value_for_test(self) -> Numeric:
-        self.value = self.data_integrity_metric.get_result().current_stats.number_of_nans
-        return self.value
+        return self.data_integrity_metric.get_result().current_stats.number_of_nans
 
     def get_description(self, value: Numeric) -> str:
         return f"Number of NANs is {value}"
@@ -160,8 +157,7 @@ class TestNumberOfColumnsWithNANs(BaseIntegrityValueTest):
     name = "Test Number Of Columns With Nulls"
 
     def calculate_value_for_test(self) -> Numeric:
-        self.value = self.data_integrity_metric.get_result().current_stats.number_of_columns_with_nans
-        return self.value
+        return self.data_integrity_metric.get_result().current_stats.number_of_columns_with_nans
 
     def get_description(self, value: Numeric) -> str:
         return f"Number of columns with NANs is {value}"
@@ -190,8 +186,7 @@ class TestNumberOfRowsWithNANs(BaseIntegrityValueTest):
     name = "Test Number Of Rows With NANs"
 
     def calculate_value_for_test(self) -> Numeric:
-        self.value = self.data_integrity_metric.get_result().current_stats.number_of_rows_with_nans
-        return self.value
+        return self.data_integrity_metric.get_result().current_stats.number_of_rows_with_nans
 
     def get_description(self, value: Numeric) -> str:
         return f"Number of rows with NANs is {value}"
@@ -213,8 +208,7 @@ class TestNumberOfConstantColumns(BaseIntegrityValueTest):
         return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
-        self.value = self.data_integrity_metric.get_result().current_stats.number_of_constant_columns
-        return self.value
+        return self.data_integrity_metric.get_result().current_stats.number_of_constant_columns
 
     def get_description(self, value: Numeric) -> str:
         return f"Number of Constant Columns is {value}. Test Threshold is [{self.get_condition()}]."
@@ -243,8 +237,7 @@ class TestNumberOfEmptyRows(BaseIntegrityValueTest):
     name = "Test Number Of Empty Rows"
 
     def calculate_value_for_test(self) -> Numeric:
-        self.value = self.data_integrity_metric.get_result().current_stats.number_of_empty_rows
-        return self.value
+        return self.data_integrity_metric.get_result().current_stats.number_of_empty_rows
 
     def get_description(self, value: Numeric) -> str:
         return f"Number of empty rows: {value}"
@@ -256,8 +249,7 @@ class TestNumberOfEmptyColumns(BaseIntegrityValueTest):
     name = "Test Number Of Empty Columns"
 
     def calculate_value_for_test(self) -> Numeric:
-        self.value = self.data_integrity_metric.get_result().current_stats.number_of_empty_columns
-        return self.value
+        return self.data_integrity_metric.get_result().current_stats.number_of_empty_columns
 
     def get_description(self, value: Numeric) -> str:
         return f"Number of empty columns: {value}"
@@ -295,8 +287,7 @@ class TestNumberOfDuplicatedRows(BaseIntegrityValueTest):
         return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
-        self.value = self.data_integrity_metric.get_result().current_stats.number_of_duplicated_rows
-        return self.value
+        return self.data_integrity_metric.get_result().current_stats.number_of_duplicated_rows
 
     def get_description(self, value: Numeric) -> str:
         return f"Number of Duplicated Rows is {value}. Test Threshold is [{self.get_condition()}]."
@@ -318,8 +309,7 @@ class TestNumberOfDuplicatedColumns(BaseIntegrityValueTest):
         return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
-        self.value = self.data_integrity_metric.get_result().current_stats.number_of_duplicated_columns
-        return self.value
+        return self.data_integrity_metric.get_result().current_stats.number_of_duplicated_columns
 
     def get_description(self, value: Numeric) -> str:
         return f"Number of Duplicated Columns is  {value}. Test Threshold is [{self.get_condition()}]."
@@ -379,6 +369,17 @@ class TestColumnNANShare(BaseIntegrityByColumnsConditionTest):
             f"Share of NAs for {self.column_name} column is {value:.3g}."
             f" Test Threshold is [{self.get_condition()}]."
         )
+
+
+@default_renderer(test_type=TestColumnNANShare)
+class TestColumnNANShareRenderer(TestRenderer):
+    def render_json(self, obj: TestColumnNANShare) -> dict:
+        base = super().render_json(obj)
+        base["parameters"]["condition"] = obj.get_condition().as_dict()
+        base["parameters"]["nans_by_columns"] = obj.data_integrity_metric.get_result().current_stats.nans_by_columns
+        base["parameters"]["number_of_rows"] = obj.data_integrity_metric.get_result().current_stats.number_of_rows
+        base["parameters"]["share_of_nans"] = obj.value
+        return base
 
 
 class BaseIntegrityByColumnsTest(Test, ABC):

@@ -293,13 +293,9 @@ def test_data_integrity_test_columns_type_to_json() -> None:
 def test_data_integrity_test_columns_nan_share() -> None:
     test_dataset = pd.DataFrame({"feature1": [1, 2, np.nan], "feature2": [1, 2, np.nan], "target": ["1", "1", "1"]})
 
-    # suite = TestSuite(tests=[TestColumnNANShare(lte=0.1)])
-    # suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
-    # assert not suite
-
-    # suite = TestSuite(tests=[TestColumnNANShare(column_name="not_exists_feature")])
-    # suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
-    # assert not suite
+    suite = TestSuite(tests=[TestColumnNANShare(column_name="feature1")])
+    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=ColumnMapping())
+    assert suite
 
     suite = TestSuite(tests=[TestColumnNANShare(column_name="feature1", lt=0.1)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
@@ -308,6 +304,30 @@ def test_data_integrity_test_columns_nan_share() -> None:
     suite = TestSuite(tests=[TestColumnNANShare(column_name="feature1", lt=0.5)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
+
+
+def test_data_integrity_test_columns_nan_share_json_render() -> None:
+    test_dataset = pd.DataFrame({"feature1": [1, 2, np.nan, 4], "feature2": [1, 2, np.nan, 1]})
+
+    suite = TestSuite(tests=[TestColumnNANShare(column_name="feature1")])
+    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=ColumnMapping())
+    assert suite
+
+    result_from_json = json.loads(suite.json())
+    assert result_from_json["summary"]["all_passed"] is True
+    test_info = result_from_json["tests"][0]
+    assert test_info == {
+        "description": "Share of NAs for feature1 column is 0.25. Test Threshold is " "[eq=0.25 ± 0.025].",
+        "group": "data_integrity",
+        "name": "Test Share of NA Values",
+        "parameters": {
+            "condition": {"eq": {"absolute": 1e-12, "relative": 0.1, "value": 0.25}},
+            "nans_by_columns": {"feature1": 1, "feature2": 1},
+            "number_of_rows": 4,
+            "share_of_nans": 0.25,
+        },
+        "status": "SUCCESS",
+    }
 
 
 def test_data_integrity_test_columns_all_constant_values() -> None:

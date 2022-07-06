@@ -204,6 +204,7 @@ class BaseCheckValueTest(BaseConditionsTest):
     def check(self):
         result = TestResult(name=self.name, description="The test was not launched", status=TestResult.SKIPPED)
         value = self.calculate_value_for_test()
+        self.value = value
         result.description = self.get_description(value)
 
         try:
