@@ -167,6 +167,7 @@ class DataQualityValueListMetricsResults:
     share_in_list: float
     share_not_in_list: float
     counts_of_value: Dict[str, pd.DataFrame]
+    rows_count: int
 
 
 class DataQualityValueListMetrics(Metric[DataQualityValueListMetricsResults]):
@@ -204,6 +205,7 @@ class DataQualityValueListMetrics(Metric[DataQualityValueListMetricsResults]):
             share_in_list=values_in_list / rows_count,
             share_not_in_list=number_not_in_list / rows_count,
             counts_of_value=counts_of_value,
+            rows_count=rows_count,
         )
 
 
@@ -214,6 +216,7 @@ class DataQualityValueRangeMetricsResults:
     share_in_range: float
     share_not_in_range: float
     distr_for_plot: Dict[str, pd.DataFrame]
+    rows_count: int
 
 
 class DataQualityValueRangeMetrics(Metric[DataQualityValueRangeMetricsResults]):
@@ -262,6 +265,7 @@ class DataQualityValueRangeMetrics(Metric[DataQualityValueRangeMetricsResults]):
             share_in_range=number_in_range / rows_count,
             share_not_in_range=number_not_in_range / rows_count,
             distr_for_plot=distr_for_plot,
+            rows_count=rows_count
         )
 
 

@@ -938,8 +938,11 @@ class TestShareOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
         return self.metric.get_result().share_not_in_range
 
     def get_description(self, value: Numeric) -> str:
+        number_not_in_range = self.metric.get_result().number_not_in_range
+        rows_count = self.metric.get_result().rows_count
         return (
-            f"Share of Out-Of-Range Values for feature {self.column_name} is {np.round(value, 3)}. "
+            f"Share of Out-Of-Range Values for feature {self.column_name} is {np.round(value, 3)} "
+            f"({number_not_in_range} out of {rows_count}). "
             f"Test Threshold is [{self.get_condition()}]."
         )
 
@@ -1109,8 +1112,11 @@ class TestShareOfOutListValues(BaseDataQualityValueListMetricsTest):
         return self.metric.get_result().share_not_in_list
 
     def get_description(self, value: Numeric) -> str:
+        number_not_in_range = self.metric.get_result().number_not_in_list
+        rows_count = self.metric.get_result().rows_count
         return (
-            f"Share of Out-Of-List Values for column {self.column_name} is {np.round(value, 3)}. "
+            f"Share of Out-Of-List Values for column {self.column_name} is {np.round(value, 3)} "
+            f"({number_not_in_range} out of {rows_count}). "
             f"Test Threshold is [{self.get_condition()}]."
         )
 

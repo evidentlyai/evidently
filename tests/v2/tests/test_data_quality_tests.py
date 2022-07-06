@@ -454,7 +454,8 @@ def test_data_quality_test_share_of_values_not_in_range_json_render() -> None:
     assert result_from_json["summary"]["all_passed"] is False
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "Share of Out-Of-Range Values for feature feature1 is 0.2. Test Threshold is [gt=0.2].",
+        "description": "Share of Out-Of-Range Values for feature feature1 is 0.2 (1 "
+        "out of 5). Test Threshold is [gt=0.2].",
         "group": "data_quality",
         "name": "Test Share of Out-Of-Range Values",
         "parameters": {"condition": {"gt": 0.2}, "left": 0, "right": 10, "share_not_in_range": 0.2},
@@ -579,7 +580,8 @@ def test_data_quality_test_share_of_values_not_in_list_json_render() -> None:
     assert result_from_json["summary"]["all_passed"] is False
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "Share of Out-Of-List Values for column feature1 is 0.25. Test Threshold is [eq=0 ± 1e-12].",
+        "description": "Share of Out-Of-List Values for column feature1 is 0.25 (1 "
+        "out of 4). Test Threshold is [eq=0 ± 1e-12].",
         "group": "data_quality",
         "name": "Test Share of Out-Of-List Values",
         "parameters": {
