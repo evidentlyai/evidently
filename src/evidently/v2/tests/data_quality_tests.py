@@ -27,6 +27,7 @@ from evidently.v2.tests.utils import plot_metric_value
 from evidently.v2.tests.utils import plot_distr
 from evidently.v2.tests.utils import plot_value_counts_tables
 from evidently.v2.tests.utils import plot_value_counts_tables_ref_curr
+from evidently.v2.tests.utils import plot_correlations
 
 
 class BaseDataQualityMetricsValueTest(BaseCheckValueTest, ABC):
@@ -152,14 +153,93 @@ class TestTargetPredictionCorrelation(BaseDataQualityCorrelationsMetricsValueTes
         return f"Correlation between target and prediction is {value}"
 
 
-class HighlyCorrelatedFeatures(BaseDataQualityCorrelationsMetricsValueTest):
-    name = "Test max correlation between numerical features and compares it against the threshold"
+class TestHighlyCorrelatedFeatures(BaseDataQualityCorrelationsMetricsValueTest):
+    name = "Test Highly Correlated Features"
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.is_set():
+            return self.condition
+        if self.metric.get_result().reference_abs_max_num_features_correlation is not None:
+            ref_abs_max_num_features_corr = self.metric.get_result().reference_abs_max_num_features_correlation
+            return TestValueCondition(eq=approx(ref_abs_max_num_features_corr, relative=0.1))
+        return TestValueCondition(lt=0.9)
 
     def calculate_value_for_test(self) -> Number:
         return self.metric.get_result().abs_max_num_features_correlation
 
     def get_description(self, value: Number) -> str:
-        return f"Max numeric features correlation is {value}"
+        return f"Max Correlation is {np.round(value)}. Test Threshold is [{self.get_condition()}]."
+
+
+@default_renderer(test_type=TestHighlyCorrelatedFeatures)
+class TestHighlyCorrelatedFeaturesRenderer(TestRenderer):
+    def render_html(self, obj: TestHighlyCorrelatedFeatures) -> TestHtmlInfo:
+        info = super().render_html(obj)
+        num_features = obj.metric.get_result().num_features
+        current_correlations = obj.metric.get_result().current_correlation_matrix[num_features]
+        reference_correlations = None
+        if obj.metric.get_result().reference_correlation_matrix is not None:
+            reference_correlations = obj.metric.get_result().reference_correlation_matrix[num_features]
+        fig = plot_correlations(current_correlations, reference_correlations)
+        fig_json = fig.to_plotly_json()
+        info.details.append(
+            DetailsInfo(
+                id="HighlyCorrelatedFeatures",
+                title="",
+                info=BaseWidgetInfo(
+                    title="",
+                    size=2,
+                    type="big_graph",
+                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
+                ),
+            )
+        )
+        return info
+
+
+class TestTargetFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValueTest):
+    name = "Test Correlation Between Target and Features"
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.is_set():
+            return self.condition
+        if self.metric.get_result().reference_abs_max_target_features_correlation is not None:
+            ref_abs_max_num_target_features_corr = \
+                self.metric.get_result().reference_abs_max_target_features_correlation
+            return TestValueCondition(eq=approx(ref_abs_max_num_target_features_corr, relative=0.1))
+        return TestValueCondition(lt=0.9)
+
+    def calculate_value_for_test(self) -> Number:
+        return self.metric.get_result().abs_max_target_features_correlation
+
+    def get_description(self, value: Number) -> str:
+        return f"Max Correlation is {value:.3g}. Test Threshold is [{self.get_condition()}]."
+
+
+@default_renderer(test_type=TestTargetFeaturesCorrelations)
+class TestTargetFeaturesCorrelationsRenderer(TestRenderer):
+    def render_html(self, obj: TestTargetFeaturesCorrelations) -> TestHtmlInfo:
+        info = super().render_html(obj)
+        current_correlations = obj.metric.get_result().current_correlation_matrix
+        reference_correlations = None
+        if obj.metric.get_result().reference_correlation_matrix is not None:
+            reference_correlations = obj.metric.get_result().reference_correlation_matrix
+        fig = plot_correlations(current_correlations, reference_correlations)
+        fig_json = fig.to_plotly_json()
+        info.details.append(
+            DetailsInfo(
+                id="TestTargetFeaturesCorrelations",
+                title="",
+                info=BaseWidgetInfo(
+                    title="",
+                    size=2,
+                    type="big_graph",
+                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
+                ),
+            )
+        )
+        return info
+
 
 
 class CorrelationChanges(BaseDataQualityCorrelationsMetricsValueTest):
@@ -169,7 +249,7 @@ class CorrelationChanges(BaseDataQualityCorrelationsMetricsValueTest):
         return self.metric.get_result().abs_max_num_features_correlation
 
     def get_description(self, value: Number) -> str:
-        return f"Max numeric features correlation is {value}"
+        return f"Max numeric features correlation is {value:.3g}"
 
 
 class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest, ABC):
@@ -211,7 +291,7 @@ class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest, ABC):
         result.description = self.get_description(value)
 
         try:
-            condition_check_result = self.condition.check_value(value)
+            condition_check_result = self.get_condition().check_value(value)
 
             if condition_check_result:
                 result.mark_as_success()
@@ -488,12 +568,23 @@ class TestUniqueValuesShareRenderer(TestRenderer):
 class TestMostCommonValueShare(BaseFeatureDataQualityMetricsTest):
     name = "Test Share of the Most Common Value"
 
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.is_set():
+            return self.condition
+        if self.metric.get_result().reference_features_stats is not None:
+            ref_features_stats = self.metric.get_result().features_stats.get_all_features()
+            return TestValueCondition(
+                eq=approx(ref_features_stats[self.column_name].most_common_value_percentage / 100.0, relative=0.1)
+            )
+        return TestValueCondition(lt=0.8)
+
     def calculate_value_for_test(self) -> Number:
         features_stats = self.metric.get_result().features_stats.get_all_features()
         return features_stats[self.column_name].most_common_value_percentage / 100.0
 
     def get_description(self, value: Number) -> str:
-        return f"Share of most common value for feature '{self.column_name}' is {value}"
+        return f"Share of the Most Common Value for column {self.column_name} is {value:.3g}. \
+            Test Threshold is [{self.get_condition()}]."
 
 
 @default_renderer(test_type=TestMostCommonValueShare)
@@ -550,13 +641,15 @@ class TestMeanInNSigmas(Test):
             right_condition = reference_mean + sigmas_value
 
             if left_condition < current_mean < right_condition:
-                description = f"Mean value of column {self.column_name} {np.round(current_mean, 3)} is in range from {np.round(left_condition, 3)} \
-                                to {np.round(right_condition, 3)}"
+                description = f"Mean value of column {self.column_name} {current_mean:.3g} is " \
+                              f"in range from {left_condition:.3g} \
+                                to {right_condition:.3g}"
                 test_result = TestResult.SUCCESS
 
             else:
-                description = f"Mean value of column {self.column_name} {np.round(current_mean, 3)} is not in range from {np.round(left_condition, 3)} \
-                                to {np.round(right_condition, 3)}"
+                description = f"Mean value of column {self.column_name} {current_mean:.3g} is" \
+                              f" not in range from {left_condition:.3g} \
+                                to {right_condition:.3g}"
                 test_result = TestResult.FAIL
 
         return TestResult(name=self.name, description=description, status=test_result)

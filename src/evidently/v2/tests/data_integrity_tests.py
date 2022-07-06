@@ -1,15 +1,16 @@
 from abc import ABC
 from numbers import Number
-from typing import List
+from typing import List, Dict, Tuple
 from typing import Optional
 from typing import Union
 
-import numpy as np
+import dataclasses
 from pandas.core.dtypes.common import infer_dtype_from_object
 
+from evidently.model.widget import BaseWidgetInfo
 from evidently.v2.metrics.data_integrity_metrics import DataIntegrityMetrics
 from evidently.v2.metrics.data_integrity_metrics import DataIntegrityValueByRegexpMetrics
-from evidently.v2.renderers.base_renderer import default_renderer
+from evidently.v2.renderers.base_renderer import default_renderer, DetailsInfo
 from evidently.v2.renderers.base_renderer import TestRenderer
 from evidently.v2.renderers.base_renderer import TestHtmlInfo
 from evidently.v2.tests.base_test import BaseCheckValueTest
@@ -25,16 +26,16 @@ class BaseIntegrityValueTest(BaseCheckValueTest, ABC):
     data_integrity_metric: DataIntegrityMetrics
 
     def __init__(
-        self,
-        eq: Optional[Number] = None,
-        gt: Optional[Number] = None,
-        gte: Optional[Number] = None,
-        is_in: Optional[List[Union[Number, str, bool]]] = None,
-        lt: Optional[Number] = None,
-        lte: Optional[Number] = None,
-        not_eq: Optional[Number] = None,
-        not_in: Optional[List[Union[Number, str, bool]]] = None,
-        data_integrity_metric: Optional[DataIntegrityMetrics] = None,
+            self,
+            eq: Optional[Number] = None,
+            gt: Optional[Number] = None,
+            gte: Optional[Number] = None,
+            is_in: Optional[List[Union[Number, str, bool]]] = None,
+            lt: Optional[Number] = None,
+            lte: Optional[Number] = None,
+            not_eq: Optional[Number] = None,
+            not_in: Optional[List[Union[Number, str, bool]]] = None,
+            data_integrity_metric: Optional[DataIntegrityMetrics] = None,
     ):
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
 
@@ -91,9 +92,10 @@ class TestNumberOfRows(BaseIntegrityValueTest):
         if self.condition.is_set():
             return self.condition
         if self.data_integrity_metric.get_result().reference_stats is not None:
-            return TestValueCondition(
-                eq=approx(self.data_integrity_metric.get_result().reference_stats.number_of_rows, relative=0.1)
-            )
+            return TestValueCondition(eq=approx(
+                self.data_integrity_metric.get_result().reference_stats.number_of_rows,
+                relative=0.1
+            ))
         return TestValueCondition(gt=30)
 
     def calculate_value_for_test(self) -> Number:
@@ -180,14 +182,22 @@ class TestNumberOfRowsWithNANs(BaseIntegrityValueTest):
 class TestNumberOfConstantColumns(BaseIntegrityValueTest):
     """Number of columns contained only one unique value"""
 
-    name = "Test Number Of Constant Columns"
+    name = "Test Number of Constant Columns"
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.is_set():
+            return self.condition
+        if self.data_integrity_metric.get_result().reference_stats is not None:
+            ref_num_of_constant_columns = self.data_integrity_metric.get_result().reference_stats.number_of_constant_columns
+            return TestValueCondition(lte=ref_num_of_constant_columns)
+        return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Number:
         self.value = self.data_integrity_metric.get_result().current_stats.number_of_constant_columns
         return self.value
 
     def get_description(self, value: Number) -> str:
-        return f"Number of constant columns: {value}"
+        return f"Number of Constant Columns is {value}. Test Threshold is [{self.get_condition()}]."
 
 
 @default_renderer(test_type=TestNumberOfConstantColumns)
@@ -251,27 +261,46 @@ class TestNumberOfEmptyColumnsRenderer(TestRenderer):
 class TestNumberOfDuplicatedRows(BaseIntegrityValueTest):
     """How many rows have duplicates in the dataset"""
 
-    name = "Test Number Of Duplicated Rows"
+    name = "Test Number of Duplicated Rows"
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.is_set():
+            return self.condition
+        if self.data_integrity_metric.get_result().reference_stats is not None:
+            ref_num_of_duplicates = self.data_integrity_metric.get_result().reference_stats.number_of_duplicated_rows
+            curr_number_of_rows = self.data_integrity_metric.get_result().current_stats.number_of_rows
+            ref_number_of_rows = self.data_integrity_metric.get_result().reference_stats.number_of_rows
+            mult = ref_num_of_duplicates * curr_number_of_rows / ref_number_of_rows
+            return TestValueCondition(eq=approx(ref_num_of_duplicates * mult, 0.1))
+        return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Number:
         self.value = self.data_integrity_metric.get_result().current_stats.number_of_duplicated_rows
         return self.value
 
     def get_description(self, value: Number) -> str:
-        return f"Number of duplicated rows: {value}"
+        return f"Number of Duplicated Rows is {value}. Test Threshold is [{self.get_condition()}]."
 
 
 class TestNumberOfDuplicatedColumns(BaseIntegrityValueTest):
     """How many columns have duplicates in the dataset"""
 
-    name = "Test Number Of Duplicated Columns"
+    name = "Test Number of Duplicated Columns"
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.is_set():
+            return self.condition
+        if self.data_integrity_metric.get_result().reference_stats is not None:
+            ref_num_of_duplicated_cols = self.data_integrity_metric.get_result().reference_stats.number_of_duplicated_columns
+            return TestValueCondition(lte=ref_num_of_duplicated_cols)
+        return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Number:
         self.value = self.data_integrity_metric.get_result().current_stats.number_of_duplicated_columns
         return self.value
 
     def get_description(self, value: Number) -> str:
-        return f"Number of duplicated columns: {value}"
+        return f"Number of Duplicated Columns is  {value}. Test Threshold is [{self.get_condition()}]."
 
 
 class BaseIntegrityByColumnsConditionTest(BaseCheckValueTest, ABC):
@@ -280,17 +309,17 @@ class BaseIntegrityByColumnsConditionTest(BaseCheckValueTest, ABC):
     column_name: str
 
     def __init__(
-        self,
-        column_name: str = None,
-        eq: Optional[Number] = None,
-        gt: Optional[Number] = None,
-        gte: Optional[Number] = None,
-        is_in: Optional[List[Union[Number, str, bool]]] = None,
-        lt: Optional[Number] = None,
-        lte: Optional[Number] = None,
-        not_eq: Optional[Number] = None,
-        not_in: Optional[List[Union[Number, str, bool]]] = None,
-        data_integrity_metric: Optional[DataIntegrityMetrics] = None,
+            self,
+            column_name: str = None,
+            eq: Optional[Number] = None,
+            gt: Optional[Number] = None,
+            gte: Optional[Number] = None,
+            is_in: Optional[List[Union[Number, str, bool]]] = None,
+            lt: Optional[Number] = None,
+            lte: Optional[Number] = None,
+            not_eq: Optional[Number] = None,
+            not_in: Optional[List[Union[Number, str, bool]]] = None,
+            data_integrity_metric: Optional[DataIntegrityMetrics] = None,
     ):
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
         self.column_name = column_name
@@ -304,7 +333,6 @@ class BaseIntegrityByColumnsConditionTest(BaseCheckValueTest, ABC):
 
 class TestColumnNANShare(BaseIntegrityByColumnsConditionTest):
     """Test the share of NANs in a column"""
-
     name = "Test Share of NA Values"
 
     def get_condition(self) -> TestValueCondition:
@@ -322,7 +350,8 @@ class TestColumnNANShare(BaseIntegrityByColumnsConditionTest):
         return nans_by_columns[self.column_name] / number_of_rows
 
     def get_description(self, value: Number) -> str:
-        return f"Share of NAs for {self.column_name} column is {np.round(value, 3)}. Test Threshold is [{self.get_condition()}]."
+        return f"Share of NAs for {self.column_name} column is {value:.3g}." \
+               f" Test Threshold is [{self.get_condition()}]."
 
 
 class BaseIntegrityByColumnsTest(Test, ABC):
@@ -331,7 +360,7 @@ class BaseIntegrityByColumnsTest(Test, ABC):
     columns: Optional[List[str]]
 
     def __init__(
-        self, columns: Optional[List[str]] = None, data_integrity_metric: Optional[DataIntegrityMetrics] = None
+            self, columns: Optional[List[str]] = None, data_integrity_metric: Optional[DataIntegrityMetrics] = None
     ):
         self.columns = columns
 
@@ -416,15 +445,17 @@ class TestAllUniqueValues(BaseIntegrityByColumnsTest):
 
 class TestColumnsType(Test):
     """This test compares columns type against the specified ones or a reference dataframe"""
-
     group = "data_integrity"
     name = "Test Columns Type"
     columns_type: Optional[dict]
     data_integrity_metric: DataIntegrityMetrics
-    columns_type_from_reference: bool
+
+    @dataclasses.dataclass
+    class Result(TestResult):
+        columns_types: Dict[str, Tuple[str, str]]
 
     def __init__(
-        self, columns_type: Optional[dict] = None, data_integrity_metric: Optional[DataIntegrityMetrics] = None
+            self, columns_type: Optional[dict] = None, data_integrity_metric: Optional[DataIntegrityMetrics] = None
     ):
         self.columns_type = columns_type
 
@@ -440,55 +471,78 @@ class TestColumnsType(Test):
         data_columns_type = self.data_integrity_metric.get_result().current_stats.columns_type
 
         if self.columns_type is None:
-            self.columns_type_from_reference = True
-
             if self.data_integrity_metric.get_result().reference_stats is None:
                 status = TestResult.ERROR
                 description = "Cannot compare column types without conditions or a reference"
                 return TestResult(name=self.name, description=description, status=status)
 
             # get types from reference
-            self.columns_type = self.data_integrity_metric.get_result().reference_stats.columns_type
+            columns_type = self.data_integrity_metric.get_result().reference_stats.columns_type
 
         else:
-            self.columns_type_from_reference = False
+            columns_type = self.columns_type
 
-        if not self.columns_type:
-            status = TestResult.ERROR
-            description = "Columns type condition is empty"
-            return TestResult(name=self.name, description=description, status=status)
+            if not columns_type:
+                status = TestResult.ERROR
+                description = "Columns type condition is empty"
+                return TestResult(name=self.name, description=description, status=status)
 
-        for column_name, expected_type_object in self.columns_type.items():
+        invalid_types_count = 0
+        columns_types = {}
+        for column_name, expected_type_object in columns_type.items():
             real_column_type_object = data_columns_type.get(column_name)
 
             if real_column_type_object is None:
                 status = TestResult.ERROR
                 description = f"No column '{column_name}' in the metrics data"
-                break
+                return TestResult(name=self.name, description=description, status=status)
+            expected_type = infer_dtype_from_object(expected_type_object)
+            real_column_type = infer_dtype_from_object(real_column_type_object)
 
-            else:
-                expected_type = infer_dtype_from_object(expected_type_object)
-                real_column_type = infer_dtype_from_object(real_column_type_object)
+            columns_types[column_name] = (real_column_type.__name__, expected_type.__name__)
+            if expected_type == real_column_type or issubclass(real_column_type, expected_type):
+                # types are matched or expected type is a parent
+                continue
+            status = TestResult.FAIL
+            invalid_types_count += 1
 
-                if expected_type == real_column_type or issubclass(real_column_type, expected_type):
-                    # types are matched or expected type is a parent
-                    continue
-
-                else:
-                    status = TestResult.FAIL
-                    description = f"Column '{column_name}' type is {real_column_type}, but expected is {expected_type}"
-                    break
-
-        return TestResult(name=self.name, description=description, status=status)
+        return self.Result(name=self.name,
+                           description=f"Number of columns with a type mismatch is"
+                                       f" {invalid_types_count} out of {len(columns_type)}.",
+                           status=status,
+                           columns_types=columns_types)
 
 
 @default_renderer(test_type=TestColumnsType)
-class TestColumnsTypeRenderer(TestRenderer):
+class TestNumberOfDriftedFeaturesRenderer(TestRenderer):
     def render_json(self, obj: TestColumnsType) -> dict:
         base = super().render_json(obj)
-        base["parameters"]["columns_type"] = {k: str(v) for k, v in obj.columns_type.items()}
-        base["parameters"]["columns_type_from_reference"] = obj.columns_type_from_reference
+        base['columns'] = [dict(
+            column_name=column_name,
+            actual_type=types[0],
+            expected_type=types[1],
+        ) for column_name, types in obj.get_result().columns_types.items()]
         return base
+
+    def render_html(self, obj: TestColumnsType) -> TestHtmlInfo:
+        info = super().render_html(obj)
+
+        info.details = [
+            DetailsInfo(
+                id="drift_table",
+                title="",
+                info=BaseWidgetInfo(
+                    title="",
+                    type="table",
+                    params={"header": ["Column Name", "Actual Type", "Expected Type"], "data": [[
+                        column_name,
+                        *types
+                    ] for column_name, types in obj.get_result().columns_types.items()]},
+                    size=2,
+                ),
+            ),
+        ]
+        return info
 
 
 class TestColumnValueRegexp(BaseConditionsTest):
@@ -497,18 +551,18 @@ class TestColumnValueRegexp(BaseConditionsTest):
     metric: DataIntegrityValueByRegexpMetrics
 
     def __init__(
-        self,
-        column_name: Optional[Union[str, List[str]]] = None,
-        reg_exp: Optional[str] = None,
-        eq: Optional[Number] = None,
-        gt: Optional[Number] = None,
-        gte: Optional[Number] = None,
-        is_in: Optional[List[Union[Number, str, bool]]] = None,
-        lt: Optional[Number] = None,
-        lte: Optional[Number] = None,
-        not_eq: Optional[Number] = None,
-        not_in: Optional[List[Union[Number, str, bool]]] = None,
-        metric: Optional[DataIntegrityValueByRegexpMetrics] = None,
+            self,
+            column_name: Optional[Union[str, List[str]]] = None,
+            reg_exp: Optional[str] = None,
+            eq: Optional[Number] = None,
+            gt: Optional[Number] = None,
+            gte: Optional[Number] = None,
+            is_in: Optional[List[Union[Number, str, bool]]] = None,
+            lt: Optional[Number] = None,
+            lte: Optional[Number] = None,
+            not_eq: Optional[Number] = None,
+            not_in: Optional[List[Union[Number, str, bool]]] = None,
+            metric: Optional[DataIntegrityValueByRegexpMetrics] = None,
     ):
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
 

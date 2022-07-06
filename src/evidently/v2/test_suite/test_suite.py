@@ -23,6 +23,7 @@ from evidently.utils import NumpyEncoder
 from evidently.v2.metrics.base_metric import InputData, Metric
 from evidently.v2.renderers.notebook_utils import determine_template
 from evidently.v2.suite.base_suite import Suite, find_test_renderer
+from evidently.v2.test_preset.test_preset import TestPreset
 from evidently.v2.tests.base_test import Test, TestResult
 
 
@@ -35,34 +36,45 @@ def _discover_dependencies(test: Test) -> Iterator[Tuple[str, Union[Metric, Test
 class TestSuite:
     _inner_suite: Suite
     _columns_info: DatasetColumns
+    _test_presets: List[TestPreset]
 
-    def __init__(self, tests: Optional[List[Test]]):
+    def __init__(self, tests: Optional[List[Union[Test, TestPreset]]]):
         self._inner_suite = Suite()
+        self._test_presets = []
         for original_test in tests:
-            test = copy.copy(original_test)
-            for field_name, dependency in _discover_dependencies(test):
-                if issubclass(type(dependency), Metric):
-                    self._inner_suite.add_metrics(dependency)
-                if issubclass(type(dependency), Test):
-                    dependency_copy = copy.copy(dependency)
-                    test.__setattr__(field_name, dependency_copy)
-                    self._inner_suite.add_tests(dependency_copy)
-            self._inner_suite.add_tests(test)
+            if issubclass(type(original_test), TestPreset):
+                self._test_presets.append(original_test)
+                continue
+            self._add_test(original_test)
+
+    def _add_test(self, test: Test):
+        new_test = copy.copy(test)
+        for field_name, dependency in _discover_dependencies(new_test):
+            if issubclass(type(dependency), Metric):
+                self._inner_suite.add_metrics(dependency)
+            if issubclass(type(dependency), Test):
+                dependency_copy = copy.copy(dependency)
+                new_test.__setattr__(field_name, dependency_copy)
+                self._inner_suite.add_tests(dependency_copy)
+        self._inner_suite.add_tests(new_test)
 
     def __bool__(self):
         return all(test_result.is_passed() for _, test_result in self._inner_suite.context.test_results.items())
 
     def run(
-        self,
-        *,
-        reference_data: Optional[pd.DataFrame],
-        current_data: pd.DataFrame,
-        column_mapping: Optional[ColumnMapping] = None,
+            self, *,
+            reference_data: Optional[pd.DataFrame],
+            current_data: pd.DataFrame,
+            column_mapping: Optional[ColumnMapping] = None
     ) -> None:
         if column_mapping is None:
             column_mapping = ColumnMapping()
 
         self._columns_info = process_columns(current_data, column_mapping)
+        for preset in self._test_presets:
+            tests = preset.generate_tests(InputData(reference_data, current_data, column_mapping), self._columns_info)
+            for test in tests:
+                self._add_test(test)
         self._inner_suite.verify()
         self._inner_suite.run_calculate(InputData(reference_data, current_data, column_mapping))
         self._inner_suite.run_checks()
@@ -70,19 +82,20 @@ class TestSuite:
     def _repr_html_(self):
         dashboard_id, dashboard_info, graphs = self._build_dashboard_info()
         template_params = TemplateParams(
-            dashboard_id=dashboard_id, dashboard_info=dashboard_info, additional_graphs=graphs
-        )
+            dashboard_id=dashboard_id,
+            dashboard_info=dashboard_info,
+            additional_graphs=graphs)
         return self._render(determine_template("inline"), template_params)
 
-    def show(self, mode="auto"):
+    def show(self, mode='auto'):
         dashboard_id, dashboard_info, graphs = self._build_dashboard_info()
         template_params = TemplateParams(
-            dashboard_id=dashboard_id, dashboard_info=dashboard_info, additional_graphs=graphs
-        )
+            dashboard_id=dashboard_id,
+            dashboard_info=dashboard_info,
+            additional_graphs=graphs)
         # pylint: disable=import-outside-toplevel
         try:
             from IPython.display import HTML
-
             return HTML(self._render(determine_template(mode), template_params))
         except ImportError as err:
             raise Exception("Cannot import HTML from IPython.display, no way to show html") from err
@@ -100,11 +113,15 @@ class TestSuite:
                 dashboard_info=dashboard_info,
                 additional_graphs=graphs,
             )
-            with open(filename, "w", encoding="utf-8") as out_file:
+            with open(filename, 'w', encoding='utf-8') as out_file:
                 out_file.write(self._render(determine_template("inline"), template_params))
         else:
             font_file, lib_file = save_lib_files(filename, mode)
-            data_file = save_data_file(filename, mode, dashboard_id, dashboard_info, graphs)
+            data_file = save_data_file(filename,
+                                       mode,
+                                       dashboard_id,
+                                       dashboard_info,
+                                       graphs)
             template_params = TemplateParams(
                 dashboard_id=dashboard_id,
                 dashboard_info=dashboard_info,
@@ -115,7 +132,7 @@ class TestSuite:
                 font_file=font_file,
                 include_js_files=[lib_file, data_file],
             )
-            with open(filename, "w", encoding="utf-8") as out_file:
+            with open(filename, 'w', encoding='utf-8') as out_file:
                 out_file.write(self._render(determine_template("inline"), template_params))
 
     def as_dict(self) -> dict:
@@ -144,7 +161,7 @@ class TestSuite:
         return json.dumps(self.as_dict(), cls=NumpyEncoder)
 
     def save_json(self, filename):
-        with open(filename, "w", encoding="utf-8") as out_file:
+        with open(filename, 'w', encoding='utf-8') as out_file:
             json.dump(self.as_dict(), out_file, cls=NumpyEncoder)
 
     def _render(self, temple_func, template_params: TemplateParams):
@@ -164,37 +181,34 @@ class TestSuite:
             size=2,
             type="counter",
             params={
-                "counters": [{"value": f"{total_tests}", "label": "Total Tests"}]
-                + [
-                    {"value": f"{by_status.get(status, 0)}", "label": f"{status.title()} Tests"}
-                    for status in [TestResult.SUCCESS, TestResult.WARNING, TestResult.FAIL, TestResult.ERROR]
+                "counters": [{
+                    "value": f"{total_tests}",
+                    "label": "Total Tests"
+                }] + [
+                    {
+                        "value": f"{by_status.get(status, 0)}",
+                        "label": f"{status.title()} Tests"
+                    } for status in [TestResult.SUCCESS, TestResult.WARNING, TestResult.FAIL, TestResult.ERROR]
                 ]
             },
+
         )
         test_suite_widget = BaseWidgetInfo(
             title="",
             type="test_suite",
             size=2,
             params={
-                "tests": [
-                    dict(
-                        title=test_info.name,
-                        description=test_info.description,
-                        state=test_info.status.lower(),
-                        details=dict(
-                            parts=[
-                                dict(id=f"{test_info.name}_{item.id}", title=item.title, type="widget")
-                                for item in test_info.details
-                            ]
-                        ),
-                    )
-                    for test_info in test_results
-                ]
+                "tests": [dict(title=test_info.name,
+                               description=test_info.description,
+                               state=test_info.status.lower(),
+                               details=dict(
+                                   parts=[dict(id=f"{test_info.name}_{item.id}", title=item.title, type="widget")
+                                          for item in test_info.details]
+                               )) for test_info in test_results]
             },
-            additionalGraphs=[],
+            additionalGraphs=[]
         )
-        return (
-            "evidently_dashboard_" + str(uuid.uuid4()).replace("-", ""),
-            DashboardInfo("Test Suite", widgets=[summary_widget, test_suite_widget]),
-            {f"{info.name}_{item.id}": dataclasses.asdict(item.info) for info in test_results for item in info.details},
-        )
+        return "evidently_dashboard_" + str(uuid.uuid4()).replace("-", ""), \
+               DashboardInfo("Test Suite", widgets=[summary_widget, test_suite_widget]), \
+               {f"{info.name}_{item.id}": dataclasses.asdict(item.info)
+                for info in test_results for item in info.details}
