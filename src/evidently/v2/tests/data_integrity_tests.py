@@ -1,6 +1,7 @@
 from abc import ABC
-from numbers import Number
-from typing import List, Dict, Tuple
+from typing import List
+from typing import Dict
+from typing import Tuple
 from typing import Optional
 from typing import Union
 
@@ -10,7 +11,8 @@ from pandas.core.dtypes.common import infer_dtype_from_object
 from evidently.model.widget import BaseWidgetInfo
 from evidently.v2.metrics.data_integrity_metrics import DataIntegrityMetrics
 from evidently.v2.metrics.data_integrity_metrics import DataIntegrityValueByRegexpMetrics
-from evidently.v2.renderers.base_renderer import default_renderer, DetailsInfo
+from evidently.v2.renderers.base_renderer import default_renderer
+from evidently.v2.renderers.base_renderer import DetailsInfo
 from evidently.v2.renderers.base_renderer import TestRenderer
 from evidently.v2.renderers.base_renderer import TestHtmlInfo
 from evidently.v2.tests.base_test import BaseCheckValueTest
@@ -18,7 +20,9 @@ from evidently.v2.tests.base_test import BaseConditionsTest
 from evidently.v2.tests.base_test import Test
 from evidently.v2.tests.base_test import TestResult
 from evidently.v2.tests.base_test import TestValueCondition
-from evidently.v2.tests.utils import plot_dicts_to_table, approx
+from evidently.v2.tests.utils import plot_dicts_to_table
+from evidently.v2.tests.utils import approx
+from evidently.v2.tests.utils import Numeric
 
 
 class BaseIntegrityValueTest(BaseCheckValueTest, ABC):
@@ -27,14 +31,14 @@ class BaseIntegrityValueTest(BaseCheckValueTest, ABC):
 
     def __init__(
         self,
-        eq: Optional[Number] = None,
-        gt: Optional[Number] = None,
-        gte: Optional[Number] = None,
-        is_in: Optional[List[Union[Number, str, bool]]] = None,
-        lt: Optional[Number] = None,
-        lte: Optional[Number] = None,
-        not_eq: Optional[Number] = None,
-        not_in: Optional[List[Union[Number, str, bool]]] = None,
+        eq: Optional[Numeric] = None,
+        gt: Optional[Numeric] = None,
+        gte: Optional[Numeric] = None,
+        is_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        lt: Optional[Numeric] = None,
+        lte: Optional[Numeric] = None,
+        not_eq: Optional[Numeric] = None,
+        not_in: Optional[List[Union[Numeric, str, bool]]] = None,
         data_integrity_metric: Optional[DataIntegrityMetrics] = None,
     ):
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
@@ -58,11 +62,11 @@ class TestNumberOfColumns(BaseIntegrityValueTest):
             return TestValueCondition(eq=self.data_integrity_metric.get_result().reference_stats.number_of_columns)
         return TestValueCondition(gt=0)
 
-    def calculate_value_for_test(self) -> Number:
+    def calculate_value_for_test(self) -> Numeric:
         self.value = self.data_integrity_metric.get_result().current_stats.number_of_columns
         return self.value
 
-    def get_description(self, value: Number) -> str:
+    def get_description(self, value: Numeric) -> str:
         return f"Number of Columns is {value}. Test Threshold is [{self.get_condition()}]."
 
 
@@ -97,11 +101,11 @@ class TestNumberOfRows(BaseIntegrityValueTest):
             )
         return TestValueCondition(gt=30)
 
-    def calculate_value_for_test(self) -> Number:
+    def calculate_value_for_test(self) -> Numeric:
         self.value = self.data_integrity_metric.get_result().current_stats.number_of_rows
         return self.value
 
-    def get_description(self, value: Number) -> str:
+    def get_description(self, value: Numeric) -> str:
         return f"Number of Rows is {value}. Test Threshold is [{self.get_condition()}]."
 
 
@@ -110,11 +114,11 @@ class TestNumberOfNANs(BaseIntegrityValueTest):
 
     name = "Test Number of NAN Values"
 
-    def calculate_value_for_test(self) -> Number:
+    def calculate_value_for_test(self) -> Numeric:
         self.value = self.data_integrity_metric.get_result().current_stats.number_of_nans
         return self.value
 
-    def get_description(self, value: Number) -> str:
+    def get_description(self, value: Numeric) -> str:
         return f"Number of NANs is {value}"
 
 
@@ -140,11 +144,11 @@ class TestNumberOfColumnsWithNANs(BaseIntegrityValueTest):
 
     name = "Test Number Of Columns With Nulls"
 
-    def calculate_value_for_test(self) -> Number:
+    def calculate_value_for_test(self) -> Numeric:
         self.value = self.data_integrity_metric.get_result().current_stats.number_of_columns_with_nans
         return self.value
 
-    def get_description(self, value: Number) -> str:
+    def get_description(self, value: Numeric) -> str:
         return f"Number of columns with NANs is {value}"
 
 
@@ -170,11 +174,11 @@ class TestNumberOfRowsWithNANs(BaseIntegrityValueTest):
 
     name = "Test Number Of Rows With NANs"
 
-    def calculate_value_for_test(self) -> Number:
+    def calculate_value_for_test(self) -> Numeric:
         self.value = self.data_integrity_metric.get_result().current_stats.number_of_rows_with_nans
         return self.value
 
-    def get_description(self, value: Number) -> str:
+    def get_description(self, value: Numeric) -> str:
         return f"Number of rows with NANs is {value}"
 
 
@@ -193,11 +197,11 @@ class TestNumberOfConstantColumns(BaseIntegrityValueTest):
             return TestValueCondition(lte=ref_num_of_constant_columns)
         return TestValueCondition(eq=0)
 
-    def calculate_value_for_test(self) -> Number:
+    def calculate_value_for_test(self) -> Numeric:
         self.value = self.data_integrity_metric.get_result().current_stats.number_of_constant_columns
         return self.value
 
-    def get_description(self, value: Number) -> str:
+    def get_description(self, value: Numeric) -> str:
         return f"Number of Constant Columns is {value}. Test Threshold is [{self.get_condition()}]."
 
 
@@ -223,11 +227,11 @@ class TestNumberOfEmptyRows(BaseIntegrityValueTest):
 
     name = "Test Number Of Empty Rows"
 
-    def calculate_value_for_test(self) -> Number:
+    def calculate_value_for_test(self) -> Numeric:
         self.value = self.data_integrity_metric.get_result().current_stats.number_of_empty_rows
         return self.value
 
-    def get_description(self, value: Number) -> str:
+    def get_description(self, value: Numeric) -> str:
         return f"Number of empty rows: {value}"
 
 
@@ -236,11 +240,11 @@ class TestNumberOfEmptyColumns(BaseIntegrityValueTest):
 
     name = "Test Number Of Empty Columns"
 
-    def calculate_value_for_test(self) -> Number:
+    def calculate_value_for_test(self) -> Numeric:
         self.value = self.data_integrity_metric.get_result().current_stats.number_of_empty_columns
         return self.value
 
-    def get_description(self, value: Number) -> str:
+    def get_description(self, value: Numeric) -> str:
         return f"Number of empty columns: {value}"
 
 
@@ -275,11 +279,11 @@ class TestNumberOfDuplicatedRows(BaseIntegrityValueTest):
             return TestValueCondition(eq=approx(ref_num_of_duplicates * mult, 0.1))
         return TestValueCondition(eq=0)
 
-    def calculate_value_for_test(self) -> Number:
+    def calculate_value_for_test(self) -> Numeric:
         self.value = self.data_integrity_metric.get_result().current_stats.number_of_duplicated_rows
         return self.value
 
-    def get_description(self, value: Number) -> str:
+    def get_description(self, value: Numeric) -> str:
         return f"Number of Duplicated Rows is {value}. Test Threshold is [{self.get_condition()}]."
 
 
@@ -298,11 +302,11 @@ class TestNumberOfDuplicatedColumns(BaseIntegrityValueTest):
             return TestValueCondition(lte=ref_num_of_duplicated_cols)
         return TestValueCondition(eq=0)
 
-    def calculate_value_for_test(self) -> Number:
+    def calculate_value_for_test(self) -> Numeric:
         self.value = self.data_integrity_metric.get_result().current_stats.number_of_duplicated_columns
         return self.value
 
-    def get_description(self, value: Number) -> str:
+    def get_description(self, value: Numeric) -> str:
         return f"Number of Duplicated Columns is  {value}. Test Threshold is [{self.get_condition()}]."
 
 
@@ -314,14 +318,14 @@ class BaseIntegrityByColumnsConditionTest(BaseCheckValueTest, ABC):
     def __init__(
         self,
         column_name: str = None,
-        eq: Optional[Number] = None,
-        gt: Optional[Number] = None,
-        gte: Optional[Number] = None,
-        is_in: Optional[List[Union[Number, str, bool]]] = None,
-        lt: Optional[Number] = None,
-        lte: Optional[Number] = None,
-        not_eq: Optional[Number] = None,
-        not_in: Optional[List[Union[Number, str, bool]]] = None,
+        eq: Optional[Numeric] = None,
+        gt: Optional[Numeric] = None,
+        gte: Optional[Numeric] = None,
+        is_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        lt: Optional[Numeric] = None,
+        lte: Optional[Numeric] = None,
+        not_eq: Optional[Numeric] = None,
+        not_in: Optional[List[Union[Numeric, str, bool]]] = None,
         data_integrity_metric: Optional[DataIntegrityMetrics] = None,
     ):
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
@@ -342,18 +346,20 @@ class TestColumnNANShare(BaseIntegrityByColumnsConditionTest):
     def get_condition(self) -> TestValueCondition:
         if self.condition.is_set():
             return self.condition
+
         if self.data_integrity_metric.get_result().reference_stats is not None:
             ref_nans = self.data_integrity_metric.get_result().reference_stats.nans_by_columns[self.column_name]
             ref_num_of_rows = self.data_integrity_metric.get_result().reference_stats.number_of_rows
             return TestValueCondition(eq=approx(ref_nans / ref_num_of_rows, relative=0.1))
+
         return TestValueCondition(eq=approx(0))
 
-    def calculate_value_for_test(self) -> Number:
+    def calculate_value_for_test(self) -> Numeric:
         nans_by_columns = self.data_integrity_metric.get_result().current_stats.nans_by_columns
         number_of_rows = self.data_integrity_metric.get_result().current_stats.number_of_rows
         return nans_by_columns[self.column_name] / number_of_rows
 
-    def get_description(self, value: Number) -> str:
+    def get_description(self, value: Numeric) -> str:
         return (
             f"Share of NAs for {self.column_name} column is {value:.3g}."
             f" Test Threshold is [{self.get_condition()}]."
@@ -473,7 +479,6 @@ class TestColumnsType(Test):
             self.data_integrity_metric = data_integrity_metric
 
     def check(self):
-        description = "All columns types are ok"
         status = TestResult.SUCCESS
         data_columns_type = self.data_integrity_metric.get_result().current_stats.columns_type
 
@@ -496,6 +501,7 @@ class TestColumnsType(Test):
 
         invalid_types_count = 0
         columns_types = {}
+
         for column_name, expected_type_object in columns_type.items():
             real_column_type_object = data_columns_type.get(column_name)
 
@@ -503,20 +509,21 @@ class TestColumnsType(Test):
                 status = TestResult.ERROR
                 description = f"No column '{column_name}' in the metrics data"
                 return TestResult(name=self.name, description=description, status=status)
+
             expected_type = infer_dtype_from_object(expected_type_object)
             real_column_type = infer_dtype_from_object(real_column_type_object)
-
             columns_types[column_name] = (real_column_type.__name__, expected_type.__name__)
+
             if expected_type == real_column_type or issubclass(real_column_type, expected_type):
                 # types are matched or expected type is a parent
                 continue
+
             status = TestResult.FAIL
             invalid_types_count += 1
 
         return self.Result(
             name=self.name,
-            description=f"Number of columns with a type mismatch is"
-            f" {invalid_types_count} out of {len(columns_type)}.",
+            description=f"Number of columns with a type mismatch is {invalid_types_count} out of {len(columns_type)}.",
             status=status,
             columns_types=columns_types,
         )
@@ -568,14 +575,14 @@ class TestColumnValueRegexp(BaseConditionsTest):
         self,
         column_name: Optional[Union[str, List[str]]] = None,
         reg_exp: Optional[str] = None,
-        eq: Optional[Number] = None,
-        gt: Optional[Number] = None,
-        gte: Optional[Number] = None,
-        is_in: Optional[List[Union[Number, str, bool]]] = None,
-        lt: Optional[Number] = None,
-        lte: Optional[Number] = None,
-        not_eq: Optional[Number] = None,
-        not_in: Optional[List[Union[Number, str, bool]]] = None,
+        eq: Optional[Numeric] = None,
+        gt: Optional[Numeric] = None,
+        gte: Optional[Numeric] = None,
+        is_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        lt: Optional[Numeric] = None,
+        lte: Optional[Numeric] = None,
+        not_eq: Optional[Numeric] = None,
+        not_in: Optional[List[Union[Numeric, str, bool]]] = None,
         metric: Optional[DataIntegrityValueByRegexpMetrics] = None,
     ):
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)

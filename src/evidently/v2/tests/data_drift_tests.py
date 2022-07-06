@@ -1,5 +1,4 @@
 from abc import ABC
-from numbers import Number
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -23,6 +22,7 @@ from evidently.v2.tests.base_test import BaseCheckValueTest
 from evidently.v2.tests.base_test import TestResult
 from evidently.v2.tests.base_test import TestValueCondition
 from evidently.v2.tests.utils import plot_distr
+from evidently.v2.tests.utils import Numeric
 
 
 @dataclasses.dataclass
@@ -36,14 +36,14 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
 
     def __init__(
         self,
-        eq: Optional[Number] = None,
-        gt: Optional[Number] = None,
-        gte: Optional[Number] = None,
-        is_in: Optional[List[Union[Number, str, bool]]] = None,
-        lt: Optional[Number] = None,
-        lte: Optional[Number] = None,
-        not_eq: Optional[Number] = None,
-        not_in: Optional[List[Union[Number, str, bool]]] = None,
+        eq: Optional[Numeric] = None,
+        gt: Optional[Numeric] = None,
+        gte: Optional[Numeric] = None,
+        is_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        lt: Optional[Numeric] = None,
+        lte: Optional[Numeric] = None,
+        not_eq: Optional[Numeric] = None,
+        not_in: Optional[List[Union[Numeric, str, bool]]] = None,
         metric: Optional[DataDriftMetrics] = None,
         options: Optional[DataDriftOptions] = None,
     ):
@@ -84,10 +84,10 @@ class TestNumberOfDriftedFeatures(BaseDataDriftMetricsTest):
         else:
             return TestValueCondition(lt=max(0, self.metric.get_result().analyzer_result.metrics.n_features // 3))
 
-    def calculate_value_for_test(self) -> Number:
+    def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().analyzer_result.metrics.n_drifted_features
 
-    def get_description(self, value: Number) -> str:
+    def get_description(self, value: Numeric) -> str:
         return f"Drift is detected for {value} out of {self.metric.get_result().analyzer_result.metrics.n_features} \
             features. Threshold: [{self.get_condition()}]"
 
@@ -101,10 +101,10 @@ class TestShareOfDriftedFeatures(BaseDataDriftMetricsTest):
         else:
             return TestValueCondition(lt=0.3)
 
-    def calculate_value_for_test(self) -> Number:
+    def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().analyzer_result.metrics.share_drifted_features
 
-    def get_description(self, value: Number) -> str:
+    def get_description(self, value: Numeric) -> str:
         return f"Drift is detected for {value * 100:.3g}% features \
         ({self.metric.get_result().analyzer_result.metrics.n_drifted_features} out of \
         {self.metric.get_result().analyzer_result.metrics.n_features}). Threshold: [{self.get_condition()}]"

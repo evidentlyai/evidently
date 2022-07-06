@@ -1,31 +1,20 @@
+from typing import List
+
 from evidently.analyzers.utils import DatasetColumns
 from evidently.v2.metrics.base_metric import InputData
 from evidently.v2.test_preset.test_preset import TestPreset
-from evidently.v2.tests import (
-    TestNumberOfRows,
-    TestNumberOfColumns,
-    TestColumnsType,
-    TestColumnNANShare,
-    TestShareOfOutRangeValues,
-    TestShareOfOutListValues,
-    TestMeanInNSigmas,
-)
+from evidently.v2.tests import TestNumberOfRows
+from evidently.v2.tests import TestNumberOfColumns
+from evidently.v2.tests import TestColumnsType
+from evidently.v2.tests import TestColumnNANShare
+from evidently.v2.tests import TestShareOfOutRangeValues
+from evidently.v2.tests import TestShareOfOutListValues
+from evidently.v2.tests import TestMeanInNSigmas
 
 
 class DataStability(TestPreset):
     def generate_tests(self, data: InputData, columns: DatasetColumns):
-        all_columns = [
-            name
-            for name in columns.cat_feature_names
-            + columns.num_feature_names
-            + [
-                columns.utility_columns.id_column,
-                columns.utility_columns.date,
-                columns.utility_columns.target,
-                columns.utility_columns.prediction,
-            ]
-            if name is not None
-        ]
+        all_columns: List[str] = columns.get_all_columns_list()
         return [
             TestNumberOfRows(),
             TestNumberOfColumns(),

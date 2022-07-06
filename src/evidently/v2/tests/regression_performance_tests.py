@@ -1,15 +1,24 @@
 from abc import ABC
-from numbers import Number
 from typing import List
 from typing import Optional
 from typing import Union
 
 import numpy as np
+
 from evidently.model.widget import BaseWidgetInfo
 from evidently.v2.metrics import RegressionPerformanceMetrics
-from evidently.v2.renderers.base_renderer import default_renderer, TestRenderer, TestHtmlInfo, DetailsInfo
-from evidently.v2.tests.base_test import BaseCheckValueTest, TestValueCondition
-from evidently.v2.tests.utils import plot_check, plot_metric_value, regression_perf_plot, plot_distr, approx
+from evidently.v2.renderers.base_renderer import default_renderer
+from evidently.v2.renderers.base_renderer import TestRenderer
+from evidently.v2.renderers.base_renderer import TestHtmlInfo
+from evidently.v2.renderers.base_renderer import DetailsInfo
+from evidently.v2.tests.base_test import BaseCheckValueTest
+from evidently.v2.tests.base_test import TestValueCondition
+from evidently.v2.tests.utils import plot_check
+from evidently.v2.tests.utils import plot_metric_value
+from evidently.v2.tests.utils import regression_perf_plot
+from evidently.v2.tests.utils import plot_distr
+from evidently.v2.tests.utils import approx
+from evidently.v2.tests.utils import Numeric
 
 
 class BaseRegressionPerformanceMetricsTest(BaseCheckValueTest, ABC):
@@ -18,14 +27,14 @@ class BaseRegressionPerformanceMetricsTest(BaseCheckValueTest, ABC):
 
     def __init__(
         self,
-        eq: Optional[Number] = None,
-        gt: Optional[Number] = None,
-        gte: Optional[Number] = None,
-        is_in: Optional[List[Union[Number, str, bool]]] = None,
-        lt: Optional[Number] = None,
-        lte: Optional[Number] = None,
-        not_eq: Optional[Number] = None,
-        not_in: Optional[List[Union[Number, str, bool]]] = None,
+        eq: Optional[Numeric] = None,
+        gt: Optional[Numeric] = None,
+        gte: Optional[Numeric] = None,
+        is_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        lt: Optional[Numeric] = None,
+        lte: Optional[Numeric] = None,
+        not_eq: Optional[Numeric] = None,
+        not_in: Optional[List[Union[Numeric, str, bool]]] = None,
         metric: Optional[RegressionPerformanceMetrics] = None,
     ):
         if metric is not None:
@@ -48,10 +57,10 @@ class TestValueMAE(BaseRegressionPerformanceMetricsTest):
             return TestValueCondition(eq=approx(ref_mae, relative=0.1))
         return TestValueCondition(gt=self.metric.get_result().mean_abs_error_default)
 
-    def calculate_value_for_test(self) -> Number:
+    def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().mean_abs_error
 
-    def get_description(self, value: Number) -> str:
+    def get_description(self, value: Numeric) -> str:
         return f"MAE value is {np.round(value, 3)} Threshold: [{self.get_condition()}]"
 
 
@@ -90,10 +99,10 @@ class TestValueMAERenderer(TestRenderer):
 class TestValueMAPE(BaseRegressionPerformanceMetricsTest):
     name = "Test MAPE"
 
-    def calculate_value_for_test(self) -> Number:
+    def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().mean_abs_perc_error
 
-    def get_description(self, value: Number) -> str:
+    def get_description(self, value: Numeric) -> str:
         return f"MAPE value is {np.round(value, 3)}"
 
 
@@ -131,10 +140,10 @@ class TestValueMAPERenderer(TestRenderer):
 class TestValueRMSE(BaseRegressionPerformanceMetricsTest):
     name = "Test RMSE"
 
-    def calculate_value_for_test(self) -> Number:
+    def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().rmse
 
-    def get_description(self, value: Number) -> str:
+    def get_description(self, value: Numeric) -> str:
         return f"RMSE value is {np.round(value, 3)}"
 
 
@@ -172,10 +181,10 @@ class TestValueRMSERenderer(TestRenderer):
 class TestValueMeanError(BaseRegressionPerformanceMetricsTest):
     name = "Test mean error"
 
-    def calculate_value_for_test(self) -> Number:
+    def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().mean_error
 
-    def get_description(self, value: Number) -> str:
+    def get_description(self, value: Numeric) -> str:
         return f"Mean error value is {np.round(value, 3)}"
 
 
@@ -211,10 +220,10 @@ class TestValueMeanErrorRenderer(TestRenderer):
 class TestValueAbsMaxError(BaseRegressionPerformanceMetricsTest):
     name = "Test Absolute Value of Max Error"
 
-    def calculate_value_for_test(self) -> Number:
+    def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().abs_error_max
 
-    def get_description(self, value: Number) -> str:
+    def get_description(self, value: Numeric) -> str:
         return f"Absolute value of max error is {np.round(value, 3)}"
 
 
@@ -248,10 +257,10 @@ class TestValueAbsMaxErrorRenderer(TestRenderer):
 class TestValueR2Score(BaseRegressionPerformanceMetricsTest):
     name = "Test R2 Score"
 
-    def calculate_value_for_test(self) -> Number:
+    def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().r2_score
 
-    def get_description(self, value: Number) -> str:
+    def get_description(self, value: Numeric) -> str:
         return f"R2 score is {np.round(value, 3)}"
 
 

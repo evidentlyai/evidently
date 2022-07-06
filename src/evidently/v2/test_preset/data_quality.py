@@ -1,30 +1,19 @@
+from typing import List
+
 from evidently.analyzers.utils import DatasetColumns
 from evidently.v2.metrics.base_metric import InputData
 from evidently.v2.test_preset.test_preset import TestPreset
-from evidently.v2.tests import (
-    TestColumnNANShare,
-    TestMostCommonValueShare,
-    TestNumberOfConstantColumns,
-    TestNumberOfDuplicatedColumns,
-    TestNumberOfDuplicatedRows,
-    TestHighlyCorrelatedFeatures,
-)
+from evidently.v2.tests import TestColumnNANShare
+from evidently.v2.tests import TestMostCommonValueShare
+from evidently.v2.tests import TestNumberOfConstantColumns
+from evidently.v2.tests import TestNumberOfDuplicatedColumns
+from evidently.v2.tests import TestNumberOfDuplicatedRows
+from evidently.v2.tests import TestHighlyCorrelatedFeatures
 
 
 class DataQuality(TestPreset):
     def generate_tests(self, data: InputData, columns: DatasetColumns):
-        all_columns = [
-            name
-            for name in columns.cat_feature_names
-            + columns.num_feature_names
-            + [
-                columns.utility_columns.id_column,
-                columns.utility_columns.date,
-                columns.utility_columns.target,
-                columns.utility_columns.prediction,
-            ]
-            if name is not None
-        ]
+        all_columns: List[str] = columns.get_all_columns_list()
         return [
             *[TestColumnNANShare(column_name=name) for name in all_columns],
             *[TestMostCommonValueShare(column_name=name) for name in all_columns],

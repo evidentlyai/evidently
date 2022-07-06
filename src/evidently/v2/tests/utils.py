@@ -17,6 +17,7 @@ RED = "#ed0400"
 GREY = "#4d4d4d"
 
 
+# type for numeric because of mypy bug https://github.com/python/mypy/issues/3186
 Numeric = Union[float, int]
 
 

@@ -16,15 +16,22 @@ import evidently
 from evidently import ColumnMapping
 from evidently.analyzers.utils import process_columns
 from evidently.analyzers.utils import DatasetColumns
-from evidently.dashboard.dashboard import TemplateParams, SaveMode, SaveModeMap, save_lib_files, save_data_file
+from evidently.dashboard.dashboard import TemplateParams
+from evidently.dashboard.dashboard import SaveMode
+from evidently.dashboard.dashboard import SaveModeMap
+from evidently.dashboard.dashboard import save_lib_files
+from evidently.dashboard.dashboard import save_data_file
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
 from evidently.utils import NumpyEncoder
-from evidently.v2.metrics.base_metric import InputData, Metric
+from evidently.v2.metrics.base_metric import InputData
+from evidently.v2.metrics.base_metric import Metric
 from evidently.v2.renderers.notebook_utils import determine_template
-from evidently.v2.suite.base_suite import Suite, find_test_renderer
+from evidently.v2.suite.base_suite import Suite
+from evidently.v2.suite.base_suite import find_test_renderer
 from evidently.v2.test_preset.test_preset import TestPreset
-from evidently.v2.tests.base_test import Test, TestResult
+from evidently.v2.tests.base_test import Test
+from evidently.v2.tests.base_test import TestResult
 
 
 def _discover_dependencies(test: Test) -> Iterator[Tuple[str, Union[Metric, Test]]]:
@@ -41,21 +48,26 @@ class TestSuite:
     def __init__(self, tests: Optional[List[Union[Test, TestPreset]]]):
         self._inner_suite = Suite()
         self._test_presets = []
-        for original_test in tests:
-            if issubclass(type(original_test), TestPreset):
+
+        for original_test in tests or []:
+            if isinstance(original_test, TestPreset):
                 self._test_presets.append(original_test)
-                continue
-            self._add_test(original_test)
+
+            else:
+                self._add_test(original_test)
 
     def _add_test(self, test: Test):
         new_test = copy.copy(test)
+
         for field_name, dependency in _discover_dependencies(new_test):
-            if issubclass(type(dependency), Metric):
+            if isinstance(dependency, Metric):
                 self._inner_suite.add_metrics(dependency)
-            if issubclass(type(dependency), Test):
+
+            if isinstance(dependency, Test):
                 dependency_copy = copy.copy(dependency)
                 new_test.__setattr__(field_name, dependency_copy)
                 self._inner_suite.add_tests(dependency_copy)
+
         self._inner_suite.add_tests(new_test)
 
     def __bool__(self):

@@ -2,12 +2,12 @@ import abc
 from abc import ABC
 
 from dataclasses import dataclass
-from numbers import Number
 from typing import List
 from typing import Optional
 from typing import Union
 
 from evidently.v2.tests.utils import ApproxValue
+from evidently.v2.tests.utils import Numeric
 
 
 @dataclass
@@ -81,19 +81,19 @@ class TestValueCondition:
     An object of the class stores specified conditions and can be used for checking a value by them.
     """
 
-    eq: Optional[Number] = None
-    gt: Optional[Number] = None
-    gte: Optional[Number] = None
-    is_in: Optional[List[Union[Number, str, bool]]] = None
-    lt: Optional[Number] = None
-    lte: Optional[Number] = None
-    not_eq: Optional[Number] = None
-    not_in: Optional[List[Union[Number, str, bool]]] = None
+    eq: Optional[Numeric] = None
+    gt: Optional[Numeric] = None
+    gte: Optional[Numeric] = None
+    is_in: Optional[List[Union[Numeric, str, bool]]] = None
+    lt: Optional[Numeric] = None
+    lte: Optional[Numeric] = None
+    not_eq: Optional[Numeric] = None
+    not_in: Optional[List[Union[Numeric, str, bool]]] = None
 
     def is_set(self) -> bool:
         return any([self.eq, self.gt, self.gte, self.is_in, self.lt, self.lte, self.not_in, self.not_eq])
 
-    def check_value(self, value: Number) -> bool:
+    def check_value(self, value: Numeric) -> bool:
         result = True
 
         if self.eq is not None and result:
@@ -150,14 +150,14 @@ class BaseConditionsTest(Test, ABC):
 
     def __init__(
         self,
-        eq: Optional[Number] = None,
-        gt: Optional[Number] = None,
-        gte: Optional[Number] = None,
-        is_in: Optional[List[Union[Number, str, bool]]] = None,
-        lt: Optional[Number] = None,
-        lte: Optional[Number] = None,
-        not_eq: Optional[Number] = None,
-        not_in: Optional[List[Union[Number, str, bool]]] = None,
+        eq: Optional[Numeric] = None,
+        gt: Optional[Numeric] = None,
+        gte: Optional[Numeric] = None,
+        is_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        lt: Optional[Numeric] = None,
+        lte: Optional[Numeric] = None,
+        not_eq: Optional[Numeric] = None,
+        not_in: Optional[List[Union[Numeric, str, bool]]] = None,
     ):
         self.condition = TestValueCondition(
             eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in
@@ -169,17 +169,17 @@ class BaseCheckValueTest(BaseConditionsTest):
     Base class for all tests with checking a value condition
     """
 
-    value: Number
+    value: Numeric
 
     @abc.abstractmethod
-    def calculate_value_for_test(self) -> Number:
+    def calculate_value_for_test(self) -> Optional[Numeric]:
         """Method for getting the checking value.
 
         Define it in a child class"""
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def get_description(self, value: Number) -> str:
+    def get_description(self, value: Numeric) -> str:
         """Method for getting a description that we can use.
         The description can use the checked value.
 

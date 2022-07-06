@@ -37,6 +37,28 @@ def test_data_integrity_test_number_of_columns() -> None:
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
 
+    suite = TestSuite(tests=[TestNumberOfColumns()])
+    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=ColumnMapping())
+    assert suite
+
+
+def test_data_integrity_test_number_of_columns_to_json() -> None:
+    test_dataset = pd.DataFrame(
+        {"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 1, 2, 3], "target": [0, 0, 0, 1]}
+    )
+    suite = TestSuite(tests=[TestNumberOfColumns()])
+    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=ColumnMapping())
+    assert suite
+    json_str = suite.json()
+    json_result = json.loads(json_str)
+    assert json_result["tests"][0] == {
+        "description": "Number of Columns is 3. Test Threshold is [eq=3].",
+        "group": "data_integrity",
+        "name": "Test Number of Columns",
+        "parameters": {},
+        "status": "SUCCESS",
+    }
+
 
 def test_data_integrity_test_number_of_rows() -> None:
     test_dataset = pd.DataFrame({"target": [0, 0, 0, 1]})

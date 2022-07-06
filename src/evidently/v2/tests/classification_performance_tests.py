@@ -5,7 +5,8 @@ import numpy as np
 
 from evidently.v2.metrics.classification_performance_metrics import ClassificationPerformanceMetrics
 from evidently.v2.metrics.classification_performance_metrics import DatasetClassificationPerformanceMetrics
-from evidently.v2.tests.base_test import Test, TestResult
+from evidently.v2.tests.base_test import Test
+from evidently.v2.tests.base_test import TestResult
 
 
 class SimpleClassificationTest(Test):

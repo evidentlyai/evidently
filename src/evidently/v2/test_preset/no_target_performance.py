@@ -1,17 +1,16 @@
-from typing import List, Optional
+from typing import List
+from typing import Optional
 
 from evidently.analyzers.utils import DatasetColumns
 from evidently.v2.metrics.base_metric import InputData
 from evidently.v2.test_preset.test_preset import TestPreset
-from evidently.v2.tests import (
-    TestFeatureValueDrift,
-    TestShareOfDriftedFeatures,
-    TestColumnNANShare,
-    TestShareOfOutRangeValues,
-    TestShareOfOutListValues,
-    TestMeanInNSigmas,
-    TestColumnsType,
-)
+from evidently.v2.tests import TestFeatureValueDrift
+from evidently.v2.tests import TestShareOfDriftedFeatures
+from evidently.v2.tests import TestColumnNANShare
+from evidently.v2.tests import TestShareOfOutRangeValues
+from evidently.v2.tests import TestShareOfOutListValues
+from evidently.v2.tests import TestMeanInNSigmas
+from evidently.v2.tests import TestColumnsType
 
 
 class NoTargetPerformance(TestPreset):
@@ -20,25 +19,17 @@ class NoTargetPerformance(TestPreset):
         self.most_important_features = [] if most_important_features is None else most_important_features
 
     def generate_tests(self, data: InputData, columns: DatasetColumns):
-        all_columns = [
-            name
-            for name in columns.cat_feature_names
-            + columns.num_feature_names
-            + [
-                columns.utility_columns.id_column,
-                columns.utility_columns.date,
-                columns.utility_columns.target,
-                columns.utility_columns.prediction,
-            ]
-            if name is not None
-        ]
-        return [
-            TestFeatureValueDrift(column_name=columns.utility_columns.prediction),
-            TestShareOfDriftedFeatures(lt=data.current_data.shape[1] // 3),
-            TestColumnsType(),
-            *[TestColumnNANShare(column_name=name) for name in all_columns],
-            *[TestShareOfOutRangeValues(column_name=name) for name in columns.num_feature_names],
-            *[TestShareOfOutListValues(column_name=name) for name in columns.cat_feature_names],
-            *[TestMeanInNSigmas(column_name=name, n_sigmas=2) for name in columns.num_feature_names],
-            *[TestFeatureValueDrift(column_name=name) for name in self.most_important_features],
-        ]
+        all_columns: List[str] = columns.get_all_columns_list()
+        preset_tests: List = []
+
+        if columns.utility_columns.prediction is not None and isinstance(columns.utility_columns.prediction, str):
+            preset_tests.append(TestFeatureValueDrift(column_name=columns.utility_columns.prediction))
+
+        preset_tests.append(TestShareOfDriftedFeatures(lt=data.current_data.shape[1] // 3))
+        preset_tests.append(TestColumnsType())
+        preset_tests.extend([TestColumnNANShare(column_name=name) for name in all_columns])
+        preset_tests.extend([TestShareOfOutRangeValues(column_name=name) for name in columns.num_feature_names])
+        preset_tests.extend([TestShareOfOutListValues(column_name=name) for name in columns.cat_feature_names])
+        preset_tests.extend([TestMeanInNSigmas(column_name=name, n_sigmas=2) for name in columns.num_feature_names])
+        preset_tests.extend([TestFeatureValueDrift(column_name=name) for name in self.most_important_features])
+        return preset_tests

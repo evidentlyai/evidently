@@ -1,5 +1,4 @@
 from abc import ABC
-from numbers import Number
 from typing import List
 from typing import Optional
 from typing import Union
@@ -22,6 +21,7 @@ from evidently.v2.tests.base_test import TestValueCondition
 from evidently.v2.tests.base_test import Test
 from evidently.v2.tests.base_test import TestResult
 from evidently.v2.tests.utils import approx
+from evidently.v2.tests.utils import Numeric
 from evidently.v2.tests.utils import plot_check
 from evidently.v2.tests.utils import plot_metric_value
 from evidently.v2.tests.utils import plot_distr
@@ -36,14 +36,14 @@ class BaseDataQualityMetricsValueTest(BaseCheckValueTest, ABC):
 
     def __init__(
         self,
-        eq: Optional[Number] = None,
-        gt: Optional[Number] = None,
-        gte: Optional[Number] = None,
-        is_in: Optional[List[Union[Number, str, bool]]] = None,
-        lt: Optional[Number] = None,
-        lte: Optional[Number] = None,
-        not_eq: Optional[Number] = None,
-        not_in: Optional[List[Union[Number, str, bool]]] = None,
+        eq: Optional[Numeric] = None,
+        gt: Optional[Numeric] = None,
+        gte: Optional[Numeric] = None,
+        is_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        lt: Optional[Numeric] = None,
+        lte: Optional[Numeric] = None,
+        not_eq: Optional[Numeric] = None,
+        not_in: Optional[List[Union[Numeric, str, bool]]] = None,
         metric: Optional[DataQualityMetrics] = None,
     ):
         if metric is not None:
@@ -123,14 +123,14 @@ class BaseDataQualityCorrelationsMetricsValueTest(BaseCheckValueTest, ABC):
     def __init__(
         self,
         method: str = "pearson",
-        eq: Optional[Number] = None,
-        gt: Optional[Number] = None,
-        gte: Optional[Number] = None,
-        is_in: Optional[List[Union[Number, str, bool]]] = None,
-        lt: Optional[Number] = None,
-        lte: Optional[Number] = None,
-        not_eq: Optional[Number] = None,
-        not_in: Optional[List[Union[Number, str, bool]]] = None,
+        eq: Optional[Numeric] = None,
+        gt: Optional[Numeric] = None,
+        gte: Optional[Numeric] = None,
+        is_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        lt: Optional[Numeric] = None,
+        lte: Optional[Numeric] = None,
+        not_eq: Optional[Numeric] = None,
+        not_in: Optional[List[Union[Numeric, str, bool]]] = None,
         metric: Optional[DataQualityCorrelationMetrics] = None,
     ):
         self.method = method
@@ -146,10 +146,10 @@ class BaseDataQualityCorrelationsMetricsValueTest(BaseCheckValueTest, ABC):
 class TestTargetPredictionCorrelation(BaseDataQualityCorrelationsMetricsValueTest):
     name = "Test correlation between target and prediction"
 
-    def calculate_value_for_test(self) -> Number:
+    def calculate_value_for_test(self) -> Optional[Numeric]:
         return self.metric.get_result().target_prediction_correlation
 
-    def get_description(self, value: Number) -> str:
+    def get_description(self, value: Numeric) -> str:
         return f"Correlation between target and prediction is {value}"
 
 
@@ -164,10 +164,10 @@ class TestHighlyCorrelatedFeatures(BaseDataQualityCorrelationsMetricsValueTest):
             return TestValueCondition(eq=approx(ref_abs_max_num_features_corr, relative=0.1))
         return TestValueCondition(lt=0.9)
 
-    def calculate_value_for_test(self) -> Number:
+    def calculate_value_for_test(self) -> Optional[Numeric]:
         return self.metric.get_result().abs_max_num_features_correlation
 
-    def get_description(self, value: Number) -> str:
+    def get_description(self, value: Numeric) -> str:
         return f"Max Correlation is {np.round(value)}. Test Threshold is [{self.get_condition()}]."
 
 
@@ -210,10 +210,10 @@ class TestTargetFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValueTest
             return TestValueCondition(eq=approx(ref_abs_max_num_target_features_corr, relative=0.1))
         return TestValueCondition(lt=0.9)
 
-    def calculate_value_for_test(self) -> Number:
+    def calculate_value_for_test(self) -> Optional[Numeric]:
         return self.metric.get_result().abs_max_target_features_correlation
 
-    def get_description(self, value: Number) -> str:
+    def get_description(self, value: Numeric) -> str:
         return f"Max Correlation is {value:.3g}. Test Threshold is [{self.get_condition()}]."
 
 
@@ -245,27 +245,27 @@ class TestTargetFeaturesCorrelationsRenderer(TestRenderer):
 class CorrelationChanges(BaseDataQualityCorrelationsMetricsValueTest):
     name = "Test max correlation between numerical features and target, prediction for regression tasks"
 
-    def calculate_value_for_test(self) -> Number:
+    def calculate_value_for_test(self) -> Optional[Numeric]:
         return self.metric.get_result().abs_max_num_features_correlation
 
-    def get_description(self, value: Number) -> str:
+    def get_description(self, value: Numeric) -> str:
         return f"Max numeric features correlation is {value:.3g}"
 
 
 class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest, ABC):
-    column_name: Union[str, List[str]]
+    column_name: str
 
     def __init__(
         self,
-        column_name: Union[str, List[str]],
-        eq: Optional[Number] = None,
-        gt: Optional[Number] = None,
-        gte: Optional[Number] = None,
-        is_in: Optional[List[Union[Number, str, bool]]] = None,
-        lt: Optional[Number] = None,
-        lte: Optional[Number] = None,
-        not_eq: Optional[Number] = None,
-        not_in: Optional[List[Union[Number, str, bool]]] = None,
+        column_name: str,
+        eq: Optional[Numeric] = None,
+        gt: Optional[Numeric] = None,
+        gte: Optional[Numeric] = None,
+        is_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        lt: Optional[Numeric] = None,
+        lte: Optional[Numeric] = None,
+        not_eq: Optional[Numeric] = None,
+        not_in: Optional[List[Union[Numeric, str, bool]]] = None,
         metric: Optional[DataQualityMetrics] = None,
     ):
         self.column_name = column_name
@@ -308,11 +308,11 @@ class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest, ABC):
 class TestFeatureValueMin(BaseFeatureDataQualityMetricsTest):
     name = "Test a feature min value"
 
-    def calculate_value_for_test(self) -> Number:
+    def calculate_value_for_test(self) -> Optional[Numeric]:
         features_stats = self.metric.get_result().features_stats.get_all_features()
         return features_stats[self.column_name].min
 
-    def get_description(self, value: Number) -> str:
+    def get_description(self, value: Numeric) -> str:
         return f"Min value for feature '{self.column_name}' is {value}"
 
 
@@ -327,9 +327,12 @@ class TestFeatureValueMinRenderer(TestRenderer):
             ref_distr = obj.metric.get_result().distr_for_plots[column_name]["reference"]
         fig = plot_distr(curr_distr, ref_distr)
         fig = plot_check(fig, obj.condition)
-        fig = plot_metric_value(
-            fig, obj.metric.get_result().features_stats[column_name].min, f"current {column_name} min value"
-        )
+        min_value = obj.metric.get_result().features_stats[column_name].min
+
+        if min_value is not None:
+            fig = plot_metric_value(
+                fig, min_value, f"current {column_name} min value"
+            )
 
         fig_json = fig.to_plotly_json()
         info.details.append(
@@ -350,11 +353,11 @@ class TestFeatureValueMinRenderer(TestRenderer):
 class TestFeatureValueMax(BaseFeatureDataQualityMetricsTest):
     name = "Test a feature max value"
 
-    def calculate_value_for_test(self) -> Number:
+    def calculate_value_for_test(self) -> Optional[Numeric]:
         features_stats = self.metric.get_result().features_stats.get_all_features()
         return features_stats[self.column_name].max
 
-    def get_description(self, value: Number) -> str:
+    def get_description(self, value: Numeric) -> str:
         return f"Max value for feature '{self.column_name}' is {value}"
 
 
@@ -369,9 +372,13 @@ class TestFeatureValueMaxRenderer(TestRenderer):
             ref_distr = obj.metric.get_result().distr_for_plots[column_name]["reference"]
         fig = plot_distr(curr_distr, ref_distr)
         fig = plot_check(fig, obj.condition)
-        fig = plot_metric_value(
-            fig, obj.metric.get_result().features_stats[column_name].max, f"current {column_name} max value"
-        )
+
+        max_value = obj.metric.get_result().features_stats[column_name].max
+
+        if max_value is not None:
+            fig = plot_metric_value(
+                fig, max_value, f"current {column_name} max value"
+            )
 
         fig_json = fig.to_plotly_json()
         info.details.append(
@@ -392,11 +399,11 @@ class TestFeatureValueMaxRenderer(TestRenderer):
 class TestFeatureValueMean(BaseFeatureDataQualityMetricsTest):
     name = "Test a feature mean value"
 
-    def calculate_value_for_test(self) -> Number:
+    def calculate_value_for_test(self) -> Optional[Numeric]:
         features_stats = self.metric.get_result().features_stats.get_all_features()
         return features_stats[self.column_name].mean
 
-    def get_description(self, value: Number) -> str:
+    def get_description(self, value: Numeric) -> str:
         return f"Mean value for feature '{self.column_name}' is {value}"
 
 
@@ -411,9 +418,10 @@ class TestFeatureValueMeanRenderer(TestRenderer):
             ref_distr = obj.metric.get_result().distr_for_plots[column_name]["reference"]
         fig = plot_distr(curr_distr, ref_distr)
         fig = plot_check(fig, obj.condition)
-        fig = plot_metric_value(
-            fig, obj.metric.get_result().features_stats[column_name].mean, f"current {column_name} mean value"
-        )
+        mean_value = obj.metric.get_result().features_stats[column_name].mean
+
+        if mean_value is not None:
+            fig = plot_metric_value(fig, mean_value, f"current {column_name} mean value")
 
         fig_json = fig.to_plotly_json()
         info.details.append(
@@ -434,11 +442,11 @@ class TestFeatureValueMeanRenderer(TestRenderer):
 class TestFeatureValueMedian(BaseFeatureDataQualityMetricsTest):
     name = "Test a feature median value"
 
-    def calculate_value_for_test(self) -> Number:
+    def calculate_value_for_test(self) -> Optional[Numeric]:
         features_stats = self.metric.get_result().features_stats.get_all_features()
         return features_stats[self.column_name].percentile_50
 
-    def get_description(self, value: Number) -> str:
+    def get_description(self, value: Numeric) -> str:
         return f"Median (50 percentile) value for feature '{self.column_name}' is {value}"
 
 
@@ -455,11 +463,10 @@ class TestFeatureValueMedianRenderer(TestRenderer):
 
         fig = plot_distr(curr_distr, ref_distr)
         fig = plot_check(fig, obj.condition)
-        fig = plot_metric_value(
-            fig,
-            obj.metric.get_result().features_stats[column_name].percentile_50,
-            f"current {column_name} median value",
-        )
+        percentile_50 = obj.metric.get_result().features_stats[column_name].percentile_50
+
+        if percentile_50 is not None:
+            fig = plot_metric_value(fig, percentile_50, f"current {column_name} median value")
 
         fig_json = fig.to_plotly_json()
         info.details.append(
@@ -480,11 +487,11 @@ class TestFeatureValueMedianRenderer(TestRenderer):
 class TestFeatureValueStd(BaseFeatureDataQualityMetricsTest):
     name = "Test a feature std value"
 
-    def calculate_value_for_test(self) -> Number:
+    def calculate_value_for_test(self) -> Optional[Numeric]:
         features_stats = self.metric.get_result().features_stats.get_all_features()
         return features_stats[self.column_name].std
 
-    def get_description(self, value: Number) -> str:
+    def get_description(self, value: Numeric) -> str:
         return f"Std value for feature '{self.column_name}' is {value}"
 
 
@@ -518,12 +525,12 @@ class TestFeatureValueStdRenderer(TestRenderer):
 class TestNumberOfUniqueValues(BaseFeatureDataQualityMetricsTest):
     name = "Test a feature for number of unique values"
 
-    def calculate_value_for_test(self) -> Number:
+    def calculate_value_for_test(self) -> Optional[Numeric]:
         features_stats = self.metric.get_result().features_stats.get_all_features()
         return features_stats[self.column_name].unique_count
 
-    def get_description(self, value: Number) -> str:
-        return f"Number of unique values for feature '{self.column_name}' is {value}"
+    def get_description(self, value: Numeric) -> str:
+        return f"Numeric of unique values for feature '{self.column_name}' is {value}"
 
 
 @default_renderer(test_type=TestNumberOfUniqueValues)
@@ -543,11 +550,17 @@ class TestNumberOfUniqueValuesRenderer(TestRenderer):
 class TestUniqueValuesShare(BaseFeatureDataQualityMetricsTest):
     name = "Test a feature for share of unique values"
 
-    def calculate_value_for_test(self) -> Number:
+    def calculate_value_for_test(self) -> Optional[Numeric]:
         features_stats = self.metric.get_result().features_stats.get_all_features()
-        return features_stats[self.column_name].unique_percentage / 100.0
+        unique_percentage = features_stats[self.column_name].unique_percentage
 
-    def get_description(self, value: Number) -> str:
+        if unique_percentage is None:
+            return None
+
+        else:
+            return unique_percentage / 100.0
+
+    def get_description(self, value: Numeric) -> str:
         return f"Share of unique values for feature '{self.column_name}' is {value}"
 
 
@@ -571,18 +584,29 @@ class TestMostCommonValueShare(BaseFeatureDataQualityMetricsTest):
     def get_condition(self) -> TestValueCondition:
         if self.condition.is_set():
             return self.condition
+
         if self.metric.get_result().reference_features_stats is not None:
             ref_features_stats = self.metric.get_result().features_stats.get_all_features()
-            return TestValueCondition(
-                eq=approx(ref_features_stats[self.column_name].most_common_value_percentage / 100.0, relative=0.1)
-            )
+            most_common_value_percentage = ref_features_stats[self.column_name].most_common_value_percentage
+
+            if most_common_value_percentage is not None:
+                return TestValueCondition(
+                    eq=approx(most_common_value_percentage / 100.0, relative=0.1)
+                )
+
         return TestValueCondition(lt=0.8)
 
-    def calculate_value_for_test(self) -> Number:
+    def calculate_value_for_test(self) -> Optional[Numeric]:
         features_stats = self.metric.get_result().features_stats.get_all_features()
-        return features_stats[self.column_name].most_common_value_percentage / 100.0
+        most_common_value_percentage = features_stats[self.column_name].most_common_value_percentage
 
-    def get_description(self, value: Number) -> str:
+        if most_common_value_percentage is None:
+            return None
+
+        else:
+            return most_common_value_percentage / 100.0
+
+    def get_description(self, value: Numeric) -> str:
         return f"Share of the Most Common Value for column {self.column_name} is {value:.3g}. \
             Test Threshold is [{self.get_condition()}]."
 
@@ -592,6 +616,10 @@ class TestMostCommonValueShareRenderer(TestRenderer):
     def render_html(self, obj: TestMostCommonValueShare) -> TestHtmlInfo:
         info = super().render_html(obj)
         column_name = obj.column_name
+
+        if column_name is None:
+            raise ValueError("column_name should be present")
+
         curr_df = obj.metric.get_result().counts_of_values[column_name]["current"]
         ref_df = None
         if "reference" in obj.metric.get_result().counts_of_values[column_name].keys():
@@ -663,8 +691,19 @@ class TestMeanInNSigmas(Test):
 class TestMeanInNSigmasRenderer(TestRenderer):
     def render_html(self, obj: TestMeanInNSigmas) -> TestHtmlInfo:
         column_name = obj.column_name
-        ref_mean = obj.metric.get_result().reference_features_stats[column_name].mean
-        ref_std = obj.metric.get_result().reference_features_stats[column_name].std
+        metric_result = obj.metric.get_result()
+
+        if metric_result.reference_features_stats is not None:
+            ref_mean = metric_result.reference_features_stats[column_name].mean
+            ref_std = metric_result.reference_features_stats[column_name].std
+
+        else:
+            ref_mean = None
+            ref_std = None
+
+        if ref_std is None or ref_mean is None:
+            raise ValueError("No mean or std for reference")
+
         gt = ref_mean - obj.n_sigmas * ref_std
         lt = ref_mean + obj.n_sigmas * ref_std
         ref_condition = TestValueCondition(gt=gt, lt=lt)
@@ -677,9 +716,12 @@ class TestMeanInNSigmasRenderer(TestRenderer):
 
         fig = plot_distr(curr_distr, ref_distr)
         fig = plot_check(fig, ref_condition)
-        fig = plot_metric_value(
-            fig, obj.metric.get_result().features_stats[column_name].mean, f"current {column_name} mean value"
-        )
+        mean_value = obj.metric.get_result().features_stats[column_name].mean
+
+        if mean_value is not None:
+            fig = plot_metric_value(
+                fig, mean_value, f"current {column_name} mean value"
+            )
 
         fig_json = fig.to_plotly_json()
         info.details.append(
@@ -779,14 +821,14 @@ class BaseDataQualityValueRangeMetricsTest(BaseCheckValueTest, ABC):
         column_name: str,
         left: Optional[float] = None,
         right: Optional[float] = None,
-        eq: Optional[Number] = None,
-        gt: Optional[Number] = None,
-        gte: Optional[Number] = None,
-        is_in: Optional[List[Union[Number, str, bool]]] = None,
-        lt: Optional[Number] = None,
-        lte: Optional[Number] = None,
-        not_eq: Optional[Number] = None,
-        not_in: Optional[List[Union[Number, str, bool]]] = None,
+        eq: Optional[Numeric] = None,
+        gt: Optional[Numeric] = None,
+        gte: Optional[Numeric] = None,
+        is_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        lt: Optional[Numeric] = None,
+        lte: Optional[Numeric] = None,
+        not_eq: Optional[Numeric] = None,
+        not_in: Optional[List[Union[Numeric, str, bool]]] = None,
         metric: Optional[DataQualityValueRangeMetrics] = None,
     ):
         self.column_name = column_name
@@ -805,11 +847,11 @@ class BaseDataQualityValueRangeMetricsTest(BaseCheckValueTest, ABC):
 class TestNumberOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
     name = "Test the number of out range values for a given feature and compares it against the threshold"
 
-    def calculate_value_for_test(self) -> Number:
+    def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().number_not_in_range
 
-    def get_description(self, value: Number) -> str:
-        return f"Number of out of the range values for feature '{self.column_name}' is {value}"
+    def get_description(self, value: Numeric) -> str:
+        return f"Numeric of out of the range values for feature '{self.column_name}' is {value}"
 
 
 @default_renderer(test_type=TestNumberOfOutRangeValues)
@@ -849,10 +891,10 @@ class TestShareOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
             return self.condition
         return TestValueCondition(eq=approx(0))
 
-    def calculate_value_for_test(self) -> Number:
+    def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().share_not_in_range
 
-    def get_description(self, value: Number) -> str:
+    def get_description(self, value: Numeric) -> str:
         return f"Share of Out-Of-Range Values for feature {self.column_name} is {np.round(value, 3)}. \
         Test Threshold is [{self.get_condition()}]."
 
@@ -910,7 +952,7 @@ class TestValueList(Test):
 
         if metric_result.number_not_in_list > 0:
             test_result = TestResult.FAIL
-            description = f"Number values not in the values list is {metric_result.number_not_in_list}"
+            description = f"Numeric values not in the values list is {metric_result.number_not_in_list}"
 
         else:
             test_result = TestResult.SUCCESS
@@ -944,14 +986,14 @@ class BaseDataQualityValueListMetricsTest(BaseCheckValueTest, ABC):
         self,
         column_name: str,
         values: Optional[list] = None,
-        eq: Optional[Number] = None,
-        gt: Optional[Number] = None,
-        gte: Optional[Number] = None,
-        is_in: Optional[List[Union[Number, str, bool]]] = None,
-        lt: Optional[Number] = None,
-        lte: Optional[Number] = None,
-        not_eq: Optional[Number] = None,
-        not_in: Optional[List[Union[Number, str, bool]]] = None,
+        eq: Optional[Numeric] = None,
+        gt: Optional[Numeric] = None,
+        gte: Optional[Numeric] = None,
+        is_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        lt: Optional[Numeric] = None,
+        lte: Optional[Numeric] = None,
+        not_eq: Optional[Numeric] = None,
+        not_in: Optional[List[Union[Numeric, str, bool]]] = None,
         metric: Optional[DataQualityValueListMetrics] = None,
     ):
         self.column_name = column_name
@@ -969,11 +1011,11 @@ class BaseDataQualityValueListMetricsTest(BaseCheckValueTest, ABC):
 class TestNumberOfOutListValues(BaseDataQualityValueListMetricsTest):
     name = "Test the number of out list values for a given feature and compares it against the threshold"
 
-    def calculate_value_for_test(self) -> Number:
+    def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().number_not_in_list
 
-    def get_description(self, value: Number) -> str:
-        return f"Number of out of the list values for feature '{self.column_name}' is {value}"
+    def get_description(self, value: Numeric) -> str:
+        return f"Numeric of out of the list values for feature '{self.column_name}' is {value}"
 
 
 @default_renderer(test_type=TestNumberOfOutListValues)
@@ -999,10 +1041,10 @@ class TestShareOfOutListValues(BaseDataQualityValueListMetricsTest):
             return self.condition
         return TestValueCondition(eq=approx(0))
 
-    def calculate_value_for_test(self) -> Number:
+    def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().share_not_in_list
 
-    def get_description(self, value: Number) -> str:
+    def get_description(self, value: Numeric) -> str:
         return f"Share of Out-Of-List Values for feature {self.column_name} is {np.round(value, 3)}. Test Threshold \
             is [{self.get_condition()}]."
 
@@ -1018,14 +1060,14 @@ class TestValueQuantile(BaseCheckValueTest):
         self,
         column_name: str,
         quantile: Optional[float],
-        eq: Optional[Number] = None,
-        gt: Optional[Number] = None,
-        gte: Optional[Number] = None,
-        is_in: Optional[List[Union[Number, str, bool]]] = None,
-        lt: Optional[Number] = None,
-        lte: Optional[Number] = None,
-        not_eq: Optional[Number] = None,
-        not_in: Optional[List[Union[Number, str, bool]]] = None,
+        eq: Optional[Numeric] = None,
+        gt: Optional[Numeric] = None,
+        gte: Optional[Numeric] = None,
+        is_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        lt: Optional[Numeric] = None,
+        lte: Optional[Numeric] = None,
+        not_eq: Optional[Numeric] = None,
+        not_in: Optional[List[Union[Numeric, str, bool]]] = None,
         metric: Optional[DataQualityValueQuantileMetrics] = None,
     ):
         self.column_name = column_name
@@ -1038,14 +1080,17 @@ class TestValueQuantile(BaseCheckValueTest):
             self.metric = metric
 
         else:
+            if quantile is None:
+                raise ValueError("Quantile parameter should be present")
+
             self.metric = DataQualityValueQuantileMetrics(column=column_name, quantile=quantile)
 
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
 
-    def calculate_value_for_test(self) -> Number:
+    def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().value
 
-    def get_description(self, value: Number) -> str:
+    def get_description(self, value: Numeric) -> str:
         return f"Quantile {self.quantile} for column '{self.column_name}' is {value}"
 
 

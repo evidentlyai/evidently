@@ -64,6 +64,23 @@ class DatasetColumns:
 
         return result
 
+    def get_all_columns_list(self) -> List[str]:
+        """List all columns."""
+        result: List[str] = self.cat_feature_names + self.num_feature_names
+        result.extend(
+            [
+                name
+                for name in (
+                    self.utility_columns.id_column,
+                    self.utility_columns.date,
+                    self.utility_columns.target,
+                    self.utility_columns.prediction,
+                )
+                if name is not None and isinstance(name, str)
+            ]
+        )
+        return result
+
     def get_features_len(self, include_time_columns: bool = False) -> int:
         """How mane feature do we have. It is useful for pagination in widgets.
 
