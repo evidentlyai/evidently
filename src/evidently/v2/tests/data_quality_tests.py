@@ -226,7 +226,11 @@ class TestTargetFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValueTest
         return self.metric.get_result().current_correlation.abs_max_target_features_correlation
 
     def get_description(self, value: Numeric) -> str:
-        return f"Max Correlation is {value:.3g}. Test Threshold is [{self.get_condition()}]."
+        if value is None:
+            return f"No target in the current dataset"
+
+        else:
+            return f"Max Correlation is {value:.3g}. Test Threshold is [{self.get_condition()}]."
 
 
 @default_renderer(test_type=TestTargetFeaturesCorrelations)
@@ -234,7 +238,14 @@ class TestTargetFeaturesCorrelationsRenderer(TestRenderer):
     def render_json(self, obj: TestTargetFeaturesCorrelations) -> dict:
         base = super().render_json(obj)
         base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["abs_max_target_features_correlation"] = np.round(obj.value, 3)
+
+        if obj.value is not None:
+            abs_max_target_features_correlation = np.round(obj.value, 3)
+
+        else:
+            abs_max_target_features_correlation = obj.value
+
+        base["parameters"]["abs_max_target_features_correlation"] = abs_max_target_features_correlation
         return base
 
     def render_html(self, obj: TestTargetFeaturesCorrelations) -> TestHtmlInfo:

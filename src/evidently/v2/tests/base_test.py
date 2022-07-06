@@ -208,13 +208,17 @@ class BaseCheckValueTest(BaseConditionsTest):
         result.description = self.get_description(value)
 
         try:
-            condition_check_result = self.get_condition().check_value(value)
-
-            if condition_check_result:
-                result.mark_as_success()
+            if value is None:
+                result.mark_as_error()
 
             else:
-                result.mark_as_fail()
+                condition_check_result = self.get_condition().check_value(value)
+
+                if condition_check_result:
+                    result.mark_as_success()
+
+                else:
+                    result.mark_as_fail()
 
         except ValueError:
             result.mark_as_error("Cannot calculate the condition")

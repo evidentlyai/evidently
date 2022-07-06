@@ -639,6 +639,26 @@ def test_data_quality_test_target_features_correlation() -> None:
     assert suite
 
 
+def test_data_quality_test_target_features_correlation_errors() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "feature1": [0, 1, 2, 3],
+            "prediction": [0, 0, 0, 1],
+        }
+    )
+    suite = TestSuite(tests=[TestTargetFeaturesCorrelations()])
+    suite.run(current_data=test_dataset, reference_data=test_dataset)
+    assert not suite
+
+    assert suite.as_dict()["tests"][0] == {
+        "description": "No target in the current dataset",
+        "group": "data_quality",
+        "name": "Test Correlation Between Target and Features",
+        "parameters": {"abs_max_target_features_correlation": None, "condition": {"lt": 0.9}},
+        "status": "ERROR",
+    }
+
+
 def test_data_quality_test_target_features_correlation_json_render() -> None:
     test_dataset = pd.DataFrame(
         {
