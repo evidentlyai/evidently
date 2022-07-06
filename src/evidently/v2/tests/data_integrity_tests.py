@@ -289,7 +289,7 @@ class TestNumberOfDuplicatedRows(BaseIntegrityValueTest):
             ref_num_of_duplicates = self.data_integrity_metric.get_result().reference_stats.number_of_duplicated_rows
             curr_number_of_rows = self.data_integrity_metric.get_result().current_stats.number_of_rows
             ref_number_of_rows = self.data_integrity_metric.get_result().reference_stats.number_of_rows
-            mult = ref_num_of_duplicates * curr_number_of_rows / ref_number_of_rows
+            mult = curr_number_of_rows / ref_number_of_rows
             return TestValueCondition(eq=approx(ref_num_of_duplicates * mult, 0.1))
 
         return TestValueCondition(eq=0)
