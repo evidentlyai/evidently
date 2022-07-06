@@ -76,6 +76,22 @@ def test_data_quality_values_in_list_metrics() -> None:
     assert result.share_not_in_list == 0.5
 
 
+def test_data_quality_values_in_list_metrics_reference_defaults() -> None:
+    current_dataset = pd.DataFrame({"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 2, 2, 432]})
+    reference_dataset = pd.DataFrame({"category_feature": ["n", "n", "p", "n"]})
+    data_mapping = ColumnMapping()
+    metric = DataQualityValueListMetrics(column="category_feature")
+    result = metric.calculate(
+        data=InputData(current_data=current_dataset, reference_data=reference_dataset, column_mapping=data_mapping),
+        metrics={},
+    )
+    assert result is not None
+    assert result.number_in_list == 3
+    assert result.number_not_in_list == 1
+    assert result.share_in_list == 0.75
+    assert result.share_not_in_list == 0.25
+
+
 def test_data_quality_values_in_range_metrics() -> None:
     test_dataset = pd.DataFrame({"numerical_feature": [0, 2, 2, 432]})
     data_mapping = ColumnMapping()

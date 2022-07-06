@@ -474,16 +474,47 @@ def test_data_quality_test_value_in_list() -> None:
         {
             "feature1": [0, 1, 1, 0],
             "target": [0, 0, 0, 1],
-            "prediction": [0, 0, 1, 1],
+            "prediction": [0, 0, 1, 2],
         }
     )
     suite = TestSuite(tests=[TestValueList(column_name="feature1")])
     suite.run(current_data=test_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
     assert not suite
 
+    suite = TestSuite(tests=[TestValueList(column_name="prediction", values=[0, 1])])
+    suite.run(current_data=test_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
+    assert suite
+
     suite = TestSuite(tests=[TestValueList(column_name="target")])
     suite.run(current_data=test_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
     assert suite
+
+
+def test_data_quality_test_value_in_list_json_render() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "target": [0, 0, 1, 1],
+        }
+    )
+    reference_dataset = pd.DataFrame(
+        {
+            "target": [0, 0, 0, 1],
+        }
+    )
+    suite = TestSuite(tests=[TestValueList(column_name="target")])
+    suite.run(current_data=test_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
+    assert suite
+
+    result_from_json = json.loads(suite.json())
+    assert result_from_json["summary"]["all_passed"] is True
+    test_info = result_from_json["tests"][0]
+    assert test_info == {
+        "description": "All values is in the values list",
+        "group": "data_quality",
+        "name": "Test checks whether a feature values are in some list of values",
+        "parameters": {"column_name": "target", "number_not_in_list": 0, "values": None},
+        "status": "SUCCESS",
+    }
 
 
 def test_data_quality_test_number_of_values_not_in_list() -> None:
@@ -529,26 +560,34 @@ def test_data_quality_test_share_of_values_not_in_list() -> None:
 
 
 def test_data_quality_test_share_of_values_not_in_list_json_render() -> None:
-    test_dataset = pd.DataFrame(
+    current_dataset = pd.DataFrame(
+        {
+            "feature1": [0, 1, 10, 20],
+        }
+    )
+    reference_dataset = pd.DataFrame(
         {
             "feature1": [0, 1, 1, 20],
         }
     )
 
-    suite = TestSuite(tests=[TestShareOfOutListValues(column_name="feature1", values=[0, 1], lt=0.5)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
-    assert suite
+    suite = TestSuite(tests=[TestShareOfOutListValues(column_name="feature1")])
+    suite.run(current_data=current_dataset, reference_data=reference_dataset)
+    assert not suite
 
     result_from_json = json.loads(suite.json())
-    assert result_from_json["summary"]["all_passed"] is True
+    assert result_from_json["summary"]["all_passed"] is False
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "Share of Out-Of-List Values for feature feature1 is 0.25. "
-        "Values list is [0, 1]. Test Threshold is [lt=0.5].",
+        "description": "Share of Out-Of-List Values for column feature1 is 0.25. Test Threshold is [eq=0 ± 1e-12].",
         "group": "data_quality",
         "name": "Test Share of Out-Of-List Values",
-        "parameters": {"condition": {"lt": 0.5}, "share_not_in_list": 0.25, "values": [0, 1]},
-        "status": "SUCCESS",
+        "parameters": {
+            "condition": {"eq": {"absolute": 1e-12, "relative": 1e-06, "value": 0}},
+            "share_not_in_list": 0.25,
+            "values": None,
+        },
+        "status": "FAIL",
     }
 
 

@@ -192,7 +192,8 @@ class DataQualityValueListMetrics(Metric[DataQualityValueListMetricsResults]):
         current_counts = data.current_data[self.column].value_counts(dropna=False).reset_index()
         current_counts.columns = ["x", "count"]
         counts_of_value["current"] = current_counts
-        if data.reference_data is not None:
+
+        if data.reference_data is not None and self.values is not None:
             reference_counts = data.reference_data[self.column].value_counts(dropna=False).reset_index()
             reference_counts.columns = ["x", "count"]
             counts_of_value["reference"] = reference_counts

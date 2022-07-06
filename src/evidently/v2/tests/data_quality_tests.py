@@ -227,7 +227,7 @@ class TestTargetFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValueTest
 
     def get_description(self, value: Numeric) -> str:
         if value is None:
-            return f"No target in the current dataset"
+            return "No target in the current dataset"
 
         else:
             return f"Max Correlation is {value:.3g}. Test Threshold is [{self.get_condition()}]."
@@ -983,7 +983,7 @@ class TestShareOfOutRangeValuesRenderer(TestRenderer):
 
 class TestValueList(Test):
     group = "data_quality"
-    name = "Test checks whether a feature values is in some list of values"
+    name = "Test checks whether a feature values are in some list of values"
     metric: DataQualityValueListMetrics
     column_name: str
     values: Optional[list]
@@ -1016,14 +1016,25 @@ class TestValueList(Test):
 
 @default_renderer(test_type=TestValueList)
 class TestValueListRenderer(TestRenderer):
+    def render_json(self, obj: TestValueList) -> dict:
+        base = super().render_json(obj)
+        base["parameters"]["column_name"] = obj.column_name
+        base["parameters"]["values"] = obj.values
+        base["parameters"]["number_not_in_list"] = obj.metric.get_result().number_not_in_list
+        return base
+
     def render_html(self, obj: TestValueList) -> TestHtmlInfo:
         info = super().render_html(obj)
         column_name = obj.column_name
         values = obj.values
         curr_df = obj.metric.get_result().counts_of_value["current"]
-        ref_df = None
+
         if "reference" in obj.metric.get_result().counts_of_value.keys():
             ref_df = obj.metric.get_result().counts_of_value["reference"]
+
+        else:
+            ref_df = None
+
         additional_plots = plot_value_counts_tables(column_name, values, curr_df, ref_df, "value_list")
         info.details = additional_plots
         return info
@@ -1099,8 +1110,7 @@ class TestShareOfOutListValues(BaseDataQualityValueListMetricsTest):
 
     def get_description(self, value: Numeric) -> str:
         return (
-            f"Share of Out-Of-List Values for feature {self.column_name} is {np.round(value, 3)}. "
-            f"Values list is {self.values}. "
+            f"Share of Out-Of-List Values for column {self.column_name} is {np.round(value, 3)}. "
             f"Test Threshold is [{self.get_condition()}]."
         )
 
