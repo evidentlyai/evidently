@@ -330,9 +330,7 @@ class TestFeatureValueMinRenderer(TestRenderer):
         min_value = obj.metric.get_result().features_stats[column_name].min
 
         if min_value is not None:
-            fig = plot_metric_value(
-                fig, min_value, f"current {column_name} min value"
-            )
+            fig = plot_metric_value(fig, min_value, f"current {column_name} min value")
 
         fig_json = fig.to_plotly_json()
         info.details.append(
@@ -376,9 +374,7 @@ class TestFeatureValueMaxRenderer(TestRenderer):
         max_value = obj.metric.get_result().features_stats[column_name].max
 
         if max_value is not None:
-            fig = plot_metric_value(
-                fig, max_value, f"current {column_name} max value"
-            )
+            fig = plot_metric_value(fig, max_value, f"current {column_name} max value")
 
         fig_json = fig.to_plotly_json()
         info.details.append(
@@ -590,9 +586,7 @@ class TestMostCommonValueShare(BaseFeatureDataQualityMetricsTest):
             most_common_value_percentage = ref_features_stats[self.column_name].most_common_value_percentage
 
             if most_common_value_percentage is not None:
-                return TestValueCondition(
-                    eq=approx(most_common_value_percentage / 100.0, relative=0.1)
-                )
+                return TestValueCondition(eq=approx(most_common_value_percentage / 100.0, relative=0.1))
 
         return TestValueCondition(lt=0.8)
 
@@ -719,9 +713,7 @@ class TestMeanInNSigmasRenderer(TestRenderer):
         mean_value = obj.metric.get_result().features_stats[column_name].mean
 
         if mean_value is not None:
-            fig = plot_metric_value(
-                fig, mean_value, f"current {column_name} mean value"
-            )
+            fig = plot_metric_value(fig, mean_value, f"current {column_name} mean value")
 
         fig_json = fig.to_plotly_json()
         info.details.append(
