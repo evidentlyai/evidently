@@ -168,7 +168,7 @@ class TestHighlyCorrelatedFeatures(BaseDataQualityCorrelationsMetricsValueTest):
         return self.metric.get_result().abs_max_num_features_correlation
 
     def get_description(self, value: Numeric) -> str:
-        return f"Max Correlation is {np.round(value)}. Test Threshold is [{self.get_condition()}]."
+        return f"Max Correlation is {value:.3g}. Test Threshold is [{self.get_condition()}]."
 
 
 @default_renderer(test_type=TestHighlyCorrelatedFeatures)
