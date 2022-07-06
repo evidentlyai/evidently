@@ -280,8 +280,8 @@ def test_data_quality_test_most_common_value_share_json_render() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "The most common value in the column feature1 is 1. Its share "
-        "is 0.5. The test threshold is eq=0.5.",
+        "description": "The most common value in the column feature1 is 1. Its share is 0.5."
+                       " The test threshold is eq=0.5.",
         "group": "data_quality",
         "name": "Share of the Most Common Value",
         "parameters": {"column_name": "feature1", "condition": {"eq": 0.5}, "share_most_common_value": 0.5},
@@ -333,7 +333,7 @@ def test_data_quality_test_value_in_n_sigmas_json_render() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "Mean value of column feature1 0.5 is in range from -2.4 to " "3.4",
+        "description": "Mean value of column feature1 0.5 is in range from -2.4 to 3.4",
         "group": "data_quality",
         "name": "Mean Value Stability",
         "parameters": {
@@ -455,8 +455,8 @@ def test_data_quality_test_share_of_values_not_in_range_json_render() -> None:
     assert result_from_json["summary"]["all_passed"] is False
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "The share of values out of range in the column feature1 is "
-        "0.2 (1 out of 5).  The test threshold is gt=0.2.",
+        "description": "The share of values out of range in the column feature1 is 0.2 (1 out of 5)."
+                       "  The test threshold is gt=0.2.",
         "group": "data_quality",
         "name": "Share of Out-of-Range Values",
         "parameters": {"condition": {"gt": 0.2}, "left": 0, "right": 10, "share_not_in_range": 0.2},
@@ -581,8 +581,8 @@ def test_data_quality_test_share_of_values_not_in_list_json_render() -> None:
     assert result_from_json["summary"]["all_passed"] is False
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": " The share of values out of list in the column feature1 is "
-        "0.25 (1 out of 4). The test threshold is eq=0 ± 1e-12.",
+        "description": "The share of values out of list in the column feature1 is 0.25 (1 out of 4)."
+                       " The test threshold is eq=0 ± 1e-12.",
         "group": "data_quality",
         "name": "Share Out-of-List Values",
         "parameters": {
@@ -650,7 +650,7 @@ def test_data_quality_test_highly_correlated_features_json_render() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "The maximum correlation is 0.983. The test threshold is " "eq=0.983 ± 0.0983.",
+        "description": "The maximum correlation is 0.983. The test threshold is eq=0.983 ± 0.0983.",
         "group": "data_quality",
         "name": "Highly Correlated Features",
         "parameters": {
@@ -717,7 +717,7 @@ def test_data_quality_test_target_features_correlation_json_render() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "The maximum correlation is 0.775. The test threshold is " "eq=0.775 ± 0.0775.",
+        "description": "The maximum correlation is 0.775. The test threshold is eq=0.775 ± 0.0775.",
         "group": "data_quality",
         "name": "Correlation between Target and Features",
         "parameters": {

@@ -46,7 +46,7 @@ def register_stattest(stat_test: StatTest):
 
 
 def _get_default_stattest(reference_data: pd.Series, current_data: pd.Series, feature_type: str) -> StatTest:
-    n_values = reference_data.append(current_data).nunique()
+    n_values = pd.concat([reference_data, current_data]).nunique()
     if reference_data.shape[0] <= 1000:
         if feature_type == "num":
             if n_values <= 5:

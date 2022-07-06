@@ -1124,7 +1124,7 @@ class TestShareOfOutListValues(BaseDataQualityValueListMetricsTest):
         number_not_in_range = self.metric.get_result().number_not_in_list
         rows_count = self.metric.get_result().rows_count
         return (
-            f" The share of values out of list in the column {self.column_name} is {value:.3g} "
+            f"The share of values out of list in the column {self.column_name} is {value:.3g} "
             f"({number_not_in_range} out of {rows_count}). "
             f"The test threshold is {self.get_condition()}."
         )

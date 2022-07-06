@@ -55,7 +55,10 @@ def test_data_integrity_test_number_of_columns_json_render() -> None:
         "description": "The number of columns is 3. The test threshold is eq=3.",
         "group": "data_integrity",
         "name": "Number of Columns",
-        "parameters": {"condition": {"eq": 3}, "number_of_columns": 3},
+        "parameters": {
+            "condition": {"eq": 3},
+            "number_of_columns": 3,
+        },
         "status": "SUCCESS",
     }
 
@@ -68,7 +71,10 @@ def test_data_integrity_test_number_of_columns_json_render() -> None:
         "description": "The number of columns is 3. The test threshold is lt=5.",
         "group": "data_integrity",
         "name": "Number of Columns",
-        "parameters": {"condition": {"lt": 5}, "number_of_columns": 3},
+        "parameters": {
+            "condition": {"lt": 5},
+            "number_of_columns": 3,
+        },
         "status": "SUCCESS",
     }
 
@@ -176,7 +182,7 @@ def test_data_integrity_test_constant_columns_json_render() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "The number of constant columns is 1. The test threshold is " "lte=1.",
+        "description": "The number of constant columns is 1. The test threshold is lte=1.",
         "group": "data_integrity",
         "name": "Number of Constant Columns",
         "parameters": {"condition": {}, "number_of_constant_columns": 1},
@@ -255,7 +261,7 @@ def test_data_integrity_test_duplicated_rows_json_render() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "The number of duplicate rows is 3. The test threshold is eq=3 " "± 0.3.",
+        "description": "The number of duplicate rows is 3. The test threshold is eq=3 ± 0.3.",
         "group": "data_integrity",
         "name": "Number of Duplicate Rows",
         "parameters": {
@@ -292,7 +298,7 @@ def test_data_integrity_test_duplicated_columns_json_render() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "The number of duplicate columns is 1. The test threshold is " "lte=1.",
+        "description": "The number of duplicate columns is 1. The test threshold is lte=1.",
         "group": "data_integrity",
         "name": "Number of Duplicate Columns",
         "parameters": {"condition": {"lte": 1}, "number_of_duplicated_columns": 1},
@@ -388,7 +394,7 @@ def test_data_integrity_test_columns_nan_share_json_render() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "The share of NA values in feature1 is 0.25. The test " "threshold is eq=0.25 ± 0.025.",
+        "description": "The share of NA values in feature1 is 0.25. The test threshold is eq=0.25 ± 0.025.",
         "group": "data_integrity",
         "name": "Share of NA Values in Columns",
         "parameters": {
