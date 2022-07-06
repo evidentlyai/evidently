@@ -255,20 +255,20 @@ def test_data_integrity_test_duplicated_rows_json_render() -> None:
     )
     suite = TestSuite(tests=[TestNumberOfDuplicatedRows()])
     suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=ColumnMapping())
-    assert not suite
+    assert suite
 
     result_from_json = json.loads(suite.json())
-    assert result_from_json["summary"]["all_passed"] is False
+    assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "Number of Duplicated Rows is 3. Test Threshold is [eq=9 ± 0.9].",
+        "description": "Number of Duplicated Rows is 3. Test Threshold is [eq=3 ± 0.3].",
         "group": "data_integrity",
         "name": "Test Number of Duplicated Rows",
         "parameters": {
-            "condition": {"eq": {"absolute": 1e-12, "relative": 0.1, "value": 9.0}},
+            "condition": {"eq": {"absolute": 1e-12, "relative": 0.1, "value": 3.0}},
             "number_of_duplicated_rows": 3,
         },
-        "status": "FAIL",
+        "status": "SUCCESS",
     }
 
 

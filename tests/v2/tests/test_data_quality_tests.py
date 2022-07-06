@@ -608,12 +608,12 @@ def test_data_quality_test_highly_correlated_features_json_render() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "Max Correlation is 1.0. Test Threshold is [eq=0.983 ± 0.0983].",
+        "description": "Max Correlation is 0.983. Test Threshold is [eq=0.983 ± 0.0983].",
         "group": "data_quality",
         "name": "Test Highly Correlated Features",
         "parameters": {
             "abs_max_num_features_correlation": 0.983,
-            "condition": {"eq": {"absolute": 1e-12, "relative": 0.1, "value": pytest_approx(0.98, abs=0.01)}},
+            "condition": {"eq": {"absolute": 1e-12, "relative": 0.1, "value": pytest_approx(0.98, abs=0.1)}},
         },
         "status": "SUCCESS",
     }

@@ -167,7 +167,7 @@ def test_data_drift_test_feature_value_drift() -> None:
     )
     suite = TestSuite(tests=[TestFeatureValueDrift(column_name="feature_1")])
     suite.run(current_data=test_current_dataset, reference_data=test_reference_dataset, column_mapping=ColumnMapping())
-    assert suite
+    assert not suite
 
 
 def test_data_drift_test_feature_value_drift_json_render() -> None:
