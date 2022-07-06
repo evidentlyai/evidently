@@ -4,7 +4,7 @@ import json
 import numpy as np
 import pandas as pd
 
-from evidently.v2.tests.utils import ApproxValue
+from evidently.tests.utils import ApproxValue
 
 
 _TYPES_MAPPING = (
