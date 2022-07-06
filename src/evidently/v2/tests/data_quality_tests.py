@@ -147,7 +147,7 @@ class TestTargetPredictionCorrelation(BaseDataQualityCorrelationsMetricsValueTes
     name = "Test correlation between target and prediction"
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
-        return self.metric.get_result().target_prediction_correlation
+        return self.metric.get_result().current_correlation.target_prediction_correlation
 
     def get_description(self, value: Numeric) -> str:
         return f"Correlation between target and prediction is {value}"
@@ -159,13 +159,15 @@ class TestHighlyCorrelatedFeatures(BaseDataQualityCorrelationsMetricsValueTest):
     def get_condition(self) -> TestValueCondition:
         if self.condition.is_set():
             return self.condition
-        if self.metric.get_result().reference_abs_max_num_features_correlation is not None:
-            ref_abs_max_num_features_corr = self.metric.get_result().reference_abs_max_num_features_correlation
-            return TestValueCondition(eq=approx(ref_abs_max_num_features_corr, relative=0.1))
+
+        if self.metric.get_result().reference_correlation.abs_max_num_features_correlation is not None:
+            value = self.metric.get_result().reference_correlation.abs_max_num_features_correlation
+            return TestValueCondition(eq=approx(value, relative=0.1))
+
         return TestValueCondition(lt=0.9)
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
-        return self.metric.get_result().abs_max_num_features_correlation
+        return self.metric.get_result().current_correlation.abs_max_num_features_correlation
 
     def get_description(self, value: Numeric) -> str:
         return f"Max Correlation is {value:.3g}. Test Threshold is [{self.get_condition()}]."
@@ -181,11 +183,15 @@ class TestHighlyCorrelatedFeaturesRenderer(TestRenderer):
 
     def render_html(self, obj: TestHighlyCorrelatedFeatures) -> TestHtmlInfo:
         info = super().render_html(obj)
-        num_features = obj.metric.get_result().num_features
-        current_correlations = obj.metric.get_result().current_correlation_matrix[num_features]
-        reference_correlations = None
-        if obj.metric.get_result().reference_correlation_matrix is not None:
-            reference_correlations = obj.metric.get_result().reference_correlation_matrix[num_features]
+        num_features = obj.metric.get_result().current_correlation.num_features
+        current_correlations = obj.metric.get_result().current_correlation.correlation_matrix[num_features]
+
+        if obj.metric.get_result().reference_correlation is not None:
+            reference_correlations = obj.metric.get_result().reference_correlation.correlation_matrix[num_features]
+
+        else:
+            reference_correlations = None
+
         fig = plot_correlations(current_correlations, reference_correlations)
         fig_json = fig.to_plotly_json()
         info.details.append(
@@ -209,15 +215,15 @@ class TestTargetFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValueTest
     def get_condition(self) -> TestValueCondition:
         if self.condition.is_set():
             return self.condition
-        if self.metric.get_result().reference_abs_max_target_features_correlation is not None:
+        if self.metric.get_result().reference_correlation.abs_max_target_features_correlation is not None:
             ref_abs_max_num_target_features_corr = (
-                self.metric.get_result().reference_abs_max_target_features_correlation
+                self.metric.get_result().reference_correlation.abs_max_target_features_correlation
             )
             return TestValueCondition(eq=approx(ref_abs_max_num_target_features_corr, relative=0.1))
         return TestValueCondition(lt=0.9)
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
-        return self.metric.get_result().abs_max_target_features_correlation
+        return self.metric.get_result().current_correlation.abs_max_target_features_correlation
 
     def get_description(self, value: Numeric) -> str:
         return f"Max Correlation is {value:.3g}. Test Threshold is [{self.get_condition()}]."
@@ -233,10 +239,14 @@ class TestTargetFeaturesCorrelationsRenderer(TestRenderer):
 
     def render_html(self, obj: TestTargetFeaturesCorrelations) -> TestHtmlInfo:
         info = super().render_html(obj)
-        current_correlations = obj.metric.get_result().current_correlation_matrix
-        reference_correlations = None
-        if obj.metric.get_result().reference_correlation_matrix is not None:
-            reference_correlations = obj.metric.get_result().reference_correlation_matrix
+        current_correlations = obj.metric.get_result().current_correlation.correlation_matrix
+
+        if obj.metric.get_result().reference_correlation is not None:
+            reference_correlations = obj.metric.get_result().reference_correlation.correlation_matrix
+
+        else:
+            reference_correlations = None
+
         fig = plot_correlations(current_correlations, reference_correlations)
         fig_json = fig.to_plotly_json()
         info.details.append(
@@ -258,7 +268,7 @@ class CorrelationChanges(BaseDataQualityCorrelationsMetricsValueTest):
     name = "Test max correlation between numerical features and target, prediction for regression tasks"
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
-        return self.metric.get_result().abs_max_num_features_correlation
+        return self.metric.get_result().current_correlation.abs_max_num_features_correlation
 
     def get_description(self, value: Numeric) -> str:
         return f"Max numeric features correlation is {value:.3g}"

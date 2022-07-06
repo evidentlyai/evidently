@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from typing import Dict
+from typing import List
 from typing import Optional
 
 import pandas as pd
@@ -304,20 +305,20 @@ class DataQualityValueQuantileMetrics(Metric[DataQualityValueQuantileMetricsResu
 
 
 @dataclass
+class DataCorrelation:
+    num_features: List[str]
+    correlation_matrix: pd.DataFrame
+    target_prediction_correlation: Optional[float] = None
+    abs_max_target_features_correlation: Optional[float] = None
+    abs_max_prediction_features_correlation: Optional[float] = None
+    abs_max_correlation: Optional[float] = None
+    abs_max_num_features_correlation: Optional[float] = None
+
+
+@dataclass
 class DataQualityCorrelationMetricsResults:
-    current_correlation_matrix: pd.DataFrame
-    num_features: list
-    target_prediction_correlation: Optional[float]
-    abs_max_target_features_correlation: Optional[float]
-    abs_max_prediction_features_correlation: Optional[float]
-    abs_max_correlation: Optional[float]
-    abs_max_num_features_correlation: Optional[float]
-    reference_target_prediction_correlation: Optional[float]
-    reference_abs_max_target_features_correlation: Optional[float]
-    reference_abs_max_prediction_features_correlation: Optional[float]
-    reference_abs_max_correlation: Optional[float]
-    reference_abs_max_num_features_correlation: Optional[float]
-    reference_correlation_matrix: pd.DataFrame = None
+    current_correlation: DataCorrelation
+    reference_correlation: Optional[DataCorrelation]
 
 
 class DataQualityCorrelationMetrics(Metric[DataQualityCorrelationMetricsResults]):
@@ -328,110 +329,87 @@ class DataQualityCorrelationMetrics(Metric[DataQualityCorrelationMetricsResults]
     def __init__(self, method: str = "pearson") -> None:
         self.method = method
 
-    def calculate(self, data: InputData, metrics: dict) -> DataQualityCorrelationMetricsResults:
-        target_name = data.column_mapping.target
-        prediction_name = data.column_mapping.prediction
-        num_features = data.column_mapping.numerical_features
-
-        if not target_name:
-            raise ValueError("Target should be present")
-
-        if target_name not in data.current_data:
-            raise ValueError("Target column should be present in current data")
-
-        reference_correlations = None
-        reference_correlations_for_plot = None
-        current_correlations = data.current_data.corr(method=self.method)
-        current_correlations_for_plot = current_correlations.copy()
-
-        if data.reference_data is not None:
-            reference_correlations = data.reference_data.corr(method=self.method)
-            reference_correlations_for_plot = reference_correlations.copy()
-            np.fill_diagonal(reference_correlations.values, 0)
+    def _get_correlations(
+        self,
+        dataset: pd.DataFrame,
+        target_name: str,
+        prediction_name: str,
+        num_features: List[str],
+        is_classification_task: bool,
+    ) -> DataCorrelation:
+        correlation_matrix = dataset.corr(method=self.method)
+        correlation_matrix_for_plot = correlation_matrix.copy()
+        # fill diagonal with 1 values for getting abs max values
+        np.fill_diagonal(correlation_matrix.values, 0)
 
         if num_features is None:
-            num_features = [i for i in current_correlations if i not in [target_name, prediction_name]]
+            num_features = [i for i in correlation_matrix if i not in [target_name, prediction_name]]
 
-        # we will get 1 for all column/column correlation in the diagonal, fill it with 0
-        np.fill_diagonal(current_correlations.values, 0)
-
-        if reference_correlations is not None:
-            np.fill_diagonal(reference_correlations.values, 0)
-
-        if prediction_name in current_correlations and target_name in current_correlations:
-            target_prediction_correlation = current_correlations.loc[prediction_name, target_name]
+        if prediction_name in correlation_matrix and target_name in correlation_matrix:
+            target_prediction_correlation = correlation_matrix.loc[prediction_name, target_name]
 
         else:
             target_prediction_correlation = None
 
-        if reference_correlations is not None and \
-                prediction_name in reference_correlations and \
-                target_name in reference_correlations:
-            reference_target_prediction_correlation = reference_correlations.loc[prediction_name, target_name]
+        if target_name in correlation_matrix:
+            abs_max_target_features_correlation = correlation_matrix.loc[target_name, num_features].abs().max()
 
         else:
-            reference_target_prediction_correlation = None
+            abs_max_target_features_correlation = None
 
-        abs_max_target_features_correlation = current_correlations.loc[target_name, num_features].abs().max()
-
-        if reference_correlations is not None:
-            reference_abs_max_target_features_correlation = (
-                current_correlations.loc[target_name, num_features].abs().max()
-            )
-
-        else:
-            reference_abs_max_target_features_correlation = None
-
-        if prediction_name in current_correlations:
-            abs_max_prediction_features_correlation = current_correlations.loc[prediction_name, num_features].abs().max()
+        if prediction_name in correlation_matrix:
+            abs_max_prediction_features_correlation = correlation_matrix.loc[prediction_name, num_features].abs().max()
 
         else:
             abs_max_prediction_features_correlation = None
 
-        if reference_correlations is not None and prediction_name in reference_correlations:
-            reference_abs_max_prediction_features_correlation = (
-                current_correlations.loc[prediction_name, num_features].abs().max()
-            )
-
-        else:
-            reference_abs_max_prediction_features_correlation = None
-
-        if data.column_mapping.is_classification_task() is not None:
+        if is_classification_task is not None:
             corr_features = num_features
 
         else:
             corr_features = num_features + [target_name, prediction_name]
 
-        abs_max_correlation = current_correlations.loc[corr_features, corr_features].abs().max().max()
+        abs_max_correlation = correlation_matrix.loc[corr_features, corr_features].abs().max().max()
 
-        if reference_correlations is not None:
-            reference_abs_max_correlation = reference_correlations.loc[corr_features, corr_features].abs().max().max()
+        abs_max_num_features_correlation = correlation_matrix.loc[num_features, num_features].abs().max().max()
 
-        else:
-            reference_abs_max_correlation = None
-
-        abs_max_num_features_correlation = current_correlations.loc[num_features, num_features].abs().max().max()
-
-        if reference_correlations is not None:
-            reference_abs_max_num_features_correlation = (
-                reference_correlations.loc[num_features, num_features].abs().max().max()
-            )
-
-        else:
-            reference_abs_max_num_features_correlation = None
-
-        return DataQualityCorrelationMetricsResults(
-            current_correlation_matrix=current_correlations_for_plot,
+        return DataCorrelation(
             num_features=num_features,
+            correlation_matrix=correlation_matrix_for_plot,
             target_prediction_correlation=target_prediction_correlation,
             abs_max_target_features_correlation=abs_max_target_features_correlation,
             abs_max_prediction_features_correlation=abs_max_prediction_features_correlation,
             abs_max_correlation=abs_max_correlation,
             abs_max_num_features_correlation=abs_max_num_features_correlation,
-            reference_target_prediction_correlation=reference_target_prediction_correlation,
-            reference_abs_max_target_features_correlation=reference_abs_max_target_features_correlation,
-            reference_abs_max_prediction_features_correlation=reference_abs_max_prediction_features_correlation,
-            reference_abs_max_correlation=reference_abs_max_correlation,
-            reference_abs_max_num_features_correlation=reference_abs_max_num_features_correlation,
-            reference_correlation_matrix=reference_correlations_for_plot,
+        )
+
+    def calculate(self, data: InputData, metrics: dict) -> DataQualityCorrelationMetricsResults:
+        target_name = data.column_mapping.target
+        prediction_name = data.column_mapping.prediction
+        num_features = data.column_mapping.numerical_features
+        is_classification_task = data.column_mapping.is_classification_task()
+
+        current_correlations = self._get_correlations(
+            dataset=data.current_data,
+            target_name=target_name,
+            prediction_name=prediction_name,
+            num_features=num_features,
+            is_classification_task=is_classification_task,
+        )
+
+        if data.reference_data is not None:
+            reference_correlation = self._get_correlations(
+                dataset=data.reference_data,
+                target_name=target_name,
+                prediction_name=prediction_name,
+                num_features=num_features,
+                is_classification_task=is_classification_task,
+            )
+
+        else:
+            reference_correlation = None
+
+        return DataQualityCorrelationMetricsResults(
+            current_correlation=current_correlations,
+            reference_correlation=reference_correlation,
         )

@@ -7,6 +7,7 @@ from evidently.v2.metrics import DataQualityStabilityMetrics
 from evidently.v2.metrics import DataQualityValueListMetrics
 from evidently.v2.metrics import DataQualityValueRangeMetrics
 from evidently.v2.metrics import DataQualityValueQuantileMetrics
+from evidently.v2.metrics import DataQualityCorrelationMetrics
 
 
 def test_data_quality_metrics() -> None:
@@ -123,3 +124,30 @@ def test_data_quality_quantile_metrics() -> None:
     assert result is not None
     assert result.quantile == 0.5
     assert result.value == 2
+
+
+def test_data_quality_correlation_metrics() -> None:
+    current_dataset = pd.DataFrame(
+        {
+            "numerical_feature_1": [0, 2, 2, 2, 0],
+            "numerical_feature_2": [0, 2, 2, 2, 0],
+            "category_feature": [1, 2, 4, 2, 1],
+            "target": [0, 2, 2, 2, 0],
+            "prediction": [0, 2, 2, 2, 0],
+        }
+    )
+    data_mapping = ColumnMapping()
+    metric = DataQualityCorrelationMetrics()
+    result = metric.calculate(
+        data=InputData(current_data=current_dataset, reference_data=None, column_mapping=data_mapping), metrics={}
+    )
+    assert result is not None
+    assert result.current_correlation.num_features == ["numerical_feature_1", "numerical_feature_2", "category_feature"]
+    assert result.current_correlation.correlation_matrix is not None
+    assert result.current_correlation.target_prediction_correlation == 1.0
+    assert result.current_correlation.abs_max_target_features_correlation == 1.0
+    assert result.current_correlation.abs_max_prediction_features_correlation == 1.0
+    assert result.current_correlation.abs_max_correlation == 1.0
+    assert result.current_correlation.abs_max_num_features_correlation == 1.0
+
+    assert result.reference_correlation is None

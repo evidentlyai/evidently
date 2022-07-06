@@ -574,8 +574,8 @@ def test_data_quality_test_highly_correlated_features() -> None:
     test_dataset = pd.DataFrame(
         {
             "feature1": [0, 1, 2, 3],
-            "target": [0, 0, 0, 1],
-            "prediction": [0, 0, 1, 1],
+            "feature2": [0, 0, 0, 1],
+            "feature3": [0, 0, 1, 1],
         }
     )
     suite = TestSuite(tests=[TestHighlyCorrelatedFeatures()])
