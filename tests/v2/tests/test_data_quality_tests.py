@@ -1,3 +1,5 @@
+import json
+
 import pandas as pd
 
 import pytest
@@ -378,6 +380,28 @@ def test_data_quality_test_share_of_values_not_in_range() -> None:
     suite = TestSuite(tests=[TestShareOfOutRangeValues(column_name="feature1", lte=0.5)])
     suite.run(current_data=test_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
     assert suite
+
+
+def test_data_quality_test_share_of_values_not_in_range_json_render() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "feature1": [0, 1, 1, 0, 24],
+        }
+    )
+    suite = TestSuite(tests=[TestShareOfOutRangeValues(column_name="feature1", left=0, right=10, gt=0.2)])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    assert not suite
+
+    result_from_json = json.loads(suite.json())
+    assert result_from_json["summary"]["all_passed"] is False
+    test_info = result_from_json["tests"][0]
+    assert test_info == {
+        "description": "Share of Out-Of-Range Values for feature feature1 is 0.2. Test Threshold is [gt=0.2].",
+        "group": "data_quality",
+        "name": "Test Share of Out-Of-Range Values",
+        "parameters": {"condition": {"gt": 0.2}, "left": 0, "right": 10, "share_not_in_range": 0.2},
+        "status": "FAIL",
+    }
 
 
 def test_data_quality_test_value_in_list() -> None:

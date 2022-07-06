@@ -278,14 +278,15 @@ def test_data_integrity_test_columns_type_to_json() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "columns": [
-            {"actual_type": "bool_", "column_name": "my_target", "expected_type": "bool_"},
-            {"actual_type": "int64", "column_name": "numerical_feature", "expected_type": "int64"},
-        ],
         "description": "Number of columns with a type mismatch is 0 out of 2.",
         "group": "data_integrity",
         "name": "Test Columns Type",
-        "parameters": {},
+        "parameters": {
+            "columns": [
+                {"actual_type": "bool_", "column_name": "my_target", "expected_type": "bool_"},
+                {"actual_type": "int64", "column_name": "numerical_feature", "expected_type": "int64"},
+            ]
+        },
         "status": "SUCCESS",
     }
 
@@ -317,7 +318,7 @@ def test_data_integrity_test_columns_nan_share_json_render() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "Share of NAs for feature1 column is 0.25. Test Threshold is " "[eq=0.25 ± 0.025].",
+        "description": "Share of NAs for feature1 column is 0.25. Test Threshold is [eq=0.25 ± 0.025].",
         "group": "data_integrity",
         "name": "Test Share of NA Values",
         "parameters": {

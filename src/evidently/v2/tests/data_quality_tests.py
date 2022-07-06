@@ -887,12 +887,22 @@ class TestShareOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
         return self.metric.get_result().share_not_in_range
 
     def get_description(self, value: Numeric) -> str:
-        return f"Share of Out-Of-Range Values for feature {self.column_name} is {np.round(value, 3)}. \
-        Test Threshold is [{self.get_condition()}]."
+        return (
+            f"Share of Out-Of-Range Values for feature {self.column_name} is {np.round(value, 3)}. "
+            f"Test Threshold is [{self.get_condition()}]."
+        )
 
 
 @default_renderer(test_type=TestShareOfOutRangeValues)
 class TestShareOfOutRangeValuesRenderer(TestRenderer):
+    def render_json(self, obj: TestShareOfOutRangeValues) -> dict:
+        base = super().render_json(obj)
+        base["parameters"]["condition"] = obj.get_condition().as_dict()
+        base["parameters"]["left"] = obj.left
+        base["parameters"]["right"] = obj.right
+        base["parameters"]["share_not_in_range"] = obj.value
+        return base
+
     def render_html(self, obj: TestShareOfOutRangeValues) -> TestHtmlInfo:
         column_name = obj.column_name
         condition_ = TestValueCondition(gt=obj.left, lt=obj.right)

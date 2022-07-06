@@ -549,7 +549,7 @@ class TestColumnsType(Test):
 class TestNumberOfDriftedFeaturesRenderer(TestRenderer):
     def render_json(self, obj: TestColumnsType) -> dict:
         base = super().render_json(obj)
-        base["columns"] = [
+        base["parameters"]["columns"] = [
             dict(
                 column_name=column_name,
                 actual_type=types[0],
