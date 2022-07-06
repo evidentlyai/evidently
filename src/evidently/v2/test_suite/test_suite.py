@@ -62,10 +62,11 @@ class TestSuite:
         return all(test_result.is_passed() for _, test_result in self._inner_suite.context.test_results.items())
 
     def run(
-            self, *,
-            reference_data: Optional[pd.DataFrame],
-            current_data: pd.DataFrame,
-            column_mapping: Optional[ColumnMapping] = None
+        self,
+        *,
+        reference_data: Optional[pd.DataFrame],
+        current_data: pd.DataFrame,
+        column_mapping: Optional[ColumnMapping] = None,
     ) -> None:
         if column_mapping is None:
             column_mapping = ColumnMapping()
@@ -82,20 +83,19 @@ class TestSuite:
     def _repr_html_(self):
         dashboard_id, dashboard_info, graphs = self._build_dashboard_info()
         template_params = TemplateParams(
-            dashboard_id=dashboard_id,
-            dashboard_info=dashboard_info,
-            additional_graphs=graphs)
+            dashboard_id=dashboard_id, dashboard_info=dashboard_info, additional_graphs=graphs
+        )
         return self._render(determine_template("inline"), template_params)
 
-    def show(self, mode='auto'):
+    def show(self, mode="auto"):
         dashboard_id, dashboard_info, graphs = self._build_dashboard_info()
         template_params = TemplateParams(
-            dashboard_id=dashboard_id,
-            dashboard_info=dashboard_info,
-            additional_graphs=graphs)
+            dashboard_id=dashboard_id, dashboard_info=dashboard_info, additional_graphs=graphs
+        )
         # pylint: disable=import-outside-toplevel
         try:
             from IPython.display import HTML
+
             return HTML(self._render(determine_template(mode), template_params))
         except ImportError as err:
             raise Exception("Cannot import HTML from IPython.display, no way to show html") from err
@@ -113,15 +113,11 @@ class TestSuite:
                 dashboard_info=dashboard_info,
                 additional_graphs=graphs,
             )
-            with open(filename, 'w', encoding='utf-8') as out_file:
+            with open(filename, "w", encoding="utf-8") as out_file:
                 out_file.write(self._render(determine_template("inline"), template_params))
         else:
             font_file, lib_file = save_lib_files(filename, mode)
-            data_file = save_data_file(filename,
-                                       mode,
-                                       dashboard_id,
-                                       dashboard_info,
-                                       graphs)
+            data_file = save_data_file(filename, mode, dashboard_id, dashboard_info, graphs)
             template_params = TemplateParams(
                 dashboard_id=dashboard_id,
                 dashboard_info=dashboard_info,
@@ -132,7 +128,7 @@ class TestSuite:
                 font_file=font_file,
                 include_js_files=[lib_file, data_file],
             )
-            with open(filename, 'w', encoding='utf-8') as out_file:
+            with open(filename, "w", encoding="utf-8") as out_file:
                 out_file.write(self._render(determine_template("inline"), template_params))
 
     def as_dict(self) -> dict:
@@ -161,7 +157,7 @@ class TestSuite:
         return json.dumps(self.as_dict(), cls=NumpyEncoder)
 
     def save_json(self, filename):
-        with open(filename, 'w', encoding='utf-8') as out_file:
+        with open(filename, "w", encoding="utf-8") as out_file:
             json.dump(self.as_dict(), out_file, cls=NumpyEncoder)
 
     def _render(self, temple_func, template_params: TemplateParams):
@@ -181,34 +177,37 @@ class TestSuite:
             size=2,
             type="counter",
             params={
-                "counters": [{
-                    "value": f"{total_tests}",
-                    "label": "Total Tests"
-                }] + [
-                    {
-                        "value": f"{by_status.get(status, 0)}",
-                        "label": f"{status.title()} Tests"
-                    } for status in [TestResult.SUCCESS, TestResult.WARNING, TestResult.FAIL, TestResult.ERROR]
+                "counters": [{"value": f"{total_tests}", "label": "Total Tests"}]
+                + [
+                    {"value": f"{by_status.get(status, 0)}", "label": f"{status.title()} Tests"}
+                    for status in [TestResult.SUCCESS, TestResult.WARNING, TestResult.FAIL, TestResult.ERROR]
                 ]
             },
-
         )
         test_suite_widget = BaseWidgetInfo(
             title="",
             type="test_suite",
             size=2,
             params={
-                "tests": [dict(title=test_info.name,
-                               description=test_info.description,
-                               state=test_info.status.lower(),
-                               details=dict(
-                                   parts=[dict(id=f"{test_info.name}_{item.id}", title=item.title, type="widget")
-                                          for item in test_info.details]
-                               )) for test_info in test_results]
+                "tests": [
+                    dict(
+                        title=test_info.name,
+                        description=test_info.description,
+                        state=test_info.status.lower(),
+                        details=dict(
+                            parts=[
+                                dict(id=f"{test_info.name}_{item.id}", title=item.title, type="widget")
+                                for item in test_info.details
+                            ]
+                        ),
+                    )
+                    for test_info in test_results
+                ]
             },
-            additionalGraphs=[]
+            additionalGraphs=[],
         )
-        return "evidently_dashboard_" + str(uuid.uuid4()).replace("-", ""), \
-               DashboardInfo("Test Suite", widgets=[summary_widget, test_suite_widget]), \
-               {f"{info.name}_{item.id}": dataclasses.asdict(item.info)
-                for info in test_results for item in info.details}
+        return (
+            "evidently_dashboard_" + str(uuid.uuid4()).replace("-", ""),
+            DashboardInfo("Test Suite", widgets=[summary_widget, test_suite_widget]),
+            {f"{info.name}_{item.id}": dataclasses.asdict(item.info) for info in test_results for item in info.details},
+        )

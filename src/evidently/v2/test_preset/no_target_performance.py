@@ -3,8 +3,15 @@ from typing import List, Optional
 from evidently.analyzers.utils import DatasetColumns
 from evidently.v2.metrics.base_metric import InputData
 from evidently.v2.test_preset.test_preset import TestPreset
-from evidently.v2.tests import TestFeatureValueDrift, TestShareOfDriftedFeatures, TestColumnNANShare, \
-    TestShareOfOutRangeValues, TestShareOfOutListValues, TestMeanInNSigmas, TestColumnsType
+from evidently.v2.tests import (
+    TestFeatureValueDrift,
+    TestShareOfDriftedFeatures,
+    TestColumnNANShare,
+    TestShareOfOutRangeValues,
+    TestShareOfOutListValues,
+    TestMeanInNSigmas,
+    TestColumnsType,
+)
 
 
 class NoTargetPerformance(TestPreset):
@@ -13,12 +20,18 @@ class NoTargetPerformance(TestPreset):
         self.most_important_features = [] if most_important_features is None else most_important_features
 
     def generate_tests(self, data: InputData, columns: DatasetColumns):
-        all_columns = [name for name in columns.cat_feature_names + columns.num_feature_names + [
-            columns.utility_columns.id_column,
-            columns.utility_columns.date,
-            columns.utility_columns.target,
-            columns.utility_columns.prediction,
-        ] if name is not None]
+        all_columns = [
+            name
+            for name in columns.cat_feature_names
+            + columns.num_feature_names
+            + [
+                columns.utility_columns.id_column,
+                columns.utility_columns.date,
+                columns.utility_columns.target,
+                columns.utility_columns.prediction,
+            ]
+            if name is not None
+        ]
         return [
             TestFeatureValueDrift(column_name=columns.utility_columns.prediction),
             TestShareOfDriftedFeatures(lt=data.current_data.shape[1] // 3),

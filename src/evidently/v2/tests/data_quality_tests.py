@@ -204,8 +204,9 @@ class TestTargetFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValueTest
         if self.condition.is_set():
             return self.condition
         if self.metric.get_result().reference_abs_max_target_features_correlation is not None:
-            ref_abs_max_num_target_features_corr = \
+            ref_abs_max_num_target_features_corr = (
                 self.metric.get_result().reference_abs_max_target_features_correlation
+            )
             return TestValueCondition(eq=approx(ref_abs_max_num_target_features_corr, relative=0.1))
         return TestValueCondition(lt=0.9)
 
@@ -239,7 +240,6 @@ class TestTargetFeaturesCorrelationsRenderer(TestRenderer):
             )
         )
         return info
-
 
 
 class CorrelationChanges(BaseDataQualityCorrelationsMetricsValueTest):
@@ -641,15 +641,19 @@ class TestMeanInNSigmas(Test):
             right_condition = reference_mean + sigmas_value
 
             if left_condition < current_mean < right_condition:
-                description = f"Mean value of column {self.column_name} {current_mean:.3g} is " \
-                              f"in range from {left_condition:.3g} \
+                description = (
+                    f"Mean value of column {self.column_name} {current_mean:.3g} is "
+                    f"in range from {left_condition:.3g} \
                                 to {right_condition:.3g}"
+                )
                 test_result = TestResult.SUCCESS
 
             else:
-                description = f"Mean value of column {self.column_name} {current_mean:.3g} is" \
-                              f" not in range from {left_condition:.3g} \
+                description = (
+                    f"Mean value of column {self.column_name} {current_mean:.3g} is"
+                    f" not in range from {left_condition:.3g} \
                                 to {right_condition:.3g}"
+                )
                 test_result = TestResult.FAIL
 
         return TestResult(name=self.name, description=description, status=test_result)

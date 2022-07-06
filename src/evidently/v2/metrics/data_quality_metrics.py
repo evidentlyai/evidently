@@ -55,10 +55,11 @@ class DataQualityMetrics(Metric[DataQualityMetricsResults]):
             reference_features_stats = analyzer_results.reference_features_stats
 
         # data for visualisation
-
-        reference_data = None
         if data.reference_data is not None:
             reference_data = data.reference_data
+
+        else:
+            reference_data = None
 
         distr_for_plots = {}
         counts_of_values = {}
@@ -67,21 +68,31 @@ class DataQualityMetrics(Metric[DataQualityMetricsResults]):
             task = data.column_mapping.task
 
         elif data.column_mapping.task is None and analyzer_results.columns.utility_columns.target:
-            task = recognize_task(analyzer_results.columns.utility_columns.target, reference_data)
+            if reference_data is None:
+                data_for_task_detection = data.current_data
+
+            else:
+                data_for_task_detection = reference_data
+
+            task = recognize_task(analyzer_results.columns.utility_columns.target, data_for_task_detection)
 
         else:
             task = None
 
-        target_prediction_columns = [t for t in [analyzer_results.columns.utility_columns.target,
-                                                 analyzer_results.columns.utility_columns.prediction]
-                                     if t is not None]
+        target_prediction_columns = [
+            t
+            for t in [
+                analyzer_results.columns.utility_columns.target,
+                analyzer_results.columns.utility_columns.prediction,
+            ]
+            if t is not None
+        ]
         num_columns = analyzer_results.columns.num_feature_names
         cat_columns = analyzer_results.columns.cat_feature_names
         if task == ColumnMapping.REGRESSION_TASK:
             num_columns.extend(target_prediction_columns)
         if task == ColumnMapping.CLASSIFICATION_TASK:
             cat_columns.extend(target_prediction_columns)
-
 
         for feature in num_columns:
             counts_of_value_feature = {}
@@ -409,5 +420,5 @@ class DataQualityCorrelationMetrics(Metric[DataQualityCorrelationMetricsResults]
             reference_abs_max_prediction_features_correlation=reference_abs_max_prediction_features_correlation,
             reference_abs_max_correlation=reference_abs_max_correlation,
             reference_abs_max_num_features_correlation=reference_abs_max_num_features_correlation,
-            reference_correlation_matrix=reference_correlations
+            reference_correlation_matrix=reference_correlations,
         )

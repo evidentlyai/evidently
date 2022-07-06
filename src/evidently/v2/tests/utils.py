@@ -360,6 +360,7 @@ def plot_dicts_to_table(
 
     return additional_plots
 
+
 def plot_correlations(current_correlations, reference_correlations):
     columns = current_correlations.columns
     heatmap_text = None
@@ -376,14 +377,15 @@ def plot_correlations(current_correlations, reference_correlations):
     if len(columns) < 15:
         heatmap_text = np.round(current_correlations, 2).astype(str)
         heatmap_texttemplate = "%{text}"
-    
+
     trace = go.Heatmap(
-            z=current_correlations,
-            x=columns,
-            y=columns,
-            text=heatmap_text,
-            texttemplate=heatmap_texttemplate,
-            coloraxis="coloraxis")
+        z=current_correlations,
+        x=columns,
+        y=columns,
+        text=heatmap_text,
+        texttemplate=heatmap_texttemplate,
+        coloraxis="coloraxis",
+    )
     fig.append_trace(trace, 1, 1)
 
     if reference_correlations is not None:
@@ -397,7 +399,8 @@ def plot_correlations(current_correlations, reference_correlations):
             y=columns,
             text=heatmap_text,
             texttemplate=heatmap_texttemplate,
-            coloraxis="coloraxis")
+            coloraxis="coloraxis",
+        )
         fig.append_trace(trace, 1, 2)
-    fig.update_layout(coloraxis={'colorscale': 'RdBu_r'})
+    fig.update_layout(coloraxis={"colorscale": "RdBu_r"})
     return fig

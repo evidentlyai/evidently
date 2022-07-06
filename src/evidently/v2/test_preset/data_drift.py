@@ -10,7 +10,9 @@ class DataDrift(TestPreset):
             TestShareOfDriftedFeatures(),
             TestFeatureValueDrift(column_name=columns.utility_columns.target),
             TestFeatureValueDrift(column_name=columns.utility_columns.prediction),
-            *[TestFeatureValueDrift(column_name=name)
-              for name in columns.num_feature_names + columns.cat_feature_names
-              if name is not None]
+            *[
+                TestFeatureValueDrift(column_name=name)
+                for name in columns.num_feature_names + columns.cat_feature_names
+                if name is not None
+            ],
         ]

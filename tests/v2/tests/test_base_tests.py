@@ -57,7 +57,7 @@ def test_value_condition_set(condition_args, expected):
     [
         ({}, ""),
         ({"gte": 10}, "gte=10"),
-        ({"gte": 10.5}, "gte=10.500"),
+        ({"gte": 10.5}, "gte=10.5"),
         ({"gt": 10}, "gt=10"),
         ({"gt": 10, "lt": 40}, "gt=10 and lt=40"),
         ({"eq": 8}, "eq=8"),
