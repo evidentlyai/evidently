@@ -284,12 +284,14 @@ class TestNumberOfDuplicatedRows(BaseIntegrityValueTest):
     def get_condition(self) -> TestValueCondition:
         if self.condition.is_set():
             return self.condition
+
         if self.data_integrity_metric.get_result().reference_stats is not None:
             ref_num_of_duplicates = self.data_integrity_metric.get_result().reference_stats.number_of_duplicated_rows
             curr_number_of_rows = self.data_integrity_metric.get_result().current_stats.number_of_rows
             ref_number_of_rows = self.data_integrity_metric.get_result().reference_stats.number_of_rows
             mult = ref_num_of_duplicates * curr_number_of_rows / ref_number_of_rows
             return TestValueCondition(eq=approx(ref_num_of_duplicates * mult, 0.1))
+
         return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
@@ -297,6 +299,15 @@ class TestNumberOfDuplicatedRows(BaseIntegrityValueTest):
 
     def get_description(self, value: Numeric) -> str:
         return f"Number of Duplicated Rows is {value}. Test Threshold is [{self.get_condition()}]."
+
+
+@default_renderer(test_type=TestNumberOfDuplicatedRows)
+class TestNumberOfDuplicatedRowsRenderer(TestRenderer):
+    def render_json(self, obj: TestNumberOfDuplicatedRows) -> dict:
+        base = super().render_json(obj)
+        base["parameters"]["condition"] = obj.get_condition().as_dict()
+        base["parameters"]["number_of_duplicated_rows"] = obj.value
+        return base
 
 
 class TestNumberOfDuplicatedColumns(BaseIntegrityValueTest):
@@ -319,6 +330,15 @@ class TestNumberOfDuplicatedColumns(BaseIntegrityValueTest):
 
     def get_description(self, value: Numeric) -> str:
         return f"Number of Duplicated Columns is  {value}. Test Threshold is [{self.get_condition()}]."
+
+
+@default_renderer(test_type=TestNumberOfDuplicatedColumns)
+class TestNumberOfDuplicatedColumnsRenderer(TestRenderer):
+    def render_json(self, obj: TestNumberOfDuplicatedColumns) -> dict:
+        base = super().render_json(obj)
+        base["parameters"]["condition"] = obj.get_condition().as_dict()
+        base["parameters"]["number_of_duplicated_columns"] = obj.value
+        return base
 
 
 class BaseIntegrityByColumnsConditionTest(BaseCheckValueTest, ABC):
