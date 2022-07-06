@@ -288,6 +288,36 @@ def test_data_quality_test_value_in_n_sigmas() -> None:
     assert suite
 
 
+def test_data_quality_test_value_in_n_sigmas_json_render() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "feature1": [0, 1, 1, 0],
+            "target": [0, 0, 0, 1],
+            "prediction": [0, 0, 1, 1],
+        }
+    )
+    suite = TestSuite(tests=[TestMeanInNSigmas(column_name="feature1", n_sigmas=5)])
+    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=ColumnMapping())
+    assert suite
+
+    result_from_json = json.loads(suite.json())
+    assert result_from_json["summary"]["all_passed"] is True
+    test_info = result_from_json["tests"][0]
+    assert test_info == {
+        "description": "Mean value of column feature1 0.5 is in range from -2.4 to 3.4",
+        "group": "data_quality",
+        "name": "Test Mean Value Stability",
+        "parameters": {
+            "column_name": "feature1",
+            "current_mean": 0.5,
+            "n_sigmas": 5,
+            "reference_mean": 0.5,
+            "reference_std": 0.58,
+        },
+        "status": "SUCCESS",
+    }
+
+
 def test_data_quality_test_value_in_range() -> None:
     test_dataset = pd.DataFrame(
         {

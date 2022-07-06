@@ -673,8 +673,7 @@ class TestMeanInNSigmas(Test):
             else:
                 description = (
                     f"Mean value of column {self.column_name} {current_mean:.3g} is"
-                    f" not in range from {left_condition:.3g} \
-                                to {right_condition:.3g}"
+                    f" not in range from {left_condition:.3g} to {right_condition:.3g}"
                 )
                 test_result = TestResult.FAIL
 
@@ -683,6 +682,16 @@ class TestMeanInNSigmas(Test):
 
 @default_renderer(test_type=TestMeanInNSigmas)
 class TestMeanInNSigmasRenderer(TestRenderer):
+    def render_json(self, obj: TestMeanInNSigmas) -> dict:
+        base = super().render_json(obj)
+        metric_result = obj.metric.get_result()
+        base["parameters"]["column_name"] = obj.column_name
+        base["parameters"]["n_sigmas"] = obj.n_sigmas
+        base["parameters"]["current_mean"] = metric_result.features_stats[obj.column_name].mean
+        base["parameters"]["reference_mean"] = metric_result.reference_features_stats[obj.column_name].mean
+        base["parameters"]["reference_std"] = metric_result.reference_features_stats[obj.column_name].std
+        return base
+
     def render_html(self, obj: TestMeanInNSigmas) -> TestHtmlInfo:
         column_name = obj.column_name
         metric_result = obj.metric.get_result()
