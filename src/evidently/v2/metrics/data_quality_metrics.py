@@ -353,6 +353,7 @@ class DataQualityCorrelationMetrics(Metric[DataQualityCorrelationMetricsResults]
         if data.reference_data is not None:
             reference_correlations = data.reference_data.corr(method=self.method)
             reference_correlations_for_plot = reference_correlations.copy()
+            np.fill_diagonal(reference_correlations.values, 0)
 
         if num_features is None:
             num_features = [i for i in current_correlations if i not in [target_name, prediction_name]]
@@ -362,6 +363,7 @@ class DataQualityCorrelationMetrics(Metric[DataQualityCorrelationMetricsResults]
 
         if reference_correlations is not None:
             np.fill_diagonal(reference_correlations.values, 0)
+
 
         target_prediction_correlation = current_correlations.loc[prediction_name, target_name]
 
