@@ -346,6 +346,7 @@ class DataQualityCorrelationMetrics(Metric[DataQualityCorrelationMetricsResults]
             raise ValueError("Prediction column should be present in current data")
 
         reference_correlations = None
+        reference_correlations_for_plot = None
         current_correlations = data.current_data.corr(method=self.method)
         current_correlations_for_plot = current_correlations.copy()
 
