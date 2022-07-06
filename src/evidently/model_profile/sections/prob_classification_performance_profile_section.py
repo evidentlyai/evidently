@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from evidently.analyzers.prob_classification_performance_analyzer import ProbClassificationPerformanceAnalyzer
-from evidently.analyzers.prob_classification_performance_analyzer import ClassificationPerformanceMetrics
+from evidently.analyzers.prob_classification_performance_analyzer import ProbClassificationPerformanceMetrics
 from evidently.model_profile.sections.base_profile_section import ProfileSection
 
 
@@ -18,7 +18,7 @@ class ProbClassificationPerformanceProfileSection(ProfileSection):
         return self.analyzers_types
 
     @staticmethod
-    def _get_regression_performance_metrics_as_dict(metrics: ClassificationPerformanceMetrics) -> dict:
+    def _get_regression_performance_metrics_as_dict(metrics: ProbClassificationPerformanceMetrics) -> dict:
         result = {
             'accuracy': metrics.accuracy,
             'precision': metrics.precision,

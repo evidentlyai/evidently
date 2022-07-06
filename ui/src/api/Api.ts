@@ -13,12 +13,10 @@ export class Result<T> {
     Error = (error: string) => new Result<T>(undefined, error);
 }
 
-export interface GraphWidgetParams
-{
+export interface GraphWidgetParams {
 }
 
-export interface TableWidgetParams
-{
+export interface TableWidgetParams {
     header: string[];
     data: (number | string)[][];
 }
@@ -28,33 +26,28 @@ export interface CounterInfo {
     label: string;
 }
 
-export interface CounterWidgetParams
-{
+export interface CounterWidgetParams {
     counters: CounterInfo[];
 }
 
-export interface PercentWidgetParams
-{
+export interface PercentWidgetParams {
     value: number;
     maxValue: number;
     details?: string;
 }
 
-export interface BigGraphWidgetParams
-{
+export interface BigGraphWidgetParams {
     data: Partial<PlotData>[];
     layout: Partial<Layout>;
 }
 
-export interface TabGraph
-{
+export interface TabGraph {
     id: string;
     title: string;
     graph: BigGraphWidgetParams;
 }
 
-export interface MultiTabGraphWidgetParams
-{
+export interface MultiTabGraphWidgetParams {
     graphs: TabGraph[];
 }
 
@@ -64,24 +57,20 @@ export interface TabWidget {
     widget: WidgetInfo;
 }
 
-export interface MultiTabWidgetParams
-{
+export interface MultiTabWidgetParams {
     tabs: TabWidget[];
 }
 
-export interface WidgetGroupParams
-{
+export interface WidgetGroupParams {
     widgets: WidgetInfo[];
 }
 
-export interface WidgetListParams
-{
+export interface WidgetListParams {
     widgets: WidgetInfo[];
     pageSize: number;
 }
 
-export enum WidgetSize
-{
+export enum WidgetSize {
     Small,
     Medium,
     Big,
@@ -138,12 +127,18 @@ export interface ColumnDefinition {
     options?: LineGraphOptions | ScatterGraphOptions | HistogramGraphOptions;
 }
 
+export interface DetailsPart {
+    title: string;
+    id: string;
+    type: string;
+}
+
 export interface BigTableRowDetails {
-    parts: {"title": string, "id": string, "type": string}[];
+    parts: DetailsPart[];
     insights: InsightsParams[];
 }
 
-export type BigTableDataRow = any & {graphId?: string, details?: BigTableRowDetails}
+export type BigTableDataRow = any & { graphId?: string, details?: BigTableRowDetails }
 
 export interface BigTableWidgetParams {
     columns: ColumnDefinition[];
@@ -197,8 +192,7 @@ export interface WidgetInfo {
         | BigTableWidgetParams
         | RichDataParams
         | TextWidgetParams
-        | TestSuiteWidgetParams
-    ;
+        | TestSuiteWidgetParams;
     alertsPosition?: "row" | "column";
     alertStats?: AlertStats;
     alerts?: MetricAlertParams[];
@@ -207,8 +201,7 @@ export interface WidgetInfo {
 
 export type AdditionalGraphInfo = BigGraphWidgetParams
 
-export interface DashboardInfo
-{
+export interface DashboardInfo {
     name: string;
     widgets: WidgetInfo[];
 }
@@ -230,7 +223,10 @@ export interface ProjectInfo {
 
 export interface Api {
     getAdditionalGraphData(projectId: string, dashboardId: string, graphId: string): Promise<AdditionalGraphInfo>
+
     getAdditionalWidgetData(projectId: string, dashboardId: string, widgetId: string): Promise<WidgetInfo>
+
     getDashboard(projectId: string, dashboardId: string): Promise<DashboardInfo>
+
     getProjects(): Promise<ProjectInfo[]>
 }

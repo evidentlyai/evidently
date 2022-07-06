@@ -25,7 +25,7 @@ class ConfusionMatrix:
 
 
 @dataclass
-class ClassificationPerformanceMetrics:
+class ProbClassificationPerformanceMetrics:
     """Class for performance metrics values"""
     accuracy: float
     precision: float
@@ -45,8 +45,8 @@ class ClassificationPerformanceMetrics:
 @dataclass
 class ProbClassificationPerformanceAnalyzerResults(BaseAnalyzerResult):
     quality_metrics_options: QualityMetricsOptions
-    reference_metrics: Optional[ClassificationPerformanceMetrics] = None
-    current_metrics: Optional[ClassificationPerformanceMetrics] = None
+    reference_metrics: Optional[ProbClassificationPerformanceMetrics] = None
+    current_metrics: Optional[ProbClassificationPerformanceMetrics] = None
 
 
 class ProbClassificationPerformanceAnalyzer(Analyzer):
@@ -109,7 +109,7 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
             conf_matrix = metrics.confusion_matrix(reference_data[target_column], prediction_labels)
             confusion_by_classes = calculate_confusion_by_classes(conf_matrix, labels)
 
-            result.reference_metrics = ClassificationPerformanceMetrics(
+            result.reference_metrics = ProbClassificationPerformanceMetrics(
                 accuracy=accuracy_score,
                 precision=avg_precision,
                 recall=avg_recall,
@@ -244,7 +244,7 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
                 # get TP, FP, TN, FN metrics for each class
                 confusion_by_classes = calculate_confusion_by_classes(conf_matrix, labels)
 
-                result.current_metrics = ClassificationPerformanceMetrics(
+                result.current_metrics = ProbClassificationPerformanceMetrics(
                     accuracy=accuracy_score,
                     precision=avg_precision,
                     recall=avg_recall,

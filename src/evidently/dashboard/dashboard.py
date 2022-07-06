@@ -251,38 +251,13 @@ class Dashboard(Pipeline):
             if _mode is None:
                 raise ValueError(f"Unexpected save mode {mode}. Expected [{','.join(SaveModeMap.keys())}]")
             mode = _mode
-        parent_dir = os.path.dirname(filename)
-        base_name = os.path.basename(filename)
-        if parent_dir and not os.path.exists(parent_dir):
-            os.makedirs(parent_dir, exist_ok=True)
-
         if mode == SaveMode.SINGLE_FILE:
             with open(filename, 'w', encoding='utf-8') as out_file:
                 out_file.write(self.html())
         if mode in [SaveMode.FOLDER, SaveMode.SYMLINK_FOLDER]:
-            if not os.path.exists(os.path.join(parent_dir, "js")):
-                os.makedirs(os.path.join(parent_dir, "js"), exist_ok=True)
-            font_file = os.path.join(parent_dir, "js", "material-ui-icons.woff2")
-            data_file = os.path.join(parent_dir, "js", f"{base_name}.data.js")
-            lib_file = os.path.join(parent_dir, "js", f"evidently.{evidently.__version__}.js")
-
-            if mode == SaveMode.SYMLINK_FOLDER:
-                if os.path.exists(font_file):
-                    os.remove(font_file)
-                os.symlink(os.path.join(_STATIC_PATH, "material-ui-icons.woff2"), font_file)
-                if os.path.exists(lib_file):
-                    os.remove(lib_file)
-                os.symlink(os.path.join(_STATIC_PATH, "index.js"), lib_file)
-            else:
-                shutil.copy(os.path.join(_STATIC_PATH, "material-ui-icons.woff2"), font_file)
-                shutil.copy(os.path.join(_STATIC_PATH, "index.js"), lib_file)
-
+            font_file, lib_file = save_lib_files(filename, mode)
             dashboard_id, dashboard_info, additional_graphs = self.__dashboard_data()
-            with open(data_file, 'w', encoding='utf-8') as out_file:
-                out_file.write(f"""
-var {dashboard_id} = {_dashboard_info_to_json(dashboard_info)};
-var additional_graphs_{dashboard_id} = {json.dumps(additional_graphs, cls=NumpyEncoder)};""")
-
+            data_file = save_data_file(filename, mode, dashboard_id, dashboard_info, additional_graphs)
             with open(filename, 'w', encoding='utf-8') as out_file:
                 out_file.write(self.__no_lib_render(dashboard_id,
                                                     dashboard_info,
@@ -290,3 +265,40 @@ var additional_graphs_{dashboard_id} = {json.dumps(additional_graphs, cls=NumpyE
                                                     font_file,
                                                     [data_file, lib_file],
                                                     file_html_template))
+
+
+def save_lib_files(filename: str, mode: SaveMode):
+    if mode == SaveMode.SINGLE_FILE:
+        return None, None
+    parent_dir = os.path.dirname(filename)
+    if not os.path.exists(os.path.join(parent_dir, "js")):
+        os.makedirs(os.path.join(parent_dir, "js"), exist_ok=True)
+    font_file = os.path.join(parent_dir, "js", "material-ui-icons.woff2")
+    lib_file = os.path.join(parent_dir, "js", f"evidently.{evidently.__version__}.js")
+
+    if mode == SaveMode.SYMLINK_FOLDER:
+        if os.path.exists(font_file):
+            os.remove(font_file)
+        os.symlink(os.path.join(_STATIC_PATH, "material-ui-icons.woff2"), font_file)
+        if os.path.exists(lib_file):
+            os.remove(lib_file)
+        os.symlink(os.path.join(_STATIC_PATH, "index.js"), lib_file)
+    else:
+        shutil.copy(os.path.join(_STATIC_PATH, "material-ui-icons.woff2"), font_file)
+        shutil.copy(os.path.join(_STATIC_PATH, "index.js"), lib_file)
+    return font_file, lib_file
+
+
+def save_data_file(filename: str, mode: SaveMode, dashboard_id, dashboard_info: DashboardInfo, additional_graphs: Dict):
+    if mode == SaveMode.SINGLE_FILE:
+        return None
+    parent_dir = os.path.dirname(filename)
+    if parent_dir and not os.path.exists(parent_dir):
+        os.makedirs(parent_dir, exist_ok=True)
+    base_name = os.path.basename(filename)
+    data_file = os.path.join(parent_dir, "js", f"{base_name}.data.js")
+    with open(data_file, 'w', encoding='utf-8') as out_file:
+        out_file.write(f"""
+    var {dashboard_id} = {_dashboard_info_to_json(dashboard_info)};
+    var additional_graphs_{dashboard_id} = {json.dumps(additional_graphs, cls=NumpyEncoder)};""")
+    return data_file

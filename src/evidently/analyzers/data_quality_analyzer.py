@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # coding: utf-8
-from numbers import Number
 from typing import Dict
 from typing import Callable
 from typing import Optional
@@ -15,7 +14,8 @@ from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.analyzers.base_analyzer import BaseAnalyzerResult
 from evidently.analyzers.utils import DatasetColumns
-from evidently.analyzers.utils import process_columns, recognize_task
+from evidently.analyzers.utils import process_columns
+from evidently.analyzers.utils import recognize_task
 
 
 @dataclass
@@ -69,13 +69,13 @@ class FeatureQualityStats:
     percentile_25: Optional[float] = None
     percentile_50: Optional[float] = None
     percentile_75: Optional[float] = None
-    max: Optional[Union[Number, str]] = None
-    min: Optional[Union[Number, str]] = None
+    max: Optional[Union[int, float, bool, str]] = None
+    min: Optional[Union[int, float, bool, str]] = None
     mean: Optional[float] = None
-    most_common_value: Optional[Union[Number, str]] = None
+    most_common_value: Optional[Union[int, float, bool, str]] = None
     most_common_value_percentage: Optional[float] = None
     std: Optional[float] = None
-    most_common_not_null_value: Optional[Union[Number, str]] = None
+    most_common_not_null_value: Optional[Union[int, float, bool, str]] = None
     most_common_not_null_value_percentage: Optional[float] = None
     new_in_current_values_count: Optional[int] = None
     unused_in_current_values_count: Optional[int] = None
@@ -115,12 +115,14 @@ class DataQualityStats:
     cat_features_stats: Optional[Dict[str, FeatureQualityStats]] = None
     datetime_features_stats: Optional[Dict[str, FeatureQualityStats]] = None
     target_stats: Optional[Dict[str, FeatureQualityStats]] = None
+    prediction_stats: Optional[Dict[str, FeatureQualityStats]] = None
 
     def get_all_features(self) -> Dict[str, FeatureQualityStats]:
         result = {}
 
         for features in (
             self.target_stats,
+            self.prediction_stats,
             self.datetime_features_stats,
             self.cat_features_stats,
             self.num_features_stats,
@@ -133,6 +135,7 @@ class DataQualityStats:
     def __getitem__(self, item) -> FeatureQualityStats:
         for features in (
             self.target_stats,
+            self.prediction_stats,
             self.datetime_features_stats,
             self.cat_features_stats,
             self.num_features_stats,
@@ -190,11 +193,27 @@ class DataQualityAnalyzer(Analyzer):
 
         if target_name is not None and target_name in dataset:
             result.target_stats = {}
+
             if task == "classification":
                 result.target_stats[target_name] = self._get_features_stats(dataset[target_name], feature_type="cat")
 
             else:
                 result.target_stats[target_name] = self._get_features_stats(dataset[target_name], feature_type="num")
+
+        prediction_name = columns.utility_columns.prediction
+
+        if isinstance(prediction_name, str) and prediction_name in dataset:
+            result.prediction_stats = {}
+
+            if task == "classification":
+                result.prediction_stats[prediction_name] = self._get_features_stats(
+                    dataset[prediction_name], feature_type="cat"
+                )
+
+            else:
+                result.prediction_stats[prediction_name] = self._get_features_stats(
+                    dataset[prediction_name], feature_type="num"
+                )
 
         return result
 
@@ -282,16 +301,18 @@ class DataQualityAnalyzer(Analyzer):
         num_for_corr, cat_for_corr = self._select_features_for_corr(reference_features_stats, target_name)
         reference_correlations = {}
         current_correlations = {}
-        for kind in ['pearson', 'spearman', 'kendall', 'cramer_v']:
-            reference_correlations[kind] = self._calculate_correlations(reference_data, num_for_corr, cat_for_corr,
-                                                                        kind)
+        for kind in ["pearson", "spearman", "kendall", "cramer_v"]:
+            reference_correlations[kind] = self._calculate_correlations(
+                reference_data, num_for_corr, cat_for_corr, kind
+            )
             if current_data is not None:
-                current_correlations[kind] = self._calculate_correlations(current_data, num_for_corr, cat_for_corr,
-                                                                          kind)
+                current_correlations[kind] = self._calculate_correlations(
+                    current_data, num_for_corr, cat_for_corr, kind
+                )
         results = DataQualityAnalyzerResults(
             columns=columns,
             reference_features_stats=reference_features_stats,
-            reference_correlations=reference_correlations
+            reference_correlations=reference_correlations,
         )
         if current_features_stats is not None:
             results.current_features_stats = current_features_stats
@@ -352,7 +373,9 @@ class DataQualityAnalyzer(Analyzer):
 
         return result
 
-    def _select_features_for_corr(self, reference_features_stats: DataQualityStats, target_name: Optional[str]) -> tuple:
+    def _select_features_for_corr(
+        self, reference_features_stats: DataQualityStats, target_name: Optional[str]
+    ) -> tuple:
         """Define which features should be used for calculating correlation matrices:
             - for pearson, spearman, and kendall correlation matrices we select numerical features which have > 1
                 unique values;
@@ -376,13 +399,17 @@ class DataQualityAnalyzer(Analyzer):
                 unique_count = reference_features_stats[feature].unique_count
                 if unique_count and unique_count > 1:
                     cat_for_corr.append(feature)
+
         if target_name is not None and reference_features_stats.target_stats is not None:
             target_type = reference_features_stats.target_stats[target_name].feature_type
             unique_count = reference_features_stats.target_stats[target_name].unique_count
-            if target_type == 'num' and unique_count and unique_count > 1:
+
+            if target_type == "num" and unique_count and unique_count > 1:
                 num_for_corr.append(target_name)
-            elif target_type == 'cat' and unique_count and unique_count > 1:
+
+            elif target_type == "cat" and unique_count and unique_count > 1:
                 cat_for_corr.append(target_name)
+
         return num_for_corr, cat_for_corr
 
     def _cramer_v(self, x: pd.Series, y: pd.Series) -> float:
@@ -442,11 +469,11 @@ class DataQualityAnalyzer(Analyzer):
         Returns:
             Correlation matrix.
         """
-        if kind == 'pearson':
-            return df[num_for_corr].corr('pearson')
-        elif kind == 'spearman':
-            return df[num_for_corr].corr('spearman')
-        elif kind == 'kendall':
-            return df[num_for_corr].corr('kendall')
-        elif kind == 'cramer_v':
+        if kind == "pearson":
+            return df[num_for_corr].corr("pearson")
+        elif kind == "spearman":
+            return df[num_for_corr].corr("spearman")
+        elif kind == "kendall":
+            return df[num_for_corr].corr("kendall")
+        elif kind == "cramer_v":
             return self._corr_matrix(df[cat_for_corr], self._cramer_v)

@@ -34,7 +34,7 @@ class CachedDashboardContextState implements DashboardContextState {
     }
 }
 
-interface DashboardContextState {
+export interface DashboardContextState {
     getAdditionGraphData: (graphId: string) => Promise<AdditionalGraphInfo>
     getAdditionWidgetData: (widgetId: string) => Promise<WidgetInfo>
 }

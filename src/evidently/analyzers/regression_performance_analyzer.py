@@ -43,6 +43,7 @@ class RegressionPerformanceMetrics:
     mean_abs_error: float
     mean_abs_perc_error: float
     error_std: float
+    abs_error_max: float
     abs_error_std: float
     abs_perc_error_std: float
     error_normality: dict
@@ -145,6 +146,7 @@ def _calculate_quality_metrics(dataset, prediction_column, target_column, conf_i
     sde = np.std(dataset[prediction_column] - dataset[target_column], ddof=1)
 
     abs_err = np.abs(dataset[prediction_column] - dataset[target_column])
+    abs_error_max = abs_err.max()
     mae = np.mean(abs_err)
     sdae = np.std(abs_err, ddof=1)
 
@@ -156,6 +158,7 @@ def _calculate_quality_metrics(dataset, prediction_column, target_column, conf_i
         "mean_error": float(me),
         "mean_abs_error": float(mae),
         "mean_abs_perc_error": float(mape),
+        "abs_error_max": abs_error_max,
         "error_std": conf_interval_n_sigmas * float(sde),
         "abs_error_std": conf_interval_n_sigmas * float(sdae),
         "abs_perc_error_std": conf_interval_n_sigmas * float(sdape),

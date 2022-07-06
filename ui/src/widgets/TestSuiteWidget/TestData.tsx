@@ -22,7 +22,7 @@ const stateToSeverity: (state: TestState) => Color = (state) => {
 
 const TestData: React.FC<TestData> = ({title, description, state, details}) => {
     const [detailsPart, setDetailsPart] = useState({active: false});
-    const isDetailsAvailable = details !== undefined;
+    const isDetailsAvailable = details !== undefined && details !== null && details.parts.length > 0;
     if (!availableStates.includes(state)) {
         console.error(`unexpected state: ${state} (expected one of [${availableStates.join(", ")}])`);
         state = "unknown";

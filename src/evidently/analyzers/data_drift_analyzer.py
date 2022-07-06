@@ -32,6 +32,7 @@ class DataDriftAnalyzerFeatureMetrics:
     feature_type: str
     stattest_name: str
     p_value: float
+    threshold: float
     drift_detected: bool
 
 
@@ -100,14 +101,21 @@ class DataDriftAnalyzer(Analyzer):
         for feature_name in num_feature_names:
             threshold = data_drift_options.get_threshold(feature_name)
             feature_type = "num"
-            test = get_stattest(reference_data[feature_name],
-                                current_data[feature_name],
+            ref_feature = reference_data[feature_name].replace([-np.inf, np.inf], np.nan).dropna()
+            curr_feature = current_data[feature_name].replace([-np.inf, np.inf], np.nan).dropna()
+            test = get_stattest(ref_feature,
+                                curr_feature,
                                 feature_type,
                                 data_drift_options.get_feature_stattest_func(feature_name, feature_type))
-            p_value, drifted = test(reference_data[feature_name],
-                                    current_data[feature_name],
-                                    feature_type,
-                                    threshold)
+            drift_result = test(
+                ref_feature,
+                curr_feature,
+                feature_type,
+                threshold
+            )
+            p_value = drift_result.drift_score
+            drifted = drift_result.drifted
+            threshold = drift_result.actual_threshold
             p_values[feature_name] = PValueWithDrift(p_value, drifted)
             current_nbinsx = data_drift_options.get_nbinsx(feature_name)
             features_metrics[feature_name] = DataDriftAnalyzerFeatureMetrics(
@@ -121,6 +129,7 @@ class DataDriftAnalyzer(Analyzer):
                 stattest_name=test.display_name,
                 p_value=p_value,
                 drift_detected=drifted,
+                threshold=threshold,
             )
 
         for feature_name in cat_feature_names:
@@ -133,7 +142,10 @@ class DataDriftAnalyzer(Analyzer):
                                      feature_cur_data,
                                      feature_type,
                                      data_drift_options.get_feature_stattest_func(feature_name, feature_type))
-            p_value, drifted = stat_test(feature_ref_data, feature_cur_data, feature_type, threshold)
+            drift_result = stat_test(feature_ref_data, feature_cur_data, feature_type, threshold)
+            p_value = drift_result.drift_score
+            drifted = drift_result.drifted
+            threshold = drift_result.actual_threshold
 
             p_values[feature_name] = PValueWithDrift(p_value, drifted)
 
@@ -154,6 +166,7 @@ class DataDriftAnalyzer(Analyzer):
                 stattest_name=stat_test.display_name,
                 p_value=p_value,
                 drift_detected=drifted,
+                threshold=threshold,
             )
 
         n_drifted_features, share_drifted_features, dataset_drift = dataset_drift_evaluation(p_values, drift_share)
@@ -171,7 +184,8 @@ class DataDriftAnalyzer(Analyzer):
         )
         return result
 
-    def _get_pred_labels_from_prob(self, data: pd.DataFrame, prediction_column: list):
+    @staticmethod
+    def _get_pred_labels_from_prob(data: pd.DataFrame, prediction_column: list):
         array_prediction = data[prediction_column].to_numpy()
         prediction_ids = np.argmax(array_prediction, axis=-1)
         prediction_labels = [prediction_column[x] for x in prediction_ids]

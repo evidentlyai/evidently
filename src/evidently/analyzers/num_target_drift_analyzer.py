@@ -43,7 +43,7 @@ def _compute_correlation(
 
         raise ValueError(f'Column {main_column} should only contain numerical values.')
 
-    drift_score, drift_detected = stattest(
+    drift_result = stattest(
         reference_data[main_column],
         current_data[main_column],
         feature_type,
@@ -56,8 +56,8 @@ def _compute_correlation(
         reference_correlations=ref_target_corr.to_dict(),
         current_correlations=curr_target_corr.to_dict(),
         stattest_name=stattest.display_name,
-        drift_score=drift_score,
-        drift_detected=drift_detected,
+        drift_score=drift_result.drift_score,
+        drift_detected=drift_result.drifted,
     )
 
 

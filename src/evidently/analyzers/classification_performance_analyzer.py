@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
+from dataclasses import dataclass
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -8,7 +9,6 @@ from typing import Union
 
 import pandas as pd
 import numpy as np
-from dataclasses import dataclass
 from sklearn import metrics
 
 from evidently import ColumnMapping
@@ -43,6 +43,33 @@ class ClassificationPerformanceAnalyzerResults(BaseAnalyzerResult):
     current_metrics: Optional[ClassificationPerformanceMetrics] = None
 
 
+def classification_performance_metrics(
+        target: pd.Series, prediction: pd.Series, target_names: Optional[List[str]]
+) -> ClassificationPerformanceMetrics:
+    # calculate metrics matrix
+    metrics_matrix = metrics.classification_report(target, prediction, output_dict=True)
+    # get quality metrics from the metrics matrix, do not calculate them again
+    accuracy_score = metrics_matrix["accuracy"]
+    avg_precision = metrics_matrix["macro avg"]["precision"]
+    avg_recall = metrics_matrix["macro avg"]["recall"]
+    avg_f1 = metrics_matrix["macro avg"]["f1-score"]
+
+    # calculate confusion matrix
+    confusion_matrix = metrics.confusion_matrix(target, prediction)
+    # get labels from data mapping or get all values kinds from target and prediction columns
+    labels = target_names if target_names else sorted(set(target) | set(prediction))
+    confusion_by_classes = calculate_confusion_by_classes(confusion_matrix, labels)
+    return ClassificationPerformanceMetrics(
+        accuracy=accuracy_score,
+        precision=avg_precision,
+        recall=avg_recall,
+        f1=avg_f1,
+        metrics_matrix=metrics_matrix,
+        confusion_matrix=ConfusionMatrix(labels=labels, values=confusion_matrix.tolist()),
+        confusion_by_classes=confusion_by_classes,
+    )
+
+
 def _calculate_performance_metrics(
     *,
     data: pd.DataFrame,
@@ -53,30 +80,7 @@ def _calculate_performance_metrics(
     # remove all rows with infinite and NaN values from the dataset
     data.replace([np.inf, -np.inf], np.nan, inplace=True)
     data.dropna(axis=0, how="any", inplace=True)
-
-    # calculate metrics matrix
-    metrics_matrix = metrics.classification_report(data[target_column], data[prediction_column], output_dict=True)
-    # get quality metrics from the metrics matrix, do not calculate them again
-    accuracy_score = metrics_matrix["accuracy"]
-    avg_precision = metrics_matrix["macro avg"]["precision"]
-    avg_recall = metrics_matrix["macro avg"]["recall"]
-    avg_f1 = metrics_matrix["macro avg"]["f1-score"]
-
-    # calculate confusion matrix
-    confusion_matrix = metrics.confusion_matrix(data[target_column], data[prediction_column])
-    # get labels from data mapping or get all values kinds from target and prediction columns
-    labels = target_names if target_names else sorted(set(data[target_column]) | set(data[prediction_column]))
-    confusion_by_classes = calculate_confusion_by_classes(confusion_matrix, labels)
-
-    return ClassificationPerformanceMetrics(
-        accuracy=accuracy_score,
-        precision=avg_precision,
-        recall=avg_recall,
-        f1=avg_f1,
-        metrics_matrix=metrics_matrix,
-        confusion_matrix=ConfusionMatrix(labels=labels, values=confusion_matrix.tolist()),
-        confusion_by_classes=confusion_by_classes,
-    )
+    return classification_performance_metrics(data[target_column], data[prediction_column], target_names)
 
 
 class ClassificationPerformanceAnalyzer(Analyzer):
