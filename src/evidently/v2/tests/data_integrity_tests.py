@@ -53,7 +53,7 @@ class BaseIntegrityValueTest(BaseCheckValueTest, ABC):
 class TestNumberOfColumns(BaseIntegrityValueTest):
     """Number of all columns in the data, including utility columns (id/index, datetime, target, predictions)"""
 
-    name = "Test Number of Columns"
+    name = "Number of Columns"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.is_set():
@@ -70,7 +70,7 @@ class TestNumberOfColumns(BaseIntegrityValueTest):
         return self.data_integrity_metric.get_result().current_stats.number_of_columns
 
     def get_description(self, value: Numeric) -> str:
-        return f"Number of Columns is {value}. Test Threshold is [{self.get_condition()}]."
+        return f"The number of columns is {value}. The test threshold is {self.get_condition()}."
 
 
 @default_renderer(test_type=TestNumberOfColumns)
@@ -100,7 +100,7 @@ class TestNumberOfColumnsRenderer(TestRenderer):
 class TestNumberOfRows(BaseIntegrityValueTest):
     """Number of rows in the data"""
 
-    name = "Test Number of Rows"
+    name = "Number of Rows"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.is_set():
@@ -117,7 +117,7 @@ class TestNumberOfRows(BaseIntegrityValueTest):
         return self.data_integrity_metric.get_result().current_stats.number_of_rows
 
     def get_description(self, value: Numeric) -> str:
-        return f"Number of Rows is {value}. Test Threshold is [{self.get_condition()}]."
+        return f"The number of rows is {value}. The test threshold is {self.get_condition()}."
 
 
 @default_renderer(test_type=TestNumberOfRows)
@@ -204,7 +204,7 @@ class TestNumberOfRowsWithNANs(BaseIntegrityValueTest):
 class TestNumberOfConstantColumns(BaseIntegrityValueTest):
     """Number of columns contained only one unique value"""
 
-    name = "Test Number of Constant Columns"
+    name = "Number of Constant Columns"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.is_set():
@@ -222,7 +222,7 @@ class TestNumberOfConstantColumns(BaseIntegrityValueTest):
         return self.data_integrity_metric.get_result().current_stats.number_of_constant_columns
 
     def get_description(self, value: Numeric) -> str:
-        return f"Number of Constant Columns is {value}. Test Threshold is [{self.get_condition()}]."
+        return f"The number of constant columns is {value}. The test threshold is {self.get_condition()}."
 
 
 @default_renderer(test_type=TestNumberOfConstantColumns)
@@ -294,7 +294,7 @@ class TestNumberOfEmptyColumnsRenderer(TestRenderer):
 class TestNumberOfDuplicatedRows(BaseIntegrityValueTest):
     """How many rows have duplicates in the dataset"""
 
-    name = "Test Number of Duplicated Rows"
+    name = "Number of Duplicate Rows"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.is_set():
@@ -315,7 +315,7 @@ class TestNumberOfDuplicatedRows(BaseIntegrityValueTest):
         return self.data_integrity_metric.get_result().current_stats.number_of_duplicated_rows
 
     def get_description(self, value: Numeric) -> str:
-        return f"Number of Duplicated Rows is {value}. Test Threshold is [{self.get_condition()}]."
+        return f"The number of duplicate rows is {value}. The test threshold is {self.get_condition()}."
 
 
 @default_renderer(test_type=TestNumberOfDuplicatedRows)
@@ -330,7 +330,7 @@ class TestNumberOfDuplicatedRowsRenderer(TestRenderer):
 class TestNumberOfDuplicatedColumns(BaseIntegrityValueTest):
     """How many columns have duplicates in the dataset"""
 
-    name = "Test Number of Duplicated Columns"
+    name = "Number of Duplicate Columns"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.is_set():
@@ -348,7 +348,7 @@ class TestNumberOfDuplicatedColumns(BaseIntegrityValueTest):
         return self.data_integrity_metric.get_result().current_stats.number_of_duplicated_columns
 
     def get_description(self, value: Numeric) -> str:
-        return f"Number of Duplicated Columns is  {value}. Test Threshold is [{self.get_condition()}]."
+        return f"The number of duplicate columns is {value}. The test threshold is {self.get_condition()}."
 
 
 @default_renderer(test_type=TestNumberOfDuplicatedColumns)
@@ -391,7 +391,7 @@ class BaseIntegrityByColumnsConditionTest(BaseCheckValueTest, ABC):
 class TestColumnNANShare(BaseIntegrityByColumnsConditionTest):
     """Test the share of NANs in a column"""
 
-    name = "Test Share of NA Values"
+    name = "Share of NA Values in Columns"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.is_set():
@@ -413,8 +413,8 @@ class TestColumnNANShare(BaseIntegrityByColumnsConditionTest):
 
     def get_description(self, value: Numeric) -> str:
         return (
-            f"Share of NAs for {self.column_name} column is {value:.3g}."
-            f" Test Threshold is [{self.get_condition()}]."
+            f"The share of NA values in {self.column_name} is {value:.3g}."
+            f" The test threshold is {self.get_condition()}."
         )
 
 
@@ -522,7 +522,7 @@ class TestColumnsType(Test):
     """This test compares columns type against the specified ones or a reference dataframe"""
 
     group = "data_integrity"
-    name = "Test Columns Type"
+    name = "Column Types"
     columns_type: Optional[dict]
     data_integrity_metric: DataIntegrityMetrics
 
@@ -586,7 +586,7 @@ class TestColumnsType(Test):
 
         return self.Result(
             name=self.name,
-            description=f"Number of columns with a type mismatch is {invalid_types_count} out of {len(columns_type)}.",
+            description=f"The number of columns with a type mismatch is {invalid_types_count} out of {len(columns_type)}.",
             status=status,
             columns_types=columns_types,
         )

@@ -76,7 +76,7 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
 
 
 class TestNumberOfDriftedFeatures(BaseDataDriftMetricsTest):
-    name = "Test Number of Drifted Features"
+    name = "Number of Drifted Features"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.is_set():
@@ -89,11 +89,14 @@ class TestNumberOfDriftedFeatures(BaseDataDriftMetricsTest):
 
     def get_description(self, value: Numeric) -> str:
         n_features = self.metric.get_result().analyzer_result.metrics.n_features
-        return f"Drift is detected for {value} out of {n_features} features. Threshold: [{self.get_condition()}]"
+        return (
+            f"The drift is detected for {value} out of {n_features} features. "
+            f"The test threshold is {self.get_condition()}."
+        ) 
 
 
 class TestShareOfDriftedFeatures(BaseDataDriftMetricsTest):
-    name = "Test Share of Drifted Features"
+    name = "Share of Drifted Features"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.is_set():
@@ -108,13 +111,13 @@ class TestShareOfDriftedFeatures(BaseDataDriftMetricsTest):
         n_drifted_features = self.metric.get_result().analyzer_result.metrics.n_drifted_features
         n_features = self.metric.get_result().analyzer_result.metrics.n_features
         return (
-            f"Drift is detected for {value * 100:.3g}% features "
-            f"({n_drifted_features} out of {n_features}). Threshold: [{self.get_condition()}]"
+            f"The drift is detected for {value * 100:.3g}% features "
+            f"({n_drifted_features} out of {n_features}). The test threshold is {self.get_condition()}"
         )
 
 
 class TestFeatureValueDrift(Test):
-    name = "Test Drift Per Feature"
+    name = "Drift per Feature"
     group = "data_drift"
     metric: DataDriftMetrics
     column_name: str
@@ -145,8 +148,9 @@ class TestFeatureValueDrift(Test):
             stattest_name = drift_info.features[self.column_name].stattest_name
             threshold = drift_info.features[self.column_name].threshold
             description = (
-                f"Drift score for feature {self.column_name} is {p_value}. {stattest_name}. "
-                f"Drift Detection Threshold is {threshold}."
+                f"The drift score for the feature {self.column_name} is {p_value:.3g}. "
+                f"The drift detection method is {stattest_name}. "
+                f"The drift detection threshold is {threshold}."
             )
 
             if not drift_info.features[self.column_name].drift_detected:

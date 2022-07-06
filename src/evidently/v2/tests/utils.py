@@ -213,7 +213,7 @@ def plot_value_counts_tables(feature_name, values, curr_df, ref_df, id_prfx):
         additional_plots.append(
             DetailsInfo(
                 id=f"{id_prfx}_missed_{feature_name}",
-                title="Missed values (top 10)",
+                title="Missing values (top 10)",
                 info=BaseWidgetInfo(
                     title="",
                     type="table",

@@ -154,7 +154,7 @@ class TestTargetPredictionCorrelation(BaseDataQualityCorrelationsMetricsValueTes
 
 
 class TestHighlyCorrelatedFeatures(BaseDataQualityCorrelationsMetricsValueTest):
-    name = "Test Highly Correlated Features"
+    name = "Highly Correlated Features"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.is_set():
@@ -171,7 +171,7 @@ class TestHighlyCorrelatedFeatures(BaseDataQualityCorrelationsMetricsValueTest):
         return self.metric.get_result().current_correlation.abs_max_num_features_correlation
 
     def get_description(self, value: Numeric) -> str:
-        return f"Max Correlation is {value:.3g}. Test Threshold is [{self.get_condition()}]."
+        return f"The maximum correlation is {value:.3g}. The test threshold is {self.get_condition()}."
 
 
 @default_renderer(test_type=TestHighlyCorrelatedFeatures)
@@ -212,7 +212,7 @@ class TestHighlyCorrelatedFeaturesRenderer(TestRenderer):
 
 
 class TestTargetFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValueTest):
-    name = "Test Correlation Between Target and Features"
+    name = "Correlation between Target and Features"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.is_set():
@@ -234,7 +234,7 @@ class TestTargetFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValueTest
             return "No target in the current dataset"
 
         else:
-            return f"Max Correlation is {value:.3g}. Test Threshold is [{self.get_condition()}]."
+            return f"The maximum correlation is {value:.3g}. The test threshold is {self.get_condition()}."
 
 
 @default_renderer(test_type=TestTargetFeaturesCorrelations)
@@ -614,7 +614,7 @@ class TestUniqueValuesShareRenderer(TestRenderer):
 
 
 class TestMostCommonValueShare(BaseFeatureDataQualityMetricsTest):
-    name = "Test Share of the Most Common Value"
+    name = "Share of the Most Common Value"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.is_set():
@@ -640,9 +640,11 @@ class TestMostCommonValueShare(BaseFeatureDataQualityMetricsTest):
             return most_common_value_percentage / 100.0
 
     def get_description(self, value: Numeric) -> str:
+        most_common_value = self.metric.get_result().counts_of_values[self.column_name]["current"].iloc[0, 0]
         return (
-            f"Share of the Most Common Value for column {self.column_name} is {value:.3g}. "
-            f"Test Threshold is [{self.get_condition()}]."
+            f"The most common value in the column {self.column_name} is {most_common_value}. "
+            f"Its share is {value:.3g}. "
+            f"The test threshold is {self.get_condition()}."
         )
 
 
@@ -673,7 +675,7 @@ class TestMostCommonValueShareRenderer(TestRenderer):
 
 class TestMeanInNSigmas(Test):
     group = "data_quality"
-    name = "Test Mean Value Stability"
+    name = "Mean Value Stability"
     metric: DataQualityMetrics
     column_name: str
     n_sigmas: int
@@ -719,8 +721,8 @@ class TestMeanInNSigmas(Test):
 
             else:
                 description = (
-                    f"Mean value of column {self.column_name} {current_mean:.3g} is"
-                    f" not in range from {left_condition:.3g} to {right_condition:.3g}"
+                    f"The mean value of the column {self.column_name} is {current_mean:.3g}."
+                    f" The expected range is from {left_condition:.3g} to {right_condition:.3g}"
                 )
                 test_result = TestResult.FAIL
 
@@ -934,7 +936,7 @@ class TestNumberOfOutRangeValuesRenderer(TestRenderer):
 
 
 class TestShareOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
-    name = "Test Share of Out-Of-Range Values"
+    name = "Share of Out-of-Range Values"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.is_set():
@@ -948,9 +950,9 @@ class TestShareOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
         number_not_in_range = self.metric.get_result().number_not_in_range
         rows_count = self.metric.get_result().rows_count
         return (
-            f"Share of Out-Of-Range Values for feature {self.column_name} is {value:.3g} "
+            f"The share of values out of range in the column {self.column_name} is {value:.3g} "
             f"({number_not_in_range} out of {rows_count}). "
-            f"Test Threshold is [{self.get_condition()}]."
+            f" The test threshold is {self.get_condition()}."
         )
 
 
@@ -1108,7 +1110,7 @@ class TestNumberOfOutListValuesRenderer(TestRenderer):
 
 
 class TestShareOfOutListValues(BaseDataQualityValueListMetricsTest):
-    name = "Test Share of Out-Of-List Values"
+    name = "Share Out-of-List Values"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.is_set():
@@ -1122,9 +1124,9 @@ class TestShareOfOutListValues(BaseDataQualityValueListMetricsTest):
         number_not_in_range = self.metric.get_result().number_not_in_list
         rows_count = self.metric.get_result().rows_count
         return (
-            f"Share of Out-Of-List Values for column {self.column_name} is {value:.3g} "
+            f" The share of values out of list in the column {self.column_name} is {value:.3g} "
             f"({number_not_in_range} out of {rows_count}). "
-            f"Test Threshold is [{self.get_condition()}]."
+            f"The test threshold is {self.get_condition()}."
         )
 
 
