@@ -249,6 +249,9 @@ def test_data_quality_test_most_common_value_share() -> None:
             "prediction": [0, 0, 1, 1],
         }
     )
+    suite = TestSuite(tests=[TestMostCommonValueShare(column_name="feature1")])
+    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=ColumnMapping())
+    assert suite
     suite = TestSuite(tests=[TestMostCommonValueShare(column_name="no_existing_feature", eq=0.5)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
@@ -258,6 +261,28 @@ def test_data_quality_test_most_common_value_share() -> None:
     suite = TestSuite(tests=[TestMostCommonValueShare(column_name="feature1", eq=0.5)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
+
+
+def test_data_quality_test_most_common_value_share_json_render() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "feature1": [0, 1, 1, 5],
+        }
+    )
+    suite = TestSuite(tests=[TestMostCommonValueShare(column_name="feature1", eq=0.5)])
+    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=ColumnMapping())
+    assert suite
+
+    result_from_json = json.loads(suite.json())
+    assert result_from_json["summary"]["all_passed"] is True
+    test_info = result_from_json["tests"][0]
+    assert test_info == {
+        "description": "Share of the Most Common Value for column feature1 is 0.5. Test Threshold is [eq=0.5].",
+        "group": "data_quality",
+        "name": "Test Share of the Most Common Value",
+        "parameters": {"column_name": "feature1", "condition": {"eq": 0.5}, "share_most_common_value": 0.5},
+        "status": "SUCCESS",
+    }
 
 
 def test_data_quality_test_value_in_n_sigmas() -> None:

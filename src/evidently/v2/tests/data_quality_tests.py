@@ -283,6 +283,7 @@ class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest, ABC):
             return result
 
         value = self.calculate_value_for_test()
+        self.value = value
 
         if value is None:
             result.mark_as_error(f"No value for the feature '{self.column_name}'")
@@ -601,12 +602,19 @@ class TestMostCommonValueShare(BaseFeatureDataQualityMetricsTest):
             return most_common_value_percentage / 100.0
 
     def get_description(self, value: Numeric) -> str:
-        return f"Share of the Most Common Value for column {self.column_name} is {value:.3g}. \
-            Test Threshold is [{self.get_condition()}]."
+        return f"Share of the Most Common Value for column {self.column_name} is {value:.3g}. " \
+               f"Test Threshold is [{self.get_condition()}]."
 
 
 @default_renderer(test_type=TestMostCommonValueShare)
 class TestMostCommonValueShareRenderer(TestRenderer):
+    def render_json(self, obj: TestMostCommonValueShare) -> dict:
+        base = super().render_json(obj)
+        base["parameters"]["condition"] = obj.condition.as_dict()
+        base["parameters"]["column_name"] = obj.column_name
+        base["parameters"]["share_most_common_value"] = obj.value
+        return base
+
     def render_html(self, obj: TestMostCommonValueShare) -> TestHtmlInfo:
         info = super().render_html(obj)
         column_name = obj.column_name
