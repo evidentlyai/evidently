@@ -216,6 +216,12 @@ class TestNumberOfConstantColumns(BaseIntegrityValueTest):
 
 @default_renderer(test_type=TestNumberOfConstantColumns)
 class TestNumberOfConstantColumnsRenderer(TestRenderer):
+    def render_json(self, obj: TestNumberOfConstantColumns) -> dict:
+        base = super().render_json(obj)
+        base["parameters"]["condition"] = obj.condition.as_dict()
+        base["parameters"]["number_of_constant_columns"] = obj.value
+        return base
+
     def render_html(self, obj: TestNumberOfConstantColumns) -> TestHtmlInfo:
         info = super().render_html(obj)
         columns = ["column name", "current nunique"]

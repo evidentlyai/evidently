@@ -29,6 +29,10 @@ def test_data_integrity_test_number_of_columns() -> None:
     test_dataset = pd.DataFrame(
         {"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 2, 2, 432], "target": [0, 0, 0, 1]}
     )
+    suite = TestSuite(tests=[TestNumberOfColumns()])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    assert suite
+
     suite = TestSuite(tests=[TestNumberOfColumns(gte=10)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
@@ -37,12 +41,8 @@ def test_data_integrity_test_number_of_columns() -> None:
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
 
-    suite = TestSuite(tests=[TestNumberOfColumns()])
-    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=ColumnMapping())
-    assert suite
 
-
-def test_data_integrity_test_number_of_columns_to_json() -> None:
+def test_data_integrity_test_number_of_columns_json_render() -> None:
     test_dataset = pd.DataFrame(
         {"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 1, 2, 3], "target": [0, 0, 0, 1]}
     )
@@ -159,6 +159,10 @@ def test_data_integrity_test_constant_columns() -> None:
     test_dataset = pd.DataFrame(
         {"category_feature": [None, "d", "p", "n"], "numerical_feature": [0, 0, 0, 0], "target": [0, 0, 0, 1]}
     )
+    suite = TestSuite(tests=[TestNumberOfConstantColumns()])
+    suite.run(current_data=test_dataset, reference_data=test_dataset)
+    assert suite
+
     suite = TestSuite(tests=[TestNumberOfConstantColumns(gte=5)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
@@ -166,6 +170,24 @@ def test_data_integrity_test_constant_columns() -> None:
     suite = TestSuite(tests=[TestNumberOfConstantColumns(eq=1)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
+
+
+def test_data_integrity_test_constant_columns_json_render() -> None:
+    test_dataset = pd.DataFrame({"numerical_feature": [0, 0, 0, 0], "target": [0, 0, 0, 1]})
+    suite = TestSuite(tests=[TestNumberOfConstantColumns()])
+    suite.run(current_data=test_dataset, reference_data=test_dataset)
+    assert suite
+
+    result_from_json = json.loads(suite.json())
+    assert result_from_json["summary"]["all_passed"] is True
+    test_info = result_from_json["tests"][0]
+    assert test_info == {
+        "description": "Number of Constant Columns is 1. Test Threshold is [lte=1].",
+        "group": "data_integrity",
+        "name": "Test Number of Constant Columns",
+        "parameters": {"condition": {}, "number_of_constant_columns": 1},
+        "status": "SUCCESS",
+    }
 
 
 def test_data_integrity_test_empty_rows() -> None:
