@@ -192,9 +192,9 @@ class TestSuite:
             size=2,
             type="counter",
             params={
-                "counters": [{"value": f"{total_tests}", "label": "Total Tests"}]
+                "counters": [{"value": f"{total_tests}", "label": "Tests"}]
                 + [
-                    {"value": f"{by_status.get(status, 0)}", "label": f"{status.title()} Tests"}
+                    {"value": f"{by_status.get(status, 0)}", "label": f"{status.title()}"}
                     for status in [TestResult.SUCCESS, TestResult.WARNING, TestResult.FAIL, TestResult.ERROR]
                 ]
             },
