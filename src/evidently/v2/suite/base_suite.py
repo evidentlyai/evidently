@@ -82,10 +82,13 @@ class Suite:
         if self.context.state in [States.Calculated, States.Tested]:
             return
 
-        results = {}
+        results: dict = {}
 
-        for metric in self.context.execution_graph.get_metric_execution_iterator():
-            results[metric] = metric.calculate(data, results)
+        if self.context.execution_graph is not None:
+            execution_graph: ExecutionGraph = self.context.execution_graph
+
+            for metric in execution_graph.get_metric_execution_iterator():
+                results[metric] = metric.calculate(data, results)
 
         self.context.metric_results = results
         self.context.state = States.Calculated
@@ -93,8 +96,11 @@ class Suite:
     def run_checks(self):
         if self.context.state in [States.Init, States.Verified]:
             raise ExecutionError("No calculation was made, run 'run_calculate' first'")
+
         test_results = {}
+
         for test in self.context.execution_graph.get_test_execution_iterator():
             test_results[test] = test.check()
+
         self.context.test_results = test_results
         self.context.state = States.Tested

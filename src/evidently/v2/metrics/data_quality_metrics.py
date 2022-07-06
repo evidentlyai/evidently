@@ -1,7 +1,10 @@
 from dataclasses import dataclass
 from typing import Dict
+from typing import Iterable
 from typing import List
 from typing import Optional
+from typing import Sequence
+from typing import Union
 
 import pandas as pd
 import numpy as np
@@ -23,7 +26,7 @@ class DataQualityMetricsResults:
     features_stats: DataQualityStats
     distr_for_plots: Dict[str, Dict[str, pd.DataFrame]]
     counts_of_values: Dict[str, Dict[str, pd.DataFrame]]
-    correlations: Dict[str, pd.DataFrame] = None
+    correlations: Optional[Dict[str, pd.DataFrame]] = None
     reference_features_stats: Optional[DataQualityStats] = None
 
 
@@ -51,7 +54,14 @@ class DataQualityMetrics(Metric[DataQualityMetricsResults]):
             analyzer_results = self.analyzer.calculate(
                 reference_data=data.reference_data, current_data=data.current_data, column_mapping=data.column_mapping
             )
+            if analyzer_results.current_features_stats is None:
+                raise ValueError("No results from analyzer")
+
             features_stats = analyzer_results.current_features_stats
+
+            if analyzer_results.current_correlations is None:
+                raise ValueError("No results from analyzer")
+
             correlations = analyzer_results.current_correlations
             reference_features_stats = analyzer_results.reference_features_stats
 
@@ -66,7 +76,7 @@ class DataQualityMetrics(Metric[DataQualityMetricsResults]):
         counts_of_values = {}
 
         if data.column_mapping.task is not None:
-            task = data.column_mapping.task
+            task: Optional[str] = data.column_mapping.task
 
         elif data.column_mapping.task is None and analyzer_results.columns.utility_columns.target:
             if reference_data is None:
@@ -75,23 +85,27 @@ class DataQualityMetrics(Metric[DataQualityMetricsResults]):
             else:
                 data_for_task_detection = reference_data
 
-            task = recognize_task(analyzer_results.columns.utility_columns.target, data_for_task_detection)
+            task = recognize_task(
+                analyzer_results.columns.utility_columns.target, data_for_task_detection
+            )
 
         else:
             task = None
 
-        target_prediction_columns = [
-            t
-            for t in [
-                analyzer_results.columns.utility_columns.target,
-                analyzer_results.columns.utility_columns.prediction,
-            ]
-            if t is not None
-        ]
+        target_prediction_columns = []
+
+        if isinstance(analyzer_results.columns.utility_columns.target, str):
+            target_prediction_columns.append(analyzer_results.columns.utility_columns.target)
+
+        if isinstance(analyzer_results.columns.utility_columns.prediction, str):
+            target_prediction_columns.append(analyzer_results.columns.utility_columns.prediction)
+
         num_columns = analyzer_results.columns.num_feature_names
         cat_columns = analyzer_results.columns.cat_feature_names
+
         if task == ColumnMapping.REGRESSION_TASK:
             num_columns.extend(target_prediction_columns)
+
         if task == ColumnMapping.CLASSIFICATION_TASK:
             cat_columns.extend(target_prediction_columns)
 
@@ -235,13 +249,17 @@ class DataQualityValueRangeMetrics(Metric[DataQualityValueRangeMetricsResults]):
         if (self.left is None or self.right is None) and data.reference_data is None:
             raise ValueError("Reference should be present")
 
-        if self.left is None:
+        if self.left is None and data.reference_data is not None:
             self.left = data.reference_data[self.column].min()
 
-        if self.right is None:
+        if self.right is None and data.reference_data is not None:
             self.right = data.reference_data[self.column].max()
 
         rows_count = data.current_data[self.column].dropna().shape[0]
+
+        if self.left is None or self.right is None:
+            raise ValueError("Cannot define one or both of range parameters")
+
         number_in_range = (
             data.current_data[self.column]
             .dropna()
@@ -311,7 +329,7 @@ class DataQualityValueQuantileMetrics(Metric[DataQualityValueQuantileMetricsResu
 
 @dataclass
 class DataCorrelation:
-    num_features: List[str]
+    num_features: Optional[List[str]]
     correlation_matrix: pd.DataFrame
     target_prediction_correlation: Optional[float] = None
     abs_max_target_features_correlation: Optional[float] = None
@@ -337,9 +355,9 @@ class DataQualityCorrelationMetrics(Metric[DataQualityCorrelationMetricsResults]
     def _get_correlations(
         self,
         dataset: pd.DataFrame,
-        target_name: str,
-        prediction_name: str,
-        num_features: List[str],
+        target_name: Optional[str],
+        prediction_name: Optional[Union[str, Sequence[str]]],
+        num_features: Optional[List[str]],
         is_classification_task: bool,
     ) -> DataCorrelation:
         correlation_matrix = dataset.corr(method=self.method)
@@ -391,7 +409,7 @@ class DataQualityCorrelationMetrics(Metric[DataQualityCorrelationMetricsResults]
     def calculate(self, data: InputData, metrics: dict) -> DataQualityCorrelationMetricsResults:
         target_name = data.column_mapping.target
         prediction_name = data.column_mapping.prediction
-        num_features = data.column_mapping.numerical_features
+        num_features: Optional[List[str]] = data.column_mapping.numerical_features
         is_classification_task = data.column_mapping.is_classification_task()
 
         current_correlations = self._get_correlations(
@@ -403,7 +421,7 @@ class DataQualityCorrelationMetrics(Metric[DataQualityCorrelationMetricsResults]
         )
 
         if data.reference_data is not None:
-            reference_correlation = self._get_correlations(
+            reference_correlation: Optional[DataCorrelation] = self._get_correlations(
                 dataset=data.reference_data,
                 target_name=target_name,
                 prediction_name=prediction_name,

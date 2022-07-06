@@ -193,6 +193,7 @@ class DataQualityAnalyzer(Analyzer):
 
         if target_name is not None and target_name in dataset:
             result.target_stats = {}
+
             if task == "classification":
                 result.target_stats[target_name] = self._get_features_stats(dataset[target_name], feature_type="cat")
 
@@ -201,7 +202,7 @@ class DataQualityAnalyzer(Analyzer):
 
         prediction_name = columns.utility_columns.prediction
 
-        if prediction_name is not None and prediction_name in dataset:
+        if isinstance(prediction_name, str) and prediction_name in dataset:
             result.prediction_stats = {}
 
             if task == "classification":

@@ -1,5 +1,5 @@
 import abc
-from typing import Iterator, List
+from typing import List
 
 from evidently.v2.metrics.base_metric import Metric
 from evidently.v2.tests.base_test import Test
@@ -7,11 +7,11 @@ from evidently.v2.tests.base_test import Test
 
 class ExecutionGraph:
     @abc.abstractmethod
-    def get_metric_execution_iterator(self) -> Iterator[Metric]:
+    def get_metric_execution_iterator(self) -> List[Metric]:
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def get_test_execution_iterator(self) -> Iterator[Test]:
+    def get_test_execution_iterator(self) -> List[Test]:
         raise NotImplementedError()
 
 
@@ -28,8 +28,8 @@ class SimpleExecutionGraph(ExecutionGraph):
         self.metrics = metrics
         self.tests = tests
 
-    def get_metric_execution_iterator(self) -> Iterator[Metric]:
+    def get_metric_execution_iterator(self) -> List[Metric]:
         return self.metrics
 
-    def get_test_execution_iterator(self) -> Iterator[Test]:
+    def get_test_execution_iterator(self) -> List[Test]:
         return self.tests

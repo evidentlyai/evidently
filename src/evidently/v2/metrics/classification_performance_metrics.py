@@ -58,12 +58,14 @@ def classification_performance_metrics(
     avg_precision = sklearn.metrics.precision_score(target, prediction_labels, average="macro")
     avg_recall = sklearn.metrics.recall_score(target, prediction_labels, average="macro")
     avg_f1 = sklearn.metrics.f1_score(target, prediction_labels, average="macro")
+
     if prediction_probas is not None:
         array_prediction = prediction_probas.to_numpy()
         roc_auc = sklearn.metrics.roc_auc_score(binaraized_target, array_prediction, average="macro")
         log_loss = sklearn.metrics.log_loss(binaraized_target, array_prediction)
 
         roc_aucs = sklearn.metrics.roc_auc_score(binaraized_target, array_prediction, average=None).tolist()
+
     else:
         roc_aucs = None
         roc_auc = None
@@ -131,7 +133,10 @@ def get_prediction_data(data: pd.DataFrame, mapping: ColumnMapping) -> Tuple[pd.
     if isinstance(mapping.prediction, list):
         # list of columns with prediction probas, should be same as target labels
         return data[mapping.prediction].idxmax(axis=1), data[mapping.prediction]
-    if isinstance(mapping.prediction, str) and data[mapping.prediction].dtype == dtype("float64"):
+
+    if isinstance(mapping.prediction, str) \
+            and data[mapping.prediction].dtype == dtype("float64") \
+            and mapping.target_names is not None:
         predictions = data[mapping.prediction].apply(
             lambda x: mapping.target_names[1] if x > 0.5 else mapping.target_names[0]
         )

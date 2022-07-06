@@ -378,9 +378,11 @@ class TestColumnNANShare(BaseIntegrityByColumnsConditionTest):
         if self.condition.is_set():
             return self.condition
 
-        if self.data_integrity_metric.get_result().reference_stats is not None:
-            ref_nans = self.data_integrity_metric.get_result().reference_stats.nans_by_columns[self.column_name]
-            ref_num_of_rows = self.data_integrity_metric.get_result().reference_stats.number_of_rows
+        reference_stats = self.data_integrity_metric.get_result().reference_stats
+
+        if reference_stats is not None:
+            ref_nans = reference_stats.nans_by_columns[self.column_name]
+            ref_num_of_rows = reference_stats.number_of_rows
             return TestValueCondition(eq=approx(ref_nans / ref_num_of_rows, relative=0.1))
 
         return TestValueCondition(eq=approx(0))
@@ -633,6 +635,12 @@ class TestColumnValueRegexp(BaseConditionsTest):
             raise ValueError("Not enough parameters for the test")
 
         if metric is None:
+            if reg_exp is None:
+                raise ValueError("Regexp should be present")
+
+            if column_name is None:
+                raise ValueError("Column name should be present")
+
             self.metric = DataIntegrityValueByRegexpMetrics(column_name=column_name, reg_exp=reg_exp)
 
         else:
