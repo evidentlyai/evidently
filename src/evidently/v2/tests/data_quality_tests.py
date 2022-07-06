@@ -160,8 +160,9 @@ class TestHighlyCorrelatedFeatures(BaseDataQualityCorrelationsMetricsValueTest):
         if self.condition.is_set():
             return self.condition
 
-        if self.metric.get_result().reference_correlation.abs_max_num_features_correlation is not None:
-            value = self.metric.get_result().reference_correlation.abs_max_num_features_correlation
+        reference_correlation = self.metric.get_result().reference_correlation
+        if reference_correlation is not None and reference_correlation.abs_max_num_features_correlation is not None:
+            value = reference_correlation.abs_max_num_features_correlation
             return TestValueCondition(eq=approx(value, relative=0.1))
 
         return TestValueCondition(lt=0.9)
@@ -185,14 +186,15 @@ class TestHighlyCorrelatedFeaturesRenderer(TestRenderer):
         info = super().render_html(obj)
         num_features = obj.metric.get_result().current_correlation.num_features
         current_correlations = obj.metric.get_result().current_correlation.correlation_matrix[num_features]
+        reference_correlation = obj.metric.get_result().reference_correlation
 
-        if obj.metric.get_result().reference_correlation is not None:
-            reference_correlations = obj.metric.get_result().reference_correlation.correlation_matrix[num_features]
+        if reference_correlation is not None:
+            reference_correlations_matrix = reference_correlation.correlation_matrix[num_features]
 
         else:
-            reference_correlations = None
+            reference_correlations_matrix = None
 
-        fig = plot_correlations(current_correlations, reference_correlations)
+        fig = plot_correlations(current_correlations, reference_correlations_matrix)
         fig_json = fig.to_plotly_json()
         info.details.append(
             DetailsInfo(
@@ -215,11 +217,13 @@ class TestTargetFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValueTest
     def get_condition(self) -> TestValueCondition:
         if self.condition.is_set():
             return self.condition
-        if self.metric.get_result().reference_correlation.abs_max_target_features_correlation is not None:
-            ref_abs_max_num_target_features_corr = (
-                self.metric.get_result().reference_correlation.abs_max_target_features_correlation
-            )
-            return TestValueCondition(eq=approx(ref_abs_max_num_target_features_corr, relative=0.1))
+
+        reference_correlation = self.metric.get_result().reference_correlation
+
+        if reference_correlation is not None and reference_correlation.abs_max_target_features_correlation is not None:
+            value = reference_correlation.abs_max_target_features_correlation
+            return TestValueCondition(eq=approx(value, relative=0.1))
+
         return TestValueCondition(lt=0.9)
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
@@ -250,15 +254,16 @@ class TestTargetFeaturesCorrelationsRenderer(TestRenderer):
 
     def render_html(self, obj: TestTargetFeaturesCorrelations) -> TestHtmlInfo:
         info = super().render_html(obj)
-        current_correlations = obj.metric.get_result().current_correlation.correlation_matrix
+        current_correlations_matrix = obj.metric.get_result().current_correlation.correlation_matrix
+        reference_correlation = obj.metric.get_result().reference_correlation
 
-        if obj.metric.get_result().reference_correlation is not None:
-            reference_correlations = obj.metric.get_result().reference_correlation.correlation_matrix
+        if reference_correlation is not None:
+            reference_correlations_matrix = reference_correlation.correlation_matrix
 
         else:
-            reference_correlations = None
+            reference_correlations_matrix = None
 
-        fig = plot_correlations(current_correlations, reference_correlations)
+        fig = plot_correlations(current_correlations_matrix, reference_correlations_matrix)
         fig_json = fig.to_plotly_json()
         info.details.append(
             DetailsInfo(
@@ -342,7 +347,7 @@ class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest, ABC):
 class TestFeatureValueMin(BaseFeatureDataQualityMetricsTest):
     name = "Test a feature min value"
 
-    def calculate_value_for_test(self) -> Optional[Numeric]:
+    def calculate_value_for_test(self) -> Optional[Union[Numeric, bool, str]]:
         features_stats = self.metric.get_result().features_stats.get_all_features()
         return features_stats[self.column_name].min
 
@@ -364,7 +369,7 @@ class TestFeatureValueMinRenderer(TestRenderer):
         min_value = obj.metric.get_result().features_stats[column_name].min
 
         if min_value is not None:
-            fig = plot_metric_value(fig, min_value, f"current {column_name} min value")
+            fig = plot_metric_value(fig, float(min_value), f"current {column_name} min value")
 
         fig_json = fig.to_plotly_json()
         info.details.append(
@@ -385,7 +390,7 @@ class TestFeatureValueMinRenderer(TestRenderer):
 class TestFeatureValueMax(BaseFeatureDataQualityMetricsTest):
     name = "Test a feature max value"
 
-    def calculate_value_for_test(self) -> Optional[Numeric]:
+    def calculate_value_for_test(self) -> Optional[Union[Numeric, bool, str]]:
         features_stats = self.metric.get_result().features_stats.get_all_features()
         return features_stats[self.column_name].max
 
@@ -408,7 +413,7 @@ class TestFeatureValueMaxRenderer(TestRenderer):
         max_value = obj.metric.get_result().features_stats[column_name].max
 
         if max_value is not None:
-            fig = plot_metric_value(fig, max_value, f"current {column_name} max value")
+            fig = plot_metric_value(fig, float(max_value), f"current {column_name} max value")
 
         fig_json = fig.to_plotly_json()
         info.details.append(
@@ -730,8 +735,10 @@ class TestMeanInNSigmasRenderer(TestRenderer):
         base["parameters"]["column_name"] = obj.column_name
         base["parameters"]["n_sigmas"] = obj.n_sigmas
         base["parameters"]["current_mean"] = metric_result.features_stats[obj.column_name].mean
-        base["parameters"]["reference_mean"] = metric_result.reference_features_stats[obj.column_name].mean
-        base["parameters"]["reference_std"] = metric_result.reference_features_stats[obj.column_name].std
+
+        if metric_result.reference_features_stats is not None:
+            base["parameters"]["reference_mean"] = metric_result.reference_features_stats[obj.column_name].mean
+            base["parameters"]["reference_std"] = metric_result.reference_features_stats[obj.column_name].std
         return base
 
     def render_html(self, obj: TestMeanInNSigmas) -> TestHtmlInfo:

@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # coding: utf-8
-from numbers import Number
 from typing import Dict
 from typing import Callable
 from typing import Optional
@@ -15,7 +14,8 @@ from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.analyzers.base_analyzer import BaseAnalyzerResult
 from evidently.analyzers.utils import DatasetColumns
-from evidently.analyzers.utils import process_columns, recognize_task
+from evidently.analyzers.utils import process_columns
+from evidently.analyzers.utils import recognize_task
 
 
 @dataclass
@@ -69,13 +69,13 @@ class FeatureQualityStats:
     percentile_25: Optional[float] = None
     percentile_50: Optional[float] = None
     percentile_75: Optional[float] = None
-    max: Optional[Union[Number, str]] = None
-    min: Optional[Union[Number, str]] = None
+    max: Optional[Union[int, float, bool, str]] = None
+    min: Optional[Union[int, float, bool, str]] = None
     mean: Optional[float] = None
-    most_common_value: Optional[Union[Number, str]] = None
+    most_common_value: Optional[Union[int, float, bool, str]] = None
     most_common_value_percentage: Optional[float] = None
     std: Optional[float] = None
-    most_common_not_null_value: Optional[Union[Number, str]] = None
+    most_common_not_null_value: Optional[Union[int, float, bool, str]] = None
     most_common_not_null_value_percentage: Optional[float] = None
     new_in_current_values_count: Optional[int] = None
     unused_in_current_values_count: Optional[int] = None

@@ -2,6 +2,7 @@ import abc
 from abc import ABC
 
 from dataclasses import dataclass
+from typing import Any
 from typing import List
 from typing import Optional
 from typing import Union
@@ -184,7 +185,7 @@ class BaseCheckValueTest(BaseConditionsTest):
     value: Numeric
 
     @abc.abstractmethod
-    def calculate_value_for_test(self) -> Optional[Numeric]:
+    def calculate_value_for_test(self) -> Optional[Any]:
         """Method for getting the checking value.
 
         Define it in a child class"""
