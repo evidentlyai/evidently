@@ -55,7 +55,26 @@ def test_data_integrity_test_number_of_columns_to_json() -> None:
         "description": "Number of Columns is 3. Test Threshold is [eq=3].",
         "group": "data_integrity",
         "name": "Test Number of Columns",
-        "parameters": {},
+        "parameters": {
+            "condition": {"eq": 3},
+            "number_of_columns": 3,
+        },
+        "status": "SUCCESS",
+    }
+
+    suite = TestSuite(tests=[TestNumberOfColumns(lt=5)])
+    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=ColumnMapping())
+    assert suite
+    json_str = suite.json()
+    json_result = json.loads(json_str)
+    assert json_result["tests"][0] == {
+        "description": "Number of Columns is 3. Test Threshold is [lt=5].",
+        "group": "data_integrity",
+        "name": "Test Number of Columns",
+        "parameters": {
+            "condition": {"lt": 5},
+            "number_of_columns": 3,
+        },
         "status": "SUCCESS",
     }
 

@@ -140,6 +140,18 @@ class TestValueCondition:
 
         return f"{' and '.join(conditions)}"
 
+    def as_dict(self) -> dict:
+        result = {}
+        operations = ["eq", "gt", "gte", "lt", "lte", "not_eq", "is_in", "not_in"]
+
+        for op in operations:
+            value = getattr(self, op)
+
+            if value is not None:
+                result[op] = value
+
+        return result
+
 
 class BaseConditionsTest(Test, ABC):
     """

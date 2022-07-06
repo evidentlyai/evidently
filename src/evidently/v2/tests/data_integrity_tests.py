@@ -72,6 +72,12 @@ class TestNumberOfColumns(BaseIntegrityValueTest):
 
 @default_renderer(test_type=TestNumberOfColumns)
 class TestNumberOfColumnsRenderer(TestRenderer):
+    def render_json(self, obj: TestNumberOfColumns) -> dict:
+        base = super().render_json(obj)
+        base["parameters"]["condition"] = obj.get_condition().as_dict()
+        base["parameters"]["number_of_columns"] = obj.value
+        return base
+
     def render_html(self, obj: TestNumberOfColumns) -> TestHtmlInfo:
         info = super().render_html(obj)
         columns = ["column name", "current dtype"]
