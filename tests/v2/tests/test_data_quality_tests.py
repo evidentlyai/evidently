@@ -470,6 +470,30 @@ def test_data_quality_test_share_of_values_not_in_list() -> None:
     assert suite
 
 
+def test_data_quality_test_share_of_values_not_in_list_json_render() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "feature1": [0, 1, 1, 20],
+        }
+    )
+
+    suite = TestSuite(tests=[TestShareOfOutListValues(column_name="feature1", values=[0, 1], lt=0.5)])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    assert suite
+
+    result_from_json = json.loads(suite.json())
+    assert result_from_json["summary"]["all_passed"] is True
+    test_info = result_from_json["tests"][0]
+    assert test_info == {
+        "description": "Share of Out-Of-List Values for feature feature1 is 0.25. "
+        "Values list is [0, 1]. Test Threshold is [lt=0.5].",
+        "group": "data_quality",
+        "name": "Test Share of Out-Of-List Values",
+        "parameters": {"condition": {"lt": 0.5}, "share_not_in_list": 0.25, "values": [0, 1]},
+        "status": "SUCCESS",
+    }
+
+
 def test_data_quality_test_value_quantile() -> None:
     test_dataset = pd.DataFrame(
         {

@@ -1047,8 +1047,9 @@ class TestShareOfOutListValues(BaseDataQualityValueListMetricsTest):
         return self.metric.get_result().share_not_in_list
 
     def get_description(self, value: Numeric) -> str:
-        return f"Share of Out-Of-List Values for feature {self.column_name} is {np.round(value, 3)}. Test Threshold \
-            is [{self.get_condition()}]."
+        return f"Share of Out-Of-List Values for feature {self.column_name} is {np.round(value, 3)}. " \
+               f"Values list is {self.values}. " \
+               f"Test Threshold is [{self.get_condition()}]."
 
 
 class TestValueQuantile(BaseCheckValueTest):
@@ -1127,6 +1128,13 @@ class TestValueQuantileRenderer(TestRenderer):
 
 @default_renderer(test_type=TestShareOfOutListValues)
 class TestShareOfOutListValuesRenderer(TestRenderer):
+    def render_json(self, obj: TestShareOfOutListValues) -> dict:
+        base = super().render_json(obj)
+        base["parameters"]["condition"] = obj.get_condition().as_dict()
+        base["parameters"]["values"] = obj.values
+        base["parameters"]["share_not_in_list"] = obj.value
+        return base
+
     def render_html(self, obj: TestShareOfOutListValues) -> TestHtmlInfo:
         info = super().render_html(obj)
         column_name = obj.column_name
