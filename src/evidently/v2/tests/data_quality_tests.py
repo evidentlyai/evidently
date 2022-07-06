@@ -173,6 +173,12 @@ class TestHighlyCorrelatedFeatures(BaseDataQualityCorrelationsMetricsValueTest):
 
 @default_renderer(test_type=TestHighlyCorrelatedFeatures)
 class TestHighlyCorrelatedFeaturesRenderer(TestRenderer):
+    def render_json(self, obj: TestHighlyCorrelatedFeatures) -> dict:
+        base = super().render_json(obj)
+        base["parameters"]["condition"] = obj.get_condition().as_dict()
+        base["parameters"]["abs_max_num_features_correlation"] = np.round(obj.value, 3)
+        return base
+
     def render_html(self, obj: TestHighlyCorrelatedFeatures) -> TestHtmlInfo:
         info = super().render_html(obj)
         num_features = obj.metric.get_result().num_features
@@ -219,6 +225,12 @@ class TestTargetFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValueTest
 
 @default_renderer(test_type=TestTargetFeaturesCorrelations)
 class TestTargetFeaturesCorrelationsRenderer(TestRenderer):
+    def render_json(self, obj: TestTargetFeaturesCorrelations) -> dict:
+        base = super().render_json(obj)
+        base["parameters"]["condition"] = obj.get_condition().as_dict()
+        base["parameters"]["abs_max_target_features_correlation"] = np.round(obj.value, 3)
+        return base
+
     def render_html(self, obj: TestTargetFeaturesCorrelations) -> TestHtmlInfo:
         info = super().render_html(obj)
         current_correlations = obj.metric.get_result().current_correlation_matrix
@@ -612,7 +624,7 @@ class TestMostCommonValueShare(BaseFeatureDataQualityMetricsTest):
 class TestMostCommonValueShareRenderer(TestRenderer):
     def render_json(self, obj: TestMostCommonValueShare) -> dict:
         base = super().render_json(obj)
-        base["parameters"]["condition"] = obj.condition.as_dict()
+        base["parameters"]["condition"] = obj.get_condition().as_dict()
         base["parameters"]["column_name"] = obj.column_name
         base["parameters"]["share_most_common_value"] = obj.value
         return base

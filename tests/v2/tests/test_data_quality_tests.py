@@ -3,6 +3,7 @@ import json
 import pandas as pd
 
 import pytest
+from pytest import approx as pytest_approx
 
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.v2.tests import TestConflictTarget
@@ -24,6 +25,8 @@ from evidently.v2.tests import TestValueList
 from evidently.v2.tests import TestNumberOfOutListValues
 from evidently.v2.tests import TestShareOfOutListValues
 from evidently.v2.tests import TestValueQuantile
+from evidently.v2.tests import TestHighlyCorrelatedFeatures
+from evidently.v2.tests import TestTargetFeaturesCorrelations
 from evidently.v2.test_suite import TestSuite
 from evidently.v2.tests.utils import approx
 
@@ -565,3 +568,100 @@ def test_data_quality_test_value_quantile() -> None:
     suite = TestSuite(tests=[TestValueQuantile(column_name="feature1", quantile=0.2, lt=0.7)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
+
+
+def test_data_quality_test_highly_correlated_features() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "feature1": [0, 1, 2, 3],
+            "target": [0, 0, 0, 1],
+            "prediction": [0, 0, 1, 1],
+        }
+    )
+    suite = TestSuite(tests=[TestHighlyCorrelatedFeatures()])
+    suite.run(current_data=test_dataset, reference_data=test_dataset)
+    assert suite
+
+    suite = TestSuite(tests=[TestHighlyCorrelatedFeatures(gt=1)])
+    suite.run(current_data=test_dataset, reference_data=None)
+    assert not suite
+
+    suite = TestSuite(tests=[TestHighlyCorrelatedFeatures(lt=1)])
+    suite.run(current_data=test_dataset, reference_data=None)
+    assert suite
+
+
+def test_data_quality_test_highly_correlated_features_json_render() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "feature1": [0, 1, 2, 3],
+            "feature2": [0, 2, 3, 4],
+            "target": [0, 0, 0, 1],
+            "prediction": [0, 0, 1, 1],
+        }
+    )
+    suite = TestSuite(tests=[TestHighlyCorrelatedFeatures()])
+    suite.run(current_data=test_dataset, reference_data=test_dataset)
+    assert suite
+
+    result_from_json = json.loads(suite.json())
+    assert result_from_json["summary"]["all_passed"] is True
+    test_info = result_from_json["tests"][0]
+    assert test_info == {
+        "description": "Max Correlation is 1.0. Test Threshold is [eq=0.983 ± 0.0983].",
+        "group": "data_quality",
+        "name": "Test Highly Correlated Features",
+        "parameters": {
+            "abs_max_num_features_correlation": 0.983,
+            "condition": {"eq": {"absolute": 1e-12, "relative": 0.1, "value": pytest_approx(0.98, abs=0.01)}},
+        },
+        "status": "SUCCESS",
+    }
+
+
+def test_data_quality_test_target_features_correlation() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "feature1": [0, 1, 2, 3],
+            "target": [0, 0, 0, 1],
+            "prediction": [0, 0, 1, 1],
+        }
+    )
+    suite = TestSuite(tests=[TestTargetFeaturesCorrelations()])
+    suite.run(current_data=test_dataset, reference_data=test_dataset)
+    assert suite
+
+    suite = TestSuite(tests=[TestTargetFeaturesCorrelations(gt=1)])
+    suite.run(current_data=test_dataset, reference_data=None)
+    assert not suite
+
+    suite = TestSuite(tests=[TestTargetFeaturesCorrelations(lt=1)])
+    suite.run(current_data=test_dataset, reference_data=None)
+    assert suite
+
+
+def test_data_quality_test_target_features_correlation_json_render() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "feature1": [0, 1, 2, 3],
+            "target": [0, 0, 0, 1],
+            "prediction": [0, 0, 0, 1],
+        }
+    )
+    suite = TestSuite(tests=[TestTargetFeaturesCorrelations()])
+    suite.run(current_data=test_dataset, reference_data=test_dataset)
+    assert suite
+
+    result_from_json = json.loads(suite.json())
+    assert result_from_json["summary"]["all_passed"] is True
+    test_info = result_from_json["tests"][0]
+    assert test_info == {
+        "description": "Max Correlation is 0.775. Test Threshold is [eq=0.775 ± 0.0775].",
+        "group": "data_quality",
+        "name": "Test Correlation Between Target and Features",
+        "parameters": {
+            "abs_max_target_features_correlation": 0.775,
+            "condition": {"eq": {"absolute": 1e-12, "relative": 0.1, "value": pytest_approx(0.775, abs=0.001)}},
+        },
+        "status": "SUCCESS",
+    }
