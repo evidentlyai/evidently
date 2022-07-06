@@ -364,7 +364,6 @@ class DataQualityCorrelationMetrics(Metric[DataQualityCorrelationMetricsResults]
         if reference_correlations is not None:
             np.fill_diagonal(reference_correlations.values, 0)
 
-
         target_prediction_correlation = current_correlations.loc[prediction_name, target_name]
 
         if reference_correlations is not None:
