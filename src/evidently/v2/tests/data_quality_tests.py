@@ -602,8 +602,10 @@ class TestMostCommonValueShare(BaseFeatureDataQualityMetricsTest):
             return most_common_value_percentage / 100.0
 
     def get_description(self, value: Numeric) -> str:
-        return f"Share of the Most Common Value for column {self.column_name} is {value:.3g}. " \
-               f"Test Threshold is [{self.get_condition()}]."
+        return (
+            f"Share of the Most Common Value for column {self.column_name} is {value:.3g}. "
+            f"Test Threshold is [{self.get_condition()}]."
+        )
 
 
 @default_renderer(test_type=TestMostCommonValueShare)
@@ -673,8 +675,7 @@ class TestMeanInNSigmas(Test):
             if left_condition < current_mean < right_condition:
                 description = (
                     f"Mean value of column {self.column_name} {current_mean:.3g} is "
-                    f"in range from {left_condition:.3g} \
-                                to {right_condition:.3g}"
+                    f"in range from {left_condition:.3g} to {right_condition:.3g}"
                 )
                 test_result = TestResult.SUCCESS
 
@@ -1064,9 +1065,11 @@ class TestShareOfOutListValues(BaseDataQualityValueListMetricsTest):
         return self.metric.get_result().share_not_in_list
 
     def get_description(self, value: Numeric) -> str:
-        return f"Share of Out-Of-List Values for feature {self.column_name} is {np.round(value, 3)}. " \
-               f"Values list is {self.values}. " \
-               f"Test Threshold is [{self.get_condition()}]."
+        return (
+            f"Share of Out-Of-List Values for feature {self.column_name} is {np.round(value, 3)}. "
+            f"Values list is {self.values}. "
+            f"Test Threshold is [{self.get_condition()}]."
+        )
 
 
 class TestValueQuantile(BaseCheckValueTest):

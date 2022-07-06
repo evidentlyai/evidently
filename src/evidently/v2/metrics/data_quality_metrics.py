@@ -346,6 +346,7 @@ class DataQualityCorrelationMetrics(Metric[DataQualityCorrelationMetricsResults]
             raise ValueError("Prediction column should be present in current data")
 
         reference_correlations = None
+        reference_correlations_for_plot = None
         current_correlations = data.current_data.corr(method=self.method)
         current_correlations_for_plot = current_correlations.copy()
 
@@ -358,7 +359,10 @@ class DataQualityCorrelationMetrics(Metric[DataQualityCorrelationMetricsResults]
 
         # we will get 1 for all column/column correlation in the diagonal, fill it with 0
         np.fill_diagonal(current_correlations.values, 0)
-        np.fill_diagonal(reference_correlations.values, 0)
+
+        if reference_correlations is not None:
+            np.fill_diagonal(reference_correlations.values, 0)
+
         target_prediction_correlation = current_correlations.loc[prediction_name, target_name]
 
         if reference_correlations is not None:
