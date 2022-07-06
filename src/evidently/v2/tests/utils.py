@@ -235,7 +235,7 @@ def plot_value_counts_tables_ref_curr(feature_name, curr_df, ref_df, id_prfx):
             id=f"{id_prfx}_curr_{feature_name}",
             title="Current value counts (top 10)",
             info=BaseWidgetInfo(
-                title="C",
+                title="",
                 type="table",
                 params={"header": ["value", "count"], "data": curr_df[:10].values},
                 size=2,
@@ -380,7 +380,7 @@ def plot_correlations(current_correlations, reference_correlations):
 
     if reference_correlations is not None:
         cols = 2
-        subplot_titles = ["reference", "current"]
+        subplot_titles = ["current", "reference"]
     else:
         cols = 1
         subplot_titles = [""]

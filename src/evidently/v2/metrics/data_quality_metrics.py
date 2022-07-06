@@ -347,15 +347,18 @@ class DataQualityCorrelationMetrics(Metric[DataQualityCorrelationMetricsResults]
 
         reference_correlations = None
         current_correlations = data.current_data.corr(method=self.method)
+        current_correlations_for_plot = current_correlations.copy()
 
         if data.reference_data is not None:
             reference_correlations = data.reference_data.corr(method=self.method)
+            reference_correlations_for_plot = reference_correlations.copy()
 
         if num_features is None:
             num_features = [i for i in current_correlations if i not in [target_name, prediction_name]]
 
         # we will get 1 for all column/column correlation in the diagonal, fill it with 0
         np.fill_diagonal(current_correlations.values, 0)
+        np.fill_diagonal(reference_correlations.values, 0)
         target_prediction_correlation = current_correlations.loc[prediction_name, target_name]
 
         if reference_correlations is not None:
@@ -408,7 +411,7 @@ class DataQualityCorrelationMetrics(Metric[DataQualityCorrelationMetricsResults]
             reference_abs_max_num_features_correlation = None
 
         return DataQualityCorrelationMetricsResults(
-            current_correlation_matrix=current_correlations,
+            current_correlation_matrix=current_correlations_for_plot,
             num_features=num_features,
             target_prediction_correlation=target_prediction_correlation,
             abs_max_target_features_correlation=abs_max_target_features_correlation,
@@ -420,5 +423,5 @@ class DataQualityCorrelationMetrics(Metric[DataQualityCorrelationMetricsResults]
             reference_abs_max_prediction_features_correlation=reference_abs_max_prediction_features_correlation,
             reference_abs_max_correlation=reference_abs_max_correlation,
             reference_abs_max_num_features_correlation=reference_abs_max_num_features_correlation,
-            reference_correlation_matrix=reference_correlations,
+            reference_correlation_matrix=reference_correlations_for_plot,
         )
