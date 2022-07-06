@@ -152,8 +152,11 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
             )
         me_hist_for_plot = make_hist_for_num_plot(err_curr, err_ref)
 
-        if r2_score_ref is None or rmse_ref is None:
-            raise ValueError("No correct scores")
+        if r2_score_ref is not None:
+            r2_score_ref = float(r2_score_ref)
+
+        if rmse_ref is not None:
+            rmse_ref = float(rmse_ref)
 
         return RegressionPerformanceMetricsResults(
             r2_score=r2_score_value,
@@ -177,5 +180,5 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
             mean_abs_error_ref=reference_metrics.mean_abs_error if reference_metrics is not None else None,
             mean_abs_perc_error_ref=reference_metrics.mean_abs_perc_error if reference_metrics is not None else None,
             rmse_ref=rmse_ref,
-            r2_score_ref=float(r2_score_ref),
+            r2_score_ref=r2_score_ref,
         )

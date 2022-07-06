@@ -93,7 +93,9 @@ class DataIntegrityMetrics(Metric[DataIntegrityMetricsResults]):
         if data.reference_data is not None:
             reference_columns = np.intersect1d(columns, data.reference_data.columns)
             ref_data = data.reference_data[reference_columns]
-            reference_stats = self._get_integrity_metrics_values(ref_data, reference_columns)
+            reference_stats: Optional[DataIntegrityMetricsValues] = self._get_integrity_metrics_values(
+                ref_data, reference_columns
+            )
 
         else:
             reference_stats = None

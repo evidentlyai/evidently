@@ -58,8 +58,12 @@ class TestNumberOfColumns(BaseIntegrityValueTest):
     def get_condition(self) -> TestValueCondition:
         if self.condition.is_set():
             return self.condition
-        if self.data_integrity_metric.get_result().reference_stats is not None:
-            return TestValueCondition(eq=self.data_integrity_metric.get_result().reference_stats.number_of_columns)
+
+        reference_stats = self.data_integrity_metric.get_result().reference_stats
+
+        if reference_stats is not None:
+            return TestValueCondition(eq=reference_stats.number_of_columns)
+
         return TestValueCondition(gt=0)
 
     def calculate_value_for_test(self) -> Numeric:
@@ -81,10 +85,11 @@ class TestNumberOfColumnsRenderer(TestRenderer):
         info = super().render_html(obj)
         columns = ["column name", "current dtype"]
         dict_curr = obj.data_integrity_metric.get_result().current_stats.columns_type
-        dict_ref = None
+        dict_ref = {}
+        reference_stats = obj.data_integrity_metric.get_result().reference_stats
 
-        if obj.data_integrity_metric.get_result().reference_stats is not None:
-            dict_ref = obj.data_integrity_metric.get_result().reference_stats.columns_type
+        if reference_stats is not None:
+            dict_ref = reference_stats.columns_type
             columns = columns + ["reference dtype"]
 
         additional_plots = plot_dicts_to_table(dict_curr, dict_ref, columns, "number_of_column", "diff")
@@ -100,10 +105,12 @@ class TestNumberOfRows(BaseIntegrityValueTest):
     def get_condition(self) -> TestValueCondition:
         if self.condition.is_set():
             return self.condition
-        if self.data_integrity_metric.get_result().reference_stats is not None:
-            return TestValueCondition(
-                eq=approx(self.data_integrity_metric.get_result().reference_stats.number_of_rows, relative=0.1)
-            )
+
+        reference_stats = self.data_integrity_metric.get_result().reference_stats
+
+        if reference_stats is not None:
+            return TestValueCondition(eq=approx(reference_stats.number_of_rows, relative=0.1))
+
         return TestValueCondition(gt=30)
 
     def calculate_value_for_test(self) -> Numeric:
@@ -140,10 +147,11 @@ class TestNumberOfNANsRenderer(TestRenderer):
         info = super().render_html(obj)
         columns = ["column name", "current number of NaNs"]
         dict_curr = obj.data_integrity_metric.get_result().current_stats.nans_by_columns
-        dict_ref = None
+        dict_ref = {}
+        reference_stats = obj.data_integrity_metric.get_result().reference_stats
 
-        if obj.data_integrity_metric.get_result().reference_stats is not None:
-            dict_ref = obj.data_integrity_metric.get_result().reference_stats.nans_by_columns
+        if reference_stats is not None:
+            dict_ref = reference_stats.nans_by_columns
             columns = columns + ["reference number of NaNs"]
 
         additional_plots = plot_dicts_to_table(dict_curr, dict_ref, columns, "number_of_nans")
@@ -169,10 +177,11 @@ class TestNumberOfColumnsWithNANsRenderer(TestRenderer):
         info = super().render_html(obj)
         columns = ["column name", "current number of NaNs"]
         dict_curr = obj.data_integrity_metric.get_result().current_stats.nans_by_columns
-        dict_ref = None
+        dict_ref = {}
+        reference_stats = obj.data_integrity_metric.get_result().reference_stats
 
-        if obj.data_integrity_metric.get_result().reference_stats is not None:
-            dict_ref = obj.data_integrity_metric.get_result().reference_stats.nans_by_columns
+        if reference_stats is not None:
+            dict_ref = reference_stats.nans_by_columns
             columns = columns + ["reference number of NaNs"]
 
         additional_plots = plot_dicts_to_table(dict_curr, dict_ref, columns, "number_of_cols_with_nans")
@@ -200,11 +209,13 @@ class TestNumberOfConstantColumns(BaseIntegrityValueTest):
     def get_condition(self) -> TestValueCondition:
         if self.condition.is_set():
             return self.condition
-        if self.data_integrity_metric.get_result().reference_stats is not None:
-            ref_num_of_constant_columns = (
-                self.data_integrity_metric.get_result().reference_stats.number_of_constant_columns
-            )
-            return TestValueCondition(lte=ref_num_of_constant_columns)
+
+        reference_stats = self.data_integrity_metric.get_result().reference_stats
+
+        if reference_stats is not None:
+            value = reference_stats.number_of_constant_columns
+            return TestValueCondition(lte=value)
+
         return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
@@ -226,10 +237,11 @@ class TestNumberOfConstantColumnsRenderer(TestRenderer):
         info = super().render_html(obj)
         columns = ["column name", "current nunique"]
         dict_curr = obj.data_integrity_metric.get_result().current_stats.number_uniques_by_columns
-        dict_ref = None
+        dict_ref = {}
+        reference_stats = obj.data_integrity_metric.get_result().reference_stats
 
-        if obj.data_integrity_metric.get_result().reference_stats is not None:
-            dict_ref = obj.data_integrity_metric.get_result().reference_stats.number_uniques_by_columns
+        if reference_stats is not None:
+            dict_ref = reference_stats.number_uniques_by_columns
             columns = columns + ["reference nunique"]
 
         additional_plots = plot_dicts_to_table(dict_curr, dict_ref, columns, "number_of_cols_with_nans", "curr", True)
@@ -267,10 +279,13 @@ class TestNumberOfEmptyColumnsRenderer(TestRenderer):
         info = super().render_html(obj)
         columns = ["column name", "current number of NaNs"]
         dict_curr = obj.data_integrity_metric.get_result().current_stats.nans_by_columns
-        dict_ref = None
-        if obj.data_integrity_metric.get_result().reference_stats is not None:
-            dict_ref = obj.data_integrity_metric.get_result().reference_stats.nans_by_columns
+        dict_ref = {}
+        reference_stats = obj.data_integrity_metric.get_result().reference_stats
+
+        if reference_stats is not None:
+            dict_ref = reference_stats.nans_by_columns
             columns = columns + ["reference number of NaNs"]
+
         additional_plots = plot_dicts_to_table(dict_curr, dict_ref, columns, "number_of_empty_columns")
         info.details = additional_plots
         return info
@@ -285,10 +300,12 @@ class TestNumberOfDuplicatedRows(BaseIntegrityValueTest):
         if self.condition.is_set():
             return self.condition
 
-        if self.data_integrity_metric.get_result().reference_stats is not None:
-            ref_num_of_duplicates = self.data_integrity_metric.get_result().reference_stats.number_of_duplicated_rows
+        reference_stats = self.data_integrity_metric.get_result().reference_stats
+
+        if reference_stats is not None:
+            ref_num_of_duplicates = reference_stats.number_of_duplicated_rows
             curr_number_of_rows = self.data_integrity_metric.get_result().current_stats.number_of_rows
-            ref_number_of_rows = self.data_integrity_metric.get_result().reference_stats.number_of_rows
+            ref_number_of_rows = reference_stats.number_of_rows
             mult = curr_number_of_rows / ref_number_of_rows
             return TestValueCondition(eq=approx(ref_num_of_duplicates * mult, 0.1))
 
@@ -318,11 +335,13 @@ class TestNumberOfDuplicatedColumns(BaseIntegrityValueTest):
     def get_condition(self) -> TestValueCondition:
         if self.condition.is_set():
             return self.condition
-        if self.data_integrity_metric.get_result().reference_stats is not None:
-            ref_num_of_duplicated_cols = (
-                self.data_integrity_metric.get_result().reference_stats.number_of_duplicated_columns
-            )
-            return TestValueCondition(lte=ref_num_of_duplicated_cols)
+
+        reference_stats = self.data_integrity_metric.get_result().reference_stats
+
+        if reference_stats is not None:
+            value = reference_stats.number_of_duplicated_columns
+            return TestValueCondition(lte=value)
+
         return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
@@ -344,11 +363,11 @@ class TestNumberOfDuplicatedColumnsRenderer(TestRenderer):
 class BaseIntegrityByColumnsConditionTest(BaseCheckValueTest, ABC):
     group = "data_integrity"
     data_integrity_metric: DataIntegrityMetrics
-    column_name: str
+    column_name: Optional[str]
 
     def __init__(
         self,
-        column_name: str = None,
+        column_name: Optional[str] = None,
         eq: Optional[Numeric] = None,
         gt: Optional[Numeric] = None,
         gte: Optional[Numeric] = None,

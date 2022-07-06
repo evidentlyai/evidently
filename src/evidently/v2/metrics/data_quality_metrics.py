@@ -85,9 +85,7 @@ class DataQualityMetrics(Metric[DataQualityMetricsResults]):
             else:
                 data_for_task_detection = reference_data
 
-            task = recognize_task(
-                analyzer_results.columns.utility_columns.target, data_for_task_detection
-            )
+            task = recognize_task(analyzer_results.columns.utility_columns.target, data_for_task_detection)
 
         else:
             task = None
@@ -283,7 +281,7 @@ class DataQualityValueRangeMetrics(Metric[DataQualityValueRangeMetricsResults]):
             share_in_range=number_in_range / rows_count,
             share_not_in_range=number_not_in_range / rows_count,
             distr_for_plot=distr_for_plot,
-            rows_count=rows_count
+            rows_count=rows_count,
         )
 
 

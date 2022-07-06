@@ -3,7 +3,11 @@
 # pylint: disable=invalid-name
 
 from dataclasses import dataclass
-from typing import Any, Optional, Iterable, Union
+from typing import Any
+from typing import Iterable
+from typing import List
+from typing import Optional
+from typing import Union
 
 
 @dataclass()
@@ -56,6 +60,7 @@ class BaseWidgetInfo:
     type: str
     title: str
     size: int
+    id: str = ""
     details: str = ""
     alertsPosition: Optional[str] = None
     alertStats: Optional[AlertStats] = None
@@ -67,7 +72,7 @@ class BaseWidgetInfo:
     widgets: Iterable["BaseWidgetInfo"] = ()
     pageSize: int = 5
 
-    def get_additional_graphs(self) -> Iterable[AdditionalGraphInfo]:
+    def get_additional_graphs(self) -> List[Union[AdditionalGraphInfo, "BaseWidgetInfo"]]:
         return list(self.additionalGraphs) + [graph for widget in self.widgets for graph in widget.additionalGraphs]
 
 

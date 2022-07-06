@@ -134,9 +134,11 @@ def get_prediction_data(data: pd.DataFrame, mapping: ColumnMapping) -> Tuple[pd.
         # list of columns with prediction probas, should be same as target labels
         return data[mapping.prediction].idxmax(axis=1), data[mapping.prediction]
 
-    if isinstance(mapping.prediction, str) \
-            and data[mapping.prediction].dtype == dtype("float64") \
-            and mapping.target_names is not None:
+    if (
+        isinstance(mapping.prediction, str)
+        and data[mapping.prediction].dtype == dtype("float64")
+        and mapping.target_names is not None
+    ):
         predictions = data[mapping.prediction].apply(
             lambda x: mapping.target_names[1] if x > 0.5 else mapping.target_names[0]
         )
