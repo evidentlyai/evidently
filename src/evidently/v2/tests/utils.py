@@ -313,6 +313,17 @@ class ApproxValue:
     def __ge__(self, other):
         return self.value - self.tolerance >= other
 
+    def as_dict(self) -> dict:
+        result = {"value": self.value}
+
+        if self._relative is not None:
+            result["relative"] = self._relative
+
+        if self._absolute is not None:
+            result["absolute"] = self._absolute
+
+        return result
+
 
 def approx(value, relative=None, absolute=None):
     """Get approximate value for checking a value is equal to other within some tolerance"""

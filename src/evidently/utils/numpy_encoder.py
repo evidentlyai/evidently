@@ -4,6 +4,8 @@ import json
 import numpy as np
 import pandas as pd
 
+from evidently.v2.tests.utils import ApproxValue
+
 
 _TYPES_MAPPING = (
     (
@@ -16,6 +18,8 @@ _TYPES_MAPPING = (
     ((pd.Timedelta, ), str),
     ((np.void, type(pd.NaT)), lambda obj: None),  # should be before datetime as NaT is subclass of datetime.
     ((pd.Timestamp, datetime.datetime, datetime.date), lambda obj: obj.isoformat()),
+    # map ApproxValue to json value
+    ((ApproxValue, ), lambda obj: obj.as_dict()),
 )
 
 

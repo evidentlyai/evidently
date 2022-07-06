@@ -115,6 +115,15 @@ class TestNumberOfRows(BaseIntegrityValueTest):
         return f"Number of Rows is {value}. Test Threshold is [{self.get_condition()}]."
 
 
+@default_renderer(test_type=TestNumberOfRows)
+class TestNumberOfRowsRenderer(TestRenderer):
+    def render_json(self, obj: TestNumberOfRows) -> dict:
+        base = super().render_json(obj)
+        base["parameters"]["condition"] = obj.get_condition().as_dict()
+        base["parameters"]["number_of_rows"] = obj.value
+        return base
+
+
 class TestNumberOfNANs(BaseIntegrityValueTest):
     """Number of NAN values in the data without aggregation by rows or columns"""
 

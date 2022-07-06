@@ -81,13 +81,37 @@ def test_data_integrity_test_number_of_columns_to_json() -> None:
 
 def test_data_integrity_test_number_of_rows() -> None:
     test_dataset = pd.DataFrame({"target": [0, 0, 0, 1]})
+    suite = TestSuite(tests=[TestNumberOfRows()])
+    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=ColumnMapping())
+    assert suite
+
     suite = TestSuite(tests=[TestNumberOfRows(is_in=[10, 3, 50])])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
 
+    suite = TestSuite(tests=[TestNumberOfRows(is_in=[10, 3, 50, 4])])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    assert suite
+
     suite = TestSuite(tests=[TestNumberOfRows(gte=4)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
+
+
+def test_data_integrity_test_number_of_rows_json_report() -> None:
+    test_dataset = pd.DataFrame({"target": [0, 0, 0, 1]})
+    suite = TestSuite(tests=[TestNumberOfRows()])
+    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=ColumnMapping())
+    assert suite
+    json_str = suite.json()
+    json_result = json.loads(json_str)
+    assert json_result["tests"][0] == {
+        "description": "Number of Rows is 4. Test Threshold is [eq=4 ± 0.4].",
+        "group": "data_integrity",
+        "name": "Test Number of Rows",
+        "parameters": {"condition": {"eq": {"absolute": 1e-12, "relative": 0.1, "value": 4}}, "number_of_rows": 4},
+        "status": "SUCCESS",
+    }
 
 
 @pytest.mark.parametrize(
