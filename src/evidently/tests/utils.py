@@ -331,7 +331,7 @@ def approx(value, relative=None, absolute=None):
 
 
 def plot_dicts_to_table(
-    dict_curr: dict, dict_ref: dict, columns: list, id_prfx: str, sort_by: str = "curr", asc: bool = False
+    dict_curr: dict, dict_ref: Optional[dict], columns: list, id_prfx: str, sort_by: str = "curr", asc: bool = False
 ):
     dict_for_df = {}
     dict_ref_keys = []
