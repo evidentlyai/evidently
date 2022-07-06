@@ -624,7 +624,6 @@ def test_data_quality_test_target_features_correlation() -> None:
         {
             "feature1": [0, 1, 2, 3],
             "target": [0, 0, 0, 1],
-            "prediction": [0, 0, 1, 1],
         }
     )
     suite = TestSuite(tests=[TestTargetFeaturesCorrelations()])

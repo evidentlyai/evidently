@@ -336,14 +336,8 @@ class DataQualityCorrelationMetrics(Metric[DataQualityCorrelationMetricsResults]
         if not target_name:
             raise ValueError("Target should be present")
 
-        if not data.column_mapping.prediction:
-            raise ValueError("Prediction should be present")
-
         if target_name not in data.current_data:
             raise ValueError("Target column should be present in current data")
-
-        if data.column_mapping.prediction not in data.current_data:
-            raise ValueError("Prediction column should be present in current data")
 
         reference_correlations = None
         reference_correlations_for_plot = None
@@ -364,10 +358,17 @@ class DataQualityCorrelationMetrics(Metric[DataQualityCorrelationMetricsResults]
         if reference_correlations is not None:
             np.fill_diagonal(reference_correlations.values, 0)
 
-        target_prediction_correlation = current_correlations.loc[prediction_name, target_name]
+        if prediction_name in current_correlations and target_name in current_correlations:
+            target_prediction_correlation = current_correlations.loc[prediction_name, target_name]
 
-        if reference_correlations is not None:
+        else:
+            target_prediction_correlation = None
+
+        if reference_correlations is not None and \
+                prediction_name in reference_correlations and \
+                target_name in reference_correlations:
             reference_target_prediction_correlation = reference_correlations.loc[prediction_name, target_name]
+
         else:
             reference_target_prediction_correlation = None
 
@@ -381,9 +382,13 @@ class DataQualityCorrelationMetrics(Metric[DataQualityCorrelationMetricsResults]
         else:
             reference_abs_max_target_features_correlation = None
 
-        abs_max_prediction_features_correlation = current_correlations.loc[prediction_name, num_features].abs().max()
+        if prediction_name in current_correlations:
+            abs_max_prediction_features_correlation = current_correlations.loc[prediction_name, num_features].abs().max()
 
-        if reference_correlations is not None:
+        else:
+            abs_max_prediction_features_correlation = None
+
+        if reference_correlations is not None and prediction_name in reference_correlations:
             reference_abs_max_prediction_features_correlation = (
                 current_correlations.loc[prediction_name, num_features].abs().max()
             )
