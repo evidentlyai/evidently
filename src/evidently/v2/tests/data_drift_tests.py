@@ -88,8 +88,8 @@ class TestNumberOfDriftedFeatures(BaseDataDriftMetricsTest):
         return self.metric.get_result().analyzer_result.metrics.n_drifted_features
 
     def get_description(self, value: Numeric) -> str:
-        return f"Drift is detected for {value} out of {self.metric.get_result().analyzer_result.metrics.n_features} \
-            features. Threshold: [{self.get_condition()}]"
+        n_features = self.metric.get_result().analyzer_result.metrics.n_features
+        return f"Drift is detected for {value} out of {n_features} features. Threshold: [{self.get_condition()}]"
 
 
 class TestShareOfDriftedFeatures(BaseDataDriftMetricsTest):
@@ -105,9 +105,12 @@ class TestShareOfDriftedFeatures(BaseDataDriftMetricsTest):
         return self.metric.get_result().analyzer_result.metrics.share_drifted_features
 
     def get_description(self, value: Numeric) -> str:
-        return f"Drift is detected for {value * 100:.3g}% features \
-        ({self.metric.get_result().analyzer_result.metrics.n_drifted_features} out of \
-        {self.metric.get_result().analyzer_result.metrics.n_features}). Threshold: [{self.get_condition()}]"
+        n_drifted_features = self.metric.get_result().analyzer_result.metrics.n_drifted_features
+        n_features = self.metric.get_result().analyzer_result.metrics.n_features
+        return (
+            f"Drift is detected for {value * 100:.3g}% features "
+            f"({n_drifted_features} out of {n_features}). Threshold: [{self.get_condition()}]"
+        )
 
 
 class TestFeatureValueDrift(Test):
@@ -146,7 +149,7 @@ class TestFeatureValueDrift(Test):
                 f"Drift Detection Threshold is {threshold}."
             )
 
-            if drift_info.features[self.column_name].drift_detected:
+            if not drift_info.features[self.column_name].drift_detected:
                 result_status = TestResult.SUCCESS
 
             else:
@@ -159,8 +162,8 @@ class TestFeatureValueDrift(Test):
 class TestNumberOfDriftedFeaturesRenderer(TestRenderer):
     def render_json(self, obj: TestNumberOfDriftedFeatures) -> dict:
         base = super().render_json(obj)
-        base["features"] = {
-            feature: dict(stattest=data[0], score=np.round(data[1], 3), threshold=data[2], data_drift=data[3])
+        base["parameters"]["features"] = {
+            feature: {"stattest": data[0], "score": np.round(data[1], 3), "threshold": data[2], "data_drift": data[3]}
             for feature, data in obj.get_result().features.items()
         }
         return base
@@ -191,8 +194,8 @@ class TestNumberOfDriftedFeaturesRenderer(TestRenderer):
 class TestShareOfDriftedFeaturesRenderer(TestRenderer):
     def render_json(self, obj: TestShareOfDriftedFeatures) -> dict:
         base = super().render_json(obj)
-        base["features"] = {
-            feature: dict(stattest=data[0], score=np.round(data[1], 3), threshold=data[2], data_drift=data[3])
+        base["parameters"]["features"] = {
+            feature: {"stattest": data[0], "score": np.round(data[1], 3), "threshold": data[2], "data_drift": data[3]}
             for feature, data in obj.get_result().features.items()
         }
         return base
@@ -225,7 +228,7 @@ class TestFeatureValueDriftRenderer(TestRenderer):
         feature_name = obj.column_name
         drift_data = obj.metric.get_result().analyzer_result.metrics.features[feature_name]
         base = super().render_json(obj)
-        base["features"] = {
+        base["parameters"]["features"] = {
             feature_name: {
                 "stattest": drift_data.stattest_name,
                 "score": np.round(drift_data.p_value, 3),
