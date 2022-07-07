@@ -354,7 +354,7 @@ def plot_dicts_to_table(
         df_na = df[df[columns[1]] == "NA"]
         df_not_na = df[df[columns[1]] != "NA"]
         df_not_na = df_not_na.sort_values(columns[1], ascending=asc)
-        df = df_na.append(df_not_na)
+        df = pd.concat([df_na, df_not_na])
     df = df.astype(str)
     additional_plots = []
     additional_plots.append(

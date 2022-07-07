@@ -57,7 +57,7 @@ def _get_default_stattest(reference_data: pd.Series, current_data: pd.Series, fe
             return stattests.chi_stat_test if n_values > 2 else stattests.z_stat_test
     elif reference_data.shape[0] > 1000:
         if feature_type == "num":
-            n_values = reference_data.append(current_data).nunique()
+            n_values = pd.concat([reference_data, current_data]).nunique()
             if n_values <= 5:
                 return stattests.jensenshannon_stat_test
             elif n_values > 5:
