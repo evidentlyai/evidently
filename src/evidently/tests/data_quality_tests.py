@@ -345,14 +345,21 @@ class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest, ABC):
 
 
 class TestFeatureValueMin(BaseFeatureDataQualityMetricsTest):
-    name = "Test a feature min value"
+    name = "Min Value"
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.is_set():
+            return self.condition
+        ref_features_stats = self.metric.get_result().reference_features_stats
+        if ref_features_stats is not None:
+            return TestValueCondition(gte=ref_features_stats.get_all_features()[self.column_name].min)
 
     def calculate_value_for_test(self) -> Optional[Union[Numeric, bool, str]]:
         features_stats = self.metric.get_result().features_stats.get_all_features()
         return features_stats[self.column_name].min
 
     def get_description(self, value: Numeric) -> str:
-        return f"Min value for feature '{self.column_name}' is {value}"
+        return f"The minimum value of the column {self.column_name} is {value} The test threshold is {self.get_condition()}."
 
 
 @default_renderer(test_type=TestFeatureValueMin)
@@ -365,7 +372,7 @@ class TestFeatureValueMinRenderer(TestRenderer):
         if "reference" in obj.metric.get_result().distr_for_plots[column_name].keys():
             ref_distr = obj.metric.get_result().distr_for_plots[column_name]["reference"]
         fig = plot_distr(curr_distr, ref_distr)
-        fig = plot_check(fig, obj.condition)
+        fig = plot_check(fig, obj.get_condition())
         min_value = obj.metric.get_result().features_stats[column_name].min
 
         if min_value is not None:
@@ -390,12 +397,19 @@ class TestFeatureValueMinRenderer(TestRenderer):
 class TestFeatureValueMax(BaseFeatureDataQualityMetricsTest):
     name = "Test a feature max value"
 
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.is_set():
+            return self.condition
+        ref_features_stats = self.metric.get_result().reference_features_stats
+        if ref_features_stats is not None:
+            return TestValueCondition(lte=ref_features_stats.get_all_features()[self.column_name].max)
+
     def calculate_value_for_test(self) -> Optional[Union[Numeric, bool, str]]:
         features_stats = self.metric.get_result().features_stats.get_all_features()
         return features_stats[self.column_name].max
 
     def get_description(self, value: Numeric) -> str:
-        return f"Max value for feature '{self.column_name}' is {value}"
+        return f"The maximum value of the column {self.column_name} is {value}. The test threshold is {self.get_condition()}."
 
 
 @default_renderer(test_type=TestFeatureValueMax)
@@ -408,7 +422,7 @@ class TestFeatureValueMaxRenderer(TestRenderer):
         if "reference" in obj.metric.get_result().distr_for_plots[column_name].keys():
             ref_distr = obj.metric.get_result().distr_for_plots[column_name]["reference"]
         fig = plot_distr(curr_distr, ref_distr)
-        fig = plot_check(fig, obj.condition)
+        fig = plot_check(fig, obj.get_condition())
 
         max_value = obj.metric.get_result().features_stats[column_name].max
 
@@ -432,14 +446,21 @@ class TestFeatureValueMaxRenderer(TestRenderer):
 
 
 class TestFeatureValueMean(BaseFeatureDataQualityMetricsTest):
-    name = "Test a feature mean value"
+    name = "Mean Value"
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.is_set():
+            return self.condition
+        ref_features_stats = self.metric.get_result().reference_features_stats
+        if ref_features_stats is not None:
+            return TestValueCondition(eq=approx(ref_features_stats.get_all_features()[self.column_name].mean, 0.1))
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
         features_stats = self.metric.get_result().features_stats.get_all_features()
         return features_stats[self.column_name].mean
 
     def get_description(self, value: Numeric) -> str:
-        return f"Mean value for feature '{self.column_name}' is {value}"
+        return f"The mean value of the column {self.column_name} is {value:.3g}. The test threshold is {self.get_condition()}."
 
 
 @default_renderer(test_type=TestFeatureValueMean)
@@ -452,7 +473,7 @@ class TestFeatureValueMeanRenderer(TestRenderer):
         if "reference" in obj.metric.get_result().distr_for_plots[column_name].keys():
             ref_distr = obj.metric.get_result().distr_for_plots[column_name]["reference"]
         fig = plot_distr(curr_distr, ref_distr)
-        fig = plot_check(fig, obj.condition)
+        fig = plot_check(fig, obj.get_condition())
         mean_value = obj.metric.get_result().features_stats[column_name].mean
 
         if mean_value is not None:
@@ -475,14 +496,21 @@ class TestFeatureValueMeanRenderer(TestRenderer):
 
 
 class TestFeatureValueMedian(BaseFeatureDataQualityMetricsTest):
-    name = "Test a feature median value"
+    name = "Median Value"
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.is_set():
+            return self.condition
+        ref_features_stats = self.metric.get_result().reference_features_stats
+        if ref_features_stats is not None:
+            return TestValueCondition(eq=approx(ref_features_stats.get_all_features()[self.column_name].percentile_50, 0.1))
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
         features_stats = self.metric.get_result().features_stats.get_all_features()
         return features_stats[self.column_name].percentile_50
 
     def get_description(self, value: Numeric) -> str:
-        return f"Median (50 percentile) value for feature '{self.column_name}' is {value}"
+        return f"The median value of the column {self.column_name} is {value:.3g}. The test threshold is {self.get_condition()}."
 
 
 @default_renderer(test_type=TestFeatureValueMedian)
@@ -497,7 +525,7 @@ class TestFeatureValueMedianRenderer(TestRenderer):
             ref_distr = obj.metric.get_result().distr_for_plots[column_name]["reference"]
 
         fig = plot_distr(curr_distr, ref_distr)
-        fig = plot_check(fig, obj.condition)
+        fig = plot_check(fig, obj.get_condition())
         percentile_50 = obj.metric.get_result().features_stats[column_name].percentile_50
 
         if percentile_50 is not None:
@@ -520,14 +548,25 @@ class TestFeatureValueMedianRenderer(TestRenderer):
 
 
 class TestFeatureValueStd(BaseFeatureDataQualityMetricsTest):
-    name = "Test a feature std value"
+    name = "Standard Deviation (SD)"
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.is_set():
+            return self.condition
+        ref_features_stats = self.metric.get_result().reference_features_stats
+        if ref_features_stats is not None:
+            return TestValueCondition(eq=approx(ref_features_stats.get_all_features()[self.column_name].std, 0.1))
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
         features_stats = self.metric.get_result().features_stats.get_all_features()
         return features_stats[self.column_name].std
 
     def get_description(self, value: Numeric) -> str:
-        return f"Std value for feature '{self.column_name}' is {value}"
+        return (
+            f"The standard deviation of the column {self.column_name} is {value:.3g}. "
+            f"The test threshold is {self.get_condition()}."
+        )
+                
 
 
 @default_renderer(test_type=TestFeatureValueStd)
@@ -897,25 +936,40 @@ class BaseDataQualityValueRangeMetricsTest(BaseCheckValueTest, ABC):
 
 
 class TestNumberOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
-    name = "Test the number of out range values for a given feature and compares it against the threshold"
+    name = "Number of Out-of-Range Values "
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.is_set():
+            return self.condition
+        return TestValueCondition(eq=approx(0))
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().number_not_in_range
 
     def get_description(self, value: Numeric) -> str:
-        return f"Numeric of out of the range values for feature '{self.column_name}' is {value}"
+        return (
+            f"The number of values out of range in the column {self.column_name} is {value}. "
+            f" The test threshold is {self.get_condition()}."
+        )
 
 
 @default_renderer(test_type=TestNumberOfOutRangeValues)
 class TestNumberOfOutRangeValuesRenderer(TestRenderer):
     def render_html(self, obj: TestNumberOfOutRangeValues) -> TestHtmlInfo:
         column_name = obj.column_name
-        condition_ = TestValueCondition(gt=obj.left, lt=obj.right)
+        if obj.left and obj.right:
+            condition_ = TestValueCondition(gt=obj.left, lt=obj.right)
+        else:
+            condition_ = TestValueCondition(
+                gt=obj.metric.get_result().ref_min,
+                lt=obj.metric.get_result().ref_max
+            )
         info = super().render_html(obj)
         curr_distr = obj.metric.get_result().distr_for_plot["current"]
         ref_distr = None
         if "reference" in obj.metric.get_result().distr_for_plot.keys():
             ref_distr = obj.metric.get_result().distr_for_plot["reference"]
+
         fig = plot_distr(curr_distr, ref_distr)
         fig = plot_check(fig, condition_)
 
@@ -968,7 +1022,13 @@ class TestShareOfOutRangeValuesRenderer(TestRenderer):
 
     def render_html(self, obj: TestShareOfOutRangeValues) -> TestHtmlInfo:
         column_name = obj.column_name
-        condition_ = TestValueCondition(gt=obj.left, lt=obj.right)
+        if obj.left and obj.right:
+            condition_ = TestValueCondition(gt=obj.left, lt=obj.right)
+        else:
+            condition_ = TestValueCondition(
+                gt=obj.metric.get_result().ref_min,
+                lt=obj.metric.get_result().ref_max
+            )
         info = super().render_html(obj)
         curr_distr = obj.metric.get_result().distr_for_plot["current"]
         ref_distr = None
@@ -1085,13 +1145,21 @@ class BaseDataQualityValueListMetricsTest(BaseCheckValueTest, ABC):
 
 
 class TestNumberOfOutListValues(BaseDataQualityValueListMetricsTest):
-    name = "Test the number of out list values for a given feature and compares it against the threshold"
+    name = "Number Out-of-List Values"
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.is_set():
+            return self.condition
+        return TestValueCondition(eq=approx(0))
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().number_not_in_list
 
     def get_description(self, value: Numeric) -> str:
-        return f"Numeric of out of the list values for feature '{self.column_name}' is {value}"
+        return (
+            f"The number of values out of list in the column {self.column_name} is {value}. "
+            f"The test threshold is {self.get_condition()}."
+        )
 
 
 @default_renderer(test_type=TestNumberOfOutListValues)
@@ -1132,7 +1200,7 @@ class TestShareOfOutListValues(BaseDataQualityValueListMetricsTest):
 
 class TestValueQuantile(BaseCheckValueTest):
     group = "data_quality"
-    name = "Test calculates quantile value of a given column and compares it against the threshold"
+    name = "Quantile Value"
     metric: DataQualityValueQuantileMetrics
     column_name: str
     quantile: Optional[float]
@@ -1168,11 +1236,21 @@ class TestValueQuantile(BaseCheckValueTest):
 
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
 
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.is_set():
+            return self.condition
+        ref_value = self.metric.get_result().ref_value
+        if ref_value is not None:
+            return TestValueCondition(eq=approx(ref_value, 0.1))
+
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().value
 
     def get_description(self, value: Numeric) -> str:
-        return f"Quantile {self.quantile} for column '{self.column_name}' is {value}"
+        return (
+            f"The {self.quantile} quantile value of the column {self.column_name} is {value:.3g}. "
+            f"The test threshold is {self.get_condition()}."
+        )
 
 
 @default_renderer(test_type=TestValueQuantile)
@@ -1185,7 +1263,7 @@ class TestValueQuantileRenderer(TestRenderer):
         if "reference" in obj.metric.get_result().distr_for_plot.keys():
             ref_distr = obj.metric.get_result().distr_for_plot["reference"]
         fig = plot_distr(curr_distr, ref_distr)
-        fig = plot_check(fig, obj.condition)
+        fig = plot_check(fig, obj.get_condition())
         fig = plot_metric_value(fig, obj.metric.get_result().value, f"current {column_name} {obj.quantile} quantile")
 
         fig_json = fig.to_plotly_json()

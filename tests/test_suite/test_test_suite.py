@@ -153,4 +153,4 @@ def test_export_to_json():
     assert summary_result["total_tests"] == 36
 
     assert "by_status" in summary_result
-    assert summary_result["by_status"] == {"FAIL": 6, "SUCCESS": 30}
+    assert summary_result["by_status"] == {"FAIL": 7, "SUCCESS": 29}
