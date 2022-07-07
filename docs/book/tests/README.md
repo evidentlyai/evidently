@@ -239,6 +239,7 @@ data_drift = TestSuite(tests=[
 
 data_drift.run(reference_data=ref, current_data=curr)
 data_drift
+```
 
 | Test | Description | Default |
 |---|---|---|
