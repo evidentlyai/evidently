@@ -11,6 +11,7 @@
   * [Regression Performance](reports/reg-performance.md)
   * [Classification Performance](reports/classification-performance.md)
   * [Probabilistic Classification Performance](reports/probabilistic-classification-performance.md)
+* [Tests](tests/README.md)
 * [Examples](get-started/examples.md)
 * [Integrations](integrations/README.md)
   * [Evidently and Grafana](integrations/evidently-and-grafana.md)
