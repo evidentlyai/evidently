@@ -1,4 +1,4 @@
-![](../..docs/images/evidently_tests.png)
+![](../../images/evidently_tests.png)
 
 # What is a test?
 
