@@ -391,7 +391,7 @@ class BaseIntegrityByColumnsConditionTest(BaseCheckValueTest, ABC):
 class TestColumnNANShare(BaseIntegrityByColumnsConditionTest):
     """Test the share of NANs in a column"""
 
-    name = "Share of NA Values in Columns"
+    name = "Share of NA Values"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.is_set():
@@ -413,7 +413,7 @@ class TestColumnNANShare(BaseIntegrityByColumnsConditionTest):
 
     def get_description(self, value: Numeric) -> str:
         return (
-            f"The share of NA values in {self.column_name} is {value:.3g}."
+            f"The share of NA values in self.column_name is {value:.3g}."
             f" The test threshold is {self.get_condition()}."
         )
 

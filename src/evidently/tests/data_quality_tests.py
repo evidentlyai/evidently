@@ -1110,7 +1110,7 @@ class TestNumberOfOutListValuesRenderer(TestRenderer):
 
 
 class TestShareOfOutListValues(BaseDataQualityValueListMetricsTest):
-    name = "Share Out-of-List Values"
+    name = "Share of Out-of-List Values"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.is_set():
