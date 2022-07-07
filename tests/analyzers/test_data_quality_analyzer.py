@@ -463,6 +463,7 @@ def test_data_profile_analyzer_datetime_features(dataset: pd.DataFrame, expected
     metrics = result.reference_features_stats.datetime_features_stats["datetime_feature"]
     assert metrics == expected_metrics
 
+
 def test_data_profile_analyzer_datetime_features_zero_lenth() -> None:
     reference_data = pd.DataFrame({"datetime_feature": []})
     data_profile_analyzer = DataQualityAnalyzer()
@@ -719,6 +720,7 @@ def test_data_profile_analyzer_regression() -> None:
 
     assert result.current_features_stats is None
 
+
 def test_select_features_for_corr() -> None:
     data_profile_analyzer = DataQualityAnalyzer()
     reference_data = pd.DataFrame(
@@ -727,11 +729,11 @@ def test_select_features_for_corr() -> None:
             "reference": [2, 1, 1, 1],
             "numerical_feature_1": [0, 2, -1, 5],
             "numerical_feature_2": [0.3, 5, 0.3, 3.4],
-            "numerical_feature_empty": [np.nan]*4,
-            "numerical_feature_constant": [1]*4,
+            "numerical_feature_empty": [np.nan] * 4,
+            "numerical_feature_constant": [1] * 4,
             "categorical_feature_1": [1, 1, 5, 2],
             "categorical_feature_2": ["y", "y", "n", "y"],
-            "categorical_feature_empty": [np.nan]*4,
+            "categorical_feature_empty": [np.nan] * 4,
             "categorical_feature_constant": [1, 1, 1, np.nan],
             "datetime_feature_1": [
                 datetime(year=2012, month=1, day=5),
@@ -749,28 +751,38 @@ def test_select_features_for_corr() -> None:
     )
     column_mapping = ColumnMapping(
         target="my_target",
-        numerical_features=["numerical_feature_1", "numerical_feature_2", "numerical_feature_empty",
-        "numerical_feature_constant"],
-        categorical_features=["categorical_feature_1", "categorical_feature_2", "categorical_feature_empty",
-        "categorical_feature_constant"],
+        numerical_features=[
+            "numerical_feature_1",
+            "numerical_feature_2",
+            "numerical_feature_empty",
+            "numerical_feature_constant",
+        ],
+        categorical_features=[
+            "categorical_feature_1",
+            "categorical_feature_2",
+            "categorical_feature_empty",
+            "categorical_feature_constant",
+        ],
         datetime_features=["datetime_feature_1", "datetime_feature_2"],
         task="regression",
     )
     columns = process_columns(reference_data, column_mapping)
     reference_features_stats = data_profile_analyzer._calculate_stats(reference_data, columns, "regression")
-    num_for_corr, cat_for_corr = data_profile_analyzer._select_features_for_corr(reference_features_stats, 
-                                                                                 target_name="my_target")
+    num_for_corr, cat_for_corr = data_profile_analyzer._select_features_for_corr(
+        reference_features_stats, target_name="my_target"
+    )
     assert num_for_corr == ["numerical_feature_1", "numerical_feature_2", "my_target"]
     assert cat_for_corr == ["categorical_feature_1", "categorical_feature_2"]
 
 
 def test_cramer_v() -> None:
-    x = pd.Series(['a'] * 15 + ['b'] * 13)
-    y = pd.Series(['c'] * 7 + ['d'] * 8 + ['c'] * 11 + ['d'] * 2)
+    x = pd.Series(["a"] * 15 + ["b"] * 13)
+    y = pd.Series(["c"] * 7 + ["d"] * 8 + ["c"] * 11 + ["d"] * 2)
     data_quality_analyzer = DataQualityAnalyzer()
     v = data_quality_analyzer._cramer_v(x, y)
 
     assert v == 0.3949827793858816
+
 
 @pytest.mark.parametrize(
     "df, expected",
@@ -778,33 +790,24 @@ def test_cramer_v() -> None:
         (
             pd.DataFrame(
                 {
-                    'x': ['a'] * 15 + ['b'] * 13,
-                    'y': ['c'] * 7 + ['d'] * 8 + ['c'] * 11 + ['d'] * 2,
-                    'z': ['f'] * 14 + ['e'] * 14
+                    "x": ["a"] * 15 + ["b"] * 13,
+                    "y": ["c"] * 7 + ["d"] * 8 + ["c"] * 11 + ["d"] * 2,
+                    "z": ["f"] * 14 + ["e"] * 14,
                 }
             ),
-            np.array(
-                [[1.        , 0.39498278, 0.93094934],
-                [0.39498278, 1.        , 0.2981424 ],
-                [0.93094934, 0.2981424 , 1.        ]]
-            )
+            np.array([[1.0, 0.39498278, 0.93094934], [0.39498278, 1.0, 0.2981424], [0.93094934, 0.2981424, 1.0]]),
         ),
-        (
-            pd.DataFrame({}),
-            np.array([])
-        ),
-        (
-            pd.DataFrame({'x': ['a', 'b', 'c']}),
-            np.array([])
-        ),
-    ]
+        (pd.DataFrame({}), np.array([])),
+        (pd.DataFrame({"x": ["a", "b", "c"]}), np.array([])),
+    ],
 )
 def test_corr_matrix(df: pd.DataFrame, expected: np.array) -> None:
-    
+
     data_profile_analyzer = DataQualityAnalyzer()
     corr_matrix = data_profile_analyzer._corr_matrix(df, data_profile_analyzer._cramer_v)
 
     assert np.allclose(corr_matrix.values, expected)
+
 
 @pytest.mark.parametrize(
     "kind, expected_corr_df",
@@ -812,76 +815,98 @@ def test_corr_matrix(df: pd.DataFrame, expected: np.array) -> None:
         (
             "pearson",
             np.array(
-                [[ 1., 0.83124651, 0.87038828, 1., 0.06286946],
-                [ 0.83124651, 1., 0.63871402, 1., -0.13547661],
-                [ 0.87038828, 0.63871402, 1., np.nan, 0.12038585],
-                [ 1.,  1., np.nan, 1., 1.],
-                [ 0.06286946, -0.13547661, 0.12038585, 1.,  1.]]
-            )
+                [
+                    [1.0, 0.83124651, 0.87038828, 1.0, 0.06286946],
+                    [0.83124651, 1.0, 0.63871402, 1.0, -0.13547661],
+                    [0.87038828, 0.63871402, 1.0, np.nan, 0.12038585],
+                    [1.0, 1.0, np.nan, 1.0, 1.0],
+                    [0.06286946, -0.13547661, 0.12038585, 1.0, 1.0],
+                ]
+            ),
         ),
         (
             "spearman",
             np.array(
-                [[ 1., 0.79147062, 0.87038828, 1., 0.05778856],
-                [ 0.79147062, 1., 0.59917127, 1., -0.19500675],
-                [ 0.87038828, 0.59917127, 1., np.nan, 0.11065667],
-                [ 1., 1., np.nan, 1., 1.],
-                [ 0.05778856, -0.19500675, 0.11065667, 1., 1.]]
-            )
+                [
+                    [1.0, 0.79147062, 0.87038828, 1.0, 0.05778856],
+                    [0.79147062, 1.0, 0.59917127, 1.0, -0.19500675],
+                    [0.87038828, 0.59917127, 1.0, np.nan, 0.11065667],
+                    [1.0, 1.0, np.nan, 1.0, 1.0],
+                    [0.05778856, -0.19500675, 0.11065667, 1.0, 1.0],
+                ]
+            ),
         ),
         (
             "kendall",
             np.array(
-                [[ 1., 0.73606993, 0.74535599,  1., 0.07784989],
-                [ 0.73606993, 1., 0.52463139, 1., -0.13430383],
-                [ 0.74535599, 0.52463139, 1., np.nan, 0.10444659],
-                [ 1., 1., np.nan, 1., 1.],
-                [ 0.07784989, -0.13430383, 0.10444659, 1., 1.]]
-            )
+                [
+                    [1.0, 0.73606993, 0.74535599, 1.0, 0.07784989],
+                    [0.73606993, 1.0, 0.52463139, 1.0, -0.13430383],
+                    [0.74535599, 0.52463139, 1.0, np.nan, 0.10444659],
+                    [1.0, 1.0, np.nan, 1.0, 1.0],
+                    [0.07784989, -0.13430383, 0.10444659, 1.0, 1.0],
+                ]
+            ),
         ),
         (
             "cramer_v",
             np.array(
-                [[1., 0.72111026, 0.81649658, np.nan],
-                [0.72111026, 1., 0.70710678, 1.],
-                [0.81649658, 0.70710678, 1., np.nan],
-                [np.nan, 1., np.nan, 1.]]
-            )
-        )
-    ]
+                [
+                    [1.0, 0.72111026, 0.81649658, np.nan],
+                    [0.72111026, 1.0, 0.70710678, 1.0],
+                    [0.81649658, 0.70710678, 1.0, np.nan],
+                    [np.nan, 1.0, np.nan, 1.0],
+                ]
+            ),
+        ),
+    ],
 )
 def test_calculate_correlations(kind: str, expected_corr_df: np.array) -> None:
     df = pd.DataFrame(
-        {"num_feature_1": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-        "num_feature_2": [0.1, 0.2, 0.3, 1, 0.5, 0.6, 0.7, 1, 0.9, 1],
-        "num_feature_3": [1, 1, 1, 1, 1, 2, 2, 2, 2, 2],
-        "num_feature_4": [1, 2, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan],
-        "num_feature_constant": [1] * 10,
-        "num_feature_empty": [np.nan] * 10,
-        "cat_feature_1": ['a', 'a', 'a', 'a', 'a', 'b', 'b', 'b', 'b', 'b'],
-        "cat_feature_2": ['c', 'd', 'c', 'f', 'c', 'g', 'c', 'h', 'c', 'j'],
-        "cat_feature_3": [1, 1, 1, 1, 2, 2, 2, 2, 2, 2],
-        "cat_feature_4": [1, 2, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan],
-        "cat_feature_constant": [1] * 10,
-        "cat_feature_empty": [np.nan] * 10,
-        "datetime_feature": [datetime(year=2123, month=12, day=12)] * 10,
-        "target": [1, 2, 3, 1, 2, 3, 1, 2, 3, 1]
+        {
+            "num_feature_1": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+            "num_feature_2": [0.1, 0.2, 0.3, 1, 0.5, 0.6, 0.7, 1, 0.9, 1],
+            "num_feature_3": [1, 1, 1, 1, 1, 2, 2, 2, 2, 2],
+            "num_feature_4": [1, 2, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan],
+            "num_feature_constant": [1] * 10,
+            "num_feature_empty": [np.nan] * 10,
+            "cat_feature_1": ["a", "a", "a", "a", "a", "b", "b", "b", "b", "b"],
+            "cat_feature_2": ["c", "d", "c", "f", "c", "g", "c", "h", "c", "j"],
+            "cat_feature_3": [1, 1, 1, 1, 2, 2, 2, 2, 2, 2],
+            "cat_feature_4": [1, 2, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan],
+            "cat_feature_constant": [1] * 10,
+            "cat_feature_empty": [np.nan] * 10,
+            "datetime_feature": [datetime(year=2123, month=12, day=12)] * 10,
+            "target": [1, 2, 3, 1, 2, 3, 1, 2, 3, 1],
         }
     )
     column_mapping = ColumnMapping(
         target="target",
-        numerical_features=["num_feature_1", "num_feature_2", "num_feature_3", "num_feature_4", "num_feature_constant", 
-        "num_feature_empty"],
-        categorical_features=["cat_feature_1", "cat_feature_2", "cat_feature_3", "cat_feature_4", 
-        "cat_feature_constant", "cat_feature_empty"],
+        numerical_features=[
+            "num_feature_1",
+            "num_feature_2",
+            "num_feature_3",
+            "num_feature_4",
+            "num_feature_constant",
+            "num_feature_empty",
+        ],
+        categorical_features=[
+            "cat_feature_1",
+            "cat_feature_2",
+            "cat_feature_3",
+            "cat_feature_4",
+            "cat_feature_constant",
+            "cat_feature_empty",
+        ],
         datetime_features=["datetime_feature"],
         task="regression",
     )
     data_quality_analyzer = DataQualityAnalyzer()
     columns = process_columns(df, column_mapping)
     reference_features_stats = data_quality_analyzer._calculate_stats(df, columns, column_mapping.task)
-    num_for_corr, cat_for_corr = data_quality_analyzer._select_features_for_corr(reference_features_stats, 
-                                                                                 target_name=column_mapping.target)
+    num_for_corr, cat_for_corr = data_quality_analyzer._select_features_for_corr(
+        reference_features_stats, target_name=column_mapping.target
+    )
     corr_df = data_quality_analyzer._calculate_correlations(df, num_for_corr, cat_for_corr, kind)
     assert num_for_corr == ["num_feature_1", "num_feature_2", "num_feature_3", "num_feature_4", "target"]
     assert cat_for_corr == ["cat_feature_1", "cat_feature_2", "cat_feature_3", "cat_feature_4"]
