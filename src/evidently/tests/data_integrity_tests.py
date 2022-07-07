@@ -413,7 +413,7 @@ class TestColumnNANShare(BaseIntegrityByColumnsConditionTest):
 
     def get_description(self, value: Numeric) -> str:
         return (
-            f"The share of NA values in self.column_name is {value:.3g}."
+            f"The share of NA values in {self.column_name} is {value:.3g}."
             f" The test threshold is {self.get_condition()}."
         )
 
