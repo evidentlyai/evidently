@@ -396,7 +396,7 @@ def test_data_integrity_test_columns_nan_share_json_render() -> None:
     assert test_info == {
         "description": "The share of NA values in feature1 is 0.25. The test threshold is eq=0.25 ± 0.025.",
         "group": "data_integrity",
-        "name": "Share of NA Values in Columns",
+        "name": "Share of NA Values",
         "parameters": {
             "condition": {"eq": {"absolute": 1e-12, "relative": 0.1, "value": 0.25}},
             "nans_by_columns": {"feature1": 1, "feature2": 1},

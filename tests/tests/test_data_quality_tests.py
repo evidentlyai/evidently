@@ -584,7 +584,7 @@ def test_data_quality_test_share_of_values_not_in_list_json_render() -> None:
         "description": "The share of values out of list in the column feature1 is 0.25 (1 out of 4)."
                        " The test threshold is eq=0 ± 1e-12.",
         "group": "data_quality",
-        "name": "Share Out-of-List Values",
+        "name": "Share of Out-of-List Values",
         "parameters": {
             "condition": {"eq": {"absolute": 1e-12, "relative": 1e-06, "value": 0}},
             "share_not_in_list": 0.25,
