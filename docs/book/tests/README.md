@@ -49,7 +49,7 @@ Refer to the [input data](https://docs.evidentlyai.com/features/dashboards/input
 ## How to run tests for a dataset
 
 You can apply some tests on the dataset level, for example, to evaluate dataset data drift. Here is an example with the default test parameters (defaults described below):
-```
+```python
 data_drift_suite = TestSuite(tests=[
 TestShareOfDriftedFeatures(),
 TestNumberOfDriftedFeatures(),
@@ -60,24 +60,24 @@ column_mapping=ColumnMapping())
 ```
 
 You get the visual report automatically if you call object `data_drift_suite `in Jupyter notebook:
-```
+```python
 Data_drift_suite
 ```
 
 You can get the test output as a JSON:
-```
+```python
 data_drift.json()
 ```
 
 Or in Python dictionary format:
-```
+```python
 data_drift.as_dict()
 ```
 
 ## How to run tests for individual features
 
 You can apply some tests to the individual features, for example, to check if a feature stays within the range. Here is an example with the default test parameters (defaults described below).
-```
+```python
 suite = TestSuite(tests=[
 TestColumnNANShare(column_name='hours-per-week'),
 TestFeatureValueDrift(column_name='education'),
@@ -88,12 +88,12 @@ suite.run(reference_data=ref, current_data=curr)
 ```
 
 You can get the test output as a JSON:
-```
+```python
 suite.json()
 ```
 
 You can also generate the visual report by calling the object suite:
-```
+```python
 Suite
 ```
 
@@ -103,7 +103,7 @@ You can set the parameters for specific tests to define the condition or expecta
 
 For example, you can set the upper or lower boundaries by defining **gt** (greater than) and **lt** (less than).  
 
-```
+```python
 feature_level_tests = TestSuite(tests=[
     TestMeanInNSigmas(column_name='hours-per-week', n_sigmas=3),
     TestShareOfOutRangeValues(column_name='hours-per-week', lte=0),
@@ -145,7 +145,7 @@ You can run this preset to evaluate model quality through proxy metrics. For exa
 
 You can pass the list of the most important features for data drift evaluation. 
 
-```
+```python
 no_target_performance = TestSuite(tests=[
    NoTargetPerformance(most_important_features=['education-num', 'hours-per-week']),
 ])
@@ -175,7 +175,7 @@ If you receive a new batch of input data and want to compare it to the previous 
 
 You can run this preset to compare key descriptive statistics and the overall data shape between two batches you expect to be similar. For example, you can detect the appearance of the new categorical values, new values, or a significant difference in the number of rows. 
 
-```
+```python
 data_stability = TestSuite(tests=[
    DataStability(),
 ])
@@ -205,7 +205,7 @@ If you want to evaluate data quality, even without a reference dataset.
 You can run this preset to assess whether a data batch is suitable for training or retraining. It would detect issues like missing data, duplicates, or constant and almost constant features.  
 
 
-```
+```python
 data_quality = TestSuite(tests=[
    DataQuality(),
 ])
@@ -213,6 +213,7 @@ data_quality = TestSuite(tests=[
 data_quality.run(reference_data=ref,current_data=curr)
 data_quality
 ```
+**Preset contents:**
 
 | Test | Description | Default |
 |---|---|---|
@@ -231,8 +232,7 @@ If you receive a new batch of input data or generate a new set of predictions an
 
 You can run this preset to detect data and concept drift. It would detect a shift in distributions using statistical tests and distance metrics. By default, it uses the in-built Evidently [drift detection logic](https://docs.evidentlyai.com/reports/data-drift#how-it-works) which selects the detection method based on data volume and type.
 
-
-```
+```python
 data_drift = TestSuite(tests=[
    DataDrift(),
 ])
@@ -251,7 +251,7 @@ data_drift
 
 The following tests are currently available in the library: 
 
-```
+```python
 TestNumberOfColumns()
 TestNumberOfRows()
 TestColumnNANShare()
