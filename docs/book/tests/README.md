@@ -275,5 +275,7 @@ We are constantly expanding the list of available tests. You can see all current
 # Example
 
 You can refer to this example notebook:
-[https://colab.research.google.com/drive/1IH1TYrZXT8tBFc1i6XFVmFy4rOkkX3va?usp=sharing]
+
+Colab:
+{% embed url="https://colab.research.google.com/drive/1IH1TYrZXT8tBFc1i6XFVmFy4rOkkX3va?usp=sharing" %}
 
