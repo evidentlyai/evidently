@@ -56,7 +56,7 @@ class TestNumberOfColumns(BaseIntegrityValueTest):
     name = "Number of Columns"
 
     def get_condition(self) -> TestValueCondition:
-        if self.condition.is_set():
+        if self.condition.has_condition():
             return self.condition
 
         reference_stats = self.data_integrity_metric.get_result().reference_stats
@@ -103,7 +103,7 @@ class TestNumberOfRows(BaseIntegrityValueTest):
     name = "Number of Rows"
 
     def get_condition(self) -> TestValueCondition:
-        if self.condition.is_set():
+        if self.condition.has_condition():
             return self.condition
 
         reference_stats = self.data_integrity_metric.get_result().reference_stats
@@ -207,7 +207,7 @@ class TestNumberOfConstantColumns(BaseIntegrityValueTest):
     name = "Number of Constant Columns"
 
     def get_condition(self) -> TestValueCondition:
-        if self.condition.is_set():
+        if self.condition.has_condition():
             return self.condition
 
         reference_stats = self.data_integrity_metric.get_result().reference_stats
@@ -297,7 +297,7 @@ class TestNumberOfDuplicatedRows(BaseIntegrityValueTest):
     name = "Number of Duplicate Rows"
 
     def get_condition(self) -> TestValueCondition:
-        if self.condition.is_set():
+        if self.condition.has_condition():
             return self.condition
 
         reference_stats = self.data_integrity_metric.get_result().reference_stats
@@ -333,7 +333,7 @@ class TestNumberOfDuplicatedColumns(BaseIntegrityValueTest):
     name = "Number of Duplicate Columns"
 
     def get_condition(self) -> TestValueCondition:
-        if self.condition.is_set():
+        if self.condition.has_condition():
             return self.condition
 
         reference_stats = self.data_integrity_metric.get_result().reference_stats
@@ -394,7 +394,7 @@ class TestColumnNANShare(BaseIntegrityByColumnsConditionTest):
     name = "Share of NA Values"
 
     def get_condition(self) -> TestValueCondition:
-        if self.condition.is_set():
+        if self.condition.has_condition():
             return self.condition
 
         reference_stats = self.data_integrity_metric.get_result().reference_stats

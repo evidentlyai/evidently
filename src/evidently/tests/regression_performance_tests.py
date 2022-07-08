@@ -50,7 +50,7 @@ class TestValueMAE(BaseRegressionPerformanceMetricsTest):
     name = "Test MAE"
 
     def get_condition(self) -> TestValueCondition:
-        if self.condition.is_set():
+        if self.condition.has_condition():
             return self.condition
         ref_mae = self.metric.get_result().mean_abs_error_ref
         if ref_mae is not None:

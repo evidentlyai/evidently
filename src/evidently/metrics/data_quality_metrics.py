@@ -247,7 +247,7 @@ class DataQualityValueRangeMetrics(Metric[DataQualityValueRangeMetricsResults]):
     def calculate(self, data: InputData, metrics: dict) -> DataQualityValueRangeMetricsResults:
         if (self.left is None or self.right is None) and data.reference_data is None:
             raise ValueError("Reference should be present")
-        
+
         ref_min = None
         ref_max = None
 

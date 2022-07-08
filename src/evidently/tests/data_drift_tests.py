@@ -79,7 +79,7 @@ class TestNumberOfDriftedFeatures(BaseDataDriftMetricsTest):
     name = "Number of Drifted Features"
 
     def get_condition(self) -> TestValueCondition:
-        if self.condition.is_set():
+        if self.condition.has_condition():
             return self.condition
         else:
             return TestValueCondition(lt=max(0, self.metric.get_result().analyzer_result.metrics.n_features // 3))
@@ -99,7 +99,7 @@ class TestShareOfDriftedFeatures(BaseDataDriftMetricsTest):
     name = "Share of Drifted Features"
 
     def get_condition(self) -> TestValueCondition:
-        if self.condition.is_set():
+        if self.condition.has_condition():
             return self.condition
         else:
             return TestValueCondition(lt=0.3)

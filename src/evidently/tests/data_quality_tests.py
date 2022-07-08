@@ -157,7 +157,7 @@ class TestHighlyCorrelatedFeatures(BaseDataQualityCorrelationsMetricsValueTest):
     name = "Highly Correlated Features"
 
     def get_condition(self) -> TestValueCondition:
-        if self.condition.is_set():
+        if self.condition.has_condition():
             return self.condition
 
         reference_correlation = self.metric.get_result().reference_correlation
@@ -215,7 +215,7 @@ class TestTargetFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValueTest
     name = "Correlation between Target and Features"
 
     def get_condition(self) -> TestValueCondition:
-        if self.condition.is_set():
+        if self.condition.has_condition():
             return self.condition
 
         reference_correlation = self.metric.get_result().reference_correlation
@@ -316,30 +316,14 @@ class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest, ABC):
         features_stats = self.metric.get_result().features_stats.get_all_features()
 
         if self.column_name not in features_stats:
-            result.mark_as_fail()
-            result.description = f"Feature '{self.column_name}' was not found"
+            result.mark_as_fail(f"Feature '{self.column_name}' was not found")
             return result
 
-        value = self.calculate_value_for_test()
-        self.value = value
+        result = super().check()
 
-        if value is None:
+        if self.value is None:
             result.mark_as_error(f"No value for the feature '{self.column_name}'")
             return result
-
-        result.description = self.get_description(value)
-
-        try:
-            condition_check_result = self.get_condition().check_value(value)
-
-            if condition_check_result:
-                result.mark_as_success()
-
-            else:
-                result.mark_as_fail()
-
-        except ValueError:
-            result.mark_as_error("Cannot calculate the condition")
 
         return result
 
@@ -348,9 +332,11 @@ class TestFeatureValueMin(BaseFeatureDataQualityMetricsTest):
     name = "Min Value"
 
     def get_condition(self) -> TestValueCondition:
-        if self.condition.is_set():
+        if self.condition.has_condition():
             return self.condition
+
         ref_features_stats = self.metric.get_result().reference_features_stats
+
         if ref_features_stats is not None:
             return TestValueCondition(gte=ref_features_stats.get_all_features()[self.column_name].min)
 
@@ -398,7 +384,7 @@ class TestFeatureValueMax(BaseFeatureDataQualityMetricsTest):
     name = "Test a feature max value"
 
     def get_condition(self) -> TestValueCondition:
-        if self.condition.is_set():
+        if self.condition.has_condition():
             return self.condition
         ref_features_stats = self.metric.get_result().reference_features_stats
         if ref_features_stats is not None:
@@ -449,7 +435,7 @@ class TestFeatureValueMean(BaseFeatureDataQualityMetricsTest):
     name = "Mean Value"
 
     def get_condition(self) -> TestValueCondition:
-        if self.condition.is_set():
+        if self.condition.has_condition():
             return self.condition
         ref_features_stats = self.metric.get_result().reference_features_stats
         if ref_features_stats is not None:
@@ -499,11 +485,13 @@ class TestFeatureValueMedian(BaseFeatureDataQualityMetricsTest):
     name = "Median Value"
 
     def get_condition(self) -> TestValueCondition:
-        if self.condition.is_set():
+        if self.condition.has_condition():
             return self.condition
         ref_features_stats = self.metric.get_result().reference_features_stats
         if ref_features_stats is not None:
-            return TestValueCondition(eq=approx(ref_features_stats.get_all_features()[self.column_name].percentile_50, 0.1))
+            return TestValueCondition(
+                eq=approx(ref_features_stats.get_all_features()[self.column_name].percentile_50, 0.1)
+            )
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
         features_stats = self.metric.get_result().features_stats.get_all_features()
@@ -551,7 +539,7 @@ class TestFeatureValueStd(BaseFeatureDataQualityMetricsTest):
     name = "Standard Deviation (SD)"
 
     def get_condition(self) -> TestValueCondition:
-        if self.condition.is_set():
+        if self.condition.has_condition():
             return self.condition
         ref_features_stats = self.metric.get_result().reference_features_stats
         if ref_features_stats is not None:
@@ -566,7 +554,6 @@ class TestFeatureValueStd(BaseFeatureDataQualityMetricsTest):
             f"The standard deviation of the column {self.column_name} is {value:.3g}. "
             f"The test threshold is {self.get_condition()}."
         )
-                
 
 
 @default_renderer(test_type=TestFeatureValueStd)
@@ -656,7 +643,7 @@ class TestMostCommonValueShare(BaseFeatureDataQualityMetricsTest):
     name = "Share of the Most Common Value"
 
     def get_condition(self) -> TestValueCondition:
-        if self.condition.is_set():
+        if self.condition.has_condition():
             return self.condition
 
         if self.metric.get_result().reference_features_stats is not None:
@@ -939,7 +926,7 @@ class TestNumberOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
     name = "Number of Out-of-Range Values "
 
     def get_condition(self) -> TestValueCondition:
-        if self.condition.is_set():
+        if self.condition.has_condition():
             return self.condition
         return TestValueCondition(eq=approx(0))
 
@@ -960,10 +947,7 @@ class TestNumberOfOutRangeValuesRenderer(TestRenderer):
         if obj.left and obj.right:
             condition_ = TestValueCondition(gt=obj.left, lt=obj.right)
         else:
-            condition_ = TestValueCondition(
-                gt=obj.metric.get_result().ref_min,
-                lt=obj.metric.get_result().ref_max
-            )
+            condition_ = TestValueCondition(gt=obj.metric.get_result().ref_min, lt=obj.metric.get_result().ref_max)
         info = super().render_html(obj)
         curr_distr = obj.metric.get_result().distr_for_plot["current"]
         ref_distr = None
@@ -993,7 +977,7 @@ class TestShareOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
     name = "Share of Out-of-Range Values"
 
     def get_condition(self) -> TestValueCondition:
-        if self.condition.is_set():
+        if self.condition.has_condition():
             return self.condition
         return TestValueCondition(eq=approx(0))
 
@@ -1025,10 +1009,7 @@ class TestShareOfOutRangeValuesRenderer(TestRenderer):
         if obj.left and obj.right:
             condition_ = TestValueCondition(gt=obj.left, lt=obj.right)
         else:
-            condition_ = TestValueCondition(
-                gt=obj.metric.get_result().ref_min,
-                lt=obj.metric.get_result().ref_max
-            )
+            condition_ = TestValueCondition(gt=obj.metric.get_result().ref_min, lt=obj.metric.get_result().ref_max)
         info = super().render_html(obj)
         curr_distr = obj.metric.get_result().distr_for_plot["current"]
         ref_distr = None
@@ -1148,7 +1129,7 @@ class TestNumberOfOutListValues(BaseDataQualityValueListMetricsTest):
     name = "Number Out-of-List Values"
 
     def get_condition(self) -> TestValueCondition:
-        if self.condition.is_set():
+        if self.condition.has_condition():
             return self.condition
         return TestValueCondition(eq=approx(0))
 
@@ -1181,7 +1162,7 @@ class TestShareOfOutListValues(BaseDataQualityValueListMetricsTest):
     name = "Share of Out-of-List Values"
 
     def get_condition(self) -> TestValueCondition:
-        if self.condition.is_set():
+        if self.condition.has_condition():
             return self.condition
         return TestValueCondition(eq=approx(0))
 
@@ -1237,7 +1218,7 @@ class TestValueQuantile(BaseCheckValueTest):
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
 
     def get_condition(self) -> TestValueCondition:
-        if self.condition.is_set():
+        if self.condition.has_condition():
             return self.condition
         ref_value = self.metric.get_result().ref_value
         if ref_value is not None:

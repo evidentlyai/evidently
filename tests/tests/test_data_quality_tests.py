@@ -39,6 +39,14 @@ from evidently.tests.utils import approx
                 {"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 1, 2, 5], "target": [0, 0, 0, 1]}
             ),
             None,
+            TestFeatureValueMin(column_name="numerical_feature"),
+            False,
+        ),
+        (
+            pd.DataFrame(
+                {"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 1, 2, 5], "target": [0, 0, 0, 1]}
+            ),
+            None,
             TestFeatureValueMin(column_name="numerical_feature", gte=10),
             False,
         ),
