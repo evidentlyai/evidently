@@ -1,3 +1,5 @@
+![](../../images/evidently_tests.png)
+
 # What is a test?
 
 Tests help perform structured data and ML model performance checks. 
@@ -9,7 +11,8 @@ A **test** is a single check. It calculates a specific metric and compares it wi
 The test can return one of the following results: 
 * **Success**: test condition is satisfied.
 * **Fail**: test condition is not satisfied; the test has top priority.
-* **Warning**: test condition is not satisfied; the test has secondary priority. (The test importance parameter will be available in the next release.)  * **Error**: the test execution failed.
+* **Warning**: test condition is not satisfied; the test has secondary priority. (The test importance parameter will be available in the next release.)  
+* **Error**: the test execution failed.
 
 A **test suite** is a combination of checks grouped for a particular use case. A test suite executes multiple tests simultaneously and returns the summary of results. You can create your test suite from individual tests or use one of the existing **presets**. 
 
@@ -275,7 +278,5 @@ We are constantly expanding the list of available tests. You can see all current
 # Example
 
 You can refer to this example notebook:
-
-Colab:
 {% embed url="https://colab.research.google.com/drive/1IH1TYrZXT8tBFc1i6XFVmFy4rOkkX3va?usp=sharing" %}
 
