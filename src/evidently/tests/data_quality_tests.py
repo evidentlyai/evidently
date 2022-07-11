@@ -339,6 +339,7 @@ class TestFeatureValueMin(BaseFeatureDataQualityMetricsTest):
 
         if ref_features_stats is not None:
             return TestValueCondition(gte=ref_features_stats.get_all_features()[self.column_name].min)
+        raise ValueError("Conditions should be specified")
 
     def calculate_value_for_test(self) -> Optional[Union[Numeric, bool, str]]:
         features_stats = self.metric.get_result().features_stats.get_all_features()
@@ -389,6 +390,7 @@ class TestFeatureValueMax(BaseFeatureDataQualityMetricsTest):
         ref_features_stats = self.metric.get_result().reference_features_stats
         if ref_features_stats is not None:
             return TestValueCondition(lte=ref_features_stats.get_all_features()[self.column_name].max)
+        raise ValueError("Conditions should be specified")
 
     def calculate_value_for_test(self) -> Optional[Union[Numeric, bool, str]]:
         features_stats = self.metric.get_result().features_stats.get_all_features()
@@ -440,6 +442,7 @@ class TestFeatureValueMean(BaseFeatureDataQualityMetricsTest):
         ref_features_stats = self.metric.get_result().reference_features_stats
         if ref_features_stats is not None:
             return TestValueCondition(eq=approx(ref_features_stats.get_all_features()[self.column_name].mean, 0.1))
+        raise ValueError("Conditions should be specified")
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
         features_stats = self.metric.get_result().features_stats.get_all_features()
@@ -492,6 +495,7 @@ class TestFeatureValueMedian(BaseFeatureDataQualityMetricsTest):
             return TestValueCondition(
                 eq=approx(ref_features_stats.get_all_features()[self.column_name].percentile_50, 0.1)
             )
+        raise ValueError("Conditions should be specified")
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
         features_stats = self.metric.get_result().features_stats.get_all_features()
@@ -544,6 +548,7 @@ class TestFeatureValueStd(BaseFeatureDataQualityMetricsTest):
         ref_features_stats = self.metric.get_result().reference_features_stats
         if ref_features_stats is not None:
             return TestValueCondition(eq=approx(ref_features_stats.get_all_features()[self.column_name].std, 0.1))
+        raise ValueError("Conditions should be specified")
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
         features_stats = self.metric.get_result().features_stats.get_all_features()
@@ -618,8 +623,7 @@ class TestUniqueValuesShare(BaseFeatureDataQualityMetricsTest):
         if unique_percentage is None:
             return None
 
-        else:
-            return unique_percentage / 100.0
+        return unique_percentage / 100.0
 
     def get_description(self, value: Numeric) -> str:
         return f"Share of unique values for feature '{self.column_name}' is {value}"
@@ -662,8 +666,7 @@ class TestMostCommonValueShare(BaseFeatureDataQualityMetricsTest):
         if most_common_value_percentage is None:
             return None
 
-        else:
-            return most_common_value_percentage / 100.0
+        return most_common_value_percentage / 100.0
 
     def get_description(self, value: Numeric) -> str:
         most_common_value = self.metric.get_result().counts_of_values[self.column_name]["current"].iloc[0, 0]
@@ -816,10 +819,10 @@ class TestMeanInNSigmasRenderer(TestRenderer):
         )
         return info
 
-
+import logging
 class TestValueRange(Test):
     group = "data_quality"
-    name = "Checks that all values of certain column belong to the interval"
+    name = "Value Range"
     metric: DataQualityValueRangeMetrics
     column: str
     left: Optional[float]
@@ -847,12 +850,11 @@ class TestValueRange(Test):
 
         if number_not_in_range > 0:
             description = (
-                f"Column {self.column_name} has {number_not_in_range} values that are "
-                f"not in range from {self.left} to {self.right}."
+                f"The column {self.column_name} has values out of range."
             )
             test_result = TestResult.FAIL
         else:
-            description = f"Column {self.column_name} values are in range from {self.left} to {self.right}"
+            description = f"All values in column {self.column_name} are within range"
             test_result = TestResult.SUCCESS
 
         return TestResult(name=self.name, description=description, status=test_result)
@@ -862,7 +864,10 @@ class TestValueRange(Test):
 class TestValueRangeRenderer(TestRenderer):
     def render_html(self, obj: TestValueRange) -> TestHtmlInfo:
         column_name = obj.column_name
-        condition_ = TestValueCondition(gt=obj.left, lt=obj.right)
+        if obj.left is not None and obj.rightis is not None :
+            condition_ = TestValueCondition(gt=obj.left, lt=obj.right)
+        else:
+            condition_ = TestValueCondition(gt=obj.metric.get_result().ref_min, lt=obj.metric.get_result().ref_max)
         info = super().render_html(obj)
         curr_distr = obj.metric.get_result().distr_for_plot["current"]
         ref_distr = None
@@ -944,7 +949,7 @@ class TestNumberOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
 class TestNumberOfOutRangeValuesRenderer(TestRenderer):
     def render_html(self, obj: TestNumberOfOutRangeValues) -> TestHtmlInfo:
         column_name = obj.column_name
-        if obj.left and obj.right:
+        if obj.left is not None and obj.rightis is not None :
             condition_ = TestValueCondition(gt=obj.left, lt=obj.right)
         else:
             condition_ = TestValueCondition(gt=obj.metric.get_result().ref_min, lt=obj.metric.get_result().ref_max)
@@ -1036,7 +1041,7 @@ class TestShareOfOutRangeValuesRenderer(TestRenderer):
 
 class TestValueList(Test):
     group = "data_quality"
-    name = "Test checks whether a feature values are in some list of values"
+    name = "Out-of-List Values"
     metric: DataQualityValueListMetrics
     column_name: str
     values: Optional[list]
@@ -1058,11 +1063,11 @@ class TestValueList(Test):
 
         if metric_result.number_not_in_list > 0:
             test_result = TestResult.FAIL
-            description = f"Numeric values not in the values list is {metric_result.number_not_in_list}"
+            description = f"The column {self.column_name} has values out of list."
 
         else:
             test_result = TestResult.SUCCESS
-            description = "All values is in the values list"
+            description = f"All values in the column {self.column_name} are in the list."
 
         return TestResult(name=self.name, description=description, status=test_result)
 

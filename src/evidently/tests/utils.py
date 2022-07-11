@@ -31,11 +31,11 @@ def plot_check(fig, condition):
     if not pd.isnull(right_line):
         right_line_name = ["lt", "lte"][pd.Series([condition.lt, condition.lte]).argmin()]
         lines.append((right_line, right_line_name))
-    if condition.eq and not isinstance(condition.eq, ApproxValue):
+    if condition.eq is not None and not isinstance(condition.eq, ApproxValue):
         lines.append((condition.eq, "eq"))
-    if condition.eq and isinstance(condition.eq, ApproxValue):
+    if condition.eq is not None and isinstance(condition.eq, ApproxValue):
         lines.append((condition.eq.value, "approx"))
-    if condition.not_eq:
+    if condition.not_eq is not None:
         lines.append((condition.not_eq, "not_eq"))
 
     fig = go.Figure(fig)
@@ -56,7 +56,7 @@ def plot_check(fig, condition):
     if left_line and right_line:
         fig.add_vrect(x0=left_line, x1=right_line, fillcolor="green", opacity=0.25, line_width=0)
 
-    if condition.eq and isinstance(condition.eq, ApproxValue):
+    if condition.eq is not None and isinstance(condition.eq, ApproxValue):
         left_border = 0
         right_border = 0
 
