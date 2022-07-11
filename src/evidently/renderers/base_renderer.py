@@ -28,15 +28,26 @@ class TestHtmlInfo:
 
 
 class TestRenderer:
+    def html_description(self, obj):
+        return obj.get_result().description
+
+    def json_description(self, obj):
+        return obj.get_result().description
+
     def render_html(self, obj) -> TestHtmlInfo:
         result = obj.get_result()
-        return TestHtmlInfo(name=result.name, description=result.description, status=result.status, details=[])
+        return TestHtmlInfo(
+            name=result.name,
+            description=self.html_description(obj),
+            status=result.status,
+            details=[]
+        )
 
     def render_json(self, obj) -> dict:
         result = obj.get_result()
         return {
             "name": result.name,
-            "description": result.description,
+            "description": self.json_description(obj),
             "status": result.status,
             "group": obj.group,
             "parameters": {},

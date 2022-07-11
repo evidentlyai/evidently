@@ -1,8 +1,9 @@
 import React, {useState} from "react";
 import {TestData, TestState} from "../../api/Api";
-import {Button, Collapse, Container, Grid, Paper, Typography} from "@material-ui/core";
+import {Button, Collapse, Paper} from "@material-ui/core";
 import {Alert, AlertTitle, Color} from "@material-ui/lab";
 import {BigTableDetails} from "../BigTableWidget/BigTableDetails";
+import ReactMarkdown from "react-markdown";
 
 
 const availableStates: TestState[] = ["unknown", "success", "warning", "fail"];
@@ -34,7 +35,7 @@ const TestData: React.FC<TestData> = ({title, description, state, details}) => {
                    Details
                </Button> : null }>
             <AlertTitle>{title}</AlertTitle>
-            {description}
+            <ReactMarkdown>{description}</ReactMarkdown>
         </Alert>
         {!isDetailsAvailable ? <></> :
             <Collapse in={detailsPart.active} mountOnEnter={true} unmountOnExit={true}>
