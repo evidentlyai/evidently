@@ -864,7 +864,7 @@ class TestValueRange(Test):
 class TestValueRangeRenderer(TestRenderer):
     def render_html(self, obj: TestValueRange) -> TestHtmlInfo:
         column_name = obj.column_name
-        if obj.left is not None and obj.rightis is not None:
+        if obj.left is not None and obj.right is not None:
             condition_ = TestValueCondition(gt=obj.left, lt=obj.right)
         else:
             condition_ = TestValueCondition(gt=obj.metric.get_result().ref_min, lt=obj.metric.get_result().ref_max)
@@ -949,7 +949,7 @@ class TestNumberOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
 class TestNumberOfOutRangeValuesRenderer(TestRenderer):
     def render_html(self, obj: TestNumberOfOutRangeValues) -> TestHtmlInfo:
         column_name = obj.column_name
-        if obj.left is not None and obj.rightis is not None:
+        if obj.left is not None and obj.right is not None:
             condition_ = TestValueCondition(gt=obj.left, lt=obj.right)
         else:
             condition_ = TestValueCondition(gt=obj.metric.get_result().ref_min, lt=obj.metric.get_result().ref_max)
@@ -1228,6 +1228,7 @@ class TestValueQuantile(BaseCheckValueTest):
         ref_value = self.metric.get_result().ref_value
         if ref_value is not None:
             return TestValueCondition(eq=approx(ref_value, 0.1))
+        raise ValueError("Conditions should be specified")
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().value

@@ -228,8 +228,8 @@ class DataQualityValueRangeMetricsResults:
     share_not_in_range: float
     distr_for_plot: Dict[str, pd.DataFrame]
     rows_count: int
-    ref_min: float = None
-    ref_max: float = None
+    ref_min: Optional[float] = None
+    ref_max: Optional[float] = None
 
 
 class DataQualityValueRangeMetrics(Metric[DataQualityValueRangeMetricsResults]):
@@ -302,7 +302,7 @@ class DataQualityValueQuantileMetricsResults:
     # range of the quantile (from 0 to 1)
     quantile: float
     distr_for_plot: Dict[str, pd.DataFrame]
-    ref_value: float
+    ref_value: Optional[float]
 
 
 class DataQualityValueQuantileMetrics(Metric[DataQualityValueQuantileMetricsResults]):
