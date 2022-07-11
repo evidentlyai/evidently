@@ -32,18 +32,18 @@ def test_num_target_drift_widget_analyzer_list(widget: NumOutputDriftWidget) -> 
             pd.DataFrame({"target": [1, 2, 3, 1, 5, 6, 7]}),
             ColumnMapping(),
             None,
-            BaseWidgetInfo(type="big_graph",
-                           title="Target Drift: not detected, drift score=0.999961 (K-S p_value)",
-                           size=2),
+            BaseWidgetInfo(
+                type="big_graph", title="Target Drift: not detected, drift score=0.999961 (K-S p_value)", size=2
+            ),
         ),
         (
             pd.DataFrame({"target": [1, 2, 3, 4, 5, 6, 7]}),
             pd.DataFrame({"target": [1, 2, 3, 1, 5, 6, 7]}),
             ColumnMapping(),
             "target",
-            BaseWidgetInfo(type="big_graph",
-                           title="Target Drift: not detected, drift score=0.999961 (K-S p_value)",
-                           size=2),
+            BaseWidgetInfo(
+                type="big_graph", title="Target Drift: not detected, drift score=0.999961 (K-S p_value)", size=2
+            ),
         ),
         (
             pd.DataFrame({"data": [1, 2, 3, 4, 5, 6, 7]}),
@@ -57,9 +57,9 @@ def test_num_target_drift_widget_analyzer_list(widget: NumOutputDriftWidget) -> 
             pd.DataFrame({"prediction": [1, 2, 3, 1, 5, 6, 7]}),
             ColumnMapping(),
             "prediction",
-            BaseWidgetInfo(type="big_graph",
-                           title="Prediction Drift: not detected, drift score=0.999961 (K-S p_value)",
-                           size=2),
+            BaseWidgetInfo(
+                type="big_graph", title="Prediction Drift: not detected, drift score=0.999961 (K-S p_value)", size=2
+            ),
         ),
         (
             pd.DataFrame({"data": [1, 2, 3, 4, 5, 6, 7]}),
