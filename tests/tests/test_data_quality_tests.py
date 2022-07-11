@@ -581,7 +581,7 @@ def test_data_quality_test_share_of_values_not_in_list_json_render() -> None:
     assert result_from_json["summary"]["all_passed"] is False
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "The share of values out of list in the column feature1 is 0.25 (1 out of 4)."
+        "description": "The share of values out of list in the column **feature1** is 0.25 (1 out of 4)."
         " The test threshold is eq=0 ± 1e-12.",
         "group": "data_quality",
         "name": "Share of Out-of-List Values",
