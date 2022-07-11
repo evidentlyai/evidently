@@ -819,7 +819,7 @@ class TestMeanInNSigmasRenderer(TestRenderer):
         )
         return info
 
-import logging
+
 class TestValueRange(Test):
     group = "data_quality"
     name = "Value Range"
@@ -864,7 +864,7 @@ class TestValueRange(Test):
 class TestValueRangeRenderer(TestRenderer):
     def render_html(self, obj: TestValueRange) -> TestHtmlInfo:
         column_name = obj.column_name
-        if obj.left is not None and obj.rightis is not None :
+        if obj.left is not None and obj.rightis is not None:
             condition_ = TestValueCondition(gt=obj.left, lt=obj.right)
         else:
             condition_ = TestValueCondition(gt=obj.metric.get_result().ref_min, lt=obj.metric.get_result().ref_max)
@@ -949,7 +949,7 @@ class TestNumberOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
 class TestNumberOfOutRangeValuesRenderer(TestRenderer):
     def render_html(self, obj: TestNumberOfOutRangeValues) -> TestHtmlInfo:
         column_name = obj.column_name
-        if obj.left is not None and obj.rightis is not None :
+        if obj.left is not None and obj.rightis is not None:
             condition_ = TestValueCondition(gt=obj.left, lt=obj.right)
         else:
             condition_ = TestValueCondition(gt=obj.metric.get_result().ref_min, lt=obj.metric.get_result().ref_max)
