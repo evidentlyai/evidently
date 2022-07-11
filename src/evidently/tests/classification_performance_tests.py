@@ -153,15 +153,33 @@ class TestFNR(SimpleClassificationTest):
         return f"False Negative Rate is {value:.3g}. Test Threshold is {self.get_condition()}"
 
 
-class TestPrecisionByClass(SimpleClassificationTest):
-    name: str = "Precision Score by Class"
-
+class ByClassClassificationTest(SimpleClassificationTest):
     def __init__(self,
                  label: str,
-                 threshold: Optional[float] = None,
-                 metric: Optional[ClassificationPerformanceMetrics] = None):
-        super().__init__(threshold, metric)
+                 eq: Optional[Numeric] = None,
+                 gt: Optional[Numeric] = None,
+                 gte: Optional[Numeric] = None,
+                 is_in: Optional[List[Union[Numeric, str, bool]]] = None,
+                 lt: Optional[Numeric] = None,
+                 lte: Optional[Numeric] = None,
+                 not_eq: Optional[Numeric] = None,
+                 not_in: Optional[List[Union[Numeric, str, bool]]] = None,
+                 metric: Optional[ClassificationPerformanceMetrics] = None
+                 ):
+        super().__init__(eq=eq,
+                         gt=gt,
+                         gte=gte,
+                         is_in=is_in,
+                         lt=lt,
+                         lte=lte,
+                         not_eq=not_eq,
+                         not_in=not_in,
+                         metric=metric)
         self.label = label
+
+
+class TestPrecisionByClass(ByClassClassificationTest):
+    name: str = "Precision Score by Class"
 
     def get_value(self, result: DatasetClassificationPerformanceMetrics):
         return result.metrics_matrix[self.label]['precision']
@@ -170,15 +188,8 @@ class TestPrecisionByClass(SimpleClassificationTest):
         return f"Precision Score of {self.label} is {value:.3g}. Test Threshold is {self.get_condition()}"
 
 
-class TestRecallByClass(SimpleClassificationTest):
+class TestRecallByClass(ByClassClassificationTest):
     name: str = "Recall Score by Class"
-
-    def __init__(self,
-                 label: str,
-                 threshold: Optional[float] = None,
-                 metric: Optional[ClassificationPerformanceMetrics] = None):
-        super().__init__(threshold, metric)
-        self.label = label
 
     def get_value(self, result: DatasetClassificationPerformanceMetrics):
         return result.metrics_matrix[self.label]['recall']
@@ -187,15 +198,8 @@ class TestRecallByClass(SimpleClassificationTest):
         return f"Recall Score of {self.label} is {value:.3g}. Test Threshold is {self.get_condition()}"
 
 
-class TestF1ByClass(SimpleClassificationTest):
+class TestF1ByClass(ByClassClassificationTest):
     name: str = "F1 Score by Class"
-
-    def __init__(self,
-                 label: str,
-                 threshold: Optional[float] = None,
-                 metric: Optional[ClassificationPerformanceMetrics] = None):
-        super().__init__(threshold, metric)
-        self.label = label
 
     def get_value(self, result: DatasetClassificationPerformanceMetrics):
         return result.metrics_matrix[self.label]['f1-score']

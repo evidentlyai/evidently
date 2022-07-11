@@ -34,9 +34,9 @@ class DatasetClassificationPerformanceMetrics:
 
 @dataclasses.dataclass
 class ClassificationPerformanceMetricsResults:
+    current_metrics: DatasetClassificationPerformanceMetrics
+    dummy_metrics: DatasetClassificationPerformanceMetrics
     reference_metrics: Optional[DatasetClassificationPerformanceMetrics] = None
-    current_metrics: Optional[DatasetClassificationPerformanceMetrics] = None
-    dummy_metrics: Optional[DatasetClassificationPerformanceMetrics] = None
 
 
 def classification_performance_metrics(
@@ -100,18 +100,18 @@ class ClassificationPerformanceMetrics(Metric[ClassificationPerformanceMetricsRe
         if data.current_data is None:
             raise ValueError("current dataset should be present")
 
-        results = ClassificationPerformanceMetricsResults()
         current_data = _cleanup_data(data.current_data)
         target_data = current_data[data.column_mapping.target]
         prediction_data, prediction_probas = get_prediction_data(current_data, data.column_mapping)
-        results.current_metrics = classification_performance_metrics(
+        current_metrics = classification_performance_metrics(
             target_data, prediction_data, prediction_probas, data.column_mapping.target_names
         )
 
+        reference_metrics = None
         if data.reference_data is not None:
             reference_data = _cleanup_data(data.reference_data)
             ref_prediction_data, ref_probas = get_prediction_data(reference_data, data.column_mapping)
-            results.reference_metrics = classification_performance_metrics(
+            reference_metrics = classification_performance_metrics(
                 reference_data[data.column_mapping.target],
                 ref_prediction_data,
                 ref_probas,
@@ -119,10 +119,14 @@ class ClassificationPerformanceMetrics(Metric[ClassificationPerformanceMetricsRe
             )
 
         dummy_preds = pd.Series([target_data.value_counts().idxmax()] * len(target_data))
-        results.dummy_metrics = classification_performance_metrics(
+        dummy_metrics = classification_performance_metrics(
             target_data, dummy_preds, None, data.column_mapping.target_names
         )
-        return results
+        return ClassificationPerformanceMetricsResults(
+            current_metrics=current_metrics,
+            reference_metrics=reference_metrics,
+            dummy_metrics=dummy_metrics,
+        )
 
 
 def _cleanup_data(data: pd.DataFrame) -> pd.DataFrame:
