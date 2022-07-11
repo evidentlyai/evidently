@@ -519,9 +519,9 @@ def test_data_quality_test_value_in_list_json_render() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "All values is in the values list",
+        "description": "All values in the column target are in the list.",
         "group": "data_quality",
-        "name": "Test checks whether a feature values are in some list of values",
+        "name": "Out-of-List Values",
         "parameters": {"column_name": "target", "number_not_in_list": 0, "values": None},
         "status": "SUCCESS",
     }
