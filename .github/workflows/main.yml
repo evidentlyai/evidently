@@ -65,3 +65,8 @@ jobs:
         run: pip install -r requirements.txt
       - name: Build package
         run: python setup.py sdist
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts
+          path: dist/evidently-*-py3-none-any.whl
