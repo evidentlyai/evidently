@@ -341,10 +341,10 @@ def plot_dicts_to_table(
     dict_for_df[columns[0]] = keys
     dict_for_df[columns[1]] = [dict_curr.get(x, "NA") for x in keys]
 
-    if dict_ref is not None:
+    if dict_ref:
         dict_for_df[columns[2]] = [dict_ref.get(x, "NA") for x in keys]
     df = pd.DataFrame(dict_for_df)
-    if dict_ref is not None:
+    if dict_ref:
         if sort_by == "diff":
             df = df.astype(str)
             df["eq"] = (df[columns[1]] == df[columns[2]]).astype(int)

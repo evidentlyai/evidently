@@ -132,13 +132,27 @@ class TestNumberOfRowsRenderer(TestRenderer):
 class TestNumberOfNANs(BaseIntegrityValueTest):
     """Number of NAN values in the data without aggregation by rows or columns"""
 
-    name = "Test Number of NAN Values"
+    name = "Number of NA Values"
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.has_condition():
+            return self.condition
+
+        reference_stats = self.data_integrity_metric.get_result().reference_stats
+
+        if reference_stats is not None:
+            curr_number_of_rows = self.data_integrity_metric.get_result().current_stats.number_of_rows
+            ref_number_of_rows = reference_stats.number_of_rows
+            mult = curr_number_of_rows / ref_number_of_rows
+            return TestValueCondition(eq=approx(reference_stats.number_of_nans * mult, relative=0.1))
+
+        return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
         return self.data_integrity_metric.get_result().current_stats.number_of_nans
 
     def get_description(self, value: Numeric) -> str:
-        return f"Number of NANs is {value}"
+        return f"The number of NA values in the dataset is {value}. The test threshold is {self.get_condition()}."
 
 
 @default_renderer(test_type=TestNumberOfNANs)
