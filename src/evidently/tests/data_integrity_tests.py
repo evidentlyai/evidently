@@ -176,13 +176,24 @@ class TestNumberOfNANsRenderer(TestRenderer):
 class TestNumberOfColumnsWithNANs(BaseIntegrityValueTest):
     """Number of columns contained at least one NAN value"""
 
-    name = "Test Number Of Columns With Nulls"
+    name = "Number of Columns with NA values"
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.has_condition():
+            return self.condition
+
+        reference_stats = self.data_integrity_metric.get_result().reference_stats
+
+        if reference_stats is not None:
+            return TestValueCondition(eq=reference_stats.number_of_columns_with_nans)
+
+        return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
         return self.data_integrity_metric.get_result().current_stats.number_of_columns_with_nans
 
     def get_description(self, value: Numeric) -> str:
-        return f"Number of columns with NANs is {value}"
+        return f"The number of columns with NA values is {value}. The test threshold is {self.get_condition()}."
 
 
 @default_renderer(test_type=TestNumberOfColumnsWithNANs)
