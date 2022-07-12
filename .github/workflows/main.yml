@@ -73,6 +73,8 @@ jobs:
           cache: 'pip'
       - name: Install dependencies
         run: pip install -r requirements.txt
+      - name: Install wheel
+        run: pip install wheel
       - name: Build package
         run: python setup.py sdist bdist_wheel
       - name: Archive built package
