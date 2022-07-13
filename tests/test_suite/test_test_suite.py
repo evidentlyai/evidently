@@ -91,6 +91,8 @@ def test_export_to_json():
         TestColumnValueRegexp(column_name="cat_feature_2", reg_exp=r"[n|y|n//a]"),
         TestConflictTarget(),
         TestConflictPrediction(),
+        TestAllConstantValues(column_name="num_feature_1"),
+        TestAllUniqueValues(column_name="num_feature_1"),
         TestFeatureValueMin(column_name="num_feature_1"),
         TestFeatureValueMax(column_name="num_feature_1"),
         TestFeatureValueMean(column_name="num_feature_1"),
@@ -148,7 +150,13 @@ def test_export_to_json():
     assert summary_result["all_passed"] is False
 
     assert "total_tests" in summary_result
-    assert summary_result["total_tests"] == 34
+    assert summary_result["total_tests"] == 36
+
+    assert "success_tests" in summary_result
+    assert summary_result["success_tests"] == 31
+
+    assert "failed_tests" in summary_result
+    assert summary_result["failed_tests"] == 5
 
     assert "by_status" in summary_result
-    assert summary_result["by_status"] == {"FAIL": 4, "SUCCESS": 30}
+    assert summary_result["by_status"] == {"FAIL": 5, "SUCCESS": 31}
