@@ -409,48 +409,26 @@ def test_data_integrity_test_columns_nan_share_json_render() -> None:
 
 def test_data_integrity_test_columns_all_constant_values() -> None:
     test_dataset = pd.DataFrame({"feature1": [1, 1, np.nan], "feature2": [1, 2, np.nan], "target": ["1", "1", "1"]})
-    suite = TestSuite(tests=[TestAllConstantValues(columns=[])])
+
+    suite = TestSuite(tests=[TestAllConstantValues(column_name="not_exists_feature")])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
 
-    suite = TestSuite(tests=[TestAllConstantValues(columns=["not_exists_feature", "feature1", "feature2", "target"])])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
-    assert not suite
-
-    suite = TestSuite(tests=[TestAllConstantValues(columns=["feature1"])])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
-    assert suite
-
-    suite = TestSuite(tests=[TestAllConstantValues(columns=["feature1", "feature2"])])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
-    assert not suite
-
-    suite = TestSuite(tests=[TestAllConstantValues(columns=["target"])])
+    suite = TestSuite(tests=[TestAllConstantValues(column_name="feature1")])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
 
 
-def test_data_integrity_test_columns_all_unique_values() -> None:
+def test_data_integrity_test_all_unique_values() -> None:
     test_dataset = pd.DataFrame(
         {"feature1": [1, 1, 2, 3], "feature2": [1, 2, np.nan, 4], "target": ["1", "2", "3", ""]}
     )
-    suite = TestSuite(tests=[TestAllUniqueValues(columns=[])])
+
+    suite = TestSuite(tests=[TestAllUniqueValues(column_name="not_exists_feature")])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
 
-    suite = TestSuite(tests=[TestAllUniqueValues(columns=["not_exists_feature", "feature1", "feature2", "target"])])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
-    assert not suite
-
-    suite = TestSuite(tests=[TestAllUniqueValues(columns=["feature2"])])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
-    assert suite
-
-    suite = TestSuite(tests=[TestAllUniqueValues(columns=["feature1", "feature2"])])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
-    assert not suite
-
-    suite = TestSuite(tests=[TestAllUniqueValues(columns=["target"])])
+    suite = TestSuite(tests=[TestAllUniqueValues(column_name="feature2")])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
 

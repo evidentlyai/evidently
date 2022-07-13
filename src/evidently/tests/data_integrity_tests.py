@@ -429,15 +429,15 @@ class TestColumnNANShareRenderer(TestRenderer):
         return base
 
 
-class BaseIntegrityByColumnsTest(Test, ABC):
+class BaseIntegrityOneColumnTest(Test, ABC):
     group = "data_integrity"
     data_integrity_metric: DataIntegrityMetrics
-    columns: Optional[List[str]]
+    column_name: str
 
     def __init__(
-        self, columns: Optional[List[str]] = None, data_integrity_metric: Optional[DataIntegrityMetrics] = None
+        self, column_name: str, data_integrity_metric: Optional[DataIntegrityMetrics] = None
     ):
-        self.columns = columns
+        self.column_name = column_name
 
         if data_integrity_metric is None:
             self.data_integrity_metric = DataIntegrityMetrics()
@@ -446,74 +446,63 @@ class BaseIntegrityByColumnsTest(Test, ABC):
             self.data_integrity_metric = data_integrity_metric
 
 
-class TestAllConstantValues(BaseIntegrityByColumnsTest):
+class TestAllConstantValues(BaseIntegrityOneColumnTest):
     """Test that there is only one unique value in a column"""
 
     name = "Test Column Has One Constant Value"
     data_integrity_metric: DataIntegrityMetrics
 
     def check(self):
-        description = "All tested columns have constant values"
-        status = TestResult.SUCCESS
-
         uniques_by_columns = self.data_integrity_metric.get_result().current_stats.number_uniques_by_columns
+        number_of_rows = self.data_integrity_metric.get_result().current_stats.number_of_rows
+        column_name = self.column_name
 
-        if not self.columns:
-            check_columns = uniques_by_columns.keys()
+        if column_name not in uniques_by_columns:
+            status = TestResult.ERROR
+            description = f"No column {column_name} in the metrics data"
 
         else:
-            check_columns = self.columns
+            uniques_in_column = uniques_by_columns[self.column_name]
 
-        for column_name in check_columns:
-            if column_name not in uniques_by_columns:
-                status = TestResult.ERROR
-                description = f"No column '{column_name}' in the metrics data"
-                break
+            description = f"The number of the unique values in {column_name} " \
+                          f"is {uniques_in_column} out of {number_of_rows}"
+
+            if uniques_in_column != 1:
+                status = TestResult.FAIL
 
             else:
-                uniques_by_column = uniques_by_columns[column_name]
-
-                if uniques_by_column != 1:
-                    status = TestResult.FAIL
-                    description = f"Column '{column_name}' has {uniques_by_column} unique values"
-                    break
+                status = TestResult.SUCCESS
 
         return TestResult(name=self.name, description=description, status=status)
 
 
-class TestAllUniqueValues(BaseIntegrityByColumnsTest):
+class TestAllUniqueValues(BaseIntegrityOneColumnTest):
     """Test that there is only uniques values in a column"""
 
     name = "Test Column Has Unique Values Only"
 
     def check(self):
-        description = "All tested columns have unique values"
-        status = TestResult.SUCCESS
-
         uniques_by_columns = self.data_integrity_metric.get_result().current_stats.number_uniques_by_columns
         number_of_rows = self.data_integrity_metric.get_result().current_stats.number_of_rows
         nans_by_columns = self.data_integrity_metric.get_result().current_stats.nans_by_columns
+        column_name = self.column_name
 
-        if not self.columns:
-            check_columns = uniques_by_columns.keys()
+        if column_name not in uniques_by_columns or column_name not in nans_by_columns:
+            status = TestResult.ERROR
+            description = f"No column {column_name} in the metrics data"
 
         else:
-            check_columns = self.columns
+            uniques_in_column = uniques_by_columns[column_name]
+            nans_in_column = nans_by_columns[column_name]
 
-        for column_name in check_columns:
-            if column_name not in uniques_by_columns or column_name not in nans_by_columns:
-                status = TestResult.ERROR
-                description = f"No column '{column_name}' in the metrics data"
-                break
+            description = f"The number of the unique values in {column_name} " \
+                          f"is {uniques_in_column}  out of {number_of_rows}"
+
+            if uniques_in_column != number_of_rows - nans_in_column:
+                status = TestResult.FAIL
 
             else:
-                uniques_in_column = uniques_by_columns[column_name]
-                nans_in_column = nans_by_columns[column_name]
-
-                if uniques_in_column != number_of_rows - nans_in_column:
-                    status = TestResult.FAIL
-                    description = f"Column '{column_name}' has {uniques_in_column} unique values"
-                    break
+                status = TestResult.SUCCESS
 
         return TestResult(name=self.name, description=description, status=status)
 
