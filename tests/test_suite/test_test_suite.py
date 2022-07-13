@@ -88,8 +88,6 @@ def test_export_to_json():
         TestNumberOfDuplicatedColumns(),
         TestColumnsType({"num_feature_1": int, "cat_feature_2": str}),
         TestColumnNANShare(column_name="num_feature_1", gt=5),
-        TestAllConstantValues(),
-        TestAllUniqueValues(),
         TestColumnValueRegexp(column_name="cat_feature_2", reg_exp=r"[n|y|n//a]"),
         TestConflictTarget(),
         TestConflictPrediction(),
@@ -150,7 +148,7 @@ def test_export_to_json():
     assert summary_result["all_passed"] is False
 
     assert "total_tests" in summary_result
-    assert summary_result["total_tests"] == 36
+    assert summary_result["total_tests"] == 34
 
     assert "by_status" in summary_result
-    assert summary_result["by_status"] == {"FAIL": 6, "SUCCESS": 30}
+    assert summary_result["by_status"] == {"FAIL": 4, "SUCCESS": 30}
