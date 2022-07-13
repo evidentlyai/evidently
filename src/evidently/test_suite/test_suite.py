@@ -154,15 +154,17 @@ class TestSuite:
             renderer = find_test_renderer(type(test), self._inner_suite.context.renderers)
             test_results.append(renderer.render_json(test))
 
+        total_tests = len(self._inner_suite.context.test_results)
+
         return {
             "version": evidently.__version__,
             "datetime": datetime.now().isoformat(),
             "tests": test_results,
             "summary": {
                 "all_passed": bool(self),
-                "total_tests": len(self._inner_suite.context.test_results),
-                "success_tests": len(self._inner_suite.context.test_results),
-                "failed_tests": len(self._inner_suite.context.test_results),
+                "total_tests": total_tests,
+                "success_tests": counter["SUCCESS"] + counter["WARNING"],
+                "failed_tests": counter["FAIL"],
                 "by_status": counter,
             },
             "columns_info": dataclasses.asdict(self._columns_info),
@@ -182,11 +184,13 @@ class TestSuite:
         test_results = []
         total_tests = len(self._inner_suite.context.test_results)
         by_status = {}
+
         for test, test_result in self._inner_suite.context.test_results.items():
             # renderer = find_test_renderer(type(test.obj), self._inner_suite.context.renderers)
             renderer = find_test_renderer(type(test), self._inner_suite.context.renderers)
             by_status[test_result.status] = by_status.get(test_result.status, 0) + 1
             test_results.append(renderer.render_html(test))
+
         summary_widget = BaseWidgetInfo(
             title="",
             size=2,

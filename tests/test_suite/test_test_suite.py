@@ -152,5 +152,11 @@ def test_export_to_json():
     assert "total_tests" in summary_result
     assert summary_result["total_tests"] == 36
 
+    assert "success_tests" in summary_result
+    assert summary_result["success_tests"] == 30
+
+    assert "failed_tests" in summary_result
+    assert summary_result["failed_tests"] == 6
+
     assert "by_status" in summary_result
     assert summary_result["by_status"] == {"FAIL": 6, "SUCCESS": 30}
