@@ -22,7 +22,7 @@ def get_binned_data(reference: pd.Series, current: pd.Series, feature_type: str,
         current_percents = np.histogram(current, bins)[0] / len(current)
 
     else:
-        keys = list((reference.unique() | current.unique()) - {np.nan})
+        keys = list((set(reference.unique()) | set(current.unique())) - {np.nan})
 
         ref_feature_dict = {**dict.fromkeys(keys, 0), **dict(reference.value_counts())}
         current_feature_dict = {**dict.fromkeys(keys, 0), **dict(current.value_counts())}
