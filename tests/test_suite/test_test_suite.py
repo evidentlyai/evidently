@@ -88,11 +88,11 @@ def test_export_to_json():
         TestNumberOfDuplicatedColumns(),
         TestColumnsType({"num_feature_1": int, "cat_feature_2": str}),
         TestColumnNANShare(column_name="num_feature_1", gt=5),
-        TestAllConstantValues(),
-        TestAllUniqueValues(),
         TestColumnValueRegExp(column_name="cat_feature_2", reg_exp=r"[n|y|n//a]"),
         TestConflictTarget(),
         TestConflictPrediction(),
+        TestAllConstantValues(column_name="num_feature_1"),
+        TestAllUniqueValues(column_name="num_feature_1"),
         TestFeatureValueMin(column_name="num_feature_1"),
         TestFeatureValueMax(column_name="num_feature_1"),
         TestFeatureValueMean(column_name="num_feature_1"),
@@ -151,6 +151,12 @@ def test_export_to_json():
 
     assert "total_tests" in summary_result
     assert summary_result["total_tests"] == 36
+
+    assert "success_tests" in summary_result
+    assert summary_result["success_tests"] == 31
+
+    assert "failed_tests" in summary_result
+    assert summary_result["failed_tests"] == 5
 
     assert "by_status" in summary_result
     assert summary_result["by_status"] == {"FAIL": 10, "SUCCESS": 26}

@@ -6,16 +6,17 @@ def determine_template(mode: str):
     render_mode = mode
     try:
         from IPython import get_ipython
+        is_colab = type(get_ipython()).__module__.startswith("google.colab")
+    except ImportError:
+        is_colab = False
 
-        if mode == "auto":
-            if type(get_ipython()).__module__.startswith("google.colab"):
-                render_mode = "inline"
-            else:
-                render_mode = "nbextension"
-        if render_mode == "inline":
-            return file_html_template
-        if render_mode == "nbextension":
-            return inline_template
-        raise ValueError(f"Unexpected value {mode}/{render_mode} for mode")
-    except ImportError as err:
-        raise Exception("Cannot import HTML from IPython.display, no way to show html") from err
+    if mode == "auto":
+        if is_colab:
+            render_mode = "inline"
+        else:
+            render_mode = "nbextension"
+    if render_mode == "inline":
+        return file_html_template
+    if render_mode == "nbextension":
+        return inline_template
+    raise ValueError(f"Unexpected value {mode}/{render_mode} for mode")
