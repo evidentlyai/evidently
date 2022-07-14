@@ -144,13 +144,27 @@ class BaseDataQualityCorrelationsMetricsValueTest(BaseCheckValueTest, ABC):
 
 
 class TestTargetPredictionCorrelation(BaseDataQualityCorrelationsMetricsValueTest):
-    name = "Test correlation between target and prediction"
+    name = "Correlation between Target and Prediction"
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.has_condition():
+            return self.condition
+
+        reference_correlation = self.metric.get_result().reference_correlation
+        if reference_correlation is not None and reference_correlation.target_prediction_correlation is not None:
+            value = reference_correlation.target_prediction_correlation
+            return TestValueCondition(eq=approx(value, absolute=0.25))
+
+        return TestValueCondition(gt=0)
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
         return self.metric.get_result().current_correlation.target_prediction_correlation
 
     def get_description(self, value: Numeric) -> str:
-        return f"Correlation between target and prediction is {value}"
+        return (
+            f"The correlation between the target and prediction is {value:.3}. "
+            f"The test threshold is {self.get_condition()}."
+        )
 
 
 class TestHighlyCorrelatedFeatures(BaseDataQualityCorrelationsMetricsValueTest):
@@ -280,14 +294,151 @@ class TestTargetFeaturesCorrelationsRenderer(TestRenderer):
         return info
 
 
-class CorrelationChanges(BaseDataQualityCorrelationsMetricsValueTest):
-    name = "Test max correlation between numerical features and target, prediction for regression tasks"
+class TestPredictionFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValueTest):
+    name = "Correlation between Prediction and Features"
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.has_condition():
+            return self.condition
+
+        reference_correlation = self.metric.get_result().reference_correlation
+
+        if reference_correlation is not None and reference_correlation.abs_max_prediction_features_correlation is not None:
+            value = reference_correlation.abs_max_prediction_features_correlation
+            return TestValueCondition(eq=approx(value, relative=0.1))
+
+        return TestValueCondition(lt=0.9)
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
-        return self.metric.get_result().current_correlation.abs_max_num_features_correlation
+        return self.metric.get_result().current_correlation.abs_max_prediction_features_correlation
 
     def get_description(self, value: Numeric) -> str:
-        return f"Max numeric features correlation is {value:.3g}"
+        if value is None:
+            return "No prediction in the current dataset"
+
+        else:
+            return f"The maximum correlation is {value:.3g}. The test threshold is {self.get_condition()}."
+
+
+@default_renderer(test_type=TestPredictionFeaturesCorrelations)
+class TestPredictionFeaturesCorrelationsRenderer(TestRenderer):
+    def render_json(self, obj: TestPredictionFeaturesCorrelations) -> dict:
+        base = super().render_json(obj)
+        base["parameters"]["condition"] = obj.get_condition().as_dict()
+
+        if obj.value is not None:
+            abs_max_prediction_features_correlation = np.round(obj.value, 3)
+
+        else:
+            abs_max_prediction_features_correlation = obj.value
+
+        base["parameters"]["abs_max_prediction_features_correlation"] = abs_max_prediction_features_correlation
+        return base
+
+    def render_html(self, obj: TestTargetFeaturesCorrelations) -> TestHtmlInfo:
+        info = super().render_html(obj)
+        current_correlations_matrix = obj.metric.get_result().current_correlation.correlation_matrix
+        reference_correlation = obj.metric.get_result().reference_correlation
+
+        if reference_correlation is not None:
+            reference_correlations_matrix = reference_correlation.correlation_matrix
+
+        else:
+            reference_correlations_matrix = None
+
+        fig = plot_correlations(current_correlations_matrix, reference_correlations_matrix)
+        fig_json = fig.to_plotly_json()
+        info.details.append(
+            DetailsInfo(
+                id="TestTargetFeaturesCorrelations",
+                title="",
+                info=BaseWidgetInfo(
+                    title="",
+                    size=2,
+                    type="big_graph",
+                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
+                ),
+            )
+        )
+        return info
+
+class TestCorrelationChanges(BaseDataQualityCorrelationsMetricsValueTest):
+    group = "data_quality"
+    name = "Change in Correlation"
+    metric: DataQualityCorrelationMetrics
+    change: float
+
+    def __init__(self,
+        corr_diff: float = 0.25,
+        method: str = "pearson",
+        eq: Optional[Numeric] = None,
+        gt: Optional[Numeric] = None,
+        gte: Optional[Numeric] = None,
+        is_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        lt: Optional[Numeric] = None,
+        lte: Optional[Numeric] = None,
+        not_eq: Optional[Numeric] = None,
+        not_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        metric: Optional[DataQualityCorrelationMetrics] = None,
+    ):
+        super().__init__(method=method,
+                         eq=eq,
+                         gt=gt,
+                         gte=gte,
+                         is_in=is_in,
+                         lt=lt,
+                         lte=lte,
+                         not_eq=not_eq,
+                         not_in=not_in,
+                         metric=metric)
+        self.corr_diff = corr_diff
+    
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.has_condition():
+            return self.condition
+
+        return TestValueCondition(eq=0)
+
+    def calculate_value_for_test(self) -> Optional[Numeric]:
+        reference_correlation = self.metric.get_result().reference_correlation
+        current_correlation = self.metric.get_result().current_correlation
+        if reference_correlation is None:
+            raise ValueError("Reference should be present")
+        diff = reference_correlation.correlation_matrix - current_correlation.correlation_matrix
+        return (diff.abs() > self.corr_diff).sum().sum() / 2
+
+    def get_description(self, value: Numeric) -> str:
+        return f"Number of correlation violations is {value:.3g}. The test threshold is {self.get_condition()}."
+
+
+@default_renderer(test_type=TestCorrelationChanges)
+class TestCorrelationChangesRenderer(TestRenderer):
+    def render_html(self, obj: TestCorrelationChanges) -> TestHtmlInfo:
+        info = super().render_html(obj)
+        current_correlations_matrix = obj.metric.get_result().current_correlation.correlation_matrix
+        reference_correlation = obj.metric.get_result().reference_correlation
+
+        if reference_correlation is not None:
+            reference_correlations_matrix = reference_correlation.correlation_matrix
+
+        else:
+            reference_correlations_matrix = None
+
+        fig = plot_correlations(current_correlations_matrix, reference_correlations_matrix)
+        fig_json = fig.to_plotly_json()
+        info.details.append(
+            DetailsInfo(
+                id="TestTargetFeaturesCorrelations",
+                title="",
+                info=BaseWidgetInfo(
+                    title="",
+                    size=2,
+                    type="big_graph",
+                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
+                ),
+            )
+        )
+        return info
 
 
 class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest, ABC):
@@ -339,7 +490,7 @@ class TestFeatureValueMin(BaseFeatureDataQualityMetricsTest):
 
         if ref_features_stats is not None:
             return TestValueCondition(gte=ref_features_stats.get_all_features()[self.column_name].min)
-        raise ValueError("Conditions should be specified")
+        raise ValueError("Neither required test parameters nor reference data has been provided.")
 
     def calculate_value_for_test(self) -> Optional[Union[Numeric, bool, str]]:
         features_stats = self.metric.get_result().features_stats.get_all_features()
@@ -390,7 +541,7 @@ class TestFeatureValueMax(BaseFeatureDataQualityMetricsTest):
         ref_features_stats = self.metric.get_result().reference_features_stats
         if ref_features_stats is not None:
             return TestValueCondition(lte=ref_features_stats.get_all_features()[self.column_name].max)
-        raise ValueError("Conditions should be specified")
+        raise ValueError("Neither required test parameters nor reference data has been provided.")
 
     def calculate_value_for_test(self) -> Optional[Union[Numeric, bool, str]]:
         features_stats = self.metric.get_result().features_stats.get_all_features()
@@ -442,7 +593,7 @@ class TestFeatureValueMean(BaseFeatureDataQualityMetricsTest):
         ref_features_stats = self.metric.get_result().reference_features_stats
         if ref_features_stats is not None:
             return TestValueCondition(eq=approx(ref_features_stats.get_all_features()[self.column_name].mean, 0.1))
-        raise ValueError("Conditions should be specified")
+        raise ValueError("Neither required test parameters nor reference data has been provided.")
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
         features_stats = self.metric.get_result().features_stats.get_all_features()
@@ -495,7 +646,7 @@ class TestFeatureValueMedian(BaseFeatureDataQualityMetricsTest):
             return TestValueCondition(
                 eq=approx(ref_features_stats.get_all_features()[self.column_name].percentile_50, 0.1)
             )
-        raise ValueError("Conditions should be specified")
+        raise ValueError("Neither required test parameters nor reference data has been provided.")
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
         features_stats = self.metric.get_result().features_stats.get_all_features()
@@ -548,7 +699,7 @@ class TestFeatureValueStd(BaseFeatureDataQualityMetricsTest):
         ref_features_stats = self.metric.get_result().reference_features_stats
         if ref_features_stats is not None:
             return TestValueCondition(eq=approx(ref_features_stats.get_all_features()[self.column_name].std, 0.1))
-        raise ValueError("Conditions should be specified")
+        raise ValueError("Neither required test parameters nor reference data has been provided.")
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
         features_stats = self.metric.get_result().features_stats.get_all_features()
@@ -589,14 +740,27 @@ class TestFeatureValueStdRenderer(TestRenderer):
 
 
 class TestNumberOfUniqueValues(BaseFeatureDataQualityMetricsTest):
-    name = "Test a feature for number of unique values"
+    name = "Number of Unique Values"
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.has_condition():
+            return self.condition
+
+        if self.metric.get_result().reference_features_stats is not None:
+            ref_features_stats = self.metric.get_result().features_stats.get_all_features()
+            unique_count = ref_features_stats[self.column_name].unique_count
+            return TestValueCondition(eq=approx(unique_count, relative=0.1))
+        return TestValueCondition(gt=1)
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
         features_stats = self.metric.get_result().features_stats.get_all_features()
         return features_stats[self.column_name].unique_count
 
     def get_description(self, value: Numeric) -> str:
-        return f"Numeric of unique values for feature '{self.column_name}' is {value}"
+        return (
+            f"The number of the unique values in the column {self.column_name} is {value}. "
+            f"The test threshold is {self.get_condition()}."
+        )
 
 
 @default_renderer(test_type=TestNumberOfUniqueValues)
@@ -614,7 +778,20 @@ class TestNumberOfUniqueValuesRenderer(TestRenderer):
 
 
 class TestUniqueValuesShare(BaseFeatureDataQualityMetricsTest):
-    name = "Test a feature for share of unique values"
+    name = "Share of Unique Values"
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.has_condition():
+            return self.condition
+
+        if self.metric.get_result().reference_features_stats is not None:
+            ref_features_stats = self.metric.get_result().features_stats.get_all_features()
+            unique_percentage = ref_features_stats[self.column_name].unique_percentage
+
+            if unique_percentage is not None:
+                return TestValueCondition(eq=approx(unique_percentage / 100.0, relative=0.1))
+
+        raise ValueError("Neither required test parameters nor reference data has been provided.")
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
         features_stats = self.metric.get_result().features_stats.get_all_features()
@@ -626,7 +803,10 @@ class TestUniqueValuesShare(BaseFeatureDataQualityMetricsTest):
         return unique_percentage / 100.0
 
     def get_description(self, value: Numeric) -> str:
-        return f"Share of unique values for feature '{self.column_name}' is {value}"
+        return (
+            f"The share of the unique values in the column {self.column_name} is {value:.3}. "
+            f"The test threshold is {self.get_condition()}."
+        )
 
 
 @default_renderer(test_type=TestUniqueValuesShare)
@@ -1228,7 +1408,7 @@ class TestValueQuantile(BaseCheckValueTest):
         ref_value = self.metric.get_result().ref_value
         if ref_value is not None:
             return TestValueCondition(eq=approx(ref_value, 0.1))
-        raise ValueError("Conditions should be specified")
+        raise ValueError("Neither required test parameters nor reference data has been provided.")
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().value

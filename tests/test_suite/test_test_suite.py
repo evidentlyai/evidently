@@ -22,7 +22,7 @@ from evidently.tests import TestColumnsType
 from evidently.tests import TestColumnNANShare
 from evidently.tests import TestAllConstantValues
 from evidently.tests import TestAllUniqueValues
-from evidently.tests import TestColumnValueRegexp
+from evidently.tests import TestColumnValueRegExp
 from evidently.tests import TestConflictTarget
 from evidently.tests import TestConflictPrediction
 from evidently.tests import TestFeatureValueMin
@@ -90,7 +90,7 @@ def test_export_to_json():
         TestColumnNANShare(column_name="num_feature_1", gt=5),
         TestAllConstantValues(),
         TestAllUniqueValues(),
-        TestColumnValueRegexp(column_name="cat_feature_2", reg_exp=r"[n|y|n//a]"),
+        TestColumnValueRegExp(column_name="cat_feature_2", reg_exp=r"[n|y|n//a]"),
         TestConflictTarget(),
         TestConflictPrediction(),
         TestFeatureValueMin(column_name="num_feature_1"),
@@ -153,4 +153,4 @@ def test_export_to_json():
     assert summary_result["total_tests"] == 36
 
     assert "by_status" in summary_result
-    assert summary_result["by_status"] == {"FAIL": 9, "SUCCESS": 27}
+    assert summary_result["by_status"] == {"FAIL": 10, "SUCCESS": 26}

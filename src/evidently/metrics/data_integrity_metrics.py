@@ -106,32 +106,30 @@ class DataIntegrityMetrics(Metric[DataIntegrityMetricsResults]):
 @dataclass
 class DataIntegrityValueByRegexpMetricResult:
     # mapping column_name: matched_count
-    matched_values: Dict[str, int]
+    not_matched_values: Dict[str, int]
+    mult: Optional[float] = None
 
 
 class DataIntegrityValueByRegexpMetrics(Metric[DataIntegrityValueByRegexpMetricResult]):
-    """Count number of values in a column or in columns matched a regexp"""
+    """Count number of values in a column not matched a regexp"""
 
-    column_name: List[str]
+    column_name: str
 
-    def __init__(self, column_name: Union[str, List[str]], reg_exp: str):
+    def __init__(self, column_name: str, reg_exp: str):
         self.reg_exp = reg_exp
-
-        if isinstance(column_name, str):
-            column_name = [column_name]
 
         self.column_name = column_name
         self.reg_exp_compiled = re.compile(reg_exp)
 
-    def _calculate_matched_for_dataset(self, dataset: pd.DataFrame) -> Dict[str, int]:
-        matched_values = {}
-
-        for column_name in self.column_name:
-            n = dataset[column_name].apply(lambda x: bool(self.reg_exp_compiled.match(str(x)))).sum()
-            matched_values[column_name] = n
-
-        return matched_values
-
     def calculate(self, data: InputData, metrics: dict) -> DataIntegrityValueByRegexpMetricResult:
-        matched_values = self._calculate_matched_for_dataset(data.current_data)
-        return DataIntegrityValueByRegexpMetricResult(matched_values=matched_values)
+        mult = None
+        not_matched_values = {}
+        n = data.current_data[self.column_name].apply(lambda x: bool(self.reg_exp_compiled.match(str(x)))).sum()
+        not_matched_values['current'] = data.current_data[self.column_name].dropna().shape[0] - n
+
+        if data.reference_data is not None:
+            n = data.reference_data[self.column_name].apply(lambda x: bool(self.reg_exp_compiled.match(str(x)))).sum()
+            not_matched_values['reference'] = data.reference_data[self.column_name].dropna().shape[0] - n
+            mult = data.current_data.shape[0] / data.reference_data.shape[0]
+
+        return DataIntegrityValueByRegexpMetricResult(not_matched_values=not_matched_values, mult=mult)

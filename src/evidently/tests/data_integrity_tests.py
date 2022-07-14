@@ -217,13 +217,28 @@ class TestNumberOfColumnsWithNANsRenderer(TestRenderer):
 class TestNumberOfRowsWithNANs(BaseIntegrityValueTest):
     """Number of rows contained at least one NAN value"""
 
-    name = "Test Number Of Rows With NANs"
+    name = "Number of Rows with NA Values"
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.has_condition():
+            return self.condition
+
+        reference_stats = self.data_integrity_metric.get_result().reference_stats
+
+        if reference_stats is not None:
+            ref_number_of_rows_with_nans = reference_stats.number_of_rows_with_nans
+            curr_number_of_rows = self.data_integrity_metric.get_result().current_stats.number_of_rows
+            ref_number_of_rows = reference_stats.number_of_rows
+            mult = curr_number_of_rows / ref_number_of_rows
+            return TestValueCondition(eq=approx(ref_number_of_rows_with_nans * mult, 0.1))
+
+        return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
         return self.data_integrity_metric.get_result().current_stats.number_of_rows_with_nans
 
     def get_description(self, value: Numeric) -> str:
-        return f"Number of rows with NANs is {value}"
+        return f"The number of rows with NA values is {value}. The test threshold is {self.get_condition()}."
 
 
 class TestNumberOfConstantColumns(BaseIntegrityValueTest):
@@ -277,25 +292,51 @@ class TestNumberOfConstantColumnsRenderer(TestRenderer):
 class TestNumberOfEmptyRows(BaseIntegrityValueTest):
     """Number of rows contained all NAN values"""
 
-    name = "Test Number Of Empty Rows"
+    name = "Number of Empty Rows"
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.has_condition():
+            return self.condition
+
+        reference_stats = self.data_integrity_metric.get_result().reference_stats
+
+        if reference_stats is not None:
+            ref_number_of_empty_rows = reference_stats.number_of_empty_rows
+            curr_number_of_rows = self.data_integrity_metric.get_result().current_stats.number_of_rows
+            ref_number_of_rows = reference_stats.number_of_rows
+            mult = curr_number_of_rows / ref_number_of_rows
+            return TestValueCondition(eq=approx(ref_number_of_empty_rows * mult, 0.1))
+
+        return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
         return self.data_integrity_metric.get_result().current_stats.number_of_empty_rows
 
     def get_description(self, value: Numeric) -> str:
-        return f"Number of empty rows: {value}"
+        return f"Number of Empty Rows is {value}. Test Threshold is {self.get_condition()}."
 
 
 class TestNumberOfEmptyColumns(BaseIntegrityValueTest):
     """Number of columns contained all NAN values"""
 
-    name = "Test Number Of Empty Columns"
+    name = "Number of Empty Columns"
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.has_condition():
+            return self.condition
+
+        reference_stats = self.data_integrity_metric.get_result().reference_stats
+
+        if reference_stats is not None:
+            return TestValueCondition(lte=reference_stats.number_of_empty_columns)
+
+        return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
         return self.data_integrity_metric.get_result().current_stats.number_of_empty_columns
 
     def get_description(self, value: Numeric) -> str:
-        return f"Number of empty columns: {value}"
+        return f"Number of Empty Columns is {value} Test Threshold is {self.get_condition()}."
 
 
 @default_renderer(test_type=TestNumberOfEmptyColumns)
@@ -654,14 +695,14 @@ class TestNumberOfDriftedFeaturesRenderer(TestRenderer):
         return info
 
 
-class TestColumnValueRegexp(BaseConditionsTest):
+class TestColumnValueRegExp(BaseCheckValueTest, ABC):
     group = "data_integrity"
-    name = "Test count number of values in a column or in columns matched a regexp"
+    name = "RegExp Match"
     metric: DataIntegrityValueByRegexpMetrics
 
     def __init__(
         self,
-        column_name: Optional[Union[str, List[str]]] = None,
+        column_name: Optional[str] = None,
         reg_exp: Optional[str] = None,
         eq: Optional[Numeric] = None,
         gt: Optional[Numeric] = None,
@@ -689,16 +730,21 @@ class TestColumnValueRegexp(BaseConditionsTest):
 
         else:
             self.metric = metric
+    
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.has_condition():
+            return self.condition
 
-    def check(self):
-        status = TestResult.SUCCESS
-        description = "All match numbers are in conditions"
-        matched_values = self.metric.get_result().matched_values
+        if 'reference' in self.metric.get_result().not_matched_values.keys():
+            ref_value = self.metric.get_result().not_matched_values['reference']
+            mult = self.metric.get_result().mult
+            return TestValueCondition(eq=approx(ref_value * mult, relative=0.1))
 
-        for column_name, matched_number in matched_values.items():
-            if not self.condition.check_value(matched_number):
-                status = TestResult.FAIL
-                description = f"Count of matched values for column {column_name} is {matched_number}"
-                break
+        return TestValueCondition(eq=0)
 
-        return TestResult(name=self.name, description=description, status=status)
+    def calculate_value_for_test(self) -> Optional[Numeric]:
+        return self.metric.get_result().not_matched_values['current']
+
+    def get_description(self, value: Numeric) -> str:
+        return f"The number of the mismatched values is {value}. The test threshold is {self.get_condition()}."
+
