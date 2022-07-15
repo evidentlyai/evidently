@@ -21,6 +21,7 @@ from evidently.tests.base_test import Test
 from evidently.tests.base_test import TestResult
 from evidently.tests.base_test import TestValueCondition
 from evidently.tests.utils import plot_dicts_to_table
+from evidently.tests.utils import plot_value_counts_tables_ref_curr
 from evidently.tests.utils import approx
 from evidently.tests.utils import Numeric
 
@@ -479,7 +480,7 @@ class TestColumnNANShare(BaseIntegrityByColumnsConditionTest):
 
     def get_description(self, value: Numeric) -> str:
         return (
-            f"The share of NA values in {self.column_name} is {value:.3g}."
+            f"The share of NA values in the column {self.column_name} is {value:.3g}."
             f" The test threshold is {self.get_condition()}."
         )
 
@@ -512,10 +513,10 @@ class BaseIntegrityOneColumnTest(Test, ABC):
             self.data_integrity_metric = data_integrity_metric
 
 
-class TestAllConstantValues(BaseIntegrityOneColumnTest):
+class TestColumnAllConstantValues(BaseIntegrityOneColumnTest):
     """Test that there is only one unique value in a column"""
 
-    name = "Test Column Has One Constant Value"
+    name = "All Constant Values in a Column"
     data_integrity_metric: DataIntegrityMetrics
 
     def check(self):
@@ -530,10 +531,10 @@ class TestAllConstantValues(BaseIntegrityOneColumnTest):
         else:
             uniques_in_column = uniques_by_columns[self.column_name]
 
-            description = f"The number of the unique values in {column_name} " \
+            description = f"The number of the unique values in the column {column_name} " \
                           f"is {uniques_in_column} out of {number_of_rows}"
 
-            if uniques_in_column != 1:
+            if uniques_in_column <= 1:
                 status = TestResult.FAIL
 
             else:
@@ -542,10 +543,25 @@ class TestAllConstantValues(BaseIntegrityOneColumnTest):
         return TestResult(name=self.name, description=description, status=status)
 
 
-class TestAllUniqueValues(BaseIntegrityOneColumnTest):
+@default_renderer(test_type=TestColumnAllConstantValues)
+class TestColumnAllConstantValuesRenderer(TestRenderer):
+    def render_html(self, obj: TestColumnAllConstantValues) -> TestHtmlInfo:
+        info = super().render_html(obj)
+        column_name = obj.column_name
+        curr_df = obj.data_integrity_metric.get_result().current_stats.counts_of_values[column_name]
+        ref_df = None
+        reference_stats = obj.data_integrity_metric.get_result().reference_stats
+        if reference_stats is not None:
+            ref_df = reference_stats.counts_of_values[column_name]
+        additional_plots = plot_value_counts_tables_ref_curr(column_name, curr_df, ref_df, "AllConstantValues")
+        info.details = additional_plots
+        return info
+
+
+class TestColumnAllUniqueValues(BaseIntegrityOneColumnTest):
     """Test that there is only uniques values in a column"""
 
-    name = "Test Column Has Unique Values Only"
+    name = "All Unique Values in a Column"
 
     def check(self):
         uniques_by_columns = self.data_integrity_metric.get_result().current_stats.number_uniques_by_columns
@@ -561,7 +577,7 @@ class TestAllUniqueValues(BaseIntegrityOneColumnTest):
             uniques_in_column = uniques_by_columns[column_name]
             nans_in_column = nans_by_columns[column_name]
 
-            description = f"The number of the unique values in {column_name} " \
+            description = f"The number of the unique values in the column {column_name} " \
                           f"is {uniques_in_column}  out of {number_of_rows}"
 
             if uniques_in_column != number_of_rows - nans_in_column:
@@ -571,6 +587,21 @@ class TestAllUniqueValues(BaseIntegrityOneColumnTest):
                 status = TestResult.SUCCESS
 
         return TestResult(name=self.name, description=description, status=status)
+
+
+@default_renderer(test_type=TestColumnAllUniqueValues)
+class TestColumnAllUniqueValuesRenderer(TestRenderer):
+    def render_html(self, obj: TestColumnAllUniqueValues) -> TestHtmlInfo:
+        info = super().render_html(obj)
+        column_name = obj.column_name
+        curr_df = obj.data_integrity_metric.get_result().current_stats.counts_of_values[column_name]
+        ref_df = None
+        reference_stats = obj.data_integrity_metric.get_result().reference_stats
+        if reference_stats is not None:
+            ref_df = reference_stats.counts_of_values[column_name]
+        additional_plots = plot_value_counts_tables_ref_curr(column_name, curr_df, ref_df, "AllUniqueValues")
+        info.details = additional_plots
+        return info
 
 
 class TestColumnsType(Test):
@@ -688,6 +719,7 @@ class TestColumnValueRegExp(BaseCheckValueTest, ABC):
     group = "data_integrity"
     name = "RegExp Match"
     metric: DataIntegrityValueByRegexpMetrics
+    column_name: Optional[str]
 
     def __init__(
         self,
@@ -704,6 +736,7 @@ class TestColumnValueRegExp(BaseCheckValueTest, ABC):
         metric: Optional[DataIntegrityValueByRegexpMetrics] = None,
     ):
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
+        self.column_name = column_name
 
         if (column_name is None or reg_exp is None) and metric is None:
             raise ValueError("Not enough parameters for the test")
@@ -719,7 +752,7 @@ class TestColumnValueRegExp(BaseCheckValueTest, ABC):
 
         else:
             self.metric = metric
-    
+
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
             return self.condition
@@ -727,7 +760,8 @@ class TestColumnValueRegExp(BaseCheckValueTest, ABC):
         if 'reference' in self.metric.get_result().not_matched_values.keys():
             ref_value = self.metric.get_result().not_matched_values['reference']
             mult = self.metric.get_result().mult
-            return TestValueCondition(eq=approx(ref_value * mult, relative=0.1))
+            if mult is not None:
+                return TestValueCondition(eq=approx(ref_value * mult, relative=0.1))
 
         return TestValueCondition(eq=0)
 
@@ -735,5 +769,21 @@ class TestColumnValueRegExp(BaseCheckValueTest, ABC):
         return self.metric.get_result().not_matched_values['current']
 
     def get_description(self, value: Numeric) -> str:
-        return f"The number of the mismatched values is {value}. The test threshold is {self.get_condition()}."
+        return (
+            f"The number of the mismatched values in the column {self.column_name} is {value}. "
+            f"The test threshold is {self.get_condition()}."
+        )
 
+
+@default_renderer(test_type=TestColumnValueRegExp)
+class TestColumnValueRegExpRenderer(TestRenderer):
+    def render_html(self, obj: TestColumnValueRegExp) -> TestHtmlInfo:
+        info = super().render_html(obj)
+        column_name = obj.column_name
+        curr_df = obj.metric.get_result().not_matched_table['current']
+        ref_df = None
+        if 'reference' in obj.metric.get_result().not_matched_table.keys():
+            ref_df = obj.metric.get_result().not_matched_table['reference']
+        additional_plots = plot_value_counts_tables_ref_curr(column_name, curr_df, ref_df, f"{column_name}_ColumnValueRegExp")
+        info.details = additional_plots
+        return info

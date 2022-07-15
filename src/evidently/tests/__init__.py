@@ -13,8 +13,8 @@ from .data_integrity_tests import TestNumberOfDuplicatedRows
 from .data_integrity_tests import TestNumberOfDuplicatedColumns
 from .data_integrity_tests import TestColumnsType
 from .data_integrity_tests import TestColumnNANShare
-from .data_integrity_tests import TestAllConstantValues
-from .data_integrity_tests import TestAllUniqueValues
+from .data_integrity_tests import TestColumnAllConstantValues
+from .data_integrity_tests import TestColumnAllUniqueValues
 from .data_integrity_tests import TestColumnValueRegExp
 from .data_quality_tests import TestConflictTarget
 from .data_quality_tests import TestConflictPrediction

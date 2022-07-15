@@ -20,8 +20,8 @@ from evidently.tests import TestNumberOfDuplicatedRows
 from evidently.tests import TestNumberOfDuplicatedColumns
 from evidently.tests import TestColumnsType
 from evidently.tests import TestColumnNANShare
-from evidently.tests import TestAllConstantValues
-from evidently.tests import TestAllUniqueValues
+from evidently.tests import TestColumnAllConstantValues
+from evidently.tests import TestColumnAllUniqueValues
 from evidently.tests import TestColumnValueRegExp
 from evidently.tests import TestConflictTarget
 from evidently.tests import TestConflictPrediction
@@ -91,8 +91,8 @@ def test_export_to_json():
         TestColumnValueRegExp(column_name="cat_feature_2", reg_exp=r"[n|y|n//a]"),
         TestConflictTarget(),
         TestConflictPrediction(),
-        TestAllConstantValues(column_name="num_feature_1"),
-        TestAllUniqueValues(column_name="num_feature_1"),
+        TestColumnAllConstantValues(column_name="num_feature_1"),
+        TestColumnAllUniqueValues(column_name="num_feature_1"),
         TestFeatureValueMin(column_name="num_feature_1"),
         TestFeatureValueMax(column_name="num_feature_1"),
         TestFeatureValueMean(column_name="num_feature_1"),
@@ -153,10 +153,10 @@ def test_export_to_json():
     assert summary_result["total_tests"] == 36
 
     assert "success_tests" in summary_result
-    assert summary_result["success_tests"] == 31
+    assert summary_result["success_tests"] == 28
 
     assert "failed_tests" in summary_result
-    assert summary_result["failed_tests"] == 5
+    assert summary_result["failed_tests"] == 8
 
     assert "by_status" in summary_result
-    assert summary_result["by_status"] == {"FAIL": 10, "SUCCESS": 26}
+    assert summary_result["by_status"] == {"FAIL": 8, "SUCCESS": 28}

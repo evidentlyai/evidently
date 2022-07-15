@@ -362,13 +362,15 @@ class TestPredictionFeaturesCorrelationsRenderer(TestRenderer):
         )
         return info
 
+
 class TestCorrelationChanges(BaseDataQualityCorrelationsMetricsValueTest):
     group = "data_quality"
     name = "Change in Correlation"
     metric: DataQualityCorrelationMetrics
-    change: float
+    corr_diff: float
 
-    def __init__(self,
+    def __init__(
+        self,
         corr_diff: float = 0.25,
         method: str = "pearson",
         eq: Optional[Numeric] = None,
@@ -392,7 +394,7 @@ class TestCorrelationChanges(BaseDataQualityCorrelationsMetricsValueTest):
                          not_in=not_in,
                          metric=metric)
         self.corr_diff = corr_diff
-    
+
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
             return self.condition
@@ -746,8 +748,9 @@ class TestNumberOfUniqueValues(BaseFeatureDataQualityMetricsTest):
         if self.condition.has_condition():
             return self.condition
 
-        if self.metric.get_result().reference_features_stats is not None:
-            ref_features_stats = self.metric.get_result().features_stats.get_all_features()
+        reference_features_stats = self.metric.get_result().reference_features_stats
+        if reference_features_stats is not None:
+            ref_features_stats = reference_features_stats.get_all_features()
             unique_count = ref_features_stats[self.column_name].unique_count
             return TestValueCondition(eq=approx(unique_count, relative=0.1))
         return TestValueCondition(gt=1)
@@ -784,8 +787,9 @@ class TestUniqueValuesShare(BaseFeatureDataQualityMetricsTest):
         if self.condition.has_condition():
             return self.condition
 
-        if self.metric.get_result().reference_features_stats is not None:
-            ref_features_stats = self.metric.get_result().features_stats.get_all_features()
+        reference_features_stats = self.metric.get_result().reference_features_stats
+        if reference_features_stats is not None:
+            ref_features_stats = reference_features_stats.get_all_features()
             unique_percentage = ref_features_stats[self.column_name].unique_percentage
 
             if unique_percentage is not None:
@@ -830,8 +834,9 @@ class TestMostCommonValueShare(BaseFeatureDataQualityMetricsTest):
         if self.condition.has_condition():
             return self.condition
 
-        if self.metric.get_result().reference_features_stats is not None:
-            ref_features_stats = self.metric.get_result().features_stats.get_all_features()
+        reference_features_stats = self.metric.get_result().reference_features_stats
+        if reference_features_stats is not None:
+            ref_features_stats = reference_features_stats.get_all_features()
             most_common_value_percentage = ref_features_stats[self.column_name].most_common_value_percentage
 
             if most_common_value_percentage is not None:
@@ -923,8 +928,8 @@ class TestMeanInNSigmas(Test):
 
             if left_condition < current_mean < right_condition:
                 description = (
-                    f"Mean value of column {self.column_name} {current_mean:.3g} is "
-                    f"in range from {left_condition:.3g} to {right_condition:.3g}"
+                    f"The mean value of the column {self.column_name} is {current_mean:.3g}."
+                    f" The expected range is from {left_condition:.3g} to {right_condition:.3g}"
                 )
                 test_result = TestResult.SUCCESS
 
@@ -1034,7 +1039,7 @@ class TestValueRange(Test):
             )
             test_result = TestResult.FAIL
         else:
-            description = f"All values in column {self.column_name} are within range"
+            description = f"All values in the column {self.column_name} are within range"
             test_result = TestResult.SUCCESS
 
         return TestResult(name=self.name, description=description, status=test_result)

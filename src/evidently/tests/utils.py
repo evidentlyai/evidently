@@ -40,13 +40,12 @@ def plot_check(fig, condition):
 
     fig = go.Figure(fig)
     max_y = np.max([np.max(x["y"]) for x in fig.data])
-    min_y = np.min([np.min(x["y"]) for x in fig.data])
     if len(lines) > 0:
         for line, name in lines:
             fig.add_trace(
                 go.Scatter(
                     x=(line, line),
-                    y=(min_y, max_y),
+                    y=(0, max_y),
                     mode="lines",
                     line=dict(color=GREY, width=3, dash="dash"),
                     name=name,

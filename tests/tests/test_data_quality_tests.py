@@ -357,7 +357,7 @@ def test_data_quality_test_value_in_n_sigmas_json_render() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "Mean value of column feature1 0.5 is in range from -2.4 to 3.4",
+        "description": "The mean value of the column feature1 is 0.5. The expected range is from -2.4 to 3.4",
         "group": "data_quality",
         "name": "Mean Value Stability",
         "parameters": {
