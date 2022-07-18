@@ -31,22 +31,21 @@ def plot_check(fig, condition):
     if not pd.isnull(right_line):
         right_line_name = ["lt", "lte"][pd.Series([condition.lt, condition.lte]).argmin()]
         lines.append((right_line, right_line_name))
-    if condition.eq and not isinstance(condition.eq, ApproxValue):
+    if condition.eq is not None and not isinstance(condition.eq, ApproxValue):
         lines.append((condition.eq, "eq"))
-    if condition.eq and isinstance(condition.eq, ApproxValue):
+    if condition.eq is not None and isinstance(condition.eq, ApproxValue):
         lines.append((condition.eq.value, "approx"))
-    if condition.not_eq:
+    if condition.not_eq is not None:
         lines.append((condition.not_eq, "not_eq"))
 
     fig = go.Figure(fig)
     max_y = np.max([np.max(x["y"]) for x in fig.data])
-    min_y = np.min([np.min(x["y"]) for x in fig.data])
     if len(lines) > 0:
         for line, name in lines:
             fig.add_trace(
                 go.Scatter(
                     x=(line, line),
-                    y=(min_y, max_y),
+                    y=(0, max_y),
                     mode="lines",
                     line=dict(color=GREY, width=3, dash="dash"),
                     name=name,
@@ -56,7 +55,7 @@ def plot_check(fig, condition):
     if left_line and right_line:
         fig.add_vrect(x0=left_line, x1=right_line, fillcolor="green", opacity=0.25, line_width=0)
 
-    if condition.eq and isinstance(condition.eq, ApproxValue):
+    if condition.eq is not None and isinstance(condition.eq, ApproxValue):
         left_border = 0
         right_border = 0
 
@@ -341,10 +340,10 @@ def plot_dicts_to_table(
     dict_for_df[columns[0]] = keys
     dict_for_df[columns[1]] = [dict_curr.get(x, "NA") for x in keys]
 
-    if dict_ref is not None:
+    if dict_ref:
         dict_for_df[columns[2]] = [dict_ref.get(x, "NA") for x in keys]
     df = pd.DataFrame(dict_for_df)
-    if dict_ref is not None:
+    if dict_ref:
         if sort_by == "diff":
             df = df.astype(str)
             df["eq"] = (df[columns[1]] == df[columns[2]]).astype(int)

@@ -144,20 +144,34 @@ class BaseDataQualityCorrelationsMetricsValueTest(BaseCheckValueTest, ABC):
 
 
 class TestTargetPredictionCorrelation(BaseDataQualityCorrelationsMetricsValueTest):
-    name = "Test correlation between target and prediction"
+    name = "Correlation between Target and Prediction"
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.has_condition():
+            return self.condition
+
+        reference_correlation = self.metric.get_result().reference_correlation
+        if reference_correlation is not None and reference_correlation.target_prediction_correlation is not None:
+            value = reference_correlation.target_prediction_correlation
+            return TestValueCondition(eq=approx(value, absolute=0.25))
+
+        return TestValueCondition(gt=0)
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
         return self.metric.get_result().current_correlation.target_prediction_correlation
 
     def get_description(self, value: Numeric) -> str:
-        return f"Correlation between target and prediction is {value}"
+        return (
+            f"The correlation between the target and prediction is {value:.3}. "
+            f"The test threshold is {self.get_condition()}."
+        )
 
 
 class TestHighlyCorrelatedFeatures(BaseDataQualityCorrelationsMetricsValueTest):
     name = "Highly Correlated Features"
 
     def get_condition(self) -> TestValueCondition:
-        if self.condition.is_set():
+        if self.condition.has_condition():
             return self.condition
 
         reference_correlation = self.metric.get_result().reference_correlation
@@ -215,7 +229,7 @@ class TestTargetFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValueTest
     name = "Correlation between Target and Features"
 
     def get_condition(self) -> TestValueCondition:
-        if self.condition.is_set():
+        if self.condition.has_condition():
             return self.condition
 
         reference_correlation = self.metric.get_result().reference_correlation
@@ -280,14 +294,153 @@ class TestTargetFeaturesCorrelationsRenderer(TestRenderer):
         return info
 
 
-class CorrelationChanges(BaseDataQualityCorrelationsMetricsValueTest):
-    name = "Test max correlation between numerical features and target, prediction for regression tasks"
+class TestPredictionFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValueTest):
+    name = "Correlation between Prediction and Features"
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.has_condition():
+            return self.condition
+
+        reference_correlation = self.metric.get_result().reference_correlation
+
+        if reference_correlation is not None and reference_correlation.abs_max_prediction_features_correlation is not None:
+            value = reference_correlation.abs_max_prediction_features_correlation
+            return TestValueCondition(eq=approx(value, relative=0.1))
+
+        return TestValueCondition(lt=0.9)
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
-        return self.metric.get_result().current_correlation.abs_max_num_features_correlation
+        return self.metric.get_result().current_correlation.abs_max_prediction_features_correlation
 
     def get_description(self, value: Numeric) -> str:
-        return f"Max numeric features correlation is {value:.3g}"
+        if value is None:
+            return "No prediction in the current dataset"
+
+        else:
+            return f"The maximum correlation is {value:.3g}. The test threshold is {self.get_condition()}."
+
+
+@default_renderer(test_type=TestPredictionFeaturesCorrelations)
+class TestPredictionFeaturesCorrelationsRenderer(TestRenderer):
+    def render_json(self, obj: TestPredictionFeaturesCorrelations) -> dict:
+        base = super().render_json(obj)
+        base["parameters"]["condition"] = obj.get_condition().as_dict()
+
+        if obj.value is not None:
+            abs_max_prediction_features_correlation = np.round(obj.value, 3)
+
+        else:
+            abs_max_prediction_features_correlation = obj.value
+
+        base["parameters"]["abs_max_prediction_features_correlation"] = abs_max_prediction_features_correlation
+        return base
+
+    def render_html(self, obj: TestTargetFeaturesCorrelations) -> TestHtmlInfo:
+        info = super().render_html(obj)
+        current_correlations_matrix = obj.metric.get_result().current_correlation.correlation_matrix
+        reference_correlation = obj.metric.get_result().reference_correlation
+
+        if reference_correlation is not None:
+            reference_correlations_matrix = reference_correlation.correlation_matrix
+
+        else:
+            reference_correlations_matrix = None
+
+        fig = plot_correlations(current_correlations_matrix, reference_correlations_matrix)
+        fig_json = fig.to_plotly_json()
+        info.details.append(
+            DetailsInfo(
+                id="TestTargetFeaturesCorrelations",
+                title="",
+                info=BaseWidgetInfo(
+                    title="",
+                    size=2,
+                    type="big_graph",
+                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
+                ),
+            )
+        )
+        return info
+
+
+class TestCorrelationChanges(BaseDataQualityCorrelationsMetricsValueTest):
+    group = "data_quality"
+    name = "Change in Correlation"
+    metric: DataQualityCorrelationMetrics
+    corr_diff: float
+
+    def __init__(
+        self,
+        corr_diff: float = 0.25,
+        method: str = "pearson",
+        eq: Optional[Numeric] = None,
+        gt: Optional[Numeric] = None,
+        gte: Optional[Numeric] = None,
+        is_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        lt: Optional[Numeric] = None,
+        lte: Optional[Numeric] = None,
+        not_eq: Optional[Numeric] = None,
+        not_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        metric: Optional[DataQualityCorrelationMetrics] = None,
+    ):
+        super().__init__(method=method,
+                         eq=eq,
+                         gt=gt,
+                         gte=gte,
+                         is_in=is_in,
+                         lt=lt,
+                         lte=lte,
+                         not_eq=not_eq,
+                         not_in=not_in,
+                         metric=metric)
+        self.corr_diff = corr_diff
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.has_condition():
+            return self.condition
+
+        return TestValueCondition(eq=0)
+
+    def calculate_value_for_test(self) -> Optional[Numeric]:
+        reference_correlation = self.metric.get_result().reference_correlation
+        current_correlation = self.metric.get_result().current_correlation
+        if reference_correlation is None:
+            raise ValueError("Reference should be present")
+        diff = reference_correlation.correlation_matrix - current_correlation.correlation_matrix
+        return (diff.abs() > self.corr_diff).sum().sum() / 2
+
+    def get_description(self, value: Numeric) -> str:
+        return f"Number of correlation violations is {value:.3g}. The test threshold is {self.get_condition()}."
+
+
+@default_renderer(test_type=TestCorrelationChanges)
+class TestCorrelationChangesRenderer(TestRenderer):
+    def render_html(self, obj: TestCorrelationChanges) -> TestHtmlInfo:
+        info = super().render_html(obj)
+        current_correlations_matrix = obj.metric.get_result().current_correlation.correlation_matrix
+        reference_correlation = obj.metric.get_result().reference_correlation
+
+        if reference_correlation is not None:
+            reference_correlations_matrix = reference_correlation.correlation_matrix
+
+        else:
+            reference_correlations_matrix = None
+
+        fig = plot_correlations(current_correlations_matrix, reference_correlations_matrix)
+        fig_json = fig.to_plotly_json()
+        info.details.append(
+            DetailsInfo(
+                id="TestTargetFeaturesCorrelations",
+                title="",
+                info=BaseWidgetInfo(
+                    title="",
+                    size=2,
+                    type="big_graph",
+                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
+                ),
+            )
+        )
+        return info
 
 
 class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest, ABC):
@@ -316,43 +469,43 @@ class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest, ABC):
         features_stats = self.metric.get_result().features_stats.get_all_features()
 
         if self.column_name not in features_stats:
-            result.mark_as_fail()
-            result.description = f"Feature '{self.column_name}' was not found"
+            result.mark_as_fail(f"Feature '{self.column_name}' was not found")
             return result
 
-        value = self.calculate_value_for_test()
-        self.value = value
+        result = super().check()
 
-        if value is None:
+        if self.value is None:
             result.mark_as_error(f"No value for the feature '{self.column_name}'")
             return result
-
-        result.description = self.get_description(value)
-
-        try:
-            condition_check_result = self.get_condition().check_value(value)
-
-            if condition_check_result:
-                result.mark_as_success()
-
-            else:
-                result.mark_as_fail()
-
-        except ValueError:
-            result.mark_as_error("Cannot calculate the condition")
 
         return result
 
 
 class TestFeatureValueMin(BaseFeatureDataQualityMetricsTest):
-    name = "Test a feature min value"
+    name = "Min Value"
 
-    def calculate_value_for_test(self) -> Optional[Union[Numeric, bool, str]]:
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.has_condition():
+            return self.condition
+
+        ref_features_stats = self.metric.get_result().reference_features_stats
+
+        if ref_features_stats is not None:
+            min_value = ref_features_stats.get_all_features()[self.column_name].min
+            if isinstance(min_value, str):
+                raise ValueError(f"{self.column_name} should be numerical or bool")
+            return TestValueCondition(gte=min_value)
+        raise ValueError("Neither required test parameters nor reference data has been provided.")
+
+    def calculate_value_for_test(self) -> Optional[Union[Numeric, bool]]:
         features_stats = self.metric.get_result().features_stats.get_all_features()
-        return features_stats[self.column_name].min
+        min_value = features_stats[self.column_name].min
+        if isinstance(min_value, str):
+            raise ValueError(f"{self.column_name} should be numerical or bool")
+        return min_value
 
     def get_description(self, value: Numeric) -> str:
-        return f"Min value for feature '{self.column_name}' is {value}"
+        return f"The minimum value of the column {self.column_name} is {value} The test threshold is {self.get_condition()}."
 
 
 @default_renderer(test_type=TestFeatureValueMin)
@@ -365,7 +518,7 @@ class TestFeatureValueMinRenderer(TestRenderer):
         if "reference" in obj.metric.get_result().distr_for_plots[column_name].keys():
             ref_distr = obj.metric.get_result().distr_for_plots[column_name]["reference"]
         fig = plot_distr(curr_distr, ref_distr)
-        fig = plot_check(fig, obj.condition)
+        fig = plot_check(fig, obj.get_condition())
         min_value = obj.metric.get_result().features_stats[column_name].min
 
         if min_value is not None:
@@ -390,12 +543,26 @@ class TestFeatureValueMinRenderer(TestRenderer):
 class TestFeatureValueMax(BaseFeatureDataQualityMetricsTest):
     name = "Test a feature max value"
 
-    def calculate_value_for_test(self) -> Optional[Union[Numeric, bool, str]]:
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.has_condition():
+            return self.condition
+        ref_features_stats = self.metric.get_result().reference_features_stats
+        if ref_features_stats is not None:
+            max_value = ref_features_stats.get_all_features()[self.column_name].max
+            if isinstance(max_value, str):
+                raise ValueError(f"{self.column_name} should be numerical or bool")
+            return TestValueCondition(lte=max_value)
+        raise ValueError("Neither required test parameters nor reference data has been provided.")
+
+    def calculate_value_for_test(self) -> Optional[Union[Numeric, bool]]:
         features_stats = self.metric.get_result().features_stats.get_all_features()
-        return features_stats[self.column_name].max
+        max_value = features_stats[self.column_name].max
+        if isinstance(max_value, str):
+            raise ValueError(f"{self.column_name} should be numerical or bool")
+        return max_value
 
     def get_description(self, value: Numeric) -> str:
-        return f"Max value for feature '{self.column_name}' is {value}"
+        return f"The maximum value of the column {self.column_name} is {value}. The test threshold is {self.get_condition()}."
 
 
 @default_renderer(test_type=TestFeatureValueMax)
@@ -408,7 +575,7 @@ class TestFeatureValueMaxRenderer(TestRenderer):
         if "reference" in obj.metric.get_result().distr_for_plots[column_name].keys():
             ref_distr = obj.metric.get_result().distr_for_plots[column_name]["reference"]
         fig = plot_distr(curr_distr, ref_distr)
-        fig = plot_check(fig, obj.condition)
+        fig = plot_check(fig, obj.get_condition())
 
         max_value = obj.metric.get_result().features_stats[column_name].max
 
@@ -432,14 +599,22 @@ class TestFeatureValueMaxRenderer(TestRenderer):
 
 
 class TestFeatureValueMean(BaseFeatureDataQualityMetricsTest):
-    name = "Test a feature mean value"
+    name = "Mean Value"
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.has_condition():
+            return self.condition
+        ref_features_stats = self.metric.get_result().reference_features_stats
+        if ref_features_stats is not None:
+            return TestValueCondition(eq=approx(ref_features_stats.get_all_features()[self.column_name].mean, 0.1))
+        raise ValueError("Neither required test parameters nor reference data has been provided.")
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
         features_stats = self.metric.get_result().features_stats.get_all_features()
         return features_stats[self.column_name].mean
 
     def get_description(self, value: Numeric) -> str:
-        return f"Mean value for feature '{self.column_name}' is {value}"
+        return f"The mean value of the column {self.column_name} is {value:.3g}. The test threshold is {self.get_condition()}."
 
 
 @default_renderer(test_type=TestFeatureValueMean)
@@ -452,7 +627,7 @@ class TestFeatureValueMeanRenderer(TestRenderer):
         if "reference" in obj.metric.get_result().distr_for_plots[column_name].keys():
             ref_distr = obj.metric.get_result().distr_for_plots[column_name]["reference"]
         fig = plot_distr(curr_distr, ref_distr)
-        fig = plot_check(fig, obj.condition)
+        fig = plot_check(fig, obj.get_condition())
         mean_value = obj.metric.get_result().features_stats[column_name].mean
 
         if mean_value is not None:
@@ -475,14 +650,24 @@ class TestFeatureValueMeanRenderer(TestRenderer):
 
 
 class TestFeatureValueMedian(BaseFeatureDataQualityMetricsTest):
-    name = "Test a feature median value"
+    name = "Median Value"
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.has_condition():
+            return self.condition
+        ref_features_stats = self.metric.get_result().reference_features_stats
+        if ref_features_stats is not None:
+            return TestValueCondition(
+                eq=approx(ref_features_stats.get_all_features()[self.column_name].percentile_50, 0.1)
+            )
+        raise ValueError("Neither required test parameters nor reference data has been provided.")
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
         features_stats = self.metric.get_result().features_stats.get_all_features()
         return features_stats[self.column_name].percentile_50
 
     def get_description(self, value: Numeric) -> str:
-        return f"Median (50 percentile) value for feature '{self.column_name}' is {value}"
+        return f"The median value of the column {self.column_name} is {value:.3g}. The test threshold is {self.get_condition()}."
 
 
 @default_renderer(test_type=TestFeatureValueMedian)
@@ -497,7 +682,7 @@ class TestFeatureValueMedianRenderer(TestRenderer):
             ref_distr = obj.metric.get_result().distr_for_plots[column_name]["reference"]
 
         fig = plot_distr(curr_distr, ref_distr)
-        fig = plot_check(fig, obj.condition)
+        fig = plot_check(fig, obj.get_condition())
         percentile_50 = obj.metric.get_result().features_stats[column_name].percentile_50
 
         if percentile_50 is not None:
@@ -520,14 +705,25 @@ class TestFeatureValueMedianRenderer(TestRenderer):
 
 
 class TestFeatureValueStd(BaseFeatureDataQualityMetricsTest):
-    name = "Test a feature std value"
+    name = "Standard Deviation (SD)"
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.has_condition():
+            return self.condition
+        ref_features_stats = self.metric.get_result().reference_features_stats
+        if ref_features_stats is not None:
+            return TestValueCondition(eq=approx(ref_features_stats.get_all_features()[self.column_name].std, 0.1))
+        raise ValueError("Neither required test parameters nor reference data has been provided.")
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
         features_stats = self.metric.get_result().features_stats.get_all_features()
         return features_stats[self.column_name].std
 
     def get_description(self, value: Numeric) -> str:
-        return f"Std value for feature '{self.column_name}' is {value}"
+        return (
+            f"The standard deviation of the column {self.column_name} is {value:.3g}. "
+            f"The test threshold is {self.get_condition()}."
+        )
 
 
 @default_renderer(test_type=TestFeatureValueStd)
@@ -558,14 +754,28 @@ class TestFeatureValueStdRenderer(TestRenderer):
 
 
 class TestNumberOfUniqueValues(BaseFeatureDataQualityMetricsTest):
-    name = "Test a feature for number of unique values"
+    name = "Number of Unique Values"
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.has_condition():
+            return self.condition
+
+        reference_features_stats = self.metric.get_result().reference_features_stats
+        if reference_features_stats is not None:
+            ref_features_stats = reference_features_stats.get_all_features()
+            unique_count = ref_features_stats[self.column_name].unique_count
+            return TestValueCondition(eq=approx(unique_count, relative=0.1))
+        return TestValueCondition(gt=1)
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
         features_stats = self.metric.get_result().features_stats.get_all_features()
         return features_stats[self.column_name].unique_count
 
     def get_description(self, value: Numeric) -> str:
-        return f"Numeric of unique values for feature '{self.column_name}' is {value}"
+        return (
+            f"The number of the unique values in the column {self.column_name} is {value}. "
+            f"The test threshold is {self.get_condition()}."
+        )
 
 
 @default_renderer(test_type=TestNumberOfUniqueValues)
@@ -583,7 +793,21 @@ class TestNumberOfUniqueValuesRenderer(TestRenderer):
 
 
 class TestUniqueValuesShare(BaseFeatureDataQualityMetricsTest):
-    name = "Test a feature for share of unique values"
+    name = "Share of Unique Values"
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.has_condition():
+            return self.condition
+
+        reference_features_stats = self.metric.get_result().reference_features_stats
+        if reference_features_stats is not None:
+            ref_features_stats = reference_features_stats.get_all_features()
+            unique_percentage = ref_features_stats[self.column_name].unique_percentage
+
+            if unique_percentage is not None:
+                return TestValueCondition(eq=approx(unique_percentage / 100.0, relative=0.1))
+
+        raise ValueError("Neither required test parameters nor reference data has been provided.")
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
         features_stats = self.metric.get_result().features_stats.get_all_features()
@@ -592,11 +816,13 @@ class TestUniqueValuesShare(BaseFeatureDataQualityMetricsTest):
         if unique_percentage is None:
             return None
 
-        else:
-            return unique_percentage / 100.0
+        return unique_percentage / 100.0
 
     def get_description(self, value: Numeric) -> str:
-        return f"Share of unique values for feature '{self.column_name}' is {value}"
+        return (
+            f"The share of the unique values in the column {self.column_name} is {value:.3}. "
+            f"The test threshold is {self.get_condition()}."
+        )
 
 
 @default_renderer(test_type=TestUniqueValuesShare)
@@ -617,11 +843,12 @@ class TestMostCommonValueShare(BaseFeatureDataQualityMetricsTest):
     name = "Share of the Most Common Value"
 
     def get_condition(self) -> TestValueCondition:
-        if self.condition.is_set():
+        if self.condition.has_condition():
             return self.condition
 
-        if self.metric.get_result().reference_features_stats is not None:
-            ref_features_stats = self.metric.get_result().features_stats.get_all_features()
+        reference_features_stats = self.metric.get_result().reference_features_stats
+        if reference_features_stats is not None:
+            ref_features_stats = reference_features_stats.get_all_features()
             most_common_value_percentage = ref_features_stats[self.column_name].most_common_value_percentage
 
             if most_common_value_percentage is not None:
@@ -636,8 +863,7 @@ class TestMostCommonValueShare(BaseFeatureDataQualityMetricsTest):
         if most_common_value_percentage is None:
             return None
 
-        else:
-            return most_common_value_percentage / 100.0
+        return most_common_value_percentage / 100.0
 
     def get_description(self, value: Numeric) -> str:
         most_common_value = self.metric.get_result().counts_of_values[self.column_name]["current"].iloc[0, 0]
@@ -714,8 +940,8 @@ class TestMeanInNSigmas(Test):
 
             if left_condition < current_mean < right_condition:
                 description = (
-                    f"Mean value of column {self.column_name} {current_mean:.3g} is "
-                    f"in range from {left_condition:.3g} to {right_condition:.3g}"
+                    f"The mean value of the column {self.column_name} is {current_mean:.3g}."
+                    f" The expected range is from {left_condition:.3g} to {right_condition:.3g}"
                 )
                 test_result = TestResult.SUCCESS
 
@@ -793,7 +1019,7 @@ class TestMeanInNSigmasRenderer(TestRenderer):
 
 class TestValueRange(Test):
     group = "data_quality"
-    name = "Checks that all values of certain column belong to the interval"
+    name = "Value Range"
     metric: DataQualityValueRangeMetrics
     column: str
     left: Optional[float]
@@ -821,12 +1047,11 @@ class TestValueRange(Test):
 
         if number_not_in_range > 0:
             description = (
-                f"Column {self.column_name} has {number_not_in_range} values that are "
-                f"not in range from {self.left} to {self.right}."
+                f"The column {self.column_name} has values out of range."
             )
             test_result = TestResult.FAIL
         else:
-            description = f"Column {self.column_name} values are in range from {self.left} to {self.right}"
+            description = f"All values in the column {self.column_name} are within range"
             test_result = TestResult.SUCCESS
 
         return TestResult(name=self.name, description=description, status=test_result)
@@ -836,7 +1061,10 @@ class TestValueRange(Test):
 class TestValueRangeRenderer(TestRenderer):
     def render_html(self, obj: TestValueRange) -> TestHtmlInfo:
         column_name = obj.column_name
-        condition_ = TestValueCondition(gt=obj.left, lt=obj.right)
+        if obj.left is not None and obj.right is not None:
+            condition_ = TestValueCondition(gt=obj.left, lt=obj.right)
+        else:
+            condition_ = TestValueCondition(gt=obj.metric.get_result().ref_min, lt=obj.metric.get_result().ref_max)
         info = super().render_html(obj)
         curr_distr = obj.metric.get_result().distr_for_plot["current"]
         ref_distr = None
@@ -897,25 +1125,37 @@ class BaseDataQualityValueRangeMetricsTest(BaseCheckValueTest, ABC):
 
 
 class TestNumberOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
-    name = "Test the number of out range values for a given feature and compares it against the threshold"
+    name = "Number of Out-of-Range Values "
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.has_condition():
+            return self.condition
+        return TestValueCondition(eq=approx(0))
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().number_not_in_range
 
     def get_description(self, value: Numeric) -> str:
-        return f"Numeric of out of the range values for feature '{self.column_name}' is {value}"
+        return (
+            f"The number of values out of range in the column {self.column_name} is {value}. "
+            f" The test threshold is {self.get_condition()}."
+        )
 
 
 @default_renderer(test_type=TestNumberOfOutRangeValues)
 class TestNumberOfOutRangeValuesRenderer(TestRenderer):
     def render_html(self, obj: TestNumberOfOutRangeValues) -> TestHtmlInfo:
         column_name = obj.column_name
-        condition_ = TestValueCondition(gt=obj.left, lt=obj.right)
+        if obj.left is not None and obj.right is not None:
+            condition_ = TestValueCondition(gt=obj.left, lt=obj.right)
+        else:
+            condition_ = TestValueCondition(gt=obj.metric.get_result().ref_min, lt=obj.metric.get_result().ref_max)
         info = super().render_html(obj)
         curr_distr = obj.metric.get_result().distr_for_plot["current"]
         ref_distr = None
         if "reference" in obj.metric.get_result().distr_for_plot.keys():
             ref_distr = obj.metric.get_result().distr_for_plot["reference"]
+
         fig = plot_distr(curr_distr, ref_distr)
         fig = plot_check(fig, condition_)
 
@@ -939,7 +1179,7 @@ class TestShareOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
     name = "Share of Out-of-Range Values"
 
     def get_condition(self) -> TestValueCondition:
-        if self.condition.is_set():
+        if self.condition.has_condition():
             return self.condition
         return TestValueCondition(eq=approx(0))
 
@@ -968,7 +1208,10 @@ class TestShareOfOutRangeValuesRenderer(TestRenderer):
 
     def render_html(self, obj: TestShareOfOutRangeValues) -> TestHtmlInfo:
         column_name = obj.column_name
-        condition_ = TestValueCondition(gt=obj.left, lt=obj.right)
+        if obj.left and obj.right:
+            condition_ = TestValueCondition(gt=obj.left, lt=obj.right)
+        else:
+            condition_ = TestValueCondition(gt=obj.metric.get_result().ref_min, lt=obj.metric.get_result().ref_max)
         info = super().render_html(obj)
         curr_distr = obj.metric.get_result().distr_for_plot["current"]
         ref_distr = None
@@ -995,7 +1238,7 @@ class TestShareOfOutRangeValuesRenderer(TestRenderer):
 
 class TestValueList(Test):
     group = "data_quality"
-    name = "Test checks whether a feature values are in some list of values"
+    name = "Out-of-List Values"
     metric: DataQualityValueListMetrics
     column_name: str
     values: Optional[list]
@@ -1017,11 +1260,11 @@ class TestValueList(Test):
 
         if metric_result.number_not_in_list > 0:
             test_result = TestResult.FAIL
-            description = f"Numeric values not in the values list is {metric_result.number_not_in_list}"
+            description = f"The column {self.column_name} has values out of list."
 
         else:
             test_result = TestResult.SUCCESS
-            description = "All values is in the values list"
+            description = f"All values in the column {self.column_name} are in the list."
 
         return TestResult(name=self.name, description=description, status=test_result)
 
@@ -1085,13 +1328,21 @@ class BaseDataQualityValueListMetricsTest(BaseCheckValueTest, ABC):
 
 
 class TestNumberOfOutListValues(BaseDataQualityValueListMetricsTest):
-    name = "Test the number of out list values for a given feature and compares it against the threshold"
+    name = "Number Out-of-List Values"
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.has_condition():
+            return self.condition
+        return TestValueCondition(eq=approx(0))
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().number_not_in_list
 
     def get_description(self, value: Numeric) -> str:
-        return f"Numeric of out of the list values for feature '{self.column_name}' is {value}"
+        return (
+            f"The number of values out of list in the column {self.column_name} is {value}. "
+            f"The test threshold is {self.get_condition()}."
+        )
 
 
 @default_renderer(test_type=TestNumberOfOutListValues)
@@ -1113,7 +1364,7 @@ class TestShareOfOutListValues(BaseDataQualityValueListMetricsTest):
     name = "Share of Out-of-List Values"
 
     def get_condition(self) -> TestValueCondition:
-        if self.condition.is_set():
+        if self.condition.has_condition():
             return self.condition
         return TestValueCondition(eq=approx(0))
 
@@ -1132,7 +1383,7 @@ class TestShareOfOutListValues(BaseDataQualityValueListMetricsTest):
 
 class TestValueQuantile(BaseCheckValueTest):
     group = "data_quality"
-    name = "Test calculates quantile value of a given column and compares it against the threshold"
+    name = "Quantile Value"
     metric: DataQualityValueQuantileMetrics
     column_name: str
     quantile: Optional[float]
@@ -1168,11 +1419,22 @@ class TestValueQuantile(BaseCheckValueTest):
 
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
 
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.has_condition():
+            return self.condition
+        ref_value = self.metric.get_result().ref_value
+        if ref_value is not None:
+            return TestValueCondition(eq=approx(ref_value, 0.1))
+        raise ValueError("Neither required test parameters nor reference data has been provided.")
+
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().value
 
     def get_description(self, value: Numeric) -> str:
-        return f"Quantile {self.quantile} for column '{self.column_name}' is {value}"
+        return (
+            f"The {self.quantile} quantile value of the column {self.column_name} is {value:.3g}. "
+            f"The test threshold is {self.get_condition()}."
+        )
 
 
 @default_renderer(test_type=TestValueQuantile)
@@ -1185,7 +1447,7 @@ class TestValueQuantileRenderer(TestRenderer):
         if "reference" in obj.metric.get_result().distr_for_plot.keys():
             ref_distr = obj.metric.get_result().distr_for_plot["reference"]
         fig = plot_distr(curr_distr, ref_distr)
-        fig = plot_check(fig, obj.condition)
+        fig = plot_check(fig, obj.get_condition())
         fig = plot_metric_value(fig, obj.metric.get_result().value, f"current {column_name} {obj.quantile} quantile")
 
         fig_json = fig.to_plotly_json()
