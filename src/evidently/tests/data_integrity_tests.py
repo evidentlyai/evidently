@@ -480,7 +480,7 @@ class TestColumnNANShare(BaseIntegrityByColumnsConditionTest):
 
     def get_description(self, value: Numeric) -> str:
         return (
-            f"The share of NA values in the column {self.column_name} is {value:.3g}."
+            f"The share of NA values in the column **{self.column_name}** is {value:.3g}."
             f" The test threshold is {self.get_condition()}."
         )
 
@@ -531,7 +531,7 @@ class TestColumnAllConstantValues(BaseIntegrityOneColumnTest):
         else:
             uniques_in_column = uniques_by_columns[self.column_name]
 
-            description = f"The number of the unique values in the column {column_name} " \
+            description = f"The number of the unique values in the column **{column_name}** " \
                           f"is {uniques_in_column} out of {number_of_rows}"
 
             if uniques_in_column <= 1:
@@ -577,7 +577,7 @@ class TestColumnAllUniqueValues(BaseIntegrityOneColumnTest):
             uniques_in_column = uniques_by_columns[column_name]
             nans_in_column = nans_by_columns[column_name]
 
-            description = f"The number of the unique values in the column {column_name} " \
+            description = f"The number of the unique values in the column **{column_name}** " \
                           f"is {uniques_in_column}  out of {number_of_rows}"
 
             if uniques_in_column != number_of_rows - nans_in_column:
@@ -770,7 +770,7 @@ class TestColumnValueRegExp(BaseCheckValueTest, ABC):
 
     def get_description(self, value: Numeric) -> str:
         return (
-            f"The number of the mismatched values in the column {self.column_name} is {value}. "
+            f"The number of the mismatched values in the column **{self.column_name}** is {value}. "
             f"The test threshold is {self.get_condition()}."
         )
 

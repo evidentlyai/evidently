@@ -505,7 +505,7 @@ class TestFeatureValueMin(BaseFeatureDataQualityMetricsTest):
         return min_value
 
     def get_description(self, value: Numeric) -> str:
-        return f"The minimum value of the column {self.column_name} is {value} The test threshold is {self.get_condition()}."
+        return f"The minimum value of the column **{self.column_name}** is {value} The test threshold is {self.get_condition()}."
 
 
 @default_renderer(test_type=TestFeatureValueMin)
@@ -562,7 +562,7 @@ class TestFeatureValueMax(BaseFeatureDataQualityMetricsTest):
         return max_value
 
     def get_description(self, value: Numeric) -> str:
-        return f"The maximum value of the column {self.column_name} is {value}. The test threshold is {self.get_condition()}."
+        return f"The maximum value of the column **{self.column_name}** is {value}. The test threshold is {self.get_condition()}."
 
 
 @default_renderer(test_type=TestFeatureValueMax)
@@ -614,7 +614,7 @@ class TestFeatureValueMean(BaseFeatureDataQualityMetricsTest):
         return features_stats[self.column_name].mean
 
     def get_description(self, value: Numeric) -> str:
-        return f"The mean value of the column {self.column_name} is {value:.3g}. The test threshold is {self.get_condition()}."
+        return f"The mean value of the column **{self.column_name}** is {value:.3g}. The test threshold is {self.get_condition()}."
 
 
 @default_renderer(test_type=TestFeatureValueMean)
@@ -667,7 +667,7 @@ class TestFeatureValueMedian(BaseFeatureDataQualityMetricsTest):
         return features_stats[self.column_name].percentile_50
 
     def get_description(self, value: Numeric) -> str:
-        return f"The median value of the column {self.column_name} is {value:.3g}. The test threshold is {self.get_condition()}."
+        return f"The median value of the column **{self.column_name}** is {value:.3g}. The test threshold is {self.get_condition()}."
 
 
 @default_renderer(test_type=TestFeatureValueMedian)
@@ -721,7 +721,7 @@ class TestFeatureValueStd(BaseFeatureDataQualityMetricsTest):
 
     def get_description(self, value: Numeric) -> str:
         return (
-            f"The standard deviation of the column {self.column_name} is {value:.3g}. "
+            f"The standard deviation of the column **{self.column_name}** is {value:.3g}. "
             f"The test threshold is {self.get_condition()}."
         )
 
@@ -773,7 +773,7 @@ class TestNumberOfUniqueValues(BaseFeatureDataQualityMetricsTest):
 
     def get_description(self, value: Numeric) -> str:
         return (
-            f"The number of the unique values in the column {self.column_name} is {value}. "
+            f"The number of the unique values in the column **{self.column_name}** is {value}. "
             f"The test threshold is {self.get_condition()}."
         )
 
@@ -820,7 +820,7 @@ class TestUniqueValuesShare(BaseFeatureDataQualityMetricsTest):
 
     def get_description(self, value: Numeric) -> str:
         return (
-            f"The share of the unique values in the column {self.column_name} is {value:.3}. "
+            f"The share of the unique values in the column **{self.column_name}** is {value:.3}. "
             f"The test threshold is {self.get_condition()}."
         )
 
@@ -868,7 +868,7 @@ class TestMostCommonValueShare(BaseFeatureDataQualityMetricsTest):
     def get_description(self, value: Numeric) -> str:
         most_common_value = self.metric.get_result().counts_of_values[self.column_name]["current"].iloc[0, 0]
         return (
-            f"The most common value in the column {self.column_name} is {most_common_value}. "
+            f"The most common value in the column **{self.column_name}** is {most_common_value}. "
             f"Its share is {value:.3g}. "
             f"The test threshold is {self.get_condition()}."
         )
@@ -940,14 +940,14 @@ class TestMeanInNSigmas(Test):
 
             if left_condition < current_mean < right_condition:
                 description = (
-                    f"The mean value of the column {self.column_name} is {current_mean:.3g}."
+                    f"The mean value of the column **{self.column_name}** is {current_mean:.3g}."
                     f" The expected range is from {left_condition:.3g} to {right_condition:.3g}"
                 )
                 test_result = TestResult.SUCCESS
 
             else:
                 description = (
-                    f"The mean value of the column {self.column_name} is {current_mean:.3g}."
+                    f"The mean value of the column **{self.column_name}** is {current_mean:.3g}."
                     f" The expected range is from {left_condition:.3g} to {right_condition:.3g}"
                 )
                 test_result = TestResult.FAIL
@@ -1047,11 +1047,11 @@ class TestValueRange(Test):
 
         if number_not_in_range > 0:
             description = (
-                f"The column {self.column_name} has values out of range."
+                f"The column **{self.column_name}** has values out of range."
             )
             test_result = TestResult.FAIL
         else:
-            description = f"All values in the column {self.column_name} are within range"
+            description = f"All values in the column **{self.column_name}** are within range"
             test_result = TestResult.SUCCESS
 
         return TestResult(name=self.name, description=description, status=test_result)
@@ -1137,7 +1137,7 @@ class TestNumberOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
 
     def get_description(self, value: Numeric) -> str:
         return (
-            f"The number of values out of range in the column {self.column_name} is {value}. "
+            f"The number of values out of range in the column **{self.column_name}** is {value}. "
             f" The test threshold is {self.get_condition()}."
         )
 
@@ -1190,7 +1190,7 @@ class TestShareOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
         number_not_in_range = self.metric.get_result().number_not_in_range
         rows_count = self.metric.get_result().rows_count
         return (
-            f"The share of values out of range in the column {self.column_name} is {value:.3g} "
+            f"The share of values out of range in the column **{self.column_name}** is {value:.3g} "
             f"({number_not_in_range} out of {rows_count}). "
             f" The test threshold is {self.get_condition()}."
         )
@@ -1260,11 +1260,11 @@ class TestValueList(Test):
 
         if metric_result.number_not_in_list > 0:
             test_result = TestResult.FAIL
-            description = f"The column {self.column_name} has values out of list."
+            description = f"The column **{self.column_name}** has values out of list."
 
         else:
             test_result = TestResult.SUCCESS
-            description = f"All values in the column {self.column_name} are in the list."
+            description = f"All values in the column **{self.column_name}** are in the list."
 
         return TestResult(name=self.name, description=description, status=test_result)
 
@@ -1340,7 +1340,7 @@ class TestNumberOfOutListValues(BaseDataQualityValueListMetricsTest):
 
     def get_description(self, value: Numeric) -> str:
         return (
-            f"The number of values out of list in the column {self.column_name} is {value}. "
+            f"The number of values out of list in the column **{self.column_name}** is {value}. "
             f"The test threshold is {self.get_condition()}."
         )
 
@@ -1432,7 +1432,7 @@ class TestValueQuantile(BaseCheckValueTest):
 
     def get_description(self, value: Numeric) -> str:
         return (
-            f"The {self.quantile} quantile value of the column {self.column_name} is {value:.3g}. "
+            f"The {self.quantile} quantile value of the column **{self.column_name}** is {value:.3g}. "
             f"The test threshold is {self.get_condition()}."
         )
 

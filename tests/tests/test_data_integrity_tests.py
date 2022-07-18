@@ -394,7 +394,7 @@ def test_data_integrity_test_columns_nan_share_json_render() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "The share of NA values in the column feature1 is 0.25. The test threshold is eq=0.25 ± 0.025.",
+        "description": "The share of NA values in the column **feature1** is 0.25. The test threshold is eq=0.25 ± 0.025.",
         "group": "data_integrity",
         "name": "Share of NA Values",
         "parameters": {
