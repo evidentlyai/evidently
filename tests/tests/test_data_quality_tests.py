@@ -305,7 +305,7 @@ def test_data_quality_test_most_common_value_share_json_render() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "The most common value in the column feature1 is 1. Its share is 0.5."
+        "description": "The most common value in the column **feature1** is 1. Its share is 0.5."
         " The test threshold is eq=0.5.",
         "group": "data_quality",
         "name": "Share of the Most Common Value",
@@ -358,7 +358,7 @@ def test_data_quality_test_value_in_n_sigmas_json_render() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "The mean value of the column feature1 is 0.5. The expected range is from -2.4 to 3.4",
+        "description": "The mean value of the column **feature1** is 0.5. The expected range is from -2.4 to 3.4",
         "group": "data_quality",
         "name": "Mean Value Stability",
         "parameters": {
@@ -480,7 +480,7 @@ def test_data_quality_test_share_of_values_not_in_range_json_render() -> None:
     assert result_from_json["summary"]["all_passed"] is False
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "The share of values out of range in the column feature1 is 0.2 (1 out of 5)."
+        "description": "The share of values out of range in the column **feature1** is 0.2 (1 out of 5)."
         "  The test threshold is gt=0.2.",
         "group": "data_quality",
         "name": "Share of Out-of-Range Values",
@@ -536,7 +536,7 @@ def test_data_quality_test_value_in_list_json_render() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "All values in the column target are in the list.",
+        "description": "All values in the column **target** are in the list.",
         "group": "data_quality",
         "name": "Out-of-List Values",
         "parameters": {"column_name": "target", "number_not_in_list": 0, "values": None},

@@ -148,7 +148,7 @@ class TestFeatureValueDrift(Test):
             stattest_name = drift_info.features[self.column_name].stattest_name
             threshold = drift_info.features[self.column_name].threshold
             description = (
-                f"The drift score for the feature {self.column_name} is {p_value:.3g}. "
+                f"The drift score for the feature **{self.column_name}** is {p_value:.3g}. "
                 f"The drift detection method is {stattest_name}. "
                 f"The drift detection threshold is {threshold}."
             )
