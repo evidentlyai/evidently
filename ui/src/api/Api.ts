@@ -171,11 +171,27 @@ export interface TestData {
     title: string;
     description: string;
     state: TestState;
+    groupData: Map<string, string>;
     details?: BigTableRowDetails;
+}
+
+export interface TestGroupData {
+    id: string;
+    title: string;
+    description: string;
+    sortIndex: number;
+    severity?: TestState;
+}
+
+export interface TestGroupTypeData {
+    id: string;
+    title: string;
+    values: TestGroupData[];
 }
 
 export interface TestSuiteWidgetParams {
     tests: TestData[];
+    testGroupTypes: TestGroupTypeData[];
 }
 
 export interface WidgetInfo {
