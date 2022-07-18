@@ -28,6 +28,7 @@ from evidently.tests import TestValueQuantile
 from evidently.tests import TestHighlyCorrelatedFeatures
 from evidently.tests import TestTargetFeaturesCorrelations
 from evidently.test_suite import TestSuite
+from evidently.tests.base_test import TestResult
 from evidently.tests.utils import approx
 
 
@@ -115,9 +116,9 @@ def test_data_quality_test_min_exception(
         test_object: TestFeatureValueMin,
         expected_success: bool,
 ) -> None:
-    with pytest.raises(ValueError):
-        suite = TestSuite(tests=[test_object])
-        suite.run(current_data=test_dataset, reference_data=reference_dataset)
+    suite = TestSuite(tests=[test_object])
+    suite.run(current_data=test_dataset, reference_data=reference_dataset)
+    assert suite.as_dict()['tests'][0]['status'] == TestResult.ERROR
 
 def test_data_quality_test_max() -> None:
     test_dataset = pd.DataFrame(
