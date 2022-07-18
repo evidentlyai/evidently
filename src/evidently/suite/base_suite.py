@@ -4,7 +4,7 @@ from typing import Optional
 from evidently.metrics.base_metric import Metric, InputData
 from evidently.renderers.base_renderer import TestRenderer, RenderersDefinitions, DEFAULT_RENDERERS
 from evidently.suite.execution_graph import ExecutionGraph, SimpleExecutionGraph
-from evidently.tests.base_test import Test
+from evidently.tests.base_test import Test, TestResult
 
 
 @dataclasses.dataclass
@@ -100,7 +100,12 @@ class Suite:
         test_results = {}
 
         for test in self.context.execution_graph.get_test_execution_iterator():
-            test_results[test] = test.check()
+            try:
+                test_results[test] = test.check()
+            except BaseException as ex:
+                test_results[test] = TestResult(name=test.name,
+                                                status=TestResult.ERROR,
+                                                description=f"Test failed with exceptions: {ex}")
 
         self.context.test_results = test_results
         self.context.state = States.Tested

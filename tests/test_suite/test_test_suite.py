@@ -41,6 +41,15 @@ from evidently.tests import TestValueList
 from evidently.tests import TestNumberOfOutListValues
 from evidently.tests import TestShareOfOutListValues
 from evidently.tests import TestValueQuantile
+from evidently.tests.base_test import Test
+
+
+class ErrorTest(Test):
+    name = "Error Test"
+    group = "example"
+
+    def check(self):
+        raise ValueError("Test Exception")
 
 
 def test_export_to_json():
@@ -109,6 +118,7 @@ def test_export_to_json():
         TestNumberOfOutListValues(column_name="num_feature_1"),
         TestShareOfOutListValues(column_name="num_feature_1"),
         TestValueQuantile(column_name="num_feature_1", quantile=0.1, lt=2),
+        ErrorTest(),
     ]
     suite = TestSuite(tests=tests)
     suite.run(current_data=current_data, reference_data=reference_data, column_mapping=column_mapping)
@@ -150,7 +160,7 @@ def test_export_to_json():
     assert summary_result["all_passed"] is False
 
     assert "total_tests" in summary_result
-    assert summary_result["total_tests"] == 36
+    assert summary_result["total_tests"] == 37
 
     assert "success_tests" in summary_result
     assert summary_result["success_tests"] == 28
@@ -158,5 +168,7 @@ def test_export_to_json():
     assert "failed_tests" in summary_result
     assert summary_result["failed_tests"] == 8
 
+
+
     assert "by_status" in summary_result
-    assert summary_result["by_status"] == {"FAIL": 8, "SUCCESS": 28}
+    assert summary_result["by_status"] == {"FAIL": 8, "SUCCESS": 28, "ERROR": 1}

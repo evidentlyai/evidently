@@ -491,12 +491,18 @@ class TestFeatureValueMin(BaseFeatureDataQualityMetricsTest):
         ref_features_stats = self.metric.get_result().reference_features_stats
 
         if ref_features_stats is not None:
-            return TestValueCondition(gte=ref_features_stats.get_all_features()[self.column_name].min)
+            min_value = ref_features_stats.get_all_features()[self.column_name].min
+            if isinstance(min_value, str):
+                raise ValueError(f"{self.column_name} should be numerical or bool")
+            return TestValueCondition(gte=min_value)
         raise ValueError("Neither required test parameters nor reference data has been provided.")
 
-    def calculate_value_for_test(self) -> Optional[Union[Numeric, bool, str]]:
+    def calculate_value_for_test(self) -> Optional[Union[Numeric, bool]]:
         features_stats = self.metric.get_result().features_stats.get_all_features()
-        return features_stats[self.column_name].min
+        min_value = features_stats[self.column_name].min
+        if isinstance(min_value, str):
+            raise ValueError(f"{self.column_name} should be numerical or bool")
+        return min_value
 
     def get_description(self, value: Numeric) -> str:
         return f"The minimum value of the column {self.column_name} is {value} The test threshold is {self.get_condition()}."
@@ -542,12 +548,18 @@ class TestFeatureValueMax(BaseFeatureDataQualityMetricsTest):
             return self.condition
         ref_features_stats = self.metric.get_result().reference_features_stats
         if ref_features_stats is not None:
-            return TestValueCondition(lte=ref_features_stats.get_all_features()[self.column_name].max)
+            max_value = ref_features_stats.get_all_features()[self.column_name].max
+            if isinstance(max_value, str):
+                raise ValueError(f"{self.column_name} should be numerical or bool")
+            return TestValueCondition(lte=max_value)
         raise ValueError("Neither required test parameters nor reference data has been provided.")
 
-    def calculate_value_for_test(self) -> Optional[Union[Numeric, bool, str]]:
+    def calculate_value_for_test(self) -> Optional[Union[Numeric, bool]]:
         features_stats = self.metric.get_result().features_stats.get_all_features()
-        return features_stats[self.column_name].max
+        max_value = features_stats[self.column_name].max
+        if isinstance(max_value, str):
+            raise ValueError(f"{self.column_name} should be numerical or bool")
+        return max_value
 
     def get_description(self, value: Numeric) -> str:
         return f"The maximum value of the column {self.column_name} is {value}. The test threshold is {self.get_condition()}."
