@@ -1,4 +1,5 @@
 import dataclasses
+import math
 from typing import Optional, Tuple, List, Dict, Union
 
 import numpy as np
@@ -36,17 +37,18 @@ class DatasetClassificationPerformanceMetrics:
 class ClassificationPerformanceMetricsResults:
     current_metrics: DatasetClassificationPerformanceMetrics
     dummy_metrics: DatasetClassificationPerformanceMetrics
+    by_k_metrics: Dict[Union[int, float], DatasetClassificationPerformanceMetrics]
     reference_metrics: Optional[DatasetClassificationPerformanceMetrics] = None
 
 
 def classification_performance_metrics(
-    target: pd.Series,
-    prediction: pd.Series,
-    prediction_probas: Optional[pd.DataFrame],
-    target_names: Optional[List[str]],
+        target: pd.Series,
+        prediction: pd.Series,
+        prediction_probas: Optional[pd.DataFrame],
+        target_names: Optional[List[str]],
 ) -> DatasetClassificationPerformanceMetrics:
     # calculate metrics matrix
-    labels = target_names if target_names else sorted(set(target) | set(prediction))
+    labels = target_names if target_names else sorted(set(target.unique()) | set(prediction.unique()))
     binaraized_target = (target.values.reshape(-1, 1) == labels).astype(int)
 
     prediction_labels = prediction
@@ -93,8 +95,14 @@ def classification_performance_metrics(
 
 
 class ClassificationPerformanceMetrics(Metric[ClassificationPerformanceMetricsResults]):
+    k_variants: List[Union[int, float]]
+
     def __init__(self):
-        pass
+        self.k_variants = []
+
+    def with_k(self, k: Union[int, float]) -> 'ClassificationPerformanceMetrics':
+        self.k_variants.append(k)
+        return self
 
     def calculate(self, data: InputData, metrics: dict) -> ClassificationPerformanceMetricsResults:
         if data.current_data is None:
@@ -103,8 +111,35 @@ class ClassificationPerformanceMetrics(Metric[ClassificationPerformanceMetricsRe
         current_data = _cleanup_data(data.current_data)
         target_data = current_data[data.column_mapping.target]
         prediction_data, prediction_probas = get_prediction_data(current_data, data.column_mapping)
+
+        target_names = data.column_mapping.target_names
+        labels = sorted(target_names if target_names else
+                        sorted(set(target_data.unique()) | set(prediction_data.unique())))
+
+        by_k_results = {}
+
+        for k in self.k_variants:
+            # calculate metrics matrix
+            if prediction_probas is None or len(labels) != 2:
+                raise ValueError("Top K parameter can be used only with binary classification with probas")
+
+            sorted_prediction = pd.DataFrame(dict(target=target_data,
+                                                  prediction=prediction_data,
+                                                  probas_0=prediction_probas[labels[0]],
+                                                  probas_1=prediction_probas[labels[1]])).sort_values(by='probas_1',
+                                                                                                      ascending=False)
+
+            if isinstance(k, float):
+                filtered_data = sorted_prediction.iloc[: int(math.ceil(k * sorted_prediction.shape[0])), :]
+            elif isinstance(k, int):
+                filtered_data = sorted_prediction.iloc[:k, :]
+            else:
+                raise ValueError(f"Unexpected k type {type(k)}")
+            k_target_data = filtered_data['target']
+            k_prediction_data = filtered_data['prediction']
+            by_k_results[k] = classification_performance_metrics(k_target_data, k_prediction_data, None, labels)
         current_metrics = classification_performance_metrics(
-            target_data, prediction_data, prediction_probas, data.column_mapping.target_names
+            target_data, prediction_data, prediction_probas, labels
         )
 
         reference_metrics = None
@@ -115,17 +150,18 @@ class ClassificationPerformanceMetrics(Metric[ClassificationPerformanceMetricsRe
                 reference_data[data.column_mapping.target],
                 ref_prediction_data,
                 ref_probas,
-                data.column_mapping.target_names,
+                target_names,
             )
 
         dummy_preds = pd.Series([target_data.value_counts().idxmax()] * len(target_data))
         dummy_metrics = classification_performance_metrics(
-            target_data, dummy_preds, None, data.column_mapping.target_names
+            target_data, dummy_preds, None, target_names
         )
         return ClassificationPerformanceMetricsResults(
             current_metrics=current_metrics,
             reference_metrics=reference_metrics,
             dummy_metrics=dummy_metrics,
+            by_k_metrics=by_k_results,
         )
 
 
@@ -139,9 +175,9 @@ def get_prediction_data(data: pd.DataFrame, mapping: ColumnMapping) -> Tuple[pd.
         return data[mapping.prediction].idxmax(axis=1), data[mapping.prediction]
 
     if (
-        isinstance(mapping.prediction, str)
-        and data[mapping.prediction].dtype == dtype("float64")
-        and mapping.target_names is not None
+            isinstance(mapping.prediction, str)
+            and data[mapping.prediction].dtype == dtype("float64")
+            and mapping.target_names is not None
     ):
         predictions = data[mapping.prediction].apply(
             lambda x: mapping.target_names[1] if x > 0.5 else mapping.target_names[0]

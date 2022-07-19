@@ -1,4 +1,5 @@
 import abc
+from abc import ABC
 from typing import Optional, List, Union, Any
 
 from evidently.metrics.classification_performance_metrics import ClassificationPerformanceMetrics
@@ -45,7 +46,43 @@ class SimpleClassificationTest(BaseCheckValueTest):
         raise NotImplementedError()
 
 
-class TestAccuracyScore(SimpleClassificationTest):
+class SimpleClassificationTestTopK(SimpleClassificationTest, ABC):
+    def __init__(
+            self,
+            k: Union[float, int] = None,
+            eq: Optional[Numeric] = None,
+            gt: Optional[Numeric] = None,
+            gte: Optional[Numeric] = None,
+            is_in: Optional[List[Union[Numeric, str, bool]]] = None,
+            lt: Optional[Numeric] = None,
+            lte: Optional[Numeric] = None,
+            not_eq: Optional[Numeric] = None,
+            not_in: Optional[List[Union[Numeric, str, bool]]] = None,
+            metric: Optional[ClassificationPerformanceMetrics] = None
+    ):
+        if metric is None:
+            metric = ClassificationPerformanceMetrics()
+        if k is not None:
+            metric = metric.with_k(k)
+        super().__init__(eq=eq,
+                         gt=gt,
+                         gte=gte,
+                         is_in=is_in,
+                         lt=lt,
+                         lte=lte,
+                         not_eq=not_eq,
+                         not_in=not_in,
+                         metric=metric,
+                         )
+        self.k = k
+
+    def calculate_value_for_test(self) -> Optional[Any]:
+        if self.k is not None:
+            return self.get_value(self.metric.get_result().by_k_metrics[self.k])
+        return self.get_value(self.metric.get_result().current_metrics)
+
+
+class TestAccuracyScore(SimpleClassificationTestTopK):
     name = "Accuracy Score"
 
     def get_value(self, result: DatasetClassificationPerformanceMetrics):
@@ -55,7 +92,7 @@ class TestAccuracyScore(SimpleClassificationTest):
         return f"Accuracy Score is {value:.3g}. Test Threshold is {self.get_condition()}"
 
 
-class TestPrecisionScore(SimpleClassificationTest):
+class TestPrecisionScore(SimpleClassificationTestTopK):
     name = "Precision Score"
 
     def get_value(self, result: DatasetClassificationPerformanceMetrics):
@@ -65,7 +102,7 @@ class TestPrecisionScore(SimpleClassificationTest):
         return f"Precision Score is {value:.3g}. Test Threshold is {self.get_condition()}"
 
 
-class TestF1Score(SimpleClassificationTest):
+class TestF1Score(SimpleClassificationTestTopK):
     name = "F1 Score"
 
     def get_value(self, result: DatasetClassificationPerformanceMetrics):
@@ -75,7 +112,7 @@ class TestF1Score(SimpleClassificationTest):
         return f"F1 Score is {value:.3g}. Test Threshold is {self.get_condition()}"
 
 
-class TestRecallScore(SimpleClassificationTest):
+class TestRecallScore(SimpleClassificationTestTopK):
     name = "Recall Score"
 
     def get_value(self, result: DatasetClassificationPerformanceMetrics):
