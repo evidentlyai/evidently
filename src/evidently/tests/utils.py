@@ -142,10 +142,10 @@ def regression_perf_plot(
 
     fig.update_yaxes(title_text=name, row=1, col=1)
     fig.update_yaxes(title_text="count", row=2, col=1)
-    title = f"current {name}: {np.round(curr_mertic, 3)} "
+    title = f"current {name}: {np.round(curr_mertic, 3)}"
 
     if is_ref_data:
-        title += f"<br>reference {name}: {np.round(ref_metric, 3)}"
+        title += f", reference {name}: {np.round(ref_metric, 3)}"
 
     fig.update_layout(title=title)
     return fig

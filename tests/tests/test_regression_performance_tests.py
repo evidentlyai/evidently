@@ -43,7 +43,7 @@ def test_value_mape_test() -> None:
 
     suite = TestSuite(tests=[TestValueMAPE(eq=100)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
-    assert suite
+    assert not suite
 
 
 def test_value_mean_error_test() -> None:
@@ -70,7 +70,7 @@ def test_abs_max_error_test() -> None:
             "category_feature": ["n", "d", "p", "n"],
             "numerical_feature": [0, 1, 2, 5],
             "target": [1, 2, 3, 4],
-            "preds": [1, 2, 3, 4],
+            "preds": [1., 2., 3., 4.],
         }
     )
     suite = TestSuite(tests=[TestValueAbsMaxError(lt=1)])
