@@ -34,7 +34,7 @@ class SimpleClassificationTest(BaseCheckValueTest):
         return self.get_value(self.metric.get_result().current_metrics)
 
     def get_condition(self) -> TestValueCondition:
-        if self.condition.is_set():
+        if self.condition.has_condition():
             return self.condition
         ref_metrics = self.metric.get_result().reference_metrics
         if ref_metrics is not None:
