@@ -11,12 +11,12 @@ from pandas.core.dtypes.common import infer_dtype_from_object
 from evidently.model.widget import BaseWidgetInfo
 from evidently.metrics.data_integrity_metrics import DataIntegrityMetrics
 from evidently.metrics.data_integrity_metrics import DataIntegrityValueByRegexpMetrics
+from evidently.metrics.data_integrity_metrics import DataIntegrityNullValuesMetrics
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.base_renderer import DetailsInfo
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.tests.base_test import BaseCheckValueTest
-from evidently.tests.base_test import BaseConditionsTest
 from evidently.tests.base_test import Test
 from evidently.tests.base_test import TestResult
 from evidently.tests.base_test import TestValueCondition
@@ -242,6 +242,97 @@ class TestNumberOfRowsWithNANs(BaseIntegrityValueTest):
         return f"The number of rows with NA values is {value}. The test threshold is {self.get_condition()}."
 
 
+class BaseIntegrityNullValuesTest(BaseCheckValueTest, ABC):
+    group = "data_integrity"
+    metric: DataIntegrityNullValuesMetrics
+
+    def __init__(
+        self,
+        null_values: Optional[list] = None,
+        ignore_na: bool = False,
+        eq: Optional[Numeric] = None,
+        gt: Optional[Numeric] = None,
+        gte: Optional[Numeric] = None,
+        is_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        lt: Optional[Numeric] = None,
+        lte: Optional[Numeric] = None,
+        not_eq: Optional[Numeric] = None,
+        not_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        metric: Optional[DataIntegrityNullValuesMetrics] = None,
+    ):
+        super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
+
+        if metric is None:
+            self.metric = DataIntegrityNullValuesMetrics(null_values=null_values, ignore_na=ignore_na)
+
+        else:
+            self.metric = metric
+
+
+class TestNumberOfDifferentNulls(BaseIntegrityNullValuesTest):
+    """Check a number of differently encoded empty/null values."""
+
+    name = "Test Number Of Different Null Kinds"
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.has_condition():
+            return self.condition
+
+        reference_null_values = self.metric.get_result().reference_null_values
+
+        if reference_null_values is not None:
+            return TestValueCondition(eq=reference_null_values.number_of_differently_encoded_nulls)
+
+        raise ValueError("Neither required test parameters nor reference data has been provided.")
+
+    def calculate_value_for_test(self) -> Numeric:
+        return self.metric.get_result().current_null_values.number_of_differently_encoded_nulls
+
+    def get_description(self, value: Numeric) -> str:
+        return f"Number of different null kinds is {value}"
+
+
+@default_renderer(test_type=TestNumberOfDifferentNulls)
+class TestNumberOfDifferentNullsRenderer(TestRenderer):
+    def render_json(self, obj: TestNumberOfDifferentNulls) -> dict:
+        base = super().render_json(obj)
+        base["parameters"]["condition"] = obj.condition.as_dict()
+        base["parameters"]["number_of_differently_encoded_nulls"] = obj.value
+        return base
+
+
+class TestNumberOfNullValues(BaseIntegrityNullValuesTest):
+    """Check a number of empty/null values."""
+
+    name = "Test Number Of Null Values"
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.has_condition():
+            return self.condition
+
+        reference_null_values = self.metric.get_result().reference_null_values
+
+        if reference_null_values is not None:
+            return TestValueCondition(eq=approx(reference_null_values.number_of_null_values, relative=0.1))
+
+        raise ValueError("Neither required test parameters nor reference data has been provided.")
+
+    def calculate_value_for_test(self) -> Numeric:
+        return self.metric.get_result().current_null_values.number_of_null_values
+
+    def get_description(self, value: Numeric) -> str:
+        return f"Number of null values is {value}"
+
+
+@default_renderer(test_type=TestNumberOfNullValues)
+class TestNumberOfNullValuesRenderer(TestRenderer):
+    def render_json(self, obj: TestNumberOfNullValues) -> dict:
+        base = super().render_json(obj)
+        base["parameters"]["condition"] = obj.condition.as_dict()
+        base["parameters"]["number_of_null_values"] = obj.value
+        return base
+
+
 class TestNumberOfConstantColumns(BaseIntegrityValueTest):
     """Number of columns contained only one unique value"""
 
@@ -285,7 +376,7 @@ class TestNumberOfConstantColumnsRenderer(TestRenderer):
             dict_ref = reference_stats.number_uniques_by_columns
             columns = columns + ["reference nunique"]
 
-        additional_plots = plot_dicts_to_table(dict_curr, dict_ref, columns, "number_of_cols_with_nans", "curr", True)
+        additional_plots = plot_dicts_to_table(dict_curr, dict_ref, columns, "number_of_constant_cols", "curr", True)
         info.details = additional_plots
         return info
 
@@ -501,9 +592,7 @@ class BaseIntegrityOneColumnTest(Test, ABC):
     data_integrity_metric: DataIntegrityMetrics
     column_name: str
 
-    def __init__(
-        self, column_name: str, data_integrity_metric: Optional[DataIntegrityMetrics] = None
-    ):
+    def __init__(self, column_name: str, data_integrity_metric: Optional[DataIntegrityMetrics] = None):
         self.column_name = column_name
 
         if data_integrity_metric is None:
@@ -531,8 +620,10 @@ class TestColumnAllConstantValues(BaseIntegrityOneColumnTest):
         else:
             uniques_in_column = uniques_by_columns[self.column_name]
 
-            description = f"The number of the unique values in the column **{column_name}** " \
-                          f"is {uniques_in_column} out of {number_of_rows}"
+            description = (
+                f"The number of the unique values in the column **{column_name}** "
+                f"is {uniques_in_column} out of {number_of_rows}"
+            )
 
             if uniques_in_column <= 1:
                 status = TestResult.FAIL
@@ -577,8 +668,10 @@ class TestColumnAllUniqueValues(BaseIntegrityOneColumnTest):
             uniques_in_column = uniques_by_columns[column_name]
             nans_in_column = nans_by_columns[column_name]
 
-            description = f"The number of the unique values in the column **{column_name}** " \
-                          f"is {uniques_in_column}  out of {number_of_rows}"
+            description = (
+                f"The number of the unique values in the column **{column_name}** "
+                f"is {uniques_in_column}  out of {number_of_rows}"
+            )
 
             if uniques_in_column != number_of_rows - nans_in_column:
                 status = TestResult.FAIL
@@ -757,8 +850,8 @@ class TestColumnValueRegExp(BaseCheckValueTest, ABC):
         if self.condition.has_condition():
             return self.condition
 
-        if 'reference' in self.metric.get_result().not_matched_values.keys():
-            ref_value = self.metric.get_result().not_matched_values['reference']
+        if "reference" in self.metric.get_result().not_matched_values.keys():
+            ref_value = self.metric.get_result().not_matched_values["reference"]
             mult = self.metric.get_result().mult
             if mult is not None:
                 return TestValueCondition(eq=approx(ref_value * mult, relative=0.1))
@@ -766,7 +859,7 @@ class TestColumnValueRegExp(BaseCheckValueTest, ABC):
         return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
-        return self.metric.get_result().not_matched_values['current']
+        return self.metric.get_result().not_matched_values["current"]
 
     def get_description(self, value: Numeric) -> str:
         return (
@@ -780,10 +873,12 @@ class TestColumnValueRegExpRenderer(TestRenderer):
     def render_html(self, obj: TestColumnValueRegExp) -> TestHtmlInfo:
         info = super().render_html(obj)
         column_name = obj.column_name
-        curr_df = obj.metric.get_result().not_matched_table['current']
+        curr_df = obj.metric.get_result().not_matched_table["current"]
         ref_df = None
-        if 'reference' in obj.metric.get_result().not_matched_table.keys():
-            ref_df = obj.metric.get_result().not_matched_table['reference']
-        additional_plots = plot_value_counts_tables_ref_curr(column_name, curr_df, ref_df, f"{column_name}_ColumnValueRegExp")
+        if "reference" in obj.metric.get_result().not_matched_table.keys():
+            ref_df = obj.metric.get_result().not_matched_table["reference"]
+        additional_plots = plot_value_counts_tables_ref_curr(
+            column_name, curr_df, ref_df, f"{column_name}_ColumnValueRegExp"
+        )
         info.details = additional_plots
         return info

@@ -22,6 +22,8 @@ from evidently.tests import TestColumnNANShare
 from evidently.tests import TestColumnAllConstantValues
 from evidently.tests import TestColumnAllUniqueValues
 from evidently.tests import TestColumnValueRegExp
+from evidently.tests import TestNumberOfDifferentNulls
+from evidently.tests import TestNumberOfNullValues
 from evidently.test_suite import TestSuite
 
 
@@ -394,7 +396,8 @@ def test_data_integrity_test_columns_nan_share_json_render() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "The share of NA values in the column **feature1** is 0.25. The test threshold is eq=0.25 ± 0.025.",
+        "description": "The share of NA values in the column **feature1** is 0.25. "
+                       "The test threshold is eq=0.25 ± 0.025.",
         "group": "data_integrity",
         "name": "Share of NA Values",
         "parameters": {
@@ -443,3 +446,38 @@ def test_data_integrity_test_column_values_match_regexp() -> None:
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
 
+
+def test_data_integrity_test_different_nulls() -> None:
+    test_dataset = pd.DataFrame({"feature1": ["n/a", "b", "a"], "feature2": ["b", "", None]})
+
+    suite = TestSuite(tests=[TestNumberOfDifferentNulls()])
+    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=ColumnMapping())
+    assert suite
+
+    suite = TestSuite(tests=[TestNumberOfDifferentNulls(lt=3)])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    assert suite
+
+    suite = TestSuite(tests=[TestNumberOfDifferentNulls(null_values=["", "n/a"], lt=3)])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    assert not suite
+
+
+def test_data_integrity_test_number_of_nulls() -> None:
+    test_dataset = pd.DataFrame({"feature1": ["", None, "null", "a"], "feature2": ["b", "null", None, None]})
+
+    suite = TestSuite(tests=[TestNumberOfNullValues()])
+    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=ColumnMapping())
+    assert suite
+
+    suite = TestSuite(tests=[TestNumberOfNullValues(lt=6)])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    assert suite
+
+    suite = TestSuite(tests=[TestNumberOfNullValues(null_values=["", "null"], ignore_na=True, lt=4)])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    assert suite
+
+    suite = TestSuite(tests=[TestNumberOfNullValues(null_values=["", "null"], ignore_na=False, lt=4)])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    assert not suite

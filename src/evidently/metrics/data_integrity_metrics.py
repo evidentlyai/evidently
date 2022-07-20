@@ -5,9 +5,7 @@ import pandas as pd
 from dataclasses import dataclass
 from itertools import combinations
 from typing import Dict
-from typing import List
 from typing import Optional
-from typing import Union
 
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
@@ -20,7 +18,6 @@ class DataIntegrityMetricsValues:
     number_of_nans: int
     number_of_columns_with_nans: int
     number_of_rows_with_nans: int
-    # number_of_differently_encoded_nulls: int
     number_of_constant_columns: int
     number_of_empty_rows: int
     number_of_empty_columns: int
@@ -61,7 +58,7 @@ class DataIntegrityMetrics(Metric[DataIntegrityMetricsResults]):
             columns_type=dict(dataset.dtypes.to_dict()),
             nans_by_columns=dataset.isna().sum().to_dict(),
             number_uniques_by_columns=dict(dataset.nunique().to_dict()),
-            counts_of_values=counts_of_values
+            counts_of_values=counts_of_values,
         )
 
     def calculate(self, data: InputData, metrics: dict) -> DataIntegrityMetricsResults:
@@ -136,35 +133,108 @@ class DataIntegrityValueByRegexpMetrics(Metric[DataIntegrityValueByRegexpMetricR
         not_matched_table = {}
         selector = data.current_data[self.column_name].apply(lambda x: bool(self.reg_exp_compiled.match(str(x))))
         n = selector.sum()
-        not_matched_values['current'] = data.current_data[self.column_name].dropna().shape[0] - n
+        not_matched_values["current"] = data.current_data[self.column_name].dropna().shape[0] - n
 
         df_counts = (
             data.current_data[self.column_name]
-            .dropna()
-            [~selector.dropna().astype(bool)]
+            .dropna()[~selector.dropna().astype(bool)]
             .value_counts(dropna=False)
             .reset_index()
         )
         df_counts.columns = ["x", "count"]
-        not_matched_table['current'] = df_counts
+        not_matched_table["current"] = df_counts
 
         if data.reference_data is not None:
             selector = data.reference_data[self.column_name].apply(lambda x: bool(self.reg_exp_compiled.match(str(x))))
             n = selector.sum()
-            not_matched_values['reference'] = data.reference_data[self.column_name].dropna().shape[0] - n
+            not_matched_values["reference"] = data.reference_data[self.column_name].dropna().shape[0] - n
             mult = data.current_data.shape[0] / data.reference_data.shape[0]
             df_counts = (
                 data.reference_data[self.column_name]
-                .dropna()
-                [~selector.dropna().astype(bool)]
+                .dropna()[~selector.dropna().astype(bool)]
                 .value_counts(dropna=False)
                 .reset_index()
             )
             df_counts.columns = ["x", "count"]
-            not_matched_table['reference'] = df_counts
+            not_matched_table["reference"] = df_counts
 
         return DataIntegrityValueByRegexpMetricResult(
             not_matched_values=not_matched_values,
             not_matched_table=not_matched_table,
             mult=mult,
+        )
+
+
+@dataclass
+class DataIntegrityNullValues:
+    number_of_differently_encoded_nulls: int
+    number_of_null_values: int
+
+
+@dataclass
+class DataIntegrityNullValuesMetricsResult:
+    current_null_values: DataIntegrityNullValues
+    reference_null_values: Optional[DataIntegrityNullValues] = None
+
+
+class DataIntegrityNullValuesMetrics(Metric[DataIntegrityNullValuesMetricsResult]):
+    """Count null values in a dataset.
+
+    Calculate an amount of null-like values kinds and overall count for such values.
+    NA-types like numpy.NaN, pandas.NaT are counted as one type.
+    If you do not want to take them into account - you can do it with `ignore_na` parameter.
+
+    Also, you can set you own null-line values list with `null_values` parameter.
+    """
+
+    # default custom null values list
+    CUSTOM_NULL_VALUES = ["", np.inf]
+    null_values: list
+
+    def __init__(self, null_values: Optional[list] = None, ignore_na: bool = False) -> None:
+        self.ignore_na = ignore_na
+
+        if null_values is None:
+            self.null_values = self.CUSTOM_NULL_VALUES
+
+        else:
+            self.null_values = null_values
+
+    def _calculate_null_values_stats(self, dataset: pd.DataFrame) -> DataIntegrityNullValues:
+        number_of_differently_encoded_nulls = 0
+        number_of_null_values = 0
+
+        if not self.ignore_na:
+            null_by_pandas = dataset.isnull().sum().sum()
+
+            if null_by_pandas > 0:
+                number_of_differently_encoded_nulls += 1
+                number_of_null_values += null_by_pandas
+
+        for null_value in self.null_values:
+            value_count = (dataset == null_value).sum().sum()
+
+            if value_count > 0:
+                number_of_differently_encoded_nulls += 1
+                number_of_null_values += value_count
+
+        return DataIntegrityNullValues(
+            number_of_differently_encoded_nulls=number_of_differently_encoded_nulls,
+            number_of_null_values=number_of_null_values,
+        )
+
+    def calculate(self, data: InputData, metrics: dict) -> DataIntegrityNullValuesMetricsResult:
+        current_null_values = self._calculate_null_values_stats(data.current_data)
+
+        if data.reference_data is not None:
+            reference_null_values: Optional[DataIntegrityNullValues] = self._calculate_null_values_stats(
+                data.reference_data
+            )
+
+        else:
+            reference_null_values = None
+
+        return DataIntegrityNullValuesMetricsResult(
+            current_null_values=current_null_values,
+            reference_null_values=reference_null_values,
         )
