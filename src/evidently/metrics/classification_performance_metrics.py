@@ -12,7 +12,7 @@ from evidently.analyzers.classification_performance_analyzer import ConfusionMat
 from evidently.analyzers.utils import calculate_confusion_by_classes
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
-
+import logging
 
 @dataclasses.dataclass
 class DatasetClassificationPerformanceMetrics:
@@ -48,27 +48,40 @@ def classification_performance_metrics(
         prediction_probas: Optional[pd.DataFrame],
         target_names: Optional[List[str]],
 ) -> DatasetClassificationPerformanceMetrics:
-    # calculate metrics matrix
-    labels = target_names if target_names else sorted(set(target.unique()) | set(prediction.unique()))
-    binaraized_target = (target.values.reshape(-1, 1) == labels).astype(int)
 
+    class_num = target.nunique()
     prediction_labels = prediction
+    if class_num > 2:
+        accuracy_score = sklearn.metrics.accuracy_score(target, prediction_labels)
+        avg_precision = sklearn.metrics.precision_score(target, prediction_labels, average="macro")
+        avg_recall = sklearn.metrics.recall_score(target, prediction_labels, average="macro")
+        avg_f1 = sklearn.metrics.f1_score(target, prediction_labels, average="macro")
+    
+    else:
+        pos_label = 1
+        if target.dtype == dtype("str") and prediction_probas is not None:
+            pos_label = prediction_probas.columns[0]
+        if target.dtype == dtype("str") and target_names is not None:
+            pos_label = target_names[0]
+        accuracy_score = sklearn.metrics.accuracy_score(target, prediction_labels)
+        avg_precision = sklearn.metrics.precision_score(target, prediction_labels, average="binary", pos_label=pos_label)
+        avg_recall = sklearn.metrics.recall_score(target, prediction_labels, average="binary", pos_label=pos_label)
+        avg_f1 = sklearn.metrics.f1_score(target, prediction_labels, average="binary", pos_label=pos_label)
 
-    labels = sorted(set(target))
+    # calculate metrics matrix
+    # labels = target_names if target_names else sorted(set(target.unique()) | set(prediction.unique()))
+        # binaraized_target = (target.values.reshape(-1, 1) == labels).astype(int)
 
-    # calculate quality metrics
-    accuracy_score = sklearn.metrics.accuracy_score(target, prediction_labels)
-    avg_precision = sklearn.metrics.precision_score(target, prediction_labels, average="macro")
-    avg_recall = sklearn.metrics.recall_score(target, prediction_labels, average="macro")
-    avg_f1 = sklearn.metrics.f1_score(target, prediction_labels, average="macro")
+    # prediction_labels = prediction
+
+    # labels = sorted(set(target))
 
     if prediction_probas is not None:
+        binaraized_target = (target.values.reshape(-1, 1) == list(prediction_probas.columns)).astype(int)
         array_prediction = prediction_probas.to_numpy()
         roc_auc = sklearn.metrics.roc_auc_score(binaraized_target, array_prediction, average="macro")
         log_loss = sklearn.metrics.log_loss(binaraized_target, array_prediction)
-
         roc_aucs = sklearn.metrics.roc_auc_score(binaraized_target, array_prediction, average=None).tolist()
-
     else:
         roc_aucs = None
         roc_auc = None
@@ -78,6 +91,7 @@ def classification_performance_metrics(
     metrics_matrix = sklearn.metrics.classification_report(target, prediction_labels, output_dict=True)
 
     # calculate confusion matrix
+    labels = target_names if target_names else sorted(set(target.unique()) | set(prediction.unique()))
     conf_matrix = sklearn.metrics.confusion_matrix(target, prediction_labels)
     confusion_by_classes = calculate_confusion_by_classes(conf_matrix, labels)
 
@@ -115,7 +129,7 @@ class ClassificationPerformanceMetrics(Metric[ClassificationPerformanceMetricsRe
         if data.current_data is None:
             raise ValueError("current dataset should be present")
 
-        current_data = _cleanup_data(data.current_data)
+        current_data = _cleanup_data(data.current_data, data.column_mapping)
         target_data = current_data[data.column_mapping.target]
         prediction_data, prediction_probas = get_prediction_data(current_data, data.column_mapping)
 
@@ -149,7 +163,7 @@ class ClassificationPerformanceMetrics(Metric[ClassificationPerformanceMetricsRe
 
         reference_metrics = None
         if data.reference_data is not None:
-            reference_data = _cleanup_data(data.reference_data)
+            reference_data = _cleanup_data(data.reference_data, data.column_mapping)
             ref_prediction_data, ref_probas = get_prediction_data(reference_data, data.column_mapping)
             reference_metrics = classification_performance_metrics(
                 reference_data[data.column_mapping.target],
@@ -171,30 +185,73 @@ class ClassificationPerformanceMetrics(Metric[ClassificationPerformanceMetricsRe
         )
 
 
-def _cleanup_data(data: pd.DataFrame) -> pd.DataFrame:
-    return data.replace([np.inf, -np.inf], np.nan).dropna(axis=0, how="any")
+def _cleanup_data(data: pd.DataFrame, mapping: ColumnMapping) -> pd.DataFrame:
+    target = mapping.target
+    prediction = mapping.prediction
+    subset = []
+    if target is not None:
+        subset.append(target)
+    if prediction is not None and isinstance(mapping.prediction, list):
+        subset +=  prediction
+    if prediction is not None and isinstance(mapping.prediction, str):
+        subset.append(prediction)
+    if len(subset) > 0:
+        return data.replace([np.inf, -np.inf], np.nan).dropna(axis=0, how="any", subset=subset)
+    return data
 
 
 def get_prediction_data(
         data: pd.DataFrame,
         mapping: ColumnMapping,
         threshold: float = 0.5) -> Tuple[pd.Series, Optional[pd.DataFrame]]:
-    if isinstance(mapping.prediction, list):
+
+    # multiclass + probas
+    if (
+        isinstance(mapping.prediction, list)
+        and len(mapping.prediction) > 2
+    ):
         # list of columns with prediction probas, should be same as target labels
         return data[mapping.prediction].idxmax(axis=1), data[mapping.prediction]
+ 
+    # binary + probas
+    if (
+        isinstance(mapping.prediction, list)
+        and len(mapping.prediction) == 2
+    ):
+        predictions = data[mapping.prediction[0]].apply(
+            lambda x: mapping.prediction[0] if x >= threshold else mapping.prediction[1]
+        )
+        return predictions, data[mapping.prediction]
 
+    # # binary + one column probas
+    # if (
+    #         isinstance(mapping.prediction, str)
+    #         and data[mapping.target].dtype == dtype("str")
+    #         and data[mapping.prediction].dtype == dtype("float")
+    #         and mapping.target_names is not None
+    # ):
+    #     predictions = data[mapping.prediction].apply(
+    #         lambda x: mapping.target_names[0] if x >= threshold else mapping.target_names[1]
+    #     )
+    #     prediction_probas = pd.DataFrame.from_dict(
+    #         {
+    #             mapping.target_names[0]: data[mapping.prediction],
+    #             mapping.target_names[1]: data[mapping.prediction].apply(lambda x: 1.0 - x),
+    #         }
+    #     )
+    #     return predictions, prediction_probas
+
+    # binary target and preds are numbers
     if (
             isinstance(mapping.prediction, str)
-            and data[mapping.prediction].dtype == dtype("float64")
-            and mapping.target_names is not None
+            and data[mapping.target].dtype == dtype("int")
+            and data[mapping.prediction].dtype == dtype("float")
     ):
-        predictions = data[mapping.prediction].apply(
-            lambda x: mapping.target_names[1] if x > threshold else mapping.target_names[0]
-        )
+        predictions = data[mapping.prediction] >= threshold
         prediction_probas = pd.DataFrame.from_dict(
             {
-                mapping.target_names[1]: data[mapping.prediction],
-                mapping.target_names[0]: data[mapping.prediction].apply(lambda x: 1.0 - x),
+                1: data[mapping.prediction],
+                0: data[mapping.prediction].apply(lambda x: 1.0 - x),
             }
         )
         return predictions, prediction_probas

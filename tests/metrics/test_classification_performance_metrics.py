@@ -4,10 +4,82 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from evidently.analyzers.classification_performance_analyzer import ConfusionMatrix
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.metrics.base_metric import InputData
 from evidently.metrics import ClassificationPerformanceMetrics
 from evidently.metrics.classification_performance_metrics import get_prediction_data
+
+
+def test_classification_performance_metrics_binary_labels() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "target": [1, 1, 1, 1, 0, 0, 0, 0, 0, 0],
+            "prediction": [1, 1, 0, 1, 0, 0, 1, 0, 0, 1],
+        }
+    )
+    column_mapping = ColumnMapping(target="target", prediction="prediction")
+    metric = ClassificationPerformanceMetrics()
+    result = metric.calculate(
+        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=column_mapping), metrics={}
+    )
+    assert result is not None
+    assert result.current_metrics.accuracy == 0.7
+    assert result.current_metrics.precision == 0.6
+    assert result.current_metrics.recall == 0.75
+    assert result.current_metrics.f1 == 0.6666666666666665
+    assert result.current_metrics.metrics_matrix == {
+        '0': {
+            'precision': 0.8,
+            'recall': 0.6666666666666666,
+            'f1-score': 0.7272727272727272,
+            'support': 6
+        },
+        '1': {
+            'precision': 0.6,
+            'recall': 0.75,
+            'f1-score': 0.6666666666666665,
+            'support': 4
+        },
+        'accuracy': 0.7,
+        'macro avg': {
+            'precision': 0.7,
+            'recall': 0.7083333333333333,
+            'f1-score': 0.6969696969696968,
+            'support': 10
+        },
+        'weighted avg': {
+            'precision': 0.7200000000000001,
+            'recall': 0.7,
+            'f1-score': 0.7030303030303029,
+            'support': 10
+        }
+    }
+    assert result.current_metrics.confusion_matrix == ConfusionMatrix(labels=[0, 1], values=[[4, 2], [1, 3]])
+
+
+def test_classification_performance_metrics_binary_probas_threshold() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "target": [1, 1, 1, 1, 0, 0, 0, 0, 0, 0],
+            "prediction": [0.9, 0.7, 0., 0.5, 0.1, 0.4, 0.6, 0.2, 0.2, 0.8],
+        }
+    )
+    class_threshold = 0.6
+    column_mapping = ColumnMapping(target="target", prediction="prediction")
+    metric = ClassificationPerformanceMetrics().with_threshold(class_threshold)
+    result = metric.calculate(
+        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=column_mapping), metrics={}
+    )
+    assert result is not None
+    assert result.by_threshold_metrics[class_threshold].accuracy == 0.6
+    assert result.by_threshold_metrics[class_threshold].precision == 0.5
+    assert result.by_threshold_metrics[class_threshold].recall == 0.5
+    assert result.by_threshold_metrics[class_threshold].f1 == 0.5
+    assert result.by_threshold_metrics[class_threshold].roc_auc == 0.625
+    assert result.by_threshold_metrics[class_threshold].log_loss == 3.928216092142768
+    assert result.current_metrics.confusion_matrix == ConfusionMatrix(labels=[0, 1], values=[[4, 2], [2, 2]])
+
 
 
 @pytest.mark.parametrize(
