@@ -49,7 +49,8 @@ class SimpleClassificationTest(BaseCheckValueTest):
 class SimpleClassificationTestTopK(SimpleClassificationTest, ABC):
     def __init__(
             self,
-            k: Union[float, int] = None,
+            classification_threshold: Optional[float] = None,
+            k: Optional[Union[float, int]] = None,
             eq: Optional[Numeric] = None,
             gt: Optional[Numeric] = None,
             gte: Optional[Numeric] = None,
@@ -62,8 +63,12 @@ class SimpleClassificationTestTopK(SimpleClassificationTest, ABC):
     ):
         if metric is None:
             metric = ClassificationPerformanceMetrics()
+        if k is not None and classification_threshold is not None:
+            raise ValueError("Only one of classification_threshold or k should be given")
         if k is not None:
             metric = metric.with_k(k)
+        if classification_threshold is not None:
+            metric.with_threshold(classification_threshold)
         super().__init__(eq=eq,
                          gt=gt,
                          gte=gte,
@@ -75,10 +80,13 @@ class SimpleClassificationTestTopK(SimpleClassificationTest, ABC):
                          metric=metric,
                          )
         self.k = k
+        self.threshold = classification_threshold
 
     def calculate_value_for_test(self) -> Optional[Any]:
         if self.k is not None:
             return self.get_value(self.metric.get_result().by_k_metrics[self.k])
+        if self.threshold is not None:
+            return self.get_value(self.metric.get_result().by_threshold_metrics[self.threshold])
         return self.get_value(self.metric.get_result().current_metrics)
 
 

@@ -38,6 +38,7 @@ class ClassificationPerformanceMetricsResults:
     current_metrics: DatasetClassificationPerformanceMetrics
     dummy_metrics: DatasetClassificationPerformanceMetrics
     by_k_metrics: Dict[Union[int, float], DatasetClassificationPerformanceMetrics]
+    by_threshold_metrics: Dict[float, DatasetClassificationPerformanceMetrics]
     reference_metrics: Optional[DatasetClassificationPerformanceMetrics] = None
 
 
@@ -96,12 +97,18 @@ def classification_performance_metrics(
 
 class ClassificationPerformanceMetrics(Metric[ClassificationPerformanceMetricsResults]):
     k_variants: List[Union[int, float]]
+    thresholds: List[float]
 
     def __init__(self):
         self.k_variants = []
+        self.thresholds = []
 
     def with_k(self, k: Union[int, float]) -> 'ClassificationPerformanceMetrics':
         self.k_variants.append(k)
+        return self
+
+    def with_threshold(self, threshold: float) -> 'ClassificationPerformanceMetrics':
+        self.thresholds.append(threshold)
         return self
 
     def calculate(self, data: InputData, metrics: dict) -> ClassificationPerformanceMetricsResults:
@@ -117,27 +124,25 @@ class ClassificationPerformanceMetrics(Metric[ClassificationPerformanceMetricsRe
                         sorted(set(target_data.unique()) | set(prediction_data.unique())))
 
         by_k_results = {}
+        by_threshold_results = {}
 
         for k in self.k_variants:
             # calculate metrics matrix
             if prediction_probas is None or len(labels) != 2:
                 raise ValueError("Top K parameter can be used only with binary classification with probas")
-
-            sorted_prediction = pd.DataFrame(dict(target=target_data,
-                                                  prediction=prediction_data,
-                                                  probas_0=prediction_probas[labels[0]],
-                                                  probas_1=prediction_probas[labels[1]])).sort_values(by='probas_1',
-                                                                                                      ascending=False)
-
             if isinstance(k, float):
-                filtered_data = sorted_prediction.iloc[: int(math.ceil(k * sorted_prediction.shape[0])), :]
+                threshold = prediction_probas[labels[1]].sort_values(ascending=False)[int(math.ceil(k * prediction_probas.shape[0]))]
             elif isinstance(k, int):
-                filtered_data = sorted_prediction.iloc[:k, :]
+                threshold = prediction_probas[labels[1]].sort_values(ascending=False)[k]
             else:
                 raise ValueError(f"Unexpected k type {type(k)}")
-            k_target_data = filtered_data['target']
-            k_prediction_data = filtered_data['prediction']
-            by_k_results[k] = classification_performance_metrics(k_target_data, k_prediction_data, None, labels)
+            k_prediction_data, k_probas = get_prediction_data(current_data, data.column_mapping, threshold)
+            by_k_results[k] = classification_performance_metrics(target_data, k_prediction_data, k_probas, labels)
+
+        for threshold in self.thresholds:
+            k_prediction_data, k_probas = get_prediction_data(current_data, data.column_mapping, threshold)
+            by_threshold_results[threshold] = classification_performance_metrics(target_data, k_prediction_data, k_probas, labels)
+
         current_metrics = classification_performance_metrics(
             target_data, prediction_data, prediction_probas, labels
         )
@@ -162,6 +167,7 @@ class ClassificationPerformanceMetrics(Metric[ClassificationPerformanceMetricsRe
             reference_metrics=reference_metrics,
             dummy_metrics=dummy_metrics,
             by_k_metrics=by_k_results,
+            by_threshold_metrics=by_threshold_results,
         )
 
 
@@ -169,7 +175,10 @@ def _cleanup_data(data: pd.DataFrame) -> pd.DataFrame:
     return data.replace([np.inf, -np.inf], np.nan).dropna(axis=0, how="any")
 
 
-def get_prediction_data(data: pd.DataFrame, mapping: ColumnMapping) -> Tuple[pd.Series, Optional[pd.DataFrame]]:
+def get_prediction_data(
+        data: pd.DataFrame,
+        mapping: ColumnMapping,
+        threshold: float = 0.5) -> Tuple[pd.Series, Optional[pd.DataFrame]]:
     if isinstance(mapping.prediction, list):
         # list of columns with prediction probas, should be same as target labels
         return data[mapping.prediction].idxmax(axis=1), data[mapping.prediction]
@@ -180,7 +189,7 @@ def get_prediction_data(data: pd.DataFrame, mapping: ColumnMapping) -> Tuple[pd.
             and mapping.target_names is not None
     ):
         predictions = data[mapping.prediction].apply(
-            lambda x: mapping.target_names[1] if x > 0.5 else mapping.target_names[0]
+            lambda x: mapping.target_names[1] if x > threshold else mapping.target_names[0]
         )
         prediction_probas = pd.DataFrame.from_dict(
             {
