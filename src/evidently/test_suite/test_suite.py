@@ -13,7 +13,7 @@ from typing import Tuple
 import pandas as pd
 
 import evidently
-from evidently import ColumnMapping
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.analyzers.utils import process_columns
 from evidently.analyzers.utils import DatasetColumns
 from evidently.dashboard.dashboard import TemplateParams
@@ -31,6 +31,7 @@ from evidently.suite.base_suite import Suite
 from evidently.suite.base_suite import find_test_renderer
 from evidently.test_preset.test_preset import TestPreset
 from evidently.tests.base_test import Test
+from evidently.tests.base_test import BaseTestGenerator
 from evidently.tests.base_test import TestResult
 
 
@@ -89,7 +90,12 @@ class TestSuite:
             tests = preset.generate_tests(InputData(reference_data, current_data, column_mapping), self._columns_info)
 
             for test in tests:
-                self._add_test(test)
+                if isinstance(test, BaseTestGenerator):
+                    for test_item in test.generate_tests(columns_info=self._columns_info):
+                        self._add_test(test_item)
+
+                else:
+                    self._add_test(test)
 
         self._inner_suite.verify()
         self._inner_suite.run_calculate(InputData(reference_data, current_data, column_mapping))

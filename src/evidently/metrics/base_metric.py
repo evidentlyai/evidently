@@ -1,7 +1,6 @@
 import abc
 from dataclasses import dataclass
 from typing import Generic
-from typing import Tuple
 from typing import TypeVar
 from typing import Optional
 

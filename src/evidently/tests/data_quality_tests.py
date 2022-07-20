@@ -5,6 +5,7 @@ from typing import Union
 
 import numpy as np
 
+from evidently.analyzers.utils import DatasetColumns
 from evidently.model.widget import BaseWidgetInfo
 from evidently.metrics import DataQualityMetrics
 from evidently.metrics import DataQualityStabilityMetrics
@@ -19,6 +20,7 @@ from evidently.metrics import DataQualityCorrelationMetrics
 from evidently.tests.base_test import BaseCheckValueTest
 from evidently.tests.base_test import TestValueCondition
 from evidently.tests.base_test import Test
+from evidently.tests.base_test import BaseTestGenerator
 from evidently.tests.base_test import TestResult
 from evidently.tests.utils import approx
 from evidently.tests.utils import Numeric
@@ -303,7 +305,10 @@ class TestPredictionFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValue
 
         reference_correlation = self.metric.get_result().reference_correlation
 
-        if reference_correlation is not None and reference_correlation.abs_max_prediction_features_correlation is not None:
+        if (
+            reference_correlation is not None
+            and reference_correlation.abs_max_prediction_features_correlation is not None
+        ):
             value = reference_correlation.abs_max_prediction_features_correlation
             return TestValueCondition(eq=approx(value, relative=0.1))
 
@@ -383,16 +388,18 @@ class TestCorrelationChanges(BaseDataQualityCorrelationsMetricsValueTest):
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
         metric: Optional[DataQualityCorrelationMetrics] = None,
     ):
-        super().__init__(method=method,
-                         eq=eq,
-                         gt=gt,
-                         gte=gte,
-                         is_in=is_in,
-                         lt=lt,
-                         lte=lte,
-                         not_eq=not_eq,
-                         not_in=not_in,
-                         metric=metric)
+        super().__init__(
+            method=method,
+            eq=eq,
+            gt=gt,
+            gte=gte,
+            is_in=is_in,
+            lt=lt,
+            lte=lte,
+            not_eq=not_eq,
+            not_in=not_in,
+            metric=metric,
+        )
         self.corr_diff = corr_diff
 
     def get_condition(self) -> TestValueCondition:
@@ -899,6 +906,13 @@ class TestMostCommonValueShareRenderer(TestRenderer):
         return info
 
 
+class TestAllColumnsMostCommonValueShare(BaseTestGenerator):
+    """Creates most common value share tests for each column in the dataset"""
+
+    def generate_tests(self, columns_info: DatasetColumns) -> List[TestMostCommonValueShare]:
+        return [TestMostCommonValueShare(column_name=name) for name in columns_info.get_all_columns_list()]
+
+
 class TestMeanInNSigmas(Test):
     group = "data_quality"
     name = "Mean Value Stability"
@@ -1017,6 +1031,13 @@ class TestMeanInNSigmasRenderer(TestRenderer):
         return info
 
 
+class TestNumColumnsMeanInNSigmas(BaseTestGenerator):
+    """Create tests of mean for all numeric columns"""
+
+    def generate_tests(self, columns_info: DatasetColumns) -> List[TestMeanInNSigmas]:
+        return [TestMeanInNSigmas(column_name=name, n_sigmas=2) for name in columns_info.num_feature_names]
+
+
 class TestValueRange(Test):
     group = "data_quality"
     name = "Value Range"
@@ -1046,9 +1067,7 @@ class TestValueRange(Test):
         number_not_in_range = self.metric.get_result().number_not_in_range
 
         if number_not_in_range > 0:
-            description = (
-                f"The column **{self.column_name}** has values out of range."
-            )
+            description = f"The column **{self.column_name}** has values out of range."
             test_result = TestResult.FAIL
         else:
             description = f"All values in the column **{self.column_name}** are within range"
@@ -1236,6 +1255,13 @@ class TestShareOfOutRangeValuesRenderer(TestRenderer):
         return info
 
 
+class TestNumColumnsOutOfRangeValues(BaseTestGenerator):
+    """Creates share of out of range values tests for all numeric columns"""
+
+    def generate_tests(self, columns_info: DatasetColumns) -> List[TestShareOfOutRangeValues]:
+        return [TestShareOfOutRangeValues(column_name=name) for name in columns_info.num_feature_names]
+
+
 class TestValueList(Test):
     group = "data_quality"
     name = "Out-of-List Values"
@@ -1379,6 +1405,13 @@ class TestShareOfOutListValues(BaseDataQualityValueListMetricsTest):
             f"({number_not_in_range} out of {rows_count}). "
             f"The test threshold is {self.get_condition()}."
         )
+
+
+class TestCatColumnsOutOfListValues(BaseTestGenerator):
+    """Create share of out of list values tests for category columns"""
+
+    def generate_tests(self, columns_info: DatasetColumns) -> List[TestShareOfOutListValues]:
+        return [TestShareOfOutListValues(column_name=name) for name in columns_info.cat_feature_names]
 
 
 class TestValueQuantile(BaseCheckValueTest):

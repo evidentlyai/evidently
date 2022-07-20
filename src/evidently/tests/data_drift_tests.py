@@ -10,6 +10,7 @@ import dataclasses
 import numpy as np
 import pandas as pd
 
+from evidently.analyzers.utils import DatasetColumns
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import DataDriftOptions
 from evidently.metrics import DataDriftMetrics
@@ -18,6 +19,7 @@ from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.renderers.base_renderer import DetailsInfo
 from evidently.renderers.base_renderer import default_renderer
 from evidently.tests.base_test import Test
+from evidently.tests.base_test import BaseTestGenerator
 from evidently.tests.base_test import BaseCheckValueTest
 from evidently.tests.base_test import TestResult
 from evidently.tests.base_test import TestValueCondition
@@ -160,6 +162,16 @@ class TestFeatureValueDrift(Test):
                 result_status = TestResult.FAIL
 
         return TestResult(name=self.name, description=description, status=result_status)
+
+
+class TestAllFeaturesValueDrift(BaseTestGenerator):
+    """Create value drift tests for numeric and category features"""
+
+    def generate_tests(self, columns_info: DatasetColumns) -> List[TestFeatureValueDrift]:
+        return [
+            TestFeatureValueDrift(column_name=name)
+            for name in columns_info.get_all_features_list(include_datetime_feature=False)
+        ]
 
 
 @default_renderer(test_type=TestNumberOfDriftedFeatures)

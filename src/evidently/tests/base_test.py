@@ -3,10 +3,13 @@ from abc import ABC
 
 from dataclasses import dataclass
 from typing import Any
+from typing import Generic
 from typing import List
 from typing import Optional
+from typing import TypeVar
 from typing import Union
 
+from evidently.analyzers.utils import DatasetColumns
 from evidently.tests.utils import ApproxValue
 from evidently.tests.utils import Numeric
 
@@ -238,3 +241,12 @@ class BaseCheckValueTest(BaseConditionsTest):
             result.mark_as_error("Cannot calculate the condition")
 
         return result
+
+
+TTest = TypeVar("TTest")
+
+
+class BaseTestGenerator(Generic[TTest]):
+    @abc.abstractmethod
+    def generate_tests(self, columns_info: DatasetColumns) -> List[TTest]:
+        raise NotImplementedError()
