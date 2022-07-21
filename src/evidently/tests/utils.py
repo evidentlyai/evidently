@@ -415,3 +415,35 @@ def plot_correlations(current_correlations, reference_correlations):
         fig.append_trace(trace, 1, 2)
     fig.update_layout(coloraxis={"colorscale": "RdBu_r"})
     return fig
+
+def plot_conf_mtrx(curr_mtrx, ref_mtrx):
+    if ref_mtrx is not None:
+        cols = 2
+        subplot_titles = ["current", "reference"]
+    else:
+        cols = 1
+        subplot_titles = [""]
+    fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
+
+    trace = go.Heatmap(
+        z=curr_mtrx.values,
+        x=curr_mtrx.labels,
+        y=curr_mtrx.labels,
+        text=curr_mtrx.values.astype(str),
+        texttemplate="%{text}",
+        coloraxis="coloraxis",
+    )
+    fig.append_trace(trace, 1, 1)
+    
+    if ref_mtrx is not None:
+        trace = go.Heatmap(
+            z=ref_mtrx.values,
+            x=ref_mtrx.labels,
+            y=ref_mtrx.labels,
+            text=ref_mtrx.values.astype(str),
+            texttemplate="%{text}",
+            coloraxis="coloraxis",
+        )
+    fig.append_trace(trace, 1, 2)
+    fig.update_layout(coloraxis={"colorscale": "RdBu_r"})
+    return fig

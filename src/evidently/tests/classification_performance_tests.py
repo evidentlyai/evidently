@@ -4,8 +4,12 @@ from typing import Optional, List, Union, Any
 
 from evidently.metrics.classification_performance_metrics import ClassificationPerformanceMetrics
 from evidently.metrics.classification_performance_metrics import DatasetClassificationPerformanceMetrics
+from evidently.renderers.base_renderer import default_renderer
+from evidently.renderers.base_renderer import TestRenderer
+from evidently.renderers.base_renderer import TestHtmlInfo
+from evidently.renderers.base_renderer import DetailsInfo
 from evidently.tests.base_test import BaseCheckValueTest, TestValueCondition
-from evidently.tests.utils import Numeric, approx
+from evidently.tests.utils import Numeric, approx, plot_conf_mtrx
 
 
 class SimpleClassificationTest(BaseCheckValueTest):
@@ -115,6 +119,46 @@ class TestAccuracyScore(SimpleClassificationTestTopK):
 
     def get_description(self, value: Numeric) -> str:
         return f"Accuracy Score is {value:.3g}. Test Threshold is {self.get_condition()}"
+
+
+# @default_renderer(test_type=TestAccuracyScore)
+# class TestAccuracyScoreRenderer(TestRenderer):
+#     def render_html(self, obj: TestAccuracyScore) -> TestHtmlInfo:
+#         info = super().render_html(obj)
+#         k = obj.k
+#         threshold = obj.threshold
+#         if k:
+#             metrics = obj.metric.get_result().by_k_metrics[k]
+#         elif threshold:
+#             metrics = obj.metric.get_result().by_threshold_metrics[threshold]
+#         else:
+#             metrics = obj.metric.get_result()
+        
+#         ref_data = obj.metric.get_result().refeernce_metrics
+#         if "reference" in obj.metric.get_result().hist_for_plot.keys():
+#             is_ref_data = True
+#         fig = plot_conf_mtrx(
+#             val_for_plot=obj.metric.get_result().vals_for_plots["mean_abs_perc_error"],
+#             hist_for_plot=obj.metric.get_result().hist_for_plot,
+#             name="MAPE",
+#             curr_mertic=obj.metric.get_result().mean_abs_perc_error,
+#             ref_metric=obj.metric.get_result().mean_abs_perc_error_ref,
+#             is_ref_data=is_ref_data,
+#         )
+#         fig_json = fig.to_plotly_json()
+#         info.details.append(
+#             DetailsInfo(
+#                 "MAPE",
+#                 "",
+#                 BaseWidgetInfo(
+#                     title=fig_json["layout"]["title"]["text"],
+#                     size=2,
+#                     type="big_graph",
+#                     params={"data": fig_json["data"], "layout": fig_json["layout"]},
+#                 ),
+#             )
+#         )
+#         return info
 
 
 class TestPrecisionScore(SimpleClassificationTestTopK):
