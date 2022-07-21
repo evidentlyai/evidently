@@ -84,10 +84,27 @@ class SimpleClassificationTestTopK(SimpleClassificationTest, ABC):
 
     def calculate_value_for_test(self) -> Optional[Any]:
         if self.k is not None:
-            return self.get_value(self.metric.get_result().by_k_metrics[self.k])
+            return self.get_value(self.metric.get_result().current_by_k_metrics[self.k])
         if self.threshold is not None:
-            return self.get_value(self.metric.get_result().by_threshold_metrics[self.threshold])
+            return self.get_value(self.metric.get_result().current_by_threshold_metrics[self.threshold])
         return self.get_value(self.metric.get_result().current_metrics)
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.has_condition():
+            return self.condition
+        result = self.metric.get_result()
+        ref_metrics = result.reference_metrics
+        if ref_metrics is not None:
+            if self.k is not None:
+                if result.reference_by_k_metrics is None:
+                    raise ValueError("Reference by K isn't set but expected by test")
+                ref_metrics = result.reference_by_k_metrics[self.k]
+            if self.threshold is not None:
+                if result.reference_by_threshold_metrics is None:
+                    raise ValueError("Reference by Threshold isn't set but expected by test")
+                ref_metrics = result.reference_by_threshold_metrics[self.threshold]
+            return TestValueCondition(eq=approx(self.get_value(ref_metrics)))
+        return TestValueCondition(gt=self.get_value(result.dummy_metrics))
 
 
 class TestAccuracyScore(SimpleClassificationTestTopK):
