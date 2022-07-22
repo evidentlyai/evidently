@@ -174,6 +174,18 @@ class TestAllFeaturesValueDrift(BaseTestGenerator):
         ]
 
 
+class TestCustomFeaturesValueDrift(BaseTestGenerator):
+    """Create value drift tests for specified features"""
+
+    features: List[str]
+
+    def __init__(self, features: List[str]):
+        self.features = features
+
+    def generate_tests(self, columns_info: DatasetColumns) -> List[TestFeatureValueDrift]:
+        return [TestFeatureValueDrift(column_name=name) for name in self.features]
+
+
 @default_renderer(test_type=TestNumberOfDriftedFeatures)
 class TestNumberOfDriftedFeaturesRenderer(TestRenderer):
     def render_json(self, obj: TestNumberOfDriftedFeatures) -> dict:

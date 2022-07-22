@@ -2,6 +2,7 @@ from .data_drift_tests import TestNumberOfDriftedFeatures
 from .data_drift_tests import TestShareOfDriftedFeatures
 from .data_drift_tests import TestFeatureValueDrift
 from .data_drift_tests import TestAllFeaturesValueDrift
+from .data_drift_tests import TestCustomFeaturesValueDrift
 from .data_integrity_tests import TestNumberOfColumns
 from .data_integrity_tests import TestNumberOfRows
 from .data_integrity_tests import TestNumberOfNANs
