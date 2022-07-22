@@ -247,6 +247,30 @@ TTest = TypeVar("TTest")
 
 
 class BaseTestGenerator(Generic[TTest]):
+    """Base class for tests generator creation
+
+    To create a new generator:
+        - inherit a class from the base class
+        - implement `generate_tests` method and return a list of test objects from it
+
+    Test Suite will call the method and add generated tests to its list instead of the generator object.
+
+    You can use `columns_info` parameter in `generate_tests` for getting data structure meta info like columns list.
+
+    For example:
+        if you want to create a test generator for 50, 90, 99 quantiles tests
+        for all numeric columns with default condition, by reference quantiles
+
+    class TestQuantiles():
+        def generate_tests(self, columns_info: DatasetColumns) -> List[TestValueQuantile]:
+            return [
+                TestValueQuantile(column_name=name, quantile=quantile)
+                for quantile in (0.5, 0.9, 0.99)
+                for name in columns_info.num_feature_names
+            ]
+
+    Do not forget set correct test type for `generate_tests` return value
+    """
     @abc.abstractmethod
     def generate_tests(self, columns_info: DatasetColumns) -> List[TTest]:
         raise NotImplementedError()
