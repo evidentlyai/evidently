@@ -23,8 +23,12 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
-
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.6'
+          architecture: 'x64'
+          cache: 'pip'
       # Runs a single command using the runners shell
       - name: Install dependencies
         run: pip install -r requirements.txt && pip install -r dev_requirements.txt
@@ -36,11 +40,12 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
         with:
           python-version: '3.6'
           architecture: 'x64'
+          cache: 'pip'
       - name: Install dependencies
         run: pip install -r requirements.txt && pip install -r dev_requirements.txt && pip install --upgrade pygments
       - name: Install package
@@ -60,8 +65,20 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.6'
+          architecture: 'x64'
+          cache: 'pip'
       - name: Install dependencies
         run: pip install -r requirements.txt
+      - name: Install wheel
+        run: pip install wheel
       - name: Build package
-        run: python setup.py sdist
+        run: python setup.py sdist bdist_wheel
+      - name: Archive built package
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts
+          path: dist/
