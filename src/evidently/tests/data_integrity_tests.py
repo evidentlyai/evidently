@@ -517,7 +517,7 @@ class TestColumnsType(Test):
 
     @dataclasses.dataclass
     class Result(TestResult):
-        columns_types: Dict[str, Tuple[str, str]]
+        columns_types: Dict[str, Tuple[str, str]] = dataclasses.field(default=dict)
 
     def __init__(
         self, columns_type: Optional[dict] = None, data_integrity_metric: Optional[DataIntegrityMetrics] = None

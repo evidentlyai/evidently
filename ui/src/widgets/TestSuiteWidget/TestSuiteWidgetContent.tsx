@@ -14,7 +14,10 @@ const TestSuiteFolding: React.FC<TestSuiteFoldingProps> = ({type, availableTypes
     (
         <>
             <Select value={type} onChange={event => onChange(event.target.value as string)}>
-                {availableTypes.map(typeData => <MenuItem value={typeData.id}>{typeData.title}</MenuItem>)}
+                {availableTypes.map(typeData => <MenuItem key={typeData.id}
+                                                          value={typeData.id}>
+                    {typeData.title}
+                </MenuItem>)}
             </Select>
         </>
     )
@@ -33,7 +36,7 @@ const TestGroup: React.FC<{ groupInfo: TestGroupData, tests: TestData[] }> = ({g
         </Alert>
         <Collapse in={collapse.active} mountOnEnter={true} unmountOnExit={true}>
             <Grid container spacing={2}>
-                {tests.map(test => <Grid item xs={12}><TestInfo {...test} /></Grid>)}
+                {tests.map((test, idx) => <Grid item key={idx} xs={12}><TestInfo {...test} /></Grid>)}
             </Grid>
         </Collapse>
     </Paper></>
@@ -52,7 +55,17 @@ const GroupedSection: React.FC<GroupedSectionProps> = ({type, groupsInfo, tests}
             return [groupsInfo.find(t => t.id === type)!.values, test => test.state]
         }
 
-        throw "unexpected type";
+        const group = groupsInfo.find(t => t.id === type);
+        console.log(type);
+        console.log(groupsInfo);
+        console.log(group);
+        console.log(tests);
+        if (group === undefined) {
+            throw "unexpected type";
+        }
+        return [[...group.values,
+            {id: "no group", title: "No Group", sortIndex: -1, description: "No group of this type was provided"}],
+                test => test.groups[type] ?? "no group"];
     }
 
     const [actualGroups, groupFn] = getGroupFn(type)
@@ -64,10 +77,14 @@ const GroupedSection: React.FC<GroupedSectionProps> = ({type, groupsInfo, tests}
     return <>
         <Grid container spacing={2}>
             {Array.from(grouped.entries())
-                .map(([key, value]) => [actualGroups.find(t => t.id === key)!, value] as [TestGroupData, TestData[]])
-                .sort((a, b) => a[0].sortIndex - b[0].sortIndex)
-                .map(([key, value]) =>
-                    <Grid item xs={12}>
+                .map(([key, value]) => [actualGroups.find(t => t.id === key) ?? {
+                    id: key,
+                    title: key
+                }, value] as [TestGroupData, TestData[]])
+                .sort((a, b) =>
+                    (a[0].sortIndex ?? 0) - (b[0].sortIndex ?? 0))
+                .map(([key, value], idx) =>
+                    <Grid item xs={12} key={`test_${idx}`}>
                         <TestGroup groupInfo={key} tests={value}/>
                     </Grid>)
             }
@@ -77,11 +94,13 @@ const GroupedSection: React.FC<GroupedSectionProps> = ({type, groupsInfo, tests}
 
 const DefaultGroups: TestGroupTypeData[] = [
     {id: "none", title: "No Grouping", values: []},
-    {id: "status", title: "Status", values: [
-    {id: "success", title: "Passed tests", sortIndex: 3, description: "", severity: "success"},
-    {id: "fail", title: "Failed tests", sortIndex: 1, description: "", severity: "fail"},
-    {id: "warning", title: "Passed tests with warnings", sortIndex: 2, description: "", severity: "warning"},
-]},
+    {
+        id: "status", title: "Status", values: [
+            {id: "success", title: "Passed tests", sortIndex: 3, description: "", severity: "success"},
+            {id: "fail", title: "Failed tests", sortIndex: 1, description: "", severity: "fail"},
+            {id: "warning", title: "Passed tests with warnings", sortIndex: 2, description: "", severity: "warning"},
+        ]
+    },
 ]
 
 /**
@@ -89,19 +108,21 @@ const DefaultGroups: TestGroupTypeData[] = [
  * @constructor
  */
 const TestSuiteWidgetContent: React.FC<TestSuiteWidgetParams> = ({tests, testGroupTypes}) => {
-    const [grouping, changeGrouping] = React.useState({"group_type": "none"})
+    const [grouping, changeGrouping] = React.useState({"group_type": "none"});
+    let availableTypes = [...DefaultGroups, ...(testGroupTypes ?? [])];
     return (<><Grid container spacing={2}>
         <Grid item xs={12}>
             <TestSuiteFolding type={grouping.group_type}
-                              availableTypes={[...DefaultGroups, ...(testGroupTypes ?? [])]}
+                              availableTypes={availableTypes}
                               onChange={type => changeGrouping({"group_type": type})}/>
         </Grid>
         <Grid item xs={12}>
             <Grid container spacing={2}>
                 {grouping.group_type === "none"
-                    ? tests.map(test => <Grid item xs={12}><TestInfo {...test} /></Grid>)
+                    ? tests.map((test, idx) =>
+                        <Grid item key={`test_${idx}`} xs={12}><TestInfo {...test} /></Grid>)
                     : <GroupedSection type={grouping.group_type}
-                                      groupsInfo={testGroupTypes}
+                                      groupsInfo={availableTypes}
                                       tests={tests}/>}
             </Grid>
         </Grid>

@@ -312,7 +312,10 @@ class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest, ABC):
         )
 
     def check(self):
-        result = TestResult(name=self.name, description="The test was not launched", status=TestResult.SKIPPED)
+        result = TestResult(name=self.name,
+                            description="The test was not launched",
+                            status=TestResult.SKIPPED,
+                            groups={"by_feature": self.column_name})
         features_stats = self.metric.get_result().features_stats.get_all_features()
 
         if self.column_name not in features_stats:

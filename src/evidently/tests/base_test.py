@@ -1,8 +1,9 @@
 import abc
 from abc import ABC
 
+import dataclasses
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Dict
 from typing import List
 from typing import Optional
 from typing import Union
@@ -26,6 +27,8 @@ class TestResult:
     description: str
     # status of the test result
     status: str
+    # grouping parameters
+    groups: Dict[str, str] = dataclasses.field(default_factory=dict)
 
     def set_status(self, status: str, description: Optional[str] = None) -> None:
         self.status = status

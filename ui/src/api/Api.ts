@@ -171,15 +171,15 @@ export interface TestData {
     title: string;
     description: string;
     state: TestState;
-    groupData: Map<string, string>;
+    groups: any;
     details?: BigTableRowDetails;
 }
 
 export interface TestGroupData {
     id: string;
     title: string;
-    description: string;
-    sortIndex: number;
+    description?: string;
+    sortIndex?: number;
     severity?: TestState;
 }
 

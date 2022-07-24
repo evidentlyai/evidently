@@ -27,7 +27,7 @@ from evidently.tests.utils import Numeric
 
 @dataclasses.dataclass
 class TestDataDriftResult(TestResult):
-    features: Dict[str, Tuple[str, float, float]]
+    features: Dict[str, Tuple[str, float, float]] = dataclasses.field(default=dict)
 
 
 class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
@@ -159,7 +159,10 @@ class TestFeatureValueDrift(Test):
             else:
                 result_status = TestResult.FAIL
 
-        return TestResult(name=self.name, description=description, status=result_status)
+        return TestResult(name=self.name,
+                          description=description,
+                          status=result_status,
+                          groups={"by_feature": self.column_name})
 
 
 @default_renderer(test_type=TestNumberOfDriftedFeatures)
