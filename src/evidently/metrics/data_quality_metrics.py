@@ -228,6 +228,8 @@ class DataQualityValueRangeMetricsResults:
     share_not_in_range: float
     distr_for_plot: Dict[str, pd.DataFrame]
     rows_count: int
+    ref_min: Optional[float] = None
+    ref_max: Optional[float] = None
 
 
 class DataQualityValueRangeMetrics(Metric[DataQualityValueRangeMetricsResults]):
@@ -246,11 +248,18 @@ class DataQualityValueRangeMetrics(Metric[DataQualityValueRangeMetricsResults]):
         if (self.left is None or self.right is None) and data.reference_data is None:
             raise ValueError("Reference should be present")
 
+        ref_min = None
+        ref_max = None
+
+        if data.reference_data is not None:
+            ref_min = data.reference_data[self.column].min()
+            ref_max = data.reference_data[self.column].max()
+
         if self.left is None and data.reference_data is not None:
-            self.left = data.reference_data[self.column].min()
+            self.left = ref_min
 
         if self.right is None and data.reference_data is not None:
-            self.right = data.reference_data[self.column].max()
+            self.right = ref_max
 
         rows_count = data.current_data[self.column].dropna().shape[0]
 
@@ -281,6 +290,8 @@ class DataQualityValueRangeMetrics(Metric[DataQualityValueRangeMetricsResults]):
             share_not_in_range=number_not_in_range / rows_count,
             distr_for_plot=distr_for_plot,
             rows_count=rows_count,
+            ref_min=ref_min,
+            ref_max=ref_max
         )
 
 
@@ -291,6 +302,7 @@ class DataQualityValueQuantileMetricsResults:
     # range of the quantile (from 0 to 1)
     quantile: float
     distr_for_plot: Dict[str, pd.DataFrame]
+    ref_value: Optional[float]
 
 
 class DataQualityValueQuantileMetrics(Metric[DataQualityValueQuantileMetricsResults]):
@@ -313,14 +325,17 @@ class DataQualityValueQuantileMetrics(Metric[DataQualityValueQuantileMetricsResu
         curr_feature = data.current_data[self.column]
 
         ref_feature = None
+        ref_value = None
         if data.reference_data is not None:
             ref_feature = data.reference_data[self.column]
+            ref_value = data.reference_data[self.column].quantile(self.quantile)
 
         distr_for_plot = make_hist_for_num_plot(curr_feature, ref_feature)
         return DataQualityValueQuantileMetricsResults(
             value=data.current_data[self.column].quantile(self.quantile),
             quantile=self.quantile,
             distr_for_plot=distr_for_plot,
+            ref_value=ref_value
         )
 
 

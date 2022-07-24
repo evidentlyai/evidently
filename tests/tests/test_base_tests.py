@@ -49,7 +49,7 @@ def test_value_condition_class(condition_args, value, expected_result):
 )
 def test_value_condition_set(condition_args, expected):
     condition = TestValueCondition(**condition_args)
-    assert condition.is_set() == expected
+    assert condition.has_condition() == expected
 
 
 @pytest.mark.parametrize(

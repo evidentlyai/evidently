@@ -94,8 +94,16 @@ class TestValueCondition:
     not_eq: Optional[Numeric] = None
     not_in: Optional[List[Union[Numeric, str, bool]]] = None
 
-    def is_set(self) -> bool:
-        return any([self.eq, self.gt, self.gte, self.is_in, self.lt, self.lte, self.not_in, self.not_eq])
+    def has_condition(self) -> bool:
+        """
+        Checks if we have a condition in the object and returns True in this case.
+
+        If we have no conditions - returns False.
+        """
+        return any(
+            value is not None
+            for value in (self.eq, self.gt, self.gte, self.is_in, self.lt, self.lte, self.not_in, self.not_eq)
+        )
 
     def check_value(self, value: Numeric) -> bool:
         result = True
@@ -216,7 +224,12 @@ class BaseCheckValueTest(BaseConditionsTest):
                 result.mark_as_error()
 
             else:
-                condition_check_result = self.get_condition().check_value(value)
+                condition = self.get_condition()
+
+                if condition is None:
+                    raise ValueError
+
+                condition_check_result = condition.check_value(value)
 
                 if condition_check_result:
                     result.mark_as_success()

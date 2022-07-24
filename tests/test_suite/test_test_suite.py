@@ -20,9 +20,9 @@ from evidently.tests import TestNumberOfDuplicatedRows
 from evidently.tests import TestNumberOfDuplicatedColumns
 from evidently.tests import TestColumnsType
 from evidently.tests import TestColumnNANShare
-from evidently.tests import TestAllConstantValues
-from evidently.tests import TestAllUniqueValues
-from evidently.tests import TestColumnValueRegexp
+from evidently.tests import TestColumnAllConstantValues
+from evidently.tests import TestColumnAllUniqueValues
+from evidently.tests import TestColumnValueRegExp
 from evidently.tests import TestConflictTarget
 from evidently.tests import TestConflictPrediction
 from evidently.tests import TestFeatureValueMin
@@ -41,6 +41,15 @@ from evidently.tests import TestValueList
 from evidently.tests import TestNumberOfOutListValues
 from evidently.tests import TestShareOfOutListValues
 from evidently.tests import TestValueQuantile
+from evidently.tests.base_test import Test
+
+
+class ErrorTest(Test):
+    name = "Error Test"
+    group = "example"
+
+    def check(self):
+        raise ValueError("Test Exception")
 
 
 def test_export_to_json():
@@ -88,11 +97,11 @@ def test_export_to_json():
         TestNumberOfDuplicatedColumns(),
         TestColumnsType({"num_feature_1": int, "cat_feature_2": str}),
         TestColumnNANShare(column_name="num_feature_1", gt=5),
-        TestColumnValueRegexp(column_name="cat_feature_2", reg_exp=r"[n|y|n//a]"),
+        TestColumnValueRegExp(column_name="cat_feature_2", reg_exp=r"[n|y|n//a]"),
         TestConflictTarget(),
         TestConflictPrediction(),
-        TestAllConstantValues(column_name="num_feature_1"),
-        TestAllUniqueValues(column_name="num_feature_1"),
+        TestColumnAllConstantValues(column_name="num_feature_1"),
+        TestColumnAllUniqueValues(column_name="num_feature_1"),
         TestFeatureValueMin(column_name="num_feature_1"),
         TestFeatureValueMax(column_name="num_feature_1"),
         TestFeatureValueMean(column_name="num_feature_1"),
@@ -109,6 +118,7 @@ def test_export_to_json():
         TestNumberOfOutListValues(column_name="num_feature_1"),
         TestShareOfOutListValues(column_name="num_feature_1"),
         TestValueQuantile(column_name="num_feature_1", quantile=0.1, lt=2),
+        ErrorTest(),
     ]
     suite = TestSuite(tests=tests)
     suite.run(current_data=current_data, reference_data=reference_data, column_mapping=column_mapping)
@@ -150,13 +160,15 @@ def test_export_to_json():
     assert summary_result["all_passed"] is False
 
     assert "total_tests" in summary_result
-    assert summary_result["total_tests"] == 36
+    assert summary_result["total_tests"] == 37
 
     assert "success_tests" in summary_result
-    assert summary_result["success_tests"] == 31
+    assert summary_result["success_tests"] == 28
 
     assert "failed_tests" in summary_result
-    assert summary_result["failed_tests"] == 5
+    assert summary_result["failed_tests"] == 8
+
+
 
     assert "by_status" in summary_result
-    assert summary_result["by_status"] == {"FAIL": 5, "SUCCESS": 31}
+    assert summary_result["by_status"] == {"FAIL": 8, "SUCCESS": 28, "ERROR": 1}

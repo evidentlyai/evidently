@@ -13,12 +13,13 @@ from .data_integrity_tests import TestNumberOfDuplicatedRows
 from .data_integrity_tests import TestNumberOfDuplicatedColumns
 from .data_integrity_tests import TestColumnsType
 from .data_integrity_tests import TestColumnNANShare
-from .data_integrity_tests import TestAllConstantValues
-from .data_integrity_tests import TestAllUniqueValues
-from .data_integrity_tests import TestColumnValueRegexp
+from .data_integrity_tests import TestColumnAllConstantValues
+from .data_integrity_tests import TestColumnAllUniqueValues
+from .data_integrity_tests import TestColumnValueRegExp
 from .data_quality_tests import TestConflictTarget
 from .data_quality_tests import TestConflictPrediction
 from .data_quality_tests import TestTargetPredictionCorrelation
+from .data_quality_tests import TestPredictionFeaturesCorrelations
 from .data_quality_tests import TestFeatureValueMin
 from .data_quality_tests import TestFeatureValueMax
 from .data_quality_tests import TestFeatureValueMean
@@ -37,6 +38,7 @@ from .data_quality_tests import TestShareOfOutListValues
 from .data_quality_tests import TestValueQuantile
 from .data_quality_tests import TestHighlyCorrelatedFeatures
 from .data_quality_tests import TestTargetFeaturesCorrelations
+from .data_quality_tests import TestCorrelationChanges
 from .regression_performance_tests import TestValueMAE
 from .regression_performance_tests import TestValueMAPE
 from .regression_performance_tests import TestValueMeanError

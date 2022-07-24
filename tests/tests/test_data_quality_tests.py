@@ -28,6 +28,7 @@ from evidently.tests import TestValueQuantile
 from evidently.tests import TestHighlyCorrelatedFeatures
 from evidently.tests import TestTargetFeaturesCorrelations
 from evidently.test_suite import TestSuite
+from evidently.tests.base_test import TestResult
 from evidently.tests.utils import approx
 
 
@@ -94,6 +95,30 @@ def test_data_quality_test_min(
     suite.run(current_data=test_dataset, reference_data=reference_dataset)
     assert bool(suite) is expected_success
 
+
+@pytest.mark.parametrize(
+    "test_dataset, reference_dataset, test_object, expected_success",
+    (
+            (
+                    pd.DataFrame(
+                        {"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 1, 2, 5],
+                         "target": [0, 0, 0, 1]}
+                    ),
+                    None,
+                    TestFeatureValueMin(column_name="numerical_feature"),
+                    False,
+            ),
+    )
+)
+def test_data_quality_test_min_exception(
+        test_dataset: pd.DataFrame,
+        reference_dataset: pd.DataFrame,
+        test_object: TestFeatureValueMin,
+        expected_success: bool,
+) -> None:
+    suite = TestSuite(tests=[test_object])
+    suite.run(current_data=test_dataset, reference_data=reference_dataset)
+    assert suite.as_dict()['tests'][0]['status'] == TestResult.ERROR
 
 def test_data_quality_test_max() -> None:
     test_dataset = pd.DataFrame(
@@ -280,7 +305,7 @@ def test_data_quality_test_most_common_value_share_json_render() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "The most common value in the column feature1 is 1. Its share is 0.5."
+        "description": "The most common value in the column **feature1** is 1. Its share is 0.5."
         " The test threshold is eq=0.5.",
         "group": "data_quality",
         "name": "Share of the Most Common Value",
@@ -333,7 +358,7 @@ def test_data_quality_test_value_in_n_sigmas_json_render() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "Mean value of column feature1 0.5 is in range from -2.4 to 3.4",
+        "description": "The mean value of the column **feature1** is 0.5. The expected range is from -2.4 to 3.4",
         "group": "data_quality",
         "name": "Mean Value Stability",
         "parameters": {
@@ -455,7 +480,7 @@ def test_data_quality_test_share_of_values_not_in_range_json_render() -> None:
     assert result_from_json["summary"]["all_passed"] is False
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "The share of values out of range in the column feature1 is 0.2 (1 out of 5)."
+        "description": "The share of values out of range in the column **feature1** is 0.2 (1 out of 5)."
         "  The test threshold is gt=0.2.",
         "group": "data_quality",
         "name": "Share of Out-of-Range Values",
@@ -511,9 +536,9 @@ def test_data_quality_test_value_in_list_json_render() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "All values is in the values list",
+        "description": "All values in the column **target** are in the list.",
         "group": "data_quality",
-        "name": "Test checks whether a feature values are in some list of values",
+        "name": "Out-of-List Values",
         "parameters": {"column_name": "target", "number_not_in_list": 0, "values": None},
         "status": "SUCCESS",
     }
