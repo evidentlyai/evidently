@@ -1,15 +1,17 @@
 import abc
 from abc import ABC
-from typing import Optional, List, Union, Any
+from typing import Optional, List, Union, Any, Tuple
 
 from evidently.metrics.classification_performance_metrics import ClassificationPerformanceMetrics
+from evidently.metrics.classification_performance_metrics import ClassificationPerformanceMetricsResults
 from evidently.metrics.classification_performance_metrics import DatasetClassificationPerformanceMetrics
+from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.renderers.base_renderer import DetailsInfo
 from evidently.tests.base_test import BaseCheckValueTest, TestValueCondition
-from evidently.tests.utils import Numeric, approx, plot_conf_mtrx
+from evidently.tests.utils import Numeric, approx, plot_conf_mtrx, plot_roc_auc
 
 
 class SimpleClassificationTest(BaseCheckValueTest):
@@ -42,7 +44,9 @@ class SimpleClassificationTest(BaseCheckValueTest):
             return self.condition
         ref_metrics = self.metric.get_result().reference_metrics
         if ref_metrics is not None:
-            return TestValueCondition(eq=approx(self.get_value(ref_metrics)))
+            return TestValueCondition(eq=approx(self.get_value(ref_metrics),relative=0.1))
+        if self.get_value(self.metric.get_result().dummy_metrics) is None:
+            raise ValueError("Neither required test parameters nor reference data has been provided.")
         return TestValueCondition(gt=self.get_value(self.metric.get_result().dummy_metrics))
 
     @abc.abstractmethod
@@ -107,7 +111,9 @@ class SimpleClassificationTestTopK(SimpleClassificationTest, ABC):
                 if result.reference_by_threshold_metrics is None:
                     raise ValueError("Reference by Threshold isn't set but expected by test")
                 ref_metrics = result.reference_by_threshold_metrics[self.threshold]
-            return TestValueCondition(eq=approx(self.get_value(ref_metrics)))
+            return TestValueCondition(eq=approx(self.get_value(ref_metrics), relative=0.1))
+        if self.get_value(result.dummy_metrics) is None:
+            raise ValueError("Neither required test parameters nor reference data has been provided.")
         return TestValueCondition(gt=self.get_value(result.dummy_metrics))
 
 
@@ -121,44 +127,33 @@ class TestAccuracyScore(SimpleClassificationTestTopK):
         return f"Accuracy Score is {value:.3g}. Test Threshold is {self.get_condition()}"
 
 
-# @default_renderer(test_type=TestAccuracyScore)
-# class TestAccuracyScoreRenderer(TestRenderer):
-#     def render_html(self, obj: TestAccuracyScore) -> TestHtmlInfo:
-#         info = super().render_html(obj)
-#         k = obj.k
-#         threshold = obj.threshold
-#         if k:
-#             metrics = obj.metric.get_result().by_k_metrics[k]
-#         elif threshold:
-#             metrics = obj.metric.get_result().by_threshold_metrics[threshold]
-#         else:
-#             metrics = obj.metric.get_result()
-        
-#         ref_data = obj.metric.get_result().refeernce_metrics
-#         if "reference" in obj.metric.get_result().hist_for_plot.keys():
-#             is_ref_data = True
-#         fig = plot_conf_mtrx(
-#             val_for_plot=obj.metric.get_result().vals_for_plots["mean_abs_perc_error"],
-#             hist_for_plot=obj.metric.get_result().hist_for_plot,
-#             name="MAPE",
-#             curr_mertic=obj.metric.get_result().mean_abs_perc_error,
-#             ref_metric=obj.metric.get_result().mean_abs_perc_error_ref,
-#             is_ref_data=is_ref_data,
-#         )
-#         fig_json = fig.to_plotly_json()
-#         info.details.append(
-#             DetailsInfo(
-#                 "MAPE",
-#                 "",
-#                 BaseWidgetInfo(
-#                     title=fig_json["layout"]["title"]["text"],
-#                     size=2,
-#                     type="big_graph",
-#                     params={"data": fig_json["data"], "layout": fig_json["layout"]},
-#                 ),
-#             )
-#         )
-#         return info
+@default_renderer(test_type=TestAccuracyScore)
+class TestAccuracyScoreRenderer(TestRenderer):
+    def render_html(self, obj: TestAccuracyScore) -> TestHtmlInfo:
+        info = super().render_html(obj)
+        k = obj.k
+        threshold = obj.threshold
+        is_ref = obj.metric.get_result().reference_metrics is not None
+        curr_metrics, ref_metrics = _get_metric_result(k, threshold, is_ref, obj.metric.get_result())
+        curr_matrix = curr_metrics.confusion_matrix
+        ref_matrix = None
+        if ref_metrics is not None:
+            ref_matrix = ref_metrics.confusion_matrix
+        fig = plot_conf_mtrx(curr_matrix, ref_matrix)
+        fig_json = fig.to_plotly_json()
+        info.details.append(
+            DetailsInfo(
+                "AccuracyScore",
+                "",
+                BaseWidgetInfo(
+                    title="",
+                    size=2,
+                    type="big_graph",
+                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
+                ),
+            )
+        )
+        return info
 
 
 class TestPrecisionScore(SimpleClassificationTestTopK):
@@ -171,6 +166,35 @@ class TestPrecisionScore(SimpleClassificationTestTopK):
         return f"Precision Score is {value:.3g}. Test Threshold is {self.get_condition()}"
 
 
+@default_renderer(test_type=TestPrecisionScore)
+class TestPrecisionScoreRenderer(TestRenderer):
+    def render_html(self, obj: TestPrecisionScore) -> TestHtmlInfo:
+        info = super().render_html(obj)
+        k = obj.k
+        threshold = obj.threshold
+        is_ref = obj.metric.get_result().reference_metrics is not None
+        curr_metrics, ref_metrics = _get_metric_result(k, threshold, is_ref, obj.metric.get_result())
+        curr_matrix = curr_metrics.confusion_matrix
+        ref_matrix = None
+        if ref_metrics is not None:
+            ref_matrix = ref_metrics.confusion_matrix
+        fig = plot_conf_mtrx(curr_matrix, ref_matrix)
+        fig_json = fig.to_plotly_json()
+        info.details.append(
+            DetailsInfo(
+                "PrecisionScore",
+                "",
+                BaseWidgetInfo(
+                    title="",
+                    size=2,
+                    type="big_graph",
+                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
+                ),
+            )
+        )
+        return info
+
+
 class TestF1Score(SimpleClassificationTestTopK):
     name = "F1 Score"
 
@@ -179,6 +203,35 @@ class TestF1Score(SimpleClassificationTestTopK):
 
     def get_description(self, value: Numeric) -> str:
         return f"F1 Score is {value:.3g}. Test Threshold is {self.get_condition()}"
+
+
+@default_renderer(test_type=TestF1Score)
+class TestF1ScoreRenderer(TestRenderer):
+    def render_html(self, obj: TestF1Score) -> TestHtmlInfo:
+        info = super().render_html(obj)
+        k = obj.k
+        threshold = obj.threshold
+        is_ref = obj.metric.get_result().reference_metrics is not None
+        curr_metrics, ref_metrics = _get_metric_result(k, threshold, is_ref, obj.metric.get_result())
+        curr_matrix = curr_metrics.confusion_matrix
+        ref_matrix = None
+        if ref_metrics is not None:
+            ref_matrix = ref_metrics.confusion_matrix
+        fig = plot_conf_mtrx(curr_matrix, ref_matrix)
+        fig_json = fig.to_plotly_json()
+        info.details.append(
+            DetailsInfo(
+                "F1Score",
+                "",
+                BaseWidgetInfo(
+                    title="",
+                    size=2,
+                    type="big_graph",
+                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
+                ),
+            )
+        )
+        return info
 
 
 class TestRecallScore(SimpleClassificationTestTopK):
@@ -191,6 +244,35 @@ class TestRecallScore(SimpleClassificationTestTopK):
         return f"Recall Score is {value:.3g}. Test Threshold is {self.get_condition()}"
 
 
+@default_renderer(test_type=TestRecallScore)
+class TestRecallScoreRenderer(TestRenderer):
+    def render_html(self, obj: TestRecallScore) -> TestHtmlInfo:
+        info = super().render_html(obj)
+        k = obj.k
+        threshold = obj.threshold
+        is_ref = obj.metric.get_result().reference_metrics is not None
+        curr_metrics, ref_metrics = _get_metric_result(k, threshold, is_ref, obj.metric.get_result())
+        curr_matrix = curr_metrics.confusion_matrix
+        ref_matrix = None
+        if ref_metrics is not None:
+            ref_matrix = ref_metrics.confusion_matrix
+        fig = plot_conf_mtrx(curr_matrix, ref_matrix)
+        fig_json = fig.to_plotly_json()
+        info.details.append(
+            DetailsInfo(
+                "RecallScore",
+                "",
+                BaseWidgetInfo(
+                    title="",
+                    size=2,
+                    type="big_graph",
+                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
+                ),
+            )
+        )
+        return info
+
+
 class TestRocAuc(SimpleClassificationTest):
     name = "ROC AUC Score"
 
@@ -199,6 +281,20 @@ class TestRocAuc(SimpleClassificationTest):
 
     def get_description(self, value: Numeric) -> str:
         return f"ROC AUC Score is {value:.3g}. Test Threshold is {self.get_condition()}"
+
+
+@default_renderer(test_type=TestRocAuc)
+class TestRocAucRenderer(TestRenderer):
+    def render_html(self, obj: TestRocAuc) -> TestHtmlInfo:
+        info = super().render_html(obj)
+        curr_metrics = obj.metric.get_result().current_metrics 
+        ref_metrics = obj.metric.get_result().reference_metrics 
+        curr_roc_curve = curr_metrics.roc_curve
+        ref_roc_curve = None
+        if ref_metrics is not None:
+            ref_roc_curve = ref_metrics.roc_curve
+        info.details = plot_roc_auc(curr_roc_curve, ref_roc_curve)
+        return info
 
 
 class TestLogLoss(SimpleClassificationTest):
@@ -222,6 +318,33 @@ class TestTPR(SimpleClassificationTest):
     def get_description(self, value: Numeric) -> str:
         return f"True Positive Rate is {value:.3g}. Test Threshold is {self.get_condition()}"
 
+@default_renderer(test_type=TestTPR)
+class TestTPRRenderer(TestRenderer):
+    def render_html(self, obj: TestTPR) -> TestHtmlInfo:
+        info = super().render_html(obj)
+        k = obj.k
+        threshold = obj.threshold
+        is_ref = obj.metric.get_result().reference_metrics is not None
+        curr_metrics, ref_metrics = _get_metric_result(k, threshold, is_ref, obj.metric.get_result())
+        curr_matrix = curr_metrics.confusion_matrix
+        ref_matrix = None
+        if ref_metrics is not None:
+            ref_matrix = ref_metrics.confusion_matrix
+        fig = plot_conf_mtrx(curr_matrix, ref_matrix)
+        fig_json = fig.to_plotly_json()
+        info.details.append(
+            DetailsInfo(
+                "TPR",
+                "",
+                BaseWidgetInfo(
+                    title="",
+                    size=2,
+                    type="big_graph",
+                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
+                ),
+            )
+        )
+        return info
 
 class TestTNR(SimpleClassificationTest):
     name = "True Negative Rate"
@@ -233,6 +356,35 @@ class TestTNR(SimpleClassificationTest):
 
     def get_description(self, value: Numeric) -> str:
         return f"True Negative Rate is {value:.3g}. Test Threshold is {self.get_condition()}"
+
+
+@default_renderer(test_type=TestTNR)
+class TestTNRRenderer(TestRenderer):
+    def render_html(self, obj: TestTNR) -> TestHtmlInfo:
+        info = super().render_html(obj)
+        k = obj.k
+        threshold = obj.threshold
+        is_ref = obj.metric.get_result().reference_metrics is not None
+        curr_metrics, ref_metrics = _get_metric_result(k, threshold, is_ref, obj.metric.get_result())
+        curr_matrix = curr_metrics.confusion_matrix
+        ref_matrix = None
+        if ref_metrics is not None:
+            ref_matrix = ref_metrics.confusion_matrix
+        fig = plot_conf_mtrx(curr_matrix, ref_matrix)
+        fig_json = fig.to_plotly_json()
+        info.details.append(
+            DetailsInfo(
+                "TNR",
+                "",
+                BaseWidgetInfo(
+                    title="",
+                    size=2,
+                    type="big_graph",
+                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
+                ),
+            )
+        )
+        return info
 
 
 class TestFPR(SimpleClassificationTest):
@@ -247,6 +399,35 @@ class TestFPR(SimpleClassificationTest):
         return f"False Positive Rate is {value:.3g}. Test Threshold is {self.get_condition()}"
 
 
+@default_renderer(test_type=TestFPR)
+class TestFPRRenderer(TestRenderer):
+    def render_html(self, obj: TestFPR) -> TestHtmlInfo:
+        info = super().render_html(obj)
+        k = obj.k
+        threshold = obj.threshold
+        is_ref = obj.metric.get_result().reference_metrics is not None
+        curr_metrics, ref_metrics = _get_metric_result(k, threshold, is_ref, obj.metric.get_result())
+        curr_matrix = curr_metrics.confusion_matrix
+        ref_matrix = None
+        if ref_metrics is not None:
+            ref_matrix = ref_metrics.confusion_matrix
+        fig = plot_conf_mtrx(curr_matrix, ref_matrix)
+        fig_json = fig.to_plotly_json()
+        info.details.append(
+            DetailsInfo(
+                "FPR",
+                "",
+                BaseWidgetInfo(
+                    title="",
+                    size=2,
+                    type="big_graph",
+                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
+                ),
+            )
+        )
+        return info
+
+
 class TestFNR(SimpleClassificationTest):
     name = "False Negative Rate"
 
@@ -257,6 +438,35 @@ class TestFNR(SimpleClassificationTest):
 
     def get_description(self, value: Numeric) -> str:
         return f"False Negative Rate is {value:.3g}. Test Threshold is {self.get_condition()}"
+
+
+@default_renderer(test_type=TestFNR)
+class TestFNRRenderer(TestRenderer):
+    def render_html(self, obj: TestFNR) -> TestHtmlInfo:
+        info = super().render_html(obj)
+        k = obj.k
+        threshold = obj.threshold
+        is_ref = obj.metric.get_result().reference_metrics is not None
+        curr_metrics, ref_metrics = _get_metric_result(k, threshold, is_ref, obj.metric.get_result())
+        curr_matrix = curr_metrics.confusion_matrix
+        ref_matrix = None
+        if ref_metrics is not None:
+            ref_matrix = ref_metrics.confusion_matrix
+        fig = plot_conf_mtrx(curr_matrix, ref_matrix)
+        fig_json = fig.to_plotly_json()
+        info.details.append(
+            DetailsInfo(
+                "FNR",
+                "",
+                BaseWidgetInfo(
+                    title="",
+                    size=2,
+                    type="big_graph",
+                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
+                ),
+            )
+        )
+        return info
 
 
 class ByClassClassificationTest(SimpleClassificationTest):
@@ -312,3 +522,25 @@ class TestF1ByClass(ByClassClassificationTest):
 
     def get_description(self, value: Numeric) -> str:
         return f"F1 Score of {self.label} is {value:.3g}. Test Threshold is {self.get_condition()}"
+
+def _get_metric_result(
+    k: Optional[Union[int, float]],
+    threshold: Optional[float],
+    is_ref: bool,
+    result: ClassificationPerformanceMetricsResults
+) -> Tuple[DatasetClassificationPerformanceMetrics, Optional[DatasetClassificationPerformanceMetrics]]:
+    ref_metrics = None
+    if k:
+        curr_metrics = result.current_by_k_metrics[k]
+        if result.reference_by_k_metrics is not None:
+            ref_metrics = result.reference_by_k_metrics[k]
+    elif threshold:
+        curr_metrics = result.current_by_threshold_metrics[threshold]
+        if result.reference_by_threshold_metrics is not None:
+            ref_metrics = result.reference_by_threshold_metrics[threshold]
+    else:
+        curr_metrics = result.current_metrics
+        if is_ref:
+            ref_metrics = result.reference_metrics
+    
+    return curr_metrics, ref_metrics

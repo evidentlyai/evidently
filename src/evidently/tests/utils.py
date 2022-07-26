@@ -417,6 +417,7 @@ def plot_correlations(current_correlations, reference_correlations):
     return fig
 
 def plot_conf_mtrx(curr_mtrx, ref_mtrx):
+
     if ref_mtrx is not None:
         cols = 2
         subplot_titles = ["current", "reference"]
@@ -424,12 +425,11 @@ def plot_conf_mtrx(curr_mtrx, ref_mtrx):
         cols = 1
         subplot_titles = [""]
     fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
-
     trace = go.Heatmap(
         z=curr_mtrx.values,
         x=curr_mtrx.labels,
         y=curr_mtrx.labels,
-        text=curr_mtrx.values.astype(str),
+        text=np.array(curr_mtrx.values).astype(str),
         texttemplate="%{text}",
         coloraxis="coloraxis",
     )
@@ -440,10 +440,62 @@ def plot_conf_mtrx(curr_mtrx, ref_mtrx):
             z=ref_mtrx.values,
             x=ref_mtrx.labels,
             y=ref_mtrx.labels,
-            text=ref_mtrx.values.astype(str),
+            text=np.array(ref_mtrx.values).astype(str),
             texttemplate="%{text}",
             coloraxis="coloraxis",
         )
-    fig.append_trace(trace, 1, 2)
+        fig.append_trace(trace, 1, 2)
     fig.update_layout(coloraxis={"colorscale": "RdBu_r"})
     return fig
+
+def plot_roc_auc(curr_roc_curve: dict, ref_roc_curve:dict) -> list:
+    additional_plots = []
+    cols = 1
+    subplot_titles = [""]
+    if ref_roc_curve is not None:
+        cols = 2
+        subplot_titles = ["current", "reference"]
+    for label in curr_roc_curve.keys():
+        fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
+        trace = go.Scatter(
+                    x=curr_roc_curve[label]['fpr'],
+                    y=curr_roc_curve[label]['tpr'],
+                    mode='lines',
+                    name='ROC',
+                    marker=dict(
+                        size=6,
+                        color=RED,
+                    )
+                )
+        fig.append_trace(trace, 1, 1)
+        if ref_roc_curve is not None:
+            trace = go.Scatter(
+                        x=ref_roc_curve[label]['fpr'],
+                        y=ref_roc_curve[label]['tpr'],
+                        mode='lines',
+                        name='ROC',
+                        marker=dict(
+                            size=6,
+                            color=GREY,
+                        )
+                    )
+            fig.append_trace(trace, 1, 2)
+        fig.update_layout(
+            yaxis_title="True Positive Rate",
+            xaxis_title="False Positive Rate",
+            showlegend=True
+        )
+        fig_json = fig.to_plotly_json()
+        additional_plots.append(
+            DetailsInfo(
+                f"Roc_auc_{label}",
+                f"ROC Curve for label {label}",
+                BaseWidgetInfo(
+                    title="",
+                    size=2,
+                    type="big_graph",
+                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
+                ),
+            )
+        )
+    return additional_plots
