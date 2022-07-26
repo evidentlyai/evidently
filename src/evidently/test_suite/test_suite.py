@@ -46,7 +46,7 @@ class TestSuite:
     _columns_info: DatasetColumns
     _test_presets: List[TestPreset]
 
-    def __init__(self, tests: Optional[List[Union[Test, TestPreset]]]):
+    def __init__(self, tests: Optional[List[Union[Test, TestPreset, BaseTestGenerator]]]):
         self._inner_suite = Suite()
         self._test_presets = []
 

@@ -261,7 +261,7 @@ class BaseTestGenerator(Generic[TTest]):
         if you want to create a test generator for 50, 90, 99 quantiles tests
         for all numeric columns with default condition, by reference quantiles
 
-    class TestQuantiles():
+    class TestQuantiles(BaseTestGenerator):
         def generate_tests(self, columns_info: DatasetColumns) -> List[TestValueQuantile]:
             return [
                 TestValueQuantile(column_name=name, quantile=quantile)
