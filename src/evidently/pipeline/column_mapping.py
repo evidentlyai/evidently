@@ -19,7 +19,7 @@ class ColumnMapping:
     datetime_features: Optional[List[str]] = None
     target_names: Optional[List[str]] = None
     task: Optional[str] = None
-    pos_label: Optional[int] = 1
+    pos_label: Optional[Union[int, str]] = None
 
     def is_classification_task(self):
         return self.task == TaskType.CLASSIFICATION_TASK

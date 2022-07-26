@@ -157,7 +157,7 @@ def test_classification_performance_metrics_binary_probas_threshold() -> None:
         ColumnMapping(prediction=["a", "b", "c"], target="target", pos_label="b"),
         0.5,
         (
-            pd.Series("a", "a", "b", "b", "b", "b", "a", "b", "b", "a"),
+            pd.Series(["a", "a", "b", "b", "b", "b", "a", "b", "b", "a"]),
             pd.DataFrame(
                 {
                     "b": [0.1, 0.3, 1., 0.5, 0.9, 0.6, 0.4, 0.8, 0.8, 0.2],
@@ -176,7 +176,7 @@ def test_classification_performance_metrics_binary_probas_threshold() -> None:
         ColumnMapping(prediction=["a", "b", "c"], target="target", pos_label="b"),
         0.5,
         (
-            pd.Series("a", "a", "b", "b", "b", "b", "a", "b", "b", "a"),
+            pd.Series(["a", "a", "b", "b", "b", "b", "a", "b", "b", "a"]),
             pd.DataFrame(
                 {
                     "b": [0.1, 0.3, 1., 0.5, 0.9, 0.6, 0.4, 0.8, 0.8, 0.2],
@@ -195,7 +195,7 @@ def test_classification_performance_metrics_binary_probas_threshold() -> None:
         ColumnMapping(prediction=["a", "b", "c"], target="target", pos_label=0),
         0.5,
         (
-            pd.Series(1, 1, 0, 0, 0, 0, 1, 0, 0, 1),
+            pd.Series([1, 1, 0, 0, 0, 0, 1, 0, 0, 1]),
             pd.DataFrame(
                 {
                     0: [0.1, 0.3, 1., 0.5, 0.9, 0.6, 0.4, 0.8, 0.8, 0.2],
@@ -214,7 +214,7 @@ def test_classification_performance_metrics_binary_probas_threshold() -> None:
         ColumnMapping(prediction=["a", "b", "c"], target="target"),
         0.5,
         (
-            pd.Series(0, 0, 1, 1, 1, 1, 0, 1, 1, 0),
+            pd.Series([0, 0, 1, 1, 1, 1, 0, 1, 1, 0]),
             pd.DataFrame(
                 {
                     1: [0.1, 0.3, 1., 0.5, 0.9, 0.6, 0.4, 0.8, 0.8, 0.2],
@@ -224,8 +224,15 @@ def test_classification_performance_metrics_binary_probas_threshold() -> None:
         )
     )
 ))
-def test_threshold_probability_labels(data: pd.DataFrame, mapping: ColumnMapping, threshold: float, expected: Tuple[pd.Series, Optional[pd.DataFrame]]):
-    assert threshold_probability_labels(data, mapping, threshold) == expected
+def test_threshold_probability_labels(
+        data: pd.DataFrame,
+        mapping: ColumnMapping,
+        threshold: float,
+        expected: Tuple[pd.Series, Optional[pd.DataFrame]]
+):
+    assert threshold_probability_labels(
+        prediction_probas=data, pos_label="", neg_label="", threshold=threshold
+    ) == expected
 
 
 @pytest.mark.parametrize("probas,labels,k,expected", (
