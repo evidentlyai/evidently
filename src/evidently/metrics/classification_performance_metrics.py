@@ -137,7 +137,7 @@ def classification_performance_metrics(
     roc_curve: Optional[dict] = None
 
     if prediction_probas is not None:
-        binaraized_target = (target.astype(str).values.reshape(-1, 1) == list(prediction_probas.columns)).astype(int)
+        binaraized_target = (target.astype(str).values.reshape(-1, 1) == list(prediction_probas.columns.astype(str))).astype(int)
         array_prediction = prediction_probas.to_numpy()
         roc_auc = sklearn.metrics.roc_auc_score(binaraized_target, array_prediction, average="macro")
         log_loss = sklearn.metrics.log_loss(binaraized_target, array_prediction)
@@ -299,7 +299,7 @@ def _cleanup_data(data: pd.DataFrame, mapping: ColumnMapping) -> pd.DataFrame:
         return data.replace([np.inf, -np.inf], np.nan).dropna(axis=0, how="any", subset=subset)
     return data
 
-
+import logging
 def get_prediction_data(
         data: pd.DataFrame,
         mapping: ColumnMapping,
@@ -364,21 +364,22 @@ def get_prediction_data(
             pos_preds = data[mapping.prediction]
         else:
             pos_preds = data[mapping.prediction].apply(lambda x: 1.0 - x)
-        predictions = pos_preds >= threshold
+        predictions = pos_preds.apply(lambda x: 0 if x >= threshold else 1)
         prediction_probas = pd.DataFrame.from_dict(
             {
                 0: pos_preds,
                 1: pos_preds.apply(lambda x: 1.0 - x),
             }
         )
+        return predictions, prediction_probas
 
     # binary target and preds are numbers
-    if (
+    elif (
             isinstance(mapping.prediction, str)
             and data[mapping.target].dtype == dtype("int")
             and data[mapping.prediction].dtype == dtype("float")
     ):
-        predictions = data[mapping.prediction] >= threshold
+        predictions = (data[mapping.prediction] >= threshold).astype(int)
         prediction_probas = pd.DataFrame.from_dict(
             {
                 1: data[mapping.prediction],

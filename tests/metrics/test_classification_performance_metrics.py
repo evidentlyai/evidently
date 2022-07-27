@@ -79,7 +79,8 @@ def test_classification_performance_metrics_binary_probas_threshold() -> None:
     assert result.current_by_threshold_metrics[class_threshold].f1 == 0.5
     assert result.current_by_threshold_metrics[class_threshold].roc_auc == 0.625
     assert result.current_by_threshold_metrics[class_threshold].log_loss == 3.928216092142768
-    assert result.current_metrics.confusion_matrix == ConfusionMatrix(labels=[0, 1], values=[[4, 2], [2, 2]])
+    assert result.current_by_threshold_metrics[class_threshold].confusion_matrix == ConfusionMatrix(labels=[0, 1],
+                                                                                                    values=[[4, 2], [2, 2]])
 
 
 # @pytest.mark.parametrize(
@@ -136,7 +137,7 @@ def test_classification_performance_metrics_binary_probas_threshold() -> None:
         ColumnMapping(prediction=["a", "b", "c"], target="target"),
         0.5,
         (
-            pd.Series(["a", "a", "a", "a", "b", "c", "b", "c", "c", "c"]),
+            pd.Series(["a", "a", "a", "a", "b", "c", "a", "c", "c", "c"]),
             pd.DataFrame(
                 {
                     "a": [0.9, 0.8, 0.6, 0.4, 0.4, 0.3, 0.6, 0.2, 0.2, 0.1],
@@ -154,7 +155,7 @@ def test_classification_performance_metrics_binary_probas_threshold() -> None:
                 "b": [0.1, 0.3, 1., 0.5, 0.9, 0.6, 0.4, 0.8, 0.8, 0.2]
             }
         ),
-        ColumnMapping(prediction=["a", "b", "c"], target="target", pos_label="b"),
+        ColumnMapping(prediction=["a", "b"], target="target", pos_label="b"),
         0.5,
         (
             pd.Series(["a", "a", "b", "b", "b", "b", "a", "b", "b", "a"]),
@@ -173,7 +174,7 @@ def test_classification_performance_metrics_binary_probas_threshold() -> None:
                 "b": [0.1, 0.3, 1., 0.5, 0.9, 0.6, 0.4, 0.8, 0.8, 0.2]
             }
         ),
-        ColumnMapping(prediction=["a", "b", "c"], target="target", pos_label="b"),
+        ColumnMapping(prediction="b", target="target", pos_label="b"),
         0.5,
         (
             pd.Series(["a", "a", "b", "b", "b", "b", "a", "b", "b", "a"]),
@@ -189,10 +190,10 @@ def test_classification_performance_metrics_binary_probas_threshold() -> None:
         pd.DataFrame(
             {
                 "target": [1, 1, 1, 1, 0, 0, 0, 0, 0, 0],
-                0: [0.1, 0.3, 1., 0.5, 0.9, 0.6, 0.4, 0.8, 0.8, 0.2]
+                '0': [0.1, 0.3, 1., 0.5, 0.9, 0.6, 0.4, 0.8, 0.8, 0.2]
             }
         ),
-        ColumnMapping(prediction=["a", "b", "c"], target="target", pos_label=0),
+        ColumnMapping(prediction='0', target="target", pos_label=0),
         0.5,
         (
             pd.Series([1, 1, 0, 0, 0, 0, 1, 0, 0, 1]),
@@ -211,7 +212,7 @@ def test_classification_performance_metrics_binary_probas_threshold() -> None:
                 "preds": [0.1, 0.3, 1., 0.5, 0.9, 0.6, 0.4, 0.8, 0.8, 0.2]
             }
         ),
-        ColumnMapping(prediction=["a", "b", "c"], target="target"),
+        ColumnMapping(prediction="preds", target="target"),
         0.5,
         (
             pd.Series([0, 0, 1, 1, 1, 1, 0, 1, 1, 0]),
@@ -224,15 +225,16 @@ def test_classification_performance_metrics_binary_probas_threshold() -> None:
         )
     )
 ))
-def test_threshold_probability_labels(
+def test_get_prediction_data(
         data: pd.DataFrame,
         mapping: ColumnMapping,
         threshold: float,
         expected: Tuple[pd.Series, Optional[pd.DataFrame]]
 ):
-    assert threshold_probability_labels(
-        prediction_probas=data, pos_label="", neg_label="", threshold=threshold
-    ) == expected
+    res = get_prediction_data(data, mapping, threshold)
+    assert res[0].equals(expected[0])
+    assert np.allclose(res[1], expected[1])
+    assert list(res[1].columns) == list(expected[1].columns)
 
 
 @pytest.mark.parametrize("probas,labels,k,expected", (
@@ -274,26 +276,26 @@ def test_k_probability_threshold(probas: pd.DataFrame, labels: List[str], k: Uni
 
 
 @pytest.mark.parametrize("probas, pos_label, neg_label, threshold, expected", (
-        (pd.DataFrame(dict(a=[.1, .2, .3, .4, .5, .6, .7, .8, .9, .0], b=[.9, .8, .7, .6, .5, .4, .3, .2, .1, 1])),
+        (pd.DataFrame({"a":[.1, .2, .3, .4, .5, .6, .7, .8, .9, .0], "b":[.9, .8, .7, .6, .5, .4, .3, .2, .1, 1]}),
          "a", 
          "b",
          0.1,
          ["b", "b", "b", "b", "b", "b", "b", "b", "a", "b"]),
-        (pd.DataFrame(dict(a=[.1, .2, .3, .4, .5, .6, .7, .8, .9, .0], b=[.9, .8, .7, .6, .5, .4, .3, .2, .1, 1])),
+        (pd.DataFrame({"a": [.1, .2, .3, .4, .5, .6, .7, .8, .9, .0], "b": [.9, .8, .7, .6, .5, .4, .3, .2, .1, 1]}),
          "a", 
          "b",
          0.84,
          ["b", "a", "a", "a", "a", "a", "a", "a", "a", "b"]),
-        (pd.DataFrame(dict(b=[.1, .2, .9, .8, .9, .5, .3, .99, .1, 1])),
-         "a", 
+        (pd.DataFrame({"b":[.1, .2, .9, .8, .9, .5, .3, .99, .1, 1]}),
+         "a",
          "b",
          0.84,
          ["a", "a", "b", "a", "b", "a", "a", "b", "a", "b"]),
-        (pd.DataFrame(dict(a=[.1, .2, .9, .8, .9, .5, .3, .99, .1, 1], b=[.9, .8, .7, .6, .5, .4, .3, .2, .1, 1])),
-         "b", 
+        (pd.DataFrame({"a":[.1, .2, .9, .8, .9, .5, .3, .99, .1, 1], "b":[.9, .8, .7, .6, .5, .4, .3, .2, .1, 1]}),
+         "b",
          "a",
          0.84,
-         ["b", "b", "a", "b", "a", "b", "b", "a", "b", "a"]),
+         ['b', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'b']),
 ))
 def test_threshold_probability_labels(probas: pd.DataFrame, pos_label: str, neg_label: str, threshold: float, expected: pd.Series):
-    assert (threshold_probability_labels(probas, labels, threshold) == expected).all()
+    assert (threshold_probability_labels(probas, pos_label, neg_label, threshold) == expected).all()
