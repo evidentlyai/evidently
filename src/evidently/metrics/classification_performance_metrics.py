@@ -1,10 +1,14 @@
 import dataclasses
-from typing import Optional, Tuple, List, Dict, Union
+from typing import Optional
+from typing import Tuple
+from typing import List
+from typing import Dict
+from typing import Union
 
 import numpy as np
 import pandas as pd
-from numpy import dtype
 import sklearn
+from numpy import dtype
 
 from evidently import ColumnMapping
 from evidently.analyzers.classification_performance_analyzer import ConfusionMatrix
@@ -45,9 +49,7 @@ class ClassificationPerformanceMetricsResults:
     reference_by_threshold_metrics: Optional[Dict[Union[int, float], DatasetClassificationPerformanceMetrics]] = None
 
 
-def k_probability_threshold(prediction_probas: pd.DataFrame,
-                            labels: List[str],
-                            k: Union[int, float]) -> float:
+def k_probability_threshold(prediction_probas: pd.DataFrame, labels: List[str], k: Union[int, float]) -> float:
     probas = prediction_probas.iloc[:, 0].sort_values(ascending=False)
     if isinstance(k, float):
         if k < 0.0 or k > 1.0:
@@ -58,56 +60,49 @@ def k_probability_threshold(prediction_probas: pd.DataFrame,
     raise ValueError(f"K has unexpected type {type(k)}")
 
 
-def threshold_probability_labels(prediction_probas: pd.DataFrame,
-                                 pos_label: Union[str, int],
-                                 neg_label: Union[str, int],
-                                 threshold: float) -> pd.Series:
+def threshold_probability_labels(
+    prediction_probas: pd.DataFrame, pos_label: Union[str, int], neg_label: Union[str, int], threshold: float
+) -> pd.Series:
     return prediction_probas[pos_label].apply(lambda x: pos_label if x >= threshold else neg_label)
 
 
 def _calculate_k_variants(
-        target_data: pd.Series,
-        prediction_probas: pd.DataFrame,
-        labels: List[str],
-        k_variants: List[Union[int, float]]):
+    target_data: pd.Series, prediction_probas: pd.DataFrame, labels: List[str], k_variants: List[Union[int, float]]
+):
     by_k_results = {}
     for k in k_variants:
         # calculate metrics matrix
         if prediction_probas is None or len(labels) > 2:
             raise ValueError("Top K parameter can be used only with binary classification with probas")
         pos_label, neg_label = prediction_probas.columns
-        prediction_labels = threshold_probability_labels(prediction_probas,
-                                                         pos_label,
-                                                         neg_label,
-                                                         k_probability_threshold(prediction_probas, labels, k))
-        by_k_results[k] = classification_performance_metrics(target_data, prediction_labels, prediction_probas, labels,
-                                                             pos_label)
+        prediction_labels = threshold_probability_labels(
+            prediction_probas, pos_label, neg_label, k_probability_threshold(prediction_probas, labels, k)
+        )
+        by_k_results[k] = classification_performance_metrics(
+            target_data, prediction_labels, prediction_probas, labels, pos_label
+        )
     return by_k_results
 
 
 def _calculate_thresholds(
-        target_data: pd.Series,
-        prediction_probas: pd.DataFrame,
-        labels: List[str],
-        thresholds: List[float]):
+    target_data: pd.Series, prediction_probas: pd.DataFrame, labels: List[str], thresholds: List[float]
+):
     by_threshold_results = {}
     for threshold in thresholds:
         pos_label, neg_label = prediction_probas.columns
         prediction_labels = threshold_probability_labels(prediction_probas, pos_label, neg_label, threshold)
-        by_threshold_results[threshold] = classification_performance_metrics(target_data,
-                                                                             prediction_labels,
-                                                                             prediction_probas,
-                                                                             labels,
-                                                                             pos_label)
+        by_threshold_results[threshold] = classification_performance_metrics(
+            target_data, prediction_labels, prediction_probas, labels, pos_label
+        )
     return by_threshold_results
 
 
 def classification_performance_metrics(
-        target: pd.Series,
-        prediction: pd.Series,
-        prediction_probas: Optional[pd.DataFrame],
-        target_names: Optional[List[str]],
-        pos_label: Optional[Union[str, int]]
+    target: pd.Series,
+    prediction: pd.Series,
+    prediction_probas: Optional[pd.DataFrame],
+    target_names: Optional[List[str]],
+    pos_label: Optional[Union[str, int]],
 ) -> DatasetClassificationPerformanceMetrics:
 
     class_num = target.nunique()
@@ -119,14 +114,15 @@ def classification_performance_metrics(
         avg_f1 = sklearn.metrics.f1_score(target, prediction_labels, average="macro")
     else:
         accuracy_score = sklearn.metrics.accuracy_score(target, prediction_labels)
-        avg_precision = sklearn.metrics.precision_score(target, prediction_labels, average="binary",
-                                                        pos_label=pos_label)
+        avg_precision = sklearn.metrics.precision_score(
+            target, prediction_labels, average="binary", pos_label=pos_label
+        )
         avg_recall = sklearn.metrics.recall_score(target, prediction_labels, average="binary", pos_label=pos_label)
         avg_f1 = sklearn.metrics.f1_score(target, prediction_labels, average="binary", pos_label=pos_label)
 
     # calculate metrics matrix
     # labels = target_names if target_names else sorted(set(target.unique()) | set(prediction.unique()))
-        # binaraized_target = (target.values.reshape(-1, 1) == labels).astype(int)
+    # binaraized_target = (target.values.reshape(-1, 1) == labels).astype(int)
 
     # prediction_labels = prediction
 
@@ -137,7 +133,9 @@ def classification_performance_metrics(
     roc_curve: Optional[dict] = None
 
     if prediction_probas is not None:
-        binaraized_target = (target.astype(str).values.reshape(-1, 1) == list(prediction_probas.columns.astype(str))).astype(int)
+        binaraized_target = (
+            target.astype(str).values.reshape(-1, 1) == list(prediction_probas.columns.astype(str))
+        ).astype(int)
         array_prediction = prediction_probas.to_numpy()
         roc_auc = sklearn.metrics.roc_auc_score(binaraized_target, array_prediction, average="macro")
         log_loss = sklearn.metrics.log_loss(binaraized_target, array_prediction)
@@ -148,11 +146,7 @@ def classification_performance_metrics(
         binaraized_target.columns = list(prediction_probas.columns)
         for label in binaraized_target.columns:
             fpr, tpr, thrs = sklearn.metrics.roc_curve(binaraized_target[label], prediction_probas[label])
-            roc_curve[label] = {
-                'fpr': fpr.tolist(),
-                'tpr': tpr.tolist(),
-                'thrs': thrs.tolist()
-            }
+            roc_curve[label] = {"fpr": fpr.tolist(), "tpr": tpr.tolist(), "thrs": thrs.tolist()}
 
     # calculate class support and metrics matrix
     metrics_matrix = sklearn.metrics.classification_report(target, prediction_labels, output_dict=True)
@@ -186,11 +180,11 @@ class ClassificationPerformanceMetrics(Metric[ClassificationPerformanceMetricsRe
         self.k_variants = []
         self.thresholds = []
 
-    def with_k(self, k: Union[int, float]) -> 'ClassificationPerformanceMetrics':
+    def with_k(self, k: Union[int, float]) -> "ClassificationPerformanceMetrics":
         self.k_variants.append(k)
         return self
 
-    def with_threshold(self, threshold: float) -> 'ClassificationPerformanceMetrics':
+    def with_threshold(self, threshold: float) -> "ClassificationPerformanceMetrics":
         self.thresholds.append(threshold)
         return self
 
@@ -206,20 +200,13 @@ class ClassificationPerformanceMetrics(Metric[ClassificationPerformanceMetricsRe
         # labels = sorted(target_names if target_names else
         #                 sorted(set(target_data.unique()) | set(prediction_data.unique())))
         labels = sorted(set(target_data.unique()))
-        current_metrics = classification_performance_metrics(target_data, prediction_data, prediction_probas, labels,
-                                                             data.column_mapping.pos_label)
+        current_metrics = classification_performance_metrics(
+            target_data, prediction_data, prediction_probas, labels, data.column_mapping.pos_label
+        )
 
-        current_by_k_metrics = _calculate_k_variants(
-            target_data,
-            prediction_probas,
-            labels,
-            self.k_variants)
+        current_by_k_metrics = _calculate_k_variants(target_data, prediction_probas, labels, self.k_variants)
 
-        current_by_thresholds_metrics = _calculate_thresholds(
-            target_data,
-            prediction_probas,
-            labels,
-            self.thresholds)
+        current_by_thresholds_metrics = _calculate_thresholds(target_data, prediction_probas, labels, self.thresholds)
 
         reference_metrics = None
         reference_by_k = None
@@ -266,8 +253,9 @@ class ClassificationPerformanceMetrics(Metric[ClassificationPerformanceMetricsRe
         )
 
 
-def _dummy_threshold_metrics(threshold: float,
-                             dummy_results: DatasetClassificationPerformanceMetrics) -> DatasetClassificationPerformanceMetrics:
+def _dummy_threshold_metrics(
+    threshold: float, dummy_results: DatasetClassificationPerformanceMetrics
+) -> DatasetClassificationPerformanceMetrics:
     mult_precision = min(1, 0.5 / (1 - threshold))
     mult_recall = min(1, (1 - threshold) / 0.5)
 
@@ -275,13 +263,17 @@ def _dummy_threshold_metrics(threshold: float,
         accuracy=dummy_results.accuracy,
         precision=dummy_results.precision * mult_precision,
         recall=dummy_results.recall * mult_recall,
-        f1=2 * dummy_results.precision * mult_precision * dummy_results.recall * mult_recall /
-        (dummy_results.precision * mult_precision + dummy_results.recall * mult_recall),
+        f1=2
+        * dummy_results.precision
+        * mult_precision
+        * dummy_results.recall
+        * mult_recall
+        / (dummy_results.precision * mult_precision + dummy_results.recall * mult_recall),
         roc_auc=None,
         log_loss=None,
         metrics_matrix=dummy_results.metrics_matrix,
         confusion_matrix=dummy_results.confusion_matrix,
-        confusion_by_classes=dummy_results.confusion_by_classes
+        confusion_by_classes=dummy_results.confusion_by_classes,
     )
 
 
@@ -299,25 +291,18 @@ def _cleanup_data(data: pd.DataFrame, mapping: ColumnMapping) -> pd.DataFrame:
         return data.replace([np.inf, -np.inf], np.nan).dropna(axis=0, how="any", subset=subset)
     return data
 
-import logging
+
 def get_prediction_data(
-        data: pd.DataFrame,
-        mapping: ColumnMapping,
-        threshold: float = 0.5) -> Tuple[pd.Series, Optional[pd.DataFrame]]:
+    data: pd.DataFrame, mapping: ColumnMapping, threshold: float = 0.5
+) -> Tuple[pd.Series, Optional[pd.DataFrame]]:
     # for binary prediction_probas has column order [pos_label, neg_label]
     # multiclass + probas
-    if (
-            isinstance(mapping.prediction, list)
-            and len(mapping.prediction) > 2
-    ):
+    if isinstance(mapping.prediction, list) and len(mapping.prediction) > 2:
         # list of columns with prediction probas, should be same as target labels
         return data[mapping.prediction].idxmax(axis=1), data[mapping.prediction]
 
     # binary + probas
-    if (
-            isinstance(mapping.prediction, list)
-            and len(mapping.prediction) == 2
-    ):
+    if isinstance(mapping.prediction, list) and len(mapping.prediction) == 2:
         labels = data[mapping.target].unique()
         if mapping.pos_label not in labels or mapping.pos_label is None:
             raise ValueError("Undefined pos_label.")
@@ -327,9 +312,9 @@ def get_prediction_data(
 
     # binary str target + one column probas
     if (
-            isinstance(mapping.prediction, str)
-            and (data[mapping.target].dtype == dtype("str") or data[mapping.target].dtype == dtype("object"))
-            and data[mapping.prediction].dtype == dtype("float")
+        isinstance(mapping.prediction, str)
+        and (data[mapping.target].dtype == dtype("str") or data[mapping.target].dtype == dtype("object"))
+        and data[mapping.prediction].dtype == dtype("float")
     ):
         labels = data[mapping.target].unique()
         if mapping.pos_label not in labels or mapping.pos_label is None:
@@ -355,11 +340,7 @@ def get_prediction_data(
         return predictions, prediction_probas
 
     # binary target and preds are numbers and prediction is a label
-    if (
-        not isinstance(mapping.prediction, list)
-        and mapping.prediction in [0, 1, '0', '1']
-        and mapping.pos_label == 0
-    ):
+    if not isinstance(mapping.prediction, list) and mapping.prediction in [0, 1, "0", "1"] and mapping.pos_label == 0:
         if mapping.prediction in [0, "0"]:
             pos_preds = data[mapping.prediction]
         else:
@@ -375,9 +356,9 @@ def get_prediction_data(
 
     # binary target and preds are numbers
     elif (
-            isinstance(mapping.prediction, str)
-            and data[mapping.target].dtype == dtype("int")
-            and data[mapping.prediction].dtype == dtype("float")
+        isinstance(mapping.prediction, str)
+        and data[mapping.target].dtype == dtype("int")
+        and data[mapping.prediction].dtype == dtype("float")
     ):
         predictions = (data[mapping.prediction] >= threshold).astype(int)
         prediction_probas = pd.DataFrame.from_dict(
