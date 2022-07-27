@@ -37,6 +37,14 @@ class DatasetClassificationPerformanceMetrics:
 
 
 @dataclasses.dataclass
+class DataForPlots:
+    """Class for Boxplots"""
+
+    current: Optional[Dict[str, Dict[str, list]]] = None
+    reference: Optional[Dict[str, Dict[str, list]]] = None
+
+
+@dataclasses.dataclass
 class ClassificationPerformanceMetricsResults:
     current_metrics: DatasetClassificationPerformanceMetrics
     current_by_k_metrics: Dict[Union[int, float], DatasetClassificationPerformanceMetrics]
@@ -47,6 +55,7 @@ class ClassificationPerformanceMetricsResults:
     reference_metrics: Optional[DatasetClassificationPerformanceMetrics] = None
     reference_by_k_metrics: Optional[Dict[Union[int, float], DatasetClassificationPerformanceMetrics]] = None
     reference_by_threshold_metrics: Optional[Dict[Union[int, float], DatasetClassificationPerformanceMetrics]] = None
+    data_for_plots: Optional[DataForPlots] = None
 
 
 def k_probability_threshold(prediction_probas: pd.DataFrame, labels: List[str], k: Union[int, float]) -> float:
@@ -231,6 +240,14 @@ class ClassificationPerformanceMetrics(Metric[ClassificationPerformanceMetricsRe
         dummy_metrics = classification_performance_metrics(
             target_data, dummy_preds, None, target_names, data.column_mapping.pos_label
         )
+        # dummy log_loss
+        if prediction_probas is not None:
+            binaraized_target = (
+                target_data.astype(str).values.reshape(-1, 1) == list(prediction_probas.columns.astype(str))
+            ).astype(int)
+            dummy_prediction = np.full(prediction_probas.shape, 1 / prediction_probas.shape[1])
+            dummy_log_loss = sklearn.metrics.log_loss(binaraized_target, dummy_prediction)
+            dummy_metrics.log_loss = dummy_log_loss
         threshold_dummy_results = {}
         for threshold in self.thresholds:
             threshold_dummy_results[threshold] = _dummy_threshold_metrics(threshold, dummy_metrics)
@@ -240,6 +257,15 @@ class ClassificationPerformanceMetrics(Metric[ClassificationPerformanceMetricsRe
             k_dummy_results[k] = _dummy_threshold_metrics(threshold, dummy_metrics)
 
         dummy_metrics.roc_auc = 0.5
+
+        # data for plots
+        curr_for_plots = None
+        ref_for_plots = None
+        if prediction_probas is not None:
+            curr_for_plots = _collect_plot_data(prediction_probas)
+        if data.reference_data is not None and ref_probas is not None:
+            ref_for_plots = _collect_plot_data(ref_probas)
+
         return ClassificationPerformanceMetricsResults(
             current_metrics=current_metrics,
             current_by_k_metrics=current_by_k_metrics,
@@ -250,6 +276,7 @@ class ClassificationPerformanceMetrics(Metric[ClassificationPerformanceMetricsRe
             dummy_metrics=dummy_metrics,
             dummy_by_k_metrics=k_dummy_results,
             dummy_by_threshold_metrics=threshold_dummy_results,
+            data_for_plots=DataForPlots(current=curr_for_plots, reference=ref_for_plots)
         )
 
 
@@ -270,7 +297,7 @@ def _dummy_threshold_metrics(
         * mult_recall
         / (dummy_results.precision * mult_precision + dummy_results.recall * mult_recall),
         roc_auc=None,
-        log_loss=None,
+        log_loss=dummy_results.log_loss,
         metrics_matrix=dummy_results.metrics_matrix,
         confusion_matrix=dummy_results.confusion_matrix,
         confusion_by_classes=dummy_results.confusion_by_classes,
@@ -369,3 +396,24 @@ def get_prediction_data(
         )
         return predictions, prediction_probas
     return data[mapping.prediction], None
+
+
+def _collect_plot_data(prediction_probas: pd.DataFrame):
+    res = {}
+    mins = []
+    lowers = []
+    means = []
+    uppers = []
+    maxs = []
+    for col in prediction_probas.columns:
+        mins.append(np.percentile(prediction_probas[col], 0))
+        lowers.append(np.percentile(prediction_probas[col], 25))
+        means.append(np.percentile(prediction_probas[col], 50))
+        uppers.append(np.percentile(prediction_probas[col], 75))
+        maxs.append(np.percentile(prediction_probas[col], 100))
+    res["mins"] = mins
+    res["lowers"] = lowers
+    res["means"] = means
+    res["uppers"] = uppers
+    res["maxs"] = maxs
+    return res

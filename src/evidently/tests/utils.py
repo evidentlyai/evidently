@@ -501,3 +501,35 @@ def plot_roc_auc(curr_roc_curve: dict, ref_roc_curve: Optional[dict]) -> list:
             )
         )
     return additional_plots
+
+
+def plot_boxes(curr_for_plots: dict, ref_for_plots: Optional[dict]):
+    fig = go.Figure()
+
+    trace = go.Box(
+        lowerfence=curr_for_plots['mins'],
+        q1=curr_for_plots['lowers'],
+        q3=curr_for_plots['uppers'],
+        median=curr_for_plots['means'],
+        upperfence=curr_for_plots['maxs'],
+        name='current',
+        marker_color=RED
+    )
+    fig.add_trace(trace)
+    if ref_for_plots is not None:
+        trace = go.Box(
+            lowerfence=curr_for_plots['mins'],
+            q1=ref_for_plots['lowers'],
+            q3=ref_for_plots['uppers'],
+            median=ref_for_plots['means'],
+            upperfence=ref_for_plots['maxs'],
+            name='reference',
+            marker_color=GREY
+        )
+        fig.add_trace(trace)
+        fig.update_layout(boxmode='group')
+    fig.update_layout(
+        yaxis_title="Prerdictions",
+        xaxis_title="Class",
+    )
+    return fig

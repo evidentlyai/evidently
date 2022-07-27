@@ -11,7 +11,7 @@ from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.renderers.base_renderer import DetailsInfo
 from evidently.tests.base_test import BaseCheckValueTest, TestValueCondition
-from evidently.tests.utils import Numeric, approx, plot_conf_mtrx, plot_roc_auc
+from evidently.tests.utils import Numeric, approx, plot_boxes, plot_conf_mtrx, plot_roc_auc
 
 
 class SimpleClassificationTest(BaseCheckValueTest):
@@ -138,12 +138,8 @@ class TestAccuracyScoreRenderer(TestRenderer):
         info = super().render_html(obj)
         k = obj.k
         threshold = obj.threshold
-        if k or threshold:
-            is_ref = obj.metric.get_result().reference_metrics is not None
-            curr_metrics, ref_metrics = _get_metric_result(k, threshold, is_ref, obj.metric.get_result())
-        else:
-            curr_metrics = obj.metric.get_result().current_metrics
-            ref_metrics = obj.metric.get_result().reference_metrics
+        is_ref = obj.metric.get_result().reference_metrics is not None
+        curr_metrics, ref_metrics = _get_metric_result(k, threshold, is_ref, obj.metric.get_result())
         curr_matrix = curr_metrics.confusion_matrix
         ref_matrix = None
         if ref_metrics is not None:
@@ -310,11 +306,47 @@ class TestRocAucRenderer(TestRenderer):
 class TestLogLoss(SimpleClassificationTest):
     name = "Logarithmic Loss"
 
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.has_condition():
+            return self.condition
+        ref_metrics = self.metric.get_result().reference_metrics
+        if ref_metrics is not None:
+            return TestValueCondition(eq=approx(self.get_value(ref_metrics), relative=0.1))
+        if self.get_value(self.metric.get_result().dummy_metrics) is None:
+            raise ValueError("Neither required test parameters nor reference data has been provided.")
+        return TestValueCondition(lt=self.get_value(self.metric.get_result().dummy_metrics))
+
     def get_value(self, result: DatasetClassificationPerformanceMetrics):
         return result.log_loss
 
     def get_description(self, value: Numeric) -> str:
         return f" Logarithmic Loss is {value:.3g}. Test Threshold is {self.get_condition()}"
+
+
+@default_renderer(test_type=TestLogLoss)
+class TestLogLossRenderer(TestRenderer):
+    def render_html(self, obj: TestLogLoss) -> TestHtmlInfo:
+        info = super().render_html(obj)
+        data_for_plots = obj.metric.get_result().data_for_plots
+        if data_for_plots is not None:
+            curr_metrics = data_for_plots.current
+            ref_metrics = data_for_plots.reference
+        if curr_metrics is not None:
+            fig = plot_boxes(curr_metrics, ref_metrics)
+            fig_json = fig.to_plotly_json()
+            info.details.append(
+                DetailsInfo(
+                    "TestLogLoss",
+                    "",
+                    BaseWidgetInfo(
+                        title="",
+                        size=2,
+                        type="big_graph",
+                        params={"data": fig_json["data"], "layout": fig_json["layout"]},
+                    ),
+                )
+            )
+        return info
 
 
 class TestTPR(SimpleClassificationTest):
