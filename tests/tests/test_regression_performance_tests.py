@@ -261,7 +261,7 @@ def test_rmse_score_test_render_json() -> None:
         }
     )
     suite = TestSuite(tests=[TestValueRMSE()])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=ColumnMapping())
     assert suite
 
     result_json = suite.json()
@@ -269,9 +269,14 @@ def test_rmse_score_test_render_json() -> None:
 
     result = json.loads(result_json)["tests"][0]
     assert result == {
-        "description": "RMSE is 0.25. The test threshold is lt=1.25.",
+        "description": "RMSE is 0.25. The test threshold is eq=0.25 ± 0.025.",
         "group": "regression",
         "name": "Root Mean Square Error (RMSE)",
-        "parameters": {"condition": {"lt": 1.25}, "rmse": 0.25, "rmse_default": 1.25, "rmse_ref": None},
+        "parameters": {
+            "condition": {"eq": {"absolute": 1e-12, "relative": 0.1, "value": 0.25}},
+            "rmse": 0.25,
+            "rmse_default": 1.25,
+            "rmse_ref": 0.25,
+        },
         "status": "SUCCESS",
     }
