@@ -166,6 +166,7 @@ class TestFeatureValueDrift(Test):
 class TestNumberOfDriftedFeaturesRenderer(TestRenderer):
     def render_json(self, obj: TestNumberOfDriftedFeatures) -> dict:
         base = super().render_json(obj)
+        base["parameters"]["condition"] = obj.get_condition().as_dict()
         base["parameters"]["features"] = {
             feature: {"stattest": data[0], "score": np.round(data[1], 3), "threshold": data[2], "data_drift": data[3]}
             for feature, data in obj.get_result().features.items()
@@ -198,6 +199,7 @@ class TestNumberOfDriftedFeaturesRenderer(TestRenderer):
 class TestShareOfDriftedFeaturesRenderer(TestRenderer):
     def render_json(self, obj: TestShareOfDriftedFeatures) -> dict:
         base = super().render_json(obj)
+        base["parameters"]["condition"] = obj.get_condition().as_dict()
         base["parameters"]["features"] = {
             feature: {"stattest": data[0], "score": np.round(data[1], 3), "threshold": data[2], "data_drift": data[3]}
             for feature, data in obj.get_result().features.items()

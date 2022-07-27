@@ -442,4 +442,3 @@ def test_data_integrity_test_column_values_match_regexp() -> None:
     suite = TestSuite(tests=[TestColumnValueRegExp(column_name="feature2", reg_exp=r"b.*")])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
-
