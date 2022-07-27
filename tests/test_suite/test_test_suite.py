@@ -168,7 +168,5 @@ def test_export_to_json():
     assert "failed_tests" in summary_result
     assert summary_result["failed_tests"] == 8
 
-
-
     assert "by_status" in summary_result
     assert summary_result["by_status"] == {"FAIL": 8, "SUCCESS": 28, "ERROR": 1}
