@@ -362,7 +362,7 @@ class TestLogLoss(SimpleClassificationTest):
 
     def get_description(self, value: Numeric) -> str:
         if value is None:
-            return "ot enough data to calculate Logarithmic Loss. Consider providing probabilities instead of labels."
+            return "Not enough data to calculate Logarithmic Loss. Consider providing probabilities instead of labels."
 
         else:
             return f" Logarithmic Loss is {value:.3g}. Test Threshold is {self.get_condition()}"
