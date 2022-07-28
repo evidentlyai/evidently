@@ -303,7 +303,10 @@ class TestPredictionFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValue
 
         reference_correlation = self.metric.get_result().reference_correlation
 
-        if reference_correlation is not None and reference_correlation.abs_max_prediction_features_correlation is not None:
+        if (
+            reference_correlation is not None
+            and reference_correlation.abs_max_prediction_features_correlation is not None
+        ):
             value = reference_correlation.abs_max_prediction_features_correlation
             return TestValueCondition(eq=approx(value, relative=0.1))
 
@@ -383,16 +386,18 @@ class TestCorrelationChanges(BaseDataQualityCorrelationsMetricsValueTest):
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
         metric: Optional[DataQualityCorrelationMetrics] = None,
     ):
-        super().__init__(method=method,
-                         eq=eq,
-                         gt=gt,
-                         gte=gte,
-                         is_in=is_in,
-                         lt=lt,
-                         lte=lte,
-                         not_eq=not_eq,
-                         not_in=not_in,
-                         metric=metric)
+        super().__init__(
+            method=method,
+            eq=eq,
+            gt=gt,
+            gte=gte,
+            is_in=is_in,
+            lt=lt,
+            lte=lte,
+            not_eq=not_eq,
+            not_in=not_in,
+            metric=metric,
+        )
         self.corr_diff = corr_diff
 
     def get_condition(self) -> TestValueCondition:
@@ -1046,9 +1051,7 @@ class TestValueRange(Test):
         number_not_in_range = self.metric.get_result().number_not_in_range
 
         if number_not_in_range > 0:
-            description = (
-                f"The column **{self.column_name}** has values out of range."
-            )
+            description = f"The column **{self.column_name}** has values out of range."
             test_result = TestResult.FAIL
         else:
             description = f"All values in the column **{self.column_name}** are within range"
