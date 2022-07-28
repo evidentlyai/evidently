@@ -4,7 +4,7 @@ from typing import Optional
 from evidently.metrics.base_metric import Metric, InputData
 from evidently.renderers.base_renderer import TestRenderer, RenderersDefinitions, DEFAULT_RENDERERS
 from evidently.suite.execution_graph import ExecutionGraph, SimpleExecutionGraph
-from evidently.tests.base_test import Test, TestResult
+from evidently.tests.base_test import Test, TestResult, GroupingTypes
 
 
 @dataclasses.dataclass
@@ -101,7 +101,12 @@ class Suite:
 
         for test in self.context.execution_graph.get_test_execution_iterator():
             try:
-                test_results[test] = test.check()
+                test_result = test.check()
+                test_result.groups.update({
+                    GroupingTypes.TestGroup.id: test.group,
+                    GroupingTypes.TestType.id: test.name,
+                })
+                test_results[test] = test_result
             except BaseException as ex:
                 test_results[test] = TestResult(name=test.name,
                                                 status=TestResult.ERROR,

@@ -23,8 +23,7 @@ interface LoadableViewState<T> {
 
 const LoadableView = <T,>(props: LoadableViewProps<T>) =>
 {
-    const [state, setState] = useState<LoadableViewState<T>>(() => ({status: LoadState.Initialized}))
-    console.log("Init");
+    const [state, setState] = useState<LoadableViewState<T>>(() => ({status: LoadState.Initialized}));
     if (state.status === LoadState.Initialized) {
         setState(_ => ({status: LoadState.Loading}));
         props.func().then(res => setState(s => ({status: LoadState.Loaded, result: res})));
