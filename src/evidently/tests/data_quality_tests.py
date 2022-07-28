@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import List
+from typing import List, Dict
 from typing import Optional
 from typing import Union
 
@@ -17,9 +17,11 @@ from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.renderers.base_renderer import DetailsInfo
 from evidently.metrics import DataQualityCorrelationMetrics
 from evidently.tests.base_test import BaseCheckValueTest
-from evidently.tests.base_test import TestValueCondition
+from evidently.tests.base_test import GroupingTypes
+from evidently.tests.base_test import GroupData
 from evidently.tests.base_test import Test
 from evidently.tests.base_test import TestResult
+from evidently.tests.base_test import TestValueCondition
 from evidently.tests.utils import approx
 from evidently.tests.utils import Numeric
 from evidently.tests.utils import plot_check
@@ -30,8 +32,12 @@ from evidently.tests.utils import plot_value_counts_tables_ref_curr
 from evidently.tests.utils import plot_correlations
 
 
+DATA_QUALITY_GROUP = GroupData("data_quality", "Data Quality", "")
+GroupingTypes.TestGroup.add_value(DATA_QUALITY_GROUP)
+
+
 class BaseDataQualityMetricsValueTest(BaseCheckValueTest, ABC):
-    group = "data_quality"
+    group = DATA_QUALITY_GROUP.id
     metric: DataQualityMetrics
 
     def __init__(
@@ -56,7 +62,7 @@ class BaseDataQualityMetricsValueTest(BaseCheckValueTest, ABC):
 
 
 class TestConflictTarget(Test):
-    group = "data_quality"
+    group = DATA_QUALITY_GROUP.id
     name = "Test number of conflicts in target"
     metric: DataQualityStabilityMetrics
 
@@ -86,7 +92,7 @@ class TestConflictTarget(Test):
 
 
 class TestConflictPrediction(Test):
-    group = "data_quality"
+    group = DATA_QUALITY_GROUP.id
     name = "Test number of conflicts in prediction"
     metric: DataQualityStabilityMetrics
 
@@ -116,7 +122,7 @@ class TestConflictPrediction(Test):
 
 
 class BaseDataQualityCorrelationsMetricsValueTest(BaseCheckValueTest, ABC):
-    group = "data_quality"
+    group = DATA_QUALITY_GROUP.id
     metric: DataQualityCorrelationMetrics
     method: str
 
@@ -469,8 +475,15 @@ class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest, ABC):
             eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in, metric=metric
         )
 
+    def groups(self) -> Dict[str, str]:
+        return {
+            GroupingTypes.ByFeature.id: self.column_name,
+        }
+
     def check(self):
-        result = TestResult(name=self.name, description="The test was not launched", status=TestResult.SKIPPED)
+        result = TestResult(name=self.name,
+                            description="The test was not launched",
+                            status=TestResult.SKIPPED)
         features_stats = self.metric.get_result().features_stats.get_all_features()
 
         if self.column_name not in features_stats:
@@ -905,7 +918,7 @@ class TestMostCommonValueShareRenderer(TestRenderer):
 
 
 class TestMeanInNSigmas(Test):
-    group = "data_quality"
+    group = DATA_QUALITY_GROUP.id
     name = "Mean Value Stability"
     metric: DataQualityMetrics
     column_name: str
@@ -957,7 +970,10 @@ class TestMeanInNSigmas(Test):
                 )
                 test_result = TestResult.FAIL
 
-        return TestResult(name=self.name, description=description, status=test_result)
+        return TestResult(name=self.name,
+                          description=description,
+                          status=test_result,
+                          groups={GroupingTypes.ByFeature.id: self.column_name})
 
 
 @default_renderer(test_type=TestMeanInNSigmas)
@@ -1023,7 +1039,7 @@ class TestMeanInNSigmasRenderer(TestRenderer):
 
 
 class TestValueRange(Test):
-    group = "data_quality"
+    group = DATA_QUALITY_GROUP.id
     name = "Value Range"
     metric: DataQualityValueRangeMetrics
     column: str
@@ -1057,7 +1073,10 @@ class TestValueRange(Test):
             description = f"All values in the column **{self.column_name}** are within range"
             test_result = TestResult.SUCCESS
 
-        return TestResult(name=self.name, description=description, status=test_result)
+        return TestResult(name=self.name,
+                          description=description,
+                          status=test_result,
+                          groups={GroupingTypes.ByFeature.id: self.column_name})
 
 
 @default_renderer(test_type=TestValueRange)
@@ -1093,7 +1112,7 @@ class TestValueRangeRenderer(TestRenderer):
 
 
 class BaseDataQualityValueRangeMetricsTest(BaseCheckValueTest, ABC):
-    group = "data_quality"
+    group = DATA_QUALITY_GROUP.id
     metric: DataQualityValueRangeMetrics
     column: str
     left: Optional[float]
@@ -1125,6 +1144,11 @@ class BaseDataQualityValueRangeMetricsTest(BaseCheckValueTest, ABC):
             self.metric = DataQualityValueRangeMetrics(column=column_name, left=left, right=right)
 
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
+
+    def groups(self) -> Dict[str, str]:
+        return {
+            GroupingTypes.ByFeature.id: self.column_name
+        }
 
 
 class TestNumberOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
@@ -1240,7 +1264,7 @@ class TestShareOfOutRangeValuesRenderer(TestRenderer):
 
 
 class TestValueList(Test):
-    group = "data_quality"
+    group = DATA_QUALITY_GROUP.id
     name = "Out-of-List Values"
     metric: DataQualityValueListMetrics
     column_name: str
@@ -1269,7 +1293,10 @@ class TestValueList(Test):
             test_result = TestResult.SUCCESS
             description = f"All values in the column **{self.column_name}** are in the list."
 
-        return TestResult(name=self.name, description=description, status=test_result)
+        return TestResult(name=self.name,
+                          description=description,
+                          status=test_result,
+                          groups={GroupingTypes.ByFeature.id: self.column_name})
 
 
 @default_renderer(test_type=TestValueList)
@@ -1299,7 +1326,7 @@ class TestValueListRenderer(TestRenderer):
 
 
 class BaseDataQualityValueListMetricsTest(BaseCheckValueTest, ABC):
-    group = "data_quality"
+    group = DATA_QUALITY_GROUP.id
     metric: DataQualityValueListMetrics
     column_name: str
     values: Optional[list]
@@ -1328,6 +1355,9 @@ class BaseDataQualityValueListMetricsTest(BaseCheckValueTest, ABC):
             self.metric = DataQualityValueListMetrics(column=column_name, values=values)
 
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
+
+    def groups(self) -> Dict[str, str]:
+        return {GroupingTypes.ByFeature.id: self.column_name}
 
 
 class TestNumberOfOutListValues(BaseDataQualityValueListMetricsTest):
@@ -1385,7 +1415,7 @@ class TestShareOfOutListValues(BaseDataQualityValueListMetricsTest):
 
 
 class TestValueQuantile(BaseCheckValueTest):
-    group = "data_quality"
+    group = DATA_QUALITY_GROUP.id
     name = "Quantile Value"
     metric: DataQualityValueQuantileMetrics
     column_name: str
@@ -1421,6 +1451,9 @@ class TestValueQuantile(BaseCheckValueTest):
             self.metric = DataQualityValueQuantileMetrics(column=column_name, quantile=quantile)
 
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
+
+    def groups(self) -> Dict[str, str]:
+        return {GroupingTypes.ByFeature.id: self.column_name}
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():

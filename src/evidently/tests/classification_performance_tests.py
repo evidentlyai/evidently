@@ -10,12 +10,19 @@ from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.renderers.base_renderer import DetailsInfo
-from evidently.tests.base_test import BaseCheckValueTest, TestValueCondition
+from evidently.tests.base_test import BaseCheckValueTest
+from evidently.tests.base_test import GroupingTypes
+from evidently.tests.base_test import GroupData
+from evidently.tests.base_test import TestValueCondition
 from evidently.tests.utils import Numeric, approx, plot_boxes, plot_conf_mtrx, plot_roc_auc
 
 
+CLASSIFICATION_GROUP = GroupData("classification", "Classification", "")
+GroupingTypes.TestGroup.add_value(CLASSIFICATION_GROUP)
+
+
 class SimpleClassificationTest(BaseCheckValueTest):
-    group = "classification"
+    group = CLASSIFICATION_GROUP.id
     name: str
     metric: ClassificationPerformanceMetrics
 

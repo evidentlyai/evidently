@@ -16,7 +16,8 @@ from evidently.renderers.base_renderer import DetailsInfo
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.tests.base_test import BaseCheckValueTest
-from evidently.tests.base_test import BaseConditionsTest
+from evidently.tests.base_test import GroupingTypes
+from evidently.tests.base_test import GroupData
 from evidently.tests.base_test import Test
 from evidently.tests.base_test import TestResult
 from evidently.tests.base_test import TestValueCondition
@@ -26,8 +27,12 @@ from evidently.tests.utils import approx
 from evidently.tests.utils import Numeric
 
 
+DATA_INTEGRITY_GROUP = GroupData("data_integrity", "Data Integrity", "")
+GroupingTypes.TestGroup.add_value(DATA_INTEGRITY_GROUP)
+
+
 class BaseIntegrityValueTest(BaseCheckValueTest, ABC):
-    group = "data_integrity"
+    group = DATA_INTEGRITY_GROUP.id
     data_integrity_metric: DataIntegrityMetrics
 
     def __init__(
@@ -454,6 +459,11 @@ class BaseIntegrityByColumnsConditionTest(BaseCheckValueTest, ABC):
         else:
             self.data_integrity_metric = data_integrity_metric
 
+    def groups(self) -> Dict[str, str]:
+        if self.column_name is not None:
+            return {GroupingTypes.ByFeature.id: self.column_name}
+        return {}
+
 
 class TestColumnNANShare(BaseIntegrityByColumnsConditionTest):
     """Test the share of NANs in a column"""
@@ -497,7 +507,7 @@ class TestColumnNANShareRenderer(TestRenderer):
 
 
 class BaseIntegrityOneColumnTest(Test, ABC):
-    group = "data_integrity"
+    group = DATA_INTEGRITY_GROUP.id
     data_integrity_metric: DataIntegrityMetrics
     column_name: str
 
@@ -509,6 +519,9 @@ class BaseIntegrityOneColumnTest(Test, ABC):
 
         else:
             self.data_integrity_metric = data_integrity_metric
+
+    def groups(self) -> Dict[str, str]:
+        return {GroupingTypes.ByFeature.id: self.column_name}
 
 
 class TestColumnAllConstantValues(BaseIntegrityOneColumnTest):
@@ -540,7 +553,7 @@ class TestColumnAllConstantValues(BaseIntegrityOneColumnTest):
             else:
                 status = TestResult.SUCCESS
 
-        return TestResult(name=self.name, description=description, status=status)
+        return TestResult(name=self.name, description=description, status=status, groups=self.groups())
 
 
 @default_renderer(test_type=TestColumnAllConstantValues)
@@ -588,7 +601,7 @@ class TestColumnAllUniqueValues(BaseIntegrityOneColumnTest):
             else:
                 status = TestResult.SUCCESS
 
-        return TestResult(name=self.name, description=description, status=status)
+        return TestResult(name=self.name, description=description, status=status, groups=self.groups())
 
 
 @default_renderer(test_type=TestColumnAllUniqueValues)
@@ -609,14 +622,14 @@ class TestColumnAllUniqueValuesRenderer(TestRenderer):
 class TestColumnsType(Test):
     """This test compares columns type against the specified ones or a reference dataframe"""
 
-    group = "data_integrity"
+    group = DATA_INTEGRITY_GROUP.id
     name = "Column Types"
     columns_type: Optional[dict]
     data_integrity_metric: DataIntegrityMetrics
 
     @dataclasses.dataclass
     class Result(TestResult):
-        columns_types: Dict[str, Tuple[str, str]]
+        columns_types: Dict[str, Tuple[str, str]] = dataclasses.field(default_factory=dict)
 
     def __init__(
         self, columns_type: Optional[dict] = None, data_integrity_metric: Optional[DataIntegrityMetrics] = None
@@ -718,7 +731,7 @@ class TestNumberOfDriftedFeaturesRenderer(TestRenderer):
 
 
 class TestColumnValueRegExp(BaseCheckValueTest, ABC):
-    group = "data_integrity"
+    group = DATA_INTEGRITY_GROUP.id
     name = "RegExp Match"
     metric: DataIntegrityValueByRegexpMetrics
     column_name: Optional[str]
@@ -754,6 +767,11 @@ class TestColumnValueRegExp(BaseCheckValueTest, ABC):
 
         else:
             self.metric = metric
+
+    def groups(self) -> Dict[str, str]:
+        if self.column_name is not None:
+            return {GroupingTypes.ByFeature.id: self.column_name}
+        return {}
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():

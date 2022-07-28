@@ -17,6 +17,8 @@ from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.renderers.base_renderer import DetailsInfo
 from evidently.renderers.base_renderer import default_renderer
+from evidently.tests.base_test import GroupingTypes
+from evidently.tests.base_test import GroupData
 from evidently.tests.base_test import Test
 from evidently.tests.base_test import BaseCheckValueTest
 from evidently.tests.base_test import TestResult
@@ -25,13 +27,17 @@ from evidently.tests.utils import plot_distr
 from evidently.tests.utils import Numeric
 
 
+DATA_DRIFT_GROUP = GroupData("data_drift", "Data Drift", "")
+GroupingTypes.TestGroup.add_value(DATA_DRIFT_GROUP)
+
+
 @dataclasses.dataclass
 class TestDataDriftResult(TestResult):
-    features: Dict[str, Tuple[str, float, float]]
+    features: Dict[str, Tuple[str, float, float]] = dataclasses.field(default_factory=dict)
 
 
 class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
-    group = "data_drift"
+    group = DATA_DRIFT_GROUP.id
     metric: DataDriftMetrics
 
     def __init__(
@@ -118,7 +124,7 @@ class TestShareOfDriftedFeatures(BaseDataDriftMetricsTest):
 
 class TestFeatureValueDrift(Test):
     name = "Drift per Feature"
-    group = "data_drift"
+    group = DATA_DRIFT_GROUP.id
     metric: DataDriftMetrics
     column_name: str
 
@@ -159,7 +165,12 @@ class TestFeatureValueDrift(Test):
             else:
                 result_status = TestResult.FAIL
 
-        return TestResult(name=self.name, description=description, status=result_status)
+        return TestResult(name=self.name,
+                          description=description,
+                          status=result_status,
+                          groups={
+                              GroupingTypes.ByFeature.id: self.column_name,
+                          })
 
 
 @default_renderer(test_type=TestNumberOfDriftedFeatures)
