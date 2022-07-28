@@ -435,7 +435,7 @@ class TestNumberOfDuplicatedColumnsRenderer(TestRenderer):
 
 
 class BaseIntegrityByColumnsConditionTest(BaseCheckValueTest, ABC):
-    group = "data_integrity"
+    group = DATA_INTEGRITY_GROUP.id
     data_integrity_metric: DataIntegrityMetrics
     column_name: Optional[str]
 

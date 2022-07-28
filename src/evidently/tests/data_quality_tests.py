@@ -375,7 +375,7 @@ class TestPredictionFeaturesCorrelationsRenderer(TestRenderer):
 
 
 class TestCorrelationChanges(BaseDataQualityCorrelationsMetricsValueTest):
-    group = "data_quality"
+    group = DATA_QUALITY_GROUP.id
     name = "Change in Correlation"
     metric: DataQualityCorrelationMetrics
     corr_diff: float
