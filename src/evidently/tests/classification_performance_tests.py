@@ -412,6 +412,15 @@ class TestTPR(SimpleClassificationTest):
         return f"True Positive Rate is {value:.3g}. Test Threshold is {self.get_condition()}"
 
 
+@default_renderer(test_type=TestTPR)
+class TestTPRRenderer(TestRenderer):
+    def render_json(self, obj: TestTPR) -> dict:
+        base = super().render_json(obj)
+        base["parameters"]["condition"] = obj.get_condition().as_dict()
+        base["parameters"]["tpr"] = obj.value
+        return base
+
+
 class TestTNR(SimpleClassificationTest):
     name = "True Negative Rate"
 
@@ -422,6 +431,15 @@ class TestTNR(SimpleClassificationTest):
 
     def get_description(self, value: Numeric) -> str:
         return f"True Negative Rate is {value:.3g}. Test Threshold is {self.get_condition()}"
+
+
+@default_renderer(test_type=TestTNR)
+class TestTNRRenderer(TestRenderer):
+    def render_json(self, obj: TestTNR) -> dict:
+        base = super().render_json(obj)
+        base["parameters"]["condition"] = obj.get_condition().as_dict()
+        base["parameters"]["tnr"] = obj.value
+        return base
 
 
 class TestFPR(SimpleClassificationTest):
@@ -436,6 +454,15 @@ class TestFPR(SimpleClassificationTest):
         return f"False Positive Rate is {value:.3g}. Test Threshold is {self.get_condition()}"
 
 
+@default_renderer(test_type=TestFPR)
+class TestFPRRenderer(TestRenderer):
+    def render_json(self, obj: TestFPR) -> dict:
+        base = super().render_json(obj)
+        base["parameters"]["condition"] = obj.get_condition().as_dict()
+        base["parameters"]["fpr"] = obj.value
+        return base
+
+
 class TestFNR(SimpleClassificationTest):
     name = "False Negative Rate"
 
@@ -446,6 +473,15 @@ class TestFNR(SimpleClassificationTest):
 
     def get_description(self, value: Numeric) -> str:
         return f"False Negative Rate is {value:.3g}. Test Threshold is {self.get_condition()}"
+
+
+@default_renderer(test_type=TestFNR)
+class TestFNRRenderer(TestRenderer):
+    def render_json(self, obj: TestFNR) -> dict:
+        base = super().render_json(obj)
+        base["parameters"]["condition"] = obj.get_condition().as_dict()
+        base["parameters"]["fnr"] = obj.value
+        return base
 
 
 class ByClassClassificationTest(SimpleClassificationTest, ABC):

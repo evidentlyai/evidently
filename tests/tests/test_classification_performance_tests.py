@@ -14,6 +14,10 @@ from evidently.tests import TestLogLoss
 from evidently.tests import TestPrecisionByClass
 from evidently.tests import TestRecallByClass
 from evidently.tests import TestF1ByClass
+from evidently.tests import TestTPR
+from evidently.tests import TestTNR
+from evidently.tests import TestFPR
+from evidently.tests import TestFNR
 from evidently.test_suite import TestSuite
 
 
@@ -398,5 +402,149 @@ def test_recall_by_class_test_render_json() -> None:
             "label": "1",
             "recall": 0.5,
         },
+        "status": "SUCCESS",
+    }
+
+
+def test_tpr_test() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "target": ["a", "a", "c", "b"],
+            "prediction": ["a", "a", "b", "b"],
+        }
+    )
+    column_mapping = ColumnMapping()
+    suite = TestSuite(tests=[TestTPR(lt=0.8)])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
+    assert suite
+
+
+def test_tpr_test_render_json() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "target": ["a", "a", "c", "b"],
+            "prediction": ["a", "a", "b", "c"],
+        }
+    )
+    suite = TestSuite(tests=[TestTPR()])
+    suite.run(current_data=test_dataset, reference_data=test_dataset)
+    assert suite
+
+    result_from_json = json.loads(suite.json())
+    assert result_from_json["summary"]["all_passed"] is True
+    test_info = result_from_json["tests"][0]
+    assert test_info == {
+        "description": "True Positive Rate is 0.5. Test Threshold is eq=0.5 ± 0.1",
+        "group": "classification",
+        "name": "True Positive Rate",
+        "parameters": {"condition": {"eq": {"absolute": 1e-12, "relative": 0.2, "value": 0.5}}, "tpr": 0.5},
+        "status": "SUCCESS",
+    }
+
+
+def test_tnr_test() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "target": ["a", "a", "c", "b"],
+            "prediction": ["a", "a", "b", "b"],
+        }
+    )
+    column_mapping = ColumnMapping()
+    suite = TestSuite(tests=[TestTNR(gt=0.8)])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
+    assert suite
+
+
+def test_tnr_test_render_json() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "target": ["a", "a", "c", "b"],
+            "prediction": ["a", "a", "b", "c"],
+        }
+    )
+    suite = TestSuite(tests=[TestTNR()])
+    suite.run(current_data=test_dataset, reference_data=test_dataset)
+    assert suite
+
+    result_from_json = json.loads(suite.json())
+    assert result_from_json["summary"]["all_passed"] is True
+    test_info = result_from_json["tests"][0]
+    assert test_info == {
+        "description": "True Negative Rate is 0.75. Test Threshold is eq=0.75 ± 0.15",
+        "group": "classification",
+        "name": "True Negative Rate",
+        "parameters": {"condition": {"eq": {"absolute": 1e-12, "relative": 0.2, "value": 0.75}}, "tnr": 0.75},
+        "status": "SUCCESS",
+    }
+
+
+def test_fpr_test() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "target": ["a", "a", "c", "b"],
+            "prediction": ["a", "a", "b", "b"],
+        }
+    )
+    column_mapping = ColumnMapping()
+    suite = TestSuite(tests=[TestFPR(lt=0.8)])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
+    assert suite
+
+
+def test_fpr_test_render_json() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "target": ["a", "a", "c", "b"],
+            "prediction": ["a", "a", "b", "c"],
+        }
+    )
+    suite = TestSuite(tests=[TestFPR()])
+    suite.run(current_data=test_dataset, reference_data=test_dataset)
+    assert suite
+
+    result_from_json = json.loads(suite.json())
+    assert result_from_json["summary"]["all_passed"] is True
+    test_info = result_from_json["tests"][0]
+    assert test_info == {
+        "description": "False Positive Rate is 0.25. Test Threshold is eq=0.25 ± 0.05",
+        "group": "classification",
+        "name": "False Positive Rate",
+        "parameters": {"condition": {"eq": {"absolute": 1e-12, "relative": 0.2, "value": 0.25}}, "fpr": 0.25},
+        "status": "SUCCESS",
+    }
+
+
+def test_fnr_test() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "target": ["a", "a", "c", "b"],
+            "prediction": ["a", "a", "b", "b"],
+        }
+    )
+    column_mapping = ColumnMapping()
+    suite = TestSuite(tests=[TestFNR(lt=0.8)])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
+    assert suite
+
+
+def test_fnr_test_render_json() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "target": ["a", "a", "c", "b"],
+            "prediction": ["a", "a", "b", "c"],
+        }
+    )
+    suite = TestSuite(tests=[TestFNR()])
+    suite.run(current_data=test_dataset, reference_data=test_dataset)
+    assert suite
+
+    result_from_json = json.loads(suite.json())
+    assert result_from_json["summary"]["all_passed"] is True
+    test_info = result_from_json["tests"][0]
+    assert test_info == {
+        "description": "False Negative Rate is 0.5. Test Threshold is eq=0.5 ± 0.1",
+        "group": "classification",
+        "name": "False Negative Rate",
+        "parameters": {"condition": {"eq": {"absolute": 1e-12, "relative": 0.2, "value": 0.5}}, "fnr": 0.5},
         "status": "SUCCESS",
     }

@@ -118,11 +118,13 @@ def classification_performance_metrics(
 
     class_num = target.nunique()
     prediction_labels = prediction
+
     if class_num > 2:
         accuracy_score = sklearn.metrics.accuracy_score(target, prediction_labels)
         avg_precision = sklearn.metrics.precision_score(target, prediction_labels, average="macro")
         avg_recall = sklearn.metrics.recall_score(target, prediction_labels, average="macro")
         avg_f1 = sklearn.metrics.f1_score(target, prediction_labels, average="macro")
+
     else:
         accuracy_score = sklearn.metrics.accuracy_score(target, prediction_labels)
         avg_precision = sklearn.metrics.precision_score(
