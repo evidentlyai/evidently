@@ -336,11 +336,11 @@ class TestNumberOfNullValuesRenderer(TestRenderer):
 class BaseIntegrityColumnNullValuesTest(BaseCheckValueTest, ABC):
     group = "data_integrity"
     metric: DataIntegrityNullValuesMetrics
-    column_name: Optional[str]
+    column_name: str
 
     def __init__(
         self,
-        column_name: Optional[str],
+        column_name: str,
         null_values: Optional[list] = None,
         ignore_na: bool = False,
         eq: Optional[Numeric] = None,
