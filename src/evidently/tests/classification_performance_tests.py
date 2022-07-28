@@ -135,6 +135,12 @@ class TestAccuracyScore(SimpleClassificationTestTopK):
 
 @default_renderer(test_type=TestAccuracyScore)
 class TestAccuracyScoreRenderer(TestRenderer):
+    def render_json(self, obj: TestAccuracyScore) -> dict:
+        base = super().render_json(obj)
+        base["parameters"]["condition"] = obj.get_condition().as_dict()
+        base["parameters"]["accuracy"] = obj.value
+        return base
+
     def render_html(self, obj: TestAccuracyScore) -> TestHtmlInfo:
         info = super().render_html(obj)
         k = obj.k
@@ -174,6 +180,12 @@ class TestPrecisionScore(SimpleClassificationTestTopK):
 
 @default_renderer(test_type=TestPrecisionScore)
 class TestPrecisionScoreRenderer(TestRenderer):
+    def render_json(self, obj: TestPrecisionScore) -> dict:
+        base = super().render_json(obj)
+        base["parameters"]["condition"] = obj.get_condition().as_dict()
+        base["parameters"]["precision"] = obj.value
+        return base
+
     def render_html(self, obj: TestPrecisionScore) -> TestHtmlInfo:
         info = super().render_html(obj)
         k = obj.k
@@ -213,6 +225,12 @@ class TestF1Score(SimpleClassificationTestTopK):
 
 @default_renderer(test_type=TestF1Score)
 class TestF1ScoreRenderer(TestRenderer):
+    def render_json(self, obj: TestF1Score) -> dict:
+        base = super().render_json(obj)
+        base["parameters"]["condition"] = obj.get_condition().as_dict()
+        base["parameters"]["f1"] = obj.value
+        return base
+
     def render_html(self, obj: TestF1Score) -> TestHtmlInfo:
         info = super().render_html(obj)
         k = obj.k
@@ -252,6 +270,12 @@ class TestRecallScore(SimpleClassificationTestTopK):
 
 @default_renderer(test_type=TestRecallScore)
 class TestRecallScoreRenderer(TestRenderer):
+    def render_json(self, obj: TestRecallScore) -> dict:
+        base = super().render_json(obj)
+        base["parameters"]["condition"] = obj.get_condition().as_dict()
+        base["parameters"]["recall"] = obj.value
+        return base
+
     def render_html(self, obj: TestRecallScore) -> TestHtmlInfo:
         info = super().render_html(obj)
         k = obj.k
@@ -291,6 +315,12 @@ class TestRocAuc(SimpleClassificationTest):
 
 @default_renderer(test_type=TestRocAuc)
 class TestRocAucRenderer(TestRenderer):
+    def render_json(self, obj: TestRocAuc) -> dict:
+        base = super().render_json(obj)
+        base["parameters"]["condition"] = obj.get_condition().as_dict()
+        base["parameters"]["roc_auc"] = obj.value
+        return base
+
     def render_html(self, obj: TestRocAuc) -> TestHtmlInfo:
         info = super().render_html(obj)
         curr_metrics = obj.metric.get_result().current_metrics
@@ -330,12 +360,24 @@ class TestLogLoss(SimpleClassificationTest):
 
 @default_renderer(test_type=TestLogLoss)
 class TestLogLossRenderer(TestRenderer):
+    def render_json(self, obj: TestLogLoss) -> dict:
+        base = super().render_json(obj)
+        base["parameters"]["condition"] = obj.get_condition().as_dict()
+        base["parameters"]["log_loss"] = obj.value
+        return base
+
     def render_html(self, obj: TestLogLoss) -> TestHtmlInfo:
         info = super().render_html(obj)
         data_for_plots = obj.metric.get_result().data_for_plots
+
         if data_for_plots is not None:
             curr_metrics = data_for_plots.current
             ref_metrics = data_for_plots.reference
+
+        else:
+            curr_metrics = None
+            ref_metrics = None
+
         if curr_metrics is not None:
             fig = plot_boxes(curr_metrics, ref_metrics)
             fig_json = fig.to_plotly_json()
@@ -402,7 +444,7 @@ class TestFNR(SimpleClassificationTest):
         return f"False Negative Rate is {value:.3g}. Test Threshold is {self.get_condition()}"
 
 
-class ByClassClassificationTest(SimpleClassificationTest):
+class ByClassClassificationTest(SimpleClassificationTest, ABC):
     def __init__(
         self,
         label: str,
@@ -434,6 +476,13 @@ class TestPrecisionByClass(ByClassClassificationTest):
 
 @default_renderer(test_type=TestPrecisionByClass)
 class TestPrecisionByClassRenderer(TestRenderer):
+    def render_json(self, obj: TestPrecisionByClass) -> dict:
+        base = super().render_json(obj)
+        base["parameters"]["condition"] = obj.get_condition().as_dict()
+        base["parameters"]["precision"] = obj.value
+        base["parameters"]["class"] = obj.label
+        return base
+
     def render_html(self, obj: TestPrecisionByClass) -> TestHtmlInfo:
         info = super().render_html(obj)
         ref_metrics = obj.metric.get_result().reference_metrics
@@ -470,6 +519,13 @@ class TestRecallByClass(ByClassClassificationTest):
 
 @default_renderer(test_type=TestRecallByClass)
 class TestRecallByClassRenderer(TestRenderer):
+    def render_json(self, obj: TestRecallByClass) -> dict:
+        base = super().render_json(obj)
+        base["parameters"]["condition"] = obj.get_condition().as_dict()
+        base["parameters"]["recall"] = obj.value
+        base["parameters"]["class"] = obj.label
+        return base
+
     def render_html(self, obj: TestRecallByClass) -> TestHtmlInfo:
         info = super().render_html(obj)
         ref_metrics = obj.metric.get_result().reference_metrics
@@ -506,6 +562,13 @@ class TestF1ByClass(ByClassClassificationTest):
 
 @default_renderer(test_type=TestF1ByClass)
 class TestF1ByClassRenderer(TestRenderer):
+    def render_json(self, obj: TestF1ByClass) -> dict:
+        base = super().render_json(obj)
+        base["parameters"]["condition"] = obj.get_condition().as_dict()
+        base["parameters"]["f1"] = obj.value
+        base["parameters"]["class"] = obj.label
+        return base
+
     def render_html(self, obj: TestF1ByClass) -> TestHtmlInfo:
         info = super().render_html(obj)
         ref_metrics = obj.metric.get_result().reference_metrics
