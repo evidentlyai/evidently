@@ -1,4 +1,3 @@
-from typing import List
 from typing import Optional
 from typing import Tuple
 from typing import Union
@@ -7,6 +6,7 @@ import numpy as np
 import pandas as pd
 
 import pytest
+from pytest import approx
 
 from evidently.analyzers.classification_performance_analyzer import ConfusionMatrix
 from evidently.pipeline.column_mapping import ColumnMapping
@@ -69,46 +69,48 @@ def test_classification_performance_metrics_binary_probas_threshold() -> None:
     )
 
 
-# @pytest.mark.parametrize(
-#     "data,mapping,expected_predictions,expected_probas",
-#     [
-#         (
-#             pd.DataFrame([dict(target="a", prediction="a")]),
-#             ColumnMapping(prediction="prediction"),
-#             pd.Series(["a"]),
-#             None,
-#         ),
-#         (
-#             pd.DataFrame([dict(target="a", pos_proba=0.9)]),
-#             ColumnMapping(prediction="pos_proba", target_names=["b", "a"]),
-#             pd.Series(["a"]),
-#             pd.DataFrame([dict(a=0.9, b=0.1)]),
-#         ),
-#     ],
-# )
-# def test_prediction_data(
-#     data: pd.DataFrame, mapping: ColumnMapping, expected_predictions: pd.Series, expected_probas: Optional[pd.DataFrame]
-# ):
-#     predictions, predictions_probas = get_prediction_data(data, mapping)
-#     assert predictions.equals(expected_predictions)
-#     if predictions_probas is None:
-#         assert expected_probas is None
-#     else:
-#         assert np.isclose(predictions_probas, expected_probas).all()
+@pytest.mark.parametrize(
+    "data,mapping,expected_predictions,expected_probas",
+    [
+        (
+            pd.DataFrame([dict(target=1, preds=1)]),
+            ColumnMapping(prediction="preds"),
+            [1],
+            None,
+        ),
+        # (
+        #     pd.DataFrame([dict(target="a", pos_proba=0.9)]),
+        #     ColumnMapping(prediction="pos_proba", target_names=["b", "a"]),
+        #     pd.Series(["a"]),
+        #     pd.DataFrame([dict(a=0.9, b=0.1)]),
+        # )
+    ],
+)
+def test_prediction_data_with_default_threshold(
+    data: pd.DataFrame, mapping: ColumnMapping, expected_predictions: list, expected_probas: Optional[pd.DataFrame]
+):
+    predictions, predictions_probas = get_prediction_data(data, mapping)
+    assert predictions.tolist() == expected_predictions
+
+    if predictions_probas is None:
+        assert predictions_probas == expected_probas
+
+    else:
+        assert predictions_probas.to_dict() == expected_probas
 
 
-# def test_classification_performance_metrics() -> None:
-#     test_dataset = pd.DataFrame({"target": [1, 1, 1, 1], "prediction": [1, 1, 1, 0]})
-#     data_mapping = ColumnMapping()
-#     metric = ClassificationPerformanceMetrics()
-#     result = metric.calculate(
-#         data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping), metrics={}
-#     )
-#     assert result is not None
-#     assert result.current_metrics.accuracy == 0.75
-#     assert result.current_metrics.f1 < 0.5
-#     assert result.current_metrics.precision == 0.5
-#     assert result.current_metrics.recall == 0.375
+def test_classification_performance_metrics() -> None:
+    test_dataset = pd.DataFrame({"target": [1, 1, 1, 1], "prediction": [1, 1, 1, 0]})
+    data_mapping = ColumnMapping()
+    metric = ClassificationPerformanceMetrics()
+    result = metric.calculate(
+        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping), metrics={}
+    )
+    assert result is not None
+    assert result.current_metrics.accuracy == 0.75
+    assert result.current_metrics.f1 == approx(0.86, abs=0.01)
+    assert result.current_metrics.precision == 1
+    assert result.current_metrics.recall == 0.75
 
 
 @pytest.mark.parametrize(
@@ -219,7 +221,7 @@ def test_get_prediction_data(
 
 
 @pytest.mark.parametrize(
-    "probas,labels,k,expected",
+    "probas,k,expected",
     (
         (
             pd.DataFrame(
@@ -228,7 +230,6 @@ def test_get_prediction_data(
                     b=[0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 1],
                 )
             ),
-            ["a", "b"],
             0.1,
             0.9,
         ),
@@ -241,7 +242,6 @@ def test_get_prediction_data(
                     ]
                 ).T
             ),
-            [0, 1],
             0.1,
             0.9,
         ),
@@ -252,7 +252,6 @@ def test_get_prediction_data(
                     b=[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.0],
                 )
             ),
-            ["a", "b"],
             0.1,
             1.0,
         ),
@@ -263,7 +262,6 @@ def test_get_prediction_data(
                     b=[0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 1],
                 )
             ),
-            ["a", "b"],
             0.2,
             0.8,
         ),
@@ -274,7 +272,6 @@ def test_get_prediction_data(
                     b=[0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 1],
                 )
             ),
-            ["a", "b"],
             1,
             0.8,
         ),
@@ -285,7 +282,6 @@ def test_get_prediction_data(
                     b=[0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 1],
                 )
             ),
-            ["b", "a"],
             2,
             0.7,
         ),
@@ -296,7 +292,6 @@ def test_get_prediction_data(
                     b=[0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 1],
                 )
             ),
-            ["a", "b"],
             11,
             0.0,
         ),
@@ -307,14 +302,13 @@ def test_get_prediction_data(
                     b=[0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 1],
                 )
             ),
-            ["a", "b"],
             0.0,
             0.9,
         ),
     ),
 )
-def test_k_probability_threshold(probas: pd.DataFrame, labels: List[str], k: Union[int, float], expected: float):
-    assert k_probability_threshold(probas, labels, k) == expected
+def test_k_probability_threshold(probas: pd.DataFrame, k: Union[int, float], expected: float):
+    assert k_probability_threshold(probas, k) == expected
 
 
 @pytest.mark.parametrize(

@@ -20,16 +20,16 @@ class SimpleClassificationTest(BaseCheckValueTest):
     metric: ClassificationPerformanceMetrics
 
     def __init__(
-            self,
-            eq: Optional[Numeric] = None,
-            gt: Optional[Numeric] = None,
-            gte: Optional[Numeric] = None,
-            is_in: Optional[List[Union[Numeric, str, bool]]] = None,
-            lt: Optional[Numeric] = None,
-            lte: Optional[Numeric] = None,
-            not_eq: Optional[Numeric] = None,
-            not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-            metric: Optional[ClassificationPerformanceMetrics] = None
+        self,
+        eq: Optional[Numeric] = None,
+        gt: Optional[Numeric] = None,
+        gte: Optional[Numeric] = None,
+        is_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        lt: Optional[Numeric] = None,
+        lte: Optional[Numeric] = None,
+        not_eq: Optional[Numeric] = None,
+        not_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        metric: Optional[ClassificationPerformanceMetrics] = None,
     ):
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
         if metric is None:
@@ -56,18 +56,18 @@ class SimpleClassificationTest(BaseCheckValueTest):
 
 class SimpleClassificationTestTopK(SimpleClassificationTest, ABC):
     def __init__(
-            self,
-            classification_threshold: Optional[float] = None,
-            k: Optional[Union[float, int]] = None,
-            eq: Optional[Numeric] = None,
-            gt: Optional[Numeric] = None,
-            gte: Optional[Numeric] = None,
-            is_in: Optional[List[Union[Numeric, str, bool]]] = None,
-            lt: Optional[Numeric] = None,
-            lte: Optional[Numeric] = None,
-            not_eq: Optional[Numeric] = None,
-            not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-            metric: Optional[ClassificationPerformanceMetrics] = None
+        self,
+        classification_threshold: Optional[float] = None,
+        k: Optional[Union[float, int]] = None,
+        eq: Optional[Numeric] = None,
+        gt: Optional[Numeric] = None,
+        gte: Optional[Numeric] = None,
+        is_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        lt: Optional[Numeric] = None,
+        lte: Optional[Numeric] = None,
+        not_eq: Optional[Numeric] = None,
+        not_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        metric: Optional[ClassificationPerformanceMetrics] = None,
     ):
         if metric is None:
             metric = ClassificationPerformanceMetrics()
@@ -77,16 +77,17 @@ class SimpleClassificationTestTopK(SimpleClassificationTest, ABC):
             metric = metric.with_k(k)
         if classification_threshold is not None:
             metric.with_threshold(classification_threshold)
-        super().__init__(eq=eq,
-                         gt=gt,
-                         gte=gte,
-                         is_in=is_in,
-                         lt=lt,
-                         lte=lte,
-                         not_eq=not_eq,
-                         not_in=not_in,
-                         metric=metric,
-                         )
+        super().__init__(
+            eq=eq,
+            gt=gt,
+            gte=gte,
+            is_in=is_in,
+            lt=lt,
+            lte=lte,
+            not_eq=not_eq,
+            not_in=not_in,
+            metric=metric,
+        )
         self.k = k
         self.threshold = classification_threshold
 
@@ -320,7 +321,11 @@ class TestLogLoss(SimpleClassificationTest):
         return result.log_loss
 
     def get_description(self, value: Numeric) -> str:
-        return f" Logarithmic Loss is {value:.3g}. Test Threshold is {self.get_condition()}"
+        if value is None:
+            return "No log loss value for the data"
+
+        else:
+            return f" Logarithmic Loss is {value:.3g}. Test Threshold is {self.get_condition()}"
 
 
 @default_renderer(test_type=TestLogLoss)
@@ -398,27 +403,22 @@ class TestFNR(SimpleClassificationTest):
 
 
 class ByClassClassificationTest(SimpleClassificationTest):
-    def __init__(self,
-                 label: str,
-                 eq: Optional[Numeric] = None,
-                 gt: Optional[Numeric] = None,
-                 gte: Optional[Numeric] = None,
-                 is_in: Optional[List[Union[Numeric, str, bool]]] = None,
-                 lt: Optional[Numeric] = None,
-                 lte: Optional[Numeric] = None,
-                 not_eq: Optional[Numeric] = None,
-                 not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-                 metric: Optional[ClassificationPerformanceMetrics] = None
-                 ):
-        super().__init__(eq=eq,
-                         gt=gt,
-                         gte=gte,
-                         is_in=is_in,
-                         lt=lt,
-                         lte=lte,
-                         not_eq=not_eq,
-                         not_in=not_in,
-                         metric=metric)
+    def __init__(
+        self,
+        label: str,
+        eq: Optional[Numeric] = None,
+        gt: Optional[Numeric] = None,
+        gte: Optional[Numeric] = None,
+        is_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        lt: Optional[Numeric] = None,
+        lte: Optional[Numeric] = None,
+        not_eq: Optional[Numeric] = None,
+        not_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        metric: Optional[ClassificationPerformanceMetrics] = None,
+    ):
+        super().__init__(
+            eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in, metric=metric
+        )
         self.label = label
 
 
@@ -426,7 +426,7 @@ class TestPrecisionByClass(ByClassClassificationTest):
     name: str = "Precision Score by Class"
 
     def get_value(self, result: DatasetClassificationPerformanceMetrics):
-        return result.metrics_matrix[self.label]['precision']
+        return result.metrics_matrix[self.label]["precision"]
 
     def get_description(self, value: Numeric) -> str:
         return f"Precision Score of **{self.label}** is {value:.3g}. Test Threshold is {self.get_condition()}"
@@ -462,7 +462,7 @@ class TestRecallByClass(ByClassClassificationTest):
     name: str = "Recall Score by Class"
 
     def get_value(self, result: DatasetClassificationPerformanceMetrics):
-        return result.metrics_matrix[self.label]['recall']
+        return result.metrics_matrix[self.label]["recall"]
 
     def get_description(self, value: Numeric) -> str:
         return f"Recall Score of **{self.label}** is {value:.3g}. Test Threshold is {self.get_condition()}"
@@ -498,7 +498,7 @@ class TestF1ByClass(ByClassClassificationTest):
     name: str = "F1 Score by Class"
 
     def get_value(self, result: DatasetClassificationPerformanceMetrics):
-        return result.metrics_matrix[self.label]['f1-score']
+        return result.metrics_matrix[self.label]["f1-score"]
 
     def get_description(self, value: Numeric) -> str:
         return f"F1 Score of **{self.label}** is {value:.3g}. Test Threshold is {self.get_condition()}"
@@ -534,7 +534,7 @@ def _get_metric_result(
     k: Optional[Union[int, float]],
     threshold: Optional[float],
     is_ref: bool,
-    result: ClassificationPerformanceMetricsResults
+    result: ClassificationPerformanceMetricsResults,
 ) -> Tuple[DatasetClassificationPerformanceMetrics, Optional[DatasetClassificationPerformanceMetrics]]:
     ref_metrics = None
     if k:
