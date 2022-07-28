@@ -318,8 +318,7 @@ class TestRocAuc(SimpleClassificationTest):
 
     def get_description(self, value: Numeric) -> str:
         if value is None:
-            return "No ROC AUC Score value for the data"
-
+            return "Not enough data to calculate ROC AUC. Consider providing probabilities instead of labels."
         else:
             return f"ROC AUC Score is {value:.3g}. Test Threshold is {self.get_condition()}"
 
@@ -363,7 +362,7 @@ class TestLogLoss(SimpleClassificationTest):
 
     def get_description(self, value: Numeric) -> str:
         if value is None:
-            return "No log loss value for the data"
+            return "ot enough data to calculate Logarithmic Loss. Consider providing probabilities instead of labels."
 
         else:
             return f" Logarithmic Loss is {value:.3g}. Test Threshold is {self.get_condition()}"
