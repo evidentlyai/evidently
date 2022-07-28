@@ -33,10 +33,10 @@ class GroupTypeData:
 
 
 class GroupingTypes:
-    ByFeature = GroupTypeData("by_feature", "By Feature", [])
-    ByClass = GroupTypeData("by_class", "Test Group", [])
-    TestGroup = GroupTypeData("test_group", "Test Group", [])
-    TestType = GroupTypeData("test_type", "Test Type", [])
+    ByFeature = GroupTypeData("by_feature", "By feature", [])
+    ByClass = GroupTypeData("by_class", "By class", [])
+    TestGroup = GroupTypeData("test_group", "By test group", [])
+    TestType = GroupTypeData("test_type", "By test type", [])
 
 
 DEFAULT_GROUP = [
