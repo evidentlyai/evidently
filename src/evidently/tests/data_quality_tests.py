@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import List
+from typing import List, Dict
 from typing import Optional
 from typing import Union
 
@@ -470,16 +470,15 @@ class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest, ABC):
             eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in, metric=metric
         )
 
-    def check(self):
-        groups = {
-            GroupingTypes.ByFeature: self.column_name,
-            GroupingTypes.TestGroup: self.group,
-            GroupingTypes.TestType: self.name
+    def groups(self) -> Dict[str, str]:
+        return {
+            GroupingTypes.ByFeature.id: self.column_name,
         }
+
+    def check(self):
         result = TestResult(name=self.name,
                             description="The test was not launched",
-                            status=TestResult.SKIPPED,
-                            groups=groups)
+                            status=TestResult.SKIPPED)
         features_stats = self.metric.get_result().features_stats.get_all_features()
 
         if self.column_name not in features_stats:
@@ -487,7 +486,6 @@ class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest, ABC):
             return result
 
         result = super().check()
-        result.groups.update(groups)
 
         if self.value is None:
             result.mark_as_error(f"No value for the feature '{self.column_name}'")

@@ -31,6 +31,7 @@ class GroupTypeData:
     def add_value(self, data: GroupData):
         self.values.append(data)
 
+
 class GroupingTypes:
     ByFeature = GroupTypeData("by_feature", "By Feature", [])
     ByClass = GroupTypeData("by_class", "Test Group", [])
@@ -44,6 +45,7 @@ DEFAULT_GROUP = [
     GroupingTypes.TestType,
     GroupingTypes.ByClass
 ]
+
 
 @dataclass
 class TestResult:
