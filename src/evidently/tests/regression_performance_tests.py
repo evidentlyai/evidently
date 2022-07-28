@@ -3,8 +3,6 @@ from typing import List
 from typing import Optional
 from typing import Union
 
-import numpy as np
-
 from evidently.model.widget import BaseWidgetInfo
 from evidently.metrics import RegressionPerformanceMetrics
 from evidently.renderers.base_renderer import default_renderer
@@ -12,6 +10,8 @@ from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.renderers.base_renderer import DetailsInfo
 from evidently.tests.base_test import BaseCheckValueTest
+from evidently.tests.base_test import GroupingTypes
+from evidently.tests.base_test import GroupData
 from evidently.tests.base_test import TestValueCondition
 from evidently.tests.utils import plot_check
 from evidently.tests.utils import plot_metric_value
@@ -21,8 +21,12 @@ from evidently.tests.utils import approx
 from evidently.tests.utils import Numeric
 
 
+REGRESSION_GROUP = GroupData("regression", "Regression", "")
+GroupingTypes.TestGroup.add_value(REGRESSION_GROUP)
+
+
 class BaseRegressionPerformanceMetricsTest(BaseCheckValueTest, ABC):
-    group = "regression"
+    group = REGRESSION_GROUP.id
     metric: RegressionPerformanceMetrics
 
     def __init__(

@@ -32,34 +32,13 @@ from evidently.suite.base_suite import find_test_renderer
 from evidently.test_preset.test_preset import TestPreset
 from evidently.tests.base_test import Test
 from evidently.tests.base_test import TestResult
+from evidently.tests.base_test import DEFAULT_GROUP
 
 
 def _discover_dependencies(test: Test) -> Iterator[Tuple[str, Union[Metric, Test]]]:
     for field_name, field in test.__dict__.items():
         if issubclass(type(field), (Metric, Test)):
             yield field_name, field
-
-
-@dataclasses.dataclass
-class GroupData:
-    id: str
-    title: str
-    description: str
-    sort_index: int
-    severity: Optional[str] = None
-
-
-@dataclasses.dataclass
-class GroupTypeData:
-    id: str
-    title: str
-    # possible values with description, if empty will use simple view (no severity, description and sorting).
-    values: List[GroupData] = dataclasses.field(default=list)
-
-
-DEFAULT_GROUP = [
-    GroupTypeData("by_feature", "By Feature", [])
-]
 
 
 class TestSuite:

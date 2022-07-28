@@ -6,11 +6,17 @@ import numpy as np
 from evidently.metrics.classification_performance_metrics import ClassificationPerformanceMetrics
 from evidently.metrics.classification_performance_metrics import DatasetClassificationPerformanceMetrics
 from evidently.tests.base_test import Test
+from evidently.tests.base_test import GroupingTypes
+from evidently.tests.base_test import GroupData
 from evidently.tests.base_test import TestResult
 
 
+CLASSIFICATION_GROUP = GroupData("classification", "Classification", "")
+GroupingTypes.TestGroup.add_value(CLASSIFICATION_GROUP)
+
+
 class SimpleClassificationTest(Test):
-    group = "classification"
+    group = CLASSIFICATION_GROUP.id
     name: str
     metric: ClassificationPerformanceMetrics
 

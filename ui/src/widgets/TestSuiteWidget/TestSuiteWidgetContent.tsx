@@ -13,11 +13,11 @@ type TestSuiteFoldingProps = {
 const TestSuiteFolding: React.FC<TestSuiteFoldingProps> = ({type, availableTypes, onChange}) =>
     (
         <>
-            <Select value={type} onChange={event => onChange(event.target.value as string)}>
-                {availableTypes.map(typeData => <MenuItem key={typeData.id}
+            <Select value={type} onChange={event => onChange(event.target.value as string)} native={true}>
+                {availableTypes.map(typeData => <option key={typeData.id}
                                                           value={typeData.id}>
                     {typeData.title}
-                </MenuItem>)}
+                </option>)}
             </Select>
         </>
     )
@@ -109,7 +109,18 @@ const DefaultGroups: TestGroupTypeData[] = [
  */
 const TestSuiteWidgetContent: React.FC<TestSuiteWidgetParams> = ({tests, testGroupTypes}) => {
     const [grouping, changeGrouping] = React.useState({"group_type": "none"});
-    let availableTypes = [...DefaultGroups, ...(testGroupTypes ?? [])];
+    const existingGroupTypes: string[] = [];
+    for (let i = 0; i < tests.length; i++) {
+        const test = tests[i];
+        const keys = Object.keys(test.groups);
+        for (let key of keys) {
+            if (existingGroupTypes.findIndex(k => k === key) === -1) {
+                existingGroupTypes.push(key);
+            }
+        }
+    }
+    let availableTypes = [...DefaultGroups, ...(testGroupTypes ?? []).filter(t => existingGroupTypes.findIndex(k => k === t.id) !== -1)];
+
     return (<><Grid container spacing={2}>
         <Grid item xs={12}>
             <TestSuiteFolding type={grouping.group_type}

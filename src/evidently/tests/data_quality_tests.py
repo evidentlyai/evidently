@@ -17,9 +17,11 @@ from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.renderers.base_renderer import DetailsInfo
 from evidently.metrics import DataQualityCorrelationMetrics
 from evidently.tests.base_test import BaseCheckValueTest
-from evidently.tests.base_test import TestValueCondition
+from evidently.tests.base_test import GroupingTypes
+from evidently.tests.base_test import GroupData
 from evidently.tests.base_test import Test
 from evidently.tests.base_test import TestResult
+from evidently.tests.base_test import TestValueCondition
 from evidently.tests.utils import approx
 from evidently.tests.utils import Numeric
 from evidently.tests.utils import plot_check
@@ -30,8 +32,12 @@ from evidently.tests.utils import plot_value_counts_tables_ref_curr
 from evidently.tests.utils import plot_correlations
 
 
+DATA_QUALITY_GROUP = GroupData("data_quality", "Data Quality", "")
+GroupingTypes.TestGroup.add_value(DATA_QUALITY_GROUP)
+
+
 class BaseDataQualityMetricsValueTest(BaseCheckValueTest, ABC):
-    group = "data_quality"
+    group = DATA_QUALITY_GROUP.id
     metric: DataQualityMetrics
 
     def __init__(
@@ -56,7 +62,7 @@ class BaseDataQualityMetricsValueTest(BaseCheckValueTest, ABC):
 
 
 class TestConflictTarget(Test):
-    group = "data_quality"
+    group = DATA_QUALITY_GROUP.id
     name = "Test number of conflicts in target"
     metric: DataQualityStabilityMetrics
 
@@ -86,7 +92,7 @@ class TestConflictTarget(Test):
 
 
 class TestConflictPrediction(Test):
-    group = "data_quality"
+    group = DATA_QUALITY_GROUP.id
     name = "Test number of conflicts in prediction"
     metric: DataQualityStabilityMetrics
 
@@ -116,7 +122,7 @@ class TestConflictPrediction(Test):
 
 
 class BaseDataQualityCorrelationsMetricsValueTest(BaseCheckValueTest, ABC):
-    group = "data_quality"
+    group = DATA_QUALITY_GROUP.id
     metric: DataQualityCorrelationMetrics
     method: str
 
@@ -465,10 +471,15 @@ class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest, ABC):
         )
 
     def check(self):
+        groups = {
+            GroupingTypes.ByFeature: self.column_name,
+            GroupingTypes.TestGroup: self.group,
+            GroupingTypes.TestType: self.name
+        }
         result = TestResult(name=self.name,
                             description="The test was not launched",
                             status=TestResult.SKIPPED,
-                            groups={"by_feature": self.column_name})
+                            groups=groups)
         features_stats = self.metric.get_result().features_stats.get_all_features()
 
         if self.column_name not in features_stats:
@@ -476,6 +487,7 @@ class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest, ABC):
             return result
 
         result = super().check()
+        result.groups.update(groups)
 
         if self.value is None:
             result.mark_as_error(f"No value for the feature '{self.column_name}'")

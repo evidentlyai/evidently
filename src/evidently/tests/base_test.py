@@ -12,6 +12,39 @@ from evidently.tests.utils import ApproxValue
 from evidently.tests.utils import Numeric
 
 
+@dataclasses.dataclass
+class GroupData:
+    id: str
+    title: str
+    description: str
+    sort_index: int = 0
+    severity: Optional[str] = None
+
+
+@dataclasses.dataclass
+class GroupTypeData:
+    id: str
+    title: str
+    # possible values with description, if empty will use simple view (no severity, description and sorting).
+    values: List[GroupData] = dataclasses.field(default_factory=list)
+
+    def add_value(self, data: GroupData):
+        self.values.append(data)
+
+class GroupingTypes:
+    ByFeature = GroupTypeData("by_feature", "By Feature", [])
+    ByClass = GroupTypeData("by_class", "Test Group", [])
+    TestGroup = GroupTypeData("test_group", "Test Group", [])
+    TestType = GroupTypeData("test_type", "Test Type", [])
+
+
+DEFAULT_GROUP = [
+    GroupingTypes.ByFeature,
+    GroupingTypes.TestGroup,
+    GroupingTypes.TestType,
+    GroupingTypes.ByClass
+]
+
 @dataclass
 class TestResult:
     # Constants for test result status
@@ -62,7 +95,7 @@ class Test:
     context = None
 
     @abc.abstractmethod
-    def check(self):
+    def check(self) -> TestResult:
         raise NotImplementedError()
 
     def set_context(self, context):
@@ -213,6 +246,9 @@ class BaseCheckValueTest(BaseConditionsTest):
     def get_condition(self) -> TestValueCondition:
         return self.condition
 
+    def groups(self) -> Dict[str, str]:
+        return {}
+
     def check(self):
         result = TestResult(name=self.name, description="The test was not launched", status=TestResult.SKIPPED)
         value = self.calculate_value_for_test()
@@ -240,4 +276,5 @@ class BaseCheckValueTest(BaseConditionsTest):
         except ValueError:
             result.mark_as_error("Cannot calculate the condition")
 
+        result.groups.update(self.groups())
         return result

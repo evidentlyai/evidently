@@ -16,7 +16,8 @@ from evidently.renderers.base_renderer import DetailsInfo
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.tests.base_test import BaseCheckValueTest
-from evidently.tests.base_test import BaseConditionsTest
+from evidently.tests.base_test import GroupingTypes
+from evidently.tests.base_test import GroupData
 from evidently.tests.base_test import Test
 from evidently.tests.base_test import TestResult
 from evidently.tests.base_test import TestValueCondition
@@ -26,8 +27,12 @@ from evidently.tests.utils import approx
 from evidently.tests.utils import Numeric
 
 
+DATA_INTEGRITY_GROUP = GroupData("data_integrity", "Data Integrity", "")
+GroupingTypes.TestGroup.add_value(DATA_INTEGRITY_GROUP)
+
+
 class BaseIntegrityValueTest(BaseCheckValueTest, ABC):
-    group = "data_integrity"
+    group = DATA_INTEGRITY_GROUP.id
     data_integrity_metric: DataIntegrityMetrics
 
     def __init__(
@@ -454,6 +459,11 @@ class BaseIntegrityByColumnsConditionTest(BaseCheckValueTest, ABC):
         else:
             self.data_integrity_metric = data_integrity_metric
 
+    def groups(self) -> Dict[str, str]:
+        if self.column_name is not None:
+            return {GroupingTypes.ByFeature.id: self.column_name}
+        return {}
+
 
 class TestColumnNANShare(BaseIntegrityByColumnsConditionTest):
     """Test the share of NANs in a column"""
@@ -614,7 +624,7 @@ class TestColumnsType(Test):
 
     @dataclasses.dataclass
     class Result(TestResult):
-        columns_types: Dict[str, Tuple[str, str]] = dataclasses.field(default=dict)
+        columns_types: Dict[str, Tuple[str, str]] = dataclasses.field(default_factory=dict)
 
     def __init__(
         self, columns_type: Optional[dict] = None, data_integrity_metric: Optional[DataIntegrityMetrics] = None
