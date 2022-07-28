@@ -44,7 +44,7 @@ class SimpleClassificationTest(BaseCheckValueTest):
             return self.condition
         ref_metrics = self.metric.get_result().reference_metrics
         if ref_metrics is not None:
-            return TestValueCondition(eq=approx(self.get_value(ref_metrics), relative=0.1))
+            return TestValueCondition(eq=approx(self.get_value(ref_metrics), relative=0.2))
         if self.get_value(self.metric.get_result().dummy_metrics) is None:
             raise ValueError("Neither required test parameters nor reference data has been provided.")
         return TestValueCondition(gt=self.get_value(self.metric.get_result().dummy_metrics))
@@ -112,7 +112,7 @@ class SimpleClassificationTestTopK(SimpleClassificationTest, ABC):
                 if result.reference_by_threshold_metrics is None:
                     raise ValueError("Reference by Threshold isn't set but expected by test")
                 ref_metrics = result.reference_by_threshold_metrics[self.threshold]
-            return TestValueCondition(eq=approx(self.get_value(ref_metrics), relative=0.1))
+            return TestValueCondition(eq=approx(self.get_value(ref_metrics), relative=0.2))
         if self.get_value(result.dummy_metrics) is None:
             raise ValueError("Neither required test parameters nor reference data has been provided.")
         dummy_metrics = result.dummy_metrics
@@ -342,7 +342,7 @@ class TestLogLoss(SimpleClassificationTest):
             return self.condition
         ref_metrics = self.metric.get_result().reference_metrics
         if ref_metrics is not None:
-            return TestValueCondition(eq=approx(self.get_value(ref_metrics), relative=0.1))
+            return TestValueCondition(eq=approx(self.get_value(ref_metrics), relative=0.2))
         if self.get_value(self.metric.get_result().dummy_metrics) is None:
             raise ValueError("Neither required test parameters nor reference data has been provided.")
         return TestValueCondition(lt=self.get_value(self.metric.get_result().dummy_metrics))
