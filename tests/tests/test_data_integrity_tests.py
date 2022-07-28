@@ -185,12 +185,13 @@ def test_data_integrity_test_constant_columns_json_render() -> None:
     result_from_json = json.loads(suite.json())
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
-    assert test_info == {'description': 'The number of constant columns is 1. The test threshold is '
-                'lte=1.',
- 'group': 'data_integrity',
- 'name': 'Number of Constant Columns',
- 'parameters': {'condition': {'lte': 1}, 'number_of_constant_columns': 1},
- 'status': 'SUCCESS'}
+    assert test_info == {
+        "description": "The number of constant columns is 1. The test threshold is " "lte=1.",
+        "group": "data_integrity",
+        "name": "Number of Constant Columns",
+        "parameters": {"condition": {"lte": 1}, "number_of_constant_columns": 1},
+        "status": "SUCCESS",
+    }
 
 
 def test_data_integrity_test_empty_rows() -> None:
@@ -398,7 +399,7 @@ def test_data_integrity_test_columns_nan_share_json_render() -> None:
     test_info = result_from_json["tests"][0]
     assert test_info == {
         "description": "The share of NA values in the column **feature1** is 0.25. "
-                       "The test threshold is eq=0.25 ± 0.025.",
+        "The test threshold is eq=0.25 ± 0.025.",
         "group": "data_integrity",
         "name": "Share of NA Values",
         "parameters": {
