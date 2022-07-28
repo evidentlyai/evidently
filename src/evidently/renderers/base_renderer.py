@@ -1,7 +1,7 @@
 import abc
 
 import dataclasses
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 from evidently.model.widget import BaseWidgetInfo
 
@@ -25,6 +25,7 @@ class TestHtmlInfo:
     description: str
     status: str
     details: List[DetailsInfo]
+    groups: Dict[str, str]
 
 
 class TestRenderer:
@@ -40,7 +41,8 @@ class TestRenderer:
             name=result.name,
             description=self.html_description(obj),
             status=result.status,
-            details=[]
+            details=[],
+            groups=result.groups,
         )
 
     def render_json(self, obj) -> dict:

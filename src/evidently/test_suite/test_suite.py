@@ -33,6 +33,7 @@ from evidently.test_preset.test_preset import TestPreset
 from evidently.tests.base_test import Test
 from evidently.tests.base_test import BaseTestGenerator
 from evidently.tests.base_test import TestResult
+from evidently.tests.base_test import DEFAULT_GROUP
 
 
 def _discover_dependencies(test: Test) -> Iterator[Tuple[str, Union[Metric, Test]]]:
@@ -236,9 +237,11 @@ class TestSuite:
                                 for item in test_info.details
                             ]
                         ),
+                        groups=test_info.groups,
                     )
                     for test_info in test_results
-                ]
+                ],
+                "testGroupTypes": DEFAULT_GROUP,
             },
             additionalGraphs=[],
         )

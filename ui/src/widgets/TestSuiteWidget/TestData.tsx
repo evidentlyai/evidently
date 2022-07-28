@@ -8,7 +8,7 @@ import ReactMarkdown from "react-markdown";
 
 const availableStates: TestState[] = ["unknown", "success", "warning", "fail"];
 
-const stateToSeverity: (state: TestState) => Color = (state) => {
+export const StateToSeverity: (state: TestState) => Color = (state) => {
     switch (state) {
         case "unknown":
             return "info";
@@ -29,7 +29,7 @@ const TestData: React.FC<TestData> = ({title, description, state, details}) => {
         state = "unknown";
     }
     return <><Paper>
-        <Alert severity={stateToSeverity(state)}
+        <Alert severity={StateToSeverity(state)}
                action={isDetailsAvailable ? <Button onClick={() => setDetailsPart(prev => ({active: !prev.active}))}
                                color="inherit" size="small">
                    Details

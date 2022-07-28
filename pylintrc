@@ -487,6 +487,7 @@ good-names=i,
            gt,
            lt,
            df,
+           op,
            _
 
 # Good variable names regexes, separated by a comma. If names match any regex,
