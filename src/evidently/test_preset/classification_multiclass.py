@@ -13,17 +13,19 @@ class MulticlassClassification(TestPreset):
         self.prediction_type = prediction_type
 
     def generate_tests(self, data: InputData, columns: DatasetColumns):
-        labels = set()
+        target = columns.utility_columns.target
+        if target is None:
+            raise ValueError("Target column should be set in mapping and be present in data")
+        labels = set(data.current_data[target].unique())
         if data.reference_data is not None:
-            labels = labels | set(data.reference_data[columns.utility_columns.target].unique())
-        labels = labels | set(data.current_data[columns.utility_columns.target].unique())
+            labels = labels | set(data.reference_data[target].unique())
         tests = [
             TestAccuracyScore(),
             TestF1Score(),
             *[TestPrecisionByClass(label) for label in labels],
             *[TestRecallByClass(label) for label in labels],
             TestNumberOfRows(),
-            TestFeatureValueDrift(column_name=columns.utility_columns.target),
+            TestFeatureValueDrift(column_name=target),
         ]
 
         if self.prediction_type == 'labels':

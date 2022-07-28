@@ -14,17 +14,20 @@ class BinaryClassification(TestPreset):
         self.threshold = threshold
 
     def generate_tests(self, data: InputData, columns: DatasetColumns):
-        tests = []
-        tests += [TestFeatureValueDrift(columns.utility_columns.target)]
+        target = columns.utility_columns.target
+        if target is None:
+            raise ValueError("Target column should be set in mapping and be present in data")
         if self.prediction_type == 'labels':
-            return tests + [
+            return [
+                TestFeatureValueDrift(target),
                 TestPrecisionScore(),
                 TestRecallScore(),
                 TestF1Score(),
                 TestAccuracyScore(),
             ]
         if self.prediction_type == 'probas':
-            return tests + [
+            return [
+                TestFeatureValueDrift(target),
                 TestRocAuc(),
                 TestPrecisionScore(classification_threshold=self.threshold),
                 TestRecallScore(classification_threshold=self.threshold),
