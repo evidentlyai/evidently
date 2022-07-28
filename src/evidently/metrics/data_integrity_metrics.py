@@ -168,7 +168,9 @@ class DataIntegrityValueByRegexpMetrics(Metric[DataIntegrityValueByRegexpMetricR
 @dataclass
 class DataIntegrityNullValues:
     number_of_differently_encoded_nulls: int
+    number_of_differently_encoded_nulls_by_columns: Dict[str, int]
     number_of_null_values: int
+    number_of_null_values_by_columns: Dict[str, int]
 
 
 @dataclass
@@ -203,6 +205,8 @@ class DataIntegrityNullValuesMetrics(Metric[DataIntegrityNullValuesMetricsResult
     def _calculate_null_values_stats(self, dataset: pd.DataFrame) -> DataIntegrityNullValues:
         number_of_differently_encoded_nulls = 0
         number_of_null_values = 0
+        columns_number_of_differently_encoded_nulls = {column_name: 0 for column_name in dataset.columns}
+        columns_number_of_null_values = {column_name: 0 for column_name in dataset.columns}
 
         if not self.ignore_na:
             null_by_pandas = dataset.isnull().sum().sum()
@@ -211,6 +215,13 @@ class DataIntegrityNullValuesMetrics(Metric[DataIntegrityNullValuesMetricsResult
                 number_of_differently_encoded_nulls += 1
                 number_of_null_values += null_by_pandas
 
+            for column_name in dataset.columns:
+                column_null_by_pandas = dataset[column_name].isnull().sum()
+
+                if column_null_by_pandas:
+                    columns_number_of_differently_encoded_nulls[column_name] += 1
+                    columns_number_of_null_values[column_name] += column_null_by_pandas
+
         for null_value in self.null_values:
             value_count = (dataset == null_value).sum().sum()
 
@@ -218,9 +229,18 @@ class DataIntegrityNullValuesMetrics(Metric[DataIntegrityNullValuesMetricsResult
                 number_of_differently_encoded_nulls += 1
                 number_of_null_values += value_count
 
+            for column_name in dataset.columns:
+                column_value_count = (dataset[column_name] == null_value).sum()
+
+                if column_value_count > 0:
+                    columns_number_of_differently_encoded_nulls[column_name] += 1
+                    columns_number_of_null_values[column_name] += column_value_count
+
         return DataIntegrityNullValues(
             number_of_differently_encoded_nulls=number_of_differently_encoded_nulls,
+            number_of_differently_encoded_nulls_by_columns=columns_number_of_differently_encoded_nulls,
             number_of_null_values=number_of_null_values,
+            number_of_null_values_by_columns=columns_number_of_null_values
         )
 
     def calculate(self, data: InputData, metrics: dict) -> DataIntegrityNullValuesMetricsResult:

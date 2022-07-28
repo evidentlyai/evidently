@@ -18,6 +18,8 @@ from .data_integrity_tests import TestColumnAllUniqueValues
 from .data_integrity_tests import TestColumnValueRegExp
 from .data_integrity_tests import TestNumberOfDifferentNulls
 from .data_integrity_tests import TestNumberOfNullValues
+from .data_integrity_tests import TestColumnNumberOfDifferentNulls
+from .data_integrity_tests import TestColumnNumberOfNullValues
 from .data_quality_tests import TestConflictTarget
 from .data_quality_tests import TestConflictPrediction
 from .data_quality_tests import TestTargetPredictionCorrelation

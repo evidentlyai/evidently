@@ -24,6 +24,8 @@ from evidently.tests import TestColumnAllUniqueValues
 from evidently.tests import TestColumnValueRegExp
 from evidently.tests import TestNumberOfDifferentNulls
 from evidently.tests import TestNumberOfNullValues
+from evidently.tests import TestColumnNumberOfDifferentNulls
+from evidently.tests import TestColumnNumberOfNullValues
 from evidently.test_suite import TestSuite
 
 
@@ -183,13 +185,12 @@ def test_data_integrity_test_constant_columns_json_render() -> None:
     result_from_json = json.loads(suite.json())
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
-    assert test_info == {
-        "description": "The number of constant columns is 1. The test threshold is lte=1.",
-        "group": "data_integrity",
-        "name": "Number of Constant Columns",
-        "parameters": {"condition": {}, "number_of_constant_columns": 1},
-        "status": "SUCCESS",
-    }
+    assert test_info == {'description': 'The number of constant columns is 1. The test threshold is '
+                'lte=1.',
+ 'group': 'data_integrity',
+ 'name': 'Number of Constant Columns',
+ 'parameters': {'condition': {'lte': 1}, 'number_of_constant_columns': 1},
+ 'status': 'SUCCESS'}
 
 
 def test_data_integrity_test_empty_rows() -> None:
@@ -481,3 +482,19 @@ def test_data_integrity_test_number_of_nulls() -> None:
     suite = TestSuite(tests=[TestNumberOfNullValues(null_values=["", "null"], ignore_na=False, lt=4)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
+
+
+def test_data_integrity_test_different_nulls_one_column() -> None:
+    test_dataset = pd.DataFrame({"feature1": ["n/a", "b", "a"], "feature2": ["b", "", None]})
+
+    suite = TestSuite(tests=[TestColumnNumberOfDifferentNulls(column_name="feature1")])
+    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=ColumnMapping())
+    assert suite
+
+
+def test_data_integrity_test_number_of_nulls_one_column() -> None:
+    test_dataset = pd.DataFrame({"feature1": ["", None, "null", "a"], "feature2": ["b", "null", None, None]})
+
+    suite = TestSuite(tests=[TestColumnNumberOfNullValues(column_name="feature1")])
+    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=ColumnMapping())
+    assert suite

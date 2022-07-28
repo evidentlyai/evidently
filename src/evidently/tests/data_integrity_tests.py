@@ -296,7 +296,7 @@ class TestNumberOfDifferentNulls(BaseIntegrityNullValuesTest):
 class TestNumberOfDifferentNullsRenderer(TestRenderer):
     def render_json(self, obj: TestNumberOfDifferentNulls) -> dict:
         base = super().render_json(obj)
-        base["parameters"]["condition"] = obj.condition.as_dict()
+        base["parameters"]["condition"] = obj.get_condition().as_dict()
         base["parameters"]["number_of_differently_encoded_nulls"] = obj.value
         return base
 
@@ -328,8 +328,107 @@ class TestNumberOfNullValues(BaseIntegrityNullValuesTest):
 class TestNumberOfNullValuesRenderer(TestRenderer):
     def render_json(self, obj: TestNumberOfNullValues) -> dict:
         base = super().render_json(obj)
-        base["parameters"]["condition"] = obj.condition.as_dict()
+        base["parameters"]["condition"] = obj.get_condition().as_dict()
         base["parameters"]["number_of_null_values"] = obj.value
+        return base
+
+
+class BaseIntegrityColumnNullValuesTest(BaseCheckValueTest, ABC):
+    group = "data_integrity"
+    metric: DataIntegrityNullValuesMetrics
+    column_name: Optional[str]
+
+    def __init__(
+        self,
+        column_name: Optional[str],
+        null_values: Optional[list] = None,
+        ignore_na: bool = False,
+        eq: Optional[Numeric] = None,
+        gt: Optional[Numeric] = None,
+        gte: Optional[Numeric] = None,
+        is_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        lt: Optional[Numeric] = None,
+        lte: Optional[Numeric] = None,
+        not_eq: Optional[Numeric] = None,
+        not_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        metric: Optional[DataIntegrityNullValuesMetrics] = None,
+    ):
+        super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
+        self.column_name = column_name
+
+        if metric is None:
+            self.metric = DataIntegrityNullValuesMetrics(null_values=null_values, ignore_na=ignore_na)
+
+        else:
+            self.metric = metric
+
+
+class TestColumnNumberOfDifferentNulls(BaseIntegrityColumnNullValuesTest):
+    """Check a number of differently encoded empty/null values in one column."""
+
+    name = "Test Number Of Different Null Kinds In One Column"
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.has_condition():
+            return self.condition
+
+        reference_null_values = self.metric.get_result().reference_null_values
+
+        if reference_null_values is not None:
+            ref_value = reference_null_values.number_of_differently_encoded_nulls_by_columns[self.column_name]
+            return TestValueCondition(lte=ref_value)
+
+        raise ValueError("Neither required test parameters nor reference data has been provided.")
+
+    def calculate_value_for_test(self) -> Numeric:
+        metric_data = self.metric.get_result().current_null_values
+        return metric_data.number_of_differently_encoded_nulls_by_columns[self.column_name]
+
+    def get_description(self, value: Numeric) -> str:
+        return f"Number of different null kinds in **{self.column_name}** is {value}"
+
+
+@default_renderer(test_type=TestColumnNumberOfDifferentNulls)
+class TestColumnNumberOfDifferentNullsRenderer(TestRenderer):
+    def render_json(self, obj: TestColumnNumberOfDifferentNulls) -> dict:
+        base = super().render_json(obj)
+        base["parameters"]["condition"] = obj.get_condition().as_dict()
+        base["parameters"]["number_of_null_values"] = obj.value
+        base["parameters"]["column_name"] = obj.column_name
+        return base
+
+
+class TestColumnNumberOfNullValues(BaseIntegrityColumnNullValuesTest):
+    """Check a number of empty/null values in one column."""
+
+    name = "Test Number Of Null Values In One Column"
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.has_condition():
+            return self.condition
+
+        reference_null_values = self.metric.get_result().reference_null_values
+
+        if reference_null_values is not None:
+            ref_value = reference_null_values.number_of_null_values_by_columns[self.column_name]
+            return TestValueCondition(eq=approx(ref_value, relative=0.1))
+
+        raise ValueError("Neither required test parameters nor reference data has been provided.")
+
+    def calculate_value_for_test(self) -> Numeric:
+        return self.metric.get_result().current_null_values.number_of_null_values_by_columns[self.column_name]
+
+    def get_description(self, value: Numeric) -> str:
+        return f"Number of null values **{self.column_name}** is {value}"
+
+
+@default_renderer(test_type=TestColumnNumberOfNullValues)
+class TestColumnNumberOfNullValuesRenderer(TestRenderer):
+    def render_json(self, obj: TestColumnNumberOfNullValues) -> dict:
+        base = super().render_json(obj)
+        base["parameters"]["condition"] = obj.get_condition().as_dict()
+        base["parameters"]["number_of_null_values"] = obj.value
+        base["parameters"]["column_name"] = obj.column_name
         return base
 
 
@@ -361,7 +460,7 @@ class TestNumberOfConstantColumns(BaseIntegrityValueTest):
 class TestNumberOfConstantColumnsRenderer(TestRenderer):
     def render_json(self, obj: TestNumberOfConstantColumns) -> dict:
         base = super().render_json(obj)
-        base["parameters"]["condition"] = obj.condition.as_dict()
+        base["parameters"]["condition"] = obj.get_condition().as_dict()
         base["parameters"]["number_of_constant_columns"] = obj.value
         return base
 
