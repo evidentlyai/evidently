@@ -62,3 +62,6 @@ from .classification_performance_tests import TestTPR
 from .classification_performance_tests import TestTNR
 from .classification_performance_tests import TestFPR
 from .classification_performance_tests import TestFNR
+from .classification_performance_tests import TestPrecisionByClass
+from .classification_performance_tests import TestRecallByClass
+from .classification_performance_tests import TestF1ByClass
