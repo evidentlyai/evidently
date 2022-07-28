@@ -70,11 +70,21 @@ class TestValueMAE(BaseRegressionPerformanceMetricsTest):
 
 @default_renderer(test_type=TestValueMAE)
 class TestValueMAERenderer(TestRenderer):
+    def render_json(self, obj: TestValueMAE) -> dict:
+        base = super().render_json(obj)
+        metric_result = obj.metric.get_result()
+        base["parameters"]["condition"] = obj.get_condition().as_dict()
+        base["parameters"]["mean_abs_error"] = metric_result.mean_abs_error
+        base["parameters"]["mean_abs_error_ref"] = metric_result.mean_abs_error_ref
+        return base
+
     def render_html(self, obj: TestValueMAE) -> TestHtmlInfo:
         info = super().render_html(obj)
         is_ref_data = False
+
         if "reference" in obj.metric.get_result().hist_for_plot.keys():
             is_ref_data = True
+
         fig = regression_perf_plot(
             val_for_plot=obj.metric.get_result().vals_for_plots["mean_abs_error"],
             hist_for_plot=obj.metric.get_result().hist_for_plot,
@@ -84,7 +94,6 @@ class TestValueMAERenderer(TestRenderer):
             is_ref_data=is_ref_data,
         )
         fig_json = fig.to_plotly_json()
-
         info.details.append(
             DetailsInfo(
                 "MAE",
@@ -120,6 +129,15 @@ class TestValueMAPE(BaseRegressionPerformanceMetricsTest):
 
 @default_renderer(test_type=TestValueMAPE)
 class TestValueMAPERenderer(TestRenderer):
+    def render_json(self, obj: TestValueMAPE) -> dict:
+        base = super().render_json(obj)
+        metric_result = obj.metric.get_result()
+        base["parameters"]["condition"] = obj.get_condition().as_dict()
+        base["parameters"]["mean_abs_perc_error"] = metric_result.mean_abs_perc_error
+        base["parameters"]["mean_abs_perc_error_ref"] = metric_result.mean_abs_perc_error_ref
+        base["parameters"]["mean_abs_perc_error_default"] = metric_result.mean_abs_perc_error_default
+        return base
+
     def render_html(self, obj: TestValueMAPE) -> TestHtmlInfo:
         info = super().render_html(obj)
         is_ref_data = False
@@ -171,6 +189,15 @@ class TestValueRMSE(BaseRegressionPerformanceMetricsTest):
 
 @default_renderer(test_type=TestValueRMSE)
 class TestValueRMSERenderer(TestRenderer):
+    def render_json(self, obj: TestValueRMSE) -> dict:
+        base = super().render_json(obj)
+        metric_result = obj.metric.get_result()
+        base["parameters"]["condition"] = obj.get_condition().as_dict()
+        base["parameters"]["rmse"] = metric_result.rmse
+        base["parameters"]["rmse_ref"] = metric_result.rmse_ref
+        base["parameters"]["rmse_default"] = metric_result.rmse_default
+        return base
+
     def render_html(self, obj: TestValueRMSE) -> TestHtmlInfo:
         info = super().render_html(obj)
         is_ref_data = False
@@ -217,6 +244,13 @@ class TestValueMeanError(BaseRegressionPerformanceMetricsTest):
 
 @default_renderer(test_type=TestValueMeanError)
 class TestValueMeanErrorRenderer(TestRenderer):
+    def render_json(self, obj: TestValueMeanError) -> dict:
+        base = super().render_json(obj)
+        metric_result = obj.metric.get_result()
+        base["parameters"]["condition"] = obj.get_condition().as_dict()
+        base["parameters"]["mean_error"] = metric_result.mean_error
+        return base
+
     def render_html(self, obj: TestValueMeanError) -> TestHtmlInfo:
         info = super().render_html(obj)
         me_hist_for_plot = obj.metric.get_result().me_hist_for_plot
@@ -264,6 +298,15 @@ class TestValueAbsMaxError(BaseRegressionPerformanceMetricsTest):
 
 @default_renderer(test_type=TestValueAbsMaxError)
 class TestValueAbsMaxErrorRenderer(TestRenderer):
+    def render_json(self, obj: TestValueAbsMaxError) -> dict:
+        base = super().render_json(obj)
+        metric_result = obj.metric.get_result()
+        base["parameters"]["condition"] = obj.get_condition().as_dict()
+        base["parameters"]["abs_error_max"] = metric_result.abs_error_max
+        base["parameters"]["abs_error_max_ref"] = metric_result.abs_error_max_ref
+        base["parameters"]["abs_error_max_ref"] = metric_result.abs_error_max_default
+        return base
+
     def render_html(self, obj: TestValueAbsMaxError) -> TestHtmlInfo:
         info = super().render_html(obj)
         me_hist_for_plot = obj.metric.get_result().me_hist_for_plot
@@ -309,6 +352,14 @@ class TestValueR2Score(BaseRegressionPerformanceMetricsTest):
 
 @default_renderer(test_type=TestValueR2Score)
 class TestValueR2ScoreRenderer(TestRenderer):
+    def render_json(self, obj: TestValueAbsMaxError) -> dict:
+        base = super().render_json(obj)
+        metric_result = obj.metric.get_result()
+        base["parameters"]["condition"] = obj.get_condition().as_dict()
+        base["parameters"]["r2_score"] = metric_result.r2_score
+        base["parameters"]["r2_score_ref"] = metric_result.r2_score_ref
+        return base
+
     def render_html(self, obj: TestValueR2Score) -> TestHtmlInfo:
         info = super().render_html(obj)
         is_ref_data = False
