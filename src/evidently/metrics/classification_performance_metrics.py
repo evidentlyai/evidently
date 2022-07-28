@@ -1,6 +1,5 @@
 import dataclasses
 from typing import Optional
-from typing import Tuple
 from typing import List
 from typing import Dict
 from typing import Union
@@ -9,6 +8,9 @@ import numpy as np
 import pandas as pd
 import sklearn
 from numpy import dtype
+from pandas.core.dtypes.api import is_float_dtype
+from pandas.core.dtypes.api import is_string_dtype
+from pandas.core.dtypes.api import is_object_dtype
 
 from evidently import ColumnMapping
 from evidently.analyzers.classification_performance_analyzer import ConfusionMatrix
@@ -72,6 +74,7 @@ def k_probability_threshold(prediction_probas: pd.DataFrame, k: Union[int, float
 def threshold_probability_labels(
     prediction_probas: pd.DataFrame, pos_label: Union[str, int], neg_label: Union[str, int], threshold: float
 ) -> pd.Series:
+    """Get prediction values by probabilities with the threshold apply"""
     return prediction_probas[pos_label].apply(lambda x: pos_label if x >= threshold else neg_label)
 
 
@@ -140,7 +143,7 @@ def classification_performance_metrics(
         array_prediction = prediction_probas.to_numpy()
         roc_auc = sklearn.metrics.roc_auc_score(binaraized_target, array_prediction, average="macro")
         log_loss = sklearn.metrics.log_loss(binaraized_target, array_prediction)
-        roc_aucs = sklearn.metrics.roc_auc_score(binaraized_target, array_prediction, average=None).tolist()
+        roc_aucs = sklearn.metrics.roc_auc_score(binaraized_target, array_prediction, average=None).tolist()  # noqa
         # roc curve
         roc_curve = {}
         binaraized_target = pd.DataFrame(binaraized_target)
@@ -195,7 +198,9 @@ class ClassificationPerformanceMetrics(Metric[ClassificationPerformanceMetricsRe
 
         current_data = _cleanup_data(data.current_data, data.column_mapping)
         target_data = current_data[data.column_mapping.target]
-        prediction_data, prediction_probas = get_prediction_data(current_data, data.column_mapping)
+        predictions = get_prediction_data(current_data, data.column_mapping)
+        prediction_data = predictions.predictions
+        prediction_probas = predictions.prediction_probas
 
         labels = sorted(set(target_data.unique()))
         current_metrics = classification_performance_metrics(
@@ -213,7 +218,9 @@ class ClassificationPerformanceMetrics(Metric[ClassificationPerformanceMetricsRe
 
         if data.reference_data is not None:
             reference_data = _cleanup_data(data.reference_data, data.column_mapping)
-            ref_prediction_data, ref_probas = get_prediction_data(reference_data, data.column_mapping)
+            ref_predictions = get_prediction_data(reference_data, data.column_mapping)
+            ref_prediction_data = ref_predictions.predictions
+            ref_probas = ref_predictions.prediction_probas
             ref_target = reference_data[data.column_mapping.target]
             reference_metrics = classification_performance_metrics(
                 ref_target,
@@ -314,33 +321,66 @@ def _cleanup_data(data: pd.DataFrame, mapping: ColumnMapping) -> pd.DataFrame:
     return data
 
 
+@dataclasses.dataclass
+class PredictionData:
+    predictions: pd.Series
+    prediction_probas: Optional[pd.DataFrame]
+
+
 def get_prediction_data(
     data: pd.DataFrame, mapping: ColumnMapping, threshold: float = 0.5
-) -> Tuple[pd.Series, Optional[pd.DataFrame]]:
+) -> PredictionData:
+    """Get predicted values and optional prediction probabilities from source data.
+    Also take into account a threshold value - if a probability is less than the value, do not take it into account.
+
+    Return and object with predicted values and an optional prediction probabilities.
+    """
+    # binary or multiclass classification
     # for binary prediction_probas has column order [pos_label, neg_label]
-    # multiclass + probas
+    # for multiclass classification return just values and probas
     if isinstance(mapping.prediction, list) and len(mapping.prediction) > 2:
         # list of columns with prediction probas, should be same as target labels
-        return data[mapping.prediction].idxmax(axis=1), data[mapping.prediction]
+        return PredictionData(
+            predictions=data[mapping.prediction].idxmax(axis=1),
+            prediction_probas=data[mapping.prediction]
+        )
 
-    # binary + probas
+    # calculate labels as np.array - for better negative label calculations for binary classification
+    if mapping.target_names is not None:
+        # if target_names is specified, get labels from it
+        labels = np.array(mapping.target_names)
+
+    else:
+        # if target_names is not specified, try to get labels from target and/or prediction
+        if isinstance(mapping.prediction, str) and not is_float_dtype(data[mapping.prediction]):
+            # if prediction is not probas, get unique values from it and target
+            labels = np.union1d(data[mapping.target].unique(), data[mapping.prediction].unique())
+
+        else:
+            # if prediction is probas, get unique values from target only
+            labels = data[mapping.target].unique()
+
+    # get negative label for binary classification
+    neg_label = labels[labels != mapping.pos_label][0]
+
+    # binary classification
+    # prediction in mapping is a list of two columns:
+    # one is positive value probabilities, second is negative value probabilities
     if isinstance(mapping.prediction, list) and len(mapping.prediction) == 2:
-        labels = data[mapping.target].unique()
         if mapping.pos_label not in labels or mapping.pos_label is None:
             raise ValueError("Undefined pos_label.")
-        neg_label = labels[labels != mapping.pos_label][0]
-        predictions = threshold_probability_labels(data[mapping.prediction], mapping.pos_label, neg_label, threshold)
-        return predictions, data[[mapping.pos_label, neg_label]]
 
-    # binary str target + one column probas
+        predictions = threshold_probability_labels(data[mapping.prediction], mapping.pos_label, neg_label, threshold)
+        return PredictionData(predictions=predictions, prediction_probas=data[[mapping.pos_label, neg_label]])
+
+    # binary classification
+    # target is strings or other values, prediction is a string with positive label name, one column with probabilities
     if (
         isinstance(mapping.prediction, str)
-        and (data[mapping.target].dtype == dtype("str") or data[mapping.target].dtype == dtype("object"))
-        and data[mapping.prediction].dtype == dtype("float")
+        and (is_string_dtype(data[mapping.target]) or is_object_dtype(data[mapping.target]))
+        and is_float_dtype(data[mapping.prediction])
     ):
-        labels = data[mapping.target].unique()
-
-        if mapping.pos_label not in labels or mapping.pos_label is None:
+        if mapping.pos_label is None or mapping.pos_label not in labels:
             raise ValueError("Undefined pos_label.")
 
         if mapping.prediction not in labels:
@@ -348,8 +388,6 @@ def get_prediction_data(
                 "No prediction for the target labels were found. "
                 "Consider to rename columns with the prediction to match target labels."
             )
-
-        neg_label = labels[labels != mapping.pos_label][0]
 
         if mapping.pos_label == mapping.prediction:
             pos_preds = data[mapping.prediction]
@@ -364,7 +402,7 @@ def get_prediction_data(
             }
         )
         predictions = threshold_probability_labels(prediction_probas, mapping.pos_label, neg_label, threshold)
-        return predictions, prediction_probas
+        return PredictionData(predictions=predictions, prediction_probas=prediction_probas)
 
     # binary target and preds are numbers and prediction is a label
     if not isinstance(mapping.prediction, list) and mapping.prediction in [0, 1, "0", "1"] and mapping.pos_label == 0:
@@ -379,7 +417,7 @@ def get_prediction_data(
                 1: pos_preds.apply(lambda x: 1.0 - x),
             }
         )
-        return predictions, prediction_probas
+        return PredictionData(predictions=predictions, prediction_probas=prediction_probas)
 
     # binary target and preds are numbers
     elif (
@@ -394,8 +432,10 @@ def get_prediction_data(
                 0: data[mapping.prediction].apply(lambda x: 1.0 - x),
             }
         )
-        return predictions, prediction_probas
-    return data[mapping.prediction], None
+        return PredictionData(predictions=predictions, prediction_probas=prediction_probas)
+
+    # for other cases return just prediction values, probabilities are None by default
+    return PredictionData(predictions=data[mapping.prediction], prediction_probas=None)
 
 
 def _collect_plot_data(prediction_probas: pd.DataFrame):

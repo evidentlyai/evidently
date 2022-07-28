@@ -72,31 +72,65 @@ def test_classification_performance_metrics_binary_probas_threshold() -> None:
 @pytest.mark.parametrize(
     "data,mapping,expected_predictions,expected_probas",
     [
+        # just simple target and predictions, without probabilities
+        # return predictions and no probas
         (
-            pd.DataFrame([dict(target=1, preds=1)]),
-            ColumnMapping(prediction="preds"),
-            [1],
+            pd.DataFrame({"target": [1, 0, 1], "predictions": [0, 0, 1]}),
+            ColumnMapping(prediction="predictions"),
+            [0, 0, 1],
             None,
         ),
-        # (
-        #     pd.DataFrame([dict(target="a", pos_proba=0.9)]),
-        #     ColumnMapping(prediction="pos_proba", target_names=["b", "a"]),
-        #     pd.Series(["a"]),
-        #     pd.DataFrame([dict(a=0.9, b=0.1)]),
-        # )
+        # just simple target and predictions, without probabilities, in target only one value
+        (
+            pd.DataFrame({"target": [1, 1, 1], "predictions": [0, 0, 1]}),
+            ColumnMapping(prediction="predictions"),
+            [0, 0, 1],
+            None,
+        ),
+        (
+            pd.DataFrame({"target": [1, 0, 1], 1: [0.1, 0.3, 0.9], 0: [0.9, 0.7, 0.1]}),
+            ColumnMapping(prediction=[1, 0]),
+            [0, 0, 1],
+            {0: {0: 0.9, 1: 0.7, 2: 0.1}, 1: {0: 0.1, 1: 0.3, 2: 0.9}},
+        ),
+        (
+            pd.DataFrame({"target": ["true", "false", "true"], "true": [0.1, 0.3, 0.9], "false": [0.9, 0.7, 0.1]}),
+            ColumnMapping(prediction=["true", "false"], pos_label="true"),
+            ["false", "false", "true"],
+            {"false": {0: 0.9, 1: 0.7, 2: 0.1}, "true": {0: 0.1, 1: 0.3, 2: 0.9}},
+        ),
+        # prediction is a one column with probabilities
+        (
+            pd.DataFrame({"target": ["true", "false", "true"], "true": [0.1, 0.3, 0.8]}),
+            ColumnMapping(prediction="true", pos_label="true"),
+            ["false", "false", "true"],
+            {"false": {0: 0.9, 1: 0.7, 2: approx(0.2, abs=0.01)}, "true": {0: 0.1, 1: 0.3, 2: 0.8}},
+        ),
+        (
+            pd.DataFrame({"target": ["a", "b"], "a": [0.9, 0.4]}),
+            ColumnMapping(prediction="a", pos_label="a"),
+            ["a", "b"],
+            {"a": {0: 0.9, 1: 0.4}, "b": {0: approx(0.1, abs=0.01), 1: 0.6}},
+        ),
+        (
+            pd.DataFrame({"target": ["a", "a"], "a": [0.9, 0.4]}),
+            ColumnMapping(prediction="a", pos_label="a", target_names=["b", "a"]),
+            ["a", "b"],
+            {"a": {0: 0.9, 1: 0.4}, "b": {0: approx(0.1, abs=0.01), 1: 0.6}},
+        ),
     ],
 )
 def test_prediction_data_with_default_threshold(
-    data: pd.DataFrame, mapping: ColumnMapping, expected_predictions: list, expected_probas: Optional[pd.DataFrame]
+    data: pd.DataFrame, mapping: ColumnMapping, expected_predictions: list, expected_probas: Optional[dict]
 ):
-    predictions, predictions_probas = get_prediction_data(data, mapping)
-    assert predictions.tolist() == expected_predictions
+    prediction_data = get_prediction_data(data, mapping)
+    assert prediction_data.predictions.tolist() == expected_predictions
 
-    if predictions_probas is None:
-        assert predictions_probas == expected_probas
+    if expected_probas is None:
+        assert prediction_data.prediction_probas is None
 
     else:
-        assert predictions_probas.to_dict() == expected_probas
+        assert prediction_data.prediction_probas.to_dict() == expected_probas
 
 
 def test_classification_performance_metrics() -> None:
@@ -214,10 +248,10 @@ def test_classification_performance_metrics() -> None:
 def test_get_prediction_data(
     data: pd.DataFrame, mapping: ColumnMapping, threshold: float, expected: Tuple[pd.Series, Optional[pd.DataFrame]]
 ):
-    res = get_prediction_data(data, mapping, threshold)
-    assert res[0].equals(expected[0])
-    assert np.allclose(res[1], expected[1])
-    assert list(res[1].columns) == list(expected[1].columns)
+    result = get_prediction_data(data, mapping, threshold)
+    assert result.predictions.equals(expected[0])
+    assert np.allclose(result.prediction_probas, expected[1])
+    assert list(result.prediction_probas.columns) == list(expected[1].columns)
 
 
 @pytest.mark.parametrize(
