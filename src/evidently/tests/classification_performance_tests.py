@@ -484,7 +484,7 @@ class TestPrecisionByClassRenderer(TestRenderer):
         base = super().render_json(obj)
         base["parameters"]["condition"] = obj.get_condition().as_dict()
         base["parameters"]["precision"] = obj.value
-        base["parameters"]["class"] = obj.label
+        base["parameters"]["label"] = obj.label
         return base
 
     def render_html(self, obj: TestPrecisionByClass) -> TestHtmlInfo:
@@ -527,7 +527,7 @@ class TestRecallByClassRenderer(TestRenderer):
         base = super().render_json(obj)
         base["parameters"]["condition"] = obj.get_condition().as_dict()
         base["parameters"]["recall"] = obj.value
-        base["parameters"]["class"] = obj.label
+        base["parameters"]["label"] = obj.label
         return base
 
     def render_html(self, obj: TestRecallByClass) -> TestHtmlInfo:
@@ -570,7 +570,7 @@ class TestF1ByClassRenderer(TestRenderer):
         base = super().render_json(obj)
         base["parameters"]["condition"] = obj.get_condition().as_dict()
         base["parameters"]["f1"] = obj.value
-        base["parameters"]["class"] = obj.label
+        base["parameters"]["label"] = obj.label
         return base
 
     def render_html(self, obj: TestF1ByClass) -> TestHtmlInfo:

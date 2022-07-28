@@ -280,3 +280,123 @@ def test_roc_auc_test_cannot_calculate_roc_auc() -> None:
     test_info = suite.as_dict()["tests"][0]
     assert test_info["description"] == "No ROC AUC Score value for the data"
     assert test_info["status"] == "ERROR"
+
+
+def test_precision_by_class_test() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "target": ["a", "a", "a", "b"],
+            "prediction": ["a", "a", "b", "b"],
+        }
+    )
+    column_mapping = ColumnMapping(pos_label="a")
+    suite = TestSuite(tests=[TestPrecisionByClass(label="a", gt=0.8)])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
+    assert suite
+
+
+def test_precision_by_class_test_render_json() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "target": [1, 0, 0, 1],
+            "prediction": [1, 0, 1, 0],
+        }
+    )
+    suite = TestSuite(tests=[TestPrecisionByClass(label="1")])
+    suite.run(current_data=test_dataset, reference_data=test_dataset)
+    assert suite
+
+    result_from_json = json.loads(suite.json())
+    assert result_from_json["summary"]["all_passed"] is True
+    test_info = result_from_json["tests"][0]
+    assert test_info == {
+        "description": "Precision Score of **1** is 0.5. Test Threshold is eq=0.5 ± " "0.1",
+        "group": "classification",
+        "name": "Precision Score by Class",
+        "parameters": {
+            "label": "1",
+            "condition": {"eq": {"absolute": 1e-12, "relative": 0.2, "value": 0.5}},
+            "precision": 0.5,
+        },
+        "status": "SUCCESS",
+    }
+
+
+def test_f1_by_class_test() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "target": ["a", "a", "a", "b"],
+            "prediction": ["a", "a", "b", "b"],
+        }
+    )
+    column_mapping = ColumnMapping(pos_label="a")
+    suite = TestSuite(tests=[TestF1ByClass(label="a", gt=0.5)])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
+    assert suite
+
+
+def test_f1_by_class_test_render_json() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "target": [1, 1, 0, 1],
+            "prediction": [1, 0, 1, 0],
+        }
+    )
+    suite = TestSuite(tests=[TestF1ByClass(label="0")])
+    suite.run(current_data=test_dataset, reference_data=test_dataset)
+    assert suite
+
+    result_from_json = json.loads(suite.json())
+    assert result_from_json["summary"]["all_passed"] is True
+    test_info = result_from_json["tests"][0]
+    assert test_info == {
+        "description": "F1 Score of **0** is 0. Test Threshold is eq=0 ± 1e-12",
+        "group": "classification",
+        "name": "F1 Score by Class",
+        "parameters": {
+            "condition": {"eq": {"absolute": 1e-12, "relative": 0.2, "value": 0.0}},
+            "f1": 0.0,
+            "label": "0",
+        },
+        "status": "SUCCESS",
+    }
+
+
+def test_recall_by_class_test() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "target": ["a", "a", "a", "b"],
+            "prediction": ["a", "a", "b", "b"],
+        }
+    )
+    column_mapping = ColumnMapping(pos_label="a")
+    suite = TestSuite(tests=[TestRecallByClass(label="b", gt=0.8)])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
+    assert suite
+
+
+def test_recall_by_class_test_render_json() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "target": [1, 0, 0, 1],
+            "prediction": [1, 0, 1, 0],
+        }
+    )
+    suite = TestSuite(tests=[TestRecallByClass(label="1")])
+    suite.run(current_data=test_dataset, reference_data=test_dataset)
+    assert suite
+
+    result_from_json = json.loads(suite.json())
+    assert result_from_json["summary"]["all_passed"] is True
+    test_info = result_from_json["tests"][0]
+    assert test_info == {
+        "description": "Recall Score of **1** is 0.5. Test Threshold is eq=0.5 ± 0.1",
+        "group": "classification",
+        "name": "Recall Score by Class",
+        "parameters": {
+            "condition": {"eq": {"absolute": 1e-12, "relative": 0.2, "value": 0.5}},
+            "label": "1",
+            "recall": 0.5,
+        },
+        "status": "SUCCESS",
+    }
