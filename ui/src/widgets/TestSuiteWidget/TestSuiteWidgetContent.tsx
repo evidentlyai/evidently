@@ -27,6 +27,7 @@ const TestGroup: React.FC<{ groupInfo: TestGroupData, tests: TestData[] }> = ({g
     const [collapse, setCollapse] = useState({active: false});
     return <><Paper>
         <Alert severity={StateToSeverity(groupInfo.severity ?? "unknown")}
+               icon={false}
                action={<Button onClick={() => setCollapse(prev => ({active: !prev.active}))} color="inherit"
                                size="small">
                    {collapse.active ? "Hide" : "Show"}
@@ -35,7 +36,7 @@ const TestGroup: React.FC<{ groupInfo: TestGroupData, tests: TestData[] }> = ({g
             {groupInfo.description}
         </Alert>
         <Collapse in={collapse.active} mountOnEnter={true} unmountOnExit={true}>
-            <Grid container spacing={2}>
+            <Grid container spacing={2} style={{padding: 10, paddingTop: 20}}>
                 {tests.map((test, idx) => <Grid item key={idx} xs={12}><TestInfo {...test} /></Grid>)}
             </Grid>
         </Collapse>
