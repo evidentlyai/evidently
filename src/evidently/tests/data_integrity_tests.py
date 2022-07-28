@@ -249,7 +249,7 @@ class TestNumberOfRowsWithNANs(BaseIntegrityValueTest):
 
 
 class BaseIntegrityNullValuesTest(BaseCheckValueTest, ABC):
-    group = "data_integrity"
+    group = DATA_INTEGRITY_GROUP.id
     metric: DataIntegrityNullValuesMetrics
 
     def __init__(
@@ -340,7 +340,7 @@ class TestNumberOfNullValuesRenderer(TestRenderer):
 
 
 class BaseIntegrityColumnNullValuesTest(BaseCheckValueTest, ABC):
-    group = "data_integrity"
+    group = DATA_INTEGRITY_GROUP.id
     metric: DataIntegrityNullValuesMetrics
     column_name: str
 
@@ -624,7 +624,7 @@ class TestNumberOfDuplicatedColumnsRenderer(TestRenderer):
 
 
 class BaseIntegrityByColumnsConditionTest(BaseCheckValueTest, ABC):
-    group = "data_integrity"
+    group = DATA_INTEGRITY_GROUP.id
     data_integrity_metric: DataIntegrityMetrics
     column_name: Optional[str]
 
