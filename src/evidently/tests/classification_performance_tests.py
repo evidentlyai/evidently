@@ -310,7 +310,11 @@ class TestRocAuc(SimpleClassificationTest):
         return result.roc_auc
 
     def get_description(self, value: Numeric) -> str:
-        return f"ROC AUC Score is {value:.3g}. Test Threshold is {self.get_condition()}"
+        if value is None:
+            return "No ROC AUC Score value for the data"
+
+        else:
+            return f"ROC AUC Score is {value:.3g}. Test Threshold is {self.get_condition()}"
 
 
 @default_renderer(test_type=TestRocAuc)

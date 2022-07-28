@@ -43,10 +43,10 @@ def test_accuracy_score_test_render_json() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "Accuracy Score is 0.5. Test Threshold is eq=0.5 ± 0.05",
+        "description": "Accuracy Score is 0.5. Test Threshold is eq=0.5 ± 0.1",
         "group": "classification",
         "name": "Accuracy Score",
-        "parameters": {"accuracy": 0.5, "condition": {"eq": {"absolute": 1e-12, "relative": 0.1, "value": 0.5}}},
+        "parameters": {"accuracy": 0.5, "condition": {"eq": {"absolute": 1e-12, "relative": 0.2, "value": 0.5}}},
         "status": "SUCCESS",
     }
 
@@ -79,10 +79,82 @@ def test_precision_score_test_render_json() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "Precision Score is 0.5. Test Threshold is eq=0.5 ± 0.05",
+        "description": "Precision Score is 0.5. Test Threshold is eq=0.5 ± 0.1",
         "group": "classification",
         "name": "Precision Score",
-        "parameters": {"condition": {"eq": {"absolute": 1e-12, "relative": 0.1, "value": 0.5}}, "precision": 0.5},
+        "parameters": {"condition": {"eq": {"absolute": 1e-12, "relative": 0.2, "value": 0.5}}, "precision": 0.5},
+        "status": "SUCCESS",
+    }
+
+
+def test_f1_score_test() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "target": ["a", "a", "a", "b"],
+            "prediction": ["a", "a", "b", "b"],
+        }
+    )
+    column_mapping = ColumnMapping(pos_label="a")
+    suite = TestSuite(tests=[TestF1Score(gt=0.5)])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
+    assert suite
+
+
+def test_f1_score_test_render_json() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "target": [1, 0, 0, 1],
+            "prediction": [1, 0, 1, 0],
+        }
+    )
+    suite = TestSuite(tests=[TestF1Score()])
+    suite.run(current_data=test_dataset, reference_data=test_dataset)
+    assert suite
+
+    result_from_json = json.loads(suite.json())
+    assert result_from_json["summary"]["all_passed"] is True
+    test_info = result_from_json["tests"][0]
+    assert test_info == {
+        "description": "F1 Score is 0.5. Test Threshold is eq=0.5 ± 0.1",
+        "group": "classification",
+        "name": "F1 Score",
+        "parameters": {"condition": {"eq": {"absolute": 1e-12, "relative": 0.2, "value": 0.5}}, "f1": 0.5},
+        "status": "SUCCESS",
+    }
+
+
+def test_recall_score_test() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "target": ["a", "a", "a", "b"],
+            "prediction": ["a", "a", "b", "b"],
+        }
+    )
+    column_mapping = ColumnMapping(pos_label="a")
+    suite = TestSuite(tests=[TestRecallScore(lt=0.8)])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
+    assert suite
+
+
+def test_recall_score_test_render_json() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "target": [1, 0, 0, 1],
+            "prediction": [1, 0, 1, 0],
+        }
+    )
+    suite = TestSuite(tests=[TestRecallScore()])
+    suite.run(current_data=test_dataset, reference_data=test_dataset)
+    assert suite
+
+    result_from_json = json.loads(suite.json())
+    assert result_from_json["summary"]["all_passed"] is True
+    test_info = result_from_json["tests"][0]
+    assert test_info == {
+        "description": "Recall Score is 0.5. Test Threshold is eq=0.5 ± 0.1",
+        "group": "classification",
+        "name": "Recall Score",
+        "parameters": {"condition": {"eq": {"absolute": 1e-12, "relative": 0.2, "value": 0.5}}, "recall": 0.5},
         "status": "SUCCESS",
     }
 
@@ -101,4 +173,21 @@ def test_log_loss_test_cannot_calculate_log_loss() -> None:
     assert not suite
     test_info = suite.as_dict()["tests"][0]
     assert test_info["description"] == "No log loss value for the data"
+    assert test_info["status"] == "ERROR"
+
+
+def test_rec_auc_test_cannot_calculate_roc_auc() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "target": ["a", "a", "a", "b", "b", "b", "c", "c", "c", "c"],
+            "prediction": ["a", "a", "a", "b", "a", "c", "a", "c", "c", "c"],
+        }
+    )
+    column_mapping = ColumnMapping(target="target", prediction="prediction")
+
+    suite = TestSuite(tests=[TestRocAuc(lt=1)])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
+    assert not suite
+    test_info = suite.as_dict()["tests"][0]
+    assert test_info["description"] == "No ROC AUC Score value for the data"
     assert test_info["status"] == "ERROR"
