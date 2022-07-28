@@ -127,8 +127,10 @@ def test_classification_performance_metrics_binary_probas_threshold() -> None:
             pd.DataFrame({"target": [1, 0, 1], "1": [0.1, 0.3, 0.9], 0: [0.9, 0.7, 0.1]}),
             ColumnMapping(prediction="1", pos_label=0),
             [0, 0, 1],
-            {0: {0: 0.9, 1: 0.7, 2: approx(0.1, abs=0.01)},
-             1: {0: approx(0.1, abs=0.01), 1: approx(0.3, abs=0.01), 2: 0.9}},
+            {
+                0: {0: 0.9, 1: 0.7, 2: approx(0.1, abs=0.01)},
+                1: {0: approx(0.1, abs=0.01), 1: approx(0.3, abs=0.01), 2: 0.9},
+            },
         ),
         # binary classification, prediction is labels-strings
         (
@@ -184,25 +186,25 @@ def test_prediction_data_with_default_threshold(
         (
             pd.DataFrame({"target": ["true", "false", "true"], "true": [0.1, 0.3, 0.8]}),
             ColumnMapping(prediction="true"),
-            "Undefined pos_label."
+            "Undefined pos_label.",
         ),
         # incorrect pos value
         (
             pd.DataFrame({"target": ["true", "false", "true"], "true": [0.1, 0.3, 0.8]}),
             ColumnMapping(prediction="true", pos_label="pos"),
-            "Undefined pos_label."
+            "Undefined pos_label.",
         ),
         (
             pd.DataFrame({"target": ["true", "false", "true"], "true": [0.1, 0.3, 0.8], "false": [0.9, 0.7, 0.2]}),
             ColumnMapping(prediction=["true", "false"], pos_label="pos"),
-            "Undefined pos_label."
+            "Undefined pos_label.",
         ),
         # prediction not in labels list
         (
             pd.DataFrame({"target": ["true", "false", "true"], "True": [0.1, 0.3, 0.8]}),
             ColumnMapping(prediction="True", pos_label="true"),
             "No prediction for the target labels were found. "
-            "Consider to rename columns with the prediction to match target labels."
+            "Consider to rename columns with the prediction to match target labels.",
         ),
     ],
 )
