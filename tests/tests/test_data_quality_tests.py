@@ -99,26 +99,26 @@ def test_data_quality_test_min(
 @pytest.mark.parametrize(
     "test_dataset, reference_dataset, test_object, expected_success",
     (
-            (
-                    pd.DataFrame(
-                        {"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 1, 2, 5],
-                         "target": [0, 0, 0, 1]}
-                    ),
-                    None,
-                    TestFeatureValueMin(column_name="numerical_feature"),
-                    False,
+        (
+            pd.DataFrame(
+                {"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 1, 2, 5], "target": [0, 0, 0, 1]}
             ),
-    )
+            None,
+            TestFeatureValueMin(column_name="numerical_feature"),
+            False,
+        ),
+    ),
 )
 def test_data_quality_test_min_exception(
-        test_dataset: pd.DataFrame,
-        reference_dataset: pd.DataFrame,
-        test_object: TestFeatureValueMin,
-        expected_success: bool,
+    test_dataset: pd.DataFrame,
+    reference_dataset: pd.DataFrame,
+    test_object: TestFeatureValueMin,
+    expected_success: bool,
 ) -> None:
     suite = TestSuite(tests=[test_object])
     suite.run(current_data=test_dataset, reference_data=reference_dataset)
-    assert suite.as_dict()['tests'][0]['status'] == TestResult.ERROR
+    assert suite.as_dict()["tests"][0]["status"] == TestResult.ERROR
+
 
 def test_data_quality_test_max() -> None:
     test_dataset = pd.DataFrame(
