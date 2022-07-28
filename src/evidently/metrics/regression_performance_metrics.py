@@ -26,12 +26,14 @@ class RegressionPerformanceMetricsResults:
     rmse: float
     rmse_default: float
     mean_error: float
+    me_default_sigma: float
     me_hist_for_plot: Dict[str, pd.Series]
     mean_abs_error: float
     mean_abs_error_default: float
     mean_abs_perc_error: float
     mean_abs_perc_error_default: float
     abs_error_max: float
+    abs_error_max_default: float
     error_std: float
     abs_error_std: float
     abs_perc_error_std: float
@@ -44,6 +46,7 @@ class RegressionPerformanceMetricsResults:
     mean_abs_perc_error_ref: Optional[float] = None
     rmse_ref: Optional[float] = None
     r2_score_ref: Optional[float] = None
+    abs_error_max_ref: Optional[float] = None
 
 
 class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
@@ -106,7 +109,7 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
 
         mean_abs_perc_error_default = mean_absolute_percentage_error(
             y_true=data.current_data[data.column_mapping.target], y_pred=[dummy_preds] * data.current_data.shape[0]
-        )
+        ) * 100
         #  r2_score default values
         r2_score_ref = None
         if data.reference_data is not None:
@@ -114,6 +117,16 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
                 y_true=data.reference_data[data.column_mapping.target],
                 y_pred=data.reference_data[data.column_mapping.prediction],
             )
+        # max error default values
+        abs_error_max_ref = None
+        if reference_metrics is not None:
+            abs_error_max_ref = reference_metrics.abs_error_max
+        y_true = data.current_data[data.column_mapping.target]
+        y_pred = data.current_data[data.column_mapping.prediction]
+        abs_error_max_default = np.abs(y_true - y_true.median()).max()
+
+        #  me default values
+        me_default_sigma = (y_pred - y_true).std()
 
         # visualisation
 
@@ -163,12 +176,14 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
             rmse=rmse_score_value,
             rmse_default=rmse_default,
             mean_error=current_metrics.mean_error,
+            me_default_sigma=me_default_sigma,
             me_hist_for_plot=me_hist_for_plot,
             mean_abs_error=current_metrics.mean_abs_error,
             mean_abs_error_default=mean_abs_error_default,
             mean_abs_perc_error=current_metrics.mean_abs_perc_error,
             mean_abs_perc_error_default=mean_abs_perc_error_default,
             abs_error_max=current_metrics.abs_error_max,
+            abs_error_max_default=abs_error_max_default,
             error_std=current_metrics.error_std,
             abs_error_std=current_metrics.abs_error_std,
             abs_perc_error_std=current_metrics.abs_perc_error_std,
@@ -181,4 +196,5 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
             mean_abs_perc_error_ref=reference_metrics.mean_abs_perc_error if reference_metrics is not None else None,
             rmse_ref=rmse_ref,
             r2_score_ref=r2_score_ref,
+            abs_error_max_ref=abs_error_max_ref,
         )

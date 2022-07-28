@@ -35,10 +35,10 @@ from evidently.utils.numpy_encoder import NumpyEncoder
             "[42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42]",
         ),
         (
-            [_type(0.5) for _type in (np.float, np.float_, np.float16, np.float32, np.float64)],
-            "[0.5, 0.5, 0.5, 0.5, 0.5]",
+            [_type(0.5) for _type in (np.float_, np.float16, np.float32, np.float64)],
+            "[0.5, 0.5, 0.5, 0.5]",
         ),
-        ([(_type(1), _type(0)) for _type in (np.bool, np.bool_)], "[[true, false], [true, false]]"),
+        (np.array([np.bool_(1), np.bool_(0)]), "[true, false]"),
         (np.array([0, 1, 2.1, np.nan, np.inf, pd.NaT]), "[0, 1, 2.1, NaN, Infinity, null]"),
         (np.empty((0, 0)), "[]"),
         (np.array([[0, 1, 2.1], [0, 1, 2.1], [0, 1, 2.1]]), "[[0.0, 1.0, 2.1], [0.0, 1.0, 2.1], [0.0, 1.0, 2.1]]"),

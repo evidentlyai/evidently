@@ -38,10 +38,10 @@ def analyzer() -> RegressionPerformanceAnalyzer:
                 reference_metrics=RegressionPerformanceMetrics(
                     mean_error=0.0,
                     mean_abs_error=0.5,
-                    mean_abs_perc_error=np.inf,
+                    mean_abs_perc_error=1.1258999068426243e+17,
                     error_std=0.816496580927726,
                     abs_error_std=0.5773502691896257,
-                    abs_perc_error_std=approx(np.nan, nan_ok=True),  # noqa
+                    abs_perc_error_std=2251799813685247.8, #approx(np.nan, nan_ok=True),  # noqa
                     error_normality={
                         "order_statistic_medians_x": [
                             -0.9981488825015566,
@@ -177,10 +177,10 @@ def analyzer() -> RegressionPerformanceAnalyzer:
                 reference_metrics=RegressionPerformanceMetrics(
                     mean_error=-0.25,
                     mean_abs_error=0.75,
-                    mean_abs_perc_error=np.inf,
+                    mean_abs_perc_error=1.1258999068426245e+17,
                     error_std=0.9574271077563381,
                     abs_error_std=0.5,
-                    abs_perc_error_std=approx(np.nan, nan_ok=True),  # noqa
+                    abs_perc_error_std=2251799813685248.0, #approx(np.nan, nan_ok=True),  # noqa
                     error_normality={
                         "order_statistic_medians_x": [
                             -0.9981488825015566,
@@ -203,10 +203,10 @@ def analyzer() -> RegressionPerformanceAnalyzer:
                 current_metrics=RegressionPerformanceMetrics(
                     mean_error=0.0,
                     mean_abs_error=1.0,
-                    mean_abs_perc_error=np.inf,
+                    mean_abs_perc_error=2.2517998136852486e+17,
                     error_std=1.4142135623730951,
                     abs_error_std=0.0,
-                    abs_perc_error_std=approx(np.nan, nan_ok=True),  # noqa
+                    abs_perc_error_std=3184525836262885.5, #approx(np.nan, nan_ok=True),  # noqa
                     error_normality={
                         "order_statistic_medians_x": [-0.5449521356173604, 0.5449521356173604],
                         "order_statistic_medians_y": [-1.0, 1.0],
