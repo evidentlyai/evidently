@@ -360,15 +360,15 @@ def get_prediction_data(
             # if prediction is probas, get unique values from target only
             labels = data[mapping.target].unique()
 
-    # get negative label for binary classification
-    neg_label = labels[labels != mapping.pos_label][0]
-
     # binary classification
     # prediction in mapping is a list of two columns:
     # one is positive value probabilities, second is negative value probabilities
     if isinstance(mapping.prediction, list) and len(mapping.prediction) == 2:
         if mapping.pos_label not in labels or mapping.pos_label is None:
             raise ValueError("Undefined pos_label.")
+
+        # get negative label for binary classification
+        neg_label = labels[labels != mapping.pos_label][0]
 
         predictions = threshold_probability_labels(data[mapping.prediction], mapping.pos_label, neg_label, threshold)
         return PredictionData(predictions=predictions, prediction_probas=data[[mapping.pos_label, neg_label]])
@@ -388,6 +388,9 @@ def get_prediction_data(
                 "No prediction for the target labels were found. "
                 "Consider to rename columns with the prediction to match target labels."
             )
+
+        # get negative label for binary classification
+        neg_label = labels[labels != mapping.pos_label][0]
 
         if mapping.pos_label == mapping.prediction:
             pos_preds = data[mapping.prediction]

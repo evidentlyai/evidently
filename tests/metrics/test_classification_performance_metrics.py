@@ -80,6 +80,13 @@ def test_classification_performance_metrics_binary_probas_threshold() -> None:
             [0, 0, 1],
             None,
         ),
+        # just simple target and predictions, without probabilities, no negative value
+        (
+            pd.DataFrame({"target": [1, 1, 1], "predictions": [1, 1, 1]}),
+            ColumnMapping(prediction="predictions"),
+            [1, 1, 1],
+            None,
+        ),
         # just simple target and predictions, without probabilities, in target only one value
         (
             pd.DataFrame({"target": [1, 1, 1], "predictions": [0, 0, 1]}),
@@ -87,12 +94,43 @@ def test_classification_performance_metrics_binary_probas_threshold() -> None:
             [0, 0, 1],
             None,
         ),
+        # just simple target and predictions, without probabilities, only one not-default value
+        (
+            pd.DataFrame({"target": ["a", "a", "a"], "predictions": ["a", "a", "a"]}),
+            ColumnMapping(prediction="predictions"),
+            ["a", "a", "a"],
+            None,
+        ),
+        # multy classification, prediction is labels-strings
+        (
+            pd.DataFrame({"target": ["a", "a", "a"], "a": [0.1, 0.3, 0.9], "b": [0.8, 0.7, 0.1], "c": [0.9, 0.7, 0.1]}),
+            ColumnMapping(prediction=["a", "b", "c"]),
+            ["c", "b", "a"],
+            {"a": {0: 0.1, 1: 0.3, 2: 0.9}, "b": {0: 0.8, 1: 0.7, 2: 0.1}, "c": {0: 0.9, 1: 0.7, 2: 0.1}},
+        ),
+        # multy classification, prediction is labels-strings, all probabilities are lower than default threshold
+        (
+            pd.DataFrame({"target": ["a", "a", "a"], "a": [0.1, 0.2, 0.2], "b": [0.2, 0.3, 0.1], "c": [0.3, 0.2, 0.1]}),
+            ColumnMapping(prediction=["a", "b", "c"]),
+            ["c", "b", "a"],
+            {"a": {0: 0.1, 1: 0.2, 2: 0.2}, "b": {0: 0.2, 1: 0.3, 2: 0.1}, "c": {0: 0.3, 1: 0.2, 2: 0.1}},
+        ),
+        # binary classification, prediction is labels-numbers
         (
             pd.DataFrame({"target": [1, 0, 1], 1: [0.1, 0.3, 0.9], 0: [0.9, 0.7, 0.1]}),
             ColumnMapping(prediction=[1, 0]),
             [0, 0, 1],
             {0: {0: 0.9, 1: 0.7, 2: 0.1}, 1: {0: 0.1, 1: 0.3, 2: 0.9}},
         ),
+        # binary classification, prediction is negative, pos label is 0
+        (
+            pd.DataFrame({"target": [1, 0, 1], "1": [0.1, 0.3, 0.9], 0: [0.9, 0.7, 0.1]}),
+            ColumnMapping(prediction="1", pos_label=0),
+            [0, 0, 1],
+            {0: {0: 0.9, 1: 0.7, 2: approx(0.1, abs=0.01)},
+             1: {0: approx(0.1, abs=0.01), 1: approx(0.3, abs=0.01), 2: 0.9}},
+        ),
+        # binary classification, prediction is labels-strings
         (
             pd.DataFrame({"target": ["true", "false", "true"], "true": [0.1, 0.3, 0.9], "false": [0.9, 0.7, 0.1]}),
             ColumnMapping(prediction=["true", "false"], pos_label="true"),
@@ -109,6 +147,12 @@ def test_classification_performance_metrics_binary_probas_threshold() -> None:
         (
             pd.DataFrame({"target": ["a", "b"], "a": [0.9, 0.4]}),
             ColumnMapping(prediction="a", pos_label="a"),
+            ["a", "b"],
+            {"a": {0: 0.9, 1: 0.4}, "b": {0: approx(0.1, abs=0.01), 1: 0.6}},
+        ),
+        (
+            pd.DataFrame({"target": ["a", "b"], "b": [0.1, 0.6]}),
+            ColumnMapping(prediction="b", pos_label="a"),
             ["a", "b"],
             {"a": {0: 0.9, 1: 0.4}, "b": {0: approx(0.1, abs=0.01), 1: 0.6}},
         ),
@@ -131,6 +175,42 @@ def test_prediction_data_with_default_threshold(
 
     else:
         assert prediction_data.prediction_probas.to_dict() == expected_probas
+
+
+@pytest.mark.parametrize(
+    "data,mapping,error_text",
+    [
+        # no pos value
+        (
+            pd.DataFrame({"target": ["true", "false", "true"], "true": [0.1, 0.3, 0.8]}),
+            ColumnMapping(prediction="true"),
+            "Undefined pos_label."
+        ),
+        # incorrect pos value
+        (
+            pd.DataFrame({"target": ["true", "false", "true"], "true": [0.1, 0.3, 0.8]}),
+            ColumnMapping(prediction="true", pos_label="pos"),
+            "Undefined pos_label."
+        ),
+        (
+            pd.DataFrame({"target": ["true", "false", "true"], "true": [0.1, 0.3, 0.8], "false": [0.9, 0.7, 0.2]}),
+            ColumnMapping(prediction=["true", "false"], pos_label="pos"),
+            "Undefined pos_label."
+        ),
+        # prediction not in labels list
+        (
+            pd.DataFrame({"target": ["true", "false", "true"], "True": [0.1, 0.3, 0.8]}),
+            ColumnMapping(prediction="True", pos_label="true"),
+            "No prediction for the target labels were found. "
+            "Consider to rename columns with the prediction to match target labels."
+        ),
+    ],
+)
+def test_prediction_data_raises_value_error(data: pd.DataFrame, mapping: ColumnMapping, error_text: str):
+    with pytest.raises(ValueError) as error:
+        get_prediction_data(data, mapping)
+
+    assert error.value.args[0] == error_text
 
 
 def test_classification_performance_metrics() -> None:
