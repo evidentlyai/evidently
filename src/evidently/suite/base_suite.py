@@ -101,16 +101,15 @@ class Suite:
 
         for test in self.context.execution_graph.get_test_execution_iterator():
             try:
-                test_result = test.check()
-                test_result.groups.update({
-                    GroupingTypes.TestGroup.id: test.group,
-                    GroupingTypes.TestType.id: test.name,
-                })
-                test_results[test] = test_result
+                test_results[test] = test.check()
             except BaseException as ex:
                 test_results[test] = TestResult(name=test.name,
                                                 status=TestResult.ERROR,
                                                 description=f"Test failed with exceptions: {ex}")
+            test_results[test].groups.update({
+                GroupingTypes.TestGroup.id: test.group,
+                GroupingTypes.TestType.id: test.name,
+            })
 
         self.context.test_results = test_results
         self.context.state = States.Tested
