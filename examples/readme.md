@@ -115,6 +115,7 @@ Probabilistic Classification Performance (Multiclass) | [link](sample_notebooks/
 Classification Performance (Binary) | [link](sample_notebooks/classification_performance_breast_cancer.ipynb) | [link](https://colab.research.google.com/drive/1b2kTLUIVJkKJybYeD3ZjpaREr_9dDTpz) | Breast cancer sklearn.datasets
 Probabilistic Classification Performance (Binary) | [link](sample_notebooks/probabilistic_classification_performance_breast_cancer.ipynb) | [link](https://colab.research.google.com/drive/1sE2H4mFSgtNe34JZMAeC3eLntid6oe1g) | Breast cancer sklearn.datasets
 Data Quality | [link](sample_notebooks/data_quality_bike_sharing_demand.ipynb) | [link](https://colab.research.google.com/drive/1XDxs4k2wNHU9Xbxb9WI2rOgMkZFavyRd) | Bike sharing UCI: [link](https://archive.ics.uci.edu/ml/datasets/bike+sharing+dataset)
+Tests and Test Presets | [link](sample_notebooks/tests_and_test_presets.ipynb) | [link](https://colab.research.google.com/drive/1xQJs6aQlU_7ludwpGGPnRLQpwQh65omr) | Adult data set openml
 
 ### How-to notebooks
 These examples answer “how-to” questions - they help you to adjust evidently as you need
