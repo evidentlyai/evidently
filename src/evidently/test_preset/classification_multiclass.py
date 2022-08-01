@@ -22,8 +22,8 @@ class MulticlassClassification(TestPreset):
         tests = [
             TestAccuracyScore(),
             TestF1Score(),
-            *[TestPrecisionByClass(label) for label in labels],
-            *[TestRecallByClass(label) for label in labels],
+            *[TestPrecisionByClass(str(label)) for label in labels],
+            *[TestRecallByClass(str(label)) for label in labels],
             TestNumberOfRows(),
             TestFeatureValueDrift(column_name=target),
         ]
