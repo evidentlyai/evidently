@@ -2,7 +2,7 @@ from evidently.analyzers.utils import DatasetColumns
 from evidently.metrics.base_metric import InputData
 from evidently.test_preset.test_preset import TestPreset
 from evidently.tests import TestAccuracyScore, TestF1Score, TestPrecisionScore, TestRecallScore, \
-    TestFeatureValueDrift, TestRocAuc, TestTPR, TestTNR, TestFPR, TestFNR
+    TestFeatureValueDrift, TestRocAuc
 
 
 class BinaryClassification(TestPreset):
@@ -33,9 +33,5 @@ class BinaryClassification(TestPreset):
                 TestRecallScore(classification_threshold=self.threshold),
                 TestAccuracyScore(classification_threshold=self.threshold),
                 TestF1Score(classification_threshold=self.threshold),
-                TestTPR(),
-                TestTNR(),
-                TestFPR(),
-                TestFNR(),
             ]
         raise ValueError(f'Unexpected prediction_type: "{self.prediction_type}"')
