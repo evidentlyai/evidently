@@ -169,6 +169,8 @@ class TestTargetPredictionCorrelation(BaseDataQualityCorrelationsMetricsValueTes
         return self.metric.get_result().current_correlation.target_prediction_correlation
 
     def get_description(self, value: Numeric) -> str:
+        if value is None:
+            return "No target or prediction in the dataset."
         return (
             f"The correlation between the target and prediction is {value:.3}. "
             f"The test threshold is {self.get_condition()}."

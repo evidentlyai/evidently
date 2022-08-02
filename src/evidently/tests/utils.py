@@ -304,13 +304,13 @@ class ApproxValue:
         return self.value + self.tolerance < other
 
     def __le__(self, other):
-        return self.value + self.tolerance <= other
+        return self.value - self.tolerance <= other
 
     def __gt__(self, other):
         return self.value - self.tolerance > other
 
     def __ge__(self, other):
-        return self.value - self.tolerance >= other
+        return self.value + self.tolerance >= other
 
     def as_dict(self) -> dict:
         result = {"value": self.value}

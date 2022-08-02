@@ -10,6 +10,7 @@ const availableStates: TestState[] = ["unknown", "success", "warning", "fail"];
 
 export const StateToSeverity: (state: TestState) => Color = (state) => {
     switch (state) {
+        case "error":
         case "unknown":
             return "info";
         case "success":

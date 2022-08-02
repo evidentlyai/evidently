@@ -222,7 +222,8 @@ def test_log_loss_test_cannot_calculate_log_loss() -> None:
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
     assert not suite
     test_info = suite.as_dict()["tests"][0]
-    assert test_info["description"] == "No log loss value for the data"
+    assert test_info["description"] == "Not enough data to calculate Logarithmic Loss." \
+                                       " Consider providing probabilities instead of labels."
     assert test_info["status"] == "ERROR"
 
 
@@ -282,7 +283,8 @@ def test_roc_auc_test_cannot_calculate_roc_auc() -> None:
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
     assert not suite
     test_info = suite.as_dict()["tests"][0]
-    assert test_info["description"] == "No ROC AUC Score value for the data"
+    assert test_info["description"] == "Not enough data to calculate ROC AUC." \
+                                       " Consider providing probabilities instead of labels."
     assert test_info["status"] == "ERROR"
 
 

@@ -181,7 +181,7 @@ def test_abs_max_error_test_render_json() -> None:
 
     result = json.loads(result_json)["tests"][0]
     assert result == {
-        "description": "The Max Absolute Error is 0.0. The test threshold is lte=0 ± " "1e-12.",
+        "description": "The Max Absolute Error is 0.0. The test threshold is lte=0 ± 1e-12.",
         "group": "regression",
         "name": "Max Absolute Error",
         "parameters": {
@@ -189,7 +189,7 @@ def test_abs_max_error_test_render_json() -> None:
             "abs_error_max_ref": 1.5,
             "condition": {"lte": {"absolute": 1e-12, "relative": 0.1, "value": 0.0}},
         },
-        "status": "FAIL",
+        "status": "SUCCESS",
     }
 
 

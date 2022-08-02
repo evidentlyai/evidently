@@ -89,7 +89,8 @@ class DataDriftAnalyzer(Analyzer):
                 columns.utility_columns.prediction = 'prediction'
                 num_feature_names += [columns.utility_columns.prediction]
             elif isinstance(prediction_column, str):
-                if reference_data[prediction_column].nunique() > 5:
+                if pd.api.types.is_numeric_dtype(reference_data[prediction_column].dtype) and\
+                        reference_data[prediction_column].nunique() > 5:
                     num_feature_names += [prediction_column]
                 else:
                     cat_feature_names += [prediction_column]

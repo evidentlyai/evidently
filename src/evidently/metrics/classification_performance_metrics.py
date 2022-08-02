@@ -287,7 +287,10 @@ class ClassificationPerformanceMetrics(Metric[ClassificationPerformanceMetricsRe
 def _dummy_threshold_metrics(
     threshold: float, dummy_results: DatasetClassificationPerformanceMetrics
 ) -> DatasetClassificationPerformanceMetrics:
-    mult_precision = min(1.0, 0.5 / (1 - threshold))
+    if threshold == 1.0:
+        mult_precision = 1.0
+    else:
+        mult_precision = min(1.0, 0.5 / (1 - threshold))
     mult_recall = min(1.0, (1 - threshold) / 0.5)
 
     return DatasetClassificationPerformanceMetrics(
