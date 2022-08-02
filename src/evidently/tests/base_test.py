@@ -4,6 +4,7 @@ from abc import ABC
 import dataclasses
 from dataclasses import dataclass
 from typing import Any
+from typing import ClassVar
 from typing import Dict
 from typing import Generic
 from typing import List
@@ -317,3 +318,41 @@ class BaseTestGenerator(Generic[TTest]):
     @abc.abstractmethod
     def generate_tests(self, columns_info: DatasetColumns) -> List[TTest]:
         raise NotImplementedError()
+
+
+def generate_tests_for_all_columns(test_class: ClassVar[Test]) -> BaseTestGenerator:
+    """Generate tests with default parameters for all columns"""
+    class TestForAllColumns(BaseTestGenerator):
+        def generate_tests(self, columns_info: DatasetColumns) -> List[test_class]:
+            return [
+                test_class(column_name=name)
+                for name in columns_info.get_all_columns_list()
+            ]
+
+    return TestForAllColumns()
+
+
+def generate_tests_for_numeric_columns(test_class: ClassVar[Test]) -> BaseTestGenerator:
+    """Generate tests with default parameters for numeric columns"""
+
+    class TestGeneratorForNumericColumns(BaseTestGenerator):
+        def generate_tests(self, columns_info: DatasetColumns) -> List[test_class]:
+            return [
+                test_class(column_name=name)
+                for name in columns_info.num_feature_names
+            ]
+
+    return TestGeneratorForNumericColumns()
+
+
+def generate_tests_for_category_columns(test_class: ClassVar[Test]) -> BaseTestGenerator:
+    """Generate tests with default parameters for category columns"""
+
+    class TestGeneratorForCategoryColumns(BaseTestGenerator):
+        def generate_tests(self, columns_info: DatasetColumns) -> List[test_class]:
+            return [
+                test_class(column_name=name)
+                for name in columns_info.cat_feature_names
+            ]
+
+    return TestGeneratorForCategoryColumns()
