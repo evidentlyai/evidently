@@ -64,4 +64,4 @@ def test_data_drift_analyzer_as_dict_format(data_drift_analyzer: DataDriftAnalyz
 
     # check data drift results
     assert result.columns.target_names == ["drift_target"]
-    assert result.metrics.dataset_drift is False
+    assert result.metrics.dataset_drift is True

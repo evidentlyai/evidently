@@ -169,7 +169,7 @@ def test_data_drift_test_feature_value_drift() -> None:
     )
     suite = TestSuite(tests=[TestFeatureValueDrift(column_name="feature_1")])
     suite.run(current_data=test_current_dataset, reference_data=test_reference_dataset, column_mapping=ColumnMapping())
-    assert not suite
+    assert suite
 
 
 def test_data_drift_test_feature_value_drift_json_render() -> None:
@@ -179,20 +179,20 @@ def test_data_drift_test_feature_value_drift_json_render() -> None:
     )
     suite = TestSuite(tests=[TestFeatureValueDrift(column_name="feature_1")])
     suite.run(current_data=test_current_dataset, reference_data=test_reference_dataset)
-    assert not suite
+    assert suite
 
     result_from_json = json.loads(suite.json())
-    assert result_from_json["summary"]["all_passed"] is False
+    assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "The drift score for the feature **feature_1** is 0."
+        "description": "The drift score for the feature **feature_1** is 0.064."
         " The drift detection method is chi-square p_value. The drift detection threshold is 0.05.",
         "group": "data_drift",
         "name": "Drift per Feature",
         "parameters": {
             "features": {
-                "feature_1": {"data_drift": True, "score": 0.0, "stattest": "chi-square p_value", "threshold": 0.05}
+                "feature_1": {"data_drift": False, "score": 0.064, "stattest": "chi-square p_value", "threshold": 0.05}
             }
         },
-        "status": "FAIL",
+        "status": "SUCCESS",
     }
