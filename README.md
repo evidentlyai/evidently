@@ -55,7 +55,7 @@ There is a lightweight integration with Prometheus and Grafana that comes with p
 ### MAC OS and Linux
 Evidently is available as a PyPI package. To install it using pip package manager, run:
 ```sh
-$ pip install evidently
+$ pip install --pre evidently
 ```
 If you want to generate reports as HTML files or export as JSON profiles, the installation is now complete.
 
