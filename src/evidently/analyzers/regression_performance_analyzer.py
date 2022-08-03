@@ -75,7 +75,7 @@ class RegressionPerformanceAnalyzer(Analyzer):
         cat_feature_names = columns.cat_feature_names
 
         if target_column is not None and prediction_column is not None:
-            _prepare_dataset(reference_data)
+            _prepare_dataset(reference_data, target_column, prediction_column)
 
             # calculate quality metrics
             quality_metrics = _calculate_quality_metrics(reference_data, prediction_column, target_column)
@@ -98,7 +98,7 @@ class RegressionPerformanceAnalyzer(Analyzer):
             }
 
             if current_data is not None:
-                _prepare_dataset(current_data)
+                _prepare_dataset(current_data, target_column, prediction_column)
 
                 # calculate quality metrics
                 quality_metrics = _calculate_quality_metrics(current_data, prediction_column, target_column)
@@ -166,9 +166,9 @@ def _calculate_quality_metrics(dataset, prediction_column, target_column, conf_i
     }
 
 
-def _prepare_dataset(dataset):
+def _prepare_dataset(dataset, target_column, prediction_column):
     dataset.replace([np.inf, -np.inf], np.nan, inplace=True)
-    dataset.dropna(axis=0, how="any", inplace=True)
+    dataset.dropna(axis=0, how="any", inplace=True, subset=[target_column, prediction_column])
 
 
 def _calculate_underperformance(err_quantiles: ErrorWithQuantiles, conf_interval_n_sigmas: int = 1):

@@ -54,7 +54,7 @@ class RegErrorNormalityWidget(Widget):
             return None
 
         dataset_to_plot.replace([np.inf, -np.inf], np.nan, inplace=True)
-        dataset_to_plot.dropna(axis=0, how='any', inplace=True)
+        dataset_to_plot.dropna(axis=0, how='any', inplace=True, subset=[target_column, prediction_column])
 
         # plot error normality
         error_norm = go.Figure()
