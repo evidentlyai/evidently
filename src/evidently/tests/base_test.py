@@ -4,11 +4,12 @@ from abc import ABC
 import dataclasses
 from dataclasses import dataclass
 from typing import Any
-from typing import ClassVar
+from typing import Callable
 from typing import Dict
 from typing import Generic
 from typing import List
 from typing import Optional
+from typing import Type
 from typing import TypeVar
 from typing import Union
 
@@ -115,6 +116,14 @@ class Test:
         if result is None:
             raise ValueError(f"No result found for metric {self} of type {type(self).__name__}")
         return result
+
+
+class TestColumn:
+    """Base test class for a test that checks one column"""
+    column_name: str
+
+    def __init__(self, column_name: str):
+        self.column_name = column_name
 
 
 @dataclass
@@ -320,39 +329,119 @@ class BaseTestGenerator(Generic[TTest]):
         raise NotImplementedError()
 
 
-def generate_tests_for_all_columns(test_class: ClassVar[Test]) -> BaseTestGenerator:
-    """Generate tests with default parameters for all columns"""
-    class TestForAllColumns(BaseTestGenerator):
-        def generate_tests(self, columns_info: DatasetColumns) -> List[test_class]:
-            return [
-                test_class(column_name=name)
-                for name in columns_info.get_all_columns_list()
-            ]
+def _generate_tests_for_columns_list_from_method(
+    test_class: Type[TestColumn],
+    list_columns_method: Callable,
+    for_all_parameters: Optional[Dict] = None,
+    per_column_parameters: Optional[Dict] = None,
+) -> BaseTestGenerator:
 
-    return TestForAllColumns()
+    class TestForOneColumn(BaseTestGenerator):
+        def generate_tests(self, columns_info: DatasetColumns) -> List[TestColumn]:
+            result = []
+
+            if for_all_parameters is None:
+                parameters = {}
+
+            else:
+                parameters = for_all_parameters
+
+            for column_name in list_columns_method(columns_info):
+                if per_column_parameters is not None and column_name in per_column_parameters:
+                    actual_parameters = per_column_parameters[column_name]
+
+                else:
+                    actual_parameters = parameters
+
+                parameters["column_name"] = column_name
+                result.append(test_class(**actual_parameters))
+
+            return result
+
+    return TestForOneColumn()
 
 
-def generate_tests_for_numeric_columns(test_class: ClassVar[Test]) -> BaseTestGenerator:
-    """Generate tests with default parameters for numeric columns"""
+def generate_tests_for_columns(
+        test_class: Type[TestColumn],
+        columns: List[str],
+        for_all_parameters: Optional[Dict] = None,
+        per_column_parameters: Optional[Dict] = None,
+) -> BaseTestGenerator:
+    """Generate tests for specified columns"""
+    def list_columns(_: DatasetColumns) -> List[str]:
+        return columns
 
-    class TestGeneratorForNumericColumns(BaseTestGenerator):
-        def generate_tests(self, columns_info: DatasetColumns) -> List[test_class]:
-            return [
-                test_class(column_name=name)
-                for name in columns_info.num_feature_names
-            ]
-
-    return TestGeneratorForNumericColumns()
+    return _generate_tests_for_columns_list_from_method(
+        test_class=test_class,
+        list_columns_method=list_columns,
+        for_all_parameters=for_all_parameters,
+        per_column_parameters=per_column_parameters,
+    )
 
 
-def generate_tests_for_category_columns(test_class: ClassVar[Test]) -> BaseTestGenerator:
-    """Generate tests with default parameters for category columns"""
+def generate_tests_for_all_columns(
+        test_class: Type[TestColumn],
+        for_all_parameters: Optional[Dict] = None,
+        per_column_parameters: Optional[Dict] = None,
+) -> BaseTestGenerator:
+    """Generate tests for all columns"""
+    def list_all_columns(columns_info: DatasetColumns) -> List[str]:
+        return columns_info.get_all_columns_list()
 
-    class TestGeneratorForCategoryColumns(BaseTestGenerator):
-        def generate_tests(self, columns_info: DatasetColumns) -> List[test_class]:
-            return [
-                test_class(column_name=name)
-                for name in columns_info.cat_feature_names
-            ]
+    return _generate_tests_for_columns_list_from_method(
+        test_class=test_class,
+        list_columns_method=list_all_columns,
+        for_all_parameters=for_all_parameters,
+        per_column_parameters=per_column_parameters,
+    )
 
-    return TestGeneratorForCategoryColumns()
+
+def generate_tests_for_num_features(
+        test_class: Type[TestColumn],
+        for_all_parameters: Optional[Dict] = None,
+        per_column_parameters: Optional[Dict] = None
+) -> BaseTestGenerator:
+    """Generate tests for numeric features"""
+    def list_num_features_columns(columns_info: DatasetColumns) -> List[str]:
+        return columns_info.num_feature_names
+
+    return _generate_tests_for_columns_list_from_method(
+        test_class=test_class,
+        list_columns_method=list_num_features_columns,
+        for_all_parameters=for_all_parameters,
+        per_column_parameters=per_column_parameters,
+    )
+
+
+def generate_tests_for_cat_features(
+    test_class: Type[TestColumn],
+    for_all_parameters: Optional[Dict] = None,
+    per_column_parameters: Optional[Dict] = None
+) -> BaseTestGenerator:
+    """Generate tests for category features"""
+    def list_cat_features_columns(columns_info: DatasetColumns) -> List[str]:
+        return columns_info.cat_feature_names
+
+    return _generate_tests_for_columns_list_from_method(
+        test_class=test_class,
+        list_columns_method=list_cat_features_columns,
+        for_all_parameters=for_all_parameters,
+        per_column_parameters=per_column_parameters,
+    )
+
+
+def generate_tests_for_datetime_features(
+    test_class: Type[TestColumn],
+    for_all_parameters: Optional[Dict] = None,
+    per_column_parameters: Optional[Dict] = None
+) -> BaseTestGenerator:
+    """Generate tests for datetime features"""
+    def list_numeric_features_columns(columns_info: DatasetColumns) -> List[str]:
+        return columns_info.datetime_feature_names
+
+    return _generate_tests_for_columns_list_from_method(
+        test_class=test_class,
+        list_columns_method=list_numeric_features_columns,
+        for_all_parameters=for_all_parameters,
+        per_column_parameters=per_column_parameters,
+    )
