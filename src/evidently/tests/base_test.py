@@ -340,20 +340,14 @@ def _generate_tests_for_columns_list_from_method(
         def generate_tests(self, columns_info: DatasetColumns) -> List[TestColumn]:
             result = []
 
-            if for_all_parameters is None:
-                parameters = {}
-
-            else:
-                parameters = for_all_parameters
-
             for column_name in list_columns_method(columns_info):
                 if per_column_parameters is not None and column_name in per_column_parameters:
                     actual_parameters = per_column_parameters[column_name]
 
                 else:
-                    actual_parameters = parameters
+                    actual_parameters = for_all_parameters or {}
 
-                parameters["column_name"] = column_name
+                actual_parameters["column_name"] = column_name
                 result.append(test_class(**actual_parameters))
 
             return result
