@@ -15,6 +15,13 @@ from evidently.renderers.base_renderer import DetailsInfo
 
 RED = "#ed0400"
 GREY = "#4d4d4d"
+COLOR_DISCRETE_SEQUENCE = (
+    "#ed0400",
+    "#0a5f38",
+    "#6c3461",
+
+    "#6b8ba4",
+)
 
 
 # type for numeric because of mypy bug https://github.com/python/mypy/issues/3186
@@ -532,4 +539,69 @@ def plot_boxes(curr_for_plots: dict, ref_for_plots: Optional[dict]):
         yaxis_title="Prerdictions",
         xaxis_title="Class",
     )
+    return fig
+
+
+def plot_rates(curr_rate_plots_data: dict, ref_rate_plots_data: Optional[dict] = None):
+    if ref_rate_plots_data is not None:
+        cols = 2
+        subplot_titles = ["current", "reference"]
+    else:
+        cols = 1
+        subplot_titles = [""]
+
+    curr_df = pd.DataFrame(
+        {
+            'thrs': curr_rate_plots_data['thrs'],
+            'fpr': curr_rate_plots_data['fpr'],
+            'tpr': curr_rate_plots_data['tpr'],
+            'fnr': curr_rate_plots_data['fnr'],
+            'tnr': curr_rate_plots_data['tnr']
+        }
+    )
+    curr_df = curr_df[curr_df.thrs <= 1]
+
+    fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
+    for i, metric in enumerate(['fpr', 'tpr', 'fnr', 'tnr']):
+        fig.append_trace(
+            go.Scatter(
+                x=curr_df['thrs'],
+                y=curr_df[metric],
+                mode='lines',
+                legendgroup=metric,
+                name=metric,
+                marker_color=COLOR_DISCRETE_SEQUENCE[i]
+            ),
+            1,
+            1
+        )
+    if ref_rate_plots_data is not None:
+        ref_df = pd.DataFrame(
+            {
+                'thrs': ref_rate_plots_data['thrs'],
+                'fpr': ref_rate_plots_data['fpr'],
+                'tpr': ref_rate_plots_data['tpr'],
+                'fnr': ref_rate_plots_data['fnr'],
+                'tnr': ref_rate_plots_data['tnr']
+            }
+        )
+        ref_df = ref_df[ref_df.thrs <= 1]
+        for i, metric in enumerate(['fpr', 'tpr', 'fnr', 'tnr']):
+            fig.append_trace(
+                go.Scatter(
+                    x=ref_df['thrs'],
+                    y=ref_df[metric],
+                    mode='lines',
+                    legendgroup=metric,
+                    name=metric,
+                    showlegend=False,
+                    marker_color=COLOR_DISCRETE_SEQUENCE[i]
+                ),
+                1,
+                2
+            )
+    fig.update_layout(
+        xaxis_title="threshold",
+    )
+
     return fig

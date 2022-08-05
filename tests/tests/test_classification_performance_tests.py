@@ -411,11 +411,11 @@ def test_recall_by_class_test_render_json() -> None:
 def test_tpr_test() -> None:
     test_dataset = pd.DataFrame(
         {
-            "target": ["a", "a", "c", "b"],
-            "prediction": ["a", "a", "b", "b"],
+            "target": ["a", "a", "b", "b"],
+            "prediction": ["a", "b", "b", "b"],
         }
     )
-    column_mapping = ColumnMapping()
+    column_mapping = ColumnMapping(pos_label="a")
     suite = TestSuite(tests=[TestTPR(lt=0.8)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
     assert suite
@@ -424,12 +424,13 @@ def test_tpr_test() -> None:
 def test_tpr_test_render_json() -> None:
     test_dataset = pd.DataFrame(
         {
-            "target": ["a", "a", "c", "b"],
-            "prediction": ["a", "a", "b", "c"],
+            "target": ["a", "a", "b", "b"],
+            "prediction": ["a", "b", "b", "b"],
         }
     )
+    column_mapping = ColumnMapping(pos_label="a")
     suite = TestSuite(tests=[TestTPR()])
-    suite.run(current_data=test_dataset, reference_data=test_dataset)
+    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=column_mapping)
     assert suite
 
     result_from_json = json.loads(suite.json())
@@ -447,11 +448,11 @@ def test_tpr_test_render_json() -> None:
 def test_tnr_test() -> None:
     test_dataset = pd.DataFrame(
         {
-            "target": ["a", "a", "c", "b"],
-            "prediction": ["a", "a", "b", "b"],
+            "target": ["a", "a", "b", "b"],
+            "prediction": ["a", "b", "b", "b"],
         }
     )
-    column_mapping = ColumnMapping()
+    column_mapping = ColumnMapping(pos_label="a")
     suite = TestSuite(tests=[TestTNR(gt=0.8)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
     assert suite
@@ -460,22 +461,23 @@ def test_tnr_test() -> None:
 def test_tnr_test_render_json() -> None:
     test_dataset = pd.DataFrame(
         {
-            "target": ["a", "a", "c", "b"],
-            "prediction": ["a", "a", "b", "c"],
+            "target": ["a", "a", "b", "b"],
+            "prediction": ["a", "b", "b", "b"],
         }
     )
+    column_mapping = ColumnMapping(pos_label="a")
     suite = TestSuite(tests=[TestTNR()])
-    suite.run(current_data=test_dataset, reference_data=test_dataset)
+    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=column_mapping)
     assert suite
 
     result_from_json = json.loads(suite.json())
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "True Negative Rate is 0.75. Test Threshold is eq=0.75 ± 0.15",
+        "description": "True Negative Rate is 1. Test Threshold is eq=1 ± 0.2",
         "group": "classification",
         "name": "True Negative Rate",
-        "parameters": {"condition": {"eq": {"absolute": 1e-12, "relative": 0.2, "value": 0.75}}, "tnr": 0.75},
+        "parameters": {"condition": {"eq": {"absolute": 1e-12, "relative": 0.2, "value": 1}}, "tnr": 1},
         "status": "SUCCESS",
     }
 
@@ -483,11 +485,11 @@ def test_tnr_test_render_json() -> None:
 def test_fpr_test() -> None:
     test_dataset = pd.DataFrame(
         {
-            "target": ["a", "a", "c", "b"],
-            "prediction": ["a", "a", "b", "b"],
+            "target": ["a", "a", "b", "b"],
+            "prediction": ["a", "b", "b", "b"],
         }
     )
-    column_mapping = ColumnMapping()
+    column_mapping = ColumnMapping(pos_label="a")
     suite = TestSuite(tests=[TestFPR(lt=0.8)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
     assert suite
@@ -496,22 +498,23 @@ def test_fpr_test() -> None:
 def test_fpr_test_render_json() -> None:
     test_dataset = pd.DataFrame(
         {
-            "target": ["a", "a", "c", "b"],
-            "prediction": ["a", "a", "b", "c"],
+            "target": ["a", "a", "b", "b"],
+            "prediction": ["a", "b", "b", "b"],
         }
     )
+    column_mapping = ColumnMapping(pos_label="a")
     suite = TestSuite(tests=[TestFPR()])
-    suite.run(current_data=test_dataset, reference_data=test_dataset)
+    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=column_mapping)
     assert suite
 
     result_from_json = json.loads(suite.json())
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "False Positive Rate is 0.25. Test Threshold is eq=0.25 ± 0.05",
+        "description": "False Positive Rate is 0. Test Threshold is eq=0 ± 1e-12",
         "group": "classification",
         "name": "False Positive Rate",
-        "parameters": {"condition": {"eq": {"absolute": 1e-12, "relative": 0.2, "value": 0.25}}, "fpr": 0.25},
+        "parameters": {"condition": {"eq": {"absolute": 1e-12, "relative": 0.2, "value": 0}}, "fpr": 0},
         "status": "SUCCESS",
     }
 
@@ -519,11 +522,11 @@ def test_fpr_test_render_json() -> None:
 def test_fnr_test() -> None:
     test_dataset = pd.DataFrame(
         {
-            "target": ["a", "a", "c", "b"],
-            "prediction": ["a", "a", "b", "b"],
+            "target": ["a", "a", "b", "b"],
+            "prediction": ["a", "b", "b", "b"],
         }
     )
-    column_mapping = ColumnMapping()
+    column_mapping = ColumnMapping(pos_label="a")
     suite = TestSuite(tests=[TestFNR(lt=0.8)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
     assert suite
@@ -532,12 +535,13 @@ def test_fnr_test() -> None:
 def test_fnr_test_render_json() -> None:
     test_dataset = pd.DataFrame(
         {
-            "target": ["a", "a", "c", "b"],
-            "prediction": ["a", "a", "b", "c"],
+            "target": ["a", "a", "b", "b"],
+            "prediction": ["a", "b", "b", "b"],
         }
     )
+    column_mapping = ColumnMapping(pos_label="a")
     suite = TestSuite(tests=[TestFNR()])
-    suite.run(current_data=test_dataset, reference_data=test_dataset)
+    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=column_mapping)
     assert suite
 
     result_from_json = json.loads(suite.json())
