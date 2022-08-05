@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import {TestSuiteWidgetParams, TestData, TestGroupData, TestGroupTypeData} from "../../api/Api";
 import TestInfo, {StateToSeverity} from "./TestData";
-import {Button, Collapse, Grid, MenuItem, Paper, Select} from "@material-ui/core";
+import {Button, Collapse, Grid, Paper, Select} from "@material-ui/core";
 import {Alert, AlertTitle} from "@material-ui/lab";
 
 
@@ -57,16 +57,13 @@ const GroupedSection: React.FC<GroupedSectionProps> = ({type, groupsInfo, tests}
         }
 
         const group = groupsInfo.find(t => t.id === type);
-        console.log(type);
-        console.log(groupsInfo);
-        console.log(group);
-        console.log(tests);
         if (group === undefined) {
             throw "unexpected type";
         }
-        return [[...group.values,
-            {id: "no group", title: "No Group", sortIndex: -1, description: "No group of this type was provided"}],
-                test => test.groups[type] ?? "no group"];
+        const groups = group.values.find(v => v.id == "no group") !== undefined ? group.values
+            : [...group.values,
+            {id: "no group", title: "No Group", sortIndex: -1, description: "No group of this type was provided"}];
+        return [groups, test => test.groups[type] ?? "no group"];
     }
 
     const [actualGroups, groupFn] = getGroupFn(type)
