@@ -51,7 +51,8 @@ class RegColoredPredActualWidget(Widget):
             return None
 
         dataset_to_plot.replace([np.inf, -np.inf], np.nan, inplace=True)
-        dataset_to_plot.dropna(axis=0, how='any', inplace=True)
+        dataset_to_plot.dropna(axis=0, how='any', inplace=True,
+                               subset=[results_utility_columns.target, results_utility_columns.prediction])
 
         error = dataset_to_plot[results_utility_columns.prediction] - dataset_to_plot[results_utility_columns.target]
 
