@@ -1,3 +1,4 @@
+import abc
 import dataclasses
 from typing import Optional
 from typing import List
@@ -41,28 +42,14 @@ class DatasetClassificationPerformanceMetrics:
     fpr: Optional[float] = None
     fnr: Optional[float] = None
     rate_plots_data: Optional[dict] = None
+    plot_data: Optional[Dict[str, Dict[str, list]]] = None
 
 
 @dataclasses.dataclass
-class DataForPlots:
-    """Class for Boxplots"""
-
-    current: Optional[Dict[str, Dict[str, list]]] = None
-    reference: Optional[Dict[str, Dict[str, list]]] = None
-
-
-@dataclasses.dataclass
-class ClassificationPerformanceMetricsResults:
-    current_metrics: DatasetClassificationPerformanceMetrics
-    current_by_k_metrics: Dict[Union[int, float], DatasetClassificationPerformanceMetrics]
-    current_by_threshold_metrics: Dict[Union[int, float], DatasetClassificationPerformanceMetrics]
-    dummy_metrics: DatasetClassificationPerformanceMetrics
-    dummy_by_k_metrics: Dict[Union[int, float], DatasetClassificationPerformanceMetrics]
-    dummy_by_threshold_metrics: Dict[Union[int, float], DatasetClassificationPerformanceMetrics]
-    reference_metrics: Optional[DatasetClassificationPerformanceMetrics] = None
-    reference_by_k_metrics: Optional[Dict[Union[int, float], DatasetClassificationPerformanceMetrics]] = None
-    reference_by_threshold_metrics: Optional[Dict[Union[int, float], DatasetClassificationPerformanceMetrics]] = None
-    data_for_plots: Optional[DataForPlots] = None
+class ClassificationPerformanceResults:
+    current: DatasetClassificationPerformanceMetrics
+    dummy: DatasetClassificationPerformanceMetrics
+    reference: Optional[DatasetClassificationPerformanceMetrics] = None
 
 
 def k_probability_threshold(prediction_probas: pd.DataFrame, k: Union[int, float]) -> float:
@@ -83,35 +70,25 @@ def threshold_probability_labels(
     return prediction_probas[pos_label].apply(lambda x: pos_label if x >= threshold else neg_label)
 
 
-def _calculate_k_variants(
-    target_data: pd.Series, prediction_probas: pd.DataFrame, labels: List[str], k_variants: List[Union[int, float]]
+def _calculate_k_variant(
+    target_data: pd.Series, prediction_probas: pd.DataFrame, labels: List[str], k: Union[int, float]
 ):
-    by_k_results = {}
-    for k in k_variants:
-        # calculate metrics matrix
-        if prediction_probas is None or len(labels) > 2:
-            raise ValueError("Top K parameter can be used only with binary classification with probas")
+    if prediction_probas is None or len(labels) > 2:
+        raise ValueError("Top K parameter can be used only with binary classification with probas")
 
-        pos_label, neg_label = prediction_probas.columns
-        prediction_labels = threshold_probability_labels(
-            prediction_probas, pos_label, neg_label, k_probability_threshold(prediction_probas, k)
-        )
-        by_k_results[k] = classification_performance_metrics(
-            target_data, prediction_labels, prediction_probas, pos_label
-        )
-    return by_k_results
+    pos_label, neg_label = prediction_probas.columns
+    prediction_labels = threshold_probability_labels(
+        prediction_probas, pos_label, neg_label, k_probability_threshold(prediction_probas, k)
+    )
+    return classification_performance_metrics(target_data, prediction_labels, prediction_probas, pos_label)
 
 
-def _calculate_thresholds(target_data: pd.Series, prediction_probas: pd.DataFrame, thresholds: List[float]):
-    by_threshold_results = {}
-
-    for threshold in thresholds:
-        pos_label, neg_label = prediction_probas.columns
-        prediction_labels = threshold_probability_labels(prediction_probas, pos_label, neg_label, threshold)
-        by_threshold_results[threshold] = classification_performance_metrics(
-            target_data, prediction_labels, prediction_probas, pos_label
-        )
-    return by_threshold_results
+def _calculate_threshold(target_data: pd.Series, prediction_probas: pd.DataFrame, threshold: float):
+    pos_label, neg_label = prediction_probas.columns
+    prediction_labels = threshold_probability_labels(prediction_probas, pos_label, neg_label, threshold)
+    return classification_performance_metrics(
+        target_data, prediction_labels, prediction_probas, pos_label
+    )
 
 
 def classification_performance_metrics(
@@ -224,23 +201,8 @@ def classification_performance_metrics(
     )
 
 
-class ClassificationPerformanceMetrics(Metric[ClassificationPerformanceMetricsResults]):
-    k_variants: List[Union[int, float]]
-    thresholds: List[float]
-
-    def __init__(self):
-        self.k_variants = []
-        self.thresholds = []
-
-    def with_k(self, k: Union[int, float]) -> "ClassificationPerformanceMetrics":
-        self.k_variants.append(k)
-        return self
-
-    def with_threshold(self, threshold: float) -> "ClassificationPerformanceMetrics":
-        self.thresholds.append(threshold)
-        return self
-
-    def calculate(self, data: InputData, metrics: dict) -> ClassificationPerformanceMetricsResults:
+class ClassificationPerformanceMetrics(Metric[ClassificationPerformanceResults]):
+    def calculate(self, data: InputData, metrics: dict) -> ClassificationPerformanceResults:
         if data.current_data is None:
             raise ValueError("current dataset should be present")
 
@@ -250,19 +212,14 @@ class ClassificationPerformanceMetrics(Metric[ClassificationPerformanceMetricsRe
         prediction_data = predictions.predictions
         prediction_probas = predictions.prediction_probas
 
-        labels = sorted(set(target_data.unique()))
         current_metrics = classification_performance_metrics(
             target_data, prediction_data, prediction_probas, data.column_mapping.pos_label
         )
 
-        current_by_k_metrics = _calculate_k_variants(target_data, prediction_probas, labels, self.k_variants)
-
-        current_by_thresholds_metrics = _calculate_thresholds(target_data, prediction_probas, self.thresholds)
-
+        # data for plots
+        if prediction_probas is not None:
+            current_metrics.plot_data = _collect_plot_data(prediction_probas)
         reference_metrics = None
-        reference_by_k = None
-        reference_by_threshold = None
-        ref_probas = None
 
         if data.reference_data is not None:
             reference_data = _cleanup_data(data.reference_data, data.column_mapping)
@@ -276,8 +233,8 @@ class ClassificationPerformanceMetrics(Metric[ClassificationPerformanceMetricsRe
                 ref_probas,
                 data.column_mapping.pos_label,
             )
-            reference_by_k = _calculate_k_variants(ref_target, ref_probas, labels, self.k_variants)
-            reference_by_threshold = _calculate_thresholds(ref_target, ref_probas, self.thresholds)
+            if ref_probas is not None:
+                reference_metrics.plot_data = _collect_plot_data(ref_probas)
 
         # dummy
         labels_ratio = target_data.value_counts(normalize=True)
@@ -295,38 +252,13 @@ class ClassificationPerformanceMetrics(Metric[ClassificationPerformanceMetricsRe
             dummy_prediction = np.full(prediction_probas.shape, 1 / prediction_probas.shape[1])
             dummy_log_loss = sklearn.metrics.log_loss(binaraized_target, dummy_prediction)
             dummy_metrics.log_loss = dummy_log_loss
-        threshold_dummy_results = {}
-
-        for threshold in self.thresholds:
-            threshold_dummy_results[threshold] = _dummy_threshold_metrics(threshold, dummy_metrics)
-
-        k_dummy_results = {}
-
-        for k in self.k_variants:
-            threshold = k_probability_threshold(prediction_probas, k)
-            k_dummy_results[k] = _dummy_threshold_metrics(threshold, dummy_metrics)
 
         dummy_metrics.roc_auc = 0.5
 
-        # data for plots
-        curr_for_plots = None
-        ref_for_plots = None
-        if prediction_probas is not None:
-            curr_for_plots = _collect_plot_data(prediction_probas)
-        if data.reference_data is not None and ref_probas is not None:
-            ref_for_plots = _collect_plot_data(ref_probas)
-
-        return ClassificationPerformanceMetricsResults(
-            current_metrics=current_metrics,
-            current_by_k_metrics=current_by_k_metrics,
-            current_by_threshold_metrics=current_by_thresholds_metrics,
-            reference_metrics=reference_metrics,
-            reference_by_k_metrics=reference_by_k,
-            reference_by_threshold_metrics=reference_by_threshold,
-            dummy_metrics=dummy_metrics,
-            dummy_by_k_metrics=k_dummy_results,
-            dummy_by_threshold_metrics=threshold_dummy_results,
-            data_for_plots=DataForPlots(current=curr_for_plots, reference=ref_for_plots),
+        return ClassificationPerformanceResults(
+            current=current_metrics,
+            reference=reference_metrics,
+            dummy=dummy_metrics,
         )
 
 
@@ -374,6 +306,77 @@ def _dummy_threshold_metrics(
         fpr=fpr,
         fnr=fnr
     )
+
+
+class ClassificationPerformanceMetricsThresholdBase(Metric[ClassificationPerformanceResults]):
+    def calculate(self, data: InputData, metrics: dict) -> ClassificationPerformanceResults:
+        current_data = _cleanup_data(data.current_data, data.column_mapping)
+        target_data = current_data[data.column_mapping.target]
+        threshold = self.get_threshold(current_data, data.column_mapping)
+        current_results = self.calculate_metric(data.current_data, data.column_mapping)
+
+        # dummy
+        labels_ratio = target_data.value_counts(normalize=True)
+        np.random.seed(0)
+        dummy_preds = np.random.choice(labels_ratio.index, len(target_data), p=labels_ratio)
+        dummy_metrics = classification_performance_metrics(
+            target_data, dummy_preds, None, data.column_mapping.pos_label
+        )
+        dummy_results = _dummy_threshold_metrics(threshold, dummy_metrics)
+        reference_results = None
+        if data.reference_data is not None:
+            reference_results = self.calculate_metric(data.reference_data, data.column_mapping)
+        return ClassificationPerformanceResults(
+            current=current_results,
+            dummy=dummy_results,
+            reference=reference_results,
+        )
+
+    @abc.abstractmethod
+    def get_threshold(self, dataset: pd.DataFrame, mapping: ColumnMapping) -> float:
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def calculate_metric(self, dataset: pd.DataFrame, mapping: ColumnMapping):
+        raise NotImplementedError()
+
+
+class ClassificationPerformanceMetricsTopK(ClassificationPerformanceMetricsThresholdBase):
+    def __init__(self, k: Union[float, int]):
+        self.k = k
+
+    def get_threshold(self, dataset: pd.DataFrame, mapping: ColumnMapping) -> float:
+        predictions = get_prediction_data(dataset, mapping)
+        return k_probability_threshold(predictions.prediction_probas, self.k)
+
+    def calculate_metric(self, dataset: pd.DataFrame, mapping: ColumnMapping):
+        data = _cleanup_data(dataset, mapping)
+        target_data = data[mapping.target]
+        predictions = get_prediction_data(data, mapping)
+        labels = sorted(set(target_data.unique()))
+        prediction_probas = predictions.prediction_probas
+        return _calculate_k_variant(target_data, prediction_probas, labels, self.k)
+
+    def get_parameters(self) -> tuple:
+        return tuple((self.k, ))
+
+
+class ClassificationPerformanceMetricsThreshold(ClassificationPerformanceMetricsThresholdBase):
+    def __init__(self, classification_threshold: float):
+        self.threshold = classification_threshold
+
+    def get_threshold(self, dataset: pd.DataFrame, mapping: ColumnMapping) -> float:
+        return self.threshold
+
+    def calculate_metric(self, dataset: pd.DataFrame, mapping: ColumnMapping):
+        data = _cleanup_data(dataset, mapping)
+        target_data = data[mapping.target]
+        predictions = get_prediction_data(data, mapping)
+        prediction_probas = predictions.prediction_probas
+        return _calculate_threshold(target_data, prediction_probas, self.threshold)
+
+    def get_parameters(self) -> tuple:
+        return tuple((self.threshold, ))
 
 
 def _cleanup_data(data: pd.DataFrame, mapping: ColumnMapping) -> pd.DataFrame:

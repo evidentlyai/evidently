@@ -1,7 +1,6 @@
 import abc
 from dataclasses import dataclass
 from typing import Generic
-from typing import Tuple
 from typing import TypeVar
 from typing import Optional
 
@@ -36,3 +35,14 @@ class Metric(Generic[TResult]):
         if result is None:
             raise ValueError(f"No result found for metric {self} of type {type(self).__name__}")
         return result
+
+    def get_parameters(self) -> tuple:
+        attributes = []
+        for field, value in sorted(self.__dict__.items(), key=lambda x: x[0]):
+            if field in ['context']:
+                continue
+            if isinstance(value, list):
+                attributes.append(tuple(value))
+            else:
+                attributes.append(value)
+        return tuple(attributes)
