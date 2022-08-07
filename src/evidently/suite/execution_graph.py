@@ -51,6 +51,7 @@ def _aggregate_metrics(agg, item):
     agg[type(item)] = agg.get(type(item), []) + [item]
     return agg
 
+
 def _aggregate_by_parameters(agg: dict, metric: Metric) -> dict:
     agg[metric.get_parameters()] = agg.get(metric.get_parameters(), []) + [metric]
     return agg
