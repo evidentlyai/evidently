@@ -6,6 +6,7 @@ from evidently.metrics.base_metric import Metric
 from evidently.metrics.classification_performance_metrics import ClassificationPerformanceMetrics
 from evidently.metrics.classification_performance_metrics import ClassificationPerformanceResults
 from evidently.metrics.classification_performance_metrics import ClassificationPerformanceMetricsTopK
+from evidently.metrics.classification_performance_metrics import ClassificationPerformanceMetricsThreshold
 from evidently.metrics.classification_performance_metrics import DatasetClassificationPerformanceMetrics
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import default_renderer
@@ -77,12 +78,6 @@ class SimpleClassificationTestTopK(SimpleClassificationTest, ABC):
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
     ):
-        if k is not None and classification_threshold is not None:
-            raise ValueError("Only one of classification_threshold or k should be given")
-        if k is not None:
-            self.metric = ClassificationPerformanceMetricsTopK(k)
-        # if classification_threshold is not None:
-        #     s = ClassificationPerformanceMetricsTopK(classification_threshold)
         super().__init__(
             eq=eq,
             gt=gt,
@@ -93,6 +88,12 @@ class SimpleClassificationTestTopK(SimpleClassificationTest, ABC):
             not_eq=not_eq,
             not_in=not_in,
         )
+        if k is not None and classification_threshold is not None:
+            raise ValueError("Only one of classification_threshold or k should be given")
+        if k is not None:
+            self.metric = ClassificationPerformanceMetricsTopK(k)
+        if classification_threshold is not None:
+            self.metric = ClassificationPerformanceMetricsThreshold(classification_threshold)
         self.k = k
         self.threshold = classification_threshold
 
