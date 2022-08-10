@@ -78,8 +78,13 @@ def _calculate_performance_metrics(
     target_names: Optional[List[str]],
 ) -> ClassificationPerformanceMetrics:
     # remove all rows with infinite and NaN values from the dataset
+    target_and_preds = [target_column]
+    if isinstance(prediction_column, str):
+        target_and_preds += [prediction_column]
+    else:
+        target_and_preds += prediction_column
     data.replace([np.inf, -np.inf], np.nan, inplace=True)
-    data.dropna(axis=0, how="any", inplace=True)
+    data.dropna(axis=0, how="any", inplace=True, subset=target_and_preds)
     return classification_performance_metrics(data[target_column], data[prediction_column], target_names)
 
 
