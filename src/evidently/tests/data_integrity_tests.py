@@ -17,10 +17,10 @@ from evidently.renderers.base_renderer import DetailsInfo
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.tests.base_test import BaseCheckValueTest
+from evidently.tests.base_test import BaseTestGenerator
 from evidently.tests.base_test import GroupingTypes
 from evidently.tests.base_test import GroupData
 from evidently.tests.base_test import Test
-from evidently.tests.base_test import BaseTestGenerator
 from evidently.tests.base_test import TestResult
 from evidently.tests.base_test import TestValueCondition
 from evidently.tests.utils import plot_dicts_to_table
@@ -437,7 +437,6 @@ class TestNumberOfDuplicatedColumnsRenderer(TestRenderer):
 class BaseIntegrityByColumnsConditionTest(BaseCheckValueTest, ABC):
     group = DATA_INTEGRITY_GROUP.id
     data_integrity_metric: DataIntegrityMetrics
-    column_name: Optional[str]
 
     def __init__(
         self,
