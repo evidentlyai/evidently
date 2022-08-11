@@ -18,7 +18,7 @@ def test_data_quality_monitor_regression() -> None:
         {
             "my_target": [1, 2, 1, 4],
             "my_prediction": [2, -1, 1, -1],
-            "numerical_feature": [0, 2, -1, 5],
+            "numerical_feature": [0, 2, 0, 5],
             "categorical_feature": ["y", "y", "n", "u"],
             "datetime_feature": [
                 datetime(year=2012, month=1, day=5),
@@ -479,7 +479,7 @@ def test_data_quality_monitor_regression() -> None:
                 "feature_type": "num",
                 "metric": "unique_count",
             },
-            "value": 4,
+            "value": 3,
         },
         {
             "labels": {
@@ -488,7 +488,7 @@ def test_data_quality_monitor_regression() -> None:
                 "feature_type": "num",
                 "metric": "unique_percentage",
             },
-            "value": 100.0,
+            "value": 75.0,
         },
         {
             "labels": {
@@ -497,7 +497,7 @@ def test_data_quality_monitor_regression() -> None:
                 "feature_type": "num",
                 "metric": "percentile_25",
             },
-            "value": -0.25,
+            "value": 0.0,
         },
         {
             "labels": {
@@ -523,11 +523,11 @@ def test_data_quality_monitor_regression() -> None:
         },
         {
             "labels": {"dataset": "reference", "feature": "numerical_feature", "feature_type": "num", "metric": "min"},
-            "value": -1,
+            "value": 0,
         },
         {
             "labels": {"dataset": "reference", "feature": "numerical_feature", "feature_type": "num", "metric": "mean"},
-            "value": 1.5,
+            "value": 1.75,
         },
         {
             "labels": {
@@ -536,7 +536,7 @@ def test_data_quality_monitor_regression() -> None:
                 "feature_type": "num",
                 "metric": "most_common_value",
             },
-            "value": 5,
+            "value": 0,
         },
         {
             "labels": {
@@ -545,11 +545,11 @@ def test_data_quality_monitor_regression() -> None:
                 "feature_type": "num",
                 "metric": "most_common_value_percentage",
             },
-            "value": 25.0,
+            "value": 50.0,
         },
         {
             "labels": {"dataset": "reference", "feature": "numerical_feature", "feature_type": "num", "metric": "std"},
-            "value": 2.65,
+            "value": 2.36,
         },
         {
             "labels": {"dataset": "current", "feature": "my_target", "feature_type": "num", "metric": "count"},

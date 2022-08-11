@@ -39,9 +39,17 @@ class GroupTypeData:
 
 
 class GroupingTypes:
-    ByFeature = GroupTypeData("by_feature", "By feature", [])
+    ByFeature = GroupTypeData("by_feature", "By feature", [GroupData(
+        "no group",
+        "Dataset-level tests",
+        "Some tests cannot be grouped by feature",
+    )])
     ByClass = GroupTypeData("by_class", "By class", [])
-    TestGroup = GroupTypeData("test_group", "By test group", [])
+    TestGroup = GroupTypeData("test_group", "By test group", [GroupData(
+        "no group",
+        "Ungrouped",
+        "Some tests don’t belong to any group under the selected condition",
+    )])
     TestType = GroupTypeData("test_type", "By test type", [])
 
 

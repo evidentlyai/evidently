@@ -46,10 +46,10 @@ class UnderperformSegmTableWidget(Widget):
         widget_info = None
         if current_data is not None:
             current_data.replace([np.inf, -np.inf], np.nan, inplace=True)
-            current_data.dropna(axis=0, how='any', inplace=True)
+            current_data.dropna(axis=0, how='any', inplace=True, subset=[target_name, prediction_name])
 
             reference_data.replace([np.inf, -np.inf], np.nan, inplace=True)
-            reference_data.dropna(axis=0, how='any', inplace=True)
+            reference_data.dropna(axis=0, how='any', inplace=True, subset=[target_name, prediction_name])
 
             ref_error = reference_data[prediction_name] - reference_data[target_name]
             current_error = current_data[prediction_name] - current_data[target_name]
@@ -197,50 +197,8 @@ class UnderperformSegmTableWidget(Widget):
 
                 feature_hist_json = json.loads(feature_hist.to_json())
 
-                segment_fig = make_subplots(rows=1, cols=2, subplot_titles=("Reference", "Current"))
-
-                segment_fig.add_trace(
-                    go.Scatter(
-                        x=reference_data[target_name],
-                        y=reference_data[prediction_name],
-                        mode='markers',
-                        marker=dict(
-                            size=6,
-                            cmax=max(max(reference_data[feature_name]), max(current_data[feature_name])),
-                            cmin=min(min(reference_data[feature_name]), min(current_data[feature_name])),
-                            color=reference_data[feature_name],
-                        ),
-                        showlegend=False,
-                    ),
-                    row=1, col=1
-                )
-
-                segment_fig.add_trace(
-                    go.Scatter(
-                        x=current_data[target_name],
-                        y=current_data[prediction_name],
-                        mode='markers',
-                        marker=dict(
-                            size=6,
-                            cmax=max(max(reference_data[feature_name]), max(current_data[feature_name])),
-                            cmin=min(min(reference_data[feature_name]), min(current_data[feature_name])),
-                            color=current_data[feature_name],
-                            colorbar=dict(
-                                title=feature_name
-                            ),
-                        ),
-                        showlegend=False,
-                    ),
-                    row=1, col=2
-                )
-
-                # Update xaxis properties
-                segment_fig.update_xaxes(title_text="Actual Value", showgrid=True, row=1, col=1)
-                segment_fig.update_xaxes(title_text="Actual Value", showgrid=True, row=1, col=2)
-
-                # Update yaxis properties
-                segment_fig.update_yaxes(title_text="Predicted Value", showgrid=True, row=1, col=1)
-                segment_fig.update_yaxes(title_text="Predicted Value", showgrid=True, row=1, col=2)
+                segment_fig = px.scatter(merged_data, x=target_name, y=prediction_name, color=feature_name,
+                                         facet_col="dataset")
 
                 segment_json = json.loads(segment_fig.to_json())
 
@@ -353,14 +311,14 @@ class UnderperformSegmTableWidget(Widget):
 
         else:
             reference_data.replace([np.inf, -np.inf], np.nan, inplace=True)
-            reference_data.dropna(axis=0, how='any', inplace=True)
+            reference_data.dropna(axis=0, how='any', inplace=True, subset=[target_name, prediction_name])
 
             error = reference_data[prediction_name] - reference_data[target_name]
 
             quntile_5 = np.quantile(error, .05)
             quntile_95 = np.quantile(error, .95)
 
-            reference_data['Error bias'] = reference_data['Error bias'] = list(
+            reference_data['Error bias'] = list(
                 map(lambda x: 'Underestimation'
                               if x <= quntile_5 else 'Majority'
                               if x < quntile_95 else 'Overestimation', error))
