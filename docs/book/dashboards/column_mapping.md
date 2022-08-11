@@ -20,7 +20,7 @@ If the `column_mapping` is not specified or set as `None`, we use the default ma
 
 ID, datetime, target, and prediction are utility columns. Requirements are different depending on the report type:
 
-* For the **Data Drift** report, these columns are not required. If you specify id, target, and prediction, they will be excluded from the data drift report. If you specify the datetime, it will be used in data plots.
+* For the **Data Drift** report, these columns are not required. If you specify id, target, and prediction, they will be excluded from the data drift report. However, starting from the version [0.1.51.dev0](https://github.com/evidentlyai/evidently/releases/tag/v0.1.51.dev0) only id column will be excluded from the data drift report; if target or prediction is specified it will remain in the report. If you specify the datetime, it will be used in data plots.
 * For the **Target Drift** reports, we expect either the target or the prediction column or both. ID and datetime are optional.
 * For **Model Performance** reports, both the target and the prediction column are required. ID and datetime are optional.
 * For **Data Quality** report, these columns are not required. If you you specify target and datetime they will be used in data plots.

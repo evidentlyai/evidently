@@ -101,7 +101,7 @@ class TestSuite:
         template_params = TemplateParams(
             dashboard_id=dashboard_id, dashboard_info=dashboard_info, additional_graphs=graphs
         )
-        return self._render(determine_template("inline"), template_params)
+        return self._render(determine_template("auto"), template_params)
 
     def show(self, mode="auto"):
         dashboard_id, dashboard_info, graphs = self._build_dashboard_info()

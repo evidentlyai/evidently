@@ -48,7 +48,8 @@ class RegAbsPercErrorTimeWidget(Widget):
                 raise ValueError(f"Widget [{self.title}] requires reference dataset but it is None")
             return None
         dataset_to_plot.replace([np.inf, -np.inf], np.nan, inplace=True)
-        dataset_to_plot.dropna(axis=0, how='any', inplace=True)
+        dataset_to_plot.dropna(axis=0, how='any', inplace=True,
+                               subset=[results_utility_columns.target, results_utility_columns.prediction])
 
         # plot absolute error in time
         abs_perc_error_time = go.Figure()

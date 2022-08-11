@@ -165,7 +165,7 @@ export interface TextWidgetParams {
     text: string;
 }
 
-export type TestState = "unknown" | "success" | "warning" | "fail";
+export type TestState = "unknown" | "error" | "success" | "warning" | "fail";
 
 export interface TestData {
     title: string;

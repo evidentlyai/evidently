@@ -14,7 +14,7 @@ from evidently.tests.base_test import BaseCheckValueTest
 from evidently.tests.base_test import GroupingTypes
 from evidently.tests.base_test import GroupData
 from evidently.tests.base_test import TestValueCondition
-from evidently.tests.utils import Numeric, approx, plot_boxes, plot_conf_mtrx, plot_roc_auc
+from evidently.tests.utils import Numeric, approx, plot_boxes, plot_conf_mtrx, plot_rates, plot_roc_auc
 
 
 CLASSIFICATION_GROUP = GroupData("classification", "Classification", "")
@@ -318,8 +318,7 @@ class TestRocAuc(SimpleClassificationTest):
 
     def get_description(self, value: Numeric) -> str:
         if value is None:
-            return "No ROC AUC Score value for the data"
-
+            return "Not enough data to calculate ROC AUC. Consider providing probabilities instead of labels."
         else:
             return f"ROC AUC Score is {value:.3g}. Test Threshold is {self.get_condition()}"
 
@@ -363,7 +362,7 @@ class TestLogLoss(SimpleClassificationTest):
 
     def get_description(self, value: Numeric) -> str:
         if value is None:
-            return "No log loss value for the data"
+            return "Not enough data to calculate Logarithmic Loss. Consider providing probabilities instead of labels."
 
         else:
             return f" Logarithmic Loss is {value:.3g}. Test Threshold is {self.get_condition()}"
@@ -407,15 +406,16 @@ class TestLogLossRenderer(TestRenderer):
         return info
 
 
-class TestTPR(SimpleClassificationTest):
+class TestTPR(SimpleClassificationTestTopK):
     name = "True Positive Rate"
 
     def get_value(self, result: DatasetClassificationPerformanceMetrics):
-        tp_total = sum([data["tp"] for label, data in result.confusion_by_classes.items()])
-        fn_total = sum([data["fn"] for label, data in result.confusion_by_classes.items()])
-        return tp_total / (tp_total + fn_total)
+        return result.tpr
 
     def get_description(self, value: Numeric) -> str:
+        if value is None:
+            return "This test is applicable only for binary classification"
+
         return f"True Positive Rate is {value:.3g}. Test Threshold is {self.get_condition()}"
 
 
@@ -427,16 +427,44 @@ class TestTPRRenderer(TestRenderer):
         base["parameters"]["tpr"] = obj.value
         return base
 
+    def render_html(self, obj: TestF1Score) -> TestHtmlInfo:
+        info = super().render_html(obj)
+        k = obj.k
+        threshold = obj.threshold
+        is_ref = obj.metric.get_result().reference_metrics is not None
+        curr_metrics, ref_metrics = _get_metric_result(k, threshold, is_ref, obj.metric.get_result())
+        curr_rate_plots_data = curr_metrics.rate_plots_data
+        ref_rate_plots_data = None
+        if ref_metrics is not None:
+            ref_rate_plots_data = ref_metrics.rate_plots_data
+        if curr_rate_plots_data is not None:
+            fig = plot_rates(curr_rate_plots_data, ref_rate_plots_data)
+            fig_json = fig.to_plotly_json()
+            info.details.append(
+                DetailsInfo(
+                    "TPR",
+                    "",
+                    BaseWidgetInfo(
+                        title="",
+                        size=2,
+                        type="big_graph",
+                        params={"data": fig_json["data"], "layout": fig_json["layout"]},
+                    ),
+                )
+            )
+        return info
 
-class TestTNR(SimpleClassificationTest):
+
+class TestTNR(SimpleClassificationTestTopK):
     name = "True Negative Rate"
 
     def get_value(self, result: DatasetClassificationPerformanceMetrics):
-        tn_total = sum([data["tn"] for label, data in result.confusion_by_classes.items()])
-        fp_total = sum([data["fp"] for label, data in result.confusion_by_classes.items()])
-        return tn_total / (tn_total + fp_total)
+        return result.tnr
 
     def get_description(self, value: Numeric) -> str:
+        if value is None:
+            return "This test is applicable only for binary classification"
+
         return f"True Negative Rate is {value:.3g}. Test Threshold is {self.get_condition()}"
 
 
@@ -448,16 +476,68 @@ class TestTNRRenderer(TestRenderer):
         base["parameters"]["tnr"] = obj.value
         return base
 
+    def render_html(self, obj: TestF1Score) -> TestHtmlInfo:
+        info = super().render_html(obj)
+        k = obj.k
+        threshold = obj.threshold
+        is_ref = obj.metric.get_result().reference_metrics is not None
+        curr_metrics, ref_metrics = _get_metric_result(k, threshold, is_ref, obj.metric.get_result())
+        curr_rate_plots_data = curr_metrics.rate_plots_data
+        ref_rate_plots_data = None
+        if ref_metrics is not None:
+            ref_rate_plots_data = ref_metrics.rate_plots_data
+        if curr_rate_plots_data is not None:
+            fig = plot_rates(curr_rate_plots_data, ref_rate_plots_data)
+            fig_json = fig.to_plotly_json()
+            info.details.append(
+                DetailsInfo(
+                    "TNR",
+                    "",
+                    BaseWidgetInfo(
+                        title="",
+                        size=2,
+                        type="big_graph",
+                        params={"data": fig_json["data"], "layout": fig_json["layout"]},
+                    ),
+                )
+            )
+        return info
 
-class TestFPR(SimpleClassificationTest):
+
+class TestFPR(SimpleClassificationTestTopK):
     name = "False Positive Rate"
 
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.has_condition():
+            return self.condition
+        result = self.metric.get_result()
+        ref_metrics = result.reference_metrics
+        if ref_metrics is not None:
+            if self.k is not None:
+                if result.reference_by_k_metrics is None:
+                    raise ValueError("Reference by K isn't set but expected by test")
+                ref_metrics = result.reference_by_k_metrics[self.k]
+            if self.threshold is not None:
+                if result.reference_by_threshold_metrics is None:
+                    raise ValueError("Reference by Threshold isn't set but expected by test")
+                ref_metrics = result.reference_by_threshold_metrics[self.threshold]
+            return TestValueCondition(eq=approx(self.get_value(ref_metrics), relative=0.2))
+        if self.get_value(result.dummy_metrics) is None:
+            raise ValueError("Neither required test parameters nor reference data has been provided.")
+        dummy_metrics = result.dummy_metrics
+        if self.k is not None:
+            dummy_metrics = result.dummy_by_k_metrics[self.k]
+        if self.threshold is not None:
+            dummy_metrics = result.dummy_by_threshold_metrics[self.threshold]
+        return TestValueCondition(lt=self.get_value(dummy_metrics))
+
     def get_value(self, result: DatasetClassificationPerformanceMetrics):
-        tn_total = sum([data["tn"] for label, data in result.confusion_by_classes.items()])
-        fp_total = sum([data["fp"] for label, data in result.confusion_by_classes.items()])
-        return fp_total / (tn_total + fp_total)
+        return result.fpr
 
     def get_description(self, value: Numeric) -> str:
+        if value is None:
+            return "This test is applicable only for binary classification"
+
         return f"False Positive Rate is {value:.3g}. Test Threshold is {self.get_condition()}"
 
 
@@ -469,16 +549,68 @@ class TestFPRRenderer(TestRenderer):
         base["parameters"]["fpr"] = obj.value
         return base
 
+    def render_html(self, obj: TestF1Score) -> TestHtmlInfo:
+        info = super().render_html(obj)
+        k = obj.k
+        threshold = obj.threshold
+        is_ref = obj.metric.get_result().reference_metrics is not None
+        curr_metrics, ref_metrics = _get_metric_result(k, threshold, is_ref, obj.metric.get_result())
+        curr_rate_plots_data = curr_metrics.rate_plots_data
+        ref_rate_plots_data = None
+        if ref_metrics is not None:
+            ref_rate_plots_data = ref_metrics.rate_plots_data
+        if curr_rate_plots_data is not None:
+            fig = plot_rates(curr_rate_plots_data, ref_rate_plots_data)
+            fig_json = fig.to_plotly_json()
+            info.details.append(
+                DetailsInfo(
+                    "FPR",
+                    "",
+                    BaseWidgetInfo(
+                        title="",
+                        size=2,
+                        type="big_graph",
+                        params={"data": fig_json["data"], "layout": fig_json["layout"]},
+                    ),
+                )
+            )
+        return info
 
-class TestFNR(SimpleClassificationTest):
+
+class TestFNR(SimpleClassificationTestTopK):
     name = "False Negative Rate"
 
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.has_condition():
+            return self.condition
+        result = self.metric.get_result()
+        ref_metrics = result.reference_metrics
+        if ref_metrics is not None:
+            if self.k is not None:
+                if result.reference_by_k_metrics is None:
+                    raise ValueError("Reference by K isn't set but expected by test")
+                ref_metrics = result.reference_by_k_metrics[self.k]
+            if self.threshold is not None:
+                if result.reference_by_threshold_metrics is None:
+                    raise ValueError("Reference by Threshold isn't set but expected by test")
+                ref_metrics = result.reference_by_threshold_metrics[self.threshold]
+            return TestValueCondition(eq=approx(self.get_value(ref_metrics), relative=0.2))
+        if self.get_value(result.dummy_metrics) is None:
+            raise ValueError("Neither required test parameters nor reference data has been provided.")
+        dummy_metrics = result.dummy_metrics
+        if self.k is not None:
+            dummy_metrics = result.dummy_by_k_metrics[self.k]
+        if self.threshold is not None:
+            dummy_metrics = result.dummy_by_threshold_metrics[self.threshold]
+        return TestValueCondition(lt=self.get_value(dummy_metrics))
+
     def get_value(self, result: DatasetClassificationPerformanceMetrics):
-        tp_total = sum([data["tp"] for label, data in result.confusion_by_classes.items()])
-        fn_total = sum([data["fn"] for label, data in result.confusion_by_classes.items()])
-        return fn_total / (tp_total + fn_total)
+        return result.fnr
 
     def get_description(self, value: Numeric) -> str:
+        if value is None:
+            return "This test is applicable only for binary classification"
+
         return f"False Negative Rate is {value:.3g}. Test Threshold is {self.get_condition()}"
 
 
@@ -489,6 +621,33 @@ class TestFNRRenderer(TestRenderer):
         base["parameters"]["condition"] = obj.get_condition().as_dict()
         base["parameters"]["fnr"] = obj.value
         return base
+
+    def render_html(self, obj: TestF1Score) -> TestHtmlInfo:
+        info = super().render_html(obj)
+        k = obj.k
+        threshold = obj.threshold
+        is_ref = obj.metric.get_result().reference_metrics is not None
+        curr_metrics, ref_metrics = _get_metric_result(k, threshold, is_ref, obj.metric.get_result())
+        curr_rate_plots_data = curr_metrics.rate_plots_data
+        ref_rate_plots_data = None
+        if ref_metrics is not None:
+            ref_rate_plots_data = ref_metrics.rate_plots_data
+        if curr_rate_plots_data is not None:
+            fig = plot_rates(curr_rate_plots_data, ref_rate_plots_data)
+            fig_json = fig.to_plotly_json()
+            info.details.append(
+                DetailsInfo(
+                    "FNR",
+                    "",
+                    BaseWidgetInfo(
+                        title="",
+                        size=2,
+                        type="big_graph",
+                        params={"data": fig_json["data"], "layout": fig_json["layout"]},
+                    ),
+                )
+            )
+        return info
 
 
 class ByClassClassificationTest(SimpleClassificationTest, ABC):

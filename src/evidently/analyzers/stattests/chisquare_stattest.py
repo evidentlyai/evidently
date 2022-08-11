@@ -25,7 +25,7 @@ def _chi_stat_test(
 
     f_exp = [ref_feature_dict[key] * k_norm for key in keys]
     f_obs = [current_feature_dict[key] for key in keys]
-    p_value = chisquare(f_exp, f_obs)[1]
+    p_value = chisquare(f_obs, f_exp)[1]
     return p_value, p_value < threshold
 
 

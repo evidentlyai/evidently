@@ -1,6 +1,7 @@
 from datetime import datetime
 
 import pytest
+from pytest import approx
 
 import numpy as np
 import pandas as pd
@@ -23,8 +24,8 @@ def test_no_calculation_results() -> None:
         (
             pd.DataFrame(
                 {
-                    "target": [1, 2, 3, 4],
-                    "numerical_feature": [0.5, 0.0, 4.8, 2.1],
+                    "target": [1, 1, 3, 4],
+                    "numerical_feature": [0.5, 0.0, 2.1, 2.1],
                     "categorical_feature": [1, 1, 0, 1],
                 }
             ),
@@ -37,28 +38,28 @@ def test_no_calculation_results() -> None:
                         "missing_count": 0,
                         "missing_percentage": 0.0,
                         "most_common_value": 1,
-                        "most_common_value_percentage": 75,
+                        "most_common_value_percentage": 75.0,
                         "unique_count": 2,
-                        "unique_percentage": 50,
+                        "unique_percentage": 50.0,
                     },
                     "numerical_feature": {
                         "count": 4,
                         "feature_type": "num",
                         "infinite_count": 0,
                         "infinite_percentage": 0.0,
-                        "max": 4.8,
-                        "mean": 1.85,
+                        "max": 2.1,
+                        "mean": 1.18,
                         "min": 0.0,
                         "missing_count": 0,
                         "missing_percentage": 0.0,
                         "most_common_value": 2.1,
-                        "most_common_value_percentage": 25,
+                        "most_common_value_percentage": 50.0,
                         "percentile_25": 0.38,
                         "percentile_50": 1.3,
-                        "percentile_75": 2.78,
-                        "std": 2.16,
-                        "unique_count": 4,
-                        "unique_percentage": 100,
+                        "percentile_75": 2.1,
+                        "std": 1.09,
+                        "unique_count": 3,
+                        "unique_percentage": 75.0,
                     },
                     "target": {
                         "count": 4,
@@ -66,18 +67,18 @@ def test_no_calculation_results() -> None:
                         "infinite_count": 0,
                         "infinite_percentage": 0.0,
                         "max": 4,
-                        "mean": 2.5,
+                        "mean": 2.25,
                         "min": 1,
                         "missing_count": 0,
                         "missing_percentage": 0.0,
-                        "most_common_value": 4,
-                        "most_common_value_percentage": 25,
-                        "percentile_25": 1.75,
-                        "percentile_50": 2.5,
+                        "most_common_value": 1,
+                        "most_common_value_percentage": 50.0,
+                        "percentile_25": 1.0,
+                        "percentile_50": 2.0,
                         "percentile_75": 3.25,
-                        "std": 1.29,
-                        "unique_count": 4,
-                        "unique_percentage": 100,
+                        "std": 1.5,
+                        "unique_count": 3,
+                        "unique_percentage": 75.0,
                     },
                 }
             },
@@ -85,10 +86,11 @@ def test_no_calculation_results() -> None:
         (
             pd.DataFrame(
                 {
-                    "target": [np.nan, 2, 3, 3],
-                    "numerical_feature": [np.nan, 0.0, 1, 0.5],
-                    "categorical_feature": [1, np.nan, 0, 1],
+                    "target": [np.nan, 2, 3, 3, 3],
+                    "numerical_feature": [np.nan, 0.0, 1, 0.5, 1],
+                    "categorical_feature": [1, np.nan, 0, 1, 1],
                     "datetime_feature": [
+                        datetime(year=2123, month=12, day=12),
                         datetime(year=2123, month=12, day=12),
                         datetime(year=2123, month=12, day=12),
                         datetime(year=2123, month=12, day=14),
@@ -117,10 +119,10 @@ def test_no_calculation_results() -> None:
                         "missing_count": 0,
                         "missing_percentage": 0.0,
                         "most_common_value": 1,
-                        "most_common_value_percentage": 50,
-                        "unique_count": 2,
-                        "unique_percentage": 50,
+                        "most_common_value_percentage": 50.0,
                         "new_in_current_values_count": 0,
+                        "unique_count": 2,
+                        "unique_percentage": 50.0,
                         "unused_in_current_values_count": 1,
                     },
                     "datetime_feature": {
@@ -131,9 +133,9 @@ def test_no_calculation_results() -> None:
                         "missing_count": 0,
                         "missing_percentage": 0.0,
                         "most_common_value": "2123-12-12 00:00:00",
-                        "most_common_value_percentage": 50,
+                        "most_common_value_percentage": 50.0,
                         "unique_count": 2,
-                        "unique_percentage": 50,
+                        "unique_percentage": 50.0,
                     },
                     "numerical_feature": {
                         "count": 4,
@@ -146,13 +148,13 @@ def test_no_calculation_results() -> None:
                         "missing_count": 0,
                         "missing_percentage": 0.0,
                         "most_common_value": 0.0,
-                        "most_common_value_percentage": 50,
+                        "most_common_value_percentage": 50.0,
                         "percentile_25": 0.0,
                         "percentile_50": 0.25,
                         "percentile_75": 53281.16,
                         "std": 106561.48,
                         "unique_count": 3,
-                        "unique_percentage": 75,
+                        "unique_percentage": 75.0,
                     },
                     "target": {
                         "count": 3,
@@ -163,77 +165,77 @@ def test_no_calculation_results() -> None:
                         "mean": 2.0,
                         "min": 2.0,
                         "missing_count": 1,
-                        "missing_percentage": 25,
+                        "missing_percentage": 25.0,
                         "most_common_value": 2.0,
-                        "most_common_value_percentage": 75,
+                        "most_common_value_percentage": 75.0,
                         "percentile_25": 2.0,
                         "percentile_50": 2.0,
                         "percentile_75": 2.0,
                         "std": 0.0,
                         "unique_count": 1,
-                        "unique_percentage": 25,
+                        "unique_percentage": 25.0,
                     },
                 },
                 "reference": {
                     "categorical_feature": {
-                        "count": 3,
+                        "count": 4,
                         "feature_type": "cat",
                         "missing_count": 1,
-                        "missing_percentage": 25,
+                        "missing_percentage": 20.0,
                         "most_common_value": 1.0,
-                        "most_common_value_percentage": 50,
+                        "most_common_value_percentage": 60.0,
                         "unique_count": 2,
-                        "unique_percentage": 50,
+                        "unique_percentage": 40.0,
                     },
                     "datetime_feature": {
-                        "count": 3,
+                        "count": 4,
                         "feature_type": "datetime",
                         "max": "2123-12-14 00:00:00",
                         "min": "2123-12-12 00:00:00",
                         "missing_count": 1,
-                        "missing_percentage": 25,
+                        "missing_percentage": 20.0,
                         "most_common_value": "2123-12-12 00:00:00",
-                        "most_common_value_percentage": 50,
+                        "most_common_value_percentage": 60.0,
                         "unique_count": 2,
-                        "unique_percentage": 50,
+                        "unique_percentage": 40.0,
                     },
                     "numerical_feature": {
-                        "count": 3,
+                        "count": 4,
                         "feature_type": "num",
                         "infinite_count": 0,
                         "infinite_percentage": 0.0,
                         "max": 1.0,
-                        "mean": 0.5,
+                        "mean": 0.62,
                         "min": 0.0,
                         "missing_count": 1,
-                        "missing_percentage": 25,
-                        "most_common_value": 0.5,
-                        "most_common_value_percentage": 25,
-                        "percentile_25": 0.25,
-                        "percentile_50": 0.5,
-                        "percentile_75": 0.75,
-                        "std": 0.5,
+                        "missing_percentage": 20.0,
+                        "most_common_value": 1.0,
+                        "most_common_value_percentage": 40.0,
+                        "percentile_25": 0.38,
+                        "percentile_50": 0.75,
+                        "percentile_75": 1.0,
+                        "std": 0.48,
                         "unique_count": 3,
-                        "unique_percentage": 75,
+                        "unique_percentage": 60.0,
                     },
                     "target": {
-                        "count": 3,
+                        "count": 4,
                         "feature_type": "num",
                         "infinite_count": 0,
                         "infinite_percentage": 0.0,
                         "max": 3.0,
-                        "mean": 2.67,
+                        "mean": 2.75,
                         "min": 2.0,
                         "missing_count": 1,
-                        "missing_percentage": 25,
+                        "missing_percentage": 20.0,
                         "most_common_value": 3.0,
-                        "most_common_value_percentage": 50,
-                        "percentile_25": 2.5,
+                        "most_common_value_percentage": 60.0,
+                        "percentile_25": 2.75,
                         "percentile_50": 3.0,
                         "percentile_75": 3.0,
-                        "std": 0.58,
+                        "std": 0.5,
                         "unique_count": 2,
-                        "unique_percentage": 50,
+                        "unique_percentage": 40.0,
                     },
                 },
             },
@@ -262,122 +264,15 @@ def test_data_quality_profile_section_with_calculated_results(
 
 
 @pytest.mark.parametrize(
-    "kind, expected_corr_dict",
-    [
-        (
-            "pearson",
-            {
-                "num_feature_1": {
-                    "num_feature_2": 0.831246511091087,
-                    "num_feature_3": 0.8703882797784892,
-                    "num_feature_4": 1.0,
-                    "target": 0.06286946134619315,
-                },
-                "num_feature_2": {
-                    "num_feature_1": 0.831246511091087,
-                    "num_feature_3": 0.6387140179060972,
-                    "num_feature_4": 1.0,
-                    "target": -0.1354766133889617,
-                },
-                "num_feature_3": {
-                    "num_feature_1": 0.8703882797784892,
-                    "num_feature_2": 0.6387140179060972,
-                    "num_feature_4": np.nan,
-                    "target": 0.1203858530857692,
-                },
-                "num_feature_4": {"num_feature_1": 1.0, "num_feature_2": 1.0, "num_feature_3": np.nan, "target": 1.0},
-                "target": {
-                    "num_feature_1": 0.06286946134619315,
-                    "num_feature_2": -0.1354766133889617,
-                    "num_feature_3": 0.1203858530857692,
-                    "num_feature_4": 1.0,
-                },
-            },
-        ),
-        (
-            "spearman",
-            {
-                "num_feature_1": {
-                    "num_feature_2": 0.791470623690405,
-                    "num_feature_3": 0.8703882797784891,
-                    "num_feature_4": 1.0,
-                    "target": 0.057788559639706465,
-                },
-                "num_feature_2": {
-                    "num_feature_1": 0.791470623690405,
-                    "num_feature_3": 0.5991712703227052,
-                    "num_feature_4": 1.0,
-                    "target": -0.19500675222569575,
-                },
-                "num_feature_3": {
-                    "num_feature_1": 0.8703882797784891,
-                    "num_feature_2": 0.5991712703227052,
-                    "num_feature_4": np.nan,
-                    "target": 0.11065666703449763,
-                },
-                "num_feature_4": {"num_feature_1": 1.0, "num_feature_2": 1.0, "num_feature_3": np.nan, "target": 1.0},
-                "target": {
-                    "num_feature_1": 0.057788559639706465,
-                    "num_feature_2": -0.19500675222569575,
-                    "num_feature_3": 0.11065666703449763,
-                    "num_feature_4": 1.0,
-                },
-            },
-        ),
-        (
-            "kendall",
-            {
-                "num_feature_1": {
-                    "num_feature_2": 0.7360699299651778,
-                    "num_feature_3": 0.7453559924999299,
-                    "num_feature_4": 1.0,
-                    "target": 0.0778498944161523,
-                },
-                "num_feature_2": {
-                    "num_feature_1": 0.7360699299651778,
-                    "num_feature_3": 0.5246313898711125,
-                    "num_feature_4": 1.0,
-                    "target": -0.13430382733756338,
-                },
-                "num_feature_3": {
-                    "num_feature_1": 0.7453559924999299,
-                    "num_feature_2": 0.5246313898711125,
-                    "num_feature_4": np.nan,
-                    "target": 0.1044465935734187,
-                },
-                "num_feature_4": {"num_feature_1": 1.0, "num_feature_2": 1.0, "num_feature_3": np.nan, "target": 1.0},
-                "target": {
-                    "num_feature_1": 0.0778498944161523,
-                    "num_feature_2": -0.13430382733756338,
-                    "num_feature_3": 0.1044465935734187,
-                    "num_feature_4": 1.0,
-                },
-            },
-        ),
-        (
-            "cramer_v",
-            {
-                "cat_feature_1": {
-                    "cat_feature_2": 0.7211102550927979,
-                    "cat_feature_3": 0.816496580927726,
-                    "cat_feature_4": np.nan,
-                },
-                "cat_feature_2": {
-                    "cat_feature_1": 0.7211102550927979,
-                    "cat_feature_3": 0.7071067811865476,
-                    "cat_feature_4": 1.0,
-                },
-                "cat_feature_3": {
-                    "cat_feature_1": 0.816496580927726,
-                    "cat_feature_2": 0.7071067811865476,
-                    "cat_feature_4": np.nan,
-                },
-                "cat_feature_4": {"cat_feature_1": np.nan, "cat_feature_2": 1.0, "cat_feature_3": np.nan},
-            },
-        ),
-    ],
+    "kind",
+    (
+        "pearson",
+        "spearman",
+        "kendall",
+        "cramer_v",
+    ),
 )
-def test_data_quality_profile_section_correlations(kind: str, expected_corr_dict: dict) -> None:
+def test_data_quality_profile_section_correlations(kind: str) -> None:
     df = pd.DataFrame(
         {
             "num_feature_1": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
@@ -418,4 +313,7 @@ def test_data_quality_profile_section_correlations(kind: str, expected_corr_dict
         task="regression",
     )
     profile_section_result = calculate_section_results(DataQualityProfileSection, df, None, column_mapping)
-    np.testing.assert_equal(profile_section_result["data"]["correlations"]["reference"][kind], expected_corr_dict)
+    assert kind in profile_section_result["data"]["correlations"]["reference"]
+    result = profile_section_result["data"]["correlations"]["reference"][kind]
+    assert isinstance(result, dict)
+    assert result != {}

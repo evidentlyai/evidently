@@ -36,6 +36,11 @@ class DatasetClassificationPerformanceMetrics:
     roc_curve: Optional[dict] = None
     pr_curve: Optional[dict] = None
     pr_table: Optional[Union[dict, list]] = None
+    tpr: Optional[float] = None
+    tnr: Optional[float] = None
+    fpr: Optional[float] = None
+    fnr: Optional[float] = None
+    rate_plots_data: Optional[dict] = None
 
 
 @dataclasses.dataclass
@@ -151,8 +156,8 @@ def classification_performance_metrics(
         binaraized_target = pd.DataFrame(binaraized_target)
         binaraized_target.columns = list(prediction_probas.columns)
         for label in binaraized_target.columns:
-            fpr, tpr, thrs = sklearn.metrics.roc_curve(binaraized_target[label], prediction_probas[label])
-            roc_curve[label] = {"fpr": fpr.tolist(), "tpr": tpr.tolist(), "thrs": thrs.tolist()}
+            fprs, tprs, thrs = sklearn.metrics.roc_curve(binaraized_target[label], prediction_probas[label])
+            roc_curve[label] = {"fpr": fprs.tolist(), "tpr": tprs.tolist(), "thrs": thrs.tolist()}
 
     # calculate class support and metrics matrix
     metrics_matrix = sklearn.metrics.classification_report(target, prediction_labels, output_dict=True)
@@ -162,6 +167,42 @@ def classification_performance_metrics(
     labels = sorted(set(target.unique()))
     conf_matrix = sklearn.metrics.confusion_matrix(target, prediction_labels)
     confusion_by_classes = calculate_confusion_by_classes(conf_matrix, labels)
+    tpr: Optional[float] = None
+    tnr: Optional[float] = None
+    fpr: Optional[float] = None
+    fnr: Optional[float] = None
+    rate_plots_data: Optional[dict] = None
+
+    # calculate rates metrics and plot data
+    if class_num == 2 and pos_label is not None:
+        conf_by_pos_label = confusion_by_classes[str(pos_label)]
+        tpr = conf_by_pos_label['tp'] / (conf_by_pos_label['tp'] + conf_by_pos_label['fn'])
+        tnr = conf_by_pos_label['tn'] / (conf_by_pos_label['tn'] + conf_by_pos_label['fp'])
+        fpr = conf_by_pos_label['fp'] / (conf_by_pos_label['fp'] + conf_by_pos_label['tn'])
+        fnr = conf_by_pos_label['fn'] / (conf_by_pos_label['fn'] + conf_by_pos_label['tp'])
+
+    if class_num == 2 and prediction_probas is not None and roc_curve is not None:
+        rate_plots_data = {}
+        rate_plots_data["thrs"] = roc_curve[pos_label]["thrs"]
+        rate_plots_data["tpr"] = roc_curve[pos_label]["tpr"]
+        rate_plots_data["fpr"] = roc_curve[pos_label]["fpr"]
+
+        df = pd.DataFrame({'true': binaraized_target[pos_label].values, 'preds': prediction_probas[pos_label].values})
+        tnrs = []
+        fnrs = []
+        for tr in rate_plots_data["thrs"]:
+            if tr < 1:
+                tn = df[(df.true == 0) & (df.preds < tr)].shape[0]
+                fn = df[(df.true == 1) & (df.preds < tr)].shape[0]
+                tp = df[(df.true == 1) & (df.preds >= tr)].shape[0]
+                fp = df[(df.true == 0) & (df.preds >= tr)].shape[0]
+                tnrs.append(tn / (tn + fp))
+                fnrs.append(fn / (fn + tp))
+            else:
+                fnrs.append(1)
+                tnrs.append(1)
+        rate_plots_data["fnr"] = fnrs
+        rate_plots_data["tnr"] = tnrs
 
     return DatasetClassificationPerformanceMetrics(
         accuracy=accuracy_score,
@@ -175,6 +216,11 @@ def classification_performance_metrics(
         roc_aucs=roc_aucs,
         roc_curve=roc_curve,
         confusion_by_classes=confusion_by_classes,
+        tpr=tpr,
+        tnr=tnr,
+        fpr=fpr,
+        fnr=fnr,
+        rate_plots_data=rate_plots_data
     )
 
 
@@ -287,8 +333,26 @@ class ClassificationPerformanceMetrics(Metric[ClassificationPerformanceMetricsRe
 def _dummy_threshold_metrics(
     threshold: float, dummy_results: DatasetClassificationPerformanceMetrics
 ) -> DatasetClassificationPerformanceMetrics:
-    mult_precision = min(1.0, 0.5 / (1 - threshold))
+    if threshold == 1.0:
+        mult_precision = 1.0
+    else:
+        mult_precision = min(1.0, 0.5 / (1 - threshold))
     mult_recall = min(1.0, (1 - threshold) / 0.5)
+
+    tpr: Optional[float] = None
+    tnr: Optional[float] = None
+    fpr: Optional[float] = None
+    fnr: Optional[float] = None
+    if (
+        dummy_results.tpr is not None
+        and dummy_results.tnr is not None
+        and dummy_results.fpr is not None
+        and dummy_results.fnr is not None
+    ):
+        tpr = dummy_results.tpr * mult_recall
+        tnr = dummy_results.tnr * mult_precision
+        fpr = dummy_results.fpr * mult_recall
+        fnr = dummy_results.fnr * mult_precision
 
     return DatasetClassificationPerformanceMetrics(
         accuracy=dummy_results.accuracy,
@@ -305,6 +369,10 @@ def _dummy_threshold_metrics(
         metrics_matrix=dummy_results.metrics_matrix,
         confusion_matrix=dummy_results.confusion_matrix,
         confusion_by_classes=dummy_results.confusion_by_classes,
+        tpr=tpr,
+        tnr=tnr,
+        fpr=fpr,
+        fnr=fnr
     )
 
 
