@@ -17,13 +17,10 @@ from evidently.analyzers.utils import process_columns
 from evidently.options import DataDriftOptions, QualityMetricsOptions
 
 
-def _remove_nans_and_infinities(dataframe):
+def _remove_infinities(dataframe):
     #   document somewhere, that all analyzers are mutators, i.e. they will change
-    #   the dataframe, like here: replace inf and nan values. That means if far down the pipeline
-    #   somebody wants to compute number of nans, the results will be 0.
-    #   Consider return copies of dataframes, even though it will drain memory for large datasets
+    #   the dataframe, like here: replace inf and nan values.
     dataframe.replace([np.inf, -np.inf], np.nan, inplace=True)
-    dataframe.dropna(axis=0, how="any", inplace=True)
     return dataframe
 
 
@@ -142,8 +139,8 @@ class CatTargetDriftAnalyzer(Analyzer):
 
         # consider replacing only values in target and prediction column, see comment above
         #   _remove_nans_and_infinities
-        reference_data = _remove_nans_and_infinities(reference_data)
-        current_data = _remove_nans_and_infinities(current_data)
+        reference_data = _remove_infinities(reference_data)
+        current_data = _remove_infinities(current_data)
         feature_type = "cat"
         if target_column is not None:
             target_test = get_stattest(reference_data[target_column],
@@ -151,7 +148,12 @@ class CatTargetDriftAnalyzer(Analyzer):
                                        feature_type,
                                        data_drift_options.cat_target_stattest_func)
             drift_result = _compute_statistic(
-                reference_data, current_data, feature_type, target_column, target_test, threshold
+                reference_data.dropna(subset=[target_column]),
+                current_data.dropna(subset=[target_column]),
+                feature_type,
+                target_column,
+                target_test,
+                threshold
             )
             result.target_metrics = DataDriftMetrics(
                 column_name=target_column,
@@ -161,13 +163,18 @@ class CatTargetDriftAnalyzer(Analyzer):
             )
 
         if prediction_column is not None:
-            pred_test = get_stattest(reference_data[prediction_column],
-                                     current_data[prediction_column],
+            pred_test = get_stattest(reference_data[prediction_column].dropna(),
+                                     current_data[prediction_column].dropna(),
                                      feature_type,
                                      data_drift_options.cat_target_stattest_func)
 
             drift_result = _compute_statistic(
-                reference_data, current_data, feature_type, prediction_column, pred_test, threshold
+                reference_data.dropna(subset=[prediction_column]),
+                current_data.dropna(subset=[prediction_column]),
+                feature_type,
+                prediction_column,
+                pred_test,
+                threshold
             )
             result.prediction_metrics = DataDriftMetrics(
                 column_name=prediction_column,
