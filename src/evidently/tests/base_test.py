@@ -337,7 +337,9 @@ def generate_columns_tests(
 
     Test class is specified with `test_class` parameter.
 
-    Columns can be defined with a list or with a special string token:
+    Columns list can be specifies as a list with parameter `columns`
+
+    Or columns can be defined with with a special string token in the same parameter:
     - if `columns` is None or "all" - make tests for all columns, including target/prediction columns
     - if `columns` is "num" - for numeric features
     - if `columns` is "cat" - for category features
