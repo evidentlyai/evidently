@@ -8,6 +8,7 @@ from typing import Dict
 from typing import Generic
 from typing import List
 from typing import Optional
+from typing import Tuple
 from typing import Type
 from typing import TypeVar
 from typing import Union
@@ -336,14 +337,17 @@ def generate_columns_tests(
     """Create a test generator for a columns list with a test class.
 
     Test class is specified with `test_class` parameter.
+    If the test have no "column_name" parameter - TypeError will be raised.
 
-    Columns list can be specifies as a list with parameter `columns`
+    Columns list can be defined with parameter `columns`.
 
-    Or columns can be defined with with a special string token in the same parameter:
-    - if `columns` is None or "all" - make tests for all columns, including target/prediction columns
-    - if `columns` is "num" - for numeric features
-    - if `columns` is "cat" - for category features
-    - if `columns` is "features" - for all features, not target/prediction columns
+    `columns` can be one of values:
+    - None or "all" - make tests for all columns, including target/prediction columns
+    - "num" - for numeric features
+    - "cat" - for category features
+    - "features" - for all features, not target/prediction columns.
+
+    If `columns` is not one of the values, ValueError will vbe raised.
 
     `parameters` is used for specifying other parameters for each test, it is the same for all generated tests.
     """
@@ -358,10 +362,7 @@ def generate_columns_tests(
             nonlocal parameters_for_test
             result = []
 
-            if isinstance(columns, list):
-                columns_for_tests = columns
-
-            elif columns == "all" or columns is None:
+            if columns == "all" or columns is None:
                 columns_for_tests = columns_info.get_all_columns_list()
 
             elif columns == "cat":
