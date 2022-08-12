@@ -8,6 +8,7 @@ from typing import Union
 import dataclasses
 from pandas.core.dtypes.common import infer_dtype_from_object
 
+from evidently.analyzers.utils import DatasetColumns
 from evidently.model.widget import BaseWidgetInfo
 from evidently.metrics.data_integrity_metrics import DataIntegrityMetrics
 from evidently.metrics.data_integrity_metrics import DataIntegrityValueByRegexpMetrics
@@ -16,6 +17,7 @@ from evidently.renderers.base_renderer import DetailsInfo
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.tests.base_test import BaseCheckValueTest
+from evidently.tests.base_test import BaseTestGenerator
 from evidently.tests.base_test import GroupingTypes
 from evidently.tests.base_test import GroupData
 from evidently.tests.base_test import Test
@@ -433,9 +435,8 @@ class TestNumberOfDuplicatedColumnsRenderer(TestRenderer):
 
 
 class BaseIntegrityByColumnsConditionTest(BaseCheckValueTest, ABC):
-    group = "data_integrity"
+    group = DATA_INTEGRITY_GROUP.id
     data_integrity_metric: DataIntegrityMetrics
-    column_name: Optional[str]
 
     def __init__(
         self,
@@ -504,6 +505,11 @@ class TestColumnNANShareRenderer(TestRenderer):
         base["parameters"]["number_of_rows"] = obj.data_integrity_metric.get_result().current_stats.number_of_rows
         base["parameters"]["share_of_nans"] = obj.value
         return base
+
+
+class TestAllColumnsNANShare(BaseTestGenerator):
+    def generate_tests(self, columns_info: DatasetColumns) -> List[TestColumnNANShare]:
+        return [TestColumnNANShare(column_name=name) for name in columns_info.get_all_columns_list()]
 
 
 class BaseIntegrityOneColumnTest(Test, ABC):

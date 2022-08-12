@@ -13,7 +13,7 @@ from typing import Tuple
 import pandas as pd
 
 import evidently
-from evidently import ColumnMapping
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.analyzers.utils import process_columns
 from evidently.analyzers.utils import DatasetColumns
 from evidently.dashboard.dashboard import TemplateParams
@@ -31,6 +31,7 @@ from evidently.suite.base_suite import Suite
 from evidently.suite.base_suite import find_test_renderer
 from evidently.test_preset.test_preset import TestPreset
 from evidently.tests.base_test import Test
+from evidently.tests.base_test import BaseTestGenerator
 from evidently.tests.base_test import TestResult
 from evidently.tests.base_test import DEFAULT_GROUP
 
@@ -45,14 +46,19 @@ class TestSuite:
     _inner_suite: Suite
     _columns_info: DatasetColumns
     _test_presets: List[TestPreset]
+    _test_generators: List[BaseTestGenerator]
 
-    def __init__(self, tests: Optional[List[Union[Test, TestPreset]]]):
+    def __init__(self, tests: Optional[List[Union[Test, TestPreset, BaseTestGenerator]]]):
         self._inner_suite = Suite()
         self._test_presets = []
+        self._test_generators = []
 
         for original_test in tests or []:
             if isinstance(original_test, TestPreset):
                 self._test_presets.append(original_test)
+
+            elif isinstance(original_test, BaseTestGenerator):
+                self._test_generators.append(original_test)
 
             else:
                 self._add_test(original_test)
@@ -74,6 +80,10 @@ class TestSuite:
     def __bool__(self):
         return all(test_result.is_passed() for _, test_result in self._inner_suite.context.test_results.items())
 
+    def _add_tests_from_generator(self, test_generator: BaseTestGenerator):
+        for test_item in test_generator.generate_tests(columns_info=self._columns_info):
+            self._add_test(test_item)
+
     def run(
         self,
         *,
@@ -90,7 +100,14 @@ class TestSuite:
             tests = preset.generate_tests(InputData(reference_data, current_data, column_mapping), self._columns_info)
 
             for test in tests:
-                self._add_test(test)
+                if isinstance(test, BaseTestGenerator):
+                    self._add_tests_from_generator(test)
+
+                else:
+                    self._add_test(test)
+
+        for test_generator in self._test_generators:
+            self._add_tests_from_generator(test_generator)
 
         self._inner_suite.verify()
         self._inner_suite.run_calculate(InputData(reference_data, current_data, column_mapping))

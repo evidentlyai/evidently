@@ -3,6 +3,7 @@ from evidently.metrics.base_metric import InputData
 from evidently.test_preset.test_preset import TestPreset
 from evidently.tests import TestFeatureValueDrift
 from evidently.tests import TestShareOfDriftedFeatures
+from evidently.tests import TestAllFeaturesValueDrift
 
 
 class DataDrift(TestPreset):
@@ -15,8 +16,6 @@ class DataDrift(TestPreset):
         if columns.utility_columns.prediction is not None and isinstance(columns.utility_columns.prediction, str):
             preset_tests.append(TestFeatureValueDrift(column_name=columns.utility_columns.prediction))
 
-        for name in columns.num_feature_names + columns.cat_feature_names:
-            if name is not None:
-                preset_tests.append(TestFeatureValueDrift(column_name=name))
+        preset_tests.append(TestAllFeaturesValueDrift())
 
         return preset_tests
