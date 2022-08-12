@@ -5,6 +5,7 @@ from typing import Union
 
 import numpy as np
 
+from evidently.analyzers.utils import DatasetColumns
 from evidently.model.widget import BaseWidgetInfo
 from evidently.metrics import DataQualityMetrics
 from evidently.metrics import DataQualityStabilityMetrics
@@ -20,6 +21,7 @@ from evidently.tests.base_test import BaseCheckValueTest
 from evidently.tests.base_test import GroupingTypes
 from evidently.tests.base_test import GroupData
 from evidently.tests.base_test import Test
+from evidently.tests.base_test import BaseTestGenerator
 from evidently.tests.base_test import TestResult
 from evidently.tests.base_test import TestValueCondition
 from evidently.tests.utils import approx
@@ -375,7 +377,7 @@ class TestPredictionFeaturesCorrelationsRenderer(TestRenderer):
 
 
 class TestCorrelationChanges(BaseDataQualityCorrelationsMetricsValueTest):
-    group = "data_quality"
+    group = DATA_QUALITY_GROUP.id
     name = "Change in Correlation"
     metric: DataQualityCorrelationMetrics
     corr_diff: float
@@ -919,6 +921,13 @@ class TestMostCommonValueShareRenderer(TestRenderer):
         return info
 
 
+class TestAllColumnsMostCommonValueShare(BaseTestGenerator):
+    """Creates most common value share tests for each column in the dataset"""
+
+    def generate_tests(self, columns_info: DatasetColumns) -> List[TestMostCommonValueShare]:
+        return [TestMostCommonValueShare(column_name=name) for name in columns_info.get_all_columns_list()]
+
+
 class TestMeanInNSigmas(Test):
     group = DATA_QUALITY_GROUP.id
     name = "Mean Value Stability"
@@ -1038,6 +1047,13 @@ class TestMeanInNSigmasRenderer(TestRenderer):
             )
         )
         return info
+
+
+class TestNumColumnsMeanInNSigmas(BaseTestGenerator):
+    """Create tests of mean for all numeric columns"""
+
+    def generate_tests(self, columns_info: DatasetColumns) -> List[TestMeanInNSigmas]:
+        return [TestMeanInNSigmas(column_name=name, n_sigmas=2) for name in columns_info.num_feature_names]
 
 
 class TestValueRange(Test):
@@ -1265,6 +1281,13 @@ class TestShareOfOutRangeValuesRenderer(TestRenderer):
         return info
 
 
+class TestNumColumnsOutOfRangeValues(BaseTestGenerator):
+    """Creates share of out of range values tests for all numeric columns"""
+
+    def generate_tests(self, columns_info: DatasetColumns) -> List[TestShareOfOutRangeValues]:
+        return [TestShareOfOutRangeValues(column_name=name) for name in columns_info.num_feature_names]
+
+
 class TestValueList(Test):
     group = DATA_QUALITY_GROUP.id
     name = "Out-of-List Values"
@@ -1414,6 +1437,13 @@ class TestShareOfOutListValues(BaseDataQualityValueListMetricsTest):
             f"({number_not_in_range} out of {rows_count}). "
             f"The test threshold is {self.get_condition()}."
         )
+
+
+class TestCatColumnsOutOfListValues(BaseTestGenerator):
+    """Create share of out of list values tests for category columns"""
+
+    def generate_tests(self, columns_info: DatasetColumns) -> List[TestShareOfOutListValues]:
+        return [TestShareOfOutListValues(column_name=name) for name in columns_info.cat_feature_names]
 
 
 class TestValueQuantile(BaseCheckValueTest):
