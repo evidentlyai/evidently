@@ -220,21 +220,21 @@ class DataIntegrityNullValuesMetrics(Metric[DataIntegrityNullValuesMetricsResult
     If `replace` parameter is True - use values from `null_values` list only.
     """
 
-    # default custom null values list
+    # default null values list
     DEFAULT_NULL_VALUES = ["", np.inf, None]
-    _PANDAS_NULL_MARKER = "pandas null values"
-    null_values: set
+    null_values: frozenset
 
     def __init__(self, null_values: Optional[list] = None, replace: bool = True) -> None:
         if null_values is None:
-            self.null_values = set(self.DEFAULT_NULL_VALUES)
+            # use default null-values list if we have no user-defined null values
+            null_values = self.DEFAULT_NULL_VALUES
 
-        else:
-            if replace:
-                self.null_values = set(null_values)
+        elif not replace:
+            # add default nulls to user-defined nulls list
+            null_values = self.DEFAULT_NULL_VALUES + null_values
 
-            else:
-                self.null_values = set(self.DEFAULT_NULL_VALUES + null_values)
+        # use frozenset because metrics parameters should be immutable/hashable for deduplication
+        self.null_values = frozenset(null_values)
 
     def _calculate_null_values_stats(self, dataset: pd.DataFrame) -> DataIntegrityNullValues:
         null_kinds = set()
@@ -253,7 +253,6 @@ class DataIntegrityNullValuesMetrics(Metric[DataIntegrityNullValuesMetricsResult
                 if null_value is None:
                     # check all pandas null-types like numpy.NAN, pandas.NA, pandas.NaT, etc
                     column_null = dataset[column_name].isnull().sum()
-                    null_value = self._PANDAS_NULL_MARKER
 
                 else:
                     column_null = (dataset[column_name] == null_value).sum()
