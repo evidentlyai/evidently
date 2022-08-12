@@ -486,7 +486,7 @@ def test_data_integrity_test_number_of_nulls() -> None:
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
 
-    suite = TestSuite(tests=[TestNumberOfNulls(null_values=["", "n/a"], lt=3)])
+    suite = TestSuite(tests=[TestNumberOfNulls(null_values=["", "n/a", None], replace=True, lt=3)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
 
@@ -502,11 +502,11 @@ def test_data_integrity_test_share_of_nulls() -> None:
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
 
-    suite = TestSuite(tests=[TestShareOfNulls(null_values=["", "null"], ignore_na=True, lt=0.4)])
+    suite = TestSuite(tests=[TestShareOfNulls(null_values=["", "null"], lt=0.4)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
 
-    suite = TestSuite(tests=[TestShareOfNulls(null_values=["", "null"], ignore_na=False, lt=0.4)])
+    suite = TestSuite(tests=[TestShareOfNulls(null_values=["", "null", False, None], replace=True, lt=0.4)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
 

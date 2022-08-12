@@ -64,18 +64,18 @@ def test_data_integrity_metrics_different_null_values() -> None:
     }
     assert result.reference_null_values is None
 
-    metric = DataIntegrityNullValuesMetrics(ignore_na=True)
+    metric = DataIntegrityNullValuesMetrics(null_values=["n/a"], replace=False)
     result = metric.calculate(
         data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping), metrics={}
     )
     assert result is not None
-    # expect empty string as null-values
-    assert result.current_null_values.number_of_different_nulls == 2
-    assert result.current_null_values.number_of_nulls == 4
+    # expect n/a and other defaults as null-values
+    assert result.current_null_values.number_of_different_nulls == 4
+    assert result.current_null_values.number_of_nulls == 10
     assert result.reference_null_values is None
 
-    # test custom list of null values with na values
-    metric = DataIntegrityNullValuesMetrics(null_values=["", 0, "n/a", -9999])
+    # test custom list of null values, no default, but with Pandas nulls
+    metric = DataIntegrityNullValuesMetrics(null_values=["", 0, "n/a", -9999, None], replace=True)
     result = metric.calculate(
         data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping), metrics={}
     )
@@ -84,8 +84,8 @@ def test_data_integrity_metrics_different_null_values() -> None:
     assert result.current_null_values.number_of_nulls == 11
     assert result.reference_null_values is None
 
-    # test custom list of null values and ignore na values
-    metric = DataIntegrityNullValuesMetrics(null_values=["", 0, "n/a", -9999], ignore_na=True)
+    # test custom list of null values and ignore pandas null values
+    metric = DataIntegrityNullValuesMetrics(null_values=["", 0, "n/a", -9999], replace=True)
     result = metric.calculate(
         data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping), metrics={}
     )

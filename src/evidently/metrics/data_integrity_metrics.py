@@ -214,19 +214,18 @@ class DataIntegrityNullValuesMetrics(Metric[DataIntegrityNullValuesMetricsResult
     NA-types like numpy.NaN, pandas.NaT are counted as one type.
 
     You can set you own null-line values list with `null_values` parameter.
-    If `replace` parameter is False - add pandas null-values to the results.
+    Value None in the list means that Pandas null values will be included in the calculation.
+
+    If `replace` parameter is False - add defaults to user's list.
     If `replace` parameter is True - use values from `null_values` list only.
     """
 
     # default custom null values list
-    DEFAULT_NULL_VALUES = ["", np.inf]
+    DEFAULT_NULL_VALUES = ["", np.inf, None]
     _PANDAS_NULL_MARKER = "pandas null values"
     null_values: set
-    ignore_na: bool
 
-    def __init__(self, null_values: Optional[list] = None, ignore_na: bool = False, replace: bool = True) -> None:
-        self.ignore_na = ignore_na
-
+    def __init__(self, null_values: Optional[list] = None, replace: bool = True) -> None:
         if null_values is None:
             self.null_values = set(self.DEFAULT_NULL_VALUES)
 
@@ -249,25 +248,15 @@ class DataIntegrityNullValuesMetrics(Metric[DataIntegrityNullValuesMetricsResult
         number_of_rows = dataset.shape[0]
 
         for column_name in dataset.columns:
-            if not self.ignore_na:
-                # here we check all pandas null-types like numpy.NAN, pandas.NA, pandas.NaT, etc
-                column_null_by_pandas = dataset[column_name].isnull().sum()
-
-                if column_null_by_pandas > 0:
-                    # increase overall counter
-                    number_of_nulls += column_null_by_pandas
-                    # increase by-column counter
-                    number_of_nulls_by_column[column_name] += column_null_by_pandas
-                    # add special pandas-null type to set of null values in the column
-                    different_nulls_by_column[column_name].add(self._PANDAS_NULL_MARKER)
-                    # add special pandas-null type to set of null values in the all dataset
-                    null_kinds.add(self._PANDAS_NULL_MARKER)
-                    # add the column to set of columns with a null value
-                    columns_with_nulls.add(column_name)
-
             # iterate by each value in custom null-values list and check the value in a column
             for null_value in self.null_values:
-                column_null = (dataset[column_name] == null_value).sum()
+                if null_value is None:
+                    # check all pandas null-types like numpy.NAN, pandas.NA, pandas.NaT, etc
+                    column_null = dataset[column_name].isnull().sum()
+                    null_value = self._PANDAS_NULL_MARKER
+
+                else:
+                    column_null = (dataset[column_name] == null_value).sum()
 
                 if column_null > 0:
                     # increase overall counter
@@ -282,7 +271,7 @@ class DataIntegrityNullValuesMetrics(Metric[DataIntegrityNullValuesMetricsResult
                     columns_with_nulls.add(column_name)
 
         for _, row in dataset.iterrows():
-            if not self.ignore_na:
+            if None in self.null_values:
                 # check pandas null-values
                 if row.isnull().any():
                     # if there is a null-value - just increase the counter and move to check the next row
@@ -290,10 +279,16 @@ class DataIntegrityNullValuesMetrics(Metric[DataIntegrityNullValuesMetricsResult
                     continue
 
             for null_value in self.null_values:
-                if null_value in row:
-                    # found a null value, increase the counter and move to check the next row
+                if null_value is None:
+                    # if there is a pandas null-value
+                    increase_counter = row.isnull().any()
+
+                else:
+                    # if there is another null value
+                    increase_counter = null_value in row
+
+                if increase_counter:
                     number_of_rows_with_nulls += 1
-                    continue
 
         share_of_nulls_by_column = {
             column_name: value / number_of_rows for column_name, value in number_of_nulls_by_column.items()
@@ -323,6 +318,9 @@ class DataIntegrityNullValuesMetrics(Metric[DataIntegrityNullValuesMetricsResult
         )
 
     def calculate(self, data: InputData, metrics: dict) -> DataIntegrityNullValuesMetricsResult:
+        if not self.null_values:
+            raise ValueError("Null-values list should not be empty.")
+
         current_null_values = self._calculate_null_values_stats(data.current_data)
 
         if data.reference_data is not None:

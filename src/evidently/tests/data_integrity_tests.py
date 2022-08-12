@@ -184,7 +184,6 @@ class BaseIntegrityNullValuesTest(BaseCheckValueTest, ABC):
     def __init__(
         self,
         null_values: Optional[list] = None,
-        ignore_na: bool = False,
         replace: bool = True,
         eq: Optional[Numeric] = None,
         gt: Optional[Numeric] = None,
@@ -199,7 +198,7 @@ class BaseIntegrityNullValuesTest(BaseCheckValueTest, ABC):
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
 
         if metric is None:
-            self.metric = DataIntegrityNullValuesMetrics(null_values=null_values, ignore_na=ignore_na, replace=replace)
+            self.metric = DataIntegrityNullValuesMetrics(null_values=null_values, replace=replace)
 
         else:
             self.metric = metric
@@ -470,7 +469,6 @@ class BaseIntegrityColumnNullValuesTest(BaseCheckValueTest, ABC):
         self,
         column_name: str,
         null_values: Optional[list] = None,
-        ignore_na: bool = False,
         replace: bool = True,
         eq: Optional[Numeric] = None,
         gt: Optional[Numeric] = None,
@@ -486,7 +484,7 @@ class BaseIntegrityColumnNullValuesTest(BaseCheckValueTest, ABC):
         self.column_name = column_name
 
         if metric is None:
-            self.metric = DataIntegrityNullValuesMetrics(null_values=null_values, ignore_na=ignore_na, replace=replace)
+            self.metric = DataIntegrityNullValuesMetrics(null_values=null_values, replace=replace)
 
         else:
             self.metric = metric
