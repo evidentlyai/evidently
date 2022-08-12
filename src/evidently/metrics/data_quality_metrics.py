@@ -33,9 +33,13 @@ class DataQualityMetrics(Metric[DataQualityMetricsResults]):
     def __init__(self, options: QualityMetricsOptions = None) -> None:
         self.analyzer = DataQualityAnalyzer()
         self.analyzer.options_provider = OptionsProvider()
+        self.options = options
 
         if options is not None:
             self.analyzer.options_provider.add(options)
+
+    def get_parameters(self) -> tuple:
+        return tuple((self.options, ))
 
     def calculate(self, data: InputData, metrics: dict) -> DataQualityMetricsResults:
         if data.current_data is None:

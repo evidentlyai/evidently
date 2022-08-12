@@ -1,9 +1,12 @@
 import abc
 from abc import ABC
-from typing import Optional, List, Union, Any, Tuple
+from typing import Optional, List, Union, Any
 
+from evidently.metrics.base_metric import Metric
 from evidently.metrics.classification_performance_metrics import ClassificationPerformanceMetrics
-from evidently.metrics.classification_performance_metrics import ClassificationPerformanceMetricsResults
+from evidently.metrics.classification_performance_metrics import ClassificationPerformanceResults
+from evidently.metrics.classification_performance_metrics import ClassificationPerformanceMetricsTopK
+from evidently.metrics.classification_performance_metrics import ClassificationPerformanceMetricsThreshold
 from evidently.metrics.classification_performance_metrics import DatasetClassificationPerformanceMetrics
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import default_renderer
@@ -24,7 +27,7 @@ GroupingTypes.TestGroup.add_value(CLASSIFICATION_GROUP)
 class SimpleClassificationTest(BaseCheckValueTest):
     group = CLASSIFICATION_GROUP.id
     name: str
-    metric: ClassificationPerformanceMetrics
+    metric: Metric[ClassificationPerformanceResults]
 
     def __init__(
         self,
@@ -44,17 +47,17 @@ class SimpleClassificationTest(BaseCheckValueTest):
         self.metric = metric
 
     def calculate_value_for_test(self) -> Optional[Any]:
-        return self.get_value(self.metric.get_result().current_metrics)
+        return self.get_value(self.metric.get_result().current)
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
             return self.condition
-        ref_metrics = self.metric.get_result().reference_metrics
+        ref_metrics = self.metric.get_result().reference
         if ref_metrics is not None:
             return TestValueCondition(eq=approx(self.get_value(ref_metrics), relative=0.2))
-        if self.get_value(self.metric.get_result().dummy_metrics) is None:
+        if self.get_value(self.metric.get_result().dummy) is None:
             raise ValueError("Neither required test parameters nor reference data has been provided.")
-        return TestValueCondition(gt=self.get_value(self.metric.get_result().dummy_metrics))
+        return TestValueCondition(gt=self.get_value(self.metric.get_result().dummy))
 
     @abc.abstractmethod
     def get_value(self, result: DatasetClassificationPerformanceMetrics):
@@ -74,16 +77,7 @@ class SimpleClassificationTestTopK(SimpleClassificationTest, ABC):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        metric: Optional[ClassificationPerformanceMetrics] = None,
     ):
-        if metric is None:
-            metric = ClassificationPerformanceMetrics()
-        if k is not None and classification_threshold is not None:
-            raise ValueError("Only one of classification_threshold or k should be given")
-        if k is not None:
-            metric = metric.with_k(k)
-        if classification_threshold is not None:
-            metric.with_threshold(classification_threshold)
         super().__init__(
             eq=eq,
             gt=gt,
@@ -93,40 +87,29 @@ class SimpleClassificationTestTopK(SimpleClassificationTest, ABC):
             lte=lte,
             not_eq=not_eq,
             not_in=not_in,
-            metric=metric,
         )
+        if k is not None and classification_threshold is not None:
+            raise ValueError("Only one of classification_threshold or k should be given")
+        if k is not None:
+            self.metric = ClassificationPerformanceMetricsTopK(k)
+        if classification_threshold is not None:
+            self.metric = ClassificationPerformanceMetricsThreshold(classification_threshold)
         self.k = k
         self.threshold = classification_threshold
 
     def calculate_value_for_test(self) -> Optional[Any]:
-        if self.k is not None:
-            return self.get_value(self.metric.get_result().current_by_k_metrics[self.k])
-        if self.threshold is not None:
-            return self.get_value(self.metric.get_result().current_by_threshold_metrics[self.threshold])
-        return self.get_value(self.metric.get_result().current_metrics)
+        return self.get_value(self.metric.get_result().current)
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
             return self.condition
         result = self.metric.get_result()
-        ref_metrics = result.reference_metrics
+        ref_metrics = result.reference
         if ref_metrics is not None:
-            if self.k is not None:
-                if result.reference_by_k_metrics is None:
-                    raise ValueError("Reference by K isn't set but expected by test")
-                ref_metrics = result.reference_by_k_metrics[self.k]
-            if self.threshold is not None:
-                if result.reference_by_threshold_metrics is None:
-                    raise ValueError("Reference by Threshold isn't set but expected by test")
-                ref_metrics = result.reference_by_threshold_metrics[self.threshold]
             return TestValueCondition(eq=approx(self.get_value(ref_metrics), relative=0.2))
-        if self.get_value(result.dummy_metrics) is None:
+        if self.get_value(result.dummy) is None:
             raise ValueError("Neither required test parameters nor reference data has been provided.")
-        dummy_metrics = result.dummy_metrics
-        if self.k is not None:
-            dummy_metrics = result.dummy_by_k_metrics[self.k]
-        if self.threshold is not None:
-            dummy_metrics = result.dummy_by_threshold_metrics[self.threshold]
+        dummy_metrics = result.dummy
         return TestValueCondition(gt=self.get_value(dummy_metrics))
 
 
@@ -150,10 +133,8 @@ class TestAccuracyScoreRenderer(TestRenderer):
 
     def render_html(self, obj: TestAccuracyScore) -> TestHtmlInfo:
         info = super().render_html(obj)
-        k = obj.k
-        threshold = obj.threshold
-        is_ref = obj.metric.get_result().reference_metrics is not None
-        curr_metrics, ref_metrics = _get_metric_result(k, threshold, is_ref, obj.metric.get_result())
+        curr_metrics = obj.metric.get_result().current
+        ref_metrics = obj.metric.get_result().reference
         curr_matrix = curr_metrics.confusion_matrix
         ref_matrix = None
         if ref_metrics is not None:
@@ -195,10 +176,8 @@ class TestPrecisionScoreRenderer(TestRenderer):
 
     def render_html(self, obj: TestPrecisionScore) -> TestHtmlInfo:
         info = super().render_html(obj)
-        k = obj.k
-        threshold = obj.threshold
-        is_ref = obj.metric.get_result().reference_metrics is not None
-        curr_metrics, ref_metrics = _get_metric_result(k, threshold, is_ref, obj.metric.get_result())
+        curr_metrics = obj.metric.get_result().current
+        ref_metrics = obj.metric.get_result().reference
         curr_matrix = curr_metrics.confusion_matrix
         ref_matrix = None
         if ref_metrics is not None:
@@ -240,10 +219,8 @@ class TestF1ScoreRenderer(TestRenderer):
 
     def render_html(self, obj: TestF1Score) -> TestHtmlInfo:
         info = super().render_html(obj)
-        k = obj.k
-        threshold = obj.threshold
-        is_ref = obj.metric.get_result().reference_metrics is not None
-        curr_metrics, ref_metrics = _get_metric_result(k, threshold, is_ref, obj.metric.get_result())
+        curr_metrics = obj.metric.get_result().current
+        ref_metrics = obj.metric.get_result().reference
         curr_matrix = curr_metrics.confusion_matrix
         ref_matrix = None
         if ref_metrics is not None:
@@ -285,10 +262,8 @@ class TestRecallScoreRenderer(TestRenderer):
 
     def render_html(self, obj: TestRecallScore) -> TestHtmlInfo:
         info = super().render_html(obj)
-        k = obj.k
-        threshold = obj.threshold
-        is_ref = obj.metric.get_result().reference_metrics is not None
-        curr_metrics, ref_metrics = _get_metric_result(k, threshold, is_ref, obj.metric.get_result())
+        curr_metrics = obj.metric.get_result().current
+        ref_metrics = obj.metric.get_result().reference
         curr_matrix = curr_metrics.confusion_matrix
         ref_matrix = None
         if ref_metrics is not None:
@@ -333,8 +308,8 @@ class TestRocAucRenderer(TestRenderer):
 
     def render_html(self, obj: TestRocAuc) -> TestHtmlInfo:
         info = super().render_html(obj)
-        curr_metrics = obj.metric.get_result().current_metrics
-        ref_metrics = obj.metric.get_result().reference_metrics
+        curr_metrics = obj.metric.get_result().current
+        ref_metrics = obj.metric.get_result().reference
         curr_roc_curve = curr_metrics.roc_curve
         ref_roc_curve = None
         if ref_metrics is not None:
@@ -350,12 +325,12 @@ class TestLogLoss(SimpleClassificationTest):
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
             return self.condition
-        ref_metrics = self.metric.get_result().reference_metrics
+        ref_metrics = self.metric.get_result().reference
         if ref_metrics is not None:
             return TestValueCondition(eq=approx(self.get_value(ref_metrics), relative=0.2))
-        if self.get_value(self.metric.get_result().dummy_metrics) is None:
+        if self.get_value(self.metric.get_result().dummy) is None:
             raise ValueError("Neither required test parameters nor reference data has been provided.")
-        return TestValueCondition(lt=self.get_value(self.metric.get_result().dummy_metrics))
+        return TestValueCondition(lt=self.get_value(self.metric.get_result().dummy))
 
     def get_value(self, result: DatasetClassificationPerformanceMetrics):
         return result.log_loss
@@ -363,7 +338,6 @@ class TestLogLoss(SimpleClassificationTest):
     def get_description(self, value: Numeric) -> str:
         if value is None:
             return "Not enough data to calculate Logarithmic Loss. Consider providing probabilities instead of labels."
-
         else:
             return f" Logarithmic Loss is {value:.3g}. Test Threshold is {self.get_condition()}"
 
@@ -378,15 +352,10 @@ class TestLogLossRenderer(TestRenderer):
 
     def render_html(self, obj: TestLogLoss) -> TestHtmlInfo:
         info = super().render_html(obj)
-        data_for_plots = obj.metric.get_result().data_for_plots
+        result = obj.metric.get_result()
 
-        if data_for_plots is not None:
-            curr_metrics = data_for_plots.current
-            ref_metrics = data_for_plots.reference
-
-        else:
-            curr_metrics = None
-            ref_metrics = None
+        curr_metrics = result.current.plot_data
+        ref_metrics = None if result.reference is None else result.reference.plot_data
 
         if curr_metrics is not None:
             fig = plot_boxes(curr_metrics, ref_metrics)
@@ -429,10 +398,8 @@ class TestTPRRenderer(TestRenderer):
 
     def render_html(self, obj: TestF1Score) -> TestHtmlInfo:
         info = super().render_html(obj)
-        k = obj.k
-        threshold = obj.threshold
-        is_ref = obj.metric.get_result().reference_metrics is not None
-        curr_metrics, ref_metrics = _get_metric_result(k, threshold, is_ref, obj.metric.get_result())
+        curr_metrics = obj.metric.get_result().current
+        ref_metrics = obj.metric.get_result().reference
         curr_rate_plots_data = curr_metrics.rate_plots_data
         ref_rate_plots_data = None
         if ref_metrics is not None:
@@ -478,10 +445,8 @@ class TestTNRRenderer(TestRenderer):
 
     def render_html(self, obj: TestF1Score) -> TestHtmlInfo:
         info = super().render_html(obj)
-        k = obj.k
-        threshold = obj.threshold
-        is_ref = obj.metric.get_result().reference_metrics is not None
-        curr_metrics, ref_metrics = _get_metric_result(k, threshold, is_ref, obj.metric.get_result())
+        curr_metrics = obj.metric.get_result().current
+        ref_metrics = obj.metric.get_result().reference
         curr_rate_plots_data = curr_metrics.rate_plots_data
         ref_rate_plots_data = None
         if ref_metrics is not None:
@@ -511,24 +476,12 @@ class TestFPR(SimpleClassificationTestTopK):
         if self.condition.has_condition():
             return self.condition
         result = self.metric.get_result()
-        ref_metrics = result.reference_metrics
+        ref_metrics = result.reference
         if ref_metrics is not None:
-            if self.k is not None:
-                if result.reference_by_k_metrics is None:
-                    raise ValueError("Reference by K isn't set but expected by test")
-                ref_metrics = result.reference_by_k_metrics[self.k]
-            if self.threshold is not None:
-                if result.reference_by_threshold_metrics is None:
-                    raise ValueError("Reference by Threshold isn't set but expected by test")
-                ref_metrics = result.reference_by_threshold_metrics[self.threshold]
             return TestValueCondition(eq=approx(self.get_value(ref_metrics), relative=0.2))
-        if self.get_value(result.dummy_metrics) is None:
+        if self.get_value(result.dummy) is None:
             raise ValueError("Neither required test parameters nor reference data has been provided.")
-        dummy_metrics = result.dummy_metrics
-        if self.k is not None:
-            dummy_metrics = result.dummy_by_k_metrics[self.k]
-        if self.threshold is not None:
-            dummy_metrics = result.dummy_by_threshold_metrics[self.threshold]
+        dummy_metrics = result.dummy
         return TestValueCondition(lt=self.get_value(dummy_metrics))
 
     def get_value(self, result: DatasetClassificationPerformanceMetrics):
@@ -551,10 +504,8 @@ class TestFPRRenderer(TestRenderer):
 
     def render_html(self, obj: TestF1Score) -> TestHtmlInfo:
         info = super().render_html(obj)
-        k = obj.k
-        threshold = obj.threshold
-        is_ref = obj.metric.get_result().reference_metrics is not None
-        curr_metrics, ref_metrics = _get_metric_result(k, threshold, is_ref, obj.metric.get_result())
+        curr_metrics = obj.metric.get_result().current
+        ref_metrics = obj.metric.get_result().reference
         curr_rate_plots_data = curr_metrics.rate_plots_data
         ref_rate_plots_data = None
         if ref_metrics is not None:
@@ -584,24 +535,12 @@ class TestFNR(SimpleClassificationTestTopK):
         if self.condition.has_condition():
             return self.condition
         result = self.metric.get_result()
-        ref_metrics = result.reference_metrics
+        ref_metrics = result.reference
         if ref_metrics is not None:
-            if self.k is not None:
-                if result.reference_by_k_metrics is None:
-                    raise ValueError("Reference by K isn't set but expected by test")
-                ref_metrics = result.reference_by_k_metrics[self.k]
-            if self.threshold is not None:
-                if result.reference_by_threshold_metrics is None:
-                    raise ValueError("Reference by Threshold isn't set but expected by test")
-                ref_metrics = result.reference_by_threshold_metrics[self.threshold]
             return TestValueCondition(eq=approx(self.get_value(ref_metrics), relative=0.2))
-        if self.get_value(result.dummy_metrics) is None:
+        if self.get_value(result.dummy) is None:
             raise ValueError("Neither required test parameters nor reference data has been provided.")
-        dummy_metrics = result.dummy_metrics
-        if self.k is not None:
-            dummy_metrics = result.dummy_by_k_metrics[self.k]
-        if self.threshold is not None:
-            dummy_metrics = result.dummy_by_threshold_metrics[self.threshold]
+        dummy_metrics = result.dummy
         return TestValueCondition(lt=self.get_value(dummy_metrics))
 
     def get_value(self, result: DatasetClassificationPerformanceMetrics):
@@ -624,10 +563,8 @@ class TestFNRRenderer(TestRenderer):
 
     def render_html(self, obj: TestF1Score) -> TestHtmlInfo:
         info = super().render_html(obj)
-        k = obj.k
-        threshold = obj.threshold
-        is_ref = obj.metric.get_result().reference_metrics is not None
-        curr_metrics, ref_metrics = _get_metric_result(k, threshold, is_ref, obj.metric.get_result())
+        curr_metrics = obj.metric.get_result().current
+        ref_metrics = obj.metric.get_result().reference
         curr_rate_plots_data = curr_metrics.rate_plots_data
         ref_rate_plots_data = None
         if ref_metrics is not None:
@@ -691,8 +628,8 @@ class TestPrecisionByClassRenderer(TestRenderer):
 
     def render_html(self, obj: TestPrecisionByClass) -> TestHtmlInfo:
         info = super().render_html(obj)
-        ref_metrics = obj.metric.get_result().reference_metrics
-        curr_matrix = obj.metric.get_result().current_metrics.confusion_matrix
+        ref_metrics = obj.metric.get_result().reference
+        curr_matrix = obj.metric.get_result().current.confusion_matrix
         ref_matrix = None
         if ref_metrics is not None:
             ref_matrix = ref_metrics.confusion_matrix
@@ -734,8 +671,8 @@ class TestRecallByClassRenderer(TestRenderer):
 
     def render_html(self, obj: TestRecallByClass) -> TestHtmlInfo:
         info = super().render_html(obj)
-        ref_metrics = obj.metric.get_result().reference_metrics
-        curr_matrix = obj.metric.get_result().current_metrics.confusion_matrix
+        ref_metrics = obj.metric.get_result().reference
+        curr_matrix = obj.metric.get_result().current.confusion_matrix
         ref_matrix = None
         if ref_metrics is not None:
             ref_matrix = ref_metrics.confusion_matrix
@@ -777,8 +714,8 @@ class TestF1ByClassRenderer(TestRenderer):
 
     def render_html(self, obj: TestF1ByClass) -> TestHtmlInfo:
         info = super().render_html(obj)
-        ref_metrics = obj.metric.get_result().reference_metrics
-        curr_matrix = obj.metric.get_result().current_metrics.confusion_matrix
+        ref_metrics = obj.metric.get_result().reference
+        curr_matrix = obj.metric.get_result().current.confusion_matrix
         ref_matrix = None
         if ref_metrics is not None:
             ref_matrix = ref_metrics.confusion_matrix
@@ -797,26 +734,3 @@ class TestF1ByClassRenderer(TestRenderer):
             )
         )
         return info
-
-
-def _get_metric_result(
-    k: Optional[Union[int, float]],
-    threshold: Optional[float],
-    is_ref: bool,
-    result: ClassificationPerformanceMetricsResults,
-) -> Tuple[DatasetClassificationPerformanceMetrics, Optional[DatasetClassificationPerformanceMetrics]]:
-    ref_metrics = None
-    if k:
-        curr_metrics = result.current_by_k_metrics[k]
-        if result.reference_by_k_metrics is not None:
-            ref_metrics = result.reference_by_k_metrics[k]
-    elif threshold:
-        curr_metrics = result.current_by_threshold_metrics[threshold]
-        if result.reference_by_threshold_metrics is not None:
-            ref_metrics = result.reference_by_threshold_metrics[threshold]
-    else:
-        curr_metrics = result.current_metrics
-        if is_ref:
-            ref_metrics = result.reference_metrics
-
-    return curr_metrics, ref_metrics

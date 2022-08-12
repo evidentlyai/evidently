@@ -25,9 +25,12 @@ class DataDriftMetrics(Metric[DataDriftMetricsResults]):
     def __init__(self, options: Optional[DataDriftOptions] = None):
         self.analyzer = DataDriftAnalyzer()
         self.analyzer.options_provider = OptionsProvider()
-
+        self.options = options
         if options is not None:
             self.analyzer.options_provider.add(options)
+
+    def get_parameters(self) -> tuple:
+        return tuple((self.options, ))
 
     def calculate(self, data: InputData, metrics: dict) -> DataDriftMetricsResults:
         if data.reference_data is None:

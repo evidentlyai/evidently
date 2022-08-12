@@ -1,4 +1,5 @@
 import dataclasses
+import logging
 from typing import Optional
 
 from evidently.metrics.base_metric import Metric, InputData
@@ -87,8 +88,14 @@ class Suite:
         if self.context.execution_graph is not None:
             execution_graph: ExecutionGraph = self.context.execution_graph
 
-            for metric in execution_graph.get_metric_execution_iterator():
-                results[metric] = metric.calculate(data, results)
+            calculations = {}
+            for metric, calculation in execution_graph.get_metric_execution_iterator():
+                if calculation not in calculations:
+                    logging.debug(f"Executing {type(calculation)}...")
+                    calculations[calculation] = calculation.calculate(data, results)
+                else:
+                    logging.debug(f"Using cached result for {type(calculation)}")
+                results[metric] = calculations[calculation]
 
         self.context.metric_results = results
         self.context.state = States.Calculated
@@ -101,6 +108,7 @@ class Suite:
 
         for test in self.context.execution_graph.get_test_execution_iterator():
             try:
+                logging.debug(f"Executing {type(test)}...")
                 test_results[test] = test.check()
             except BaseException as ex:
                 test_results[test] = TestResult(name=test.name,
