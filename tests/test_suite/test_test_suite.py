@@ -10,9 +10,9 @@ from evidently.tests import TestShareOfDriftedFeatures
 from evidently.tests import TestFeatureValueDrift
 from evidently.tests import TestNumberOfColumns
 from evidently.tests import TestNumberOfRows
-from evidently.tests import TestNumberOfNANs
-from evidently.tests import TestNumberOfColumnsWithNANs
-from evidently.tests import TestNumberOfRowsWithNANs
+from evidently.tests import TestNumberOfNulls
+from evidently.tests import TestNumberOfColumnsWithNulls
+from evidently.tests import TestNumberOfRowsWithNulls
 from evidently.tests import TestNumberOfConstantColumns
 from evidently.tests import TestNumberOfEmptyRows
 from evidently.tests import TestNumberOfEmptyColumns
@@ -87,9 +87,9 @@ def test_export_to_json():
         TestFeatureValueDrift(column_name="num_feature_1"),
         TestNumberOfColumns(),
         TestNumberOfRows(),
-        TestNumberOfNANs(),
-        TestNumberOfColumnsWithNANs(),
-        TestNumberOfRowsWithNANs(),
+        TestNumberOfNulls(),
+        TestNumberOfColumnsWithNulls(),
+        TestNumberOfRowsWithNulls(),
         TestNumberOfConstantColumns(),
         TestNumberOfEmptyRows(),
         TestNumberOfEmptyColumns(),

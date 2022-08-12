@@ -9,9 +9,10 @@ import pytest
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.tests import TestNumberOfColumns
 from evidently.tests import TestNumberOfRows
-from evidently.tests import TestNumberOfNANs
-from evidently.tests import TestNumberOfColumnsWithNANs
-from evidently.tests import TestNumberOfRowsWithNANs
+
+# from evidently.tests import TestNumberOfNANs
+# from evidently.tests import TestNumberOfColumnsWithNANs
+# from evidently.tests import TestNumberOfRowsWithNANs
 from evidently.tests import TestNumberOfConstantColumns
 from evidently.tests import TestNumberOfEmptyRows
 from evidently.tests import TestNumberOfEmptyColumns
@@ -22,10 +23,10 @@ from evidently.tests import TestColumnNANShare
 from evidently.tests import TestColumnAllConstantValues
 from evidently.tests import TestColumnAllUniqueValues
 from evidently.tests import TestColumnValueRegExp
-from evidently.tests import TestNumberOfDifferentNulls
-from evidently.tests import TestNumberOfNullValues
+from evidently.tests import TestNumberOfNulls
+from evidently.tests import TestShareOfNulls
 from evidently.tests import TestColumnNumberOfDifferentNulls
-from evidently.tests import TestColumnNumberOfNullValues
+from evidently.tests import TestColumnNumberOfNulls
 from evidently.test_suite import TestSuite
 
 
@@ -118,45 +119,45 @@ def test_data_integrity_test_number_of_rows_json_report() -> None:
     }
 
 
-@pytest.mark.parametrize(
-    "test_dataset, conditions, result",
-    (
-        (pd.DataFrame({"target": [0, 0, 0, 1]}), {"eq": 0}, True),
-        (pd.DataFrame({"target": [0, 0, None, 1], "numeric": [None, None, None, 1]}), {"lt": 3}, False),
-    ),
-)
-def test_data_integrity_test_number_of_nans_no_errors(
-    test_dataset: pd.DataFrame, conditions: dict, result: bool
-) -> None:
-    suite = TestSuite(tests=[TestNumberOfNANs(**conditions)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
-    assert bool(suite) is result
-
-
-def test_data_integrity_test_number_of_columns_with_nans() -> None:
-    test_dataset = pd.DataFrame(
-        {"category_feature": [None, "d", "p", "n"], "numerical_feature": [0, 2, None, 432], "target": [0, 0, 0, 1]}
-    )
-    suite = TestSuite(tests=[TestNumberOfColumnsWithNANs(gte=5)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
-    assert not suite
-
-    suite = TestSuite(tests=[TestNumberOfColumnsWithNANs(eq=2)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
-    assert suite
-
-
-def test_data_integrity_test_number_of_rows_with_nans() -> None:
-    test_dataset = pd.DataFrame(
-        {"category_feature": [None, "d", "p", "n"], "numerical_feature": [0, 2, None, 432], "target": [0, 0, 0, 1]}
-    )
-    suite = TestSuite(tests=[TestNumberOfRowsWithNANs(gte=5)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
-    assert not suite
-
-    suite = TestSuite(tests=[TestNumberOfRowsWithNANs(eq=2)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
-    assert suite
+# @pytest.mark.parametrize(
+#     "test_dataset, conditions, result",
+#     (
+#         (pd.DataFrame({"target": [0, 0, 0, 1]}), {"eq": 0}, True),
+#         (pd.DataFrame({"target": [0, 0, None, 1], "numeric": [None, None, None, 1]}), {"lt": 3}, False),
+#     ),
+# )
+# def test_data_integrity_test_number_of_nans_no_errors(
+#     test_dataset: pd.DataFrame, conditions: dict, result: bool
+# ) -> None:
+#     suite = TestSuite(tests=[TestNumberOfNANs(**conditions)])
+#     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+#     assert bool(suite) is result
+#
+#
+# def test_data_integrity_test_number_of_columns_with_nans() -> None:
+#     test_dataset = pd.DataFrame(
+#         {"category_feature": [None, "d", "p", "n"], "numerical_feature": [0, 2, None, 432], "target": [0, 0, 0, 1]}
+#     )
+#     suite = TestSuite(tests=[TestNumberOfColumnsWithNANs(gte=5)])
+#     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+#     assert not suite
+#
+#     suite = TestSuite(tests=[TestNumberOfColumnsWithNANs(eq=2)])
+#     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+#     assert suite
+#
+#
+# def test_data_integrity_test_number_of_rows_with_nans() -> None:
+#     test_dataset = pd.DataFrame(
+#         {"category_feature": [None, "d", "p", "n"], "numerical_feature": [0, 2, None, 432], "target": [0, 0, 0, 1]}
+#     )
+#     suite = TestSuite(tests=[TestNumberOfRowsWithNANs(gte=5)])
+#     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+#     assert not suite
+#
+#     suite = TestSuite(tests=[TestNumberOfRowsWithNANs(eq=2)])
+#     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+#     assert suite
 
 
 def test_data_integrity_test_constant_columns() -> None:
@@ -449,38 +450,38 @@ def test_data_integrity_test_column_values_match_regexp() -> None:
     assert suite
 
 
-def test_data_integrity_test_different_nulls() -> None:
+def test_data_integrity_test_number_of_nulls() -> None:
     test_dataset = pd.DataFrame({"feature1": ["n/a", "b", "a"], "feature2": ["b", "", None]})
 
-    suite = TestSuite(tests=[TestNumberOfDifferentNulls()])
-    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=ColumnMapping())
-    assert suite
+    suite = TestSuite(tests=[TestNumberOfNulls()])
+    suite.run(current_data=test_dataset, reference_data=test_dataset)
+    assert not suite
 
-    suite = TestSuite(tests=[TestNumberOfDifferentNulls(lt=3)])
+    suite = TestSuite(tests=[TestNumberOfNulls(lt=3)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
 
-    suite = TestSuite(tests=[TestNumberOfDifferentNulls(null_values=["", "n/a"], lt=3)])
+    suite = TestSuite(tests=[TestNumberOfNulls(null_values=["", "n/a"], lt=3)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
 
 
-def test_data_integrity_test_number_of_nulls() -> None:
+def test_data_integrity_test_share_of_nulls() -> None:
     test_dataset = pd.DataFrame({"feature1": ["", None, "null", "a"], "feature2": ["b", "null", None, None]})
 
-    suite = TestSuite(tests=[TestNumberOfNullValues()])
+    suite = TestSuite(tests=[TestShareOfNulls()])
     suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=ColumnMapping())
     assert suite
 
-    suite = TestSuite(tests=[TestNumberOfNullValues(lt=6)])
+    suite = TestSuite(tests=[TestShareOfNulls(lt=0.9)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
 
-    suite = TestSuite(tests=[TestNumberOfNullValues(null_values=["", "null"], ignore_na=True, lt=4)])
+    suite = TestSuite(tests=[TestShareOfNulls(null_values=["", "null"], ignore_na=True, lt=0.4)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
 
-    suite = TestSuite(tests=[TestNumberOfNullValues(null_values=["", "null"], ignore_na=False, lt=4)])
+    suite = TestSuite(tests=[TestShareOfNulls(null_values=["", "null"], ignore_na=False, lt=0.4)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
 
@@ -496,6 +497,6 @@ def test_data_integrity_test_different_nulls_one_column() -> None:
 def test_data_integrity_test_number_of_nulls_one_column() -> None:
     test_dataset = pd.DataFrame({"feature1": ["", None, "null", "a"], "feature2": ["b", "null", None, None]})
 
-    suite = TestSuite(tests=[TestColumnNumberOfNullValues(column_name="feature1")])
+    suite = TestSuite(tests=[TestColumnNumberOfNulls(column_name="feature1", lt=10)])
     suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=ColumnMapping())
     assert suite

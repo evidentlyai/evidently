@@ -1,11 +1,13 @@
 import re
 
-import numpy as np
-import pandas as pd
 from dataclasses import dataclass
 from itertools import combinations
 from typing import Dict
+from typing import List
 from typing import Optional
+
+import numpy as np
+import pandas as pd
 
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
@@ -167,10 +169,36 @@ class DataIntegrityValueByRegexpMetrics(Metric[DataIntegrityValueByRegexpMetricR
 
 @dataclass
 class DataIntegrityNullValues:
-    number_of_differently_encoded_nulls: int
-    number_of_differently_encoded_nulls_by_columns: Dict[str, int]
-    number_of_null_values: int
-    number_of_null_values_by_columns: Dict[str, int]
+    # set of different null-like values in the dataset
+    different_nulls: set
+    # number of different null-like values in the dataset
+    number_of_different_nulls: int
+    # set of different null-like values for each column
+    different_nulls_by_column: Dict[str, set]
+    # count of different null-like values for each column
+    number_of_different_nulls_by_column: Dict[str, int]
+    # count of null-values in all dataset
+    number_of_nulls: int
+    # share of null-values in all dataset
+    share_of_nulls: float
+    # count of null-values for each column
+    number_of_nulls_by_column: Dict[str, int]
+    # share of null-values for each column
+    share_of_nulls_by_column: Dict[str, float]
+    # count of rows in the dataset
+    number_of_rows: int
+    # count of rows with a null-value
+    number_of_rows_with_nulls: int
+    # share of rows with a null-value
+    share_of_rows_with_nulls: float
+    # count of columns in the dataset
+    number_of_columns: int
+    # list of columns with a null value
+    columns_with_nulls: List[str]
+    # count of columns with a null-value
+    number_of_columns_with_nulls: int
+    # share of columns with a null-value
+    share_of_columns_with_nulls: float
 
 
 @dataclass
@@ -182,65 +210,116 @@ class DataIntegrityNullValuesMetricsResult:
 class DataIntegrityNullValuesMetrics(Metric[DataIntegrityNullValuesMetricsResult]):
     """Count null values in a dataset.
 
-    Calculate an amount of null-like values kinds and overall count for such values.
+    Calculate an amount of null-like values kinds and count for such values.
     NA-types like numpy.NaN, pandas.NaT are counted as one type.
-    If you do not want to take them into account - you can do it with `ignore_na` parameter.
 
-    Also, you can set you own null-line values list with `null_values` parameter.
+    You can set you own null-line values list with `null_values` parameter.
+    If `replace` parameter is False - add pandas null-values to the results.
+    If `replace` parameter is True - use values from `null_values` list only.
     """
 
     # default custom null values list
-    CUSTOM_NULL_VALUES = ["", np.inf]
-    null_values: list
+    DEFAULT_NULL_VALUES = ["", np.inf]
+    _PANDAS_NULL_MARKER = "pandas null values"
+    null_values: set
+    ignore_na: bool
 
-    def __init__(self, null_values: Optional[list] = None, ignore_na: bool = False) -> None:
+    def __init__(self, null_values: Optional[list] = None, ignore_na: bool = False, replace: bool = True) -> None:
         self.ignore_na = ignore_na
 
         if null_values is None:
-            self.null_values = self.CUSTOM_NULL_VALUES
+            self.null_values = set(self.DEFAULT_NULL_VALUES)
 
         else:
-            self.null_values = null_values
+            if replace:
+                self.null_values = set(null_values)
+
+            else:
+                self.null_values = set(self.DEFAULT_NULL_VALUES + null_values)
 
     def _calculate_null_values_stats(self, dataset: pd.DataFrame) -> DataIntegrityNullValues:
-        number_of_differently_encoded_nulls = 0
-        number_of_null_values = 0
-        columns_number_of_differently_encoded_nulls = {column_name: 0 for column_name in dataset.columns}
-        columns_number_of_null_values = {column_name: 0 for column_name in dataset.columns}
+        null_kinds = set()
+        columns_with_nulls = set()
+        number_of_nulls = 0
+        different_nulls_by_column: Dict[str, set] = {column_name: set() for column_name in dataset.columns}
+        number_of_nulls_by_column: Dict[str, int] = {column_name: 0 for column_name in dataset.columns}
+        number_of_rows_with_nulls = 0
 
-        if not self.ignore_na:
-            null_by_pandas = dataset.isnull().sum().sum()
+        number_of_columns = len(dataset.columns)
+        number_of_rows = dataset.shape[0]
 
-            if null_by_pandas > 0:
-                number_of_differently_encoded_nulls += 1
-                number_of_null_values += null_by_pandas
-
-            for column_name in dataset.columns:
+        for column_name in dataset.columns:
+            if not self.ignore_na:
+                # here we check all pandas null-types like numpy.NAN, pandas.NA, pandas.NaT, etc
                 column_null_by_pandas = dataset[column_name].isnull().sum()
 
-                if column_null_by_pandas:
-                    columns_number_of_differently_encoded_nulls[column_name] += 1
-                    columns_number_of_null_values[column_name] += column_null_by_pandas
+                if column_null_by_pandas > 0:
+                    # increase overall counter
+                    number_of_nulls += column_null_by_pandas
+                    # increase by-column counter
+                    number_of_nulls_by_column[column_name] += column_null_by_pandas
+                    # add special pandas-null type to set of null values in the column
+                    different_nulls_by_column[column_name].add(self._PANDAS_NULL_MARKER)
+                    # add special pandas-null type to set of null values in the all dataset
+                    null_kinds.add(self._PANDAS_NULL_MARKER)
+                    # add the column to set of columns with a null value
+                    columns_with_nulls.add(column_name)
 
-        for null_value in self.null_values:
-            value_count = (dataset == null_value).sum().sum()
+            # iterate by each value in custom null-values list and check the value in a column
+            for null_value in self.null_values:
+                column_null = (dataset[column_name] == null_value).sum()
 
-            if value_count > 0:
-                number_of_differently_encoded_nulls += 1
-                number_of_null_values += value_count
+                if column_null > 0:
+                    # increase overall counter
+                    number_of_nulls += column_null
+                    # increase by-column counter
+                    number_of_nulls_by_column[column_name] += column_null
+                    # add special pandas-null type to set of null values in the column
+                    different_nulls_by_column[column_name].add(null_value)
+                    # add special pandas-null type to set of null values in the all dataset
+                    null_kinds.add(null_value)
+                    # add the column to set of columns with a null value
+                    columns_with_nulls.add(column_name)
 
-            for column_name in dataset.columns:
-                column_value_count = (dataset[column_name] == null_value).sum()
+        for _, row in dataset.iterrows():
+            if not self.ignore_na:
+                # check pandas null-values
+                if row.isnull().any():
+                    # if there is a null-value - just increase the counter and move to check the next row
+                    number_of_rows_with_nulls += 1
+                    continue
 
-                if column_value_count > 0:
-                    columns_number_of_differently_encoded_nulls[column_name] += 1
-                    columns_number_of_null_values[column_name] += column_value_count
+            for null_value in self.null_values:
+                if null_value in row:
+                    # found a null value, increase the counter and move to check the next row
+                    number_of_rows_with_nulls += 1
+                    continue
+
+        share_of_nulls_by_column = {
+            column_name: value / number_of_rows for column_name, value in number_of_nulls_by_column.items()
+        }
+        number_of_different_nulls_by_column = {
+            column_name: len(value) for column_name, value in different_nulls_by_column.items()
+        }
+
+        number_of_columns_with_nulls = len(columns_with_nulls)
 
         return DataIntegrityNullValues(
-            number_of_differently_encoded_nulls=number_of_differently_encoded_nulls,
-            number_of_differently_encoded_nulls_by_columns=columns_number_of_differently_encoded_nulls,
-            number_of_null_values=number_of_null_values,
-            number_of_null_values_by_columns=columns_number_of_null_values
+            different_nulls=null_kinds,
+            number_of_different_nulls=len(null_kinds),
+            different_nulls_by_column=different_nulls_by_column,
+            number_of_different_nulls_by_column=number_of_different_nulls_by_column,
+            number_of_nulls=number_of_nulls,
+            share_of_nulls=number_of_nulls / (number_of_columns * number_of_rows),
+            number_of_nulls_by_column=number_of_nulls_by_column,
+            share_of_nulls_by_column=share_of_nulls_by_column,
+            number_of_rows=number_of_rows,
+            number_of_rows_with_nulls=number_of_rows_with_nulls,
+            share_of_rows_with_nulls=number_of_rows_with_nulls / number_of_rows,
+            number_of_columns=number_of_columns,
+            columns_with_nulls=sorted(columns_with_nulls),
+            number_of_columns_with_nulls=len(columns_with_nulls),
+            share_of_columns_with_nulls=number_of_columns_with_nulls / number_of_columns,
         )
 
     def calculate(self, data: InputData, metrics: dict) -> DataIntegrityNullValuesMetricsResult:

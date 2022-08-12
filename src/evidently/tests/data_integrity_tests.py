@@ -136,116 +136,89 @@ class TestNumberOfRowsRenderer(TestRenderer):
         return base
 
 
-class TestNumberOfNANs(BaseIntegrityValueTest):
-    """Number of NAN values in the data without aggregation by rows or columns"""
-
-    name = "Number of NA Values"
-
-    def get_condition(self) -> TestValueCondition:
-        if self.condition.has_condition():
-            return self.condition
-
-        reference_stats = self.data_integrity_metric.get_result().reference_stats
-
-        if reference_stats is not None:
-            curr_number_of_rows = self.data_integrity_metric.get_result().current_stats.number_of_rows
-            ref_number_of_rows = reference_stats.number_of_rows
-            mult = curr_number_of_rows / ref_number_of_rows
-            return TestValueCondition(eq=approx(reference_stats.number_of_nans * mult, relative=0.1))
-
-        return TestValueCondition(eq=0)
-
-    def calculate_value_for_test(self) -> Numeric:
-        return self.data_integrity_metric.get_result().current_stats.number_of_nans
-
-    def get_description(self, value: Numeric) -> str:
-        return f"The number of NA values in the dataset is {value}. The test threshold is {self.get_condition()}."
-
-
-@default_renderer(test_type=TestNumberOfNANs)
-class TestNumberOfNANsRenderer(TestRenderer):
-    def render_html(self, obj: TestNumberOfNANs) -> TestHtmlInfo:
-        info = super().render_html(obj)
-        columns = ["column name", "current number of NaNs"]
-        dict_curr = obj.data_integrity_metric.get_result().current_stats.nans_by_columns
-        dict_ref = {}
-        reference_stats = obj.data_integrity_metric.get_result().reference_stats
-
-        if reference_stats is not None:
-            dict_ref = reference_stats.nans_by_columns
-            columns = columns + ["reference number of NaNs"]
-
-        additional_plots = plot_dicts_to_table(dict_curr, dict_ref, columns, "number_of_nans")
-        info.details = additional_plots
-        return info
-
-
-class TestNumberOfColumnsWithNANs(BaseIntegrityValueTest):
-    """Number of columns contained at least one NAN value"""
-
-    name = "Number of Columns with NA values"
-
-    def get_condition(self) -> TestValueCondition:
-        if self.condition.has_condition():
-            return self.condition
-
-        reference_stats = self.data_integrity_metric.get_result().reference_stats
-
-        if reference_stats is not None:
-            return TestValueCondition(eq=reference_stats.number_of_columns_with_nans)
-
-        return TestValueCondition(eq=0)
-
-    def calculate_value_for_test(self) -> Numeric:
-        return self.data_integrity_metric.get_result().current_stats.number_of_columns_with_nans
-
-    def get_description(self, value: Numeric) -> str:
-        return f"The number of columns with NA values is {value}. The test threshold is {self.get_condition()}."
+# class TestNumberOfNANs(BaseIntegrityValueTest):
+#     """Number of NAN values in the data without aggregation by rows or columns"""
+#
+#     name = "Number of NA Values"
+#
+#     def get_condition(self) -> TestValueCondition:
+#         if self.condition.has_condition():
+#             return self.condition
+#
+#         reference_stats = self.data_integrity_metric.get_result().reference_stats
+#
+#         if reference_stats is not None:
+#             curr_number_of_rows = self.data_integrity_metric.get_result().current_stats.number_of_rows
+#             ref_number_of_rows = reference_stats.number_of_rows
+#             mult = curr_number_of_rows / ref_number_of_rows
+#             return TestValueCondition(eq=approx(reference_stats.number_of_nans * mult, relative=0.1))
+#
+#         return TestValueCondition(eq=0)
+#
+#     def calculate_value_for_test(self) -> Numeric:
+#         return self.data_integrity_metric.get_result().current_stats.number_of_nans
+#
+#     def get_description(self, value: Numeric) -> str:
+#         return f"The number of NA values in the dataset is {value}. The test threshold is {self.get_condition()}."
+#
+#
+# @default_renderer(test_type=TestNumberOfNANs)
+# class TestNumberOfNANsRenderer(TestRenderer):
+#     def render_html(self, obj: TestNumberOfNANs) -> TestHtmlInfo:
+#         info = super().render_html(obj)
+#         columns = ["column name", "current number of NaNs"]
+#         dict_curr = obj.data_integrity_metric.get_result().current_stats.nans_by_columns
+#         dict_ref = {}
+#         reference_stats = obj.data_integrity_metric.get_result().reference_stats
+#
+#         if reference_stats is not None:
+#             dict_ref = reference_stats.nans_by_columns
+#             columns = columns + ["reference number of NaNs"]
+#
+#         additional_plots = plot_dicts_to_table(dict_curr, dict_ref, columns, "number_of_nans")
+#         info.details = additional_plots
+#         return info
 
 
-@default_renderer(test_type=TestNumberOfColumnsWithNANs)
-class TestNumberOfColumnsWithNANsRenderer(TestRenderer):
-    def render_html(self, obj: TestNumberOfColumnsWithNANs) -> TestHtmlInfo:
-        info = super().render_html(obj)
-        columns = ["column name", "current number of NaNs"]
-        dict_curr = obj.data_integrity_metric.get_result().current_stats.nans_by_columns
-        dict_ref = {}
-        reference_stats = obj.data_integrity_metric.get_result().reference_stats
-
-        if reference_stats is not None:
-            dict_ref = reference_stats.nans_by_columns
-            columns = columns + ["reference number of NaNs"]
-
-        additional_plots = plot_dicts_to_table(dict_curr, dict_ref, columns, "number_of_cols_with_nans")
-        info.details = additional_plots
-        return info
-
-
-class TestNumberOfRowsWithNANs(BaseIntegrityValueTest):
-    """Number of rows contained at least one NAN value"""
-
-    name = "Number of Rows with NA Values"
-
-    def get_condition(self) -> TestValueCondition:
-        if self.condition.has_condition():
-            return self.condition
-
-        reference_stats = self.data_integrity_metric.get_result().reference_stats
-
-        if reference_stats is not None:
-            ref_number_of_rows_with_nans = reference_stats.number_of_rows_with_nans
-            curr_number_of_rows = self.data_integrity_metric.get_result().current_stats.number_of_rows
-            ref_number_of_rows = reference_stats.number_of_rows
-            mult = curr_number_of_rows / ref_number_of_rows
-            return TestValueCondition(eq=approx(ref_number_of_rows_with_nans * mult, 0.1))
-
-        return TestValueCondition(eq=0)
-
-    def calculate_value_for_test(self) -> Numeric:
-        return self.data_integrity_metric.get_result().current_stats.number_of_rows_with_nans
-
-    def get_description(self, value: Numeric) -> str:
-        return f"The number of rows with NA values is {value}. The test threshold is {self.get_condition()}."
+# class TestNumberOfColumnsWithNANs(BaseIntegrityValueTest):
+#     """Number of columns contained at least one NAN value"""
+#
+#     name = "Number of Columns with NA values"
+#
+#     def get_condition(self) -> TestValueCondition:
+#         if self.condition.has_condition():
+#             return self.condition
+#
+#         reference_stats = self.data_integrity_metric.get_result().reference_stats
+#
+#         if reference_stats is not None:
+#             return TestValueCondition(eq=reference_stats.number_of_columns_with_nans)
+#
+#         return TestValueCondition(eq=0)
+#
+#     def calculate_value_for_test(self) -> Numeric:
+#         return self.data_integrity_metric.get_result().current_stats.number_of_columns_with_nans
+#
+#     def get_description(self, value: Numeric) -> str:
+#         return f"The number of columns with NA values is {value}. The test threshold is {self.get_condition()}."
+#
+#
+# @default_renderer(test_type=TestNumberOfColumnsWithNANs)
+# class TestNumberOfColumnsWithNANsRenderer(TestRenderer):
+#     def render_html(self, obj: TestNumberOfColumnsWithNANs) -> TestHtmlInfo:
+#         info = super().render_html(obj)
+#         columns = ["column name", "current number of NaNs"]
+#         dict_curr = obj.data_integrity_metric.get_result().current_stats.nans_by_columns
+#         dict_ref = {}
+#         reference_stats = obj.data_integrity_metric.get_result().reference_stats
+#
+#         if reference_stats is not None:
+#             dict_ref = reference_stats.nans_by_columns
+#             columns = columns + ["reference number of NaNs"]
+#
+#         additional_plots = plot_dicts_to_table(dict_curr, dict_ref, columns, "number_of_cols_with_nans")
+#         info.details = additional_plots
+#         return info
 
 
 class BaseIntegrityNullValuesTest(BaseCheckValueTest, ABC):
@@ -256,6 +229,7 @@ class BaseIntegrityNullValuesTest(BaseCheckValueTest, ABC):
         self,
         null_values: Optional[list] = None,
         ignore_na: bool = False,
+        replace: bool = True,
         eq: Optional[Numeric] = None,
         gt: Optional[Numeric] = None,
         gte: Optional[Numeric] = None,
@@ -269,16 +243,16 @@ class BaseIntegrityNullValuesTest(BaseCheckValueTest, ABC):
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
 
         if metric is None:
-            self.metric = DataIntegrityNullValuesMetrics(null_values=null_values, ignore_na=ignore_na)
+            self.metric = DataIntegrityNullValuesMetrics(null_values=null_values, ignore_na=ignore_na, replace=replace)
 
         else:
             self.metric = metric
 
 
 class TestNumberOfDifferentNulls(BaseIntegrityNullValuesTest):
-    """Check a number of differently encoded empty/null values."""
+    """Check a number of different encoded nulls."""
 
-    name = "Test Number Of Different Null Kinds"
+    name = "Test Number Of Different Nulls"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
@@ -287,15 +261,15 @@ class TestNumberOfDifferentNulls(BaseIntegrityNullValuesTest):
         reference_null_values = self.metric.get_result().reference_null_values
 
         if reference_null_values is not None:
-            return TestValueCondition(eq=reference_null_values.number_of_differently_encoded_nulls)
+            return TestValueCondition(eq=reference_null_values.number_of_different_nulls)
 
         raise ValueError("Neither required test parameters nor reference data has been provided.")
 
     def calculate_value_for_test(self) -> Numeric:
-        return self.metric.get_result().current_null_values.number_of_differently_encoded_nulls
+        return self.metric.get_result().current_null_values.number_of_different_nulls
 
     def get_description(self, value: Numeric) -> str:
-        return f"Number of different null kinds is {value}"
+        return f"Number of different nulls is {value}"
 
 
 @default_renderer(test_type=TestNumberOfDifferentNulls)
@@ -303,14 +277,14 @@ class TestNumberOfDifferentNullsRenderer(TestRenderer):
     def render_json(self, obj: TestNumberOfDifferentNulls) -> dict:
         base = super().render_json(obj)
         base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["number_of_differently_encoded_nulls"] = obj.value
+        base["parameters"]["number_of_different_nulls"] = obj.value
         return base
 
 
-class TestNumberOfNullValues(BaseIntegrityNullValuesTest):
-    """Check a number of empty/null values."""
+class TestNumberOfNulls(BaseIntegrityNullValuesTest):
+    """Check a number of null values."""
 
-    name = "Test Number Of Null Values"
+    name = "Test Number Of Nulls"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
@@ -319,23 +293,183 @@ class TestNumberOfNullValues(BaseIntegrityNullValuesTest):
         reference_null_values = self.metric.get_result().reference_null_values
 
         if reference_null_values is not None:
-            return TestValueCondition(eq=approx(reference_null_values.number_of_null_values, relative=0.1))
+            return TestValueCondition(lt=reference_null_values.number_of_nulls)
 
         raise ValueError("Neither required test parameters nor reference data has been provided.")
 
     def calculate_value_for_test(self) -> Numeric:
-        return self.metric.get_result().current_null_values.number_of_null_values
+        return self.metric.get_result().current_null_values.number_of_nulls
 
     def get_description(self, value: Numeric) -> str:
-        return f"Number of null values is {value}"
+        return f"Number of nulls is {value}"
 
 
-@default_renderer(test_type=TestNumberOfNullValues)
-class TestNumberOfNullValuesRenderer(TestRenderer):
-    def render_json(self, obj: TestNumberOfNullValues) -> dict:
+@default_renderer(test_type=TestNumberOfNulls)
+class TestNumberOfNullsRenderer(TestRenderer):
+    def render_json(self, obj: TestNumberOfNulls) -> dict:
         base = super().render_json(obj)
         base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["number_of_null_values"] = obj.value
+        base["parameters"]["number_of_nulls"] = obj.value
+        return base
+
+
+class TestShareOfNulls(BaseIntegrityNullValuesTest):
+    """Check a share of null values."""
+
+    name = "Test Share Of Nulls"
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.has_condition():
+            return self.condition
+
+        reference = self.metric.get_result().reference_null_values
+
+        if reference is not None:
+            return TestValueCondition(lte=reference.share_of_nulls)
+
+        raise ValueError("Neither required test parameters nor reference data has been provided.")
+
+    def calculate_value_for_test(self) -> Numeric:
+        return self.metric.get_result().current_null_values.share_of_nulls
+
+    def get_description(self, value: Numeric) -> str:
+        return f"Share of null values is {value}"
+
+
+@default_renderer(test_type=TestShareOfNulls)
+class TestShareOfNullsRenderer(TestRenderer):
+    def render_json(self, obj: TestShareOfNulls) -> dict:
+        base = super().render_json(obj)
+        base["parameters"]["condition"] = obj.get_condition().as_dict()
+        base["parameters"]["share_of_nulls"] = obj.value
+        return base
+
+
+class TestNumberOfColumnsWithNulls(BaseIntegrityNullValuesTest):
+    """Check a number of columns with a null value."""
+
+    name = "Test Number Of Columns With Nulls"
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.has_condition():
+            return self.condition
+
+        reference = self.metric.get_result().reference_null_values
+
+        if reference is not None:
+            return TestValueCondition(lt=approx(reference.number_of_columns_with_nulls, relative=0.1))
+
+        raise ValueError("Neither required test parameters nor reference data has been provided.")
+
+    def calculate_value_for_test(self) -> Numeric:
+        return self.metric.get_result().current_null_values.number_of_columns_with_nulls
+
+    def get_description(self, value: Numeric) -> str:
+        return f"Number of columns with null values is {value}"
+
+
+@default_renderer(test_type=TestNumberOfColumnsWithNulls)
+class TestNumberOfColumnsWithNullsRenderer(TestRenderer):
+    def render_json(self, obj: TestNumberOfColumnsWithNulls) -> dict:
+        base = super().render_json(obj)
+        base["parameters"]["condition"] = obj.get_condition().as_dict()
+        base["parameters"]["number_of_columns_with_nulls"] = obj.value
+        return base
+
+
+class TestShareOfColumnsWithNulls(BaseIntegrityNullValuesTest):
+    """Check a share of columns with a null value."""
+
+    name = "Test Share Of Columns With Nulls"
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.has_condition():
+            return self.condition
+
+        reference = self.metric.get_result().reference_null_values
+
+        if reference is not None:
+            return TestValueCondition(lt=approx(reference.share_of_columns_with_nulls, relative=0.1))
+
+        raise ValueError("Neither required test parameters nor reference data has been provided.")
+
+    def calculate_value_for_test(self) -> Numeric:
+        return self.metric.get_result().current_null_values.share_of_columns_with_nulls
+
+    def get_description(self, value: Numeric) -> str:
+        return f"Share of columns with null values is {value}"
+
+
+@default_renderer(test_type=TestShareOfColumnsWithNulls)
+class TestShareOfColumnsWithNullsRenderer(TestRenderer):
+    def render_json(self, obj: TestShareOfColumnsWithNulls) -> dict:
+        base = super().render_json(obj)
+        base["parameters"]["condition"] = obj.get_condition().as_dict()
+        base["parameters"]["share_of_columns_with_nulls"] = obj.value
+        return base
+
+
+class TestNumberOfRowsWithNulls(BaseIntegrityNullValuesTest):
+    """Check a number of rows with a null value."""
+
+    name = "Test Number Of Rows With Nulls"
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.has_condition():
+            return self.condition
+
+        reference = self.metric.get_result().reference_null_values
+
+        if reference is not None:
+            return TestValueCondition(lt=approx(reference.number_of_rows_with_nulls, relative=0.1))
+
+        raise ValueError("Neither required test parameters nor reference data has been provided.")
+
+    def calculate_value_for_test(self) -> Numeric:
+        return self.metric.get_result().current_null_values.number_of_rows_with_nulls
+
+    def get_description(self, value: Numeric) -> str:
+        return f"Number of rows with null values is {value}"
+
+
+@default_renderer(test_type=TestNumberOfRowsWithNulls)
+class TestNumberOfRowsWithNullsRenderer(TestRenderer):
+    def render_json(self, obj: TestNumberOfRowsWithNulls) -> dict:
+        base = super().render_json(obj)
+        base["parameters"]["condition"] = obj.get_condition().as_dict()
+        base["parameters"]["number_of_rows_with_nulls"] = obj.value
+        return base
+
+
+class TestShareOfRowsWithNulls(BaseIntegrityNullValuesTest):
+    """Check a share of rows with a null value."""
+
+    name = "Test Share Of Rows With Nulls"
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.has_condition():
+            return self.condition
+
+        reference = self.metric.get_result().reference_null_values
+
+        if reference is not None:
+            return TestValueCondition(lt=approx(reference.share_of_rows_with_nulls, relative=0.1))
+
+        raise ValueError("Neither required test parameters nor reference data has been provided.")
+
+    def calculate_value_for_test(self) -> Numeric:
+        return self.metric.get_result().current_null_values.share_of_rows_with_nulls
+
+    def get_description(self, value: Numeric) -> str:
+        return f"Share of rows with null values is {value}"
+
+
+@default_renderer(test_type=TestShareOfRowsWithNulls)
+class TestShareOfRowsWithNullsRenderer(TestRenderer):
+    def render_json(self, obj: TestShareOfRowsWithNulls) -> dict:
+        base = super().render_json(obj)
+        base["parameters"]["condition"] = obj.get_condition().as_dict()
+        base["parameters"]["share_of_rows_with_nulls"] = obj.value
         return base
 
 
@@ -381,14 +515,14 @@ class TestColumnNumberOfDifferentNulls(BaseIntegrityColumnNullValuesTest):
         reference_null_values = self.metric.get_result().reference_null_values
 
         if reference_null_values is not None:
-            ref_value = reference_null_values.number_of_differently_encoded_nulls_by_columns[self.column_name]
+            ref_value = len(reference_null_values.different_nulls_by_column[self.column_name])
             return TestValueCondition(lte=ref_value)
 
         raise ValueError("Neither required test parameters nor reference data has been provided.")
 
     def calculate_value_for_test(self) -> Numeric:
         metric_data = self.metric.get_result().current_null_values
-        return metric_data.number_of_differently_encoded_nulls_by_columns[self.column_name]
+        return len(metric_data.different_nulls_by_column[self.column_name])
 
     def get_description(self, value: Numeric) -> str:
         return f"Number of different null kinds in **{self.column_name}** is {value}"
@@ -399,15 +533,15 @@ class TestColumnNumberOfDifferentNullsRenderer(TestRenderer):
     def render_json(self, obj: TestColumnNumberOfDifferentNulls) -> dict:
         base = super().render_json(obj)
         base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["number_of_null_values"] = obj.value
+        base["parameters"]["number_of_different_nulls"] = obj.value
         base["parameters"]["column_name"] = obj.column_name
         return base
 
 
-class TestColumnNumberOfNullValues(BaseIntegrityColumnNullValuesTest):
+class TestColumnNumberOfNulls(BaseIntegrityColumnNullValuesTest):
     """Check a number of empty/null values in one column."""
 
-    name = "Test Number Of Null Values In One Column"
+    name = "Test Number Of Null Values In Column"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
@@ -416,24 +550,58 @@ class TestColumnNumberOfNullValues(BaseIntegrityColumnNullValuesTest):
         reference_null_values = self.metric.get_result().reference_null_values
 
         if reference_null_values is not None:
-            ref_value = reference_null_values.number_of_null_values_by_columns[self.column_name]
-            return TestValueCondition(eq=approx(ref_value, relative=0.1))
+            ref_value = reference_null_values.number_of_nulls_by_column[self.column_name]
+            return TestValueCondition(lt=ref_value)
 
         raise ValueError("Neither required test parameters nor reference data has been provided.")
 
     def calculate_value_for_test(self) -> Numeric:
-        return self.metric.get_result().current_null_values.number_of_null_values_by_columns[self.column_name]
+        return self.metric.get_result().current_null_values.number_of_nulls_by_column[self.column_name]
 
     def get_description(self, value: Numeric) -> str:
-        return f"Number of null values **{self.column_name}** is {value}"
+        return f"Number of null values in **{self.column_name}** is {value}"
 
 
-@default_renderer(test_type=TestColumnNumberOfNullValues)
-class TestColumnNumberOfNullValuesRenderer(TestRenderer):
-    def render_json(self, obj: TestColumnNumberOfNullValues) -> dict:
+@default_renderer(test_type=TestColumnNumberOfNulls)
+class TestColumnNumberOfNullsRenderer(TestRenderer):
+    def render_json(self, obj: TestColumnNumberOfNulls) -> dict:
         base = super().render_json(obj)
         base["parameters"]["condition"] = obj.get_condition().as_dict()
         base["parameters"]["number_of_null_values"] = obj.value
+        base["parameters"]["column_name"] = obj.column_name
+        return base
+
+
+class TestColumnShareOfNulls(BaseIntegrityColumnNullValuesTest):
+    """Check a share of empty/null values in one column."""
+
+    name = "Test Share Of Null Values In Column"
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.has_condition():
+            return self.condition
+
+        reference_null_values = self.metric.get_result().reference_null_values
+
+        if reference_null_values is not None:
+            ref_value = reference_null_values.share_of_nulls_by_column[self.column_name]
+            return TestValueCondition(lt=approx(ref_value, relative=0.1))
+
+        raise ValueError("Neither required test parameters nor reference data has been provided.")
+
+    def calculate_value_for_test(self) -> Numeric:
+        return self.metric.get_result().current_null_values.share_of_nulls_by_column[self.column_name]
+
+    def get_description(self, value: Numeric) -> str:
+        return f"Share of null values in **{self.column_name}** is {value}"
+
+
+@default_renderer(test_type=TestColumnShareOfNulls)
+class TestColumnShareOfNullsRenderer(TestRenderer):
+    def render_json(self, obj: TestColumnShareOfNulls) -> dict:
+        base = super().render_json(obj)
+        base["parameters"]["condition"] = obj.get_condition().as_dict()
+        base["parameters"]["share_of_null_values"] = obj.value
         base["parameters"]["column_name"] = obj.column_name
         return base
 
@@ -878,7 +1046,8 @@ class TestColumnsType(Test):
 
         return self.Result(
             name=self.name,
-            description=f"The number of columns with a type mismatch is {invalid_types_count} out of {len(columns_type)}.",
+            description=f"The number of columns with a type "
+                        f"mismatch is {invalid_types_count} out of {len(columns_type)}.",
             status=status,
             columns_types=columns_types,
         )
