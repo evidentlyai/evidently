@@ -329,7 +329,7 @@ class BaseTestGenerator(Generic[TTest]):
         raise NotImplementedError()
 
 
-def generate_columns_tests(
+def generate_column_tests(
     test_class: Type[Test],
     columns: Optional[Union[str, list]] = None,
     parameters: Optional[Dict] = None,
