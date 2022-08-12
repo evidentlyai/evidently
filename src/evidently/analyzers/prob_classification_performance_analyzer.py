@@ -72,8 +72,13 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
         classification_threshold = quality_metrics_options.classification_threshold
 
         if target_column is not None and prediction_column is not None:
+            target_and_preds = [target_column]
+            if isinstance(prediction_column, str):
+                target_and_preds += [prediction_column]
+            else:
+                target_and_preds += prediction_column
             reference_data.replace([np.inf, -np.inf], np.nan, inplace=True)
-            reference_data.dropna(axis=0, how='any', inplace=True)
+            reference_data.dropna(axis=0, how='any', inplace=True, subset=target_and_preds)
             binaraized_target = (reference_data[target_column].values.reshape(-1, 1) == prediction_column).astype(int)
             array_prediction = reference_data[prediction_column].to_numpy()
 
@@ -207,7 +212,7 @@ class ProbClassificationPerformanceAnalyzer(Analyzer):
 
             if current_data is not None:
                 current_data.replace([np.inf, -np.inf], np.nan, inplace=True)
-                current_data.dropna(axis=0, how='any', inplace=True)
+                current_data.dropna(axis=0, how='any', inplace=True, subset=target_and_preds)
 
                 binaraized_target = (current_data[target_column].values.reshape(-1, 1) == prediction_column).astype(int)
 
