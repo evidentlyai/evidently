@@ -19,7 +19,7 @@ from evidently.tests import TestNumberOfEmptyColumns
 from evidently.tests import TestNumberOfDuplicatedRows
 from evidently.tests import TestNumberOfDuplicatedColumns
 from evidently.tests import TestColumnsType
-from evidently.tests import TestColumnNANShare
+from evidently.tests import TestColumnShareOfNulls
 from evidently.tests import TestColumnAllConstantValues
 from evidently.tests import TestColumnAllUniqueValues
 from evidently.tests import TestColumnValueRegExp
@@ -96,7 +96,7 @@ def test_export_to_json():
         TestNumberOfDuplicatedRows(),
         TestNumberOfDuplicatedColumns(),
         TestColumnsType({"num_feature_1": int, "cat_feature_2": str}),
-        TestColumnNANShare(column_name="num_feature_1", gt=5),
+        TestColumnShareOfNulls(column_name="num_feature_1", gt=5),
         TestColumnValueRegExp(column_name="cat_feature_2", reg_exp=r"[n|y|n//a]"),
         TestConflictTarget(),
         TestConflictPrediction(),

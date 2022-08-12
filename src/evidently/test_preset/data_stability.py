@@ -6,7 +6,7 @@ from evidently.test_preset.test_preset import TestPreset
 from evidently.tests import TestNumberOfRows
 from evidently.tests import TestNumberOfColumns
 from evidently.tests import TestColumnsType
-from evidently.tests import TestColumnNANShare
+from evidently.tests import TestColumnShareOfNulls
 from evidently.tests import TestShareOfOutRangeValues
 from evidently.tests import TestShareOfOutListValues
 from evidently.tests import TestMeanInNSigmas
@@ -19,7 +19,7 @@ class DataStability(TestPreset):
             TestNumberOfRows(),
             TestNumberOfColumns(),
             TestColumnsType(),
-            *[TestColumnNANShare(column_name=name) for name in all_columns],
+            *[TestColumnShareOfNulls(column_name=name) for name in all_columns],
             *[TestShareOfOutRangeValues(column_name=name) for name in columns.num_feature_names],
             *[TestShareOfOutListValues(column_name=name) for name in columns.cat_feature_names],
             *[TestMeanInNSigmas(column_name=name, n_sigmas=2) for name in columns.num_feature_names],

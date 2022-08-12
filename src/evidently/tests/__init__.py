@@ -3,14 +3,12 @@ from .data_drift_tests import TestShareOfDriftedFeatures
 from .data_drift_tests import TestFeatureValueDrift
 from .data_integrity_tests import TestNumberOfColumns
 from .data_integrity_tests import TestNumberOfRows
-# from .data_integrity_tests import TestNumberOfNANs
 from .data_integrity_tests import TestNumberOfConstantColumns
 from .data_integrity_tests import TestNumberOfEmptyRows
 from .data_integrity_tests import TestNumberOfEmptyColumns
 from .data_integrity_tests import TestNumberOfDuplicatedRows
 from .data_integrity_tests import TestNumberOfDuplicatedColumns
 from .data_integrity_tests import TestColumnsType
-from .data_integrity_tests import TestColumnNANShare
 from .data_integrity_tests import TestColumnAllConstantValues
 from .data_integrity_tests import TestColumnAllUniqueValues
 from .data_integrity_tests import TestColumnValueRegExp
