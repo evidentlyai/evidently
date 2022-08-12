@@ -331,7 +331,7 @@ class BaseTestGenerator(Generic[TTest]):
 
 def generate_columns_tests(
     test_class: Type[Test],
-    columns: Optional[str] = None,
+    columns: Optional[Union[str, list]] = None,
     parameters: Optional[Dict] = None,
 ) -> BaseTestGenerator:
     """Create a test generator for a columns list with a test class.
@@ -340,14 +340,14 @@ def generate_columns_tests(
     If the test have no "column_name" parameter - TypeError will be raised.
 
     Columns list can be defined with parameter `columns`.
-
-    `columns` can be one of values:
-    - None or "all" - make tests for all columns, including target/prediction columns
+    If it is a list - just use it as a list of the columns.
+    If `columns` is a string, it can be one of values:
+    - "all" - make tests for all columns, including target/prediction columns
     - "num" - for numeric features
     - "cat" - for category features
     - "features" - for all features, not target/prediction columns.
-
-    If `columns` is not one of the values, ValueError will vbe raised.
+    None value is the same as "all".
+    If `columns` is string and it is not one of the values, ValueError will be raised.
 
     `parameters` is used for specifying other parameters for each test, it is the same for all generated tests.
     """
@@ -362,7 +362,10 @@ def generate_columns_tests(
             nonlocal parameters_for_test
             result = []
 
-            if columns == "all" or columns is None:
+            if isinstance(columns, list):
+                columns_for_tests = columns
+
+            elif columns == "all" or columns is None:
                 columns_for_tests = columns_info.get_all_columns_list()
 
             elif columns == "cat":
