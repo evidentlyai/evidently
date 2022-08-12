@@ -483,6 +483,7 @@ class BaseIntegrityColumnNullValuesTest(BaseCheckValueTest, ABC):
         column_name: str,
         null_values: Optional[list] = None,
         ignore_na: bool = False,
+        replace: bool = True,
         eq: Optional[Numeric] = None,
         gt: Optional[Numeric] = None,
         gte: Optional[Numeric] = None,
@@ -497,7 +498,7 @@ class BaseIntegrityColumnNullValuesTest(BaseCheckValueTest, ABC):
         self.column_name = column_name
 
         if metric is None:
-            self.metric = DataIntegrityNullValuesMetrics(null_values=null_values, ignore_na=ignore_na)
+            self.metric = DataIntegrityNullValuesMetrics(null_values=null_values, ignore_na=ignore_na, replace=replace)
 
         else:
             self.metric = metric
