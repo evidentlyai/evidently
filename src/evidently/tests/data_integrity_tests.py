@@ -138,47 +138,6 @@ class TestNumberOfRowsRenderer(TestRenderer):
         return base
 
 
-# class TestNumberOfColumnsWithNANs(BaseIntegrityValueTest):
-#     """Number of columns contained at least one NAN value"""
-#
-#     name = "Number of Columns with NA values"
-#
-#     def get_condition(self) -> TestValueCondition:
-#         if self.condition.has_condition():
-#             return self.condition
-#
-#         reference_stats = self.data_integrity_metric.get_result().reference_stats
-#
-#         if reference_stats is not None:
-#             return TestValueCondition(eq=reference_stats.number_of_columns_with_nans)
-#
-#         return TestValueCondition(eq=0)
-#
-#     def calculate_value_for_test(self) -> Numeric:
-#         return self.data_integrity_metric.get_result().current_stats.number_of_columns_with_nans
-#
-#     def get_description(self, value: Numeric) -> str:
-#         return f"The number of columns with NA values is {value}. The test threshold is {self.get_condition()}."
-#
-#
-# @default_renderer(test_type=TestNumberOfColumnsWithNANs)
-# class TestNumberOfColumnsWithNANsRenderer(TestRenderer):
-#     def render_html(self, obj: TestNumberOfColumnsWithNANs) -> TestHtmlInfo:
-#         info = super().render_html(obj)
-#         columns = ["column name", "current number of NaNs"]
-#         dict_curr = obj.data_integrity_metric.get_result().current_stats.nans_by_columns
-#         dict_ref = {}
-#         reference_stats = obj.data_integrity_metric.get_result().reference_stats
-#
-#         if reference_stats is not None:
-#             dict_ref = reference_stats.nans_by_columns
-#             columns = columns + ["reference number of NaNs"]
-#
-#         additional_plots = plot_dicts_to_table(dict_curr, dict_ref, columns, "number_of_cols_with_nans")
-#         info.details = additional_plots
-#         return info
-
-
 class BaseIntegrityNullValuesTest(BaseCheckValueTest, ABC):
     group = DATA_INTEGRITY_GROUP.id
     metric: DataIntegrityNullValuesMetrics
@@ -583,6 +542,11 @@ class TestColumnShareOfNulls(BaseIntegrityColumnNullValuesTest):
 
     def get_description(self, value: Numeric) -> str:
         return f"Share of null values in **{self.column_name}** is {value}"
+
+
+class TestAllColumnsShareOfNulls(BaseTestGenerator):
+    def generate_tests(self, columns_info: DatasetColumns) -> List[TestColumnShareOfNulls]:
+        return [TestColumnShareOfNulls(column_name=name) for name in columns_info.get_all_columns_list()]
 
 
 @default_renderer(test_type=TestColumnShareOfNulls)
