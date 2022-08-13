@@ -203,6 +203,34 @@ class BaseTestNullValuesRenderer(TestRenderer):
         info.details = additional_plots
         return info
 
+    @staticmethod
+    def _replace_null_values_to_description(nulls: dict) -> dict:
+        """Replace null values in the dict keys to human-readable string"""
+        nulls_naming_mapping = {
+            None: "Pandas nulls (None, NAN, etc.)",
+            "": "\"\" (empty string)",
+            np.inf: "Numpy \"inf\" value",
+            -np.inf: "Numpy \"-inf\" value",
+        }
+        return {nulls_naming_mapping.get(k, k): v for k, v in nulls.items()}
+
+    def get_table_with_number_of_nulls_by_null_values(
+        self, info: TestHtmlInfo, current_nulls: dict, reference_nulls: Optional[dict], name: str
+    ) -> TestHtmlInfo:
+        columns = ["null", "current number of nulls"]
+        dict_curr = self._replace_null_values_to_description(current_nulls)
+        dict_ref = {}
+
+        if reference_nulls is not None:
+            # add one more column and values for reference data
+            columns.append("reference number of nulls")
+            # cast keys to str because None could be in keys and it is not processed correctly in visual tables
+            dict_ref = self._replace_null_values_to_description(reference_nulls)
+
+        additional_plots = plot_dicts_to_table(dict_curr, dict_ref, columns, name)
+        info.details = additional_plots
+        return info
+
 
 class TestNumberOfDifferentNulls(BaseIntegrityNullValuesTest):
     """Check a number of different encoded nulls."""
@@ -234,6 +262,22 @@ class TestNumberOfDifferentNullsRenderer(BaseTestNullValuesRenderer):
         base["parameters"]["condition"] = obj.get_condition().as_dict()
         base["parameters"]["number_of_different_nulls"] = obj.value
         return base
+
+    def render_html(self, obj: TestNumberOfDifferentNulls) -> TestHtmlInfo:
+        """Get a table with a null value and number of the value in the dataset"""
+        info = super().render_html(obj)
+        metric_result = obj.metric.get_result()
+        current_nulls = metric_result.current_null_values.different_nulls
+
+        if metric_result.reference_null_values is None:
+            reference_nulls = None
+
+        else:
+            reference_nulls = metric_result.reference_null_values.different_nulls
+
+        return self.get_table_with_number_of_nulls_by_null_values(
+            info, current_nulls, reference_nulls, "number_of_different_nulls"
+        )
 
 
 class TestNumberOfNulls(BaseIntegrityNullValuesTest):
@@ -486,7 +530,7 @@ class BaseIntegrityColumnNullValuesTest(BaseCheckValueTest, ABC):
 class TestColumnNumberOfDifferentNulls(BaseIntegrityColumnNullValuesTest):
     """Check a number of differently encoded empty/null values in one column."""
 
-    name = "Test Number Of Different Null Kinds In One Column"
+    name = "Test Number Of Different Null Kinds In Column"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
@@ -517,6 +561,22 @@ class TestColumnNumberOfDifferentNullsRenderer(BaseTestNullValuesRenderer):
         base["parameters"]["number_of_different_nulls"] = obj.value
         base["parameters"]["column_name"] = obj.column_name
         return base
+
+    def render_html(self, obj: TestColumnNumberOfDifferentNulls) -> TestHtmlInfo:
+        """Get a table with a null value and number of the value in the dataset"""
+        info = super().render_html(obj)
+        metric_result = obj.metric.get_result()
+        current_nulls = metric_result.current_null_values.different_nulls_by_column[obj.column_name]
+
+        if metric_result.reference_null_values is None:
+            reference_nulls = None
+
+        else:
+            reference_nulls = metric_result.reference_null_values.different_nulls_by_column[obj.column_name]
+
+        return self.get_table_with_number_of_nulls_by_null_values(
+            info, current_nulls, reference_nulls, "number_of_different_nulls"
+        )
 
 
 class TestColumnNumberOfNulls(BaseIntegrityColumnNullValuesTest):

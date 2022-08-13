@@ -2,6 +2,7 @@ import re
 
 from dataclasses import dataclass
 from itertools import combinations
+from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -170,11 +171,11 @@ class DataIntegrityValueByRegexpMetrics(Metric[DataIntegrityValueByRegexpMetricR
 @dataclass
 class DataIntegrityNullValues:
     # set of different null-like values in the dataset
-    different_nulls: set
+    different_nulls: Dict[Any, int]
     # number of different null-like values in the dataset
     number_of_different_nulls: int
     # set of different null-like values for each column
-    different_nulls_by_column: Dict[str, set]
+    different_nulls_by_column: Dict[str, Dict[Any, int]]
     # count of different null-like values for each column
     number_of_different_nulls_by_column: Dict[str, int]
     # count of null-values in all dataset
@@ -221,7 +222,7 @@ class DataIntegrityNullValuesMetrics(Metric[DataIntegrityNullValuesMetricsResult
     """
 
     # default null values list
-    DEFAULT_NULL_VALUES = ["", np.inf, None]
+    DEFAULT_NULL_VALUES = ["", np.inf, -np.inf, None]
     null_values: frozenset
 
     def __init__(self, null_values: Optional[list] = None, replace: bool = True) -> None:
@@ -237,13 +238,20 @@ class DataIntegrityNullValuesMetrics(Metric[DataIntegrityNullValuesMetricsResult
         self.null_values = frozenset(null_values)
 
     def _calculate_null_values_stats(self, dataset: pd.DataFrame) -> DataIntegrityNullValues:
-        null_kinds = set()
+        different_nulls = {null_value: 0 for null_value in self.null_values}
         columns_with_nulls = set()
         number_of_nulls = 0
-        different_nulls_by_column: Dict[str, set] = {column_name: set() for column_name in dataset.columns}
-        number_of_nulls_by_column: Dict[str, int] = {column_name: 0 for column_name in dataset.columns}
-        number_of_rows_with_nulls = 0
+        number_of_nulls_by_column: Dict[str, int] = {}
+        different_nulls_by_column: Dict[str, Dict[Any, int]] = {}
 
+        for column_name in dataset.columns:
+            number_of_nulls_by_column[column_name] = 0
+            different_nulls_by_column[column_name] = {}
+
+            for null_value in self.null_values:
+                different_nulls_by_column[column_name][null_value] = 0
+
+        number_of_rows_with_nulls = 0
         number_of_columns = len(dataset.columns)
         number_of_rows = dataset.shape[0]
 
@@ -262,10 +270,10 @@ class DataIntegrityNullValuesMetrics(Metric[DataIntegrityNullValuesMetricsResult
                     number_of_nulls += column_null
                     # increase by-column counter
                     number_of_nulls_by_column[column_name] += column_null
-                    # add special pandas-null type to set of null values in the column
-                    different_nulls_by_column[column_name].add(null_value)
-                    # add special pandas-null type to set of null values in the all dataset
-                    null_kinds.add(null_value)
+                    # increase by-null-value counter for each column
+                    different_nulls_by_column[column_name][null_value] += column_null
+                    # increase by-null-value counter
+                    different_nulls[null_value] += column_null
                     # add the column to set of columns with a null value
                     columns_with_nulls.add(column_name)
 
@@ -292,15 +300,19 @@ class DataIntegrityNullValuesMetrics(Metric[DataIntegrityNullValuesMetricsResult
         share_of_nulls_by_column = {
             column_name: value / number_of_rows for column_name, value in number_of_nulls_by_column.items()
         }
-        number_of_different_nulls_by_column = {
-            column_name: len(value) for column_name, value in different_nulls_by_column.items()
-        }
+        number_of_different_nulls_by_column = {}
+
+        for column_name, nulls in different_nulls_by_column.items():
+            # count a number of null-values that have a value in the column
+            number_of_different_nulls_by_column[column_name] = len(
+                {keys for keys, values in nulls.items() if values > 0}
+            )
 
         number_of_columns_with_nulls = len(columns_with_nulls)
 
         return DataIntegrityNullValues(
-            different_nulls=null_kinds,
-            number_of_different_nulls=len(null_kinds),
+            different_nulls=different_nulls,
+            number_of_different_nulls=len(different_nulls),
             different_nulls_by_column=different_nulls_by_column,
             number_of_different_nulls_by_column=number_of_different_nulls_by_column,
             number_of_nulls=number_of_nulls,
