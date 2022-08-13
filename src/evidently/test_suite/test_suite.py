@@ -233,13 +233,13 @@ class TestSuite:
                         state=test_info.status.lower(),
                         details=dict(
                             parts=[
-                                dict(id=f"{test_info.name}_{item.id}", title=item.title, type="widget")
+                                dict(id=f"{test_info.name}_{idx}_{item.id}", title=item.title, type="widget")
                                 for item in test_info.details
                             ]
                         ),
                         groups=test_info.groups,
                     )
-                    for test_info in test_results
+                    for idx, test_info in enumerate(test_results)
                 ],
                 "testGroupTypes": DEFAULT_GROUP,
             },
@@ -248,5 +248,7 @@ class TestSuite:
         return (
             "evidently_dashboard_" + str(uuid.uuid4()).replace("-", ""),
             DashboardInfo("Test Suite", widgets=[summary_widget, test_suite_widget]),
-            {f"{info.name}_{item.id}": dataclasses.asdict(item.info) for info in test_results for item in info.details},
+            {f"{info.name}_{idx}_{item.id}": dataclasses.asdict(item.info)
+             for idx, info in enumerate(test_results)
+             for item in info.details},
         )
