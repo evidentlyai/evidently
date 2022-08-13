@@ -426,7 +426,7 @@ def test_data_integrity_test_columns_null_share_json_render() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "Share of null values in **feature1** is 0.25",
+        "description": "Share of null values in **feature1** is 0.25. The test " "threshold is lte=0.25 ± 0.025.",
         "group": "data_integrity",
         "name": "Test Share Of Null Values In Column",
         "parameters": {

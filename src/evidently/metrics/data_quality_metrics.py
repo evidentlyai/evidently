@@ -39,7 +39,7 @@ class DataQualityMetrics(Metric[DataQualityMetricsResults]):
             self.analyzer.options_provider.add(options)
 
     def get_parameters(self) -> tuple:
-        return tuple((self.options, ))
+        return tuple((self.options,))
 
     def calculate(self, data: InputData, metrics: dict) -> DataQualityMetricsResults:
         if data.current_data is None:
@@ -295,7 +295,7 @@ class DataQualityValueRangeMetrics(Metric[DataQualityValueRangeMetricsResults]):
             distr_for_plot=distr_for_plot,
             rows_count=rows_count,
             ref_min=ref_min,
-            ref_max=ref_max
+            ref_max=ref_max,
         )
 
 
@@ -339,7 +339,7 @@ class DataQualityValueQuantileMetrics(Metric[DataQualityValueQuantileMetricsResu
             value=data.current_data[self.column].quantile(self.quantile),
             quantile=self.quantile,
             distr_for_plot=distr_for_plot,
-            ref_value=ref_value
+            ref_value=ref_value,
         )
 
 

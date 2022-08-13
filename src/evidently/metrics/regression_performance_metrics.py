@@ -110,9 +110,12 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
         pos = idxs[idx]
         dummy_preds = s[s != 0].values[pos]
 
-        mean_abs_perc_error_default = mean_absolute_percentage_error(
-            y_true=data.current_data[data.column_mapping.target], y_pred=[dummy_preds] * data.current_data.shape[0]
-        ) * 100
+        mean_abs_perc_error_default = (
+            mean_absolute_percentage_error(
+                y_true=data.current_data[data.column_mapping.target], y_pred=[dummy_preds] * data.current_data.shape[0]
+            )
+            * 100
+        )
         #  r2_score default values
         r2_score_ref = None
         if data.reference_data is not None:

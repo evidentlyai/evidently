@@ -39,7 +39,7 @@ class Metric(Generic[TResult]):
     def get_parameters(self) -> tuple:
         attributes = []
         for field, value in sorted(self.__dict__.items(), key=lambda x: x[0]):
-            if field in ['context']:
+            if field in ["context"]:
                 continue
             if isinstance(value, list):
                 attributes.append(tuple(value))

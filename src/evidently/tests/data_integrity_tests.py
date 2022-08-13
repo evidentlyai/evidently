@@ -6,6 +6,7 @@ from typing import Optional
 from typing import Union
 
 import dataclasses
+import numpy as np
 from pandas.core.dtypes.common import infer_dtype_from_object
 
 from evidently.analyzers.utils import DatasetColumns
@@ -13,6 +14,8 @@ from evidently.model.widget import BaseWidgetInfo
 from evidently.metrics.data_integrity_metrics import DataIntegrityMetrics
 from evidently.metrics.data_integrity_metrics import DataIntegrityValueByRegexpMetrics
 from evidently.metrics.data_integrity_metrics import DataIntegrityNullValuesMetrics
+from evidently.metrics.data_integrity_metrics import DataIntegrityNullValues
+from evidently.metrics.data_integrity_metrics import DataIntegrityNullValuesMetricsResult
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.base_renderer import DetailsInfo
 from evidently.renderers.base_renderer import TestRenderer
@@ -165,6 +168,42 @@ class BaseIntegrityNullValuesTest(BaseCheckValueTest, ABC):
             self.metric = metric
 
 
+class BaseTestNullValuesRenderer(TestRenderer):
+    """Common class for tests of null-values.
+    Some tests have the same details visualizations.
+    """
+
+    @staticmethod
+    def _get_number_and_percents_of_nulls(nulls_info: DataIntegrityNullValues) -> Dict[str, str]:
+        """Get a string with nulls numbers and percents from nulls info for results table"""
+        result = {}
+
+        for columns_name in nulls_info.number_of_nulls_by_column:
+            nulls_count = nulls_info.number_of_nulls_by_column[columns_name]
+            percent_count = nulls_info.share_of_nulls_by_column[columns_name] * 100
+            result[columns_name] = f"{nulls_count} ({percent_count:.2f}%)"
+
+        return result
+
+    def get_table_with_nulls_and_percents_by_column(
+        self, info: TestHtmlInfo, metric_result: DataIntegrityNullValuesMetricsResult, name: str
+    ) -> TestHtmlInfo:
+        """Get a table with nulls number and percents"""
+        columns = ["column name", "current number of nulls"]
+        dict_curr = self._get_number_and_percents_of_nulls(metric_result.current_null_values)
+        dict_ref = {}
+        reference_stats = metric_result.reference_null_values
+
+        if reference_stats is not None:
+            # add one more column and values for reference data
+            columns.append("reference number of nulls")
+            dict_ref = self._get_number_and_percents_of_nulls(reference_stats)
+
+        additional_plots = plot_dicts_to_table(dict_curr, dict_ref, columns, name)
+        info.details = additional_plots
+        return info
+
+
 class TestNumberOfDifferentNulls(BaseIntegrityNullValuesTest):
     """Check a number of different encoded nulls."""
 
@@ -185,11 +224,11 @@ class TestNumberOfDifferentNulls(BaseIntegrityNullValuesTest):
         return self.metric.get_result().current_null_values.number_of_different_nulls
 
     def get_description(self, value: Numeric) -> str:
-        return f"Number of different nulls is {value}"
+        return f"Number of different nulls is {value}. The test threshold is {self.get_condition()}."
 
 
 @default_renderer(test_type=TestNumberOfDifferentNulls)
-class TestNumberOfDifferentNullsRenderer(TestRenderer):
+class TestNumberOfDifferentNullsRenderer(BaseTestNullValuesRenderer):
     def render_json(self, obj: TestNumberOfDifferentNulls) -> dict:
         base = super().render_json(obj)
         base["parameters"]["condition"] = obj.get_condition().as_dict()
@@ -217,11 +256,11 @@ class TestNumberOfNulls(BaseIntegrityNullValuesTest):
         return self.metric.get_result().current_null_values.number_of_nulls
 
     def get_description(self, value: Numeric) -> str:
-        return f"Number of nulls is {value}"
+        return f"Number of nulls is {value}. The test threshold is {self.get_condition()}."
 
 
 @default_renderer(test_type=TestNumberOfNulls)
-class TestNumberOfNullsRenderer(TestRenderer):
+class TestNumberOfNullsRenderer(BaseTestNullValuesRenderer):
     def render_json(self, obj: TestNumberOfNulls) -> dict:
         base = super().render_json(obj)
         base["parameters"]["condition"] = obj.get_condition().as_dict()
@@ -230,19 +269,8 @@ class TestNumberOfNullsRenderer(TestRenderer):
 
     def render_html(self, obj: TestNumberOfNulls) -> TestHtmlInfo:
         info = super().render_html(obj)
-        columns = ["column name", "current number of nulls"]
         metric_result = obj.metric.get_result()
-        dict_curr = metric_result.current_null_values.number_of_nulls_by_column
-        dict_ref = {}
-        reference_stats = metric_result.reference_null_values
-
-        if reference_stats is not None:
-            dict_ref = reference_stats.number_of_nulls_by_column
-            columns = columns + ["reference number of nulls"]
-
-        additional_plots = plot_dicts_to_table(dict_curr, dict_ref, columns, "number_of_nulls")
-        info.details = additional_plots
-        return info
+        return self.get_table_with_nulls_and_percents_by_column(info, metric_result, "number_of_nulls")
 
 
 class TestShareOfNulls(BaseIntegrityNullValuesTest):
@@ -265,16 +293,21 @@ class TestShareOfNulls(BaseIntegrityNullValuesTest):
         return self.metric.get_result().current_null_values.share_of_nulls
 
     def get_description(self, value: Numeric) -> str:
-        return f"Share of null values is {value}"
+        return f"Share of null values is {np.round(value, 3)}. The test threshold is {self.get_condition()}."
 
 
 @default_renderer(test_type=TestShareOfNulls)
-class TestShareOfNullsRenderer(TestRenderer):
+class TestShareOfNullsRenderer(BaseTestNullValuesRenderer):
     def render_json(self, obj: TestShareOfNulls) -> dict:
         base = super().render_json(obj)
         base["parameters"]["condition"] = obj.get_condition().as_dict()
         base["parameters"]["share_of_nulls"] = obj.value
         return base
+
+    def render_html(self, obj: TestNumberOfNulls) -> TestHtmlInfo:
+        info = super().render_html(obj)
+        metric_result = obj.metric.get_result()
+        return self.get_table_with_nulls_and_percents_by_column(info, metric_result, "share_of_nulls")
 
 
 class TestNumberOfColumnsWithNulls(BaseIntegrityNullValuesTest):
@@ -297,32 +330,23 @@ class TestNumberOfColumnsWithNulls(BaseIntegrityNullValuesTest):
         return self.metric.get_result().current_null_values.number_of_columns_with_nulls
 
     def get_description(self, value: Numeric) -> str:
-        return f"Number of columns with null values is {value}"
+        return f"Number of columns with null values is {value}. The test threshold is {self.get_condition()}."
 
 
 @default_renderer(test_type=TestNumberOfColumnsWithNulls)
-class TestNumberOfColumnsWithNullsRenderer(TestRenderer):
+class TestNumberOfColumnsWithNullsRenderer(BaseTestNullValuesRenderer):
     def render_json(self, obj: TestNumberOfColumnsWithNulls) -> dict:
         base = super().render_json(obj)
         base["parameters"]["condition"] = obj.get_condition().as_dict()
         base["parameters"]["number_of_columns_with_nulls"] = obj.value
         return base
 
-    def render_html(self, obj: TestNumberOfColumnsWithNulls) -> TestHtmlInfo:
+    def render_html(self, obj: TestNumberOfNulls) -> TestHtmlInfo:
         info = super().render_html(obj)
-        columns = ["column name", "current number of nulls"]
         metric_result = obj.metric.get_result()
-        dict_curr = metric_result.current_null_values.number_of_nulls_by_column
-        dict_ref = {}
-        reference_stats = metric_result.reference_null_values
-
-        if reference_stats is not None:
-            dict_ref = reference_stats.number_of_nulls_by_column
-            columns = columns + ["reference number of nulls"]
-
-        additional_plots = plot_dicts_to_table(dict_curr, dict_ref, columns, "number_of_cols_with_nulls")
-        info.details = additional_plots
-        return info
+        return self.get_table_with_nulls_and_percents_by_column(
+            info, metric_result, "number_of_columns_with_nulls"
+        )
 
 
 class TestShareOfColumnsWithNulls(BaseIntegrityNullValuesTest):
@@ -345,16 +369,24 @@ class TestShareOfColumnsWithNulls(BaseIntegrityNullValuesTest):
         return self.metric.get_result().current_null_values.share_of_columns_with_nulls
 
     def get_description(self, value: Numeric) -> str:
-        return f"Share of columns with null values is {value}"
+        return f"Share of columns with null values is {np.round(value, 3)}. " \
+               f"The test threshold is {self.get_condition()}."
 
 
 @default_renderer(test_type=TestShareOfColumnsWithNulls)
-class TestShareOfColumnsWithNullsRenderer(TestRenderer):
+class TestShareOfColumnsWithNullsRenderer(BaseTestNullValuesRenderer):
     def render_json(self, obj: TestShareOfColumnsWithNulls) -> dict:
         base = super().render_json(obj)
         base["parameters"]["condition"] = obj.get_condition().as_dict()
         base["parameters"]["share_of_columns_with_nulls"] = obj.value
         return base
+
+    def render_html(self, obj: TestNumberOfNulls) -> TestHtmlInfo:
+        info = super().render_html(obj)
+        metric_result = obj.metric.get_result()
+        return self.get_table_with_nulls_and_percents_by_column(
+            info, metric_result, "share_of_columns_with_nulls"
+        )
 
 
 class TestNumberOfRowsWithNulls(BaseIntegrityNullValuesTest):
@@ -377,11 +409,11 @@ class TestNumberOfRowsWithNulls(BaseIntegrityNullValuesTest):
         return self.metric.get_result().current_null_values.number_of_rows_with_nulls
 
     def get_description(self, value: Numeric) -> str:
-        return f"Number of rows with null values is {value}"
+        return f"Number of rows with null values is {value}. The test threshold is {self.get_condition()}."
 
 
 @default_renderer(test_type=TestNumberOfRowsWithNulls)
-class TestNumberOfRowsWithNullsRenderer(TestRenderer):
+class TestNumberOfRowsWithNullsRenderer(BaseTestNullValuesRenderer):
     def render_json(self, obj: TestNumberOfRowsWithNulls) -> dict:
         base = super().render_json(obj)
         base["parameters"]["condition"] = obj.get_condition().as_dict()
@@ -409,11 +441,11 @@ class TestShareOfRowsWithNulls(BaseIntegrityNullValuesTest):
         return self.metric.get_result().current_null_values.share_of_rows_with_nulls
 
     def get_description(self, value: Numeric) -> str:
-        return f"Share of rows with null values is {value}"
+        return f"Share of rows with null values is {np.round(value, 3)}. The test threshold is {self.get_condition()}."
 
 
 @default_renderer(test_type=TestShareOfRowsWithNulls)
-class TestShareOfRowsWithNullsRenderer(TestRenderer):
+class TestShareOfRowsWithNullsRenderer(BaseTestNullValuesRenderer):
     def render_json(self, obj: TestShareOfRowsWithNulls) -> dict:
         base = super().render_json(obj)
         base["parameters"]["condition"] = obj.get_condition().as_dict()
@@ -473,11 +505,12 @@ class TestColumnNumberOfDifferentNulls(BaseIntegrityColumnNullValuesTest):
         return len(metric_data.different_nulls_by_column[self.column_name])
 
     def get_description(self, value: Numeric) -> str:
-        return f"Number of different null kinds in **{self.column_name}** is {value}"
+        return f"Number of different null kinds in **{self.column_name}** is {value}. " \
+               f"The test threshold is {self.get_condition()}."
 
 
 @default_renderer(test_type=TestColumnNumberOfDifferentNulls)
-class TestColumnNumberOfDifferentNullsRenderer(TestRenderer):
+class TestColumnNumberOfDifferentNullsRenderer(BaseTestNullValuesRenderer):
     def render_json(self, obj: TestColumnNumberOfDifferentNulls) -> dict:
         base = super().render_json(obj)
         base["parameters"]["condition"] = obj.get_condition().as_dict()
@@ -507,11 +540,12 @@ class TestColumnNumberOfNulls(BaseIntegrityColumnNullValuesTest):
         return self.metric.get_result().current_null_values.number_of_nulls_by_column[self.column_name]
 
     def get_description(self, value: Numeric) -> str:
-        return f"Number of null values in **{self.column_name}** is {value}"
+        return f"Number of null values in **{self.column_name}** is {value}. " \
+               f"The test threshold is {self.get_condition()}."
 
 
 @default_renderer(test_type=TestColumnNumberOfNulls)
-class TestColumnNumberOfNullsRenderer(TestRenderer):
+class TestColumnNumberOfNullsRenderer(BaseTestNullValuesRenderer):
     def render_json(self, obj: TestColumnNumberOfNulls) -> dict:
         base = super().render_json(obj)
         base["parameters"]["condition"] = obj.get_condition().as_dict()
@@ -541,7 +575,8 @@ class TestColumnShareOfNulls(BaseIntegrityColumnNullValuesTest):
         return self.metric.get_result().current_null_values.share_of_nulls_by_column[self.column_name]
 
     def get_description(self, value: Numeric) -> str:
-        return f"Share of null values in **{self.column_name}** is {value}"
+        return f"Share of null values in **{self.column_name}** is {np.round(value, 3)}. " \
+               f"The test threshold is {self.get_condition()}."
 
 
 class TestAllColumnsShareOfNulls(BaseTestGenerator):
@@ -550,7 +585,7 @@ class TestAllColumnsShareOfNulls(BaseTestGenerator):
 
 
 @default_renderer(test_type=TestColumnShareOfNulls)
-class TestColumnShareOfNullsRenderer(TestRenderer):
+class TestColumnShareOfNullsRenderer(BaseTestNullValuesRenderer):
     def render_json(self, obj: TestColumnShareOfNulls) -> dict:
         base = super().render_json(obj)
         base["parameters"]["condition"] = obj.get_condition().as_dict()
