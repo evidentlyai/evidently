@@ -296,6 +296,7 @@ class DataIntegrityNullValuesMetrics(Metric[DataIntegrityNullValuesMetricsResult
 
                 if increase_counter:
                     number_of_rows_with_nulls += 1
+                    continue
 
         share_of_nulls_by_column = {
             column_name: value / number_of_rows for column_name, value in number_of_nulls_by_column.items()
@@ -309,10 +310,11 @@ class DataIntegrityNullValuesMetrics(Metric[DataIntegrityNullValuesMetricsResult
             )
 
         number_of_columns_with_nulls = len(columns_with_nulls)
+        number_of_different_nulls = len({k for k in different_nulls if different_nulls[k] > 0})
 
         return DataIntegrityNullValues(
             different_nulls=different_nulls,
-            number_of_different_nulls=len(different_nulls),
+            number_of_different_nulls=number_of_different_nulls,
             different_nulls_by_column=different_nulls_by_column,
             number_of_different_nulls_by_column=number_of_different_nulls_by_column,
             number_of_nulls=number_of_nulls,

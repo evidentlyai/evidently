@@ -127,12 +127,40 @@ def test_data_integrity_test_number_of_rows_json_report() -> None:
         (pd.DataFrame({"target": [0, 0, None, 1], "numeric": [None, None, None, 1]}), {"lt": 3}, False),
     ),
 )
-def test_data_integrity_test_number_of_nans_no_errors(
+def test_data_integrity_test_number_of_nulls_no_errors(
     test_dataset: pd.DataFrame, conditions: dict, result: bool
 ) -> None:
     suite = TestSuite(tests=[TestNumberOfNulls(**conditions)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert bool(suite) is result
+
+
+@pytest.mark.parametrize(
+    "test_dataset, conditions, result",
+    (
+        (pd.DataFrame({"target": [0, 0, 0, 5]}), {"eq": 0}, True),
+        (pd.DataFrame({"target": ["", "0", None, "1"], "numeric": [np.inf, None, -np.inf, 1]}), {"lt": 3}, False),
+    ),
+)
+def test_data_integrity_test_number_of_different_null_values(
+    test_dataset: pd.DataFrame, conditions: dict, result: bool
+) -> None:
+    suite = TestSuite(tests=[TestNumberOfDifferentNulls(**conditions)])
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    assert bool(suite) is result
+
+
+def test_data_integrity_test_null_values_with_different_metrics() -> None:
+    test_dataframe = pd.DataFrame({"target": [None, 0, 0, ""]})
+    suite = TestSuite(
+        tests=[
+            TestNumberOfDifferentNulls(null_values=[0], replace=True, eq=1),
+            TestNumberOfDifferentNulls(null_values=[0], replace=False, eq=3),
+        ]
+    )
+    suite.run(current_data=test_dataframe, reference_data=None)
+    assert suite
+    assert suite.show()
 
 
 def test_data_integrity_test_number_of_columns_with_nulls() -> None:
