@@ -345,7 +345,9 @@ def dataframes_to_table(
         na_position: str = "first",
         asc: bool = False,
 ):
+    display_columns = ['display']
     if reference is not None:
+        display_columns += ['ref_display']
         df = pd.merge(current,
                       reference.rename(columns={'value': 'ref_value', 'display': 'ref_display'}),
                       how="outer",
@@ -362,7 +364,8 @@ def dataframes_to_table(
         df.sort_values('value', na_position=na_position, inplace=True, ascending=asc)
     elif sort_by == "diff" and reference is not None:
         df.sort_values("eq", inplace=True)
-    df = df[['display', 'ref_display']].fillna("NA")
+
+    df = df[display_columns].fillna("NA")
     return [
         DetailsInfo(
             id=table_id,
