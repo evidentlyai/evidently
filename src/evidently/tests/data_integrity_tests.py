@@ -7,6 +7,7 @@ from typing import Union
 
 import dataclasses
 import numpy as np
+import pandas as pd
 from pandas.core.dtypes.common import infer_dtype_from_object
 
 from evidently.analyzers.utils import DatasetColumns
@@ -27,7 +28,7 @@ from evidently.tests.base_test import GroupData
 from evidently.tests.base_test import Test
 from evidently.tests.base_test import TestResult
 from evidently.tests.base_test import TestValueCondition
-from evidently.tests.utils import plot_dicts_to_table
+from evidently.tests.utils import plot_dicts_to_table, dataframes_to_table
 from evidently.tests.utils import plot_value_counts_tables_ref_curr
 from evidently.tests.utils import approx
 from evidently.tests.utils import Numeric
@@ -174,7 +175,7 @@ class BaseTestNullValuesRenderer(TestRenderer):
     """
 
     @staticmethod
-    def _get_number_and_percents_of_nulls(nulls_info: DataIntegrityNullValues) -> Dict[str, str]:
+    def _get_number_and_percents_of_nulls(nulls_info: DataIntegrityNullValues) -> pd.DataFrame:
         """Get a string with nulls numbers and percents from nulls info for results table"""
         result = {}
 
@@ -183,7 +184,13 @@ class BaseTestNullValuesRenderer(TestRenderer):
             percent_count = nulls_info.share_of_nulls_by_column[columns_name] * 100
             result[columns_name] = f"{nulls_count} ({percent_count:.2f}%)"
 
-        return result
+        return pd.DataFrame.from_dict({
+            name: dict(
+                value=nulls_info.number_of_nulls_by_column[name],
+                display=f"{nulls_info.number_of_nulls_by_column[name]}"
+                        f" ({nulls_info.share_of_nulls_by_column[name] * 100:.2f}%)")
+            for name in nulls_info.number_of_nulls_by_column.keys()
+        }, orient='index', columns=['value', 'display'])
 
     def get_table_with_nulls_and_percents_by_column(
         self, info: TestHtmlInfo, metric_result: DataIntegrityNullValuesMetricsResult, name: str
@@ -191,7 +198,7 @@ class BaseTestNullValuesRenderer(TestRenderer):
         """Get a table with nulls number and percents"""
         columns = ["column name", "current number of nulls"]
         dict_curr = self._get_number_and_percents_of_nulls(metric_result.current_null_values)
-        dict_ref = {}
+        dict_ref = None
         reference_stats = metric_result.reference_null_values
 
         if reference_stats is not None:
@@ -199,7 +206,7 @@ class BaseTestNullValuesRenderer(TestRenderer):
             columns.append("reference number of nulls")
             dict_ref = self._get_number_and_percents_of_nulls(reference_stats)
 
-        additional_plots = plot_dicts_to_table(dict_curr, dict_ref, columns, name)
+        additional_plots = dataframes_to_table(dict_curr, dict_ref, columns, name)
         info.details = additional_plots
         return info
 
