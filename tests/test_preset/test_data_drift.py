@@ -26,17 +26,17 @@ def test_data_drift_preset():
             "prediction": [0, 0, 0, 1],
         }
     )
-    data_quality_suite = TestSuite(tests=[
-        DataDrift(),
-    ])
+    data_quality_suite = TestSuite(
+        tests=[
+            DataDrift(),
+        ]
+    )
     column_mapping = ColumnMapping(
         numerical_features=["numerical_feature_1", "numerical_feature_2"],
-        categorical_features=["category_feature_1", "category_feature_2"]
+        categorical_features=["category_feature_1", "category_feature_2"],
     )
     data_quality_suite.run(
-        current_data=test_current_dataset,
-        reference_data=test_reference_dataset,
-        column_mapping=column_mapping
+        current_data=test_current_dataset, reference_data=test_reference_dataset, column_mapping=column_mapping
     )
     assert data_quality_suite
     assert len(data_quality_suite.as_dict()["tests"]) == 7

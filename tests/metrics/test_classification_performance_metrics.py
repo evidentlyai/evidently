@@ -65,9 +65,7 @@ def test_classification_performance_metrics_binary_probas_threshold() -> None:
     assert result.current.f1 == 0.5
     assert result.current.roc_auc == 0.625
     assert result.current.log_loss == 3.928216092142768
-    assert result.current.confusion_matrix == ConfusionMatrix(
-        labels=[0, 1], values=[[4, 2], [2, 2]]
-    )
+    assert result.current.confusion_matrix == ConfusionMatrix(labels=[0, 1], values=[[4, 2], [2, 2]])
 
 
 @pytest.mark.parametrize(

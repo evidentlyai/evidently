@@ -86,9 +86,7 @@ def _calculate_k_variant(
 def _calculate_threshold(target_data: pd.Series, prediction_probas: pd.DataFrame, threshold: float):
     pos_label, neg_label = prediction_probas.columns
     prediction_labels = threshold_probability_labels(prediction_probas, pos_label, neg_label, threshold)
-    return classification_performance_metrics(
-        target_data, prediction_labels, prediction_probas, pos_label
-    )
+    return classification_performance_metrics(target_data, prediction_labels, prediction_probas, pos_label)
 
 
 def classification_performance_metrics(
@@ -153,10 +151,10 @@ def classification_performance_metrics(
     # calculate rates metrics and plot data
     if class_num == 2 and pos_label is not None:
         conf_by_pos_label = confusion_by_classes[str(pos_label)]
-        tpr = conf_by_pos_label['tp'] / (conf_by_pos_label['tp'] + conf_by_pos_label['fn'])
-        tnr = conf_by_pos_label['tn'] / (conf_by_pos_label['tn'] + conf_by_pos_label['fp'])
-        fpr = conf_by_pos_label['fp'] / (conf_by_pos_label['fp'] + conf_by_pos_label['tn'])
-        fnr = conf_by_pos_label['fn'] / (conf_by_pos_label['fn'] + conf_by_pos_label['tp'])
+        tpr = conf_by_pos_label["tp"] / (conf_by_pos_label["tp"] + conf_by_pos_label["fn"])
+        tnr = conf_by_pos_label["tn"] / (conf_by_pos_label["tn"] + conf_by_pos_label["fp"])
+        fpr = conf_by_pos_label["fp"] / (conf_by_pos_label["fp"] + conf_by_pos_label["tn"])
+        fnr = conf_by_pos_label["fn"] / (conf_by_pos_label["fn"] + conf_by_pos_label["tp"])
 
     if class_num == 2 and prediction_probas is not None and roc_curve is not None:
         rate_plots_data = {}
@@ -164,7 +162,7 @@ def classification_performance_metrics(
         rate_plots_data["tpr"] = roc_curve[pos_label]["tpr"]
         rate_plots_data["fpr"] = roc_curve[pos_label]["fpr"]
 
-        df = pd.DataFrame({'true': binaraized_target[pos_label].values, 'preds': prediction_probas[pos_label].values})
+        df = pd.DataFrame({"true": binaraized_target[pos_label].values, "preds": prediction_probas[pos_label].values})
         tnrs = []
         fnrs = []
         for tr in rate_plots_data["thrs"]:
@@ -197,7 +195,7 @@ def classification_performance_metrics(
         tnr=tnr,
         fpr=fpr,
         fnr=fnr,
-        rate_plots_data=rate_plots_data
+        rate_plots_data=rate_plots_data,
     )
 
 
@@ -304,7 +302,7 @@ def _dummy_threshold_metrics(
         tpr=tpr,
         tnr=tnr,
         fpr=fpr,
-        fnr=fnr
+        fnr=fnr,
     )
 
 
@@ -358,7 +356,7 @@ class ClassificationPerformanceMetricsTopK(ClassificationPerformanceMetricsThres
         return _calculate_k_variant(target_data, prediction_probas, labels, self.k)
 
     def get_parameters(self) -> tuple:
-        return tuple((self.k, ))
+        return tuple((self.k,))
 
 
 class ClassificationPerformanceMetricsThreshold(ClassificationPerformanceMetricsThresholdBase):
@@ -376,7 +374,7 @@ class ClassificationPerformanceMetricsThreshold(ClassificationPerformanceMetrics
         return _calculate_threshold(target_data, prediction_probas, self.threshold)
 
     def get_parameters(self) -> tuple:
-        return tuple((self.threshold, ))
+        return tuple((self.threshold,))
 
 
 def _cleanup_data(data: pd.DataFrame, mapping: ColumnMapping) -> pd.DataFrame:
@@ -400,9 +398,7 @@ class PredictionData:
     prediction_probas: Optional[pd.DataFrame]
 
 
-def get_prediction_data(
-    data: pd.DataFrame, mapping: ColumnMapping, threshold: float = 0.5
-) -> PredictionData:
+def get_prediction_data(data: pd.DataFrame, mapping: ColumnMapping, threshold: float = 0.5) -> PredictionData:
     """Get predicted values and optional prediction probabilities from source data.
     Also take into account a threshold value - if a probability is less than the value, do not take it into account.
 
@@ -414,8 +410,7 @@ def get_prediction_data(
     if isinstance(mapping.prediction, list) and len(mapping.prediction) > 2:
         # list of columns with prediction probas, should be same as target labels
         return PredictionData(
-            predictions=data[mapping.prediction].idxmax(axis=1),
-            prediction_probas=data[mapping.prediction]
+            predictions=data[mapping.prediction].idxmax(axis=1), prediction_probas=data[mapping.prediction]
         )
 
     # calculate labels as np.array - for better negative label calculations for binary classification

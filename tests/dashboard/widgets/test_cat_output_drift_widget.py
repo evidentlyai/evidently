@@ -58,7 +58,9 @@ def test_cat_output_widget_analyzer_list(widget: CatOutputDriftWidget) -> None:
             ColumnMapping(),
             "prediction",
             BaseWidgetInfo(
-                type="big_graph", title="Prediction Drift: not detected, drift score=0.572407 (chi-square p_value)", size=2
+                type="big_graph",
+                title="Prediction Drift: not detected, drift score=0.572407 (chi-square p_value)",
+                size=2,
             ),
         ),
         (

@@ -10,16 +10,16 @@ from evidently.tests import TestShareOfDriftedFeatures
 from evidently.tests import TestFeatureValueDrift
 from evidently.tests import TestNumberOfColumns
 from evidently.tests import TestNumberOfRows
-from evidently.tests import TestNumberOfNANs
-from evidently.tests import TestNumberOfColumnsWithNANs
-from evidently.tests import TestNumberOfRowsWithNANs
+from evidently.tests import TestNumberOfNulls
+from evidently.tests import TestNumberOfColumnsWithNulls
+from evidently.tests import TestNumberOfRowsWithNulls
 from evidently.tests import TestNumberOfConstantColumns
 from evidently.tests import TestNumberOfEmptyRows
 from evidently.tests import TestNumberOfEmptyColumns
 from evidently.tests import TestNumberOfDuplicatedRows
 from evidently.tests import TestNumberOfDuplicatedColumns
 from evidently.tests import TestColumnsType
-from evidently.tests import TestColumnNANShare
+from evidently.tests import TestColumnShareOfNulls
 from evidently.tests import TestColumnAllConstantValues
 from evidently.tests import TestColumnAllUniqueValues
 from evidently.tests import TestColumnValueRegExp
@@ -87,16 +87,16 @@ def test_export_to_json():
         TestFeatureValueDrift(column_name="num_feature_1"),
         TestNumberOfColumns(),
         TestNumberOfRows(),
-        TestNumberOfNANs(),
-        TestNumberOfColumnsWithNANs(),
-        TestNumberOfRowsWithNANs(),
+        TestNumberOfNulls(),
+        TestNumberOfColumnsWithNulls(),
+        TestNumberOfRowsWithNulls(),
         TestNumberOfConstantColumns(),
         TestNumberOfEmptyRows(),
         TestNumberOfEmptyColumns(),
         TestNumberOfDuplicatedRows(),
         TestNumberOfDuplicatedColumns(),
         TestColumnsType({"num_feature_1": int, "cat_feature_2": str}),
-        TestColumnNANShare(column_name="num_feature_1", gt=5),
+        TestColumnShareOfNulls(column_name="num_feature_1", gt=5),
         TestColumnValueRegExp(column_name="cat_feature_2", reg_exp=r"[n|y|n//a]"),
         TestConflictTarget(),
         TestConflictPrediction(),

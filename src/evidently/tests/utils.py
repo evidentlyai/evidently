@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List
 from typing import Optional
 from typing import Union
 
@@ -336,47 +336,61 @@ def approx(value, relative=None, absolute=None):
     return ApproxValue(value=value, relative=relative, absolute=absolute)
 
 
-def plot_dicts_to_table(
-    dict_curr: dict, dict_ref: Optional[dict], columns: list, id_prfx: str, sort_by: str = "curr", asc: bool = False
+def dataframes_to_table(
+        current: pd.DataFrame,
+        reference: Optional[pd.DataFrame],
+        columns: List[str],
+        table_id: str,
+        sort_by: str = "curr",
+        na_position: str = "first",
+        asc: bool = False,
 ):
-    dict_for_df = {}
-    dict_ref_keys = []
-    if dict_ref is not None:
-        dict_ref_keys = list(dict_ref.keys())
-    keys = np.union1d(list(dict_curr.keys()), dict_ref_keys)
-    dict_for_df[columns[0]] = keys
-    dict_for_df[columns[1]] = [dict_curr.get(x, "NA") for x in keys]
-
-    if dict_ref:
-        dict_for_df[columns[2]] = [dict_ref.get(x, "NA") for x in keys]
-    df = pd.DataFrame(dict_for_df)
-    if dict_ref:
-        if sort_by == "diff":
-            df = df.astype(str)
-            df["eq"] = (df[columns[1]] == df[columns[2]]).astype(int)
-            df = df.sort_values("eq")
-            df.drop("eq", axis=1, inplace=True)
+    if reference is not None:
+        df = pd.merge(current,
+                      reference.rename(columns={'value': 'ref_value', 'display': 'ref_display'}),
+                      how="outer",
+                      left_index=True,
+                      right_index=True)
+        df["eq"] = (df['value'] == df['ref_value']) | (df['value'].isna() & df['ref_value'].isna())
+        if 'ref_display' not in df.columns:
+            df['ref_display'] = df['ref_value'].fillna('NA').astype(str)
+    else:
+        df = current
+    if 'display' not in df.columns:
+        df['display'] = df['value'].fillna('NA').astype(str)
     if sort_by == "curr":
-        df_na = df[df[columns[1]] == "NA"]
-        df_not_na = df[df[columns[1]] != "NA"]
-        df_not_na = df_not_na.sort_values(columns[1], ascending=asc)
-        df = pd.concat([df_na, df_not_na])
-    df = df.astype(str)
-    additional_plots = []
-    additional_plots.append(
+        df.sort_values('value', na_position=na_position, inplace=True, ascending=asc)
+    elif sort_by == "diff" and reference is not None:
+        df.sort_values("eq", inplace=True)
+    df = df[['display', 'ref_display']].fillna("NA")
+    return [
         DetailsInfo(
-            id=id_prfx,
+            id=table_id,
             title="",
             info=BaseWidgetInfo(
                 title="",
                 type="table",
-                params={"header": list(df.columns), "data": df.values},
+                params={
+                    "header": list(columns),
+                    "data": [[idx] + list(df.loc[idx].values) for idx in df.index]},
                 size=2,
             ),
         )
-    )
+    ]
 
-    return additional_plots
+
+def plot_dicts_to_table(
+    dict_curr: dict, dict_ref: Optional[dict], columns: list, id_prfx: str, sort_by: str = "curr", asc: bool = False
+):
+    return dataframes_to_table(
+        pd.DataFrame.from_dict(dict_curr, orient='index', columns=['value']),
+        None if dict_ref is None else pd.DataFrame.from_dict(dict_ref, orient='index', columns=['value']),
+        columns=columns,
+        table_id=id_prfx,
+        sort_by=sort_by,
+        na_position='first',
+        asc=asc
+    )
 
 
 def plot_correlations(current_correlations, reference_correlations):

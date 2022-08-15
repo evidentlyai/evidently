@@ -21,9 +21,11 @@ def test_data_quality_preset():
             "prediction": [0, 0, 0, 1],
         }
     )
-    data_quality_suite = TestSuite(tests=[
-        DataQuality(),
-    ])
+    data_quality_suite = TestSuite(
+        tests=[
+            DataQuality(),
+        ]
+    )
 
     data_quality_suite.run(current_data=test_current_dataset, reference_data=test_reference_dataset)
     assert not data_quality_suite

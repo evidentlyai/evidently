@@ -30,7 +30,7 @@ class DataDriftMetrics(Metric[DataDriftMetricsResults]):
             self.analyzer.options_provider.add(options)
 
     def get_parameters(self) -> tuple:
-        return tuple((self.options, ))
+        return tuple((self.options,))
 
     def calculate(self, data: InputData, metrics: dict) -> DataDriftMetricsResults:
         if data.reference_data is None:
