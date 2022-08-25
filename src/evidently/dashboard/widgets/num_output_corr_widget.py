@@ -51,7 +51,14 @@ class NumOutputCorrWidget(Widget):
 
         # calculate corr
         ref_output_corr = metrics.reference_correlations
+
+        if ref_output_corr is None:
+            return None
+
         current_output_corr = metrics.current_correlations
+
+        if current_output_corr is None:
+            return None
 
         # plot output correlations
         output_corr = go.Figure()

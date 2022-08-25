@@ -1,8 +1,4 @@
-#!/usr/bin/env python
-# coding: utf-8
 
-from typing import Dict
-from typing import List
 from typing import Optional
 from typing import Sequence
 
@@ -13,60 +9,19 @@ import pandas as pd
 from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.analyzers.base_analyzer import BaseAnalyzerResult
-from evidently.analyzers.stattests.registry import get_stattest, StatTest
 from evidently.options import DataDriftOptions
 from evidently.analyzers.utils import process_columns
-
-
-@dataclass
-class NumDataDriftMetrics:
-    """Class numeric features drift values"""
-    column_name: str
-    reference_correlations: Dict[str, float]
-    current_correlations: Dict[str, float]
-    stattest_name: str
-    drift_score: float
-    drift_detected: bool
-
-
-def _compute_correlation(
-        reference_data: pd.DataFrame,
-        current_data: pd.DataFrame,
-        main_column: str,
-        num_columns: List[str],
-        feature_type: str,
-        stattest: StatTest,
-        threshold: Optional[float]
-) -> Optional[NumDataDriftMetrics]:
-    if not pd.api.types.is_numeric_dtype(reference_data[main_column]) or \
-            not pd.api.types.is_numeric_dtype(current_data[main_column]):
-
-        raise ValueError(f'Column {main_column} should only contain numerical values.')
-
-    drift_result = stattest(
-        reference_data[main_column],
-        current_data[main_column],
-        feature_type,
-        threshold)
-    ref_target_corr = reference_data[num_columns + [main_column]].corr()[main_column]
-    curr_target_corr = current_data[num_columns + [main_column]].corr()[main_column]
-
-    return NumDataDriftMetrics(
-        column_name=main_column,
-        reference_correlations=ref_target_corr.to_dict(),
-        current_correlations=curr_target_corr.to_dict(),
-        stattest_name=stattest.display_name,
-        drift_score=drift_result.drift_score,
-        drift_detected=drift_result.drifted,
-    )
+from evidently.metrics.calculations.data_drift import calculate_data_drift_for_numeric_feature
+from evidently.metrics.calculations.data_drift import DataDriftMetrics
+from evidently.metrics.calculations.data_quality import get_rows_count
 
 
 @dataclass
 class NumTargetDriftAnalyzerResults(BaseAnalyzerResult):
     reference_data_count: int = 0
     current_data_count: int = 0
-    target_metrics: Optional[NumDataDriftMetrics] = None
-    prediction_metrics: Optional[NumDataDriftMetrics] = None
+    target_metrics: Optional[DataDriftMetrics] = None
+    prediction_metrics: Optional[DataDriftMetrics] = None
 
 
 class NumTargetDriftAnalyzer(Analyzer):
@@ -135,37 +90,31 @@ class NumTargetDriftAnalyzer(Analyzer):
                              f'are not present in columns.num_feature_names')
 
         result = NumTargetDriftAnalyzerResults(
-            columns=columns, reference_data_count=reference_data.shape[0], current_data_count=current_data.shape[0]
+            columns=columns,
+            reference_data_count=get_rows_count(reference_data),
+            current_data_count=get_rows_count(current_data),
         )
         data_drift_options = self.options_provider.get(DataDriftOptions)
         threshold = data_drift_options.num_target_threshold
 
-        feature_type = "num"
         if target_column is not None:
-            test = get_stattest(reference_data[target_column],
-                                current_data[target_column],
-                                feature_type,
-                                data_drift_options.num_target_stattest_func)
-            result.target_metrics = _compute_correlation(
-                reference_data, current_data, target_column, columns.num_feature_names, feature_type, test, threshold
+            result.target_metrics = calculate_data_drift_for_numeric_feature(
+                current_data=current_data,
+                reference_data=reference_data,
+                column_name=target_column,
+                numeric_columns=columns.num_feature_names,
+                stattest=data_drift_options.num_target_stattest_func,
+                threshold=threshold
             )
-        else:
-            result.target_metrics = None
+
         if prediction_column is not None:
-            test = get_stattest(reference_data[prediction_column],
-                                current_data[prediction_column],
-                                feature_type,
-                                data_drift_options.num_target_stattest_func)
-            result.prediction_metrics = _compute_correlation(
-                reference_data,
-                current_data,
-                prediction_column,
-                columns.num_feature_names,
-                feature_type,
-                test,
-                threshold
+            result.prediction_metrics = calculate_data_drift_for_numeric_feature(
+                current_data=current_data,
+                reference_data=reference_data,
+                column_name=prediction_column,
+                numeric_columns=columns.num_feature_names,
+                stattest=data_drift_options.num_target_stattest_func,
+                threshold=threshold
             )
-        else:
-            result.prediction_metrics = None
 
         return result

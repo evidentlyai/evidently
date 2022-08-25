@@ -1,9 +1,11 @@
-import pytest
 from pandas import DataFrame
+
+import pytest
 
 from evidently import ColumnMapping
 from evidently.analyzers.data_drift_analyzer import DataDriftAnalyzer
-from evidently.options import DataDriftOptions, OptionsProvider
+from evidently.options import DataDriftOptions
+from evidently.options import OptionsProvider
 
 
 @pytest.fixture
@@ -65,3 +67,36 @@ def test_data_drift_analyzer_as_dict_format(data_drift_analyzer: DataDriftAnalyz
     # check data drift results
     assert result.columns.target_names == ["drift_target"]
     assert result.metrics.dataset_drift is True
+
+
+def test_data_drift_analyzer_with_different_values_in_reference_and_current_data_category_feature(
+        data_drift_analyzer: DataDriftAnalyzer
+) -> None:
+    ref_test_data = DataFrame(
+        {
+            "target": [1, 2, 3, 4, 5],
+            "categorical_feature_1": [1, 2, 3, 4, 5],
+            "categorical_feature_2": [1, 0, 1, 0, None],
+        }
+    )
+
+    curr_test_data = DataFrame(
+        {
+            "target": [9],
+            # has here a value that no in the same feature in reference
+            "categorical_feature_1": [10],
+            "categorical_feature_2": [1],
+        }
+    )
+
+    data_columns = ColumnMapping(
+        categorical_features=["categorical_feature_1", "categorical_feature_2"], target="target"
+    )
+    result = data_drift_analyzer.calculate(
+        current_data=curr_test_data, reference_data=ref_test_data, column_mapping=data_columns
+    )
+    assert result.options is not None
+    assert result.columns is not None
+    # check features in results
+    assert result.metrics.n_features == 3
+    assert result.metrics.dataset_drift is False

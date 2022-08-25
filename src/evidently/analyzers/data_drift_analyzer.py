@@ -155,9 +155,10 @@ class DataDriftAnalyzer(Analyzer):
             keys = set(ref_counts.keys()).union(set(cur_counts.keys()))
             for key in keys:
                 if key not in ref_counts:
-                    ref_counts[key] = 0
+                    ref_counts.loc[key] = 0
                 if key not in cur_counts:
-                    cur_counts[key] = 0
+                    cur_counts.loc[key] = 0
+
             ref_small_hist = list(reversed(list(map(list, zip(*sorted(ref_counts.items(), key=lambda x: x[0]))))))
             cur_small_hist = list(reversed(list(map(list, zip(*sorted(cur_counts.items(), key=lambda x: x[0]))))))
             features_metrics[feature_name] = DataDriftAnalyzerFeatureMetrics(
