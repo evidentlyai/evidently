@@ -77,6 +77,7 @@ class DataDriftAnalyzer(Analyzer):
                 num_feature_names += [target_column]
             else:
                 cat_feature_names += [target_column]
+
         if prediction_column is not None:
             if isinstance(prediction_column, list) and len(prediction_column) > 2:
                 reference_data['predicted_labels'] = self._get_pred_labels_from_prob(reference_data, prediction_column)
