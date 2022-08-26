@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 import collections
-from typing import Dict, Optional, Tuple
+from typing import Optional, Tuple
 from dataclasses import dataclass
 
 import pandas as pd
@@ -10,9 +10,12 @@ import numpy as np
 from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.analyzers.base_analyzer import BaseAnalyzerResult
-from evidently.analyzers.stattests import get_stattest
+from evidently.calculations.data_drift import DataDriftAnalyzerMetrics
+from evidently.calculations.data_drift import DataDriftAnalyzerFeatureMetrics
+from evidently.calculations.stattests import get_stattest
 from evidently.options import DataDriftOptions
-from evidently.analyzers.utils import process_columns, recognize_task
+from evidently.utils.data_operations import process_columns
+from evidently.utils.data_operations import recognize_task
 
 
 def dataset_drift_evaluation(p_values, drift_share=0.5) -> Tuple[int, float, bool]:
@@ -23,26 +26,6 @@ def dataset_drift_evaluation(p_values, drift_share=0.5) -> Tuple[int, float, boo
 
 
 PValueWithDrift = collections.namedtuple("PValueWithDrift", ["p_value", "drifted"])
-
-
-@dataclass
-class DataDriftAnalyzerFeatureMetrics:
-    current_small_hist: list
-    ref_small_hist: list
-    feature_type: str
-    stattest_name: str
-    p_value: float
-    threshold: float
-    drift_detected: bool
-
-
-@dataclass
-class DataDriftAnalyzerMetrics:
-    n_features: int
-    n_drifted_features: int
-    share_drifted_features: float
-    dataset_drift: bool
-    features: Dict[str, DataDriftAnalyzerFeatureMetrics]
 
 
 @dataclass

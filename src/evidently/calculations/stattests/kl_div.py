@@ -3,8 +3,8 @@ from typing import Tuple
 import pandas as pd
 from scipy import stats
 
-from evidently.analyzers.stattests.registry import StatTest, register_stattest
-from evidently.analyzers.stattests.utils import get_binned_data
+from evidently.calculations.stattests.registry import StatTest, register_stattest
+from evidently.calculations.stattests.utils import get_binned_data
 
 
 def kl_div(

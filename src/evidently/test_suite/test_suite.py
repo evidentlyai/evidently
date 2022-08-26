@@ -14,8 +14,7 @@ import pandas as pd
 
 import evidently
 from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.analyzers.utils import process_columns
-from evidently.analyzers.utils import DatasetColumns
+from evidently.utils.data_operations import process_columns, DatasetColumns
 from evidently.dashboard.dashboard import TemplateParams
 from evidently.dashboard.dashboard import SaveMode
 from evidently.dashboard.dashboard import SaveModeMap

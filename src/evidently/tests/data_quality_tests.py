@@ -5,7 +5,7 @@ from typing import Union
 
 import numpy as np
 
-from evidently.analyzers.utils import DatasetColumns
+from evidently.utils.data_operations import DatasetColumns
 from evidently.model.widget import BaseWidgetInfo
 from evidently.metrics import DataQualityMetrics
 from evidently.metrics import DataQualityStabilityMetrics

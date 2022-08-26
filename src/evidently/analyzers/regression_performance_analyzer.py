@@ -9,9 +9,9 @@ import pandas as pd
 from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.analyzers.base_analyzer import BaseAnalyzerResult
-from evidently.analyzers.utils import process_columns
-from evidently.metrics.calculations.regression_performance import calculate_regression_performance
-from evidently.metrics.calculations.regression_performance import RegressionPerformanceMetrics
+from evidently.utils.data_operations import process_columns
+from evidently.calculations.regression_performance import calculate_regression_performance
+from evidently.calculations.regression_performance import RegressionPerformanceMetrics
 
 
 @dataclass

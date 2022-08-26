@@ -5,8 +5,8 @@ import pandas as pd
 
 from evidently import ColumnMapping
 from evidently.analyzers.data_quality_analyzer import DataQualityAnalyzer
-from evidently.analyzers.data_quality_analyzer import FeatureQualityStats
-from evidently.analyzers.utils import process_columns
+from evidently.calculations.data_quality import FeatureQualityStats
+from evidently.utils.data_operations import process_columns
 
 import pytest
 

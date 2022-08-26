@@ -1,12 +1,11 @@
 from dataclasses import dataclass
 from typing import Dict
-from typing import Optional
 
 import pandas as pd
 import numpy as np
 from scipy.stats import probplot
 
-from evidently.analyzers.utils import DatasetColumns
+from evidently.utils.data_operations import DatasetColumns
 
 
 class ErrorWithQuantiles:

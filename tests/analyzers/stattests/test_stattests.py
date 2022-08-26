@@ -2,8 +2,8 @@ import numpy as np
 import pandas as pd
 from pytest import approx
 
-from evidently.analyzers.stattests import z_stat_test
-from evidently.analyzers.stattests.chisquare_stattest import chi_stat_test
+from evidently.calculations.stattests import z_stat_test
+from evidently.calculations.stattests.chisquare_stattest import chi_stat_test
 
 
 def test_freq_obs_eq_freq_exp() -> None:

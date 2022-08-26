@@ -46,8 +46,9 @@ options = DataDriftOptions(
 ```
 
 Change the StatTest for a single feature to Custom function (using a StatTest object):
+
 ```python
-from evidently.analyzers.stattests import StatTest
+from evidently.calculations import StatTest
 from evidently.options.data_drift import DataDriftOptions
 
 
@@ -62,9 +63,8 @@ my_stat_test = StatTest(
   allowed_feature_types=["cat"],
 )
 
-
 options = DataDriftOptions(
-  feature_stattest_func={"feature_1": my_stat_test },
+  feature_stattest_func={"feature_1": my_stat_test},
 )
 ```
 
@@ -109,12 +109,14 @@ To create the instance of the `StatTest` class, you need:
 
 
 ### Example:
+
 ```python
-from evidently.analyzers.stattests import StatTest
+from evidently.calculations import StatTest
 
 
 def example_stat_test(reference_data, current_data, feature_type, threshold):
-    return 0.1, False
+  return 0.1, False
+
 
 example_stat_test = StatTest(
   name="example_test",

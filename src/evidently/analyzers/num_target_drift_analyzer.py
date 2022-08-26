@@ -10,10 +10,10 @@ from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.analyzers.base_analyzer import BaseAnalyzerResult
 from evidently.options import DataDriftOptions
-from evidently.analyzers.utils import process_columns
-from evidently.metrics.calculations.data_drift import calculate_data_drift_for_numeric_feature
-from evidently.metrics.calculations.data_drift import DataDriftMetrics
-from evidently.metrics.calculations.data_quality import get_rows_count
+from evidently.utils.data_operations import process_columns
+from evidently.calculations.data_drift import calculate_data_drift_for_numeric_feature
+from evidently.calculations.data_drift import DataDriftMetrics
+from evidently.calculations.data_quality import get_rows_count
 
 
 @dataclass

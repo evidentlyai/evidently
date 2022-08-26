@@ -5,7 +5,7 @@ from typing import Dict
 import pandas as pd
 
 from evidently.analyzers.data_quality_analyzer import DataQualityAnalyzer
-from evidently.analyzers.data_quality_analyzer import DataQualityStats
+from evidently.calculations.data_quality import DataQualityStats
 from evidently.model_profile.sections.base_profile_section import ProfileSection
 
 

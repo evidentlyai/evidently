@@ -4,7 +4,7 @@ import dataclasses
 
 import pandas as pd
 
-from evidently.analyzers import stattests
+from evidently.calculations import stattests
 
 StatTestFuncType = Callable[[pd.Series, pd.Series, str, float], Tuple[float, bool]]
 

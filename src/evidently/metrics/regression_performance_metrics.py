@@ -10,10 +10,10 @@ from sklearn.metrics import mean_absolute_percentage_error
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import r2_score
 
-from evidently.analyzers.utils import process_columns
+from evidently.utils.data_operations import process_columns
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
-from evidently.metrics.calculations.regression_performance import calculate_regression_performance
+from evidently.calculations.regression_performance import calculate_regression_performance
 from evidently.metrics.utils import make_target_bins_for_reg_plots
 from evidently.metrics.utils import make_hist_for_cat_plot
 from evidently.metrics.utils import apply_func_to_binned_data

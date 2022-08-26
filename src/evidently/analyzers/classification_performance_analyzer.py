@@ -14,14 +14,9 @@ from sklearn import metrics
 from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.analyzers.base_analyzer import BaseAnalyzerResult
-from evidently.analyzers.utils import process_columns
-from evidently.analyzers.utils import calculate_confusion_by_classes
-
-
-@dataclass
-class ConfusionMatrix:
-    labels: List[str]
-    values: list
+from evidently.utils.data_operations import process_columns
+from evidently.calculations.classification_performance import calculate_confusion_by_classes
+from evidently.calculations.classification_performance import ConfusionMatrix
 
 
 @dataclass

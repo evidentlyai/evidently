@@ -2,7 +2,7 @@ from typing import Generator
 
 from evidently.analyzers.prob_classification_performance_analyzer import ProbClassificationPerformanceMetrics
 from evidently.analyzers.prob_classification_performance_analyzer import ProbClassificationPerformanceAnalyzer
-from evidently.analyzers.utils import DatasetColumns
+from evidently.utils.data_operations import DatasetColumns
 from evidently.model_monitoring.monitoring import ModelMonitor
 from evidently.model_monitoring.monitoring import ModelMonitoringMetric
 from evidently.model_monitoring.monitoring import MetricsType

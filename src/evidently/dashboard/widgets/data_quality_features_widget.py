@@ -13,8 +13,9 @@ from plotly.subplots import make_subplots
 from evidently import ColumnMapping
 from evidently.analyzers.data_quality_analyzer import DataQualityAnalyzer
 from evidently.analyzers.data_quality_analyzer import DataQualityAnalyzerResults
-from evidently.analyzers.data_quality_analyzer import FeatureQualityStats
-from evidently.model.widget import BaseWidgetInfo, AdditionalGraphInfo
+from evidently.calculations.data_quality import FeatureQualityStats
+from evidently.model.widget import AdditionalGraphInfo
+from evidently.model.widget import BaseWidgetInfo
 from evidently.dashboard.widgets.widget import Widget
 from evidently.options import ColorOptions
 

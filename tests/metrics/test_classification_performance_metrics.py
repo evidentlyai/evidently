@@ -8,7 +8,7 @@ import pandas as pd
 import pytest
 from pytest import approx
 
-from evidently.analyzers.classification_performance_analyzer import ConfusionMatrix
+from evidently.calculations.classification_performance import ConfusionMatrix
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.metrics.base_metric import InputData
 from evidently.metrics import ClassificationPerformanceMetrics

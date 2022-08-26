@@ -1,6 +1,6 @@
 """Methods for data drift calculations"""
 
-from typing import List, Optional, Dict
+from typing import List, Dict
 from typing import Optional
 from typing import Sequence
 from typing import Union
@@ -9,9 +9,9 @@ import numpy as np
 import pandas as pd
 from dataclasses import dataclass
 
-from evidently.analyzers.stattests.registry import get_stattest
-from evidently.analyzers.stattests.registry import PossibleStatTestType
-from evidently.analyzers.stattests.registry import StatTest
+from evidently.calculations.stattests import get_stattest
+from evidently.calculations.stattests import PossibleStatTestType
+from evidently.calculations.stattests import StatTest
 
 
 def _get_pred_labels_from_prob(dataframe: pd.DataFrame, prediction_column: list) -> List[str]:
@@ -143,3 +143,23 @@ def calculate_data_drift_for_numeric_feature(
     result.current_correlations = current_data[numeric_columns + [column_name]].corr()[column_name].to_dict()
     result.reference_correlations = reference_data[numeric_columns + [column_name]].corr()[column_name].to_dict()
     return result
+
+
+@dataclass
+class DataDriftAnalyzerFeatureMetrics:
+    current_small_hist: list
+    ref_small_hist: list
+    feature_type: str
+    stattest_name: str
+    p_value: float
+    threshold: float
+    drift_detected: bool
+
+
+@dataclass
+class DataDriftAnalyzerMetrics:
+    n_features: int
+    n_drifted_features: int
+    share_drifted_features: float
+    dataset_drift: bool
+    features: Dict[str, DataDriftAnalyzerFeatureMetrics]

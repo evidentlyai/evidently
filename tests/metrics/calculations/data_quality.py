@@ -3,7 +3,7 @@ import pandas as pd
 
 import pytest
 
-from evidently.metrics.calculations.data_quality import get_rows_count
+from evidently.calculations import get_rows_count
 
 
 @pytest.mark.parametrize(

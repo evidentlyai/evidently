@@ -9,9 +9,8 @@ import pandas as pd
 import numpy as np
 
 from evidently import TaskType
-from evidently.analyzers.data_quality_analyzer import DataQualityStats
-from evidently.analyzers.data_quality_analyzer import DataQualityAnalyzer
-from evidently.analyzers.utils import recognize_task
+from evidently.calculations.data_quality import DataQualityStats
+from evidently.utils.data_operations import recognize_task
 from evidently.options.quality_metrics import QualityMetricsOptions
 from evidently.options import OptionsProvider
 from evidently.metrics.base_metric import InputData
@@ -31,22 +30,24 @@ class DataQualityMetricsResults:
 
 class DataQualityMetrics(Metric[DataQualityMetricsResults]):
     def __init__(self, options: QualityMetricsOptions = None) -> None:
-        self.analyzer = DataQualityAnalyzer()
-        self.analyzer.options_provider = OptionsProvider()
         self.options = options
-
-        if options is not None:
-            self.analyzer.options_provider.add(options)
 
     def get_parameters(self) -> tuple:
         return tuple((self.options,))
 
     def calculate(self, data: InputData, metrics: dict) -> DataQualityMetricsResults:
+        from evidently.analyzers.data_quality_analyzer import DataQualityAnalyzer
+        analyzer = DataQualityAnalyzer()
+        analyzer.options_provider = OptionsProvider()
+
+        if self.options is not None:
+            analyzer.options_provider.add(self.options)
+
         if data.current_data is None:
             raise ValueError("Current dataset should be present")
 
         if data.reference_data is None:
-            analyzer_results = self.analyzer.calculate(
+            analyzer_results = analyzer.calculate(
                 reference_data=data.current_data, current_data=None, column_mapping=data.column_mapping
             )
             features_stats = analyzer_results.reference_features_stats
@@ -54,7 +55,7 @@ class DataQualityMetrics(Metric[DataQualityMetricsResults]):
             reference_features_stats = None
 
         else:
-            analyzer_results = self.analyzer.calculate(
+            analyzer_results = analyzer.calculate(
                 reference_data=data.reference_data, current_data=data.current_data, column_mapping=data.column_mapping
             )
             if analyzer_results.current_features_stats is None:

@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 from pandas.core.dtypes.common import infer_dtype_from_object
 
-from evidently.analyzers.utils import DatasetColumns
+from evidently.utils.data_operations import DatasetColumns
 from evidently.model.widget import BaseWidgetInfo
 from evidently.metrics.data_integrity_metrics import DataIntegrityMetrics
 from evidently.metrics.data_integrity_metrics import DataIntegrityValueByRegexpMetrics

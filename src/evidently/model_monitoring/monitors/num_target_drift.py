@@ -1,7 +1,7 @@
 from typing import Generator
 
 from evidently.analyzers.num_target_drift_analyzer import NumTargetDriftAnalyzer
-from evidently.metrics.calculations.data_drift import DataDriftMetrics
+from evidently.calculations.data_drift import DataDriftMetrics
 from evidently.model_monitoring.monitoring import MetricsType
 from evidently.model_monitoring.monitoring import ModelMonitor
 from evidently.model_monitoring.monitoring import ModelMonitoringMetric

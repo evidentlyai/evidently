@@ -11,11 +11,12 @@ import pandas as pd
 from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.analyzers.base_analyzer import BaseAnalyzerResult
-from evidently.analyzers.utils import process_columns
-from evidently.metrics.calculations.data_drift import define_predictions_type, DataDriftMetrics
-from evidently.metrics.calculations.data_drift import calculate_data_drift_for_category_feature
-from evidently.metrics.calculations.data_quality import get_rows_count
-from evidently.metrics.calculations.data_clean import replace_infinity_values_to_nan
+from evidently.utils.data_operations import process_columns
+from evidently.calculations.data_drift import calculate_data_drift_for_category_feature
+from evidently.calculations.data_drift import define_predictions_type
+from evidently.calculations.data_drift import DataDriftMetrics
+from evidently.calculations.data_quality import get_rows_count
+from evidently.utils.data_operations import replace_infinity_values_to_nan
 from evidently.options import DataDriftOptions
 from evidently.options import QualityMetricsOptions
 

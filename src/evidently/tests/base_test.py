@@ -8,12 +8,11 @@ from typing import Dict
 from typing import Generic
 from typing import List
 from typing import Optional
-from typing import Tuple
 from typing import Type
 from typing import TypeVar
 from typing import Union
 
-from evidently.analyzers.utils import DatasetColumns
+from evidently.utils.data_operations import DatasetColumns
 from evidently.tests.utils import ApproxValue
 from evidently.tests.utils import Numeric
 

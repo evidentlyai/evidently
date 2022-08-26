@@ -5,7 +5,7 @@ from typing import Tuple
 import pandas as pd
 from scipy.stats import ks_2samp
 
-from evidently.analyzers.stattests.registry import StatTest, register_stattest
+from evidently.calculations.stattests.registry import StatTest, register_stattest
 
 
 def _ks_stat_test(

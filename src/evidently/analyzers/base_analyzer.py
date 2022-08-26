@@ -8,7 +8,7 @@ from dataclasses import dataclass
 
 from evidently.options import OptionsProvider
 from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.analyzers.utils import DatasetColumns
+from evidently.utils.data_operations import DatasetColumns
 
 
 @dataclass

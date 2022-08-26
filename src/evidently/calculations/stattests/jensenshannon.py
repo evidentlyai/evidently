@@ -3,8 +3,8 @@ from typing import Tuple
 import pandas as pd
 from scipy.spatial import distance
 
-from evidently.analyzers.stattests.utils import get_binned_data
-from evidently.analyzers.stattests.registry import StatTest, register_stattest
+from evidently.calculations.stattests.utils import get_binned_data
+from evidently.calculations.stattests.registry import StatTest, register_stattest
 
 
 def _jensenshannon(

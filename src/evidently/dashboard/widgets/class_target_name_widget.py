@@ -7,7 +7,7 @@ import pandas as pd
 from evidently import ColumnMapping
 from evidently.model.widget import BaseWidgetInfo
 from evidently.dashboard.widgets.widget import Widget
-from evidently.analyzers.utils import process_columns
+from evidently.utils.data_operations import process_columns
 
 
 class ClassTargetNameWidget(Widget):

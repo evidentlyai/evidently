@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 from scipy import stats
 
-from evidently.analyzers.stattests.registry import StatTest, register_stattest
+from evidently.calculations.stattests.registry import StatTest, register_stattest
 
 
 def _wasserstein_distance_norm(

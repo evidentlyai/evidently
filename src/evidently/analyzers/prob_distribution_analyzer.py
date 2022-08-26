@@ -4,8 +4,9 @@ import dataclasses
 import pandas as pd
 
 from evidently import ColumnMapping
-from evidently.analyzers.base_analyzer import Analyzer, BaseAnalyzerResult
-from evidently.analyzers.utils import process_columns
+from evidently.analyzers.base_analyzer import Analyzer
+from evidently.analyzers.base_analyzer import BaseAnalyzerResult
+from evidently.utils.data_operations import process_columns
 
 
 @dataclasses.dataclass

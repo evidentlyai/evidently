@@ -6,7 +6,7 @@ import pandas as pd
 
 import pytest
 
-from evidently.metrics.calculations.data_drift import define_predictions_type
+from evidently.calculations import define_predictions_type
 
 
 @pytest.mark.parametrize(
