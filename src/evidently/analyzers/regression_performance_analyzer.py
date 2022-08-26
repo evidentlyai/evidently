@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
+import copy
 from typing import Optional
 
 from dataclasses import dataclass
@@ -38,16 +39,25 @@ class RegressionPerformanceAnalyzer(Analyzer):
             result.reference_metrics = calculate_regression_performance(
                 dataset=reference_data, columns=columns, error_bias_prefix="ref_"
             )
-            error_bias = result.reference_metrics.error_bias
+
+            if result.reference_metrics.error_bias is not None:
+                error_bias = copy.deepcopy(result.reference_metrics.error_bias)
+
+            else:
+                error_bias = None
 
             if current_data is not None:
                 result.current_metrics = calculate_regression_performance(
                     dataset=current_data, columns=columns, error_bias_prefix="current_"
 
                 )
-                if error_bias is not None:
-                    for feature_name, current_bias in result.current_metrics.error_bias.items():
-                        error_bias[feature_name].update(current_bias)
+                if result.current_metrics.error_bias is not None:
+                    if error_bias is not None:
+                        for feature_name, current_bias in result.current_metrics.error_bias.items():
+                            error_bias[feature_name].update(current_bias)
+
+                    else:
+                        error_bias = copy.deepcopy(result.current_metrics.error_bias)
 
             if error_bias:
                 result.error_bias = error_bias
