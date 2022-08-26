@@ -26,8 +26,7 @@ from evidently.tests.base_test import BaseCheckValueTest
 from evidently.tests.base_test import TestResult
 from evidently.tests.base_test import TestValueCondition
 from evidently.tests.utils import plot_distr
-from evidently.tests.utils import Numeric
-
+from evidently.utils.types import Numeric
 
 DATA_DRIFT_GROUP = GroupData("data_drift", "Data Drift", "")
 GroupingTypes.TestGroup.add_value(DATA_DRIFT_GROUP)

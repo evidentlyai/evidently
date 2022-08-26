@@ -18,8 +18,7 @@ from evidently.tests.utils import plot_metric_value
 from evidently.tests.utils import regression_perf_plot
 from evidently.tests.utils import plot_distr
 from evidently.tests.utils import approx
-from evidently.tests.utils import Numeric
-
+from evidently.utils.types import Numeric
 
 REGRESSION_GROUP = GroupData("regression", "Regression", "")
 GroupingTypes.TestGroup.add_value(REGRESSION_GROUP)

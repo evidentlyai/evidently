@@ -25,7 +25,7 @@ from evidently.tests.base_test import BaseTestGenerator
 from evidently.tests.base_test import TestResult
 from evidently.tests.base_test import TestValueCondition
 from evidently.tests.utils import approx
-from evidently.tests.utils import Numeric
+from evidently.utils.types import Numeric
 from evidently.tests.utils import plot_check
 from evidently.tests.utils import plot_metric_value
 from evidently.tests.utils import plot_distr

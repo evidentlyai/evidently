@@ -1,6 +1,5 @@
 from typing import Dict, List
 from typing import Optional
-from typing import Union
 
 import numpy as np
 import pandas as pd
@@ -11,7 +10,7 @@ from plotly.subplots import make_subplots
 
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import DetailsInfo
-
+from evidently.utils.types import ApproxValue
 
 RED = "#ed0400"
 GREY = "#4d4d4d"
@@ -21,10 +20,6 @@ COLOR_DISCRETE_SEQUENCE = (
     "#6c3461",
     "#6b8ba4",
 )
-
-
-# type for numeric because of mypy bug https://github.com/python/mypy/issues/3186
-Numeric = Union[float, int]
 
 
 def plot_check(fig, condition):
@@ -262,72 +257,6 @@ def plot_value_counts_tables_ref_curr(feature_name, curr_df, ref_df, id_prfx):
             )
         )
     return additional_plots
-
-
-class ApproxValue:
-    """Class for approximate scalar value calculations"""
-
-    DEFAULT_RELATIVE = 1e-6
-    DEFAULT_ABSOLUTE = 1e-12
-    value: Numeric
-    _relative: Numeric
-    _absolute: Numeric
-
-    def __init__(self, value: Numeric, relative: Optional[Numeric] = None, absolute: Optional[Numeric] = None):
-        self.value = value
-
-        if relative is not None and relative <= 0:
-            raise ValueError("Relative value for approx should be greater than 0")
-
-        if relative is None:
-            self._relative = self.DEFAULT_RELATIVE
-
-        else:
-            self._relative = relative
-
-        if absolute is None:
-            self._absolute = self.DEFAULT_ABSOLUTE
-
-        else:
-            self._absolute = absolute
-
-    @property
-    def tolerance(self) -> Numeric:
-        relative_value = abs(self.value) * self._relative
-        return max(relative_value, self._absolute)
-
-    def __format__(self, format_spec):
-        return f"{format(self.value, format_spec)} ± {format(self.tolerance, format_spec)}"
-
-    def __repr__(self):
-        return f"{self.value} ± {self.tolerance}"
-
-    def __eq__(self, other):
-        tolerance = self.tolerance
-        return (self.value - tolerance) <= other <= (self.value + tolerance)
-
-    def __lt__(self, other):
-        return self.value + self.tolerance < other
-
-    def __le__(self, other):
-        return self.value - self.tolerance <= other
-
-    def __gt__(self, other):
-        return self.value - self.tolerance > other
-
-    def __ge__(self, other):
-        return self.value + self.tolerance >= other
-
-    def as_dict(self) -> dict:
-        result = {"value": self.value}
-
-        if self._relative is not None:
-            result["relative"] = self._relative
-
-        if self._absolute is not None:
-            result["absolute"] = self._absolute
-
-        return result
 
 
 def approx(value, relative=None, absolute=None):

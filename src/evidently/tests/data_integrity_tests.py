@@ -31,8 +31,7 @@ from evidently.tests.base_test import TestValueCondition
 from evidently.tests.utils import plot_dicts_to_table, dataframes_to_table
 from evidently.tests.utils import plot_value_counts_tables_ref_curr
 from evidently.tests.utils import approx
-from evidently.tests.utils import Numeric
-
+from evidently.utils.types import Numeric
 
 DATA_INTEGRITY_GROUP = GroupData("data_integrity", "Data Integrity", "")
 GroupingTypes.TestGroup.add_value(DATA_INTEGRITY_GROUP)

@@ -13,8 +13,7 @@ from typing import TypeVar
 from typing import Union
 
 from evidently.utils.data_operations import DatasetColumns
-from evidently.tests.utils import ApproxValue
-from evidently.tests.utils import Numeric
+from evidently.utils.types import ApproxValue, Numeric
 
 
 @dataclasses.dataclass
