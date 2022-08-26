@@ -1,4 +1,3 @@
-
 from typing import Optional
 from typing import Sequence
 
@@ -37,10 +36,9 @@ class NumTargetDriftAnalyzer(Analyzer):
     def get_results(analyzer_results) -> NumTargetDriftAnalyzerResults:
         return analyzer_results[NumTargetDriftAnalyzer]
 
-    def calculate(self,
-                  reference_data: pd.DataFrame,
-                  current_data: Optional[pd.DataFrame],
-                  column_mapping: ColumnMapping) -> NumTargetDriftAnalyzerResults:
+    def calculate(
+        self, reference_data: pd.DataFrame, current_data: Optional[pd.DataFrame], column_mapping: ColumnMapping
+    ) -> NumTargetDriftAnalyzerResults:
         """Calculate the target and prediction drifts.
 
         With default options, uses a two sample Kolmogorov-Smirnov test at a 0.95 confidence level.
@@ -86,8 +84,10 @@ class NumTargetDriftAnalyzer(Analyzer):
             raise ValueError("prediction should not be a sequence")
 
         if set(columns.num_feature_names) - set(current_data.columns):
-            raise ValueError(f'Some numerical features in current data {current_data.columns}'
-                             f'are not present in columns.num_feature_names')
+            raise ValueError(
+                f"Some numerical features in current data {current_data.columns}"
+                f"are not present in columns.num_feature_names"
+            )
 
         result = NumTargetDriftAnalyzerResults(
             columns=columns,
@@ -104,7 +104,7 @@ class NumTargetDriftAnalyzer(Analyzer):
                 column_name=target_column,
                 numeric_columns=columns.num_feature_names,
                 stattest=data_drift_options.num_target_stattest_func,
-                threshold=threshold
+                threshold=threshold,
             )
 
         if prediction_column is not None:
@@ -114,7 +114,7 @@ class NumTargetDriftAnalyzer(Analyzer):
                 column_name=prediction_column,
                 numeric_columns=columns.num_feature_names,
                 stattest=data_drift_options.num_target_stattest_func,
-                threshold=threshold
+                threshold=threshold,
             )
 
         return result

@@ -25,11 +25,11 @@ class ProfileSection(PipelineStage):
 
     @abc.abstractmethod
     def calculate(
-            self,
-            reference_data: pandas.DataFrame,
-            current_data: Optional[pandas.DataFrame],
-            column_mapping: ColumnMapping,
-            analyzers_results: Dict[Type[Analyzer], Any],
+        self,
+        reference_data: pandas.DataFrame,
+        current_data: Optional[pandas.DataFrame],
+        column_mapping: ColumnMapping,
+        analyzers_results: Dict[Type[Analyzer], Any],
     ) -> None:
         raise NotImplementedError()
 

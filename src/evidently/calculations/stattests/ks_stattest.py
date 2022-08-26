@@ -9,10 +9,8 @@ from evidently.calculations.stattests.registry import StatTest, register_stattes
 
 
 def _ks_stat_test(
-        reference_data: pd.Series,
-        current_data: pd.Series,
-        feature_type: str,
-        threshold: float) -> Tuple[float, bool]:
+    reference_data: pd.Series, current_data: pd.Series, feature_type: str, threshold: float
+) -> Tuple[float, bool]:
     """Run the two-sample Kolmogorov-Smirnov test of two samples. Alternative: two-sided
     Args:
         reference_data: reference data

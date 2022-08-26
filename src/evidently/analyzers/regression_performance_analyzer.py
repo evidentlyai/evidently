@@ -49,7 +49,6 @@ class RegressionPerformanceAnalyzer(Analyzer):
             if current_data is not None:
                 result.current_metrics = calculate_regression_performance(
                     dataset=current_data, columns=columns, error_bias_prefix="current_"
-
                 )
                 if result.current_metrics.error_bias is not None:
                     if error_bias is not None:

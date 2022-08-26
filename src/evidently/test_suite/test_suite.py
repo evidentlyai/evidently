@@ -247,7 +247,9 @@ class TestSuite:
         return (
             "evidently_dashboard_" + str(uuid.uuid4()).replace("-", ""),
             DashboardInfo("Test Suite", widgets=[summary_widget, test_suite_widget]),
-            {f"{info.name}_{idx}_{item.id}": dataclasses.asdict(item.info)
-             for idx, info in enumerate(test_results)
-             for item in info.details},
+            {
+                f"{info.name}_{idx}_{item.id}": dataclasses.asdict(item.info)
+                for idx, info in enumerate(test_results)
+                for item in info.details
+            },
         )

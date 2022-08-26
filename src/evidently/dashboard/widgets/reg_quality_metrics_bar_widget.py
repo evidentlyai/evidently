@@ -11,29 +11,31 @@ from evidently.dashboard.widgets.widget import Widget
 
 
 class RegQualityMetricsBarWidget(Widget):
-    def __init__(self, title: str, dataset: str = 'reference'):
+    def __init__(self, title: str, dataset: str = "reference"):
         super().__init__(title)
         self.dataset = dataset  # reference or current
 
     def analyzers(self):
         return [RegressionPerformanceAnalyzer]
 
-    def calculate(self,
-                  reference_data: pd.DataFrame,
-                  current_data: Optional[pd.DataFrame],
-                  column_mapping: ColumnMapping,
-                  analyzers_results) -> Optional[BaseWidgetInfo]:
+    def calculate(
+        self,
+        reference_data: pd.DataFrame,
+        current_data: Optional[pd.DataFrame],
+        column_mapping: ColumnMapping,
+        analyzers_results,
+    ) -> Optional[BaseWidgetInfo]:
         results = RegressionPerformanceAnalyzer.get_results(analyzers_results)
 
         if results.columns.utility_columns.target is None or results.columns.utility_columns.prediction is None:
-            if self.dataset == 'reference':
+            if self.dataset == "reference":
                 raise ValueError(f"Widget [{self.title}] requires 'target' and 'prediction' columns")
             return None
 
-        if self.dataset == 'reference':
+        if self.dataset == "reference":
             results_metrics = results.reference_metrics
 
-        elif self.dataset == 'current':
+        elif self.dataset == "current":
             results_metrics = results.current_metrics
 
         else:
@@ -52,20 +54,19 @@ class RegQualityMetricsBarWidget(Widget):
             params={
                 "counters": [
                     {
-                        "value": f"{round(results_metrics.mean_error, 2)}"
-                                 f" ({round(results_metrics.error_std, 2)})",
-                        "label": "ME"
+                        "value": f"{round(results_metrics.mean_error, 2)}" f" ({round(results_metrics.error_std, 2)})",
+                        "label": "ME",
                     },
                     {
                         "value": f"{round(results_metrics.mean_abs_error, 2)}"
-                                 f" ({round(results_metrics.abs_error_std, 2)})",
-                        "label": "MAE"
+                        f" ({round(results_metrics.abs_error_std, 2)})",
+                        "label": "MAE",
                     },
                     {
                         "value": f"{round(results_metrics.mean_abs_perc_error, 2)}"
-                                 f" ({round(results_metrics.abs_perc_error_std, 2)})",
-                        "label": "MAPE"
-                    }
+                        f" ({round(results_metrics.abs_perc_error_std, 2)})",
+                        "label": "MAPE",
+                    },
                 ]
             },
         )

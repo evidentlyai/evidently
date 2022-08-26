@@ -39,7 +39,7 @@ class ClassificationPerformanceAnalyzerResults(BaseAnalyzerResult):
 
 
 def classification_performance_metrics(
-        target: pd.Series, prediction: pd.Series, target_names: Optional[List[str]]
+    target: pd.Series, prediction: pd.Series, target_names: Optional[List[str]]
 ) -> ClassificationPerformanceMetrics:
     # calculate metrics matrix
     metrics_matrix = metrics.classification_report(target, prediction, output_dict=True)

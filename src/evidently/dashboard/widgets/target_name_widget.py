@@ -18,35 +18,37 @@ class TargetNameWidget(Widget):
         self.kind = kind  # regression, classification or prob_classification
 
     def analyzers(self):
-        if self.kind == 'regression':
+        if self.kind == "regression":
             return [RegressionPerformanceAnalyzer]
-        if self.kind == 'classification':
+        if self.kind == "classification":
             return [ClassificationPerformanceAnalyzer]
-        if self.kind == 'prob_classification':
+        if self.kind == "prob_classification":
             return [ProbClassificationPerformanceAnalyzer]
         raise ValueError(f"Unexpected kind({self.kind}) of TargetNameWidget")
 
-    def calculate(self,
-                  reference_data: pd.DataFrame,
-                  current_data: Optional[pd.DataFrame],
-                  column_mapping: ColumnMapping,
-                  analyzers_results) -> Optional[BaseWidgetInfo]:
+    def calculate(
+        self,
+        reference_data: pd.DataFrame,
+        current_data: Optional[pd.DataFrame],
+        column_mapping: ColumnMapping,
+        analyzers_results,
+    ) -> Optional[BaseWidgetInfo]:
 
         results_columns = None
 
-        if self.kind == 'regression':
+        if self.kind == "regression":
             regression_results = RegressionPerformanceAnalyzer.get_results(analyzers_results)
 
             if regression_results:
                 results_columns = regression_results.columns
 
-        elif self.kind == 'classification':
+        elif self.kind == "classification":
             classification_results = ClassificationPerformanceAnalyzer.get_results(analyzers_results)
 
             if classification_results:
                 results_columns = classification_results.columns
 
-        elif self.kind == 'prob_classification':
+        elif self.kind == "prob_classification":
             prob_classification_results = ProbClassificationPerformanceAnalyzer.get_results(analyzers_results)
 
             if prob_classification_results:
@@ -67,10 +69,7 @@ class TargetNameWidget(Widget):
             size=2,
             params={
                 "counters": [
-                    {
-                        "value": "",
-                        "label": self.title + " Target: '" + results_columns.utility_columns.target + "'"
-                    }
+                    {"value": "", "label": self.title + " Target: '" + results_columns.utility_columns.target + "'"}
                 ]
             },
         )

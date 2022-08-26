@@ -24,11 +24,13 @@ class CatTargetPredFeatureTable(Widget):
     def analyzers(self):
         return [CatTargetDriftAnalyzer]
 
-    def calculate(self,
-                  reference_data: pd.DataFrame,
-                  current_data: Optional[pd.DataFrame],
-                  column_mapping: ColumnMapping,
-                  analyzers_results) -> Optional[BaseWidgetInfo]:
+    def calculate(
+        self,
+        reference_data: pd.DataFrame,
+        current_data: Optional[pd.DataFrame],
+        column_mapping: ColumnMapping,
+        analyzers_results,
+    ) -> Optional[BaseWidgetInfo]:
 
         results = CatTargetDriftAnalyzer.get_results(analyzers_results)
         quality_metrics_options = self.options_provider.get(QualityMetricsOptions)
@@ -51,24 +53,18 @@ class CatTargetPredFeatureTable(Widget):
                     {
                         "details": {
                             "parts": [
-                                {
-                                    "title": "Target",
-                                    "id": feature_name + "_target_values"
-                                },
-                                {
-                                    "title": "Prediction",
-                                    "id": feature_name + "_prediction_values"
-                                }
+                                {"title": "Target", "id": feature_name + "_target_values"},
+                                {"title": "Prediction", "id": feature_name + "_prediction_values"},
                             ],
-                            "insights": []
+                            "insights": [],
                         },
-                        "f1": feature_name
+                        "f1": feature_name,
                     }
                 )
 
                 # create target plot
-                reference_data['dataset'] = 'Reference'
-                current_data['dataset'] = 'Current'
+                reference_data["dataset"] = "Reference"
+                current_data["dataset"] = "Current"
                 if cut_quantile and quality_metrics_options.get_cut_quantile(feature_name):
                     side, q = quality_metrics_options.get_cut_quantile(feature_name)
                     cqt = CutQuantileTransformer(side=side, q=q)
@@ -80,37 +76,41 @@ class CatTargetPredFeatureTable(Widget):
                     current_data_to_plot = current_data
                 merged_data = pd.concat([reference_data_to_plot, current_data_to_plot])
 
-                target_fig = px.histogram(merged_data, x=feature_name, color=target_name,
-                                          facet_col="dataset", barmode='overlay',
-                                          category_orders={"dataset": ["Reference", "Current"]})
+                target_fig = px.histogram(
+                    merged_data,
+                    x=feature_name,
+                    color=target_name,
+                    facet_col="dataset",
+                    barmode="overlay",
+                    category_orders={"dataset": ["Reference", "Current"]},
+                )
 
                 target_fig_json = json.loads(target_fig.to_json())
 
                 # create prediction plot
-                pred_fig = px.histogram(merged_data, x=feature_name, color=prediction_name,
-                                        facet_col="dataset", barmode='overlay',
-                                        category_orders={"dataset": ["Reference", "Current"]})
+                pred_fig = px.histogram(
+                    merged_data,
+                    x=feature_name,
+                    color=prediction_name,
+                    facet_col="dataset",
+                    barmode="overlay",
+                    category_orders={"dataset": ["Reference", "Current"]},
+                )
 
                 pred_fig_json = json.loads(pred_fig.to_json())
 
                 # write plot data in table as additional data
                 additional_graphs_data.append(
                     AdditionalGraphInfo(
-                        feature_name + '_target_values',
-                        {
-                            "data": target_fig_json['data'],
-                            "layout": target_fig_json['layout']
-                        },
+                        feature_name + "_target_values",
+                        {"data": target_fig_json["data"], "layout": target_fig_json["layout"]},
                     )
                 )
 
                 additional_graphs_data.append(
                     AdditionalGraphInfo(
-                        feature_name + '_prediction_values',
-                        {
-                            "data": pred_fig_json['data'],
-                            "layout": pred_fig_json['layout']
-                        },
+                        feature_name + "_prediction_values",
+                        {"data": pred_fig_json["data"], "layout": pred_fig_json["layout"]},
                     )
                 )
 
@@ -120,15 +120,10 @@ class CatTargetPredFeatureTable(Widget):
                 size=2,
                 params={
                     "rowsPerPage": self._get_rows_per_page(results.columns),
-                    "columns": [
-                        {
-                            "title": "Feature",
-                            "field": "f1"
-                        }
-                    ],
-                    "data": params_data
+                    "columns": [{"title": "Feature", "field": "f1"}],
+                    "data": params_data,
                 },
-                additionalGraphs=additional_graphs_data
+                additionalGraphs=additional_graphs_data,
             )
 
         if target_name is not None:
@@ -140,22 +135,17 @@ class CatTargetPredFeatureTable(Widget):
                 params_data.append(
                     {
                         "details": {
-                            "parts": [
-                                {
-                                    "title": "Target",
-                                    "id": feature_name + "_target_values"
-                                }
-                            ],
-                            "insights": []
+                            "parts": [{"title": "Target", "id": feature_name + "_target_values"}],
+                            "insights": [],
                         },
-                        "f1": feature_name
+                        "f1": feature_name,
                     }
                 )
 
                 # create target plot
                 # TO DO%: out pf the cycle
-                reference_data['dataset'] = 'Reference'
-                current_data['dataset'] = 'Current'
+                reference_data["dataset"] = "Reference"
+                current_data["dataset"] = "Current"
                 if cut_quantile and quality_metrics_options.get_cut_quantile(feature_name):
                     side, q = quality_metrics_options.get_cut_quantile(feature_name)
                     cqt = CutQuantileTransformer(side=side, q=q)
@@ -167,20 +157,22 @@ class CatTargetPredFeatureTable(Widget):
                     current_data_to_plot = current_data
                 merged_data = pd.concat([reference_data_to_plot, current_data_to_plot])
 
-                target_fig = px.histogram(merged_data, x=feature_name, color=target_name,
-                                          facet_col="dataset", barmode='overlay',
-                                          category_orders={"dataset": ["Reference", "Current"]})
+                target_fig = px.histogram(
+                    merged_data,
+                    x=feature_name,
+                    color=target_name,
+                    facet_col="dataset",
+                    barmode="overlay",
+                    category_orders={"dataset": ["Reference", "Current"]},
+                )
 
                 target_fig_json = json.loads(target_fig.to_json())
 
                 # write plot data in table as additional data
                 additional_graphs_data.append(
                     AdditionalGraphInfo(
-                        feature_name + '_target_values',
-                        {
-                            "data": target_fig_json['data'],
-                            "layout": target_fig_json['layout']
-                        },
+                        feature_name + "_target_values",
+                        {"data": target_fig_json["data"], "layout": target_fig_json["layout"]},
                     )
                 )
 
@@ -190,15 +182,10 @@ class CatTargetPredFeatureTable(Widget):
                 size=2,
                 params={
                     "rowsPerPage": self._get_rows_per_page(results.columns),
-                    "columns": [
-                        {
-                            "title": "Feature",
-                            "field": "f1"
-                        }
-                    ],
-                    "data": params_data
+                    "columns": [{"title": "Feature", "field": "f1"}],
+                    "data": params_data,
                 },
-                additionalGraphs=additional_graphs_data
+                additionalGraphs=additional_graphs_data,
             )
         if results.columns.utility_columns.prediction is not None:
             additional_graphs_data = []
@@ -208,21 +195,16 @@ class CatTargetPredFeatureTable(Widget):
                 params_data.append(
                     {
                         "details": {
-                            "parts": [
-                                {
-                                    "title": "Prediction",
-                                    "id": feature_name + "_prediction_values"
-                                }
-                            ],
-                            "insights": []
+                            "parts": [{"title": "Prediction", "id": feature_name + "_prediction_values"}],
+                            "insights": [],
                         },
-                        "f1": feature_name
+                        "f1": feature_name,
                     }
                 )
 
                 # create target plot
-                reference_data['dataset'] = 'Reference'
-                current_data['dataset'] = 'Current'
+                reference_data["dataset"] = "Reference"
+                current_data["dataset"] = "Current"
                 if cut_quantile and quality_metrics_options.get_cut_quantile(feature_name):
                     side, q = quality_metrics_options.get_cut_quantile(feature_name)
                     cqt = CutQuantileTransformer(side=side, q=q)
@@ -234,20 +216,22 @@ class CatTargetPredFeatureTable(Widget):
                     current_data_to_plot = current_data
                 merged_data = pd.concat([reference_data_to_plot, current_data_to_plot])
 
-                prediction_fig = px.histogram(merged_data, x=feature_name, barmode='overlay',
-                                              color=results.columns.utility_columns.prediction, facet_col="dataset",
-                                              category_orders={"dataset": ["Reference", "Current"]})
+                prediction_fig = px.histogram(
+                    merged_data,
+                    x=feature_name,
+                    barmode="overlay",
+                    color=results.columns.utility_columns.prediction,
+                    facet_col="dataset",
+                    category_orders={"dataset": ["Reference", "Current"]},
+                )
 
                 prediction_fig_json = json.loads(prediction_fig.to_json())
 
                 # write plot data in table as additional data
                 additional_graphs_data.append(
                     AdditionalGraphInfo(
-                        feature_name + '_prediction_values',
-                        {
-                            "data": prediction_fig_json['data'],
-                            "layout": prediction_fig_json['layout']
-                        },
+                        feature_name + "_prediction_values",
+                        {"data": prediction_fig_json["data"], "layout": prediction_fig_json["layout"]},
                     )
                 )
 
@@ -257,14 +241,9 @@ class CatTargetPredFeatureTable(Widget):
                 size=2,
                 params={
                     "rowsPerPage": self._get_rows_per_page(results.columns),
-                    "columns": [
-                        {
-                            "title": "Feature",
-                            "field": "f1"
-                        }
-                    ],
-                    "data": params_data
+                    "columns": [{"title": "Feature", "field": "f1"}],
+                    "data": params_data,
                 },
-                additionalGraphs=additional_graphs_data
+                additionalGraphs=additional_graphs_data,
             )
         raise ValueError(f"Widget {self.title} require 'prediction' or 'target' columns not to be None")

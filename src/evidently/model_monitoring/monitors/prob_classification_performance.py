@@ -21,6 +21,7 @@ class ProbClassificationPerformanceMonitorMetricsMonitor:
        - confusion: aggregated confusion metrics
        - class_confusion: confusion (TP, TN, FP, FN) by class
     """
+
     _tag = "prob_classification_performance"
     quality = ModelMonitoringMetric(f"{_tag}:quality", ["dataset", "metric"])
     class_representation = ModelMonitoringMetric(f"{_tag}:class_representation", ["dataset", "class_name", "type"])

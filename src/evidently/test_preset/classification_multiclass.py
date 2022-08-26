@@ -1,14 +1,22 @@
 from evidently.utils.data_operations import DatasetColumns
 from evidently.metrics.base_metric import InputData
 from evidently.test_preset.test_preset import TestPreset
-from evidently.tests import TestAccuracyScore, TestF1Score, TestPrecisionByClass, TestRecallByClass,\
-    TestNumberOfRows, TestFeatureValueDrift, TestRocAuc, TestLogLoss
+from evidently.tests import (
+    TestAccuracyScore,
+    TestF1Score,
+    TestPrecisionByClass,
+    TestRecallByClass,
+    TestNumberOfRows,
+    TestFeatureValueDrift,
+    TestRocAuc,
+    TestLogLoss,
+)
 
 
 class MulticlassClassification(TestPreset):
     def __init__(self, prediction_type: str):
         super().__init__()
-        if prediction_type not in ['probas', 'labels']:
+        if prediction_type not in ["probas", "labels"]:
             raise ValueError("`prediction_type` argument should by one of 'probas' or 'labels'")
         self.prediction_type = prediction_type
 
@@ -28,8 +36,8 @@ class MulticlassClassification(TestPreset):
             TestFeatureValueDrift(column_name=target),
         ]
 
-        if self.prediction_type == 'labels':
+        if self.prediction_type == "labels":
             return tests
-        if self.prediction_type == 'probas':
+        if self.prediction_type == "probas":
             return tests + [TestRocAuc(), TestLogLoss()]
         raise ValueError(f'Unexpected prediction_type: "{self.prediction_type}"')

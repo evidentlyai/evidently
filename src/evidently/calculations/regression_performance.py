@@ -55,7 +55,9 @@ def _calculate_quality_metrics(dataset, prediction_column, target_column, conf_i
     sdae = np.std(abs_err, ddof=1)
 
     epsilon = np.finfo(np.float64).eps
-    abs_perc_err = np.abs(dataset[prediction_column] - dataset[target_column]) / np.maximum(dataset[target_column], epsilon)
+    abs_perc_err = np.abs(dataset[prediction_column] - dataset[target_column]) / np.maximum(
+        dataset[target_column], epsilon
+    )
     mape = 100.0 * np.mean(abs_perc_err)
     sdape = np.std(abs_perc_err, ddof=1)
 

@@ -14,9 +14,9 @@ def get_binned_data(reference: pd.Series, current: pd.Series, feature_type: str,
         current_percents: % of records in each bucket for reference
     """
     n_vals = reference.nunique()
-    if feature_type == 'num' and n_vals > 20:
+    if feature_type == "num" and n_vals > 20:
 
-        bins = np.histogram_bin_edges(list(reference) + list(current), bins='sturges')
+        bins = np.histogram_bin_edges(list(reference) + list(current), bins="sturges")
 
         reference_percents = np.histogram(reference, bins)[0] / len(reference)
         current_percents = np.histogram(current, bins)[0] / len(current)

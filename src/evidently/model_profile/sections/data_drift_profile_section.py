@@ -25,30 +25,26 @@ class DataDriftProfileSection(ProfileSection):
         result_json: Dict[str, Any] = data_drift_results.columns.as_dict()
 
         metrics_dict: Dict[str, Union[int, bool, float, Dict]] = {
-            'n_features': data_drift_results.metrics.n_features,
-            'n_drifted_features': data_drift_results.metrics.n_drifted_features,
-            'share_drifted_features': data_drift_results.metrics.share_drifted_features,
-            'dataset_drift': data_drift_results.metrics.dataset_drift
+            "n_features": data_drift_results.metrics.n_features,
+            "n_drifted_features": data_drift_results.metrics.n_drifted_features,
+            "share_drifted_features": data_drift_results.metrics.share_drifted_features,
+            "dataset_drift": data_drift_results.metrics.dataset_drift,
         }
         # add metrics to a flat dict with data drift results
         for feature_name, feature_metrics in data_drift_results.metrics.features.items():
             metrics_dict[feature_name] = {
-                'current_small_hist': feature_metrics.current_small_hist,
-                'ref_small_hist': feature_metrics.ref_small_hist,
-                'feature_type': feature_metrics.feature_type,
-                'stattest_name': feature_metrics.stattest_name,
-                'drift_score': feature_metrics.p_value,
-                'drift_detected': feature_metrics.drift_detected,
+                "current_small_hist": feature_metrics.current_small_hist,
+                "ref_small_hist": feature_metrics.ref_small_hist,
+                "feature_type": feature_metrics.feature_type,
+                "stattest_name": feature_metrics.stattest_name,
+                "drift_score": feature_metrics.p_value,
+                "drift_detected": feature_metrics.drift_detected,
             }
 
-        result_json['options'] = data_drift_results.options.as_dict()
-        result_json['metrics'] = metrics_dict
+        result_json["options"] = data_drift_results.options.as_dict()
+        result_json["metrics"] = metrics_dict
 
-        self._result = {
-            'name': self.part_id(),
-            'datetime': str(datetime.now()),
-            'data': result_json
-        }
+        self._result = {"name": self.part_id(), "datetime": str(datetime.now()), "data": result_json}
 
     def get_results(self) -> Optional[Dict[str, Union[str, Dict]]]:
         return self._result

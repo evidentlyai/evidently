@@ -3,8 +3,15 @@ from typing import Dict
 
 from evidently.dashboard import Dashboard
 from evidently.runner.runner import RunnerOptions, Runner
-from evidently.dashboard.tabs import DataDriftTab, CatTargetDriftTab, ClassificationPerformanceTab, \
-    NumTargetDriftTab, ProbClassificationPerformanceTab, RegressionPerformanceTab, DataQualityTab
+from evidently.dashboard.tabs import (
+    DataDriftTab,
+    CatTargetDriftTab,
+    ClassificationPerformanceTab,
+    NumTargetDriftTab,
+    ProbClassificationPerformanceTab,
+    RegressionPerformanceTab,
+    DataQualityTab,
+)
 
 
 @dataclass
@@ -38,12 +45,12 @@ class DashboardRunner(Runner):
             if tab_class is None:
                 raise ValueError(f"Unknown tab {tab}")
             try:
-                verbose_level = int(params.get('verbose_level', None)) \
-                    if params.get('verbose_level', None) is not None\
-                    else None
+                verbose_level = (
+                    int(params.get("verbose_level", None)) if params.get("verbose_level", None) is not None else None
+                )
             except ValueError as ex:
                 raise ValueError(f"Failed to parse verbose level for tab {tab}") from ex
-            include_widgets = params.get('include_widgets', None)
+            include_widgets = params.get("include_widgets", None)
             tabs.append(tab_class(verbose_level=verbose_level, include_widgets=include_widgets))
 
         dashboard = Dashboard(tabs=tabs, options=self.options.options)

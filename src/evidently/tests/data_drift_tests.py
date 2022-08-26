@@ -167,12 +167,14 @@ class TestFeatureValueDrift(Test):
             else:
                 result_status = TestResult.FAIL
 
-        return TestResult(name=self.name,
-                          description=description,
-                          status=result_status,
-                          groups={
-                              GroupingTypes.ByFeature.id: self.column_name,
-                          })
+        return TestResult(
+            name=self.name,
+            description=description,
+            status=result_status,
+            groups={
+                GroupingTypes.ByFeature.id: self.column_name,
+            },
+        )
 
 
 class TestAllFeaturesValueDrift(BaseTestGenerator):

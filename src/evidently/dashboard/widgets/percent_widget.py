@@ -8,8 +8,13 @@ from evidently.model.widget import BaseWidgetInfo, AlertStats, Insight, Triggere
 
 
 class PercentWidget(Widget):
-    def calculate(self, reference_data: pd.DataFrame, current_data: Optional[pd.DataFrame],
-                  column_mapping: ColumnMapping, analyzers_results) -> Optional[BaseWidgetInfo]:
+    def calculate(
+        self,
+        reference_data: pd.DataFrame,
+        current_data: Optional[pd.DataFrame],
+        column_mapping: ColumnMapping,
+        analyzers_results,
+    ) -> Optional[BaseWidgetInfo]:
         return BaseWidgetInfo(
             type="percent",
             title="Example Percent Widget",
@@ -21,21 +26,16 @@ class PercentWidget(Widget):
                 triggered=TriggeredAlertStats(
                     last_24h=3,
                     period=1,
-                )
+                ),
             ),
-            alerts=[Alert(value=5, state="warning", text="short text",
-                          longText="some long description of alert")],
-            params={
-                "value": 40,
-                "maxValue": 134,
-                "details": "Some information"
-            },
+            alerts=[Alert(value=5, state="warning", text="short text", longText="some long description of alert")],
+            params={"value": 40, "maxValue": 134, "details": "Some information"},
             insights=[
                 Insight("Info insight", "info", "Example insight information"),
                 Insight("Warning insight", "warning", "Example insight information"),
                 Insight("Error insight", "error", "Example insight information"),
                 Insight("Success insight", "success", "Example insight information"),
-            ]
+            ],
         )
 
     def analyzers(self):

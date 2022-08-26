@@ -6,6 +6,7 @@ def determine_template(mode: str):
     render_mode = mode
     try:
         from IPython import get_ipython
+
         is_colab = type(get_ipython()).__module__.startswith("google.colab")
     except ImportError:
         is_colab = False

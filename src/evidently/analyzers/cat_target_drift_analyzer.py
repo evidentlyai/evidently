@@ -98,13 +98,13 @@ class CatTargetDriftAnalyzer(Analyzer):
             prediction_column=columns.utility_columns.prediction,
             current_data=current_data,
             reference_data=reference_data,
-            threshold=classification_threshold
+            threshold=classification_threshold,
         )
 
         result = CatTargetDriftAnalyzerResults(
             columns=columns,
             reference_data_count=get_rows_count(reference_data),
-            current_data_count=get_rows_count(current_data)
+            current_data_count=get_rows_count(current_data),
         )
 
         # consider replacing only values in target and prediction column
@@ -117,7 +117,7 @@ class CatTargetDriftAnalyzer(Analyzer):
                 reference_data=reference_data,
                 column_name=target_column,
                 stattest=data_drift_options.cat_target_stattest_func,
-                threshold=threshold
+                threshold=threshold,
             )
 
         if prediction_column is not None:
@@ -126,7 +126,7 @@ class CatTargetDriftAnalyzer(Analyzer):
                 reference_data=reference_data,
                 column_name=prediction_column,
                 stattest=data_drift_options.cat_target_stattest_func,
-                threshold=threshold
+                threshold=threshold,
             )
 
         return result

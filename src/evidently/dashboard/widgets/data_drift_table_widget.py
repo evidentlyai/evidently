@@ -255,9 +255,9 @@ class DataDriftTableWidget(Widget):
 
         # sort columns by drift score
         df_for_sort = pd.DataFrame()
-        df_for_sort['features'] = all_features
-        df_for_sort['scores'] = [data_drift_results.metrics.features[feature].p_value for feature in all_features]
-        all_features = df_for_sort.sort_values('scores', ascending=False).features.tolist()
+        df_for_sort["features"] = all_features
+        df_for_sort["scores"] = [data_drift_results.metrics.features[feature].p_value for feature in all_features]
+        all_features = df_for_sort.sort_values("scores", ascending=False).features.tolist()
         columns = []
         if target_column:
             columns.append(target_column)
@@ -269,10 +269,7 @@ class DataDriftTableWidget(Widget):
 
         for feature_name in columns:
             params_data.append(
-                _generate_feature_params(
-                    feature_name,
-                    data_drift_results.metrics.features[feature_name]
-                )
+                _generate_feature_params(feature_name, data_drift_results.metrics.features[feature_name])
             )
 
         # set additionalGraphs

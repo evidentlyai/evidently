@@ -37,6 +37,7 @@ class DataQualityMetrics(Metric[DataQualityMetricsResults]):
 
     def calculate(self, data: InputData, metrics: dict) -> DataQualityMetricsResults:
         from evidently.analyzers.data_quality_analyzer import DataQualityAnalyzer
+
         analyzer = DataQualityAnalyzer()
         analyzer.options_provider = OptionsProvider()
 

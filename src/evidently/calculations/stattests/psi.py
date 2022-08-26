@@ -8,11 +8,8 @@ from evidently.calculations.stattests.utils import get_binned_data
 
 
 def psi(
-        reference_data: pd.Series,
-        current_data: pd.Series,
-        feature_type: str,
-        threshold: float,
-        n_bins: int = 30) -> Tuple[float, bool]:
+    reference_data: pd.Series, current_data: pd.Series, feature_type: str, threshold: float, n_bins: int = 30
+) -> Tuple[float, bool]:
     """Calculate the PSI
     Args:
         reference_data: reference data
@@ -28,7 +25,7 @@ def psi(
 
     def sub_psi(ref_perc, curr_perc):
         """Calculate the actual PSI value from comparing the values.
-            Update the actual value to a very small number if equal to zero
+        Update the actual value to a very small number if equal to zero
         """
         value = (ref_perc - curr_perc) * np.log(ref_perc / curr_perc)
         return value

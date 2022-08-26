@@ -30,8 +30,8 @@ def _collect_environment():
         python=dict(
             version=platform.python_version(),
             interpreter=platform.python_implementation(),
-            conda='CONDA_DEFAULT_ENV' in os.environ,
-            venv='VIRTUAL_ENV' in os.environ,
+            conda="CONDA_DEFAULT_ENV" in os.environ,
+            venv="VIRTUAL_ENV" in os.environ,
         ),
         os=platform.platform(),
     )

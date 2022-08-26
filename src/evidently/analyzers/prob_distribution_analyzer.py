@@ -20,8 +20,9 @@ class ProbDistributionAnalyzer(Analyzer):
     def get_results(analyzer_results) -> ProbDistributionAnalyzerResults:
         return analyzer_results[ProbDistributionAnalyzer]
 
-    def calculate(self, reference_data: pd.DataFrame, current_data: Optional[pd.DataFrame],
-                  column_mapping: ColumnMapping) -> ProbDistributionAnalyzerResults:
+    def calculate(
+        self, reference_data: pd.DataFrame, current_data: Optional[pd.DataFrame], column_mapping: ColumnMapping
+    ) -> ProbDistributionAnalyzerResults:
         columns = process_columns(reference_data, column_mapping)
 
         return ProbDistributionAnalyzerResults(columns=columns)

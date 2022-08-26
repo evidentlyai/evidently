@@ -14,11 +14,13 @@ class BarWidget(Widget):
     def analyzers(self):
         return []
 
-    def calculate(self,
-                  reference_data: pd.DataFrame,
-                  current_data: Optional[pd.DataFrame],
-                  column_mapping: ColumnMapping,
-                  analyzers_results) -> Optional[BaseWidgetInfo]:
+    def calculate(
+        self,
+        reference_data: pd.DataFrame,
+        current_data: Optional[pd.DataFrame],
+        column_mapping: ColumnMapping,
+        analyzers_results,
+    ) -> Optional[BaseWidgetInfo]:
         return BaseWidgetInfo(
             type="big_graph",
             title=self.title,
@@ -26,27 +28,16 @@ class BarWidget(Widget):
             params={
                 "data": [
                     {
-                        "marker": {
-                            "color": "#ed0400"
-                        },
+                        "marker": {"color": "#ed0400"},
                         "type": "bar",
                         "x": [1, 2, 3, 4, 5],
                         "y": [2, 5, 3, 1, 2],
                     }
                 ],
                 "layout": {
-                    "xaxis": {
-                        "title": {
-                            "text": "Features"
-                        }
-                    },
-                    "yaxis": {
-                        "showticklabels": True,
-                        "title": {
-                            "text": "Correlation"
-                        }
-                    }
-                }
+                    "xaxis": {"title": {"text": "Features"}},
+                    "yaxis": {"showticklabels": True, "title": {"text": "Correlation"}},
+                },
             },
             alerts=[],
             insights=[],

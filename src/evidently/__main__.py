@@ -82,24 +82,31 @@ def calculate_dashboard(config: str, reference: str, current: str, output_path: 
         sampling=Sampling(
             reference=SamplingOptions(**ref_sampling),
             current=SamplingOptions(**cur_sampling),
-        ))
+        ),
+    )
 
-    runner = DashboardRunner(DashboardRunnerOptions(
-        reference_data_path=reference,
-        reference_data_options=DataOptions(date_column=opts.data_format.date_column,
-                                           separator=opts.data_format.separator,
-                                           header=opts.data_format.header),
-        reference_data_sampling=opts.sampling.reference,
-        current_data_path=current,
-        current_data_options=DataOptions(date_column=opts.data_format.date_column,
-                                         separator=opts.data_format.separator,
-                                         header=opts.data_format.header),
-        current_data_sampling=opts.sampling.current,
-        dashboard_tabs=opts.dashboard_tabs,
-        options=parse_options(opts_data["options"]),
-        column_mapping=ColumnMapping(**opts.column_mapping),
-        output_path=os.path.join(output_path, report_name),
-    ))
+    runner = DashboardRunner(
+        DashboardRunnerOptions(
+            reference_data_path=reference,
+            reference_data_options=DataOptions(
+                date_column=opts.data_format.date_column,
+                separator=opts.data_format.separator,
+                header=opts.data_format.header,
+            ),
+            reference_data_sampling=opts.sampling.reference,
+            current_data_path=current,
+            current_data_options=DataOptions(
+                date_column=opts.data_format.date_column,
+                separator=opts.data_format.separator,
+                header=opts.data_format.header,
+            ),
+            current_data_sampling=opts.sampling.current,
+            dashboard_tabs=opts.dashboard_tabs,
+            options=parse_options(opts_data["options"]),
+            column_mapping=ColumnMapping(**opts.column_mapping),
+            output_path=os.path.join(output_path, report_name),
+        )
+    )
     runner.run()
     if TELEMETRY_ENABLED:
         sender = TelemetrySender(TELEMETRY_ADDRESS)
@@ -124,25 +131,32 @@ def calculate_profile(config: str, reference: str, current: str, output_path: st
         sampling=Sampling(
             reference=SamplingOptions(**ref_sampling),
             current=SamplingOptions(**cur_sampling),
-        ))
+        ),
+    )
 
-    runner = ProfileRunner(ProfileRunnerOptions(
-        reference_data_path=reference,
-        reference_data_options=DataOptions(date_column=opts.data_format.date_column,
-                                           separator=opts.data_format.separator,
-                                           header=opts.data_format.header),
-        reference_data_sampling=opts.sampling.reference,
-        current_data_path=current,
-        current_data_options=DataOptions(date_column=opts.data_format.date_column,
-                                         separator=opts.data_format.separator,
-                                         header=opts.data_format.header),
-        current_data_sampling=opts.sampling.current,
-        profile_parts=opts.profile_parts,
-        column_mapping=ColumnMapping(**opts.column_mapping),
-        options=parse_options(opts_data.get("options", None)),
-        output_path=os.path.join(output_path, report_name),
-        pretty_print=opts.pretty_print,
-    ))
+    runner = ProfileRunner(
+        ProfileRunnerOptions(
+            reference_data_path=reference,
+            reference_data_options=DataOptions(
+                date_column=opts.data_format.date_column,
+                separator=opts.data_format.separator,
+                header=opts.data_format.header,
+            ),
+            reference_data_sampling=opts.sampling.reference,
+            current_data_path=current,
+            current_data_options=DataOptions(
+                date_column=opts.data_format.date_column,
+                separator=opts.data_format.separator,
+                header=opts.data_format.header,
+            ),
+            current_data_sampling=opts.sampling.current,
+            profile_parts=opts.profile_parts,
+            column_mapping=ColumnMapping(**opts.column_mapping),
+            options=parse_options(opts_data.get("options", None)),
+            output_path=os.path.join(output_path, report_name),
+            pretty_print=opts.pretty_print,
+        )
+    )
     runner.run()
     if TELEMETRY_ENABLED:
         sender = TelemetrySender(TELEMETRY_ADDRESS)
@@ -158,8 +172,9 @@ def _add_default_parameters(configurable_parser, default_output_name: str):
     configurable_parser.add_argument("--reference", dest="reference", required=True, help="Path to reference data")
     configurable_parser.add_argument("--current", dest="current", help="Path to current data")
     configurable_parser.add_argument("--output_path", dest="output_path", required=True, help="Path to store report")
-    configurable_parser.add_argument("--report_name", dest="report_name", default=default_output_name,
-                                     help="Report name")
+    configurable_parser.add_argument(
+        "--report_name", dest="report_name", default=default_output_name, help="Report name"
+    )
     configurable_parser.add_argument("--config", dest="config", required=True, help="Path to configuration")
 
 
