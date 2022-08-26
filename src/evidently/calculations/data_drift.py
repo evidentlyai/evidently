@@ -67,17 +67,6 @@ def define_predictions_type(
     return result_prediction_column
 
 
-def _compute_statistic(
-    reference_data: pd.DataFrame,
-    current_data: pd.DataFrame,
-    feature_type: str,
-    column_name: str,
-    stattest: StatTest,
-    threshold: Optional[float],
-):
-    return stattest(reference_data[column_name], current_data[column_name], feature_type, threshold)
-
-
 @dataclass
 class DataDriftMetrics:
     """Class for drift values"""
