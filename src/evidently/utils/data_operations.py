@@ -179,19 +179,19 @@ def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping) -> Dat
     )
 
 
-def recognize_task(target_name: str, reference_data: pd.DataFrame) -> str:
+def recognize_task(target_name: str, dataset: pd.DataFrame) -> str:
     """Try to guess about the target type:
     if the target has a numeric type and number of unique values > 5: task == ‘regression’
     in all other cases task == ‘classification’.
 
     Args:
         target_name: name of target column.
-        reference_data: usually the data which you used in training.
+        dataset: usually the data which you used in training.
 
     Returns:
         Task parameter.
     """
-    if pd.api.types.is_numeric_dtype(reference_data[target_name]) and reference_data[target_name].nunique() >= 5:
+    if pd.api.types.is_numeric_dtype(dataset[target_name]) and dataset[target_name].nunique() >= 5:
         task = "regression"
 
     else:

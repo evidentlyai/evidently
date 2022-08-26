@@ -9,14 +9,15 @@ import pandas as pd
 import numpy as np
 
 from evidently import TaskType
+from evidently.calculations.data_quality import calculate_correlations
+from evidently.calculations.data_quality import calculate_data_quality_stats
 from evidently.calculations.data_quality import DataQualityStats
-from evidently.utils.data_operations import recognize_task
-from evidently.options.quality_metrics import QualityMetricsOptions
-from evidently.options import OptionsProvider
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.metrics.utils import make_hist_for_num_plot
 from evidently.metrics.utils import make_hist_for_cat_plot
+from evidently.utils.data_operations import process_columns
+from evidently.utils.data_operations import recognize_task
 
 
 @dataclass
@@ -29,46 +30,35 @@ class DataQualityMetricsResults:
 
 
 class DataQualityMetrics(Metric[DataQualityMetricsResults]):
-    def __init__(self, options: QualityMetricsOptions = None) -> None:
-        self.options = options
-
-    def get_parameters(self) -> tuple:
-        return tuple((self.options,))
-
     def calculate(self, data: InputData, metrics: dict) -> DataQualityMetricsResults:
-        from evidently.analyzers.data_quality_analyzer import DataQualityAnalyzer
-
-        analyzer = DataQualityAnalyzer()
-        analyzer.options_provider = OptionsProvider()
-
-        if self.options is not None:
-            analyzer.options_provider.add(self.options)
-
         if data.current_data is None:
             raise ValueError("Current dataset should be present")
 
-        if data.reference_data is None:
-            analyzer_results = analyzer.calculate(
-                reference_data=data.current_data, current_data=None, column_mapping=data.column_mapping
-            )
-            features_stats = analyzer_results.reference_features_stats
-            correlations = analyzer_results.reference_correlations
-            reference_features_stats = None
+        columns = process_columns(data.current_data, data.column_mapping)
+        target_name = columns.utility_columns.target
+
+        if data.column_mapping.task is None:
+            if target_name is None:
+                task = None
+
+            else:
+                if data.reference_data is None:
+                    data_for_task_detection = data.current_data
+
+                else:
+                    data_for_task_detection = data.reference_data
+
+                task = recognize_task(target_name, data_for_task_detection)
 
         else:
-            analyzer_results = analyzer.calculate(
-                reference_data=data.reference_data, current_data=data.current_data, column_mapping=data.column_mapping
-            )
-            if analyzer_results.current_features_stats is None:
-                raise ValueError("No results from analyzer")
+            task = data.column_mapping.task
 
-            features_stats = analyzer_results.current_features_stats
+        current_features_stats = calculate_data_quality_stats(data.current_data, columns, task)
+        current_correlations = calculate_correlations(data.current_data, current_features_stats, target_name)
+        reference_features_stats = None
 
-            if analyzer_results.current_correlations is None:
-                raise ValueError("No results from analyzer")
-
-            correlations = analyzer_results.current_correlations
-            reference_features_stats = analyzer_results.reference_features_stats
+        if data.reference_data is not None:
+            reference_features_stats = calculate_data_quality_stats(data.reference_data, columns, task)
 
         # data for visualisation
         if data.reference_data is not None:
@@ -79,32 +69,16 @@ class DataQualityMetrics(Metric[DataQualityMetricsResults]):
 
         distr_for_plots = {}
         counts_of_values = {}
-
-        if data.column_mapping.task is not None:
-            task: Optional[str] = data.column_mapping.task
-
-        elif data.column_mapping.task is None and analyzer_results.columns.utility_columns.target:
-            if reference_data is None:
-                data_for_task_detection = data.current_data
-
-            else:
-                data_for_task_detection = reference_data
-
-            task = recognize_task(analyzer_results.columns.utility_columns.target, data_for_task_detection)
-
-        else:
-            task = None
-
         target_prediction_columns = []
 
-        if isinstance(analyzer_results.columns.utility_columns.target, str):
-            target_prediction_columns.append(analyzer_results.columns.utility_columns.target)
+        if isinstance(columns.utility_columns.target, str):
+            target_prediction_columns.append(columns.utility_columns.target)
 
-        if isinstance(analyzer_results.columns.utility_columns.prediction, str):
-            target_prediction_columns.append(analyzer_results.columns.utility_columns.prediction)
+        if isinstance(columns.utility_columns.prediction, str):
+            target_prediction_columns.append(columns.utility_columns.prediction)
 
-        num_columns = analyzer_results.columns.num_feature_names
-        cat_columns = analyzer_results.columns.cat_feature_names
+        num_columns = columns.num_feature_names
+        cat_columns = columns.cat_feature_names
 
         if task == TaskType.REGRESSION_TASK:
             num_columns.extend(target_prediction_columns)
@@ -140,10 +114,10 @@ class DataQualityMetrics(Metric[DataQualityMetricsResults]):
             distr_for_plots[feature] = counts_of_values[feature]
 
         return DataQualityMetricsResults(
-            features_stats=features_stats,
+            features_stats=current_features_stats,
             distr_for_plots=distr_for_plots,
             counts_of_values=counts_of_values,
-            correlations=correlations,
+            correlations=current_correlations,
             reference_features_stats=reference_features_stats,
         )
 

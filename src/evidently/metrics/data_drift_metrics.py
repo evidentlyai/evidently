@@ -57,6 +57,4 @@ class DataDriftMetrics(Metric[DataDriftMetricsResults]):
         for feature in columns.cat_feature_names:
             distr_for_plots[feature] = make_hist_for_cat_plot(data.current_data[feature], data.reference_data[feature])
 
-        return DataDriftMetricsResults(
-            options=options, metrics=drift_metrics, distr_for_plots=distr_for_plots
-        )
+        return DataDriftMetricsResults(options=options, metrics=drift_metrics, distr_for_plots=distr_for_plots)
