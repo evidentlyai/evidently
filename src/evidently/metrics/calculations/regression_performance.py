@@ -184,12 +184,12 @@ class RegressionPerformanceMetrics:
     abs_perc_error_std: float
     error_normality: dict
     underperformance: dict
-    error_bias: Optional[dict] = None
+    error_bias: dict
 
 
 def calculate_regression_performance(
     dataset: pd.DataFrame, columns: DatasetColumns, error_bias_prefix: str
-) -> Optional[RegressionPerformanceMetrics]:
+) -> RegressionPerformanceMetrics:
     target_column = columns.utility_columns.target
     prediction_column = columns.utility_columns.prediction
 
@@ -197,7 +197,7 @@ def calculate_regression_performance(
     cat_feature_names = columns.cat_feature_names
 
     if target_column is None or prediction_column is None:
-        return None
+        raise ValueError("Target and prediction should be present")
 
     _prepare_dataset(dataset, target_column, prediction_column)
     # calculate quality metrics
@@ -207,15 +207,11 @@ def calculate_regression_performance(
     quality_metrics["error_normality"] = _calculate_error_normality(err_quantiles)
     # underperformance metrics
     quality_metrics["underperformance"] = _calculate_underperformance(err_quantiles)
-    result = RegressionPerformanceMetrics(**quality_metrics)
+    quality_metrics["error_bias"] = {}
     feature_bias = _error_bias_table(dataset, err_quantiles, num_feature_names, cat_feature_names)
     # convert to old format
-    error_bias = {
+    quality_metrics["error_bias"] = {
         feature: dict(feature_type=bias.feature_type, **bias.as_dict(error_bias_prefix))
         for feature, bias in feature_bias.items()
     }
-
-    if error_bias:
-        result.error_bias = error_bias
-
-    return result
+    return RegressionPerformanceMetrics(**quality_metrics)

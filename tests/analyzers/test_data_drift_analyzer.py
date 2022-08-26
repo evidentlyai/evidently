@@ -70,7 +70,7 @@ def test_data_drift_analyzer_as_dict_format(data_drift_analyzer: DataDriftAnalyz
 
 
 def test_data_drift_analyzer_with_different_values_in_reference_and_current_data_category_feature(
-        data_drift_analyzer: DataDriftAnalyzer
+    data_drift_analyzer: DataDriftAnalyzer,
 ) -> None:
     ref_test_data = DataFrame(
         {

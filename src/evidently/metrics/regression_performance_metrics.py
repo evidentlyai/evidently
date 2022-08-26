@@ -63,16 +63,20 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
             dataset=data.current_data, columns=columns, error_bias_prefix="current_"
         )
         error_bias = current_metrics.error_bias
+        reference_metrics = None
 
         if data.reference_data is not None:
             reference_metrics = calculate_regression_performance(
                 dataset=data.reference_data, columns=columns, error_bias_prefix="ref_"
             )
-            for feature_name, current_bias in reference_metrics.error_bias.items():
-                error_bias[feature_name].update(current_bias)
 
-        else:
-            reference_metrics = None
+            if reference_metrics is not None and reference_metrics.error_bias:
+                for feature_name, current_bias in reference_metrics.error_bias.items():
+                    if feature_name in error_bias:
+                        error_bias[feature_name].update(current_bias)
+
+                    else:
+                        error_bias[feature_name] = current_bias
 
         r2_score_value = r2_score(
             y_true=data.current_data[data.column_mapping.target],

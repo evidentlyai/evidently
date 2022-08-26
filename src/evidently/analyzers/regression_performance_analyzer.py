@@ -39,7 +39,6 @@ class RegressionPerformanceAnalyzer(Analyzer):
                 dataset=reference_data, columns=columns, error_bias_prefix="ref_"
             )
             error_bias = result.reference_metrics.error_bias
-            result.reference_metrics.error_bias = None
 
             if current_data is not None:
                 result.current_metrics = calculate_regression_performance(
@@ -49,8 +48,6 @@ class RegressionPerformanceAnalyzer(Analyzer):
                 if error_bias is not None:
                     for feature_name, current_bias in result.current_metrics.error_bias.items():
                         error_bias[feature_name].update(current_bias)
-
-                result.current_metrics.error_bias = None
 
             if error_bias:
                 result.error_bias = error_bias
