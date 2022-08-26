@@ -197,7 +197,7 @@ class TestCustomFeaturesValueDrift(BaseTestGenerator):
         return [TestFeatureValueDrift(column_name=name) for name in self.features]
 
 
-@default_renderer(test_type=TestNumberOfDriftedFeatures)
+@default_renderer(wrap_type=TestNumberOfDriftedFeatures)
 class TestNumberOfDriftedFeaturesRenderer(TestRenderer):
     def render_json(self, obj: TestNumberOfDriftedFeatures) -> dict:
         base = super().render_json(obj)
@@ -230,7 +230,7 @@ class TestNumberOfDriftedFeaturesRenderer(TestRenderer):
         return info
 
 
-@default_renderer(test_type=TestShareOfDriftedFeatures)
+@default_renderer(wrap_type=TestShareOfDriftedFeatures)
 class TestShareOfDriftedFeaturesRenderer(TestRenderer):
     def render_json(self, obj: TestShareOfDriftedFeatures) -> dict:
         base = super().render_json(obj)
@@ -263,7 +263,7 @@ class TestShareOfDriftedFeaturesRenderer(TestRenderer):
         return info
 
 
-@default_renderer(test_type=TestFeatureValueDrift)
+@default_renderer(wrap_type=TestFeatureValueDrift)
 class TestFeatureValueDriftRenderer(TestRenderer):
     def render_json(self, obj: TestFeatureValueDrift) -> dict:
         feature_name = obj.column_name

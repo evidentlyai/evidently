@@ -200,7 +200,7 @@ def classification_performance_metrics(
 
 
 class ClassificationPerformanceMetrics(Metric[ClassificationPerformanceResults]):
-    def calculate(self, data: InputData, metrics: dict) -> ClassificationPerformanceResults:
+    def calculate(self, data: InputData) -> ClassificationPerformanceResults:
         if data.current_data is None:
             raise ValueError("current dataset should be present")
 
@@ -307,7 +307,7 @@ def _dummy_threshold_metrics(
 
 
 class ClassificationPerformanceMetricsThresholdBase(Metric[ClassificationPerformanceResults]):
-    def calculate(self, data: InputData, metrics: dict) -> ClassificationPerformanceResults:
+    def calculate(self, data: InputData) -> ClassificationPerformanceResults:
         current_data = _cleanup_data(data.current_data, data.column_mapping)
         target_data = current_data[data.column_mapping.target]
         threshold = self.get_threshold(current_data, data.column_mapping)

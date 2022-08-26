@@ -1,15 +1,7 @@
-import abc
-
 import dataclasses
 from typing import List, Optional, Dict
 
 from evidently.model.widget import BaseWidgetInfo
-
-
-class MetricRenderer:
-    @abc.abstractmethod
-    def render(self, obj) -> BaseWidgetInfo:
-        raise NotImplementedError()
 
 
 @dataclasses.dataclass
@@ -17,6 +9,21 @@ class DetailsInfo:
     id: str
     title: str
     info: BaseWidgetInfo
+
+
+@dataclasses.dataclass
+class MetricHtmlInfo:
+    name: str
+    info: BaseWidgetInfo
+    details: List[DetailsInfo]
+
+
+class MetricRenderer:
+    def render_html(self, obj) -> List[MetricHtmlInfo]:
+        raise NotImplementedError()
+
+    def render_json(self, obj) -> dict:
+        raise NotImplementedError()
 
 
 @dataclasses.dataclass
@@ -63,9 +70,9 @@ class RenderersDefinitions:
     default_html_metric_renderer: Optional[MetricRenderer] = None
 
 
-def default_renderer(test_type):
+def default_renderer(wrap_type):
     def wrapper(cls):
-        DEFAULT_RENDERERS.typed_renderers[test_type] = cls()
+        DEFAULT_RENDERERS.typed_renderers[wrap_type] = cls()
         return cls
 
     return wrapper
