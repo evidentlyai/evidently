@@ -64,7 +64,7 @@ class DataIntegrityMetrics(Metric[DataIntegrityMetricsResults]):
             counts_of_values=counts_of_values,
         )
 
-    def calculate(self, data: InputData, metrics: dict) -> DataIntegrityMetricsResults:
+    def calculate(self, data: InputData) -> DataIntegrityMetricsResults:
         columns = []
 
         for col in [data.column_mapping.target, data.column_mapping.datetime, data.column_mapping.id]:
@@ -130,7 +130,7 @@ class DataIntegrityValueByRegexpMetrics(Metric[DataIntegrityValueByRegexpMetricR
         self.column_name = column_name
         self.reg_exp_compiled = re.compile(reg_exp)
 
-    def calculate(self, data: InputData, metrics: dict) -> DataIntegrityValueByRegexpMetricResult:
+    def calculate(self, data: InputData) -> DataIntegrityValueByRegexpMetricResult:
         mult = None
         not_matched_values = {}
         not_matched_table = {}
@@ -330,7 +330,7 @@ class DataIntegrityNullValuesMetrics(Metric[DataIntegrityNullValuesMetricsResult
             share_of_columns_with_nulls=number_of_columns_with_nulls / number_of_columns,
         )
 
-    def calculate(self, data: InputData, metrics: dict) -> DataIntegrityNullValuesMetricsResult:
+    def calculate(self, data: InputData) -> DataIntegrityNullValuesMetricsResult:
         if not self.null_values:
             raise ValueError("Null-values list should not be empty.")
 

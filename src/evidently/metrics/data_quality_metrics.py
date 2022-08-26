@@ -41,7 +41,7 @@ class DataQualityMetrics(Metric[DataQualityMetricsResults]):
     def get_parameters(self) -> tuple:
         return tuple((self.options,))
 
-    def calculate(self, data: InputData, metrics: dict) -> DataQualityMetricsResults:
+    def calculate(self, data: InputData) -> DataQualityMetricsResults:
         if data.current_data is None:
             raise ValueError("Current dataset should be present")
 
@@ -155,7 +155,7 @@ class DataQualityStabilityMetricsResults:
 class DataQualityStabilityMetrics(Metric[DataQualityStabilityMetricsResults]):
     """Calculates stability by target and prediction"""
 
-    def calculate(self, data: InputData, metrics: dict) -> DataQualityStabilityMetricsResults:
+    def calculate(self, data: InputData) -> DataQualityStabilityMetricsResults:
         result = DataQualityStabilityMetricsResults()
         target_name = data.column_mapping.target
         prediction_name = data.column_mapping.prediction
@@ -195,7 +195,7 @@ class DataQualityValueListMetrics(Metric[DataQualityValueListMetricsResults]):
         self.values = values
         self.column = column
 
-    def calculate(self, data: InputData, metrics: dict) -> DataQualityValueListMetricsResults:
+    def calculate(self, data: InputData) -> DataQualityValueListMetricsResults:
         if self.values is None:
             if data.reference_data is None:
                 raise ValueError("Reference or values list should be present")
@@ -248,7 +248,7 @@ class DataQualityValueRangeMetrics(Metric[DataQualityValueRangeMetricsResults]):
         self.right = right
         self.column = column
 
-    def calculate(self, data: InputData, metrics: dict) -> DataQualityValueRangeMetricsResults:
+    def calculate(self, data: InputData) -> DataQualityValueRangeMetricsResults:
         if (self.left is None or self.right is None) and data.reference_data is None:
             raise ValueError("Reference should be present")
 
@@ -323,7 +323,7 @@ class DataQualityValueQuantileMetrics(Metric[DataQualityValueQuantileMetricsResu
         self.column = column
         self.quantile = quantile
 
-    def calculate(self, data: InputData, metrics: dict) -> DataQualityValueQuantileMetricsResults:
+    def calculate(self, data: InputData) -> DataQualityValueQuantileMetricsResults:
         # visualisation
 
         curr_feature = data.current_data[self.column]
@@ -422,7 +422,7 @@ class DataQualityCorrelationMetrics(Metric[DataQualityCorrelationMetricsResults]
             abs_max_num_features_correlation=abs_max_num_features_correlation,
         )
 
-    def calculate(self, data: InputData, metrics: dict) -> DataQualityCorrelationMetricsResults:
+    def calculate(self, data: InputData) -> DataQualityCorrelationMetricsResults:
         target_name = data.column_mapping.target
         prediction_name = data.column_mapping.prediction
         num_features: Optional[List[str]] = data.column_mapping.numerical_features

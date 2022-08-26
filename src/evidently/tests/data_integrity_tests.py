@@ -86,7 +86,7 @@ class TestNumberOfColumns(BaseIntegrityValueTest):
         return f"The number of columns is {value}. The test threshold is {self.get_condition()}."
 
 
-@default_renderer(test_type=TestNumberOfColumns)
+@default_renderer(wrap_type=TestNumberOfColumns)
 class TestNumberOfColumnsRenderer(TestRenderer):
     def render_json(self, obj: TestNumberOfColumns) -> dict:
         base = super().render_json(obj)
@@ -133,7 +133,7 @@ class TestNumberOfRows(BaseIntegrityValueTest):
         return f"The number of rows is {value}. The test threshold is {self.get_condition()}."
 
 
-@default_renderer(test_type=TestNumberOfRows)
+@default_renderer(wrap_type=TestNumberOfRows)
 class TestNumberOfRowsRenderer(TestRenderer):
     def render_json(self, obj: TestNumberOfRows) -> dict:
         base = super().render_json(obj)
@@ -262,7 +262,7 @@ class TestNumberOfDifferentNulls(BaseIntegrityNullValuesTest):
         return f"Number of different nulls is {value}. The test threshold is {self.get_condition()}."
 
 
-@default_renderer(test_type=TestNumberOfDifferentNulls)
+@default_renderer(wrap_type=TestNumberOfDifferentNulls)
 class TestNumberOfDifferentNullsRenderer(BaseTestNullValuesRenderer):
     def render_json(self, obj: TestNumberOfDifferentNulls) -> dict:
         base = super().render_json(obj)
@@ -310,7 +310,7 @@ class TestNumberOfNulls(BaseIntegrityNullValuesTest):
         return f"Number of nulls is {value}. The test threshold is {self.get_condition()}."
 
 
-@default_renderer(test_type=TestNumberOfNulls)
+@default_renderer(wrap_type=TestNumberOfNulls)
 class TestNumberOfNullsRenderer(BaseTestNullValuesRenderer):
     def render_json(self, obj: TestNumberOfNulls) -> dict:
         base = super().render_json(obj)
@@ -347,7 +347,7 @@ class TestShareOfNulls(BaseIntegrityNullValuesTest):
         return f"Share of null values is {np.round(value, 3)}. The test threshold is {self.get_condition()}."
 
 
-@default_renderer(test_type=TestShareOfNulls)
+@default_renderer(wrap_type=TestShareOfNulls)
 class TestShareOfNullsRenderer(BaseTestNullValuesRenderer):
     def render_json(self, obj: TestShareOfNulls) -> dict:
         base = super().render_json(obj)
@@ -384,7 +384,7 @@ class TestNumberOfColumnsWithNulls(BaseIntegrityNullValuesTest):
         return f"Number of columns with null values is {value}. The test threshold is {self.get_condition()}."
 
 
-@default_renderer(test_type=TestNumberOfColumnsWithNulls)
+@default_renderer(wrap_type=TestNumberOfColumnsWithNulls)
 class TestNumberOfColumnsWithNullsRenderer(BaseTestNullValuesRenderer):
     def render_json(self, obj: TestNumberOfColumnsWithNulls) -> dict:
         base = super().render_json(obj)
@@ -424,7 +424,7 @@ class TestShareOfColumnsWithNulls(BaseIntegrityNullValuesTest):
                f"The test threshold is {self.get_condition()}."
 
 
-@default_renderer(test_type=TestShareOfColumnsWithNulls)
+@default_renderer(wrap_type=TestShareOfColumnsWithNulls)
 class TestShareOfColumnsWithNullsRenderer(BaseTestNullValuesRenderer):
     def render_json(self, obj: TestShareOfColumnsWithNulls) -> dict:
         base = super().render_json(obj)
@@ -463,7 +463,7 @@ class TestNumberOfRowsWithNulls(BaseIntegrityNullValuesTest):
         return f"Number of rows with null values is {value}. The test threshold is {self.get_condition()}."
 
 
-@default_renderer(test_type=TestNumberOfRowsWithNulls)
+@default_renderer(wrap_type=TestNumberOfRowsWithNulls)
 class TestNumberOfRowsWithNullsRenderer(BaseTestNullValuesRenderer):
     def render_json(self, obj: TestNumberOfRowsWithNulls) -> dict:
         base = super().render_json(obj)
@@ -495,7 +495,7 @@ class TestShareOfRowsWithNulls(BaseIntegrityNullValuesTest):
         return f"Share of rows with null values is {np.round(value, 3)}. The test threshold is {self.get_condition()}."
 
 
-@default_renderer(test_type=TestShareOfRowsWithNulls)
+@default_renderer(wrap_type=TestShareOfRowsWithNulls)
 class TestShareOfRowsWithNullsRenderer(BaseTestNullValuesRenderer):
     def render_json(self, obj: TestShareOfRowsWithNulls) -> dict:
         base = super().render_json(obj)
@@ -560,7 +560,7 @@ class TestColumnNumberOfDifferentNulls(BaseIntegrityColumnNullValuesTest):
                f"The test threshold is {self.get_condition()}."
 
 
-@default_renderer(test_type=TestColumnNumberOfDifferentNulls)
+@default_renderer(wrap_type=TestColumnNumberOfDifferentNulls)
 class TestColumnNumberOfDifferentNullsRenderer(BaseTestNullValuesRenderer):
     def render_json(self, obj: TestColumnNumberOfDifferentNulls) -> dict:
         base = super().render_json(obj)
@@ -611,7 +611,7 @@ class TestColumnNumberOfNulls(BaseIntegrityColumnNullValuesTest):
                f"The test threshold is {self.get_condition()}."
 
 
-@default_renderer(test_type=TestColumnNumberOfNulls)
+@default_renderer(wrap_type=TestColumnNumberOfNulls)
 class TestColumnNumberOfNullsRenderer(BaseTestNullValuesRenderer):
     def render_json(self, obj: TestColumnNumberOfNulls) -> dict:
         base = super().render_json(obj)
@@ -651,7 +651,7 @@ class TestAllColumnsShareOfNulls(BaseTestGenerator):
         return [TestColumnShareOfNulls(column_name=name) for name in columns_info.get_all_columns_list()]
 
 
-@default_renderer(test_type=TestColumnShareOfNulls)
+@default_renderer(wrap_type=TestColumnShareOfNulls)
 class TestColumnShareOfNullsRenderer(BaseTestNullValuesRenderer):
     def render_json(self, obj: TestColumnShareOfNulls) -> dict:
         base = super().render_json(obj)
@@ -685,7 +685,7 @@ class TestNumberOfConstantColumns(BaseIntegrityValueTest):
         return f"The number of constant columns is {value}. The test threshold is {self.get_condition()}."
 
 
-@default_renderer(test_type=TestNumberOfConstantColumns)
+@default_renderer(wrap_type=TestNumberOfConstantColumns)
 class TestNumberOfConstantColumnsRenderer(TestRenderer):
     def render_json(self, obj: TestNumberOfConstantColumns) -> dict:
         base = super().render_json(obj)
@@ -759,7 +759,7 @@ class TestNumberOfEmptyColumns(BaseIntegrityValueTest):
         return f"Number of Empty Columns is {value} Test Threshold is {self.get_condition()}."
 
 
-@default_renderer(test_type=TestNumberOfEmptyColumns)
+@default_renderer(wrap_type=TestNumberOfEmptyColumns)
 class TestNumberOfEmptyColumnsRenderer(TestRenderer):
     def render_html(self, obj: TestNumberOfEmptyColumns) -> TestHtmlInfo:
         info = super().render_html(obj)
@@ -804,7 +804,7 @@ class TestNumberOfDuplicatedRows(BaseIntegrityValueTest):
         return f"The number of duplicate rows is {value}. The test threshold is {self.get_condition()}."
 
 
-@default_renderer(test_type=TestNumberOfDuplicatedRows)
+@default_renderer(wrap_type=TestNumberOfDuplicatedRows)
 class TestNumberOfDuplicatedRowsRenderer(TestRenderer):
     def render_json(self, obj: TestNumberOfDuplicatedRows) -> dict:
         base = super().render_json(obj)
@@ -837,7 +837,7 @@ class TestNumberOfDuplicatedColumns(BaseIntegrityValueTest):
         return f"The number of duplicate columns is {value}. The test threshold is {self.get_condition()}."
 
 
-@default_renderer(test_type=TestNumberOfDuplicatedColumns)
+@default_renderer(wrap_type=TestNumberOfDuplicatedColumns)
 class TestNumberOfDuplicatedColumnsRenderer(TestRenderer):
     def render_json(self, obj: TestNumberOfDuplicatedColumns) -> dict:
         base = super().render_json(obj)
@@ -928,7 +928,7 @@ class TestColumnAllConstantValues(BaseIntegrityOneColumnTest):
         return TestResult(name=self.name, description=description, status=status, groups=self.groups())
 
 
-@default_renderer(test_type=TestColumnAllConstantValues)
+@default_renderer(wrap_type=TestColumnAllConstantValues)
 class TestColumnAllConstantValuesRenderer(TestRenderer):
     def render_html(self, obj: TestColumnAllConstantValues) -> TestHtmlInfo:
         info = super().render_html(obj)
@@ -976,7 +976,7 @@ class TestColumnAllUniqueValues(BaseIntegrityOneColumnTest):
         return TestResult(name=self.name, description=description, status=status, groups=self.groups())
 
 
-@default_renderer(test_type=TestColumnAllUniqueValues)
+@default_renderer(wrap_type=TestColumnAllUniqueValues)
 class TestColumnAllUniqueValuesRenderer(TestRenderer):
     def render_html(self, obj: TestColumnAllUniqueValues) -> TestHtmlInfo:
         info = super().render_html(obj)
@@ -1066,7 +1066,7 @@ class TestColumnsType(Test):
         )
 
 
-@default_renderer(test_type=TestColumnsType)
+@default_renderer(wrap_type=TestColumnsType)
 class TestNumberOfDriftedFeaturesRenderer(TestRenderer):
     def render_json(self, obj: TestColumnsType) -> dict:
         base = super().render_json(obj)
@@ -1168,7 +1168,7 @@ class TestColumnValueRegExp(BaseCheckValueTest, ABC):
         )
 
 
-@default_renderer(test_type=TestColumnValueRegExp)
+@default_renderer(wrap_type=TestColumnValueRegExp)
 class TestColumnValueRegExpRenderer(TestRenderer):
     def render_html(self, obj: TestColumnValueRegExp) -> TestHtmlInfo:
         info = super().render_html(obj)

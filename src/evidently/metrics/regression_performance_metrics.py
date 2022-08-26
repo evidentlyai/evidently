@@ -56,7 +56,7 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
     def get_parameters(self) -> tuple:
         return ()
 
-    def calculate(self, data: InputData, metrics: dict) -> RegressionPerformanceMetricsResults:
+    def calculate(self, data: InputData) -> RegressionPerformanceMetricsResults:
         if data.current_data is None:
             raise ValueError("current dataset should be present")
 
