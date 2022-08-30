@@ -16,6 +16,7 @@ from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.base_renderer import MetricHtmlInfo
+from evidently.renderers.base_renderer import DetailsInfo
 from evidently.renderers.base_renderer import MetricRenderer
 
 
@@ -223,28 +224,65 @@ class DataIntegrityValueByRegexpMetricsRenderer(MetricRenderer):
     def render_json(self, obj: DataIntegrityValueByRegexpMetrics) -> dict:
         return dataclasses.asdict(obj.get_result())
 
+    @staticmethod
+    def _get_table_stat(title: str, name: str, stats: DataIntegrityValueByRegexpStat) -> MetricHtmlInfo:
+        matched_stat = [(f"{k} (matched)", v) for k, v in stats.table_of_matched.items()]
+        matched_stat += [(f"{k} (not matched)", v) for k, v in stats.table_of_not_matched.items()]
+        matched_stat += [
+            ("NaN",
+             stats.number_of_rows - stats.number_of_matched - stats.number_of_not_matched),
+            ("Total", stats.number_of_rows)
+        ]
+        matched_stat_headers = ["Value", "Count"]
+        return MetricHtmlInfo(
+            name=f"data_integrity_value_by_regexp_stats_{name}",
+            info=BaseWidgetInfo(
+                title=title,
+                type=BaseWidgetInfo.WIDGET_INFO_TYPE_TABLE,
+                size=1,
+                params={
+                    "header": matched_stat_headers, "data": matched_stat
+                },
+            ),
+            details=[],
+        )
+
     def render_html(self, obj: DataIntegrityValueByRegexpMetrics) -> List[MetricHtmlInfo]:
-        result = obj.get_result()
-        return [
+        metric_result = obj.get_result()
+        number_of_matched = metric_result.current.number_of_matched
+        number_of_rows = metric_result.current.number_of_rows
+
+        result = [
             MetricHtmlInfo(
-                "data_integrity_value_by_regexp",
-                BaseWidgetInfo(
-                    type="counter",
-                    title="Data Integrity By Regexp",
+                name="data_integrity_value_by_regexp_title",
+                info=BaseWidgetInfo(
+                    type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
+                    title="Data Integrity Metric: Values Matching By Regexp In a Column",
                     size=2,
                     params={
                         "counters": [
                             {
                                 "value": "",
-                                "label": f"""For regexp "{result.reg_exp}" in column **{result.column_name}** founded {result.current.number_of_matched} values in {result.current.number_of_rows} rows.
-{result.current.table_of_matched}, {result.current.table_of_not_matched}"""
+                                "label": f"Founded {number_of_matched} of {number_of_rows} by "
+                                         f"regexp \"{metric_result.reg_exp}\" in "
+                                         f"column **{metric_result.column_name}** of current data."
                             }
                         ]
                     },
                 ),
                 details=[],
             ),
+            self._get_table_stat(title="Current Match Statistics", name="current", stats=metric_result.current),
         ]
+
+        if metric_result.reference is not None:
+            result.append(
+                self._get_table_stat(
+                    title="Reference Match Statistics", name="reference", stats=metric_result.reference
+                )
+            )
+
+        return result
 
 
 @dataclass

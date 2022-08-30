@@ -57,6 +57,11 @@ class AdditionalGraphInfo:
 
 @dataclass
 class BaseWidgetInfo:
+    WIDGET_INFO_TYPE_COUNTER = "counter"
+    WIDGET_INFO_TYPE_TABLE = "table"
+    WIDGET_INFO_TYPE_BIG_TABLE = "big_table"
+    WIDGET_INFO_TYPE_BIG_GRAPH = "big_graph"
+
     type: str
     title: str
     size: int
