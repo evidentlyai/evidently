@@ -1,5 +1,6 @@
 import dataclasses
-from typing import Dict, List
+from typing import Dict
+from typing import List
 from typing import Optional
 from dataclasses import dataclass
 
@@ -12,7 +13,9 @@ from evidently.calculations.data_drift import DataDriftAnalyzerMetrics
 from evidently.metrics.utils import make_hist_for_num_plot
 from evidently.metrics.utils import make_hist_for_cat_plot
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import default_renderer, MetricRenderer, MetricHtmlInfo
+from evidently.renderers.base_renderer import default_renderer
+from evidently.renderers.base_renderer import MetricHtmlInfo
+from evidently.renderers.base_renderer import MetricRenderer
 from evidently.options import DataDriftOptions
 from evidently.options import OptionsProvider
 from evidently.utils.data_operations import process_columns

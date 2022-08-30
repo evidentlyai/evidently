@@ -1,6 +1,8 @@
-from dataclasses import dataclass
-from typing import Optional, Dict, Union
 import warnings
+from dataclasses import dataclass
+from typing import Dict
+from typing import Optional
+from typing import Union
 
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.calculations.stattests import StatTest
@@ -11,7 +13,7 @@ DEFAULT_NBINSX = 10
 
 @dataclass
 class DataDriftOptions:
-    """Configuration for Data Drift analyzer, Dashboard and Profile.
+    """Configuration for Data Drift calculations.
 
     Attributes:
         confidence: Defines the confidence level for statistical tests.
