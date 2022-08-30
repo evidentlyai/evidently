@@ -174,8 +174,8 @@ class DataIntegrityValueByRegexpMetrics(Metric[DataIntegrityValueByRegexpMetricR
         number_of_matched = 0
         number_of_na = 0
         number_of_not_matched = 0
-        table_of_matched = collections.defaultdict(int)
-        table_of_not_matched = collections.defaultdict(int)
+        table_of_matched: Dict[str, int] = collections.defaultdict(int)
+        table_of_not_matched: Dict[str, int] = collections.defaultdict(int)
 
         for item in column:
             if pd.isna(item):

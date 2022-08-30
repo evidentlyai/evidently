@@ -57,36 +57,36 @@ def test_data_integrity_metrics() -> None:
             )
         ),
         (
-                pd.DataFrame(
-                    {
-                        "feature": [" a", "a", "\tb", np.nan, np.nan],
-                    }
+            pd.DataFrame(
+                {
+                    "feature": [" a", "a", "\tb", np.nan, np.nan],
+                }
+            ),
+            pd.DataFrame(
+                {
+                    "feature": ["a", "a", "c"],
+                }
+            ),
+            "feature",
+            r"^\s+.*",
+            DataIntegrityValueByRegexpMetricResult(
+                column_name="feature",
+                reg_exp=r"^\s+.*",
+                current=DataIntegrityValueByRegexpStat(
+                    number_of_matched=2,
+                    number_of_not_matched=1,
+                    number_of_rows=5,
+                    table_of_matched={" a": 1, "\tb": 1},
+                    table_of_not_matched={"a": 1},
                 ),
-                pd.DataFrame(
-                    {
-                        "feature": ["a", "a", "c"],
-                    }
-                ),
-                "feature",
-                r"^\s+.*",
-                DataIntegrityValueByRegexpMetricResult(
-                    column_name="feature",
-                    reg_exp=r"^\s+.*",
-                    current=DataIntegrityValueByRegexpStat(
-                        number_of_matched=2,
-                        number_of_not_matched=1,
-                        number_of_rows=5,
-                        table_of_matched={" a": 1, "\tb": 1},
-                        table_of_not_matched={"a": 1},
-                    ),
-                    reference=DataIntegrityValueByRegexpStat(
-                        number_of_matched=0,
-                        number_of_not_matched=3,
-                        number_of_rows=3,
-                        table_of_matched={},
-                        table_of_not_matched={"a": 2, "c": 1},
-                    )
+                reference=DataIntegrityValueByRegexpStat(
+                    number_of_matched=0,
+                    number_of_not_matched=3,
+                    number_of_rows=3,
+                    table_of_matched={},
+                    table_of_not_matched={"a": 2, "c": 1},
                 )
+            )
         ),
     )
 )
