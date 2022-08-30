@@ -54,7 +54,6 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
         return ()
 
     def calculate(self, data: InputData) -> RegressionPerformanceMetricsResults:
-    def calculate(self, data: InputData, metrics: dict) -> RegressionPerformanceMetricsResults:
         columns = process_columns(data.current_data, data.column_mapping)
 
         if data.current_data is None:

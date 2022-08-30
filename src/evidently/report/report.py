@@ -1,16 +1,21 @@
 import dataclasses
 import uuid
-from typing import Optional, List, Union
+from typing import List
+from typing import Optional
+from typing import Union
 
 import pandas as pd
 
 from evidently import ColumnMapping
-from evidently.analyzers.utils import process_columns, DatasetColumns
 from evidently.dashboard.dashboard import TemplateParams
-from evidently.metrics.base_metric import Metric, InputData
+from evidently.metrics.base_metric import InputData
+from evidently.metrics.base_metric import Metric
 from evidently.model.dashboard import DashboardInfo
 from evidently.renderers.notebook_utils import determine_template
-from evidently.suite.base_suite import Suite, find_metric_renderer
+from evidently.suite.base_suite import find_metric_renderer
+from evidently.suite.base_suite import Suite
+from evidently.utils.data_operations import process_columns
+from evidently.utils.data_operations import DatasetColumns
 
 
 class Report:
@@ -23,11 +28,11 @@ class Report:
         self._inner_suite = Suite()
 
     def run(
-            self,
-            *,
-            reference_data: Optional[pd.DataFrame],
-            current_data: pd.DataFrame,
-            column_mapping: Optional[ColumnMapping] = None,
+        self,
+        *,
+        reference_data: Optional[pd.DataFrame],
+        current_data: pd.DataFrame,
+        column_mapping: Optional[ColumnMapping] = None,
     ) -> None:
         if column_mapping is None:
             column_mapping = ColumnMapping()
@@ -56,7 +61,9 @@ class Report:
         return (
             "evidently_dashboard_" + str(uuid.uuid4()).replace("-", ""),
             DashboardInfo("Report", widgets=[result.info for result in metrics_results]),
-            {f"{info.name}_{idx}_{item.id}": dataclasses.asdict(item.info)
-             for idx, info in enumerate(metrics_results)
-             for item in info.details},
+            {
+                f"{info.name}_{idx}_{item.id}": dataclasses.asdict(item.info)
+                for idx, info in enumerate(metrics_results)
+                for item in info.details
+            },
         )
