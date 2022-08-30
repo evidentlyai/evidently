@@ -123,7 +123,7 @@ class TestAccuracyScore(SimpleClassificationTestTopK):
         return f"Accuracy Score is {value:.3g}. Test Threshold is {self.get_condition()}"
 
 
-@default_renderer(test_type=TestAccuracyScore)
+@default_renderer(wrap_type=TestAccuracyScore)
 class TestAccuracyScoreRenderer(TestRenderer):
     def render_json(self, obj: TestAccuracyScore) -> dict:
         base = super().render_json(obj)
@@ -166,7 +166,7 @@ class TestPrecisionScore(SimpleClassificationTestTopK):
         return f"Precision Score is {value:.3g}. Test Threshold is {self.get_condition()}"
 
 
-@default_renderer(test_type=TestPrecisionScore)
+@default_renderer(wrap_type=TestPrecisionScore)
 class TestPrecisionScoreRenderer(TestRenderer):
     def render_json(self, obj: TestPrecisionScore) -> dict:
         base = super().render_json(obj)
@@ -209,7 +209,7 @@ class TestF1Score(SimpleClassificationTestTopK):
         return f"F1 Score is {value:.3g}. Test Threshold is {self.get_condition()}"
 
 
-@default_renderer(test_type=TestF1Score)
+@default_renderer(wrap_type=TestF1Score)
 class TestF1ScoreRenderer(TestRenderer):
     def render_json(self, obj: TestF1Score) -> dict:
         base = super().render_json(obj)
@@ -252,7 +252,7 @@ class TestRecallScore(SimpleClassificationTestTopK):
         return f"Recall Score is {value:.3g}. Test Threshold is {self.get_condition()}"
 
 
-@default_renderer(test_type=TestRecallScore)
+@default_renderer(wrap_type=TestRecallScore)
 class TestRecallScoreRenderer(TestRenderer):
     def render_json(self, obj: TestRecallScore) -> dict:
         base = super().render_json(obj)
@@ -298,7 +298,7 @@ class TestRocAuc(SimpleClassificationTest):
             return f"ROC AUC Score is {value:.3g}. Test Threshold is {self.get_condition()}"
 
 
-@default_renderer(test_type=TestRocAuc)
+@default_renderer(wrap_type=TestRocAuc)
 class TestRocAucRenderer(TestRenderer):
     def render_json(self, obj: TestRocAuc) -> dict:
         base = super().render_json(obj)
@@ -342,7 +342,7 @@ class TestLogLoss(SimpleClassificationTest):
             return f" Logarithmic Loss is {value:.3g}. Test Threshold is {self.get_condition()}"
 
 
-@default_renderer(test_type=TestLogLoss)
+@default_renderer(wrap_type=TestLogLoss)
 class TestLogLossRenderer(TestRenderer):
     def render_json(self, obj: TestLogLoss) -> dict:
         base = super().render_json(obj)
@@ -388,7 +388,7 @@ class TestTPR(SimpleClassificationTestTopK):
         return f"True Positive Rate is {value:.3g}. Test Threshold is {self.get_condition()}"
 
 
-@default_renderer(test_type=TestTPR)
+@default_renderer(wrap_type=TestTPR)
 class TestTPRRenderer(TestRenderer):
     def render_json(self, obj: TestTPR) -> dict:
         base = super().render_json(obj)
@@ -435,7 +435,7 @@ class TestTNR(SimpleClassificationTestTopK):
         return f"True Negative Rate is {value:.3g}. Test Threshold is {self.get_condition()}"
 
 
-@default_renderer(test_type=TestTNR)
+@default_renderer(wrap_type=TestTNR)
 class TestTNRRenderer(TestRenderer):
     def render_json(self, obj: TestTNR) -> dict:
         base = super().render_json(obj)
@@ -494,7 +494,7 @@ class TestFPR(SimpleClassificationTestTopK):
         return f"False Positive Rate is {value:.3g}. Test Threshold is {self.get_condition()}"
 
 
-@default_renderer(test_type=TestFPR)
+@default_renderer(wrap_type=TestFPR)
 class TestFPRRenderer(TestRenderer):
     def render_json(self, obj: TestFPR) -> dict:
         base = super().render_json(obj)
@@ -553,7 +553,7 @@ class TestFNR(SimpleClassificationTestTopK):
         return f"False Negative Rate is {value:.3g}. Test Threshold is {self.get_condition()}"
 
 
-@default_renderer(test_type=TestFNR)
+@default_renderer(wrap_type=TestFNR)
 class TestFNRRenderer(TestRenderer):
     def render_json(self, obj: TestFNR) -> dict:
         base = super().render_json(obj)
@@ -617,7 +617,7 @@ class TestPrecisionByClass(ByClassClassificationTest):
         return f"Precision Score of **{self.label}** is {value:.3g}. Test Threshold is {self.get_condition()}"
 
 
-@default_renderer(test_type=TestPrecisionByClass)
+@default_renderer(wrap_type=TestPrecisionByClass)
 class TestPrecisionByClassRenderer(TestRenderer):
     def render_json(self, obj: TestPrecisionByClass) -> dict:
         base = super().render_json(obj)
@@ -660,7 +660,7 @@ class TestRecallByClass(ByClassClassificationTest):
         return f"Recall Score of **{self.label}** is {value:.3g}. Test Threshold is {self.get_condition()}"
 
 
-@default_renderer(test_type=TestRecallByClass)
+@default_renderer(wrap_type=TestRecallByClass)
 class TestRecallByClassRenderer(TestRenderer):
     def render_json(self, obj: TestRecallByClass) -> dict:
         base = super().render_json(obj)
@@ -703,7 +703,7 @@ class TestF1ByClass(ByClassClassificationTest):
         return f"F1 Score of **{self.label}** is {value:.3g}. Test Threshold is {self.get_condition()}"
 
 
-@default_renderer(test_type=TestF1ByClass)
+@default_renderer(wrap_type=TestF1ByClass)
 class TestF1ByClassRenderer(TestRenderer):
     def render_json(self, obj: TestF1ByClass) -> dict:
         base = super().render_json(obj)

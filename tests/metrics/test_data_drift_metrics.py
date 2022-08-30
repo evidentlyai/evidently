@@ -108,8 +108,7 @@ def test_data_drift_metrics(
 ) -> None:
     metric = DataDriftMetrics()
     result = metric.calculate(
-        data=InputData(current_data=current_dataset, reference_data=reference_dataset, column_mapping=data_mapping),
-        metrics={},
+        data=InputData(current_data=current_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
     )
     assert result is not None
     assert result.metrics.n_drifted_features == n_drifted_features
@@ -139,6 +138,5 @@ def test_data_drift_metrics_value_error(
 
     with pytest.raises(ValueError):
         metric.calculate(
-            data=InputData(current_data=current_dataset, reference_data=reference_dataset, column_mapping=data_mapping),
-            metrics={},
+            data=InputData(current_data=current_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
         )

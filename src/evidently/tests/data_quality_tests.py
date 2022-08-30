@@ -198,7 +198,7 @@ class TestHighlyCorrelatedFeatures(BaseDataQualityCorrelationsMetricsValueTest):
         return f"The maximum correlation is {value:.3g}. The test threshold is {self.get_condition()}."
 
 
-@default_renderer(test_type=TestHighlyCorrelatedFeatures)
+@default_renderer(wrap_type=TestHighlyCorrelatedFeatures)
 class TestHighlyCorrelatedFeaturesRenderer(TestRenderer):
     def render_json(self, obj: TestHighlyCorrelatedFeatures) -> dict:
         base = super().render_json(obj)
@@ -261,7 +261,7 @@ class TestTargetFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValueTest
             return f"The maximum correlation is {value:.3g}. The test threshold is {self.get_condition()}."
 
 
-@default_renderer(test_type=TestTargetFeaturesCorrelations)
+@default_renderer(wrap_type=TestTargetFeaturesCorrelations)
 class TestTargetFeaturesCorrelationsRenderer(TestRenderer):
     def render_json(self, obj: TestTargetFeaturesCorrelations) -> dict:
         base = super().render_json(obj)
@@ -333,7 +333,7 @@ class TestPredictionFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValue
             return f"The maximum correlation is {value:.3g}. The test threshold is {self.get_condition()}."
 
 
-@default_renderer(test_type=TestPredictionFeaturesCorrelations)
+@default_renderer(wrap_type=TestPredictionFeaturesCorrelations)
 class TestPredictionFeaturesCorrelationsRenderer(TestRenderer):
     def render_json(self, obj: TestPredictionFeaturesCorrelations) -> dict:
         base = super().render_json(obj)
@@ -428,7 +428,7 @@ class TestCorrelationChanges(BaseDataQualityCorrelationsMetricsValueTest):
         return f"Number of correlation violations is {value:.3g}. The test threshold is {self.get_condition()}."
 
 
-@default_renderer(test_type=TestCorrelationChanges)
+@default_renderer(wrap_type=TestCorrelationChanges)
 class TestCorrelationChangesRenderer(TestRenderer):
     def render_html(self, obj: TestCorrelationChanges) -> TestHtmlInfo:
         info = super().render_html(obj)
@@ -528,7 +528,7 @@ class TestFeatureValueMin(BaseFeatureDataQualityMetricsTest):
         return f"The minimum value of the column **{self.column_name}** is {value} The test threshold is {self.get_condition()}."
 
 
-@default_renderer(test_type=TestFeatureValueMin)
+@default_renderer(wrap_type=TestFeatureValueMin)
 class TestFeatureValueMinRenderer(TestRenderer):
     def render_html(self, obj: TestFeatureValueMin) -> TestHtmlInfo:
         column_name = obj.column_name
@@ -585,7 +585,7 @@ class TestFeatureValueMax(BaseFeatureDataQualityMetricsTest):
         return f"The maximum value of the column **{self.column_name}** is {value}. The test threshold is {self.get_condition()}."
 
 
-@default_renderer(test_type=TestFeatureValueMax)
+@default_renderer(wrap_type=TestFeatureValueMax)
 class TestFeatureValueMaxRenderer(TestRenderer):
     def render_html(self, obj: TestFeatureValueMax) -> TestHtmlInfo:
         column_name = obj.column_name
@@ -637,7 +637,7 @@ class TestFeatureValueMean(BaseFeatureDataQualityMetricsTest):
         return f"The mean value of the column **{self.column_name}** is {value:.3g}. The test threshold is {self.get_condition()}."
 
 
-@default_renderer(test_type=TestFeatureValueMean)
+@default_renderer(wrap_type=TestFeatureValueMean)
 class TestFeatureValueMeanRenderer(TestRenderer):
     def render_html(self, obj: TestFeatureValueMean) -> TestHtmlInfo:
         column_name = obj.column_name
@@ -690,7 +690,7 @@ class TestFeatureValueMedian(BaseFeatureDataQualityMetricsTest):
         return f"The median value of the column **{self.column_name}** is {value:.3g}. The test threshold is {self.get_condition()}."
 
 
-@default_renderer(test_type=TestFeatureValueMedian)
+@default_renderer(wrap_type=TestFeatureValueMedian)
 class TestFeatureValueMedianRenderer(TestRenderer):
     def render_html(self, obj: TestFeatureValueMedian) -> TestHtmlInfo:
         column_name = obj.column_name
@@ -746,7 +746,7 @@ class TestFeatureValueStd(BaseFeatureDataQualityMetricsTest):
         )
 
 
-@default_renderer(test_type=TestFeatureValueStd)
+@default_renderer(wrap_type=TestFeatureValueStd)
 class TestFeatureValueStdRenderer(TestRenderer):
     def render_html(self, obj: TestFeatureValueStd) -> TestHtmlInfo:
         column_name = obj.column_name
@@ -798,7 +798,7 @@ class TestNumberOfUniqueValues(BaseFeatureDataQualityMetricsTest):
         )
 
 
-@default_renderer(test_type=TestNumberOfUniqueValues)
+@default_renderer(wrap_type=TestNumberOfUniqueValues)
 class TestNumberOfUniqueValuesRenderer(TestRenderer):
     def render_html(self, obj: TestNumberOfUniqueValues) -> TestHtmlInfo:
         info = super().render_html(obj)
@@ -845,7 +845,7 @@ class TestUniqueValuesShare(BaseFeatureDataQualityMetricsTest):
         )
 
 
-@default_renderer(test_type=TestUniqueValuesShare)
+@default_renderer(wrap_type=TestUniqueValuesShare)
 class TestUniqueValuesShareRenderer(TestRenderer):
     def render_html(self, obj: TestUniqueValuesShare) -> TestHtmlInfo:
         info = super().render_html(obj)
@@ -894,7 +894,7 @@ class TestMostCommonValueShare(BaseFeatureDataQualityMetricsTest):
         )
 
 
-@default_renderer(test_type=TestMostCommonValueShare)
+@default_renderer(wrap_type=TestMostCommonValueShare)
 class TestMostCommonValueShareRenderer(TestRenderer):
     def render_json(self, obj: TestMostCommonValueShare) -> dict:
         base = super().render_json(obj)
@@ -987,7 +987,7 @@ class TestMeanInNSigmas(Test):
         )
 
 
-@default_renderer(test_type=TestMeanInNSigmas)
+@default_renderer(wrap_type=TestMeanInNSigmas)
 class TestMeanInNSigmasRenderer(TestRenderer):
     def render_json(self, obj: TestMeanInNSigmas) -> dict:
         base = super().render_json(obj)
@@ -1099,7 +1099,7 @@ class TestValueRange(Test):
         )
 
 
-@default_renderer(test_type=TestValueRange)
+@default_renderer(wrap_type=TestValueRange)
 class TestValueRangeRenderer(TestRenderer):
     def render_html(self, obj: TestValueRange) -> TestHtmlInfo:
         column_name = obj.column_name
@@ -1187,7 +1187,7 @@ class TestNumberOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
         )
 
 
-@default_renderer(test_type=TestNumberOfOutRangeValues)
+@default_renderer(wrap_type=TestNumberOfOutRangeValues)
 class TestNumberOfOutRangeValuesRenderer(TestRenderer):
     def render_html(self, obj: TestNumberOfOutRangeValues) -> TestHtmlInfo:
         column_name = obj.column_name
@@ -1241,7 +1241,7 @@ class TestShareOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
         )
 
 
-@default_renderer(test_type=TestShareOfOutRangeValues)
+@default_renderer(wrap_type=TestShareOfOutRangeValues)
 class TestShareOfOutRangeValuesRenderer(TestRenderer):
     def render_json(self, obj: TestShareOfOutRangeValues) -> dict:
         base = super().render_json(obj)
@@ -1326,7 +1326,7 @@ class TestValueList(Test):
         )
 
 
-@default_renderer(test_type=TestValueList)
+@default_renderer(wrap_type=TestValueList)
 class TestValueListRenderer(TestRenderer):
     def render_json(self, obj: TestValueList) -> dict:
         base = super().render_json(obj)
@@ -1405,7 +1405,7 @@ class TestNumberOfOutListValues(BaseDataQualityValueListMetricsTest):
         )
 
 
-@default_renderer(test_type=TestNumberOfOutListValues)
+@default_renderer(wrap_type=TestNumberOfOutListValues)
 class TestNumberOfOutListValuesRenderer(TestRenderer):
     def render_html(self, obj: TestNumberOfOutListValues) -> TestHtmlInfo:
         info = super().render_html(obj)
@@ -1507,7 +1507,7 @@ class TestValueQuantile(BaseCheckValueTest):
         )
 
 
-@default_renderer(test_type=TestValueQuantile)
+@default_renderer(wrap_type=TestValueQuantile)
 class TestValueQuantileRenderer(TestRenderer):
     def render_html(self, obj: TestValueQuantile) -> TestHtmlInfo:
         column_name = obj.column_name
@@ -1536,7 +1536,7 @@ class TestValueQuantileRenderer(TestRenderer):
         return info
 
 
-@default_renderer(test_type=TestShareOfOutListValues)
+@default_renderer(wrap_type=TestShareOfOutListValues)
 class TestShareOfOutListValuesRenderer(TestRenderer):
     def render_json(self, obj: TestShareOfOutListValues) -> dict:
         base = super().render_json(obj)

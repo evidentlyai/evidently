@@ -22,7 +22,7 @@ class Metric(Generic[TResult]):
     context = None
 
     @abc.abstractmethod
-    def calculate(self, data: InputData, metrics: dict) -> TResult:
+    def calculate(self, data: InputData) -> TResult:
         raise NotImplementedError()
 
     def set_context(self, context):

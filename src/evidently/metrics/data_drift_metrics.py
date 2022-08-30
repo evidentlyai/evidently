@@ -1,4 +1,5 @@
-from typing import Dict
+import dataclasses
+from typing import Dict, List
 from typing import Optional
 from dataclasses import dataclass
 
@@ -10,6 +11,8 @@ from evidently.calculations.data_drift import get_overall_data_drift
 from evidently.calculations.data_drift import DataDriftAnalyzerMetrics
 from evidently.metrics.utils import make_hist_for_num_plot
 from evidently.metrics.utils import make_hist_for_cat_plot
+from evidently.model.widget import BaseWidgetInfo
+from evidently.renderers.base_renderer import default_renderer, MetricRenderer, MetricHtmlInfo
 from evidently.options import DataDriftOptions
 from evidently.options import OptionsProvider
 from evidently.utils.data_operations import process_columns
@@ -31,7 +34,7 @@ class DataDriftMetrics(Metric[DataDriftMetricsResults]):
     def get_parameters(self) -> tuple:
         return tuple((self.options,))
 
-    def calculate(self, data: InputData, metrics: dict) -> DataDriftMetricsResults:
+    def calculate(self, data: InputData) -> DataDriftMetricsResults:
         columns = process_columns(data.current_data, data.column_mapping)
         options_provider: OptionsProvider = OptionsProvider()
 
@@ -58,3 +61,30 @@ class DataDriftMetrics(Metric[DataDriftMetricsResults]):
             distr_for_plots[feature] = make_hist_for_cat_plot(data.current_data[feature], data.reference_data[feature])
 
         return DataDriftMetricsResults(options=options, metrics=drift_metrics, distr_for_plots=distr_for_plots)
+
+
+@default_renderer(wrap_type=DataDriftMetrics)
+class TestNumberOfDriftedFeaturesRenderer(MetricRenderer):
+    def render_json(self, obj: DataDriftMetrics) -> dict:
+        return dataclasses.asdict(obj.get_result().analyzer_result)
+
+    def render_html(self, obj: DataDriftMetrics) -> List[MetricHtmlInfo]:
+        return [MetricHtmlInfo(
+            "data_drift",
+            BaseWidgetInfo(
+                type="counter",
+                title="Data Drift",
+                size=2,
+                params={
+                    "counters": [
+                        {
+                            "value": "",
+                            "label":
+                                f"Share:'{obj.get_result().analyzer_result.metrics.share_drifted_features}'"
+                        }
+                    ]
+                },
+            ),
+            details=[],
+        ),
+        ]

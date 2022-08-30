@@ -2,43 +2,35 @@ import copy
 import dataclasses
 import json
 import uuid
-from datetime import datetime
 from collections import Counter
+from datetime import datetime
 from typing import List
 from typing import Optional
 from typing import Union
-from typing import Iterator
-from typing import Tuple
 
 import pandas as pd
 
 import evidently
-from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.utils.data_operations import process_columns, DatasetColumns
-from evidently.dashboard.dashboard import TemplateParams
+from evidently.utils.data_operations import DatasetColumns
+from evidently.utils.data_operations import process_columns
 from evidently.dashboard.dashboard import SaveMode
 from evidently.dashboard.dashboard import SaveModeMap
-from evidently.dashboard.dashboard import save_lib_files
+from evidently.dashboard.dashboard import TemplateParams
 from evidently.dashboard.dashboard import save_data_file
+from evidently.dashboard.dashboard import save_lib_files
+from evidently.metrics.base_metric import InputData
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
-from evidently.utils import NumpyEncoder
-from evidently.metrics.base_metric import InputData
-from evidently.metrics.base_metric import Metric
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.renderers.notebook_utils import determine_template
 from evidently.suite.base_suite import Suite
 from evidently.suite.base_suite import find_test_renderer
 from evidently.test_preset.test_preset import TestPreset
-from evidently.tests.base_test import Test
 from evidently.tests.base_test import BaseTestGenerator
-from evidently.tests.base_test import TestResult
 from evidently.tests.base_test import DEFAULT_GROUP
-
-
-def _discover_dependencies(test: Test) -> Iterator[Tuple[str, Union[Metric, Test]]]:
-    for field_name, field in test.__dict__.items():
-        if issubclass(type(field), (Metric, Test)):
-            yield field_name, field
+from evidently.tests.base_test import Test
+from evidently.tests.base_test import TestResult
+from evidently.utils import NumpyEncoder
 
 
 class TestSuite:
@@ -64,17 +56,7 @@ class TestSuite:
 
     def _add_test(self, test: Test):
         new_test = copy.copy(test)
-
-        for field_name, dependency in _discover_dependencies(new_test):
-            if isinstance(dependency, Metric):
-                self._inner_suite.add_metrics(dependency)
-
-            if isinstance(dependency, Test):
-                dependency_copy = copy.copy(dependency)
-                new_test.__setattr__(field_name, dependency_copy)
-                self._inner_suite.add_tests(dependency_copy)
-
-        self._inner_suite.add_tests(new_test)
+        self._inner_suite.add_test(new_test)
 
     def __bool__(self):
         return all(test_result.is_passed() for _, test_result in self._inner_suite.context.test_results.items())

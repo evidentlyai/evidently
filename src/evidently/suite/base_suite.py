@@ -1,9 +1,10 @@
+import copy
 import dataclasses
 import logging
-from typing import Optional
+from typing import Optional, Tuple, Iterator, Union
 
 from evidently.metrics.base_metric import Metric, InputData
-from evidently.renderers.base_renderer import TestRenderer, RenderersDefinitions, DEFAULT_RENDERERS
+from evidently.renderers.base_renderer import TestRenderer, RenderersDefinitions, DEFAULT_RENDERERS, MetricRenderer
 from evidently.suite.execution_graph import ExecutionGraph, SimpleExecutionGraph
 from evidently.tests.base_test import Test, TestResult, GroupingTypes
 
@@ -27,6 +28,21 @@ def find_test_renderer(obj, renderers: RenderersDefinitions) -> TestRenderer:
     if issubclass(obj, Test) and renderers.default_html_test_renderer:
         return renderers.default_html_test_renderer
     raise KeyError(f"No renderer found for {obj}")
+
+
+def find_metric_renderer(obj, renderers: RenderersDefinitions) -> MetricRenderer:
+    predefined = renderers.typed_renderers.get(obj, None)
+    if predefined:
+        return predefined
+    if renderers.default_html_metric_renderer:
+        return renderers.default_html_metric_renderer
+    raise KeyError(f"No renderer found for {obj}")
+
+
+def _discover_dependencies(test: Union[Metric, Test]) -> Iterator[Tuple[str, Union[Metric, Test]]]:
+    for field_name, field in test.__dict__.items():
+        if issubclass(type(field), (Metric, Test)):
+            yield field_name, field
 
 
 @dataclasses.dataclass
@@ -60,16 +76,30 @@ class Suite:
             renderers=DEFAULT_RENDERERS,
         )
 
-    def add_metrics(self, *metrics: Metric):
-        for metric in metrics:
-            metric.set_context(self.context)
-        self.context.metrics.extend(metrics)
+    def add_test(self, test: Test):
+        test.set_context(self.context)
+        for field_name, dependency in _discover_dependencies(test):
+            if isinstance(dependency, Metric):
+                self.add_metric(dependency)
+
+            if isinstance(dependency, Test):
+                dependency_copy = copy.copy(dependency)
+                test.__setattr__(field_name, dependency_copy)
+                self.add_test(dependency_copy)
+        self.context.tests.append(test)
         self.context.state = States.Init
 
-    def add_tests(self, *tests: Test):
-        for test in tests:
-            test.set_context(self.context)
-        self.context.tests.extend(tests)
+    def add_metric(self, metric: Metric):
+        metric.set_context(self.context)
+        for field_name, dependency in _discover_dependencies(metric):
+            if isinstance(dependency, Metric):
+                self.add_metric(dependency)
+
+            if isinstance(dependency, Test):
+                dependency_copy = copy.copy(dependency)
+                metric.__setattr__(field_name, dependency_copy)
+                self.add_test(dependency_copy)
+        self.context.metrics.append(metric)
         self.context.state = States.Init
 
     def verify(self):
@@ -92,7 +122,7 @@ class Suite:
             for metric, calculation in execution_graph.get_metric_execution_iterator():
                 if calculation not in calculations:
                     logging.debug(f"Executing {type(calculation)}...")
-                    calculations[calculation] = calculation.calculate(data, results)
+                    calculations[calculation] = calculation.calculate(data)
                 else:
                     logging.debug(f"Using cached result for {type(calculation)}")
                 results[metric] = calculations[calculation]

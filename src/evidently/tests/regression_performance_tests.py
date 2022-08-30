@@ -67,7 +67,7 @@ class TestValueMAE(BaseRegressionPerformanceMetricsTest):
         return f"MAE is {value:.3}. The test threshold is {self.get_condition()}"
 
 
-@default_renderer(test_type=TestValueMAE)
+@default_renderer(wrap_type=TestValueMAE)
 class TestValueMAERenderer(TestRenderer):
     def render_json(self, obj: TestValueMAE) -> dict:
         base = super().render_json(obj)
@@ -126,7 +126,7 @@ class TestValueMAPE(BaseRegressionPerformanceMetricsTest):
         return f"MAPE is {value:.3}. The test threshold is {self.get_condition()}."
 
 
-@default_renderer(test_type=TestValueMAPE)
+@default_renderer(wrap_type=TestValueMAPE)
 class TestValueMAPERenderer(TestRenderer):
     def render_json(self, obj: TestValueMAPE) -> dict:
         base = super().render_json(obj)
@@ -186,7 +186,7 @@ class TestValueRMSE(BaseRegressionPerformanceMetricsTest):
         return f"RMSE is {value:.3}. The test threshold is {self.get_condition()}."
 
 
-@default_renderer(test_type=TestValueRMSE)
+@default_renderer(wrap_type=TestValueRMSE)
 class TestValueRMSERenderer(TestRenderer):
     def render_json(self, obj: TestValueRMSE) -> dict:
         base = super().render_json(obj)
@@ -241,7 +241,7 @@ class TestValueMeanError(BaseRegressionPerformanceMetricsTest):
         return f"ME is {value:.3}. The test threshold is {self.get_condition()}."
 
 
-@default_renderer(test_type=TestValueMeanError)
+@default_renderer(wrap_type=TestValueMeanError)
 class TestValueMeanErrorRenderer(TestRenderer):
     def render_json(self, obj: TestValueMeanError) -> dict:
         base = super().render_json(obj)
@@ -295,7 +295,7 @@ class TestValueAbsMaxError(BaseRegressionPerformanceMetricsTest):
         return f"The Max Absolute Error is {value:.3}. The test threshold is {self.get_condition()}."
 
 
-@default_renderer(test_type=TestValueAbsMaxError)
+@default_renderer(wrap_type=TestValueAbsMaxError)
 class TestValueAbsMaxErrorRenderer(TestRenderer):
     def render_json(self, obj: TestValueAbsMaxError) -> dict:
         base = super().render_json(obj)
@@ -349,7 +349,7 @@ class TestValueR2Score(BaseRegressionPerformanceMetricsTest):
         return f"The R2 score is {value:.3}. The test threshold is {self.get_condition()}."
 
 
-@default_renderer(test_type=TestValueR2Score)
+@default_renderer(wrap_type=TestValueR2Score)
 class TestValueR2ScoreRenderer(TestRenderer):
     def render_json(self, obj: TestValueAbsMaxError) -> dict:
         base = super().render_json(obj)

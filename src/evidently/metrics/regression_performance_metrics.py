@@ -53,6 +53,7 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
     def get_parameters(self) -> tuple:
         return ()
 
+    def calculate(self, data: InputData) -> RegressionPerformanceMetricsResults:
     def calculate(self, data: InputData, metrics: dict) -> RegressionPerformanceMetricsResults:
         columns = process_columns(data.current_data, data.column_mapping)
 

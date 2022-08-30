@@ -113,7 +113,9 @@ To generate the Data Drift dashboard, run:
 
 ```python
 iris_data_drift_report = Dashboard(tabs=[DataDriftTab()])
-iris_data_drift_report.calculate(iris_frame[:75], iris_frame[75:], 
+iris_data_drift_report.calculate(
+    iris_frame[:75],
+    iris_frame[75:], 
     column_mapping = None)
 iris_data_drift_report.show()
 ```
@@ -148,8 +150,7 @@ To generate the Target Drift report, run:
 
 ```python
 iris_data_and_target_drift_report = Dashboard(tabs=[DataDriftTab(), CatTargetDriftTab()])
-iris_data_and_target_drift_report.calculate(iris_frame[:75], iris_frame[75:], 
-    column_mapping=None)
+iris_data_and_target_drift_report.calculate(iris_frame[:75])
 iris_data_and_target_drift_report.show()
 ```
 
@@ -165,7 +166,7 @@ A complete dashboard corresponds to the verbose_level=1. To get a shorter versio
 
 ```python
 iris_target_drift_dashboard = Dashboard(tabs=[CatTargetDriftTab(verbose_level=1)])
-iris_target_drift_dashboard.calculate(iris_frame[:75], iris_frame[75:], column_mapping=None)
+iris_target_drift_dashboard.calculate(iris_frame[:75])
 iris_target_drift_dashboard.show()
 ```
 
@@ -208,7 +209,7 @@ To generate the **Data Drift** and the **Categorical Target Drift** profiles, ru
 
 ```python
 iris_target_and_data_drift_profile = Profile(sections=[DataDriftProfileSection(), CatTargetDriftProfileSection()])
-iris_target_and_data_drift_profile.calculate(iris_frame[:75], iris_frame[75:], column_mapping=None) 
+iris_target_and_data_drift_profile.calculate(iris_frame[:75])
 iris_target_and_data_drift_profile.json() 
 ```
 
