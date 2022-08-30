@@ -12,6 +12,7 @@ from evidently.analyzers.classification_performance_analyzer import ConfusionMat
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.metrics.base_metric import InputData
 from evidently.metrics import ClassificationPerformanceMetrics
+from evidently.metrics import ClassificationPerformanceMetricsTopK
 from evidently.metrics import ClassificationPerformanceMetricsThreshold
 from evidently.metrics.classification_performance_metrics import get_prediction_data
 from evidently.metrics.classification_performance_metrics import k_probability_threshold
@@ -475,3 +476,33 @@ def test_threshold_probability_labels(
     probas: pd.DataFrame, pos_label: str, neg_label: str, threshold: float, expected: pd.Series
 ) -> None:
     assert threshold_probability_labels(probas, pos_label, neg_label, threshold).tolist() == expected
+
+
+def test_classification_performance_top_k_metrics_no_probas() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "target": [1, 1, 1],
+            "prediction": [1, 1, 0],
+        }
+    )
+    column_mapping = ColumnMapping(target="target", prediction="prediction", pos_label=1)
+    metric = ClassificationPerformanceMetricsTopK(k=1)
+    with pytest.raises(ValueError):
+        metric.calculate(
+            data=InputData(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
+        )
+
+
+def test_classification_performance_top_k_metrics() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "target": ["1", "2", "1"],
+            "1": [1.0, 0.0, 0.5],
+        }
+    )
+    column_mapping = ColumnMapping(target="target", prediction="1", pos_label="2")
+    metric = ClassificationPerformanceMetricsTopK(k=1)
+    result = metric.calculate(
+        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
+    )
+    assert result

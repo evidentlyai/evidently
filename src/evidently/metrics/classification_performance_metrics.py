@@ -18,6 +18,10 @@ from evidently.analyzers.classification_performance_analyzer import ConfusionMat
 from evidently.analyzers.utils import calculate_confusion_by_classes
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
+from evidently.model.widget import BaseWidgetInfo
+from evidently.renderers.base_renderer import default_renderer
+from evidently.renderers.base_renderer import MetricHtmlInfo
+from evidently.renderers.base_renderer import MetricRenderer
 
 
 @dataclasses.dataclass
@@ -260,6 +264,33 @@ class ClassificationPerformanceMetrics(Metric[ClassificationPerformanceResults])
         )
 
 
+@default_renderer(wrap_type=ClassificationPerformanceMetrics)
+class ClassificationPerformanceMetricsRenderer(MetricRenderer):
+    def render_json(self, obj: ClassificationPerformanceMetrics) -> dict:
+        return dataclasses.asdict(obj.get_result().current)
+
+    def render_html(self, obj: ClassificationPerformanceMetrics) -> List[MetricHtmlInfo]:
+        return [
+            MetricHtmlInfo(
+                "classification_performance",
+                BaseWidgetInfo(
+                    type="counter",
+                    title="Classification Performance",
+                    size=2,
+                    params={
+                        "counters": [
+                            {
+                                "value": "",
+                                "label": "ClassificationPerformanceMetrics"
+                            }
+                        ]
+                    },
+                ),
+                details=[],
+            ),
+        ]
+
+
 def _dummy_threshold_metrics(
     threshold: float, dummy_results: DatasetClassificationPerformanceMetrics
 ) -> DatasetClassificationPerformanceMetrics:
@@ -345,6 +376,10 @@ class ClassificationPerformanceMetricsTopK(ClassificationPerformanceMetricsThres
 
     def get_threshold(self, dataset: pd.DataFrame, mapping: ColumnMapping) -> float:
         predictions = get_prediction_data(dataset, mapping)
+
+        if predictions.prediction_probas is None:
+            raise ValueError("Top K parameter can be used only with binary classification with probas")
+
         return k_probability_threshold(predictions.prediction_probas, self.k)
 
     def calculate_metric(self, dataset: pd.DataFrame, mapping: ColumnMapping):
@@ -357,6 +392,33 @@ class ClassificationPerformanceMetricsTopK(ClassificationPerformanceMetricsThres
 
     def get_parameters(self) -> tuple:
         return tuple((self.k,))
+
+
+@default_renderer(wrap_type=ClassificationPerformanceMetricsTopK)
+class ClassificationPerformanceMetricsTopKRenderer(MetricRenderer):
+    def render_json(self, obj: ClassificationPerformanceMetricsTopK) -> dict:
+        return dataclasses.asdict(obj.get_result().current)
+
+    def render_html(self, obj: ClassificationPerformanceMetricsTopK) -> List[MetricHtmlInfo]:
+        return [
+            MetricHtmlInfo(
+                "classification_performance_top_k",
+                BaseWidgetInfo(
+                    type="counter",
+                    title="Classification Performance Top K",
+                    size=2,
+                    params={
+                        "counters": [
+                            {
+                                "value": "",
+                                "label": "ClassificationPerformanceMetricsTopK"
+                            }
+                        ]
+                    },
+                ),
+                details=[],
+            ),
+        ]
 
 
 class ClassificationPerformanceMetricsThreshold(ClassificationPerformanceMetricsThresholdBase):
@@ -375,6 +437,33 @@ class ClassificationPerformanceMetricsThreshold(ClassificationPerformanceMetrics
 
     def get_parameters(self) -> tuple:
         return tuple((self.threshold,))
+
+
+@default_renderer(wrap_type=ClassificationPerformanceMetricsThreshold)
+class ClassificationPerformanceMetricsThresholdRenderer(MetricRenderer):
+    def render_json(self, obj: ClassificationPerformanceMetricsThreshold) -> dict:
+        return dataclasses.asdict(obj.get_result().current)
+
+    def render_html(self, obj: ClassificationPerformanceMetricsThreshold) -> List[MetricHtmlInfo]:
+        return [
+            MetricHtmlInfo(
+                "classification_performance_threshold",
+                BaseWidgetInfo(
+                    type="counter",
+                    title="Classification Performance with Threshold",
+                    size=2,
+                    params={
+                        "counters": [
+                            {
+                                "value": "",
+                                "label": "ClassificationPerformanceMetricsThreshold"
+                            }
+                        ]
+                    },
+                ),
+                details=[],
+            ),
+        ]
 
 
 def _cleanup_data(data: pd.DataFrame, mapping: ColumnMapping) -> pd.DataFrame:

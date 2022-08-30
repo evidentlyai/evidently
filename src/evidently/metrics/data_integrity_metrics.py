@@ -1,5 +1,6 @@
 import re
 
+import dataclasses
 from dataclasses import dataclass
 from itertools import combinations
 from typing import Any
@@ -12,6 +13,10 @@ import pandas as pd
 
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
+from evidently.model.widget import BaseWidgetInfo
+from evidently.renderers.base_renderer import default_renderer
+from evidently.renderers.base_renderer import MetricHtmlInfo
+from evidently.renderers.base_renderer import MetricRenderer
 
 
 @dataclass
@@ -111,6 +116,33 @@ class DataIntegrityMetrics(Metric[DataIntegrityMetricsResults]):
         return DataIntegrityMetricsResults(current_stats=current_stats, reference_stats=reference_stats)
 
 
+@default_renderer(wrap_type=DataIntegrityMetrics)
+class DataIntegrityMetricsRenderer(MetricRenderer):
+    def render_json(self, obj: DataIntegrityMetrics) -> dict:
+        return dataclasses.asdict(obj.get_result().current_stats)
+
+    def render_html(self, obj: DataIntegrityMetrics) -> List[MetricHtmlInfo]:
+        return [
+            MetricHtmlInfo(
+                "data_integrity",
+                BaseWidgetInfo(
+                    type="counter",
+                    title="Data Integrity Metrics",
+                    size=2,
+                    params={
+                        "counters": [
+                            {
+                                "value": "",
+                                "label": "DataIntegrityMetrics"
+                            }
+                        ]
+                    },
+                ),
+                details=[],
+            ),
+        ]
+
+
 @dataclass
 class DataIntegrityValueByRegexpMetricResult:
     # mapping column_name: matched_count
@@ -166,6 +198,33 @@ class DataIntegrityValueByRegexpMetrics(Metric[DataIntegrityValueByRegexpMetricR
             not_matched_table=not_matched_table,
             mult=mult,
         )
+
+
+@default_renderer(wrap_type=DataIntegrityValueByRegexpMetrics)
+class DataIntegrityValueByRegexpMetricsRenderer(MetricRenderer):
+    def render_json(self, obj: DataIntegrityValueByRegexpMetrics) -> dict:
+        return dataclasses.asdict(obj.get_result())
+
+    def render_html(self, obj: DataIntegrityValueByRegexpMetrics) -> List[MetricHtmlInfo]:
+        return [
+            MetricHtmlInfo(
+                "data_integrity_value_by_regexp",
+                BaseWidgetInfo(
+                    type="counter",
+                    title="Data Integrity By Regexp",
+                    size=2,
+                    params={
+                        "counters": [
+                            {
+                                "value": "",
+                                "label": "DataIntegrityValueByRegexpMetrics"
+                            }
+                        ]
+                    },
+                ),
+                details=[],
+            ),
+        ]
 
 
 @dataclass
@@ -348,3 +407,30 @@ class DataIntegrityNullValuesMetrics(Metric[DataIntegrityNullValuesMetricsResult
             current_null_values=current_null_values,
             reference_null_values=reference_null_values,
         )
+
+
+@default_renderer(wrap_type=DataIntegrityNullValuesMetrics)
+class DataIntegrityNullValuesMetricsRenderer(MetricRenderer):
+    def render_json(self, obj: DataIntegrityNullValuesMetrics) -> dict:
+        return dataclasses.asdict(obj.get_result().current_null_values)
+
+    def render_html(self, obj: DataIntegrityNullValuesMetrics) -> List[MetricHtmlInfo]:
+        return [
+            MetricHtmlInfo(
+                "data_integrity_null_values",
+                BaseWidgetInfo(
+                    type="counter",
+                    title="Data Integrity Null Values",
+                    size=2,
+                    params={
+                        "counters": [
+                            {
+                                "value": "",
+                                "label": "DataIntegrityNullValuesMetrics"
+                            }
+                        ]
+                    },
+                ),
+                details=[],
+            ),
+        ]

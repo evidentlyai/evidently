@@ -50,27 +50,28 @@ class DataDriftMetrics(Metric[DataDriftMetricsResults]):
 
 
 @default_renderer(wrap_type=DataDriftMetrics)
-class TestNumberOfDriftedFeaturesRenderer(MetricRenderer):
+class DataDriftMetricsRenderer(MetricRenderer):
     def render_json(self, obj: DataDriftMetrics) -> dict:
         return dataclasses.asdict(obj.get_result().analyzer_result)
 
     def render_html(self, obj: DataDriftMetrics) -> List[MetricHtmlInfo]:
-        return [MetricHtmlInfo(
-            "data_drift",
-            BaseWidgetInfo(
-                type="counter",
-                title="Data Drift",
-                size=2,
-                params={
-                    "counters": [
-                        {
-                            "value": "",
-                            "label":
-                                f"Share:'{obj.get_result().analyzer_result.metrics.share_drifted_features}'"
-                        }
-                    ]
-                },
+        return [
+            MetricHtmlInfo(
+                "data_drift",
+                BaseWidgetInfo(
+                    type="counter",
+                    title="Data Drift",
+                    size=2,
+                    params={
+                        "counters": [
+                            {
+                                "value": "",
+                                "label":
+                                    f"Share:'{obj.get_result().analyzer_result.metrics.share_drifted_features}'"
+                            }
+                        ]
+                    },
+                ),
+                details=[],
             ),
-            details=[],
-        ),
         ]

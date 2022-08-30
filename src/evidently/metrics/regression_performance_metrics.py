@@ -1,5 +1,7 @@
+import dataclasses
 from dataclasses import dataclass
 from typing import Dict
+from typing import List
 from typing import Optional
 
 
@@ -18,6 +20,10 @@ from evidently.metrics.utils import make_target_bins_for_reg_plots
 from evidently.metrics.utils import make_hist_for_cat_plot
 from evidently.metrics.utils import apply_func_to_binned_data
 from evidently.metrics.utils import make_hist_for_num_plot
+from evidently.model.widget import BaseWidgetInfo
+from evidently.renderers.base_renderer import default_renderer
+from evidently.renderers.base_renderer import MetricHtmlInfo
+from evidently.renderers.base_renderer import MetricRenderer
 
 
 @dataclass
@@ -204,3 +210,30 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
             r2_score_ref=r2_score_ref,
             abs_error_max_ref=abs_error_max_ref,
         )
+
+
+@default_renderer(wrap_type=RegressionPerformanceMetrics)
+class RegressionPerformanceMetricsRenderer(MetricRenderer):
+    def render_json(self, obj: RegressionPerformanceMetrics) -> dict:
+        return dataclasses.asdict(obj.get_result())
+
+    def render_html(self, obj: RegressionPerformanceMetrics) -> List[MetricHtmlInfo]:
+        return [
+            MetricHtmlInfo(
+                "regression_performance",
+                BaseWidgetInfo(
+                    type="counter",
+                    title="Regression Performance",
+                    size=2,
+                    params={
+                        "counters": [
+                            {
+                                "value": "",
+                                "label": "RegressionPerformanceMetrics"
+                            }
+                        ]
+                    },
+                ),
+                details=[],
+            ),
+        ]

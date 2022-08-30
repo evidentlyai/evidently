@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 
 from evidently.pipeline.column_mapping import ColumnMapping
@@ -35,6 +36,28 @@ def test_data_quality_stability_metrics() -> None:
     assert result is not None
     assert result.number_not_stable_target == 2
     assert result.number_not_stable_prediction == 4
+
+
+def test_data_quality_stability_metrics_no_other_columns() -> None:
+    curr = pd.DataFrame(
+        {
+            "target": [1, 0, 1],
+            "prediction": [1, 0, 1],
+        }
+    )
+    ref = pd.DataFrame(
+        {
+            "target": [1, 1, 1],
+            "prediction": [1, 1, 1],
+        }
+    )
+    data_mapping = ColumnMapping()
+    metric = DataQualityStabilityMetrics()
+    result = metric.calculate(
+        data=InputData(current_data=curr, reference_data=ref, column_mapping=data_mapping))
+    assert result is not None
+    assert result.number_not_stable_target == 0
+    assert result.number_not_stable_prediction == 0
 
 
 def test_data_quality_values_in_list_metrics() -> None:

@@ -1,3 +1,4 @@
+import dataclasses
 from dataclasses import dataclass
 from typing import Dict
 from typing import List
@@ -18,6 +19,10 @@ from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.metrics.utils import make_hist_for_num_plot
 from evidently.metrics.utils import make_hist_for_cat_plot
+from evidently.model.widget import BaseWidgetInfo
+from evidently.renderers.base_renderer import default_renderer
+from evidently.renderers.base_renderer import MetricHtmlInfo
+from evidently.renderers.base_renderer import MetricRenderer
 
 
 @dataclass
@@ -146,6 +151,33 @@ class DataQualityMetrics(Metric[DataQualityMetricsResults]):
         )
 
 
+@default_renderer(wrap_type=DataQualityMetrics)
+class DataQualityMetricsRenderer(MetricRenderer):
+    def render_json(self, obj: DataQualityMetrics) -> dict:
+        return dataclasses.asdict(obj.get_result())
+
+    def render_html(self, obj: DataQualityMetrics) -> List[MetricHtmlInfo]:
+        return [
+            MetricHtmlInfo(
+                "data_quality",
+                BaseWidgetInfo(
+                    type="counter",
+                    title="Data Quality",
+                    size=2,
+                    params={
+                        "counters": [
+                            {
+                                "value": "",
+                                "label": "DataQualityMetrics"
+                            }
+                        ]
+                    },
+                ),
+                details=[],
+            ),
+        ]
+
+
 @dataclass
 class DataQualityStabilityMetricsResults:
     number_not_stable_target: Optional[int] = None
@@ -160,6 +192,12 @@ class DataQualityStabilityMetrics(Metric[DataQualityStabilityMetricsResults]):
         target_name = data.column_mapping.target
         prediction_name = data.column_mapping.prediction
         columns = [column for column in data.current_data.columns if column not in (target_name, prediction_name)]
+
+        if not columns:
+            result.number_not_stable_target = 0
+            result.number_not_stable_prediction = 0
+            return result
+
         duplicates = data.current_data[data.current_data.duplicated(subset=columns, keep=False)]
 
         if target_name in data.current_data:
@@ -173,6 +211,33 @@ class DataQualityStabilityMetrics(Metric[DataQualityStabilityMetricsResults]):
             ).shape[0]
 
         return result
+
+
+@default_renderer(wrap_type=DataQualityStabilityMetrics)
+class DataQualityStabilityMetricsRenderer(MetricRenderer):
+    def render_json(self, obj: DataQualityMetrics) -> dict:
+        return dataclasses.asdict(obj.get_result())
+
+    def render_html(self, obj: DataQualityMetrics) -> List[MetricHtmlInfo]:
+        return [
+            MetricHtmlInfo(
+                "data_quality_stability",
+                BaseWidgetInfo(
+                    type="counter",
+                    title="Data Quality Stability",
+                    size=2,
+                    params={
+                        "counters": [
+                            {
+                                "value": "",
+                                "label": "DataQualityStabilityMetricsRenderer"
+                            }
+                        ]
+                    },
+                ),
+                details=[],
+            ),
+        ]
 
 
 @dataclass
@@ -222,6 +287,33 @@ class DataQualityValueListMetrics(Metric[DataQualityValueListMetricsResults]):
             counts_of_value=counts_of_value,
             rows_count=rows_count,
         )
+
+
+@default_renderer(wrap_type=DataQualityValueListMetrics)
+class DataQualityValueListMetricsRenderer(MetricRenderer):
+    def render_json(self, obj: DataQualityValueListMetrics) -> dict:
+        return dataclasses.asdict(obj.get_result())
+
+    def render_html(self, obj: DataQualityValueListMetrics) -> List[MetricHtmlInfo]:
+        return [
+            MetricHtmlInfo(
+                "data_quality_value_list",
+                BaseWidgetInfo(
+                    type="counter",
+                    title="Data Quality Value List",
+                    size=2,
+                    params={
+                        "counters": [
+                            {
+                                "value": "",
+                                "label": "DataQualityValueListMetrics"
+                            }
+                        ]
+                    },
+                ),
+                details=[],
+            ),
+        ]
 
 
 @dataclass
@@ -299,6 +391,33 @@ class DataQualityValueRangeMetrics(Metric[DataQualityValueRangeMetricsResults]):
         )
 
 
+@default_renderer(wrap_type=DataQualityValueRangeMetrics)
+class DataQualityValueRangeMetricsRenderer(MetricRenderer):
+    def render_json(self, obj: DataQualityValueRangeMetrics) -> dict:
+        return dataclasses.asdict(obj.get_result())
+
+    def render_html(self, obj: DataQualityValueRangeMetrics) -> List[MetricHtmlInfo]:
+        return [
+            MetricHtmlInfo(
+                "data_quality_value_range",
+                BaseWidgetInfo(
+                    type="counter",
+                    title="Data Quality Value Range",
+                    size=2,
+                    params={
+                        "counters": [
+                            {
+                                "value": "",
+                                "label": "DataQualityValueRangeMetrics"
+                            }
+                        ]
+                    },
+                ),
+                details=[],
+            ),
+        ]
+
+
 @dataclass
 class DataQualityValueQuantileMetricsResults:
     # calculated value of the quantile
@@ -341,6 +460,33 @@ class DataQualityValueQuantileMetrics(Metric[DataQualityValueQuantileMetricsResu
             distr_for_plot=distr_for_plot,
             ref_value=ref_value,
         )
+
+
+@default_renderer(wrap_type=DataQualityValueQuantileMetrics)
+class DataQualityValueQuantileMetricsRenderer(MetricRenderer):
+    def render_json(self, obj: DataQualityValueQuantileMetrics) -> dict:
+        return dataclasses.asdict(obj.get_result())
+
+    def render_html(self, obj: DataQualityValueQuantileMetrics) -> List[MetricHtmlInfo]:
+        return [
+            MetricHtmlInfo(
+                "data_quality_value_quantile",
+                BaseWidgetInfo(
+                    type="counter",
+                    title="Data Quality Value Quantile",
+                    size=2,
+                    params={
+                        "counters": [
+                            {
+                                "value": "",
+                                "label": "DataQualityValueQuantileMetrics"
+                            }
+                        ]
+                    },
+                ),
+                details=[],
+            ),
+        ]
 
 
 @dataclass
@@ -452,3 +598,30 @@ class DataQualityCorrelationMetrics(Metric[DataQualityCorrelationMetricsResults]
             current_correlation=current_correlations,
             reference_correlation=reference_correlation,
         )
+
+
+@default_renderer(wrap_type=DataQualityCorrelationMetrics)
+class DataQualityCorrelationMetricsRenderer(MetricRenderer):
+    def render_json(self, obj: DataQualityCorrelationMetrics) -> dict:
+        return dataclasses.asdict(obj.get_result())
+
+    def render_html(self, obj: DataQualityCorrelationMetrics) -> List[MetricHtmlInfo]:
+        return [
+            MetricHtmlInfo(
+                "data_quality_correlation",
+                BaseWidgetInfo(
+                    type="counter",
+                    title="Data Quality Correlation",
+                    size=2,
+                    params={
+                        "counters": [
+                            {
+                                "value": "",
+                                "label": "DataQualityCorrelationMetrics"
+                            }
+                        ]
+                    },
+                ),
+                details=[],
+            ),
+        ]
