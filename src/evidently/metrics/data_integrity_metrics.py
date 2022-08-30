@@ -1,6 +1,6 @@
-import re
-
+import collections
 import dataclasses
+import re
 from dataclasses import dataclass
 from itertools import combinations
 from typing import Any
@@ -144,11 +144,20 @@ class DataIntegrityMetricsRenderer(MetricRenderer):
 
 
 @dataclass
+class DataIntegrityValueByRegexpStat:
+    number_of_matched: int
+    number_of_not_matched: int
+    number_of_rows: int
+    table_of_matched: Dict[str, int]
+    table_of_not_matched: Dict[str, int]
+
+
+@dataclass
 class DataIntegrityValueByRegexpMetricResult:
-    # mapping column_name: matched_count
-    not_matched_values: Dict[str, int]
-    not_matched_table: Dict[str, int]
-    mult: Optional[float] = None
+    column_name: str
+    reg_exp: str
+    current: DataIntegrityValueByRegexpStat
+    reference: Optional[DataIntegrityValueByRegexpStat] = None
 
 
 class DataIntegrityValueByRegexpMetrics(Metric[DataIntegrityValueByRegexpMetricResult]):
@@ -158,45 +167,54 @@ class DataIntegrityValueByRegexpMetrics(Metric[DataIntegrityValueByRegexpMetricR
 
     def __init__(self, column_name: str, reg_exp: str):
         self.reg_exp = reg_exp
-
         self.column_name = column_name
         self.reg_exp_compiled = re.compile(reg_exp)
 
-    def calculate(self, data: InputData) -> DataIntegrityValueByRegexpMetricResult:
-        mult = None
-        not_matched_values = {}
-        not_matched_table = {}
-        selector = data.current_data[self.column_name].apply(lambda x: bool(self.reg_exp_compiled.match(str(x))))
-        n = selector.sum()
-        not_matched_values["current"] = data.current_data[self.column_name].dropna().shape[0] - n
+    def _calculate_stats_by_regexp(self, column: pd.Series) -> DataIntegrityValueByRegexpStat:
+        number_of_matched = 0
+        number_of_na = 0
+        number_of_not_matched = 0
+        table_of_matched = collections.defaultdict(int)
+        table_of_not_matched = collections.defaultdict(int)
 
-        df_counts = (
-            data.current_data[self.column_name]
-            .dropna()[~selector.dropna().astype(bool)]
-            .value_counts(dropna=False)
-            .reset_index()
+        for item in column:
+            if pd.isna(item):
+                number_of_na += 1
+                continue
+
+            item = str(item)
+
+            if bool(self.reg_exp_compiled.match(str(item))):
+                number_of_matched += 1
+                table_of_matched[item] += 1
+
+            else:
+                number_of_not_matched += 1
+                table_of_not_matched[item] += 1
+
+        return DataIntegrityValueByRegexpStat(
+            number_of_matched=number_of_matched,
+            number_of_not_matched=number_of_not_matched,
+            number_of_rows=column.shape[0],
+            table_of_matched=dict(table_of_matched),
+            table_of_not_matched=dict(table_of_not_matched)
         )
-        df_counts.columns = ["x", "count"]
-        not_matched_table["current"] = df_counts
+
+    def calculate(self, data: InputData) -> DataIntegrityValueByRegexpMetricResult:
+        current = self._calculate_stats_by_regexp(data.current_data[self.column_name])
+        reference = None
 
         if data.reference_data is not None:
-            selector = data.reference_data[self.column_name].apply(lambda x: bool(self.reg_exp_compiled.match(str(x))))
-            n = selector.sum()
-            not_matched_values["reference"] = data.reference_data[self.column_name].dropna().shape[0] - n
-            mult = data.current_data.shape[0] / data.reference_data.shape[0]
-            df_counts = (
-                data.reference_data[self.column_name]
-                .dropna()[~selector.dropna().astype(bool)]
-                .value_counts(dropna=False)
-                .reset_index()
-            )
-            df_counts.columns = ["x", "count"]
-            not_matched_table["reference"] = df_counts
+            if self.column_name not in data.reference_data:
+                raise ValueError(f"Column {self.column_name} was not found in reference dataset.")
+
+            reference = self._calculate_stats_by_regexp(data.reference_data[self.column_name])
 
         return DataIntegrityValueByRegexpMetricResult(
-            not_matched_values=not_matched_values,
-            not_matched_table=not_matched_table,
-            mult=mult,
+            column_name=self.column_name,
+            reg_exp=self.reg_exp,
+            current=current,
+            reference=reference
         )
 
 
@@ -206,6 +224,7 @@ class DataIntegrityValueByRegexpMetricsRenderer(MetricRenderer):
         return dataclasses.asdict(obj.get_result())
 
     def render_html(self, obj: DataIntegrityValueByRegexpMetrics) -> List[MetricHtmlInfo]:
+        result = obj.get_result()
         return [
             MetricHtmlInfo(
                 "data_integrity_value_by_regexp",
@@ -217,7 +236,8 @@ class DataIntegrityValueByRegexpMetricsRenderer(MetricRenderer):
                         "counters": [
                             {
                                 "value": "",
-                                "label": "DataIntegrityValueByRegexpMetrics"
+                                "label": f"""For regexp "{result.reg_exp}" in column **{result.column_name}** founded {result.current.number_of_matched} values in {result.current.number_of_rows} rows.
+{result.current.table_of_matched}, {result.current.table_of_not_matched}"""
                             }
                         ]
                     },
