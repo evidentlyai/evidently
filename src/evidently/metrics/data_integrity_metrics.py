@@ -48,11 +48,13 @@ class DataIntegrityMetrics(Metric[DataIntegrityMetricsResults]):
     @staticmethod
     def _get_integrity_metrics_values(dataset: pd.DataFrame, columns: tuple) -> DataIntegrityMetricsValues:
         counts_of_values = {}
-        for col in dataset.columns:
-            feature = dataset[col]
+
+        for column_name in dataset.columns:
+            feature = dataset[column_name]
             df_counts = feature.value_counts(dropna=False).reset_index()
             df_counts.columns = ["x", "count"]
-            counts_of_values[col] = df_counts
+            counts_of_values[column_name] = df_counts
+
         return DataIntegrityMetricsValues(
             number_of_columns=len(columns),
             number_of_rows=dataset.shape[0],
@@ -123,21 +125,28 @@ class DataIntegrityMetricsRenderer(MetricRenderer):
         return dataclasses.asdict(obj.get_result().current_stats)
 
     def render_html(self, obj: DataIntegrityMetrics) -> List[MetricHtmlInfo]:
+        metric_result = obj.get_result()
+        headers = ["Metric", "Value"]
+        stats = (
+            ("number_of_columns", metric_result.current_stats.number_of_columns),
+            ("number_of_rows", metric_result.current_stats.number_of_rows),
+            ("number_of_nans", metric_result.current_stats.number_of_nans),
+            ("number_of_columns_with_nans", metric_result.current_stats.number_of_columns_with_nans),
+            ("number_of_rows_with_nans", metric_result.current_stats.number_of_rows_with_nans),
+            ("number_of_constant_columns", metric_result.current_stats.number_of_constant_columns),
+            ("number_of_empty_rows", metric_result.current_stats.number_of_empty_rows),
+            ("number_of_empty_columns", metric_result.current_stats.number_of_empty_columns),
+            ("number_of_duplicated_rows", metric_result.current_stats.number_of_duplicated_rows),
+            ("number_of_duplicated_columns", metric_result.current_stats.number_of_duplicated_columns),
+        )
         return [
             MetricHtmlInfo(
                 "data_integrity",
                 BaseWidgetInfo(
-                    type="counter",
-                    title="Data Integrity Metrics",
+                    type=BaseWidgetInfo.WIDGET_INFO_TYPE_TABLE,
+                    title="Data Integrity Metric: Common Statistics",
                     size=2,
-                    params={
-                        "counters": [
-                            {
-                                "value": "",
-                                "label": "DataIntegrityMetrics"
-                            }
-                        ]
-                    },
+                    params={"header": headers, "data": stats},
                 ),
                 details=[],
             ),
