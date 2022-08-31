@@ -7,6 +7,7 @@ from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Pattern
 
 import numpy as np
 import pandas as pd
@@ -16,7 +17,6 @@ from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.base_renderer import MetricHtmlInfo
-from evidently.renderers.base_renderer import DetailsInfo
 from evidently.renderers.base_renderer import MetricRenderer
 
 
@@ -146,30 +146,44 @@ class DataIntegrityMetricsRenderer(MetricRenderer):
 
 @dataclass
 class DataIntegrityValueByRegexpStat:
+    """Statistics about matched by a regular expression values in a column for one dataset"""
+    # count of matched values in the column, without NaNs
     number_of_matched: int
+    # count of not matched values in the column, without NaNs
     number_of_not_matched: int
+    # count of rows in the column, including matched, not matched and NaNs
     number_of_rows: int
+    # map with matched values (keys) and count of the values (value)
     table_of_matched: Dict[str, int]
+    # map with not matched values (keys) and count of the values (values)
     table_of_not_matched: Dict[str, int]
 
 
 @dataclass
 class DataIntegrityValueByRegexpMetricResult:
+    # name of the column that we check by the regular expression
     column_name: str
+    # the regular expression as a string
     reg_exp: str
+    # match statistic for current dataset
     current: DataIntegrityValueByRegexpStat
+    # match statistic for reference dataset, equals None if the reference is not present
     reference: Optional[DataIntegrityValueByRegexpStat] = None
 
 
 class DataIntegrityValueByRegexpMetrics(Metric[DataIntegrityValueByRegexpMetricResult]):
-    """Count number of values in a column not matched a regexp"""
-
+    """Count number of values in a column matched or not by a regular expression (regexp)"""
+    # name of the column that we check
     column_name: str
+    # the regular expression
+    reg_exp: str
+    # compiled regular expression for speed optimization
+    _reg_exp_compiled: Pattern
 
     def __init__(self, column_name: str, reg_exp: str):
         self.reg_exp = reg_exp
         self.column_name = column_name
-        self.reg_exp_compiled = re.compile(reg_exp)
+        self._reg_exp_compiled = re.compile(reg_exp)
 
     def _calculate_stats_by_regexp(self, column: pd.Series) -> DataIntegrityValueByRegexpStat:
         number_of_matched = 0
@@ -185,7 +199,7 @@ class DataIntegrityValueByRegexpMetrics(Metric[DataIntegrityValueByRegexpMetricR
 
             item = str(item)
 
-            if bool(self.reg_exp_compiled.match(str(item))):
+            if bool(self._reg_exp_compiled.match(str(item))):
                 number_of_matched += 1
                 table_of_matched[item] += 1
 
