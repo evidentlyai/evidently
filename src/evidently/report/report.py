@@ -1,24 +1,32 @@
 import dataclasses
 import uuid
-from typing import Optional, List, Union
+from typing import List
+from typing import Optional
+from typing import Union
 
 import pandas as pd
 
 from evidently import ColumnMapping
-from evidently.analyzers.utils import process_columns, DatasetColumns
+from evidently.analyzers.utils import process_columns
+from evidently.analyzers.utils import DatasetColumns
 from evidently.dashboard.dashboard import TemplateParams
-from evidently.metrics.base_metric import Metric, InputData
+from evidently.metric_preset.metric_preset import MetricPreset
+from evidently.metrics.base_metric import InputData
+from evidently.metrics.base_metric import Metric
 from evidently.model.dashboard import DashboardInfo
 from evidently.renderers.notebook_utils import determine_template
-from evidently.suite.base_suite import Suite, find_metric_renderer
+from evidently.suite.base_suite import find_metric_renderer
+from evidently.suite.base_suite import Suite
 
 
 class Report:
     _inner_suite: Suite
     _columns_info: DatasetColumns
+    metrics: List[Union[Metric, MetricPreset]]
 
-    def __init__(self, metrics: List[Union[Metric]]):
+    def __init__(self, metrics: List[Union[Metric, MetricPreset]]):
         super().__init__()
+        # just save all metrics and metric presets
         self.metrics = metrics
         self._inner_suite = Suite()
 
@@ -31,11 +39,27 @@ class Report:
     ) -> None:
         if column_mapping is None:
             column_mapping = ColumnMapping()
+
         self._columns_info = process_columns(current_data, column_mapping)
-        for metric in self.metrics:
-            self._inner_suite.add_metric(metric)
+        data = InputData(reference_data, current_data, column_mapping)
+
+        # get each item from metrics/presets and add to metrics list
+        # do it in one loop because we want to save metrics and presets order
+        for item in self.metrics:
+            if isinstance(item, MetricPreset):
+                metrics = item.generate_metrics(data=data, columns=self._columns_info)
+
+                for metric in metrics:
+                    self._inner_suite.add_metric(metric)
+
+            elif isinstance(item, Metric):
+                self._inner_suite.add_metric(item)
+
+            else:
+                raise ValueError("Incorrect item instead of a metric or metric preset was passed to Report")
+
         self._inner_suite.verify()
-        self._inner_suite.run_calculate(InputData(reference_data, current_data, column_mapping))
+        self._inner_suite.run_calculate(data)
 
     def _repr_html_(self):
         dashboard_id, dashboard_info, graphs = self._build_dashboard_info()
