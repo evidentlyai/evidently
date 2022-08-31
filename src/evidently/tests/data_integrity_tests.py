@@ -15,7 +15,7 @@ from evidently.model.widget import BaseWidgetInfo
 from evidently.metrics.data_integrity_metrics import DataIntegrityMetrics
 from evidently.metrics.data_integrity_metrics import DataIntegrityValueByRegexpMetrics
 from evidently.metrics.data_integrity_metrics import DataIntegrityNullValuesMetrics
-from evidently.metrics.data_integrity_metrics import DataIntegrityNullValues
+from evidently.metrics.data_integrity_metrics import DataIntegrityNullValuesStat
 from evidently.metrics.data_integrity_metrics import DataIntegrityNullValuesMetricsResult
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.base_renderer import DetailsInfo
@@ -175,7 +175,7 @@ class BaseTestNullValuesRenderer(TestRenderer):
     """
 
     @staticmethod
-    def _get_number_and_percents_of_nulls(nulls_info: DataIntegrityNullValues) -> pd.DataFrame:
+    def _get_number_and_percents_of_nulls(nulls_info: DataIntegrityNullValuesStat) -> pd.DataFrame:
         """Get a string with nulls numbers and percents from nulls info for results table"""
         result = {}
 

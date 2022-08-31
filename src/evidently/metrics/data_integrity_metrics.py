@@ -300,7 +300,8 @@ class DataIntegrityValueByRegexpMetricsRenderer(MetricRenderer):
 
 
 @dataclass
-class DataIntegrityNullValues:
+class DataIntegrityNullValuesStat:
+    """Statistics about null values in a dataset"""
     # set of different null-like values in the dataset
     different_nulls: Dict[Any, int]
     # number of different null-like values in the dataset
@@ -335,8 +336,8 @@ class DataIntegrityNullValues:
 
 @dataclass
 class DataIntegrityNullValuesMetricsResult:
-    current_null_values: DataIntegrityNullValues
-    reference_null_values: Optional[DataIntegrityNullValues] = None
+    current_null_values: DataIntegrityNullValuesStat
+    reference_null_values: Optional[DataIntegrityNullValuesStat] = None
 
 
 class DataIntegrityNullValuesMetrics(Metric[DataIntegrityNullValuesMetricsResult]):
@@ -368,7 +369,7 @@ class DataIntegrityNullValuesMetrics(Metric[DataIntegrityNullValuesMetricsResult
         # use frozenset because metrics parameters should be immutable/hashable for deduplication
         self.null_values = frozenset(null_values)
 
-    def _calculate_null_values_stats(self, dataset: pd.DataFrame) -> DataIntegrityNullValues:
+    def _calculate_null_values_stats(self, dataset: pd.DataFrame) -> DataIntegrityNullValuesStat:
         different_nulls = {null_value: 0 for null_value in self.null_values}
         columns_with_nulls = set()
         number_of_nulls = 0
@@ -443,7 +444,7 @@ class DataIntegrityNullValuesMetrics(Metric[DataIntegrityNullValuesMetricsResult
         number_of_columns_with_nulls = len(columns_with_nulls)
         number_of_different_nulls = len({k for k in different_nulls if different_nulls[k] > 0})
 
-        return DataIntegrityNullValues(
+        return DataIntegrityNullValuesStat(
             different_nulls=different_nulls,
             number_of_different_nulls=number_of_different_nulls,
             different_nulls_by_column=different_nulls_by_column,
@@ -468,7 +469,7 @@ class DataIntegrityNullValuesMetrics(Metric[DataIntegrityNullValuesMetricsResult
         current_null_values = self._calculate_null_values_stats(data.current_data)
 
         if data.reference_data is not None:
-            reference_null_values: Optional[DataIntegrityNullValues] = self._calculate_null_values_stats(
+            reference_null_values: Optional[DataIntegrityNullValuesStat] = self._calculate_null_values_stats(
                 data.reference_data
             )
 
@@ -486,23 +487,54 @@ class DataIntegrityNullValuesMetricsRenderer(MetricRenderer):
     def render_json(self, obj: DataIntegrityNullValuesMetrics) -> dict:
         return dataclasses.asdict(obj.get_result().current_null_values)
 
+    @staticmethod
+    def _get_table_stat(title: str, name: str, stats: DataIntegrityNullValuesStat) -> MetricHtmlInfo:
+        matched_stat = [(k, v) for k, v in stats.number_of_nulls_by_column.items()]
+        matched_stat_headers = ["Value", "Count"]
+        return MetricHtmlInfo(
+            name=f"data_integrity_null_values_stats_{name}",
+            info=BaseWidgetInfo(
+                title=title,
+                type=BaseWidgetInfo.WIDGET_INFO_TYPE_TABLE,
+                size=1,
+                params={
+                    "header": matched_stat_headers, "data": matched_stat
+                },
+            ),
+            details=[],
+        )
+
     def render_html(self, obj: DataIntegrityNullValuesMetrics) -> List[MetricHtmlInfo]:
-        return [
+        metric_result = obj.get_result()
+        number_of_nulls = metric_result.current_null_values.number_of_nulls
+
+        result = [
             MetricHtmlInfo(
-                "data_integrity_null_values",
-                BaseWidgetInfo(
-                    type="counter",
-                    title="Data Integrity Null Values",
+                name="data_integrity_null_values_title",
+                info=BaseWidgetInfo(
+                    type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
+                    title="Data Integrity Metric: Null Values Statistic",
                     size=2,
                     params={
                         "counters": [
                             {
                                 "value": "",
-                                "label": "DataIntegrityNullValuesMetrics"
+                                "label": f"In current dataset {number_of_nulls} null values."
                             }
                         ]
                     },
                 ),
                 details=[],
             ),
+            self._get_table_stat(
+                title="Current Nulls Statistics", name="current", stats=metric_result.current_null_values
+            ),
         ]
+
+        if metric_result.reference_null_values is not None:
+            result.append(
+                self._get_table_stat(
+                    title="Reference Nulls Statistics", name="reference", stats=metric_result.reference_null_values
+                )
+            )
+        return result
