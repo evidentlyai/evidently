@@ -294,16 +294,10 @@ class ClassificationPerformanceMetricsRenderer(MetricRenderer):
         ]
 
         if metrics.roc_auc is not None:
-            counters.append({
-                "value": str(round(metrics.roc_auc, 3)),
-                "label": "ROC AUC"
-            })
+            counters.append({"value": str(round(metrics.roc_auc, 3)), "label": "ROC AUC"})
 
         if metrics.log_loss is not None:
-            counters.append({
-                "value": str(round(metrics.log_loss, 3)),
-                "label": "LogLoss"
-            })
+            counters.append({"value": str(round(metrics.log_loss, 3)), "label": "LogLoss"})
 
         return MetricHtmlInfo(
             f"classification_performance_metrics_table_{dataset_name.lower()}",
@@ -311,9 +305,7 @@ class ClassificationPerformanceMetricsRenderer(MetricRenderer):
                 title=f"{dataset_name.capitalize()}: Model Quality With Macro-average Metrics",
                 type="counter",
                 size=2,
-                params={
-                    "counters": counters
-                },
+                params={"counters": counters},
             ),
             details=[],
         )
@@ -689,12 +681,14 @@ class PredictionData:
     prediction_probas: Optional[pd.DataFrame]
 
 
-def _check_pos_labels(pos_label: Optional[str], labels: List[str]) -> None:
+def _check_pos_labels(pos_label: Optional[Union[str, int]], labels: List[str]) -> Union[str, int]:
     if pos_label is None:
         raise ValueError("Undefined pos_label.")
 
     if pos_label not in labels:
         raise ValueError(f"Cannot find pos_label '{pos_label}' in labels {labels}")
+
+    return pos_label
 
 
 def get_prediction_data(data: pd.DataFrame, mapping: ColumnMapping, threshold: float = 0.5) -> PredictionData:
@@ -731,13 +725,13 @@ def get_prediction_data(data: pd.DataFrame, mapping: ColumnMapping, threshold: f
     # prediction in mapping is a list of two columns:
     # one is positive value probabilities, second is negative value probabilities
     if isinstance(mapping.prediction, list) and len(mapping.prediction) == 2:
-        _check_pos_labels(mapping.pos_label, labels)
+        pos_label = _check_pos_labels(mapping.pos_label, labels)
 
         # get negative label for binary classification
         neg_label = labels[labels != mapping.pos_label][0]
 
-        predictions = threshold_probability_labels(data[mapping.prediction], mapping.pos_label, neg_label, threshold)
-        return PredictionData(predictions=predictions, prediction_probas=data[[mapping.pos_label, neg_label]])
+        predictions = threshold_probability_labels(data[mapping.prediction], pos_label, neg_label, threshold)
+        return PredictionData(predictions=predictions, prediction_probas=data[[pos_label, neg_label]])
 
     # binary classification
     # target is strings or other values, prediction is a string with positive label name, one column with probabilities
@@ -746,7 +740,7 @@ def get_prediction_data(data: pd.DataFrame, mapping: ColumnMapping, threshold: f
         and (is_string_dtype(data[mapping.target]) or is_object_dtype(data[mapping.target]))
         and is_float_dtype(data[mapping.prediction])
     ):
-        _check_pos_labels(mapping.pos_label, labels)
+        pos_label = _check_pos_labels(mapping.pos_label, labels)
 
         if mapping.prediction not in labels:
             raise ValueError(
@@ -755,9 +749,9 @@ def get_prediction_data(data: pd.DataFrame, mapping: ColumnMapping, threshold: f
             )
 
         # get negative label for binary classification
-        neg_label = labels[labels != mapping.pos_label][0]
+        neg_label = labels[labels != pos_label][0]
 
-        if mapping.pos_label == mapping.prediction:
+        if pos_label == mapping.prediction:
             pos_preds = data[mapping.prediction]
 
         else:
@@ -765,11 +759,11 @@ def get_prediction_data(data: pd.DataFrame, mapping: ColumnMapping, threshold: f
 
         prediction_probas = pd.DataFrame.from_dict(
             {
-                mapping.pos_label: pos_preds,
+                pos_label: pos_preds,
                 neg_label: pos_preds.apply(lambda x: 1.0 - x),
             }
         )
-        predictions = threshold_probability_labels(prediction_probas, mapping.pos_label, neg_label, threshold)
+        predictions = threshold_probability_labels(prediction_probas, pos_label, neg_label, threshold)
         return PredictionData(predictions=predictions, prediction_probas=prediction_probas)
 
     # binary target and preds are numbers and prediction is a label
