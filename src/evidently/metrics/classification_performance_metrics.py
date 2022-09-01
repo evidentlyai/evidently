@@ -17,10 +17,10 @@ from pandas.core.dtypes.api import is_string_dtype
 from pandas.core.dtypes.api import is_object_dtype
 
 from evidently import ColumnMapping
-from evidently.analyzers.classification_performance_analyzer import ConfusionMatrix
-from evidently.analyzers.utils import calculate_confusion_by_classes
-from evidently.analyzers.utils import process_columns
-from evidently.analyzers.utils import DatasetColumns
+from evidently.calculations.classification_performance import ConfusionMatrix
+from evidently.calculations.classification_performance import calculate_confusion_by_classes
+from evidently.utils.data_operations import process_columns
+from evidently.utils.data_operations import DatasetColumns
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo

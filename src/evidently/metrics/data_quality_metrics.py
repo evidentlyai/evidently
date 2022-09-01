@@ -140,14 +140,7 @@ class DataQualityMetricsRenderer(MetricRenderer):
                     type="counter",
                     title="Data Quality",
                     size=2,
-                    params={
-                        "counters": [
-                            {
-                                "value": "",
-                                "label": "DataQualityMetrics"
-                            }
-                        ]
-                    },
+                    params={"counters": [{"value": "", "label": "DataQualityMetrics"}]},
                 ),
                 details=[],
             ),
@@ -202,14 +195,7 @@ class DataQualityStabilityMetricsRenderer(MetricRenderer):
                     type="counter",
                     title="Data Quality Stability",
                     size=2,
-                    params={
-                        "counters": [
-                            {
-                                "value": "",
-                                "label": "DataQualityStabilityMetricsRenderer"
-                            }
-                        ]
-                    },
+                    params={"counters": [{"value": "", "label": "DataQualityStabilityMetricsRenderer"}]},
                 ),
                 details=[],
             ),
@@ -278,14 +264,7 @@ class DataQualityValueListMetricsRenderer(MetricRenderer):
                     type="counter",
                     title="Data Quality Value List",
                     size=2,
-                    params={
-                        "counters": [
-                            {
-                                "value": "",
-                                "label": "DataQualityValueListMetrics"
-                            }
-                        ]
-                    },
+                    params={"counters": [{"value": "", "label": "DataQualityValueListMetrics"}]},
                 ),
                 details=[],
             ),
@@ -380,14 +359,7 @@ class DataQualityValueRangeMetricsRenderer(MetricRenderer):
                     type="counter",
                     title="Data Quality Value Range",
                     size=2,
-                    params={
-                        "counters": [
-                            {
-                                "value": "",
-                                "label": "DataQualityValueRangeMetrics"
-                            }
-                        ]
-                    },
+                    params={"counters": [{"value": "", "label": "DataQualityValueRangeMetrics"}]},
                 ),
                 details=[],
             ),
@@ -451,14 +423,7 @@ class DataQualityValueQuantileMetricsRenderer(MetricRenderer):
                     type="counter",
                     title="Data Quality Value Quantile",
                     size=2,
-                    params={
-                        "counters": [
-                            {
-                                "value": "",
-                                "label": "DataQualityValueQuantileMetrics"
-                            }
-                        ]
-                    },
+                    params={"counters": [{"value": "", "label": "DataQualityValueQuantileMetrics"}]},
                 ),
                 details=[],
             ),
@@ -589,14 +554,7 @@ class DataQualityCorrelationMetricsRenderer(MetricRenderer):
                     type="counter",
                     title="Data Quality Correlation",
                     size=2,
-                    params={
-                        "counters": [
-                            {
-                                "value": "",
-                                "label": "DataQualityCorrelationMetrics"
-                            }
-                        ]
-                    },
+                    params={"counters": [{"value": "", "label": "DataQualityCorrelationMetrics"}]},
                 ),
                 details=[],
             ),

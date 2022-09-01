@@ -55,8 +55,7 @@ def test_data_quality_stability_metrics_no_other_columns() -> None:
     )
     data_mapping = ColumnMapping()
     metric = DataQualityStabilityMetrics()
-    result = metric.calculate(
-        data=InputData(current_data=curr, reference_data=ref, column_mapping=data_mapping))
+    result = metric.calculate(data=InputData(current_data=curr, reference_data=ref, column_mapping=data_mapping))
     assert result is not None
     assert result.number_not_stable_target == 0
     assert result.number_not_stable_prediction == 0

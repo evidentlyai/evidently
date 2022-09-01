@@ -491,9 +491,7 @@ def test_classification_performance_top_k_metrics_no_probas() -> None:
     column_mapping = ColumnMapping(target="target", prediction="prediction", pos_label=1)
     metric = ClassificationPerformanceMetricsTopK(k=1)
     with pytest.raises(ValueError):
-        metric.calculate(
-            data=InputData(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
-        )
+        metric.calculate(data=InputData(current_data=test_dataset, reference_data=None, column_mapping=column_mapping))
 
 
 def test_classification_performance_top_k_metrics() -> None:

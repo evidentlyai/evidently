@@ -232,14 +232,7 @@ class RegressionPerformanceMetricsRenderer(MetricRenderer):
                     type="counter",
                     title="Regression Performance",
                     size=2,
-                    params={
-                        "counters": [
-                            {
-                                "value": "",
-                                "label": "RegressionPerformanceMetrics"
-                            }
-                        ]
-                    },
+                    params={"counters": [{"value": "", "label": "RegressionPerformanceMetrics"}]},
                 ),
                 details=[],
             ),

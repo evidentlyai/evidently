@@ -54,8 +54,8 @@ def test_data_integrity_metrics() -> None:
                     table_of_matched={"3": 1, "b5": 1},
                     table_of_not_matched={"a": 2},
                 ),
-                reference=None
-            )
+                reference=None,
+            ),
         ),
         (
             pd.DataFrame(
@@ -86,21 +86,22 @@ def test_data_integrity_metrics() -> None:
                     number_of_rows=3,
                     table_of_matched={},
                     table_of_not_matched={"a": 2, "c": 1},
-                )
-            )
+                ),
+            ),
         ),
-    )
+    ),
 )
 def test_data_integrity_value_by_regexp_metric(
     current_data: pd.DataFrame,
     reference_data: pd.DataFrame,
     column_name: str,
     reg_exp: str,
-    expected_result: DataIntegrityValueByRegexpMetricResult
+    expected_result: DataIntegrityValueByRegexpMetricResult,
 ) -> None:
     metric = DataIntegrityValueByRegexpMetrics(column_name=column_name, reg_exp=reg_exp)
     result = metric.calculate(
-        data=InputData(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping()))
+        data=InputData(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
+    )
     assert result == expected_result
 
 

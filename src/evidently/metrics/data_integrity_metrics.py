@@ -156,6 +156,7 @@ class DataIntegrityMetricsRenderer(MetricRenderer):
 @dataclass
 class DataIntegrityValueByRegexpStat:
     """Statistics about matched by a regular expression values in a column for one dataset"""
+
     # count of matched values in the column, without NaNs
     number_of_matched: int
     # count of not matched values in the column, without NaNs
@@ -182,6 +183,7 @@ class DataIntegrityValueByRegexpMetricResult:
 
 class DataIntegrityValueByRegexpMetrics(Metric[DataIntegrityValueByRegexpMetricResult]):
     """Count number of values in a column matched or not by a regular expression (regexp)"""
+
     # name of the column that we check
     column_name: str
     # the regular expression
@@ -221,7 +223,7 @@ class DataIntegrityValueByRegexpMetrics(Metric[DataIntegrityValueByRegexpMetricR
             number_of_not_matched=number_of_not_matched,
             number_of_rows=column.shape[0],
             table_of_matched=dict(table_of_matched),
-            table_of_not_matched=dict(table_of_not_matched)
+            table_of_not_matched=dict(table_of_not_matched),
         )
 
     def calculate(self, data: InputData) -> DataIntegrityValueByRegexpMetricResult:
@@ -235,10 +237,7 @@ class DataIntegrityValueByRegexpMetrics(Metric[DataIntegrityValueByRegexpMetricR
             reference = self._calculate_stats_by_regexp(data.reference_data[self.column_name])
 
         return DataIntegrityValueByRegexpMetricResult(
-            column_name=self.column_name,
-            reg_exp=self.reg_exp,
-            current=current,
-            reference=reference
+            column_name=self.column_name, reg_exp=self.reg_exp, current=current, reference=reference
         )
 
 
@@ -252,9 +251,8 @@ class DataIntegrityValueByRegexpMetricsRenderer(MetricRenderer):
         matched_stat = [(f"{k} (matched)", v) for k, v in stats.table_of_matched.items()]
         matched_stat += [(f"{k} (not matched)", v) for k, v in stats.table_of_not_matched.items()]
         matched_stat += [
-            ("NaN",
-             stats.number_of_rows - stats.number_of_matched - stats.number_of_not_matched),
-            ("Total", stats.number_of_rows)
+            ("NaN", stats.number_of_rows - stats.number_of_matched - stats.number_of_not_matched),
+            ("Total", stats.number_of_rows),
         ]
         matched_stat_headers = ["Value", "Count"]
         return MetricHtmlInfo(
@@ -263,9 +261,7 @@ class DataIntegrityValueByRegexpMetricsRenderer(MetricRenderer):
                 title=title,
                 type=BaseWidgetInfo.WIDGET_INFO_TYPE_TABLE,
                 size=1,
-                params={
-                    "header": matched_stat_headers, "data": matched_stat
-                },
+                params={"header": matched_stat_headers, "data": matched_stat},
             ),
             details=[],
         )
@@ -287,8 +283,8 @@ class DataIntegrityValueByRegexpMetricsRenderer(MetricRenderer):
                             {
                                 "value": "",
                                 "label": f"Founded {number_of_matched} of {number_of_rows} by "
-                                         f"regexp \"{metric_result.reg_exp}\" in "
-                                         f"column **{metric_result.column_name}** of current data."
+                                f'regexp "{metric_result.reg_exp}" in '
+                                f"column **{metric_result.column_name}** of current data.",
                             }
                         ]
                     },
@@ -311,6 +307,7 @@ class DataIntegrityValueByRegexpMetricsRenderer(MetricRenderer):
 @dataclass
 class DataIntegrityNullValuesStat:
     """Statistics about null values in a dataset"""
+
     # set of different null-like values in the dataset
     different_nulls: Dict[Any, int]
     # number of different null-like values in the dataset
@@ -506,9 +503,7 @@ class DataIntegrityNullValuesMetricsRenderer(MetricRenderer):
                 title=title,
                 type=BaseWidgetInfo.WIDGET_INFO_TYPE_TABLE,
                 size=1,
-                params={
-                    "header": matched_stat_headers, "data": matched_stat
-                },
+                params={"header": matched_stat_headers, "data": matched_stat},
             ),
             details=[],
         )
@@ -524,14 +519,7 @@ class DataIntegrityNullValuesMetricsRenderer(MetricRenderer):
                     type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
                     title="Data Integrity Metric: Null Values Statistic",
                     size=2,
-                    params={
-                        "counters": [
-                            {
-                                "value": "",
-                                "label": f"In current dataset {number_of_nulls} null values."
-                            }
-                        ]
-                    },
+                    params={"counters": [{"value": "", "label": f"In current dataset {number_of_nulls} null values."}]},
                 ),
                 details=[],
             ),
