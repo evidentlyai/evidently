@@ -1,12 +1,17 @@
+import abc
 import copy
 import dataclasses
+import json
 import logging
 from typing import Optional, Tuple, Iterator, Union
 
+from evidently.dashboard.dashboard import TemplateParams, save_lib_files, save_data_file, SaveMode, SaveModeMap
 from evidently.metrics.base_metric import Metric, InputData
 from evidently.renderers.base_renderer import TestRenderer, RenderersDefinitions, DEFAULT_RENDERERS, MetricRenderer
+from evidently.renderers.notebook_utils import determine_template
 from evidently.suite.execution_graph import ExecutionGraph, SimpleExecutionGraph
 from evidently.tests.base_test import Test, TestResult, GroupingTypes
+from evidently.utils import NumpyEncoder
 
 
 @dataclasses.dataclass
@@ -60,6 +65,77 @@ class Context:
 
 class ExecutionError(Exception):
     pass
+
+
+class Display:
+    @abc.abstractmethod
+    def _build_dashboard_info(self):
+        raise NotImplementedError()
+
+    def _repr_html_(self):
+        dashboard_id, dashboard_info, graphs = self._build_dashboard_info()
+        template_params = TemplateParams(
+            dashboard_id=dashboard_id, dashboard_info=dashboard_info, additional_graphs=graphs
+        )
+        return self._render(determine_template("auto"), template_params)
+
+    def show(self, mode="auto"):
+        dashboard_id, dashboard_info, graphs = self._build_dashboard_info()
+        template_params = TemplateParams(
+            dashboard_id=dashboard_id, dashboard_info=dashboard_info, additional_graphs=graphs
+        )
+        # pylint: disable=import-outside-toplevel
+        try:
+            from IPython.display import HTML
+
+            return HTML(self._render(determine_template(mode), template_params))
+        except ImportError as err:
+            raise Exception("Cannot import HTML from IPython.display, no way to show html") from err
+
+    def save_html(self, filename: str, mode: Union[str, SaveMode] = SaveMode.SINGLE_FILE):
+        dashboard_id, dashboard_info, graphs = self._build_dashboard_info()
+        if isinstance(mode, str):
+            _mode = SaveModeMap.get(mode)
+            if _mode is None:
+                raise ValueError(f"Unexpected save mode {mode}. Expected [{','.join(SaveModeMap.keys())}]")
+            mode = _mode
+        if mode == SaveMode.SINGLE_FILE:
+            template_params = TemplateParams(
+                dashboard_id=dashboard_id,
+                dashboard_info=dashboard_info,
+                additional_graphs=graphs,
+            )
+            with open(filename, "w", encoding="utf-8") as out_file:
+                out_file.write(self._render(determine_template("inline"), template_params))
+        else:
+            font_file, lib_file = save_lib_files(filename, mode)
+            data_file = save_data_file(filename, mode, dashboard_id, dashboard_info, graphs)
+            template_params = TemplateParams(
+                dashboard_id=dashboard_id,
+                dashboard_info=dashboard_info,
+                additional_graphs=graphs,
+                embed_lib=False,
+                embed_data=False,
+                embed_font=False,
+                font_file=font_file,
+                include_js_files=[lib_file, data_file],
+            )
+            with open(filename, "w", encoding="utf-8") as out_file:
+                out_file.write(self._render(determine_template("inline"), template_params))
+
+    @abc.abstractmethod
+    def as_dict(self) -> dict:
+        raise NotImplementedError()
+
+    def json(self) -> str:
+        return json.dumps(self.as_dict(), cls=NumpyEncoder)
+
+    def save_json(self, filename):
+        with open(filename, "w", encoding="utf-8") as out_file:
+            json.dump(self.as_dict(), out_file, cls=NumpyEncoder)
+
+    def _render(self, temple_func, template_params: TemplateParams):
+        return temple_func(params=template_params)
 
 
 class Suite:
