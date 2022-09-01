@@ -7,8 +7,7 @@ from typing import Union
 import pandas as pd
 
 from evidently import ColumnMapping
-from evidently.utils.data_operations import DatasetColumns
-from evidently.utils.data_operations import process_columns
+from evidently.dashboard.dashboard import TemplateParams
 from evidently.metric_preset.metric_preset import MetricPreset
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric

@@ -1,24 +1,28 @@
 import dataclasses
+import uuid
 from typing import Dict
 from typing import List
 from typing import Optional
-from dataclasses import dataclass
 
 import pandas as pd
+from dataclasses import dataclass
+from evidently.calculations.data_drift import DataDriftAnalyzerMetrics
+from evidently.calculations.data_drift import get_overall_data_drift
+from evidently.utils.data_operations import process_columns
 
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
-from evidently.calculations.data_drift import get_overall_data_drift
-from evidently.calculations.data_drift import DataDriftAnalyzerMetrics
-from evidently.metrics.utils import make_hist_for_num_plot
 from evidently.metrics.utils import make_hist_for_cat_plot
+from evidently.metrics.utils import make_hist_for_num_plot
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import default_renderer
-from evidently.renderers.base_renderer import MetricHtmlInfo
-from evidently.renderers.base_renderer import MetricRenderer
+from evidently.options import ColorOptions, QualityMetricsOptions
 from evidently.options import DataDriftOptions
 from evidently.options import OptionsProvider
-from evidently.utils.data_operations import process_columns
+from evidently.renderers.base_renderer import DetailsInfo
+from evidently.renderers.base_renderer import MetricHtmlInfo
+from evidently.renderers.base_renderer import MetricRenderer
+from evidently.renderers.base_renderer import default_renderer
+from evidently.tests.utils import plot_distr
 
 
 @dataclass
@@ -66,25 +70,147 @@ class DataDriftMetrics(Metric[DataDriftMetricsResults]):
         return DataDriftMetricsResults(options=options, metrics=drift_metrics, distr_for_plots=distr_for_plots)
 
 
+def _generate_feature_params(item_id: str, name: str, data: DataDriftAnalyzerFeatureMetrics) -> dict:
+    current_small_hist = data.current_small_hist
+    ref_small_hist = data.ref_small_hist
+    feature_type = data.feature_type
+    p_value = data.p_value
+    distr_sim_test = "Detected" if data.drift_detected else "Not Detected"
+    parts = []
+    if data.feature_type == "num":
+        parts.append({"title": "Data drift", "id": f"{item_id}_{name}_drift", "type": "widget"})
+    parts.append({"title": "Data distribution", "id": f"{item_id}_{name}_distr", "type": "widget"})
+    return {
+        "details": {"parts": parts, "insights": []},
+        "f1": name,
+        "f6": feature_type,
+        "stattest_name": data.stattest_name,
+        "f3": {"x": list(ref_small_hist[1]), "y": list(ref_small_hist[0])},
+        "f4": {"x": list(current_small_hist[1]), "y": list(current_small_hist[0])},
+        "f2": distr_sim_test,
+        "f5": round(p_value, 6),
+    }
+
+
 @default_renderer(wrap_type=DataDriftMetrics)
-class TestNumberOfDriftedFeaturesRenderer(MetricRenderer):
+class DataDriftMetricsRenderer(MetricRenderer):
     def render_json(self, obj: DataDriftMetrics) -> dict:
         return dataclasses.asdict(obj.get_result().metrics)
 
     def render_html(self, obj: DataDriftMetrics) -> List[MetricHtmlInfo]:
-        return [
-            MetricHtmlInfo(
-                "data_drift",
-                BaseWidgetInfo(
-                    type="counter",
-                    title="Data Drift",
-                    size=2,
-                    params={
-                        "counters": [
-                            {"value": "", "label": f"Share:'{obj.get_result().metrics.share_drifted_features}'"}
-                        ]
-                    },
+        color_options = ColorOptions()
+        quality_metrics_options = QualityMetricsOptions()
+        data_drift_options = obj.options
+
+        data_drift_results = obj.get_result().analyzer_result
+        all_features = data_drift_results.columns.get_all_features_list()
+        date_column = data_drift_results.columns.utility_columns.date
+        target_column = data_drift_results.columns.utility_columns.target
+        prediction_column = data_drift_results.columns.utility_columns.prediction
+
+        # set params data
+        params_data = []
+
+        # sort columns by drift score
+        df_for_sort = pd.DataFrame()
+        df_for_sort['features'] = all_features
+        df_for_sort['scores'] = [data_drift_results.metrics.features[feature].p_value for feature in all_features]
+        all_features = df_for_sort.sort_values('scores', ascending=False).features.tolist()
+        columns = []
+        if target_column:
+            columns.append(target_column)
+            all_features.remove(target_column)
+        if prediction_column and isinstance(prediction_column, str):
+            columns.append(prediction_column)
+            all_features.remove(prediction_column)
+        columns = columns + all_features
+
+        item_id = str(uuid.uuid4())
+        for feature_name in columns:
+            params_data.append(
+                _generate_feature_params(
+                    item_id,
+                    feature_name,
+                    data_drift_results.metrics.features[feature_name]
+                )
+            )
+
+        # set additionalGraphs
+        additional_graphs_data = []
+        for feature_name in columns:
+            curr_distr = obj.get_result().distr_for_plots[feature_name]["current"]
+            ref_distr = obj.get_result().distr_for_plots[feature_name]["reference"]
+            fig = plot_distr(curr_distr, ref_distr)
+            fig_json = fig.to_plotly_json()
+            additional_graphs_data.append(
+                DetailsInfo(
+                    id=f"{item_id}_{feature_name}_distr",
+                    title="",
+                    info=BaseWidgetInfo(
+                        title="",
+                        size=2,
+                        type="big_graph",
+                        params={"data": fig_json["data"], "layout": fig_json["layout"]},
+                    ),
                 ),
-                details=[],
+            )
+            additional_graphs_data.append(
+                DetailsInfo(
+                    id=f"{item_id}_{feature_name}_drift",
+                    title="",
+                    info=BaseWidgetInfo(
+                        title="",
+                        size=2,
+                        type="unknown",
+                    )
+                )
+            )
+        n_drifted_features = data_drift_results.metrics.n_drifted_features
+        dataset_drift = data_drift_results.metrics.dataset_drift
+        n_features = data_drift_results.metrics.n_features
+        drift_share = data_drift_results.metrics.share_drifted_features
+
+        title_prefix = (
+            f"Drift is detected for {drift_share * 100:.2f}% of features ({n_drifted_features}"
+            f" out of {n_features}). "
+        )
+        title_suffix = "Dataset Drift is detected." if dataset_drift else "Dataset Drift is NOT detected."
+
+        return [MetricHtmlInfo(
+            name="data drift",
+            info=BaseWidgetInfo(
+                title=title_prefix + title_suffix,
+                type="big_table",
+                details="",
+                alerts=[],
+                alertsPosition="row",
+                insights=[],
+                size=2,
+                params={
+                    "rowsPerPage": min(n_features, 10),
+                    "columns": [
+                        {"title": "Feature", "field": "f1"},
+                        {"title": "Type", "field": "f6"},
+                        {
+                            "title": "Reference Distribution",
+                            "field": "f3",
+                            "type": "histogram",
+                            "options": {"xField": "x", "yField": "y", "color": color_options.primary_color},
+                        },
+                        {
+                            "title": "Current Distribution",
+                            "field": "f4",
+                            "type": "histogram",
+                            "options": {"xField": "x", "yField": "y", "color": color_options.primary_color},
+                        },
+                        {"title": "Data Drift", "field": "f2"},
+                        {"title": "Stat Test", "field": "stattest_name"},
+                        {"title": "Drift Score", "field": "f5"},
+                    ],
+                    "data": params_data,
+                },
+                additionalGraphs=[],
             ),
+            details=additional_graphs_data,
+        )
         ]
