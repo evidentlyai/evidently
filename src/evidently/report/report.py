@@ -7,19 +7,18 @@ from typing import Union
 import pandas as pd
 
 from evidently import ColumnMapping
-from evidently.dashboard.dashboard import TemplateParams
+from evidently.utils.data_operations import DatasetColumns
+from evidently.utils.data_operations import process_columns
 from evidently.metric_preset.metric_preset import MetricPreset
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.model.dashboard import DashboardInfo
-from evidently.renderers.notebook_utils import determine_template
-from evidently.suite.base_suite import find_metric_renderer
+from evidently.suite.base_suite import Display
 from evidently.suite.base_suite import Suite
-from evidently.utils.data_operations import process_columns
-from evidently.utils.data_operations import DatasetColumns
+from evidently.suite.base_suite import find_metric_renderer
 
 
-class Report:
+class Report(Display):
     _inner_suite: Suite
     _columns_info: DatasetColumns
     metrics: List[Union[Metric, MetricPreset]]
@@ -31,11 +30,11 @@ class Report:
         self._inner_suite = Suite()
 
     def run(
-        self,
-        *,
-        reference_data: Optional[pd.DataFrame],
-        current_data: pd.DataFrame,
-        column_mapping: Optional[ColumnMapping] = None,
+            self,
+            *,
+            reference_data: Optional[pd.DataFrame],
+            current_data: pd.DataFrame,
+            column_mapping: Optional[ColumnMapping] = None,
     ) -> None:
         if column_mapping is None:
             column_mapping = ColumnMapping()
@@ -61,15 +60,8 @@ class Report:
         self._inner_suite.verify()
         self._inner_suite.run_calculate(data)
 
-    def _repr_html_(self):
-        dashboard_id, dashboard_info, graphs = self._build_dashboard_info()
-        template_params = TemplateParams(
-            dashboard_id=dashboard_id, dashboard_info=dashboard_info, additional_graphs=graphs
-        )
-        return self._render(determine_template("auto"), template_params)
-
-    def _render(self, temple_func, template_params: TemplateParams):
-        return temple_func(params=template_params)
+    def as_dict(self) -> dict:
+        raise NotImplementedError()
 
     def _build_dashboard_info(self):
         metrics_results = []
@@ -80,9 +72,7 @@ class Report:
         return (
             "evidently_dashboard_" + str(uuid.uuid4()).replace("-", ""),
             DashboardInfo("Report", widgets=[result.info for result in metrics_results]),
-            {
-                f"{info.name}_{idx}_{item.id}": dataclasses.asdict(item.info)
-                for idx, info in enumerate(metrics_results)
-                for item in info.details
-            },
+            {f"{item.id}": dataclasses.asdict(item.info)
+             for idx, info in enumerate(metrics_results)
+             for item in info.details},
         )
