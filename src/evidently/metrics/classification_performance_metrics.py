@@ -1,5 +1,6 @@
 import abc
 import dataclasses
+import json
 from typing import Optional
 from typing import List
 from typing import Dict
@@ -7,6 +8,7 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
+import plotly.graph_objs as go
 import sklearn
 from numpy import dtype
 from pandas.core.dtypes.api import is_float_dtype
@@ -16,12 +18,15 @@ from pandas.core.dtypes.api import is_object_dtype
 from evidently import ColumnMapping
 from evidently.analyzers.classification_performance_analyzer import ConfusionMatrix
 from evidently.analyzers.utils import calculate_confusion_by_classes
+from evidently.analyzers.utils import process_columns
+from evidently.analyzers.utils import DatasetColumns
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.base_renderer import MetricHtmlInfo
 from evidently.renderers.base_renderer import MetricRenderer
+from evidently.options import ColorOptions
 
 
 @dataclasses.dataclass
@@ -54,6 +59,7 @@ class ClassificationPerformanceResults:
     current: DatasetClassificationPerformanceMetrics
     dummy: DatasetClassificationPerformanceMetrics
     reference: Optional[DatasetClassificationPerformanceMetrics] = None
+    columns: Optional[DatasetColumns] = None
 
 
 def k_probability_threshold(prediction_probas: pd.DataFrame, k: Union[int, float]) -> float:
@@ -161,10 +167,11 @@ def classification_performance_metrics(
         fnr = conf_by_pos_label["fn"] / (conf_by_pos_label["fn"] + conf_by_pos_label["tp"])
 
     if class_num == 2 and prediction_probas is not None and roc_curve is not None:
-        rate_plots_data = {}
-        rate_plots_data["thrs"] = roc_curve[pos_label]["thrs"]
-        rate_plots_data["tpr"] = roc_curve[pos_label]["tpr"]
-        rate_plots_data["fpr"] = roc_curve[pos_label]["fpr"]
+        rate_plots_data = {
+            "thrs": roc_curve[pos_label]["thrs"],
+            "tpr": roc_curve[pos_label]["tpr"],
+            "fpr": roc_curve[pos_label]["fpr"]
+        }
 
         df = pd.DataFrame({"true": binaraized_target[pos_label].values, "preds": prediction_probas[pos_label].values})
         tnrs = []
@@ -207,6 +214,12 @@ class ClassificationPerformanceMetrics(Metric[ClassificationPerformanceResults])
     def calculate(self, data: InputData) -> ClassificationPerformanceResults:
         if data.current_data is None:
             raise ValueError("current dataset should be present")
+
+        if data.reference_data is None:
+            columns = process_columns(data.current_data, data.column_mapping)
+
+        else:
+            columns = process_columns(data.reference_data, data.column_mapping)
 
         current_data = _cleanup_data(data.current_data, data.column_mapping)
         target_data = current_data[data.column_mapping.target]
@@ -258,6 +271,7 @@ class ClassificationPerformanceMetrics(Metric[ClassificationPerformanceResults])
         dummy_metrics.roc_auc = 0.5
 
         return ClassificationPerformanceResults(
+            columns=columns,
             current=current_metrics,
             reference=reference_metrics,
             dummy=dummy_metrics,
@@ -269,26 +283,124 @@ class ClassificationPerformanceMetricsRenderer(MetricRenderer):
     def render_json(self, obj: ClassificationPerformanceMetrics) -> dict:
         return dataclasses.asdict(obj.get_result().current)
 
+    @staticmethod
+    def _get_metrics_table(
+            dataset_name: str,
+            metrics: DatasetClassificationPerformanceMetrics
+    ) -> MetricHtmlInfo:
+        return MetricHtmlInfo(
+            f"classification_performance_metrics_{dataset_name.lower()}",
+            BaseWidgetInfo(
+                title=f"{dataset_name.capitalize()}: Model Quality With Macro-average Metrics",
+                type="counter",
+                size=2,
+                params={
+                    "counters": [
+                        {
+                            "value": str(round(metrics.accuracy, 3)),
+                            "label": "Accuracy"
+                        },
+                        {
+                            "value": str(round(metrics.precision, 3)),
+                            "label": "Precision"
+                        },
+                        {
+                            "value": str(round(metrics.recall, 3)),
+                            "label": "Recall"
+                        },
+                        {
+                            "value": str(round(metrics.f1, 3)),
+                            "label": "F1"
+                        }
+                    ]
+                },
+            ),
+            details=[],
+        )
+
+    @staticmethod
+    def _get_class_representation_graph(
+        dataset_name: str,
+        metrics: DatasetClassificationPerformanceMetrics,
+        size: int,
+        columns: DatasetColumns,
+        color_options: ColorOptions
+    ) -> MetricHtmlInfo:
+        metrics_frame = pd.DataFrame(metrics.metrics_matrix)
+        fig = go.Figure()
+        fig.add_trace(go.Bar(
+            x=columns.target_names if columns.target_names else metrics_frame.columns.tolist()[:-3],
+            y=metrics_frame.iloc[-1:, :-3].values[0], marker_color=color_options.primary_color, name='Support'))
+        fig.update_layout(
+            xaxis_title="Class",
+            yaxis_title="Number of Objects",
+        )
+        support_bar_json = json.loads(fig.to_json())
+        return MetricHtmlInfo(
+                f"classification_performance_current_metrics_class_representation_{dataset_name.lower()}",
+                BaseWidgetInfo(
+                    title=f"{dataset_name.capitalize()}: Class Representation",
+                    type="big_graph",
+                    size=size,
+                    params={
+                        "data": support_bar_json['data'],
+                        "layout": support_bar_json['layout']
+                    },
+                    additionalGraphs=[],
+                ),
+                details=[],
+            )
+
     def render_html(self, obj: ClassificationPerformanceMetrics) -> List[MetricHtmlInfo]:
-        return [
+        metric_result = obj.get_result()
+        color_options = ColorOptions()
+        columns = metric_result.columns
+        target_name = columns.utility_columns.target
+        result = [
             MetricHtmlInfo(
-                "classification_performance",
+                "classification_performance_title",
                 BaseWidgetInfo(
                     type="counter",
-                    title="Classification Performance",
+                    title="",
                     size=2,
                     params={
                         "counters": [
                             {
                                 "value": "",
-                                "label": "ClassificationPerformanceMetrics"
+                                "label": f"Classification Model Performance Report. Target: '{target_name}'"
                             }
                         ]
                     },
                 ),
                 details=[],
-            ),
+            )
         ]
+        # add tables with perf metrics
+        if metric_result.reference is not None:
+            result.append(self._get_metrics_table(dataset_name="reference", metrics=metric_result.reference))
+
+        result.append(self._get_metrics_table(dataset_name="current", metrics=metric_result.current))
+
+        # add graphs with class representation
+        size = 2
+        if metric_result.reference is not None:
+            size = 1
+            result.append(self._get_class_representation_graph(
+                dataset_name="reference",
+                metrics=metric_result.reference,
+                size=size,
+                columns=columns,
+                color_options=color_options
+            ))
+
+        result.append(self._get_class_representation_graph(
+            dataset_name="current",
+            metrics=metric_result.current,
+            size=size,
+            columns=columns,
+            color_options=color_options
+        ))
+        return result
 
 
 def _dummy_threshold_metrics(
