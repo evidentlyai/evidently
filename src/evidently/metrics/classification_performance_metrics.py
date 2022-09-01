@@ -8,6 +8,7 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
+import plotly.figure_factory as ff
 import plotly.graph_objs as go
 import sklearn
 from numpy import dtype
@@ -170,7 +171,7 @@ def classification_performance_metrics(
         rate_plots_data = {
             "thrs": roc_curve[pos_label]["thrs"],
             "tpr": roc_curve[pos_label]["tpr"],
-            "fpr": roc_curve[pos_label]["fpr"]
+            "fpr": roc_curve[pos_label]["fpr"],
         }
 
         df = pd.DataFrame({"true": binaraized_target[pos_label].values, "preds": prediction_probas[pos_label].values})
@@ -284,34 +285,19 @@ class ClassificationPerformanceMetricsRenderer(MetricRenderer):
         return dataclasses.asdict(obj.get_result().current)
 
     @staticmethod
-    def _get_metrics_table(
-            dataset_name: str,
-            metrics: DatasetClassificationPerformanceMetrics
-    ) -> MetricHtmlInfo:
+    def _get_metrics_table(dataset_name: str, metrics: DatasetClassificationPerformanceMetrics) -> MetricHtmlInfo:
         return MetricHtmlInfo(
-            f"classification_performance_metrics_{dataset_name.lower()}",
+            f"classification_performance_metrics_table_{dataset_name.lower()}",
             BaseWidgetInfo(
                 title=f"{dataset_name.capitalize()}: Model Quality With Macro-average Metrics",
                 type="counter",
                 size=2,
                 params={
                     "counters": [
-                        {
-                            "value": str(round(metrics.accuracy, 3)),
-                            "label": "Accuracy"
-                        },
-                        {
-                            "value": str(round(metrics.precision, 3)),
-                            "label": "Precision"
-                        },
-                        {
-                            "value": str(round(metrics.recall, 3)),
-                            "label": "Recall"
-                        },
-                        {
-                            "value": str(round(metrics.f1, 3)),
-                            "label": "F1"
-                        }
+                        {"value": str(round(metrics.accuracy, 3)), "label": "Accuracy"},
+                        {"value": str(round(metrics.precision, 3)), "label": "Precision"},
+                        {"value": str(round(metrics.recall, 3)), "label": "Recall"},
+                        {"value": str(round(metrics.f1, 3)), "label": "F1"},
                     ]
                 },
             ),
@@ -324,32 +310,99 @@ class ClassificationPerformanceMetricsRenderer(MetricRenderer):
         metrics: DatasetClassificationPerformanceMetrics,
         size: int,
         columns: DatasetColumns,
-        color_options: ColorOptions
+        color_options: ColorOptions,
     ) -> MetricHtmlInfo:
         metrics_frame = pd.DataFrame(metrics.metrics_matrix)
         fig = go.Figure()
-        fig.add_trace(go.Bar(
-            x=columns.target_names if columns.target_names else metrics_frame.columns.tolist()[:-3],
-            y=metrics_frame.iloc[-1:, :-3].values[0], marker_color=color_options.primary_color, name='Support'))
+        fig.add_trace(
+            go.Bar(
+                x=columns.target_names if columns.target_names else metrics_frame.columns.tolist()[:-3],
+                y=metrics_frame.iloc[-1:, :-3].values[0],
+                marker_color=color_options.primary_color,
+                name="Support",
+            )
+        )
         fig.update_layout(
             xaxis_title="Class",
             yaxis_title="Number of Objects",
         )
         support_bar_json = json.loads(fig.to_json())
         return MetricHtmlInfo(
-                f"classification_performance_current_metrics_class_representation_{dataset_name.lower()}",
-                BaseWidgetInfo(
-                    title=f"{dataset_name.capitalize()}: Class Representation",
-                    type="big_graph",
-                    size=size,
-                    params={
-                        "data": support_bar_json['data'],
-                        "layout": support_bar_json['layout']
-                    },
-                    additionalGraphs=[],
-                ),
-                details=[],
-            )
+            f"classification_performance_metrics_class_representation_{dataset_name.lower()}",
+            BaseWidgetInfo(
+                title=f"{dataset_name.capitalize()}: Class Representation",
+                type="big_graph",
+                size=size,
+                params={"data": support_bar_json["data"], "layout": support_bar_json["layout"]},
+                additionalGraphs=[],
+            ),
+            details=[],
+        )
+
+    @staticmethod
+    def _get_confusion_matrix_graph(
+        dataset_name: str,
+        metrics: DatasetClassificationPerformanceMetrics,
+        size: int,
+    ) -> MetricHtmlInfo:
+        conf_matrix = metrics.confusion_matrix.values
+        labels = metrics.confusion_matrix.labels
+        z = [[int(y) for y in x] for x in conf_matrix]
+
+        # change each element of z to type string for annotations
+        z_text = [[str(y) for y in x] for x in z]
+
+        fig = ff.create_annotated_heatmap(
+            z, x=labels, y=labels, annotation_text=z_text, colorscale="bluered", showscale=True
+        )
+
+        fig.update_layout(xaxis_title="Predicted value", yaxis_title="Actual value")
+
+        conf_matrix_json = json.loads(fig.to_json())
+
+        return MetricHtmlInfo(
+            f"classification_performance_current_metrics_confusion_matrix_{dataset_name.lower()}",
+            BaseWidgetInfo(
+                title=f"{dataset_name.capitalize()}: Confusion Matrix",
+                type="big_graph",
+                size=size,
+                params={"data": conf_matrix_json["data"], "layout": conf_matrix_json["layout"]},
+                additionalGraphs=[],
+            ),
+            details=[],
+        )
+
+    @staticmethod
+    def _get_metrics_matrix_graph(
+        dataset_name: str, metrics: DatasetClassificationPerformanceMetrics, size: int, columns: DatasetColumns
+    ) -> MetricHtmlInfo:
+        # plot support bar
+        metrics_matrix = metrics.metrics_matrix
+        metrics_frame = pd.DataFrame(metrics_matrix)
+
+        z = metrics_frame.iloc[:-1, :-3].values
+        x = columns.target_names if columns.target_names else metrics_frame.columns.tolist()[:-3]
+        y = ["precision", "recall", "f1-score"]
+
+        # change each element of z to type string for annotations
+        z_text = [[str(round(y, 3)) for y in x] for x in z]
+
+        # set up figure
+        fig = ff.create_annotated_heatmap(z, x=x, y=y, annotation_text=z_text, colorscale="bluered", showscale=True)
+        fig.update_layout(xaxis_title="Class", yaxis_title="Metric")
+
+        metrics_matrix_json = json.loads(fig.to_json())
+
+        return MetricHtmlInfo(
+            f"classification_performance_current_metrics_metrix_matrix_{dataset_name.lower()}",
+            BaseWidgetInfo(
+                title=f"{dataset_name.capitalize()}: Quality Metrics by Class",
+                type="big_graph",
+                size=size,
+                params={"data": metrics_matrix_json["data"], "layout": metrics_matrix_json["layout"]},
+            ),
+            details=[],
+        )
 
     def render_html(self, obj: ClassificationPerformanceMetrics) -> List[MetricHtmlInfo]:
         metric_result = obj.get_result()
@@ -365,10 +418,7 @@ class ClassificationPerformanceMetricsRenderer(MetricRenderer):
                     size=2,
                     params={
                         "counters": [
-                            {
-                                "value": "",
-                                "label": f"Classification Model Performance Report. Target: '{target_name}'"
-                            }
+                            {"value": "", "label": f"Classification Model Performance Report. Target: '{target_name}'"}
                         ]
                     },
                 ),
@@ -381,25 +431,58 @@ class ClassificationPerformanceMetricsRenderer(MetricRenderer):
 
         result.append(self._get_metrics_table(dataset_name="current", metrics=metric_result.current))
 
-        # add graphs with class representation
-        size = 2
         if metric_result.reference is not None:
             size = 1
-            result.append(self._get_class_representation_graph(
-                dataset_name="reference",
-                metrics=metric_result.reference,
+
+        else:
+            size = 2
+
+        # add graphs with class representation
+        if metric_result.reference is not None:
+            result.append(
+                self._get_class_representation_graph(
+                    dataset_name="reference",
+                    metrics=metric_result.reference,
+                    size=1,
+                    columns=columns,
+                    color_options=color_options,
+                )
+            )
+
+        result.append(
+            self._get_class_representation_graph(
+                dataset_name="current",
+                metrics=metric_result.current,
                 size=size,
                 columns=columns,
-                color_options=color_options
-            ))
+                color_options=color_options,
+            )
+        )
 
-        result.append(self._get_class_representation_graph(
-            dataset_name="current",
-            metrics=metric_result.current,
-            size=size,
-            columns=columns,
-            color_options=color_options
-        ))
+        # add confusion matrix graph
+        if metric_result.reference is not None:
+            result.append(
+                self._get_confusion_matrix_graph(dataset_name="reference", metrics=metric_result.reference, size=1)
+            )
+
+        result.append(
+            self._get_confusion_matrix_graph(dataset_name="current", metrics=metric_result.current, size=size)
+        )
+
+        # add metrix matrix graph by classes
+        # add confusion matrix graph
+        if metric_result.reference is not None:
+            result.append(
+                self._get_metrics_matrix_graph(
+                    dataset_name="reference", metrics=metric_result.reference, size=1, columns=columns
+                )
+            )
+
+        result.append(
+            self._get_metrics_matrix_graph(
+                dataset_name="current", metrics=metric_result.current, size=size, columns=columns
+            )
+        )
         return result
 
 
@@ -519,14 +602,7 @@ class ClassificationPerformanceMetricsTopKRenderer(MetricRenderer):
                     type="counter",
                     title="Classification Performance Top K",
                     size=2,
-                    params={
-                        "counters": [
-                            {
-                                "value": "",
-                                "label": "ClassificationPerformanceMetricsTopK"
-                            }
-                        ]
-                    },
+                    params={"counters": [{"value": "", "label": "ClassificationPerformanceMetricsTopK"}]},
                 ),
                 details=[],
             ),
@@ -564,14 +640,7 @@ class ClassificationPerformanceMetricsThresholdRenderer(MetricRenderer):
                     type="counter",
                     title="Classification Performance with Threshold",
                     size=2,
-                    params={
-                        "counters": [
-                            {
-                                "value": "",
-                                "label": "ClassificationPerformanceMetricsThreshold"
-                            }
-                        ]
-                    },
+                    params={"counters": [{"value": "", "label": "ClassificationPerformanceMetricsThreshold"}]},
                 ),
                 details=[],
             ),
