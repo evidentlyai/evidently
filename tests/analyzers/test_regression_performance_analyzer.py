@@ -4,8 +4,7 @@ import pandas as pd
 import pytest
 from pytest import approx
 
-from evidently.analyzers.utils import DatasetColumns
-from evidently.analyzers.utils import DatasetUtilityColumns
+from evidently.utils.data_operations import DatasetColumns, DatasetUtilityColumns
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceAnalyzer
 from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceMetrics
@@ -60,6 +59,7 @@ def analyzer() -> RegressionPerformanceAnalyzer:
                         "underestimation": {"mean_error": -1.0, "std_error": approx(np.nan, nan_ok=True)},
                         "overestimation": {"mean_error": 1.0, "std_error": approx(np.nan, nan_ok=True)},
                     },
+                    error_bias={},
                 ),
                 current_metrics=None,
                 error_bias={},
@@ -108,6 +108,7 @@ def analyzer() -> RegressionPerformanceAnalyzer:
                         "underestimation": {"mean_error": 0.0, "std_error": 0.0},
                         "overestimation": {"mean_error": 0.0, "std_error": 0.0},
                     },
+                    error_bias={},
                 ),
                 current_metrics=RegressionPerformanceMetrics(
                     mean_error=0.0,
@@ -132,6 +133,7 @@ def analyzer() -> RegressionPerformanceAnalyzer:
                         "underestimation": {"mean_error": 0.0, "std_error": 0.0},
                         "overestimation": {"mean_error": 0.0, "std_error": 0.0},
                     },
+                    error_bias={},
                 ),
                 error_bias={},
             ),
@@ -179,8 +181,9 @@ def analyzer() -> RegressionPerformanceAnalyzer:
                     mean_abs_error=0.75,
                     mean_abs_perc_error=1.1258999068426245e17,
                     error_std=0.9574271077563381,
+                    abs_error_max=1,
                     abs_error_std=0.5,
-                    abs_perc_error_std=2251799813685248.0,  # approx(np.nan, nan_ok=True),  # noqa
+                    abs_perc_error_std=2251799813685248.0,
                     error_normality={
                         "order_statistic_medians_x": [
                             -0.9981488825015566,
@@ -193,11 +196,40 @@ def analyzer() -> RegressionPerformanceAnalyzer:
                         "intercept": -0.25000000000000006,
                         "r": 0.9380933329232763,
                     },
-                    abs_error_max=1,
                     underperformance={
-                        "majority": {"mean_error": 0.0, "std_error": approx(np.nan, nan_ok=True)},
+                        "majority": {"mean_error": 0.0, "std_error": approx(np.NAN, nan_ok=True)},
                         "underestimation": {"mean_error": -1.0, "std_error": 0.0},
-                        "overestimation": {"mean_error": 1.0, "std_error": approx(np.nan, nan_ok=True)},
+                        "overestimation": {"mean_error": 1.0, "std_error": approx(np.NAN, nan_ok=True)},
+                    },
+                    error_bias={
+                        "numeric_feature_1": {
+                            "feature_type": "num",
+                            "ref_majority": 10.0,
+                            "ref_under": 10.0,
+                            "ref_over": 10.0,
+                            "ref_range": 0.0,
+                        },
+                        "numeric_feature_2": {
+                            "feature_type": "num",
+                            "ref_majority": 4.25,
+                            "ref_under": 6.5,
+                            "ref_over": 2.0,
+                            "ref_range": 56.25,
+                        },
+                        "category_feature_1": {
+                            "feature_type": "cat",
+                            "ref_majority": 1,
+                            "ref_under": 1,
+                            "ref_over": 1,
+                            "ref_range": 0.0,
+                        },
+                        "category_feature_2": {
+                            "feature_type": "cat",
+                            "ref_majority": "v1",
+                            "ref_under": "v3",
+                            "ref_over": "v2",
+                            "ref_range": 1.0,
+                        },
                     },
                 ),
                 current_metrics=RegressionPerformanceMetrics(
@@ -205,8 +237,9 @@ def analyzer() -> RegressionPerformanceAnalyzer:
                     mean_abs_error=1.0,
                     mean_abs_perc_error=2.2517998136852486e17,
                     error_std=1.4142135623730951,
+                    abs_error_max=1,
                     abs_error_std=0.0,
-                    abs_perc_error_std=3184525836262885.5,  # approx(np.nan, nan_ok=True),  # noqa
+                    abs_perc_error_std=3184525836262885.5,
                     error_normality={
                         "order_statistic_medians_x": [-0.5449521356173604, 0.5449521356173604],
                         "order_statistic_medians_y": [-1.0, 1.0],
@@ -214,14 +247,43 @@ def analyzer() -> RegressionPerformanceAnalyzer:
                         "intercept": 0.0,
                         "r": 1.0,
                     },
-                    abs_error_max=1,
                     underperformance={
                         "majority": {
-                            "mean_error": approx(np.nan, nan_ok=True),
-                            "std_error": approx(np.nan, nan_ok=True),
+                            "mean_error": approx(np.NAN, nan_ok=True),
+                            "std_error": approx(np.NAN, nan_ok=True),
                         },
-                        "underestimation": {"mean_error": -1.0, "std_error": approx(np.nan, nan_ok=True)},
-                        "overestimation": {"mean_error": 1.0, "std_error": approx(np.nan, nan_ok=True)},
+                        "underestimation": {"mean_error": -1.0, "std_error": approx(np.NAN, nan_ok=True)},
+                        "overestimation": {"mean_error": 1.0, "std_error": approx(np.NAN, nan_ok=True)},
+                    },
+                    error_bias={
+                        "numeric_feature_1": {
+                            "feature_type": "num",
+                            "current_majority": 10.0,
+                            "current_under": 10.0,
+                            "current_over": 10.0,
+                            "current_range": 0.0,
+                        },
+                        "numeric_feature_2": {
+                            "feature_type": "num",
+                            "current_majority": 3.0,
+                            "current_under": 2.0,
+                            "current_over": 4.0,
+                            "current_range": 100.0,
+                        },
+                        "category_feature_1": {
+                            "feature_type": "cat",
+                            "current_majority": 1,
+                            "current_under": 1,
+                            "current_over": 1,
+                            "current_range": 0.0,
+                        },
+                        "category_feature_2": {
+                            "feature_type": "cat",
+                            "current_majority": "v1",
+                            "current_under": "v1",
+                            "current_over": "v2",
+                            "current_range": 1.0,
+                        },
                     },
                 ),
                 error_bias={

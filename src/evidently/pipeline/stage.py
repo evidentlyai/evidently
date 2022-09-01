@@ -23,8 +23,11 @@ class PipelineStage:
         return self._analyzers
 
     @abc.abstractmethod
-    def calculate(self, reference_data: pandas.DataFrame,
-                  current_data: pandas.DataFrame,
-                  column_mapping: ColumnMapping,
-                  analyzers_results: Dict[Type[Analyzer], Any]):
+    def calculate(
+        self,
+        reference_data: pandas.DataFrame,
+        current_data: pandas.DataFrame,
+        column_mapping: ColumnMapping,
+        analyzers_results: Dict[Type[Analyzer], Any],
+    ):
         raise NotImplementedError()

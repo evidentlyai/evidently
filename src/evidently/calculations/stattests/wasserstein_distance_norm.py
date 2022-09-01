@@ -4,14 +4,12 @@ import pandas as pd
 import numpy as np
 from scipy import stats
 
-from evidently.analyzers.stattests.registry import StatTest, register_stattest
+from evidently.calculations.stattests.registry import StatTest, register_stattest
 
 
 def _wasserstein_distance_norm(
-        reference_data: pd.Series,
-        current_data: pd.Series,
-        feature_type: str,
-        threshold: float) -> Tuple[float, bool]:
+    reference_data: pd.Series, current_data: pd.Series, feature_type: str, threshold: float
+) -> Tuple[float, bool]:
     """Compute the first Wasserstein distance between two arrays normed by std of reference data
     Args:
         reference_data: reference data

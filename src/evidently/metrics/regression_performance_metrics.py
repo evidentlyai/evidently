@@ -10,10 +10,10 @@ from sklearn.metrics import mean_absolute_percentage_error
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import r2_score
 
-from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceAnalyzer
-
+from evidently.utils.data_operations import process_columns
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
+from evidently.calculations.regression_performance import calculate_regression_performance
 from evidently.metrics.utils import make_target_bins_for_reg_plots
 from evidently.metrics.utils import make_hist_for_cat_plot
 from evidently.metrics.utils import apply_func_to_binned_data
@@ -50,28 +50,33 @@ class RegressionPerformanceMetricsResults:
 
 
 class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
-    def __init__(self):
-        self.analyzer = RegressionPerformanceAnalyzer()
-
     def get_parameters(self) -> tuple:
         return ()
 
     def calculate(self, data: InputData) -> RegressionPerformanceMetricsResults:
+        columns = process_columns(data.current_data, data.column_mapping)
+
         if data.current_data is None:
             raise ValueError("current dataset should be present")
 
-        if data.reference_data is None:
-            analyzer_results = self.analyzer.calculate(
-                reference_data=data.current_data, current_data=None, column_mapping=data.column_mapping
+        current_metrics = calculate_regression_performance(
+            dataset=data.current_data, columns=columns, error_bias_prefix="current_"
+        )
+        error_bias = current_metrics.error_bias
+        reference_metrics = None
+
+        if data.reference_data is not None:
+            reference_metrics = calculate_regression_performance(
+                dataset=data.reference_data, columns=columns, error_bias_prefix="ref_"
             )
-            current_metrics = analyzer_results.reference_metrics
-            reference_metrics = None
-        else:
-            analyzer_results = self.analyzer.calculate(
-                reference_data=data.reference_data, current_data=data.current_data, column_mapping=data.column_mapping
-            )
-            current_metrics = analyzer_results.current_metrics
-            reference_metrics = analyzer_results.reference_metrics
+
+            if reference_metrics is not None and reference_metrics.error_bias:
+                for feature_name, current_bias in reference_metrics.error_bias.items():
+                    if feature_name in error_bias:
+                        error_bias[feature_name].update(current_bias)
+
+                    else:
+                        error_bias[feature_name] = current_bias
 
         r2_score_value = r2_score(
             y_true=data.current_data[data.column_mapping.target],
@@ -125,8 +130,10 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
             )
         # max error default values
         abs_error_max_ref = None
+
         if reference_metrics is not None:
             abs_error_max_ref = reference_metrics.abs_error_max
+
         y_true = data.current_data[data.column_mapping.target]
         y_pred = data.current_data[data.column_mapping.prediction]
         abs_error_max_default = np.abs(y_true - y_true.median()).max()
@@ -197,7 +204,7 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
             underperformance=current_metrics.underperformance,
             hist_for_plot=hist_for_plot,
             vals_for_plots=vals_for_plots,
-            error_bias=analyzer_results.error_bias,
+            error_bias=error_bias,
             mean_abs_error_ref=reference_metrics.mean_abs_error if reference_metrics is not None else None,
             mean_abs_perc_error_ref=reference_metrics.mean_abs_perc_error if reference_metrics is not None else None,
             rmse_ref=rmse_ref,

@@ -17,98 +17,100 @@ from evidently.options import ColorOptions
 
 
 class RegColoredPredActualWidget(Widget):
-    def __init__(self, title: str, dataset: str = 'reference'):
+    def __init__(self, title: str, dataset: str = "reference"):
         super().__init__(title)
         self.dataset = dataset  # reference or current
 
     def analyzers(self):
         return [RegressionPerformanceAnalyzer]
 
-    def calculate(self,
-                  reference_data: pd.DataFrame,
-                  current_data: Optional[pd.DataFrame],
-                  column_mapping: ColumnMapping,
-                  analyzers_results) -> Optional[BaseWidgetInfo]:
+    def calculate(
+        self,
+        reference_data: pd.DataFrame,
+        current_data: Optional[pd.DataFrame],
+        column_mapping: ColumnMapping,
+        analyzers_results,
+    ) -> Optional[BaseWidgetInfo]:
         color_options = self.options_provider.get(ColorOptions)
         results = RegressionPerformanceAnalyzer.get_results(analyzers_results)
         results_utility_columns = results.columns.utility_columns
 
         if results_utility_columns.target is None or results_utility_columns.prediction is None:
-            if self.dataset == 'reference':
+            if self.dataset == "reference":
                 raise ValueError(f"Widget [{self.title}] requires 'target' and 'prediction' columns")
 
             return None
 
-        if self.dataset == 'current':
+        if self.dataset == "current":
             dataset_to_plot = current_data.copy(deep=False) if current_data is not None else None
 
         else:
             dataset_to_plot = reference_data.copy(deep=False)
 
         if dataset_to_plot is None:
-            if self.dataset == 'reference':
+            if self.dataset == "reference":
                 raise ValueError(f"Widget [{self.title}] requires reference dataset but it is None")
             return None
 
         dataset_to_plot.replace([np.inf, -np.inf], np.nan, inplace=True)
-        dataset_to_plot.dropna(axis=0, how='any', inplace=True,
-                               subset=[results_utility_columns.target, results_utility_columns.prediction])
+        dataset_to_plot.dropna(
+            axis=0, how="any", inplace=True, subset=[results_utility_columns.target, results_utility_columns.prediction]
+        )
 
         error = dataset_to_plot[results_utility_columns.prediction] - dataset_to_plot[results_utility_columns.target]
 
-        quantile_5 = np.quantile(error, .05)
-        quantile_95 = np.quantile(error, .95)
+        quantile_5 = np.quantile(error, 0.05)
+        quantile_95 = np.quantile(error, 0.95)
 
-        dataset_to_plot['Error bias'] = list(map(
-            lambda x: 'Underestimation'
-                      if x <= quantile_5 else 'Majority'
-                      if x < quantile_95 else 'Overestimation', error))
+        dataset_to_plot["Error bias"] = list(
+            map(
+                lambda x: "Underestimation" if x <= quantile_5 else "Majority" if x < quantile_95 else "Overestimation",
+                error,
+            )
+        )
 
         # plot output correlations
         pred_actual = go.Figure()
 
-        pred_actual.add_trace(go.Scatter(
-            x=dataset_to_plot[dataset_to_plot['Error bias'] == 'Underestimation'][results_utility_columns.target],
-            y=dataset_to_plot[dataset_to_plot['Error bias'] == 'Underestimation'][results_utility_columns.prediction],
-            mode='markers',
-            name='Underestimation',
-            marker=dict(
-                color=color_options.underestimation_color,
-                showscale=False
+        pred_actual.add_trace(
+            go.Scatter(
+                x=dataset_to_plot[dataset_to_plot["Error bias"] == "Underestimation"][results_utility_columns.target],
+                y=dataset_to_plot[dataset_to_plot["Error bias"] == "Underestimation"][
+                    results_utility_columns.prediction
+                ],
+                mode="markers",
+                name="Underestimation",
+                marker=dict(color=color_options.underestimation_color, showscale=False),
             )
-        ))
+        )
 
-        pred_actual.add_trace(go.Scatter(
-            x=dataset_to_plot[dataset_to_plot['Error bias'] == 'Overestimation'][results_utility_columns.target],
-            y=dataset_to_plot[dataset_to_plot['Error bias'] == 'Overestimation'][results_utility_columns.prediction],
-            mode='markers',
-            name='Overestimation',
-            marker=dict(
-                color=color_options.overestimation_color,
-                showscale=False
+        pred_actual.add_trace(
+            go.Scatter(
+                x=dataset_to_plot[dataset_to_plot["Error bias"] == "Overestimation"][results_utility_columns.target],
+                y=dataset_to_plot[dataset_to_plot["Error bias"] == "Overestimation"][
+                    results_utility_columns.prediction
+                ],
+                mode="markers",
+                name="Overestimation",
+                marker=dict(color=color_options.overestimation_color, showscale=False),
             )
-        ))
+        )
 
-        pred_actual.add_trace(go.Scatter(
-            x=dataset_to_plot[dataset_to_plot['Error bias'] == 'Majority'][results_utility_columns.target],
-            y=dataset_to_plot[dataset_to_plot['Error bias'] == 'Majority'][results_utility_columns.prediction],
-            mode='markers',
-            name='Majority',
-            marker=dict(
-                color=color_options.majority_color,
-                showscale=False
+        pred_actual.add_trace(
+            go.Scatter(
+                x=dataset_to_plot[dataset_to_plot["Error bias"] == "Majority"][results_utility_columns.target],
+                y=dataset_to_plot[dataset_to_plot["Error bias"] == "Majority"][results_utility_columns.prediction],
+                mode="markers",
+                name="Majority",
+                marker=dict(color=color_options.majority_color, showscale=False),
             )
-        ))
+        )
 
         pred_actual.update_layout(
             xaxis_title="Actual value",
             yaxis_title="Predicted value",
-            xaxis=dict(
-                showticklabels=True
-            ),
-            yaxis=dict(
-                showticklabels=True
-            ),
+            xaxis=dict(showticklabels=True),
+            yaxis=dict(showticklabels=True),
         )
 
         pred_actual_json = json.loads(pred_actual.to_json())
@@ -117,9 +119,6 @@ class RegColoredPredActualWidget(Widget):
             title=self.title,
             type="big_graph",
             size=1 if current_data is not None else 2,
-            params={
-                "data": pred_actual_json['data'],
-                "layout": pred_actual_json['layout']
-            },
+            params={"data": pred_actual_json["data"], "layout": pred_actual_json["layout"]},
             additionalGraphs=[],
         )

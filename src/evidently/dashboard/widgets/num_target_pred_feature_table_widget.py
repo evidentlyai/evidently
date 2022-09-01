@@ -20,11 +20,13 @@ class NumTargetPredFeatureTable(Widget):
     def analyzers(self):
         return [NumTargetDriftAnalyzer]
 
-    def calculate(self,
-                  reference_data: pd.DataFrame,
-                  current_data: Optional[pd.DataFrame],
-                  column_mapping: ColumnMapping,
-                  analyzers_results) -> Optional[BaseWidgetInfo]:
+    def calculate(
+        self,
+        reference_data: pd.DataFrame,
+        current_data: Optional[pd.DataFrame],
+        column_mapping: ColumnMapping,
+        analyzers_results,
+    ) -> Optional[BaseWidgetInfo]:
         color_options = self.options_provider.get(ColorOptions)
         results = NumTargetDriftAnalyzer.get_results(analyzers_results)
 
@@ -44,16 +46,8 @@ class NumTargetPredFeatureTable(Widget):
             # add data for table in params
             params_data.append(
                 {
-                    "details": {
-                        "parts": [
-                            {
-                                "title": "Feature values",
-                                "id": feature_name + "_values"
-                            }
-                        ],
-                        "insights": []
-                    },
-                    "f1": feature_name
+                    "details": {"parts": [{"title": "Feature values", "id": feature_name + "_values"}], "insights": []},
+                    "f1": feature_name,
                 }
             )
 
@@ -65,14 +59,12 @@ class NumTargetPredFeatureTable(Widget):
                     go.Scattergl(
                         x=reference_data[feature_name],
                         y=reference_data[prediction_column],
-                        mode='markers',
-                        name='Prediction (ref)',
-                        marker=dict(
-                            size=6,
-                            color=color_options.secondary_color
-                        )
+                        mode="markers",
+                        name="Prediction (ref)",
+                        marker=dict(size=6, color=color_options.secondary_color),
                     ),
-                    row=1, col=1
+                    row=1,
+                    col=1,
                 )
 
             if target_column is not None:
@@ -80,14 +72,12 @@ class NumTargetPredFeatureTable(Widget):
                     go.Scattergl(
                         x=reference_data[feature_name],
                         y=reference_data[target_column],
-                        mode='markers',
-                        name='Target (ref)',
-                        marker=dict(
-                            size=6,
-                            color=color_options.primary_color
-                        )
+                        mode="markers",
+                        name="Target (ref)",
+                        marker=dict(size=6, color=color_options.primary_color),
                     ),
-                    row=1, col=1
+                    row=1,
+                    col=1,
                 )
 
             if prediction_column is not None:
@@ -95,14 +85,12 @@ class NumTargetPredFeatureTable(Widget):
                     go.Scatter(
                         x=current_data[feature_name],
                         y=current_data[prediction_column],
-                        mode='markers',
-                        name='Prediction (curr)',
-                        marker=dict(
-                            size=6,
-                            color=color_options.secondary_color
-                        )
+                        mode="markers",
+                        name="Prediction (curr)",
+                        marker=dict(size=6, color=color_options.secondary_color),
                     ),
-                    row=1, col=2
+                    row=1,
+                    col=2,
                 )
 
             if target_column is not None:
@@ -110,14 +98,12 @@ class NumTargetPredFeatureTable(Widget):
                     go.Scatter(
                         x=current_data[feature_name],
                         y=current_data[target_column],
-                        mode='markers',
-                        name='Target (curr)',
-                        marker=dict(
-                            size=6,
-                            color=color_options.primary_color
-                        )
+                        mode="markers",
+                        name="Target (curr)",
+                        marker=dict(size=6, color=color_options.primary_color),
                     ),
-                    row=1, col=2
+                    row=1,
+                    col=2,
                 )
 
             # Update xaxis properties
@@ -132,13 +118,7 @@ class NumTargetPredFeatureTable(Widget):
 
             # write plot data in table as additional data
             additional_graphs_data.append(
-                AdditionalGraphInfo(
-                    feature_name + '_values',
-                    {
-                        "data": fig_json['data'],
-                        "layout": fig_json['layout']
-                    }
-                )
+                AdditionalGraphInfo(feature_name + "_values", {"data": fig_json["data"], "layout": fig_json["layout"]})
             )
 
         return BaseWidgetInfo(
@@ -147,13 +127,8 @@ class NumTargetPredFeatureTable(Widget):
             size=2,
             params={
                 "rowsPerPage": min(results.columns.get_features_len(), 10),
-                "columns": [
-                    {
-                        "title": "Feature",
-                        "field": "f1"
-                    }
-                ],
-                "data": params_data
+                "columns": [{"title": "Feature", "field": "f1"}],
+                "data": params_data,
             },
-            additionalGraphs=additional_graphs_data
+            additionalGraphs=additional_graphs_data,
         )

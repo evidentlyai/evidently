@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 from pandas.core.dtypes.common import infer_dtype_from_object
 
-from evidently.analyzers.utils import DatasetColumns
+from evidently.utils.data_operations import DatasetColumns
 from evidently.model.widget import BaseWidgetInfo
 from evidently.metrics.data_integrity_metrics import DataIntegrityMetrics
 from evidently.metrics.data_integrity_metrics import DataIntegrityValueByRegexpMetrics
@@ -31,8 +31,7 @@ from evidently.tests.base_test import TestValueCondition
 from evidently.tests.utils import plot_dicts_to_table, dataframes_to_table
 from evidently.tests.utils import plot_value_counts_tables_ref_curr
 from evidently.tests.utils import approx
-from evidently.tests.utils import Numeric
-
+from evidently.utils.types import Numeric
 
 DATA_INTEGRITY_GROUP = GroupData("data_integrity", "Data Integrity", "")
 GroupingTypes.TestGroup.add_value(DATA_INTEGRITY_GROUP)
@@ -184,13 +183,18 @@ class BaseTestNullValuesRenderer(TestRenderer):
             percent_count = nulls_info.share_of_nulls_by_column[columns_name] * 100
             result[columns_name] = f"{nulls_count} ({percent_count:.2f}%)"
 
-        return pd.DataFrame.from_dict({
-            name: dict(
-                value=nulls_info.number_of_nulls_by_column[name],
-                display=f"{nulls_info.number_of_nulls_by_column[name]}"
-                        f" ({nulls_info.share_of_nulls_by_column[name] * 100:.2f}%)")
-            for name in nulls_info.number_of_nulls_by_column.keys()
-        }, orient='index', columns=['value', 'display'])
+        return pd.DataFrame.from_dict(
+            {
+                name: dict(
+                    value=nulls_info.number_of_nulls_by_column[name],
+                    display=f"{nulls_info.number_of_nulls_by_column[name]}"
+                    f" ({nulls_info.share_of_nulls_by_column[name] * 100:.2f}%)",
+                )
+                for name in nulls_info.number_of_nulls_by_column.keys()
+            },
+            orient="index",
+            columns=["value", "display"],
+        )
 
     def get_table_with_nulls_and_percents_by_column(
         self, info: TestHtmlInfo, metric_result: DataIntegrityNullValuesMetricsResult, name: str
@@ -215,9 +219,9 @@ class BaseTestNullValuesRenderer(TestRenderer):
         """Replace null values in the dict keys to human-readable string"""
         nulls_naming_mapping = {
             None: "Pandas nulls (None, NAN, etc.)",
-            "": "\"\" (empty string)",
-            np.inf: "Numpy \"inf\" value",
-            -np.inf: "Numpy \"-inf\" value",
+            "": '"" (empty string)',
+            np.inf: 'Numpy "inf" value',
+            -np.inf: 'Numpy "-inf" value',
         }
         return {nulls_naming_mapping.get(k, k): v for k, v in nulls.items()}
 
@@ -395,9 +399,7 @@ class TestNumberOfColumnsWithNullsRenderer(BaseTestNullValuesRenderer):
     def render_html(self, obj: TestNumberOfNulls) -> TestHtmlInfo:
         info = super().render_html(obj)
         metric_result = obj.metric.get_result()
-        return self.get_table_with_nulls_and_percents_by_column(
-            info, metric_result, "number_of_columns_with_nulls"
-        )
+        return self.get_table_with_nulls_and_percents_by_column(info, metric_result, "number_of_columns_with_nulls")
 
 
 class TestShareOfColumnsWithNulls(BaseIntegrityNullValuesTest):
@@ -420,8 +422,10 @@ class TestShareOfColumnsWithNulls(BaseIntegrityNullValuesTest):
         return self.metric.get_result().current_null_values.share_of_columns_with_nulls
 
     def get_description(self, value: Numeric) -> str:
-        return f"Share of columns with null values is {np.round(value, 3)}. " \
-               f"The test threshold is {self.get_condition()}."
+        return (
+            f"Share of columns with null values is {np.round(value, 3)}. "
+            f"The test threshold is {self.get_condition()}."
+        )
 
 
 @default_renderer(wrap_type=TestShareOfColumnsWithNulls)
@@ -435,9 +439,7 @@ class TestShareOfColumnsWithNullsRenderer(BaseTestNullValuesRenderer):
     def render_html(self, obj: TestNumberOfNulls) -> TestHtmlInfo:
         info = super().render_html(obj)
         metric_result = obj.metric.get_result()
-        return self.get_table_with_nulls_and_percents_by_column(
-            info, metric_result, "share_of_columns_with_nulls"
-        )
+        return self.get_table_with_nulls_and_percents_by_column(info, metric_result, "share_of_columns_with_nulls")
 
 
 class TestNumberOfRowsWithNulls(BaseIntegrityNullValuesTest):
@@ -556,8 +558,10 @@ class TestColumnNumberOfDifferentNulls(BaseIntegrityColumnNullValuesTest):
         return len(metric_data.different_nulls_by_column[self.column_name])
 
     def get_description(self, value: Numeric) -> str:
-        return f"Number of different null kinds in **{self.column_name}** is {value}. " \
-               f"The test threshold is {self.get_condition()}."
+        return (
+            f"Number of different null kinds in **{self.column_name}** is {value}. "
+            f"The test threshold is {self.get_condition()}."
+        )
 
 
 @default_renderer(wrap_type=TestColumnNumberOfDifferentNulls)
@@ -607,8 +611,10 @@ class TestColumnNumberOfNulls(BaseIntegrityColumnNullValuesTest):
         return self.metric.get_result().current_null_values.number_of_nulls_by_column[self.column_name]
 
     def get_description(self, value: Numeric) -> str:
-        return f"Number of null values in **{self.column_name}** is {value}. " \
-               f"The test threshold is {self.get_condition()}."
+        return (
+            f"Number of null values in **{self.column_name}** is {value}. "
+            f"The test threshold is {self.get_condition()}."
+        )
 
 
 @default_renderer(wrap_type=TestColumnNumberOfNulls)
@@ -642,8 +648,10 @@ class TestColumnShareOfNulls(BaseIntegrityColumnNullValuesTest):
         return self.metric.get_result().current_null_values.share_of_nulls_by_column[self.column_name]
 
     def get_description(self, value: Numeric) -> str:
-        return f"Share of null values in **{self.column_name}** is {np.round(value, 3)}. " \
-               f"The test threshold is {self.get_condition()}."
+        return (
+            f"Share of null values in **{self.column_name}** is {np.round(value, 3)}. "
+            f"The test threshold is {self.get_condition()}."
+        )
 
 
 class TestAllColumnsShareOfNulls(BaseTestGenerator):
@@ -1060,7 +1068,7 @@ class TestColumnsType(Test):
         return self.Result(
             name=self.name,
             description=f"The number of columns with a type "
-                        f"mismatch is {invalid_types_count} out of {len(columns_type)}.",
+            f"mismatch is {invalid_types_count} out of {len(columns_type)}.",
             status=status,
             columns_types=columns_types,
         )

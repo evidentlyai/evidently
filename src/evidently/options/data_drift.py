@@ -1,15 +1,19 @@
-from dataclasses import dataclass
-from typing import Optional, Dict, Union
 import warnings
+from dataclasses import dataclass
+from typing import Dict
+from typing import Optional
+from typing import Union
 
-from evidently.analyzers.stattests import StatTest, PossibleStatTestType
+from evidently.calculations.stattests import PossibleStatTestType
+from evidently.calculations.stattests import StatTest
+
 
 DEFAULT_NBINSX = 10
 
 
 @dataclass
 class DataDriftOptions:
-    """ Configuration for Data Drift analyzer, Dashboard and Profile.
+    """Configuration for Data Drift calculations.
 
     Attributes:
         confidence: Defines the confidence level for statistical tests.
@@ -36,6 +40,7 @@ class DataDriftOptions:
         cat_target_stattest_func: Defines a custom statistical test to detect target drift in CatTargetDrift.
         num_target_stattest_func: Defines a custom statistical test to detect target drift in NumTargetDrift.
     """
+
     confidence: Optional[Union[float, Dict[str, float]]] = None
     threshold: Optional[Union[float, Dict[str, float]]] = None
     drift_share: float = 0.5
@@ -60,7 +65,7 @@ class DataDriftOptions:
             "confidence": self.confidence,
             "drift_share": self.drift_share,
             "nbinsx": self.nbinsx,
-            "xbins": self.xbins
+            "xbins": self.xbins,
         }
 
     def get_threshold(self, feature_name: str) -> Optional[float]:
@@ -69,10 +74,10 @@ class DataDriftOptions:
         if self.confidence is not None:
             warnings.warn("DataDriftOptions.confidence is deprecated, use DataDriftOptions.threshold instead.")
             if isinstance(self.confidence, float):
-                return 1. - self.confidence
+                return 1.0 - self.confidence
             if isinstance(self.confidence, dict):
                 override = self.confidence.get(feature_name)
-                return None if override is None else 1. - override
+                return None if override is None else 1.0 - override
             raise ValueError(f"DataDriftOptions.confidence is incorrect type {type(self.confidence)}")
         if self.threshold is not None:
             if isinstance(self.threshold, float):
@@ -89,21 +94,26 @@ class DataDriftOptions:
             return self.nbinsx.get(feature_name, DEFAULT_NBINSX)
         raise ValueError(f"DataDriftOptions.nbinsx is incorrect type {type(self.nbinsx)}")
 
-    def get_feature_stattest_func(
-            self,
-            feature_name: str,
-            feature_type: str) -> Optional[PossibleStatTestType]:
-        if self.feature_stattest_func is not None and any([self.all_features_stattest,
-                                                           self.cat_features_stattest,
-                                                           self.num_features_stattest,
-                                                           self.per_feature_stattest]):
-            raise ValueError("Cannot use DataDriftOptions.feature_stattest_func along with any "
-                             "of DataDriftOptions.cat_stattest_func,"
-                             " DataDriftOptions.num_stattest_func,"
-                             " DataDriftOptions.per_feature_stattest_func.")
+    def get_feature_stattest_func(self, feature_name: str, feature_type: str) -> Optional[PossibleStatTestType]:
+        if self.feature_stattest_func is not None and any(
+            [
+                self.all_features_stattest,
+                self.cat_features_stattest,
+                self.num_features_stattest,
+                self.per_feature_stattest,
+            ]
+        ):
+            raise ValueError(
+                "Cannot use DataDriftOptions.feature_stattest_func along with any "
+                "of DataDriftOptions.cat_stattest_func,"
+                " DataDriftOptions.num_stattest_func,"
+                " DataDriftOptions.per_feature_stattest_func."
+            )
         if self.feature_stattest_func is not None:
-            warnings.warn("DataDriftOptions.feature_stattest_func is deprecated use DataDriftOptions.stattest_func"
-                          " or DataDriftOptions.per_feature_stattest_func.")
+            warnings.warn(
+                "DataDriftOptions.feature_stattest_func is deprecated use DataDriftOptions.stattest_func"
+                " or DataDriftOptions.per_feature_stattest_func."
+            )
             if callable(self.feature_stattest_func) or isinstance(self.feature_stattest_func, (StatTest, str)):
                 return self.feature_stattest_func
             if isinstance(self.feature_stattest_func, dict):

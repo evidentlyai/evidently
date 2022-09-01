@@ -1,12 +1,11 @@
 from datetime import datetime
 
 import pytest
-from pytest import approx
 
 import numpy as np
 import pandas as pd
 
-from evidently.analyzers.utils import ColumnMapping
+from evidently.utils.data_operations import ColumnMapping
 from evidently.model_profile.sections.data_quality_profile_section import DataQualityProfileSection
 
 from .helpers import calculate_section_results

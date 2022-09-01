@@ -23,8 +23,8 @@ import sys
 
 # BEFORE importing distutils, remove MANIFEST. distutils doesn't properly
 # update it when the contents of directories change.
-if os.path.exists('MANIFEST'):
-    os.remove('MANIFEST')
+if os.path.exists("MANIFEST"):
+    os.remove("MANIFEST")
 
 
 from distutils.cmd import Command
@@ -40,29 +40,32 @@ try:
 except ImportError:
     bdist_wheel = None
 
-if sys.platform == 'win32':
+if sys.platform == "win32":
     from subprocess import list2cmdline
 else:
+
     def list2cmdline(cmd_list):
-        return ' '.join(map(pipes.quote, cmd_list))
+        return " ".join(map(pipes.quote, cmd_list))
 
 
-__version__ = '0.2.0'
+__version__ = "0.2.0"
 
 # ---------------------------------------------------------------------------
 # Top Level Variables
 # ---------------------------------------------------------------------------
 
 HERE = os.path.abspath(os.path.dirname(__file__))
-is_repo = os.path.exists(pjoin(HERE, '.git'))
-node_modules = pjoin(HERE, 'node_modules')
+is_repo = os.path.exists(pjoin(HERE, ".git"))
+node_modules = pjoin(HERE, "node_modules")
 
 SEPARATORS = os.sep if os.altsep is None else os.sep + os.altsep
 
-npm_path = ':'.join([
-    pjoin(HERE, 'node_modules', '.bin'),
-    os.environ.get('PATH', os.defpath),
-])
+npm_path = ":".join(
+    [
+        pjoin(HERE, "node_modules", ".bin"),
+        os.environ.get("PATH", os.defpath),
+    ]
+)
 
 if "--skip-npm" in sys.argv:
     print("Skipping npm install as requested.")
@@ -76,7 +79,8 @@ else:
 # Public Functions
 # ---------------------------------------------------------------------------
 
-def get_version(file, name='__version__'):
+
+def get_version(file, name="__version__"):
     """Get the version of the package from the given file by
     executing it and extracting the given `name`.
     """
@@ -86,14 +90,15 @@ def get_version(file, name='__version__'):
         exec(f.read(), {}, version_ns)
     return version_ns[name]
 
+
 def find_packages(top=HERE):
     """
     Find all of the packages.
     """
     packages = []
     for d, dirs, _ in os.walk(top, followlinks=True):
-        if os.path.exists(pjoin(d, '__init__.py')):
-            packages.append(os.path.relpath(d, top).replace(os.path.sep, '.'))
+        if os.path.exists(pjoin(d, "__init__.py")):
+            packages.append(os.path.relpath(d, top).replace(os.path.sep, "."))
         elif d != top:
             # Do not look for packages in subfolders if current is not a package
             dirs[:] = []
@@ -102,7 +107,7 @@ def find_packages(top=HERE):
 
 def update_package_data(distribution):
     """update build_py options to get package_data changes"""
-    build_py = distribution.get_command_obj('build_py')
+    build_py = distribution.get_command_obj("build_py")
     build_py.finalize_options()
 
 
@@ -112,13 +117,12 @@ class bdist_egg_disabled(bdist_egg):
     Prevents setup.py install performing setuptools' default easy_install,
     which it should never ever do.
     """
+
     def run(self):
-        sys.exit("Aborting implicit building of eggs. Use `pip install .` "
-                 " to install from source.")
+        sys.exit("Aborting implicit building of eggs. Use `pip install .` " " to install from source.")
 
 
-def create_cmdclass(prerelease_cmd=None, package_data_spec=None,
-        data_files_spec=None):
+def create_cmdclass(prerelease_cmd=None, package_data_spec=None, data_files_spec=None):
     """Create a command class with the given optional prerelease class.
 
     Parameters
@@ -152,11 +156,11 @@ def create_cmdclass(prerelease_cmd=None, package_data_spec=None,
     """
     wrapped = [prerelease_cmd] if prerelease_cmd else []
     if package_data_spec or data_files_spec:
-        wrapped.append('handle_files')
+        wrapped.append("handle_files")
     wrapper = functools.partial(_wrap_command, wrapped)
     handle_files = _get_file_handler(package_data_spec, data_files_spec)
 
-    if 'bdist_egg' in sys.argv:
+    if "bdist_egg" in sys.argv:
         egg = wrapper(bdist_egg, strict=True)
     else:
         egg = bdist_egg_disabled
@@ -169,9 +173,9 @@ def create_cmdclass(prerelease_cmd=None, package_data_spec=None,
     )
 
     if bdist_wheel:
-        cmdclass['bdist_wheel'] = wrapper(bdist_wheel, strict=True)
+        cmdclass["bdist_wheel"] = wrapper(bdist_wheel, strict=True)
 
-    cmdclass['develop'] = wrapper(develop, strict=True)
+    cmdclass["develop"] = wrapper(develop, strict=True)
     return cmdclass
 
 
@@ -179,7 +183,6 @@ def command_for_func(func):
     """Create a command that calls the given function."""
 
     class FuncCommand(BaseCommand):
-
         def run(self):
             func()
             update_package_data(self.distribution)
@@ -189,23 +192,25 @@ def command_for_func(func):
 
 def run(cmd, **kwargs):
     """Echo a command before running it.  Defaults to repo as cwd"""
-    log.info('> ' + list2cmdline(cmd))
-    kwargs.setdefault('cwd', HERE)
-    kwargs.setdefault('shell', os.name == 'nt')
-    if not isinstance(cmd, (list, tuple)) and os.name != 'nt':
+    log.info("> " + list2cmdline(cmd))
+    kwargs.setdefault("cwd", HERE)
+    kwargs.setdefault("shell", os.name == "nt")
+    if not isinstance(cmd, (list, tuple)) and os.name != "nt":
         cmd = shlex.split(cmd)
     cmd_path = which(cmd[0])
     if not cmd_path:
-        sys.exit("Aborting. Could not find cmd (%s) in path. "
-                 "If command is not expected to be in user's path, "
-                 "use an absolute path." % cmd[0])
+        sys.exit(
+            "Aborting. Could not find cmd (%s) in path. "
+            "If command is not expected to be in user's path, "
+            "use an absolute path." % cmd[0]
+        )
     cmd[0] = cmd_path
     return subprocess.check_call(cmd, **kwargs)
 
 
 def is_stale(target, source):
     """Test whether the target file/directory is stale based on the source
-       file/directory.
+    file/directory.
     """
     if not os.path.exists(target):
         return True
@@ -215,6 +220,7 @@ def is_stale(target, source):
 
 class BaseCommand(Command):
     """Empty command because Command needs subclasses to override too much"""
+
     user_options = []
 
     def initialize_options(self):
@@ -250,6 +256,7 @@ def combine_commands(*commands):
         def run(self):
             for c in self.commands:
                 c.run()
+
     return CombinedCommand
 
 
@@ -300,7 +307,7 @@ def mtime(path):
     return os.stat(path).st_mtime
 
 
-def install_npm(path=None, build_dir=None, source_dir=None, build_cmd='build', force=False, npm=None):
+def install_npm(path=None, build_dir=None, source_dir=None, build_cmd="build", force=False, npm=None):
     """Return a Command for managing an npm installation.
 
     Note: The command is skipped if the `--skip-npm` flag is used.
@@ -321,40 +328,40 @@ def install_npm(path=None, build_dir=None, source_dir=None, build_cmd='build', f
     """
 
     class NPM(BaseCommand):
-        description = 'install package.json dependencies using npm'
+        description = "install package.json dependencies using npm"
 
         def run(self):
             if skip_npm:
-                log.info('Skipping npm-installation')
+                log.info("Skipping npm-installation")
                 return
             node_package = path or HERE
-            node_modules = pjoin(node_package, 'node_modules')
-            is_yarn = os.path.exists(pjoin(node_package, 'yarn.lock'))
+            node_modules = pjoin(node_package, "node_modules")
+            is_yarn = os.path.exists(pjoin(node_package, "yarn.lock"))
 
             npm_cmd = npm
 
             if npm is None:
                 if is_yarn:
-                    npm_cmd = ['yarn']
+                    npm_cmd = ["yarn"]
                 else:
-                    npm_cmd = ['npm']
+                    npm_cmd = ["npm"]
 
             if not which(npm_cmd[0]):
-                log.error("`{0}` unavailable.  If you're running this command "
-                          "using sudo, make sure `{0}` is available to sudo"
-                          .format(npm_cmd[0]))
+                log.error(
+                    "`{0}` unavailable.  If you're running this command "
+                    "using sudo, make sure `{0}` is available to sudo".format(npm_cmd[0])
+                )
                 return
 
-            if force or is_stale(node_modules, pjoin(node_package, 'package.json')):
-                log.info('Installing build dependencies with npm.  This may '
-                         'take a while...')
-                run(npm_cmd + ['install'], cwd=node_package)
+            if force or is_stale(node_modules, pjoin(node_package, "package.json")):
+                log.info("Installing build dependencies with npm.  This may " "take a while...")
+                run(npm_cmd + ["install"], cwd=node_package)
             if build_dir and source_dir and not force:
                 should_build = is_stale(build_dir, source_dir)
             else:
                 should_build = True
             if should_build:
-                run(npm_cmd + ['run', build_cmd], cwd=node_package)
+                run(npm_cmd + ["run", build_cmd], cwd=node_package)
 
     return NPM
 
@@ -370,11 +377,11 @@ def ensure_targets(targets):
     class TargetsCheck(BaseCommand):
         def run(self):
             if skip_npm:
-                log.info('Skipping target checks')
+                log.info("Skipping target checks")
                 return
             missing = [t for t in targets if not os.path.exists(t)]
             if missing:
-                raise ValueError(('missing files: %s' % missing))
+                raise ValueError(("missing files: %s" % missing))
 
     return TargetsCheck
 
@@ -393,8 +400,7 @@ def which(cmd, mode=os.F_OK | os.X_OK, path=None):
     # Additionally check that `file` is not a directory, as on Windows
     # directories pass the os.access check.
     def _access_check(fn, mode):
-        return (os.path.exists(fn) and os.access(fn, mode) and
-                not os.path.isdir(fn))
+        return os.path.exists(fn) and os.access(fn, mode) and not os.path.isdir(fn)
 
     # Short circuit. If we're given a full path which matches the mode
     # and it exists, we're done here.
@@ -448,10 +454,10 @@ def _wrap_command(cmds, cls, strict=True):
     strict: boolean, optional
         Wether to raise errors when a pre-command fails.
     """
-    class WrappedCommand(cls):
 
+    class WrappedCommand(cls):
         def run(self):
-            if not getattr(self, 'uninstall', None):
+            if not getattr(self, "uninstall", None):
                 try:
                     [self.run_command(cmd) for cmd in cmds]
                 except Exception:
@@ -464,14 +470,14 @@ def _wrap_command(cmds, cls, strict=True):
 
             result = cls.run(self)
             return result
+
     return WrappedCommand
 
 
 def _get_file_handler(package_data_spec, data_files_spec):
-    """Get a package_data and data_files handler command.
-    """
-    class FileHandler(BaseCommand):
+    """Get a package_data and data_files handler command."""
 
+    class FileHandler(BaseCommand):
         def run(self):
             package_data = self.distribution.package_data
             package_spec = package_data_spec or dict()
@@ -479,18 +485,16 @@ def _get_file_handler(package_data_spec, data_files_spec):
             for (key, patterns) in package_spec.items():
                 package_data[key] = _get_package_data(key, patterns)
 
-            self.distribution.data_files = _get_data_files(
-                data_files_spec, self.distribution.data_files
-            )
+            self.distribution.data_files = _get_data_files(data_files_spec, self.distribution.data_files)
 
     return FileHandler
 
 
 def _glob_pjoin(*parts):
     """Join paths for glob processing"""
-    if parts[0] in ('.', ''):
+    if parts[0] in (".", ""):
         parts = parts[1:]
-    return pjoin(*parts).replace(os.sep, '/')
+    return pjoin(*parts).replace(os.sep, "/")
 
 
 def _get_data_files(data_specs, existing, top=HERE):
@@ -517,15 +521,15 @@ def _get_data_files(data_specs, existing, top=HERE):
     for (path, dname, pattern) in data_specs or []:
         if os.path.isabs(dname):
             dname = os.path.relpath(dname, top)
-        dname = dname.replace(os.sep, '/')
-        offset = 0 if dname in ('.', '') else len(dname) + 1
+        dname = dname.replace(os.sep, "/")
+        offset = 0 if dname in (".", "") else len(dname) + 1
         files = _get_files(_glob_pjoin(dname, pattern), top=top)
         for fname in files:
             # Normalize the path.
             root = os.path.dirname(fname)
             full_path = _glob_pjoin(path, root[offset:])
             print(dname, root, full_path, offset)
-            if full_path.endswith('/'):
+            if full_path.endswith("/"):
                 full_path = full_path[:-1]
             file_data[full_path].append(fname)
 
@@ -565,14 +569,14 @@ def _get_files(file_patterns, top=HERE):
 
     for root, dirnames, filenames in os.walk(top):
         # Don't recurse into node_modules
-        if 'node_modules' in dirnames:
-            dirnames.remove('node_modules')
+        if "node_modules" in dirnames:
+            dirnames.remove("node_modules")
         for m in matchers:
             for filename in filenames:
                 fn = os.path.relpath(_glob_pjoin(root, filename), top)
-                fn = fn.replace(os.sep, '/')
+                fn = fn.replace(os.sep, "/")
                 if m(fn):
-                    files.add(fn.replace(os.sep, '/'))
+                    files.add(fn.replace(os.sep, "/"))
 
     return list(files)
 
@@ -594,16 +598,16 @@ def _get_package_data(root, file_patterns=None):
     Files in `node_modules` are ignored.
     """
     if file_patterns is None:
-        file_patterns = ['*']
-    return _get_files(file_patterns, _glob_pjoin(HERE, 'src', root))
+        file_patterns = ["*"]
+    return _get_files(file_patterns, _glob_pjoin(HERE, "src", root))
 
 
 def _compile_pattern(pat, ignore_case=True):
     """Translate and compile a glob pattern to a regular expression matcher."""
     if isinstance(pat, bytes):
-        pat_str = pat.decode('ISO-8859-1')
+        pat_str = pat.decode("ISO-8859-1")
         res_str = _translate_glob(pat_str)
-        res = res_str.encode('ISO-8859-1')
+        res = res_str.encode("ISO-8859-1")
     else:
         res = _translate_glob(pat)
     flags = re.IGNORECASE if ignore_case else 0
@@ -632,9 +636,9 @@ def _translate_glob(pat):
     translated_parts = []
     for part in _iexplode_path(pat):
         translated_parts.append(_translate_glob_part(part))
-    os_sep_class = '[%s]' % re.escape(SEPARATORS)
+    os_sep_class = "[%s]" % re.escape(SEPARATORS)
     res = _join_translated(translated_parts, os_sep_class)
-    return '{res}\\Z(?ms)'.format(res=res)
+    return "{res}\\Z(?ms)".format(res=res)
 
 
 def _join_translated(translated_parts, os_sep_class):
@@ -643,20 +647,20 @@ def _join_translated(translated_parts, os_sep_class):
     This is different from a simple join, as care need to be taken
     to allow ** to match ZERO or more directories.
     """
-    res = ''
+    res = ""
     for part in translated_parts[:-1]:
-        if part == '.*':
+        if part == ".*":
             # drop separator, since it is optional
             # (** matches ZERO or more dirs)
             res += part
         else:
             res += part + os_sep_class
 
-    if translated_parts[-1] == '.*':
+    if translated_parts[-1] == ".*":
         # Final part is **
-        res += '.+'
+        res += ".+"
         # Follow stdlib/git convention of matching all sub files/directories:
-        res += '({os_sep_class}?.*)?'.format(os_sep_class=os_sep_class)
+        res += "({os_sep_class}?.*)?".format(os_sep_class=os_sep_class)
     else:
         res += translated_parts[-1]
     return res
@@ -665,36 +669,36 @@ def _join_translated(translated_parts, os_sep_class):
 def _translate_glob_part(pat):
     """Translate a glob PATTERN PART to a regular expression."""
     # Code modified from Python 3 standard lib fnmatch:
-    if pat == '**':
-        return '.*'
+    if pat == "**":
+        return ".*"
     i, n = 0, len(pat)
     res = []
     while i < n:
         c = pat[i]
         i = i + 1
-        if c == '*':
+        if c == "*":
             # Match anything but path separators:
-            res.append('[^%s]*' % SEPARATORS)
-        elif c == '?':
-            res.append('[^%s]?' % SEPARATORS)
-        elif c == '[':
+            res.append("[^%s]*" % SEPARATORS)
+        elif c == "?":
+            res.append("[^%s]?" % SEPARATORS)
+        elif c == "[":
             j = i
-            if j < n and pat[j] == '!':
+            if j < n and pat[j] == "!":
                 j = j + 1
-            if j < n and pat[j] == ']':
+            if j < n and pat[j] == "]":
                 j = j + 1
-            while j < n and pat[j] != ']':
+            while j < n and pat[j] != "]":
                 j = j + 1
             if j >= n:
-                res.append('\\[')
+                res.append("\\[")
             else:
-                stuff = pat[i:j].replace('\\', '\\\\')
+                stuff = pat[i:j].replace("\\", "\\\\")
                 i = j + 1
-                if stuff[0] == '!':
-                    stuff = '^' + stuff[1:]
-                elif stuff[0] == '^':
-                    stuff = '\\' + stuff
-                res.append('[%s]' % stuff)
+                if stuff[0] == "!":
+                    stuff = "^" + stuff[1:]
+                elif stuff[0] == "^":
+                    stuff = "\\" + stuff
+                res.append("[%s]" % stuff)
         else:
             res.append(re.escape(c))
-    return ''.join(res)
+    return "".join(res)

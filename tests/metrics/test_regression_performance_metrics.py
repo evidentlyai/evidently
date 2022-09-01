@@ -18,5 +18,6 @@ def test_regression_performance_metrics() -> None:
     data_mapping = ColumnMapping()
     metric = RegressionPerformanceMetrics()
     result = metric.calculate(
-        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping))
+        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+    )
     assert result is not None

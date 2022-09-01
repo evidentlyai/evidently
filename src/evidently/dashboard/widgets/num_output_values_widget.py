@@ -18,7 +18,7 @@ from evidently.options import QualityMetricsOptions
 
 
 class NumOutputValuesWidget(Widget):
-    def __init__(self, title: str, kind: str = 'target'):
+    def __init__(self, title: str, kind: str = "target"):
         super().__init__(title)
         self.title = title
         self.kind = kind  # target or prediction
@@ -26,11 +26,13 @@ class NumOutputValuesWidget(Widget):
     def analyzers(self):
         return [NumTargetDriftAnalyzer]
 
-    def calculate(self,
-                  reference_data: pd.DataFrame,
-                  current_data: Optional[pd.DataFrame],
-                  column_mapping: ColumnMapping,
-                  analyzers_results) -> Optional[BaseWidgetInfo]:
+    def calculate(
+        self,
+        reference_data: pd.DataFrame,
+        current_data: Optional[pd.DataFrame],
+        column_mapping: ColumnMapping,
+        analyzers_results,
+    ) -> Optional[BaseWidgetInfo]:
         color_options = self.options_provider.get(ColorOptions)
         results = NumTargetDriftAnalyzer.get_results(analyzers_results)
         quality_metrics_options = self.options_provider.get(QualityMetricsOptions)
@@ -39,13 +41,13 @@ class NumOutputValuesWidget(Widget):
         if current_data is None:
             raise ValueError("current_data should be present")
 
-        if self.kind == 'target':
+        if self.kind == "target":
             if results.columns.utility_columns.target is None:
                 return None
 
             column_name = results.columns.utility_columns.target
 
-        elif self.kind == 'prediction':
+        elif self.kind == "prediction":
             if results.columns.utility_columns.prediction is None:
                 return None
 
@@ -65,58 +67,50 @@ class NumOutputValuesWidget(Widget):
 
         output_values = go.Figure()
 
-        output_values.add_trace(go.Scattergl(
-            x=reference_data[utility_columns_date] if utility_columns_date else reference_data.index,
-            y=reference_data[column_name],
-            mode='markers',
-            name='Reference',
-            marker=dict(
-                size=6,
-                color=color_options.get_reference_data_color()
+        output_values.add_trace(
+            go.Scattergl(
+                x=reference_data[utility_columns_date] if utility_columns_date else reference_data.index,
+                y=reference_data[column_name],
+                mode="markers",
+                name="Reference",
+                marker=dict(size=6, color=color_options.get_reference_data_color()),
             )
-        ))
+        )
 
-        output_values.add_trace(go.Scattergl(
-            x=current_data[utility_columns_date] if utility_columns_date else current_data.index,
-            y=current_data[column_name],
-            mode='markers',
-            name='Current',
-            marker=dict(
-                size=6,
-                color=color_options.get_current_data_color()
+        output_values.add_trace(
+            go.Scattergl(
+                x=current_data[utility_columns_date] if utility_columns_date else current_data.index,
+                y=current_data[column_name],
+                mode="markers",
+                name="Current",
+                marker=dict(size=6, color=color_options.get_current_data_color()),
             )
-        ))
+        )
 
         if utility_columns_date:
             x0 = current_data[utility_columns_date].sort_values()[1]
         else:
             x0 = current_data.index.sort_values()[1]
 
-        output_values.add_trace(go.Scatter(
-            x=[x0, x0],
-            y=[reference_mean - conf_interval_n_sigmas * reference_std,
-                reference_mean + conf_interval_n_sigmas * reference_std],
-            mode='markers',
-            name='Current',
-            marker=dict(
-                size=0.01,
-                color=color_options.non_visible_color,
-                opacity=0.005
-            ),
-            showlegend=False
-        ))
+        output_values.add_trace(
+            go.Scatter(
+                x=[x0, x0],
+                y=[
+                    reference_mean - conf_interval_n_sigmas * reference_std,
+                    reference_mean + conf_interval_n_sigmas * reference_std,
+                ],
+                mode="markers",
+                name="Current",
+                marker=dict(size=0.01, color=color_options.non_visible_color, opacity=0.005),
+                showlegend=False,
+            )
+        )
 
         output_values.update_layout(
             xaxis_title=x_title,
-            yaxis_title=self.kind.title() + ' Value',
+            yaxis_title=self.kind.title() + " Value",
             showlegend=True,
-            legend=dict(
-                orientation="h",
-                yanchor="bottom",
-                y=1.02,
-                xanchor="right",
-                x=1
-            ),
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
             shapes=[
                 dict(
                     type="rect",
@@ -135,19 +129,16 @@ class NumOutputValuesWidget(Widget):
                 ),
                 dict(
                     type="line",
-                    name='Reference',
+                    name="Reference",
                     xref="paper",
                     yref="y",
                     x0=0,  # min(testset_agg_by_date.index),
                     y0=reference_mean,
                     x1=1,  # max(testset_agg_by_date.index),
                     y1=reference_mean,
-                    line=dict(
-                        color=color_options.zero_line_color,
-                        width=3
-                    )
+                    line=dict(color=color_options.zero_line_color, width=3),
                 ),
-            ]
+            ],
         )
 
         output_values_json = json.loads(output_values.to_json())
@@ -156,8 +147,5 @@ class NumOutputValuesWidget(Widget):
             title=self.title,
             type="big_graph",
             size=1,
-            params={
-                "data": output_values_json['data'],
-                "layout": output_values_json['layout']
-            },
+            params={"data": output_values_json["data"], "layout": output_values_json["layout"]},
         )

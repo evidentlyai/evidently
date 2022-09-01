@@ -16,35 +16,39 @@ from evidently.options import ColorOptions
 
 
 class ProbClassSupportWidget(Widget):
-    def __init__(self, title: str, dataset: str = 'reference'):
+    def __init__(self, title: str, dataset: str = "reference"):
         super().__init__(title)
         self.dataset = dataset  # reference or current
 
     def analyzers(self):
         return [ProbClassificationPerformanceAnalyzer]
 
-    def calculate(self,
-                  reference_data: pd.DataFrame,
-                  current_data: Optional[pd.DataFrame],
-                  column_mapping: ColumnMapping,
-                  analyzers_results) -> Optional[BaseWidgetInfo]:
+    def calculate(
+        self,
+        reference_data: pd.DataFrame,
+        current_data: Optional[pd.DataFrame],
+        column_mapping: ColumnMapping,
+        analyzers_results,
+    ) -> Optional[BaseWidgetInfo]:
         color_options = self.options_provider.get(ColorOptions)
         results = ProbClassificationPerformanceAnalyzer.get_results(analyzers_results)
         utility_columns = results.columns.utility_columns
 
         if utility_columns.target is None or utility_columns.prediction is None:
-            if self.dataset == 'reference':
+            if self.dataset == "reference":
                 raise ValueError(f"Widget [{self.title}] requires 'target' and 'prediction' columns")
             return None
 
-        if self.dataset == 'reference':
+        if self.dataset == "reference":
             metrics = results.reference_metrics
 
             if metrics is None:
-                raise ValueError(f"Widget [{self.title}] required 'reference' results from"
-                                 f" {ProbClassificationPerformanceAnalyzer.__name__} but no data found")
+                raise ValueError(
+                    f"Widget [{self.title}] required 'reference' results from"
+                    f" {ProbClassificationPerformanceAnalyzer.__name__} but no data found"
+                )
 
-        elif self.dataset == 'current':
+        elif self.dataset == "current":
             metrics = results.current_metrics
 
         else:
@@ -59,12 +63,14 @@ class ProbClassSupportWidget(Widget):
 
         fig = go.Figure()
 
-        fig.add_trace(go.Bar(
-            x=metrics_frame.columns.tolist()[:-3],
-            y=metrics_frame.iloc[-1:, :-3].values[0],
-            marker_color=color_options.primary_color,
-            name='Support'
-        ))
+        fig.add_trace(
+            go.Bar(
+                x=metrics_frame.columns.tolist()[:-3],
+                y=metrics_frame.iloc[-1:, :-3].values[0],
+                marker_color=color_options.primary_color,
+                name="Support",
+            )
+        )
 
         fig.update_layout(
             xaxis_title="Class",
@@ -77,8 +83,5 @@ class ProbClassSupportWidget(Widget):
             title=self.title,
             type="big_graph",
             size=1 if current_data is not None else 2,
-            params={
-                "data": support_bar_json['data'],
-                "layout": support_bar_json['layout']
-            },
+            params={"data": support_bar_json["data"], "layout": support_bar_json["layout"]},
         )

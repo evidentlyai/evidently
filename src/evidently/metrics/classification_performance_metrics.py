@@ -14,8 +14,8 @@ from pandas.core.dtypes.api import is_string_dtype
 from pandas.core.dtypes.api import is_object_dtype
 
 from evidently import ColumnMapping
-from evidently.analyzers.classification_performance_analyzer import ConfusionMatrix
-from evidently.analyzers.utils import calculate_confusion_by_classes
+from evidently.calculations.classification_performance import calculate_confusion_by_classes
+from evidently.calculations.classification_performance import ConfusionMatrix
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 

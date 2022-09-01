@@ -4,8 +4,7 @@ import json
 import numpy as np
 import pandas as pd
 
-from evidently.tests.utils import ApproxValue
-
+from evidently.utils.types import ApproxValue
 
 _TYPES_MAPPING = (
     (
@@ -15,11 +14,11 @@ _TYPES_MAPPING = (
     ((np.float_, np.float16, np.float32, np.float64), float),
     ((np.ndarray,), lambda obj: obj.tolist()),
     ((np.bool_), bool),
-    ((pd.Timedelta, ), str),
+    ((pd.Timedelta,), str),
     ((np.void, type(pd.NaT)), lambda obj: None),  # should be before datetime as NaT is subclass of datetime.
     ((pd.Timestamp, datetime.datetime, datetime.date), lambda obj: obj.isoformat()),
     # map ApproxValue to json value
-    ((ApproxValue, ), lambda obj: obj.as_dict()),
+    ((ApproxValue,), lambda obj: obj.as_dict()),
 )
 
 

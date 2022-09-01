@@ -8,7 +8,7 @@ import pandas as pd
 import pytest
 from pytest import approx
 
-from evidently.analyzers.classification_performance_analyzer import ConfusionMatrix
+from evidently.calculations.classification_performance import ConfusionMatrix
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.metrics.base_metric import InputData
 from evidently.metrics import ClassificationPerformanceMetrics
@@ -28,7 +28,8 @@ def test_classification_performance_metrics_binary_labels() -> None:
     column_mapping = ColumnMapping(target="target", prediction="prediction")
     metric = ClassificationPerformanceMetrics()
     result = metric.calculate(
-        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=column_mapping))
+        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
+    )
     assert result is not None
     assert result.current.accuracy == 0.7
     assert result.current.precision == 0.6
@@ -55,7 +56,8 @@ def test_classification_performance_metrics_binary_probas_threshold() -> None:
     column_mapping = ColumnMapping(target="target", prediction="prediction")
     metric = ClassificationPerformanceMetricsThreshold(class_threshold)
     result = metric.calculate(
-        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=column_mapping))
+        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
+    )
     assert result is not None
     assert result.current.accuracy == 0.6
     assert result.current.precision == 0.5
@@ -217,7 +219,8 @@ def test_classification_performance_metrics() -> None:
     data_mapping = ColumnMapping()
     metric = ClassificationPerformanceMetrics()
     result = metric.calculate(
-        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping))
+        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+    )
     assert result is not None
     assert result.current.accuracy == 0.75
     assert result.current.f1 == approx(0.86, abs=0.01)

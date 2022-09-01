@@ -60,14 +60,14 @@ class DataLoader:
 
     def load(self, filename: str, data_options: DataOptions, sampling_options: SamplingOptions = None):
         sampling_opts = SamplingOptions("none", 0, 0) if sampling_options is None else sampling_options
-        parse_dates = [data_options.date_column] \
-            if data_options.date_column \
-            else False
-        return pd.read_csv(filename,
-                           header=0 if data_options.header else None,
-                           sep=data_options.separator,
-                           skiprows=_skiprows(sampling_opts),
-                           parse_dates=parse_dates)
+        parse_dates = [data_options.date_column] if data_options.date_column else False
+        return pd.read_csv(
+            filename,
+            header=0 if data_options.header else None,
+            sep=data_options.separator,
+            skiprows=_skiprows(sampling_opts),
+            parse_dates=parse_dates,
+        )
 
 
 CHUNK_SIZE = 1000

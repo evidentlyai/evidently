@@ -4,9 +4,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from evidently.analyzers.utils import process_columns
-from evidently.analyzers.utils import DatasetColumns
-from evidently.analyzers.utils import DatasetUtilityColumns
+from evidently.utils.data_operations import process_columns, DatasetColumns, DatasetUtilityColumns
 from evidently.pipeline.column_mapping import ColumnMapping
 
 

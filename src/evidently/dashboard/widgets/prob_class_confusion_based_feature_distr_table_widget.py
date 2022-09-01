@@ -23,11 +23,13 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
     def analyzers(self):
         return [ProbClassificationPerformanceAnalyzer]
 
-    def calculate(self,
-                  reference_data: pd.DataFrame,
-                  current_data: Optional[pd.DataFrame],
-                  column_mapping: ColumnMapping,
-                  analyzers_results) -> Optional[BaseWidgetInfo]:
+    def calculate(
+        self,
+        reference_data: pd.DataFrame,
+        current_data: Optional[pd.DataFrame],
+        column_mapping: ColumnMapping,
+        analyzers_results,
+    ) -> Optional[BaseWidgetInfo]:
         color_options = self.options_provider.get(ColorOptions)
         results = ProbClassificationPerformanceAnalyzer.get_results(analyzers_results)
         quality_metrics_options = self.options_provider.get(QualityMetricsOptions)
@@ -41,13 +43,12 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
             ref_array_prediction = reference_data[utility_columns.prediction].to_numpy()
             ref_prediction_ids = np.argmax(ref_array_prediction, axis=-1)
             ref_prediction_labels = [utility_columns.prediction[x] for x in ref_prediction_ids]
-            reference_data['prediction_labels'] = ref_prediction_labels
+            reference_data["prediction_labels"] = ref_prediction_labels
 
             current_array_prediction = current_data[utility_columns.prediction].to_numpy()
             current_prediction_ids = np.argmax(current_array_prediction, axis=-1)
-            current_prediction_labels = [utility_columns.prediction[x] for x in
-                                         current_prediction_ids]
-            current_data['prediction_labels'] = current_prediction_labels
+            current_prediction_labels = [utility_columns.prediction[x] for x in current_prediction_ids]
+            current_data["prediction_labels"] = current_prediction_labels
 
             additional_graphs_data = []
             params_data = []
@@ -59,17 +60,17 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                 params_data.append(
                     {
                         "details": {
-                            "parts": [{"title": "All", "id": "All" + "_" + str(feature_name)}] + [
-                                {"title": str(label), "id": feature_name + "_" + str(label)} for label in labels],
-                            "insights": []
+                            "parts": [{"title": "All", "id": "All" + "_" + str(feature_name)}]
+                            + [{"title": str(label), "id": feature_name + "_" + str(label)} for label in labels],
+                            "insights": [],
                         },
-                        "f1": feature_name
+                        "f1": feature_name,
                     }
                 )
 
                 # create confusion based plots
-                reference_data['dataset'] = 'Reference'
-                current_data['dataset'] = 'Current'
+                reference_data["dataset"] = "Reference"
+                current_data["dataset"] = "Current"
                 if cut_quantile and quality_metrics_options.get_cut_quantile(feature_name):
                     side, q = quality_metrics_options.get_cut_quantile(feature_name)
                     cqt = CutQuantileTransformer(side=side, q=q)
@@ -81,9 +82,15 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                     current_data_to_plot = current_data
                 merged_data = pd.concat([reference_data_to_plot, current_data_to_plot])
 
-                fig = px.histogram(merged_data, x=feature_name, color=utility_columns.target,
-                                   facet_col="dataset", histnorm='', barmode='overlay',
-                                   category_orders={"dataset": ["Reference", "Current"]})
+                fig = px.histogram(
+                    merged_data,
+                    x=feature_name,
+                    color=utility_columns.target,
+                    facet_col="dataset",
+                    histnorm="",
+                    barmode="overlay",
+                    category_orders={"dataset": ["Reference", "Current"]},
+                )
 
                 fig_json = json.loads(fig.to_json())
 
@@ -91,10 +98,7 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                 additional_graphs_data.append(
                     AdditionalGraphInfo(
                         "All" + "_" + str(feature_name),
-                        {
-                            "data": fig_json['data'],
-                            "layout": fig_json['layout']
-                        },
+                        {"data": fig_json["data"], "layout": fig_json["layout"]},
                     )
                 )
 
@@ -102,85 +106,75 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                     fig = make_subplots(rows=1, cols=2, subplot_titles=("Reference", "Current"))
 
                     # REF
-                    fig.add_trace(go.Scatter(
-                        x=reference_data[reference_data[utility_columns.target] == label][
-                            feature_name],
-                        y=reference_data[reference_data[utility_columns.target] == label][label],
-                        mode='markers',
-                        name=str(label) + ' (ref)',
-                        marker=dict(
-                            size=6,
-                            color=color_options.get_current_data_color()
-                        )
-                    ),
-                        row=1, col=1
+                    fig.add_trace(
+                        go.Scatter(
+                            x=reference_data[reference_data[utility_columns.target] == label][feature_name],
+                            y=reference_data[reference_data[utility_columns.target] == label][label],
+                            mode="markers",
+                            name=str(label) + " (ref)",
+                            marker=dict(size=6, color=color_options.get_current_data_color()),
+                        ),
+                        row=1,
+                        col=1,
                     )
 
-                    fig.add_trace(go.Scatter(
-                        x=reference_data[reference_data[utility_columns.target] != label][
-                            feature_name],
-                        y=reference_data[reference_data[utility_columns.target] != label][label],
-                        mode='markers',
-                        name='other (ref)',
-                        marker=dict(
-                            size=6,
-                            color=color_options.get_reference_data_color()
-                        )
-                    ),
-                        row=1, col=1
+                    fig.add_trace(
+                        go.Scatter(
+                            x=reference_data[reference_data[utility_columns.target] != label][feature_name],
+                            y=reference_data[reference_data[utility_columns.target] != label][label],
+                            mode="markers",
+                            name="other (ref)",
+                            marker=dict(size=6, color=color_options.get_reference_data_color()),
+                        ),
+                        row=1,
+                        col=1,
                     )
 
                     fig.update_layout(
                         xaxis_title=feature_name,
-                        yaxis_title='Probability',
-                        xaxis=dict(
-                            showticklabels=True
-                        ),
-                        yaxis=dict(
-                            range=(-0.1, 1.1),
-                            showticklabels=True
-                        )
+                        yaxis_title="Probability",
+                        xaxis=dict(showticklabels=True),
+                        yaxis=dict(range=(-0.1, 1.1), showticklabels=True),
                     )
 
                     # current Prediction
-                    fig.add_trace(go.Scatter(
-                        x=current_data[current_data[utility_columns.target] == label][feature_name],
-                        y=current_data[current_data[utility_columns.target] == label][label],
-                        mode='markers',
-                        name=str(label) + ' (curr)',
-                        marker=dict(
-                            size=6,
-                            # set color equal to a variable
-                            color=color_options.get_current_data_color()
-                        )
-                    ),
-                        row=1, col=2
+                    fig.add_trace(
+                        go.Scatter(
+                            x=current_data[current_data[utility_columns.target] == label][feature_name],
+                            y=current_data[current_data[utility_columns.target] == label][label],
+                            mode="markers",
+                            name=str(label) + " (curr)",
+                            marker=dict(
+                                size=6,
+                                # set color equal to a variable
+                                color=color_options.get_current_data_color(),
+                            ),
+                        ),
+                        row=1,
+                        col=2,
                     )
 
-                    fig.add_trace(go.Scatter(
-                        x=current_data[current_data[utility_columns.target] != label][feature_name],
-                        y=current_data[current_data[utility_columns.target] != label][label],
-                        mode='markers',
-                        name='other (curr)',
-                        marker=dict(
-                            size=6,
-                            # set color equal to a variable
-                            color=color_options.get_reference_data_color()
-                        )
-                    ),
-                        row=1, col=2
+                    fig.add_trace(
+                        go.Scatter(
+                            x=current_data[current_data[utility_columns.target] != label][feature_name],
+                            y=current_data[current_data[utility_columns.target] != label][label],
+                            mode="markers",
+                            name="other (curr)",
+                            marker=dict(
+                                size=6,
+                                # set color equal to a variable
+                                color=color_options.get_reference_data_color(),
+                            ),
+                        ),
+                        row=1,
+                        col=2,
                     )
 
                     fig.update_layout(
                         xaxis_title=feature_name,
-                        yaxis_title='Probability',
-                        xaxis=dict(
-                            showticklabels=True
-                        ),
-                        yaxis=dict(
-                            range=(-0.1, 1.1),
-                            showticklabels=True
-                        )
+                        yaxis_title="Probability",
+                        xaxis=dict(showticklabels=True),
+                        yaxis=dict(range=(-0.1, 1.1), showticklabels=True),
                     )
 
                     # Update xaxis properties
@@ -197,17 +191,14 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                     additional_graphs_data.append(
                         AdditionalGraphInfo(
                             feature_name + "_" + str(label),
-                            {
-                                "data": fig_json['data'],
-                                "layout": fig_json['layout']
-                            },
+                            {"data": fig_json["data"], "layout": fig_json["layout"]},
                         )
                     )
         else:
             ref_array_prediction = reference_data[utility_columns.prediction].to_numpy()
             ref_prediction_ids = np.argmax(ref_array_prediction, axis=-1)
             ref_prediction_labels = [utility_columns.prediction[x] for x in ref_prediction_ids]
-            reference_data['prediction_labels'] = ref_prediction_labels
+            reference_data["prediction_labels"] = ref_prediction_labels
 
             additional_graphs_data = []
             params_data = []
@@ -219,17 +210,16 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                 params_data.append(
                     {
                         "details": {
-                            "parts": [{"title": "All", "id": "All" + "_" + str(feature_name)}] + [
-                                {"title": str(label), "id": feature_name + "_" + str(label)} for label in labels],
-                            "insights": []
+                            "parts": [{"title": "All", "id": "All" + "_" + str(feature_name)}]
+                            + [{"title": str(label), "id": feature_name + "_" + str(label)} for label in labels],
+                            "insights": [],
                         },
-                        "f1": feature_name
+                        "f1": feature_name,
                     }
                 )
 
                 # create confusion based plots
-                fig = px.histogram(reference_data, x=feature_name, color=utility_columns.target,
-                                   histnorm='')
+                fig = px.histogram(reference_data, x=feature_name, color=utility_columns.target, histnorm="")
                 if cut_quantile and quality_metrics_options.get_cut_quantile(feature_name):
                     side, q = quality_metrics_options.get_cut_quantile(feature_name)
                     cqt = CutQuantileTransformer(side=side, q=q)
@@ -238,8 +228,9 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                 else:
                     reference_data_to_plot = reference_data
 
-                fig = px.histogram(reference_data_to_plot, x=feature_name, color=utility_columns.target,
-                                   histnorm='', barmode='overlay')
+                fig = px.histogram(
+                    reference_data_to_plot, x=feature_name, color=utility_columns.target, histnorm="", barmode="overlay"
+                )
 
                 fig_json = json.loads(fig.to_json())
 
@@ -247,50 +238,40 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                 additional_graphs_data.append(
                     AdditionalGraphInfo(
                         "All" + "_" + str(feature_name),
-                        {
-                            "data": fig_json['data'],
-                            "layout": fig_json['layout']
-                        },
+                        {"data": fig_json["data"], "layout": fig_json["layout"]},
                     )
                 )
 
                 for label in labels:
                     fig = go.Figure()
 
-                    fig.add_trace(go.Scatter(
-                        x=reference_data[reference_data[utility_columns.target] == label][
-                            feature_name],
-                        y=reference_data[reference_data[utility_columns.target] == label][label],
-                        mode='markers',
-                        name=str(label),
-                        marker=dict(
-                            size=6,
-                            color=color_options.get_current_data_color()  # set color equal to a variable
+                    fig.add_trace(
+                        go.Scatter(
+                            x=reference_data[reference_data[utility_columns.target] == label][feature_name],
+                            y=reference_data[reference_data[utility_columns.target] == label][label],
+                            mode="markers",
+                            name=str(label),
+                            marker=dict(
+                                size=6, color=color_options.get_current_data_color()  # set color equal to a variable
+                            ),
                         )
-                    ))
+                    )
 
-                    fig.add_trace(go.Scatter(
-                        x=reference_data[reference_data[utility_columns.target] != label][
-                            feature_name],
-                        y=reference_data[reference_data[utility_columns.target] != label][label],
-                        mode='markers',
-                        name='other',
-                        marker=dict(
-                            size=6,
-                            color=color_options.get_reference_data_color()
+                    fig.add_trace(
+                        go.Scatter(
+                            x=reference_data[reference_data[utility_columns.target] != label][feature_name],
+                            y=reference_data[reference_data[utility_columns.target] != label][label],
+                            mode="markers",
+                            name="other",
+                            marker=dict(size=6, color=color_options.get_reference_data_color()),
                         )
-                    ))
+                    )
 
                     fig.update_layout(
                         xaxis_title=feature_name,
-                        yaxis_title='Probability',
-                        xaxis=dict(
-                            showticklabels=True
-                        ),
-                        yaxis=dict(
-                            range=(-0.1, 1.1),
-                            showticklabels=True
-                        )
+                        yaxis_title="Probability",
+                        xaxis=dict(showticklabels=True),
+                        yaxis=dict(range=(-0.1, 1.1), showticklabels=True),
                     )
 
                     fig_json = json.loads(fig.to_json())
@@ -299,10 +280,7 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                     additional_graphs_data.append(
                         AdditionalGraphInfo(
                             feature_name + "_" + str(label),
-                            {
-                                "data": fig_json['data'],
-                                "layout": fig_json['layout']
-                            },
+                            {"data": fig_json["data"], "layout": fig_json["layout"]},
                         )
                     )
 
@@ -312,13 +290,8 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
             size=2,
             params={
                 "rowsPerPage": min(results.columns.get_features_len(), 10),
-                "columns": [
-                    {
-                        "title": "Feature",
-                        "field": "f1"
-                    }
-                ],
-                "data": params_data
+                "columns": [{"title": "Feature", "field": "f1"}],
+                "data": params_data,
             },
-            additionalGraphs=additional_graphs_data
+            additionalGraphs=additional_graphs_data,
         )

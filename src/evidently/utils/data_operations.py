@@ -1,14 +1,18 @@
-from typing import Dict
-from typing import List
-from typing import Optional
-from typing import Sequence
-from typing import Union
+"""Methods for clean null or NaN values in a dataset"""
+from typing import List, Optional, Dict, Union, Sequence
 
 import numpy as np
 import pandas as pd
 from dataclasses import dataclass
 
-from evidently.pipeline.column_mapping import ColumnMapping
+from evidently import ColumnMapping
+
+
+def replace_infinity_values_to_nan(dataframe: pd.DataFrame) -> pd.DataFrame:
+    #   document somewhere, that all analyzers are mutators, i.e. they will change
+    #   the dataframe, like here: replace inf and nan values.
+    dataframe.replace([np.inf, -np.inf], np.nan, inplace=True)
+    return dataframe
 
 
 @dataclass
@@ -142,22 +146,18 @@ def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping) -> Dat
 
     else:
         empty_cols = dataset[num_feature_names].isnull().mean()
-        empty_cols = empty_cols[empty_cols == 1.].index
+        empty_cols = empty_cols[empty_cols == 1.0].index
         num_feature_names = sorted(
-            list(
-                set(dataset[num_feature_names].select_dtypes([np.number]).columns).union(set(empty_cols))
-            )
+            list(set(dataset[num_feature_names].select_dtypes([np.number]).columns).union(set(empty_cols)))
         )
 
     if datetime_feature_names is None:
         datetime_feature_names = sorted(list(set(dataset.select_dtypes(["datetime"]).columns) - utility_columns_set))
     else:
         empty_cols = dataset[datetime_feature_names].isnull().mean()
-        empty_cols = empty_cols[empty_cols == 1.].index
+        empty_cols = empty_cols[empty_cols == 1.0].index
         datetime_feature_names = sorted(
-            list(
-                set(dataset[datetime_feature_names].select_dtypes(["datetime"]).columns).union(set(empty_cols))
-            )
+            list(set(dataset[datetime_feature_names].select_dtypes(["datetime"]).columns).union(set(empty_cols)))
         )
 
     cat_feature_names = column_mapping.categorical_features
@@ -179,55 +179,19 @@ def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping) -> Dat
     )
 
 
-def calculate_confusion_by_classes(confusion_matrix: pd.DataFrame, class_names: List[str]) -> Dict[str, Dict[str, int]]:
-    """Calculate metrics
-        TP (true positive)
-        TN (true negative)
-        FP (false positive)
-        FN (false negative)
-    for each class from confusion matrix.
-
-    Returns a dict like:
-    {
-        "class_1_name": {
-            "tp": 1,
-            "tn": 5,
-            "fp": 0,
-            "fn": 3,
-        },
-        ...
-    }
-    """
-    true_positive = np.diag(confusion_matrix)
-    false_positive = confusion_matrix.sum(axis=0) - np.diag(confusion_matrix)
-    false_negative = confusion_matrix.sum(axis=1) - np.diag(confusion_matrix)
-    true_negative = confusion_matrix.sum() - (false_positive + false_negative + true_positive)
-    confusion_by_classes = {}
-
-    for idx, class_name in enumerate(class_names):
-        confusion_by_classes[str(class_name)] = {
-            "tp": true_positive[idx],
-            "tn": true_negative[idx],
-            "fp": false_positive[idx],
-            "fn": false_negative[idx],
-        }
-
-    return confusion_by_classes
-
-
-def recognize_task(target_name: str, reference_data: pd.DataFrame) -> str:
+def recognize_task(target_name: str, dataset: pd.DataFrame) -> str:
     """Try to guess about the target type:
     if the target has a numeric type and number of unique values > 5: task == ‘regression’
     in all other cases task == ‘classification’.
 
     Args:
         target_name: name of target column.
-        reference_data: usually the data which you used in training.
+        dataset: usually the data which you used in training.
 
     Returns:
         Task parameter.
     """
-    if pd.api.types.is_numeric_dtype(reference_data[target_name]) and reference_data[target_name].nunique() >= 5:
+    if pd.api.types.is_numeric_dtype(dataset[target_name]) and dataset[target_name].nunique() >= 5:
         task = "regression"
 
     else:

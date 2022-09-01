@@ -8,14 +8,12 @@ from typing import Dict
 from typing import Generic
 from typing import List
 from typing import Optional
-from typing import Tuple
 from typing import Type
 from typing import TypeVar
 from typing import Union
 
-from evidently.analyzers.utils import DatasetColumns
-from evidently.tests.utils import ApproxValue
-from evidently.tests.utils import Numeric
+from evidently.utils.data_operations import DatasetColumns
+from evidently.utils.types import ApproxValue, Numeric
 
 
 @dataclasses.dataclass
@@ -39,26 +37,33 @@ class GroupTypeData:
 
 
 class GroupingTypes:
-    ByFeature = GroupTypeData("by_feature", "By feature", [GroupData(
-        "no group",
-        "Dataset-level tests",
-        "Some tests cannot be grouped by feature",
-    )])
+    ByFeature = GroupTypeData(
+        "by_feature",
+        "By feature",
+        [
+            GroupData(
+                "no group",
+                "Dataset-level tests",
+                "Some tests cannot be grouped by feature",
+            )
+        ],
+    )
     ByClass = GroupTypeData("by_class", "By class", [])
-    TestGroup = GroupTypeData("test_group", "By test group", [GroupData(
-        "no group",
-        "Ungrouped",
-        "Some tests don’t belong to any group under the selected condition",
-    )])
+    TestGroup = GroupTypeData(
+        "test_group",
+        "By test group",
+        [
+            GroupData(
+                "no group",
+                "Ungrouped",
+                "Some tests don’t belong to any group under the selected condition",
+            )
+        ],
+    )
     TestType = GroupTypeData("test_type", "By test type", [])
 
 
-DEFAULT_GROUP = [
-    GroupingTypes.ByFeature,
-    GroupingTypes.TestGroup,
-    GroupingTypes.TestType,
-    GroupingTypes.ByClass
-]
+DEFAULT_GROUP = [GroupingTypes.ByFeature, GroupingTypes.TestGroup, GroupingTypes.TestType, GroupingTypes.ByClass]
 
 
 @dataclass
@@ -324,6 +329,7 @@ class BaseTestGenerator(Generic[TTest]):
 
     Do not forget set correct test type for `generate_tests` return value
     """
+
     @abc.abstractmethod
     def generate_tests(self, columns_info: DatasetColumns) -> List[TTest]:
         raise NotImplementedError()
