@@ -286,6 +286,25 @@ class ClassificationPerformanceMetricsRenderer(MetricRenderer):
 
     @staticmethod
     def _get_metrics_table(dataset_name: str, metrics: DatasetClassificationPerformanceMetrics) -> MetricHtmlInfo:
+        counters = [
+            {"value": str(round(metrics.accuracy, 3)), "label": "Accuracy"},
+            {"value": str(round(metrics.precision, 3)), "label": "Precision"},
+            {"value": str(round(metrics.recall, 3)), "label": "Recall"},
+            {"value": str(round(metrics.f1, 3)), "label": "F1"},
+        ]
+
+        if metrics.roc_auc is not None:
+            counters.append({
+                "value": str(round(metrics.roc_auc, 3)),
+                "label": "ROC AUC"
+            })
+
+        if metrics.log_loss is not None:
+            counters.append({
+                "value": str(round(metrics.log_loss, 3)),
+                "label": "LogLoss"
+            })
+
         return MetricHtmlInfo(
             f"classification_performance_metrics_table_{dataset_name.lower()}",
             BaseWidgetInfo(
@@ -293,12 +312,7 @@ class ClassificationPerformanceMetricsRenderer(MetricRenderer):
                 type="counter",
                 size=2,
                 params={
-                    "counters": [
-                        {"value": str(round(metrics.accuracy, 3)), "label": "Accuracy"},
-                        {"value": str(round(metrics.precision, 3)), "label": "Precision"},
-                        {"value": str(round(metrics.recall, 3)), "label": "Recall"},
-                        {"value": str(round(metrics.f1, 3)), "label": "F1"},
-                    ]
+                    "counters": counters
                 },
             ),
             details=[],
@@ -675,6 +689,14 @@ class PredictionData:
     prediction_probas: Optional[pd.DataFrame]
 
 
+def _check_pos_labels(pos_label: Optional[str], labels: List[str]) -> None:
+    if pos_label is None:
+        raise ValueError("Undefined pos_label.")
+
+    if pos_label not in labels:
+        raise ValueError(f"Cannot find pos_label '{pos_label}' in labels {labels}")
+
+
 def get_prediction_data(data: pd.DataFrame, mapping: ColumnMapping, threshold: float = 0.5) -> PredictionData:
     """Get predicted values and optional prediction probabilities from source data.
     Also take into account a threshold value - if a probability is less than the value, do not take it into account.
@@ -709,8 +731,7 @@ def get_prediction_data(data: pd.DataFrame, mapping: ColumnMapping, threshold: f
     # prediction in mapping is a list of two columns:
     # one is positive value probabilities, second is negative value probabilities
     if isinstance(mapping.prediction, list) and len(mapping.prediction) == 2:
-        if mapping.pos_label not in labels or mapping.pos_label is None:
-            raise ValueError("Undefined pos_label.")
+        _check_pos_labels(mapping.pos_label, labels)
 
         # get negative label for binary classification
         neg_label = labels[labels != mapping.pos_label][0]
@@ -725,8 +746,7 @@ def get_prediction_data(data: pd.DataFrame, mapping: ColumnMapping, threshold: f
         and (is_string_dtype(data[mapping.target]) or is_object_dtype(data[mapping.target]))
         and is_float_dtype(data[mapping.prediction])
     ):
-        if mapping.pos_label is None or mapping.pos_label not in labels:
-            raise ValueError("Undefined pos_label.")
+        _check_pos_labels(mapping.pos_label, labels)
 
         if mapping.prediction not in labels:
             raise ValueError(
