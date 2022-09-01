@@ -57,10 +57,10 @@ class DatasetClassificationPerformanceMetrics:
 
 @dataclasses.dataclass
 class ClassificationPerformanceResults:
+    columns: DatasetColumns
     current: DatasetClassificationPerformanceMetrics
     dummy: DatasetClassificationPerformanceMetrics
     reference: Optional[DatasetClassificationPerformanceMetrics] = None
-    columns: Optional[DatasetColumns] = None
 
 
 def k_probability_threshold(prediction_probas: pd.DataFrame, k: Union[int, float]) -> float:
@@ -534,6 +534,12 @@ def _dummy_threshold_metrics(
 
 class ClassificationPerformanceMetricsThresholdBase(Metric[ClassificationPerformanceResults]):
     def calculate(self, data: InputData) -> ClassificationPerformanceResults:
+        if data.reference_data is None:
+            columns = process_columns(data.current_data, data.column_mapping)
+
+        else:
+            columns = process_columns(data.reference_data, data.column_mapping)
+
         current_data = _cleanup_data(data.current_data, data.column_mapping)
         target_data = current_data[data.column_mapping.target]
         threshold = self.get_threshold(current_data, data.column_mapping)
@@ -551,6 +557,7 @@ class ClassificationPerformanceMetricsThresholdBase(Metric[ClassificationPerform
         if data.reference_data is not None:
             reference_results = self.calculate_metric(data.reference_data, data.column_mapping)
         return ClassificationPerformanceResults(
+            columns=columns,
             current=current_results,
             dummy=dummy_results,
             reference=reference_results,
