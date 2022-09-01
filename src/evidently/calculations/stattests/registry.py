@@ -4,7 +4,7 @@ import dataclasses
 
 import pandas as pd
 
-from evidently.analyzers import stattests
+from evidently.calculations import stattests
 
 StatTestFuncType = Callable[[pd.Series, pd.Series, str, float], Tuple[float, bool]]
 
@@ -24,11 +24,9 @@ class StatTest:
     allowed_feature_types: List[str]
     default_threshold: float = 0.05
 
-    def __call__(self,
-                 reference_data: pd.Series,
-                 current_data: pd.Series,
-                 feature_type: str,
-                 threshold: Optional[float]) -> StatTestResult:
+    def __call__(
+        self, reference_data: pd.Series, current_data: pd.Series, feature_type: str, threshold: Optional[float]
+    ) -> StatTestResult:
         actual_threshold = self.default_threshold if threshold is None else threshold
         drift_score, drifted = self.func(reference_data, current_data, feature_type, actual_threshold)
         return StatTestResult(drift_score=drift_score, drifted=drifted, actual_threshold=actual_threshold)
@@ -67,10 +65,9 @@ def _get_default_stattest(reference_data: pd.Series, current_data: pd.Series, fe
     raise ValueError(f"Unexpected feature_type {feature_type}")
 
 
-def get_stattest(reference_data: pd.Series,
-                 current_data: pd.Series,
-                 feature_type: str,
-                 stattest_func: Optional[PossibleStatTestType]) -> StatTest:
+def get_stattest(
+    reference_data: pd.Series, current_data: pd.Series, feature_type: str, stattest_func: Optional[PossibleStatTestType]
+) -> StatTest:
     if stattest_func is None:
         return _get_default_stattest(reference_data, current_data, feature_type)
     if isinstance(stattest_func, StatTest):
@@ -80,7 +77,7 @@ def get_stattest(reference_data: pd.Series,
             name="",
             display_name=f"custom function '{stattest_func.__name__}'",
             func=stattest_func,
-            allowed_feature_types=[]
+            allowed_feature_types=[],
         )
     if callable(stattest_func) and stattest_func in _registered_stat_test_funcs:
         stattest_name = _registered_stat_test_funcs[stattest_func]
@@ -99,11 +96,14 @@ def get_stattest(reference_data: pd.Series,
 
 class StatTestNotFoundError(ValueError):
     def __init__(self, stattest_name: str):
-        super().__init__(f"No stattest found of name {stattest_name}. "
-                         f"Available stattests: {list(_registered_stat_tests.keys())}")
+        super().__init__(
+            f"No stattest found of name {stattest_name}. " f"Available stattests: {list(_registered_stat_tests.keys())}"
+        )
 
 
 class StatTestInvalidFeatureTypeError(ValueError):
     def __init__(self, stattest_name: str, feature_type: str):
-        super().__init__(f"Stattest {stattest_name} isn't applicable to feature of type {feature_type}. "
-                         f"Available feature types: {list(_registered_stat_tests[stattest_name].keys())}")
+        super().__init__(
+            f"Stattest {stattest_name} isn't applicable to feature of type {feature_type}. "
+            f"Available feature types: {list(_registered_stat_tests[stattest_name].keys())}"
+        )

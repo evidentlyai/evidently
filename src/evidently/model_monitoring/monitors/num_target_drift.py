@@ -1,7 +1,7 @@
 from typing import Generator
 
 from evidently.analyzers.num_target_drift_analyzer import NumTargetDriftAnalyzer
-from evidently.analyzers.num_target_drift_analyzer import NumDataDriftMetrics
+from evidently.calculations.data_drift import DataDriftMetrics
 from evidently.model_monitoring.monitoring import MetricsType
 from evidently.model_monitoring.monitoring import ModelMonitor
 from evidently.model_monitoring.monitoring import ModelMonitoringMetric
@@ -36,18 +36,20 @@ class NumTargetDriftMonitor(ModelMonitor):
         return [NumTargetDriftAnalyzer]
 
     @staticmethod
-    def _yield_metrics(metrics: NumDataDriftMetrics, kind: str) -> Generator[MetricsType, None, None]:
+    def _yield_metrics(metrics: DataDriftMetrics, kind: str) -> Generator[MetricsType, None, None]:
         yield NumTargetDriftMonitorMetrics.drift.create(metrics.drift_score, dict(kind=kind))
 
-        for feature_name, correlation_value in metrics.reference_correlations.items():
-            yield NumTargetDriftMonitorMetrics.reference_correlations.create(
-                correlation_value, dict(feature=feature_name, feature_type="num", kind=kind)
-            )
+        if metrics.reference_correlations is not None:
+            for feature_name, correlation_value in metrics.reference_correlations.items():
+                yield NumTargetDriftMonitorMetrics.reference_correlations.create(
+                    correlation_value, dict(feature=feature_name, feature_type="num", kind=kind)
+                )
 
-        for feature_name, correlation_value in metrics.current_correlations.items():
-            yield NumTargetDriftMonitorMetrics.current_correlations.create(
-                correlation_value, dict(feature=feature_name, feature_type="num", kind=kind)
-            )
+        if metrics.current_correlations is not None:
+            for feature_name, correlation_value in metrics.current_correlations.items():
+                yield NumTargetDriftMonitorMetrics.current_correlations.create(
+                    correlation_value, dict(feature=feature_name, feature_type="num", kind=kind)
+                )
 
     def metrics(self, analyzer_results):
         results = NumTargetDriftAnalyzer.get_results(analyzer_results)

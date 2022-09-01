@@ -13,8 +13,9 @@ from plotly.subplots import make_subplots
 from evidently import ColumnMapping
 from evidently.analyzers.data_quality_analyzer import DataQualityAnalyzer
 from evidently.analyzers.data_quality_analyzer import DataQualityAnalyzerResults
-from evidently.analyzers.data_quality_analyzer import FeatureQualityStats
-from evidently.model.widget import BaseWidgetInfo, AdditionalGraphInfo
+from evidently.calculations.data_quality import FeatureQualityStats
+from evidently.model.widget import AdditionalGraphInfo
+from evidently.model.widget import BaseWidgetInfo
 from evidently.dashboard.widgets.widget import Widget
 from evidently.options import ColorOptions
 
@@ -274,7 +275,7 @@ class DataQualityFeaturesWidget(Widget):
                 trace1 = go.Histogram(
                     x=reference_data[feature_name],
                     marker_color=color_options.get_reference_data_color(),
-                    name="reference"
+                    name="reference",
                 )
                 trace2 = go.Histogram(
                     x=np.log10(reference_data.loc[reference_data[feature_name] > 0, feature_name]),
@@ -283,9 +284,7 @@ class DataQualityFeaturesWidget(Widget):
                     name="reference",
                 )
                 trace3 = go.Histogram(
-                    x=current_data[feature_name],
-                    marker_color=color_options.get_current_data_color(),
-                    name="current"
+                    x=current_data[feature_name], marker_color=color_options.get_current_data_color(), name="current"
                 )
                 trace4 = go.Histogram(
                     x=np.log10(current_data.loc[current_data[feature_name] > 0, feature_name]),
@@ -332,14 +331,14 @@ class DataQualityFeaturesWidget(Widget):
                     go.Histogram(
                         x=reference_data[feature_name],
                         marker_color=color_options.get_reference_data_color(),
-                        name="reference"
+                        name="reference",
                     )
                 )
                 fig.add_trace(
                     go.Histogram(
                         x=current_data[feature_name],
                         marker_color=color_options.get_current_data_color(),
-                        name="current"
+                        name="current",
                     )
                 )
             fig.update_xaxes(categoryorder="array", categoryarray=cats)

@@ -5,7 +5,7 @@ from typing import Union
 
 import numpy as np
 
-from evidently.analyzers.utils import DatasetColumns
+from evidently.utils.data_operations import DatasetColumns
 from evidently.model.widget import BaseWidgetInfo
 from evidently.metrics import DataQualityMetrics
 from evidently.metrics import DataQualityStabilityMetrics
@@ -25,7 +25,7 @@ from evidently.tests.base_test import BaseTestGenerator
 from evidently.tests.base_test import TestResult
 from evidently.tests.base_test import TestValueCondition
 from evidently.tests.utils import approx
-from evidently.tests.utils import Numeric
+from evidently.utils.types import Numeric
 from evidently.tests.utils import plot_check
 from evidently.tests.utils import plot_metric_value
 from evidently.tests.utils import plot_distr
@@ -485,9 +485,7 @@ class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest, ABC):
         }
 
     def check(self):
-        result = TestResult(name=self.name,
-                            description="The test was not launched",
-                            status=TestResult.SKIPPED)
+        result = TestResult(name=self.name, description="The test was not launched", status=TestResult.SKIPPED)
         features_stats = self.metric.get_result().features_stats.get_all_features()
 
         if self.column_name not in features_stats:
@@ -981,10 +979,12 @@ class TestMeanInNSigmas(Test):
                 )
                 test_result = TestResult.FAIL
 
-        return TestResult(name=self.name,
-                          description=description,
-                          status=test_result,
-                          groups={GroupingTypes.ByFeature.id: self.column_name})
+        return TestResult(
+            name=self.name,
+            description=description,
+            status=test_result,
+            groups={GroupingTypes.ByFeature.id: self.column_name},
+        )
 
 
 @default_renderer(wrap_type=TestMeanInNSigmas)
@@ -1091,10 +1091,12 @@ class TestValueRange(Test):
             description = f"All values in the column **{self.column_name}** are within range"
             test_result = TestResult.SUCCESS
 
-        return TestResult(name=self.name,
-                          description=description,
-                          status=test_result,
-                          groups={GroupingTypes.ByFeature.id: self.column_name})
+        return TestResult(
+            name=self.name,
+            description=description,
+            status=test_result,
+            groups={GroupingTypes.ByFeature.id: self.column_name},
+        )
 
 
 @default_renderer(wrap_type=TestValueRange)
@@ -1164,9 +1166,7 @@ class BaseDataQualityValueRangeMetricsTest(BaseCheckValueTest, ABC):
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
 
     def groups(self) -> Dict[str, str]:
-        return {
-            GroupingTypes.ByFeature.id: self.column_name
-        }
+        return {GroupingTypes.ByFeature.id: self.column_name}
 
 
 class TestNumberOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
@@ -1318,10 +1318,12 @@ class TestValueList(Test):
             test_result = TestResult.SUCCESS
             description = f"All values in the column **{self.column_name}** are in the list."
 
-        return TestResult(name=self.name,
-                          description=description,
-                          status=test_result,
-                          groups={GroupingTypes.ByFeature.id: self.column_name})
+        return TestResult(
+            name=self.name,
+            description=description,
+            status=test_result,
+            groups={GroupingTypes.ByFeature.id: self.column_name},
+        )
 
 
 @default_renderer(wrap_type=TestValueList)

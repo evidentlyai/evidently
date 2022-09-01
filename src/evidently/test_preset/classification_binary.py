@@ -1,14 +1,20 @@
-from evidently.analyzers.utils import DatasetColumns
+from evidently.utils.data_operations import DatasetColumns
 from evidently.metrics.base_metric import InputData
 from evidently.test_preset.test_preset import TestPreset
-from evidently.tests import TestAccuracyScore, TestF1Score, TestPrecisionScore, TestRecallScore, \
-    TestFeatureValueDrift, TestRocAuc
+from evidently.tests import (
+    TestAccuracyScore,
+    TestF1Score,
+    TestPrecisionScore,
+    TestRecallScore,
+    TestFeatureValueDrift,
+    TestRocAuc,
+)
 
 
 class BinaryClassification(TestPreset):
     def __init__(self, prediction_type: str, threshold: float = 0.5):
         super().__init__()
-        if prediction_type not in ['probas', 'labels']:
+        if prediction_type not in ["probas", "labels"]:
             raise ValueError("`prediction_type` argument should by one of 'probas' or 'labels'")
         self.prediction_type = prediction_type
         self.threshold = threshold
@@ -17,7 +23,7 @@ class BinaryClassification(TestPreset):
         target = columns.utility_columns.target
         if target is None:
             raise ValueError("Target column should be set in mapping and be present in data")
-        if self.prediction_type == 'labels':
+        if self.prediction_type == "labels":
             return [
                 TestFeatureValueDrift(target),
                 TestPrecisionScore(),
@@ -25,7 +31,7 @@ class BinaryClassification(TestPreset):
                 TestF1Score(),
                 TestAccuracyScore(),
             ]
-        if self.prediction_type == 'probas':
+        if self.prediction_type == "probas":
             return [
                 TestFeatureValueDrift(target),
                 TestRocAuc(),

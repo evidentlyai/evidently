@@ -16,7 +16,8 @@ def test_data_quality_metrics() -> None:
     data_mapping = ColumnMapping()
     metric = DataQualityMetrics()
     result = metric.calculate(
-        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping))
+        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+    )
     assert result is not None
 
 
@@ -32,7 +33,8 @@ def test_data_quality_stability_metrics() -> None:
     data_mapping = ColumnMapping()
     metric = DataQualityStabilityMetrics()
     result = metric.calculate(
-        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping))
+        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+    )
     assert result is not None
     assert result.number_not_stable_target == 2
     assert result.number_not_stable_prediction == 4
@@ -65,7 +67,8 @@ def test_data_quality_values_in_list_metrics() -> None:
     data_mapping = ColumnMapping()
     metric = DataQualityValueListMetrics(column="category_feature", values=["d"])
     result = metric.calculate(
-        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping))
+        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+    )
     assert result is not None
     assert result.number_in_list == 1
     assert result.number_not_in_list == 3
@@ -74,7 +77,8 @@ def test_data_quality_values_in_list_metrics() -> None:
 
     metric = DataQualityValueListMetrics(column="numerical_feature", values=[2])
     result = metric.calculate(
-        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping))
+        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+    )
     assert result is not None
     assert result.number_in_list == 2
     assert result.number_not_in_list == 2
@@ -85,7 +89,8 @@ def test_data_quality_values_in_list_metrics() -> None:
 
     metric = DataQualityValueListMetrics(column="category_feature")
     result = metric.calculate(
-        data=InputData(current_data=test_dataset, reference_data=reference_dataset, column_mapping=data_mapping))
+        data=InputData(current_data=test_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
+    )
     assert result is not None
     assert result.number_in_list == 2
     assert result.number_not_in_list == 2
@@ -99,7 +104,8 @@ def test_data_quality_values_in_list_metrics_reference_defaults() -> None:
     data_mapping = ColumnMapping()
     metric = DataQualityValueListMetrics(column="category_feature")
     result = metric.calculate(
-        data=InputData(current_data=current_dataset, reference_data=reference_dataset, column_mapping=data_mapping))
+        data=InputData(current_data=current_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
+    )
     assert result is not None
     assert result.number_in_list == 3
     assert result.number_not_in_list == 1
@@ -112,7 +118,8 @@ def test_data_quality_values_in_range_metrics() -> None:
     data_mapping = ColumnMapping()
     metric = DataQualityValueRangeMetrics(column="numerical_feature", left=0, right=10.5)
     result = metric.calculate(
-        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping))
+        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+    )
     assert result is not None
     assert result.number_in_range == 3
     assert result.number_not_in_range == 1
@@ -123,7 +130,8 @@ def test_data_quality_values_in_range_metrics() -> None:
 
     metric = DataQualityValueRangeMetrics(column="numerical_feature")
     result = metric.calculate(
-        data=InputData(current_data=test_dataset, reference_data=reference_dataset, column_mapping=data_mapping))
+        data=InputData(current_data=test_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
+    )
     assert result is not None
     assert result.number_in_range == 1
     assert result.number_not_in_range == 3
@@ -132,7 +140,8 @@ def test_data_quality_values_in_range_metrics() -> None:
 
     metric = DataQualityValueRangeMetrics(column="numerical_feature", right=5)
     result = metric.calculate(
-        data=InputData(current_data=test_dataset, reference_data=reference_dataset, column_mapping=data_mapping))
+        data=InputData(current_data=test_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
+    )
     assert result is not None
     assert result.number_in_range == 3
     assert result.number_not_in_range == 1
@@ -145,7 +154,8 @@ def test_data_quality_quantile_metrics() -> None:
     data_mapping = ColumnMapping()
     metric = DataQualityValueQuantileMetrics(column="numerical_feature", quantile=0.5)
     result = metric.calculate(
-        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping))
+        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+    )
     assert result is not None
     assert result.quantile == 0.5
     assert result.value == 2
@@ -164,7 +174,8 @@ def test_data_quality_correlation_metrics() -> None:
     data_mapping = ColumnMapping()
     metric = DataQualityCorrelationMetrics()
     result = metric.calculate(
-        data=InputData(current_data=current_dataset, reference_data=None, column_mapping=data_mapping))
+        data=InputData(current_data=current_dataset, reference_data=None, column_mapping=data_mapping)
+    )
     assert result is not None
     assert result.current_correlation.num_features == ["numerical_feature_1", "numerical_feature_2", "category_feature"]
     assert result.current_correlation.correlation_matrix is not None

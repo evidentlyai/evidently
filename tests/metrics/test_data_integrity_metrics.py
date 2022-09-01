@@ -23,7 +23,8 @@ def test_data_integrity_metrics() -> None:
     data_mapping = ColumnMapping()
     metric = DataIntegrityMetrics()
     result = metric.calculate(
-        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping))
+        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+    )
     assert result is not None
     assert result.current_stats.number_of_columns == 4
     assert result.current_stats.number_of_rows == 3
@@ -117,7 +118,8 @@ def test_data_integrity_metrics_different_null_values() -> None:
     data_mapping = ColumnMapping()
     metric = DataIntegrityNullValuesMetrics()
     result = metric.calculate(
-        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping))
+        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+    )
     assert result is not None
     # expect na values and an empty string as null-values
     assert result.current_null_values.different_nulls == {None: 5, -np.inf: 1, np.inf: 1, "": 2}
@@ -151,7 +153,8 @@ def test_data_integrity_metrics_different_null_values() -> None:
 
     metric = DataIntegrityNullValuesMetrics(null_values=["n/a"], replace=False)
     result = metric.calculate(
-        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping))
+        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+    )
     assert result is not None
     # expect n/a and other defaults as null-values
     assert result.current_null_values.number_of_different_nulls == 5
@@ -161,7 +164,8 @@ def test_data_integrity_metrics_different_null_values() -> None:
     # test custom list of null values, no default, but with Pandas nulls
     metric = DataIntegrityNullValuesMetrics(null_values=["", 0, "n/a", -9999, None], replace=True)
     result = metric.calculate(
-        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping))
+        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+    )
     assert result is not None
     assert result.current_null_values.number_of_different_nulls == 5
     assert result.current_null_values.number_of_nulls == 11
@@ -170,7 +174,8 @@ def test_data_integrity_metrics_different_null_values() -> None:
     # test custom list of null values and ignore pandas null values
     metric = DataIntegrityNullValuesMetrics(null_values=["", 0, "n/a", -9999], replace=True)
     result = metric.calculate(
-        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping))
+        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+    )
     assert result is not None
     assert result.current_null_values.number_of_different_nulls == 4
     assert result.current_null_values.number_of_nulls == 6

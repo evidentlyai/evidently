@@ -36,8 +36,8 @@ class TemplateParams:
 
 def _dashboard_info_to_json(dashboard_info: DashboardInfo):
     asdict_result = asdict(dashboard_info)
-    for widget in asdict_result['widgets']:
-        widget.pop('additionalGraphs', None)
+    for widget in asdict_result["widgets"]:
+        widget.pop("additionalGraphs", None)
     return json.dumps(asdict_result, cls=NumpyEncoder)
 
 
@@ -89,10 +89,14 @@ domReady(function () {{
 
 def file_html_template(params: TemplateParams):
     lib_block = f"""<script>{__load_js()}</script>""" if params.embed_lib else "<!-- no embedded lib -->"
-    data_block = f"""<script>
+    data_block = (
+        f"""<script>
     var {params.dashboard_id} = {_dashboard_info_to_json(params.dashboard_info)};
     var additional_graphs_{params.dashboard_id} = {json.dumps(params.additional_graphs, cls=NumpyEncoder)};
-</script>""" if params.embed_data else "<!-- no embedded data -->"
+</script>"""
+        if params.embed_data
+        else "<!-- no embedded data -->"
+    )
     js_files_block = "\n".join([f'<script src="{file}"></script>' for file in params.include_js_files])
     return f"""
 <html>
@@ -154,12 +158,11 @@ SaveModeMap = {v.value: v for v in SaveMode}
 
 
 def __load_js():
-    return open(os.path.join(_STATIC_PATH, "index.js"), encoding='utf-8').read()
+    return open(os.path.join(_STATIC_PATH, "index.js"), encoding="utf-8").read()
 
 
 def __load_font():
-    return base64.b64encode(
-        open(os.path.join(_STATIC_PATH, "material-ui-icons.woff2"), 'rb').read()).decode()
+    return base64.b64encode(open(os.path.join(_STATIC_PATH, "material-ui-icons.woff2"), "rb").read()).decode()
 
 
 class Dashboard(Pipeline):
@@ -169,10 +172,12 @@ class Dashboard(Pipeline):
     def __init__(self, tabs: Sequence[Tab], options: Optional[List[object]] = None):
         super().__init__(tabs, options if options is not None else [])
 
-    def calculate(self,
-                  reference_data: pandas.DataFrame,
-                  current_data: Optional[pandas.DataFrame] = None,
-                  column_mapping: Optional[ColumnMapping] = None):
+    def calculate(
+        self,
+        reference_data: pandas.DataFrame,
+        current_data: Optional[pandas.DataFrame] = None,
+        column_mapping: Optional[ColumnMapping] = None,
+    ):
         column_mapping = column_mapping or ColumnMapping()
         self.execute(reference_data, current_data, column_mapping)
 
@@ -191,22 +196,27 @@ class Dashboard(Pipeline):
     def __render(self, dashboard_id, dashboard_info, additional_graphs, template: Callable[[TemplateParams], str]):
         return template(TemplateParams(dashboard_id, dashboard_info, additional_graphs))
 
-    def __no_lib_render(self,
-                        dashboard_id,
-                        dashboard_info,
-                        additional_graphs,
-                        font_file: str,
-                        include_js_files: List[str],
-                        template: Callable[[TemplateParams], str]):
-        return template(TemplateParams(dashboard_id,
-                                       dashboard_info,
-                                       additional_graphs,
-                                       embed_lib=False,
-                                       embed_data=False,
-                                       embed_font=False,
-                                       font_file=font_file,
-                                       include_js_files=include_js_files,
-                                       ))
+    def __no_lib_render(
+        self,
+        dashboard_id,
+        dashboard_info,
+        additional_graphs,
+        font_file: str,
+        include_js_files: List[str],
+        template: Callable[[TemplateParams], str],
+    ):
+        return template(
+            TemplateParams(
+                dashboard_id,
+                dashboard_info,
+                additional_graphs,
+                embed_lib=False,
+                embed_data=False,
+                embed_font=False,
+                font_file=font_file,
+                include_js_files=include_js_files,
+            )
+        )
 
     def _json(self):
         dashboard_id = "evidently_dashboard_" + str(uuid.uuid4()).replace("-", "")
@@ -218,24 +228,25 @@ class Dashboard(Pipeline):
         parent_dir = os.path.dirname(filename)
         if parent_dir and not os.path.exists(parent_dir):
             os.makedirs(parent_dir, exist_ok=True)
-        with open(filename, 'w', encoding='utf-8') as out_file:
+        with open(filename, "w", encoding="utf-8") as out_file:
             out_file.write(self._json())
 
-    def show(self, mode='auto'):
+    def show(self, mode="auto"):
         dashboard_id, dashboard_info, additional_graphs = self.__dashboard_data()
         # pylint: disable=import-outside-toplevel
         render_mode = mode
         try:
             from IPython.display import HTML
             from IPython import get_ipython
-            if mode == 'auto':
+
+            if mode == "auto":
                 if type(get_ipython()).__module__.startswith("google.colab"):
-                    render_mode = 'inline'
+                    render_mode = "inline"
                 else:
-                    render_mode = 'nbextension'
-            if render_mode == 'inline':
+                    render_mode = "nbextension"
+            if render_mode == "inline":
                 return HTML(self.__render(dashboard_id, dashboard_info, additional_graphs, file_html_template))
-            if render_mode == 'nbextension':
+            if render_mode == "nbextension":
                 return HTML(self.__render(dashboard_id, dashboard_info, additional_graphs, inline_template))
             raise ValueError(f"Unexpected value {mode}/{render_mode} for mode")
         except ImportError as err:
@@ -252,19 +263,23 @@ class Dashboard(Pipeline):
                 raise ValueError(f"Unexpected save mode {mode}. Expected [{','.join(SaveModeMap.keys())}]")
             mode = _mode
         if mode == SaveMode.SINGLE_FILE:
-            with open(filename, 'w', encoding='utf-8') as out_file:
+            with open(filename, "w", encoding="utf-8") as out_file:
                 out_file.write(self.html())
         if mode in [SaveMode.FOLDER, SaveMode.SYMLINK_FOLDER]:
             font_file, lib_file = save_lib_files(filename, mode)
             dashboard_id, dashboard_info, additional_graphs = self.__dashboard_data()
             data_file = save_data_file(filename, mode, dashboard_id, dashboard_info, additional_graphs)
-            with open(filename, 'w', encoding='utf-8') as out_file:
-                out_file.write(self.__no_lib_render(dashboard_id,
-                                                    dashboard_info,
-                                                    additional_graphs,
-                                                    font_file,
-                                                    [data_file, lib_file],
-                                                    file_html_template))
+            with open(filename, "w", encoding="utf-8") as out_file:
+                out_file.write(
+                    self.__no_lib_render(
+                        dashboard_id,
+                        dashboard_info,
+                        additional_graphs,
+                        font_file,
+                        [data_file, lib_file],
+                        file_html_template,
+                    )
+                )
 
 
 def save_lib_files(filename: str, mode: SaveMode):
@@ -297,8 +312,10 @@ def save_data_file(filename: str, mode: SaveMode, dashboard_id, dashboard_info: 
         os.makedirs(parent_dir, exist_ok=True)
     base_name = os.path.basename(filename)
     data_file = os.path.join(parent_dir, "js", f"{base_name}.data.js")
-    with open(data_file, 'w', encoding='utf-8') as out_file:
-        out_file.write(f"""
+    with open(data_file, "w", encoding="utf-8") as out_file:
+        out_file.write(
+            f"""
     var {dashboard_id} = {_dashboard_info_to_json(dashboard_info)};
-    var additional_graphs_{dashboard_id} = {json.dumps(additional_graphs, cls=NumpyEncoder)};""")
+    var additional_graphs_{dashboard_id} = {json.dumps(additional_graphs, cls=NumpyEncoder)};"""
+        )
     return data_file

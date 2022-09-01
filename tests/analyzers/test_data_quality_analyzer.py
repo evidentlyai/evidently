@@ -5,8 +5,10 @@ import pandas as pd
 
 from evidently import ColumnMapping
 from evidently.analyzers.data_quality_analyzer import DataQualityAnalyzer
-from evidently.analyzers.data_quality_analyzer import FeatureQualityStats
-from evidently.analyzers.utils import process_columns
+from evidently.calculations import data_quality
+from evidently.calculations.data_quality import calculate_data_quality_stats
+from evidently.calculations.data_quality import FeatureQualityStats
+from evidently.utils.data_operations import process_columns
 
 import pytest
 
@@ -724,7 +726,6 @@ def test_data_profile_analyzer_regression() -> None:
 
 
 def test_select_features_for_corr() -> None:
-    data_profile_analyzer = DataQualityAnalyzer()
     reference_data = pd.DataFrame(
         {
             "my_target": [1, 2, 3, 1],
@@ -769,8 +770,8 @@ def test_select_features_for_corr() -> None:
         task="regression",
     )
     columns = process_columns(reference_data, column_mapping)
-    reference_features_stats = data_profile_analyzer._calculate_stats(reference_data, columns, "regression")
-    num_for_corr, cat_for_corr = data_profile_analyzer._select_features_for_corr(
+    reference_features_stats = calculate_data_quality_stats(reference_data, columns, "regression")
+    num_for_corr, cat_for_corr = data_quality._select_features_for_corr(
         reference_features_stats, target_name="my_target"
     )
     assert num_for_corr == ["numerical_feature_1", "numerical_feature_2", "my_target"]
@@ -780,9 +781,7 @@ def test_select_features_for_corr() -> None:
 def test_cramer_v() -> None:
     x = pd.Series(["a"] * 15 + ["b"] * 13)
     y = pd.Series(["c"] * 7 + ["d"] * 8 + ["c"] * 11 + ["d"] * 2)
-    data_quality_analyzer = DataQualityAnalyzer()
-    v = data_quality_analyzer._cramer_v(x, y)
-
+    v = data_quality._cramer_v(x, y)
     assert v == 0.3949827793858816
 
 
@@ -804,10 +803,7 @@ def test_cramer_v() -> None:
     ],
 )
 def test_corr_matrix(df: pd.DataFrame, expected: np.array) -> None:
-
-    data_profile_analyzer = DataQualityAnalyzer()
-    corr_matrix = data_profile_analyzer._corr_matrix(df, data_profile_analyzer._cramer_v)
-
+    corr_matrix = data_quality._corr_matrix(df, data_quality._cramer_v)
     assert np.allclose(corr_matrix.values, expected)
 
 
@@ -903,13 +899,12 @@ def test_calculate_correlations(kind: str, expected_corr_df: np.array) -> None:
         datetime_features=["datetime_feature"],
         task="regression",
     )
-    data_quality_analyzer = DataQualityAnalyzer()
     columns = process_columns(df, column_mapping)
-    reference_features_stats = data_quality_analyzer._calculate_stats(df, columns, column_mapping.task)
-    num_for_corr, cat_for_corr = data_quality_analyzer._select_features_for_corr(
+    reference_features_stats = calculate_data_quality_stats(df, columns, column_mapping.task)
+    num_for_corr, cat_for_corr = data_quality._select_features_for_corr(
         reference_features_stats, target_name=column_mapping.target
     )
-    corr_df = data_quality_analyzer._calculate_correlations(df, num_for_corr, cat_for_corr, kind)
+    corr_df = data_quality._calculate_correlations(df, num_for_corr, cat_for_corr, kind)
     assert num_for_corr == ["num_feature_1", "num_feature_2", "num_feature_3", "num_feature_4", "target"]
     assert cat_for_corr == ["cat_feature_1", "cat_feature_2", "cat_feature_3", "cat_feature_4"]
     assert np.allclose(corr_df, expected_corr_df, equal_nan=True)

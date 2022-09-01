@@ -18,40 +18,45 @@ except Exception as e:
 dir_path = "reports"
 file_path = "data_quality_test_suite.html"
 
+
 def load_data_execute(**context):
-    data = fetch_openml(name='adult', version=2, as_frame='auto')
+    data = fetch_openml(name="adult", version=2, as_frame="auto")
     df = data.frame
 
-    #target and prediction
-    df['target'] = df['education-num']
-    df['prediction'] = df['education-num'].values + np.random.normal(0, 6, df.shape[0])
+    # target and prediction
+    df["target"] = df["education-num"]
+    df["prediction"] = df["education-num"].values + np.random.normal(0, 6, df.shape[0])
 
-    #reference and current data
-    reference_data = df[~df.education.isin(['Some-college', 'HS-grad', 'Bachelors'])]
-    current_data = df[df.education.isin(['Some-college', 'HS-grad', 'Bachelors'])]
+    # reference and current data
+    reference_data = df[~df.education.isin(["Some-college", "HS-grad", "Bachelors"])]
+    current_data = df[df.education.isin(["Some-college", "HS-grad", "Bachelors"])]
 
     context["ti"].xcom_push(key="reference", value=reference_data)
     context["ti"].xcom_push(key="current", value=current_data)
 
+
 def data_quality_tests_execute(**context):
-    data_quality_suite = TestSuite(tests=[
-        TestShareOfDriftedFeatures(),
-        TestHighlyCorrelatedFeatures(),
-        TestNumberOfColumns(),
-        TestNumberOfConstantColumns(),
-        TestNumberOfDuplicatedColumns(),
-        TestColumnsType(),
-        TestTargetFeaturesCorrelations(),
-    ])
+    data_quality_suite = TestSuite(
+        tests=[
+            TestShareOfDriftedFeatures(),
+            TestHighlyCorrelatedFeatures(),
+            TestNumberOfColumns(),
+            TestNumberOfConstantColumns(),
+            TestNumberOfDuplicatedColumns(),
+            TestColumnsType(),
+            TestTargetFeaturesCorrelations(),
+        ]
+    )
 
     reference_data = context.get("ti").xcom_pull(key="reference")
     current_data = context.get("ti").xcom_pull(key="current")
 
     data_quality_suite.run(reference_data=reference_data, current_data=current_data)
     suite_results = data_quality_suite.as_dict()
-    if not suite_results['summary']['all_passed']:
+    if not suite_results["summary"]["all_passed"]:
         context["ti"].xcom_push(key="test_suite", value=data_quality_suite)
         return "create_html"
+
 
 def test_suite_html_execute(**context):
     reference_data = context.get("ti").xcom_pull(key="reference")
@@ -66,6 +71,7 @@ def test_suite_html_execute(**context):
         print("Creation of the directory {} failed".format(dir_path))
 
     data_quality_suite.save_html(os.path.join(dir_path, file_path))
+
 
 default_args = {
     "start_date": datetime(2022, 7, 10),

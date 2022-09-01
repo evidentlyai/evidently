@@ -15,7 +15,7 @@ class QualityMetricsOptions:
         return {
             "conf_interval_n_sigmas": self.conf_interval_n_sigmas,
             "classification_threshold": self.classification_threshold,
-            "cut_quantile": self.cut_quantile
+            "cut_quantile": self.cut_quantile,
         }
 
     def get_cut_quantile(self, feature_name: str) -> Optional[Tuple[str, float]]:
@@ -25,5 +25,7 @@ class QualityMetricsOptions:
             return self.cut_quantile
         if isinstance(self.cut_quantile, dict):
             return self.cut_quantile.get(feature_name, None)
-        raise ValueError(f"""QualityMetricsOptions.remove_outliers
-                                is incorrect type {type(self.cut_quantile)}""")
+        raise ValueError(
+            f"""QualityMetricsOptions.remove_outliers
+                                is incorrect type {type(self.cut_quantile)}"""
+        )

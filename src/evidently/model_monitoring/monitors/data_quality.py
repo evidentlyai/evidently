@@ -3,7 +3,7 @@ from typing import Generator
 import pandas as pd
 
 from evidently.analyzers.data_quality_analyzer import DataQualityAnalyzer
-from evidently.analyzers.data_quality_analyzer import DataQualityStats
+from evidently.calculations.data_quality import DataQualityStats
 from evidently.model_monitoring.monitoring import MetricsType
 from evidently.model_monitoring.monitoring import ModelMonitor
 from evidently.model_monitoring.monitoring import ModelMonitoringMetric

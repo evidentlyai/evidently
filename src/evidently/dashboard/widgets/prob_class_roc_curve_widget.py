@@ -16,36 +16,40 @@ from evidently.options import ColorOptions
 
 
 class ProbClassRocCurveWidget(Widget):
-    def __init__(self, title: str, dataset: str = 'reference'):
+    def __init__(self, title: str, dataset: str = "reference"):
         super().__init__(title)
         self.dataset = dataset  # reference or current
 
     def analyzers(self):
         return [ProbClassificationPerformanceAnalyzer]
 
-    def calculate(self,
-                  reference_data: pd.DataFrame,
-                  current_data: Optional[pd.DataFrame],
-                  column_mapping: ColumnMapping,
-                  analyzers_results) -> Optional[BaseWidgetInfo]:
+    def calculate(
+        self,
+        reference_data: pd.DataFrame,
+        current_data: Optional[pd.DataFrame],
+        column_mapping: ColumnMapping,
+        analyzers_results,
+    ) -> Optional[BaseWidgetInfo]:
         color_options = self.options_provider.get(ColorOptions)
         results = ProbClassificationPerformanceAnalyzer.get_results(analyzers_results)
         utility_columns = results.columns.utility_columns
 
         if utility_columns.target is None or utility_columns.prediction is None:
-            if self.dataset == 'reference':
+            if self.dataset == "reference":
                 raise ValueError(f"Widget [{self.title}] requires 'target' and 'prediction' columns")
 
             return None
 
-        if self.dataset == 'reference':
+        if self.dataset == "reference":
             metrics = results.reference_metrics
 
             if metrics is None:
-                raise ValueError(f"Widget [{self.title}] required 'reference' results from"
-                                 f" {ProbClassificationPerformanceAnalyzer.__name__} but no data found")
+                raise ValueError(
+                    f"Widget [{self.title}] required 'reference' results from"
+                    f" {ProbClassificationPerformanceAnalyzer.__name__} but no data found"
+                )
 
-        elif self.dataset == 'current':
+        elif self.dataset == "current":
             metrics = results.current_metrics
 
         else:
@@ -65,22 +69,20 @@ class ProbClassRocCurveWidget(Widget):
                 raise ValueError(f"Widget [{self.title}] got incorrect type for roc_curve value")
 
             roc_curve = metrics.roc_curve
-            fig.add_trace(go.Scatter(
-                x=roc_curve['fpr'],
-                y=roc_curve['tpr'],
-                mode='lines',
-                name='ROC',
-                marker=dict(
-                    size=6,
-                    color=color_options.primary_color,
+            fig.add_trace(
+                go.Scatter(
+                    x=roc_curve["fpr"],
+                    y=roc_curve["tpr"],
+                    mode="lines",
+                    name="ROC",
+                    marker=dict(
+                        size=6,
+                        color=color_options.primary_color,
+                    ),
                 )
-            ))
-
-            fig.update_layout(
-                yaxis_title="True Positive Rate",
-                xaxis_title="False Positive Rate",
-                showlegend=True
             )
+
+            fig.update_layout(yaxis_title="True Positive Rate", xaxis_title="False Positive Rate", showlegend=True)
 
             fig_json = json.loads(fig.to_json())
 
@@ -88,10 +90,7 @@ class ProbClassRocCurveWidget(Widget):
                 title=self.title,
                 type="big_graph",
                 size=1 if current_data is not None else 2,
-                params={
-                    "data": fig_json['data'],
-                    "layout": fig_json['layout']
-                },
+                params={"data": fig_json["data"], "layout": fig_json["layout"]},
                 additionalGraphs=[],
             )
 
@@ -109,40 +108,38 @@ class ProbClassRocCurveWidget(Widget):
                 roc_curve = metrics.roc_curve[label]
                 fig = go.Figure()
 
-                fig.add_trace(go.Scatter(
-                    x=roc_curve['fpr'],
-                    y=roc_curve['tpr'],
-                    mode='lines',
-                    name='ROC',
-                    marker=dict(
-                        size=6,
-                        color=color_options.primary_color,
+                fig.add_trace(
+                    go.Scatter(
+                        x=roc_curve["fpr"],
+                        y=roc_curve["tpr"],
+                        mode="lines",
+                        name="ROC",
+                        marker=dict(
+                            size=6,
+                            color=color_options.primary_color,
+                        ),
                     )
-                ))
-
-                fig.update_layout(
-                    yaxis_title="True Positive Rate",
-                    xaxis_title="False Positive Rate",
-                    showlegend=True
                 )
+
+                fig.update_layout(yaxis_title="True Positive Rate", xaxis_title="False Positive Rate", showlegend=True)
 
                 fig_json = json.loads(fig.to_json())
 
-                graphs.append({
-                    "id": f"tab_{label}",
-                    "title": str(label),
-                    "graph": {
-                        "data": fig_json["data"],
-                        "layout": fig_json["layout"],
+                graphs.append(
+                    {
+                        "id": f"tab_{label}",
+                        "title": str(label),
+                        "graph": {
+                            "data": fig_json["data"],
+                            "layout": fig_json["layout"],
+                        },
                     }
-                })
+                )
 
             widget_info = BaseWidgetInfo(
                 title=self.title,
                 type="tabbed_graph",
                 size=1 if current_data is not None else 2,
-                params={
-                    "graphs": graphs
-                },
+                params={"graphs": graphs},
             )
         return widget_info

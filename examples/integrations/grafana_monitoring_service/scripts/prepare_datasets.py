@@ -21,11 +21,7 @@ BIKE_DATA_SOURCE_URL = "https://archive.ics.uci.edu/ml/machine-learning-database
 
 def setup_logger() -> None:
     logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s [%(levelname)s] %(message)s",
-        handlers=[
-            logging.StreamHandler()
-        ]
+        level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s", handlers=[logging.StreamHandler()]
     )
 
 
@@ -57,11 +53,13 @@ def get_data_bike(use_model: bool) -> Tuple[pd.DataFrame, pd.DataFrame]:
 
     if use_model:
         from sklearn.ensemble import RandomForestRegressor
+
         # get predictions with random forest
         model = RandomForestRegressor(random_state=0)
 
     else:
         from sklearn.ensemble import GradientBoostingRegressor
+
         model = GradientBoostingRegressor(random_state=0)
 
     model.fit(reference_bike_data[features], reference_bike_data[target])

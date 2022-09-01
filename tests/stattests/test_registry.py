@@ -3,19 +3,17 @@ from typing import Tuple
 import pandas as pd
 import pytest
 
-from evidently.analyzers.stattests import ks_stat_test
-from evidently.analyzers.stattests import chi_stat_test
-from evidently.analyzers.stattests import z_stat_test
-from evidently.analyzers.stattests import jensenshannon_stat_test
-from evidently.analyzers.stattests import kl_div_stat_test
-from evidently.analyzers.stattests import psi_stat_test
-from evidently.analyzers.stattests import wasserstein_stat_test
-from evidently.analyzers.stattests.registry import (
-    get_stattest,
-    StatTestInvalidFeatureTypeError,
-    StatTestNotFoundError,
-    StatTest,
-)
+from evidently.calculations.stattests import ks_stat_test
+from evidently.calculations.stattests import chi_stat_test
+from evidently.calculations.stattests import z_stat_test
+from evidently.calculations.stattests import jensenshannon_stat_test
+from evidently.calculations.stattests import kl_div_stat_test
+from evidently.calculations.stattests import psi_stat_test
+from evidently.calculations.stattests import wasserstein_stat_test
+from evidently.calculations.stattests import get_stattest
+from evidently.calculations.stattests import StatTest
+from evidently.calculations.stattests.registry import StatTestInvalidFeatureTypeError
+from evidently.calculations.stattests.registry import StatTestNotFoundError
 
 
 def _custom_stattest(reference_data: pd.Series, current_data: pd.Series, feature_type: str) -> Tuple[float, bool]:

@@ -36,6 +36,7 @@ class Insight:
         severity: Severity level for insight information (one of 'info', 'warning', 'error', 'success')
         text: Insidght information
     """
+
     title: str
     severity: str
     text: str

@@ -7,18 +7,20 @@ import pandas as pd
 from evidently import ColumnMapping
 from evidently.model.widget import BaseWidgetInfo
 from evidently.dashboard.widgets.widget import Widget
-from evidently.analyzers.utils import process_columns
+from evidently.utils.data_operations import process_columns
 
 
 class ClassTargetNameWidget(Widget):
     def analyzers(self):
         return []
 
-    def calculate(self,
-                  reference_data: pd.DataFrame,
-                  current_data: Optional[pd.DataFrame],
-                  column_mapping: ColumnMapping,
-                  analyzers_results) -> Optional[BaseWidgetInfo]:
+    def calculate(
+        self,
+        reference_data: pd.DataFrame,
+        current_data: Optional[pd.DataFrame],
+        column_mapping: ColumnMapping,
+        analyzers_results,
+    ) -> Optional[BaseWidgetInfo]:
         columns = process_columns(reference_data, column_mapping)
 
         if columns.utility_columns.target is None or columns.utility_columns.prediction is None:
@@ -32,8 +34,7 @@ class ClassTargetNameWidget(Widget):
                 "counters": [
                     {
                         "value": "",
-                        "label":
-                            f"Classification Model Performance Report. Target:'{columns.utility_columns.target}'"
+                        "label": f"Classification Model Performance Report. Target:'{columns.utility_columns.target}'",
                     }
                 ]
             },

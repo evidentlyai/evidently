@@ -17,8 +17,8 @@ from evidently.tests.base_test import BaseCheckValueTest
 from evidently.tests.base_test import GroupingTypes
 from evidently.tests.base_test import GroupData
 from evidently.tests.base_test import TestValueCondition
-from evidently.tests.utils import Numeric, approx, plot_boxes, plot_conf_mtrx, plot_rates, plot_roc_auc
-
+from evidently.tests.utils import approx, plot_boxes, plot_conf_mtrx, plot_rates, plot_roc_auc
+from evidently.utils.types import Numeric
 
 CLASSIFICATION_GROUP = GroupData("classification", "Classification", "")
 GroupingTypes.TestGroup.add_value(CLASSIFICATION_GROUP)

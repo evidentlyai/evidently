@@ -35,8 +35,8 @@ class CatTargetDriftMonitor(ModelMonitor):
 
         if results.prediction_metrics:
             yield CatTargetDriftMonitorMetrics.drift.create(
-                results.prediction_metrics.drift_score,
-                dict(kind="prediction"))
+                results.prediction_metrics.drift_score, dict(kind="prediction")
+            )
 
         if results.target_metrics:
             yield CatTargetDriftMonitorMetrics.drift.create(results.target_metrics.drift_score, dict(kind="target"))

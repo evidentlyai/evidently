@@ -15,34 +15,38 @@ from evidently.dashboard.widgets.widget import Widget
 
 
 class ClassConfMatrixWidget(Widget):
-    def __init__(self, title: str, dataset: str = 'reference'):
+    def __init__(self, title: str, dataset: str = "reference"):
         super().__init__(title)
         self.dataset = dataset  # reference or current
 
     def analyzers(self):
         return [ClassificationPerformanceAnalyzer]
 
-    def calculate(self,
-                  reference_data: pd.DataFrame,
-                  current_data: Optional[pd.DataFrame],
-                  column_mapping: ColumnMapping,
-                  analyzers_results) -> Optional[BaseWidgetInfo]:
+    def calculate(
+        self,
+        reference_data: pd.DataFrame,
+        current_data: Optional[pd.DataFrame],
+        column_mapping: ColumnMapping,
+        analyzers_results,
+    ) -> Optional[BaseWidgetInfo]:
         results = ClassificationPerformanceAnalyzer.get_results(analyzers_results)
 
         if results.columns.utility_columns.target is None or results.columns.utility_columns.prediction is None:
-            if self.dataset == 'reference':
+            if self.dataset == "reference":
                 raise ValueError(f"Widget [{self.title}] required 'target' or 'prediction' column to be set")
             return None
 
-        if self.dataset == 'current':
+        if self.dataset == "current":
             result_metrics = results.current_metrics
 
-        elif self.dataset == 'reference':
+        elif self.dataset == "reference":
             result_metrics = results.reference_metrics
 
         else:
-            raise ValueError(f"Widget [{self.title}] required '{self.dataset}' results from"
-                             f" {ClassificationPerformanceAnalyzer.__name__} but no data found")
+            raise ValueError(
+                f"Widget [{self.title}] required '{self.dataset}' results from"
+                f" {ClassificationPerformanceAnalyzer.__name__} but no data found"
+            )
 
         if result_metrics is None:
             return None
@@ -55,12 +59,11 @@ class ClassConfMatrixWidget(Widget):
         # change each element of z to type string for annotations
         z_text = [[str(y) for y in x] for x in z]
 
-        fig = ff.create_annotated_heatmap(z, x=labels, y=labels, annotation_text=z_text,
-                                          colorscale='bluered', showscale=True)
+        fig = ff.create_annotated_heatmap(
+            z, x=labels, y=labels, annotation_text=z_text, colorscale="bluered", showscale=True
+        )
 
-        fig.update_layout(
-            xaxis_title="Predicted value",
-            yaxis_title="Actual value")
+        fig.update_layout(xaxis_title="Predicted value", yaxis_title="Actual value")
 
         conf_matrix_json = json.loads(fig.to_json())
 
@@ -68,9 +71,6 @@ class ClassConfMatrixWidget(Widget):
             title=self.title,
             type="big_graph",
             size=1 if current_data is not None else 2,
-            params={
-                "data": conf_matrix_json['data'],
-                "layout": conf_matrix_json['layout']
-            },
+            params={"data": conf_matrix_json["data"], "layout": conf_matrix_json["layout"]},
             additionalGraphs=[],
         )

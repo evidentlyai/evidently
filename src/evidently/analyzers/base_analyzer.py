@@ -8,7 +8,7 @@ from dataclasses import dataclass
 
 from evidently.options import OptionsProvider
 from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.analyzers.utils import DatasetColumns
+from evidently.utils.data_operations import DatasetColumns
 
 
 @dataclass
@@ -24,15 +24,15 @@ class BaseAnalyzerResult:
         class RegressionPerformanceAnalyzerResults(BaseAnalyzerResult):
             my_result: str
     """
+
     columns: DatasetColumns
 
 
 class Analyzer:
     @abc.abstractmethod
-    def calculate(self,
-                  reference_data: pd.DataFrame,
-                  current_data: Optional[pd.DataFrame],
-                  column_mapping: ColumnMapping) -> BaseAnalyzerResult:
+    def calculate(
+        self, reference_data: pd.DataFrame, current_data: Optional[pd.DataFrame], column_mapping: ColumnMapping
+    ) -> BaseAnalyzerResult:
         raise NotImplementedError()
 
     options_provider: OptionsProvider

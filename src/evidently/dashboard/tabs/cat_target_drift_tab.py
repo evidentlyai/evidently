@@ -9,8 +9,8 @@ from evidently.dashboard.widgets.prob_class_pred_distr_widget import ProbClassPr
 class CatTargetDriftTab(Tab):
     widgets = [
         (CatOutputDriftWidget("Target Drift"), Verbose.ALWAYS),
-        (CatOutputDriftWidget("Prediction Drift", 'prediction'), Verbose.ALWAYS),
+        (CatOutputDriftWidget("Prediction Drift", "prediction"), Verbose.ALWAYS),
         (ProbClassPredDistrWidget("Reference: Probability Distribution"), Verbose.FULL),
-        (ProbClassPredDistrWidget("Current: Probability Distribution", 'current'), Verbose.FULL),
+        (ProbClassPredDistrWidget("Current: Probability Distribution", "current"), Verbose.FULL),
         (CatTargetPredFeatureTable("Target (Prediction) Behavior By Feature"), Verbose.FULL),
     ]

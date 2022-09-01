@@ -11,8 +11,8 @@ from typing import Union
 import pandas as pd
 
 import evidently
-from evidently.analyzers.utils import DatasetColumns
-from evidently.analyzers.utils import process_columns
+from evidently.utils.data_operations import DatasetColumns
+from evidently.utils.data_operations import process_columns
 from evidently.dashboard.dashboard import SaveMode
 from evidently.dashboard.dashboard import SaveModeMap
 from evidently.dashboard.dashboard import TemplateParams
@@ -229,7 +229,9 @@ class TestSuite:
         return (
             "evidently_dashboard_" + str(uuid.uuid4()).replace("-", ""),
             DashboardInfo("Test Suite", widgets=[summary_widget, test_suite_widget]),
-            {f"{info.name}_{idx}_{item.id}": dataclasses.asdict(item.info)
-             for idx, info in enumerate(test_results)
-             for item in info.details},
+            {
+                f"{info.name}_{idx}_{item.id}": dataclasses.asdict(item.info)
+                for idx, info in enumerate(test_results)
+                for item in info.details
+            },
         )

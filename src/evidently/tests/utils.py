@@ -1,6 +1,5 @@
 from typing import Dict, List
 from typing import Optional
-from typing import Union
 
 import numpy as np
 import pandas as pd
@@ -11,7 +10,7 @@ from plotly.subplots import make_subplots
 
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import DetailsInfo
-
+from evidently.utils.types import ApproxValue
 
 RED = "#ed0400"
 GREY = "#4d4d4d"
@@ -19,13 +18,8 @@ COLOR_DISCRETE_SEQUENCE = (
     "#ed0400",
     "#0a5f38",
     "#6c3461",
-
     "#6b8ba4",
 )
-
-
-# type for numeric because of mypy bug https://github.com/python/mypy/issues/3186
-Numeric = Union[float, int]
 
 
 def plot_check(fig, condition):
@@ -265,103 +259,39 @@ def plot_value_counts_tables_ref_curr(feature_name, curr_df, ref_df, id_prfx):
     return additional_plots
 
 
-class ApproxValue:
-    """Class for approximate scalar value calculations"""
-
-    DEFAULT_RELATIVE = 1e-6
-    DEFAULT_ABSOLUTE = 1e-12
-    value: Numeric
-    _relative: Numeric
-    _absolute: Numeric
-
-    def __init__(self, value: Numeric, relative: Optional[Numeric] = None, absolute: Optional[Numeric] = None):
-        self.value = value
-
-        if relative is not None and relative <= 0:
-            raise ValueError("Relative value for approx should be greater than 0")
-
-        if relative is None:
-            self._relative = self.DEFAULT_RELATIVE
-
-        else:
-            self._relative = relative
-
-        if absolute is None:
-            self._absolute = self.DEFAULT_ABSOLUTE
-
-        else:
-            self._absolute = absolute
-
-    @property
-    def tolerance(self) -> Numeric:
-        relative_value = abs(self.value) * self._relative
-        return max(relative_value, self._absolute)
-
-    def __format__(self, format_spec):
-        return f"{format(self.value, format_spec)} ± {format(self.tolerance, format_spec)}"
-
-    def __repr__(self):
-        return f"{self.value} ± {self.tolerance}"
-
-    def __eq__(self, other):
-        tolerance = self.tolerance
-        return (self.value - tolerance) <= other <= (self.value + tolerance)
-
-    def __lt__(self, other):
-        return self.value + self.tolerance < other
-
-    def __le__(self, other):
-        return self.value - self.tolerance <= other
-
-    def __gt__(self, other):
-        return self.value - self.tolerance > other
-
-    def __ge__(self, other):
-        return self.value + self.tolerance >= other
-
-    def as_dict(self) -> dict:
-        result = {"value": self.value}
-
-        if self._relative is not None:
-            result["relative"] = self._relative
-
-        if self._absolute is not None:
-            result["absolute"] = self._absolute
-
-        return result
-
-
 def approx(value, relative=None, absolute=None):
     """Get approximate value for checking a value is equal to other within some tolerance"""
     return ApproxValue(value=value, relative=relative, absolute=absolute)
 
 
 def dataframes_to_table(
-        current: pd.DataFrame,
-        reference: Optional[pd.DataFrame],
-        columns: List[str],
-        table_id: str,
-        sort_by: str = "curr",
-        na_position: str = "first",
-        asc: bool = False,
+    current: pd.DataFrame,
+    reference: Optional[pd.DataFrame],
+    columns: List[str],
+    table_id: str,
+    sort_by: str = "curr",
+    na_position: str = "first",
+    asc: bool = False,
 ):
-    display_columns = ['display']
+    display_columns = ["display"]
     if reference is not None:
-        display_columns += ['ref_display']
-        df = pd.merge(current,
-                      reference.rename(columns={'value': 'ref_value', 'display': 'ref_display'}),
-                      how="outer",
-                      left_index=True,
-                      right_index=True)
-        df["eq"] = (df['value'] == df['ref_value']) | (df['value'].isna() & df['ref_value'].isna())
-        if 'ref_display' not in df.columns:
-            df['ref_display'] = df['ref_value'].fillna('NA').astype(str)
+        display_columns += ["ref_display"]
+        df = pd.merge(
+            current,
+            reference.rename(columns={"value": "ref_value", "display": "ref_display"}),
+            how="outer",
+            left_index=True,
+            right_index=True,
+        )
+        df["eq"] = (df["value"] == df["ref_value"]) | (df["value"].isna() & df["ref_value"].isna())
+        if "ref_display" not in df.columns:
+            df["ref_display"] = df["ref_value"].fillna("NA").astype(str)
     else:
         df = current
-    if 'display' not in df.columns:
-        df['display'] = df['value'].fillna('NA').astype(str)
+    if "display" not in df.columns:
+        df["display"] = df["value"].fillna("NA").astype(str)
     if sort_by == "curr":
-        df.sort_values('value', na_position=na_position, inplace=True, ascending=asc)
+        df.sort_values("value", na_position=na_position, inplace=True, ascending=asc)
     elif sort_by == "diff" and reference is not None:
         df.sort_values("eq", inplace=True)
 
@@ -373,9 +303,7 @@ def dataframes_to_table(
             info=BaseWidgetInfo(
                 title="",
                 type="table",
-                params={
-                    "header": list(columns),
-                    "data": [[idx] + list(df.loc[idx].values) for idx in df.index]},
+                params={"header": list(columns), "data": [[idx] + list(df.loc[idx].values) for idx in df.index]},
                 size=2,
             ),
         )
@@ -386,13 +314,13 @@ def plot_dicts_to_table(
     dict_curr: dict, dict_ref: Optional[dict], columns: list, id_prfx: str, sort_by: str = "curr", asc: bool = False
 ):
     return dataframes_to_table(
-        pd.DataFrame.from_dict(dict_curr, orient='index', columns=['value']),
-        None if dict_ref is None else pd.DataFrame.from_dict(dict_ref, orient='index', columns=['value']),
+        pd.DataFrame.from_dict(dict_curr, orient="index", columns=["value"]),
+        None if dict_ref is None else pd.DataFrame.from_dict(dict_ref, orient="index", columns=["value"]),
         columns=columns,
         table_id=id_prfx,
         sort_by=sort_by,
-        na_position='first',
-        asc=asc
+        na_position="first",
+        asc=asc,
     )
 
 
@@ -484,33 +412,29 @@ def plot_roc_auc(curr_roc_curve: dict, ref_roc_curve: Optional[dict]) -> list:
     for label in curr_roc_curve.keys():
         fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
         trace = go.Scatter(
-            x=curr_roc_curve[label]['fpr'],
-            y=curr_roc_curve[label]['tpr'],
-            mode='lines',
-            name='ROC',
+            x=curr_roc_curve[label]["fpr"],
+            y=curr_roc_curve[label]["tpr"],
+            mode="lines",
+            name="ROC",
             marker=dict(
                 size=6,
                 color=RED,
-            )
+            ),
         )
         fig.append_trace(trace, 1, 1)
         if ref_roc_curve is not None:
             trace = go.Scatter(
-                x=ref_roc_curve[label]['fpr'],
-                y=ref_roc_curve[label]['tpr'],
-                mode='lines',
-                name='ROC',
+                x=ref_roc_curve[label]["fpr"],
+                y=ref_roc_curve[label]["tpr"],
+                mode="lines",
+                name="ROC",
                 marker=dict(
                     size=6,
                     color=GREY,
-                )
+                ),
             )
             fig.append_trace(trace, 1, 2)
-        fig.update_layout(
-            yaxis_title="True Positive Rate",
-            xaxis_title="False Positive Rate",
-            showlegend=True
-        )
+        fig.update_layout(yaxis_title="True Positive Rate", xaxis_title="False Positive Rate", showlegend=True)
         fig_json = fig.to_plotly_json()
         additional_plots.append(
             DetailsInfo(
@@ -531,27 +455,27 @@ def plot_boxes(curr_for_plots: dict, ref_for_plots: Optional[dict]):
     fig = go.Figure()
 
     trace = go.Box(
-        lowerfence=curr_for_plots['mins'],
-        q1=curr_for_plots['lowers'],
-        q3=curr_for_plots['uppers'],
-        median=curr_for_plots['means'],
-        upperfence=curr_for_plots['maxs'],
-        name='current',
-        marker_color=RED
+        lowerfence=curr_for_plots["mins"],
+        q1=curr_for_plots["lowers"],
+        q3=curr_for_plots["uppers"],
+        median=curr_for_plots["means"],
+        upperfence=curr_for_plots["maxs"],
+        name="current",
+        marker_color=RED,
     )
     fig.add_trace(trace)
     if ref_for_plots is not None:
         trace = go.Box(
-            lowerfence=curr_for_plots['mins'],
-            q1=ref_for_plots['lowers'],
-            q3=ref_for_plots['uppers'],
-            median=ref_for_plots['means'],
-            upperfence=ref_for_plots['maxs'],
-            name='reference',
-            marker_color=GREY
+            lowerfence=curr_for_plots["mins"],
+            q1=ref_for_plots["lowers"],
+            q3=ref_for_plots["uppers"],
+            median=ref_for_plots["means"],
+            upperfence=ref_for_plots["maxs"],
+            name="reference",
+            marker_color=GREY,
         )
         fig.add_trace(trace)
-        fig.update_layout(boxmode='group')
+        fig.update_layout(boxmode="group")
     fig.update_layout(
         yaxis_title="Prerdictions",
         xaxis_title="Class",
@@ -569,53 +493,53 @@ def plot_rates(curr_rate_plots_data: dict, ref_rate_plots_data: Optional[dict] =
 
     curr_df = pd.DataFrame(
         {
-            'thrs': curr_rate_plots_data['thrs'],
-            'fpr': curr_rate_plots_data['fpr'],
-            'tpr': curr_rate_plots_data['tpr'],
-            'fnr': curr_rate_plots_data['fnr'],
-            'tnr': curr_rate_plots_data['tnr']
+            "thrs": curr_rate_plots_data["thrs"],
+            "fpr": curr_rate_plots_data["fpr"],
+            "tpr": curr_rate_plots_data["tpr"],
+            "fnr": curr_rate_plots_data["fnr"],
+            "tnr": curr_rate_plots_data["tnr"],
         }
     )
     curr_df = curr_df[curr_df.thrs <= 1]
 
     fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
-    for i, metric in enumerate(['fpr', 'tpr', 'fnr', 'tnr']):
+    for i, metric in enumerate(["fpr", "tpr", "fnr", "tnr"]):
         fig.append_trace(
             go.Scatter(
-                x=curr_df['thrs'],
+                x=curr_df["thrs"],
                 y=curr_df[metric],
-                mode='lines',
+                mode="lines",
                 legendgroup=metric,
                 name=metric,
-                marker_color=COLOR_DISCRETE_SEQUENCE[i]
+                marker_color=COLOR_DISCRETE_SEQUENCE[i],
             ),
             1,
-            1
+            1,
         )
     if ref_rate_plots_data is not None:
         ref_df = pd.DataFrame(
             {
-                'thrs': ref_rate_plots_data['thrs'],
-                'fpr': ref_rate_plots_data['fpr'],
-                'tpr': ref_rate_plots_data['tpr'],
-                'fnr': ref_rate_plots_data['fnr'],
-                'tnr': ref_rate_plots_data['tnr']
+                "thrs": ref_rate_plots_data["thrs"],
+                "fpr": ref_rate_plots_data["fpr"],
+                "tpr": ref_rate_plots_data["tpr"],
+                "fnr": ref_rate_plots_data["fnr"],
+                "tnr": ref_rate_plots_data["tnr"],
             }
         )
         ref_df = ref_df[ref_df.thrs <= 1]
-        for i, metric in enumerate(['fpr', 'tpr', 'fnr', 'tnr']):
+        for i, metric in enumerate(["fpr", "tpr", "fnr", "tnr"]):
             fig.append_trace(
                 go.Scatter(
-                    x=ref_df['thrs'],
+                    x=ref_df["thrs"],
                     y=ref_df[metric],
-                    mode='lines',
+                    mode="lines",
                     legendgroup=metric,
                     name=metric,
                     showlegend=False,
-                    marker_color=COLOR_DISCRETE_SEQUENCE[i]
+                    marker_color=COLOR_DISCRETE_SEQUENCE[i],
                 ),
                 1,
-                2
+                2,
             )
     fig.update_layout(
         xaxis_title="threshold",
