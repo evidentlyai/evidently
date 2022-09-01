@@ -93,11 +93,7 @@ class MonitoringService:
     calculation_period_sec: float = 15
     window_size: int
 
-    def __init__(
-        self,
-        datasets: Dict[str, LoadedDataset],
-        window_size: int
-    ):
+    def __init__(self, datasets: Dict[str, LoadedDataset], window_size: int):
         self.reference = {}
         self.monitoring = {}
         self.current = {}
@@ -218,7 +214,7 @@ def configure_service():
                 name=dataset_name,
                 references=reference_data,
                 monitors=dataset_config["monitors"],
-                column_mapping=ColumnMapping(**dataset_config["column_mapping"])
+                column_mapping=ColumnMapping(**dataset_config["column_mapping"]),
             )
             logging.info("Reference is loaded for dataset %s: %s rows", dataset_name, len(reference_data))
 

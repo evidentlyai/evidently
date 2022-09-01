@@ -14,34 +14,22 @@ class TargetDistributionWidget(Widget):
     def __init__(self, title: str):
         super().__init__(title)
 
-    def calculate(self,
-                  reference_data: pd.DataFrame,
-                  current_data: pd.DataFrame,
-                  column_mapping,
-                  analyzers_results) -> Optional[BaseWidgetInfo]:
-        
+    def calculate(
+        self, reference_data: pd.DataFrame, current_data: pd.DataFrame, column_mapping, analyzers_results
+    ) -> Optional[BaseWidgetInfo]:
+
         hist_data = [reference_data[column_mapping.target], current_data[column_mapping.target]]
-        group_labels = ['reference', 'production']
-        colors = ['#333F44', '#37AA9C'] 
+        group_labels = ["reference", "production"]
+        colors = ["#333F44", "#37AA9C"]
 
         fig = ff.create_distplot(hist_data, group_labels, colors=colors, show_hist=False, show_rug=False)
 
         fig.update_layout(
-            xaxis_title="Value", 
+            xaxis_title="Value",
             yaxis_title="Share",
-            xaxis=dict(
-                showticklabels=True
-            ),
-            yaxis=dict(
-                showticklabels=True
-            ),
-            legend=dict(
-                orientation="v",
-                yanchor="top",
-                y=1.02,
-                xanchor="right",
-                x=1
-            ),
+            xaxis=dict(showticklabels=True),
+            yaxis=dict(showticklabels=True),
+            legend=dict(orientation="v", yanchor="top", y=1.02, xanchor="right", x=1),
         )
 
         target_dist_json = json.loads(fig.to_json())
@@ -50,9 +38,5 @@ class TargetDistributionWidget(Widget):
             title=self.title,
             type="big_graph",
             size=1,
-            params={
-                "data": target_dist_json['data'],
-                "layout": target_dist_json['layout']
-            },
+            params={"data": target_dist_json["data"], "layout": target_dist_json["layout"]},
         )
-
