@@ -184,18 +184,18 @@ def test_prediction_data_with_default_threshold(
         (
             pd.DataFrame({"target": ["true", "false", "true"], "true": [0.1, 0.3, 0.8]}),
             ColumnMapping(prediction="true"),
-            "Undefined pos_label.",
+            "Cannot find pos_label '1' in labels ['true' 'false']",
         ),
         # incorrect pos value
         (
             pd.DataFrame({"target": ["true", "false", "true"], "true": [0.1, 0.3, 0.8]}),
             ColumnMapping(prediction="true", pos_label="pos"),
-            "Undefined pos_label.",
+            "Cannot find pos_label 'pos' in labels ['true' 'false']",
         ),
         (
             pd.DataFrame({"target": ["true", "false", "true"], "true": [0.1, 0.3, 0.8], "false": [0.9, 0.7, 0.2]}),
             ColumnMapping(prediction=["true", "false"], pos_label="pos"),
-            "Undefined pos_label.",
+            "Cannot find pos_label 'pos' in labels ['true' 'false']",
         ),
         # prediction not in labels list
         (
