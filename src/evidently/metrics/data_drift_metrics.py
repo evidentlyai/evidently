@@ -1,13 +1,15 @@
 import dataclasses
+from dataclasses import dataclass
 import uuid
 from typing import Dict
 from typing import List
 from typing import Optional
 
 import pandas as pd
-from dataclasses import dataclass
 from evidently.calculations.data_drift import DataDriftAnalyzerMetrics
+from evidently.calculations.data_drift import DataDriftAnalyzerFeatureMetrics
 from evidently.calculations.data_drift import get_overall_data_drift
+from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.data_operations import process_columns
 
 from evidently.metrics.base_metric import InputData
@@ -15,19 +17,20 @@ from evidently.metrics.base_metric import Metric
 from evidently.metrics.utils import make_hist_for_cat_plot
 from evidently.metrics.utils import make_hist_for_num_plot
 from evidently.model.widget import BaseWidgetInfo
-from evidently.options import ColorOptions, QualityMetricsOptions
+from evidently.options import ColorOptions
 from evidently.options import DataDriftOptions
 from evidently.options import OptionsProvider
 from evidently.renderers.base_renderer import DetailsInfo
 from evidently.renderers.base_renderer import MetricHtmlInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
-from evidently.tests.utils import plot_distr
+from evidently.renderers.render_utils import plot_distr
 
 
 @dataclass
 class DataDriftMetricsResults:
     options: DataDriftOptions
+    columns: DatasetColumns
     metrics: DataDriftAnalyzerMetrics
     distr_for_plots: Dict[str, Dict[str, pd.DataFrame]]
 
@@ -67,7 +70,11 @@ class DataDriftMetrics(Metric[DataDriftMetricsResults]):
         for feature in columns.cat_feature_names:
             distr_for_plots[feature] = make_hist_for_cat_plot(data.current_data[feature], data.reference_data[feature])
 
-        return DataDriftMetricsResults(options=options, metrics=drift_metrics, distr_for_plots=distr_for_plots)
+        return DataDriftMetricsResults(
+            options=options,
+            columns=columns,
+            metrics=drift_metrics,
+            distr_for_plots=distr_for_plots)
 
 
 def _generate_feature_params(item_id: str, name: str, data: DataDriftAnalyzerFeatureMetrics) -> dict:
@@ -77,8 +84,6 @@ def _generate_feature_params(item_id: str, name: str, data: DataDriftAnalyzerFea
     p_value = data.p_value
     distr_sim_test = "Detected" if data.drift_detected else "Not Detected"
     parts = []
-    if data.feature_type == "num":
-        parts.append({"title": "Data drift", "id": f"{item_id}_{name}_drift", "type": "widget"})
     parts.append({"title": "Data distribution", "id": f"{item_id}_{name}_distr", "type": "widget"})
     return {
         "details": {"parts": parts, "insights": []},
@@ -99,12 +104,9 @@ class DataDriftMetricsRenderer(MetricRenderer):
 
     def render_html(self, obj: DataDriftMetrics) -> List[MetricHtmlInfo]:
         color_options = ColorOptions()
-        quality_metrics_options = QualityMetricsOptions()
-        data_drift_options = obj.options
 
-        data_drift_results = obj.get_result().analyzer_result
+        data_drift_results = obj.get_result()
         all_features = data_drift_results.columns.get_all_features_list()
-        date_column = data_drift_results.columns.utility_columns.date
         target_column = data_drift_results.columns.utility_columns.target
         prediction_column = data_drift_results.columns.utility_columns.prediction
 
@@ -153,17 +155,6 @@ class DataDriftMetricsRenderer(MetricRenderer):
                         params={"data": fig_json["data"], "layout": fig_json["layout"]},
                     ),
                 ),
-            )
-            additional_graphs_data.append(
-                DetailsInfo(
-                    id=f"{item_id}_{feature_name}_drift",
-                    title="",
-                    info=BaseWidgetInfo(
-                        title="",
-                        size=2,
-                        type="unknown",
-                    )
-                )
             )
         n_drifted_features = data_drift_results.metrics.n_drifted_features
         dataset_drift = data_drift_results.metrics.dataset_drift

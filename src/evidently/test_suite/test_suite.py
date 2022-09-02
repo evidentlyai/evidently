@@ -1,3 +1,4 @@
+import copy
 import dataclasses
 import uuid
 from collections import Counter
@@ -44,14 +45,18 @@ class TestSuite(Display):
                 self._test_generators.append(original_test)
 
             else:
-                self._inner_suite.add_test(original_test)
+                self._add_test(original_test)
+
+    def _add_test(self, test: Test):
+        new_test = copy.copy(test)
+        self._inner_suite.add_test(new_test)
 
     def __bool__(self):
         return all(test_result.is_passed() for _, test_result in self._inner_suite.context.test_results.items())
 
     def _add_tests_from_generator(self, test_generator: BaseTestGenerator):
         for test_item in test_generator.generate_tests(columns_info=self._columns_info):
-            self._inner_suite.add_test(test_item)
+            self._add_test(test_item)
 
     def run(
         self,
@@ -73,7 +78,7 @@ class TestSuite(Display):
                     self._add_tests_from_generator(test)
 
                 else:
-                    self._inner_suite.add_test(test)
+                    self._add_test(test)
 
         for test_generator in self._test_generators:
             self._add_tests_from_generator(test_generator)
