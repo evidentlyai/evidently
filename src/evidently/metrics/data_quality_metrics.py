@@ -266,6 +266,7 @@ class DataQualityStabilityMetricsRenderer(MetricRenderer):
 
 @dataclass
 class DataQualityValueListMetricsResults:
+    column_name: str
     number_in_list: int
     number_not_in_list: int
     share_in_list: float
@@ -305,6 +306,7 @@ class DataQualityValueListMetrics(Metric[DataQualityValueListMetricsResults]):
             counts_of_value["reference"] = reference_counts
 
         return DataQualityValueListMetricsResults(
+            column_name=self.column_name,
             number_in_list=values_in_list,
             number_not_in_list=rows_count - values_in_list,
             share_in_list=values_in_list / rows_count,
@@ -344,28 +346,32 @@ class DataQualityValueListMetricsRenderer(MetricRenderer):
 
     def render_html(self, obj: DataQualityValueListMetrics) -> List[MetricHtmlInfo]:
         metric_result = obj.get_result()
+        values_list_info = ",".join(metric_result.values)
         result = [
             MetricHtmlInfo(
-                "data_quality_value_list_title",
+                "data_quality_values_list_title",
                 BaseWidgetInfo(
                     type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
                     title="",
                     size=2,
                     params={
                         "counters": [
-                            {"value": "", "label": f"Data value list metrics for the column '{obj.column_name}'"}
+                            {
+                                "value": "",
+                                "label": f"Data Value List Metrics for the column: {metric_result.column_name}",
+                            }
                         ]
                     },
                 ),
                 details=[],
             ),
             MetricHtmlInfo(
-                "data_quality_value_list_values_list",
+                "data_quality_values_list_info",
                 BaseWidgetInfo(
                     type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
                     title="",
                     size=2,
-                    params={"counters": [{"value": "", "label": f"Values list: '{metric_result.values}'"}]},
+                    params={"counters": [{"value": "", "label": f"Values: {values_list_info}"}]},
                 ),
                 details=[],
             ),
@@ -376,6 +382,9 @@ class DataQualityValueListMetricsRenderer(MetricRenderer):
 
 @dataclass
 class DataQualityValueRangeMetricsResults:
+    column_name: str
+    range_left_value: float
+    range_right_value: float
     number_in_range: int
     number_not_in_range: int
     share_in_range: float
@@ -438,6 +447,9 @@ class DataQualityValueRangeMetrics(Metric[DataQualityValueRangeMetricsResults]):
         distr_for_plot = make_hist_for_num_plot(curr_feature, ref_feature)
 
         return DataQualityValueRangeMetricsResults(
+            column_name=self.column_name,
+            range_left_value=self.left,
+            range_right_value=self.right,
             number_in_range=number_in_range,
             number_not_in_range=number_not_in_range,
             share_in_range=number_in_range / rows_count,
@@ -454,23 +466,64 @@ class DataQualityValueRangeMetricsRenderer(MetricRenderer):
     def render_json(self, obj: DataQualityValueRangeMetrics) -> dict:
         return dataclasses.asdict(obj.get_result())
 
+    @staticmethod
+    def _get_table_stat(dataset_name: str, metrics: DataQualityValueRangeMetricsResults) -> MetricHtmlInfo:
+        matched_stat = [
+            ("Values from the range", metrics.number_in_range),
+            ("Share from the range", np.round(metrics.share_in_range, 3)),
+            ("Values not in the range", metrics.number_not_in_range),
+            ("Share not in the range", np.round(metrics.share_not_in_range, 3)),
+            ("Rows count", metrics.rows_count),
+        ]
+
+        matched_stat_headers = ["Metric", "Value"]
+        return MetricHtmlInfo(
+            name=f"data_quality_values_range_stat_{dataset_name.lower()}",
+            info=BaseWidgetInfo(
+                title=f"{dataset_name.capitalize()}: Values statistic",
+                type=BaseWidgetInfo.WIDGET_INFO_TYPE_TABLE,
+                size=2,
+                params={"header": matched_stat_headers, "data": matched_stat},
+            ),
+            details=[],
+        )
+
     def render_html(self, obj: DataQualityValueRangeMetrics) -> List[MetricHtmlInfo]:
-        return [
+        metric_result = obj.get_result()
+        column_name = metric_result.column_name
+        left = metric_result.range_left_value
+        right = metric_result.range_right_value
+        result = [
             MetricHtmlInfo(
-                "data_quality_value_range",
+                "data_quality_value_range_title",
                 BaseWidgetInfo(
                     type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
-                    title="Data Quality Value Range",
+                    title="",
                     size=2,
-                    params={"counters": [{"value": "", "label": "DataQualityValueRangeMetrics"}]},
+                    params={
+                        "counters": [{"value": "", "label": f"Data Value Range Metrics for the column: {column_name}"}]
+                    },
                 ),
                 details=[],
             ),
+            MetricHtmlInfo(
+                "data_quality_value_range_title",
+                BaseWidgetInfo(
+                    type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
+                    title="",
+                    size=2,
+                    params={"counters": [{"value": "", "label": f"Range is from {left} to {right}"}]},
+                ),
+                details=[],
+            ),
+            self._get_table_stat(dataset_name="current", metrics=metric_result),
         ]
+        return result
 
 
 @dataclass
 class DataQualityValueQuantileMetricsResults:
+    column_name: str
     # calculated value of the quantile
     value: float
     # range of the quantile (from 0 to 1)
@@ -490,23 +543,22 @@ class DataQualityValueQuantileMetrics(Metric[DataQualityValueQuantileMetricsResu
             if not 0 <= quantile <= 1:
                 raise ValueError("Quantile should all be in the interval [0, 1].")
 
-        self.column = column_name
+        self.column_name = column_name
         self.quantile = quantile
 
     def calculate(self, data: InputData) -> DataQualityValueQuantileMetricsResults:
-        # visualisation
-
-        curr_feature = data.current_data[self.column]
-
+        curr_feature = data.current_data[self.column_name]
         ref_feature = None
         ref_value = None
+
         if data.reference_data is not None:
-            ref_feature = data.reference_data[self.column]
-            ref_value = data.reference_data[self.column].quantile(self.quantile)
+            ref_feature = data.reference_data[self.column_name]
+            ref_value = data.reference_data[self.column_name].quantile(self.quantile)
 
         distr_for_plot = make_hist_for_num_plot(curr_feature, ref_feature)
         return DataQualityValueQuantileMetricsResults(
-            value=data.current_data[self.column].quantile(self.quantile),
+            column_name=self.column_name,
+            value=data.current_data[self.column_name].quantile(self.quantile),
             quantile=self.quantile,
             distr_for_plot=distr_for_plot,
             ref_value=ref_value,
@@ -519,18 +571,45 @@ class DataQualityValueQuantileMetricsRenderer(MetricRenderer):
         return dataclasses.asdict(obj.get_result())
 
     def render_html(self, obj: DataQualityValueQuantileMetrics) -> List[MetricHtmlInfo]:
-        return [
+        metric_result = obj.get_result()
+        column_name = metric_result.column_name
+        counters = [
+            {"value": metric_result.quantile, "label": "Quantile"},
+            {"value": metric_result.value, "label": "Current dataset value"},
+        ]
+
+        if metric_result.ref_value:
+            counters.append(
+                {"value": metric_result.ref_value, "label": "Reference dataset value"},
+            )
+
+        result = [
             MetricHtmlInfo(
-                "data_quality_value_quantile",
+                "data_quality_value_quantile_title",
                 BaseWidgetInfo(
                     type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
-                    title="Data Quality Value Quantile",
+                    title="",
                     size=2,
-                    params={"counters": [{"value": "", "label": "DataQualityValueQuantileMetrics"}]},
+                    params={
+                        "counters": [
+                            {"value": "", "label": f"Data Value Quantile Metrics for the column: {column_name}"}
+                        ]
+                    },
+                ),
+                details=[],
+            ),
+            MetricHtmlInfo(
+                "data_quality_value_quantile_stat",
+                BaseWidgetInfo(
+                    type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
+                    title="",
+                    size=2,
+                    params={"counters": counters},
                 ),
                 details=[],
             ),
         ]
+        return result
 
 
 @dataclass
@@ -649,16 +728,50 @@ class DataQualityCorrelationMetricsRenderer(MetricRenderer):
     def render_json(self, obj: DataQualityCorrelationMetrics) -> dict:
         return dataclasses.asdict(obj.get_result())
 
+    @staticmethod
+    def _get_table_stat(dataset_name: str, correlation: DataCorrelation) -> MetricHtmlInfo:
+        matched_stat = [
+            ("Abs max correlation", np.round(correlation.abs_max_correlation, 3)),
+            ("Abs max num features correlation", np.round(correlation.abs_max_num_features_correlation, 3)),
+            ("Abs max target features correlation", np.round(correlation.abs_max_target_features_correlation, 3)),
+            (
+                "Abs max prediction features correlation",
+                np.round(correlation.abs_max_prediction_features_correlation, 3),
+            ),
+        ]
+
+        matched_stat_headers = ["Metric", "Value"]
+        return MetricHtmlInfo(
+            name=f"data_quality_correlation_stat_{dataset_name.lower()}",
+            info=BaseWidgetInfo(
+                title=f"{dataset_name.capitalize()}: Correlation statistic",
+                type=BaseWidgetInfo.WIDGET_INFO_TYPE_TABLE,
+                size=2,
+                params={"header": matched_stat_headers, "data": matched_stat},
+            ),
+            details=[],
+        )
+
     def render_html(self, obj: DataQualityCorrelationMetrics) -> List[MetricHtmlInfo]:
-        return [
+        metric_result = obj.get_result()
+
+        result = [
             MetricHtmlInfo(
-                "data_quality_correlation",
+                "data_quality_correlation_title",
                 BaseWidgetInfo(
                     type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
-                    title="Data Quality Correlation",
+                    title="",
                     size=2,
-                    params={"counters": [{"value": "", "label": "DataQualityCorrelationMetrics"}]},
+                    params={"counters": [{"value": "", "label": "Data Correlation Metrics"}]},
                 ),
                 details=[],
             ),
+            self._get_table_stat(dataset_name="current", correlation=metric_result.current_correlation),
         ]
+
+        if metric_result.reference_correlation is not None:
+            result.append(
+                self._get_table_stat(dataset_name="reference", correlation=metric_result.reference_correlation)
+            )
+
+        return result

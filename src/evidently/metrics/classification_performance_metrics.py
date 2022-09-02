@@ -430,9 +430,9 @@ class ClassificationPerformanceMetricsRenderer(MetricRenderer):
                 "classification_performance_target_name",
                 BaseWidgetInfo(
                     type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
-                    title=f"Target: '{target_name}'",
+                    title="",
                     size=2,
-                    params={},
+                    params={"counters": [{"value": "", "label": f"Target: '{target_name}'"}]},
                 ),
                 details=[],
             ),
@@ -611,21 +611,53 @@ class ClassificationPerformanceMetricsTopK(ClassificationPerformanceMetricsThres
 @default_renderer(wrap_type=ClassificationPerformanceMetricsTopK)
 class ClassificationPerformanceMetricsTopKRenderer(MetricRenderer):
     def render_json(self, obj: ClassificationPerformanceMetricsTopK) -> dict:
-        return dataclasses.asdict(obj.get_result().current)
+        return dataclasses.asdict(obj.get_result())
+
+    @staticmethod
+    def _get_metrics_table(
+        dataset_name: str, metrics: DatasetClassificationPerformanceMetrics, top_k: Union[float, int]
+    ) -> MetricHtmlInfo:
+        counters = [
+            {"value": top_k, "label": "Top K"},
+            {"value": str(round(metrics.accuracy, 3)), "label": "Accuracy"},
+            {"value": str(round(metrics.precision, 3)), "label": "Precision"},
+            {"value": str(round(metrics.recall, 3)), "label": "Recall"},
+            {"value": str(round(metrics.f1, 3)), "label": "F1"},
+        ]
+
+        return MetricHtmlInfo(
+            f"classification_performance_top_k_table_{dataset_name.lower()}",
+            BaseWidgetInfo(
+                title=f"{dataset_name.capitalize()}: Model Quality With Macro-average Metrics",
+                type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
+                size=2,
+                params={"counters": counters},
+            ),
+            details=[],
+        )
 
     def render_html(self, obj: ClassificationPerformanceMetricsTopK) -> List[MetricHtmlInfo]:
-        return [
+        metric_result = obj.get_result()
+        result = [
             MetricHtmlInfo(
-                "classification_performance_top_k",
+                "classification_performance_top_k_title",
                 BaseWidgetInfo(
                     type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
-                    title="Classification Performance Top K",
+                    title="",
                     size=2,
-                    params={"counters": [{"value": "", "label": "ClassificationPerformanceMetricsTopK"}]},
+                    params={"counters": [{"value": "", "label": "Classification Performance With Top K"}]},
                 ),
                 details=[],
             ),
+            self._get_metrics_table(dataset_name="current", metrics=metric_result.current, top_k=obj.k),
         ]
+
+        if metric_result.reference is not None:
+            result.append(
+                self._get_metrics_table(dataset_name="reference", metrics=metric_result.reference, top_k=obj.k)
+            )
+
+        return result
 
 
 class ClassificationPerformanceMetricsThreshold(ClassificationPerformanceMetricsThresholdBase):
@@ -651,19 +683,53 @@ class ClassificationPerformanceMetricsThresholdRenderer(MetricRenderer):
     def render_json(self, obj: ClassificationPerformanceMetricsThreshold) -> dict:
         return dataclasses.asdict(obj.get_result().current)
 
+    @staticmethod
+    def _get_metrics_table(
+        dataset_name: str, metrics: DatasetClassificationPerformanceMetrics, threshold: float
+    ) -> MetricHtmlInfo:
+        counters = [
+            {"value": threshold, "label": "Threshold"},
+            {"value": str(round(metrics.accuracy, 3)), "label": "Accuracy"},
+            {"value": str(round(metrics.precision, 3)), "label": "Precision"},
+            {"value": str(round(metrics.recall, 3)), "label": "Recall"},
+            {"value": str(round(metrics.f1, 3)), "label": "F1"},
+        ]
+
+        return MetricHtmlInfo(
+            f"classification_performance_top_k_table_{dataset_name.lower()}",
+            BaseWidgetInfo(
+                title=f"{dataset_name.capitalize()}: Model Quality With Macro-average Metrics",
+                type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
+                size=2,
+                params={"counters": counters},
+            ),
+            details=[],
+        )
+
     def render_html(self, obj: ClassificationPerformanceMetricsThreshold) -> List[MetricHtmlInfo]:
-        return [
+        metric_result = obj.get_result()
+        result = [
             MetricHtmlInfo(
-                "classification_performance_threshold",
+                "classification_performance_threshold_title",
                 BaseWidgetInfo(
                     type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
-                    title="Classification Performance with Threshold",
+                    title="",
                     size=2,
-                    params={"counters": [{"value": "", "label": "ClassificationPerformanceMetricsThreshold"}]},
+                    params={"counters": [{"value": "", "label": "Classification Performance With Threshold"}]},
                 ),
                 details=[],
             ),
+            self._get_metrics_table(dataset_name="current", metrics=metric_result.current, threshold=obj.threshold),
         ]
+
+        if metric_result.reference is not None:
+            result.append(
+                self._get_metrics_table(
+                    dataset_name="reference", metrics=metric_result.reference, threshold=obj.threshold
+                )
+            )
+
+        return result
 
 
 def _cleanup_data(data: pd.DataFrame, mapping: ColumnMapping) -> pd.DataFrame:
