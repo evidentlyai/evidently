@@ -16,6 +16,7 @@ from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.renderers.base_renderer import DetailsInfo
+from evidently.renderers.render_utils import plot_distr
 from evidently.metrics import DataQualityCorrelationMetrics
 from evidently.tests.base_test import BaseCheckValueTest
 from evidently.tests.base_test import GroupingTypes
@@ -28,7 +29,6 @@ from evidently.tests.utils import approx
 from evidently.utils.types import Numeric
 from evidently.tests.utils import plot_check
 from evidently.tests.utils import plot_metric_value
-from evidently.tests.utils import plot_distr
 from evidently.tests.utils import plot_value_counts_tables
 from evidently.tests.utils import plot_value_counts_tables_ref_curr
 from evidently.tests.utils import plot_correlations

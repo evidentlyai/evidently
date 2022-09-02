@@ -8,8 +8,6 @@ from typing import Union
 import pandas as pd
 
 from evidently import ColumnMapping
-from evidently.utils.data_operations import DatasetColumns
-from evidently.utils.data_operations import process_columns
 from evidently.metric_preset.metric_preset import MetricPreset
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
@@ -17,6 +15,8 @@ from evidently.model.dashboard import DashboardInfo
 from evidently.suite.base_suite import Display
 from evidently.suite.base_suite import Suite
 from evidently.suite.base_suite import find_metric_renderer
+from evidently.utils.data_operations import DatasetColumns
+from evidently.utils.data_operations import process_columns
 
 
 class Report(Display):
