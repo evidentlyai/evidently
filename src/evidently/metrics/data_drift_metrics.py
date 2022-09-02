@@ -72,10 +72,8 @@ class DataDriftMetrics(Metric[DataDriftMetricsResults]):
             distr_for_plots[feature] = make_hist_for_cat_plot(data.current_data[feature], data.reference_data[feature])
 
         return DataDriftMetricsResults(
-            options=options,
-            columns=columns,
-            metrics=drift_metrics,
-            distr_for_plots=distr_for_plots)
+            options=options, columns=columns, metrics=drift_metrics, distr_for_plots=distr_for_plots
+        )
 
 
 def _generate_feature_params(item_id: str, name: str, data: DataDriftAnalyzerFeatureMetrics) -> dict:
@@ -116,9 +114,9 @@ class DataDriftMetricsRenderer(MetricRenderer):
 
         # sort columns by drift score
         df_for_sort = pd.DataFrame()
-        df_for_sort['features'] = all_features
-        df_for_sort['scores'] = [data_drift_results.metrics.features[feature].p_value for feature in all_features]
-        all_features = df_for_sort.sort_values('scores', ascending=False).features.tolist()
+        df_for_sort["features"] = all_features
+        df_for_sort["scores"] = [data_drift_results.metrics.features[feature].p_value for feature in all_features]
+        all_features = df_for_sort.sort_values("scores", ascending=False).features.tolist()
         columns = []
         if target_column:
             columns.append(target_column)
@@ -131,11 +129,7 @@ class DataDriftMetricsRenderer(MetricRenderer):
         item_id = str(uuid.uuid4())
         for feature_name in columns:
             params_data.append(
-                _generate_feature_params(
-                    item_id,
-                    feature_name,
-                    data_drift_results.metrics.features[feature_name]
-                )
+                _generate_feature_params(item_id, feature_name, data_drift_results.metrics.features[feature_name])
             )
 
         # set additionalGraphs
@@ -168,41 +162,42 @@ class DataDriftMetricsRenderer(MetricRenderer):
         )
         title_suffix = "Dataset Drift is detected." if dataset_drift else "Dataset Drift is NOT detected."
 
-        return [MetricHtmlInfo(
-            name="data drift",
-            info=BaseWidgetInfo(
-                title=title_prefix + title_suffix,
-                type="big_table",
-                details="",
-                alerts=[],
-                alertsPosition="row",
-                insights=[],
-                size=2,
-                params={
-                    "rowsPerPage": min(n_features, 10),
-                    "columns": [
-                        {"title": "Feature", "field": "f1"},
-                        {"title": "Type", "field": "f6"},
-                        {
-                            "title": "Reference Distribution",
-                            "field": "f3",
-                            "type": "histogram",
-                            "options": {"xField": "x", "yField": "y", "color": color_options.primary_color},
-                        },
-                        {
-                            "title": "Current Distribution",
-                            "field": "f4",
-                            "type": "histogram",
-                            "options": {"xField": "x", "yField": "y", "color": color_options.primary_color},
-                        },
-                        {"title": "Data Drift", "field": "f2"},
-                        {"title": "Stat Test", "field": "stattest_name"},
-                        {"title": "Drift Score", "field": "f5"},
-                    ],
-                    "data": params_data,
-                },
-                additionalGraphs=[],
-            ),
-            details=additional_graphs_data,
-        )
+        return [
+            MetricHtmlInfo(
+                name="data drift",
+                info=BaseWidgetInfo(
+                    title=title_prefix + title_suffix,
+                    type="big_table",
+                    details="",
+                    alerts=[],
+                    alertsPosition="row",
+                    insights=[],
+                    size=2,
+                    params={
+                        "rowsPerPage": min(n_features, 10),
+                        "columns": [
+                            {"title": "Feature", "field": "f1"},
+                            {"title": "Type", "field": "f6"},
+                            {
+                                "title": "Reference Distribution",
+                                "field": "f3",
+                                "type": "histogram",
+                                "options": {"xField": "x", "yField": "y", "color": color_options.primary_color},
+                            },
+                            {
+                                "title": "Current Distribution",
+                                "field": "f4",
+                                "type": "histogram",
+                                "options": {"xField": "x", "yField": "y", "color": color_options.primary_color},
+                            },
+                            {"title": "Data Drift", "field": "f2"},
+                            {"title": "Stat Test", "field": "stattest_name"},
+                            {"title": "Drift Score", "field": "f5"},
+                        ],
+                        "data": params_data,
+                    },
+                    additionalGraphs=[],
+                ),
+                details=additional_graphs_data,
+            )
         ]
