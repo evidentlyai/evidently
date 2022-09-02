@@ -73,26 +73,24 @@ class DataDriftMetricsRenderer(MetricRenderer):
 
     @staticmethod
     def _get_features_drift_table(metrics: DataDriftAnalyzerMetrics) -> MetricHtmlInfo:
-        headers = ["Column Name", "Drift", "Drift Score", "Stattest"]
+        headers = ["Column Name", "Drift", "Drift Score", "Stattest", "Threshold"]
         data = []
 
         for column_name, drift_info in metrics.features.items():
-            drift = "no drift"
-
-            if drift_info.drift_detected:
-                drift = "drift was detected"
-
-            data.append((
-                column_name,
-                drift,
-                f"{drift_info.p_value:.3f}",
-                f"{drift_info.stattest_name} with threshold {drift_info.threshold}",
-            ))
+            data.append(
+                (
+                    column_name,
+                    "drift was detected" if drift_info.drift_detected else "no drift",
+                    f"{drift_info.p_value:.3f}",
+                    f"{drift_info.stattest_name}",
+                    f"{drift_info.threshold}"
+                )
+            )
 
         return MetricHtmlInfo(
-            f"data_drift_features",
+            "data_drift_features",
             BaseWidgetInfo(
-                title=f"Data Drift Scores",
+                title="Data Drift Scores",
                 type=BaseWidgetInfo.WIDGET_INFO_TYPE_TABLE,
                 size=2,
                 params={"header": headers, "data": data},
@@ -110,41 +108,37 @@ class DataDriftMetricsRenderer(MetricRenderer):
             dataset_drift = "drift was not detected"
 
         if metrics.n_drifted_features:
-            features_drift = f"{metrics.n_drifted_features} of {metrics.n_features} features " \
-                               f"({round(metrics.share_drifted_features, 3)}%)"
+            features_drift = (
+                f"{metrics.n_drifted_features} of {metrics.n_features} features "
+                f"({round(metrics.share_drifted_features, 3)}%)"
+            )
 
         else:
             features_drift = "no drifted features"
 
         result = [
             MetricHtmlInfo(
-                "data_drift_dataset",
+                "data_drift_title",
                 BaseWidgetInfo(
                     type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
                     title="",
                     size=2,
-                    params={
-                        "counters": [
-                            {"value": "", "label": f"Dataset Drift: {dataset_drift}"}
-                        ]
-                    },
+                    params={"counters": [{"value": "", "label": f"Data Drift"}]},
                 ),
                 details=[],
             ),
             MetricHtmlInfo(
-                "data_drift_features",
+                "data_drift_overview",
                 BaseWidgetInfo(
                     type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
                     title="",
                     size=2,
-                    params={
-                        "counters": [
-                            {"value": "", "label": f"Features Drift: {features_drift}"}
-                        ]
-                    },
+                    params={"counters": [{
+                        "value": "",
+                        "label": f"Dataset Drift: {dataset_drift}. Features Drift: {features_drift}"}]},
                 ),
                 details=[],
             ),
-            self._get_features_drift_table(metrics=metrics)
+            self._get_features_drift_table(metrics=metrics),
         ]
         return result

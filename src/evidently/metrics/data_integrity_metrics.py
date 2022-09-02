@@ -85,7 +85,7 @@ class DataIntegrityMetrics(Metric[DataIntegrityMetricsResults]):
             data.column_mapping.datetime_features,
         ]:
             if features is not None:
-                columns += features
+                columns.extend(features)
 
         if data.column_mapping.prediction is not None:
             if isinstance(data.column_mapping.prediction, str):
@@ -124,33 +124,58 @@ class DataIntegrityMetricsRenderer(MetricRenderer):
     def render_json(self, obj: DataIntegrityMetrics) -> dict:
         return dataclasses.asdict(obj.get_result().current_stats)
 
+    @staticmethod
+    def _get_metrics_table(
+            dataset_name: str, metrics: DataIntegrityMetricsValues
+    ) -> MetricHtmlInfo:
+        headers = ("Quality Metric", "Value")
+        stats = (
+            ("Number of columns", metrics.number_of_columns),
+            ("Number of rows", metrics.number_of_rows),
+            ("Number of NaNs", metrics.number_of_nans),
+            ("Number of columns with NaNs", metrics.number_of_columns_with_nans),
+            ("Number of rows with NaNs", metrics.number_of_rows_with_nans),
+            ("Number of constant columns", metrics.number_of_constant_columns),
+            ("Number of empty rows", metrics.number_of_empty_rows),
+            ("Number of empty columns", metrics.number_of_empty_columns),
+            ("Number of duplicated rows", metrics.number_of_duplicated_rows),
+            ("Number of duplicated columns", metrics.number_of_duplicated_columns),
+        )
+
+        return MetricHtmlInfo(
+            f"data_integrity_metrics_table_{dataset_name.lower()}",
+            BaseWidgetInfo(
+                title=f"{dataset_name.capitalize()}: Data Integrity Metrics",
+                type=BaseWidgetInfo.WIDGET_INFO_TYPE_TABLE,
+                size=2,
+                params={"header": headers, "data": stats},
+            ),
+            details=[],
+        )
+
     def render_html(self, obj: DataIntegrityMetrics) -> List[MetricHtmlInfo]:
         metric_result = obj.get_result()
-        headers = ["Metric", "Value"]
-        stats = (
-            ("number_of_columns", metric_result.current_stats.number_of_columns),
-            ("number_of_rows", metric_result.current_stats.number_of_rows),
-            ("number_of_nans", metric_result.current_stats.number_of_nans),
-            ("number_of_columns_with_nans", metric_result.current_stats.number_of_columns_with_nans),
-            ("number_of_rows_with_nans", metric_result.current_stats.number_of_rows_with_nans),
-            ("number_of_constant_columns", metric_result.current_stats.number_of_constant_columns),
-            ("number_of_empty_rows", metric_result.current_stats.number_of_empty_rows),
-            ("number_of_empty_columns", metric_result.current_stats.number_of_empty_columns),
-            ("number_of_duplicated_rows", metric_result.current_stats.number_of_duplicated_rows),
-            ("number_of_duplicated_columns", metric_result.current_stats.number_of_duplicated_columns),
-        )
-        return [
+
+        result = [
             MetricHtmlInfo(
-                "data_integrity",
+                "data_integrity_title",
                 BaseWidgetInfo(
-                    type=BaseWidgetInfo.WIDGET_INFO_TYPE_TABLE,
-                    title="Data Integrity Metric: Common Statistics",
+                    type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
+                    title="",
                     size=2,
-                    params={"header": headers, "data": stats},
+                    params={"counters": [{"value": "", "label": "Data Integrity"}]},
                 ),
                 details=[],
             ),
+            self._get_metrics_table(dataset_name="current", metrics=metric_result.current_stats)
         ]
+
+        if metric_result.reference_stats is not None:
+            result.append(
+                self._get_metrics_table(dataset_name="reference", metrics=metric_result.reference_stats)
+            )
+
+        return result
 
 
 @dataclass
@@ -247,20 +272,20 @@ class DataIntegrityValueByRegexpMetricsRenderer(MetricRenderer):
         return dataclasses.asdict(obj.get_result())
 
     @staticmethod
-    def _get_table_stat(title: str, name: str, stats: DataIntegrityValueByRegexpStat) -> MetricHtmlInfo:
-        matched_stat = [(f"{k} (matched)", v) for k, v in stats.table_of_matched.items()]
-        matched_stat += [(f"{k} (not matched)", v) for k, v in stats.table_of_not_matched.items()]
+    def _get_table_stat(dataset_name: str, metrics: DataIntegrityValueByRegexpStat) -> MetricHtmlInfo:
+        matched_stat = [(f"{k} (matched)", v) for k, v in metrics.table_of_matched.items()]
+        matched_stat += [(f"{k} (not matched)", v) for k, v in metrics.table_of_not_matched.items()]
         matched_stat += [
-            ("NaN", stats.number_of_rows - stats.number_of_matched - stats.number_of_not_matched),
-            ("Total", stats.number_of_rows),
+            ("NaN", metrics.number_of_rows - metrics.number_of_matched - metrics.number_of_not_matched),
+            ("Total", metrics.number_of_rows),
         ]
         matched_stat_headers = ["Value", "Count"]
         return MetricHtmlInfo(
-            name=f"data_integrity_value_by_regexp_stats_{name}",
+            name=f"data_integrity_value_by_regexp_stats_{dataset_name.lower()}",
             info=BaseWidgetInfo(
-                title=title,
+                title=f"{dataset_name.capitalize()}: Match Statistics",
                 type=BaseWidgetInfo.WIDGET_INFO_TYPE_TABLE,
-                size=1,
+                size=2,
                 params={"header": matched_stat_headers, "data": matched_stat},
             ),
             details=[],
@@ -282,22 +307,22 @@ class DataIntegrityValueByRegexpMetricsRenderer(MetricRenderer):
                         "counters": [
                             {
                                 "value": "",
-                                "label": f"Founded {number_of_matched} of {number_of_rows} by "
-                                f'regexp "{metric_result.reg_exp}" in '
-                                f"column **{metric_result.column_name}** of current data.",
+                                "label": f"Founded {number_of_matched} of {number_of_rows} with "
+                                f"regexp '{metric_result.reg_exp}' in "
+                                f"column '{metric_result.column_name}' in current dataset.",
                             }
                         ]
                     },
                 ),
                 details=[],
             ),
-            self._get_table_stat(title="Current Match Statistics", name="current", stats=metric_result.current),
+            self._get_table_stat(dataset_name="current", metrics=metric_result.current),
         ]
 
         if metric_result.reference is not None:
             result.append(
                 self._get_table_stat(
-                    title="Reference Match Statistics", name="reference", stats=metric_result.reference
+                    dataset_name="reference", metrics=metric_result.reference
                 )
             )
 
@@ -494,15 +519,15 @@ class DataIntegrityNullValuesMetricsRenderer(MetricRenderer):
         return dataclasses.asdict(obj.get_result().current_null_values)
 
     @staticmethod
-    def _get_table_stat(title: str, name: str, stats: DataIntegrityNullValuesStat) -> MetricHtmlInfo:
+    def _get_table_stat(dataset_name: str, stats: DataIntegrityNullValuesStat) -> MetricHtmlInfo:
         matched_stat = [(k, v) for k, v in stats.number_of_nulls_by_column.items()]
         matched_stat_headers = ["Value", "Count"]
         return MetricHtmlInfo(
-            name=f"data_integrity_null_values_stats_{name}",
+            name=f"data_integrity_null_values_stats_{dataset_name.lower()}",
             info=BaseWidgetInfo(
-                title=title,
+                title=f"{dataset_name.capitalize()}: Nulls Statistic",
                 type=BaseWidgetInfo.WIDGET_INFO_TYPE_TABLE,
-                size=1,
+                size=2,
                 params={"header": matched_stat_headers, "data": matched_stat},
             ),
             details=[],
@@ -517,21 +542,28 @@ class DataIntegrityNullValuesMetricsRenderer(MetricRenderer):
                 name="data_integrity_null_values_title",
                 info=BaseWidgetInfo(
                     type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
-                    title="Data Integrity Metric: Null Values Statistic",
+                    title="",
+                    size=2,
+                    params={"counters": [{"value": "", "label": "Data Integrity Metric: Null Values Statistic"}]},
+                ),
+                details=[],
+            ),
+            MetricHtmlInfo(
+                name="data_integrity_null_values_title",
+                info=BaseWidgetInfo(
+                    type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
+                    title="",
                     size=2,
                     params={"counters": [{"value": "", "label": f"In current dataset {number_of_nulls} null values."}]},
                 ),
                 details=[],
             ),
-            self._get_table_stat(
-                title="Current Nulls Statistics", name="current", stats=metric_result.current_null_values
-            ),
+            self._get_table_stat(dataset_name="current", stats=metric_result.current_null_values),
         ]
 
         if metric_result.reference_null_values is not None:
             result.append(
-                self._get_table_stat(
-                    title="Reference Nulls Statistics", name="reference", stats=metric_result.reference_null_values
-                )
+                self._get_table_stat(dataset_name="reference", stats=metric_result.reference_null_values)
             )
+
         return result
