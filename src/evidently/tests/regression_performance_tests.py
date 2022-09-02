@@ -9,6 +9,7 @@ from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.renderers.base_renderer import DetailsInfo
+from evidently.renderers.render_utils import plot_distr
 from evidently.tests.base_test import BaseCheckValueTest
 from evidently.tests.base_test import GroupingTypes
 from evidently.tests.base_test import GroupData
@@ -16,7 +17,6 @@ from evidently.tests.base_test import TestValueCondition
 from evidently.tests.utils import plot_check
 from evidently.tests.utils import plot_metric_value
 from evidently.tests.utils import regression_perf_plot
-from evidently.utils.visualizations import plot_distr
 from evidently.tests.utils import approx
 from evidently.utils.types import Numeric
 

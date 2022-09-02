@@ -8,18 +8,10 @@ from pandas.api.types import is_numeric_dtype
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
 
+from evidently.renderers.render_utils import RED, GREY, COLOR_DISCRETE_SEQUENCE
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import DetailsInfo
 from evidently.utils.types import ApproxValue
-
-RED = "#ed0400"
-GREY = "#4d4d4d"
-COLOR_DISCRETE_SEQUENCE = (
-    "#ed0400",
-    "#0a5f38",
-    "#6c3461",
-    "#6b8ba4",
-)
 
 
 def plot_check(fig, condition):
