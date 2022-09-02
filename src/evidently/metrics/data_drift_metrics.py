@@ -123,7 +123,7 @@ class DataDriftMetricsRenderer(MetricRenderer):
                     type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
                     title="",
                     size=2,
-                    params={"counters": [{"value": "", "label": f"Data Drift"}]},
+                    params={"counters": [{"value": "", "label": "Data Drift"}]},
                 ),
                 details=[],
             ),
