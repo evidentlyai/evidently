@@ -21,6 +21,9 @@ class InputData:
 class Metric(Generic[TResult]):
     context = None
 
+    def get_id(self) -> str:
+        return self.__class__.__name__
+
     @abc.abstractmethod
     def calculate(self, data: InputData) -> TResult:
         raise NotImplementedError()
