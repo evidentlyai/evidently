@@ -92,20 +92,6 @@ def plot_metric_value(fig, metric_val: float, metric_name: str):
     return fig
 
 
-def plot_distr(hist_curr, hist_ref=None, orientation="v"):
-    fig = go.Figure()
-
-    fig.add_trace(
-        go.Bar(name="current", x=hist_curr["x"], y=hist_curr["count"], marker_color=RED, orientation=orientation)
-    )
-    if hist_ref is not None:
-        fig.add_trace(
-            go.Bar(name="reference", x=hist_ref["x"], y=hist_ref["count"], marker_color=GREY, orientation=orientation)
-        )
-
-    return fig
-
-
 def regression_perf_plot(
     val_for_plot: Dict[str, pd.Series],
     hist_for_plot: Dict[str, pd.Series],

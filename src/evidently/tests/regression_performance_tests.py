@@ -16,7 +16,7 @@ from evidently.tests.base_test import TestValueCondition
 from evidently.tests.utils import plot_check
 from evidently.tests.utils import plot_metric_value
 from evidently.tests.utils import regression_perf_plot
-from evidently.tests.utils import plot_distr
+from evidently.utils.visualizations import plot_distr
 from evidently.tests.utils import approx
 from evidently.utils.types import Numeric
 

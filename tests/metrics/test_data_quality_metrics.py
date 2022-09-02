@@ -64,7 +64,7 @@ def test_data_quality_stability_metrics_no_other_columns() -> None:
 def test_data_quality_values_in_list_metrics() -> None:
     test_dataset = pd.DataFrame({"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 2, 2, 432]})
     data_mapping = ColumnMapping()
-    metric = DataQualityValueListMetrics(column="category_feature", values=["d"])
+    metric = DataQualityValueListMetrics(column_name="category_feature", values=["d"])
     result = metric.calculate(
         data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
     )
@@ -74,7 +74,7 @@ def test_data_quality_values_in_list_metrics() -> None:
     assert result.share_in_list == 0.25
     assert result.share_not_in_list == 0.75
 
-    metric = DataQualityValueListMetrics(column="numerical_feature", values=[2])
+    metric = DataQualityValueListMetrics(column_name="numerical_feature", values=[2])
     result = metric.calculate(
         data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
     )
@@ -86,7 +86,7 @@ def test_data_quality_values_in_list_metrics() -> None:
 
     reference_dataset = pd.DataFrame({"category_feature": ["n", "y", "n", "y"], "numerical_feature": [0, 2, 2, 432]})
 
-    metric = DataQualityValueListMetrics(column="category_feature")
+    metric = DataQualityValueListMetrics(column_name="category_feature")
     result = metric.calculate(
         data=InputData(current_data=test_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
     )
@@ -101,7 +101,7 @@ def test_data_quality_values_in_list_metrics_reference_defaults() -> None:
     current_dataset = pd.DataFrame({"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 2, 2, 432]})
     reference_dataset = pd.DataFrame({"category_feature": ["n", "n", "p", "n"]})
     data_mapping = ColumnMapping()
-    metric = DataQualityValueListMetrics(column="category_feature")
+    metric = DataQualityValueListMetrics(column_name="category_feature")
     result = metric.calculate(
         data=InputData(current_data=current_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
     )
@@ -115,7 +115,7 @@ def test_data_quality_values_in_list_metrics_reference_defaults() -> None:
 def test_data_quality_values_in_range_metrics() -> None:
     test_dataset = pd.DataFrame({"numerical_feature": [0, 2, 2, 432]})
     data_mapping = ColumnMapping()
-    metric = DataQualityValueRangeMetrics(column="numerical_feature", left=0, right=10.5)
+    metric = DataQualityValueRangeMetrics(column_name="numerical_feature", left=0, right=10.5)
     result = metric.calculate(
         data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
     )
@@ -127,7 +127,7 @@ def test_data_quality_values_in_range_metrics() -> None:
 
     reference_dataset = pd.DataFrame({"numerical_feature": [0, 1, 1, 1]})
 
-    metric = DataQualityValueRangeMetrics(column="numerical_feature")
+    metric = DataQualityValueRangeMetrics(column_name="numerical_feature")
     result = metric.calculate(
         data=InputData(current_data=test_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
     )
@@ -137,7 +137,7 @@ def test_data_quality_values_in_range_metrics() -> None:
     assert result.share_in_range == 0.25
     assert result.share_not_in_range == 0.75
 
-    metric = DataQualityValueRangeMetrics(column="numerical_feature", right=5)
+    metric = DataQualityValueRangeMetrics(column_name="numerical_feature", right=5)
     result = metric.calculate(
         data=InputData(current_data=test_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
     )
@@ -151,7 +151,7 @@ def test_data_quality_values_in_range_metrics() -> None:
 def test_data_quality_quantile_metrics() -> None:
     test_dataset = pd.DataFrame({"numerical_feature": [0, 2, 2, 2, 0]})
     data_mapping = ColumnMapping()
-    metric = DataQualityValueQuantileMetrics(column="numerical_feature", quantile=0.5)
+    metric = DataQualityValueQuantileMetrics(column_name="numerical_feature", quantile=0.5)
     result = metric.calculate(
         data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
     )

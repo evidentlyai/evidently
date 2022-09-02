@@ -125,9 +125,7 @@ class DataIntegrityMetricsRenderer(MetricRenderer):
         return dataclasses.asdict(obj.get_result().current_stats)
 
     @staticmethod
-    def _get_metrics_table(
-            dataset_name: str, metrics: DataIntegrityMetricsValues
-    ) -> MetricHtmlInfo:
+    def _get_metrics_table(dataset_name: str, metrics: DataIntegrityMetricsValues) -> MetricHtmlInfo:
         headers = ("Quality Metric", "Value")
         stats = (
             ("Number of columns", metrics.number_of_columns),
@@ -167,13 +165,11 @@ class DataIntegrityMetricsRenderer(MetricRenderer):
                 ),
                 details=[],
             ),
-            self._get_metrics_table(dataset_name="current", metrics=metric_result.current_stats)
+            self._get_metrics_table(dataset_name="current", metrics=metric_result.current_stats),
         ]
 
         if metric_result.reference_stats is not None:
-            result.append(
-                self._get_metrics_table(dataset_name="reference", metrics=metric_result.reference_stats)
-            )
+            result.append(self._get_metrics_table(dataset_name="reference", metrics=metric_result.reference_stats))
 
         return result
 
@@ -320,11 +316,7 @@ class DataIntegrityValueByRegexpMetricsRenderer(MetricRenderer):
         ]
 
         if metric_result.reference is not None:
-            result.append(
-                self._get_table_stat(
-                    dataset_name="reference", metrics=metric_result.reference
-                )
-            )
+            result.append(self._get_table_stat(dataset_name="reference", metrics=metric_result.reference))
 
         return result
 
@@ -562,8 +554,6 @@ class DataIntegrityNullValuesMetricsRenderer(MetricRenderer):
         ]
 
         if metric_result.reference_null_values is not None:
-            result.append(
-                self._get_table_stat(dataset_name="reference", stats=metric_result.reference_null_values)
-            )
+            result.append(self._get_table_stat(dataset_name="reference", stats=metric_result.reference_null_values))
 
         return result

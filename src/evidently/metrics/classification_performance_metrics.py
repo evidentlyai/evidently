@@ -422,14 +422,20 @@ class ClassificationPerformanceMetricsRenderer(MetricRenderer):
                     type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
                     title="",
                     size=2,
-                    params={
-                        "counters": [
-                            {"value": "", "label": f"Classification Model Performance Report. Target: '{target_name}'"}
-                        ]
-                    },
+                    params={"counters": [{"value": "", "label": "Classification Model Performance."}]},
                 ),
                 details=[],
-            )
+            ),
+            MetricHtmlInfo(
+                "classification_performance_target_name",
+                BaseWidgetInfo(
+                    type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
+                    title=f"Target: '{target_name}'",
+                    size=2,
+                    params={},
+                ),
+                details=[],
+            ),
         ]
         # add tables with perf metrics
         if metric_result.reference is not None:

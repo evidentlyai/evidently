@@ -10,19 +10,20 @@ import pandas as pd
 import numpy as np
 
 from evidently import TaskType
-from evidently.calculations.data_quality import calculate_correlations
+from evidently.calculations.data_quality import calculate_correlations, FeatureQualityStats
 from evidently.calculations.data_quality import calculate_data_quality_stats
 from evidently.calculations.data_quality import DataQualityStats
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.metrics.utils import make_hist_for_num_plot
 from evidently.metrics.utils import make_hist_for_cat_plot
-from evidently.utils.data_operations import process_columns
-from evidently.utils.data_operations import recognize_task
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.base_renderer import MetricHtmlInfo
 from evidently.renderers.base_renderer import MetricRenderer
+from evidently.utils.data_operations import process_columns
+from evidently.utils.data_operations import recognize_task
+from evidently.utils.visualizations import plot_distr
 
 
 @dataclass
@@ -132,19 +133,63 @@ class DataQualityMetricsRenderer(MetricRenderer):
     def render_json(self, obj: DataQualityMetrics) -> dict:
         return dataclasses.asdict(obj.get_result())
 
+    @staticmethod
+    def _get_metrics_table(dataset_name: str, stats: Dict[str, FeatureQualityStats]) -> MetricHtmlInfo:
+        headers = ["Column name", "Type", "Count"]
+        column_stats = ((column_name, stat.feature_type, stat.count) for column_name, stat in stats.items())
+        return MetricHtmlInfo(
+            f"data_quality_stats_table_{dataset_name.lower()}",
+            BaseWidgetInfo(
+                title=f"{dataset_name.capitalize()}: Data Integrity Metrics",
+                type=BaseWidgetInfo.WIDGET_INFO_TYPE_TABLE,
+                size=2,
+                params={"header": headers, "data": column_stats},
+            ),
+            details=[],
+        )
+
+    @staticmethod
+    def _get_data_quality_distribution_graph(
+        features_stat: Dict[str, Dict[str, pd.DataFrame]],
+    ) -> List[MetricHtmlInfo]:
+        result = []
+
+        for column_name, stat in features_stat.items():
+            curr_distr = stat["current"]
+            ref_distr = stat.get("reference")
+            fig = plot_distr(curr_distr, ref_distr)
+            fig_json = fig.to_plotly_json()
+
+            result.append(
+                MetricHtmlInfo(
+                    f"data_quality_{column_name}",
+                    BaseWidgetInfo(
+                        title=f"Column: {column_name}",
+                        size=2,
+                        type="big_graph",
+                        params={"data": fig_json["data"], "layout": fig_json["layout"]},
+                    ),
+                    details=[],
+                )
+            )
+        return result
+
     def render_html(self, obj: DataQualityMetrics) -> List[MetricHtmlInfo]:
-        return [
+        metric_result = obj.get_result()
+        result = [
             MetricHtmlInfo(
-                "data_quality",
+                "data_quality_title",
                 BaseWidgetInfo(
                     type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
-                    title="Data Quality",
+                    title="",
                     size=2,
-                    params={"counters": [{"value": "", "label": "DataQualityMetrics"}]},
+                    params={"counters": [{"value": "", "label": "Data Quality Metrics"}]},
                 ),
                 details=[],
             ),
         ]
+        result.extend(self._get_data_quality_distribution_graph(features_stat=metric_result.distr_for_plots))
+        return result
 
 
 @dataclass
@@ -184,22 +229,39 @@ class DataQualityStabilityMetrics(Metric[DataQualityStabilityMetricsResults]):
 
 @default_renderer(wrap_type=DataQualityStabilityMetrics)
 class DataQualityStabilityMetricsRenderer(MetricRenderer):
-    def render_json(self, obj: DataQualityMetrics) -> dict:
+    def render_json(self, obj: DataQualityStabilityMetrics) -> dict:
         return dataclasses.asdict(obj.get_result())
 
-    def render_html(self, obj: DataQualityMetrics) -> List[MetricHtmlInfo]:
-        return [
+    def render_html(self, obj: DataQualityStabilityMetrics) -> List[MetricHtmlInfo]:
+        metric_result = obj.get_result()
+        result = [
             MetricHtmlInfo(
-                "data_quality_stability",
+                "data_quality_stability_title",
                 BaseWidgetInfo(
                     type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
-                    title="Data Quality Stability",
+                    title="",
                     size=2,
-                    params={"counters": [{"value": "", "label": "DataQualityStabilityMetricsRenderer"}]},
+                    params={"counters": [{"value": "", "label": "Data Stability Metrics"}]},
+                ),
+                details=[],
+            ),
+            MetricHtmlInfo(
+                "data_quality_stability_info",
+                BaseWidgetInfo(
+                    type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
+                    title="",
+                    size=2,
+                    params={
+                        "counters": [
+                            {"value": metric_result.number_not_stable_target, "label": "Not stable target"},
+                            {"value": metric_result.number_not_stable_prediction, "label": "Not stable prediction"},
+                        ]
+                    },
                 ),
                 details=[],
             ),
         ]
+        return result
 
 
 @dataclass
@@ -210,34 +272,35 @@ class DataQualityValueListMetricsResults:
     share_not_in_list: float
     counts_of_value: Dict[str, pd.DataFrame]
     rows_count: int
+    values: List[str]
 
 
 class DataQualityValueListMetrics(Metric[DataQualityValueListMetricsResults]):
     """Calculates count and shares of values in the predefined values list"""
 
-    column: str
+    column_name: str
     values: Optional[list]
 
-    def __init__(self, column: str, values: Optional[list] = None) -> None:
+    def __init__(self, column_name: str, values: Optional[list] = None) -> None:
         self.values = values
-        self.column = column
+        self.column_name = column_name
 
     def calculate(self, data: InputData) -> DataQualityValueListMetricsResults:
         if self.values is None:
             if data.reference_data is None:
                 raise ValueError("Reference or values list should be present")
-            self.values = data.reference_data[self.column].unique()
+            self.values = data.reference_data[self.column_name].unique()
 
         rows_count = data.current_data.shape[0]
-        values_in_list = data.current_data[self.column].isin(self.values).sum()
+        values_in_list = data.current_data[self.column_name].isin(self.values).sum()
         number_not_in_list = rows_count - values_in_list
         counts_of_value = {}
-        current_counts = data.current_data[self.column].value_counts(dropna=False).reset_index()
+        current_counts = data.current_data[self.column_name].value_counts(dropna=False).reset_index()
         current_counts.columns = ["x", "count"]
         counts_of_value["current"] = current_counts
 
         if data.reference_data is not None and self.values is not None:
-            reference_counts = data.reference_data[self.column].value_counts(dropna=False).reset_index()
+            reference_counts = data.reference_data[self.column_name].value_counts(dropna=False).reset_index()
             reference_counts.columns = ["x", "count"]
             counts_of_value["reference"] = reference_counts
 
@@ -248,6 +311,7 @@ class DataQualityValueListMetrics(Metric[DataQualityValueListMetricsResults]):
             share_not_in_list=number_not_in_list / rows_count,
             counts_of_value=counts_of_value,
             rows_count=rows_count,
+            values=[str(value) for value in self.values]
         )
 
 
@@ -256,19 +320,58 @@ class DataQualityValueListMetricsRenderer(MetricRenderer):
     def render_json(self, obj: DataQualityValueListMetrics) -> dict:
         return dataclasses.asdict(obj.get_result())
 
+    @staticmethod
+    def _get_table_stat(dataset_name: str, metrics: DataQualityValueListMetricsResults) -> MetricHtmlInfo:
+        matched_stat = [
+            ("Values from the list", metrics.number_in_list),
+            ("Share from the list", np.round(metrics.share_in_list, 3)),
+            ("Values not in the list", metrics.number_not_in_list),
+            ("Share not in the list", np.round(metrics.share_not_in_list, 3)),
+            ("Rows count", metrics.rows_count),
+        ]
+
+        matched_stat_headers = ["Metric", "Value"]
+        return MetricHtmlInfo(
+            name=f"data_quality_values_list_stat_{dataset_name.lower()}",
+            info=BaseWidgetInfo(
+                title=f"{dataset_name.capitalize()}: Values list statistic",
+                type=BaseWidgetInfo.WIDGET_INFO_TYPE_TABLE,
+                size=2,
+                params={"header": matched_stat_headers, "data": matched_stat},
+            ),
+            details=[],
+        )
+
     def render_html(self, obj: DataQualityValueListMetrics) -> List[MetricHtmlInfo]:
-        return [
+        metric_result = obj.get_result()
+        result = [
             MetricHtmlInfo(
-                "data_quality_value_list",
+                "data_quality_value_list_title",
                 BaseWidgetInfo(
                     type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
-                    title="Data Quality Value List",
+                    title="",
                     size=2,
-                    params={"counters": [{"value": "", "label": "DataQualityValueListMetrics"}]},
+                    params={
+                        "counters": [
+                            {"value": "", "label": f"Data value list metrics for the column '{obj.column_name}'"}
+                        ]
+                    },
                 ),
                 details=[],
             ),
+            MetricHtmlInfo(
+                "data_quality_value_list_values_list",
+                BaseWidgetInfo(
+                    type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
+                    title="",
+                    size=2,
+                    params={"counters": [{"value": "", "label": f"Values list: '{metric_result.values}'"}]},
+                ),
+                details=[],
+            ),
+            self._get_table_stat(dataset_name="current", metrics=metric_result),
         ]
+        return result
 
 
 @dataclass
@@ -286,14 +389,14 @@ class DataQualityValueRangeMetricsResults:
 class DataQualityValueRangeMetrics(Metric[DataQualityValueRangeMetricsResults]):
     """Calculates count and shares of values in the predefined values range"""
 
-    column: str
+    column_name: str
     left: Optional[float]
     right: Optional[float]
 
-    def __init__(self, column: str, left: Optional[float] = None, right: Optional[float] = None) -> None:
+    def __init__(self, column_name: str, left: Optional[float] = None, right: Optional[float] = None) -> None:
         self.left = left
         self.right = right
-        self.column = column
+        self.column_name = column_name
 
     def calculate(self, data: InputData) -> DataQualityValueRangeMetricsResults:
         if (self.left is None or self.right is None) and data.reference_data is None:
@@ -303,8 +406,8 @@ class DataQualityValueRangeMetrics(Metric[DataQualityValueRangeMetricsResults]):
         ref_max = None
 
         if data.reference_data is not None:
-            ref_min = data.reference_data[self.column].min()
-            ref_max = data.reference_data[self.column].max()
+            ref_min = data.reference_data[self.column_name].min()
+            ref_max = data.reference_data[self.column_name].max()
 
         if self.left is None and data.reference_data is not None:
             self.left = ref_min
@@ -312,13 +415,13 @@ class DataQualityValueRangeMetrics(Metric[DataQualityValueRangeMetricsResults]):
         if self.right is None and data.reference_data is not None:
             self.right = ref_max
 
-        rows_count = data.current_data[self.column].dropna().shape[0]
+        rows_count = data.current_data[self.column_name].dropna().shape[0]
 
         if self.left is None or self.right is None:
             raise ValueError("Cannot define one or both of range parameters")
 
         number_in_range = (
-            data.current_data[self.column]
+            data.current_data[self.column_name]
             .dropna()
             .between(left=float(self.left), right=float(self.right), inclusive="both")
             .sum()
@@ -326,11 +429,11 @@ class DataQualityValueRangeMetrics(Metric[DataQualityValueRangeMetricsResults]):
         number_not_in_range = rows_count - number_in_range
 
         # visualisation
-        curr_feature = data.current_data[self.column]
+        curr_feature = data.current_data[self.column_name]
 
         ref_feature = None
         if data.reference_data is not None:
-            ref_feature = data.reference_data[self.column]
+            ref_feature = data.reference_data[self.column_name]
 
         distr_for_plot = make_hist_for_num_plot(curr_feature, ref_feature)
 
@@ -379,15 +482,15 @@ class DataQualityValueQuantileMetricsResults:
 class DataQualityValueQuantileMetrics(Metric[DataQualityValueQuantileMetricsResults]):
     """Calculates quantile with specified range"""
 
-    column: str
+    column_name: str
     quantile: float
 
-    def __init__(self, column: str, quantile: float) -> None:
+    def __init__(self, column_name: str, quantile: float) -> None:
         if quantile is not None:
             if not 0 <= quantile <= 1:
                 raise ValueError("Quantile should all be in the interval [0, 1].")
 
-        self.column = column
+        self.column = column_name
         self.quantile = quantile
 
     def calculate(self, data: InputData) -> DataQualityValueQuantileMetricsResults:

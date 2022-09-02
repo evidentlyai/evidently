@@ -225,13 +225,13 @@ class RegressionPerformanceMetricsRenderer(MetricRenderer):
         return dataclasses.asdict(obj.get_result())
 
     @staticmethod
-    def _get_metrics_table(dataset_name: str, metrics: RegressionPerformanceMetricsResults) -> MetricHtmlInfo:
+    def _get_metrics_tails(dataset_name: str, metrics: RegressionPerformanceMetricsResults) -> MetricHtmlInfo:
         counters = [
-            {"value": str(round(metrics.mean_error, 3)), "label": "mean_error"},
-            {"value": str(round(metrics.mean_abs_error, 3)), "label": "mean_abs_error"},
-            {"value": str(round(metrics.mean_abs_perc_error, 3)), "label": "mean_abs_perc_error"},
-            {"value": str(round(metrics.rmse, 3)), "label": "rmse"},
-            {"value": str(round(metrics.r2_score, 3)), "label": "r2_score"},
+            {"value": str(round(metrics.mean_error, 3)), "label": "Mean error"},
+            {"value": str(round(metrics.mean_abs_error, 3)), "label": "Mean abs error"},
+            {"value": str(round(metrics.mean_abs_perc_error, 3)), "label": "Mean abs perc error"},
+            {"value": str(round(metrics.rmse, 3)), "label": "RMSE"},
+            {"value": str(round(metrics.r2_score, 3)), "label": "r2 score"},
         ]
 
         return MetricHtmlInfo(
@@ -247,14 +247,17 @@ class RegressionPerformanceMetricsRenderer(MetricRenderer):
 
     def render_html(self, obj: RegressionPerformanceMetrics) -> List[MetricHtmlInfo]:
         metric_result = obj.get_result()
-        result = [MetricHtmlInfo(
-            "regression_performance_title",
-            BaseWidgetInfo(
-                type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
-                title="",
-                size=2,
-                params={"counters": [{"value": "", "label": "Model Quality"}]},
+        result = [
+            MetricHtmlInfo(
+                "regression_performance_title",
+                BaseWidgetInfo(
+                    type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
+                    title="",
+                    size=2,
+                    params={"counters": [{"value": "", "label": "Model Quality"}]},
+                ),
+                details=[],
             ),
-            details=[],
-        ), self._get_metrics_table(dataset_name="current", metrics=metric_result)]
+            self._get_metrics_tails(dataset_name="current", metrics=metric_result),
+        ]
         return result

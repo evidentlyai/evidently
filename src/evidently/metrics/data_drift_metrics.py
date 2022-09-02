@@ -83,7 +83,7 @@ class DataDriftMetricsRenderer(MetricRenderer):
                     "drift was detected" if drift_info.drift_detected else "no drift",
                     f"{drift_info.p_value:.3f}",
                     f"{drift_info.stattest_name}",
-                    f"{drift_info.threshold}"
+                    f"{drift_info.threshold}",
                 )
             )
 
@@ -133,9 +133,11 @@ class DataDriftMetricsRenderer(MetricRenderer):
                     type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
                     title="",
                     size=2,
-                    params={"counters": [{
-                        "value": "",
-                        "label": f"Dataset Drift: {dataset_drift}. Features Drift: {features_drift}"}]},
+                    params={
+                        "counters": [
+                            {"value": "", "label": f"Dataset Drift: {dataset_drift}. Features Drift: {features_drift}"}
+                        ]
+                    },
                 ),
                 details=[],
             ),

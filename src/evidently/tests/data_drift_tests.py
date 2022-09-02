@@ -25,7 +25,7 @@ from evidently.tests.base_test import BaseTestGenerator
 from evidently.tests.base_test import BaseCheckValueTest
 from evidently.tests.base_test import TestResult
 from evidently.tests.base_test import TestValueCondition
-from evidently.tests.utils import plot_distr
+from evidently.utils.visualizations import plot_distr
 from evidently.utils.types import Numeric
 
 DATA_DRIFT_GROUP = GroupData("data_drift", "Data Drift", "")
