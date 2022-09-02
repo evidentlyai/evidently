@@ -311,7 +311,7 @@ class DataQualityValueListMetrics(Metric[DataQualityValueListMetricsResults]):
             share_not_in_list=number_not_in_list / rows_count,
             counts_of_value=counts_of_value,
             rows_count=rows_count,
-            values=[str(value) for value in self.values]
+            values=[str(value) for value in self.values],
         )
 
 
