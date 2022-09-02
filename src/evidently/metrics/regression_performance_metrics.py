@@ -229,7 +229,7 @@ class RegressionPerformanceMetricsRenderer(MetricRenderer):
             MetricHtmlInfo(
                 "regression_performance",
                 BaseWidgetInfo(
-                    type="counter",
+                    type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
                     title="Regression Performance",
                     size=2,
                     params={"counters": [{"value": "", "label": "RegressionPerformanceMetrics"}]},

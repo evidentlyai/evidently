@@ -137,7 +137,7 @@ class DataQualityMetricsRenderer(MetricRenderer):
             MetricHtmlInfo(
                 "data_quality",
                 BaseWidgetInfo(
-                    type="counter",
+                    type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
                     title="Data Quality",
                     size=2,
                     params={"counters": [{"value": "", "label": "DataQualityMetrics"}]},
@@ -192,7 +192,7 @@ class DataQualityStabilityMetricsRenderer(MetricRenderer):
             MetricHtmlInfo(
                 "data_quality_stability",
                 BaseWidgetInfo(
-                    type="counter",
+                    type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
                     title="Data Quality Stability",
                     size=2,
                     params={"counters": [{"value": "", "label": "DataQualityStabilityMetricsRenderer"}]},
@@ -261,7 +261,7 @@ class DataQualityValueListMetricsRenderer(MetricRenderer):
             MetricHtmlInfo(
                 "data_quality_value_list",
                 BaseWidgetInfo(
-                    type="counter",
+                    type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
                     title="Data Quality Value List",
                     size=2,
                     params={"counters": [{"value": "", "label": "DataQualityValueListMetrics"}]},
@@ -356,7 +356,7 @@ class DataQualityValueRangeMetricsRenderer(MetricRenderer):
             MetricHtmlInfo(
                 "data_quality_value_range",
                 BaseWidgetInfo(
-                    type="counter",
+                    type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
                     title="Data Quality Value Range",
                     size=2,
                     params={"counters": [{"value": "", "label": "DataQualityValueRangeMetrics"}]},
@@ -420,7 +420,7 @@ class DataQualityValueQuantileMetricsRenderer(MetricRenderer):
             MetricHtmlInfo(
                 "data_quality_value_quantile",
                 BaseWidgetInfo(
-                    type="counter",
+                    type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
                     title="Data Quality Value Quantile",
                     size=2,
                     params={"counters": [{"value": "", "label": "DataQualityValueQuantileMetrics"}]},
@@ -551,7 +551,7 @@ class DataQualityCorrelationMetricsRenderer(MetricRenderer):
             MetricHtmlInfo(
                 "data_quality_correlation",
                 BaseWidgetInfo(
-                    type="counter",
+                    type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
                     title="Data Quality Correlation",
                     size=2,
                     params={"counters": [{"value": "", "label": "DataQualityCorrelationMetrics"}]},

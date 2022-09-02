@@ -30,11 +30,11 @@ class Report(Display):
         self._inner_suite = Suite()
 
     def run(
-            self,
-            *,
-            reference_data: Optional[pd.DataFrame],
-            current_data: pd.DataFrame,
-            column_mapping: Optional[ColumnMapping] = None,
+        self,
+        *,
+        reference_data: Optional[pd.DataFrame],
+        current_data: pd.DataFrame,
+        column_mapping: Optional[ColumnMapping] = None,
     ) -> None:
         if column_mapping is None:
             column_mapping = ColumnMapping()
@@ -72,7 +72,9 @@ class Report(Display):
         return (
             "evidently_dashboard_" + str(uuid.uuid4()).replace("-", ""),
             DashboardInfo("Report", widgets=[result.info for result in metrics_results]),
-            {f"{item.id}": dataclasses.asdict(item.info)
-             for idx, info in enumerate(metrics_results)
-             for item in info.details},
+            {
+                f"{item.id}": dataclasses.asdict(item.info)
+                for idx, info in enumerate(metrics_results)
+                for item in info.details
+            },
         )

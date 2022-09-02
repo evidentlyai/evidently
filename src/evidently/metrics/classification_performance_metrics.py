@@ -282,7 +282,7 @@ class ClassificationPerformanceMetrics(Metric[ClassificationPerformanceResults])
 @default_renderer(wrap_type=ClassificationPerformanceMetrics)
 class ClassificationPerformanceMetricsRenderer(MetricRenderer):
     def render_json(self, obj: ClassificationPerformanceMetrics) -> dict:
-        return dataclasses.asdict(obj.get_result().current)
+        return dataclasses.asdict(obj.get_result())
 
     @staticmethod
     def _get_metrics_table(dataset_name: str, metrics: DatasetClassificationPerformanceMetrics) -> MetricHtmlInfo:
@@ -303,7 +303,7 @@ class ClassificationPerformanceMetricsRenderer(MetricRenderer):
             f"classification_performance_metrics_table_{dataset_name.lower()}",
             BaseWidgetInfo(
                 title=f"{dataset_name.capitalize()}: Model Quality With Macro-average Metrics",
-                type="counter",
+                type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
                 size=2,
                 params={"counters": counters},
             ),
@@ -337,7 +337,7 @@ class ClassificationPerformanceMetricsRenderer(MetricRenderer):
             f"classification_performance_metrics_class_representation_{dataset_name.lower()}",
             BaseWidgetInfo(
                 title=f"{dataset_name.capitalize()}: Class Representation",
-                type="big_graph",
+                type=BaseWidgetInfo.WIDGET_INFO_TYPE_BIG_GRAPH,
                 size=size,
                 params={"data": support_bar_json["data"], "layout": support_bar_json["layout"]},
                 additionalGraphs=[],
@@ -370,7 +370,7 @@ class ClassificationPerformanceMetricsRenderer(MetricRenderer):
             f"classification_performance_current_metrics_confusion_matrix_{dataset_name.lower()}",
             BaseWidgetInfo(
                 title=f"{dataset_name.capitalize()}: Confusion Matrix",
-                type="big_graph",
+                type=BaseWidgetInfo.WIDGET_INFO_TYPE_BIG_GRAPH,
                 size=size,
                 params={"data": conf_matrix_json["data"], "layout": conf_matrix_json["layout"]},
                 additionalGraphs=[],
@@ -403,7 +403,7 @@ class ClassificationPerformanceMetricsRenderer(MetricRenderer):
             f"classification_performance_current_metrics_metrix_matrix_{dataset_name.lower()}",
             BaseWidgetInfo(
                 title=f"{dataset_name.capitalize()}: Quality Metrics by Class",
-                type="big_graph",
+                type=BaseWidgetInfo.WIDGET_INFO_TYPE_BIG_GRAPH,
                 size=size,
                 params={"data": metrics_matrix_json["data"], "layout": metrics_matrix_json["layout"]},
             ),
@@ -419,7 +419,7 @@ class ClassificationPerformanceMetricsRenderer(MetricRenderer):
             MetricHtmlInfo(
                 "classification_performance_title",
                 BaseWidgetInfo(
-                    type="counter",
+                    type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
                     title="",
                     size=2,
                     params={
@@ -612,7 +612,7 @@ class ClassificationPerformanceMetricsTopKRenderer(MetricRenderer):
             MetricHtmlInfo(
                 "classification_performance_top_k",
                 BaseWidgetInfo(
-                    type="counter",
+                    type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
                     title="Classification Performance Top K",
                     size=2,
                     params={"counters": [{"value": "", "label": "ClassificationPerformanceMetricsTopK"}]},
@@ -650,7 +650,7 @@ class ClassificationPerformanceMetricsThresholdRenderer(MetricRenderer):
             MetricHtmlInfo(
                 "classification_performance_threshold",
                 BaseWidgetInfo(
-                    type="counter",
+                    type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
                     title="Classification Performance with Threshold",
                     size=2,
                     params={"counters": [{"value": "", "label": "ClassificationPerformanceMetricsThreshold"}]},

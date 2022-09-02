@@ -69,22 +69,82 @@ class DataDriftMetrics(Metric[DataDriftMetricsResults]):
 @default_renderer(wrap_type=DataDriftMetrics)
 class DataDriftMetricsRenderer(MetricRenderer):
     def render_json(self, obj: DataDriftMetrics) -> dict:
-        return dataclasses.asdict(obj.get_result().metrics)
+        return dataclasses.asdict(obj.get_result())
+
+    @staticmethod
+    def _get_features_drift_table(metrics: DataDriftAnalyzerMetrics) -> MetricHtmlInfo:
+        headers = ["Column Name", "Drift", "Drift Score", "Stattest"]
+        data = []
+
+        for column_name, drift_info in metrics.features.items():
+            drift = "no drift"
+
+            if drift_info.drift_detected:
+                drift = "drift was detected"
+
+            data.append((
+                column_name,
+                drift,
+                f"{drift_info.p_value:.3f}",
+                f"{drift_info.stattest_name} with threshold {drift_info.threshold}",
+            ))
+
+        return MetricHtmlInfo(
+            f"data_drift_features",
+            BaseWidgetInfo(
+                title=f"Data Drift Scores",
+                type=BaseWidgetInfo.WIDGET_INFO_TYPE_TABLE,
+                size=2,
+                params={"header": headers, "data": data},
+            ),
+            details=[],
+        )
 
     def render_html(self, obj: DataDriftMetrics) -> List[MetricHtmlInfo]:
-        return [
+        metric_result = obj.get_result()
+        metrics = metric_result.metrics
+        if metrics.dataset_drift:
+            dataset_drift = "drift was detected"
+
+        else:
+            dataset_drift = "drift was not detected"
+
+        if metrics.n_drifted_features:
+            features_drift = f"{metrics.n_drifted_features} of {metrics.n_features} features " \
+                               f"({round(metrics.share_drifted_features, 3)}%)"
+
+        else:
+            features_drift = "no drifted features"
+
+        result = [
             MetricHtmlInfo(
-                "data_drift",
+                "data_drift_dataset",
                 BaseWidgetInfo(
-                    type="counter",
-                    title="Data Drift",
+                    type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
+                    title="",
                     size=2,
                     params={
                         "counters": [
-                            {"value": "", "label": f"Share:'{obj.get_result().metrics.share_drifted_features}'"}
+                            {"value": "", "label": f"Dataset Drift: {dataset_drift}"}
                         ]
                     },
                 ),
                 details=[],
             ),
+            MetricHtmlInfo(
+                "data_drift_features",
+                BaseWidgetInfo(
+                    type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
+                    title="",
+                    size=2,
+                    params={
+                        "counters": [
+                            {"value": "", "label": f"Features Drift: {features_drift}"}
+                        ]
+                    },
+                ),
+                details=[],
+            ),
+            self._get_features_drift_table(metrics=metrics)
         ]
+        return result
