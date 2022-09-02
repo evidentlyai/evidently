@@ -1,6 +1,5 @@
 import copy
 import dataclasses
-import json
 import uuid
 from collections import Counter
 from datetime import datetime
@@ -13,27 +12,21 @@ import pandas as pd
 import evidently
 from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.data_operations import process_columns
-from evidently.dashboard.dashboard import SaveMode
-from evidently.dashboard.dashboard import SaveModeMap
-from evidently.dashboard.dashboard import TemplateParams
-from evidently.dashboard.dashboard import save_data_file
-from evidently.dashboard.dashboard import save_lib_files
 from evidently.metrics.base_metric import InputData
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
 from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.renderers.notebook_utils import determine_template
 from evidently.suite.base_suite import Suite
+from evidently.suite.base_suite import Display
 from evidently.suite.base_suite import find_test_renderer
 from evidently.test_preset.test_preset import TestPreset
 from evidently.tests.base_test import BaseTestGenerator
 from evidently.tests.base_test import DEFAULT_GROUP
 from evidently.tests.base_test import Test
 from evidently.tests.base_test import TestResult
-from evidently.utils import NumpyEncoder
 
 
-class TestSuite:
+class TestSuite(Display):
     _inner_suite: Suite
     _columns_info: DatasetColumns
     _test_presets: List[TestPreset]
@@ -94,57 +87,6 @@ class TestSuite:
         self._inner_suite.run_calculate(InputData(reference_data, current_data, column_mapping))
         self._inner_suite.run_checks()
 
-    def _repr_html_(self):
-        dashboard_id, dashboard_info, graphs = self._build_dashboard_info()
-        template_params = TemplateParams(
-            dashboard_id=dashboard_id, dashboard_info=dashboard_info, additional_graphs=graphs
-        )
-        return self._render(determine_template("auto"), template_params)
-
-    def show(self, mode="auto"):
-        dashboard_id, dashboard_info, graphs = self._build_dashboard_info()
-        template_params = TemplateParams(
-            dashboard_id=dashboard_id, dashboard_info=dashboard_info, additional_graphs=graphs
-        )
-        # pylint: disable=import-outside-toplevel
-        try:
-            from IPython.display import HTML
-
-            return HTML(self._render(determine_template(mode), template_params))
-        except ImportError as err:
-            raise Exception("Cannot import HTML from IPython.display, no way to show html") from err
-
-    def save_html(self, filename: str, mode: Union[str, SaveMode] = SaveMode.SINGLE_FILE):
-        dashboard_id, dashboard_info, graphs = self._build_dashboard_info()
-        if isinstance(mode, str):
-            _mode = SaveModeMap.get(mode)
-            if _mode is None:
-                raise ValueError(f"Unexpected save mode {mode}. Expected [{','.join(SaveModeMap.keys())}]")
-            mode = _mode
-        if mode == SaveMode.SINGLE_FILE:
-            template_params = TemplateParams(
-                dashboard_id=dashboard_id,
-                dashboard_info=dashboard_info,
-                additional_graphs=graphs,
-            )
-            with open(filename, "w", encoding="utf-8") as out_file:
-                out_file.write(self._render(determine_template("inline"), template_params))
-        else:
-            font_file, lib_file = save_lib_files(filename, mode)
-            data_file = save_data_file(filename, mode, dashboard_id, dashboard_info, graphs)
-            template_params = TemplateParams(
-                dashboard_id=dashboard_id,
-                dashboard_info=dashboard_info,
-                additional_graphs=graphs,
-                embed_lib=False,
-                embed_data=False,
-                embed_font=False,
-                font_file=font_file,
-                include_js_files=[lib_file, data_file],
-            )
-            with open(filename, "w", encoding="utf-8") as out_file:
-                out_file.write(self._render(determine_template("inline"), template_params))
-
     def as_dict(self) -> dict:
         test_results = []
         counter = Counter(test_result.status for test_result in self._inner_suite.context.test_results.values())
@@ -168,16 +110,6 @@ class TestSuite:
             },
             "columns_info": dataclasses.asdict(self._columns_info),
         }
-
-    def json(self) -> str:
-        return json.dumps(self.as_dict(), cls=NumpyEncoder)
-
-    def save_json(self, filename):
-        with open(filename, "w", encoding="utf-8") as out_file:
-            json.dump(self.as_dict(), out_file, cls=NumpyEncoder)
-
-    def _render(self, temple_func, template_params: TemplateParams):
-        return temple_func(params=template_params)
 
     def _build_dashboard_info(self):
         test_results = []
