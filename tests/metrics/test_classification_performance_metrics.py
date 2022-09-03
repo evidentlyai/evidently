@@ -9,14 +9,15 @@ import pytest
 from pytest import approx
 
 from evidently.calculations.classification_performance import ConfusionMatrix
-from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.metrics.base_metric import InputData
 from evidently.metrics import ClassificationPerformanceMetrics
 from evidently.metrics import ClassificationPerformanceMetricsTopK
 from evidently.metrics import ClassificationPerformanceMetricsThreshold
+from evidently.metrics.base_metric import InputData
 from evidently.metrics.classification_performance_metrics import get_prediction_data
 from evidently.metrics.classification_performance_metrics import k_probability_threshold
 from evidently.metrics.classification_performance_metrics import threshold_probability_labels
+from evidently.pipeline.column_mapping import ColumnMapping
+from evidently.report import Report
 
 
 def test_classification_performance_metrics_binary_labels() -> None:
@@ -46,6 +47,24 @@ def test_classification_performance_metrics_binary_labels() -> None:
     assert result.current.confusion_matrix == ConfusionMatrix(labels=[0, 1], values=[[4, 2], [1, 3]])
 
 
+def test_classification_performance_metrics_with_report() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "my_target": [1, 1, 0],
+            "my_prediction": [0, 1, 1],
+        }
+    )
+    data_mapping = ColumnMapping(target="my_target", prediction="my_prediction")
+    report = Report(metrics=[ClassificationPerformanceMetrics()])
+    report.run(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+    assert report.show()
+    assert report.json()
+
+    report.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=data_mapping)
+    assert report.show()
+    assert report.json()
+
+
 def test_classification_performance_metrics_binary_probas_threshold() -> None:
     test_dataset = pd.DataFrame(
         {
@@ -54,10 +73,10 @@ def test_classification_performance_metrics_binary_probas_threshold() -> None:
         }
     )
     class_threshold = 0.6
-    column_mapping = ColumnMapping(target="target", prediction="prediction")
+    data_mapping = ColumnMapping(target="target", prediction="prediction")
     metric = ClassificationPerformanceMetricsThreshold(class_threshold)
     result = metric.calculate(
-        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
+        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
     )
     assert result is not None
     assert result.current.accuracy == 0.6
@@ -67,6 +86,24 @@ def test_classification_performance_metrics_binary_probas_threshold() -> None:
     assert result.current.roc_auc == 0.625
     assert result.current.log_loss == 3.928216092142768
     assert result.current.confusion_matrix == ConfusionMatrix(labels=[0, 1], values=[[4, 2], [2, 2]])
+
+
+def test_classification_performance_metrics_binary_probas_threshold_with_report() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "target": [1, 1, 0],
+            "prediction": [0.9, 0.7, 0.0],
+        }
+    )
+    data_mapping = ColumnMapping(target="target", prediction="prediction")
+    report = Report(metrics=[ClassificationPerformanceMetricsTopK(k=1)])
+    report.run(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+    assert report.show()
+    assert report.json()
+
+    report.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=data_mapping)
+    assert report.show()
+    assert report.json()
 
 
 @pytest.mark.parametrize(
@@ -481,19 +518,6 @@ def test_threshold_probability_labels(
     assert threshold_probability_labels(probas, pos_label, neg_label, threshold).tolist() == expected
 
 
-def test_classification_performance_top_k_metrics_no_probas() -> None:
-    test_dataset = pd.DataFrame(
-        {
-            "target": [1, 1, 1],
-            "prediction": [1, 1, 0],
-        }
-    )
-    column_mapping = ColumnMapping(target="target", prediction="prediction", pos_label=1)
-    metric = ClassificationPerformanceMetricsTopK(k=1)
-    with pytest.raises(ValueError):
-        metric.calculate(data=InputData(current_data=test_dataset, reference_data=None, column_mapping=column_mapping))
-
-
 def test_classification_performance_top_k_metrics() -> None:
     test_dataset = pd.DataFrame(
         {
@@ -501,9 +525,26 @@ def test_classification_performance_top_k_metrics() -> None:
             "1": [1.0, 0.0, 0.5],
         }
     )
-    column_mapping = ColumnMapping(target="target", prediction="1", pos_label="2")
-    metric = ClassificationPerformanceMetricsTopK(k=1)
-    result = metric.calculate(
-        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
+    data_mapping = ColumnMapping(target="target", prediction="1", pos_label="2")
+    report = Report(metrics=[ClassificationPerformanceMetricsTopK(k=1)])
+    report.run(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+    assert report.show()
+    assert report.json()
+
+    report.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=data_mapping)
+    assert report.show()
+    assert report.json()
+
+
+def test_classification_performance_top_k_metrics_no_probas() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "target": [1, 1, 1],
+            "prediction": [1, 1, 0],
+        }
     )
-    assert result
+    data_mapping = ColumnMapping(target="target", prediction="prediction", pos_label=1)
+    report = Report(metrics=[ClassificationPerformanceMetricsTopK(k=1)])
+
+    with pytest.raises(ValueError):
+        report.run(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)

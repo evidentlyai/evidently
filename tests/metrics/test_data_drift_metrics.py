@@ -5,10 +5,9 @@ import pandas as pd
 
 import pytest
 
-from evidently.report import Report
-from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.metrics.base_metric import InputData
 from evidently.metrics.data_drift_metrics import DataDriftMetrics
+from evidently.pipeline.column_mapping import ColumnMapping
+from evidently.report import Report
 
 
 @pytest.mark.parametrize(
@@ -105,8 +104,7 @@ def test_data_drift_metrics_no_errors(
 ) -> None:
     report = Report(metrics=[DataDriftMetrics()])
     report.run(current_data=current_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
-    assert report is not None
-    assert report.show() is not None
+    assert report.show()
     assert report.json()
 
 
@@ -130,9 +128,7 @@ def test_data_drift_metrics_value_error(
     current_dataset: pd.DataFrame, reference_dataset: Optional[pd.DataFrame]
 ) -> None:
     data_mapping = ColumnMapping()
-    metric = DataDriftMetrics()
+    report = Report(metrics=[DataDriftMetrics()])
 
     with pytest.raises(ValueError):
-        metric.calculate(
-            data=InputData(current_data=current_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
-        )
+        report.run(current_data=current_dataset, reference_data=reference_dataset, column_mapping=data_mapping)

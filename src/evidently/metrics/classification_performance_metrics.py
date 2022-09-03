@@ -614,11 +614,8 @@ class ClassificationPerformanceMetricsTopKRenderer(MetricRenderer):
         return dataclasses.asdict(obj.get_result())
 
     @staticmethod
-    def _get_metrics_table(
-        dataset_name: str, metrics: DatasetClassificationPerformanceMetrics, top_k: Union[float, int]
-    ) -> MetricHtmlInfo:
+    def _get_metrics_table(dataset_name: str, metrics: DatasetClassificationPerformanceMetrics) -> MetricHtmlInfo:
         counters = [
-            {"value": top_k, "label": "Top K"},
             {"value": str(round(metrics.accuracy, 3)), "label": "Accuracy"},
             {"value": str(round(metrics.precision, 3)), "label": "Precision"},
             {"value": str(round(metrics.recall, 3)), "label": "Recall"},
@@ -645,17 +642,15 @@ class ClassificationPerformanceMetricsTopKRenderer(MetricRenderer):
                     type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
                     title="",
                     size=2,
-                    params={"counters": [{"value": "", "label": "Classification Performance With Top K"}]},
+                    params={"counters": [{"value": "", "label": f"Classification Performance With Top K (k={obj.k})"}]},
                 ),
                 details=[],
             ),
-            self._get_metrics_table(dataset_name="current", metrics=metric_result.current, top_k=obj.k),
+            self._get_metrics_table(dataset_name="current", metrics=metric_result.current),
         ]
 
         if metric_result.reference is not None:
-            result.append(
-                self._get_metrics_table(dataset_name="reference", metrics=metric_result.reference, top_k=obj.k)
-            )
+            result.append(self._get_metrics_table(dataset_name="reference", metrics=metric_result.reference))
 
         return result
 
@@ -685,10 +680,10 @@ class ClassificationPerformanceMetricsThresholdRenderer(MetricRenderer):
 
     @staticmethod
     def _get_metrics_table(
-        dataset_name: str, metrics: DatasetClassificationPerformanceMetrics, threshold: float
+        dataset_name: str,
+        metrics: DatasetClassificationPerformanceMetrics,
     ) -> MetricHtmlInfo:
         counters = [
-            {"value": threshold, "label": "Threshold"},
             {"value": str(round(metrics.accuracy, 3)), "label": "Accuracy"},
             {"value": str(round(metrics.precision, 3)), "label": "Precision"},
             {"value": str(round(metrics.recall, 3)), "label": "Recall"},
@@ -696,7 +691,7 @@ class ClassificationPerformanceMetricsThresholdRenderer(MetricRenderer):
         ]
 
         return MetricHtmlInfo(
-            f"classification_performance_top_k_table_{dataset_name.lower()}",
+            f"classification_performance_threshold_table_{dataset_name.lower()}",
             BaseWidgetInfo(
                 title=f"{dataset_name.capitalize()}: Model Quality With Macro-average Metrics",
                 type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
@@ -715,19 +710,22 @@ class ClassificationPerformanceMetricsThresholdRenderer(MetricRenderer):
                     type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
                     title="",
                     size=2,
-                    params={"counters": [{"value": "", "label": "Classification Performance With Threshold"}]},
+                    params={
+                        "counters": [
+                            {
+                                "value": "",
+                                "label": f"Classification Performance With Threshold (threshold={obj.threshold})",
+                            }
+                        ]
+                    },
                 ),
                 details=[],
             ),
-            self._get_metrics_table(dataset_name="current", metrics=metric_result.current, threshold=obj.threshold),
+            self._get_metrics_table(dataset_name="current", metrics=metric_result.current),
         ]
 
         if metric_result.reference is not None:
-            result.append(
-                self._get_metrics_table(
-                    dataset_name="reference", metrics=metric_result.reference, threshold=obj.threshold
-                )
-            )
+            result.append(self._get_metrics_table(dataset_name="reference", metrics=metric_result.reference))
 
         return result
 

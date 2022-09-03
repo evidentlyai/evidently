@@ -282,7 +282,7 @@ class RegressionPerformanceMetricsRenderer(MetricRenderer):
                         params={
                             "counters": [
                                 {"value": str(round(metric_result.mean_error_ref, 3)), "label": "Mean error"},
-                                {"value": str(round(metric_result.mean_abs_error_ref, 3)), "label": "MAEr"},
+                                {"value": str(round(metric_result.mean_abs_error_ref, 3)), "label": "MAE"},
                                 {
                                     "value": str(round(metric_result.mean_abs_perc_error_ref, 3)),
                                     "label": "MAPE",
