@@ -96,7 +96,7 @@ def test_classification_performance_metrics_binary_probas_threshold_with_report(
         }
     )
     data_mapping = ColumnMapping(target="target", prediction="prediction")
-    report = Report(metrics=[ClassificationPerformanceMetricsTopK(k=1)])
+    report = Report(metrics=[ClassificationPerformanceMetricsThreshold(classification_threshold=1)])
     report.run(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
     assert report.show()
     assert report.json()

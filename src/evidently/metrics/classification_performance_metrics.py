@@ -676,7 +676,7 @@ class ClassificationPerformanceMetricsThreshold(ClassificationPerformanceMetrics
 @default_renderer(wrap_type=ClassificationPerformanceMetricsThreshold)
 class ClassificationPerformanceMetricsThresholdRenderer(MetricRenderer):
     def render_json(self, obj: ClassificationPerformanceMetricsThreshold) -> dict:
-        return dataclasses.asdict(obj.get_result().current)
+        return dataclasses.asdict(obj.get_result())
 
     @staticmethod
     def _get_metrics_table(

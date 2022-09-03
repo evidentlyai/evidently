@@ -10,7 +10,7 @@ import pandas as pd
 import numpy as np
 
 from evidently import TaskType
-from evidently.calculations.data_quality import calculate_correlations, FeatureQualityStats
+from evidently.calculations.data_quality import calculate_correlations
 from evidently.calculations.data_quality import calculate_data_quality_stats
 from evidently.calculations.data_quality import DataQualityStats
 from evidently.metrics.base_metric import InputData
@@ -131,22 +131,11 @@ class DataQualityMetrics(Metric[DataQualityMetricsResults]):
 @default_renderer(wrap_type=DataQualityMetrics)
 class DataQualityMetricsRenderer(MetricRenderer):
     def render_json(self, obj: DataQualityMetrics) -> dict:
-        return dataclasses.asdict(obj.get_result())
-
-    @staticmethod
-    def _get_metrics_table(dataset_name: str, stats: Dict[str, FeatureQualityStats]) -> MetricHtmlInfo:
-        headers = ["Column name", "Type", "Count"]
-        column_stats = ((column_name, stat.feature_type, stat.count) for column_name, stat in stats.items())
-        return MetricHtmlInfo(
-            f"data_quality_stats_table_{dataset_name.lower()}",
-            BaseWidgetInfo(
-                title=f"{dataset_name.capitalize()}: Data Integrity Metrics",
-                type=BaseWidgetInfo.WIDGET_INFO_TYPE_TABLE,
-                size=2,
-                params={"header": headers, "data": column_stats},
-            ),
-            details=[],
-        )
+        result = dataclasses.asdict(obj.get_result())
+        result.pop("distr_for_plots", None)
+        result.pop("counts_of_values", None)
+        result.pop("correlations", None)
+        return result
 
     @staticmethod
     def _get_data_quality_distribution_graph(
@@ -320,7 +309,9 @@ class DataQualityValueListMetrics(Metric[DataQualityValueListMetricsResults]):
 @default_renderer(wrap_type=DataQualityValueListMetrics)
 class DataQualityValueListMetricsRenderer(MetricRenderer):
     def render_json(self, obj: DataQualityValueListMetrics) -> dict:
-        return dataclasses.asdict(obj.get_result())
+        result = dataclasses.asdict(obj.get_result())
+        result.pop("counts_of_value", None)
+        return result
 
     @staticmethod
     def _get_table_stat(dataset_name: str, metrics: DataQualityValueListMetricsResults) -> MetricHtmlInfo:
@@ -464,7 +455,9 @@ class DataQualityValueRangeMetrics(Metric[DataQualityValueRangeMetricsResults]):
 @default_renderer(wrap_type=DataQualityValueRangeMetrics)
 class DataQualityValueRangeMetricsRenderer(MetricRenderer):
     def render_json(self, obj: DataQualityValueRangeMetrics) -> dict:
-        return dataclasses.asdict(obj.get_result())
+        result = dataclasses.asdict(obj.get_result())
+        result.pop("distr_for_plot", None)
+        return result
 
     @staticmethod
     def _get_table_stat(dataset_name: str, metrics: DataQualityValueRangeMetricsResults) -> MetricHtmlInfo:
@@ -568,7 +561,9 @@ class DataQualityValueQuantileMetrics(Metric[DataQualityValueQuantileMetricsResu
 @default_renderer(wrap_type=DataQualityValueQuantileMetrics)
 class DataQualityValueQuantileMetricsRenderer(MetricRenderer):
     def render_json(self, obj: DataQualityValueQuantileMetrics) -> dict:
-        return dataclasses.asdict(obj.get_result())
+        result = dataclasses.asdict(obj.get_result())
+        result.pop("distr_for_plot", None)
+        return result
 
     def render_html(self, obj: DataQualityValueQuantileMetrics) -> List[MetricHtmlInfo]:
         metric_result = obj.get_result()
@@ -625,8 +620,8 @@ class DataCorrelation:
 
 @dataclass
 class DataQualityCorrelationMetricsResults:
-    current_correlation: DataCorrelation
-    reference_correlation: Optional[DataCorrelation]
+    current: DataCorrelation
+    reference: Optional[DataCorrelation]
 
 
 class DataQualityCorrelationMetrics(Metric[DataQualityCorrelationMetricsResults]):
@@ -718,27 +713,39 @@ class DataQualityCorrelationMetrics(Metric[DataQualityCorrelationMetricsResults]
             reference_correlation = None
 
         return DataQualityCorrelationMetricsResults(
-            current_correlation=current_correlations,
-            reference_correlation=reference_correlation,
+            current=current_correlations,
+            reference=reference_correlation,
         )
 
 
 @default_renderer(wrap_type=DataQualityCorrelationMetrics)
 class DataQualityCorrelationMetricsRenderer(MetricRenderer):
     def render_json(self, obj: DataQualityCorrelationMetrics) -> dict:
-        return dataclasses.asdict(obj.get_result())
+        result = dataclasses.asdict(obj.get_result())
+        result["current"].pop("correlation_matrix", None)
+
+        if result["reference"]:
+            result["reference"].pop("correlation_matrix", None)
+
+        return result
 
     @staticmethod
     def _get_table_stat(dataset_name: str, correlation: DataCorrelation) -> MetricHtmlInfo:
         matched_stat = [
             ("Abs max correlation", np.round(correlation.abs_max_correlation, 3)),
             ("Abs max num features correlation", np.round(correlation.abs_max_num_features_correlation, 3)),
-            ("Abs max target features correlation", np.round(correlation.abs_max_target_features_correlation, 3)),
-            (
-                "Abs max prediction features correlation",
-                np.round(correlation.abs_max_prediction_features_correlation, 3),
-            ),
         ]
+        if correlation.abs_max_target_features_correlation is not None:
+            matched_stat.append(
+                ("Abs max target features correlation", np.round(correlation.abs_max_target_features_correlation, 3))
+            )
+        if correlation.abs_max_prediction_features_correlation is not None:
+            matched_stat.append(
+                (
+                    "Abs max prediction features correlation",
+                    np.round(correlation.abs_max_prediction_features_correlation, 3),
+                )
+            )
 
         matched_stat_headers = ["Metric", "Value"]
         return MetricHtmlInfo(
@@ -766,12 +773,10 @@ class DataQualityCorrelationMetricsRenderer(MetricRenderer):
                 ),
                 details=[],
             ),
-            self._get_table_stat(dataset_name="current", correlation=metric_result.current_correlation),
+            self._get_table_stat(dataset_name="current", correlation=metric_result.current),
         ]
 
-        if metric_result.reference_correlation is not None:
-            result.append(
-                self._get_table_stat(dataset_name="reference", correlation=metric_result.reference_correlation)
-            )
+        if metric_result.reference is not None:
+            result.append(self._get_table_stat(dataset_name="reference", correlation=metric_result.reference))
 
         return result
