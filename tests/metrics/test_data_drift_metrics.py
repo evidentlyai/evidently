@@ -107,28 +107,25 @@ def test_data_drift_metrics_no_errors(
     assert report.show()
     assert report.json()
 
+    report.run(current_data=current_dataset, reference_data=None, column_mapping=data_mapping)
+    assert report.show()
+    assert report.json()
 
-@pytest.mark.parametrize(
-    "current_dataset, reference_dataset",
-    (
-        (
-            pd.DataFrame(
-                {
-                    "category_feature": ["1", "2", "3"],
-                    "numerical_feature": [3, 2, 1],
-                    "target": [None, np.NAN, 1],
-                    "prediction": [1, np.NAN, 1],
-                }
-            ),
-            None,
-        ),
-    ),
-)
-def test_data_drift_metrics_value_error(
-    current_dataset: pd.DataFrame, reference_dataset: Optional[pd.DataFrame]
-) -> None:
+
+def test_data_drift_metrics_value_error() -> None:
+    test_data = pd.DataFrame(
+        {
+            "category_feature": ["1", "2", "3"],
+            "numerical_feature": [3, 2, 1],
+            "target": [None, np.NAN, 1],
+            "prediction": [1, np.NAN, 1],
+        }
+    )
     data_mapping = ColumnMapping()
     report = Report(metrics=[DataDriftMetrics()])
 
     with pytest.raises(ValueError):
-        report.run(current_data=current_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
+        report.run(current_data=test_data, reference_data=None, column_mapping=data_mapping)
+
+    with pytest.raises(ValueError):
+        report.run(current_data=None, reference_data=test_data, column_mapping=data_mapping)

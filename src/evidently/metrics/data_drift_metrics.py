@@ -46,6 +46,12 @@ class DataDriftMetrics(Metric[DataDriftMetricsResults]):
         return tuple((self.options,))
 
     def calculate(self, data: InputData) -> DataDriftMetricsResults:
+        if data.current_data is None:
+            raise ValueError("Current dataset should be present")
+
+        if data.reference_data is None:
+            raise ValueError("Reference dataset should be present")
+
         columns = process_columns(data.current_data, data.column_mapping)
         options_provider: OptionsProvider = OptionsProvider()
 
@@ -53,9 +59,6 @@ class DataDriftMetrics(Metric[DataDriftMetricsResults]):
             options_provider.add(self.options)
 
         options = options_provider.get(DataDriftOptions)
-
-        if data.reference_data is None:
-            raise ValueError("Reference dataset should be present")
 
         drift_metrics = get_overall_data_drift(
             current_data=data.current_data,

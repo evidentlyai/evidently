@@ -42,6 +42,9 @@ class Report(Display):
         if column_mapping is None:
             column_mapping = ColumnMapping()
 
+        if current_data is None:
+            raise ValueError("Current dataset should be present")
+
         self._columns_info = process_columns(current_data, column_mapping)
         data = InputData(reference_data, current_data, column_mapping)
 
