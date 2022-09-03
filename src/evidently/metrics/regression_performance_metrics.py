@@ -230,7 +230,7 @@ class RegressionPerformanceMetricsRenderer(MetricRenderer):
         # remove values with DataFrames or Series
         result.pop("hist_for_plot")
         result.pop("vals_for_plots")
-        result.pop('me_hist_for_plot')
+        result.pop("me_hist_for_plot")
         return result
 
     def render_html(self, obj: RegressionPerformanceMetrics) -> List[MetricHtmlInfo]:
@@ -247,9 +247,9 @@ class RegressionPerformanceMetricsRenderer(MetricRenderer):
                 details=[],
             ),
             MetricHtmlInfo(
-                f"regression_performance_metrics_table_current",
+                "regression_performance_metrics_table_current",
                 BaseWidgetInfo(
-                    title=f"Current: Regression Performance Metrics",
+                    title="Current: Regression Performance Metrics",
                     type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
                     size=2,
                     params={
@@ -265,12 +265,18 @@ class RegressionPerformanceMetricsRenderer(MetricRenderer):
                 details=[],
             ),
         ]
-        if metric_result.mean_error_ref is not None:
+        if (
+            metric_result.mean_error_ref is not None
+            and metric_result.mean_abs_error_ref is not None
+            and metric_result.mean_abs_perc_error_ref is not None
+            and metric_result.rmse_ref is not None
+            and metric_result.r2_score_ref is not None
+        ):
             result.append(
                 MetricHtmlInfo(
-                    f"regression_performance_metrics_table_reference",
+                    "regression_performance_metrics_table_reference",
                     BaseWidgetInfo(
-                        title=f"Reference: Regression Performance Metrics",
+                        title="Reference: Regression Performance Metrics",
                         type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
                         size=2,
                         params={
