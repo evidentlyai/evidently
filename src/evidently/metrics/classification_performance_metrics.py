@@ -1,5 +1,6 @@
 import abc
 import dataclasses
+import json
 from typing import Optional
 from typing import List
 from typing import Dict
@@ -7,6 +8,8 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
+import plotly.figure_factory as ff
+import plotly.graph_objs as go
 import sklearn
 from numpy import dtype
 from pandas.core.dtypes.api import is_float_dtype
@@ -14,10 +17,17 @@ from pandas.core.dtypes.api import is_string_dtype
 from pandas.core.dtypes.api import is_object_dtype
 
 from evidently import ColumnMapping
-from evidently.calculations.classification_performance import calculate_confusion_by_classes
 from evidently.calculations.classification_performance import ConfusionMatrix
+from evidently.calculations.classification_performance import calculate_confusion_by_classes
+from evidently.utils.data_operations import process_columns
+from evidently.utils.data_operations import DatasetColumns
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
+from evidently.model.widget import BaseWidgetInfo
+from evidently.renderers.base_renderer import default_renderer
+from evidently.renderers.base_renderer import MetricHtmlInfo
+from evidently.renderers.base_renderer import MetricRenderer
+from evidently.options import ColorOptions
 
 
 @dataclasses.dataclass
@@ -47,6 +57,7 @@ class DatasetClassificationPerformanceMetrics:
 
 @dataclasses.dataclass
 class ClassificationPerformanceResults:
+    columns: DatasetColumns
     current: DatasetClassificationPerformanceMetrics
     dummy: DatasetClassificationPerformanceMetrics
     reference: Optional[DatasetClassificationPerformanceMetrics] = None
@@ -157,10 +168,11 @@ def classification_performance_metrics(
         fnr = conf_by_pos_label["fn"] / (conf_by_pos_label["fn"] + conf_by_pos_label["tp"])
 
     if class_num == 2 and prediction_probas is not None and roc_curve is not None:
-        rate_plots_data = {}
-        rate_plots_data["thrs"] = roc_curve[pos_label]["thrs"]
-        rate_plots_data["tpr"] = roc_curve[pos_label]["tpr"]
-        rate_plots_data["fpr"] = roc_curve[pos_label]["fpr"]
+        rate_plots_data = {
+            "thrs": roc_curve[pos_label]["thrs"],
+            "tpr": roc_curve[pos_label]["tpr"],
+            "fpr": roc_curve[pos_label]["fpr"],
+        }
 
         df = pd.DataFrame({"true": binaraized_target[pos_label].values, "preds": prediction_probas[pos_label].values})
         tnrs = []
@@ -203,6 +215,12 @@ class ClassificationPerformanceMetrics(Metric[ClassificationPerformanceResults])
     def calculate(self, data: InputData) -> ClassificationPerformanceResults:
         if data.current_data is None:
             raise ValueError("current dataset should be present")
+
+        if data.reference_data is None:
+            columns = process_columns(data.current_data, data.column_mapping)
+
+        else:
+            columns = process_columns(data.reference_data, data.column_mapping)
 
         current_data = _cleanup_data(data.current_data, data.column_mapping)
         target_data = current_data[data.column_mapping.target]
@@ -254,10 +272,230 @@ class ClassificationPerformanceMetrics(Metric[ClassificationPerformanceResults])
         dummy_metrics.roc_auc = 0.5
 
         return ClassificationPerformanceResults(
+            columns=columns,
             current=current_metrics,
             reference=reference_metrics,
             dummy=dummy_metrics,
         )
+
+
+@default_renderer(wrap_type=ClassificationPerformanceMetrics)
+class ClassificationPerformanceMetricsRenderer(MetricRenderer):
+    def render_json(self, obj: ClassificationPerformanceMetrics) -> dict:
+        return dataclasses.asdict(obj.get_result())
+
+    @staticmethod
+    def _get_metrics_table(dataset_name: str, metrics: DatasetClassificationPerformanceMetrics) -> MetricHtmlInfo:
+        counters = [
+            {"value": str(round(metrics.accuracy, 3)), "label": "Accuracy"},
+            {"value": str(round(metrics.precision, 3)), "label": "Precision"},
+            {"value": str(round(metrics.recall, 3)), "label": "Recall"},
+            {"value": str(round(metrics.f1, 3)), "label": "F1"},
+        ]
+
+        if metrics.roc_auc is not None:
+            counters.append({"value": str(round(metrics.roc_auc, 3)), "label": "ROC AUC"})
+
+        if metrics.log_loss is not None:
+            counters.append({"value": str(round(metrics.log_loss, 3)), "label": "LogLoss"})
+
+        return MetricHtmlInfo(
+            f"classification_performance_metrics_table_{dataset_name.lower()}",
+            BaseWidgetInfo(
+                title=f"{dataset_name.capitalize()}: Model Quality With Macro-average Metrics",
+                type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
+                size=2,
+                params={"counters": counters},
+            ),
+            details=[],
+        )
+
+    @staticmethod
+    def _get_class_representation_graph(
+        dataset_name: str,
+        metrics: DatasetClassificationPerformanceMetrics,
+        size: int,
+        columns: DatasetColumns,
+        color_options: ColorOptions,
+    ) -> MetricHtmlInfo:
+        metrics_frame = pd.DataFrame(metrics.metrics_matrix)
+        fig = go.Figure()
+        fig.add_trace(
+            go.Bar(
+                x=columns.target_names if columns.target_names else metrics_frame.columns.tolist()[:-3],
+                y=metrics_frame.iloc[-1:, :-3].values[0],
+                marker_color=color_options.primary_color,
+                name="Support",
+            )
+        )
+        fig.update_layout(
+            xaxis_title="Class",
+            yaxis_title="Number of Objects",
+        )
+        support_bar_json = json.loads(fig.to_json())
+        return MetricHtmlInfo(
+            f"classification_performance_metrics_class_representation_{dataset_name.lower()}",
+            BaseWidgetInfo(
+                title=f"{dataset_name.capitalize()}: Class Representation",
+                type=BaseWidgetInfo.WIDGET_INFO_TYPE_BIG_GRAPH,
+                size=size,
+                params={"data": support_bar_json["data"], "layout": support_bar_json["layout"]},
+                additionalGraphs=[],
+            ),
+            details=[],
+        )
+
+    @staticmethod
+    def _get_confusion_matrix_graph(
+        dataset_name: str,
+        metrics: DatasetClassificationPerformanceMetrics,
+        size: int,
+    ) -> MetricHtmlInfo:
+        conf_matrix = metrics.confusion_matrix.values
+        labels = metrics.confusion_matrix.labels
+        z = [[int(y) for y in x] for x in conf_matrix]
+
+        # change each element of z to type string for annotations
+        z_text = [[str(y) for y in x] for x in z]
+
+        fig = ff.create_annotated_heatmap(
+            z, x=labels, y=labels, annotation_text=z_text, colorscale="bluered", showscale=True
+        )
+
+        fig.update_layout(xaxis_title="Predicted value", yaxis_title="Actual value")
+
+        conf_matrix_json = json.loads(fig.to_json())
+
+        return MetricHtmlInfo(
+            f"classification_performance_current_metrics_confusion_matrix_{dataset_name.lower()}",
+            BaseWidgetInfo(
+                title=f"{dataset_name.capitalize()}: Confusion Matrix",
+                type=BaseWidgetInfo.WIDGET_INFO_TYPE_BIG_GRAPH,
+                size=size,
+                params={"data": conf_matrix_json["data"], "layout": conf_matrix_json["layout"]},
+                additionalGraphs=[],
+            ),
+            details=[],
+        )
+
+    @staticmethod
+    def _get_metrics_matrix_graph(
+        dataset_name: str, metrics: DatasetClassificationPerformanceMetrics, size: int, columns: DatasetColumns
+    ) -> MetricHtmlInfo:
+        # plot support bar
+        metrics_matrix = metrics.metrics_matrix
+        metrics_frame = pd.DataFrame(metrics_matrix)
+
+        z = metrics_frame.iloc[:-1, :-3].values
+        x = columns.target_names if columns.target_names else metrics_frame.columns.tolist()[:-3]
+        y = ["precision", "recall", "f1-score"]
+
+        # change each element of z to type string for annotations
+        z_text = [[str(round(y, 3)) for y in x] for x in z]
+
+        # set up figure
+        fig = ff.create_annotated_heatmap(z, x=x, y=y, annotation_text=z_text, colorscale="bluered", showscale=True)
+        fig.update_layout(xaxis_title="Class", yaxis_title="Metric")
+
+        metrics_matrix_json = json.loads(fig.to_json())
+
+        return MetricHtmlInfo(
+            f"classification_performance_current_metrics_metrix_matrix_{dataset_name.lower()}",
+            BaseWidgetInfo(
+                title=f"{dataset_name.capitalize()}: Quality Metrics by Class",
+                type=BaseWidgetInfo.WIDGET_INFO_TYPE_BIG_GRAPH,
+                size=size,
+                params={"data": metrics_matrix_json["data"], "layout": metrics_matrix_json["layout"]},
+            ),
+            details=[],
+        )
+
+    def render_html(self, obj: ClassificationPerformanceMetrics) -> List[MetricHtmlInfo]:
+        metric_result = obj.get_result()
+        color_options = ColorOptions()
+        columns = metric_result.columns
+        target_name = columns.utility_columns.target
+        result = [
+            MetricHtmlInfo(
+                "classification_performance_title",
+                BaseWidgetInfo(
+                    type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
+                    title="",
+                    size=2,
+                    params={"counters": [{"value": "", "label": "Classification Model Performance."}]},
+                ),
+                details=[],
+            ),
+            MetricHtmlInfo(
+                "classification_performance_target_name",
+                BaseWidgetInfo(
+                    type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
+                    title="",
+                    size=2,
+                    params={"counters": [{"value": "", "label": f"Target: '{target_name}'"}]},
+                ),
+                details=[],
+            ),
+        ]
+        # add tables with perf metrics
+        if metric_result.reference is not None:
+            result.append(self._get_metrics_table(dataset_name="reference", metrics=metric_result.reference))
+
+        result.append(self._get_metrics_table(dataset_name="current", metrics=metric_result.current))
+
+        if metric_result.reference is not None:
+            size = 1
+
+        else:
+            size = 2
+
+        # add graphs with class representation
+        if metric_result.reference is not None:
+            result.append(
+                self._get_class_representation_graph(
+                    dataset_name="reference",
+                    metrics=metric_result.reference,
+                    size=1,
+                    columns=columns,
+                    color_options=color_options,
+                )
+            )
+
+        result.append(
+            self._get_class_representation_graph(
+                dataset_name="current",
+                metrics=metric_result.current,
+                size=size,
+                columns=columns,
+                color_options=color_options,
+            )
+        )
+
+        # add confusion matrix graph
+        if metric_result.reference is not None:
+            result.append(
+                self._get_confusion_matrix_graph(dataset_name="reference", metrics=metric_result.reference, size=1)
+            )
+
+        result.append(
+            self._get_confusion_matrix_graph(dataset_name="current", metrics=metric_result.current, size=size)
+        )
+
+        # add metrix matrix graph by classes
+        # add confusion matrix graph
+        if metric_result.reference is not None:
+            result.append(
+                self._get_metrics_matrix_graph(
+                    dataset_name="reference", metrics=metric_result.reference, size=1, columns=columns
+                )
+            )
+
+        result.append(
+            self._get_metrics_matrix_graph(
+                dataset_name="current", metrics=metric_result.current, size=size, columns=columns
+            )
+        )
+        return result
 
 
 def _dummy_threshold_metrics(
@@ -308,6 +546,12 @@ def _dummy_threshold_metrics(
 
 class ClassificationPerformanceMetricsThresholdBase(Metric[ClassificationPerformanceResults]):
     def calculate(self, data: InputData) -> ClassificationPerformanceResults:
+        if data.reference_data is None:
+            columns = process_columns(data.current_data, data.column_mapping)
+
+        else:
+            columns = process_columns(data.reference_data, data.column_mapping)
+
         current_data = _cleanup_data(data.current_data, data.column_mapping)
         target_data = current_data[data.column_mapping.target]
         threshold = self.get_threshold(current_data, data.column_mapping)
@@ -325,6 +569,7 @@ class ClassificationPerformanceMetricsThresholdBase(Metric[ClassificationPerform
         if data.reference_data is not None:
             reference_results = self.calculate_metric(data.reference_data, data.column_mapping)
         return ClassificationPerformanceResults(
+            columns=columns,
             current=current_results,
             dummy=dummy_results,
             reference=reference_results,
@@ -345,6 +590,10 @@ class ClassificationPerformanceMetricsTopK(ClassificationPerformanceMetricsThres
 
     def get_threshold(self, dataset: pd.DataFrame, mapping: ColumnMapping) -> float:
         predictions = get_prediction_data(dataset, mapping)
+
+        if predictions.prediction_probas is None:
+            raise ValueError("Top K parameter can be used only with binary classification with probas")
+
         return k_probability_threshold(predictions.prediction_probas, self.k)
 
     def calculate_metric(self, dataset: pd.DataFrame, mapping: ColumnMapping):
@@ -357,6 +606,53 @@ class ClassificationPerformanceMetricsTopK(ClassificationPerformanceMetricsThres
 
     def get_parameters(self) -> tuple:
         return tuple((self.k,))
+
+
+@default_renderer(wrap_type=ClassificationPerformanceMetricsTopK)
+class ClassificationPerformanceMetricsTopKRenderer(MetricRenderer):
+    def render_json(self, obj: ClassificationPerformanceMetricsTopK) -> dict:
+        return dataclasses.asdict(obj.get_result())
+
+    @staticmethod
+    def _get_metrics_table(dataset_name: str, metrics: DatasetClassificationPerformanceMetrics) -> MetricHtmlInfo:
+        counters = [
+            {"value": str(round(metrics.accuracy, 3)), "label": "Accuracy"},
+            {"value": str(round(metrics.precision, 3)), "label": "Precision"},
+            {"value": str(round(metrics.recall, 3)), "label": "Recall"},
+            {"value": str(round(metrics.f1, 3)), "label": "F1"},
+        ]
+
+        return MetricHtmlInfo(
+            f"classification_performance_top_k_table_{dataset_name.lower()}",
+            BaseWidgetInfo(
+                title=f"{dataset_name.capitalize()}: Model Quality With Macro-average Metrics",
+                type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
+                size=2,
+                params={"counters": counters},
+            ),
+            details=[],
+        )
+
+    def render_html(self, obj: ClassificationPerformanceMetricsTopK) -> List[MetricHtmlInfo]:
+        metric_result = obj.get_result()
+        result = [
+            MetricHtmlInfo(
+                "classification_performance_top_k_title",
+                BaseWidgetInfo(
+                    type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
+                    title="",
+                    size=2,
+                    params={"counters": [{"value": "", "label": f"Classification Performance With Top K (k={obj.k})"}]},
+                ),
+                details=[],
+            ),
+            self._get_metrics_table(dataset_name="current", metrics=metric_result.current),
+        ]
+
+        if metric_result.reference is not None:
+            result.append(self._get_metrics_table(dataset_name="reference", metrics=metric_result.reference))
+
+        return result
 
 
 class ClassificationPerformanceMetricsThreshold(ClassificationPerformanceMetricsThresholdBase):
@@ -375,6 +671,63 @@ class ClassificationPerformanceMetricsThreshold(ClassificationPerformanceMetrics
 
     def get_parameters(self) -> tuple:
         return tuple((self.threshold,))
+
+
+@default_renderer(wrap_type=ClassificationPerformanceMetricsThreshold)
+class ClassificationPerformanceMetricsThresholdRenderer(MetricRenderer):
+    def render_json(self, obj: ClassificationPerformanceMetricsThreshold) -> dict:
+        return dataclasses.asdict(obj.get_result().current)
+
+    @staticmethod
+    def _get_metrics_table(
+        dataset_name: str,
+        metrics: DatasetClassificationPerformanceMetrics,
+    ) -> MetricHtmlInfo:
+        counters = [
+            {"value": str(round(metrics.accuracy, 3)), "label": "Accuracy"},
+            {"value": str(round(metrics.precision, 3)), "label": "Precision"},
+            {"value": str(round(metrics.recall, 3)), "label": "Recall"},
+            {"value": str(round(metrics.f1, 3)), "label": "F1"},
+        ]
+
+        return MetricHtmlInfo(
+            f"classification_performance_threshold_table_{dataset_name.lower()}",
+            BaseWidgetInfo(
+                title=f"{dataset_name.capitalize()}: Model Quality With Macro-average Metrics",
+                type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
+                size=2,
+                params={"counters": counters},
+            ),
+            details=[],
+        )
+
+    def render_html(self, obj: ClassificationPerformanceMetricsThreshold) -> List[MetricHtmlInfo]:
+        metric_result = obj.get_result()
+        result = [
+            MetricHtmlInfo(
+                "classification_performance_threshold_title",
+                BaseWidgetInfo(
+                    type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
+                    title="",
+                    size=2,
+                    params={
+                        "counters": [
+                            {
+                                "value": "",
+                                "label": f"Classification Performance With Threshold (threshold={obj.threshold})",
+                            }
+                        ]
+                    },
+                ),
+                details=[],
+            ),
+            self._get_metrics_table(dataset_name="current", metrics=metric_result.current),
+        ]
+
+        if metric_result.reference is not None:
+            result.append(self._get_metrics_table(dataset_name="reference", metrics=metric_result.reference))
+
+        return result
 
 
 def _cleanup_data(data: pd.DataFrame, mapping: ColumnMapping) -> pd.DataFrame:
@@ -396,6 +749,16 @@ def _cleanup_data(data: pd.DataFrame, mapping: ColumnMapping) -> pd.DataFrame:
 class PredictionData:
     predictions: pd.Series
     prediction_probas: Optional[pd.DataFrame]
+
+
+def _check_pos_labels(pos_label: Optional[Union[str, int]], labels: List[str]) -> Union[str, int]:
+    if pos_label is None:
+        raise ValueError("Undefined pos_label.")
+
+    if pos_label not in labels:
+        raise ValueError(f"Cannot find pos_label '{pos_label}' in labels {labels}")
+
+    return pos_label
 
 
 def get_prediction_data(data: pd.DataFrame, mapping: ColumnMapping, threshold: float = 0.5) -> PredictionData:
@@ -432,14 +795,13 @@ def get_prediction_data(data: pd.DataFrame, mapping: ColumnMapping, threshold: f
     # prediction in mapping is a list of two columns:
     # one is positive value probabilities, second is negative value probabilities
     if isinstance(mapping.prediction, list) and len(mapping.prediction) == 2:
-        if mapping.pos_label not in labels or mapping.pos_label is None:
-            raise ValueError("Undefined pos_label.")
+        pos_label = _check_pos_labels(mapping.pos_label, labels)
 
         # get negative label for binary classification
         neg_label = labels[labels != mapping.pos_label][0]
 
-        predictions = threshold_probability_labels(data[mapping.prediction], mapping.pos_label, neg_label, threshold)
-        return PredictionData(predictions=predictions, prediction_probas=data[[mapping.pos_label, neg_label]])
+        predictions = threshold_probability_labels(data[mapping.prediction], pos_label, neg_label, threshold)
+        return PredictionData(predictions=predictions, prediction_probas=data[[pos_label, neg_label]])
 
     # binary classification
     # target is strings or other values, prediction is a string with positive label name, one column with probabilities
@@ -448,8 +810,7 @@ def get_prediction_data(data: pd.DataFrame, mapping: ColumnMapping, threshold: f
         and (is_string_dtype(data[mapping.target]) or is_object_dtype(data[mapping.target]))
         and is_float_dtype(data[mapping.prediction])
     ):
-        if mapping.pos_label is None or mapping.pos_label not in labels:
-            raise ValueError("Undefined pos_label.")
+        pos_label = _check_pos_labels(mapping.pos_label, labels)
 
         if mapping.prediction not in labels:
             raise ValueError(
@@ -458,9 +819,9 @@ def get_prediction_data(data: pd.DataFrame, mapping: ColumnMapping, threshold: f
             )
 
         # get negative label for binary classification
-        neg_label = labels[labels != mapping.pos_label][0]
+        neg_label = labels[labels != pos_label][0]
 
-        if mapping.pos_label == mapping.prediction:
+        if pos_label == mapping.prediction:
             pos_preds = data[mapping.prediction]
 
         else:
@@ -468,11 +829,11 @@ def get_prediction_data(data: pd.DataFrame, mapping: ColumnMapping, threshold: f
 
         prediction_probas = pd.DataFrame.from_dict(
             {
-                mapping.pos_label: pos_preds,
+                pos_label: pos_preds,
                 neg_label: pos_preds.apply(lambda x: 1.0 - x),
             }
         )
-        predictions = threshold_probability_labels(prediction_probas, mapping.pos_label, neg_label, threshold)
+        predictions = threshold_probability_labels(prediction_probas, pos_label, neg_label, threshold)
         return PredictionData(predictions=predictions, prediction_probas=prediction_probas)
 
     # binary target and preds are numbers and prediction is a label

@@ -497,10 +497,12 @@ def test_data_integrity_test_column_values_match_regexp() -> None:
     suite = TestSuite(tests=[TestColumnValueRegExp(column_name="feature1", reg_exp=r"a.*", eq=1)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
+    assert suite.show()
 
     suite = TestSuite(tests=[TestColumnValueRegExp(column_name="feature2", reg_exp=r"b.*")])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
+    assert suite.show()
 
 
 def test_data_integrity_test_number_of_nulls() -> None:

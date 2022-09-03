@@ -58,6 +58,11 @@ class AdditionalGraphInfo:
 
 @dataclass
 class BaseWidgetInfo:
+    WIDGET_INFO_TYPE_COUNTER = "counter"
+    WIDGET_INFO_TYPE_TABLE = "table"
+    WIDGET_INFO_TYPE_BIG_TABLE = "big_table"
+    WIDGET_INFO_TYPE_BIG_GRAPH = "big_graph"
+
     type: str
     title: str
     size: int
@@ -74,8 +79,9 @@ class BaseWidgetInfo:
     pageSize: int = 5
 
     def get_additional_graphs(self) -> List[Union[AdditionalGraphInfo, "BaseWidgetInfo"]]:
-        return list(self.additionalGraphs) + [graph for widget in self.widgets
-                                              for graph in widget.get_additional_graphs()]
+        return list(self.additionalGraphs) + [
+            graph for widget in self.widgets for graph in widget.get_additional_graphs()
+        ]
 
 
 @dataclass

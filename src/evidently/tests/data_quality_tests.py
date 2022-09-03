@@ -1079,7 +1079,7 @@ class TestValueRange(Test):
             self.metric = metric
 
         else:
-            self.metric = DataQualityValueRangeMetrics(column=column_name, left=left, right=right)
+            self.metric = DataQualityValueRangeMetrics(column_name=column_name, left=left, right=right)
 
     def check(self):
         number_not_in_range = self.metric.get_result().number_not_in_range
@@ -1161,7 +1161,7 @@ class BaseDataQualityValueRangeMetricsTest(BaseCheckValueTest, ABC):
             self.metric = metric
 
         else:
-            self.metric = DataQualityValueRangeMetrics(column=column_name, left=left, right=right)
+            self.metric = DataQualityValueRangeMetrics(column_name=column_name, left=left, right=right)
 
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
 
@@ -1305,7 +1305,7 @@ class TestValueList(Test):
             self.metric = metric
 
         else:
-            self.metric = DataQualityValueListMetrics(column=column_name, values=values)
+            self.metric = DataQualityValueListMetrics(column_name=column_name, values=values)
 
     def check(self):
         metric_result = self.metric.get_result()
@@ -1379,7 +1379,7 @@ class BaseDataQualityValueListMetricsTest(BaseCheckValueTest, ABC):
             self.metric = metric
 
         else:
-            self.metric = DataQualityValueListMetrics(column=column_name, values=values)
+            self.metric = DataQualityValueListMetrics(column_name=column_name, values=values)
 
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
 
@@ -1482,7 +1482,7 @@ class TestValueQuantile(BaseCheckValueTest):
             if quantile is None:
                 raise ValueError("Quantile parameter should be present")
 
-            self.metric = DataQualityValueQuantileMetrics(column=column_name, quantile=quantile)
+            self.metric = DataQualityValueQuantileMetrics(column_name=column_name, quantile=quantile)
 
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
 

@@ -1,17 +1,23 @@
+import collections
+import dataclasses
 import re
-
 from dataclasses import dataclass
 from itertools import combinations
 from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Pattern
 
 import numpy as np
 import pandas as pd
 
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
+from evidently.model.widget import BaseWidgetInfo
+from evidently.renderers.base_renderer import default_renderer
+from evidently.renderers.base_renderer import MetricHtmlInfo
+from evidently.renderers.base_renderer import MetricRenderer
 
 
 @dataclass
@@ -42,11 +48,13 @@ class DataIntegrityMetrics(Metric[DataIntegrityMetricsResults]):
     @staticmethod
     def _get_integrity_metrics_values(dataset: pd.DataFrame, columns: tuple) -> DataIntegrityMetricsValues:
         counts_of_values = {}
-        for col in dataset.columns:
-            feature = dataset[col]
+
+        for column_name in dataset.columns:
+            feature = dataset[column_name]
             df_counts = feature.value_counts(dropna=False).reset_index()
             df_counts.columns = ["x", "count"]
-            counts_of_values[col] = df_counts
+            counts_of_values[column_name] = df_counts
+
         return DataIntegrityMetricsValues(
             number_of_columns=len(columns),
             number_of_rows=dataset.shape[0],
@@ -77,7 +85,7 @@ class DataIntegrityMetrics(Metric[DataIntegrityMetricsResults]):
             data.column_mapping.datetime_features,
         ]:
             if features is not None:
-                columns += features
+                columns.extend(features)
 
         if data.column_mapping.prediction is not None:
             if isinstance(data.column_mapping.prediction, str):
@@ -111,65 +119,212 @@ class DataIntegrityMetrics(Metric[DataIntegrityMetricsResults]):
         return DataIntegrityMetricsResults(current_stats=current_stats, reference_stats=reference_stats)
 
 
+@default_renderer(wrap_type=DataIntegrityMetrics)
+class DataIntegrityMetricsRenderer(MetricRenderer):
+    def render_json(self, obj: DataIntegrityMetrics) -> dict:
+        return dataclasses.asdict(obj.get_result().current_stats)
+
+    @staticmethod
+    def _get_metrics_table(dataset_name: str, metrics: DataIntegrityMetricsValues) -> MetricHtmlInfo:
+        headers = ("Quality Metric", "Value")
+        stats = (
+            ("Number of columns", metrics.number_of_columns),
+            ("Number of rows", metrics.number_of_rows),
+            ("Number of NaNs", metrics.number_of_nans),
+            ("Number of columns with NaNs", metrics.number_of_columns_with_nans),
+            ("Number of rows with NaNs", metrics.number_of_rows_with_nans),
+            ("Number of constant columns", metrics.number_of_constant_columns),
+            ("Number of empty rows", metrics.number_of_empty_rows),
+            ("Number of empty columns", metrics.number_of_empty_columns),
+            ("Number of duplicated rows", metrics.number_of_duplicated_rows),
+            ("Number of duplicated columns", metrics.number_of_duplicated_columns),
+        )
+
+        return MetricHtmlInfo(
+            f"data_integrity_metrics_table_{dataset_name.lower()}",
+            BaseWidgetInfo(
+                title=f"{dataset_name.capitalize()}: Data Integrity Metrics",
+                type=BaseWidgetInfo.WIDGET_INFO_TYPE_TABLE,
+                size=2,
+                params={"header": headers, "data": stats},
+            ),
+            details=[],
+        )
+
+    def render_html(self, obj: DataIntegrityMetrics) -> List[MetricHtmlInfo]:
+        metric_result = obj.get_result()
+
+        result = [
+            MetricHtmlInfo(
+                "data_integrity_title",
+                BaseWidgetInfo(
+                    type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
+                    title="",
+                    size=2,
+                    params={"counters": [{"value": "", "label": "Data Integrity"}]},
+                ),
+                details=[],
+            ),
+            self._get_metrics_table(dataset_name="current", metrics=metric_result.current_stats),
+        ]
+
+        if metric_result.reference_stats is not None:
+            result.append(self._get_metrics_table(dataset_name="reference", metrics=metric_result.reference_stats))
+
+        return result
+
+
+@dataclass
+class DataIntegrityValueByRegexpStat:
+    """Statistics about matched by a regular expression values in a column for one dataset"""
+
+    # count of matched values in the column, without NaNs
+    number_of_matched: int
+    # count of not matched values in the column, without NaNs
+    number_of_not_matched: int
+    # count of rows in the column, including matched, not matched and NaNs
+    number_of_rows: int
+    # map with matched values (keys) and count of the values (value)
+    table_of_matched: Dict[str, int]
+    # map with not matched values (keys) and count of the values (values)
+    table_of_not_matched: Dict[str, int]
+
+
 @dataclass
 class DataIntegrityValueByRegexpMetricResult:
-    # mapping column_name: matched_count
-    not_matched_values: Dict[str, int]
-    not_matched_table: Dict[str, int]
-    mult: Optional[float] = None
+    # name of the column that we check by the regular expression
+    column_name: str
+    # the regular expression as a string
+    reg_exp: str
+    # match statistic for current dataset
+    current: DataIntegrityValueByRegexpStat
+    # match statistic for reference dataset, equals None if the reference is not present
+    reference: Optional[DataIntegrityValueByRegexpStat] = None
 
 
 class DataIntegrityValueByRegexpMetrics(Metric[DataIntegrityValueByRegexpMetricResult]):
-    """Count number of values in a column not matched a regexp"""
+    """Count number of values in a column matched or not by a regular expression (regexp)"""
 
+    # name of the column that we check
     column_name: str
+    # the regular expression
+    reg_exp: str
+    # compiled regular expression for speed optimization
+    _reg_exp_compiled: Pattern
 
     def __init__(self, column_name: str, reg_exp: str):
         self.reg_exp = reg_exp
-
         self.column_name = column_name
-        self.reg_exp_compiled = re.compile(reg_exp)
+        self._reg_exp_compiled = re.compile(reg_exp)
+
+    def _calculate_stats_by_regexp(self, column: pd.Series) -> DataIntegrityValueByRegexpStat:
+        number_of_matched = 0
+        number_of_na = 0
+        number_of_not_matched = 0
+        table_of_matched: Dict[str, int] = collections.defaultdict(int)
+        table_of_not_matched: Dict[str, int] = collections.defaultdict(int)
+
+        for item in column:
+            if pd.isna(item):
+                number_of_na += 1
+                continue
+
+            item = str(item)
+
+            if bool(self._reg_exp_compiled.match(str(item))):
+                number_of_matched += 1
+                table_of_matched[item] += 1
+
+            else:
+                number_of_not_matched += 1
+                table_of_not_matched[item] += 1
+
+        return DataIntegrityValueByRegexpStat(
+            number_of_matched=number_of_matched,
+            number_of_not_matched=number_of_not_matched,
+            number_of_rows=column.shape[0],
+            table_of_matched=dict(table_of_matched),
+            table_of_not_matched=dict(table_of_not_matched),
+        )
 
     def calculate(self, data: InputData) -> DataIntegrityValueByRegexpMetricResult:
-        mult = None
-        not_matched_values = {}
-        not_matched_table = {}
-        selector = data.current_data[self.column_name].apply(lambda x: bool(self.reg_exp_compiled.match(str(x))))
-        n = selector.sum()
-        not_matched_values["current"] = data.current_data[self.column_name].dropna().shape[0] - n
-
-        df_counts = (
-            data.current_data[self.column_name]
-            .dropna()[~selector.dropna().astype(bool)]
-            .value_counts(dropna=False)
-            .reset_index()
-        )
-        df_counts.columns = ["x", "count"]
-        not_matched_table["current"] = df_counts
+        current = self._calculate_stats_by_regexp(data.current_data[self.column_name])
+        reference = None
 
         if data.reference_data is not None:
-            selector = data.reference_data[self.column_name].apply(lambda x: bool(self.reg_exp_compiled.match(str(x))))
-            n = selector.sum()
-            not_matched_values["reference"] = data.reference_data[self.column_name].dropna().shape[0] - n
-            mult = data.current_data.shape[0] / data.reference_data.shape[0]
-            df_counts = (
-                data.reference_data[self.column_name]
-                .dropna()[~selector.dropna().astype(bool)]
-                .value_counts(dropna=False)
-                .reset_index()
-            )
-            df_counts.columns = ["x", "count"]
-            not_matched_table["reference"] = df_counts
+            if self.column_name not in data.reference_data:
+                raise ValueError(f"Column {self.column_name} was not found in reference dataset.")
+
+            reference = self._calculate_stats_by_regexp(data.reference_data[self.column_name])
 
         return DataIntegrityValueByRegexpMetricResult(
-            not_matched_values=not_matched_values,
-            not_matched_table=not_matched_table,
-            mult=mult,
+            column_name=self.column_name, reg_exp=self.reg_exp, current=current, reference=reference
         )
+
+
+@default_renderer(wrap_type=DataIntegrityValueByRegexpMetrics)
+class DataIntegrityValueByRegexpMetricsRenderer(MetricRenderer):
+    def render_json(self, obj: DataIntegrityValueByRegexpMetrics) -> dict:
+        return dataclasses.asdict(obj.get_result())
+
+    @staticmethod
+    def _get_table_stat(dataset_name: str, metrics: DataIntegrityValueByRegexpStat) -> MetricHtmlInfo:
+        matched_stat = [(f"{k} (matched)", v) for k, v in metrics.table_of_matched.items()]
+        matched_stat += [(f"{k} (not matched)", v) for k, v in metrics.table_of_not_matched.items()]
+        matched_stat += [
+            ("NaN", metrics.number_of_rows - metrics.number_of_matched - metrics.number_of_not_matched),
+            ("Total", metrics.number_of_rows),
+        ]
+        matched_stat_headers = ["Value", "Count"]
+        return MetricHtmlInfo(
+            name=f"data_integrity_value_by_regexp_stats_{dataset_name.lower()}",
+            info=BaseWidgetInfo(
+                title=f"{dataset_name.capitalize()}: Match Statistics",
+                type=BaseWidgetInfo.WIDGET_INFO_TYPE_TABLE,
+                size=2,
+                params={"header": matched_stat_headers, "data": matched_stat},
+            ),
+            details=[],
+        )
+
+    def render_html(self, obj: DataIntegrityValueByRegexpMetrics) -> List[MetricHtmlInfo]:
+        metric_result = obj.get_result()
+        number_of_matched = metric_result.current.number_of_matched
+        number_of_rows = metric_result.current.number_of_rows
+
+        result = [
+            MetricHtmlInfo(
+                name="data_integrity_value_by_regexp_title",
+                info=BaseWidgetInfo(
+                    type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
+                    title="Data Integrity Metric: Values Matching By Regexp In a Column",
+                    size=2,
+                    params={
+                        "counters": [
+                            {
+                                "value": "",
+                                "label": f"Founded {number_of_matched} of {number_of_rows} with "
+                                f"regexp '{metric_result.reg_exp}' in "
+                                f"column '{metric_result.column_name}' in current dataset.",
+                            }
+                        ]
+                    },
+                ),
+                details=[],
+            ),
+            self._get_table_stat(dataset_name="current", metrics=metric_result.current),
+        ]
+
+        if metric_result.reference is not None:
+            result.append(self._get_table_stat(dataset_name="reference", metrics=metric_result.reference))
+
+        return result
 
 
 @dataclass
-class DataIntegrityNullValues:
+class DataIntegrityNullValuesStat:
+    """Statistics about null values in a dataset"""
+
     # set of different null-like values in the dataset
     different_nulls: Dict[Any, int]
     # number of different null-like values in the dataset
@@ -204,8 +359,8 @@ class DataIntegrityNullValues:
 
 @dataclass
 class DataIntegrityNullValuesMetricsResult:
-    current_null_values: DataIntegrityNullValues
-    reference_null_values: Optional[DataIntegrityNullValues] = None
+    current_null_values: DataIntegrityNullValuesStat
+    reference_null_values: Optional[DataIntegrityNullValuesStat] = None
 
 
 class DataIntegrityNullValuesMetrics(Metric[DataIntegrityNullValuesMetricsResult]):
@@ -237,7 +392,7 @@ class DataIntegrityNullValuesMetrics(Metric[DataIntegrityNullValuesMetricsResult
         # use frozenset because metrics parameters should be immutable/hashable for deduplication
         self.null_values = frozenset(null_values)
 
-    def _calculate_null_values_stats(self, dataset: pd.DataFrame) -> DataIntegrityNullValues:
+    def _calculate_null_values_stats(self, dataset: pd.DataFrame) -> DataIntegrityNullValuesStat:
         different_nulls = {null_value: 0 for null_value in self.null_values}
         columns_with_nulls = set()
         number_of_nulls = 0
@@ -312,7 +467,7 @@ class DataIntegrityNullValuesMetrics(Metric[DataIntegrityNullValuesMetricsResult
         number_of_columns_with_nulls = len(columns_with_nulls)
         number_of_different_nulls = len({k for k in different_nulls if different_nulls[k] > 0})
 
-        return DataIntegrityNullValues(
+        return DataIntegrityNullValuesStat(
             different_nulls=different_nulls,
             number_of_different_nulls=number_of_different_nulls,
             different_nulls_by_column=different_nulls_by_column,
@@ -337,7 +492,7 @@ class DataIntegrityNullValuesMetrics(Metric[DataIntegrityNullValuesMetricsResult
         current_null_values = self._calculate_null_values_stats(data.current_data)
 
         if data.reference_data is not None:
-            reference_null_values: Optional[DataIntegrityNullValues] = self._calculate_null_values_stats(
+            reference_null_values: Optional[DataIntegrityNullValuesStat] = self._calculate_null_values_stats(
                 data.reference_data
             )
 
@@ -348,3 +503,57 @@ class DataIntegrityNullValuesMetrics(Metric[DataIntegrityNullValuesMetricsResult
             current_null_values=current_null_values,
             reference_null_values=reference_null_values,
         )
+
+
+@default_renderer(wrap_type=DataIntegrityNullValuesMetrics)
+class DataIntegrityNullValuesMetricsRenderer(MetricRenderer):
+    def render_json(self, obj: DataIntegrityNullValuesMetrics) -> dict:
+        return dataclasses.asdict(obj.get_result().current_null_values)
+
+    @staticmethod
+    def _get_table_stat(dataset_name: str, stats: DataIntegrityNullValuesStat) -> MetricHtmlInfo:
+        matched_stat = [(k, v) for k, v in stats.number_of_nulls_by_column.items()]
+        matched_stat_headers = ["Value", "Count"]
+        return MetricHtmlInfo(
+            name=f"data_integrity_null_values_stats_{dataset_name.lower()}",
+            info=BaseWidgetInfo(
+                title=f"{dataset_name.capitalize()}: Nulls Statistic",
+                type=BaseWidgetInfo.WIDGET_INFO_TYPE_TABLE,
+                size=2,
+                params={"header": matched_stat_headers, "data": matched_stat},
+            ),
+            details=[],
+        )
+
+    def render_html(self, obj: DataIntegrityNullValuesMetrics) -> List[MetricHtmlInfo]:
+        metric_result = obj.get_result()
+        number_of_nulls = metric_result.current_null_values.number_of_nulls
+
+        result = [
+            MetricHtmlInfo(
+                name="data_integrity_null_values_title",
+                info=BaseWidgetInfo(
+                    type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
+                    title="",
+                    size=2,
+                    params={"counters": [{"value": "", "label": "Data Integrity Metric: Null Values Statistic"}]},
+                ),
+                details=[],
+            ),
+            MetricHtmlInfo(
+                name="data_integrity_null_values_title",
+                info=BaseWidgetInfo(
+                    type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
+                    title="",
+                    size=2,
+                    params={"counters": [{"value": "", "label": f"In current dataset {number_of_nulls} null values."}]},
+                ),
+                details=[],
+            ),
+            self._get_table_stat(dataset_name="current", stats=metric_result.current_null_values),
+        ]
+
+        if metric_result.reference_null_values is not None:
+            result.append(self._get_table_stat(dataset_name="reference", stats=metric_result.reference_null_values))
+
+        return result

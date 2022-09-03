@@ -15,7 +15,7 @@ from evidently.model.widget import BaseWidgetInfo
 from evidently.metrics.data_integrity_metrics import DataIntegrityMetrics
 from evidently.metrics.data_integrity_metrics import DataIntegrityValueByRegexpMetrics
 from evidently.metrics.data_integrity_metrics import DataIntegrityNullValuesMetrics
-from evidently.metrics.data_integrity_metrics import DataIntegrityNullValues
+from evidently.metrics.data_integrity_metrics import DataIntegrityNullValuesStat
 from evidently.metrics.data_integrity_metrics import DataIntegrityNullValuesMetricsResult
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.base_renderer import DetailsInfo
@@ -174,7 +174,7 @@ class BaseTestNullValuesRenderer(TestRenderer):
     """
 
     @staticmethod
-    def _get_number_and_percents_of_nulls(nulls_info: DataIntegrityNullValues) -> pd.DataFrame:
+    def _get_number_and_percents_of_nulls(nulls_info: DataIntegrityNullValuesStat) -> pd.DataFrame:
         """Get a string with nulls numbers and percents from nulls info for results table"""
         result = {}
 
@@ -1158,16 +1158,19 @@ class TestColumnValueRegExp(BaseCheckValueTest, ABC):
         if self.condition.has_condition():
             return self.condition
 
-        if "reference" in self.metric.get_result().not_matched_values.keys():
-            ref_value = self.metric.get_result().not_matched_values["reference"]
-            mult = self.metric.get_result().mult
+        metric_result = self.metric.get_result()
+
+        if metric_result.reference:
+            ref_value = metric_result.reference.number_of_not_matched
+            mult = metric_result.current.number_of_rows / metric_result.reference.number_of_rows
+
             if mult is not None:
                 return TestValueCondition(eq=approx(ref_value * mult, relative=0.1))
 
         return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
-        return self.metric.get_result().not_matched_values["current"]
+        return self.metric.get_result().current.number_of_not_matched
 
     def get_description(self, value: Numeric) -> str:
         return (
@@ -1181,10 +1184,21 @@ class TestColumnValueRegExpRenderer(TestRenderer):
     def render_html(self, obj: TestColumnValueRegExp) -> TestHtmlInfo:
         info = super().render_html(obj)
         column_name = obj.column_name
-        curr_df = obj.metric.get_result().not_matched_table["current"]
+        metric_result = obj.metric.get_result()
+
+        if metric_result.current.table_of_not_matched:
+            curr_df = pd.DataFrame(metric_result.current.table_of_not_matched.items())
+            curr_df.columns = ["x", "count"]
+
+        else:
+            curr_df = pd.DataFrame(columns=["x", "count"])
+
         ref_df = None
-        if "reference" in obj.metric.get_result().not_matched_table.keys():
-            ref_df = obj.metric.get_result().not_matched_table["reference"]
+
+        if metric_result.reference is not None and metric_result.reference.table_of_not_matched:
+            ref_df = pd.DataFrame(metric_result.reference.table_of_not_matched.items())
+            ref_df.columns = ["x", "count"]
+
         additional_plots = plot_value_counts_tables_ref_curr(
             column_name, curr_df, ref_df, f"{column_name}_ColumnValueRegExp"
         )

@@ -1,17 +1,15 @@
-from typing import Optional
-
 import numpy as np
 import pandas as pd
 
 import pytest
 
-from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.metrics.base_metric import InputData
 from evidently.metrics.data_drift_metrics import DataDriftMetrics
+from evidently.pipeline.column_mapping import ColumnMapping
+from evidently.report import Report
 
 
 @pytest.mark.parametrize(
-    "current_dataset, reference_dataset, data_mapping, n_drifted_features",
+    "current_dataset, reference_dataset, data_mapping",
     (
         (
             pd.DataFrame(
@@ -31,7 +29,6 @@ from evidently.metrics.data_drift_metrics import DataDriftMetrics
                 }
             ),
             ColumnMapping(),
-            0,
         ),
         (
             pd.DataFrame(
@@ -51,7 +48,6 @@ from evidently.metrics.data_drift_metrics import DataDriftMetrics
                 }
             ),
             ColumnMapping(),
-            2,
         ),
         # binary classification
         (
@@ -74,7 +70,6 @@ from evidently.metrics.data_drift_metrics import DataDriftMetrics
                 }
             ),
             ColumnMapping(prediction=["label_a", "label_b"]),
-            2,
         ),
         # multy classification
         (
@@ -99,44 +94,33 @@ from evidently.metrics.data_drift_metrics import DataDriftMetrics
                 }
             ),
             ColumnMapping(target="my_target", prediction=["label_a", "label_b", "label_c"]),
-            1,
         ),
     ),
 )
-def test_data_drift_metrics(
-    current_dataset: pd.DataFrame, reference_dataset: pd.DataFrame, data_mapping: ColumnMapping, n_drifted_features: int
+def test_data_drift_metrics_no_errors(
+    current_dataset: pd.DataFrame, reference_dataset: pd.DataFrame, data_mapping: ColumnMapping
 ) -> None:
-    metric = DataDriftMetrics()
-    result = metric.calculate(
-        data=InputData(current_data=current_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
+    report = Report(metrics=[DataDriftMetrics()])
+    report.run(current_data=current_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
+    assert report.show()
+    assert report.json()
+
+
+def test_data_drift_metrics_value_error() -> None:
+    test_data = pd.DataFrame(
+        {
+            "category_feature": ["1", "2", "3"],
+            "numerical_feature": [3, 2, 1],
+            "target": [None, np.NAN, 1],
+            "prediction": [1, np.NAN, 1],
+        }
     )
-    assert result is not None
-    assert result.metrics.n_drifted_features == n_drifted_features
-
-
-@pytest.mark.parametrize(
-    "current_dataset, reference_dataset",
-    (
-        (
-            pd.DataFrame(
-                {
-                    "category_feature": ["1", "2", "3"],
-                    "numerical_feature": [3, 2, 1],
-                    "target": [None, np.NAN, 1],
-                    "prediction": [1, np.NAN, 1],
-                }
-            ),
-            None,
-        ),
-    ),
-)
-def test_data_drift_metrics_value_error(
-    current_dataset: pd.DataFrame, reference_dataset: Optional[pd.DataFrame]
-) -> None:
     data_mapping = ColumnMapping()
-    metric = DataDriftMetrics()
+    report = Report(metrics=[DataDriftMetrics()])
 
     with pytest.raises(ValueError):
-        metric.calculate(
-            data=InputData(current_data=current_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
-        )
+        report.run(current_data=test_data, reference_data=None, column_mapping=data_mapping)
+
+    with pytest.raises(ValueError):
+        # noinspection PyTypeChecker
+        report.run(current_data=None, reference_data=test_data, column_mapping=data_mapping)

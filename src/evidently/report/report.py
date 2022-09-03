@@ -33,14 +33,17 @@ class Report(Display):
         self._first_level_metrics = []
 
     def run(
-            self,
-            *,
-            reference_data: Optional[pd.DataFrame],
-            current_data: pd.DataFrame,
-            column_mapping: Optional[ColumnMapping] = None,
+        self,
+        *,
+        reference_data: Optional[pd.DataFrame],
+        current_data: pd.DataFrame,
+        column_mapping: Optional[ColumnMapping] = None,
     ) -> None:
         if column_mapping is None:
             column_mapping = ColumnMapping()
+
+        if current_data is None:
+            raise ValueError("Current dataset should be present")
 
         self._columns_info = process_columns(current_data, column_mapping)
         data = InputData(reference_data, current_data, column_mapping)
@@ -84,7 +87,9 @@ class Report(Display):
         return (
             "evidently_dashboard_" + str(uuid.uuid4()).replace("-", ""),
             DashboardInfo("Report", widgets=[result.info for result in metrics_results]),
-            {f"{item.id}": dataclasses.asdict(item.info)
-             for idx, info in enumerate(metrics_results)
-             for item in info.details},
+            {
+                f"{item.id}": dataclasses.asdict(item.info)
+                for idx, info in enumerate(metrics_results)
+                for item in info.details
+            },
         )
