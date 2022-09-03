@@ -105,10 +105,6 @@ def test_data_drift_metrics_no_errors(
     assert report.show()
     assert report.json()
 
-    report.run(current_data=current_dataset, reference_data=None, column_mapping=data_mapping)
-    assert report.show()
-    assert report.json()
-
 
 def test_data_drift_metrics_value_error() -> None:
     test_data = pd.DataFrame(
