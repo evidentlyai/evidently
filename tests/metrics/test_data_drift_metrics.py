@@ -1,5 +1,3 @@
-from typing import Optional
-
 import numpy as np
 import pandas as pd
 
@@ -128,4 +126,5 @@ def test_data_drift_metrics_value_error() -> None:
         report.run(current_data=test_data, reference_data=None, column_mapping=data_mapping)
 
     with pytest.raises(ValueError):
+        # noinspection PyTypeChecker
         report.run(current_data=None, reference_data=test_data, column_mapping=data_mapping)
