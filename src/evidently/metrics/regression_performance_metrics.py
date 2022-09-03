@@ -48,6 +48,7 @@ class RegressionPerformanceMetricsResults:
     hist_for_plot: Dict[str, pd.Series]
     vals_for_plots: Dict[str, Dict[str, pd.Series]]
     error_bias: Optional[dict] = None
+    mean_error_ref: Optional[float] = None
     mean_abs_error_ref: Optional[float] = None
     mean_abs_perc_error_ref: Optional[float] = None
     rmse_ref: Optional[float] = None
@@ -136,9 +137,11 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
             )
         # max error default values
         abs_error_max_ref = None
+        mean_error_ref = None
 
         if reference_metrics is not None:
             abs_error_max_ref = reference_metrics.abs_error_max
+            mean_error_ref = reference_metrics.mean_error
 
         y_true = data.current_data[data.column_mapping.target]
         y_pred = data.current_data[data.column_mapping.prediction]
@@ -195,6 +198,7 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
             rmse=rmse_score_value,
             rmse_default=rmse_default,
             mean_error=current_metrics.mean_error,
+            mean_error_ref=mean_error_ref,
             me_default_sigma=me_default_sigma,
             me_hist_for_plot=me_hist_for_plot,
             mean_abs_error=current_metrics.mean_abs_error,
@@ -222,28 +226,12 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
 @default_renderer(wrap_type=RegressionPerformanceMetrics)
 class RegressionPerformanceMetricsRenderer(MetricRenderer):
     def render_json(self, obj: RegressionPerformanceMetrics) -> dict:
-        return dataclasses.asdict(obj.get_result())
-
-    @staticmethod
-    def _get_metrics_tails(dataset_name: str, metrics: RegressionPerformanceMetricsResults) -> MetricHtmlInfo:
-        counters = [
-            {"value": str(round(metrics.mean_error, 3)), "label": "Mean error"},
-            {"value": str(round(metrics.mean_abs_error, 3)), "label": "Mean abs error"},
-            {"value": str(round(metrics.mean_abs_perc_error, 3)), "label": "Mean abs perc error"},
-            {"value": str(round(metrics.rmse, 3)), "label": "RMSE"},
-            {"value": str(round(metrics.r2_score, 3)), "label": "r2 score"},
-        ]
-
-        return MetricHtmlInfo(
-            f"regression_performance_metrics_table_{dataset_name.lower()}",
-            BaseWidgetInfo(
-                title=f"{dataset_name.capitalize()}: Regression Performance Metrics",
-                type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
-                size=2,
-                params={"counters": counters},
-            ),
-            details=[],
-        )
+        result = dataclasses.asdict(obj.get_result())
+        # remove values with DataFrames or Series
+        result.pop("hist_for_plot")
+        result.pop("vals_for_plots")
+        result.pop('me_hist_for_plot')
+        return result
 
     def render_html(self, obj: RegressionPerformanceMetrics) -> List[MetricHtmlInfo]:
         metric_result = obj.get_result()
@@ -258,6 +246,47 @@ class RegressionPerformanceMetricsRenderer(MetricRenderer):
                 ),
                 details=[],
             ),
-            self._get_metrics_tails(dataset_name="current", metrics=metric_result),
+            MetricHtmlInfo(
+                f"regression_performance_metrics_table_current",
+                BaseWidgetInfo(
+                    title=f"Current: Regression Performance Metrics",
+                    type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
+                    size=2,
+                    params={
+                        "counters": [
+                            {"value": str(round(metric_result.mean_error, 3)), "label": "Mean error"},
+                            {"value": str(round(metric_result.mean_abs_error, 3)), "label": "MAE"},
+                            {"value": str(round(metric_result.mean_abs_perc_error, 3)), "label": "MAPE"},
+                            {"value": str(round(metric_result.rmse, 3)), "label": "RMSE"},
+                            {"value": str(round(metric_result.r2_score, 3)), "label": "r2 score"},
+                        ]
+                    },
+                ),
+                details=[],
+            ),
         ]
+        if metric_result.mean_error_ref is not None:
+            result.append(
+                MetricHtmlInfo(
+                    f"regression_performance_metrics_table_reference",
+                    BaseWidgetInfo(
+                        title=f"Reference: Regression Performance Metrics",
+                        type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
+                        size=2,
+                        params={
+                            "counters": [
+                                {"value": str(round(metric_result.mean_error_ref, 3)), "label": "Mean error"},
+                                {"value": str(round(metric_result.mean_abs_error_ref, 3)), "label": "MAEr"},
+                                {
+                                    "value": str(round(metric_result.mean_abs_perc_error_ref, 3)),
+                                    "label": "MAPE",
+                                },
+                                {"value": str(round(metric_result.rmse_ref, 3)), "label": "RMSE"},
+                                {"value": str(round(metric_result.r2_score_ref, 3)), "label": "r2 score"},
+                            ]
+                        },
+                    ),
+                    details=[],
+                )
+            )
         return result

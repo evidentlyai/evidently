@@ -105,9 +105,9 @@ def test_data_drift_metrics_no_errors(
 ) -> None:
     report = Report(metrics=[DataDriftMetrics()])
     report.run(current_data=current_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
-    assert report.metrics is not None
-    assert report.show()
-    # assert report.json()
+    assert report is not None
+    assert report.show() is not None
+    assert report.json()
 
 
 @pytest.mark.parametrize(
