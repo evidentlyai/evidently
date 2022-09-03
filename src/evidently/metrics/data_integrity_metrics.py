@@ -40,8 +40,8 @@ class DataIntegrityMetricsValues:
 
 @dataclass
 class DataIntegrityMetricsResults:
-    current_stats: DataIntegrityMetricsValues
-    reference_stats: Optional[DataIntegrityMetricsValues] = None
+    current: DataIntegrityMetricsValues
+    reference: Optional[DataIntegrityMetricsValues] = None
 
 
 class DataIntegrityMetrics(Metric[DataIntegrityMetricsResults]):
@@ -104,25 +104,35 @@ class DataIntegrityMetrics(Metric[DataIntegrityMetricsResults]):
         current_columns = np.intersect1d(columns, data.current_data.columns)
 
         curr_data = data.current_data[current_columns]
-        current_stats = self._get_integrity_metrics_values(curr_data, current_columns)
+        current = self._get_integrity_metrics_values(curr_data, current_columns)
 
         if data.reference_data is not None:
             reference_columns = np.intersect1d(columns, data.reference_data.columns)
             ref_data = data.reference_data[reference_columns]
-            reference_stats: Optional[DataIntegrityMetricsValues] = self._get_integrity_metrics_values(
+            reference: Optional[DataIntegrityMetricsValues] = self._get_integrity_metrics_values(
                 ref_data, reference_columns
             )
 
         else:
-            reference_stats = None
+            reference = None
 
-        return DataIntegrityMetricsResults(current_stats=current_stats, reference_stats=reference_stats)
+        return DataIntegrityMetricsResults(current=current, reference=reference)
 
 
 @default_renderer(wrap_type=DataIntegrityMetrics)
 class DataIntegrityMetricsRenderer(MetricRenderer):
     def render_json(self, obj: DataIntegrityMetrics) -> dict:
-        return dataclasses.asdict(obj.get_result().current_stats)
+        result = dataclasses.asdict(obj.get_result())
+        if "current" in result:
+            result["current"].pop("counts_of_values", None)
+
+            result["current"]["columns_type"] = [str(t) for t in result["current"]["columns_type"]]
+
+        if "reference" in result and result["reference"]:
+            result["reference"].pop("counts_of_values", None)
+            result["reference"]["columns_type"] = [str(t) for t in result["reference"]["columns_type"]]
+
+        return result
 
     @staticmethod
     def _get_metrics_table(dataset_name: str, metrics: DataIntegrityMetricsValues) -> MetricHtmlInfo:
@@ -165,11 +175,11 @@ class DataIntegrityMetricsRenderer(MetricRenderer):
                 ),
                 details=[],
             ),
-            self._get_metrics_table(dataset_name="current", metrics=metric_result.current_stats),
+            self._get_metrics_table(dataset_name="current", metrics=metric_result.current),
         ]
 
-        if metric_result.reference_stats is not None:
-            result.append(self._get_metrics_table(dataset_name="reference", metrics=metric_result.reference_stats))
+        if metric_result.reference is not None:
+            result.append(self._get_metrics_table(dataset_name="reference", metrics=metric_result.reference))
 
         return result
 
