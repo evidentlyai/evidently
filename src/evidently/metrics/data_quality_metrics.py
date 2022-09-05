@@ -143,7 +143,7 @@ class DataQualityMetricsRenderer(MetricRenderer):
     @staticmethod
     def _get_data_quality_summary_table(metric_result: DataQualityMetricsResults) -> MetricHtmlInfo:
         headers = ["Quality Metric", "Current"]
-        target_name = metric_result.columns.utility_columns.target
+        target_name = str(metric_result.columns.utility_columns.target)
         date_column = metric_result.columns.utility_columns.date
 
         all_features = metric_result.columns.get_all_features_list(cat_before_num=True, include_datetime_feature=True)
@@ -151,31 +151,36 @@ class DataQualityMetricsRenderer(MetricRenderer):
         if date_column:
             all_features = [date_column] + all_features
 
-        stats = (
-            ("target column", target_name, target_name),
-            ("date column", date_column, date_column),
-            ("number of variables", len(all_features), len(all_features)),
-            (
+        number_of_variables = str(len(all_features))
+        categorical_features = str(len(metric_result.columns.cat_feature_names))
+        numeric_features = str(len(metric_result.columns.num_feature_names))
+        datetime_features = str(len(metric_result.columns.datetime_feature_names))
+
+        stats: List[List[Union[str]]] = [
+            ["target column", target_name, target_name],
+            ["date column", str(date_column), str(date_column)],
+            ["number of variables", number_of_variables, number_of_variables],
+            [
                 "number of observations",
-                metric_result.features_stats.rows_count,
-                metric_result.reference_features_stats and metric_result.reference_features_stats.rows_count,
-            ),
-            (
+                str(metric_result.features_stats.rows_count),
+                str(metric_result.reference_features_stats and metric_result.reference_features_stats.rows_count),
+            ],
+            [
                 "categorical features",
-                len(metric_result.columns.cat_feature_names),
-                len(metric_result.columns.cat_feature_names),
-            ),
-            (
+                categorical_features,
+                categorical_features,
+            ],
+            [
                 "numeric features",
-                len(metric_result.columns.num_feature_names),
-                len(metric_result.columns.num_feature_names),
-            ),
-            (
+                numeric_features,
+                numeric_features,
+            ],
+            [
                 "datetime features",
-                len(metric_result.columns.datetime_feature_names),
-                len(metric_result.columns.datetime_feature_names),
-            ),
-        )
+                datetime_features,
+                datetime_features,
+            ],
+        ]
 
         if metric_result.reference_features_stats is not None:
             headers.append("Reference")
