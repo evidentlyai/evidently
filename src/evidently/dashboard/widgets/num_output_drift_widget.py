@@ -68,8 +68,9 @@ class NumOutputDriftWidget(Widget):
         output_sim_test = "detected" if drift_detected else "not detected"
 
         # plot output distributions
-        if cut_quantile and quality_metrics_options.get_cut_quantile(column_name):
-            side, q = quality_metrics_options.get_cut_quantile(column_name)
+        quantile = quality_metrics_options.get_cut_quantile(column_name)
+        if cut_quantile and quantile is not None:
+            side, q = quantile
             cqt = CutQuantileTransformer(side=side, q=q)
             cqt.fit(reference_data[column_name])
             reference_data_to_plot = cqt.transform(reference_data[column_name])
