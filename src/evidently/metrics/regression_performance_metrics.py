@@ -63,9 +63,6 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
     def calculate(self, data: InputData) -> RegressionPerformanceMetricsResults:
         columns = process_columns(data.current_data, data.column_mapping)
 
-        if data.current_data is None:
-            raise ValueError("current dataset should be present")
-
         current_metrics = calculate_regression_performance(
             dataset=data.current_data, columns=columns, error_bias_prefix="current_"
         )
@@ -73,8 +70,9 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
         reference_metrics = None
 
         if data.reference_data is not None:
+            ref_columns = process_columns(data.reference_data, data.column_mapping)
             reference_metrics = calculate_regression_performance(
-                dataset=data.reference_data, columns=columns, error_bias_prefix="ref_"
+                dataset=data.reference_data, columns=ref_columns, error_bias_prefix="ref_"
             )
 
             if reference_metrics is not None and reference_metrics.error_bias:

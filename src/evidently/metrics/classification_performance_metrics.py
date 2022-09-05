@@ -213,9 +213,6 @@ def classification_performance_metrics(
 
 class ClassificationPerformanceMetrics(Metric[ClassificationPerformanceResults]):
     def calculate(self, data: InputData) -> ClassificationPerformanceResults:
-        if data.current_data is None:
-            raise ValueError("current dataset should be present")
-
         if data.reference_data is None:
             columns = process_columns(data.current_data, data.column_mapping)
 
