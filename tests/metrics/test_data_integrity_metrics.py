@@ -2,13 +2,15 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.metrics.base_metric import InputData
 from evidently.metrics import DataIntegrityMetrics
 from evidently.metrics import DataIntegrityValueByRegexpMetrics
+from evidently.metrics import DataIntegrityNullValuesMetrics
+from evidently.metrics.base_metric import InputData
+from evidently.metrics.base_metric import Metric
 from evidently.metrics.data_integrity_metrics import DataIntegrityValueByRegexpMetricResult
 from evidently.metrics.data_integrity_metrics import DataIntegrityValueByRegexpStat
-from evidently.metrics import DataIntegrityNullValuesMetrics
+from evidently.pipeline.column_mapping import ColumnMapping
+from evidently.report import Report
 
 
 def test_data_integrity_metrics() -> None:
@@ -26,8 +28,8 @@ def test_data_integrity_metrics() -> None:
         data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
     )
     assert result is not None
-    assert result.current_stats.number_of_columns == 4
-    assert result.current_stats.number_of_rows == 3
+    assert result.current.number_of_columns == 4
+    assert result.current.number_of_rows == 3
 
 
 @pytest.mark.parametrize(
@@ -103,6 +105,31 @@ def test_data_integrity_value_by_regexp_metric(
         data=InputData(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
     )
     assert result == expected_result
+
+
+@pytest.mark.parametrize(
+    "metric_object",
+    (
+        DataIntegrityMetrics(),
+        DataIntegrityValueByRegexpMetrics(column_name="feature", reg_exp=r".*a.*"),
+        DataIntegrityNullValuesMetrics(null_values=[None]),
+    ),
+)
+def test_data_integrity_metrics_with_report(metric_object: Metric) -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "feature": [" a", "a", "\tb", np.nan, np.nan],
+        }
+    )
+    data_mapping = ColumnMapping()
+    report = Report(metrics=[metric_object])
+    report.run(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+    assert report.show()
+    assert report.json()
+
+    report.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=data_mapping)
+    assert report.show()
+    assert report.json()
 
 
 def test_data_integrity_metrics_different_null_values() -> None:

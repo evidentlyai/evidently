@@ -158,7 +158,7 @@ class TestTargetPredictionCorrelation(BaseDataQualityCorrelationsMetricsValueTes
         if self.condition.has_condition():
             return self.condition
 
-        reference_correlation = self.metric.get_result().reference_correlation
+        reference_correlation = self.metric.get_result().reference
         if reference_correlation is not None and reference_correlation.target_prediction_correlation is not None:
             value = reference_correlation.target_prediction_correlation
             return TestValueCondition(eq=approx(value, absolute=0.25))
@@ -166,7 +166,7 @@ class TestTargetPredictionCorrelation(BaseDataQualityCorrelationsMetricsValueTes
         return TestValueCondition(gt=0)
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
-        return self.metric.get_result().current_correlation.target_prediction_correlation
+        return self.metric.get_result().current.target_prediction_correlation
 
     def get_description(self, value: Numeric) -> str:
         if value is None:
@@ -184,7 +184,7 @@ class TestHighlyCorrelatedFeatures(BaseDataQualityCorrelationsMetricsValueTest):
         if self.condition.has_condition():
             return self.condition
 
-        reference_correlation = self.metric.get_result().reference_correlation
+        reference_correlation = self.metric.get_result().reference
         if reference_correlation is not None and reference_correlation.abs_max_num_features_correlation is not None:
             value = reference_correlation.abs_max_num_features_correlation
             return TestValueCondition(eq=approx(value, relative=0.1))
@@ -192,7 +192,7 @@ class TestHighlyCorrelatedFeatures(BaseDataQualityCorrelationsMetricsValueTest):
         return TestValueCondition(lt=0.9)
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
-        return self.metric.get_result().current_correlation.abs_max_num_features_correlation
+        return self.metric.get_result().current.abs_max_num_features_correlation
 
     def get_description(self, value: Numeric) -> str:
         return f"The maximum correlation is {value:.3g}. The test threshold is {self.get_condition()}."
@@ -208,9 +208,9 @@ class TestHighlyCorrelatedFeaturesRenderer(TestRenderer):
 
     def render_html(self, obj: TestHighlyCorrelatedFeatures) -> TestHtmlInfo:
         info = super().render_html(obj)
-        num_features = obj.metric.get_result().current_correlation.num_features
-        current_correlations = obj.metric.get_result().current_correlation.correlation_matrix[num_features]
-        reference_correlation = obj.metric.get_result().reference_correlation
+        num_features = obj.metric.get_result().current.num_features
+        current_correlations = obj.metric.get_result().current.correlation_matrix[num_features]
+        reference_correlation = obj.metric.get_result().reference
 
         if reference_correlation is not None:
             reference_correlations_matrix = reference_correlation.correlation_matrix[num_features]
@@ -242,7 +242,7 @@ class TestTargetFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValueTest
         if self.condition.has_condition():
             return self.condition
 
-        reference_correlation = self.metric.get_result().reference_correlation
+        reference_correlation = self.metric.get_result().reference
 
         if reference_correlation is not None and reference_correlation.abs_max_target_features_correlation is not None:
             value = reference_correlation.abs_max_target_features_correlation
@@ -251,7 +251,7 @@ class TestTargetFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValueTest
         return TestValueCondition(lt=0.9)
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
-        return self.metric.get_result().current_correlation.abs_max_target_features_correlation
+        return self.metric.get_result().current.abs_max_target_features_correlation
 
     def get_description(self, value: Numeric) -> str:
         if value is None:
@@ -278,8 +278,8 @@ class TestTargetFeaturesCorrelationsRenderer(TestRenderer):
 
     def render_html(self, obj: TestTargetFeaturesCorrelations) -> TestHtmlInfo:
         info = super().render_html(obj)
-        current_correlations_matrix = obj.metric.get_result().current_correlation.correlation_matrix
-        reference_correlation = obj.metric.get_result().reference_correlation
+        current_correlations_matrix = obj.metric.get_result().current.correlation_matrix
+        reference_correlation = obj.metric.get_result().reference
 
         if reference_correlation is not None:
             reference_correlations_matrix = reference_correlation.correlation_matrix
@@ -311,7 +311,7 @@ class TestPredictionFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValue
         if self.condition.has_condition():
             return self.condition
 
-        reference_correlation = self.metric.get_result().reference_correlation
+        reference_correlation = self.metric.get_result().reference
 
         if (
             reference_correlation is not None
@@ -323,7 +323,7 @@ class TestPredictionFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValue
         return TestValueCondition(lt=0.9)
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
-        return self.metric.get_result().current_correlation.abs_max_prediction_features_correlation
+        return self.metric.get_result().current.abs_max_prediction_features_correlation
 
     def get_description(self, value: Numeric) -> str:
         if value is None:
@@ -350,8 +350,8 @@ class TestPredictionFeaturesCorrelationsRenderer(TestRenderer):
 
     def render_html(self, obj: TestTargetFeaturesCorrelations) -> TestHtmlInfo:
         info = super().render_html(obj)
-        current_correlations_matrix = obj.metric.get_result().current_correlation.correlation_matrix
-        reference_correlation = obj.metric.get_result().reference_correlation
+        current_correlations_matrix = obj.metric.get_result().current.correlation_matrix
+        reference_correlation = obj.metric.get_result().reference
 
         if reference_correlation is not None:
             reference_correlations_matrix = reference_correlation.correlation_matrix
@@ -417,8 +417,8 @@ class TestCorrelationChanges(BaseDataQualityCorrelationsMetricsValueTest):
         return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
-        reference_correlation = self.metric.get_result().reference_correlation
-        current_correlation = self.metric.get_result().current_correlation
+        reference_correlation = self.metric.get_result().reference
+        current_correlation = self.metric.get_result().current
         if reference_correlation is None:
             raise ValueError("Reference should be present")
         diff = reference_correlation.correlation_matrix - current_correlation.correlation_matrix
@@ -432,8 +432,8 @@ class TestCorrelationChanges(BaseDataQualityCorrelationsMetricsValueTest):
 class TestCorrelationChangesRenderer(TestRenderer):
     def render_html(self, obj: TestCorrelationChanges) -> TestHtmlInfo:
         info = super().render_html(obj)
-        current_correlations_matrix = obj.metric.get_result().current_correlation.correlation_matrix
-        reference_correlation = obj.metric.get_result().reference_correlation
+        current_correlations_matrix = obj.metric.get_result().current.correlation_matrix
+        reference_correlation = obj.metric.get_result().reference
 
         if reference_correlation is not None:
             reference_correlations_matrix = reference_correlation.correlation_matrix

@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
 
+import pytest
+
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.metrics.base_metric import InputData
 from evidently.metrics import DataQualityMetrics
@@ -9,6 +11,8 @@ from evidently.metrics import DataQualityValueListMetrics
 from evidently.metrics import DataQualityValueRangeMetrics
 from evidently.metrics import DataQualityValueQuantileMetrics
 from evidently.metrics import DataQualityCorrelationMetrics
+from evidently.metrics.base_metric import Metric
+from evidently.report import Report
 
 
 def test_data_quality_metrics() -> None:
@@ -176,12 +180,40 @@ def test_data_quality_correlation_metrics() -> None:
         data=InputData(current_data=current_dataset, reference_data=None, column_mapping=data_mapping)
     )
     assert result is not None
-    assert result.current_correlation.num_features == ["numerical_feature_1", "numerical_feature_2", "category_feature"]
-    assert result.current_correlation.correlation_matrix is not None
-    assert result.current_correlation.target_prediction_correlation == 1.0
-    assert result.current_correlation.abs_max_target_features_correlation == 1.0
-    assert result.current_correlation.abs_max_prediction_features_correlation == 1.0
-    assert result.current_correlation.abs_max_correlation == 1.0
-    assert result.current_correlation.abs_max_num_features_correlation == 1.0
+    assert result.current.num_features == ["numerical_feature_1", "numerical_feature_2", "category_feature"]
+    assert result.current.correlation_matrix is not None
+    assert result.current.target_prediction_correlation == 1.0
+    assert result.current.abs_max_target_features_correlation == 1.0
+    assert result.current.abs_max_prediction_features_correlation == 1.0
+    assert result.current.abs_max_correlation == 1.0
+    assert result.current.abs_max_num_features_correlation == 1.0
 
-    assert result.reference_correlation is None
+    assert result.reference is None
+
+
+@pytest.mark.parametrize(
+    "metric_object",
+    (
+        DataQualityMetrics(),
+        DataQualityStabilityMetrics(),
+        DataQualityValueListMetrics(column_name="feature", values=[1, 0]),
+        DataQualityValueRangeMetrics(column_name="feature", left=0, right=1),
+        DataQualityValueQuantileMetrics(column_name="feature", quantile=0.5),
+        DataQualityCorrelationMetrics(),
+    ),
+)
+def test_data_quality_metrics_with_report(metric_object: Metric) -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "feature": [1, 2, 3, 4, np.nan],
+        }
+    )
+    data_mapping = ColumnMapping()
+    report = Report(metrics=[metric_object])
+    report.run(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+    assert report.show()
+    assert report.json()
+
+    report.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=data_mapping)
+    assert report.show()
+    assert report.json()
