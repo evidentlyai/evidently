@@ -62,6 +62,7 @@ class BaseWidgetInfo:
     WIDGET_INFO_TYPE_TABLE = "table"
     WIDGET_INFO_TYPE_BIG_TABLE = "big_table"
     WIDGET_INFO_TYPE_BIG_GRAPH = "big_graph"
+    WIDGET_INFO_TYPE_RICH_DATA = "rich_data"
 
     type: str
     title: str

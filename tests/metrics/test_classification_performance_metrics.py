@@ -65,6 +65,22 @@ def test_classification_performance_metrics_with_report() -> None:
     assert report.json()
 
 
+def test_classification_performance_metrics_probs_with_report() -> None:
+    test_dataset = pd.DataFrame(
+        {
+            "label_a": [0.5, 0.4, 0.1],
+            "label_b": [0.5, 0.4, 0.1],
+            "label_c": [0.9, 0.2, 0.3],
+            "target": ["label_a", "label_b", "label_c"],
+        }
+    )
+    data_mapping = ColumnMapping(prediction=["label_a", "label_b", "label_c"])
+    report = Report(metrics=[ClassificationPerformanceMetrics()])
+    report.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=data_mapping)
+    assert report.show()
+    assert report.json()
+
+
 def test_classification_performance_metrics_binary_probas_threshold() -> None:
     test_dataset = pd.DataFrame(
         {
@@ -96,7 +112,7 @@ def test_classification_performance_metrics_binary_probas_threshold_with_report(
         }
     )
     data_mapping = ColumnMapping(target="target", prediction="prediction")
-    report = Report(metrics=[ClassificationPerformanceMetricsTopK(k=1)])
+    report = Report(metrics=[ClassificationPerformanceMetricsThreshold(classification_threshold=1)])
     report.run(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
     assert report.show()
     assert report.json()
