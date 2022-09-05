@@ -419,17 +419,11 @@ class ClassificationPerformanceMetricsRenderer(MetricRenderer):
                     type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
                     title="",
                     size=2,
-                    params={"counters": [{"value": "", "label": "Classification Model Performance."}]},
-                ),
-                details=[],
-            ),
-            MetricHtmlInfo(
-                "classification_performance_target_name",
-                BaseWidgetInfo(
-                    type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
-                    title="",
-                    size=2,
-                    params={"counters": [{"value": "", "label": f"Target: '{target_name}'"}]},
+                    params={
+                        "counters": [
+                            {"value": "", "label": f"Classification Model Performance. Target: '{target_name}'"}
+                        ]
+                    },
                 ),
                 details=[],
             ),
