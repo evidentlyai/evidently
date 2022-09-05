@@ -65,8 +65,9 @@ class CatTargetPredFeatureTable(Widget):
                 # create target plot
                 reference_data["dataset"] = "Reference"
                 current_data["dataset"] = "Current"
-                if cut_quantile and quality_metrics_options.get_cut_quantile(feature_name):
-                    side, q = quality_metrics_options.get_cut_quantile(feature_name)
+                quantile = quality_metrics_options.get_cut_quantile(feature_name)
+                if cut_quantile and quantile is not None:
+                    side, q = quantile
                     cqt = CutQuantileTransformer(side=side, q=q)
                     cqt.fit(reference_data[feature_name])
                     reference_data_to_plot = cqt.transform_df(reference_data, feature_name)
@@ -146,8 +147,9 @@ class CatTargetPredFeatureTable(Widget):
                 # TO DO%: out pf the cycle
                 reference_data["dataset"] = "Reference"
                 current_data["dataset"] = "Current"
-                if cut_quantile and quality_metrics_options.get_cut_quantile(feature_name):
-                    side, q = quality_metrics_options.get_cut_quantile(feature_name)
+                quantile = quality_metrics_options.get_cut_quantile(feature_name)
+                if cut_quantile and quantile is not None:
+                    side, q = quantile
                     cqt = CutQuantileTransformer(side=side, q=q)
                     cqt.fit(reference_data[feature_name])
                     reference_data_to_plot = cqt.transform_df(reference_data, feature_name)
@@ -205,8 +207,9 @@ class CatTargetPredFeatureTable(Widget):
                 # create target plot
                 reference_data["dataset"] = "Reference"
                 current_data["dataset"] = "Current"
-                if cut_quantile and quality_metrics_options.get_cut_quantile(feature_name):
-                    side, q = quality_metrics_options.get_cut_quantile(feature_name)
+                quantile = quality_metrics_options.get_cut_quantile(feature_name)
+                if cut_quantile and quantile is not None:
+                    side, q = quantile
                     cqt = CutQuantileTransformer(side=side, q=q)
                     cqt.fit(reference_data[feature_name])
                     reference_data_to_plot = cqt.transform_df(reference_data, feature_name)

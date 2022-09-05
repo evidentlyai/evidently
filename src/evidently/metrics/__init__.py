@@ -1,3 +1,4 @@
+from .cat_target_drift_metrics import CatTargetDriftMetrics
 from .data_integrity_metrics import DataIntegrityMetrics
 from .data_integrity_metrics import DataIntegrityValueByRegexpMetrics
 from .data_integrity_metrics import DataIntegrityNullValuesMetrics
