@@ -111,6 +111,7 @@ class FeatureQualityStats:
 
 @dataclass
 class DataQualityStats:
+    rows_count: int
     num_features_stats: Optional[Dict[str, FeatureQualityStats]] = None
     cat_features_stats: Optional[Dict[str, FeatureQualityStats]] = None
     datetime_features_stats: Optional[Dict[str, FeatureQualityStats]] = None
@@ -202,7 +203,7 @@ def _get_features_stats(feature: pd.Series, feature_type: str) -> FeatureQuality
 def calculate_data_quality_stats(
     dataset: pd.DataFrame, columns: DatasetColumns, task: Optional[str]
 ) -> DataQualityStats:
-    result = DataQualityStats()
+    result = DataQualityStats(rows_count=get_rows_count(dataset))
 
     result.num_features_stats = {
         feature_name: _get_features_stats(dataset[feature_name], feature_type="num")

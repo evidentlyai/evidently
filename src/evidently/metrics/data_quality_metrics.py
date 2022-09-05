@@ -23,11 +23,13 @@ from evidently.renderers.base_renderer import MetricHtmlInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_operations import recognize_task
+from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.visualizations import plot_distr
 
 
 @dataclass
 class DataQualityMetricsResults:
+    columns: DatasetColumns
     features_stats: DataQualityStats
     distr_for_plots: Dict[str, Dict[str, pd.DataFrame]]
     counts_of_values: Dict[str, Dict[str, pd.DataFrame]]
@@ -120,6 +122,7 @@ class DataQualityMetrics(Metric[DataQualityMetricsResults]):
             distr_for_plots[feature] = counts_of_values[feature]
 
         return DataQualityMetricsResults(
+            columns=columns,
             features_stats=current_features_stats,
             distr_for_plots=distr_for_plots,
             counts_of_values=counts_of_values,
@@ -136,6 +139,104 @@ class DataQualityMetricsRenderer(MetricRenderer):
         result.pop("counts_of_values", None)
         result.pop("correlations", None)
         return result
+
+    def _get_df_stats(self, data_quality_results, df, df_stats):
+        result = {}
+        all_features = data_quality_results.columns.get_all_features_list(
+            cat_before_num=True, include_datetime_feature=True
+        )
+        if data_quality_results.columns.utility_columns.target:
+            target_name = data_quality_results.columns.utility_columns.target
+            # target_type = df_stats[target_name].feature_type
+            # all_features = [target_name] + all_features
+        else:
+            target_name = None
+        if data_quality_results.columns.utility_columns.date:
+            date_name = data_quality_results.columns.utility_columns.date
+            all_features = [date_name] + all_features
+        else:
+            date_name = None
+
+        if target_name:
+            result["target column"] = target_name
+        else:
+            result["target column"] = "None"
+        if date_name:
+            result["date column"] = date_name
+        else:
+            result["date column"] = "None"
+        result["number of variables"] = len(all_features)
+        result["number of observations"] = df.shape[0]
+        missing_cells = df[all_features].isnull().sum().sum()
+        missing_cells_percentage = np.round(
+            missing_cells / (result["number of variables"] * result["number of observations"]), 2
+        )
+        result["missing cells"] = f"{missing_cells} ({missing_cells_percentage}%)"
+        result["categorical features"] = len(data_quality_results.columns.cat_feature_names)
+        result["numeric features"] = len(data_quality_results.columns.num_feature_names)
+        result["datetime features"] = len(data_quality_results.columns.datetime_feature_names)
+        if date_name:
+            result["datetime features"] = result["datetime features"] + 1
+        constant_values = pd.Series([df_stats[x].most_common_value_percentage for x in all_features])
+        empty_values = pd.Series([df_stats[x].missing_percentage for x in all_features])
+        result["constant features"] = (constant_values == 100).sum()
+        result["empty features"] = (empty_values == 100).sum()
+        result["almost constant features"] = (constant_values >= 95).sum()
+        result["almost empty features"] = (empty_values >= 95).sum()
+        return result
+
+    def _get_data_quality_summary_table(
+        self,
+        metric_result: DataQualityMetricsResults,
+    ) -> MetricHtmlInfo:
+        headers = ["Quality Metric", "Current"]
+        target_name = metric_result.columns.utility_columns.target
+        date_column = metric_result.columns.utility_columns.date
+
+        all_features = metric_result.columns.get_all_features_list(cat_before_num=True, include_datetime_feature=True)
+
+        if date_column:
+            all_features = [date_column] + all_features
+
+        stats = (
+            ("target column", target_name, target_name),
+            ("date column", date_column, date_column),
+            ("number of variables", len(all_features), len(all_features)),
+            (
+                "number of observations",
+                metric_result.features_stats.rows_count,
+                metric_result.reference_features_stats and metric_result.reference_features_stats.rows_count,
+            ),
+            (
+                "categorical features",
+                len(metric_result.columns.cat_feature_names),
+                len(metric_result.columns.cat_feature_names),
+            ),
+            (
+                "numeric features",
+                len(metric_result.columns.num_feature_names),
+                len(metric_result.columns.num_feature_names),
+            ),
+            (
+                "datetime features",
+                len(metric_result.columns.datetime_feature_names),
+                len(metric_result.columns.datetime_feature_names),
+            ),
+        )
+
+        if metric_result.reference_features_stats is not None:
+            headers.append("Reference")
+
+        return MetricHtmlInfo(
+            "data_quality_summary_table",
+            BaseWidgetInfo(
+                type=BaseWidgetInfo.WIDGET_INFO_TYPE_TABLE,
+                title="Data Summary",
+                size=2,
+                params={"header": headers, "data": stats},
+            ),
+            details=[],
+        )
 
     @staticmethod
     def _get_data_quality_distribution_graph(
@@ -172,10 +273,11 @@ class DataQualityMetricsRenderer(MetricRenderer):
                     type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
                     title="",
                     size=2,
-                    params={"counters": [{"value": "", "label": "Data Quality Metrics"}]},
+                    params={"counters": [{"value": "", "label": "Data Quality Report"}]},
                 ),
                 details=[],
             ),
+            self._get_data_quality_summary_table(metric_result=metric_result),
         ]
         result.extend(self._get_data_quality_distribution_graph(features_stat=metric_result.distr_for_plots))
         return result
