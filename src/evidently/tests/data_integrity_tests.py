@@ -555,7 +555,7 @@ class TestColumnNumberOfDifferentNulls(BaseIntegrityColumnNullValuesTest):
 
     def calculate_value_for_test(self) -> Numeric:
         metric_data = self.metric.get_result().current_null_values
-        return len(metric_data.different_nulls_by_column[self.column_name])
+        return metric_data.number_of_different_nulls_by_column[self.column_name]
 
     def get_description(self, value: Numeric) -> str:
         return (
