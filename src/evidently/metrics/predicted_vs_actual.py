@@ -92,19 +92,9 @@ class PredictedVsActualRenderer(MetricRenderer):
         for gen in generators:
             ref_data = obj.get_result().reference_data
             if ref_data is not None:
-                result.append(
-                    MetricHtmlInfo(
-                        name="",
-                        info=gen(ref_data, "reference", color_options),
-                        details=[]
-                    )
-                )
+                result.append(MetricHtmlInfo(name="", info=gen(ref_data, "reference", color_options), details=[]))
             result.append(
-                MetricHtmlInfo(
-                    name="",
-                    info=gen(obj.get_result().current_data, "current", color_options),
-                    details=[]
-                )
+                MetricHtmlInfo(name="", info=gen(obj.get_result().current_data, "current", color_options), details=[])
             )
         return result
 
@@ -198,9 +188,7 @@ def _error_distr(plot_data: PlotData, dataset_name: str, color_options: ColorOpt
     error = plot_data.diff
 
     error_distr.add_trace(
-        go.Histogram(
-            x=error, marker_color=color_options.primary_color, name="error distribution", histnorm="percent"
-        )
+        go.Histogram(x=error, marker_color=color_options.primary_color, name="error distribution", histnorm="percent")
     )
 
     error_distr.update_layout(

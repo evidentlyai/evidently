@@ -56,6 +56,7 @@ class RegressionPerformanceMetricsResults:
     rmse_ref: Optional[float] = None
     r2_score_ref: Optional[float] = None
     abs_error_max_ref: Optional[float] = None
+    underperformance_ref: Optional[dict] = None
 
 
 class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
@@ -193,6 +194,11 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
         if rmse_ref is not None:
             rmse_ref = float(rmse_ref)
 
+        underperformance_ref = None
+
+        if reference_metrics is not None:
+            underperformance_ref = reference_metrics.underperformance
+
         return RegressionPerformanceMetricsResults(
             columns=columns,
             r2_score=r2_score_value,
@@ -213,6 +219,7 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
             abs_perc_error_std=current_metrics.abs_perc_error_std,
             error_normality=current_metrics.error_normality,
             underperformance=current_metrics.underperformance,
+            underperformance_ref=underperformance_ref,
             hist_for_plot=hist_for_plot,
             vals_for_plots=vals_for_plots,
             error_bias=error_bias,
@@ -233,6 +240,31 @@ class RegressionPerformanceMetricsRenderer(MetricRenderer):
         result.pop("vals_for_plots")
         result.pop("me_hist_for_plot")
         return result
+
+    @staticmethod
+    def _get_underperformance_tails(dataset_name: str, underperformance: dict) -> MetricHtmlInfo:
+        return MetricHtmlInfo(
+            f"regression_performance_metrics_underperformance_{dataset_name.lower()}",
+            BaseWidgetInfo(
+                title=f"{dataset_name.capitalize()}: Mean Error per Group (+/- std)",
+                type="counter",
+                size=2,
+                params={
+                    "counters": [
+                        {"value": round(underperformance["majority"]["mean_error"], 2), "label": "Majority(90%)"},
+                        {
+                            "value": round(underperformance["underestimation"]["mean_error"], 2),
+                            "label": "Underestimation(5%)",
+                        },
+                        {
+                            "value": round(underperformance["overestimation"]["mean_error"], 2),
+                            "label": "Overestimation(5%)",
+                        },
+                    ]
+                },
+            ),
+            details=[],
+        )
 
     def render_html(self, obj: RegressionPerformanceMetrics) -> List[MetricHtmlInfo]:
         metric_result = obj.get_result()
@@ -297,6 +329,17 @@ class RegressionPerformanceMetricsRenderer(MetricRenderer):
                         },
                     ),
                     details=[],
+                )
+            )
+
+        result.append(
+            self._get_underperformance_tails(dataset_name="current", underperformance=metric_result.underperformance)
+        )
+
+        if metric_result.underperformance_ref:
+            result.append(
+                self._get_underperformance_tails(
+                    dataset_name="reference", underperformance=metric_result.underperformance_ref
                 )
             )
         return result

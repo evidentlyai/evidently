@@ -85,38 +85,52 @@ class CatTargetDriftRenderer(MetricRenderer):
         size = 2
         if ref is not None:
             size = 1
-            result.append(MetricHtmlInfo(
+            result.append(
+                MetricHtmlInfo(
+                    name="",
+                    info=BaseWidgetInfo(
+                        title="Reference: Probability Distribution",
+                        type="tabbed_graph",
+                        size=size,
+                        params={
+                            "graphs": [
+                                {
+                                    "id": "tab_" + graph["title"],
+                                    "title": graph["title"],
+                                    "graph": {
+                                        "data": graph["data"],
+                                        "layout": graph["layout"],
+                                    },
+                                }
+                                for graph in ref
+                            ]
+                        },
+                    ),
+                    details=[],
+                )
+            )
+        result.append(
+            MetricHtmlInfo(
                 name="",
                 info=BaseWidgetInfo(
-                    title="Reference: Probability Distribution",
+                    title="Current: Probability Distribution",
                     type="tabbed_graph",
                     size=size,
-                    params={"graphs": [{
-                        "id": "tab_" + graph["title"],
-                        "title": graph["title"],
-                        "graph": {
-                            "data": graph["data"],
-                            "layout": graph["layout"],
-                        },
-                    } for graph in ref]},
+                    params={
+                        "graphs": [
+                            {
+                                "id": "tab_" + graph["title"],
+                                "title": graph["title"],
+                                "graph": {
+                                    "data": graph["data"],
+                                    "layout": graph["layout"],
+                                },
+                            }
+                            for graph in obj.get_result().curr_distplot
+                        ]
+                    },
                 ),
                 details=[],
-            ))
-        result.append(MetricHtmlInfo(
-            name="",
-            info=BaseWidgetInfo(
-                title="Current: Probability Distribution",
-                type="tabbed_graph",
-                size=size,
-                params={"graphs": [{
-                    "id": "tab_" + graph["title"],
-                    "title": graph["title"],
-                    "graph": {
-                        "data": graph["data"],
-                        "layout": graph["layout"],
-                    },
-                } for graph in obj.get_result().curr_distplot]},
-            ),
-            details=[],
-        ))
+            )
+        )
         return result
