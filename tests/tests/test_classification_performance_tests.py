@@ -32,6 +32,8 @@ def test_accuracy_score_test() -> None:
     suite = TestSuite(tests=[TestAccuracyScore(lt=0.8)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
     assert suite
+    assert suite.show()
+    assert suite.json()
 
 
 def test_accuracy_score_test_render_json() -> None:
@@ -68,6 +70,8 @@ def test_precision_score_test() -> None:
     suite = TestSuite(tests=[TestPrecisionScore(gt=0.8)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
     assert suite
+    assert suite.show()
+    assert suite.json()
 
 
 def test_precision_score_test_render_json() -> None:
@@ -104,6 +108,8 @@ def test_f1_score_test() -> None:
     suite = TestSuite(tests=[TestF1Score(gt=0.5)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
     assert suite
+    assert suite.show()
+    assert suite.json()
 
 
 def test_f1_score_test_render_json() -> None:
@@ -140,6 +146,8 @@ def test_recall_score_test() -> None:
     suite = TestSuite(tests=[TestRecallScore(lt=0.8)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
     assert suite
+    assert suite.show()
+    assert suite.json()
 
 
 def test_recall_score_test_render_json() -> None:
@@ -176,10 +184,14 @@ def test_log_loss_test() -> None:
     suite = TestSuite(tests=[TestLogLoss(gte=0.8)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
     assert not suite
+    assert suite.show()
+    assert suite.json()
 
     suite = TestSuite(tests=[TestLogLoss(lt=0.8)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
     assert suite
+    assert suite.show()
+    assert suite.json()
 
 
 def test_log_loss_test_json_render() -> None:
@@ -241,10 +253,14 @@ def test_roc_auc_test() -> None:
     suite = TestSuite(tests=[TestRocAuc(gte=0.8)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
     assert suite
+    assert suite.show()
+    assert suite.json()
 
     suite = TestSuite(tests=[TestRocAuc(lt=0.8)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
     assert not suite
+    assert suite.show()
+    assert suite.json()
 
 
 def test_roc_auc_test_json_render() -> None:
@@ -303,6 +319,8 @@ def test_precision_by_class_test() -> None:
     suite = TestSuite(tests=[TestPrecisionByClass(label="a", gt=0.8)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
     assert suite
+    assert suite.show()
+    assert suite.json()
 
 
 def test_precision_by_class_test_render_json() -> None:
@@ -343,6 +361,8 @@ def test_f1_by_class_test() -> None:
     suite = TestSuite(tests=[TestF1ByClass(label="a", gt=0.5)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
     assert suite
+    assert suite.show()
+    assert suite.json()
 
 
 def test_f1_by_class_test_render_json() -> None:
@@ -383,6 +403,8 @@ def test_recall_by_class_test() -> None:
     suite = TestSuite(tests=[TestRecallByClass(label="b", gt=0.8)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
     assert suite
+    assert suite.show()
+    assert suite.json()
 
 
 def test_recall_by_class_test_render_json() -> None:
@@ -423,6 +445,8 @@ def test_tpr_test() -> None:
     suite = TestSuite(tests=[TestTPR(lt=0.8)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
     assert suite
+    assert suite.show()
+    assert suite.json()
 
 
 def test_tpr_test_render_json() -> None:
@@ -460,6 +484,8 @@ def test_tnr_test() -> None:
     suite = TestSuite(tests=[TestTNR(gt=0.8)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
     assert suite
+    assert suite.show()
+    assert suite.json()
 
 
 def test_tnr_test_render_json() -> None:
@@ -497,6 +523,8 @@ def test_fpr_test() -> None:
     suite = TestSuite(tests=[TestFPR(lt=0.8)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
     assert suite
+    assert suite.show()
+    assert suite.json()
 
 
 def test_fpr_test_render_json() -> None:
@@ -534,6 +562,8 @@ def test_fnr_test() -> None:
     suite = TestSuite(tests=[TestFNR(lt=0.8)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
     assert suite
+    assert suite.show()
+    assert suite.json()
 
 
 def test_fnr_test_render_json() -> None:

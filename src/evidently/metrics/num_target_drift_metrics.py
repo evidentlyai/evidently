@@ -11,8 +11,7 @@ import pandas as pd
 import plotly.figure_factory as ff
 import plotly.graph_objs as go
 
-from evidently.calculations.data_drift import DataDriftMetrics, \
-    calculate_data_drift_for_numeric_feature
+from evidently.calculations.data_drift import DataDriftMetrics, calculate_data_drift_for_numeric_feature
 from evidently.calculations.data_quality import get_rows_count
 from evidently.dashboard.widgets.utils import CutQuantileTransformer
 from evidently.metrics.base_metric import Metric
@@ -43,9 +42,9 @@ class NumTargetDriftAnalyzerResults:
 
 class NumTargetDriftMetrics(Metric[NumTargetDriftAnalyzerResults]):
     def __init__(
-            self,
-            options: Optional[DataDriftOptions] = None,
-            quality_metrics_options: Optional[QualityMetricsOptions] = None,
+        self,
+        options: Optional[DataDriftOptions] = None,
+        quality_metrics_options: Optional[QualityMetricsOptions] = None,
     ):
         if options is None:
             options = DataDriftOptions()
@@ -169,11 +168,11 @@ class NumTargetDriftMetrics(Metric[NumTargetDriftAnalyzerResults]):
 
 
 def _dist_plot(
-        column_name: str,
-        reference_data: pd.DataFrame,
-        current_data: pd.DataFrame,
-        quality_metrics_options: QualityMetricsOptions,
-        color_options: ColorOptions,
+    column_name: str,
+    reference_data: pd.DataFrame,
+    current_data: pd.DataFrame,
+    quality_metrics_options: QualityMetricsOptions,
+    color_options: ColorOptions,
 ):
     cut_quantile = quality_metrics_options.cut_quantile
     quantile = quality_metrics_options.get_cut_quantile(column_name)
@@ -203,13 +202,13 @@ def _dist_plot(
 
 
 def _values_plots(
-        date_column: Optional[str],
-        column_name: str,
-        kind: str,
-        reference_data: pd.DataFrame,
-        current_data: pd.DataFrame,
-        color_options: ColorOptions,
-        quality_metrics_options: QualityMetricsOptions,
+    date_column: Optional[str],
+    column_name: str,
+    kind: str,
+    reference_data: pd.DataFrame,
+    current_data: pd.DataFrame,
+    color_options: ColorOptions,
+    quality_metrics_options: QualityMetricsOptions,
 ):
     conf_interval_n_sigmas = quality_metrics_options.conf_interval_n_sigmas
     utility_columns_date = date_column
@@ -312,7 +311,7 @@ class NumTargetDriftMetricsRenderer(MetricRenderer):
                     name="",
                     info=BaseWidgetInfo(
                         title=f"Target Drift: {output_sim_test},"
-                              f" drift score={round(target_metrics.drift_score, 6)} ({target_metrics.stattest_name})",
+                        f" drift score={round(target_metrics.drift_score, 6)} ({target_metrics.stattest_name})",
                         type="big_graph",
                         details="",
                         alerts=[],
@@ -322,8 +321,9 @@ class NumTargetDriftMetricsRenderer(MetricRenderer):
                         params={"data": target_output_distr["data"], "layout": target_output_distr["layout"]},
                         additionalGraphs=[],
                     ),
-                    details=[]
-                ))
+                    details=[],
+                )
+            )
 
             result.append(_plot_correlations(target_metrics, color_options))
             result.append(
@@ -333,27 +333,27 @@ class NumTargetDriftMetricsRenderer(MetricRenderer):
                         title="Target Values",
                         type="big_graph",
                         size=1,
-                        params={
-                            "data": target_values_plot["data"],
-                            "layout": target_values_plot["layout"]
-                        },
+                        params={"data": target_values_plot["data"], "layout": target_values_plot["layout"]},
                     ),
-                    details=[]
+                    details=[],
                 ),
             )
         prediction_output_distr = obj.get_result().prediction_output_distr
         prediction_metrics = obj.get_result().prediction_metrics
         prediction_values_plot = obj.get_result().prediction_values_plot
-        if prediction_output_distr is not None and prediction_metrics is not None \
-                and prediction_values_plot is not None:
+        if (
+            prediction_output_distr is not None
+            and prediction_metrics is not None
+            and prediction_values_plot is not None
+        ):
             output_sim_test = "detected" if prediction_metrics.drift_detected else "not detected"
             result.append(
                 MetricHtmlInfo(
                     name="",
                     info=BaseWidgetInfo(
                         title=f"Prediction Drift: {output_sim_test},"
-                              f" drift score={round(prediction_metrics.drift_score, 6)}"
-                              f" ({prediction_metrics.stattest_name})",
+                        f" drift score={round(prediction_metrics.drift_score, 6)}"
+                        f" ({prediction_metrics.stattest_name})",
                         type="big_graph",
                         details="",
                         alerts=[],
@@ -363,8 +363,9 @@ class NumTargetDriftMetricsRenderer(MetricRenderer):
                         params={"data": prediction_output_distr["data"], "layout": prediction_output_distr["layout"]},
                         additionalGraphs=[],
                     ),
-                    details=[]
-                ))
+                    details=[],
+                )
+            )
             result.append(_plot_correlations(prediction_metrics, color_options))
             result.append(
                 MetricHtmlInfo(
@@ -373,12 +374,9 @@ class NumTargetDriftMetricsRenderer(MetricRenderer):
                         title="Prediction Values",
                         type="big_graph",
                         size=1,
-                        params={
-                            "data": prediction_values_plot["data"],
-                            "layout": prediction_values_plot["layout"]
-                        },
+                        params={"data": prediction_values_plot["data"], "layout": prediction_values_plot["layout"]},
                     ),
-                    details=[]
+                    details=[],
                 ),
             )
         return result
@@ -422,5 +420,5 @@ def _plot_correlations(metrics: DataDriftMetrics, color_options: ColorOptions):
             size=1,
             params={"data": output_corr_json["data"], "layout": output_corr_json["layout"]},
         ),
-        details=[]
+        details=[],
     )
