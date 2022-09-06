@@ -42,8 +42,8 @@ def _plot(dataset_to_plot, columns: DatasetColumns, color_options: Optional[Colo
 
     # plot distributions
     graphs = []
-    if not isinstance(utility_columns.prediction, typing.Iterable):
-        raise ValueError("column_mapping.prediction should be list of labels")
+    if not isinstance(utility_columns.prediction, typing.Iterable) or isinstance(utility_columns.prediction, str):
+        return None
 
     for label in utility_columns.prediction:
         pred_distr = ff.create_distplot(
@@ -81,6 +81,7 @@ class CatTargetDriftRenderer(MetricRenderer):
 
     def render_html(self, obj: ProbabilityDistributionMetric) -> List[MetricHtmlInfo]:
         ref = obj.get_result().ref_distplot
+        curr = obj.get_result().curr_distplot
         result = []
         size = 2
         if ref is not None:
@@ -109,28 +110,29 @@ class CatTargetDriftRenderer(MetricRenderer):
                     details=[],
                 )
             )
-        result.append(
-            MetricHtmlInfo(
-                name="",
-                info=BaseWidgetInfo(
-                    title="Current: Probability Distribution",
-                    type="tabbed_graph",
-                    size=size,
-                    params={
-                        "graphs": [
-                            {
-                                "id": "tab_" + graph["title"],
-                                "title": graph["title"],
-                                "graph": {
-                                    "data": graph["data"],
-                                    "layout": graph["layout"],
-                                },
-                            }
-                            for graph in obj.get_result().curr_distplot
-                        ]
-                    },
-                ),
-                details=[],
+        if curr is not None:
+            result.append(
+                MetricHtmlInfo(
+                    name="",
+                    info=BaseWidgetInfo(
+                        title="Current: Probability Distribution",
+                        type="tabbed_graph",
+                        size=size,
+                        params={
+                            "graphs": [
+                                {
+                                    "id": "tab_" + graph["title"],
+                                    "title": graph["title"],
+                                    "graph": {
+                                        "data": graph["data"],
+                                        "layout": graph["layout"],
+                                    },
+                                }
+                                for graph in obj.get_result().curr_distplot
+                            ]
+                        },
+                    ),
+                    details=[],
+                )
             )
-        )
         return result
