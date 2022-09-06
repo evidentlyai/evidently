@@ -548,7 +548,7 @@ class TestColumnNumberOfDifferentNulls(BaseIntegrityColumnNullValuesTest):
         reference_null_values = self.metric.get_result().reference_null_values
 
         if reference_null_values is not None:
-            ref_value = len(reference_null_values.different_nulls_by_column[self.column_name])
+            ref_value = reference_null_values.number_of_different_nulls_by_column[self.column_name]
             return TestValueCondition(lte=ref_value)
 
         raise ValueError("Neither required test parameters nor reference data has been provided.")
