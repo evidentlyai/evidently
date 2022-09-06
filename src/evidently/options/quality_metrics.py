@@ -26,6 +26,6 @@ class QualityMetricsOptions:
         if isinstance(self.cut_quantile, dict):
             return self.cut_quantile.get(feature_name, None)
         raise ValueError(
-            f"""QualityMetricsOptions.remove_outliers
+            f"""QualityMetricsOptions.cut_quantile
                                 is incorrect type {type(self.cut_quantile)}"""
         )

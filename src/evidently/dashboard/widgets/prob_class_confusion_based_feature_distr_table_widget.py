@@ -71,8 +71,9 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
                 # create confusion based plots
                 reference_data["dataset"] = "Reference"
                 current_data["dataset"] = "Current"
-                if cut_quantile and quality_metrics_options.get_cut_quantile(feature_name):
-                    side, q = quality_metrics_options.get_cut_quantile(feature_name)
+                quantile = quality_metrics_options.get_cut_quantile(feature_name)
+                if cut_quantile and quantile is not None:
+                    side, q = quantile
                     cqt = CutQuantileTransformer(side=side, q=q)
                     cqt.fit(reference_data[feature_name])
                     reference_data_to_plot = cqt.transform_df(reference_data, feature_name)
@@ -220,8 +221,9 @@ class ProbClassConfusionBasedFeatureDistrTable(Widget):
 
                 # create confusion based plots
                 fig = px.histogram(reference_data, x=feature_name, color=utility_columns.target, histnorm="")
-                if cut_quantile and quality_metrics_options.get_cut_quantile(feature_name):
-                    side, q = quality_metrics_options.get_cut_quantile(feature_name)
+                cut_quantile_options = quality_metrics_options.get_cut_quantile(feature_name)
+                if cut_quantile and cut_quantile_options is not None:
+                    side, q = cut_quantile_options
                     cqt = CutQuantileTransformer(side=side, q=q)
                     cqt.fit(reference_data[feature_name])
                     reference_data_to_plot = cqt.transform_df(reference_data, feature_name)

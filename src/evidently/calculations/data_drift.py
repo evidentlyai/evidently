@@ -8,13 +8,13 @@ from typing import Sequence
 from typing import Tuple
 from typing import Union
 
+from dataclasses import dataclass
+
 import numpy as np
 import pandas as pd
-from dataclasses import dataclass
 
 from evidently.calculations.stattests import get_stattest
 from evidently.calculations.stattests import PossibleStatTestType
-from evidently.calculations.stattests import StatTest
 from evidently.options import DataDriftOptions
 from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.data_operations import recognize_task
@@ -86,7 +86,7 @@ def calculate_data_drift(
     reference_data: pd.DataFrame,
     column_name: str,
     stattest: Optional[PossibleStatTestType],
-    threshold: float,
+    threshold: Optional[float],
     feature_type: str,
 ) -> DataDriftMetrics:
     drift_test_function = get_stattest(reference_data[column_name], current_data[column_name], feature_type, stattest)
@@ -105,7 +105,7 @@ def calculate_data_drift_for_category_feature(
     reference_data: pd.DataFrame,
     column_name: str,
     stattest: Optional[PossibleStatTestType],
-    threshold: float,
+    threshold: Optional[float],
 ):
     return calculate_data_drift(
         current_data=current_data.dropna(subset=[column_name]),
@@ -122,8 +122,8 @@ def calculate_data_drift_for_numeric_feature(
     current_data: pd.DataFrame,
     column_name: str,
     numeric_columns: List[str],
-    stattest: StatTest,
-    threshold: float,
+    stattest: Optional[PossibleStatTestType],
+    threshold: Optional[float],
 ) -> Optional[DataDriftMetrics]:
     if not pd.api.types.is_numeric_dtype(reference_data[column_name]) or not pd.api.types.is_numeric_dtype(
         current_data[column_name]
