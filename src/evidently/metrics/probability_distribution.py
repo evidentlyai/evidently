@@ -42,8 +42,8 @@ def _plot(dataset_to_plot, columns: DatasetColumns, color_options: Optional[Colo
 
     # plot distributions
     graphs = []
-    if not isinstance(utility_columns.prediction, typing.Iterable):
-        raise ValueError("column_mapping.prediction should be list of labels")
+    if not isinstance(utility_columns.prediction, typing.Iterable) or isinstance(utility_columns.prediction, str):
+        raise ValueError("Currently available only for multiclass probabilistic classification")
 
     for label in utility_columns.prediction:
         pred_distr = ff.create_distplot(
