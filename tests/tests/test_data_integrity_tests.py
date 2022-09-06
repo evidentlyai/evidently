@@ -561,6 +561,22 @@ def test_data_integrity_test_different_nulls_one_column_no_nulls() -> None:
     assert suite
 
 
+def test_data_integrity_test_different_nulls_one_column_with_defaults() -> None:
+    test_dataset = pd.DataFrame({"feature": ["null", "", None]})
+    reference_dataset = pd.DataFrame({"feature": ["n/a", "test", None]})
+    data_mapping = ColumnMapping()
+
+    suite = TestSuite(
+        tests=[TestColumnNumberOfDifferentNulls(column_name="feature", null_values=["null", "n/a"], replace=False)]
+    )
+    suite.run(current_data=test_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
+    assert not suite, suite.json()
+
+    another_test_dataset = pd.DataFrame({"feature": ["null", "test", None]})
+    suite.run(current_data=another_test_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
+    assert suite, suite.json()
+
+
 def test_data_integrity_test_number_of_nulls_one_column() -> None:
     test_dataset = pd.DataFrame({"feature1": ["", None, "null", "a"], "feature2": ["b", "null", None, None]})
 

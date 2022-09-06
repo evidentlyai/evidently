@@ -548,6 +548,11 @@ class TestColumnNumberOfDifferentNulls(BaseIntegrityColumnNullValuesTest):
         reference_null_values = self.metric.get_result().reference_null_values
 
         if reference_null_values is not None:
+            if self.column_name not in reference_null_values.number_of_different_nulls_by_column:
+                raise ValueError(
+                    f"Cannot define test default conditions: no column '{self.column_name}' in reference dataset."
+                )
+
             ref_value = reference_null_values.number_of_different_nulls_by_column[self.column_name]
             return TestValueCondition(lte=ref_value)
 

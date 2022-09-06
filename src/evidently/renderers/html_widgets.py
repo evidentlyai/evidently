@@ -28,13 +28,14 @@ class HistogramData:
 
 
 def histogram(
-        title: str,
-        primary_hist: HistogramData,
-        secondary_hist: Optional[HistogramData],
-        *,
-        color_options: Optional[ColorOptions] = None,
-        orientation: str = "v",
-        size: int = 2) -> BaseWidgetInfo:
+    title: str,
+    primary_hist: HistogramData,
+    secondary_hist: Optional[HistogramData],
+    *,
+    color_options: Optional[ColorOptions] = None,
+    orientation: str = "v",
+    size: int = 2,
+) -> BaseWidgetInfo:
     color_options = color_options if color_options is not None else ColorOptions()
     figure = go.Figure()
     curr_bar = go.Bar(
@@ -42,7 +43,7 @@ def histogram(
         x=primary_hist.x,
         y=primary_hist.count,
         marker_color=color_options.get_current_data_color(),
-        orientation=orientation
+        orientation=orientation,
     )
     figure.add_trace(curr_bar)
     if secondary_hist is not None:
@@ -51,7 +52,7 @@ def histogram(
             x=secondary_hist.x,
             y=secondary_hist.count,
             marker_color=color_options.get_reference_data_color(),
-            orientation=orientation
+            orientation=orientation,
         )
         figure.add_trace(ref_bar)
 

@@ -27,6 +27,7 @@ from evidently.utils.data_operations import process_columns, replace_infinity_va
 @dataclass
 class CatTargetDriftAnalyzerResults:
     """Class for all results of category target drift calculations"""
+
     columns: DatasetColumns
     target_metrics: Optional[DataDriftMetrics] = None
     prediction_metrics: Optional[DataDriftMetrics] = None
@@ -38,9 +39,8 @@ class CatTargetDriftAnalyzerResults:
 
 class CatTargetDriftMetrics(Metric[CatTargetDriftAnalyzerResults]):
     def __init__(
-            self,
-            options: Optional[DataDriftOptions] = None,
-            quality_options: Optional[QualityMetricsOptions] = None):
+        self, options: Optional[DataDriftOptions] = None, quality_options: Optional[QualityMetricsOptions] = None
+    ):
         if options is None:
             options = DataDriftOptions()
         if quality_options is None:
@@ -153,40 +153,44 @@ class CatTargetDriftRenderer(MetricRenderer):
         if target_metrics is None:
             raise ValueError("no target column was provided")
         output_sim_test = "detected" if target_metrics.drift_detected else "not detected"
-        result.append(_hist(
-            obj.get_result().target_histogram_data,
-            f"Target Drift: {output_sim_test},"
-            f" drift score={round(target_metrics.drift_score, 6)}"
-            f" ({target_metrics.stattest_name})"
-        ))
+        result.append(
+            _hist(
+                obj.get_result().target_histogram_data,
+                f"Target Drift: {output_sim_test},"
+                f" drift score={round(target_metrics.drift_score, 6)}"
+                f" ({target_metrics.stattest_name})",
+            )
+        )
         prediction_metrics = obj.get_result().prediction_metrics
         prediction_hist_data = obj.get_result().prediction_histogram_data
         if prediction_hist_data is not None and prediction_metrics is not None:
             output_sim_test = "detected" if prediction_metrics.drift_detected else "not detected"
-            result.append(_hist(
-                prediction_hist_data,
-                f"Target Drift: {output_sim_test},"
-                f" drift score={round(prediction_metrics.drift_score, 6)}"
-                f" ({prediction_metrics.stattest_name})"
-            ))
+            result.append(
+                _hist(
+                    prediction_hist_data,
+                    f"Target Drift: {output_sim_test},"
+                    f" drift score={round(prediction_metrics.drift_score, 6)}"
+                    f" ({prediction_metrics.stattest_name})",
+                )
+            )
 
         return result
 
 
 def _hist(histogram_data, title):
-    curr_hist_data = histogram_data['current']
+    curr_hist_data = histogram_data["current"]
     curr_hist = HistogramData(
         "current",
-        curr_hist_data['x'],
-        curr_hist_data['count'],
+        curr_hist_data["x"],
+        curr_hist_data["count"],
     )
-    ref_hist_data = histogram_data.get('reference', None)
+    ref_hist_data = histogram_data.get("reference", None)
     ref_hist = None
     if ref_hist_data is not None:
         ref_hist = HistogramData(
             "reference",
-            ref_hist_data['x'],
-            ref_hist_data['count'],
+            ref_hist_data["x"],
+            ref_hist_data["count"],
         )
     return MetricHtmlInfo(
         name="",
@@ -195,5 +199,5 @@ def _hist(histogram_data, title):
             curr_hist,
             ref_hist,
         ),
-        details=[]
+        details=[],
     )
