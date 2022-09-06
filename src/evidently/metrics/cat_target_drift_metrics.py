@@ -80,15 +80,17 @@ class CatTargetDriftMetrics(Metric[CatTargetDriftAnalyzerResults]):
         """
         if data.reference_data is None:
             raise ValueError("reference_data should be present")
+        reference_data = data.reference_data.copy()
 
         if data.current_data is None:
             raise ValueError("current_data should be present")
+        current_data = data.current_data.copy()
 
         # threshold = self.options.cat_target_threshold
         provider = OptionsProvider()
         options = provider.get(DataDriftOptions)
         threshold = options.cat_target_threshold
-        columns = process_columns(data.reference_data, data.column_mapping)
+        columns = process_columns(reference_data, data.column_mapping)
         target_column = columns.utility_columns.target
 
         if not isinstance(target_column, str) and isinstance(target_column, Sequence):
@@ -97,20 +99,20 @@ class CatTargetDriftMetrics(Metric[CatTargetDriftAnalyzerResults]):
         classification_threshold = self.quality_options.classification_threshold
         prediction_column = define_predictions_type(
             prediction_column=columns.utility_columns.prediction,
-            current_data=data.current_data,
-            reference_data=data.reference_data,
+            current_data=current_data,
+            reference_data=reference_data,
             threshold=classification_threshold,
         )
 
         result = CatTargetDriftAnalyzerResults(
             columns=columns,
-            reference_data_count=get_rows_count(data.reference_data),
-            current_data_count=get_rows_count(data.current_data),
+            reference_data_count=get_rows_count(reference_data),
+            current_data_count=get_rows_count(current_data),
         )
 
         # consider replacing only values in target and prediction column
-        reference_data = replace_infinity_values_to_nan(data.reference_data)
-        current_data = replace_infinity_values_to_nan(data.current_data)
+        reference_data = replace_infinity_values_to_nan(reference_data)
+        current_data = replace_infinity_values_to_nan(current_data)
 
         if target_column is not None:
             result.target_metrics = calculate_data_drift_for_category_feature(
