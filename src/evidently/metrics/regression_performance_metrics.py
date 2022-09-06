@@ -12,10 +12,9 @@ from sklearn.metrics import mean_absolute_percentage_error
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import r2_score
 
-from evidently.utils.data_operations import process_columns
+from evidently.calculations.regression_performance import calculate_regression_performance
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
-from evidently.calculations.regression_performance import calculate_regression_performance
 from evidently.metrics.utils import make_target_bins_for_reg_plots
 from evidently.metrics.utils import make_hist_for_cat_plot
 from evidently.metrics.utils import apply_func_to_binned_data
@@ -24,10 +23,13 @@ from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.base_renderer import MetricHtmlInfo
 from evidently.renderers.base_renderer import MetricRenderer
+from evidently.utils.data_operations import process_columns
+from evidently.utils.data_operations import DatasetColumns
 
 
 @dataclass
 class RegressionPerformanceMetricsResults:
+    columns: DatasetColumns
     r2_score: float
     rmse: float
     rmse_default: float
@@ -64,9 +66,6 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
     def calculate(self, data: InputData) -> RegressionPerformanceMetricsResults:
         columns = process_columns(data.current_data, data.column_mapping)
 
-        if data.current_data is None:
-            raise ValueError("current dataset should be present")
-
         current_metrics = calculate_regression_performance(
             dataset=data.current_data, columns=columns, error_bias_prefix="current_"
         )
@@ -74,8 +73,9 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
         reference_metrics = None
 
         if data.reference_data is not None:
+            ref_columns = process_columns(data.reference_data, data.column_mapping)
             reference_metrics = calculate_regression_performance(
-                dataset=data.reference_data, columns=columns, error_bias_prefix="ref_"
+                dataset=data.reference_data, columns=ref_columns, error_bias_prefix="ref_"
             )
 
             if reference_metrics is not None and reference_metrics.error_bias:
@@ -200,6 +200,7 @@ class RegressionPerformanceMetrics(Metric[RegressionPerformanceMetricsResults]):
             underperformance_ref = reference_metrics.underperformance
 
         return RegressionPerformanceMetricsResults(
+            columns=columns,
             r2_score=r2_score_value,
             rmse=rmse_score_value,
             rmse_default=rmse_default,
@@ -267,6 +268,7 @@ class RegressionPerformanceMetricsRenderer(MetricRenderer):
 
     def render_html(self, obj: RegressionPerformanceMetrics) -> List[MetricHtmlInfo]:
         metric_result = obj.get_result()
+        target_name = metric_result.columns.utility_columns.target
         result = [
             MetricHtmlInfo(
                 "regression_performance_title",
@@ -274,7 +276,9 @@ class RegressionPerformanceMetricsRenderer(MetricRenderer):
                     type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
                     title="",
                     size=2,
-                    params={"counters": [{"value": "", "label": "Model Quality"}]},
+                    params={
+                        "counters": [{"value": "", "label": f"Regression Model Performance. Target: '{target_name}’"}]
+                    },
                 ),
                 details=[],
             ),

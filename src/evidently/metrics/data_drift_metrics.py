@@ -167,7 +167,17 @@ class DataDriftMetricsRenderer(MetricRenderer):
 
         return [
             MetricHtmlInfo(
-                name="data drift",
+                "data_drift_title",
+                BaseWidgetInfo(
+                    type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
+                    title="",
+                    size=2,
+                    params={"counters": [{"value": "", "label": "Data Drift Report"}]},
+                ),
+                details=[],
+            ),
+            MetricHtmlInfo(
+                name="data_drift_table",
                 info=BaseWidgetInfo(
                     title=title_prefix + title_suffix,
                     type="big_table",
@@ -202,5 +212,5 @@ class DataDriftMetricsRenderer(MetricRenderer):
                     additionalGraphs=[],
                 ),
                 details=additional_graphs_data,
-            )
+            ),
         ]

@@ -13,7 +13,7 @@ from .quality_metrics import QualityMetricsOptions
 TypeParam = TypeVar("TypeParam")
 
 
-class OptionsProvider(Generic[TypeParam]):
+class OptionsProvider:
     _options: Dict[Type, Any]
 
     def __init__(self):

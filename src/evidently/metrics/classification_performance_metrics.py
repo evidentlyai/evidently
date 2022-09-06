@@ -213,9 +213,6 @@ def classification_performance_metrics(
 
 class ClassificationPerformanceMetrics(Metric[ClassificationPerformanceResults]):
     def calculate(self, data: InputData) -> ClassificationPerformanceResults:
-        if data.current_data is None:
-            raise ValueError("current dataset should be present")
-
         if data.reference_data is None:
             columns = process_columns(data.current_data, data.column_mapping)
 
@@ -422,17 +419,11 @@ class ClassificationPerformanceMetricsRenderer(MetricRenderer):
                     type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
                     title="",
                     size=2,
-                    params={"counters": [{"value": "", "label": "Classification Model Performance."}]},
-                ),
-                details=[],
-            ),
-            MetricHtmlInfo(
-                "classification_performance_target_name",
-                BaseWidgetInfo(
-                    type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
-                    title="",
-                    size=2,
-                    params={"counters": [{"value": "", "label": f"Target: '{target_name}'"}]},
+                    params={
+                        "counters": [
+                            {"value": "", "label": f"Classification Model Performance. Target: '{target_name}'"}
+                        ]
+                    },
                 ),
                 details=[],
             ),
@@ -676,7 +667,7 @@ class ClassificationPerformanceMetricsThreshold(ClassificationPerformanceMetrics
 @default_renderer(wrap_type=ClassificationPerformanceMetricsThreshold)
 class ClassificationPerformanceMetricsThresholdRenderer(MetricRenderer):
     def render_json(self, obj: ClassificationPerformanceMetricsThreshold) -> dict:
-        return dataclasses.asdict(obj.get_result().current)
+        return dataclasses.asdict(obj.get_result())
 
     @staticmethod
     def _get_metrics_table(
