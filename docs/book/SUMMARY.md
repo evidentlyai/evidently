@@ -44,7 +44,7 @@
 * [Recipes](recipes/README.md)
 
 ## Reference
-* [Drift algorithm](reference/data-drift-algorithm.md)
+* [Dara drift algorithm](reference/data-drift-algorithm.md)
 * [All tests](reference/all-tests.md)
 
 ## SUPPORT
