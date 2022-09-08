@@ -2,7 +2,7 @@ In some tests and metrics, Evidently uses the default Drift Detection algorithm.
 
 ## How it works
 
-Evidently compares the distributions of the values in each column of the two datasets. You should pass these datasets as reference and current. Evidently applies several statistical tests and metrics to detect if the distribution has changed significantly. It returns a "drift detected" or "not detected" result for each column.   
+Evidently compares the distributions of the values in each column of the two datasets. You should pass these datasets as **reference** and **current**. Evidently applies several statistical tests and metrics to detect if the distribution has changed significantly. It returns a "drift detected" or "not detected" result for each column.   
 
 There is a default logic to choosing the appropriate drift test for each column. It is based on:
 
@@ -10,22 +10,22 @@ There is a default logic to choosing the appropriate drift test for each column.
 * the number of observations in the reference dataset
 * the number of unique values in the column (n\_unique)
 
-For small data with <= 1000 observations in the reference dataset:
+For **small data with <= 1000 observations** in the reference dataset:
 
-* For numerical columns (n\_unique \> 5):[two-sample Kolmogorov-Smirnov test](https://en.wikipedia.org/wiki/Kolmogorov%E2%80%93Smirnov_test).
-* For categorical columns or numerical columns with n\_unique <= 5:[chi-squared test](https://en.wikipedia.org/wiki/Chi-squared_test).
+* For numerical columns (n\_unique \> 5): [two-sample Kolmogorov-Smirnov test](https://en.wikipedia.org/wiki/Kolmogorov%E2%80%93Smirnov_test).
+* For categorical columns or numerical columns with n\_unique <= 5: [chi-squared test](https://en.wikipedia.org/wiki/Chi-squared_test).
 * For binary categorical features (n\_unique <= 2): proportion difference test for independent samples based on Z-score.
 
 All tests use a 0.95 confidence level by default.  
 
-For larger data with \> 1000 observations in the reference dataset:
+For **larger data with \> 1000 observations** in the reference dataset:
 
 * For numerical columns (n\_unique \> 5):[Wasserstein Distance](https://en.wikipedia.org/wiki/Wasserstein_metric).
 * For categorical columns or numerical with n\_unique <= 5):[Jensen--Shannon divergence](https://en.wikipedia.org/wiki/Jensen%E2%80%93Shannon_divergence).
 
 All metrics use a threshold = 0.1 by default.  
 
-You can always modify this drift detection logic. You can select any of the statistical tests available in the library (including PSI, K--L divergence, Jensen-Shannon distance, Wasserstein distance, etc.), specify custom thresholds, or pass a custom test. 
+**You can always modify this drift detection logic**. You can select any of the statistical tests available in the library (including PSI, K--L divergence, Jensen-Shannon distance, Wasserstein distance, etc.), specify custom thresholds, or pass a custom test. 
 
 ## Dataset-level drift
 
