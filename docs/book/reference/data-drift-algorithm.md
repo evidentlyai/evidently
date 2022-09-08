@@ -25,7 +25,9 @@ For **larger data with \> 1000 observations** in the reference dataset:
 
 All metrics use a threshold = 0.1 by default.  
 
+{% hint style="info" %}
 **You can always modify this drift detection logic**. You can select any of the statistical tests available in the library (including PSI, K--L divergence, Jensen-Shannon distance, Wasserstein distance, etc.), specify custom thresholds, or pass a custom test. 
+{% endhint %}
 
 ## Dataset-level drift
 
