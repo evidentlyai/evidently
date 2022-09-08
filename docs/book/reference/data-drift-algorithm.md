@@ -2,7 +2,7 @@ In some tests and metrics, Evidently uses the default Drift Detection algorithm.
 
 ## How it works
 
-Evidently compares the distributions of the values in each column of the two datasets. You should pass these datasets as reference and current. Evidently applies several statistical tests and metricsto detect if the distribution has changed significantly. It returns a "drift detected" or "not detected" result for each column.   
+Evidently compares the distributions of the values in each column of the two datasets. You should pass these datasets as reference and current. Evidently applies several statistical tests and metrics to detect if the distribution has changed significantly. It returns a "drift detected" or "not detected" result for each column.   
 
 There is a default logic to choosing the appropriate drift test for each column. It is based on:
 
