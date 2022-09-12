@@ -46,7 +46,7 @@ def test_value_mae_test_render_json() -> None:
 
     result = json.loads(result_json)["tests"][0]
     assert result == {
-        "description": "MAE is 0.5. The test threshold is eq=0.5 ± 0.05",
+        "description": "The MAE is 0.5. The test threshold is eq=0.5 ± 0.05",
         "group": "regression",
         "name": "Mean Absolute Error (MAE)",
         "parameters": {
@@ -92,7 +92,7 @@ def test_value_mape_test_render_json() -> None:
 
     result = json.loads(result_json)["tests"][0]
     assert result == {
-        "description": "MAPE is 25.0. The test threshold is eq=25 ± 2.5.",
+        "description": "The MAPE is 25.0. The test threshold is eq=25 ± 2.5.",
         "group": "regression",
         "name": "Mean Absolute Percentage Error (MAPE)",
         "parameters": {
@@ -139,7 +139,7 @@ def test_value_mean_error_test_render_json() -> None:
 
     result = json.loads(result_json)["tests"][0]
     assert result == {
-        "description": "ME is 0.0. The test threshold is eq=0 ± 0.0816.",
+        "description": "The ME is 0.0. The test threshold is eq=0 ± 0.0816.",
         "group": "regression",
         "name": "Mean Error (ME)",
         "parameters": {
@@ -269,7 +269,7 @@ def test_rmse_score_test_render_json() -> None:
 
     result = json.loads(result_json)["tests"][0]
     assert result == {
-        "description": "RMSE is 0.25. The test threshold is eq=0.25 ± 0.025.",
+        "description": "The RMSE is 0.25. The test threshold is eq=0.25 ± 0.025.",
         "group": "regression",
         "name": "Root Mean Square Error (RMSE)",
         "parameters": {

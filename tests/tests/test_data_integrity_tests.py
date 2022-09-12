@@ -454,9 +454,9 @@ def test_data_integrity_test_columns_null_share_json_render() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "Share of null values in **feature1** is 0.25. The test " "threshold is lte=0.25 ± 0.025.",
+        "description": "The share of nulls and missing values in the column **feature1** is 0.25. The test threshold is lte=0.25 ± 0.025.",
         "group": "data_integrity",
-        "name": "Test Share Of Null Values In Column",
+        "name": "The Share of Nulls in a Column",
         "parameters": {
             "column_name": "feature1",
             "condition": {"lte": {"absolute": 1e-12, "relative": 0.1, "value": 0.25}},
@@ -510,7 +510,7 @@ def test_data_integrity_test_number_of_nulls() -> None:
 
     suite = TestSuite(tests=[TestNumberOfNulls()])
     suite.run(current_data=test_dataset, reference_data=test_dataset)
-    assert not suite
+    assert suite
 
     suite = TestSuite(tests=[TestNumberOfNulls(lt=3)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
