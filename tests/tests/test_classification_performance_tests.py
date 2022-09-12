@@ -320,7 +320,7 @@ def test_precision_by_class_test_render_json() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-         "description": "The precision score of the label **1** is 0.5. The test threshold is eq=0.5 ± 0.1",
+        "description": "The precision score of the label **1** is 0.5. The test threshold is eq=0.5 ± 0.1",
         "group": "classification",
         "name": "Precision Score by Class",
         "parameters": {
