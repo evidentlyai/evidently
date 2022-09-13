@@ -72,3 +72,22 @@ If you provide the reference dataset Evidently will automatically derive all rel
 | TestNumberOfOutListValues(column_name='cat_column')<br><br>values: List[str] | Column-level | Tests the number of values in a given column that are out of list.  | Expects +/-10%.<br><br>**With reference**: the test fails if over 10% of values are out of the list. <br>**No reference**: N/A |
 | TestShareOfOutListValues(column_name='cat_column')<br><br>values: List[str]<br>    | Column-level | Tests the share of values in a given column that are out of list.  | Expects +/-10%.<br><br>**With reference**: the test fails if over 10% of values are out of the list. <br>**No reference**: N/A |
 | TestValueQuantile(column_name='num_column', quantile=0.25) | Column-level | Tests that a defined quantile value is within the expected range.<br>You need to pass this quantile to run the test. | Expects +/-10%.<br><br>**With reference**: the test fails if the quantile value is over 10% higher or lower. <br>**No reference**: N/A |
+
+## Data drift
+
+insert table
+
+## Regression
+
+If there is no reference data, Evidently will compare the model performance to a dummy model that predicts the optimal constant (varies by the metric).  
+
+| Test | Level | Description | Default |
+|---|---|---|---|
+| TestValueMAE()<br>    | Dataset-level | Computes the Mean Absolute Error (MAE) and compares it to the reference if available.  | Expects +/-10% or better than a dummy model.<br><br>**With reference**: if MAE is higher or lower by over 10%, the test fails. <br>**No reference**: the test fails if the MAE value is higher than the MAE of the dummy model that predicts the optimal constant (median of the target value). |
+| TestValueRMSE() | Dataset-level | Computes the Root Mean Square Error (RMSE) and compares it to the reference if available. | Expects +/-10% or better than a dummy model.<br><br>**With reference**: if RMSE is higher or lower by over 10%, the test fails.<br>**No reference**: the test fails if the RMSE value is higher than the RMSE of the dummy model that predicts the optimal constant (mean of the target value). |
+| TestValueMeanError()<br>    | Dataset-level | Computes the Mean Error (ME) and tests if it is near zero. | Expects the Mean Error to be near zero.<br><br>**With/without reference**: the test fails if the Mean Error is skewed and the condition is violated. <br>Condition: eq = approx(absolute=0.1\*\error_std)<br>error_std  =  (curr_true - curr_preds).std() |
+| TestValueMAPE() | Dataset-level | Computes the Mean Absolute Percentage Error (MAPE) and compares it to the reference if available. | Expects +/-10% or better than a dummy model.<br><br>**With reference**: if MAPE is higher or lower by over 10%, the test fails.<br>**No reference**: the test fails if the MAPE value is higher than the MAPE of the dummy model that predicts the optimal constant (weighted median of the target value). |
+| TestValueAbsMaxError() | Dataset-level | Computes the absolute maximum error and compares it to the reference if available | Expects +/-10% or better than a dummy model.<br><br>**With reference**: if the absolute maximum error is higher or lower by over 10%, the test fails. <br>**No reference**: the test fails if the absolute maximum error is higher than the absolute maximum error of the dummy model that predicts the optimal constant (median of the target value). |
+| TestValueR2Score() | Dataset-level | Computes the R2 Score (coefficient of determination) and compares it to the reference if available. | Expects +/-10% or > 0.<br><br>**With reference**: if R2 is higher or lower by over 10%, the test fails.<br>**No reference**: the test fails if the R2 value is =< 0. |
+
+
