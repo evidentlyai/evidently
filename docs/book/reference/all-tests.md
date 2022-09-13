@@ -75,7 +75,14 @@ If you provide the reference dataset Evidently will automatically derive all rel
 
 ## Data drift
 
-insert table
+By default, all data drift tests use the Evidently [drift detection logic](https://docs.evidentlyai.com/reference/data-drift-algorithm) that selects a different statistical test or metric based on feature type and volume.  
+
+To modify the logic or select a different test, you should pass a DataDrift [Options](https://docs.evidentlyai.com/user-guide/customization/options-for-statistical-tests) object. 
+
+| Test | Level | Description | Default |
+|---|---|---|---|
+|  TestRocAuc()<br>   | Dataset-level | Computes the ROC AUC and compares it to the reference if available. | Expects +/-20% or > 0.5<br><br>**With reference**: the test fails if the ROC AUC is over 20% higher or lower than in the reference. <br>**No reference**: the test fails if ROC AUC is <= 0.5. |
+|  TestLogLoss() | Dataset-level | Computes the LogLoss and compares it to the reference. | Expects +/-20% or better than a dummy model<br><br>**With reference**: the test fails if the LogLoss is over 20% higher or lower than in the reference. <br>**No reference**: the test fails if LogLoss is higher than the LogLoss of the dummy model (equals 0.5 for a constant model). |
 
 ## Regression
 
