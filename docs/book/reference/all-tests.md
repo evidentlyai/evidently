@@ -17,6 +17,6 @@ We organize the tests into logical groups. Note that the groups do not match the
 
 Note: the tests that evaluate the number or share of nulls detect four types of nulls by default: Pandas nulls (None, NAN, etc.), "" (empty string), Numpy "-inf" value, Numpy "inf" value. You can also pass a custom list of nulls as a parameter and specify if you want to replace the default list. Example:
 
-''
+```python
 TestNumberOfNulls(null_values=["", 0, "n/a", -9999, None], replace=True)
-''
+```
