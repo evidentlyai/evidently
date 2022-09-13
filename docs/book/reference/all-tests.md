@@ -110,4 +110,11 @@ If there is no reference data, Evidently will compare the model performance to a
 | TestFPR<br><br>classification_threshold: float<br>k: union[float, int] | Dataset-level | Computes the False Positive Rate and compares it to the reference if available. | Expects +/-20% or better than a dummy model.<br><br>**With reference**: the test fails if the FPR is over 20% higher or lower.<br>**No reference**: the test fails if the FPR is higher than the FPR of the dummy model.<br>The default decision threshold is 0.5.  |
 | TestFNR<br><br>classification_threshold: float<br>k: union[float, int] | Dataset-level | Computes the False Negative Rate and compares it to the reference if available. | Expects +/-20% or better than a dummy model.<br><br>**With reference**: the test fails if the FNR is over 20% higher or lower.<br>**No reference**: the test fails if the FNR is higher than the FNR of the dummy model. <br>The default decision threshold is 0.5.  |
 
-##
+## Probabilistic classification
+
+Additional metrics apply to the probabilistic classification. 
+
+| Test | Level | Description | Default |
+|---|---|---|---|
+|  TestRocAuc()<br>   | Dataset-level | Computes the ROC AUC and compares it to the reference if available. | Expects +/-20% or > 0.5<br><br>**With reference**: the test fails if the ROC AUC is over 20% higher or lower than in the reference. <br>**No reference**: the test fails if ROC AUC is <= 0.5. |
+|  TestLogLoss() | Dataset-level | Computes the LogLoss and compares it to the reference. | Expects +/-20% or better than a dummy model<br><br>**With reference**: the test fails if the LogLoss is over 20% higher or lower than in the reference. <br>**No reference**: the test fails if LogLoss is higher than the LogLoss of the dummy model (equals 0.5 for a constant model). |
