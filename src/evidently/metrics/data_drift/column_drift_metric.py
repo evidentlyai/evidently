@@ -6,13 +6,13 @@ from typing import Optional
 import pandas as pd
 
 from evidently.calculations.data_drift import calculate_data_drift
-from evidently.calculations.data_drift import get_stattest
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.metrics.utils import make_hist_for_cat_plot
 from evidently.metrics.utils import make_hist_for_num_plot
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options import DataDriftOptions
 from evidently.options.data_drift import DEFAULT_NBINSX
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.base_renderer import MetricHtmlInfo
@@ -40,6 +40,7 @@ class ColumnDriftMetric(Metric[ColumnDriftMetricResults]):
     threshold: Optional[Numeric]
     nbinsx: Numeric
     xbins: Optional[Dict[str, int]]
+    options: Optional[DataDriftOptions]
 
     def __init__(
         self,
@@ -49,6 +50,7 @@ class ColumnDriftMetric(Metric[ColumnDriftMetricResults]):
         threshold: Optional[Numeric] = None,
         nbinsx: Numeric = DEFAULT_NBINSX,
         xbins: Optional[Dict[str, int]] = None,
+        options: Optional[DataDriftOptions] = None,
     ):
         self.column_name = column_name
         self.column_type = column_type
@@ -56,6 +58,7 @@ class ColumnDriftMetric(Metric[ColumnDriftMetricResults]):
         self.threshold = threshold
         self.nbinsx = nbinsx
         self.xbins = xbins
+        self.options = options
 
     def calculate(self, data: InputData) -> ColumnDriftMetricResults:
         if data.reference_data is None:
@@ -93,7 +96,7 @@ class ColumnDriftMetric(Metric[ColumnDriftMetricResults]):
             column_name=self.column_name,
             column_type=self.column_type,
             stattest_name=drift_result.stattest_name,
-            threshold=self.threshold,
+            threshold=drift_result.threshold,
             drift_value=drift_result.drift_score,
             drift_detected=drift_result.drift_detected,
             distr_for_plots=distr_for_plots

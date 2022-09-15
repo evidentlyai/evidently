@@ -75,6 +75,7 @@ class DataDriftMetrics:
     stattest_name: str
     drift_score: float
     drift_detected: bool
+    threshold: float
     # correlations for numeric features
     reference_correlations: Optional[Dict[str, float]] = None
     current_correlations: Optional[Dict[str, float]] = None
@@ -96,6 +97,7 @@ def calculate_data_drift(
         stattest_name=drift_test_function.display_name,
         drift_score=drift_result.drift_score,
         drift_detected=drift_result.drifted,
+        threshold=drift_result.actual_threshold
     )
 
 
