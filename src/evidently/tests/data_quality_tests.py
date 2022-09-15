@@ -425,7 +425,7 @@ class TestCorrelationChanges(BaseDataQualityCorrelationsMetricsValueTest):
         return (diff.abs() > self.corr_diff).sum().sum() / 2
 
     def get_description(self, value: Numeric) -> str:
-        return f"Number of correlation violations is {value:.3g}. The test threshold is {self.get_condition()}."
+        return f"The number of correlation violations is {value:.3g}. The test threshold is {self.get_condition()}."
 
 
 @default_renderer(wrap_type=TestCorrelationChanges)
@@ -561,7 +561,7 @@ class TestFeatureValueMinRenderer(TestRenderer):
 
 
 class TestFeatureValueMax(BaseFeatureDataQualityMetricsTest):
-    name = "Test a feature max value"
+    name = "Max Value"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():

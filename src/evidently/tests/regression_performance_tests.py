@@ -64,7 +64,7 @@ class TestValueMAE(BaseRegressionPerformanceMetricsTest):
         return self.metric.get_result().mean_abs_error
 
     def get_description(self, value: Numeric) -> str:
-        return f"MAE is {value:.3}. The test threshold is {self.get_condition()}"
+        return f"The MAE is {value:.3}. The test threshold is {self.get_condition()}"
 
 
 @default_renderer(wrap_type=TestValueMAE)
@@ -123,7 +123,7 @@ class TestValueMAPE(BaseRegressionPerformanceMetricsTest):
         return self.metric.get_result().mean_abs_perc_error
 
     def get_description(self, value: Numeric) -> str:
-        return f"MAPE is {value:.3}. The test threshold is {self.get_condition()}."
+        return f"The MAPE is {value:.3}. The test threshold is {self.get_condition()}."
 
 
 @default_renderer(wrap_type=TestValueMAPE)
@@ -183,7 +183,7 @@ class TestValueRMSE(BaseRegressionPerformanceMetricsTest):
         return self.metric.get_result().rmse
 
     def get_description(self, value: Numeric) -> str:
-        return f"RMSE is {value:.3}. The test threshold is {self.get_condition()}."
+        return f"The RMSE is {value:.3}. The test threshold is {self.get_condition()}."
 
 
 @default_renderer(wrap_type=TestValueRMSE)
@@ -238,7 +238,7 @@ class TestValueMeanError(BaseRegressionPerformanceMetricsTest):
         return self.metric.get_result().mean_error
 
     def get_description(self, value: Numeric) -> str:
-        return f"ME is {value:.3}. The test threshold is {self.get_condition()}."
+        return f"The ME is {value:.3}. The test threshold is {self.get_condition()}."
 
 
 @default_renderer(wrap_type=TestValueMeanError)

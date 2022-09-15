@@ -120,7 +120,7 @@ class TestAccuracyScore(SimpleClassificationTestTopK):
         return result.accuracy
 
     def get_description(self, value: Numeric) -> str:
-        return f"Accuracy Score is {value:.3g}. Test Threshold is {self.get_condition()}"
+        return f"The Accuracy Score is {value:.3g}. The test threshold is {self.get_condition()}"
 
 
 @default_renderer(wrap_type=TestAccuracyScore)
@@ -163,7 +163,7 @@ class TestPrecisionScore(SimpleClassificationTestTopK):
         return result.precision
 
     def get_description(self, value: Numeric) -> str:
-        return f"Precision Score is {value:.3g}. Test Threshold is {self.get_condition()}"
+        return f"The Precision Score is {value:.3g}. The test threshold is {self.get_condition()}"
 
 
 @default_renderer(wrap_type=TestPrecisionScore)
@@ -206,7 +206,7 @@ class TestF1Score(SimpleClassificationTestTopK):
         return result.f1
 
     def get_description(self, value: Numeric) -> str:
-        return f"F1 Score is {value:.3g}. Test Threshold is {self.get_condition()}"
+        return f"The F1 Score is {value:.3g}. The test threshold is {self.get_condition()}"
 
 
 @default_renderer(wrap_type=TestF1Score)
@@ -249,7 +249,7 @@ class TestRecallScore(SimpleClassificationTestTopK):
         return result.recall
 
     def get_description(self, value: Numeric) -> str:
-        return f"Recall Score is {value:.3g}. Test Threshold is {self.get_condition()}"
+        return f"The Recall Score is {value:.3g}. The test threshold is {self.get_condition()}"
 
 
 @default_renderer(wrap_type=TestRecallScore)
@@ -295,7 +295,7 @@ class TestRocAuc(SimpleClassificationTest):
         if value is None:
             return "Not enough data to calculate ROC AUC. Consider providing probabilities instead of labels."
         else:
-            return f"ROC AUC Score is {value:.3g}. Test Threshold is {self.get_condition()}"
+            return f"The ROC AUC Score is {value:.3g}. The test threshold is {self.get_condition()}"
 
 
 @default_renderer(wrap_type=TestRocAuc)
@@ -339,7 +339,7 @@ class TestLogLoss(SimpleClassificationTest):
         if value is None:
             return "Not enough data to calculate Logarithmic Loss. Consider providing probabilities instead of labels."
         else:
-            return f" Logarithmic Loss is {value:.3g}. Test Threshold is {self.get_condition()}"
+            return f"The Logarithmic Loss is {value:.3g}. The test threshold is {self.get_condition()}"
 
 
 @default_renderer(wrap_type=TestLogLoss)
@@ -385,7 +385,7 @@ class TestTPR(SimpleClassificationTestTopK):
         if value is None:
             return "This test is applicable only for binary classification"
 
-        return f"True Positive Rate is {value:.3g}. Test Threshold is {self.get_condition()}"
+        return f"The True Positive Rate is {value:.3g}. The test threshold is {self.get_condition()}"
 
 
 @default_renderer(wrap_type=TestTPR)
@@ -432,7 +432,7 @@ class TestTNR(SimpleClassificationTestTopK):
         if value is None:
             return "This test is applicable only for binary classification"
 
-        return f"True Negative Rate is {value:.3g}. Test Threshold is {self.get_condition()}"
+        return f"The True Negative Rate is {value:.3g}. The test threshold is {self.get_condition()}"
 
 
 @default_renderer(wrap_type=TestTNR)
@@ -491,7 +491,7 @@ class TestFPR(SimpleClassificationTestTopK):
         if value is None:
             return "This test is applicable only for binary classification"
 
-        return f"False Positive Rate is {value:.3g}. Test Threshold is {self.get_condition()}"
+        return f"The False Positive Rate is {value:.3g}. The test threshold is {self.get_condition()}"
 
 
 @default_renderer(wrap_type=TestFPR)
@@ -550,7 +550,7 @@ class TestFNR(SimpleClassificationTestTopK):
         if value is None:
             return "This test is applicable only for binary classification"
 
-        return f"False Negative Rate is {value:.3g}. Test Threshold is {self.get_condition()}"
+        return f"The False Negative Rate is {value:.3g}. The test threshold is {self.get_condition()}"
 
 
 @default_renderer(wrap_type=TestFNR)
@@ -614,7 +614,10 @@ class TestPrecisionByClass(ByClassClassificationTest):
         return result.metrics_matrix[self.label]["precision"]
 
     def get_description(self, value: Numeric) -> str:
-        return f"Precision Score of **{self.label}** is {value:.3g}. Test Threshold is {self.get_condition()}"
+        return (
+            f"The precision score of the label **{self.label}** is {value:.3g}. "
+            f"The test threshold is {self.get_condition()}"
+        )
 
 
 @default_renderer(wrap_type=TestPrecisionByClass)
@@ -657,7 +660,10 @@ class TestRecallByClass(ByClassClassificationTest):
         return result.metrics_matrix[self.label]["recall"]
 
     def get_description(self, value: Numeric) -> str:
-        return f"Recall Score of **{self.label}** is {value:.3g}. Test Threshold is {self.get_condition()}"
+        return (
+            f"The recall score of the label **{self.label}** is {value:.3g}. "
+            f"The test threshold is {self.get_condition()}"
+        )
 
 
 @default_renderer(wrap_type=TestRecallByClass)
@@ -700,7 +706,7 @@ class TestF1ByClass(ByClassClassificationTest):
         return result.metrics_matrix[self.label]["f1-score"]
 
     def get_description(self, value: Numeric) -> str:
-        return f"F1 Score of **{self.label}** is {value:.3g}. Test Threshold is {self.get_condition()}"
+        return f"The F1 score of the label **{self.label}** is {value:.3g}. The test threshold is {self.get_condition()}"
 
 
 @default_renderer(wrap_type=TestF1ByClass)

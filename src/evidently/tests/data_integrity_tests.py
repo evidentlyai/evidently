@@ -230,7 +230,7 @@ class BaseTestNullValuesRenderer(TestRenderer):
     ) -> TestHtmlInfo:
         columns = ["null", "current number of nulls"]
         dict_curr = self._replace_null_values_to_description(current_nulls)
-        dict_ref = {}
+        dict_ref: Optional[dict] = None
 
         if reference_nulls is not None:
             # add one more column and values for reference data
@@ -246,7 +246,7 @@ class BaseTestNullValuesRenderer(TestRenderer):
 class TestNumberOfDifferentNulls(BaseIntegrityNullValuesTest):
     """Check a number of different encoded nulls."""
 
-    name = "Test Number Of Different Nulls"
+    name = "Different Types of Nulls and Missing Values"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
@@ -257,13 +257,16 @@ class TestNumberOfDifferentNulls(BaseIntegrityNullValuesTest):
         if reference_null_values is not None:
             return TestValueCondition(eq=reference_null_values.number_of_different_nulls)
 
-        raise ValueError("Neither required test parameters nor reference data has been provided.")
+        return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().current_null_values.number_of_different_nulls
 
     def get_description(self, value: Numeric) -> str:
-        return f"Number of different nulls is {value}. The test threshold is {self.get_condition()}."
+        return (
+            f"The number of differently encoded types of nulls and missing values is {value}. "
+            f"The test threshold is {self.get_condition()}."
+        )
 
 
 @default_renderer(wrap_type=TestNumberOfDifferentNulls)
@@ -294,7 +297,7 @@ class TestNumberOfDifferentNullsRenderer(BaseTestNullValuesRenderer):
 class TestNumberOfNulls(BaseIntegrityNullValuesTest):
     """Check a number of null values."""
 
-    name = "Test Number Of Nulls"
+    name = "The Number of Nulls"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
@@ -303,15 +306,18 @@ class TestNumberOfNulls(BaseIntegrityNullValuesTest):
         reference_null_values = self.metric.get_result().reference_null_values
 
         if reference_null_values is not None:
-            return TestValueCondition(lt=reference_null_values.number_of_nulls)
+            curr_number_of_rows = self.metric.get_result().current_null_values.number_of_rows
+            ref_number_of_rows = reference_null_values.number_of_rows
+            mult = curr_number_of_rows / ref_number_of_rows
+            return TestValueCondition(lte=approx(reference_null_values.number_of_nulls * mult, relative=0.1))
 
-        raise ValueError("Neither required test parameters nor reference data has been provided.")
+        return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().current_null_values.number_of_nulls
 
     def get_description(self, value: Numeric) -> str:
-        return f"Number of nulls is {value}. The test threshold is {self.get_condition()}."
+        return f"The number of nulls and missing values is {value}. The test threshold is {self.get_condition()}."
 
 
 @default_renderer(wrap_type=TestNumberOfNulls)
@@ -331,7 +337,7 @@ class TestNumberOfNullsRenderer(BaseTestNullValuesRenderer):
 class TestShareOfNulls(BaseIntegrityNullValuesTest):
     """Check a share of null values."""
 
-    name = "Test Share Of Nulls"
+    name = "Share of Nulls"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
@@ -340,15 +346,15 @@ class TestShareOfNulls(BaseIntegrityNullValuesTest):
         reference = self.metric.get_result().reference_null_values
 
         if reference is not None:
-            return TestValueCondition(lte=reference.share_of_nulls)
+            return TestValueCondition(lte=approx(reference.share_of_nulls, relative=0.1))
 
-        raise ValueError("Neither required test parameters nor reference data has been provided.")
+        return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().current_null_values.share_of_nulls
 
     def get_description(self, value: Numeric) -> str:
-        return f"Share of null values is {np.round(value, 3)}. The test threshold is {self.get_condition()}."
+        return f"The share of nulls and missing values is {value:.3g}. The test threshold is {self.get_condition()}."
 
 
 @default_renderer(wrap_type=TestShareOfNulls)
@@ -368,7 +374,7 @@ class TestShareOfNullsRenderer(BaseTestNullValuesRenderer):
 class TestNumberOfColumnsWithNulls(BaseIntegrityNullValuesTest):
     """Check a number of columns with a null value."""
 
-    name = "Test Number Of Columns With Nulls"
+    name = "The Number of Columns With Nulls"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
@@ -377,15 +383,18 @@ class TestNumberOfColumnsWithNulls(BaseIntegrityNullValuesTest):
         reference = self.metric.get_result().reference_null_values
 
         if reference is not None:
-            return TestValueCondition(lte=approx(reference.number_of_columns_with_nulls, relative=0.1))
+            return TestValueCondition(lte=reference.number_of_columns_with_nulls)
 
-        raise ValueError("Neither required test parameters nor reference data has been provided.")
+        return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().current_null_values.number_of_columns_with_nulls
 
     def get_description(self, value: Numeric) -> str:
-        return f"Number of columns with null values is {value}. The test threshold is {self.get_condition()}."
+        return (
+            f"The number of columns with nulls and missing values is {value}. "
+            f"The test threshold is {self.get_condition()}."
+        )
 
 
 @default_renderer(wrap_type=TestNumberOfColumnsWithNulls)
@@ -405,7 +414,7 @@ class TestNumberOfColumnsWithNullsRenderer(BaseTestNullValuesRenderer):
 class TestShareOfColumnsWithNulls(BaseIntegrityNullValuesTest):
     """Check a share of columns with a null value."""
 
-    name = "Test Share Of Columns With Nulls"
+    name = "The Share of Columns With Nulls"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
@@ -414,16 +423,16 @@ class TestShareOfColumnsWithNulls(BaseIntegrityNullValuesTest):
         reference = self.metric.get_result().reference_null_values
 
         if reference is not None:
-            return TestValueCondition(lte=approx(reference.share_of_columns_with_nulls, relative=0.1))
+            return TestValueCondition(lte=reference.share_of_columns_with_nulls)
 
-        raise ValueError("Neither required test parameters nor reference data has been provided.")
+        return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().current_null_values.share_of_columns_with_nulls
 
     def get_description(self, value: Numeric) -> str:
         return (
-            f"Share of columns with null values is {np.round(value, 3)}. "
+            f"The share of columns with nulls and missing values is {value:.3g}. "
             f"The test threshold is {self.get_condition()}."
         )
 
@@ -445,7 +454,7 @@ class TestShareOfColumnsWithNullsRenderer(BaseTestNullValuesRenderer):
 class TestNumberOfRowsWithNulls(BaseIntegrityNullValuesTest):
     """Check a number of rows with a null value."""
 
-    name = "Test Number Of Rows With Nulls"
+    name = "The Number Of Rows With Nulls"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
@@ -454,15 +463,21 @@ class TestNumberOfRowsWithNulls(BaseIntegrityNullValuesTest):
         reference = self.metric.get_result().reference_null_values
 
         if reference is not None:
-            return TestValueCondition(lte=approx(reference.number_of_rows_with_nulls, relative=0.1))
+            curr_number_of_rows = self.metric.get_result().current_null_values.number_of_rows
+            ref_number_of_rows = reference.number_of_rows
+            mult = curr_number_of_rows / ref_number_of_rows
+            return TestValueCondition(lte=approx(reference.number_of_rows_with_nulls * mult, relative=0.1))
 
-        raise ValueError("Neither required test parameters nor reference data has been provided.")
+        return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().current_null_values.number_of_rows_with_nulls
 
     def get_description(self, value: Numeric) -> str:
-        return f"Number of rows with null values is {value}. The test threshold is {self.get_condition()}."
+        return (
+            f"The number of rows with nulls and missing values is {value}. "
+            f"The test threshold is {self.get_condition()}."
+        )
 
 
 @default_renderer(wrap_type=TestNumberOfRowsWithNulls)
@@ -477,7 +492,7 @@ class TestNumberOfRowsWithNullsRenderer(BaseTestNullValuesRenderer):
 class TestShareOfRowsWithNulls(BaseIntegrityNullValuesTest):
     """Check a share of rows with a null value."""
 
-    name = "Test Share Of Rows With Nulls"
+    name = "The Share of Rows With Nulls"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
@@ -488,13 +503,16 @@ class TestShareOfRowsWithNulls(BaseIntegrityNullValuesTest):
         if reference is not None:
             return TestValueCondition(lte=approx(reference.share_of_rows_with_nulls, relative=0.1))
 
-        raise ValueError("Neither required test parameters nor reference data has been provided.")
+        return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().current_null_values.share_of_rows_with_nulls
 
     def get_description(self, value: Numeric) -> str:
-        return f"Share of rows with null values is {np.round(value, 3)}. The test threshold is {self.get_condition()}."
+        return (
+            f"The share of rows with nulls and missing values is {value:.3g}. "
+            f"The test threshold is {self.get_condition()}."
+        )
 
 
 @default_renderer(wrap_type=TestShareOfRowsWithNulls)
@@ -539,7 +557,7 @@ class BaseIntegrityColumnNullValuesTest(BaseCheckValueTest, ABC):
 class TestColumnNumberOfDifferentNulls(BaseIntegrityColumnNullValuesTest):
     """Check a number of differently encoded empty/null values in one column."""
 
-    name = "Test Number Of Different Null Kinds In Column"
+    name = "Different Types of Nulls and Missing Values in a Column"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
@@ -556,7 +574,7 @@ class TestColumnNumberOfDifferentNulls(BaseIntegrityColumnNullValuesTest):
             ref_value = reference_null_values.number_of_different_nulls_by_column[self.column_name]
             return TestValueCondition(lte=ref_value)
 
-        raise ValueError("Neither required test parameters nor reference data has been provided.")
+        return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
         metric_data = self.metric.get_result().current_null_values
@@ -564,8 +582,8 @@ class TestColumnNumberOfDifferentNulls(BaseIntegrityColumnNullValuesTest):
 
     def get_description(self, value: Numeric) -> str:
         return (
-            f"Number of different null kinds in **{self.column_name}** is {value}. "
-            f"The test threshold is {self.get_condition()}."
+            f"The number of differently encoded types of nulls and missing values in the column **{self.column_name}** "
+            f"is {value}. The test threshold is {self.get_condition()}."
         )
 
 
@@ -598,7 +616,7 @@ class TestColumnNumberOfDifferentNullsRenderer(BaseTestNullValuesRenderer):
 class TestColumnNumberOfNulls(BaseIntegrityColumnNullValuesTest):
     """Check a number of empty/null values in one column."""
 
-    name = "Test Number Of Null Values In Column"
+    name = "The Number of Nulls in a Column"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
@@ -607,17 +625,20 @@ class TestColumnNumberOfNulls(BaseIntegrityColumnNullValuesTest):
         reference_null_values = self.metric.get_result().reference_null_values
 
         if reference_null_values is not None:
+            curr_number_of_rows = self.metric.get_result().current_null_values.number_of_rows
+            ref_number_of_rows = reference_null_values.number_of_rows
+            mult = curr_number_of_rows / ref_number_of_rows
             ref_value = reference_null_values.number_of_nulls_by_column[self.column_name]
-            return TestValueCondition(lte=ref_value)
+            return TestValueCondition(lte=approx(ref_value * mult, relative=0.1))
 
-        raise ValueError("Neither required test parameters nor reference data has been provided.")
+        return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().current_null_values.number_of_nulls_by_column[self.column_name]
 
     def get_description(self, value: Numeric) -> str:
         return (
-            f"Number of null values in **{self.column_name}** is {value}. "
+            f"The number of nulls and missing values in the column **{self.column_name}** is {value}. "
             f"The test threshold is {self.get_condition()}."
         )
 
@@ -635,7 +656,7 @@ class TestColumnNumberOfNullsRenderer(BaseTestNullValuesRenderer):
 class TestColumnShareOfNulls(BaseIntegrityColumnNullValuesTest):
     """Check a share of empty/null values in one column."""
 
-    name = "Test Share Of Null Values In Column"
+    name = "The Share of Nulls in a Column"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
@@ -647,14 +668,14 @@ class TestColumnShareOfNulls(BaseIntegrityColumnNullValuesTest):
             ref_value = reference.share_of_nulls_by_column[self.column_name]
             return TestValueCondition(lte=approx(ref_value, relative=0.1))
 
-        raise ValueError("Neither required test parameters nor reference data has been provided.")
+        return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().current_null_values.share_of_nulls_by_column[self.column_name]
 
     def get_description(self, value: Numeric) -> str:
         return (
-            f"Share of null values in **{self.column_name}** is {np.round(value, 3)}. "
+            f"The share of nulls and missing values in the column **{self.column_name}** is {value:.3g}. "
             f"The test threshold is {self.get_condition()}."
         )
 
@@ -746,7 +767,7 @@ class TestNumberOfEmptyRows(BaseIntegrityValueTest):
         return self.data_integrity_metric.get_result().current.number_of_empty_rows
 
     def get_description(self, value: Numeric) -> str:
-        return f"Number of Empty Rows is {value}. Test Threshold is {self.get_condition()}."
+        return f"Number of Empty Rows is {value}. The test threshold is {self.get_condition()}."
 
 
 class TestNumberOfEmptyColumns(BaseIntegrityValueTest):
@@ -769,7 +790,7 @@ class TestNumberOfEmptyColumns(BaseIntegrityValueTest):
         return self.data_integrity_metric.get_result().current.number_of_empty_columns
 
     def get_description(self, value: Numeric) -> str:
-        return f"Number of Empty Columns is {value} Test Threshold is {self.get_condition()}."
+        return f"Number of Empty Columns is {value}. The test threshold is {self.get_condition()}."
 
 
 @default_renderer(wrap_type=TestNumberOfEmptyColumns)

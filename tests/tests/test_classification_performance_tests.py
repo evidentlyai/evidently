@@ -49,7 +49,7 @@ def test_accuracy_score_test_render_json() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "Accuracy Score is 0.5. Test Threshold is eq=0.5 ± 0.1",
+        "description": "The Accuracy Score is 0.5. The test threshold is eq=0.5 ± 0.1",
         "group": "classification",
         "name": "Accuracy Score",
         "parameters": {"accuracy": 0.5, "condition": {"eq": {"absolute": 1e-12, "relative": 0.2, "value": 0.5}}},
@@ -85,7 +85,7 @@ def test_precision_score_test_render_json() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "Precision Score is 0.5. Test Threshold is eq=0.5 ± 0.1",
+        "description": "The Precision Score is 0.5. The test threshold is eq=0.5 ± 0.1",
         "group": "classification",
         "name": "Precision Score",
         "parameters": {"condition": {"eq": {"absolute": 1e-12, "relative": 0.2, "value": 0.5}}, "precision": 0.5},
@@ -121,7 +121,7 @@ def test_f1_score_test_render_json() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "F1 Score is 0.5. Test Threshold is eq=0.5 ± 0.1",
+        "description": "The F1 Score is 0.5. The test threshold is eq=0.5 ± 0.1",
         "group": "classification",
         "name": "F1 Score",
         "parameters": {"condition": {"eq": {"absolute": 1e-12, "relative": 0.2, "value": 0.5}}, "f1": 0.5},
@@ -157,7 +157,7 @@ def test_recall_score_test_render_json() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "Recall Score is 0.5. Test Threshold is eq=0.5 ± 0.1",
+        "description": "The Recall Score is 0.5. The test threshold is eq=0.5 ± 0.1",
         "group": "classification",
         "name": "Recall Score",
         "parameters": {"condition": {"eq": {"absolute": 1e-12, "relative": 0.2, "value": 0.5}}, "recall": 0.5},
@@ -198,7 +198,7 @@ def test_log_loss_test_json_render() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": " Logarithmic Loss is 0.446. Test Threshold is eq=0.446 ± " "0.0892",
+        "description": "The Logarithmic Loss is 0.446. The test threshold is eq=0.446 ± 0.0892",
         "group": "classification",
         "name": "Logarithmic Loss",
         "parameters": {
@@ -264,7 +264,7 @@ def test_roc_auc_test_json_render() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "ROC AUC Score is 0.5. Test Threshold is lt=0.8",
+        "description": "The ROC AUC Score is 0.5. The test threshold is lt=0.8",
         "group": "classification",
         "name": "ROC AUC Score",
         "parameters": {"condition": {"lt": 0.8}, "roc_auc": 0.5},
@@ -320,7 +320,7 @@ def test_precision_by_class_test_render_json() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "Precision Score of **1** is 0.5. Test Threshold is eq=0.5 ± " "0.1",
+        "description": "The precision score of the label **1** is 0.5. The test threshold is eq=0.5 ± 0.1",
         "group": "classification",
         "name": "Precision Score by Class",
         "parameters": {
@@ -360,7 +360,7 @@ def test_f1_by_class_test_render_json() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "F1 Score of **0** is 0. Test Threshold is eq=0 ± 1e-12",
+        "description": "The F1 score of the label **0** is 0. The test threshold is eq=0 ± 1e-12",
         "group": "classification",
         "name": "F1 Score by Class",
         "parameters": {
@@ -400,7 +400,7 @@ def test_recall_by_class_test_render_json() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "Recall Score of **1** is 0.5. Test Threshold is eq=0.5 ± 0.1",
+        "description": "The recall score of the label **1** is 0.5. The test threshold is eq=0.5 ± 0.1",
         "group": "classification",
         "name": "Recall Score by Class",
         "parameters": {
@@ -441,7 +441,7 @@ def test_tpr_test_render_json() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "True Positive Rate is 0.5. Test Threshold is eq=0.5 ± 0.1",
+        "description": "The True Positive Rate is 0.5. The test threshold is eq=0.5 ± 0.1",
         "group": "classification",
         "name": "True Positive Rate",
         "parameters": {"condition": {"eq": {"absolute": 1e-12, "relative": 0.2, "value": 0.5}}, "tpr": 0.5},
@@ -478,7 +478,7 @@ def test_tnr_test_render_json() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "True Negative Rate is 1. Test Threshold is eq=1 ± 0.2",
+        "description": "The True Negative Rate is 1. The test threshold is eq=1 ± 0.2",
         "group": "classification",
         "name": "True Negative Rate",
         "parameters": {"condition": {"eq": {"absolute": 1e-12, "relative": 0.2, "value": 1}}, "tnr": 1},
@@ -515,7 +515,7 @@ def test_fpr_test_render_json() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "False Positive Rate is 0. Test Threshold is eq=0 ± 1e-12",
+        "description": "The False Positive Rate is 0. The test threshold is eq=0 ± 1e-12",
         "group": "classification",
         "name": "False Positive Rate",
         "parameters": {"condition": {"eq": {"absolute": 1e-12, "relative": 0.2, "value": 0}}, "fpr": 0},
@@ -552,7 +552,7 @@ def test_fnr_test_render_json() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "False Negative Rate is 0.5. Test Threshold is eq=0.5 ± 0.1",
+        "description": "The False Negative Rate is 0.5. The test threshold is eq=0.5 ± 0.1",
         "group": "classification",
         "name": "False Negative Rate",
         "parameters": {"condition": {"eq": {"absolute": 1e-12, "relative": 0.2, "value": 0.5}}, "fnr": 0.5},
