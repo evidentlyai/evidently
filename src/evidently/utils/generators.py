@@ -66,7 +66,7 @@ def make_generator_by_columns(
         parameters_for_generation = parameters
 
     class ColumnsGenerator(BaseGenerator):
-        def generate(self, columns_info: DatasetColumns) -> List[base_class]:
+        def generate(self, columns_info: DatasetColumns) -> List[TObject]:
             nonlocal parameters_for_generation
             result = []
 

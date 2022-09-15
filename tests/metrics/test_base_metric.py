@@ -29,5 +29,3 @@ def test_metric_generator():
     )
     report.run(current_data=test_data, reference_data=None)
     assert report.show()
-
-

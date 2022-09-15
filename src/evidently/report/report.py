@@ -24,7 +24,7 @@ class Report(Display):
     _inner_suite: Suite
     _columns_info: DatasetColumns
     _first_level_metrics: List[Union[Metric]]
-    metrics: List[Union[Metric, MetricPreset]]
+    metrics: List[Union[Metric, MetricPreset, BaseGenerator]]
 
     def __init__(self, metrics: List[Union[Metric, MetricPreset, BaseGenerator]]):
         super().__init__()
