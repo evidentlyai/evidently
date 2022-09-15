@@ -2,6 +2,7 @@ from typing import Tuple
 
 import pandas as pd
 import pytest
+
 from evidently.calculations.stattests import StatTest
 from evidently.calculations.stattests import chi_stat_test
 from evidently.calculations.stattests import get_stattest

@@ -5,6 +5,7 @@ from typing import Optional
 from typing import Sequence
 
 import pandas as pd
+
 from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.analyzers.base_analyzer import BaseAnalyzerResult

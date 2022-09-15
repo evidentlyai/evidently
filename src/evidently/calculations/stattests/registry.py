@@ -7,6 +7,7 @@ from typing import Tuple
 from typing import Union
 
 import pandas as pd
+
 from evidently.calculations import stattests
 
 StatTestFuncType = Callable[[pd.Series, pd.Series, str, float], Tuple[float, bool]]

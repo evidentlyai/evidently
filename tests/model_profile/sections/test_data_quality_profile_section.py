@@ -3,6 +3,7 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 import pytest
+
 from evidently.model_profile.sections.data_quality_profile_section import DataQualityProfileSection
 from evidently.utils.data_operations import ColumnMapping
 

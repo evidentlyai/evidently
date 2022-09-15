@@ -8,6 +8,7 @@ from typing import Type
 from typing import Union
 
 import pandas
+
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.dashboard.widgets.widget import Widget
 from evidently.model.widget import BaseWidgetInfo

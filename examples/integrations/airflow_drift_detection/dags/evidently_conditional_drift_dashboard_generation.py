@@ -8,12 +8,13 @@ from airflow import DAG
 from airflow.operators.python_operator import BranchPythonOperator
 from airflow.operators.python_operator import PythonOperator
 from airflow.operators.python_operator import ShortCircuitOperator
+from sklearn import datasets
+
 from evidently.dashboard import Dashboard
 from evidently.dashboard.tabs import DataDriftTab
 from evidently.model_profile import Profile
 from evidently.model_profile.sections import DataDriftProfileSection
 from evidently.pipeline.column_mapping import ColumnMapping
-from sklearn import datasets
 
 default_args = {
     "start_date": datetime(2020, 1, 1),

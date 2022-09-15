@@ -11,6 +11,11 @@ import pandas as pd
 import plotly.figure_factory as ff
 import plotly.graph_objs as go
 import sklearn
+from numpy import dtype
+from pandas.core.dtypes.api import is_float_dtype
+from pandas.core.dtypes.api import is_object_dtype
+from pandas.core.dtypes.api import is_string_dtype
+
 from evidently import ColumnMapping
 from evidently.calculations.classification_performance import ConfusionMatrix
 from evidently.calculations.classification_performance import calculate_confusion_by_classes
@@ -23,10 +28,6 @@ from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.data_operations import process_columns
-from numpy import dtype
-from pandas.core.dtypes.api import is_float_dtype
-from pandas.core.dtypes.api import is_object_dtype
-from pandas.core.dtypes.api import is_string_dtype
 
 
 @dataclasses.dataclass

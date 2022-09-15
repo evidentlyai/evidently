@@ -1,5 +1,6 @@
 import pandas
 import pytest
+
 from evidently.model_profile.sections.num_target_drift_profile_section import NumTargetDriftProfileSection
 
 from .helpers import calculate_section_results

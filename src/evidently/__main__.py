@@ -8,6 +8,7 @@ from typing import Any
 from typing import Dict
 
 import yaml
+
 from evidently._config import TELEMETRY_ADDRESS
 from evidently._config import TELEMETRY_ENABLED
 from evidently.pipeline.column_mapping import ColumnMapping

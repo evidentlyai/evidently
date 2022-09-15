@@ -7,8 +7,9 @@ from typing import List
 from typing import Optional
 from typing import Union
 
-import evidently
 import pandas as pd
+
+import evidently
 from evidently.metrics.base_metric import InputData
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo

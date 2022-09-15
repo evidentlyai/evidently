@@ -2,6 +2,7 @@ from typing import ClassVar
 
 import pandas as pd
 import pytest
+
 from evidently import ColumnMapping
 from evidently.dashboard import Dashboard
 from evidently.dashboard.tabs import CatTargetDriftTab

@@ -66,7 +66,7 @@ setup_args = dict(
             "types-requests==2.26.0",
             "types-dataclasses==0.6",
             "black==22.8.0",
-            "isort==5.10.1"
+            "isort==5.10.1",
         ]
     },
     entry_points={},

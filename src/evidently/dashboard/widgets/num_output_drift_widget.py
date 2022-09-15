@@ -5,6 +5,7 @@ from typing import Optional
 
 import pandas as pd
 import plotly.figure_factory as ff
+
 from evidently import ColumnMapping
 from evidently.analyzers.num_target_drift_analyzer import NumTargetDriftAnalyzer
 from evidently.dashboard.widgets.utils import CutQuantileTransformer

@@ -1,9 +1,10 @@
 import pytest
+from pandas import DataFrame
+
 from evidently import ColumnMapping
 from evidently.analyzers.data_drift_analyzer import DataDriftAnalyzer
 from evidently.options import DataDriftOptions
 from evidently.options import OptionsProvider
-from pandas import DataFrame
 
 
 @pytest.fixture

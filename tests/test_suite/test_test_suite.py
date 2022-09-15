@@ -2,6 +2,7 @@ import json
 
 import numpy as np
 import pandas as pd
+
 from evidently import ColumnMapping
 from evidently.test_suite import TestSuite
 from evidently.tests import TestColumnAllConstantValues

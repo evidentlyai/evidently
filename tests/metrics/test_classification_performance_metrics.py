@@ -5,6 +5,8 @@ from typing import Union
 import numpy as np
 import pandas as pd
 import pytest
+from pytest import approx
+
 from evidently.calculations.classification_performance import ConfusionMatrix
 from evidently.metrics import ClassificationPerformanceMetrics
 from evidently.metrics import ClassificationPerformanceMetricsThreshold
@@ -15,7 +17,6 @@ from evidently.metrics.classification_performance_metrics import k_probability_t
 from evidently.metrics.classification_performance_metrics import threshold_probability_labels
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.report import Report
-from pytest import approx
 
 
 def test_classification_performance_metrics_binary_labels() -> None:

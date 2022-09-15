@@ -1,5 +1,6 @@
 import pandas as pd
 import pytest
+
 from evidently.dashboard.widgets.class_target_name_widget import ClassTargetNameWidget
 from evidently.pipeline.column_mapping import ColumnMapping
 

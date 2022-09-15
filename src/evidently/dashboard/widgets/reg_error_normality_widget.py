@@ -7,12 +7,13 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 import plotly.graph_objs as go
+from scipy.stats import probplot
+
 from evidently import ColumnMapping
 from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceAnalyzer
 from evidently.dashboard.widgets.widget import Widget
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import ColorOptions
-from scipy.stats import probplot
 
 
 class RegErrorNormalityWidget(Widget):

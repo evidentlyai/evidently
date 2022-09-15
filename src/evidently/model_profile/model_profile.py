@@ -8,6 +8,7 @@ from typing import Sequence
 from typing import Type
 
 import pandas
+
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.model_profile.sections.base_profile_section import ProfileSection
 from evidently.pipeline.column_mapping import ColumnMapping

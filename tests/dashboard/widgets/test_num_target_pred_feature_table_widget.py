@@ -2,6 +2,7 @@ from typing import Optional
 
 import pandas as pd
 import pytest
+
 from evidently.analyzers.num_target_drift_analyzer import NumTargetDriftAnalyzer
 from evidently.dashboard.widgets.num_target_pred_feature_table_widget import NumTargetPredFeatureTable
 from evidently.model.widget import BaseWidgetInfo

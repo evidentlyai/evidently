@@ -22,6 +22,9 @@ import flask
 import pandas as pd
 import prometheus_client
 import yaml
+from flask import Flask
+from werkzeug.middleware.dispatcher import DispatcherMiddleware
+
 from evidently.model_monitoring import CatTargetDriftMonitor
 from evidently.model_monitoring import ClassificationPerformanceMonitor
 from evidently.model_monitoring import DataDriftMonitor
@@ -33,8 +36,6 @@ from evidently.model_monitoring import RegressionPerformanceMonitor
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.runner.loader import DataLoader
 from evidently.runner.loader import DataOptions
-from flask import Flask
-from werkzeug.middleware.dispatcher import DispatcherMiddleware
 
 app = Flask(__name__)
 

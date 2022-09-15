@@ -2,6 +2,7 @@ from typing import ClassVar
 
 import pandas as pd
 import pytest
+
 from evidently import ColumnMapping
 from evidently.model_profile import Profile
 from evidently.model_profile.sections import CatTargetDriftProfileSection

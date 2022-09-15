@@ -4,6 +4,7 @@
 from typing import Optional
 
 import pandas as pd
+
 from evidently import ColumnMapping
 from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceAnalyzer
 from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceMetrics

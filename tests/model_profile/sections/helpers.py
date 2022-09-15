@@ -4,6 +4,7 @@ from typing import Optional
 from typing import Type
 
 import pandas
+
 from evidently.model_profile.sections.base_profile_section import ProfileSection
 from evidently.options import DataDriftOptions
 from evidently.options import OptionsProvider

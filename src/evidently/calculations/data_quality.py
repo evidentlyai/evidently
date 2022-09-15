@@ -8,8 +8,9 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
-from evidently.utils.data_operations import DatasetColumns
 from scipy.stats import chi2_contingency
+
+from evidently.utils.data_operations import DatasetColumns
 
 
 def get_rows_count(dataset: pd.DataFrame):

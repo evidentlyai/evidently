@@ -2,6 +2,7 @@ from typing import Optional
 
 import pandas as pd
 import pytest
+
 from evidently.analyzers.prob_classification_performance_analyzer import ProbClassificationPerformanceAnalyzer
 from evidently.dashboard.widgets.prob_class_prediction_cloud_widget import ProbClassPredictionCloudWidget
 from evidently.model.widget import BaseWidgetInfo

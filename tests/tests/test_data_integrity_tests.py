@@ -4,6 +4,7 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 import pytest
+
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.test_suite import TestSuite
 from evidently.tests import TestColumnAllConstantValues

@@ -1,5 +1,6 @@
 import pandas as pd
 import pytest
+
 from evidently.analyzers.classification_performance_analyzer import ClassificationPerformanceAnalyzer
 from evidently.analyzers.prob_classification_performance_analyzer import ProbClassificationPerformanceAnalyzer
 from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceAnalyzer

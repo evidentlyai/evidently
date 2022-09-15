@@ -2,6 +2,8 @@ import json
 
 import pandas as pd
 import pytest
+from pytest import approx as pytest_approx
+
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.test_suite import TestSuite
 from evidently.tests import TestConflictPrediction
@@ -27,7 +29,6 @@ from evidently.tests import TestValueQuantile
 from evidently.tests import TestValueRange
 from evidently.tests.base_test import TestResult
 from evidently.tests.utils import approx
-from pytest import approx as pytest_approx
 
 
 @pytest.mark.parametrize(

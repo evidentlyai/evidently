@@ -6,6 +6,7 @@ from typing import Optional
 
 import pandas as pd
 import plotly.express as px
+
 from evidently import ColumnMapping
 from evidently.analyzers.classification_performance_analyzer import ClassificationPerformanceAnalyzer
 from evidently.dashboard.widgets.utils import CutQuantileTransformer

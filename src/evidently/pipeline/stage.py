@@ -6,6 +6,7 @@ from typing import Set
 from typing import Type
 
 import pandas
+
 from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.options import OptionsProvider

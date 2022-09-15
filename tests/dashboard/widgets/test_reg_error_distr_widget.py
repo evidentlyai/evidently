@@ -2,6 +2,7 @@ from typing import Optional
 
 import pandas as pd
 import pytest
+
 from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceAnalyzer
 from evidently.dashboard.widgets.reg_error_distr_widget import RegErrorDistrWidget
 from evidently.model.widget import BaseWidgetInfo

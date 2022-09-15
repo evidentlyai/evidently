@@ -8,6 +8,8 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
+from pandas.core.dtypes.common import infer_dtype_from_object
+
 from evidently.metrics.data_integrity_metrics import DataIntegrityMetrics
 from evidently.metrics.data_integrity_metrics import DataIntegrityNullValuesMetrics
 from evidently.metrics.data_integrity_metrics import DataIntegrityNullValuesMetricsResult
@@ -31,7 +33,6 @@ from evidently.tests.utils import plot_dicts_to_table
 from evidently.tests.utils import plot_value_counts_tables_ref_curr
 from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.types import Numeric
-from pandas.core.dtypes.common import infer_dtype_from_object
 
 DATA_INTEGRITY_GROUP = GroupData("data_integrity", "Data Integrity", "")
 GroupingTypes.TestGroup.add_value(DATA_INTEGRITY_GROUP)

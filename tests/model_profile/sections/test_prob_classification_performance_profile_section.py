@@ -3,8 +3,10 @@ from typing import Dict
 
 import pandas
 import pytest
-from evidently.model_profile.sections.prob_classification_performance_profile_section import \
-    ProbClassificationPerformanceProfileSection
+
+from evidently.model_profile.sections.prob_classification_performance_profile_section import (
+    ProbClassificationPerformanceProfileSection,
+)
 from evidently.pipeline.column_mapping import ColumnMapping
 
 from .helpers import calculate_section_results

@@ -16,8 +16,9 @@ from typing import Optional
 from typing import Sequence
 from typing import Tuple
 
-import evidently
 import pandas
+
+import evidently
 from evidently.dashboard.tabs.base_tab import Tab
 from evidently.model.dashboard import DashboardInfo
 from evidently.pipeline.column_mapping import ColumnMapping

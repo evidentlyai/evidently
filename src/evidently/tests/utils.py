@@ -5,14 +5,15 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 import plotly.graph_objs as go
+from pandas.api.types import is_numeric_dtype
+from plotly.subplots import make_subplots
+
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import DetailsInfo
 from evidently.renderers.render_utils import COLOR_DISCRETE_SEQUENCE
 from evidently.renderers.render_utils import GREY
 from evidently.renderers.render_utils import RED
 from evidently.utils.types import ApproxValue
-from pandas.api.types import is_numeric_dtype
-from plotly.subplots import make_subplots
 
 
 def plot_check(fig, condition):

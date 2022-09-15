@@ -4,6 +4,7 @@ import abc
 from typing import Optional
 
 import pandas as pd
+
 from evidently import ColumnMapping
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import OptionsProvider

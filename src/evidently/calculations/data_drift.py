@@ -11,6 +11,7 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
+
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.calculations.stattests import get_stattest
 from evidently.options import DataDriftOptions

@@ -4,6 +4,7 @@ from typing import ClassVar
 
 import pandas as pd
 import pytest
+
 from evidently.model_monitoring import CatTargetDriftMonitor
 from evidently.model_monitoring import ClassificationPerformanceMonitor
 from evidently.model_monitoring import DataDriftMonitor

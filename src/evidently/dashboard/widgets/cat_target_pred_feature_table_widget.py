@@ -6,6 +6,7 @@ from typing import Optional
 
 import pandas as pd
 import plotly.express as px
+
 from evidently import ColumnMapping
 from evidently.analyzers.cat_target_drift_analyzer import CatTargetDriftAnalyzer
 from evidently.dashboard.widgets.utils import CutQuantileTransformer

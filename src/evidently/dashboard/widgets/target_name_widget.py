@@ -3,6 +3,7 @@
 from typing import Optional
 
 import pandas as pd
+
 from evidently import ColumnMapping
 from evidently.analyzers.classification_performance_analyzer import ClassificationPerformanceAnalyzer
 from evidently.analyzers.prob_classification_performance_analyzer import ProbClassificationPerformanceAnalyzer

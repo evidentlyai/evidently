@@ -6,11 +6,12 @@ try:
     import pandas as pd
     from airflow import DAG
     from airflow.operators.python_operator import PythonOperator
+    from sklearn import datasets
+
     from evidently.dashboard import Dashboard
     from evidently.dashboard.tabs import DataDriftTab
     from evidently.model_profile import Profile
     from evidently.model_profile.sections import DataDriftProfileSection
-    from sklearn import datasets
 
 except Exception as e:
     print("Error  {} ".format(e))

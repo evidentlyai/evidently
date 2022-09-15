@@ -5,6 +5,7 @@ from typing import Optional
 
 import pandas as pd
 import plotly.graph_objs as go
+
 from evidently import ColumnMapping
 from evidently.analyzers.num_target_drift_analyzer import NumTargetDriftAnalyzer
 from evidently.dashboard.widgets.utils import fig_to_json

@@ -8,6 +8,7 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
+
 from evidently.metrics import DataDriftMetrics
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import DataDriftOptions

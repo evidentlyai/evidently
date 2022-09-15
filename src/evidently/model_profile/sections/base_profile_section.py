@@ -6,6 +6,7 @@ from typing import Optional
 from typing import Type
 
 import pandas
+
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.pipeline.stage import PipelineStage

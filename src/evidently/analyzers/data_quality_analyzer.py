@@ -5,6 +5,7 @@ from typing import Dict
 from typing import Optional
 
 import pandas as pd
+
 from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.analyzers.base_analyzer import BaseAnalyzerResult

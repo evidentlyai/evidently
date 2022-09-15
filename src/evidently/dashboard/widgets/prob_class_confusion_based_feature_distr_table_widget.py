@@ -8,6 +8,8 @@ import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objs as go
+from plotly.subplots import make_subplots
+
 from evidently import ColumnMapping
 from evidently.analyzers.prob_classification_performance_analyzer import ProbClassificationPerformanceAnalyzer
 from evidently.dashboard.widgets.utils import CutQuantileTransformer
@@ -16,7 +18,6 @@ from evidently.model.widget import AdditionalGraphInfo
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import ColorOptions
 from evidently.options import QualityMetricsOptions
-from plotly.subplots import make_subplots
 
 
 class ProbClassConfusionBasedFeatureDistrTable(Widget):

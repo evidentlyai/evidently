@@ -1,5 +1,6 @@
 import pandas
 import pytest
+
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.utils.data_operations import process_columns
 

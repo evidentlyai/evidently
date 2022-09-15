@@ -4,8 +4,10 @@ from typing import Optional
 
 import pandas
 import pytest
-from evidently.model_profile.sections.classification_performance_profile_section import \
-    ClassificationPerformanceProfileSection
+
+from evidently.model_profile.sections.classification_performance_profile_section import (
+    ClassificationPerformanceProfileSection,
+)
 
 from .helpers import calculate_section_results
 from .helpers import check_profile_section_result_common_part

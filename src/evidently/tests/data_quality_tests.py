@@ -5,6 +5,7 @@ from typing import Optional
 from typing import Union
 
 import numpy as np
+
 from evidently.metrics import DataQualityCorrelationMetrics
 from evidently.metrics import DataQualityMetrics
 from evidently.metrics import DataQualityStabilityMetrics

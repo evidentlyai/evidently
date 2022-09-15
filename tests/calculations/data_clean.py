@@ -1,8 +1,9 @@
 import numpy as np
 import pandas as pd
 import pytest
-from evidently.calculations import replace_infinity_values_to_nan
 from pytest import approx
+
+from evidently.calculations import replace_infinity_values_to_nan
 
 
 @pytest.mark.parametrize(

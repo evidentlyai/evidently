@@ -2,8 +2,9 @@ import logging
 import os
 import platform
 
-import evidently
 import requests
+
+import evidently
 
 
 class TelemetrySender:

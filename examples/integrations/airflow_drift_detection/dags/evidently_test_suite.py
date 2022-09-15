@@ -7,10 +7,11 @@ try:
     import pandas as pd
     from airflow import DAG
     from airflow.operators.python_operator import PythonOperator
+    from sklearn.datasets import fetch_openml
+
     from evidently import ColumnMapping
     from evidently.test_suite import TestSuite
     from evidently.tests import *
-    from sklearn.datasets import fetch_openml
 
 except Exception as e:
     print("Error  {} ".format(e))
