@@ -33,11 +33,13 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt && pip install -r dev_requirements.txt
       - name: Run Black
-        run: black --check src
+        run: black --check --diff src
       - name: Run Black for Tests
-        run: black --check tests
+        run: black --check --diff tests
       - name: Run iSort
-        run: isort --check .
+        run: isort --check src
+      - name: Run iSort for Tests
+        run: isort --check tests
       - name: Run Flake8
         run: flake8 src
       - name: Run Flake8 for Tests
