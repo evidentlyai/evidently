@@ -32,14 +32,19 @@ jobs:
       # Runs a single command using the runners shell
       - name: Install dependencies
         run: pip install -r requirements.txt && pip install -r dev_requirements.txt
+      # run black separately for source and tests folders (prevent generated examples folder checking)
+      # temporary specify line length and python version explicitly for black
+      # it cannot find the settings in setup.cfg
       - name: Run Black
         run: black --check --diff -l 120 -t py36 src
       - name: Run Black for Tests
         run: black --check --diff -l 120 -t py36 tests
+      # run isort separately for source and tests folders (prevent generated examples folder checking)
       - name: Run iSort
         run: isort --check src
       - name: Run iSort for Tests
         run: isort --check tests
+      # run flake8 separately for source and tests folders
       - name: Run Flake8
         run: flake8 src
       - name: Run Flake8 for Tests
