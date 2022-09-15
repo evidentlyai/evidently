@@ -1,9 +1,13 @@
 #!/usr/bin/env python
 # coding: utf-8
-from typing import Dict, List, Optional, Tuple, Type, Union
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Tuple
+from typing import Type
+from typing import Union
 
 import pandas
-
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.dashboard.widgets.widget import Widget
 from evidently.model.widget import BaseWidgetInfo

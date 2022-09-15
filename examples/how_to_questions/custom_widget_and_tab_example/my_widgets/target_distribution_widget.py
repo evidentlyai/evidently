@@ -4,7 +4,6 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 import plotly.figure_factory as ff
-
 from evidently.dashboard.widgets.widget import Widget
 from evidently.model.widget import BaseWidgetInfo
 

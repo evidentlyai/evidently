@@ -6,12 +6,12 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-
 from evidently import ColumnMapping
 from evidently.analyzers.data_quality_analyzer import DataQualityAnalyzer
 from evidently.dashboard.widgets.widget import Widget
-from evidently.model.widget import AdditionalGraphInfo, BaseWidgetInfo
+from evidently.model.widget import AdditionalGraphInfo
+from evidently.model.widget import BaseWidgetInfo
+from plotly.subplots import make_subplots
 
 
 class DataQualityCorrelationsWidget(Widget):

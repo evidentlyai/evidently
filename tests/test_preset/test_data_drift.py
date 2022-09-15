@@ -1,5 +1,4 @@
 import pandas as pd
-
 from evidently import ColumnMapping
 from evidently.test_preset import DataDrift
 from evidently.test_suite import TestSuite

@@ -1,9 +1,7 @@
 from datetime import datetime
 
-from evidently.analyzers.num_target_drift_analyzer import \
-    NumTargetDriftAnalyzer
-from evidently.model_profile.sections.base_profile_section import \
-    ProfileSection
+from evidently.analyzers.num_target_drift_analyzer import NumTargetDriftAnalyzer
+from evidently.model_profile.sections.base_profile_section import ProfileSection
 
 
 class NumTargetDriftProfileSection(ProfileSection):

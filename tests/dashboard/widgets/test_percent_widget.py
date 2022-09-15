@@ -1,5 +1,4 @@
 import pandas as pd
-
 from evidently.dashboard.widgets.percent_widget import PercentWidget
 from evidently.pipeline.column_mapping import ColumnMapping
 

@@ -1,8 +1,11 @@
 import warnings
 from dataclasses import dataclass
-from typing import Dict, Optional, Union
+from typing import Dict
+from typing import Optional
+from typing import Union
 
-from evidently.calculations.stattests import PossibleStatTestType, StatTest
+from evidently.calculations.stattests import PossibleStatTestType
+from evidently.calculations.stattests import StatTest
 
 DEFAULT_NBINSX = 10
 

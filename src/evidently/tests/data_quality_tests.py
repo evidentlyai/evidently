@@ -1,23 +1,35 @@
 from abc import ABC
-from typing import Dict, List, Optional, Union
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Union
 
 import numpy as np
-
-from evidently.metrics import (DataQualityCorrelationMetrics,
-                               DataQualityMetrics, DataQualityStabilityMetrics,
-                               DataQualityValueListMetrics,
-                               DataQualityValueQuantileMetrics,
-                               DataQualityValueRangeMetrics)
+from evidently.metrics import DataQualityCorrelationMetrics
+from evidently.metrics import DataQualityMetrics
+from evidently.metrics import DataQualityStabilityMetrics
+from evidently.metrics import DataQualityValueListMetrics
+from evidently.metrics import DataQualityValueQuantileMetrics
+from evidently.metrics import DataQualityValueRangeMetrics
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import (DetailsInfo, TestHtmlInfo,
-                                               TestRenderer, default_renderer)
+from evidently.renderers.base_renderer import DetailsInfo
+from evidently.renderers.base_renderer import TestHtmlInfo
+from evidently.renderers.base_renderer import TestRenderer
+from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.render_utils import plot_distr
-from evidently.tests.base_test import (BaseCheckValueTest, BaseTestGenerator,
-                                       GroupData, GroupingTypes, Test,
-                                       TestResult, TestValueCondition)
-from evidently.tests.utils import (approx, plot_check, plot_correlations,
-                                   plot_metric_value, plot_value_counts_tables,
-                                   plot_value_counts_tables_ref_curr)
+from evidently.tests.base_test import BaseCheckValueTest
+from evidently.tests.base_test import BaseTestGenerator
+from evidently.tests.base_test import GroupData
+from evidently.tests.base_test import GroupingTypes
+from evidently.tests.base_test import Test
+from evidently.tests.base_test import TestResult
+from evidently.tests.base_test import TestValueCondition
+from evidently.tests.utils import approx
+from evidently.tests.utils import plot_check
+from evidently.tests.utils import plot_correlations
+from evidently.tests.utils import plot_metric_value
+from evidently.tests.utils import plot_value_counts_tables
+from evidently.tests.utils import plot_value_counts_tables_ref_curr
 from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.types import Numeric
 

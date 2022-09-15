@@ -1,12 +1,11 @@
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any
+from typing import Dict
 
 import pandas as pd
-
 from evidently.analyzers.data_quality_analyzer import DataQualityAnalyzer
 from evidently.calculations.data_quality import DataQualityStats
-from evidently.model_profile.sections.base_profile_section import \
-    ProfileSection
+from evidently.model_profile.sections.base_profile_section import ProfileSection
 
 
 class DataQualityProfileSection(ProfileSection):

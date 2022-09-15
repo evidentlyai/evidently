@@ -3,14 +3,10 @@
 from typing import Optional
 
 import pandas as pd
-
 from evidently import ColumnMapping
-from evidently.analyzers.classification_performance_analyzer import \
-    ClassificationPerformanceAnalyzer
-from evidently.analyzers.prob_classification_performance_analyzer import \
-    ProbClassificationPerformanceAnalyzer
-from evidently.analyzers.regression_performance_analyzer import \
-    RegressionPerformanceAnalyzer
+from evidently.analyzers.classification_performance_analyzer import ClassificationPerformanceAnalyzer
+from evidently.analyzers.prob_classification_performance_analyzer import ProbClassificationPerformanceAnalyzer
+from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceAnalyzer
 from evidently.dashboard.widgets.widget import Widget
 from evidently.model.widget import BaseWidgetInfo
 

@@ -7,13 +7,12 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 import plotly.graph_objs as go
-
 from evidently import ColumnMapping
-from evidently.analyzers.num_target_drift_analyzer import \
-    NumTargetDriftAnalyzer
+from evidently.analyzers.num_target_drift_analyzer import NumTargetDriftAnalyzer
 from evidently.dashboard.widgets.widget import Widget
 from evidently.model.widget import BaseWidgetInfo
-from evidently.options import ColorOptions, QualityMetricsOptions
+from evidently.options import ColorOptions
+from evidently.options import QualityMetricsOptions
 
 
 class NumOutputValuesWidget(Widget):

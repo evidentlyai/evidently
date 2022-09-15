@@ -1,8 +1,9 @@
 from typing import Generator
 
 from evidently.analyzers.data_drift_analyzer import DataDriftAnalyzer
-from evidently.model_monitoring.monitoring import (MetricsType, ModelMonitor,
-                                                   ModelMonitoringMetric)
+from evidently.model_monitoring.monitoring import MetricsType
+from evidently.model_monitoring.monitoring import ModelMonitor
+from evidently.model_monitoring.monitoring import ModelMonitoringMetric
 
 
 class DataDriftMonitorMetrics:

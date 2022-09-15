@@ -4,10 +4,9 @@ from typing import Tuple
 
 import numpy as np
 import pandas as pd
+from evidently.calculations.stattests.registry import StatTest
+from evidently.calculations.stattests.registry import register_stattest
 from scipy.stats import chisquare
-
-from evidently.calculations.stattests.registry import (StatTest,
-                                                       register_stattest)
 
 
 def _chi_stat_test(

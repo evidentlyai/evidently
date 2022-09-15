@@ -1,5 +1,4 @@
 import pandas as pd
-
 from evidently.dashboard.widgets.counter_widget import CounterWidget
 from evidently.pipeline.column_mapping import ColumnMapping
 

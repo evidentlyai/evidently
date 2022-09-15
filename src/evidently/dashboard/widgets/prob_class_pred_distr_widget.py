@@ -7,10 +7,8 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 import plotly.figure_factory as ff
-
 from evidently import ColumnMapping
-from evidently.analyzers.prob_distribution_analyzer import \
-    ProbDistributionAnalyzer
+from evidently.analyzers.prob_distribution_analyzer import ProbDistributionAnalyzer
 from evidently.dashboard.widgets.widget import Widget
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import ColorOptions

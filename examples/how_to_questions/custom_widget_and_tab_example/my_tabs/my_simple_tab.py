@@ -1,8 +1,7 @@
-from my_widgets.target_distribution_hist_widget import \
-    TargetDistributionHistWidget
+from evidently.dashboard.tabs.base_tab import Tab
+from evidently.dashboard.tabs.base_tab import Verbose
+from my_widgets.target_distribution_hist_widget import TargetDistributionHistWidget
 from my_widgets.target_distribution_widget import TargetDistributionWidget
-
-from evidently.dashboard.tabs.base_tab import Tab, Verbose
 
 
 class MySimpleTab(Tab):

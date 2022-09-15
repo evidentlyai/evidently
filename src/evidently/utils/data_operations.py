@@ -1,10 +1,13 @@
 """Methods for clean null or NaN values in a dataset"""
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Sequence, Union
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Sequence
+from typing import Union
 
 import numpy as np
 import pandas as pd
-
 from evidently import ColumnMapping
 
 

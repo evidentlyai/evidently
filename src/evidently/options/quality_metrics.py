@@ -1,5 +1,8 @@
 from dataclasses import dataclass
-from typing import Dict, Optional, Tuple, Union
+from typing import Dict
+from typing import Optional
+from typing import Tuple
+from typing import Union
 
 DEFAULT_CONF_INTERVAL_SIZE = 1
 DEFAULT_CLASSIFICATION_THRESHOLD = 0.5

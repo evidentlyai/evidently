@@ -1,17 +1,19 @@
 import dataclasses
-from typing import List, Optional
+from typing import List
+from typing import Optional
 
 import numpy as np
 import pandas as pd
 import plotly.graph_objs as go
-from scipy.stats import probplot
-
-from evidently.metrics.base_metric import InputData, Metric
+from evidently.metrics.base_metric import InputData
+from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import ColorOptions
-from evidently.renderers.base_renderer import (MetricHtmlInfo, MetricRenderer,
-                                               default_renderer)
+from evidently.renderers.base_renderer import MetricHtmlInfo
+from evidently.renderers.base_renderer import MetricRenderer
+from evidently.renderers.base_renderer import default_renderer
 from evidently.utils.data_operations import process_columns
+from scipy.stats import probplot
 
 
 @dataclasses.dataclass

@@ -1,7 +1,6 @@
 from datetime import datetime
 
 import pandas as pd
-
 from evidently.model_monitoring import ModelMonitoring
 from evidently.model_monitoring.monitors.data_quality import DataQualityMonitor
 from evidently.pipeline.column_mapping import ColumnMapping

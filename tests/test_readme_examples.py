@@ -4,20 +4,20 @@ from typing import List
 import numpy as np
 import pandas as pd
 import pytest
-from sklearn import datasets
-
 from evidently import ColumnMapping
 from evidently.dashboard import Dashboard
-from evidently.dashboard.tabs import (CatTargetDriftTab,
-                                      ClassificationPerformanceTab,
-                                      DataDriftTab,
-                                      ProbClassificationPerformanceTab,
-                                      RegressionPerformanceTab)
+from evidently.dashboard.tabs import CatTargetDriftTab
+from evidently.dashboard.tabs import ClassificationPerformanceTab
+from evidently.dashboard.tabs import DataDriftTab
+from evidently.dashboard.tabs import ProbClassificationPerformanceTab
+from evidently.dashboard.tabs import RegressionPerformanceTab
 from evidently.model_profile import Profile
-from evidently.model_profile.sections import (
-    CatTargetDriftProfileSection, ClassificationPerformanceProfileSection,
-    DataDriftProfileSection, ProbClassificationPerformanceProfileSection,
-    RegressionPerformanceProfileSection)
+from evidently.model_profile.sections import CatTargetDriftProfileSection
+from evidently.model_profile.sections import ClassificationPerformanceProfileSection
+from evidently.model_profile.sections import DataDriftProfileSection
+from evidently.model_profile.sections import ProbClassificationPerformanceProfileSection
+from evidently.model_profile.sections import RegressionPerformanceProfileSection
+from sklearn import datasets
 
 
 def _get_iris():

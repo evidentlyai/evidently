@@ -1,8 +1,12 @@
 import dataclasses
-from typing import Callable, Dict, List, Optional, Tuple, Union
+from typing import Callable
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Tuple
+from typing import Union
 
 import pandas as pd
-
 from evidently.calculations import stattests
 
 StatTestFuncType = Callable[[pd.Series, pd.Series, str, float], Tuple[float, bool]]

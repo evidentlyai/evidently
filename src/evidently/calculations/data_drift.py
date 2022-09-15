@@ -2,14 +2,20 @@
 
 import collections
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Sequence, Tuple, Union
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Sequence
+from typing import Tuple
+from typing import Union
 
 import numpy as np
 import pandas as pd
-
-from evidently.calculations.stattests import PossibleStatTestType, get_stattest
+from evidently.calculations.stattests import PossibleStatTestType
+from evidently.calculations.stattests import get_stattest
 from evidently.options import DataDriftOptions
-from evidently.utils.data_operations import DatasetColumns, recognize_task
+from evidently.utils.data_operations import DatasetColumns
+from evidently.utils.data_operations import recognize_task
 
 PValueWithDrift = collections.namedtuple("PValueWithDrift", ["p_value", "drifted"])
 

@@ -1,17 +1,21 @@
 #!/usr/bin/env python
 # coding: utf-8
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Sequence, Union
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Sequence
+from typing import Union
 
 import numpy as np
 import pandas as pd
-from sklearn import metrics
-
 from evidently import ColumnMapping
-from evidently.analyzers.base_analyzer import Analyzer, BaseAnalyzerResult
-from evidently.calculations.classification_performance import (
-    ConfusionMatrix, calculate_confusion_by_classes)
+from evidently.analyzers.base_analyzer import Analyzer
+from evidently.analyzers.base_analyzer import BaseAnalyzerResult
+from evidently.calculations.classification_performance import ConfusionMatrix
+from evidently.calculations.classification_performance import calculate_confusion_by_classes
 from evidently.utils.data_operations import process_columns
+from sklearn import metrics
 
 
 @dataclass

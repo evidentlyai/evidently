@@ -3,20 +3,28 @@ import copy
 import dataclasses
 import json
 import logging
-from typing import Iterator, Optional, Tuple, Union
+from typing import Iterator
+from typing import Optional
+from typing import Tuple
+from typing import Union
 
-from evidently.dashboard.dashboard import (SaveMode, SaveModeMap,
-                                           TemplateParams, save_data_file,
-                                           save_lib_files)
-from evidently.metrics.base_metric import InputData, Metric
-from evidently.renderers.base_renderer import (DEFAULT_RENDERERS,
-                                               MetricRenderer,
-                                               RenderersDefinitions,
-                                               TestRenderer)
+from evidently.dashboard.dashboard import SaveMode
+from evidently.dashboard.dashboard import SaveModeMap
+from evidently.dashboard.dashboard import TemplateParams
+from evidently.dashboard.dashboard import save_data_file
+from evidently.dashboard.dashboard import save_lib_files
+from evidently.metrics.base_metric import InputData
+from evidently.metrics.base_metric import Metric
+from evidently.renderers.base_renderer import DEFAULT_RENDERERS
+from evidently.renderers.base_renderer import MetricRenderer
+from evidently.renderers.base_renderer import RenderersDefinitions
+from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.notebook_utils import determine_template
-from evidently.suite.execution_graph import (ExecutionGraph,
-                                             SimpleExecutionGraph)
-from evidently.tests.base_test import GroupingTypes, Test, TestResult
+from evidently.suite.execution_graph import ExecutionGraph
+from evidently.suite.execution_graph import SimpleExecutionGraph
+from evidently.tests.base_test import GroupingTypes
+from evidently.tests.base_test import Test
+from evidently.tests.base_test import TestResult
 from evidently.utils import NumpyEncoder
 
 

@@ -1,10 +1,8 @@
 from datetime import datetime
 
-from evidently.analyzers.prob_classification_performance_analyzer import (
-    ProbClassificationPerformanceAnalyzer,
-    ProbClassificationPerformanceMetrics)
-from evidently.model_profile.sections.base_profile_section import \
-    ProfileSection
+from evidently.analyzers.prob_classification_performance_analyzer import ProbClassificationPerformanceAnalyzer
+from evidently.analyzers.prob_classification_performance_analyzer import ProbClassificationPerformanceMetrics
+from evidently.model_profile.sections.base_profile_section import ProfileSection
 
 
 class ProbClassificationPerformanceProfileSection(ProfileSection):

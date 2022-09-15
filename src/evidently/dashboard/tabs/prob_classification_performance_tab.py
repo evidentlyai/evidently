@@ -1,27 +1,19 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-from evidently.dashboard.tabs.base_tab import Tab, Verbose
-from evidently.dashboard.widgets.prob_class_conf_matrix_widget import \
-    ProbClassConfMatrixWidget
+from evidently.dashboard.tabs.base_tab import Tab
+from evidently.dashboard.tabs.base_tab import Verbose
+from evidently.dashboard.widgets.prob_class_conf_matrix_widget import ProbClassConfMatrixWidget
 from evidently.dashboard.widgets.prob_class_confusion_based_feature_distr_table_widget import \
     ProbClassConfusionBasedFeatureDistrTable
-from evidently.dashboard.widgets.prob_class_metrics_matrix_widget import \
-    ProbClassMetricsMatrixWidget
-from evidently.dashboard.widgets.prob_class_pr_curve_widget import \
-    ProbClassPRCurveWidget
-from evidently.dashboard.widgets.prob_class_pr_table_widget import \
-    ProbClassPRTableWidget
-from evidently.dashboard.widgets.prob_class_pred_distr_widget import \
-    ProbClassPredDistrWidget
-from evidently.dashboard.widgets.prob_class_prediction_cloud_widget import \
-    ProbClassPredictionCloudWidget
-from evidently.dashboard.widgets.prob_class_quality_metrics_bar_widget import \
-    ProbClassQualityMetricBarWidget
-from evidently.dashboard.widgets.prob_class_roc_curve_widget import \
-    ProbClassRocCurveWidget
-from evidently.dashboard.widgets.prob_class_support_widget import \
-    ProbClassSupportWidget
+from evidently.dashboard.widgets.prob_class_metrics_matrix_widget import ProbClassMetricsMatrixWidget
+from evidently.dashboard.widgets.prob_class_pr_curve_widget import ProbClassPRCurveWidget
+from evidently.dashboard.widgets.prob_class_pr_table_widget import ProbClassPRTableWidget
+from evidently.dashboard.widgets.prob_class_pred_distr_widget import ProbClassPredDistrWidget
+from evidently.dashboard.widgets.prob_class_prediction_cloud_widget import ProbClassPredictionCloudWidget
+from evidently.dashboard.widgets.prob_class_quality_metrics_bar_widget import ProbClassQualityMetricBarWidget
+from evidently.dashboard.widgets.prob_class_roc_curve_widget import ProbClassRocCurveWidget
+from evidently.dashboard.widgets.prob_class_support_widget import ProbClassSupportWidget
 from evidently.dashboard.widgets.target_name_widget import TargetNameWidget
 
 

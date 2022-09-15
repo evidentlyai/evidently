@@ -1,5 +1,4 @@
 import pandas as pd
-
 from evidently.dashboard.widgets.text_widget import TextWidget
 from evidently.pipeline.column_mapping import ColumnMapping
 

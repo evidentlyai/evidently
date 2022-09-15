@@ -3,9 +3,8 @@ from typing import Dict
 
 import numpy as np
 import pandas as pd
-from scipy.stats import probplot
-
 from evidently.utils.data_operations import DatasetColumns
+from scipy.stats import probplot
 
 
 class ErrorWithQuantiles:

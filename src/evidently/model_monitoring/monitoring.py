@@ -1,8 +1,14 @@
 import abc
-from typing import Any, Dict, Generator, List, Optional, Sequence, Tuple, Type
+from typing import Any
+from typing import Dict
+from typing import Generator
+from typing import List
+from typing import Optional
+from typing import Sequence
+from typing import Tuple
+from typing import Type
 
 import pandas
-
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.pipeline.pipeline import Pipeline

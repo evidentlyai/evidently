@@ -1,24 +1,28 @@
 import dataclasses
 from dataclasses import dataclass
-from typing import Dict, List, Optional
+from typing import Dict
+from typing import List
+from typing import Optional
 
 import numpy as np
 import pandas as pd
-from sklearn.metrics import (mean_absolute_error,
-                             mean_absolute_percentage_error,
-                             mean_squared_error, r2_score)
-
-from evidently.calculations.regression_performance import \
-    calculate_regression_performance
-from evidently.metrics.base_metric import InputData, Metric
-from evidently.metrics.utils import (apply_func_to_binned_data,
-                                     make_hist_for_cat_plot,
-                                     make_hist_for_num_plot,
-                                     make_target_bins_for_reg_plots)
+from evidently.calculations.regression_performance import calculate_regression_performance
+from evidently.metrics.base_metric import InputData
+from evidently.metrics.base_metric import Metric
+from evidently.metrics.utils import apply_func_to_binned_data
+from evidently.metrics.utils import make_hist_for_cat_plot
+from evidently.metrics.utils import make_hist_for_num_plot
+from evidently.metrics.utils import make_target_bins_for_reg_plots
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import (MetricHtmlInfo, MetricRenderer,
-                                               default_renderer)
-from evidently.utils.data_operations import DatasetColumns, process_columns
+from evidently.renderers.base_renderer import MetricHtmlInfo
+from evidently.renderers.base_renderer import MetricRenderer
+from evidently.renderers.base_renderer import default_renderer
+from evidently.utils.data_operations import DatasetColumns
+from evidently.utils.data_operations import process_columns
+from sklearn.metrics import mean_absolute_error
+from sklearn.metrics import mean_absolute_percentage_error
+from sklearn.metrics import mean_squared_error
+from sklearn.metrics import r2_score
 
 
 @dataclass

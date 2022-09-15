@@ -1,8 +1,11 @@
 import itertools
-from typing import Dict, List, Optional, Sequence, Type
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Sequence
+from typing import Type
 
 import pandas
-
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.options import OptionsProvider
 from evidently.pipeline.column_mapping import ColumnMapping

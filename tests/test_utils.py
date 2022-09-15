@@ -4,7 +4,6 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 import pytest
-
 from evidently.utils.numpy_encoder import NumpyEncoder
 
 

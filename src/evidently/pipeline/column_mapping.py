@@ -1,5 +1,8 @@
 from dataclasses import dataclass
-from typing import List, Optional, Sequence, Union
+from typing import List
+from typing import Optional
+from typing import Sequence
+from typing import Union
 
 
 class TaskType:

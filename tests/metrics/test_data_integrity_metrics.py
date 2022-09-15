@@ -1,13 +1,13 @@
 import numpy as np
 import pandas as pd
 import pytest
-
-from evidently.metrics import (DataIntegrityMetrics,
-                               DataIntegrityNullValuesMetrics,
-                               DataIntegrityValueByRegexpMetrics)
-from evidently.metrics.base_metric import InputData, Metric
-from evidently.metrics.data_integrity_metrics import (
-    DataIntegrityValueByRegexpMetricResult, DataIntegrityValueByRegexpStat)
+from evidently.metrics import DataIntegrityMetrics
+from evidently.metrics import DataIntegrityNullValuesMetrics
+from evidently.metrics import DataIntegrityValueByRegexpMetrics
+from evidently.metrics.base_metric import InputData
+from evidently.metrics.base_metric import Metric
+from evidently.metrics.data_integrity_metrics import DataIntegrityValueByRegexpMetricResult
+from evidently.metrics.data_integrity_metrics import DataIntegrityValueByRegexpStat
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.report import Report
 

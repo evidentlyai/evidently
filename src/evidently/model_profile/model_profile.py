@@ -1,12 +1,15 @@
 import json
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Sequence, Type
+from typing import Any
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Sequence
+from typing import Type
 
 import pandas
-
 from evidently.analyzers.base_analyzer import Analyzer
-from evidently.model_profile.sections.base_profile_section import \
-    ProfileSection
+from evidently.model_profile.sections.base_profile_section import ProfileSection
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.pipeline.pipeline import Pipeline
 from evidently.utils import NumpyEncoder

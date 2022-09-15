@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-from typing import List, Optional
+from typing import List
+from typing import Optional
 
 import numpy as np
 import pandas as pd
-
 from evidently import ColumnMapping
 from evidently.analyzers.data_quality_analyzer import DataQualityAnalyzer
 from evidently.dashboard.widgets.widget import Widget

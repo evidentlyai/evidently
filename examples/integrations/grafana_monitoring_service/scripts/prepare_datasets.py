@@ -69,7 +69,8 @@ def get_data_bike(use_model: bool) -> Tuple[pd.DataFrame, pd.DataFrame]:
 
 
 def get_data_kdd_classification() -> Tuple[pd.DataFrame, pd.DataFrame]:
-    from sklearn import model_selection, neighbors
+    from sklearn import model_selection
+    from sklearn import neighbors
     # local import for make other cases faster
     from sklearn.datasets import fetch_kddcup99
 

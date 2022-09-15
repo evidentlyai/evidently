@@ -1,10 +1,16 @@
 import logging
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Type
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Type
 
-from evidently.options import DataDriftOptions, QualityMetricsOptions
+from evidently.options import DataDriftOptions
+from evidently.options import QualityMetricsOptions
 from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.runner.loader import DataLoader, DataOptions, SamplingOptions
+from evidently.runner.loader import DataLoader
+from evidently.runner.loader import DataOptions
+from evidently.runner.loader import SamplingOptions
 
 
 @dataclass

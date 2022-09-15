@@ -1,9 +1,10 @@
 import abc
 from dataclasses import dataclass
-from typing import Generic, Optional, TypeVar
+from typing import Generic
+from typing import Optional
+from typing import TypeVar
 
 import pandas as pd
-
 from evidently.pipeline.column_mapping import ColumnMapping
 
 TResult = TypeVar("TResult")

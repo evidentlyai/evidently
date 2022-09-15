@@ -6,10 +6,12 @@
 import os
 from os.path import join as pjoin
 
+from setupbase import HERE
+from setupbase import combine_commands
+from setupbase import create_cmdclass
+from setupbase import ensure_targets
+from setupbase import install_npm
 from setuptools import setup
-
-from setupbase import (HERE, combine_commands, create_cmdclass, ensure_targets,
-                       install_npm)
 
 nb_path = pjoin(HERE, "src", "evidently", "nbextension", "static")
 

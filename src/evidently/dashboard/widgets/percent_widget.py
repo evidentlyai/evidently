@@ -1,11 +1,13 @@
 from typing import Optional
 
 import pandas as pd
-
 from evidently import ColumnMapping
 from evidently.dashboard.widgets.widget import Widget
-from evidently.model.widget import (Alert, AlertStats, BaseWidgetInfo, Insight,
-                                    TriggeredAlertStats)
+from evidently.model.widget import Alert
+from evidently.model.widget import AlertStats
+from evidently.model.widget import BaseWidgetInfo
+from evidently.model.widget import Insight
+from evidently.model.widget import TriggeredAlertStats
 
 
 class PercentWidget(Widget):

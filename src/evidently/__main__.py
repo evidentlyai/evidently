@@ -4,17 +4,20 @@ import logging
 import os
 import sys
 from dataclasses import dataclass
-from typing import Any, Dict
+from typing import Any
+from typing import Dict
 
 import yaml
-
-from evidently._config import TELEMETRY_ADDRESS, TELEMETRY_ENABLED
+from evidently._config import TELEMETRY_ADDRESS
+from evidently._config import TELEMETRY_ENABLED
 from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.runner.dashboard_runner import (DashboardRunner,
-                                               DashboardRunnerOptions)
+from evidently.runner.dashboard_runner import DashboardRunner
+from evidently.runner.dashboard_runner import DashboardRunnerOptions
 from evidently.runner.loader import SamplingOptions
-from evidently.runner.profile_runner import ProfileRunner, ProfileRunnerOptions
-from evidently.runner.runner import DataOptions, parse_options
+from evidently.runner.profile_runner import ProfileRunner
+from evidently.runner.profile_runner import ProfileRunnerOptions
+from evidently.runner.runner import DataOptions
+from evidently.runner.runner import parse_options
 from evidently.telemetry import TelemetrySender
 
 

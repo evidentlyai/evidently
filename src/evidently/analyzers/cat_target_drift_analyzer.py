@@ -1,19 +1,21 @@
 #!/usr/bin/env python
 # coding: utf-8
 from dataclasses import dataclass
-from typing import Optional, Sequence
+from typing import Optional
+from typing import Sequence
 
 import pandas as pd
-
 from evidently import ColumnMapping
-from evidently.analyzers.base_analyzer import Analyzer, BaseAnalyzerResult
-from evidently.calculations.data_drift import (
-    DataDriftMetrics, calculate_data_drift_for_category_feature,
-    define_predictions_type)
+from evidently.analyzers.base_analyzer import Analyzer
+from evidently.analyzers.base_analyzer import BaseAnalyzerResult
+from evidently.calculations.data_drift import DataDriftMetrics
+from evidently.calculations.data_drift import calculate_data_drift_for_category_feature
+from evidently.calculations.data_drift import define_predictions_type
 from evidently.calculations.data_quality import get_rows_count
-from evidently.options import DataDriftOptions, QualityMetricsOptions
-from evidently.utils.data_operations import (process_columns,
-                                             replace_infinity_values_to_nan)
+from evidently.options import DataDriftOptions
+from evidently.options import QualityMetricsOptions
+from evidently.utils.data_operations import process_columns
+from evidently.utils.data_operations import replace_infinity_values_to_nan
 
 
 @dataclass

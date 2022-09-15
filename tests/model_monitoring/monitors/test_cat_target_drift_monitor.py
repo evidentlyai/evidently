@@ -1,5 +1,4 @@
-from evidently.model_monitoring.monitors.cat_target_drift import \
-    CatTargetDriftMonitor
+from evidently.model_monitoring.monitors.cat_target_drift import CatTargetDriftMonitor
 
 
 def test_monitor_id():

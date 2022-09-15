@@ -3,11 +3,10 @@ import datetime
 import numpy as np
 import pandas as pd
 import pytest
-
 from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.utils.data_operations import (DatasetColumns,
-                                             DatasetUtilityColumns,
-                                             process_columns)
+from evidently.utils.data_operations import DatasetColumns
+from evidently.utils.data_operations import DatasetUtilityColumns
+from evidently.utils.data_operations import process_columns
 
 
 @pytest.mark.parametrize(

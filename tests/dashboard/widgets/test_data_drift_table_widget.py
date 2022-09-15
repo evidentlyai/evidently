@@ -1,11 +1,9 @@
 import pytest
-from pandas import DataFrame
-
 from evidently import ColumnMapping
 from evidently.analyzers.data_drift_analyzer import DataDriftAnalyzer
-from evidently.dashboard.widgets.data_drift_table_widget import \
-    DataDriftTableWidget
+from evidently.dashboard.widgets.data_drift_table_widget import DataDriftTableWidget
 from evidently.options import OptionsProvider
+from pandas import DataFrame
 
 
 def sample_data(feature1, feature2, feature3):

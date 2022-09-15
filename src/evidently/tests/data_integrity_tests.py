@@ -1,26 +1,37 @@
 import dataclasses
 from abc import ABC
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Tuple
+from typing import Union
 
 import numpy as np
 import pandas as pd
-from pandas.core.dtypes.common import infer_dtype_from_object
-
-from evidently.metrics.data_integrity_metrics import (
-    DataIntegrityMetrics, DataIntegrityNullValuesMetrics,
-    DataIntegrityNullValuesMetricsResult, DataIntegrityNullValuesStat,
-    DataIntegrityValueByRegexpMetrics)
+from evidently.metrics.data_integrity_metrics import DataIntegrityMetrics
+from evidently.metrics.data_integrity_metrics import DataIntegrityNullValuesMetrics
+from evidently.metrics.data_integrity_metrics import DataIntegrityNullValuesMetricsResult
+from evidently.metrics.data_integrity_metrics import DataIntegrityNullValuesStat
+from evidently.metrics.data_integrity_metrics import DataIntegrityValueByRegexpMetrics
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import (DetailsInfo, TestHtmlInfo,
-                                               TestRenderer, default_renderer)
-from evidently.tests.base_test import (BaseCheckValueTest, BaseTestGenerator,
-                                       GroupData, GroupingTypes, Test,
-                                       TestResult, TestValueCondition)
-from evidently.tests.utils import (approx, dataframes_to_table,
-                                   plot_dicts_to_table,
-                                   plot_value_counts_tables_ref_curr)
+from evidently.renderers.base_renderer import DetailsInfo
+from evidently.renderers.base_renderer import TestHtmlInfo
+from evidently.renderers.base_renderer import TestRenderer
+from evidently.renderers.base_renderer import default_renderer
+from evidently.tests.base_test import BaseCheckValueTest
+from evidently.tests.base_test import BaseTestGenerator
+from evidently.tests.base_test import GroupData
+from evidently.tests.base_test import GroupingTypes
+from evidently.tests.base_test import Test
+from evidently.tests.base_test import TestResult
+from evidently.tests.base_test import TestValueCondition
+from evidently.tests.utils import approx
+from evidently.tests.utils import dataframes_to_table
+from evidently.tests.utils import plot_dicts_to_table
+from evidently.tests.utils import plot_value_counts_tables_ref_curr
 from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.types import Numeric
+from pandas.core.dtypes.common import infer_dtype_from_object
 
 DATA_INTEGRITY_GROUP = GroupData("data_integrity", "Data Integrity", "")
 GroupingTypes.TestGroup.add_value(DATA_INTEGRITY_GROUP)

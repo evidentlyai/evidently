@@ -2,11 +2,8 @@ from typing import Optional
 
 import pandas as pd
 import pytest
-
-from evidently.analyzers.num_target_drift_analyzer import \
-    NumTargetDriftAnalyzer
-from evidently.dashboard.widgets.num_output_corr_widget import \
-    NumOutputCorrWidget
+from evidently.analyzers.num_target_drift_analyzer import NumTargetDriftAnalyzer
+from evidently.dashboard.widgets.num_output_corr_widget import NumOutputCorrWidget
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import OptionsProvider
 from evidently.pipeline.column_mapping import ColumnMapping

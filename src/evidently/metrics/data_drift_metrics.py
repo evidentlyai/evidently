@@ -1,23 +1,29 @@
 import dataclasses
 import uuid
 from dataclasses import dataclass
-from typing import Dict, List, Optional
+from typing import Dict
+from typing import List
+from typing import Optional
 
 import pandas as pd
-
-from evidently.calculations.data_drift import (DataDriftAnalyzerFeatureMetrics,
-                                               DataDriftAnalyzerMetrics,
-                                               get_overall_data_drift)
-from evidently.metrics.base_metric import InputData, Metric
-from evidently.metrics.utils import (make_hist_for_cat_plot,
-                                     make_hist_for_num_plot)
+from evidently.calculations.data_drift import DataDriftAnalyzerFeatureMetrics
+from evidently.calculations.data_drift import DataDriftAnalyzerMetrics
+from evidently.calculations.data_drift import get_overall_data_drift
+from evidently.metrics.base_metric import InputData
+from evidently.metrics.base_metric import Metric
+from evidently.metrics.utils import make_hist_for_cat_plot
+from evidently.metrics.utils import make_hist_for_num_plot
 from evidently.model.widget import BaseWidgetInfo
-from evidently.options import ColorOptions, DataDriftOptions, OptionsProvider
-from evidently.renderers.base_renderer import (DetailsInfo, MetricHtmlInfo,
-                                               MetricRenderer,
-                                               default_renderer)
+from evidently.options import ColorOptions
+from evidently.options import DataDriftOptions
+from evidently.options import OptionsProvider
+from evidently.renderers.base_renderer import DetailsInfo
+from evidently.renderers.base_renderer import MetricHtmlInfo
+from evidently.renderers.base_renderer import MetricRenderer
+from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.render_utils import plot_distr
-from evidently.utils.data_operations import DatasetColumns, process_columns
+from evidently.utils.data_operations import DatasetColumns
+from evidently.utils.data_operations import process_columns
 
 
 @dataclass

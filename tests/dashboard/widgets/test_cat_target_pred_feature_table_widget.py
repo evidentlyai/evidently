@@ -1,10 +1,7 @@
 import pandas as pd
 import pytest
-
-from evidently.analyzers.cat_target_drift_analyzer import \
-    CatTargetDriftAnalyzer
-from evidently.dashboard.widgets.cat_target_pred_feature_table_widget import \
-    CatTargetPredFeatureTable
+from evidently.analyzers.cat_target_drift_analyzer import CatTargetDriftAnalyzer
+from evidently.dashboard.widgets.cat_target_pred_feature_table_widget import CatTargetPredFeatureTable
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import OptionsProvider
 from evidently.pipeline.column_mapping import ColumnMapping

@@ -1,11 +1,13 @@
 from datetime import datetime
-from typing import Any, Dict, Iterable, Optional, Type
+from typing import Any
+from typing import Dict
+from typing import Iterable
+from typing import Optional
+from typing import Type
 
 from evidently.analyzers.base_analyzer import Analyzer
-from evidently.analyzers.cat_target_drift_analyzer import \
-    CatTargetDriftAnalyzer
-from evidently.model_profile.sections.base_profile_section import \
-    ProfileSection
+from evidently.analyzers.cat_target_drift_analyzer import CatTargetDriftAnalyzer
+from evidently.model_profile.sections.base_profile_section import ProfileSection
 
 
 class CatTargetDriftProfileSection(ProfileSection):

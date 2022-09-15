@@ -1,11 +1,10 @@
 from typing import Tuple
 
 import pandas as pd
-from scipy import stats
-
-from evidently.calculations.stattests.registry import (StatTest,
-                                                       register_stattest)
+from evidently.calculations.stattests.registry import StatTest
+from evidently.calculations.stattests.registry import register_stattest
 from evidently.calculations.stattests.utils import get_binned_data
+from scipy import stats
 
 
 def kl_div(

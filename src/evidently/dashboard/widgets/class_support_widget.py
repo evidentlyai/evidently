@@ -5,10 +5,8 @@ from typing import Optional
 
 import pandas as pd
 import plotly.graph_objs as go
-
 from evidently import ColumnMapping
-from evidently.analyzers.classification_performance_analyzer import \
-    ClassificationPerformanceAnalyzer
+from evidently.analyzers.classification_performance_analyzer import ClassificationPerformanceAnalyzer
 from evidently.dashboard.widgets.widget import Widget
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import ColorOptions

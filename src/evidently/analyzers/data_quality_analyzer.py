@@ -1,16 +1,18 @@
 #!/usr/bin/env python
 # coding: utf-8
 from dataclasses import dataclass
-from typing import Dict, Optional
+from typing import Dict
+from typing import Optional
 
 import pandas as pd
-
 from evidently import ColumnMapping
-from evidently.analyzers.base_analyzer import Analyzer, BaseAnalyzerResult
-from evidently.calculations.data_quality import (DataQualityStats,
-                                                 calculate_correlations,
-                                                 calculate_data_quality_stats)
-from evidently.utils.data_operations import process_columns, recognize_task
+from evidently.analyzers.base_analyzer import Analyzer
+from evidently.analyzers.base_analyzer import BaseAnalyzerResult
+from evidently.calculations.data_quality import DataQualityStats
+from evidently.calculations.data_quality import calculate_correlations
+from evidently.calculations.data_quality import calculate_data_quality_stats
+from evidently.utils.data_operations import process_columns
+from evidently.utils.data_operations import recognize_task
 
 
 @dataclass

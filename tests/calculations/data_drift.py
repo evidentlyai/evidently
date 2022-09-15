@@ -1,8 +1,9 @@
-from typing import List, Optional, Union
+from typing import List
+from typing import Optional
+from typing import Union
 
 import pandas as pd
 import pytest
-
 from evidently.calculations import define_predictions_type
 
 

@@ -1,8 +1,7 @@
 from typing import Optional
 
-from plotly import graph_objs as go
-
 from evidently.options.color_scheme import ColorOptions
+from plotly import graph_objs as go
 
 
 def plot_distr(hist_curr, hist_ref=None, orientation="v", color_options: Optional[ColorOptions] = None):

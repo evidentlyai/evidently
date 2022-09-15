@@ -3,10 +3,9 @@
 from typing import Tuple
 
 import pandas as pd
+from evidently.calculations.stattests.registry import StatTest
+from evidently.calculations.stattests.registry import register_stattest
 from scipy.stats import ks_2samp
-
-from evidently.calculations.stattests.registry import (StatTest,
-                                                       register_stattest)
 
 
 def _ks_stat_test(

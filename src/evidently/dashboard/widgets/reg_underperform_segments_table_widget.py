@@ -7,13 +7,12 @@ import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objs as go
-from plotly.subplots import make_subplots
-
 from evidently import ColumnMapping
-from evidently.analyzers.regression_performance_analyzer import \
-    RegressionPerformanceAnalyzer
+from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceAnalyzer
 from evidently.dashboard.widgets.widget import Widget
-from evidently.model.widget import AdditionalGraphInfo, BaseWidgetInfo
+from evidently.model.widget import AdditionalGraphInfo
+from evidently.model.widget import BaseWidgetInfo
+from plotly.subplots import make_subplots
 
 
 def _error_bias_string(quantile_5, quantile_95):

@@ -1,7 +1,6 @@
 import pytest
-from numpy.ma.testutils import approx
-
 from evidently.options import DataDriftOptions
+from numpy.ma.testutils import approx
 
 
 @pytest.mark.parametrize(

@@ -1,5 +1,4 @@
 import pandas as pd
-
 from evidently.test_preset import DataQuality
 from evidently.test_suite import TestSuite
 

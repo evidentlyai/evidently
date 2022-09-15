@@ -3,7 +3,6 @@ import json
 
 import numpy as np
 import pandas as pd
-
 from evidently.utils.types import ApproxValue
 
 _TYPES_MAPPING = (

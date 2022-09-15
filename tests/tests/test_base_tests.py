@@ -1,5 +1,4 @@
 import pytest
-
 from evidently.tests.base_test import TestValueCondition
 
 

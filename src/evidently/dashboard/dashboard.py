@@ -9,11 +9,15 @@ import shutil
 import uuid
 from dataclasses import asdict
 from enum import Enum
-from typing import Callable, Dict, List, Optional, Sequence, Tuple
-
-import pandas
+from typing import Callable
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Sequence
+from typing import Tuple
 
 import evidently
+import pandas
 from evidently.dashboard.tabs.base_tab import Tab
 from evidently.model.dashboard import DashboardInfo
 from evidently.pipeline.column_mapping import ColumnMapping

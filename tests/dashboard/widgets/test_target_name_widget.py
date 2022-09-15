@@ -1,12 +1,8 @@
 import pandas as pd
 import pytest
-
-from evidently.analyzers.classification_performance_analyzer import \
-    ClassificationPerformanceAnalyzer
-from evidently.analyzers.prob_classification_performance_analyzer import \
-    ProbClassificationPerformanceAnalyzer
-from evidently.analyzers.regression_performance_analyzer import \
-    RegressionPerformanceAnalyzer
+from evidently.analyzers.classification_performance_analyzer import ClassificationPerformanceAnalyzer
+from evidently.analyzers.prob_classification_performance_analyzer import ProbClassificationPerformanceAnalyzer
+from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceAnalyzer
 from evidently.dashboard.widgets.target_name_widget import TargetNameWidget
 from evidently.options import OptionsProvider
 from evidently.pipeline.column_mapping import ColumnMapping

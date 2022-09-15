@@ -1,7 +1,10 @@
 """Common methods for monitoring testing"""
 
 from collections import defaultdict
-from typing import Any, Dict, Generator, List
+from typing import Any
+from typing import Dict
+from typing import Generator
+from typing import List
 
 from evidently.model_monitoring.monitoring import MetricsType
 

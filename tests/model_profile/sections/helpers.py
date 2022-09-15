@@ -1,12 +1,12 @@
 """Common methods for testing sections"""
 import json
-from typing import Optional, Type
+from typing import Optional
+from typing import Type
 
 import pandas
-
-from evidently.model_profile.sections.base_profile_section import \
-    ProfileSection
-from evidently.options import DataDriftOptions, OptionsProvider
+from evidently.model_profile.sections.base_profile_section import ProfileSection
+from evidently.options import DataDriftOptions
+from evidently.options import OptionsProvider
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.utils import NumpyEncoder
 

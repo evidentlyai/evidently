@@ -2,9 +2,7 @@ from typing import Optional
 
 import pandas as pd
 import pytest
-
-from evidently.dashboard.widgets.prob_class_pred_distr_widget import \
-    ProbClassPredDistrWidget
+from evidently.dashboard.widgets.prob_class_pred_distr_widget import ProbClassPredDistrWidget
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import OptionsProvider
 from evidently.pipeline.column_mapping import ColumnMapping

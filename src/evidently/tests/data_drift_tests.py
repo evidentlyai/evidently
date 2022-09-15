@@ -1,19 +1,28 @@
 import dataclasses
 from abc import ABC
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Tuple
+from typing import Union
 
 import numpy as np
 import pandas as pd
-
 from evidently.metrics import DataDriftMetrics
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import DataDriftOptions
-from evidently.renderers.base_renderer import (DetailsInfo, TestHtmlInfo,
-                                               TestRenderer, default_renderer)
+from evidently.renderers.base_renderer import DetailsInfo
+from evidently.renderers.base_renderer import TestHtmlInfo
+from evidently.renderers.base_renderer import TestRenderer
+from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.render_utils import plot_distr
-from evidently.tests.base_test import (BaseCheckValueTest, BaseTestGenerator,
-                                       GroupData, GroupingTypes, Test,
-                                       TestResult, TestValueCondition)
+from evidently.tests.base_test import BaseCheckValueTest
+from evidently.tests.base_test import BaseTestGenerator
+from evidently.tests.base_test import GroupData
+from evidently.tests.base_test import GroupingTypes
+from evidently.tests.base_test import Test
+from evidently.tests.base_test import TestResult
+from evidently.tests.base_test import TestValueCondition
 from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.types import Numeric
 

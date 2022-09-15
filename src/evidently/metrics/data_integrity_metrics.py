@@ -3,15 +3,20 @@ import dataclasses
 import re
 from dataclasses import dataclass
 from itertools import combinations
-from typing import Any, Dict, List, Optional, Pattern
+from typing import Any
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Pattern
 
 import numpy as np
 import pandas as pd
-
-from evidently.metrics.base_metric import InputData, Metric
+from evidently.metrics.base_metric import InputData
+from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import (MetricHtmlInfo, MetricRenderer,
-                                               default_renderer)
+from evidently.renderers.base_renderer import MetricHtmlInfo
+from evidently.renderers.base_renderer import MetricRenderer
+from evidently.renderers.base_renderer import default_renderer
 
 
 @dataclass
