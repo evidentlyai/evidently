@@ -1,3 +1,4 @@
+from .data_drift.column_drift_metric import ColumnDriftMetric
 from .cat_target_drift_metrics import CatTargetDriftMetrics
 from .num_target_drift_metrics import NumTargetDriftMetrics
 from .data_integrity_metrics import DataIntegrityMetrics
