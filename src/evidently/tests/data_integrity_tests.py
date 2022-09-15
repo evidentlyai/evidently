@@ -22,7 +22,7 @@ from evidently.renderers.base_renderer import DetailsInfo
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.tests.base_test import BaseCheckValueTest
-from evidently.tests.base_test import BaseTestGenerator
+from evidently.utils.generators import BaseGenerator
 from evidently.tests.base_test import GroupingTypes
 from evidently.tests.base_test import GroupData
 from evidently.tests.base_test import Test
@@ -680,8 +680,8 @@ class TestColumnShareOfNulls(BaseIntegrityColumnNullValuesTest):
         )
 
 
-class TestAllColumnsShareOfNulls(BaseTestGenerator):
-    def generate_tests(self, columns_info: DatasetColumns) -> List[TestColumnShareOfNulls]:
+class TestAllColumnsShareOfNulls(BaseGenerator):
+    def generate(self, columns_info: DatasetColumns) -> List[TestColumnShareOfNulls]:
         return [TestColumnShareOfNulls(column_name=name) for name in columns_info.get_all_columns_list()]
 
 

@@ -22,7 +22,7 @@ from evidently.tests.base_test import BaseCheckValueTest
 from evidently.tests.base_test import GroupingTypes
 from evidently.tests.base_test import GroupData
 from evidently.tests.base_test import Test
-from evidently.tests.base_test import BaseTestGenerator
+from evidently.utils.generators import BaseGenerator
 from evidently.tests.base_test import TestResult
 from evidently.tests.base_test import TestValueCondition
 from evidently.tests.utils import approx
@@ -919,10 +919,10 @@ class TestMostCommonValueShareRenderer(TestRenderer):
         return info
 
 
-class TestAllColumnsMostCommonValueShare(BaseTestGenerator):
+class TestAllColumnsMostCommonValueShare(BaseGenerator):
     """Creates most common value share tests for each column in the dataset"""
 
-    def generate_tests(self, columns_info: DatasetColumns) -> List[TestMostCommonValueShare]:
+    def generate(self, columns_info: DatasetColumns) -> List[TestMostCommonValueShare]:
         return [TestMostCommonValueShare(column_name=name) for name in columns_info.get_all_columns_list()]
 
 
@@ -1049,10 +1049,10 @@ class TestMeanInNSigmasRenderer(TestRenderer):
         return info
 
 
-class TestNumColumnsMeanInNSigmas(BaseTestGenerator):
+class TestNumColumnsMeanInNSigmas(BaseGenerator):
     """Create tests of mean for all numeric columns"""
 
-    def generate_tests(self, columns_info: DatasetColumns) -> List[TestMeanInNSigmas]:
+    def generate(self, columns_info: DatasetColumns) -> List[TestMeanInNSigmas]:
         return [TestMeanInNSigmas(column_name=name, n_sigmas=2) for name in columns_info.num_feature_names]
 
 
@@ -1281,10 +1281,10 @@ class TestShareOfOutRangeValuesRenderer(TestRenderer):
         return info
 
 
-class TestNumColumnsOutOfRangeValues(BaseTestGenerator):
+class TestNumColumnsOutOfRangeValues(BaseGenerator):
     """Creates share of out of range values tests for all numeric columns"""
 
-    def generate_tests(self, columns_info: DatasetColumns) -> List[TestShareOfOutRangeValues]:
+    def generate(self, columns_info: DatasetColumns) -> List[TestShareOfOutRangeValues]:
         return [TestShareOfOutRangeValues(column_name=name) for name in columns_info.num_feature_names]
 
 
@@ -1441,10 +1441,10 @@ class TestShareOfOutListValues(BaseDataQualityValueListMetricsTest):
         )
 
 
-class TestCatColumnsOutOfListValues(BaseTestGenerator):
+class TestCatColumnsOutOfListValues(BaseGenerator):
     """Create share of out of list values tests for category columns"""
 
-    def generate_tests(self, columns_info: DatasetColumns) -> List[TestShareOfOutListValues]:
+    def generate(self, columns_info: DatasetColumns) -> List[TestShareOfOutListValues]:
         return [TestShareOfOutListValues(column_name=name) for name in columns_info.cat_feature_names]
 
 

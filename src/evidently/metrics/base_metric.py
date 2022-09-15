@@ -1,12 +1,18 @@
 import abc
 from dataclasses import dataclass
+from typing import Dict
 from typing import Generic
-from typing import TypeVar
 from typing import Optional
+from typing import Type
+from typing import TypeVar
+from typing import Union
 
 import pandas as pd
 
 from evidently.pipeline.column_mapping import ColumnMapping
+from evidently.utils.generators import make_generator_by_columns
+from evidently.utils.generators import BaseGenerator
+
 
 TResult = TypeVar("TResult")
 
@@ -49,3 +55,16 @@ class Metric(Generic[TResult]):
             else:
                 attributes.append(value)
         return tuple(attributes)
+
+
+def generate_column_metrics(
+    metric_class: Type[Metric],
+    columns: Optional[Union[str, list]] = None,
+    parameters: Optional[Dict] = None,
+) -> BaseGenerator:
+    """Function for generating metrics for columns"""
+    return make_generator_by_columns(
+        base_class=metric_class,
+        columns=columns,
+        parameters=parameters,
+    )
