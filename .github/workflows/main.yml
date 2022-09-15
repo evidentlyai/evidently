@@ -33,9 +33,9 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt && pip install -r dev_requirements.txt
       - name: Run Black
-        run: black --check --diff src
+        run: black --check --diff -l 120 -t py36 src
       - name: Run Black for Tests
-        run: black --check --diff tests
+        run: black --check --diff -l 120 -t py36 tests
       - name: Run iSort
         run: isort --check src
       - name: Run iSort for Tests
