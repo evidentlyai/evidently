@@ -1,15 +1,15 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-from typing import List
-from typing import Optional
-import pandas as pd
+from typing import List, Optional
+
 import numpy as np
+import pandas as pd
 
 from evidently import ColumnMapping
 from evidently.analyzers.data_quality_analyzer import DataQualityAnalyzer
-from evidently.model.widget import BaseWidgetInfo
 from evidently.dashboard.widgets.widget import Widget
+from evidently.model.widget import BaseWidgetInfo
 
 
 class DataQualitySummaryWidget(Widget):

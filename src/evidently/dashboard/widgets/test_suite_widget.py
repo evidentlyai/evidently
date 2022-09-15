@@ -5,7 +5,7 @@ import plotly.graph_objs as go
 
 from evidently import ColumnMapping
 from evidently.dashboard.widgets.widget import Widget
-from evidently.model.widget import BaseWidgetInfo, AdditionalGraphInfo
+from evidently.model.widget import AdditionalGraphInfo, BaseWidgetInfo
 
 
 class TestSuiteWidget(Widget):

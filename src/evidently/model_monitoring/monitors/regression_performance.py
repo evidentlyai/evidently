@@ -1,13 +1,10 @@
-from typing import List
-from typing import Type
-from typing import Generator
+from typing import Generator, List, Type
 
 from evidently.analyzers.base_analyzer import Analyzer
-from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceAnalyzer
-from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceMetrics
-from evidently.model_monitoring.monitoring import ModelMonitor
-from evidently.model_monitoring.monitoring import ModelMonitoringMetric
-from evidently.model_monitoring.monitoring import MetricsType
+from evidently.analyzers.regression_performance_analyzer import (
+    RegressionPerformanceAnalyzer, RegressionPerformanceMetrics)
+from evidently.model_monitoring.monitoring import (MetricsType, ModelMonitor,
+                                                   ModelMonitoringMetric)
 
 
 class RegressionPerformanceMonitorMetrics:

@@ -1,23 +1,15 @@
 from abc import ABC
-from typing import List
-from typing import Optional
-from typing import Union
+from typing import List, Optional, Union
 
-from evidently.model.widget import BaseWidgetInfo
 from evidently.metrics import RegressionPerformanceMetrics
-from evidently.renderers.base_renderer import default_renderer
-from evidently.renderers.base_renderer import TestRenderer
-from evidently.renderers.base_renderer import TestHtmlInfo
-from evidently.renderers.base_renderer import DetailsInfo
+from evidently.model.widget import BaseWidgetInfo
+from evidently.renderers.base_renderer import (DetailsInfo, TestHtmlInfo,
+                                               TestRenderer, default_renderer)
 from evidently.renderers.render_utils import plot_distr
-from evidently.tests.base_test import BaseCheckValueTest
-from evidently.tests.base_test import GroupingTypes
-from evidently.tests.base_test import GroupData
-from evidently.tests.base_test import TestValueCondition
-from evidently.tests.utils import plot_check
-from evidently.tests.utils import plot_metric_value
-from evidently.tests.utils import regression_perf_plot
-from evidently.tests.utils import approx
+from evidently.tests.base_test import (BaseCheckValueTest, GroupData,
+                                       GroupingTypes, TestValueCondition)
+from evidently.tests.utils import (approx, plot_check, plot_metric_value,
+                                   regression_perf_plot)
 from evidently.utils.types import Numeric
 
 REGRESSION_GROUP = GroupData("regression", "Regression", "")

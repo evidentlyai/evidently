@@ -4,7 +4,8 @@ from pandas import DataFrame
 from pytest import approx
 
 from evidently import ColumnMapping
-from evidently.analyzers.num_target_drift_analyzer import NumTargetDriftAnalyzer
+from evidently.analyzers.num_target_drift_analyzer import \
+    NumTargetDriftAnalyzer
 from evidently.options import DataDriftOptions, OptionsProvider
 
 

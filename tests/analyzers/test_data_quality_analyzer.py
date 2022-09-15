@@ -2,15 +2,14 @@ from datetime import datetime
 
 import numpy as np
 import pandas as pd
+import pytest
 
 from evidently import ColumnMapping
 from evidently.analyzers.data_quality_analyzer import DataQualityAnalyzer
 from evidently.calculations import data_quality
-from evidently.calculations.data_quality import calculate_data_quality_stats
-from evidently.calculations.data_quality import FeatureQualityStats
+from evidently.calculations.data_quality import (FeatureQualityStats,
+                                                 calculate_data_quality_stats)
 from evidently.utils.data_operations import process_columns
-
-import pytest
 
 
 @pytest.mark.parametrize(

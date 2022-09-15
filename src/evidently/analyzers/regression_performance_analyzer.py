@@ -1,17 +1,16 @@
 #!/usr/bin/env python
 # coding: utf-8
 import copy
+from dataclasses import dataclass
 from typing import Optional
 
-from dataclasses import dataclass
 import pandas as pd
 
 from evidently import ColumnMapping
-from evidently.analyzers.base_analyzer import Analyzer
-from evidently.analyzers.base_analyzer import BaseAnalyzerResult
+from evidently.analyzers.base_analyzer import Analyzer, BaseAnalyzerResult
+from evidently.calculations.regression_performance import (
+    RegressionPerformanceMetrics, calculate_regression_performance)
 from evidently.utils.data_operations import process_columns
-from evidently.calculations.regression_performance import calculate_regression_performance
-from evidently.calculations.regression_performance import RegressionPerformanceMetrics
 
 
 @dataclass

@@ -4,8 +4,10 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from evidently.utils.data_operations import process_columns, DatasetColumns, DatasetUtilityColumns
 from evidently.pipeline.column_mapping import ColumnMapping
+from evidently.utils.data_operations import (DatasetColumns,
+                                             DatasetUtilityColumns,
+                                             process_columns)
 
 
 @pytest.mark.parametrize(

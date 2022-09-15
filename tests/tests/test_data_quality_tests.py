@@ -1,33 +1,25 @@
 import json
 
 import pandas as pd
-
 import pytest
 from pytest import approx as pytest_approx
 
 from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.tests import TestConflictTarget
-from evidently.tests import TestConflictPrediction
-from evidently.tests import TestTargetPredictionCorrelation
-from evidently.tests import TestFeatureValueMin
-from evidently.tests import TestFeatureValueMax
-from evidently.tests import TestFeatureValueMean
-from evidently.tests import TestFeatureValueMedian
-from evidently.tests import TestFeatureValueStd
-from evidently.tests import TestNumberOfUniqueValues
-from evidently.tests import TestUniqueValuesShare
-from evidently.tests import TestMostCommonValueShare
-from evidently.tests import TestMeanInNSigmas
-from evidently.tests import TestValueRange
-from evidently.tests import TestNumberOfOutRangeValues
-from evidently.tests import TestShareOfOutRangeValues
-from evidently.tests import TestValueList
-from evidently.tests import TestNumberOfOutListValues
-from evidently.tests import TestShareOfOutListValues
-from evidently.tests import TestValueQuantile
-from evidently.tests import TestHighlyCorrelatedFeatures
-from evidently.tests import TestTargetFeaturesCorrelations
 from evidently.test_suite import TestSuite
+from evidently.tests import (TestConflictPrediction, TestConflictTarget,
+                             TestFeatureValueMax, TestFeatureValueMean,
+                             TestFeatureValueMedian, TestFeatureValueMin,
+                             TestFeatureValueStd, TestHighlyCorrelatedFeatures,
+                             TestMeanInNSigmas, TestMostCommonValueShare,
+                             TestNumberOfOutListValues,
+                             TestNumberOfOutRangeValues,
+                             TestNumberOfUniqueValues,
+                             TestShareOfOutListValues,
+                             TestShareOfOutRangeValues,
+                             TestTargetFeaturesCorrelations,
+                             TestTargetPredictionCorrelation,
+                             TestUniqueValuesShare, TestValueList,
+                             TestValueQuantile, TestValueRange)
 from evidently.tests.base_test import TestResult
 from evidently.tests.utils import approx
 

@@ -1,14 +1,16 @@
 #!/usr/bin/env python
 # coding: utf-8
 from evidently.dashboard.tabs.base_tab import Tab, Verbose
-from evidently.dashboard.widgets.target_name_widget import TargetNameWidget
-from evidently.dashboard.widgets.class_quality_metrics_bar_widget import ClassQualityMetricsBarWidget
+from evidently.dashboard.widgets.class_conf_matrix_widget import \
+    ClassConfMatrixWidget
+from evidently.dashboard.widgets.class_confusion_based_feature_distr_table_widget import \
+    ClassConfusionBasedFeatureDistrTable
+from evidently.dashboard.widgets.class_metrics_matrix_widget import \
+    ClassMetricsMatrixWidget
+from evidently.dashboard.widgets.class_quality_metrics_bar_widget import \
+    ClassQualityMetricsBarWidget
 from evidently.dashboard.widgets.class_support_widget import ClassSupportWidget
-from evidently.dashboard.widgets.class_conf_matrix_widget import ClassConfMatrixWidget
-from evidently.dashboard.widgets.class_metrics_matrix_widget import ClassMetricsMatrixWidget
-from evidently.dashboard.widgets.class_confusion_based_feature_distr_table_widget import (
-    ClassConfusionBasedFeatureDistrTable,
-)
+from evidently.dashboard.widgets.target_name_widget import TargetNameWidget
 
 
 class ClassificationPerformanceTab(Tab):

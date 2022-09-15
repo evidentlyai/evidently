@@ -6,8 +6,8 @@ import pandas as pd
 from plotly import graph_objs as go
 
 from evidently import ColumnMapping
-from evidently.model.widget import BaseWidgetInfo, AdditionalGraphInfo, Insight
 from evidently.dashboard.widgets.widget import Widget
+from evidently.model.widget import AdditionalGraphInfo, BaseWidgetInfo, Insight
 
 
 class ExpandableListWidget(Widget):

@@ -1,6 +1,6 @@
 import dataclasses
 import random
-from typing import Callable, Union, Optional, List
+from typing import Callable, List, Optional, Union
 
 import pandas as pd
 

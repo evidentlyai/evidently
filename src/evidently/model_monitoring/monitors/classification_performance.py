@@ -1,11 +1,10 @@
 from typing import Generator
 
 import evidently.utils.data_operations
-from evidently.analyzers.classification_performance_analyzer import ClassificationPerformanceAnalyzer
-from evidently.analyzers.classification_performance_analyzer import ClassificationPerformanceMetrics
-from evidently.model_monitoring.monitoring import MetricsType
-from evidently.model_monitoring.monitoring import ModelMonitor
-from evidently.model_monitoring.monitoring import ModelMonitoringMetric
+from evidently.analyzers.classification_performance_analyzer import (
+    ClassificationPerformanceAnalyzer, ClassificationPerformanceMetrics)
+from evidently.model_monitoring.monitoring import (MetricsType, ModelMonitor,
+                                                   ModelMonitoringMetric)
 
 
 class ClassificationPerformanceMonitorMetricsMonitor:

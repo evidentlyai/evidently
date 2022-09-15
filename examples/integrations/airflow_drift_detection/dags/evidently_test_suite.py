@@ -1,12 +1,12 @@
 try:
+    import os
+    from datetime import datetime, timedelta
+
+    import numpy as np
+    import pandas as pd
     from airflow import DAG
     from airflow.operators.python_operator import PythonOperator
-
-    from datetime import datetime, timedelta
-    import pandas as pd
-    import numpy as np
     from sklearn.datasets import fetch_openml
-    import os
 
     from evidently import ColumnMapping
     from evidently.test_suite import TestSuite

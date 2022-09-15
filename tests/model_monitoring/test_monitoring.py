@@ -1,22 +1,19 @@
 """Test common-cases with different dataset types and a few monitors"""
 
 from typing import ClassVar
-import pandas as pd
 
+import pandas as pd
 import pytest
 
-from evidently.model_monitoring import ModelMonitoring
-from evidently.model_monitoring import DataDriftMonitor
-from evidently.model_monitoring import CatTargetDriftMonitor
-from evidently.model_monitoring import NumTargetDriftMonitor
-from evidently.model_monitoring import RegressionPerformanceMonitor
-from evidently.model_monitoring import ClassificationPerformanceMonitor
-from evidently.model_monitoring import ProbClassificationPerformanceMonitor
-from evidently.model_monitoring import DataQualityMonitor
-from evidently.model_monitoring.monitoring import ModelMonitoringMetric
-from evidently.model_monitoring.monitoring import ModelMonitor
+from evidently.model_monitoring import (CatTargetDriftMonitor,
+                                        ClassificationPerformanceMonitor,
+                                        DataDriftMonitor, DataQualityMonitor,
+                                        ModelMonitoring, NumTargetDriftMonitor,
+                                        ProbClassificationPerformanceMonitor,
+                                        RegressionPerformanceMonitor)
+from evidently.model_monitoring.monitoring import (ModelMonitor,
+                                                   ModelMonitoringMetric)
 from evidently.pipeline.column_mapping import ColumnMapping
-
 from tests.model_monitoring.helpers import collect_metrics_results
 
 
@@ -78,7 +75,7 @@ def test_model_monitoring_with_simple_data():
     assert "classification_performance:class_quality" in result
     assert "classification_performance:confusion" in result
     assert "data_quality:quality_stat" in result
-    
+
 
 def test_data_drift_monitoring_labels_with_simple_data():
     reference_data = pd.DataFrame(
@@ -120,9 +117,9 @@ def test_data_drift_monitoring_labels_with_simple_data():
 
     data_drift_value = result["data_drift:value"]
     for e in data_drift_value:
-        assert 'stat_test' in e['labels']
-        assert 'feature' in e['labels']
-        assert 'feature_type' in e['labels']
+        assert "stat_test" in e["labels"]
+        assert "feature" in e["labels"]
+        assert "feature_type" in e["labels"]
 
 
 def test_metric_creation_with_incorrect_labels():

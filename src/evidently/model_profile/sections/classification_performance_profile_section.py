@@ -1,8 +1,9 @@
 from datetime import datetime
 
-from evidently.analyzers.classification_performance_analyzer import ClassificationPerformanceAnalyzer
-from evidently.analyzers.classification_performance_analyzer import ClassificationPerformanceMetrics
-from evidently.model_profile.sections.base_profile_section import ProfileSection
+from evidently.analyzers.classification_performance_analyzer import (
+    ClassificationPerformanceAnalyzer, ClassificationPerformanceMetrics)
+from evidently.model_profile.sections.base_profile_section import \
+    ProfileSection
 
 
 class ClassificationPerformanceProfileSection(ProfileSection):

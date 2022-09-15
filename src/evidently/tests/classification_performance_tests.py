@@ -1,23 +1,20 @@
 import abc
 from abc import ABC
-from typing import Optional, List, Union, Any
+from typing import Any, List, Optional, Union
 
 from evidently.metrics.base_metric import Metric
-from evidently.metrics.classification_performance_metrics import ClassificationPerformanceMetrics
-from evidently.metrics.classification_performance_metrics import ClassificationPerformanceResults
-from evidently.metrics.classification_performance_metrics import ClassificationPerformanceMetricsTopK
-from evidently.metrics.classification_performance_metrics import ClassificationPerformanceMetricsThreshold
-from evidently.metrics.classification_performance_metrics import DatasetClassificationPerformanceMetrics
+from evidently.metrics.classification_performance_metrics import (
+    ClassificationPerformanceMetrics,
+    ClassificationPerformanceMetricsThreshold,
+    ClassificationPerformanceMetricsTopK, ClassificationPerformanceResults,
+    DatasetClassificationPerformanceMetrics)
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import default_renderer
-from evidently.renderers.base_renderer import TestRenderer
-from evidently.renderers.base_renderer import TestHtmlInfo
-from evidently.renderers.base_renderer import DetailsInfo
-from evidently.tests.base_test import BaseCheckValueTest
-from evidently.tests.base_test import GroupingTypes
-from evidently.tests.base_test import GroupData
-from evidently.tests.base_test import TestValueCondition
-from evidently.tests.utils import approx, plot_boxes, plot_conf_mtrx, plot_rates, plot_roc_auc
+from evidently.renderers.base_renderer import (DetailsInfo, TestHtmlInfo,
+                                               TestRenderer, default_renderer)
+from evidently.tests.base_test import (BaseCheckValueTest, GroupData,
+                                       GroupingTypes, TestValueCondition)
+from evidently.tests.utils import (approx, plot_boxes, plot_conf_mtrx,
+                                   plot_rates, plot_roc_auc)
 from evidently.utils.types import Numeric
 
 CLASSIFICATION_GROUP = GroupData("classification", "Classification", "")

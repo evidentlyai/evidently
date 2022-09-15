@@ -1,6 +1,7 @@
 import pandas as pd
 
-from evidently.dashboard.widgets.expandable_list_widget import ExpandableListWidget
+from evidently.dashboard.widgets.expandable_list_widget import \
+    ExpandableListWidget
 from evidently.pipeline.column_mapping import ColumnMapping
 
 

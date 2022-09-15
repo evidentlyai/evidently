@@ -1,8 +1,8 @@
+import pandas
 import pytest
 
-import pandas
-
-from evidently.model_profile.sections.base_profile_section import ProfileSection
+from evidently.model_profile.sections.base_profile_section import \
+    ProfileSection
 from evidently.pipeline.column_mapping import ColumnMapping
 
 

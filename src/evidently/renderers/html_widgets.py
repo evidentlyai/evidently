@@ -1,8 +1,5 @@
-from typing import List
-from typing import Optional
-from typing import Union
-
 import dataclasses
+from typing import List, Optional, Union
 
 import plotly.graph_objs as go
 

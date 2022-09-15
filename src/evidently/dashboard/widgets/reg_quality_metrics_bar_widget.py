@@ -5,9 +5,10 @@ from typing import Optional
 import pandas as pd
 
 from evidently import ColumnMapping
-from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceAnalyzer
-from evidently.model.widget import BaseWidgetInfo
+from evidently.analyzers.regression_performance_analyzer import \
+    RegressionPerformanceAnalyzer
 from evidently.dashboard.widgets.widget import Widget
+from evidently.model.widget import BaseWidgetInfo
 
 
 class RegQualityMetricsBarWidget(Widget):

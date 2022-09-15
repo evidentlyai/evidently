@@ -32,8 +32,14 @@ jobs:
       # Runs a single command using the runners shell
       - name: Install dependencies
         run: pip install -r requirements.txt && pip install -r dev_requirements.txt
+      - name: Run Black
+        run: black --check .
+      - name: Run iSort
+        run: isort --check .
       - name: Run Flake8
-        run: flake8 src/evidently
+        run: flake8 src
+      - name: Run Flake8 for Tests
+        run: flake8 tests
       - name: Run Mypy
         run: mypy
   test:

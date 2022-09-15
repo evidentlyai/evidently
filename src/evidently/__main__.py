@@ -3,19 +3,19 @@ import json
 import logging
 import os
 import sys
-from typing import Dict, Any
-
 from dataclasses import dataclass
+from typing import Any, Dict
 
 import yaml
 
+from evidently._config import TELEMETRY_ADDRESS, TELEMETRY_ENABLED
 from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.telemetry import TelemetrySender
-from evidently.runner.dashboard_runner import DashboardRunnerOptions, DashboardRunner
+from evidently.runner.dashboard_runner import (DashboardRunner,
+                                               DashboardRunnerOptions)
 from evidently.runner.loader import SamplingOptions
 from evidently.runner.profile_runner import ProfileRunner, ProfileRunnerOptions
 from evidently.runner.runner import DataOptions, parse_options
-from evidently._config import TELEMETRY_ENABLED, TELEMETRY_ADDRESS
+from evidently.telemetry import TelemetrySender
 
 
 @dataclass

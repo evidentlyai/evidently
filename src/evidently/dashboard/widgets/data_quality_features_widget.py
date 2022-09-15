@@ -1,22 +1,19 @@
 #!/usr/bin/env python
 # coding: utf-8
 import json
-from typing import List
-from typing import Optional
-from typing import Tuple
-import pandas as pd
-import numpy as np
+from typing import List, Optional, Tuple
 
+import numpy as np
+import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 from evidently import ColumnMapping
-from evidently.analyzers.data_quality_analyzer import DataQualityAnalyzer
-from evidently.analyzers.data_quality_analyzer import DataQualityAnalyzerResults
+from evidently.analyzers.data_quality_analyzer import (
+    DataQualityAnalyzer, DataQualityAnalyzerResults)
 from evidently.calculations.data_quality import FeatureQualityStats
-from evidently.model.widget import AdditionalGraphInfo
-from evidently.model.widget import BaseWidgetInfo
 from evidently.dashboard.widgets.widget import Widget
+from evidently.model.widget import AdditionalGraphInfo, BaseWidgetInfo
 from evidently.options import ColorOptions
 
 

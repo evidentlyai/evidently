@@ -1,8 +1,6 @@
 import abc
 from dataclasses import dataclass
-from typing import Generic
-from typing import TypeVar
-from typing import Optional
+from typing import Generic, Optional, TypeVar
 
 import pandas as pd
 

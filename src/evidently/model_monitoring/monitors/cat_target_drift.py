@@ -1,9 +1,9 @@
 from typing import Generator
 
-from evidently.analyzers.cat_target_drift_analyzer import CatTargetDriftAnalyzer
-from evidently.model_monitoring.monitoring import MetricsType
-from evidently.model_monitoring.monitoring import ModelMonitor
-from evidently.model_monitoring.monitoring import ModelMonitoringMetric
+from evidently.analyzers.cat_target_drift_analyzer import \
+    CatTargetDriftAnalyzer
+from evidently.model_monitoring.monitoring import (MetricsType, ModelMonitor,
+                                                   ModelMonitoringMetric)
 
 
 class CatTargetDriftMonitorMetrics:

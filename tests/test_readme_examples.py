@@ -1,29 +1,23 @@
 import json
 from typing import List
 
-import pytest
-import pandas as pd
 import numpy as np
+import pandas as pd
+import pytest
 from sklearn import datasets
-
 
 from evidently import ColumnMapping
 from evidently.dashboard import Dashboard
+from evidently.dashboard.tabs import (CatTargetDriftTab,
+                                      ClassificationPerformanceTab,
+                                      DataDriftTab,
+                                      ProbClassificationPerformanceTab,
+                                      RegressionPerformanceTab)
 from evidently.model_profile import Profile
 from evidently.model_profile.sections import (
-    DataDriftProfileSection,
-    CatTargetDriftProfileSection,
-    RegressionPerformanceProfileSection,
-    ClassificationPerformanceProfileSection,
-    ProbClassificationPerformanceProfileSection,
-)
-from evidently.dashboard.tabs import (
-    DataDriftTab,
-    RegressionPerformanceTab,
-    CatTargetDriftTab,
-    ClassificationPerformanceTab,
-    ProbClassificationPerformanceTab,
-)
+    CatTargetDriftProfileSection, ClassificationPerformanceProfileSection,
+    DataDriftProfileSection, ProbClassificationPerformanceProfileSection,
+    RegressionPerformanceProfileSection)
 
 
 def _get_iris():

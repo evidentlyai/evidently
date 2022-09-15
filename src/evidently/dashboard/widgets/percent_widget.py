@@ -4,7 +4,8 @@ import pandas as pd
 
 from evidently import ColumnMapping
 from evidently.dashboard.widgets.widget import Widget
-from evidently.model.widget import BaseWidgetInfo, AlertStats, Insight, TriggeredAlertStats, Alert
+from evidently.model.widget import (Alert, AlertStats, BaseWidgetInfo, Insight,
+                                    TriggeredAlertStats)
 
 
 class PercentWidget(Widget):

@@ -1,14 +1,15 @@
 from typing import Optional
 
 import pandas as pd
-
 import pytest
 
-from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceAnalyzer
+from evidently.analyzers.regression_performance_analyzer import \
+    RegressionPerformanceAnalyzer
+from evidently.dashboard.widgets.reg_pred_and_actual_in_time_widget import \
+    RegPredActualTimeWidget
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import OptionsProvider
 from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.dashboard.widgets.reg_pred_and_actual_in_time_widget import RegPredActualTimeWidget
 
 
 @pytest.fixture

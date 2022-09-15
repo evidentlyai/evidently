@@ -4,19 +4,19 @@
 import json
 from typing import Optional
 
-import pandas as pd
 import numpy as np
-import plotly.graph_objs as go
+import pandas as pd
 import plotly.express as px
+import plotly.graph_objs as go
 from plotly.subplots import make_subplots
 
 from evidently import ColumnMapping
-from evidently.analyzers.prob_classification_performance_analyzer import ProbClassificationPerformanceAnalyzer
-from evidently.model.widget import BaseWidgetInfo, AdditionalGraphInfo
-from evidently.dashboard.widgets.widget import Widget
+from evidently.analyzers.prob_classification_performance_analyzer import \
+    ProbClassificationPerformanceAnalyzer
 from evidently.dashboard.widgets.utils import CutQuantileTransformer
-from evidently.options import ColorOptions
-from evidently.options import QualityMetricsOptions
+from evidently.dashboard.widgets.widget import Widget
+from evidently.model.widget import AdditionalGraphInfo, BaseWidgetInfo
+from evidently.options import ColorOptions, QualityMetricsOptions
 
 
 class ProbClassConfusionBasedFeatureDistrTable(Widget):

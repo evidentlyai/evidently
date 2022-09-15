@@ -1,17 +1,15 @@
-from typing import Any
-from typing import Dict
+from typing import Any, Dict
 
 import pandas
 import pytest
 
-from evidently.model_profile.sections.prob_classification_performance_profile_section import (
-    ProbClassificationPerformanceProfileSection,
-)
+from evidently.model_profile.sections.prob_classification_performance_profile_section import \
+    ProbClassificationPerformanceProfileSection
 from evidently.pipeline.column_mapping import ColumnMapping
 
-from .helpers import calculate_section_results
-from .helpers import check_profile_section_result_common_part
-from .helpers import check_section_without_calculation_results
+from .helpers import (calculate_section_results,
+                      check_profile_section_result_common_part,
+                      check_section_without_calculation_results)
 
 
 def check_prob_classification_performance_metrics_dict(metrics: Dict[str, Any]) -> None:

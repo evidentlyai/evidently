@@ -1,8 +1,9 @@
 from datetime import datetime
 
-from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceAnalyzer
-from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceMetrics
-from evidently.model_profile.sections.base_profile_section import ProfileSection
+from evidently.analyzers.regression_performance_analyzer import (
+    RegressionPerformanceAnalyzer, RegressionPerformanceMetrics)
+from evidently.model_profile.sections.base_profile_section import \
+    ProfileSection
 
 
 class RegressionPerformanceProfileSection(ProfileSection):

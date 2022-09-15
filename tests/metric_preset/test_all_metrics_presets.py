@@ -1,11 +1,8 @@
 import pandas as pd
-
 import pytest
 
-from evidently.metric_preset import ClassificationPerformance
-from evidently.metric_preset import DataDrift
-from evidently.metric_preset import DataQuality
-from evidently.metric_preset import RegressionPerformance
+from evidently.metric_preset import (ClassificationPerformance, DataDrift,
+                                     DataQuality, RegressionPerformance)
 from evidently.metric_preset.metric_preset import MetricPreset
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.report import Report

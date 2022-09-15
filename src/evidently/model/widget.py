@@ -3,11 +3,7 @@
 # pylint: disable=invalid-name
 
 from dataclasses import dataclass
-from typing import Any
-from typing import Iterable
-from typing import List
-from typing import Optional
-from typing import Union
+from typing import Any, Iterable, List, Optional, Union
 
 
 @dataclass()

@@ -1,16 +1,14 @@
-from typing import Dict, List
-from typing import Optional
+from typing import Dict, List, Optional
 
 import numpy as np
 import pandas as pd
-from pandas.api.types import is_numeric_dtype
-
 import plotly.graph_objs as go
+from pandas.api.types import is_numeric_dtype
 from plotly.subplots import make_subplots
 
-from evidently.renderers.render_utils import RED, GREY, COLOR_DISCRETE_SEQUENCE
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import DetailsInfo
+from evidently.renderers.render_utils import COLOR_DISCRETE_SEQUENCE, GREY, RED
 from evidently.utils.types import ApproxValue
 
 

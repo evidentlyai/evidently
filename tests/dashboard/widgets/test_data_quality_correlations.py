@@ -2,14 +2,14 @@ from datetime import datetime
 
 import numpy as np
 import pandas as pd
-
 import pytest
 
 from evidently.analyzers.data_quality_analyzer import DataQualityAnalyzer
+from evidently.dashboard.widgets.data_quality_correlations import \
+    DataQualityCorrelationsWidget
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import OptionsProvider
 from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.dashboard.widgets.data_quality_correlations import DataQualityCorrelationsWidget
 
 
 @pytest.fixture

@@ -1,9 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 from evidently.dashboard.tabs.base_tab import Tab, Verbose
-from evidently.dashboard.widgets.cat_output_drift_widget import CatOutputDriftWidget
-from evidently.dashboard.widgets.cat_target_pred_feature_table_widget import CatTargetPredFeatureTable
-from evidently.dashboard.widgets.prob_class_pred_distr_widget import ProbClassPredDistrWidget
+from evidently.dashboard.widgets.cat_output_drift_widget import \
+    CatOutputDriftWidget
+from evidently.dashboard.widgets.cat_target_pred_feature_table_widget import \
+    CatTargetPredFeatureTable
+from evidently.dashboard.widgets.prob_class_pred_distr_widget import \
+    ProbClassPredDistrWidget
 
 
 class CatTargetDriftTab(Tab):

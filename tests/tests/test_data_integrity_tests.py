@@ -3,32 +3,25 @@ from datetime import datetime
 
 import numpy as np
 import pandas as pd
-
 import pytest
 
 from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.tests import TestNumberOfColumns
-from evidently.tests import TestNumberOfRows
-from evidently.tests import TestNumberOfConstantColumns
-from evidently.tests import TestNumberOfEmptyRows
-from evidently.tests import TestNumberOfEmptyColumns
-from evidently.tests import TestNumberOfDuplicatedRows
-from evidently.tests import TestNumberOfDuplicatedColumns
-from evidently.tests import TestColumnsType
-from evidently.tests import TestColumnAllConstantValues
-from evidently.tests import TestColumnAllUniqueValues
-from evidently.tests import TestColumnValueRegExp
-from evidently.tests import TestNumberOfNulls
-from evidently.tests import TestShareOfNulls
-from evidently.tests import TestColumnNumberOfDifferentNulls
-from evidently.tests import TestColumnNumberOfNulls
-from evidently.tests import TestColumnShareOfNulls
-from evidently.tests import TestNumberOfDifferentNulls
-from evidently.tests import TestNumberOfColumnsWithNulls
-from evidently.tests import TestShareOfColumnsWithNulls
-from evidently.tests import TestNumberOfRowsWithNulls
-from evidently.tests import TestShareOfRowsWithNulls
 from evidently.test_suite import TestSuite
+from evidently.tests import (TestColumnAllConstantValues,
+                             TestColumnAllUniqueValues,
+                             TestColumnNumberOfDifferentNulls,
+                             TestColumnNumberOfNulls, TestColumnShareOfNulls,
+                             TestColumnsType, TestColumnValueRegExp,
+                             TestNumberOfColumns, TestNumberOfColumnsWithNulls,
+                             TestNumberOfConstantColumns,
+                             TestNumberOfDifferentNulls,
+                             TestNumberOfDuplicatedColumns,
+                             TestNumberOfDuplicatedRows,
+                             TestNumberOfEmptyColumns, TestNumberOfEmptyRows,
+                             TestNumberOfNulls, TestNumberOfRows,
+                             TestNumberOfRowsWithNulls,
+                             TestShareOfColumnsWithNulls, TestShareOfNulls,
+                             TestShareOfRowsWithNulls)
 
 
 def test_data_integrity_test_number_of_columns() -> None:

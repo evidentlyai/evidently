@@ -1,11 +1,12 @@
 import pandas
 
 from evidently import ColumnMapping
-from evidently.model_profile.sections.data_drift_profile_section import DataDriftProfileSection
+from evidently.model_profile.sections.data_drift_profile_section import \
+    DataDriftProfileSection
 
-from .helpers import calculate_section_results
-from .helpers import check_profile_section_result_common_part
-from .helpers import check_section_without_calculation_results
+from .helpers import (calculate_section_results,
+                      check_profile_section_result_common_part,
+                      check_section_without_calculation_results)
 
 
 def _check_feature_metrics(feature_metric: dict, feature_type: str):

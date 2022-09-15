@@ -1,7 +1,7 @@
 import abc
 import functools
 import logging
-from typing import List, Tuple, Type, Dict
+from typing import Dict, List, Tuple, Type
 
 from evidently.metrics.base_metric import Metric
 from evidently.tests.base_test import Test

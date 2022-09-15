@@ -1,17 +1,15 @@
-from typing import List
-from typing import Optional
+from typing import List, Optional
 
-from evidently.utils.data_operations import DatasetColumns
 from evidently.metrics.base_metric import InputData
 from evidently.test_preset.test_preset import TestPreset
-from evidently.tests import TestFeatureValueDrift
-from evidently.tests import TestShareOfDriftedFeatures
-from evidently.tests import TestAllColumnsShareOfNulls
-from evidently.tests import TestNumColumnsOutOfRangeValues
-from evidently.tests import TestCatColumnsOutOfListValues
-from evidently.tests import TestNumColumnsMeanInNSigmas
-from evidently.tests import TestCustomFeaturesValueDrift
-from evidently.tests import TestColumnsType
+from evidently.tests import (TestAllColumnsShareOfNulls,
+                             TestCatColumnsOutOfListValues, TestColumnsType,
+                             TestCustomFeaturesValueDrift,
+                             TestFeatureValueDrift,
+                             TestNumColumnsMeanInNSigmas,
+                             TestNumColumnsOutOfRangeValues,
+                             TestShareOfDriftedFeatures)
+from evidently.utils.data_operations import DatasetColumns
 
 
 class NoTargetPerformance(TestPreset):

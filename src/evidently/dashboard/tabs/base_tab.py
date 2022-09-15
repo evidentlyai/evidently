@@ -1,15 +1,14 @@
 #!/usr/bin/env python
 # coding: utf-8
-from typing import List, Dict, Type, Optional, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Type, Union
 
 import pandas
 
 from evidently.analyzers.base_analyzer import Analyzer
+from evidently.dashboard.widgets.widget import Widget
 from evidently.model.widget import BaseWidgetInfo
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.pipeline.stage import PipelineStage
-from evidently.dashboard.widgets.widget import Widget
-
 
 VerboseLevel = int
 

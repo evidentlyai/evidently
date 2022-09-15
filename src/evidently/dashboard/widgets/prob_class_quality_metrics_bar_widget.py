@@ -5,9 +5,10 @@ from typing import Optional
 import pandas as pd
 
 from evidently import ColumnMapping
-from evidently.analyzers.prob_classification_performance_analyzer import ProbClassificationPerformanceAnalyzer
-from evidently.model.widget import BaseWidgetInfo
+from evidently.analyzers.prob_classification_performance_analyzer import \
+    ProbClassificationPerformanceAnalyzer
 from evidently.dashboard.widgets.widget import Widget
+from evidently.model.widget import BaseWidgetInfo
 
 
 class ProbClassQualityMetricBarWidget(Widget):

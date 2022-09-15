@@ -1,23 +1,20 @@
 #!/usr/bin/env python
 # coding: utf-8
-from typing import Optional, List
+from typing import List, Optional
 
-import pandas as pd
 import numpy as np
-
+import pandas as pd
 import plotly.graph_objs as go
 
 from evidently import ColumnMapping
 from evidently.analyzers.data_drift_analyzer import DataDriftAnalyzer
 from evidently.calculations.data_drift import DataDriftAnalyzerFeatureMetrics
-from evidently.model.widget import AdditionalGraphInfo
-from evidently.model.widget import BaseWidgetInfo
+from evidently.dashboard.widgets.utils import (CutQuantileTransformer,
+                                               fig_to_json)
 from evidently.dashboard.widgets.widget import Widget
-from evidently.dashboard.widgets.utils import fig_to_json
-from evidently.dashboard.widgets.utils import CutQuantileTransformer
-from evidently.options import ColorOptions
-from evidently.options import DataDriftOptions
-from evidently.options import QualityMetricsOptions
+from evidently.model.widget import AdditionalGraphInfo, BaseWidgetInfo
+from evidently.options import (ColorOptions, DataDriftOptions,
+                               QualityMetricsOptions)
 
 
 def _generate_feature_params(name: str, data: DataDriftAnalyzerFeatureMetrics) -> dict:

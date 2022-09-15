@@ -2,17 +2,27 @@
 # coding: utf-8
 
 from evidently.dashboard.tabs.base_tab import Tab, Verbose
+from evidently.dashboard.widgets.reg_abs_perc_error_in_time_widget import \
+    RegAbsPercErrorTimeWidget
+from evidently.dashboard.widgets.reg_colored_pred_vs_actual_widget import \
+    RegColoredPredActualWidget
+from evidently.dashboard.widgets.reg_error_distr_widget import \
+    RegErrorDistrWidget
+from evidently.dashboard.widgets.reg_error_in_time_widget import \
+    RegErrorTimeWidget
+from evidently.dashboard.widgets.reg_error_normality_widget import \
+    RegErrorNormalityWidget
+from evidently.dashboard.widgets.reg_pred_and_actual_in_time_widget import \
+    RegPredActualTimeWidget
+from evidently.dashboard.widgets.reg_pred_vs_actual_widget import \
+    RegPredActualWidget
+from evidently.dashboard.widgets.reg_quality_metrics_bar_widget import \
+    RegQualityMetricsBarWidget
+from evidently.dashboard.widgets.reg_underperform_metrics_widget import \
+    RegUnderperformMetricsWidget
+from evidently.dashboard.widgets.reg_underperform_segments_table_widget import \
+    UnderperformSegmTableWidget
 from evidently.dashboard.widgets.target_name_widget import TargetNameWidget
-from evidently.dashboard.widgets.reg_quality_metrics_bar_widget import RegQualityMetricsBarWidget
-from evidently.dashboard.widgets.reg_pred_vs_actual_widget import RegPredActualWidget
-from evidently.dashboard.widgets.reg_pred_and_actual_in_time_widget import RegPredActualTimeWidget
-from evidently.dashboard.widgets.reg_error_in_time_widget import RegErrorTimeWidget
-from evidently.dashboard.widgets.reg_abs_perc_error_in_time_widget import RegAbsPercErrorTimeWidget
-from evidently.dashboard.widgets.reg_error_distr_widget import RegErrorDistrWidget
-from evidently.dashboard.widgets.reg_error_normality_widget import RegErrorNormalityWidget
-from evidently.dashboard.widgets.reg_underperform_metrics_widget import RegUnderperformMetricsWidget
-from evidently.dashboard.widgets.reg_colored_pred_vs_actual_widget import RegColoredPredActualWidget
-from evidently.dashboard.widgets.reg_underperform_segments_table_widget import UnderperformSegmTableWidget
 
 
 class RegressionPerformanceTab(Tab):

@@ -1,6 +1,5 @@
-from typing import List, Union, Callable, Tuple, Dict, Optional
-
 import dataclasses
+from typing import Callable, Dict, List, Optional, Tuple, Union
 
 import pandas as pd
 

@@ -1,21 +1,16 @@
-import typing
-from typing import List
-from typing import Optional
-
 import dataclasses
-import numpy as np
+import typing
+from typing import List, Optional
 
+import numpy as np
 from plotly import figure_factory as ff
 
-from evidently.metrics.base_metric import InputData
-from evidently.metrics.base_metric import Metric
+from evidently.metrics.base_metric import InputData, Metric
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import ColorOptions
-from evidently.renderers.base_renderer import MetricHtmlInfo
-from evidently.renderers.base_renderer import MetricRenderer
-from evidently.renderers.base_renderer import default_renderer
-from evidently.utils.data_operations import DatasetColumns
-from evidently.utils.data_operations import process_columns
+from evidently.renderers.base_renderer import (MetricHtmlInfo, MetricRenderer,
+                                               default_renderer)
+from evidently.utils.data_operations import DatasetColumns, process_columns
 
 
 @dataclasses.dataclass

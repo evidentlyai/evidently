@@ -1,22 +1,16 @@
 import dataclasses
 import uuid
 from datetime import datetime
-from typing import List
-from typing import Optional
-from typing import Union
+from typing import List, Optional, Union
 
 import pandas as pd
 
 from evidently import ColumnMapping
 from evidently.metric_preset.metric_preset import MetricPreset
-from evidently.metrics.base_metric import InputData
-from evidently.metrics.base_metric import Metric
+from evidently.metrics.base_metric import InputData, Metric
 from evidently.model.dashboard import DashboardInfo
-from evidently.suite.base_suite import Display
-from evidently.suite.base_suite import Suite
-from evidently.suite.base_suite import find_metric_renderer
-from evidently.utils.data_operations import DatasetColumns
-from evidently.utils.data_operations import process_columns
+from evidently.suite.base_suite import Display, Suite, find_metric_renderer
+from evidently.utils.data_operations import DatasetColumns, process_columns
 
 
 class Report(Display):

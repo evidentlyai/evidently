@@ -5,14 +5,13 @@ import pytest
 
 from evidently import ColumnMapping
 from evidently.model_profile import Profile
-from evidently.model_profile.sections import DataDriftProfileSection
-from evidently.model_profile.sections import CatTargetDriftProfileSection
-from evidently.model_profile.sections import NumTargetDriftProfileSection
-from evidently.model_profile.sections import ClassificationPerformanceProfileSection
-from evidently.model_profile.sections import ProbClassificationPerformanceProfileSection
-from evidently.model_profile.sections import RegressionPerformanceProfileSection
-from evidently.model_profile.sections import DataQualityProfileSection
-from evidently.model_profile.sections.base_profile_section import ProfileSection
+from evidently.model_profile.sections import (
+    CatTargetDriftProfileSection, ClassificationPerformanceProfileSection,
+    DataDriftProfileSection, DataQualityProfileSection,
+    NumTargetDriftProfileSection, ProbClassificationPerformanceProfileSection,
+    RegressionPerformanceProfileSection)
+from evidently.model_profile.sections.base_profile_section import \
+    ProfileSection
 
 
 @pytest.mark.parametrize(

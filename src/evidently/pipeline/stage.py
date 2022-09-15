@@ -1,5 +1,5 @@
 import abc
-from typing import Type, Dict, Set, Iterable, Any
+from typing import Any, Dict, Iterable, Set, Type
 
 import pandas
 

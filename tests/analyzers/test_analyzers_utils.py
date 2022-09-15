@@ -1,8 +1,8 @@
 import pandas
 import pytest
 
-from evidently.utils.data_operations import process_columns
 from evidently.pipeline.column_mapping import ColumnMapping
+from evidently.utils.data_operations import process_columns
 
 
 @pytest.mark.parametrize(

@@ -5,14 +5,14 @@ import json
 from typing import Optional
 
 import pandas as pd
-
 import plotly.express as px
 
 from evidently import ColumnMapping
-from evidently.analyzers.cat_target_drift_analyzer import CatTargetDriftAnalyzer
-from evidently.model.widget import BaseWidgetInfo, AdditionalGraphInfo
-from evidently.dashboard.widgets.widget import Widget
+from evidently.analyzers.cat_target_drift_analyzer import \
+    CatTargetDriftAnalyzer
 from evidently.dashboard.widgets.utils import CutQuantileTransformer
+from evidently.dashboard.widgets.widget import Widget
+from evidently.model.widget import AdditionalGraphInfo, BaseWidgetInfo
 from evidently.options import QualityMetricsOptions
 
 

@@ -1,9 +1,8 @@
 from typing import Generator
 
 from evidently.analyzers.data_drift_analyzer import DataDriftAnalyzer
-from evidently.model_monitoring.monitoring import MetricsType
-from evidently.model_monitoring.monitoring import ModelMonitor
-from evidently.model_monitoring.monitoring import ModelMonitoringMetric
+from evidently.model_monitoring.monitoring import (MetricsType, ModelMonitor,
+                                                   ModelMonitoringMetric)
 
 
 class DataDriftMonitorMetrics:
@@ -30,5 +29,10 @@ class DataDriftMonitor(ModelMonitor):
         for feature_name in data_drift_results.columns.get_all_features_list(cat_before_num=True):
             feature_metric = data_drift_results.metrics.features[feature_name]
             yield DataDriftMonitorMetrics.value.create(
-                feature_metric.p_value, dict(feature=feature_name, feature_type=feature_metric.feature_type, stat_test=feature_metric.stattest_name)
+                feature_metric.p_value,
+                dict(
+                    feature=feature_name,
+                    feature_type=feature_metric.feature_type,
+                    stat_test=feature_metric.stattest_name,
+                ),
             )

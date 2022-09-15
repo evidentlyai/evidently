@@ -5,14 +5,14 @@ import json
 from typing import Optional
 
 import pandas as pd
-
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
 
 from evidently import ColumnMapping
-from evidently.analyzers.num_target_drift_analyzer import NumTargetDriftAnalyzer
-from evidently.model.widget import BaseWidgetInfo, AdditionalGraphInfo
+from evidently.analyzers.num_target_drift_analyzer import \
+    NumTargetDriftAnalyzer
 from evidently.dashboard.widgets.widget import Widget
+from evidently.model.widget import AdditionalGraphInfo, BaseWidgetInfo
 from evidently.options import ColorOptions
 
 

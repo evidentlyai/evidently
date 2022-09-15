@@ -2,7 +2,8 @@ import pandas as pd
 from pytest import approx
 
 from evidently import ColumnMapping
-from evidently.analyzers.prob_classification_performance_analyzer import ProbClassificationPerformanceAnalyzer
+from evidently.analyzers.prob_classification_performance_analyzer import \
+    ProbClassificationPerformanceAnalyzer
 from evidently.options import OptionsProvider
 
 

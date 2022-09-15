@@ -11,7 +11,6 @@ from typing import Tuple
 import pandas as pd
 import requests
 
-
 # suppress SettingWithCopyWarning: warning
 pd.options.mode.chained_assignment = None
 
@@ -70,9 +69,7 @@ def get_data_bike(use_model: bool) -> Tuple[pd.DataFrame, pd.DataFrame]:
 
 
 def get_data_kdd_classification() -> Tuple[pd.DataFrame, pd.DataFrame]:
-    from sklearn import neighbors
-    from sklearn import model_selection
-
+    from sklearn import model_selection, neighbors
     # local import for make other cases faster
     from sklearn.datasets import fetch_kddcup99
 

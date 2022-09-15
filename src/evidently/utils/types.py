@@ -1,8 +1,6 @@
 """Additional types, classes, dataclasses, etc."""
 
-from typing import Optional
-from typing import Union
-
+from typing import Optional, Union
 
 # type for numeric because of mypy bug https://github.com/python/mypy/issues/3186
 Numeric = Union[float, int]

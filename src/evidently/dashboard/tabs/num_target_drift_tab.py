@@ -1,10 +1,14 @@
 #!/usr/bin/env python
 # coding: utf-8
 from evidently.dashboard.tabs.base_tab import Tab, Verbose
-from evidently.dashboard.widgets.num_output_drift_widget import NumOutputDriftWidget
-from evidently.dashboard.widgets.num_output_corr_widget import NumOutputCorrWidget
-from evidently.dashboard.widgets.num_output_values_widget import NumOutputValuesWidget
-from evidently.dashboard.widgets.num_target_pred_feature_table_widget import NumTargetPredFeatureTable
+from evidently.dashboard.widgets.num_output_corr_widget import \
+    NumOutputCorrWidget
+from evidently.dashboard.widgets.num_output_drift_widget import \
+    NumOutputDriftWidget
+from evidently.dashboard.widgets.num_output_values_widget import \
+    NumOutputValuesWidget
+from evidently.dashboard.widgets.num_target_pred_feature_table_widget import \
+    NumTargetPredFeatureTable
 
 
 class NumTargetDriftTab(Tab):
