@@ -1,11 +1,11 @@
 import abc
-import dataclasses
 import json
 from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Union
 
+import dataclasses
 import numpy as np
 import pandas as pd
 import plotly.figure_factory as ff

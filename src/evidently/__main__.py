@@ -3,11 +3,11 @@ import json
 import logging
 import os
 import sys
-from dataclasses import dataclass
 from typing import Any
 from typing import Dict
 
 import yaml
+from dataclasses import dataclass
 
 from evidently._config import TELEMETRY_ADDRESS
 from evidently._config import TELEMETRY_ENABLED

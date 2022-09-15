@@ -1,12 +1,13 @@
 import abc
 import copy
-import dataclasses
 import json
 import logging
 from typing import Iterator
 from typing import Optional
 from typing import Tuple
 from typing import Union
+
+import dataclasses
 
 from evidently.dashboard.dashboard import SaveMode
 from evidently.dashboard.dashboard import SaveModeMap

@@ -1,8 +1,8 @@
-import dataclasses
 import typing
 from typing import List
 from typing import Optional
 
+import dataclasses
 import numpy as np
 from plotly import figure_factory as ff
 

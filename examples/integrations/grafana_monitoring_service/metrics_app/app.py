@@ -9,7 +9,6 @@ The service gets a reference dataset from reference.csv file and process current
 
 Metrics calculation results are available with `GET /metrics` HTTP method in Prometheus compatible format.
 """
-import dataclasses
 import datetime
 import hashlib
 import logging
@@ -18,6 +17,7 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
+import dataclasses
 import flask
 import pandas as pd
 import prometheus_client

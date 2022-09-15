@@ -1,7 +1,5 @@
 import abc
-import dataclasses
 from abc import ABC
-from dataclasses import dataclass
 from typing import Any
 from typing import Dict
 from typing import Generic
@@ -10,6 +8,9 @@ from typing import Optional
 from typing import Type
 from typing import TypeVar
 from typing import Union
+
+import dataclasses
+from dataclasses import dataclass
 
 from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.types import ApproxValue

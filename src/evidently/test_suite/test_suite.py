@@ -1,5 +1,4 @@
 import copy
-import dataclasses
 import uuid
 from collections import Counter
 from datetime import datetime
@@ -7,6 +6,7 @@ from typing import List
 from typing import Optional
 from typing import Union
 
+import dataclasses
 import pandas as pd
 
 import evidently

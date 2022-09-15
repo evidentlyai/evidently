@@ -1,6 +1,7 @@
 import json
-from dataclasses import dataclass
 from typing import Dict
+
+from dataclasses import dataclass
 
 from evidently.model_profile import Profile
 from evidently.model_profile.sections.cat_target_drift_profile_section import CatTargetDriftProfileSection

@@ -2,12 +2,10 @@
 # coding: utf-8
 
 import base64
-import dataclasses
 import json
 import os
 import shutil
 import uuid
-from dataclasses import asdict
 from enum import Enum
 from typing import Callable
 from typing import Dict
@@ -16,7 +14,9 @@ from typing import Optional
 from typing import Sequence
 from typing import Tuple
 
+import dataclasses
 import pandas
+from dataclasses import asdict
 
 import evidently
 from evidently.dashboard.tabs.base_tab import Tab

@@ -1,11 +1,11 @@
-import dataclasses
 import uuid
-from dataclasses import dataclass
 from typing import Dict
 from typing import List
 from typing import Optional
 
+import dataclasses
 import pandas as pd
+from dataclasses import dataclass
 
 from evidently.calculations.data_drift import DataDriftAnalyzerFeatureMetrics
 from evidently.calculations.data_drift import DataDriftAnalyzerMetrics

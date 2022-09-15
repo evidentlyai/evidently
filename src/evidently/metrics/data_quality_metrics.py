@@ -1,13 +1,13 @@
-import dataclasses
-from dataclasses import dataclass
 from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Sequence
 from typing import Union
 
+import dataclasses
 import numpy as np
 import pandas as pd
+from dataclasses import dataclass
 
 from evidently import TaskType
 from evidently.calculations.data_quality import DataQualityStats

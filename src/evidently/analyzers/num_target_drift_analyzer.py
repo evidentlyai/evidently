@@ -1,8 +1,8 @@
-from dataclasses import dataclass
 from typing import Optional
 from typing import Sequence
 
 import pandas as pd
+from dataclasses import dataclass
 
 from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer

@@ -1,7 +1,5 @@
 import collections
-import dataclasses
 import re
-from dataclasses import dataclass
 from itertools import combinations
 from typing import Any
 from typing import Dict
@@ -9,8 +7,10 @@ from typing import List
 from typing import Optional
 from typing import Pattern
 
+import dataclasses
 import numpy as np
 import pandas as pd
+from dataclasses import dataclass
 
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
