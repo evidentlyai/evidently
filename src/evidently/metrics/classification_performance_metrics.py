@@ -19,6 +19,9 @@ from pandas.core.dtypes.api import is_string_dtype
 from evidently import ColumnMapping
 from evidently.calculations.classification_performance import ConfusionMatrix
 from evidently.calculations.classification_performance import calculate_confusion_by_classes
+from evidently.renderers.html_widgets import CounterData
+from evidently.renderers.html_widgets import counter
+from evidently.renderers.html_widgets import plotly_figure
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
@@ -284,10 +287,10 @@ class ClassificationPerformanceMetricsRenderer(MetricRenderer):
     @staticmethod
     def _get_metrics_table(dataset_name: str, metrics: DatasetClassificationPerformanceMetrics) -> MetricHtmlInfo:
         counters = [
-            {"value": str(round(metrics.accuracy, 3)), "label": "Accuracy"},
-            {"value": str(round(metrics.precision, 3)), "label": "Precision"},
-            {"value": str(round(metrics.recall, 3)), "label": "Recall"},
-            {"value": str(round(metrics.f1, 3)), "label": "F1"},
+            CounterData.float("Accuracy", metrics.accuracy, 3),
+            CounterData.float("Precision", metrics.precision, 3),
+            CounterData.float("Recall", metrics.recall, 3),
+            CounterData.float("F1", metrics.f1, 3),
         ]
 
         if metrics.roc_auc is not None:
@@ -298,13 +301,10 @@ class ClassificationPerformanceMetricsRenderer(MetricRenderer):
 
         return MetricHtmlInfo(
             f"classification_performance_metrics_table_{dataset_name.lower()}",
-            BaseWidgetInfo(
+            counter(
+                counters=counters,
                 title=f"{dataset_name.capitalize()}: Model Quality With Macro-average Metrics",
-                type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
-                size=2,
-                params={"counters": counters},
             ),
-            details=[],
         )
 
     @staticmethod
@@ -329,17 +329,12 @@ class ClassificationPerformanceMetricsRenderer(MetricRenderer):
             xaxis_title="Class",
             yaxis_title="Number of Objects",
         )
-        support_bar_json = json.loads(fig.to_json())
         return MetricHtmlInfo(
             f"classification_performance_metrics_class_representation_{dataset_name.lower()}",
-            BaseWidgetInfo(
+            plotly_figure(
                 title=f"{dataset_name.capitalize()}: Class Representation",
-                type=BaseWidgetInfo.WIDGET_INFO_TYPE_BIG_GRAPH,
-                size=size,
-                params={"data": support_bar_json["data"], "layout": support_bar_json["layout"]},
-                additionalGraphs=[],
+                figure=fig,
             ),
-            details=[],
         )
 
     @staticmethod

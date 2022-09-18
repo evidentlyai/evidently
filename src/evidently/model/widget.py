@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 # pylint: disable=invalid-name
+from enum import Enum
 
 from typing import Any
 from typing import Iterable
@@ -57,14 +58,16 @@ class AdditionalGraphInfo:
     params: Any
 
 
+class WidgetType(Enum):
+    COUNTER = "counter"
+    TABLE = "table"
+    BIG_TABLE = "big_table"
+    BIG_GRAPH = "big_graph"
+    RICH_DATA = "rich_data"
+
+
 @dataclass
 class BaseWidgetInfo:
-    WIDGET_INFO_TYPE_COUNTER = "counter"
-    WIDGET_INFO_TYPE_TABLE = "table"
-    WIDGET_INFO_TYPE_BIG_TABLE = "big_table"
-    WIDGET_INFO_TYPE_BIG_GRAPH = "big_graph"
-    WIDGET_INFO_TYPE_RICH_DATA = "rich_data"
-
     type: str
     title: str
     size: int
