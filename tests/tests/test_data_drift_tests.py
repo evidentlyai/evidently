@@ -29,6 +29,8 @@ def test_data_drift_test_number_of_drifted_features() -> None:
     suite = TestSuite(tests=[TestNumberOfDriftedFeatures(lt=1)])
     suite.run(current_data=test_current_dataset, reference_data=test_current_dataset)
     assert suite
+    assert suite.show()
+    assert suite.json()
 
 
 def test_data_drift_test_number_of_drifted_features_json_render() -> None:
@@ -112,6 +114,8 @@ def test_data_drift_test_share_of_drifted_features() -> None:
     suite = TestSuite(tests=[TestShareOfDriftedFeatures(lte=0.5)])
     suite.run(current_data=test_current_dataset, reference_data=test_current_dataset)
     assert suite
+    assert suite.show()
+    assert suite.json()
 
 
 def test_data_drift_test_share_of_drifted_features_json_render() -> None:
@@ -170,6 +174,8 @@ def test_data_drift_test_feature_value_drift() -> None:
     suite = TestSuite(tests=[TestFeatureValueDrift(column_name="feature_1")])
     suite.run(current_data=test_current_dataset, reference_data=test_reference_dataset, column_mapping=ColumnMapping())
     assert suite
+    assert suite.show()
+    assert suite.json()
 
 
 def test_data_drift_test_feature_value_drift_json_render() -> None:
