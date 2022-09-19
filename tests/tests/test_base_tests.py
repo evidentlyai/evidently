@@ -3,8 +3,8 @@ import pytest
 
 from evidently.test_suite import TestSuite
 from evidently.tests import TestColumnShareOfNulls
-from evidently.tests.base_test import generate_column_tests
 from evidently.tests.base_test import TestValueCondition
+from evidently.tests.base_test import generate_column_tests
 
 
 @pytest.mark.parametrize(

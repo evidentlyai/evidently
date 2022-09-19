@@ -21,11 +21,10 @@ from evidently.tests.base_test import BaseCheckValueTest
 from evidently.tests.base_test import GroupData
 from evidently.tests.base_test import GroupingTypes
 from evidently.tests.base_test import Test
-from evidently.utils.generators import BaseGenerator
-from evidently.tests.base_test import BaseCheckValueTest
 from evidently.tests.base_test import TestResult
 from evidently.tests.base_test import TestValueCondition
 from evidently.utils.data_operations import DatasetColumns
+from evidently.utils.generators import BaseGenerator
 from evidently.utils.types import Numeric
 
 DATA_DRIFT_GROUP = GroupData("data_drift", "Data Drift", "")

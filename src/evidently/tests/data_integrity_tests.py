@@ -21,8 +21,6 @@ from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.tests.base_test import BaseCheckValueTest
-from evidently.utils.generators import BaseGenerator
-from evidently.tests.base_test import GroupingTypes
 from evidently.tests.base_test import GroupData
 from evidently.tests.base_test import GroupingTypes
 from evidently.tests.base_test import Test
@@ -33,6 +31,7 @@ from evidently.tests.utils import dataframes_to_table
 from evidently.tests.utils import plot_dicts_to_table
 from evidently.tests.utils import plot_value_counts_tables_ref_curr
 from evidently.utils.data_operations import DatasetColumns
+from evidently.utils.generators import BaseGenerator
 from evidently.utils.types import Numeric
 
 DATA_INTEGRITY_GROUP = GroupData("data_integrity", "Data Integrity", "")

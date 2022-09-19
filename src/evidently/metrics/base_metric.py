@@ -1,5 +1,4 @@
 import abc
-from dataclasses import dataclass
 from typing import Dict
 from typing import Generic
 from typing import Optional
@@ -11,9 +10,8 @@ import pandas as pd
 from dataclasses import dataclass
 
 from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.utils.generators import make_generator_by_columns
 from evidently.utils.generators import BaseGenerator
-
+from evidently.utils.generators import make_generator_by_columns
 
 TResult = TypeVar("TResult")
 

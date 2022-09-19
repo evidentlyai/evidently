@@ -10,8 +10,8 @@ from typing import Union
 import dataclasses
 from dataclasses import dataclass
 
-from evidently.utils.generators import make_generator_by_columns
 from evidently.utils.generators import BaseGenerator
+from evidently.utils.generators import make_generator_by_columns
 from evidently.utils.types import ApproxValue
 from evidently.utils.types import Numeric
 

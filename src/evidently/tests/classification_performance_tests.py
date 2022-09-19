@@ -713,7 +713,9 @@ class TestF1ByClass(ByClassClassificationTest):
         return result.metrics_matrix[self.label]["f1-score"]
 
     def get_description(self, value: Numeric) -> str:
-        return f"The F1 score of the label **{self.label}** is {value:.3g}. The test threshold is {self.get_condition()}"
+        return (
+            f"The F1 score of the label **{self.label}** is {value:.3g}. The test threshold is {self.get_condition()}"
+        )
 
 
 @default_renderer(wrap_type=TestF1ByClass)
