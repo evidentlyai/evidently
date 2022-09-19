@@ -544,7 +544,7 @@ def test_data_integrity_test_number_of_nulls() -> None:
 
     suite = TestSuite(tests=[TestNumberOfNulls()])
     suite.run(current_data=test_dataset, reference_data=test_dataset)
-    assert not suite
+    assert suite
     assert suite.show()
     assert suite.json()
 
