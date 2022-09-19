@@ -2,7 +2,6 @@
 # coding: utf-8
 # pylint: disable=invalid-name
 from enum import Enum
-
 from typing import Any
 from typing import Iterable
 from typing import List
@@ -64,6 +63,7 @@ class WidgetType(Enum):
     BIG_TABLE = "big_table"
     BIG_GRAPH = "big_graph"
     RICH_DATA = "rich_data"
+    TABBED_GRAPH = "tabbed_graph"
 
 
 @dataclass

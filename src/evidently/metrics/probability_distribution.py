@@ -8,11 +8,13 @@ from plotly import figure_factory as ff
 
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
-from evidently.model.widget import BaseWidgetInfo
 from evidently.options import ColorOptions
 from evidently.renderers.base_renderer import MetricHtmlInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
+from evidently.renderers.html_widgets import GraphData
+from evidently.renderers.html_widgets import WidgetSize
+from evidently.renderers.html_widgets import plotly_graph_tabs
 from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.data_operations import process_columns
 
@@ -82,56 +84,28 @@ class CatTargetDriftRenderer(MetricRenderer):
         ref = obj.get_result().ref_distplot
         curr = obj.get_result().curr_distplot
         result = []
-        size = 2
+        size = WidgetSize.FULL
         if ref is not None:
-            size = 1
+            size = WidgetSize.HALF
             result.append(
                 MetricHtmlInfo(
                     name="",
-                    info=BaseWidgetInfo(
+                    info=plotly_graph_tabs(
                         title="Reference: Probability Distribution",
-                        type="tabbed_graph",
                         size=size,
-                        params={
-                            "graphs": [
-                                {
-                                    "id": "tab_" + graph["title"],
-                                    "title": graph["title"],
-                                    "graph": {
-                                        "data": graph["data"],
-                                        "layout": graph["layout"],
-                                    },
-                                }
-                                for graph in ref
-                            ]
-                        },
+                        figures=[GraphData(graph["title"], graph["data"], graph["layout"]) for graph in ref],
                     ),
-                    details=[],
                 )
             )
         if curr is not None:
             result.append(
                 MetricHtmlInfo(
                     name="",
-                    info=BaseWidgetInfo(
+                    info=plotly_graph_tabs(
                         title="Current: Probability Distribution",
-                        type="tabbed_graph",
                         size=size,
-                        params={
-                            "graphs": [
-                                {
-                                    "id": "tab_" + graph["title"],
-                                    "title": graph["title"],
-                                    "graph": {
-                                        "data": graph["data"],
-                                        "layout": graph["layout"],
-                                    },
-                                }
-                                for graph in obj.get_result().curr_distplot
-                            ]
-                        },
+                        figures=[GraphData(graph["title"], graph["data"], graph["layout"]) for graph in curr],
                     ),
-                    details=[],
                 )
             )
         return result

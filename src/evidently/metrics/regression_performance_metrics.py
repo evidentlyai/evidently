@@ -18,10 +18,12 @@ from evidently.metrics.utils import apply_func_to_binned_data
 from evidently.metrics.utils import make_hist_for_cat_plot
 from evidently.metrics.utils import make_hist_for_num_plot
 from evidently.metrics.utils import make_target_bins_for_reg_plots
-from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricHtmlInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
+from evidently.renderers.html_widgets import CounterData
+from evidently.renderers.html_widgets import counter
+from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.data_operations import process_columns
 
@@ -244,25 +246,14 @@ class RegressionPerformanceMetricsRenderer(MetricRenderer):
     def _get_underperformance_tails(dataset_name: str, underperformance: dict) -> MetricHtmlInfo:
         return MetricHtmlInfo(
             f"regression_performance_metrics_underperformance_{dataset_name.lower()}",
-            BaseWidgetInfo(
+            counter(
                 title=f"{dataset_name.capitalize()}: Mean Error per Group (+/- std)",
-                type="counter",
-                size=2,
-                params={
-                    "counters": [
-                        {"value": round(underperformance["majority"]["mean_error"], 2), "label": "Majority(90%)"},
-                        {
-                            "value": round(underperformance["underestimation"]["mean_error"], 2),
-                            "label": "Underestimation(5%)",
-                        },
-                        {
-                            "value": round(underperformance["overestimation"]["mean_error"], 2),
-                            "label": "Overestimation(5%)",
-                        },
-                    ]
-                },
+                counters=[
+                    CounterData.float("Majority(90%)", underperformance["majority"]["mean_error"], 2),
+                    CounterData.float("Underestimation(5%)", underperformance["underestimation"]["mean_error"], 2),
+                    CounterData.float("Overestimation(5%)", underperformance["overestimation"]["mean_error"], 2),
+                ],
             ),
-            details=[],
         )
 
     def render_html(self, obj: RegressionPerformanceMetrics) -> List[MetricHtmlInfo]:
@@ -271,33 +262,20 @@ class RegressionPerformanceMetricsRenderer(MetricRenderer):
         result = [
             MetricHtmlInfo(
                 "regression_performance_title",
-                BaseWidgetInfo(
-                    type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
-                    title="",
-                    size=2,
-                    params={
-                        "counters": [{"value": "", "label": f"Regression Model Performance. Target: '{target_name}’"}]
-                    },
-                ),
-                details=[],
+                header_text(label=f"Regression Model Performance. Target: '{target_name}’"),
             ),
             MetricHtmlInfo(
                 "regression_performance_metrics_table_current",
-                BaseWidgetInfo(
+                counter(
                     title="Current: Regression Performance Metrics",
-                    type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
-                    size=2,
-                    params={
-                        "counters": [
-                            {"value": str(round(metric_result.mean_error, 3)), "label": "Mean error"},
-                            {"value": str(round(metric_result.mean_abs_error, 3)), "label": "MAE"},
-                            {"value": str(round(metric_result.mean_abs_perc_error, 3)), "label": "MAPE"},
-                            {"value": str(round(metric_result.rmse, 3)), "label": "RMSE"},
-                            {"value": str(round(metric_result.r2_score, 3)), "label": "r2 score"},
-                        ]
-                    },
+                    counters=[
+                        CounterData.float("Mean error", metric_result.mean_error, 3),
+                        CounterData.float("MAE", metric_result.mean_abs_error, 3),
+                        CounterData.float("MAPE", metric_result.mean_abs_perc_error, 3),
+                        CounterData.float("RMSE", metric_result.rmse, 3),
+                        CounterData.float("r2 score", metric_result.r2_score, 3),
+                    ],
                 ),
-                details=[],
             ),
         ]
         if (
@@ -310,24 +288,16 @@ class RegressionPerformanceMetricsRenderer(MetricRenderer):
             result.append(
                 MetricHtmlInfo(
                     "regression_performance_metrics_table_reference",
-                    BaseWidgetInfo(
+                    counter(
                         title="Reference: Regression Performance Metrics",
-                        type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
-                        size=2,
-                        params={
-                            "counters": [
-                                {"value": str(round(metric_result.mean_error_ref, 3)), "label": "Mean error"},
-                                {"value": str(round(metric_result.mean_abs_error_ref, 3)), "label": "MAE"},
-                                {
-                                    "value": str(round(metric_result.mean_abs_perc_error_ref, 3)),
-                                    "label": "MAPE",
-                                },
-                                {"value": str(round(metric_result.rmse_ref, 3)), "label": "RMSE"},
-                                {"value": str(round(metric_result.r2_score_ref, 3)), "label": "r2 score"},
-                            ]
-                        },
+                        counters=[
+                            CounterData.float("Mean error", metric_result.mean_error_ref, 3),
+                            CounterData.float("MAE", metric_result.mean_abs_error_ref, 3),
+                            CounterData.float("MAPE", metric_result.mean_abs_perc_error_ref, 3),
+                            CounterData.float("RMSE", metric_result.rmse_ref, 3),
+                            CounterData.float("r2 score", metric_result.r2_score_ref, 3),
+                        ],
                     ),
-                    details=[],
                 )
             )
 
