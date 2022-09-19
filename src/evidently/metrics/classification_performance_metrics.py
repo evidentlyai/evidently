@@ -358,8 +358,6 @@ class ClassificationPerformanceMetricsRenderer(MetricRenderer):
 
         fig.update_layout(xaxis_title="Predicted value", yaxis_title="Actual value")
 
-        conf_matrix_json = json.loads(fig.to_json())
-
         return MetricHtmlInfo(
             f"classification_performance_current_metrics_confusion_matrix_{dataset_name.lower()}",
             plotly_figure(title=f"{dataset_name.capitalize()}: Confusion Matrix", figure=fig, size=size),

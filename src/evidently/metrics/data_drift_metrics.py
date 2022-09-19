@@ -144,7 +144,6 @@ class DataDriftMetricsRenderer(MetricRenderer):
             curr_distr = obj.get_result().distr_for_plots[feature_name]["current"]
             ref_distr = obj.get_result().distr_for_plots[feature_name]["reference"]
             fig = plot_distr(curr_distr, ref_distr)
-            fig_json = fig.to_plotly_json()
             additional_graphs_data.append(
                 DetailsInfo(
                     id=f"{item_id}_{feature_name}_distr",
