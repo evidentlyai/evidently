@@ -17,15 +17,16 @@ from evidently.suite.base_suite import Suite
 from evidently.suite.base_suite import find_metric_renderer
 from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.data_operations import process_columns
+from evidently.utils.generators import BaseGenerator
 
 
 class Report(Display):
     _inner_suite: Suite
     _columns_info: DatasetColumns
     _first_level_metrics: List[Union[Metric]]
-    metrics: List[Union[Metric, MetricPreset]]
+    metrics: List[Union[Metric, MetricPreset, BaseGenerator]]
 
-    def __init__(self, metrics: List[Union[Metric, MetricPreset]]):
+    def __init__(self, metrics: List[Union[Metric, MetricPreset, BaseGenerator]]):
         super().__init__()
         # just save all metrics and metric presets
         self.metrics = metrics
@@ -51,7 +52,18 @@ class Report(Display):
         # get each item from metrics/presets and add to metrics list
         # do it in one loop because we want to save metrics and presets order
         for item in self.metrics:
-            if isinstance(item, MetricPreset):
+            # if the item is a metric generator, then we need to generate metrics and add them to the report
+            if isinstance(item, BaseGenerator):
+                for metric in item.generate(columns_info=self._columns_info):
+                    if isinstance(metric, Metric):
+                        self._first_level_metrics.append(metric)
+                        self._inner_suite.add_metric(metric)
+
+                    else:
+                        # if generated item is not a metric, raise an error
+                        raise ValueError(f"Incorrect metric type in generator {item}")
+
+            elif isinstance(item, MetricPreset):
                 metrics = item.generate_metrics(data=data, columns=self._columns_info)
 
                 for metric in metrics:

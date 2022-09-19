@@ -18,13 +18,13 @@ from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.render_utils import plot_distr
 from evidently.tests.base_test import BaseCheckValueTest
-from evidently.tests.base_test import BaseTestGenerator
 from evidently.tests.base_test import GroupData
 from evidently.tests.base_test import GroupingTypes
 from evidently.tests.base_test import Test
 from evidently.tests.base_test import TestResult
 from evidently.tests.base_test import TestValueCondition
 from evidently.utils.data_operations import DatasetColumns
+from evidently.utils.generators import BaseGenerator
 from evidently.utils.types import Numeric
 
 DATA_DRIFT_GROUP = GroupData("data_drift", "Data Drift", "")
@@ -175,17 +175,17 @@ class TestFeatureValueDrift(Test):
         )
 
 
-class TestAllFeaturesValueDrift(BaseTestGenerator):
+class TestAllFeaturesValueDrift(BaseGenerator):
     """Create value drift tests for numeric and category features"""
 
-    def generate_tests(self, columns_info: DatasetColumns) -> List[TestFeatureValueDrift]:
+    def generate(self, columns_info: DatasetColumns) -> List[TestFeatureValueDrift]:
         return [
             TestFeatureValueDrift(column_name=name)
             for name in columns_info.get_all_features_list(include_datetime_feature=False)
         ]
 
 
-class TestCustomFeaturesValueDrift(BaseTestGenerator):
+class TestCustomFeaturesValueDrift(BaseGenerator):
     """Create value drift tests for specified features"""
 
     features: List[str]
@@ -193,7 +193,7 @@ class TestCustomFeaturesValueDrift(BaseTestGenerator):
     def __init__(self, features: List[str]):
         self.features = features
 
-    def generate_tests(self, columns_info: DatasetColumns) -> List[TestFeatureValueDrift]:
+    def generate(self, columns_info: DatasetColumns) -> List[TestFeatureValueDrift]:
         return [TestFeatureValueDrift(column_name=name) for name in self.features]
 
 

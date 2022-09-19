@@ -1,6 +1,10 @@
+import pandas as pd
 import pytest
 
+from evidently.test_suite import TestSuite
+from evidently.tests import TestColumnShareOfNulls
 from evidently.tests.base_test import TestValueCondition
+from evidently.tests.base_test import generate_column_tests
 
 
 @pytest.mark.parametrize(
@@ -71,3 +75,10 @@ def test_value_condition_set(condition_args, expected):
 def test_value_condition_str(condition_args, expected):
     condition = TestValueCondition(**condition_args)
     assert str(condition) == expected
+
+
+def test_test_generator():
+    test_data = pd.DataFrame({"col1": [1, 2, 3], "col2": [4, 5, 6]})
+    suite = TestSuite(tests=[generate_column_tests(TestColumnShareOfNulls, parameters={"eq": 0})])
+    suite.run(current_data=test_data, reference_data=None)
+    assert suite

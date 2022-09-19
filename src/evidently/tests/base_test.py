@@ -2,17 +2,16 @@ import abc
 from abc import ABC
 from typing import Any
 from typing import Dict
-from typing import Generic
 from typing import List
 from typing import Optional
 from typing import Type
-from typing import TypeVar
 from typing import Union
 
 import dataclasses
 from dataclasses import dataclass
 
-from evidently.utils.data_operations import DatasetColumns
+from evidently.utils.generators import BaseGenerator
+from evidently.utils.generators import make_generator_by_columns
 from evidently.utils.types import ApproxValue
 from evidently.utils.types import Numeric
 
@@ -302,102 +301,14 @@ class BaseCheckValueTest(BaseConditionsTest):
         return result
 
 
-TTest = TypeVar("TTest")
-
-
-class BaseTestGenerator(Generic[TTest]):
-    """Base class for tests generator creation
-
-    To create a new generator:
-        - inherit a class from the base class
-        - implement `generate_tests` method and return a list of test objects from it
-
-    Test Suite will call the method and add generated tests to its list instead of the generator object.
-
-    You can use `columns_info` parameter in `generate_tests` for getting data structure meta info like columns list.
-
-    For example:
-        if you want to create a test generator for 50, 90, 99 quantiles tests
-        for all numeric columns with default condition, by reference quantiles
-
-    class TestQuantiles(BaseTestGenerator):
-        def generate_tests(self, columns_info: DatasetColumns) -> List[TestValueQuantile]:
-            return [
-                TestValueQuantile(column_name=name, quantile=quantile)
-                for quantile in (0.5, 0.9, 0.99)
-                for name in columns_info.num_feature_names
-            ]
-
-    Do not forget set correct test type for `generate_tests` return value
-    """
-
-    @abc.abstractmethod
-    def generate_tests(self, columns_info: DatasetColumns) -> List[TTest]:
-        raise NotImplementedError()
-
-
 def generate_column_tests(
     test_class: Type[Test],
     columns: Optional[Union[str, list]] = None,
     parameters: Optional[Dict] = None,
-) -> BaseTestGenerator:
-    """Create a test generator for a columns list with a test class.
-
-    Test class is specified with `test_class` parameter.
-    If the test have no "column_name" parameter - TypeError will be raised.
-
-    Columns list can be defined with parameter `columns`.
-    If it is a list - just use it as a list of the columns.
-    If `columns` is a string, it can be one of values:
-    - "all" - make tests for all columns, including target/prediction columns
-    - "num" - for numeric features
-    - "cat" - for category features
-    - "features" - for all features, not target/prediction columns.
-    None value is the same as "all".
-    If `columns` is string and it is not one of the values, ValueError will be raised.
-
-    `parameters` is used for specifying other parameters for each test, it is the same for all generated tests.
-    """
-    if parameters is None:
-        parameters_for_test: Dict = {}
-
-    else:
-        parameters_for_test = parameters
-
-    class TestColumnsGenerator(BaseTestGenerator):
-        def generate_tests(self, columns_info: DatasetColumns) -> List[Test]:
-            nonlocal parameters_for_test
-            result = []
-
-            if isinstance(columns, list):
-                columns_for_tests = columns
-
-            elif columns == "all" or columns is None:
-                columns_for_tests = columns_info.get_all_columns_list()
-
-            elif columns == "cat":
-                columns_for_tests = columns_info.cat_feature_names
-
-            elif columns == "num":
-                columns_for_tests = columns_info.num_feature_names
-
-            elif columns == "features":
-                columns_for_tests = columns_info.get_all_features_list(include_datetime_feature=True)
-
-            else:
-                raise ValueError("Incorrect parameter 'columns' for test generator")
-
-            for column_name in columns_for_tests:
-                parameters_for_test["column_name"] = column_name
-                # ignore possible parameters incompatibility
-                # we cannot guarantee that a test class has column_name parameter
-                # if it has not, type error will ve raised
-                try:
-                    result.append(test_class(**parameters_for_test))  # type: ignore
-
-                except TypeError as error:
-                    raise TypeError(f"Cannot generate test {test_class.__name__}. Error: {error}")
-
-            return result
-
-    return TestColumnsGenerator()
+) -> BaseGenerator:
+    """Function for generating tests for columns"""
+    return make_generator_by_columns(
+        base_class=test_class,
+        columns=columns,
+        parameters=parameters,
+    )
