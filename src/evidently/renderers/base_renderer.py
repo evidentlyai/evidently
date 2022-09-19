@@ -1,5 +1,8 @@
+from typing import Dict
+from typing import List
+from typing import Optional
+
 import dataclasses
-from typing import List, Optional, Dict
 
 from evidently.model.widget import BaseWidgetInfo
 

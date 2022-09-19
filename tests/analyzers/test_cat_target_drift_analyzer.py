@@ -5,7 +5,8 @@ from pytest import approx
 
 from evidently import ColumnMapping
 from evidently.analyzers.cat_target_drift_analyzer import CatTargetDriftAnalyzer
-from evidently.options import DataDriftOptions, OptionsProvider
+from evidently.options import DataDriftOptions
+from evidently.options import OptionsProvider
 
 
 @pytest.fixture

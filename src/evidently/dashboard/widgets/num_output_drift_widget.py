@@ -8,9 +8,10 @@ import plotly.figure_factory as ff
 
 from evidently import ColumnMapping
 from evidently.analyzers.num_target_drift_analyzer import NumTargetDriftAnalyzer
-from evidently.model.widget import BaseWidgetInfo
+from evidently.dashboard.widgets.utils import CutQuantileTransformer
+from evidently.dashboard.widgets.utils import fig_to_json
 from evidently.dashboard.widgets.widget import Widget
-from evidently.dashboard.widgets.utils import CutQuantileTransformer, fig_to_json
+from evidently.model.widget import BaseWidgetInfo
 from evidently.options import ColorOptions
 from evidently.options import QualityMetricsOptions
 

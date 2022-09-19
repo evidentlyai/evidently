@@ -2,15 +2,15 @@
 # coding: utf-8
 
 from typing import Optional
-from dataclasses import dataclass
 
 import pandas as pd
+from dataclasses import dataclass
 
 from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.analyzers.base_analyzer import BaseAnalyzerResult
-from evidently.calculations.data_drift import get_overall_data_drift
 from evidently.calculations.data_drift import DataDriftAnalyzerMetrics
+from evidently.calculations.data_drift import get_overall_data_drift
 from evidently.options import DataDriftOptions
 from evidently.utils.data_operations import process_columns
 

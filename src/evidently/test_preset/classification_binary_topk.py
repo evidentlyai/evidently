@@ -1,17 +1,15 @@
 from typing import Union
 
-from evidently.utils.data_operations import DatasetColumns
 from evidently.metrics.base_metric import InputData
 from evidently.test_preset.test_preset import TestPreset
-from evidently.tests import (
-    TestAccuracyScore,
-    TestF1Score,
-    TestPrecisionScore,
-    TestRecallScore,
-    TestFeatureValueDrift,
-    TestRocAuc,
-    TestLogLoss,
-)
+from evidently.tests import TestAccuracyScore
+from evidently.tests import TestF1Score
+from evidently.tests import TestFeatureValueDrift
+from evidently.tests import TestLogLoss
+from evidently.tests import TestPrecisionScore
+from evidently.tests import TestRecallScore
+from evidently.tests import TestRocAuc
+from evidently.utils.data_operations import DatasetColumns
 
 
 class BinaryClassificationTopK(TestPreset):

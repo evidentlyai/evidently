@@ -1,5 +1,12 @@
 import abc
-from typing import List, Dict, Type, Generator, Tuple, Optional, Sequence, Any
+from typing import Any
+from typing import Dict
+from typing import Generator
+from typing import List
+from typing import Optional
+from typing import Sequence
+from typing import Tuple
+from typing import Type
 
 import pandas
 

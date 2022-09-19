@@ -2,14 +2,13 @@ from typing import Optional
 
 import numpy as np
 import pandas as pd
-
 import pytest
 from pytest import approx
 
-from evidently.pipeline import column_mapping
 from evidently.analyzers.classification_performance_analyzer import ClassificationPerformanceAnalyzer
 from evidently.analyzers.classification_performance_analyzer import ClassificationPerformanceMetrics
 from evidently.calculations.classification_performance import ConfusionMatrix
+from evidently.pipeline import column_mapping
 
 
 @pytest.fixture

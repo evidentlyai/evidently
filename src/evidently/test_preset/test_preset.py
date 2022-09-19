@@ -1,7 +1,7 @@
 import abc
 
-from evidently.utils.data_operations import DatasetColumns
 from evidently.metrics.base_metric import InputData
+from evidently.utils.data_operations import DatasetColumns
 
 
 class TestPreset:

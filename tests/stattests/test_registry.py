@@ -3,15 +3,15 @@ from typing import Tuple
 import pandas as pd
 import pytest
 
-from evidently.calculations.stattests import ks_stat_test
+from evidently.calculations.stattests import StatTest
 from evidently.calculations.stattests import chi_stat_test
-from evidently.calculations.stattests import z_stat_test
+from evidently.calculations.stattests import get_stattest
 from evidently.calculations.stattests import jensenshannon_stat_test
 from evidently.calculations.stattests import kl_div_stat_test
+from evidently.calculations.stattests import ks_stat_test
 from evidently.calculations.stattests import psi_stat_test
 from evidently.calculations.stattests import wasserstein_stat_test
-from evidently.calculations.stattests import get_stattest
-from evidently.calculations.stattests import StatTest
+from evidently.calculations.stattests import z_stat_test
 from evidently.calculations.stattests.registry import StatTestInvalidFeatureTypeError
 from evidently.calculations.stattests.registry import StatTestNotFoundError
 

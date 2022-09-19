@@ -1,24 +1,23 @@
 import json
 
 import pandas as pd
-
 from pytest import approx
 
 from evidently.pipeline.column_mapping import ColumnMapping
+from evidently.test_suite import TestSuite
 from evidently.tests import TestAccuracyScore
-from evidently.tests import TestPrecisionScore
+from evidently.tests import TestF1ByClass
 from evidently.tests import TestF1Score
-from evidently.tests import TestRecallScore
-from evidently.tests import TestRocAuc
+from evidently.tests import TestFNR
+from evidently.tests import TestFPR
 from evidently.tests import TestLogLoss
 from evidently.tests import TestPrecisionByClass
+from evidently.tests import TestPrecisionScore
 from evidently.tests import TestRecallByClass
-from evidently.tests import TestF1ByClass
-from evidently.tests import TestTPR
+from evidently.tests import TestRecallScore
+from evidently.tests import TestRocAuc
 from evidently.tests import TestTNR
-from evidently.tests import TestFPR
-from evidently.tests import TestFNR
-from evidently.test_suite import TestSuite
+from evidently.tests import TestTPR
 
 
 def test_accuracy_score_test() -> None:

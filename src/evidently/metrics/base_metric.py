@@ -1,10 +1,10 @@
 import abc
-from dataclasses import dataclass
 from typing import Generic
-from typing import TypeVar
 from typing import Optional
+from typing import TypeVar
 
 import pandas as pd
+from dataclasses import dataclass
 
 from evidently.pipeline.column_mapping import ColumnMapping
 

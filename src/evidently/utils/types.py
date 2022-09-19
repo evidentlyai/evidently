@@ -3,7 +3,6 @@
 from typing import Optional
 from typing import Union
 
-
 # type for numeric because of mypy bug https://github.com/python/mypy/issues/3186
 Numeric = Union[float, int]
 

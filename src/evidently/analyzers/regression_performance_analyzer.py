@@ -3,15 +3,15 @@
 import copy
 from typing import Optional
 
-from dataclasses import dataclass
 import pandas as pd
+from dataclasses import dataclass
 
 from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.analyzers.base_analyzer import BaseAnalyzerResult
-from evidently.utils.data_operations import process_columns
-from evidently.calculations.regression_performance import calculate_regression_performance
 from evidently.calculations.regression_performance import RegressionPerformanceMetrics
+from evidently.calculations.regression_performance import calculate_regression_performance
+from evidently.utils.data_operations import process_columns
 
 
 @dataclass

@@ -3,17 +3,17 @@
 from typing import Dict
 from typing import Optional
 
-from dataclasses import dataclass
 import pandas as pd
+from dataclasses import dataclass
 
 from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.analyzers.base_analyzer import BaseAnalyzerResult
+from evidently.calculations.data_quality import DataQualityStats
+from evidently.calculations.data_quality import calculate_correlations
+from evidently.calculations.data_quality import calculate_data_quality_stats
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_operations import recognize_task
-from evidently.calculations.data_quality import DataQualityStats
-from evidently.calculations.data_quality import calculate_data_quality_stats
-from evidently.calculations.data_quality import calculate_correlations
 
 
 @dataclass

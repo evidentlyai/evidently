@@ -6,9 +6,9 @@ import pandas as pd
 
 from evidently import ColumnMapping
 from evidently.analyzers.prob_classification_performance_analyzer import ProbClassificationPerformanceAnalyzer
-
-from evidently.model.widget import BaseWidgetInfo, TabInfo
 from evidently.dashboard.widgets.widget import Widget
+from evidently.model.widget import BaseWidgetInfo
+from evidently.model.widget import TabInfo
 
 
 class ProbClassPRTableWidget(Widget):

@@ -1,38 +1,38 @@
 from abc import ABC
-from typing import List, Dict
+from typing import Dict
+from typing import List
 from typing import Optional
 from typing import Union
 
 import numpy as np
 
-from evidently.utils.data_operations import DatasetColumns
-from evidently.model.widget import BaseWidgetInfo
+from evidently.metrics import DataQualityCorrelationMetrics
 from evidently.metrics import DataQualityMetrics
 from evidently.metrics import DataQualityStabilityMetrics
 from evidently.metrics import DataQualityValueListMetrics
-from evidently.metrics import DataQualityValueRangeMetrics
 from evidently.metrics import DataQualityValueQuantileMetrics
-from evidently.renderers.base_renderer import default_renderer
-from evidently.renderers.base_renderer import TestRenderer
-from evidently.renderers.base_renderer import TestHtmlInfo
+from evidently.metrics import DataQualityValueRangeMetrics
+from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import DetailsInfo
+from evidently.renderers.base_renderer import TestHtmlInfo
+from evidently.renderers.base_renderer import TestRenderer
+from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.render_utils import plot_distr
-from evidently.metrics import DataQualityCorrelationMetrics
 from evidently.tests.base_test import BaseCheckValueTest
-from evidently.tests.base_test import GroupingTypes
-from evidently.tests.base_test import GroupData
-from evidently.tests.base_test import Test
 from evidently.tests.base_test import BaseTestGenerator
+from evidently.tests.base_test import GroupData
+from evidently.tests.base_test import GroupingTypes
+from evidently.tests.base_test import Test
 from evidently.tests.base_test import TestResult
 from evidently.tests.base_test import TestValueCondition
 from evidently.tests.utils import approx
-from evidently.utils.types import Numeric
 from evidently.tests.utils import plot_check
+from evidently.tests.utils import plot_correlations
 from evidently.tests.utils import plot_metric_value
 from evidently.tests.utils import plot_value_counts_tables
 from evidently.tests.utils import plot_value_counts_tables_ref_curr
-from evidently.tests.utils import plot_correlations
-
+from evidently.utils.data_operations import DatasetColumns
+from evidently.utils.types import Numeric
 
 DATA_QUALITY_GROUP = GroupData("data_quality", "Data Quality", "")
 GroupingTypes.TestGroup.add_value(DATA_QUALITY_GROUP)

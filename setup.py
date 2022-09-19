@@ -6,9 +6,12 @@
 import os
 from os.path import join as pjoin
 
+from setupbase import HERE
+from setupbase import combine_commands
+from setupbase import create_cmdclass
+from setupbase import ensure_targets
+from setupbase import install_npm
 from setuptools import setup
-
-from setupbase import create_cmdclass, ensure_targets, combine_commands, HERE, install_npm
 
 nb_path = pjoin(HERE, "src", "evidently", "nbextension", "static")
 
@@ -53,6 +56,7 @@ setup_args = dict(
     ],
     extras_require={
         "dev": [
+            "wheel==0.35.1",
             "setuptools==50.3.2",
             "flake8==4.0.1",
             "jupyter==1.0.0",
@@ -60,6 +64,9 @@ setup_args = dict(
             "pytest==6.2.5",
             "types-PyYAML==6.0.1",
             "types-requests==2.26.0",
+            "types-dataclasses==0.6",
+            "black==22.8.0",
+            "isort==5.10.1",
         ]
     },
     entry_points={},

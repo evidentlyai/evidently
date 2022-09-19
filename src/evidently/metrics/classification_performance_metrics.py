@@ -1,11 +1,11 @@
 import abc
-import dataclasses
 import json
-from typing import Optional
-from typing import List
 from typing import Dict
+from typing import List
+from typing import Optional
 from typing import Union
 
+import dataclasses
 import numpy as np
 import pandas as pd
 import plotly.figure_factory as ff
@@ -13,21 +13,21 @@ import plotly.graph_objs as go
 import sklearn
 from numpy import dtype
 from pandas.core.dtypes.api import is_float_dtype
-from pandas.core.dtypes.api import is_string_dtype
 from pandas.core.dtypes.api import is_object_dtype
+from pandas.core.dtypes.api import is_string_dtype
 
 from evidently import ColumnMapping
 from evidently.calculations.classification_performance import ConfusionMatrix
 from evidently.calculations.classification_performance import calculate_confusion_by_classes
-from evidently.utils.data_operations import process_columns
-from evidently.utils.data_operations import DatasetColumns
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import default_renderer
+from evidently.options import ColorOptions
 from evidently.renderers.base_renderer import MetricHtmlInfo
 from evidently.renderers.base_renderer import MetricRenderer
-from evidently.options import ColorOptions
+from evidently.renderers.base_renderer import default_renderer
+from evidently.utils.data_operations import DatasetColumns
+from evidently.utils.data_operations import process_columns
 
 
 @dataclasses.dataclass

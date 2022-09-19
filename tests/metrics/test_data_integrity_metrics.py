@@ -3,8 +3,8 @@ import pandas as pd
 import pytest
 
 from evidently.metrics import DataIntegrityMetrics
-from evidently.metrics import DataIntegrityValueByRegexpMetrics
 from evidently.metrics import DataIntegrityNullValuesMetrics
+from evidently.metrics import DataIntegrityValueByRegexpMetrics
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.metrics.data_integrity_metrics import DataIntegrityValueByRegexpMetricResult

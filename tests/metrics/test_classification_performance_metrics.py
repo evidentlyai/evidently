@@ -4,14 +4,13 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
-
 import pytest
 from pytest import approx
 
 from evidently.calculations.classification_performance import ConfusionMatrix
 from evidently.metrics import ClassificationPerformanceMetrics
-from evidently.metrics import ClassificationPerformanceMetricsTopK
 from evidently.metrics import ClassificationPerformanceMetricsThreshold
+from evidently.metrics import ClassificationPerformanceMetricsTopK
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.classification_performance_metrics import get_prediction_data
 from evidently.metrics.classification_performance_metrics import k_probability_threshold

@@ -1,17 +1,16 @@
 import numpy as np
 import pandas as pd
-
 import pytest
 
-from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.metrics.base_metric import InputData
+from evidently.metrics import DataQualityCorrelationMetrics
 from evidently.metrics import DataQualityMetrics
 from evidently.metrics import DataQualityStabilityMetrics
 from evidently.metrics import DataQualityValueListMetrics
-from evidently.metrics import DataQualityValueRangeMetrics
 from evidently.metrics import DataQualityValueQuantileMetrics
-from evidently.metrics import DataQualityCorrelationMetrics
+from evidently.metrics import DataQualityValueRangeMetrics
+from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.report import Report
 
 
