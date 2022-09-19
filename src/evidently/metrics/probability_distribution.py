@@ -4,7 +4,6 @@ from typing import Optional
 
 import dataclasses
 import numpy as np
-
 from plotly import figure_factory as ff
 
 from evidently.metrics.base_metric import InputData

@@ -1,21 +1,20 @@
-import dataclasses
 from typing import List
-from typing import Optional, Sequence
+from typing import Optional
+from typing import Sequence
 
-from dataclasses import dataclass
-
+import dataclasses
 import numpy as np
-
 import pandas as pd
-
 import plotly.figure_factory as ff
 import plotly.graph_objs as go
+from dataclasses import dataclass
 
-from evidently.calculations.data_drift import DataDriftMetrics, calculate_data_drift_for_numeric_feature
+from evidently.calculations.data_drift import DataDriftMetrics
+from evidently.calculations.data_drift import calculate_data_drift_for_numeric_feature
 from evidently.calculations.data_quality import get_rows_count
 from evidently.dashboard.widgets.utils import CutQuantileTransformer
-from evidently.metrics.base_metric import Metric
 from evidently.metrics.base_metric import InputData
+from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import ColorOptions
 from evidently.options import DataDriftOptions

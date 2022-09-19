@@ -1,11 +1,10 @@
 import pandas as pd
+import pytest
 
 from evidently.analyzers.classification_performance_analyzer import ClassificationPerformanceAnalyzer
 from evidently.dashboard.widgets.class_quality_metrics_bar_widget import ClassQualityMetricsBarWidget
 from evidently.options import OptionsProvider
 from evidently.pipeline.column_mapping import ColumnMapping
-
-import pytest
 
 
 @pytest.fixture

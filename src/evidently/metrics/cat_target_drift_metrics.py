@@ -1,27 +1,30 @@
 #!/usr/bin/env python
 # coding: utf-8
-import dataclasses
 from typing import List
 from typing import Optional
 from typing import Sequence
 
+import dataclasses
 from dataclasses import dataclass
 
 from evidently.calculations.data_drift import DataDriftMetrics
 from evidently.calculations.data_drift import calculate_data_drift_for_category_feature
 from evidently.calculations.data_drift import define_predictions_type
 from evidently.calculations.data_quality import get_rows_count
-from evidently.metrics.base_metric import Metric
 from evidently.metrics.base_metric import InputData
+from evidently.metrics.base_metric import Metric
 from evidently.metrics.utils import make_hist_for_cat_plot
-from evidently.options import DataDriftOptions, QualityMetricsOptions
+from evidently.options import DataDriftOptions
 from evidently.options import OptionsProvider
+from evidently.options import QualityMetricsOptions
 from evidently.renderers.base_renderer import MetricHtmlInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import HistogramData
 from evidently.renderers.html_widgets import histogram
-from evidently.utils.data_operations import process_columns, replace_infinity_values_to_nan, DatasetColumns
+from evidently.utils.data_operations import DatasetColumns
+from evidently.utils.data_operations import process_columns
+from evidently.utils.data_operations import replace_infinity_values_to_nan
 
 
 @dataclass

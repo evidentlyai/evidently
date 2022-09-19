@@ -1,10 +1,9 @@
-import dataclasses
 from typing import List
 from typing import Optional
 
+import dataclasses
 import numpy as np
 import pandas as pd
-
 import plotly.graph_objs as go
 from scipy.stats import probplot
 

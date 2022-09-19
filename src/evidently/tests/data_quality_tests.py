@@ -1,38 +1,38 @@
 from abc import ABC
-from typing import List, Dict
+from typing import Dict
+from typing import List
 from typing import Optional
 from typing import Union
 
 import numpy as np
 
-from evidently.utils.data_operations import DatasetColumns
-from evidently.model.widget import BaseWidgetInfo
+from evidently.metrics import DataQualityCorrelationMetrics
 from evidently.metrics import DataQualityMetrics
 from evidently.metrics import DataQualityStabilityMetrics
 from evidently.metrics import DataQualityValueListMetrics
-from evidently.metrics import DataQualityValueRangeMetrics
 from evidently.metrics import DataQualityValueQuantileMetrics
-from evidently.renderers.base_renderer import default_renderer
-from evidently.renderers.base_renderer import TestRenderer
-from evidently.renderers.base_renderer import TestHtmlInfo
+from evidently.metrics import DataQualityValueRangeMetrics
+from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import DetailsInfo
+from evidently.renderers.base_renderer import TestHtmlInfo
+from evidently.renderers.base_renderer import TestRenderer
+from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.render_utils import plot_distr
-from evidently.metrics import DataQualityCorrelationMetrics
 from evidently.tests.base_test import BaseCheckValueTest
-from evidently.tests.base_test import GroupingTypes
 from evidently.tests.base_test import GroupData
+from evidently.tests.base_test import GroupingTypes
 from evidently.tests.base_test import Test
-from evidently.tests.base_test import BaseTestGenerator
 from evidently.tests.base_test import TestResult
 from evidently.tests.base_test import TestValueCondition
 from evidently.tests.utils import approx
-from evidently.utils.types import Numeric
 from evidently.tests.utils import plot_check
+from evidently.tests.utils import plot_correlations
 from evidently.tests.utils import plot_metric_value
 from evidently.tests.utils import plot_value_counts_tables
 from evidently.tests.utils import plot_value_counts_tables_ref_curr
-from evidently.tests.utils import plot_correlations
-
+from evidently.utils.data_operations import DatasetColumns
+from evidently.utils.generators import BaseGenerator
+from evidently.utils.types import Numeric
 
 DATA_QUALITY_GROUP = GroupData("data_quality", "Data Quality", "")
 GroupingTypes.TestGroup.add_value(DATA_QUALITY_GROUP)
@@ -425,7 +425,7 @@ class TestCorrelationChanges(BaseDataQualityCorrelationsMetricsValueTest):
         return (diff.abs() > self.corr_diff).sum().sum() / 2
 
     def get_description(self, value: Numeric) -> str:
-        return f"Number of correlation violations is {value:.3g}. The test threshold is {self.get_condition()}."
+        return f"The number of correlation violations is {value:.3g}. The test threshold is {self.get_condition()}."
 
 
 @default_renderer(wrap_type=TestCorrelationChanges)
@@ -561,7 +561,7 @@ class TestFeatureValueMinRenderer(TestRenderer):
 
 
 class TestFeatureValueMax(BaseFeatureDataQualityMetricsTest):
-    name = "Test a feature max value"
+    name = "Max Value"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
@@ -919,10 +919,10 @@ class TestMostCommonValueShareRenderer(TestRenderer):
         return info
 
 
-class TestAllColumnsMostCommonValueShare(BaseTestGenerator):
+class TestAllColumnsMostCommonValueShare(BaseGenerator):
     """Creates most common value share tests for each column in the dataset"""
 
-    def generate_tests(self, columns_info: DatasetColumns) -> List[TestMostCommonValueShare]:
+    def generate(self, columns_info: DatasetColumns) -> List[TestMostCommonValueShare]:
         return [TestMostCommonValueShare(column_name=name) for name in columns_info.get_all_columns_list()]
 
 
@@ -1049,10 +1049,10 @@ class TestMeanInNSigmasRenderer(TestRenderer):
         return info
 
 
-class TestNumColumnsMeanInNSigmas(BaseTestGenerator):
+class TestNumColumnsMeanInNSigmas(BaseGenerator):
     """Create tests of mean for all numeric columns"""
 
-    def generate_tests(self, columns_info: DatasetColumns) -> List[TestMeanInNSigmas]:
+    def generate(self, columns_info: DatasetColumns) -> List[TestMeanInNSigmas]:
         return [TestMeanInNSigmas(column_name=name, n_sigmas=2) for name in columns_info.num_feature_names]
 
 
@@ -1281,10 +1281,10 @@ class TestShareOfOutRangeValuesRenderer(TestRenderer):
         return info
 
 
-class TestNumColumnsOutOfRangeValues(BaseTestGenerator):
+class TestNumColumnsOutOfRangeValues(BaseGenerator):
     """Creates share of out of range values tests for all numeric columns"""
 
-    def generate_tests(self, columns_info: DatasetColumns) -> List[TestShareOfOutRangeValues]:
+    def generate(self, columns_info: DatasetColumns) -> List[TestShareOfOutRangeValues]:
         return [TestShareOfOutRangeValues(column_name=name) for name in columns_info.num_feature_names]
 
 
@@ -1441,10 +1441,10 @@ class TestShareOfOutListValues(BaseDataQualityValueListMetricsTest):
         )
 
 
-class TestCatColumnsOutOfListValues(BaseTestGenerator):
+class TestCatColumnsOutOfListValues(BaseGenerator):
     """Create share of out of list values tests for category columns"""
 
-    def generate_tests(self, columns_info: DatasetColumns) -> List[TestShareOfOutListValues]:
+    def generate(self, columns_info: DatasetColumns) -> List[TestShareOfOutListValues]:
         return [TestShareOfOutListValues(column_name=name) for name in columns_info.cat_feature_names]
 
 

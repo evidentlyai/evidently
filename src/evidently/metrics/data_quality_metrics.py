@@ -1,29 +1,29 @@
-import dataclasses
-from dataclasses import dataclass
 from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Sequence
 from typing import Union
 
-import pandas as pd
+import dataclasses
 import numpy as np
+import pandas as pd
+from dataclasses import dataclass
 
 from evidently import TaskType
+from evidently.calculations.data_quality import DataQualityStats
 from evidently.calculations.data_quality import calculate_correlations
 from evidently.calculations.data_quality import calculate_data_quality_stats
-from evidently.calculations.data_quality import DataQualityStats
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
-from evidently.metrics.utils import make_hist_for_num_plot
 from evidently.metrics.utils import make_hist_for_cat_plot
+from evidently.metrics.utils import make_hist_for_num_plot
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.base_renderer import MetricHtmlInfo
 from evidently.renderers.base_renderer import MetricRenderer
+from evidently.renderers.base_renderer import default_renderer
+from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_operations import recognize_task
-from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.visualizations import plot_distr
 
 

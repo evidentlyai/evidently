@@ -1,14 +1,13 @@
 from typing import Optional
 
 import pandas as pd
-
 import pytest
 
 from evidently.analyzers.cat_target_drift_analyzer import CatTargetDriftAnalyzer
+from evidently.dashboard.widgets.cat_output_drift_widget import CatOutputDriftWidget
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import OptionsProvider
 from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.dashboard.widgets.cat_output_drift_widget import CatOutputDriftWidget
 
 
 @pytest.fixture

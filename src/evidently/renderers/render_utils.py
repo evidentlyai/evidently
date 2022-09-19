@@ -1,6 +1,5 @@
 import plotly.graph_objs as go
 
-
 RED = "#ed0400"
 GREY = "#4d4d4d"
 COLOR_DISCRETE_SEQUENCE = (

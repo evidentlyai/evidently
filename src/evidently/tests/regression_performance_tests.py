@@ -3,21 +3,21 @@ from typing import List
 from typing import Optional
 from typing import Union
 
-from evidently.model.widget import BaseWidgetInfo
 from evidently.metrics import RegressionPerformanceMetrics
-from evidently.renderers.base_renderer import default_renderer
-from evidently.renderers.base_renderer import TestRenderer
-from evidently.renderers.base_renderer import TestHtmlInfo
+from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import DetailsInfo
+from evidently.renderers.base_renderer import TestHtmlInfo
+from evidently.renderers.base_renderer import TestRenderer
+from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.render_utils import plot_distr
 from evidently.tests.base_test import BaseCheckValueTest
-from evidently.tests.base_test import GroupingTypes
 from evidently.tests.base_test import GroupData
+from evidently.tests.base_test import GroupingTypes
 from evidently.tests.base_test import TestValueCondition
+from evidently.tests.utils import approx
 from evidently.tests.utils import plot_check
 from evidently.tests.utils import plot_metric_value
 from evidently.tests.utils import regression_perf_plot
-from evidently.tests.utils import approx
 from evidently.utils.types import Numeric
 
 REGRESSION_GROUP = GroupData("regression", "Regression", "")
@@ -64,7 +64,7 @@ class TestValueMAE(BaseRegressionPerformanceMetricsTest):
         return self.metric.get_result().mean_abs_error
 
     def get_description(self, value: Numeric) -> str:
-        return f"MAE is {value:.3}. The test threshold is {self.get_condition()}"
+        return f"The MAE is {value:.3}. The test threshold is {self.get_condition()}"
 
 
 @default_renderer(wrap_type=TestValueMAE)
@@ -123,7 +123,7 @@ class TestValueMAPE(BaseRegressionPerformanceMetricsTest):
         return self.metric.get_result().mean_abs_perc_error
 
     def get_description(self, value: Numeric) -> str:
-        return f"MAPE is {value:.3}. The test threshold is {self.get_condition()}."
+        return f"The MAPE is {value:.3}. The test threshold is {self.get_condition()}."
 
 
 @default_renderer(wrap_type=TestValueMAPE)
@@ -183,7 +183,7 @@ class TestValueRMSE(BaseRegressionPerformanceMetricsTest):
         return self.metric.get_result().rmse
 
     def get_description(self, value: Numeric) -> str:
-        return f"RMSE is {value:.3}. The test threshold is {self.get_condition()}."
+        return f"The RMSE is {value:.3}. The test threshold is {self.get_condition()}."
 
 
 @default_renderer(wrap_type=TestValueRMSE)
@@ -238,7 +238,7 @@ class TestValueMeanError(BaseRegressionPerformanceMetricsTest):
         return self.metric.get_result().mean_error
 
     def get_description(self, value: Numeric) -> str:
-        return f"ME is {value:.3}. The test threshold is {self.get_condition()}."
+        return f"The ME is {value:.3}. The test threshold is {self.get_condition()}."
 
 
 @default_renderer(wrap_type=TestValueMeanError)

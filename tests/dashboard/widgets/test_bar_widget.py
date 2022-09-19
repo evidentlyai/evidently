@@ -1,7 +1,7 @@
 import pandas as pd
 
-from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.dashboard.widgets.bar_widget import BarWidget
+from evidently.pipeline.column_mapping import ColumnMapping
 
 
 def test_bar_widget_simple_case() -> None:

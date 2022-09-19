@@ -63,11 +63,24 @@ cd C:\path\to\evidently_repo
 pip install -e .[dev]
 ```
 
-## 4. Run the tests
+## 4. Run formatters, linters, unit tests
+### Running black 
+We use black for code auto formatting.
+```sh
+black .
+```
+
+### Running isort 
+We use black for imports auto formatting.
+```sh
+isort .
+```
+
 ### Running flake8 
 We use flake8 for code style checks.
 ```sh
 flake8 src
+flake8 tests
 ```
 
 ### Running mypy
@@ -80,7 +93,7 @@ mypy
 ### Running unit tests
 Currently, the project is not fully covered by unit tests, but we are going to add more soon and expect to receive PRs with some unit tests 🙂
 ```sh
-pytest -v
+pytest -v tests
 ```
 
 ### Running smoke tests

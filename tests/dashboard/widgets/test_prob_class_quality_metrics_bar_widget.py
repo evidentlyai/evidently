@@ -1,14 +1,13 @@
 from typing import Optional
 
 import pandas as pd
-
 import pytest
 
 from evidently.analyzers.prob_classification_performance_analyzer import ProbClassificationPerformanceAnalyzer
+from evidently.dashboard.widgets.prob_class_quality_metrics_bar_widget import ProbClassQualityMetricBarWidget
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import OptionsProvider
 from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.dashboard.widgets.prob_class_quality_metrics_bar_widget import ProbClassQualityMetricBarWidget
 
 
 @pytest.fixture

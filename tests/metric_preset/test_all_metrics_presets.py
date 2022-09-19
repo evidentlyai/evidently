@@ -1,5 +1,4 @@
 import pandas as pd
-
 import pytest
 
 from evidently.metric_preset import ClassificationPerformance

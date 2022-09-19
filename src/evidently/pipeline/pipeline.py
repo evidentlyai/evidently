@@ -1,5 +1,9 @@
 import itertools
-from typing import List, Dict, Type, Sequence, Optional
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Sequence
+from typing import Type
 
 import pandas
 

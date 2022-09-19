@@ -3,10 +3,10 @@ import json
 import pandas as pd
 
 from evidently.pipeline.column_mapping import ColumnMapping
+from evidently.test_suite import TestSuite
+from evidently.tests import TestFeatureValueDrift
 from evidently.tests import TestNumberOfDriftedFeatures
 from evidently.tests import TestShareOfDriftedFeatures
-from evidently.tests import TestFeatureValueDrift
-from evidently.test_suite import TestSuite
 
 
 def test_data_drift_test_number_of_drifted_features() -> None:

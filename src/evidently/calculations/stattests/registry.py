@@ -1,7 +1,11 @@
-from typing import List, Union, Callable, Tuple, Dict, Optional
+from typing import Callable
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Tuple
+from typing import Union
 
 import dataclasses
-
 import pandas as pd
 
 from evidently.calculations import stattests

@@ -1,4 +1,7 @@
-from typing import Optional, List, Union, Sequence
+from typing import List
+from typing import Optional
+from typing import Sequence
+from typing import Union
 
 from dataclasses import dataclass
 

@@ -1,14 +1,13 @@
 from typing import Optional
 
 import pandas as pd
-
 import pytest
 
 from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceAnalyzer
+from evidently.dashboard.widgets.reg_abs_perc_error_in_time_widget import RegAbsPercErrorTimeWidget
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import OptionsProvider
 from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.dashboard.widgets.reg_abs_perc_error_in_time_widget import RegAbsPercErrorTimeWidget
 
 
 @pytest.fixture

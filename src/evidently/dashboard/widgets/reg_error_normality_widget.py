@@ -4,17 +4,15 @@
 import json
 from typing import Optional
 
-import pandas as pd
 import numpy as np
-
-from scipy.stats import probplot
+import pandas as pd
 import plotly.graph_objs as go
+from scipy.stats import probplot
 
 from evidently import ColumnMapping
 from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceAnalyzer
-
-from evidently.model.widget import BaseWidgetInfo
 from evidently.dashboard.widgets.widget import Widget
+from evidently.model.widget import BaseWidgetInfo
 from evidently.options import ColorOptions
 
 

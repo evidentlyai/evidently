@@ -5,13 +5,13 @@ import pytest
 
 from evidently import ColumnMapping
 from evidently.dashboard import Dashboard
+from evidently.dashboard.tabs import CatTargetDriftTab
+from evidently.dashboard.tabs import ClassificationPerformanceTab
 from evidently.dashboard.tabs import DataDriftTab
 from evidently.dashboard.tabs import DataQualityTab
 from evidently.dashboard.tabs import NumTargetDriftTab
-from evidently.dashboard.tabs import CatTargetDriftTab
-from evidently.dashboard.tabs import RegressionPerformanceTab
-from evidently.dashboard.tabs import ClassificationPerformanceTab
 from evidently.dashboard.tabs import ProbClassificationPerformanceTab
+from evidently.dashboard.tabs import RegressionPerformanceTab
 from evidently.dashboard.tabs.base_tab import Tab
 
 

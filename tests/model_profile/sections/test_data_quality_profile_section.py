@@ -1,12 +1,11 @@
 from datetime import datetime
 
-import pytest
-
 import numpy as np
 import pandas as pd
+import pytest
 
-from evidently.utils.data_operations import ColumnMapping
 from evidently.model_profile.sections.data_quality_profile_section import DataQualityProfileSection
+from evidently.utils.data_operations import ColumnMapping
 
 from .helpers import calculate_section_results
 from .helpers import check_profile_section_result_common_part

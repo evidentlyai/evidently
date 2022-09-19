@@ -43,6 +43,10 @@
   * [Options for Color Schema](customization/options-for-color-schema.md)
 * [Recipes](recipes/README.md)
 
+## Reference
+* [Dara drift algorithm](reference/data-drift-algorithm.md)
+* [All tests](reference/all-tests.md)
+
 ## SUPPORT
 
 * [Contact](support/contact.md)

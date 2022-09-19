@@ -3,32 +3,31 @@ from datetime import datetime
 
 import numpy as np
 import pandas as pd
-
 import pytest
 
 from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.tests import TestNumberOfColumns
-from evidently.tests import TestNumberOfRows
-from evidently.tests import TestNumberOfConstantColumns
-from evidently.tests import TestNumberOfEmptyRows
-from evidently.tests import TestNumberOfEmptyColumns
-from evidently.tests import TestNumberOfDuplicatedRows
-from evidently.tests import TestNumberOfDuplicatedColumns
-from evidently.tests import TestColumnsType
+from evidently.test_suite import TestSuite
 from evidently.tests import TestColumnAllConstantValues
 from evidently.tests import TestColumnAllUniqueValues
-from evidently.tests import TestColumnValueRegExp
-from evidently.tests import TestNumberOfNulls
-from evidently.tests import TestShareOfNulls
 from evidently.tests import TestColumnNumberOfDifferentNulls
 from evidently.tests import TestColumnNumberOfNulls
 from evidently.tests import TestColumnShareOfNulls
-from evidently.tests import TestNumberOfDifferentNulls
+from evidently.tests import TestColumnsType
+from evidently.tests import TestColumnValueRegExp
+from evidently.tests import TestNumberOfColumns
 from evidently.tests import TestNumberOfColumnsWithNulls
-from evidently.tests import TestShareOfColumnsWithNulls
+from evidently.tests import TestNumberOfConstantColumns
+from evidently.tests import TestNumberOfDifferentNulls
+from evidently.tests import TestNumberOfDuplicatedColumns
+from evidently.tests import TestNumberOfDuplicatedRows
+from evidently.tests import TestNumberOfEmptyColumns
+from evidently.tests import TestNumberOfEmptyRows
+from evidently.tests import TestNumberOfNulls
+from evidently.tests import TestNumberOfRows
 from evidently.tests import TestNumberOfRowsWithNulls
+from evidently.tests import TestShareOfColumnsWithNulls
+from evidently.tests import TestShareOfNulls
 from evidently.tests import TestShareOfRowsWithNulls
-from evidently.test_suite import TestSuite
 
 
 def test_data_integrity_test_number_of_columns() -> None:
@@ -483,9 +482,9 @@ def test_data_integrity_test_columns_null_share_json_render() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "Share of null values in **feature1** is 0.25. The test " "threshold is lte=0.25 ± 0.025.",
+        "description": "The share of nulls and missing values in the column **feature1** is 0.25. The test threshold is lte=0.25 ± 0.025.",
         "group": "data_integrity",
-        "name": "Test Share Of Null Values In Column",
+        "name": "The Share of Nulls in a Column",
         "parameters": {
             "column_name": "feature1",
             "condition": {"lte": {"absolute": 1e-12, "relative": 0.1, "value": 0.25}},

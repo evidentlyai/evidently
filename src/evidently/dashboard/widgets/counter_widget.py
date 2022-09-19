@@ -6,8 +6,8 @@ from typing import Optional
 import pandas as pd
 
 from evidently import ColumnMapping
-from evidently.model.widget import BaseWidgetInfo
 from evidently.dashboard.widgets.widget import Widget
+from evidently.model.widget import BaseWidgetInfo
 
 
 class CounterWidget(Widget):

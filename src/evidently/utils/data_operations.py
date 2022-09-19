@@ -1,5 +1,9 @@
 """Methods for clean null or NaN values in a dataset"""
-from typing import List, Optional, Dict, Union, Sequence
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Sequence
+from typing import Union
 
 import numpy as np
 import pandas as pd
