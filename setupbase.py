@@ -9,17 +9,16 @@ This file originates from the 'jupyter-packaging' package, and
 contains a set of useful utilities for including npm packages
 within a Python package.
 """
-from collections import defaultdict
-from os.path import join as pjoin
+import functools
 import io
 import os
-import functools
 import pipes
 import re
 import shlex
 import subprocess
 import sys
-
+from collections import defaultdict
+from os.path import join as pjoin
 
 # BEFORE importing distutils, remove MANIFEST. distutils doesn't properly
 # update it when the contents of directories change.
@@ -27,13 +26,13 @@ if os.path.exists("MANIFEST"):
     os.remove("MANIFEST")
 
 
+from distutils import log
 from distutils.cmd import Command
 from distutils.command.build_py import build_py
 from distutils.command.sdist import sdist
-from distutils import log
 
-from setuptools.command.develop import develop
 from setuptools.command.bdist_egg import bdist_egg
+from setuptools.command.develop import develop
 
 try:
     from wheel.bdist_wheel import bdist_wheel

@@ -1,5 +1,4 @@
 import copy
-import dataclasses
 import uuid
 from collections import Counter
 from datetime import datetime
@@ -7,22 +6,23 @@ from typing import List
 from typing import Optional
 from typing import Union
 
+import dataclasses
 import pandas as pd
 
 import evidently
-from evidently.utils.data_operations import DatasetColumns
-from evidently.utils.data_operations import process_columns
 from evidently.metrics.base_metric import InputData
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
 from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.suite.base_suite import Suite
 from evidently.suite.base_suite import Display
+from evidently.suite.base_suite import Suite
 from evidently.suite.base_suite import find_test_renderer
 from evidently.test_preset.test_preset import TestPreset
 from evidently.tests.base_test import DEFAULT_GROUP
 from evidently.tests.base_test import Test
 from evidently.tests.base_test import TestResult
+from evidently.utils.data_operations import DatasetColumns
+from evidently.utils.data_operations import process_columns
 from evidently.utils.generators import BaseGenerator
 
 

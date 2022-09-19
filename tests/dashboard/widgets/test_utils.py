@@ -1,8 +1,7 @@
 import pandas as pd
+import pytest
 
 from evidently.dashboard.widgets.utils import CutQuantileTransformer
-
-import pytest
 
 
 @pytest.mark.parametrize(

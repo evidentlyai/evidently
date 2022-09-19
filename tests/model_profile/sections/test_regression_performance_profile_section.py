@@ -2,7 +2,6 @@ from typing import Any
 from typing import Dict
 
 import pandas
-
 import pytest
 
 from evidently.model_profile.sections.regression_performance_profile_section import RegressionPerformanceProfileSection

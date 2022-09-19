@@ -1,8 +1,5 @@
 import abc
 from abc import ABC
-
-import dataclasses
-from dataclasses import dataclass
 from typing import Any
 from typing import Dict
 from typing import List
@@ -10,9 +7,13 @@ from typing import Optional
 from typing import Type
 from typing import Union
 
+import dataclasses
+from dataclasses import dataclass
+
 from evidently.utils.generators import make_generator_by_columns
 from evidently.utils.generators import BaseGenerator
-from evidently.utils.types import ApproxValue, Numeric
+from evidently.utils.types import ApproxValue
+from evidently.utils.types import Numeric
 
 
 @dataclasses.dataclass

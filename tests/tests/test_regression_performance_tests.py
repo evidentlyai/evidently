@@ -3,13 +3,13 @@ import json
 import pandas as pd
 
 from evidently.pipeline.column_mapping import ColumnMapping
+from evidently.test_suite import TestSuite
+from evidently.tests import TestValueAbsMaxError
 from evidently.tests import TestValueMAE
 from evidently.tests import TestValueMAPE
 from evidently.tests import TestValueMeanError
-from evidently.tests import TestValueAbsMaxError
-from evidently.tests import TestValueRMSE
 from evidently.tests import TestValueR2Score
-from evidently.test_suite import TestSuite
+from evidently.tests import TestValueRMSE
 
 
 def test_value_mae_test() -> None:

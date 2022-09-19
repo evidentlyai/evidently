@@ -1,18 +1,15 @@
-import dataclasses
-from dataclasses import dataclass
 import uuid
 from typing import Dict
 from typing import List
 from typing import Optional
 
+import dataclasses
 import pandas as pd
+from dataclasses import dataclass
 
-from evidently.calculations.data_drift import DataDriftAnalyzerMetrics
 from evidently.calculations.data_drift import DataDriftAnalyzerFeatureMetrics
+from evidently.calculations.data_drift import DataDriftAnalyzerMetrics
 from evidently.calculations.data_drift import get_overall_data_drift
-from evidently.utils.data_operations import DatasetColumns
-from evidently.utils.data_operations import process_columns
-
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.metrics.utils import make_hist_for_cat_plot
@@ -26,6 +23,8 @@ from evidently.renderers.base_renderer import MetricHtmlInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.render_utils import plot_distr
+from evidently.utils.data_operations import DatasetColumns
+from evidently.utils.data_operations import process_columns
 
 
 @dataclass

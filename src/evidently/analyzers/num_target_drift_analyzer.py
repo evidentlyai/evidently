@@ -1,18 +1,17 @@
 from typing import Optional
 from typing import Sequence
 
-from dataclasses import dataclass
-
 import pandas as pd
+from dataclasses import dataclass
 
 from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.analyzers.base_analyzer import BaseAnalyzerResult
+from evidently.calculations.data_drift import DataDriftMetrics
+from evidently.calculations.data_drift import calculate_data_drift_for_numeric_feature
+from evidently.calculations.data_quality import get_rows_count
 from evidently.options import DataDriftOptions
 from evidently.utils.data_operations import process_columns
-from evidently.calculations.data_drift import calculate_data_drift_for_numeric_feature
-from evidently.calculations.data_drift import DataDriftMetrics
-from evidently.calculations.data_quality import get_rows_count
 
 
 @dataclass

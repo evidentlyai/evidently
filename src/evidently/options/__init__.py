@@ -1,12 +1,14 @@
-from typing import TypeVar, Generic, Type, Dict, Any
+from typing import Any
+from typing import Dict
+from typing import Generic
+from typing import Type
+from typing import TypeVar
 
-from .color_scheme import (
-    ColorOptions,
-    KARACHI_SUNRISE_COLOR_OPTIONS,
-    SOLARIZED_COLOR_OPTIONS,
-    BERLIN_AUTUMN_COLOR_OPTIONS,
-    NIGHTOWL_COLOR_OPTIONS,
-)
+from .color_scheme import BERLIN_AUTUMN_COLOR_OPTIONS
+from .color_scheme import KARACHI_SUNRISE_COLOR_OPTIONS
+from .color_scheme import NIGHTOWL_COLOR_OPTIONS
+from .color_scheme import SOLARIZED_COLOR_OPTIONS
+from .color_scheme import ColorOptions
 from .data_drift import DataDriftOptions
 from .quality_metrics import QualityMetricsOptions
 

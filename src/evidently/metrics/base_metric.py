@@ -8,6 +8,7 @@ from typing import TypeVar
 from typing import Union
 
 import pandas as pd
+from dataclasses import dataclass
 
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.utils.generators import make_generator_by_columns

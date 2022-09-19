@@ -9,9 +9,10 @@ import plotly.express as px
 
 from evidently import ColumnMapping
 from evidently.analyzers.classification_performance_analyzer import ClassificationPerformanceAnalyzer
-from evidently.model.widget import BaseWidgetInfo, AdditionalGraphInfo
-from evidently.dashboard.widgets.widget import Widget
 from evidently.dashboard.widgets.utils import CutQuantileTransformer
+from evidently.dashboard.widgets.widget import Widget
+from evidently.model.widget import AdditionalGraphInfo
+from evidently.model.widget import BaseWidgetInfo
 from evidently.options import QualityMetricsOptions
 
 

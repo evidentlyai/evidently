@@ -1,6 +1,5 @@
-from pandas import DataFrame
-
 import pytest
+from pandas import DataFrame
 
 from evidently import ColumnMapping
 from evidently.analyzers.data_drift_analyzer import DataDriftAnalyzer

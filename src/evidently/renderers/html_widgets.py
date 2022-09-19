@@ -3,7 +3,6 @@ from typing import Optional
 from typing import Union
 
 import dataclasses
-
 import plotly.graph_objs as go
 
 from evidently.model.widget import BaseWidgetInfo

@@ -1,5 +1,4 @@
 import pandas
-
 import pytest
 
 from evidently.model_profile.sections.cat_target_drift_profile_section import CatTargetDriftProfileSection

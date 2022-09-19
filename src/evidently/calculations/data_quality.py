@@ -1,6 +1,4 @@
 """Methods for overall dataset quality calculations - rows count, a specific values count, etc."""
-from dataclasses import dataclass
-from dataclasses import fields
 from typing import Callable
 from typing import Dict
 from typing import Optional
@@ -8,6 +6,8 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
+from dataclasses import dataclass
+from dataclasses import fields
 from scipy.stats import chi2_contingency
 
 from evidently.utils.data_operations import DatasetColumns

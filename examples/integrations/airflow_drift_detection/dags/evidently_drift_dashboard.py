@@ -1,15 +1,15 @@
 try:
+    import os
+    from datetime import datetime
+    from datetime import timedelta
+
+    import pandas as pd
     from airflow import DAG
     from airflow.operators.python_operator import PythonOperator
-
-    from datetime import datetime, timedelta
-    import pandas as pd
     from sklearn import datasets
-    import os
 
     from evidently.dashboard import Dashboard
     from evidently.dashboard.tabs import DataDriftTab
-
     from evidently.model_profile import Profile
     from evidently.model_profile.sections import DataDriftProfileSection
 
