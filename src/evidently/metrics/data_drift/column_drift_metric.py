@@ -1,8 +1,8 @@
-import dataclasses
 from typing import Dict
 from typing import List
 from typing import Optional
 
+import dataclasses
 import pandas as pd
 
 from evidently.calculations.data_drift import calculate_data_drift
@@ -14,9 +14,9 @@ from evidently.metrics.utils import make_hist_for_num_plot
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import DataDriftOptions
 from evidently.options.data_drift import DEFAULT_NBINSX
-from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.base_renderer import MetricHtmlInfo
 from evidently.renderers.base_renderer import MetricRenderer
+from evidently.renderers.base_renderer import default_renderer
 from evidently.utils.types import Numeric
 
 
@@ -99,7 +99,7 @@ class ColumnDriftMetric(Metric[ColumnDriftMetricResults]):
             threshold=drift_result.threshold,
             drift_value=drift_result.drift_score,
             drift_detected=drift_result.drift_detected,
-            distr_for_plots=distr_for_plots
+            distr_for_plots=distr_for_plots,
         )
 
 

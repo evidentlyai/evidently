@@ -9,13 +9,11 @@ import dataclasses
 import numpy as np
 import pandas as pd
 
+from evidently.metrics import ColumnDriftMetric
 from evidently.metrics import DataDriftMetrics
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import DataDriftOptions
 from evidently.renderers.base_renderer import DetailsInfo
-from evidently.metrics import DataDriftMetrics
-from evidently.metrics import ColumnDriftMetric
-from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -143,11 +141,7 @@ class TestFeatureValueDrift(Test):
             self.metric = metric
 
         else:
-            self.metric = ColumnDriftMetric(
-                column_name=self.column_name,
-                column_type="num",
-                options=options
-            )
+            self.metric = ColumnDriftMetric(column_name=self.column_name, column_type="num", options=options)
 
     def check(self):
         drift_info = self.metric.get_result()
