@@ -1,7 +1,5 @@
 import collections
-import dataclasses
 import re
-from dataclasses import dataclass
 from itertools import combinations
 from typing import Any
 from typing import Dict
@@ -9,15 +7,21 @@ from typing import List
 from typing import Optional
 from typing import Pattern
 
+import dataclasses
 import numpy as np
 import pandas as pd
+from dataclasses import dataclass
 
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
-from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import default_renderer
+from evidently.model.widget import WidgetType
 from evidently.renderers.base_renderer import MetricHtmlInfo
 from evidently.renderers.base_renderer import MetricRenderer
+from evidently.renderers.base_renderer import default_renderer
+from evidently.renderers.html_widgets import CounterData
+from evidently.renderers.html_widgets import counter
+from evidently.renderers.html_widgets import header_text
+from evidently.renderers.html_widgets import table_data
 
 
 @dataclass
@@ -152,13 +156,7 @@ class DataIntegrityMetricsRenderer(MetricRenderer):
 
         return MetricHtmlInfo(
             f"data_integrity_metrics_table_{dataset_name.lower()}",
-            BaseWidgetInfo(
-                title=f"{dataset_name.capitalize()}: Data Integrity Metrics",
-                type=BaseWidgetInfo.WIDGET_INFO_TYPE_TABLE,
-                size=2,
-                params={"header": headers, "data": stats},
-            ),
-            details=[],
+            table_data(column_names=headers, data=stats),
         )
 
     def render_html(self, obj: DataIntegrityMetrics) -> List[MetricHtmlInfo]:
@@ -167,13 +165,7 @@ class DataIntegrityMetricsRenderer(MetricRenderer):
         result = [
             MetricHtmlInfo(
                 "data_integrity_title",
-                BaseWidgetInfo(
-                    type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
-                    title="",
-                    size=2,
-                    params={"counters": [{"value": "", "label": "Data Integrity"}]},
-                ),
-                details=[],
+                header_text(label="Data Integrity"),
             ),
             self._get_metrics_table(dataset_name="current", metrics=metric_result.current),
         ]
@@ -288,13 +280,11 @@ class DataIntegrityValueByRegexpMetricsRenderer(MetricRenderer):
         matched_stat_headers = ["Value", "Count"]
         return MetricHtmlInfo(
             name=f"data_integrity_value_by_regexp_stats_{dataset_name.lower()}",
-            info=BaseWidgetInfo(
+            info=table_data(
                 title=f"{dataset_name.capitalize()}: Match Statistics",
-                type=BaseWidgetInfo.WIDGET_INFO_TYPE_TABLE,
-                size=2,
-                params={"header": matched_stat_headers, "data": matched_stat},
+                column_names=matched_stat_headers,
+                data=matched_stat,
             ),
-            details=[],
         )
 
     def render_html(self, obj: DataIntegrityValueByRegexpMetrics) -> List[MetricHtmlInfo]:
@@ -305,22 +295,17 @@ class DataIntegrityValueByRegexpMetricsRenderer(MetricRenderer):
         result = [
             MetricHtmlInfo(
                 name="data_integrity_value_by_regexp_title",
-                info=BaseWidgetInfo(
-                    type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
+                info=counter(
                     title="Data Integrity Metric: Values Matching By Regexp In a Column",
-                    size=2,
-                    params={
-                        "counters": [
-                            {
-                                "value": "",
-                                "label": f"Founded {number_of_matched} of {number_of_rows} with "
-                                f"regexp '{metric_result.reg_exp}' in "
-                                f"column '{metric_result.column_name}' in current dataset.",
-                            }
-                        ]
-                    },
+                    counters=[
+                        CounterData(
+                            label="",
+                            value=f"Founded {number_of_matched} of {number_of_rows} with "
+                            f"regexp '{metric_result.reg_exp}' in "
+                            f"column '{metric_result.column_name}' in current dataset.",
+                        )
+                    ],
                 ),
-                details=[],
             ),
             self._get_table_stat(dataset_name="current", metrics=metric_result.current),
         ]
@@ -526,13 +511,11 @@ class DataIntegrityNullValuesMetricsRenderer(MetricRenderer):
         matched_stat_headers = ["Value", "Count"]
         return MetricHtmlInfo(
             name=f"data_integrity_null_values_stats_{dataset_name.lower()}",
-            info=BaseWidgetInfo(
+            info=table_data(
                 title=f"{dataset_name.capitalize()}: Nulls Statistic",
-                type=BaseWidgetInfo.WIDGET_INFO_TYPE_TABLE,
-                size=2,
-                params={"header": matched_stat_headers, "data": matched_stat},
+                column_names=matched_stat_headers,
+                data=matched_stat,
             ),
-            details=[],
         )
 
     def render_html(self, obj: DataIntegrityNullValuesMetrics) -> List[MetricHtmlInfo]:
@@ -542,23 +525,11 @@ class DataIntegrityNullValuesMetricsRenderer(MetricRenderer):
         result = [
             MetricHtmlInfo(
                 name="data_integrity_null_values_title",
-                info=BaseWidgetInfo(
-                    type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
-                    title="",
-                    size=2,
-                    params={"counters": [{"value": "", "label": "Data Integrity Metric: Null Values Statistic"}]},
-                ),
-                details=[],
+                info=header_text(label="Data Integrity Metric: Null Values Statistic"),
             ),
             MetricHtmlInfo(
                 name="data_integrity_null_values_title",
-                info=BaseWidgetInfo(
-                    type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
-                    title="",
-                    size=2,
-                    params={"counters": [{"value": "", "label": f"In current dataset {number_of_nulls} null values."}]},
-                ),
-                details=[],
+                info=header_text(label=f"In current dataset {number_of_nulls} null values."),
             ),
             self._get_table_stat(dataset_name="current", stats=metric_result.current_null_values),
         ]

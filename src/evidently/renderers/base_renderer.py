@@ -1,5 +1,8 @@
+from typing import Dict
+from typing import List
+from typing import Optional
+
 import dataclasses
-from typing import List, Optional, Dict
 
 from evidently.model.widget import BaseWidgetInfo
 
@@ -15,7 +18,7 @@ class DetailsInfo:
 class MetricHtmlInfo:
     name: str
     info: BaseWidgetInfo
-    details: List[DetailsInfo]
+    details: List[DetailsInfo] = dataclasses.field(default_factory=list)
 
 
 class MetricRenderer:

@@ -1,11 +1,9 @@
 import pandas as pd
+from pytest import approx
 
 from evidently.model_monitoring import ModelMonitoring
 from evidently.model_monitoring.monitors.num_target_drift import NumTargetDriftMonitor
 from evidently.pipeline.column_mapping import ColumnMapping
-
-from pytest import approx
-
 from tests.model_monitoring.helpers import collect_metrics_results
 
 

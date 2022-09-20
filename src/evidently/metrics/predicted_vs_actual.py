@@ -1,20 +1,21 @@
-import dataclasses
 from typing import List
 from typing import Optional
 
+import dataclasses
 import numpy as np
 import pandas as pd
-
 import plotly.graph_objs as go
 from scipy.stats import probplot
 
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
-from evidently.model.widget import BaseWidgetInfo
 from evidently.options import ColorOptions
 from evidently.renderers.base_renderer import MetricHtmlInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
+from evidently.renderers.html_widgets import WidgetSize
+from evidently.renderers.html_widgets import plotly_data
+from evidently.renderers.html_widgets import plotly_figure
 from evidently.utils.data_operations import process_columns
 
 
@@ -129,13 +130,10 @@ def _error_norm(plot_data: PlotData, dataset_name: str, color_options: ColorOpti
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
     )
 
-    error_norm_json = error_norm.to_plotly_json()
-
-    return BaseWidgetInfo(
+    return plotly_figure(
         title=f"{dataset_name.title()}: Error Normality",
-        type="big_graph",
-        size=1,
-        params={"data": error_norm_json["data"], "layout": error_norm_json["layout"]},
+        size=WidgetSize.HALF,
+        figure=error_norm,
     )
 
 
@@ -171,14 +169,10 @@ def _error_in_time(plot_data: PlotData, dataset_name: str, color_options: ColorO
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
     )
 
-    error_in_time_json = error_in_time.to_plotly_json()
-
-    return BaseWidgetInfo(
+    return plotly_figure(
         title=f"{dataset_name.title()}: Error (Predicted - Actual)",
-        type="big_graph",
-        size=1,
-        params={"data": error_in_time_json["data"], "layout": error_in_time_json["layout"]},
-        additionalGraphs=[],
+        size=WidgetSize.HALF,
+        figure=error_in_time,
     )
 
 
@@ -196,14 +190,7 @@ def _error_distr(plot_data: PlotData, dataset_name: str, color_options: ColorOpt
         yaxis_title="Percentage",
     )
 
-    error_distr_json = error_distr.to_plotly_json()
-
-    return BaseWidgetInfo(
-        title=f"{dataset_name.title()}: Error Distribution",
-        type="big_graph",
-        size=1,
-        params={"data": error_distr_json["data"], "layout": error_distr_json["layout"]},
-    )
+    return plotly_figure(title=f"{dataset_name.title()}: Error Distribution", size=WidgetSize.HALF, figure=error_distr)
 
 
 def _abs_error_in_time(plot_data: PlotData, dataset_name: str, color_options: ColorOptions):
@@ -237,14 +224,8 @@ def _abs_error_in_time(plot_data: PlotData, dataset_name: str, color_options: Co
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
     )
 
-    abs_perc_error_time_json = abs_perc_error_time.to_plotly_json()
-
-    return BaseWidgetInfo(
-        title=f"{dataset_name.title()}: Absolute Percentage Error",
-        type="big_graph",
-        size=1,
-        params={"data": abs_perc_error_time_json["data"], "layout": abs_perc_error_time_json["layout"]},
-        additionalGraphs=[],
+    return plotly_figure(
+        title=f"{dataset_name.title()}: Absolute Percentage Error", size=WidgetSize.HALF, figure=abs_perc_error_time
     )
 
 
@@ -289,13 +270,10 @@ def _pred_vs_actual_in_time(plot_data: PlotData, dataset_name: str, color_option
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
     )
 
-    pred_actual_time_json = pred_actual_time.to_plotly_json()
-
-    return BaseWidgetInfo(
+    return plotly_figure(
         title=f"{dataset_name.title()}: Predicted vs Actual in Time",
-        type="big_graph",
-        size=1,
-        params={"data": pred_actual_time_json["data"], "layout": pred_actual_time_json["layout"]},
+        size=WidgetSize.HALF,
+        figure=pred_actual_time,
     )
 
 
@@ -319,10 +297,8 @@ def _plot_data_to_plotly(plot_data: PlotData, dataset_name: str, color_options: 
         yaxis=dict(showticklabels=True),
     )
 
-    pred_actual_json = pred_actual.to_plotly_json()
-    return BaseWidgetInfo(
+    return plotly_figure(
         title=f"{dataset_name.title()}: Predicted vs Actual",
-        type="big_graph",
-        size=1,
-        params={"data": pred_actual_json["data"], "layout": pred_actual_json["layout"]},
+        size=WidgetSize.HALF,
+        figure=pred_actual,
     )

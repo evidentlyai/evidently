@@ -1,17 +1,17 @@
-from dataclasses import dataclass
 from typing import Dict
 
+from dataclasses import dataclass
+
 from evidently.dashboard import Dashboard
-from evidently.runner.runner import RunnerOptions, Runner
-from evidently.dashboard.tabs import (
-    DataDriftTab,
-    CatTargetDriftTab,
-    ClassificationPerformanceTab,
-    NumTargetDriftTab,
-    ProbClassificationPerformanceTab,
-    RegressionPerformanceTab,
-    DataQualityTab,
-)
+from evidently.dashboard.tabs import CatTargetDriftTab
+from evidently.dashboard.tabs import ClassificationPerformanceTab
+from evidently.dashboard.tabs import DataDriftTab
+from evidently.dashboard.tabs import DataQualityTab
+from evidently.dashboard.tabs import NumTargetDriftTab
+from evidently.dashboard.tabs import ProbClassificationPerformanceTab
+from evidently.dashboard.tabs import RegressionPerformanceTab
+from evidently.runner.runner import Runner
+from evidently.runner.runner import RunnerOptions
 
 
 @dataclass

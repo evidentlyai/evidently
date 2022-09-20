@@ -3,7 +3,6 @@ import pandas as pd
 from evidently.model_monitoring import ModelMonitoring
 from evidently.model_monitoring.monitors.prob_classification_performance import ProbClassificationPerformanceMonitor
 from evidently.pipeline.column_mapping import ColumnMapping
-
 from tests.model_monitoring.helpers import collect_metrics_results
 
 

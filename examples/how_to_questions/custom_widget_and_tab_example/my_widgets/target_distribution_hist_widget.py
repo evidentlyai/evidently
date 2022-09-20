@@ -1,13 +1,12 @@
 import json
 from typing import Optional
 
-import pandas as pd
 import numpy as np
-
+import pandas as pd
 import plotly.figure_factory as ff
 
-from evidently.model.widget import BaseWidgetInfo
 from evidently.dashboard.widgets.widget import Widget
+from evidently.model.widget import BaseWidgetInfo
 
 
 class TargetDistributionHistWidget(Widget):

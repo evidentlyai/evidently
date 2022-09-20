@@ -1,8 +1,8 @@
 from abc import ABC
-from typing import List
 from typing import Dict
-from typing import Tuple
+from typing import List
 from typing import Optional
+from typing import Tuple
 from typing import Union
 
 import dataclasses
@@ -10,27 +10,28 @@ import numpy as np
 import pandas as pd
 from pandas.core.dtypes.common import infer_dtype_from_object
 
-from evidently.utils.data_operations import DatasetColumns
-from evidently.model.widget import BaseWidgetInfo
 from evidently.metrics.data_integrity_metrics import DataIntegrityMetrics
-from evidently.metrics.data_integrity_metrics import DataIntegrityValueByRegexpMetrics
 from evidently.metrics.data_integrity_metrics import DataIntegrityNullValuesMetrics
-from evidently.metrics.data_integrity_metrics import DataIntegrityNullValuesStat
 from evidently.metrics.data_integrity_metrics import DataIntegrityNullValuesMetricsResult
-from evidently.renderers.base_renderer import default_renderer
+from evidently.metrics.data_integrity_metrics import DataIntegrityNullValuesStat
+from evidently.metrics.data_integrity_metrics import DataIntegrityValueByRegexpMetrics
+from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import DetailsInfo
-from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import TestHtmlInfo
+from evidently.renderers.base_renderer import TestRenderer
+from evidently.renderers.base_renderer import default_renderer
 from evidently.tests.base_test import BaseCheckValueTest
-from evidently.tests.base_test import BaseTestGenerator
-from evidently.tests.base_test import GroupingTypes
 from evidently.tests.base_test import GroupData
+from evidently.tests.base_test import GroupingTypes
 from evidently.tests.base_test import Test
 from evidently.tests.base_test import TestResult
 from evidently.tests.base_test import TestValueCondition
-from evidently.tests.utils import plot_dicts_to_table, dataframes_to_table
-from evidently.tests.utils import plot_value_counts_tables_ref_curr
 from evidently.tests.utils import approx
+from evidently.tests.utils import dataframes_to_table
+from evidently.tests.utils import plot_dicts_to_table
+from evidently.tests.utils import plot_value_counts_tables_ref_curr
+from evidently.utils.data_operations import DatasetColumns
+from evidently.utils.generators import BaseGenerator
 from evidently.utils.types import Numeric
 
 DATA_INTEGRITY_GROUP = GroupData("data_integrity", "Data Integrity", "")
@@ -680,8 +681,8 @@ class TestColumnShareOfNulls(BaseIntegrityColumnNullValuesTest):
         )
 
 
-class TestAllColumnsShareOfNulls(BaseTestGenerator):
-    def generate_tests(self, columns_info: DatasetColumns) -> List[TestColumnShareOfNulls]:
+class TestAllColumnsShareOfNulls(BaseGenerator):
+    def generate(self, columns_info: DatasetColumns) -> List[TestColumnShareOfNulls]:
         return [TestColumnShareOfNulls(column_name=name) for name in columns_info.get_all_columns_list()]
 
 

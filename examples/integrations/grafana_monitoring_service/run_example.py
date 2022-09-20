@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 
 import argparse
-import os
 import logging
+import os
 import shutil
 import subprocess
 
 import pandas as pd
-
 
 # suppress SettingWithCopyWarning: warning
 pd.options.mode.chained_assignment = None

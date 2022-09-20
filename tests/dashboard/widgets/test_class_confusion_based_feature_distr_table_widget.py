@@ -1,4 +1,5 @@
 import pandas as pd
+import pytest
 
 from evidently.analyzers.classification_performance_analyzer import ClassificationPerformanceAnalyzer
 from evidently.dashboard.widgets.class_confusion_based_feature_distr_table_widget import (
@@ -7,8 +8,6 @@ from evidently.dashboard.widgets.class_confusion_based_feature_distr_table_widge
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import OptionsProvider
 from evidently.pipeline.column_mapping import ColumnMapping
-
-import pytest
 
 
 @pytest.fixture

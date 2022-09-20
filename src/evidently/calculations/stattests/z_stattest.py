@@ -4,10 +4,10 @@ from typing import Tuple
 
 import numpy as np
 import pandas as pd
-
 from scipy.stats import norm
 
-from evidently.calculations.stattests.registry import StatTest, register_stattest
+from evidently.calculations.stattests.registry import StatTest
+from evidently.calculations.stattests.registry import register_stattest
 
 
 def proportions_diff_z_stat_ind(ref: pd.DataFrame, curr: pd.DataFrame):

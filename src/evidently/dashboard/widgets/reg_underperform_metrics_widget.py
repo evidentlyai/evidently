@@ -8,8 +8,8 @@ import pandas as pd
 from evidently import ColumnMapping
 from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceAnalyzer
 from evidently.analyzers.regression_performance_analyzer import RegressionPerformanceMetrics
-from evidently.model.widget import BaseWidgetInfo
 from evidently.dashboard.widgets.widget import Widget
+from evidently.model.widget import BaseWidgetInfo
 
 
 class RegUnderperformMetricsWidget(Widget):

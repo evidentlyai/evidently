@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-from dataclasses import dataclass
 from typing import List
+
+from dataclasses import dataclass
 
 from evidently.model.widget import BaseWidgetInfo
 

@@ -1,9 +1,9 @@
-from evidently.utils.data_operations import DatasetColumns
 from evidently.metrics.base_metric import InputData
 from evidently.test_preset.test_preset import TestPreset
+from evidently.tests import TestAllFeaturesValueDrift
 from evidently.tests import TestFeatureValueDrift
 from evidently.tests import TestShareOfDriftedFeatures
-from evidently.tests import TestAllFeaturesValueDrift
+from evidently.utils.data_operations import DatasetColumns
 
 
 class DataDrift(TestPreset):

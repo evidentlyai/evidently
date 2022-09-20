@@ -1,4 +1,5 @@
-from evidently.dashboard.dashboard import file_html_template, inline_template
+from evidently.dashboard.dashboard import file_html_template
+from evidently.dashboard.dashboard import inline_template
 
 
 def determine_template(mode: str):

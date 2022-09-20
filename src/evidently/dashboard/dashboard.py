@@ -1,24 +1,28 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-import dataclasses
+import base64
 import json
 import os
 import shutil
 import uuid
-import base64
 from enum import Enum
+from typing import Callable
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Sequence
+from typing import Tuple
 
-from dataclasses import asdict
-from typing import List, Callable, Dict, Optional, Sequence, Tuple
-
+import dataclasses
 import pandas
+from dataclasses import asdict
 
 import evidently
-from evidently.model.dashboard import DashboardInfo
-from evidently.pipeline.pipeline import Pipeline
-from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.dashboard.tabs.base_tab import Tab
+from evidently.model.dashboard import DashboardInfo
+from evidently.pipeline.column_mapping import ColumnMapping
+from evidently.pipeline.pipeline import Pipeline
 from evidently.utils import NumpyEncoder
 
 
@@ -236,8 +240,8 @@ class Dashboard(Pipeline):
         # pylint: disable=import-outside-toplevel
         render_mode = mode
         try:
-            from IPython.display import HTML
             from IPython import get_ipython
+            from IPython.display import HTML
 
             if mode == "auto":
                 if type(get_ipython()).__module__.startswith("google.colab"):
