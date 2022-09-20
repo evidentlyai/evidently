@@ -11,6 +11,7 @@ from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.metrics.utils import make_hist_for_cat_plot
 from evidently.metrics.utils import make_hist_for_num_plot
+from evidently.model.widget import WidgetType
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import DataDriftOptions
 from evidently.options.data_drift import DEFAULT_NBINSX
@@ -111,7 +112,7 @@ class ColumnDriftMetricRenderer(MetricRenderer):
             MetricHtmlInfo(
                 "column_data_drift_title",
                 BaseWidgetInfo(
-                    type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
+                    type=WidgetType.COUNTER.value,
                     title="",
                     size=2,
                     params={"counters": [{"value": "", "label": f"Column Data Drift: {result.drift_detected}"}]},
