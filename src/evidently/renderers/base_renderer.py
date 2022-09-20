@@ -18,7 +18,7 @@ class DetailsInfo:
 class MetricHtmlInfo:
     name: str
     info: BaseWidgetInfo
-    details: List[DetailsInfo]
+    details: List[DetailsInfo] = dataclasses.field(default_factory=list)
 
 
 class MetricRenderer:

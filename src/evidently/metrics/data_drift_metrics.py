@@ -14,7 +14,6 @@ from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.metrics.utils import make_hist_for_cat_plot
 from evidently.metrics.utils import make_hist_for_num_plot
-from evidently.model.widget import BaseWidgetInfo
 from evidently.options import ColorOptions
 from evidently.options import DataDriftOptions
 from evidently.options import OptionsProvider
@@ -22,6 +21,11 @@ from evidently.renderers.base_renderer import DetailsInfo
 from evidently.renderers.base_renderer import MetricHtmlInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
+from evidently.renderers.html_widgets import ColumnDefinition
+from evidently.renderers.html_widgets import ColumnType
+from evidently.renderers.html_widgets import header_text
+from evidently.renderers.html_widgets import plotly_figure
+from evidently.renderers.html_widgets import rich_table_data
 from evidently.renderers.render_utils import plot_distr
 from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.data_operations import process_columns
@@ -140,17 +144,11 @@ class DataDriftMetricsRenderer(MetricRenderer):
             curr_distr = obj.get_result().distr_for_plots[feature_name]["current"]
             ref_distr = obj.get_result().distr_for_plots[feature_name]["reference"]
             fig = plot_distr(curr_distr, ref_distr)
-            fig_json = fig.to_plotly_json()
             additional_graphs_data.append(
                 DetailsInfo(
                     id=f"{item_id}_{feature_name}_distr",
                     title="",
-                    info=BaseWidgetInfo(
-                        title="",
-                        size=2,
-                        type="big_graph",
-                        params={"data": fig_json["data"], "layout": fig_json["layout"]},
-                    ),
+                    info=plotly_figure(title="", figure=fig),
                 ),
             )
         n_drifted_features = data_drift_results.metrics.n_drifted_features
@@ -167,48 +165,32 @@ class DataDriftMetricsRenderer(MetricRenderer):
         return [
             MetricHtmlInfo(
                 "data_drift_title",
-                BaseWidgetInfo(
-                    type=BaseWidgetInfo.WIDGET_INFO_TYPE_COUNTER,
-                    title="",
-                    size=2,
-                    params={"counters": [{"value": "", "label": "Data Drift Report"}]},
-                ),
-                details=[],
+                header_text(label="Data Drift Report"),
             ),
             MetricHtmlInfo(
                 name="data_drift_table",
-                info=BaseWidgetInfo(
+                info=rich_table_data(
                     title=title_prefix + title_suffix,
-                    type="big_table",
-                    details="",
-                    alerts=[],
-                    alertsPosition="row",
-                    insights=[],
-                    size=2,
-                    params={
-                        "rowsPerPage": min(n_features, 10),
-                        "columns": [
-                            {"title": "Feature", "field": "f1"},
-                            {"title": "Type", "field": "f6"},
-                            {
-                                "title": "Reference Distribution",
-                                "field": "f3",
-                                "type": "histogram",
-                                "options": {"xField": "x", "yField": "y", "color": color_options.primary_color},
-                            },
-                            {
-                                "title": "Current Distribution",
-                                "field": "f4",
-                                "type": "histogram",
-                                "options": {"xField": "x", "yField": "y", "color": color_options.primary_color},
-                            },
-                            {"title": "Data Drift", "field": "f2"},
-                            {"title": "Stat Test", "field": "stattest_name"},
-                            {"title": "Drift Score", "field": "f5"},
-                        ],
-                        "data": params_data,
-                    },
-                    additionalGraphs=[],
+                    columns=[
+                        ColumnDefinition("Feature", "f1"),
+                        ColumnDefinition("Type", "f6"),
+                        ColumnDefinition(
+                            "Reference Distribution",
+                            "f3",
+                            ColumnType.HISTOGRAM,
+                            options={"xField": "x", "yField": "y", "color": color_options.primary_color},
+                        ),
+                        ColumnDefinition(
+                            "Current Distribution",
+                            "f4",
+                            ColumnType.HISTOGRAM,
+                            options={"xField": "x", "yField": "y", "color": color_options.primary_color},
+                        ),
+                        ColumnDefinition("Data Drift", "f2"),
+                        ColumnDefinition("Stat Test", "stattest_name"),
+                        ColumnDefinition("Drift Score", "f5"),
+                    ],
+                    data=params_data,
                 ),
                 details=additional_graphs_data,
             ),
