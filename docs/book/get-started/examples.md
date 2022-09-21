@@ -4,6 +4,14 @@ description: Sample notebooks and tutorials
 
 # Examples
 
+## Sample notebooks, new API
+
+Examples of reports and tests using new API (version 0.1.57 and above):  
+
+Contents| Jupyter notebook | Colab notebook | Data source 
+--- | --- | --- | --- 
+All tests and tests presets | [link](https://github.com/evidentlyai/evidently/blob/main/examples/sample_notebooks/tests_and_test_presets.ipynb) | [link](N/A) | Iris, Breast cancer, California housing from sklearn.datasets; Adult dataset from openml 
+
 ## Sample notebooks
 
 Here you can find simple examples on toy datasets to quickly explore what Evidently can do right out of the box. Each example shows how to create a default Evidently dashboard, a JSON profile and an HTML report.
