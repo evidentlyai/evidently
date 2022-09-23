@@ -45,6 +45,21 @@ data_stability
 **Example 2**. To apply and call NoTargetPerformance preset:
 
 ```python
+no_target_performance = TestSuite(tests=[
+NoTargetPerformance(most_important_features=['education-num', 'hours-per-week']),
+])
+no_target_performance.run(reference_data=ref,current_data=curr)
+No_target_performance
+```
+You can use the `most_important_features` argument as shown above. In this case, some of the per-feature tests will only apply to the features from the list. This way, you will decrease the overall number of tests. 
+
+{% hint style="info" %} Refer to the Test Suites to see the complete list of presets and contents, and to the All Tests [All tests](../reference/all-tests.md) to learn about defaults.{% endhint %}
+
+## Available presets 
+
+Here are other Test presets you can try:
+
+```python
 NoTargetPerformance
 DataStability
 DataQuality
@@ -54,24 +69,6 @@ MulticlassClassification
 BinaryClassificationTopK
 BinaryClassification
 ```
-
-Refer to the Test Suites to see the complete list of presets and contents, and to the All Tests list to learn about defaults.
-
----
-You can use the `most_important_features` argument as shown above. In this case, some of the per-feature tests will only apply to the features from the list. This way, you will decrease the overall number of tests. 
-
-## Available presets 
-
-Here are other Test presets you can try:
-
-```python
-no_target_performance = TestSuite(tests=[
-NoTargetPerformance(most_important_features=['education-num', 'hours-per-week']),
-])
-no_target_performance.run(reference_data=ref,current_data=curr)
-No_target_performance
-```
-{% hint style="info" %} Refer to the Test Suites to see the complete list of presets and contents, and to the All Tests [All tests](../reference/all-tests.md) to learn about defaults.{% endhint %}
 
 # Output formats 
 
