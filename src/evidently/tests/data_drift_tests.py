@@ -141,7 +141,7 @@ class TestFeatureValueDrift(Test):
             self.metric = metric
 
         else:
-            self.metric = ColumnDriftMetric(column_name=self.column_name, column_type="num", options=options)
+            self.metric = ColumnDriftMetric(column_name=self.column_name, options=options)
 
     def check(self):
         drift_info = self.metric.get_result()

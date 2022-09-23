@@ -130,3 +130,6 @@ class DataDriftOptions:
         if self.per_feature_stattest is None:
             return func
         return self.per_feature_stattest.get(feature_name, func)
+
+    def __hash__(self):
+        return f"{self.confidence}{self.threshold}{self.drift_share}{self.nbinsx}{self.xbins}".__hash__()

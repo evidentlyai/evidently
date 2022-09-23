@@ -15,13 +15,13 @@ from evidently.report import Report
             pd.DataFrame({"col": [1, 2, 3]}),
             pd.DataFrame({"col": [1, 2, 3]}),
             None,
-            ColumnDriftMetric(column_name="col", column_type="num"),
+            ColumnDriftMetric(column_name="col"),
         ),
         (
             pd.DataFrame({"col": [1, 2, 3]}),
             pd.DataFrame({"col": [1, 2, 3]}),
             None,
-            ColumnDriftMetric(column_name="col", column_type="cat"),
+            ColumnDriftMetric(column_name="col"),
         ),
     ),
 )
@@ -40,29 +40,26 @@ def test_column_drift_metric_success(
 @pytest.mark.parametrize(
     "current_data, reference_data, data_mapping, metric",
     (
+        # no reference dataset
         (
             pd.DataFrame({"col": [1, 2, 3]}),
             None,
             None,
-            ColumnDriftMetric(column_name="col", column_type="num"),
+            ColumnDriftMetric(column_name="col"),
         ),
+        # no column in reference dataset
         (
             pd.DataFrame({"feature": [1, 2, 3]}),
             pd.DataFrame({"col": [1, 2, 3]}),
             None,
-            ColumnDriftMetric(column_name="col", column_type="cat"),
+            ColumnDriftMetric(column_name="col"),
         ),
+        # no column in current dataset
         (
             pd.DataFrame({"col": [1, 2, 3]}),
             pd.DataFrame({"feature": [1, 2, 3]}),
             None,
-            ColumnDriftMetric(column_name="col", column_type="cat"),
-        ),
-        (
-            pd.DataFrame({"col": [1, 2, 3]}),
-            pd.DataFrame({"col": [1, 2, 3]}),
-            None,
-            ColumnDriftMetric(column_name="col", column_type="datetime"),
+            ColumnDriftMetric(column_name="col"),
         ),
     ),
 )

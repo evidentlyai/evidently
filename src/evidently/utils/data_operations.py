@@ -104,6 +104,35 @@ class DatasetColumns:
 
         return len(self.num_feature_names) + len(self.cat_feature_names) + len_time_columns
 
+    def get_column_type(self, column_name: str, task: Optional[str]) -> str:
+        """Get column type."""
+        if column_name == self.utility_columns.target:
+            if task == "regression":
+                return "num"
+
+            else:
+                return "cat"
+
+        if column_name in self.num_feature_names:
+            return "num"
+
+        if column_name in self.cat_feature_names:
+            return "cat"
+
+        if column_name in self.datetime_feature_names:
+            return "datetime"
+
+        if column_name == self.utility_columns.prediction:
+            return "num"
+
+        if column_name == self.utility_columns.id_column:
+            return "id"
+
+        if column_name == self.utility_columns.date:
+            return "date"
+
+        return "unknown"
+
 
 def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping) -> DatasetColumns:
     if column_mapping is None:

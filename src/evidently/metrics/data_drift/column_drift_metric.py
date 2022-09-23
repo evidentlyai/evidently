@@ -6,7 +6,6 @@ import dataclasses
 import pandas as pd
 
 from evidently.calculations.data_drift import calculate_data_drift
-from evidently.calculations.stattests import PossibleStatTestType
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.metrics.utils import make_hist_for_cat_plot
@@ -14,10 +13,11 @@ from evidently.metrics.utils import make_hist_for_num_plot
 from evidently.model.widget import BaseWidgetInfo
 from evidently.model.widget import WidgetType
 from evidently.options import DataDriftOptions
-from evidently.options.data_drift import DEFAULT_NBINSX
 from evidently.renderers.base_renderer import MetricHtmlInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
+from evidently.utils.data_operations import process_columns
+from evidently.utils.data_operations import recognize_task
 from evidently.utils.types import Numeric
 
 
@@ -36,30 +36,20 @@ class ColumnDriftMetric(Metric[ColumnDriftMetricResults]):
     """Calculate drift metric for a column"""
 
     column_name: str
-    column_type: str
-    stattest: Optional[PossibleStatTestType]
-    threshold: Optional[Numeric]
-    nbinsx: Numeric
-    xbins: Optional[Dict[str, int]]
-    options: Optional[DataDriftOptions]
+    options: DataDriftOptions
 
     def __init__(
         self,
         column_name: str,
-        column_type: str,
-        stattest: Optional[PossibleStatTestType] = None,
-        threshold: Optional[Numeric] = None,
-        nbinsx: Numeric = DEFAULT_NBINSX,
-        xbins: Optional[Dict[str, int]] = None,
         options: Optional[DataDriftOptions] = None,
     ):
         self.column_name = column_name
-        self.column_type = column_type
-        self.stattest = stattest
-        self.threshold = threshold
-        self.nbinsx = nbinsx
-        self.xbins = xbins
-        self.options = options
+
+        if options is None:
+            self.options = DataDriftOptions()
+
+        else:
+            self.options = options
 
     def calculate(self, data: InputData) -> ColumnDriftMetricResults:
         if data.reference_data is None:
@@ -71,31 +61,51 @@ class ColumnDriftMetric(Metric[ColumnDriftMetricResults]):
         if self.column_name not in data.reference_data:
             raise ValueError(f"Cannot find column {self.column_name} in reference dataset")
 
-        if self.column_type not in ("cat", "num"):
-            raise ValueError(f"Incorrect column type {self.column_type}")
+        columns = process_columns(data.reference_data, data.column_mapping)
+        target_name = columns.utility_columns.target
+
+        task: Optional[str] = None
+
+        if data.column_mapping.task is not None:
+            task = data.column_mapping.task
+
+        elif data.column_mapping.task is None and target_name:
+            task = recognize_task(target_name, data.reference_data)
+
+        column_type = columns.get_column_type(column_name=self.column_name, task=task)
+
+        if column_type not in ["cat", "num"]:
+            raise ValueError(f"Column type {column_type} is not supported by ColumnDriftMetric")
+
+        stattest = self.options.get_feature_stattest_func(self.column_name, column_type)
+
+        threshold = self.options.get_threshold(self.column_name)
 
         drift_result = calculate_data_drift(
             current_data=data.current_data,
             reference_data=data.reference_data,
             column_name=self.column_name,
-            stattest=self.stattest,
-            threshold=self.threshold,
-            feature_type=self.column_type,
+            stattest=stattest,
+            threshold=threshold,
+            feature_type=column_type,
         )
 
-        if self.column_type == "cat":
+        if column_type == "cat":
+            distr_for_plots = make_hist_for_cat_plot(
+                data.current_data[self.column_name], data.reference_data[self.column_name]
+            )
+
+        elif column_type == "num":
             distr_for_plots = make_hist_for_num_plot(
                 data.current_data[self.column_name], data.reference_data[self.column_name]
             )
 
         else:
-            distr_for_plots = make_hist_for_cat_plot(
-                data.current_data[self.column_name], data.reference_data[self.column_name]
-            )
+            raise ValueError(f"Column type {column_type} is not supported by ColumnDriftMetric")
 
         return ColumnDriftMetricResults(
             column_name=self.column_name,
-            column_type=self.column_type,
+            column_type=column_type,
             stattest_name=drift_result.stattest_name,
             threshold=drift_result.threshold,
             drift_value=drift_result.drift_score,
@@ -112,7 +122,7 @@ class ColumnDriftMetricRenderer(MetricRenderer):
             MetricHtmlInfo(
                 "column_data_drift_title",
                 BaseWidgetInfo(
-                    type=WidgetType.COUNTER.value,
+                    type=str(WidgetType.COUNTER.value),
                     title="",
                     size=2,
                     params={"counters": [{"value": "", "label": f"Column Data Drift: {result.drift_detected}"}]},
