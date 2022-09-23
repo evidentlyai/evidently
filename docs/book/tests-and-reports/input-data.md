@@ -20,9 +20,9 @@ If you want to use a **single** dataset without reference, pass it as the **curr
  
 It will work in most cases. One exception is calculating data or prediction drift which always requires two datasets to compare the distributions.
  
-If you pass a single dataset to generate a report, there will be no side-by-side comparison. The report will show metrics (e.g., Data Quality or Regression Performance) for a single dataset.
+If you pass a single dataset to generate a **report**, there will be no side-by-side comparison. The report will show metrics (e.g., Data Quality or Regression Performance) for a single dataset.
  
-If you pass a single dataset to run tests, Evidently will use the default test parameters. For example, it will compare the model performance with a dummy model. You can also manually set the conditions (e.g., expected min-max value ranges) without the reference dataset.  
+If you pass a single dataset to run **tests**, Evidently will use the default test parameters. For example, it will compare the model performance with a dummy model. You can also manually set the conditions (e.g., expected min-max value ranges) without the reference dataset.  
 
 {% hint style="info" %} The default parameters for each test are listed in the [All tests](../reference/all-tests.md) table.{% endhint %}
 
