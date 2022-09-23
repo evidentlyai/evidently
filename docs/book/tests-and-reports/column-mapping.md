@@ -61,38 +61,66 @@ column_mapping.numerical_features = ['temp', 'atemp', 'humidity'] #list of numer
 column_mapping.categorical_features = ['season', 'holiday'] #list of categorical features
 ```
 
-{% hint style="info" %} **Why map them:** the column types affect some of the tests, metrics and visualizations. For example, the [drift algorithm](../reference/drift-algorithm.md) selects a statistical test based on the column type and ignores DateTime features. Some of the data quality visualizations are different for specific feature types. Some of the tests (e.g. on value ranges) only considers numeral columns, etc.{% endhint %}
+{% hint style="info" %} **Why map them:** the column types affect some of the tests, metrics and visualizations. For example, the [drift algorithm](../reference/data-drift-algorithm.md) selects a statistical test based on the column type and ignores DateTime features. Some of the data quality visualizations are different for specific feature types. Some of the tests (e.g. on value ranges) only considers numeral columns, etc.{% endhint %}
 
-**NOTE: Column names in Probabilistic Classification**
+## Additional mapping
 
-The tool expects your `DataFrame(s)` to contain columns with the names matching the ones from the ‘prediction’ list. Each column should include information about the predicted probability \[0;1] for the corresponding class.
+There are additional mapping options that apply to specific Test Suites and Reports.
+
+### DateTime features 
+
+You might have temporal features in your dataset. For example, “date of the last contact.” 
+ 
+To map them, define: 
 
 ```python
 column_mapping = ColumnMapping()
-
-column_mapping.prediction = ['class_name1', 'class_name2', 'class_name3',]
+column_mapping.datetime_features = ['last_call_date', 'join_date'] #list of DateTime features
 ```
 
-**NOTE: Column order in Binary Classification**
+Default: by default, Evidently only treats columns with DateTime format (np.datetime64) as DateTime features.
+ 
+Note: do not confuse DateTime features with the DateTime column, which is used as the x-axis in some plots. You will typically use the DateTime column as a prediction timestamp. 
 
-For binary classification, class order matters. The tool expects that the target (so-called positive) class is the **first** in the `column_mapping.prediction` list.
+{% hint style="info" %} **Why map them:** if you specify DateTime features, they will be ignored in data drift calculation. Evidently will also calculate appropriate statistics and generate different visualizations for DateTime features in the data quality report.{% endhint %}
 
+### Task parameter for target function
 
-**NOTE: task parameter in Data Quality**
-
-To build the report correctly we should define classification from regression problem. There is a case when we can’t do it for sure: multiclass problem with a lot of classes encoded by numbers looks like regression problem too. In such cases, you should specify the **task** parameter. It accepts two values: 'regression' and 'classification'.
-
+In many cases, it is important to differentiate between continuous and discrete targets. This applies to multiple reports and tests, including Data Quality and Target Drift. 
+ 
+To define it explicitly, specify the task parameter:
 
 ```python
 column_mapping = ColumnMapping()
-
 column_mapping.target = 'y'
-column_mapping.task = 'classification'
+column_mapping.task = 'regression'
 ```
+It accepts two values: 'regression' and 'classification'. 
+ 
+**Default**: If you don't specify the task, Evidently will use a simple strategy: if the target has a numeric type and the number of unique values > 5: task == ‘regression.’ In all other cases, the task == ‘classification’.
 
-If you don't specify it we use a simple strategy: 
+{% hint style="info" %} **Why map it:**  If you have a multi-class problem where classes are encoded as numbers, it might look the same way as a regression problem. Thus it is best to explicitly specify it. It will affect how the target (prediction) is visualized and help pick the correct statistical tests for the target (prediction) drift detection. It will also affect the calculation of statistics and tests that differ for numerical and categorical data types.{% endhint %} 
 
-if the target has a numeric type and number of unique values > 5: task == ‘regression’
+### Prediction column(s) in classification 
 
-in all other cases task == ‘classification’
+To evaluate the classification performance, you need both true labels and prediction. Depending on the classification type (e.g., binary, multi-class, probabilistic), you have different options of how to pass the predictions.
+
+**Multiclass classification**, option 1.
+
+Target: encoded labels, Preds: encoded labels + Optional[target_names].
+
+| target | prediction |
+|---|---|
+| 1 | 1 |
+| 0 | 2 |
+| … | … |
+| 2 | 2 |
+
+```python
+column_mapping = ColumnMapping()
+
+column_mapping.target = 'target'
+column_mapping.prediction = 'prediction'
+column_mapping.target_names = ['Setosa', 'Versicolour', 'Virginica']
+```
 
