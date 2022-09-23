@@ -35,13 +35,11 @@ Data structure requirements depend on the type of analysis. Here are example req
 | Classification Performance | Optional | Required | Required | Optional | Optional |
 | Regression Performance | Optional | Required | Required | Optional | Optional |
 
-# ColumnMapping Object
-
-## Primary mapping
+# ColumnMapping Object: primary mapping 
 
 You can create a `ColumnMapping` object to map your column names and feature types. 
 
-### Dataset structure
+## Dataset structure
 
 To specify the column names for target, prediction, ID or DateTime: 
 
@@ -56,7 +54,7 @@ column_mapping.id = None #there is no ID column in the dataset
 column_mapping.datetime = 'date' #'date' is the name of the column with datetime
 ```
 
-### Categorical and Numerical features
+## Categorical and Numerical features
 
 To split the features into numerical and categorical types: 
 
@@ -67,11 +65,11 @@ column_mapping.categorical_features = ['season', 'holiday'] #list of categorical
 
 {% hint style="info" %} **Why map them:** the column types affect some of the tests, metrics and visualizations. For example, the [drift algorithm](../reference/data-drift-algorithm.md) selects a statistical test based on the column type and ignores DateTime features. Some of the data quality visualizations are different for specific feature types. Some of the tests (e.g. on value ranges) only considers numeral columns, etc.{% endhint %}
 
-## Additional mapping
+# ColumnMapping Object: additional mapping 
 
 There are additional mapping options that apply to specific Test Suites and Reports.
 
-### DateTime features 
+## DateTime features 
 
 You might have temporal features in your dataset. For example, “date of the last contact.” 
  
@@ -88,7 +86,7 @@ column_mapping.datetime_features = ['last_call_date', 'join_date'] #list of Date
 
 {% hint style="info" %} **Why map them:** if you specify DateTime features, they will be ignored in data drift calculation. Evidently will also calculate appropriate statistics and generate different visualizations for DateTime features in the data quality report.{% endhint %}
 
-### Task parameter for target function
+## Task parameter for target function
 
 In many cases, it is important to differentiate between continuous and discrete targets. This applies to multiple reports and tests, including Data Quality and Target Drift. 
  
@@ -105,7 +103,7 @@ It accepts two values: 'regression' and 'classification'.
 
 {% hint style="info" %} **Why map it:**  If you have a multi-class problem where classes are encoded as numbers, it might look the same way as a regression problem. Thus it is best to explicitly specify it. It will affect how the target (prediction) is visualized and help pick the correct statistical tests for the target (prediction) drift detection. It will also affect the calculation of statistics and tests that differ for numerical and categorical data types.{% endhint %} 
 
-### Prediction column(s) in classification 
+## Prediction column(s) in classification 
 
 To evaluate the classification performance, you need both true labels and prediction. Depending on the classification type (e.g., binary, multi-class, probabilistic), you have different options of how to pass the predictions.
 
