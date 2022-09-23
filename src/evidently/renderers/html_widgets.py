@@ -101,7 +101,7 @@ def plotly_figure(*, title: str, figure: go.Figure, size: WidgetSize = WidgetSiz
         >>> bar_figure = go.Figure(go.Bar(name="Bar plot", x=[1, 2, 3, 4], y=[10, 11, 20, 11]))
         >>> widget_info = plotly_figure(title="Bar plot widget", figure=bar_figure, size=WidgetSize.FULL)
     """
-    return plotly_graph(graph_data=GraphData.figure(title=title,figure=figure), size=size)
+    return plotly_graph(graph_data=GraphData.figure(title=title, figure=figure), size=size)
 
 
 def plotly_graph_tabs(*, title: str, figures: List[GraphData], size: WidgetSize = WidgetSize.FULL) -> BaseWidgetInfo:
