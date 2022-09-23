@@ -111,7 +111,9 @@ You can create a custom test suite from individual tests.
 
 You need to create a `TestSuite` object and specify which tests to include. 
 
-**Dataset-level tests**. You can apply some of the tests on the dataset level, for example, to evaluate data drift for all features. 
+## Dataset-level tests
+
+You can apply some of the tests on the dataset level, for example, to evaluate data drift for all features. 
 
 To create a custom data drift test suite with dataset-level tests:
 
@@ -130,7 +132,9 @@ column_mapping=ColumnMapping()
 data_drift_suite
 ```
 
-**Column-level tests**. You can apply some tests to the individual columns, for example, to check if a feature or model prediction stays within the range. 
+## Column-level tests
+
+You can apply some tests to the individual columns, for example, to check if a feature or model prediction stays within the range. 
 
 To create a custom data drift test suite with column-level tests:
 
@@ -151,7 +155,9 @@ feature_suite
 
 **Combining tests**. When you define the composition of the TestSuite, you can include presets and individual tests in the same list. You can also combine feature-level and dataset-level tests in a single suite. 
 
-**Available tests**. Evidently library has dozens of individual tests. Here are some examples of individual tests: 
+## Available tests
+
+Evidently library has dozens of individual tests. Here are some examples of individual tests: 
 
 ```python
 TestShareOfOutRangeValues()
@@ -162,4 +168,33 @@ TestHighlyCorrelatedFeatures()
 ```
 
 {% hint style="info" %} Reference: The complete list of tests is available [here](../reference/all-tests.md).{% endhint %}
+
+# Custom test parameters
+
+**Defaults**. Each test compares the value of a specific metric in the current dataset against the reference. If you do not specify the condition explicitly, Evidently will use a default. For example, the TestShareOfOutRangeValues will fail if over 10% of values are out of range. The normal range for each feature will be automatically derived from the reference.
+
+{% hint style="info" %} Reference:  All defaults are described in the same table with [all tests](../reference/all-tests.md).{% endhint %}
+
+## How to set the parameters
+
+You can override the default and set the parameters for specific tests.
+
+For example, you can set the upper or lower boundaries of a specific value by defining gt (greater than) and lt (less than).
+
+Here is an example:
+
+```python
+feature_level_tests = TestSuite(tests=[
+TestMeanInNSigmas(column_name='hours-per-week', n_sigmas=3),
+TestShareOfOutRangeValues(column_name='hours-per-week', lte=0),
+TestNumberOfOutListValues(column_name='education', lt=0),
+TestColumnShareOfNulls(column_name='education', lt=0.2),
+])
+feature_level_tests.run(reference_data=ref, current_data=curr)
+Feature_level_test
+```
+## Available parameters
+
+The following standard parameters are available: 
+
 
