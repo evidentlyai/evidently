@@ -197,4 +197,40 @@ Feature_level_test
 
 The following standard parameters are available: 
 
+| Condition parameter name | Explanation                                | Usage Example                                                   |
+|--------------------------|--------------------------------------------|-----------------------------------------------------------------|
+| eq: val                  | test_result == val                         | TestFeatureMin(feature_name=”numeric_feature”, eq=5)            |
+| not_eq: val              | test_result != val                         | TestFeatureMin(feature_name=”numeric_feature”, ne=0)            |
+| gt: val                  | test_result > val                          | TestFeatureMin(feature_name=”numeric_feature”, gt=5)            |
+| gte: val                 | test_result >= val                         | TestFeatureMin(feature_name=”numeric_feature”, gte=5)           |
+| lt: val                  | test_result <=val                          | TestFeatureMin(feature_name=”numeric_feature”, lt=5)            |
+| lte: val                 | test_result <= val                         | TestFeatureMin(feature_name=”numeric_feature”, lte=5)           |
+| is_in: list              | test_result == one of the values from list | TestFeatureMin(feature_name=”numeric_feature”, is_in=[3,5,7])   |
+| not_in: list             | test_result != any of the values from list | TestFeatureMin(feature_name=”numeric_feature”, not_in=[-1,0,1]) |
 
+**Approx**. If you want to set an upper and/or lower limit to the value, you can use approx instead of calculating the value itself. You can set the relative or absolute range. 
+
+```python
+approx(value, relative=None, absolute=None)
+```
+
+This simplifies the definition of parameters.
+`eq=approx(5, relative=0.1, absolute=None)` is the same as `lte=5 + 5 * 0.1` and `gte=5 - 5 * 0.1`
+`eq=approx(5, relative=None, absolute=0.1)` is the same as `lte=5 + 0.1` and `gte=5 - 0.1`
+
+To apply approx, you need to first import this component:
+
+```python
+from evidently.tests.utils import approx
+```
+
+Here is how you can set the upper boundary as 5+10%:
+
+```python
+lte=approx(5, relative=0.1)
+```
+
+Here is how you can set the boundary as 5 +/-10%:
+```python
+eq=approx(5, relative=0.1)
+```
