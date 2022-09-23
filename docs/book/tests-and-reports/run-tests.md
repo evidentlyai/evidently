@@ -217,7 +217,9 @@ approx(value, relative=None, absolute=None)
 ```
 
 This simplifies the definition of parameters.
+
 `eq=approx(5, relative=0.1, absolute=None)` is the same as `lte=5 + 5 * 0.1` and `gte=5 - 5 * 0.1`
+
 `eq=approx(5, relative=None, absolute=0.1)` is the same as `lte=5 + 0.1` and `gte=5 - 0.1`
 
 To apply approx, you need to first import this component:
