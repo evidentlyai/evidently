@@ -19,7 +19,7 @@ This section explains each step in more detail. It covers both reports and test 
 {% endcontent-ref %}
 
 {% content-ref url="get-reports.md" %}
-[get-report.md](get-reports.md)
+[get-reports.md](get-reports.md)
 {% endcontent-ref %}
 
 {% content-ref url="supported-environments.md" %}
