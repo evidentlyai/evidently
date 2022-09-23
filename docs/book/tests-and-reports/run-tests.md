@@ -6,7 +6,7 @@ description: How run the Tests in Evidently.
 
 # Installation and prep
 
-After [installation](../get-started/install-evidently.md), import evidently and the required tests or test suites:
+After [installation](../get-started/install-evidently.md), import the TestSuite component and the required tests or test suites:
 
 ```python
 from evidently.test_suite import TestSuite
@@ -19,7 +19,7 @@ You need to prepare two datasets for comparison: **reference** and **current**. 
 
 # Test presets 
 
-Evidently has ready-made `presets` that group relevant tests together. You can use them as templates to test a specific aspect of the data or model performance.
+Evidently has ready-made `test_presets` that group relevant tests together. You can use them as templates to test a specific aspect of the data or model performance.
 
 You need to create a `TestSuite` object and include the specific preset in the list of tests. You should also point to the current dataset and reference dataset (if available).
 
