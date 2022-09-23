@@ -70,7 +70,7 @@ BinaryClassificationTopK
 BinaryClassification
 ```
 
-# Output formats 
+## Output formats 
 
 You can get the test results in different formats. 
 
@@ -104,3 +104,62 @@ To get the dictionary:
 ```python
 data_stability.as_dict()
 ```
+
+# Custom test suite
+
+You can create a custom test suite from individual tests.
+
+You need to create a `TestSuite` object and specify which tests to include. 
+
+**Dataset-level tests**. You can apply some of the tests on the dataset level, for example, to evaluate data drift for all features. 
+
+To create a custom data drift test suite with dataset-level tests:
+
+```python
+data_drift_suite = TestSuite(tests=[
+TestShareOfDriftedFeatures(),
+TestNumberOfDriftedFeatures(),
+])
+```
+
+To run the tests and get the visual report:
+
+```python
+data_drift_suite.run(reference_data=ref, current_data=curr,
+column_mapping=ColumnMapping()
+data_drift_suite
+```
+
+**Column-level tests**. You can apply some tests to the individual columns, for example, to check if a feature or model prediction stays within the range. 
+
+To create a custom data drift test suite with column-level tests:
+
+```python
+feature_suite = TestSuite(tests=[
+TestColumnShareOfNulls(column_name='hours-per-week'),
+TestFeatureValueDrift(column_name='education'),
+TestMeanInNSigmas(column_name='hours-per-week')
+])
+```
+
+To run the tests and get the visual report:
+
+```python
+feature_suite.run(reference_data=ref, current_data=curr)
+feature_suite
+```
+
+**Combining tests**. When you define the composition of the TestSuite, you can include presets and individual tests in the same list. You can also combine feature-level and dataset-level tests in a single suite. 
+
+**Available tests**. Evidently library has dozens of individual tests. Here are some examples of individual tests: 
+
+```python
+TestShareOfOutRangeValues()
+TestMostCommonValueShare()
+TestNumberOfConstantColumns()
+TestNumberOfDuplicatedColumns()
+TestHighlyCorrelatedFeatures()
+```
+
+{% hint style="info" %} Reference: The complete list of tests is available [here](../reference/all-tests.md).{% endhint %}
+
