@@ -35,7 +35,7 @@ Data structure requirements depend on the type of analysis. Here are example req
 | Classification Performance | Optional | Required | Required | Optional | Optional |
 | Regression Performance | Optional | Required | Required | Optional | Optional |
 
-# ColumnMapping Object: primary mapping 
+# ColumnMapping Object 
 
 You can create a `ColumnMapping` object to map your column names and feature types. 
 
@@ -65,7 +65,7 @@ column_mapping.categorical_features = ['season', 'holiday'] #list of categorical
 
 {% hint style="info" %} **Why map them:** the column types affect some of the tests, metrics and visualizations. For example, the [drift algorithm](../reference/data-drift-algorithm.md) selects a statistical test based on the column type and ignores DateTime features. Some of the data quality visualizations are different for specific feature types. Some of the tests (e.g. on value ranges) only considers numeral columns, etc.{% endhint %}
 
-# ColumnMapping Object: additional mapping 
+# Additional mapping options
 
 There are additional mapping options that apply to specific Test Suites and Reports.
 
@@ -107,7 +107,7 @@ It accepts two values: 'regression' and 'classification'.
 
 To evaluate the classification performance, you need both true labels and prediction. Depending on the classification type (e.g., binary, multi-class, probabilistic), you have different options of how to pass the predictions.
 
-**Multiclass classification**, option 1.
+### Multiclass classification, option 1.
 
 Target: encoded labels, Preds: encoded labels + Optional[target_names].
 
@@ -128,7 +128,7 @@ column_mapping.target_names = ['Setosa', 'Versicolour', 'Virginica']
 
 If you pass the target names, they will appear on the visualizations. 
 
-**Multiclass classification**, option 2.
+### Multiclass classification, option 2.
 
 Target: labels, Preds: labels. 
 
@@ -146,7 +146,7 @@ column_mapping.target = 'target'
 column_mapping.prediction = 'prediction'
 ```
 
-**Multiclass probabilistic classification.**
+### Multiclass probabilistic classification
 
 Target: labels, Preds: columns named after labels.
 
@@ -167,7 +167,7 @@ column_mapping.prediction = ['Setosa', 'Versicolour', 'Virginica']
 
 Naming the columns after the lables is a requirement. You cannot pass a custom list.
 
-**Binary classification**, option 1. 
+### Binary classification**, option 1
 
 Target: encoded labels, Preds: encoded labels + pos_label + Optional[target_names]
 
@@ -192,7 +192,7 @@ pos_label = 0
 
 If you pass the target names, they will appear on the visualizations. 
 
-**Binary classification**, option 2. 
+### Binary classification**, option 2 
 
 Target: labels, Preds: labels + pos_label
 
@@ -214,7 +214,7 @@ pos_label = 'churn'
 
 ```
 
-**Binary probabilistic classification**, option 1. 
+### Binary probabilistic classification**, option 1 
 
 Target: labels, Preds: columns named after labels + pos_label
 
@@ -236,7 +236,7 @@ pos_label = 'churn'
 
 ```
 
-**Binary probabilistic classification**, option 2. 
+### Binary probabilistic classification**, option 2 
 
 Target: labels, Preds: a column named like one of the labels + pos_label
 
@@ -257,7 +257,7 @@ pos_label = 'churn'
 ```
 Both naming the column after one of the labels and passing the name of the positive class are requirements.
 
-**Binary probabilistic classification**, option 3. 
+### Binary probabilistic classification**, option 3
 
 Target: encoded labels, Preds: one column with any name + pos_label
 
