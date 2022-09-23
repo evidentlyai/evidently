@@ -190,7 +190,9 @@ TestShareOfOutRangeValues(column_name='hours-per-week', lte=0),
 TestNumberOfOutListValues(column_name='education', lt=0),
 TestColumnShareOfNulls(column_name='education', lt=0.2),
 ])
+
 feature_level_tests.run(reference_data=ref, current_data=curr)
+
 Feature_level_test
 ```
 ## Available parameters
