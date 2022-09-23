@@ -82,9 +82,9 @@ column_mapping = ColumnMapping()
 column_mapping.datetime_features = ['last_call_date', 'join_date'] #list of DateTime features
 ```
 
-Default: by default, Evidently only treats columns with DateTime format (np.datetime64) as DateTime features.
+**Default** by default, Evidently only treats columns with DateTime format (np.datetime64) as DateTime features.
  
-Note: do not confuse DateTime features with the DateTime column, which is used as the x-axis in some plots. You will typically use the DateTime column as a prediction timestamp. 
+**Note**: do not confuse DateTime features with the DateTime column, which is used as the x-axis in some plots. You will typically use the DateTime column as a prediction timestamp. 
 
 {% hint style="info" %} **Why map them:** if you specify DateTime features, they will be ignored in data drift calculation. Evidently will also calculate appropriate statistics and generate different visualizations for DateTime features in the data quality report.{% endhint %}
 
