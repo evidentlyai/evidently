@@ -18,14 +18,12 @@ If the `column_mapping` is not specified or set as `None`, Evidently will use th
 * All other columns will be treated as Categorical.
 
 **Dataset structure**:
-The column named **“id“**  will be treated as an ID column. 
-The column named **“datetime”** will be treated as a DateTime column. 
-The column named **“target”** will be treated as a target function.
-The column named **“prediction”** will be treated as a model prediction.
+* The column named **“id“**  will be treated as an ID column. 
+* The column named **“datetime”** will be treated as a DateTime column. 
+* The column named **“target”** will be treated as a target function.
+* The column named **“prediction”** will be treated as a model prediction.
  
 ID, DateTime, target, and prediction are utility columns. If provided, the **“datetime”** column will be used as an index for some plots. The **“ID”** column will be excluded from drift analysis. 
-
-ID, datetime, target, and prediction are utility columns. Requirements are different depending on the report type:
 
 Data structure requirements depend on the type of analysis. Here are example requirements:
 
