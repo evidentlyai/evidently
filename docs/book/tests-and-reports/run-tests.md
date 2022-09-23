@@ -197,6 +197,8 @@ Feature_level_test
 ```
 ## Available parameters
 
+### Standard parameters 
+
 The following standard parameters are available: 
 
 | Condition parameter name | Explanation                                | Usage Example                                                   |
@@ -210,7 +212,9 @@ The following standard parameters are available:
 | is_in: list              | test_result == one of the values from list | TestFeatureMin(feature_name=”numeric_feature”, is_in=[3,5,7])   |
 | not_in: list             | test_result != any of the values from list | TestFeatureMin(feature_name=”numeric_feature”, not_in=[-1,0,1]) |
 
-**Approx**. If you want to set an upper and/or lower limit to the value, you can use approx instead of calculating the value itself. You can set the relative or absolute range. 
+### Approx
+
+If you want to set an upper and/or lower limit to the value, you can use approx instead of calculating the value itself. You can set the relative or absolute range. 
 
 ```python
 approx(value, relative=None, absolute=None)
@@ -239,7 +243,7 @@ Here is how you can set the boundary as 5 +/-10%:
 eq=approx(5, relative=0.1)
 ```
 
-**Additional parameters**.
+### Additional parameters
 
 Some tests require additional parameters or might have optional parameters.
 
@@ -251,9 +255,11 @@ For example, if you want to test a quantile value, you need to pass the quantile
 
 There are several features that simplify generating multiple column-level tests. 
 
-**List comprehension**. You can pass a list of parameters or a list of columns. 
+## List comprehension
 
-Example 1. Pass the list of multiple quantile values to test for the same column. 
+You can pass a list of parameters or a list of columns. 
+
+**Example 1**. Pass the list of multiple quantile values to test for the same column. 
 
 ```python
 suite = TestSuite(tests=[
@@ -264,7 +270,7 @@ suite.run(current_data=current_data, reference_data=reference_data)
 suite
 ```
 
-Example 2. Apply the same test with a defined custom parameter for all columns in the list: 
+**Example 2**. Apply the same test with a defined custom parameter for all columns in the list: 
 
 ```python
 suite = TestSuite(tests=[
@@ -275,7 +281,9 @@ suite.run(current_data=current_data, reference_data=reference_data)
 suite
 ```
 
-**Column test generator**. You can also use the generate_column_tests function to create multiple tests.
+## Column test generator
+
+You can also use the `generate_column_tests` function to create multiple tests.
 
 By default, it generates tests with the default parameters for all the columns:
 
@@ -293,7 +301,7 @@ suite.run(current_data=current_data, reference_data=reference_data)
 suite
 ```
 
-You can generate tests for different subsets of columns. Here is how you generate tests only for numerical columns:
+You can generate tests for different subsets of columns. Here is how you generate tests only for **numerical columns**:
 
 ```python
 suite = TestSuite(tests=[generate_column_tests(TestFeatureValueMin, columns="num")])
@@ -301,7 +309,7 @@ suite.run(current_data=current_data, reference_data=reference_data)
 suite
 ```
 
-Here is how you generate tests only for categorical columns:
+Here is how you generate tests only for **categorical columns**:
 
 ```python
 suite = TestSuite(tests=[generate_column_tests(TestColumnShareOfNulls, columns="cat", parameters={"lt": 0.1})])
@@ -318,7 +326,9 @@ suite.run(current_data=current_data, reference_data=reference_data)
 suite
 ```
  
-**Column parameter**. You can use the parameter `columns` to define a list of columns to which you apply the tests. 
+### Column parameter
+
+You can use the parameter `columns` to define a list of columns to which you apply the tests. 
  
 If it is a list, you can just use it as a list of the columns. If `columns` is a string, it can take the following values:
 * `"all"` - apply tests for all columns, including target/prediction columns.
