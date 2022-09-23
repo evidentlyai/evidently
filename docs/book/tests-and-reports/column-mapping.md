@@ -1,5 +1,5 @@
 ---
-description: How to use column mapping in Evidently..
+description: How to use column mapping in Evidently.
 ---
 
 **TL;DR:** Evidently expects a certain dataset structure and input column names. You can specify any differences by creating a ColumnMapping object.
