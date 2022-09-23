@@ -179,7 +179,7 @@ TestHighlyCorrelatedFeatures()
 
 You can override the default and set the parameters for specific tests.
 
-For example, you can set the upper or lower boundaries of a specific value by defining gt (greater than) and lt (less than).
+For example, you can set the upper or lower boundaries of a specific value by defining `gt` (greater than) and `lt` (less than).
 
 Here is an example:
 
