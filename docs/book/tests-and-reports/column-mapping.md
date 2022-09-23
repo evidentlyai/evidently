@@ -39,9 +39,11 @@ Data structure requirements depend on the type of analysis. Here are example req
 
 ## Primary mapping
 
-## Target, prediction, ID and DateTime
+You can create a `ColumnMapping` object to map your column names and feature types. 
 
-If you use different column names for target, prediction, ID or DateTime, you can create a `ColumnMapping` object to specify them: 
+### Target, prediction, ID and DateTime
+
+To specify the column names for target, prediction, ID or DateTime: 
 
 ```python
 from evidently.pipeline.column_mapping import ColumnMapping
@@ -54,7 +56,7 @@ column_mapping.id = None #there is no ID column in the dataset
 column_mapping.datetime = 'date' #'date' is the name of the column with datetime
 ```
 
-## Categorical and Numerical features
+### Categorical and Numerical features
 
 To split the features into numerical and categorical types: 
 
