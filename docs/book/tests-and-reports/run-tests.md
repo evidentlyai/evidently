@@ -25,6 +25,8 @@ You need to create a `TestSuite` object and include the specific preset in the l
 
 If nothing else is specified, the tests will run with the default parameters.
 
+## How to run test presets
+
 **Example 1**. To apply the DataStability test preset:
 
 ```python
@@ -58,7 +60,9 @@ Refer to the Test Suites to see the complete list of presets and contents, and t
 ---
 You can use the `most_important_features` argument as shown above. In this case, some of the per-feature tests will only apply to the features from the list. This way, you will decrease the overall number of tests. 
 
-**Available presets**. Here are other Test presets you can try:
+## Available presets 
+
+Here are other Test presets you can try:
 
 ```python
 no_target_performance = TestSuite(tests=[
@@ -67,14 +71,39 @@ NoTargetPerformance(most_important_features=['education-num', 'hours-per-week'])
 no_target_performance.run(reference_data=ref,current_data=curr)
 No_target_performance
 ```
+{% hint style="info" %} Refer to the Test Suites to see the complete list of presets and contents, and to the All Tests [All tests](../reference/all-tests.md) to learn about defaults.{% endhint %}
 
+# Output formats 
 
-You can get the test output as a JSON:
+You can get the test results in different formats. 
+
+**HTML**. You can get the Test Suite output as an interactive visual report. It is best for exploration and debugging. You can also document test results and share them with the team. 
+
+To see in Jupyter notebook or Colab, call the object: 
 ```python
-data_drift.json()
+data_stability
 ```
 
-Or in Python dictionary format:
+To export HTML as a separate file: 
 ```python
-data_drift.as_dict()
+data_stability.save_html(“file.html”)
+```
+**JSON**. You can get the test output as a JSON. It is best for test automation and integration in your prediction pipelines. 
+
+To get the JSON:
+
+```python
+data_stability.json()
+```
+To export JSON as a separate file: 
+
+```python
+data_stability.save_json(“file.json”)
+```
+
+**Python dictionary**. You can get the test output in the Python dictionary format. Using a Python object might be more convenient if you want to apply multiple transformations to the output.
+
+To get the dictionary:
+```python
+data_stability.as_dict()
 ```
