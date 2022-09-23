@@ -41,7 +41,7 @@ Data structure requirements depend on the type of analysis. Here are example req
 
 You can create a `ColumnMapping` object to map your column names and feature types. 
 
-### Target, prediction, ID and DateTime
+### Dataset structure
 
 To specify the column names for target, prediction, ID or DateTime: 
 
