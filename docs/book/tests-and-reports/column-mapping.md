@@ -61,8 +61,7 @@ column_mapping.numerical_features = ['temp', 'atemp', 'humidity'] #list of numer
 column_mapping.categorical_features = ['season', 'holiday'] #list of categorical features
 ```
 
-Why map them: the column types affect some of the tests, metrics and visualizations. For example, the drift algorithm selects a statistical test based on the column type and ignores DateTime features. Some of the data quality visualizations are different for specific feature types. Some of the tests (e.g. on value ranges) only considers numeral columns, etc. 
-
+{% hint style="info" %} **Why map them:** the column types affect some of the tests, metrics and visualizations. For example, the [drift algorithm](../reference/drift-algorithm.md) selects a statistical test based on the column type and ignores DateTime features. Some of the data quality visualizations are different for specific feature types. Some of the tests (e.g. on value ranges) only considers numeral columns, etc.{% endhint %}
 
 **NOTE: Column names in Probabilistic Classification**
 
