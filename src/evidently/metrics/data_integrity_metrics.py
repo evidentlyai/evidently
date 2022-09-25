@@ -6,15 +6,17 @@ from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Pattern
+from typing import Union
 
 import dataclasses
 import numpy as np
 import pandas as pd
 from dataclasses import dataclass
 
+from evidently.calculations.data_quality import FeatureQualityStats
+from evidently.calculations.data_quality import get_features_stats
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
-from evidently.model.widget import WidgetType
 from evidently.renderers.base_renderer import MetricHtmlInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -22,6 +24,112 @@ from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import table_data
+from evidently.utils.data_operations import process_columns
+from evidently.utils.types import Numeric
+
+
+@dataclass
+class NumericCharacteristics:
+    count: int
+    mean: Optional[Numeric]
+    std: Optional[Numeric]
+    min: Optional[Numeric]
+    p25: Optional[Numeric]
+    p50: Optional[Numeric]
+    p75: Optional[Numeric]
+    max: Optional[Numeric]
+
+
+@dataclass
+class CategoricalCharacteristics:
+    count: int
+    unique: Optional[int]
+    most_common: Optional[object]
+    missing: Optional[int]
+    new_categories: Optional[List[object]]
+
+
+@dataclass
+class DatetimeCharacteristics:
+    count: int
+    unique: Optional[int]
+    most_common: Optional[object]
+    missing: Optional[int]
+    first: Optional[str]
+    last: Optional[str]
+
+
+ColumnCharacteristics = Union[NumericCharacteristics, CategoricalCharacteristics, DatetimeCharacteristics]
+
+
+@dataclass
+class ColumnSummary:
+    column_name: str
+    column_type: str
+    reference_characteristics: Optional[ColumnCharacteristics]
+    current_characteristics: ColumnCharacteristics
+
+
+class ColumnSummaryMetric(Metric[ColumnSummary]):
+    def __init__(self, column_name: str):
+        self.column_name = column_name
+
+    def calculate(self, data: InputData) -> ColumnSummary:
+        columns = process_columns(data.current_data, data.column_mapping)
+        if self.column_name in columns.num_feature_names:
+            column_type = "num"
+        elif self.column_name in columns.cat_feature_names:
+            column_type = "num"
+        elif self.column_name in columns.datetime_feature_names:
+            column_type = "num"
+        else:
+            raise ValueError(f"column {self.column_name} not in num, cat or datetime features lists")
+        ref_characteristics = None
+        if data.reference_data is not None:
+            ref_characteristics = self.map_data(get_features_stats(data.reference_data[self.column_name], column_type))
+        curr_characteristics = self.map_data(get_features_stats(data.current_data[self.column_name], column_type))
+        return ColumnSummary(
+            column_name=self.column_name,
+            column_type=column_type,
+            reference_characteristics=ref_characteristics,
+            current_characteristics=curr_characteristics,
+        )
+
+    @staticmethod
+    def map_data(stats: FeatureQualityStats) -> ColumnCharacteristics:
+        if stats.feature_type == "num":
+            if isinstance(stats.max, str) or isinstance(stats.min, str):
+                raise ValueError("max / min stats should be int or float type, but got str")
+            return NumericCharacteristics(
+                count=stats.count,
+                mean=stats.mean,
+                std=stats.std,
+                min=stats.min,
+                max=stats.max,
+                p25=stats.percentile_25,
+                p50=stats.percentile_50,
+                p75=stats.percentile_75,
+            )
+        if stats.feature_type == "cat":
+            return CategoricalCharacteristics(
+                count=stats.count,
+                unique=stats.unique_count,
+                most_common=stats.most_common_value,
+                missing=stats.missing_count,
+                new_categories=[],
+            )
+        if stats.feature_type == "datetime":
+            if not isinstance(stats.min, str) or not isinstance(stats.max, str):
+                raise ValueError(f"min / max expected to be str for datetime, got {type(stats.min)}/{type(stats.max)}")
+            return DatetimeCharacteristics(
+                count=stats.count,
+                unique=stats.unique_count,
+                most_common=stats.most_common_value,
+                missing=stats.missing_count,
+                first=stats.min,
+                last=stats.max,
+            )
+        raise ValueError(f"unknown feature type {stats.feature_type}")
 
 
 @dataclass

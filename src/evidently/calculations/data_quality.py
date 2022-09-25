@@ -147,7 +147,7 @@ class DataQualityStats:
         raise KeyError(item)
 
 
-def _get_features_stats(feature: pd.Series, feature_type: str) -> FeatureQualityStats:
+def get_features_stats(feature: pd.Series, feature_type: str) -> FeatureQualityStats:
     def get_percentage_from_all_values(value: Union[int, float]) -> float:
         return np.round(100 * value / all_values_count, 2)
 
@@ -206,12 +206,12 @@ def calculate_data_quality_stats(
     result = DataQualityStats(rows_count=get_rows_count(dataset))
 
     result.num_features_stats = {
-        feature_name: _get_features_stats(dataset[feature_name], feature_type="num")
+        feature_name: get_features_stats(dataset[feature_name], feature_type="num")
         for feature_name in columns.num_feature_names
     }
 
     result.cat_features_stats = {
-        feature_name: _get_features_stats(dataset[feature_name], feature_type="cat")
+        feature_name: get_features_stats(dataset[feature_name], feature_type="cat")
         for feature_name in columns.cat_feature_names
     }
 
@@ -222,7 +222,7 @@ def calculate_data_quality_stats(
         date_list = columns.datetime_feature_names
 
     result.datetime_features_stats = {
-        feature_name: _get_features_stats(dataset[feature_name], feature_type="datetime") for feature_name in date_list
+        feature_name: get_features_stats(dataset[feature_name], feature_type="datetime") for feature_name in date_list
     }
 
     target_name = columns.utility_columns.target
@@ -231,10 +231,10 @@ def calculate_data_quality_stats(
         result.target_stats = {}
 
         if task == "classification":
-            result.target_stats[target_name] = _get_features_stats(dataset[target_name], feature_type="cat")
+            result.target_stats[target_name] = get_features_stats(dataset[target_name], feature_type="cat")
 
         else:
-            result.target_stats[target_name] = _get_features_stats(dataset[target_name], feature_type="num")
+            result.target_stats[target_name] = get_features_stats(dataset[target_name], feature_type="num")
 
     prediction_name = columns.utility_columns.prediction
 
@@ -242,10 +242,10 @@ def calculate_data_quality_stats(
         result.prediction_stats = {}
 
         if task == "classification":
-            result.prediction_stats[prediction_name] = _get_features_stats(dataset[prediction_name], feature_type="cat")
+            result.prediction_stats[prediction_name] = get_features_stats(dataset[prediction_name], feature_type="cat")
 
         else:
-            result.prediction_stats[prediction_name] = _get_features_stats(dataset[prediction_name], feature_type="num")
+            result.prediction_stats[prediction_name] = get_features_stats(dataset[prediction_name], feature_type="num")
 
     return result
 
