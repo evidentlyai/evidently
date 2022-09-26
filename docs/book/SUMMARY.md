@@ -34,6 +34,12 @@
 * [Monitoring](monitoring/README.md)
 
 ## User Guide
+* [Tests and reports](tests-and-reports/README.md)
+  * [Input data](tests-and-reports/input-data.md)
+  * [Column mapping](tests-and-reports/column-mapping.md)
+  * [Run tests](tests-and-reports/run-tests.md)
+  * [Get reports](tests-and-reports/get-reports.md)
+  * [Supported environments](tests-and-reports/supported-environments.md)
 * [Customization](customization/README.md)
   * [Select Widgets](customization/select-widgets-to-display.md)
   * [Custom Widgets and Tabs](customization/add-a-custom-widget-or-tab.md)
