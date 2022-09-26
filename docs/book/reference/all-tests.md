@@ -84,8 +84,9 @@ To modify the logic or select a different test, you should pass a DataDrift [Opt
 
 | Test | Description | Default |
 |---|---|---|
-|  TestRocAuc()<br>   | Dataset-level. <br><br> Computes the ROC AUC and compares it to the reference if available. | Expects +/-20% or > 0.5<br><br>**With reference**: the test fails if the ROC AUC is over 20% higher or lower than in the reference. <br>**No reference**: the test fails if ROC AUC is <= 0.5. |
-|  TestLogLoss() | Dataset-level. <br><br> Computes the LogLoss and compares it to the reference. | Expects +/-20% or better than a dummy model<br><br>**With reference**: the test fails if the LogLoss is over 20% higher or lower than in the reference. <br>**No reference**: the test fails if LogLoss is higher than the LogLoss of the dummy model (equals 0.5 for a constant model). |
+| TestNumberOfDriftedFeatures<br>options: DataDriftOptions | Dataset-level.  <br><br> Compares the distribution of each column in the current dataset to the reference and computes the number of drifting features. | Expects =< ⅓ features to drift.<br>With reference: If > 1/3 of features drifted, the test fails.<br>No reference: N/A |
+| TestShareOfDriftedFeatures<br>options: DataDriftOptions | Dataset-level.  <br><br> Compares the distribution of each column in the current dataset to the reference and computes the share of drifting features. | Expects =< ⅓ features to drift.<br>With reference: If > 1/3 of features drifted, the test fails.<br>No reference: N/A |
+| TestFeatureValueDrif(column_name='name')<br>options: DataDriftOptions<br>    | Column-level. <br><br> Compares the distribution of values in a given column to the reference.  | Expects no drift.<br>With reference: the test fails if the distribution drift is detected in a given column.<br>No reference: N/A |
 
 ## Regression
 
