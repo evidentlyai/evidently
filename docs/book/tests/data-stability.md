@@ -23,13 +23,13 @@ The preset contains the following tests:
 
 
 ```python
-TestNumberOfRows()
-TestNumberOfColumns()
-TestColumnsType(column='all')
-TestColumnNullShare(column=’all’)
+TestNumberOfRows(),
+TestNumberOfColumns(),
+TestColumnsType(),
+TestColumnNANShare(column=’all’)
 TestShareOfOutRangeValues(column=numerical_columns)
 TestShareOfOutListValues(column=categorical_columns)
-TestValueMeanInSTD(column=numerical_columns, n=2)
+TestMeanInNSigmas(column=numerical_columns, n=2)
 ```
 
 Unless specified otherwise, the default settings are applied. 
