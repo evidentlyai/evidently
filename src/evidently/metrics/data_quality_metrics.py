@@ -29,6 +29,7 @@ from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_operations import recognize_task
 from evidently.utils.visualizations import plot_distr
+from evidently.utils.visualizations import plot_range
 
 
 @dataclass
@@ -401,7 +402,7 @@ class DataQualityValueRangeMetricsResults:
     ref_min: Optional[float] = None
     ref_max: Optional[float] = None
 
-
+import logging
 class DataQualityValueRangeMetrics(Metric[DataQualityValueRangeMetricsResults]):
     """Calculates count and shares of values in the predefined values range"""
 
@@ -500,6 +501,15 @@ class DataQualityValueRangeMetricsRenderer(MetricRenderer):
         column_name = metric_result.column_name
         left = metric_result.range_left_value
         right = metric_result.range_right_value
+        distr_for_plot = metric_result.distr_for_plot
+        curr_distr = distr_for_plot["current"]
+        ref_distr: Optional[pd.DataFrame]=None
+        if "reference" in distr_for_plot.keys():
+            ref_distr = distr_for_plot["reference"]
+
+        fig = plot_distr(curr_distr, ref_distr)
+        fig = plot_range(fig, left=left, right=right)
+
         result = [
             MetricHtmlInfo(
                 "data_quality_value_range_title",
@@ -509,7 +519,10 @@ class DataQualityValueRangeMetricsRenderer(MetricRenderer):
                 "data_quality_value_range_title",
                 header_text(label=f"Range is from {left} to {right}"),
             ),
-            self._get_table_stat(dataset_name="current", metrics=metric_result),
+            MetricHtmlInfo(
+                "data_quality_value_range_title",
+                plotly_figure(title="", figure=fig),
+            ),
         ]
         return result
 

@@ -30,3 +30,8 @@ def plot_distr(hist_curr, hist_ref=None, orientation="v", color_options: Optiona
         )
 
     return fig
+
+def plot_range(fig, left, right):
+    fig = go.Figure(fig)
+    fig.add_vrect(x0=left, x1=right, fillcolor="green", opacity=0.25, line_width=0)
+    return fig

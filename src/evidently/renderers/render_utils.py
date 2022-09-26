@@ -22,3 +22,4 @@ def plot_distr(hist_curr, hist_ref=None, orientation="v"):
         )
 
     return fig
+
