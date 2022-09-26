@@ -1,6 +1,6 @@
 ## When to use it?
 
-You can use the Regression Performance test preset to evaluate the quality of a regression model, when you have the ground truth data (actuals).
+You can use the Regression test preset to evaluate the quality of a regression model, when you have the ground truth data (actuals).
 
 ### Code example
 
