@@ -2,6 +2,10 @@
 description: How to generate dashboards in Evidently.
 ---
 
+{% hint style="info" %}
+Evidently is migrating to the new API, and we are updating the documentation. Dashboard object will be soon depreciated and replaced with Reports object. It has the same functionality, but with a cleaner API and easier customization. Read more on [Reports](../tests-and-reports/get-reports.md). You can still use the Dashboards functionality at the moment.
+{% endhint %}
+
 # Generate Dashboards
 
 After [installation](../get-started/install-evidently.md), import `evidently` and the required tabs:
