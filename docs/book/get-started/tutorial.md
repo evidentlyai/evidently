@@ -251,7 +251,7 @@ Tests
 It works the same for custom Reports which you can create from individual Metrics (coming soon).
 
 {% hint style="info" %}
-**Customize it!** To explore the list of available individual tests, consult [All tests](../reference/all-tests.md) reference table. To see how to set custom test conditions, head to [User Guide](../tests-and-reports/get-tests.md).
+**Customize it!** To explore the list of available individual tests, consult [All tests](../reference/all-tests.md) reference table. To see how to set custom test conditions, head to [User Guide](../tests-and-reports/run-tests.md).
 {% endhint %}
 
 ## 7. Get the output as JSON
