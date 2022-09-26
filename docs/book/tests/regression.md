@@ -6,7 +6,7 @@ You can use the Regression Performance test preset to evaluate the quality of a 
 
 ```python
 regression_performance = TestSuite(tests=[
-   RegressionPerformance(),
+   Regression(),
 ])
  
 regression_performance.run(reference_data=ref, current_data=curr)
