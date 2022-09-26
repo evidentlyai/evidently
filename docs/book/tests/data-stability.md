@@ -36,5 +36,6 @@ Unless specified otherwise, the default settings are applied.
 
 Head here to the [All tests](../reference/all-tests.md) table to see the description of individual tests and default parameters. 
 
-
-We do our best to maintain the documentation up to date. If you see any discrepancy with the contents of the preset, consult the API documentation as the source of truth, and send us a Pull Request to update!  
+{% hint style="info" %} 
+We are doing our best to maintain this page up to date. In case of discrepancies, consult the code on GitHub (API reference coming soon!) or the current version of the "All tests" example notebook in the [Examples](../get-started/examples.md) section. If you notice an error, please send us a pull request to update the documentation! 
+{% endhint %}
