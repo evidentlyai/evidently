@@ -52,7 +52,7 @@ column_mapping.id = None #there is no ID column in the dataset
 column_mapping.datetime = 'date' #'date' is the name of the column with datetime
 ```
 
-## Categorical and Numerical features
+## Categorical and numerical features
 
 To split the features into numerical and categorical types: 
 
