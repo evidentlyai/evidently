@@ -11,7 +11,7 @@ How to read the tables:
 We organize the tests into logical groups. Note that the groups do not match the presets with the same name, e.g., there are more Data Quality tests below than in the DataQuality preset.
 
 {% hint style="info" %} 
-We are doing our best to maintain this page up to date. In case of discrepancies, consult the code on GitHub (API reference coming soon!) or the current version of the "All tests" example notebook in the [Examples](../examples) section. If you notice an error, please send us a pull request to update the documentation! 
+We are doing our best to maintain this page up to date. In case of discrepancies, consult the code on GitHub (API reference coming soon!) or the current version of the "All tests" example notebook in the [Examples](../get-started/examples.md) section. If you notice an error, please send us a pull request to update the documentation! 
 {% endhint %}
 
 ## Data integrity
