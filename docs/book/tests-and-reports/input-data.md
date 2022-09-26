@@ -4,7 +4,7 @@ description: How to prepare the data to run Evidently reports or tests.
 
 **TL;DR:** Pass two datasets: reference and current. Use `pandas.DataFrame`. Keep the schema identical. Downsample if too large. As an option, pass only the current data.  
 
- Data Preparation
+# Data Preparation
 
 Prepare the input data as a `pandas.DataFrame`. 
  
