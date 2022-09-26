@@ -80,7 +80,7 @@ If you provide the reference dataset, Evidently will automatically derive all re
 
 By default, all data drift tests use the Evidently [drift detection logic](data-drift-algorithm.md) that selects a different statistical test or metric based on feature type and volume. You always need a reference dataset.
 
-To modify the logic or select a different test, you should pass a DataDrift [Options](../user-guide/customization/options-for-statistical-tests) object. 
+To modify the logic or select a different test, you should pass a DataDrift [Options](../customization/options-for-statistical-tests.md) object. 
 
 | Test | Description | Default |
 |---|---|---|
