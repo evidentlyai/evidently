@@ -2,7 +2,7 @@
 description: How to use column mapping in Evidently.
 ---
 
-**TL;DR:** Evidently expects a certain dataset structure and input column names. You can specify any differences by creating a ColumnMapping object. It works the same way for Test Suites and Reports. 
+**TL;DR:** Evidently expects a certain dataset structure and input column names. You can specify any differences by creating a ColumnMapping object. It works the same way for test suites and reports. 
 
 # Default mapping strategy
 
@@ -67,7 +67,7 @@ column_mapping.categorical_features = ['season', 'holiday'] #list of categorical
 
 # Additional mapping options
 
-There are additional mapping options that apply to specific Test Suites and Reports.
+There are additional mapping options that apply to specific test suites and reports.
 
 ## DateTime features 
 
