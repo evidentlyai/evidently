@@ -48,6 +48,7 @@ Code snippets and a step-by-step guide on how to run tests:
 # Code examples
 
 Example Jupyter notebooks and Colabs:  
+
 {% content-ref url="../get-started/examples.md" %}
 [Examples](examples.md)
 {% endcontent-ref %}
