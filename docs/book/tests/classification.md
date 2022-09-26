@@ -32,8 +32,8 @@ The preset contains the following tests:
 ```python
 TestAccuracyScore(),
 TestF1Score(),
-TestPrecisionScore(), 
-TestRecallScore(),
+TestPrecisionByClass(label=labels), 
+TestRecallByClass(label=labels),
 TestFeatureValueDrift(column=target)
 ```
 
