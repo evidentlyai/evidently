@@ -39,7 +39,9 @@ The exact schema requirements differ based on the contents of the Report or Test
  
 If you pass two datasets, the structure of both datasets should be identical. All column names should be `string`.
  
-{% hint style="info" %} You can read more about the data schema requirements in the [column mapping section](column-mapping.md).{% endhint %}
+{% hint style="info" %} 
+You can read more about the data schema requirements in the [column mapping section](column-mapping.md).
+{% endhint %}
 
 # Data volume and sampling
 
