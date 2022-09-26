@@ -2,7 +2,7 @@
 
 You can use the Data Quality test preset when you want to evaluate the data quality, even without a reference dataset.
 
-It will help assess whether a data batch is suitable for training or retraining. It can detect issues like missing data, duplicates, or constant and almost constant features.  
+It will help assess whether a data batch is e.g. suitable for training or retraining. It can detect issues like missing data, duplicates, or constant and almost constant features.  
 
 ### Code example
 
@@ -23,12 +23,13 @@ The preset contains the following tests:
 
 
 ```python
-TestAllColumnsShareOfNulls(),
-TestAllColumnsMostCommonValueShare(),
+TestColumnShareOfNulls(column=’all’),
+TestMostCommonValueShare(column=’all’)
 TestNumberOfConstantColumns(),
 TestNumberOfDuplicatedColumns(),
 TestNumberOfDuplicatedRows(),
 TestHighlyCorrelatedFeatures(),
+
 ```
 
 Unless specified otherwise, the default settings are applied. 
