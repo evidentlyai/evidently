@@ -1,6 +1,6 @@
 ## When to use it?
 
-You can use the Classification Performance test preset to evaluate the quality of a classification model, when you have the ground truth labels.
+You can use one of the classification test presets to evaluate the quality of a classification model, when you have the ground truth labels.
 
 There are several presets for different classification tasks: 
 
