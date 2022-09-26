@@ -46,7 +46,7 @@ TestMeanInNSigmas(column=numerical_columns, n=2)
 
 ```
 
-If the most important feature list specified: TestValueDrift(column=most_important_feature_list)
+If the most important feature list specified: `TestValueDrift(column=most_important_feature_list)`
 
 Unless specified otherwise, the default settings are applied. 
 
