@@ -117,7 +117,7 @@ You need to create a `TestSuite` object and specify which tests to include.
 
 ## Dataset-level tests
 
-You can apply some of the tests on the dataset level, for example, to evaluate data drift for all features. 
+You can apply some of the tests on the dataset level, for example, to evaluate data drift for the whole dataset dataset. 
 
 To create a custom data drift test suite with dataset-level tests:
 
@@ -138,7 +138,7 @@ data_drift_suite
 
 ## Column-level tests
 
-You can apply some tests to the individual columns, for example, to check if a specific feature or model prediction stays within the range. 
+You can apply some tests to the individual columns, for example, to check if a specific feature or model prediction stays within the range. (Note that you can still apply column-level tests to all the individual columns in the dataset).
 
 To create a custom data drift test suite with column-level tests:
 
