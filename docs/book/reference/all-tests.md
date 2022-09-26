@@ -5,7 +5,7 @@ description: List of all tests available in Evidently.
 How to read the tables:
 
 * **Test**: the name of an individual test that you can include in a Test Suite. If a test has an optional parameter, we include an example. 
-* **Description**: plain text explanation of how the test works. We also specify whether the test applies to the whole dataset or individual columns.
+* **Description**: plain text explanation of the test. We also specify whether the test applies to the whole dataset or individual columns.
 * **Default**: description of the default parameters. Many tests have two types of the defaults. The first applies when you pass a reference dataset and Evidently can derive expectations from it. The second applies if you do not provide the reference. You can always override the defaults by specifying a custom condition.   
 
 We organize the tests into logical groups. Note that the groups do not match the presets with the same name, e.g., there are more Data Quality tests below than in the DataQuality preset.
