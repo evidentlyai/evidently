@@ -1,10 +1,10 @@
 # Get Started Tutorial
 
-In this tutorial, you will use the Evidently open-source Python library to evaluate data stability and data drift. You will run batch checks on a toy dataset and generate visual reports.
+In this tutorial, you will use the Evidently open-source Python library to evaluate **data stability** and **data drift**. You will run batch checks on a toy dataset and generate visual reports.
 
 We suggest going through this tutorial once to understand the basic functionality. You can then explore advanced features such as custom metrics and real-time monitoring.
 
-To complete the tutorial, you need basic knowledge of Python and familiarity with notebook environments. You should be able to complete it in under 10 minutes.
+To complete the tutorial, you need basic knowledge of Python and familiarity with notebook environments. You should be able to complete it in **under 10 minutes**.
 
 You can reproduce the steps in Jupyter notebooks or Colab or open and run a sample notebook from the links below.  
 
