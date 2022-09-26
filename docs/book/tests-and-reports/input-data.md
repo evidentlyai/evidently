@@ -24,7 +24,9 @@ If you pass a single dataset to generate a **report**, there will be no side-by-
  
 If you pass a single dataset to run **tests**, Evidently will use the default test parameters. For example, it will compare the model performance with a dummy model. You can also manually set the conditions (e.g., expected min-max value ranges) without the reference dataset.  
 
-{% hint style="info" %} The default parameters for each test are listed in the [All tests](../reference/all-tests.md) table.{% endhint %}
+{% hint style="info" %} 
+The default parameters for each test are listed in the [All tests](../reference/all-tests.md) table.
+{% endhint %}
 
 # Dataset structure
 
