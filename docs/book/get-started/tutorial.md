@@ -280,7 +280,7 @@ Both **tests** and **reports** have multiple presets available. Some require onl
 
 When you have the true labels, you can run presets like **Regression Performance** and **Classification Performance** to evaluate the model quality and errors. 
 
-To understand the contents of each preset, you can explore the [Reports](../reports) and [Test Suites](../test-suites). If you want to see the code, head straight to the [Examples](../get-started/examples.md) section. 
+To understand the contents of each preset, you can explore the [Reports](../reports) and [Test Suites](../tests). If you want to see the code, head straight to the [Examples](../get-started/examples.md) section. 
 
 If you need help with specific steps, consult the [User Guide](../tests-and-reports). 
 
