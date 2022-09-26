@@ -8,7 +8,7 @@ description: How to prepare the data to run Evidently reports or tests.
 
 Prepare the input data as a `pandas.DataFrame`. 
  
-You will typically need **two datasets** to compare. In Evidently, we call them `reference` and `current` datasets.
+You typically need **two datasets**. In Evidently, we call them `reference` and `current` datasets.
 * **Reference** dataset is a baseline for comparison. This can be training data or earlier production data.
 * **Current** dataset is the second dataset that is compared to the baseline. It can include the most recent production data.
 
@@ -24,7 +24,7 @@ If you pass a single dataset to generate a **report**, there will be no side-by-
  
 If you pass a single dataset to run **tests**, Evidently will use the default test parameters. For example, it will compare the model performance with a dummy model. You can also manually set the conditions (e.g., expected min-max value ranges) without the reference dataset.  
 
-{% hint style="info" %} The default parameters for each test are listed in the [All tests](../reference/all-tests.md) table.{% endhint %}
+{% hint style="info" %} The default parameters for each test are listed in the [All tests](../reference/all-tests) table.{% endhint %}
 
 # Dataset structure
 
@@ -39,7 +39,7 @@ The exact schema requirements differ based on the contents of the Report or Test
  
 If you pass two datasets, the structure of both datasets should be identical. All column names should be `string`.
  
-{% hint style="info" %} You can read more about the data schema requirements in the [column mapping section](column-mapping.md).{% endhint %}
+{% hint style="info" %} You can read more about the data schema requirements in the [column mapping section](column-mapping).{% endhint %}
 
 # Data volume and sampling
 
