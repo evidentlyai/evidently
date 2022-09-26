@@ -13,15 +13,17 @@ from evidently.test_suite import TestSuite
 from evidently.tests import *
 from evidently.test_preset import NoTargetPerformance, DataQuality, DataStability, DataDrift, Regression, MulticlassClassification, BinaryClassificationTopK, BinaryClassification
 ```
-You need to prepare two datasets for comparison: **reference** and **current**. The reference dataset is optional. 
+You need two datasets for comparison: **reference** and **current**. The reference dataset is optional. 
 
-{% hint style="info" %} Refer to the [input data](input-data.md) and [column mapping](column-mapping.md) for more details on data preparation and requirements.{% endhint %}
+{% hint style="info" %} 
+Refer to the [input data](input-data.md) and [column mapping](column-mapping.md) for more details on data preparation and requirements.
+{% endhint %}
 
 # Test presets 
 
-Evidently has ready-made `test_presets` that group relevant tests together. You can use them as templates to test a specific aspect of the data or model performance.
+Evidently has `test_presets` that group relevant tests together. You can use them as templates to test a specific aspect of the data or model performance.
 
-You need to create a `TestSuite` object and include the specific preset in the list of tests. You should also point to the current dataset and reference dataset (if available).
+You need to create a `TestSuite` object and specify the presets to include. You should also point to the current and reference dataset (if available).
 
 If nothing else is specified, the tests will run with the default parameters.
 
@@ -51,13 +53,15 @@ NoTargetPerformance(most_important_features=['education-num', 'hours-per-week'])
 no_target_performance.run(reference_data=ref,current_data=curr)
 No_target_performance
 ```
-You can use the `most_important_features` argument as shown above. In this case, some of the per-feature tests will only apply to the features from the list. This way, you will decrease the overall number of tests. 
+You can use the `most_important_features` argument as shown above. In this case, some of the per-feature tests only apply to the features from the list. This way, you decrease the overall number of tests. 
 
-{% hint style="info" %} Refer to the Test Suites to see the complete list of presets and contents, and to the All Tests [All tests](../reference/all-tests.md) to learn about defaults.{% endhint %}
+{% hint style="info" %} 
+Refer to the Test Suites to see the complete list of presets and contents, and to the All Tests [All tests](../reference/all-tests.md) to learn about defaults.
+{% endhint %}
 
 ## Available presets 
 
-Here are other Test presets you can try:
+Here are other test presets you can try:
 
 ```python
 NoTargetPerformance
@@ -134,7 +138,7 @@ data_drift_suite
 
 ## Column-level tests
 
-You can apply some tests to the individual columns, for example, to check if a feature or model prediction stays within the range. 
+You can apply some tests to the individual columns, for example, to check if a specific feature or model prediction stays within the range. 
 
 To create a custom data drift test suite with column-level tests:
 
@@ -153,7 +157,20 @@ feature_suite.run(reference_data=ref, current_data=curr)
 feature_suite
 ```
 
-**Combining tests**. When you define the composition of the TestSuite, you can include presets and individual tests in the same list. You can also combine feature-level and dataset-level tests in a single suite. 
+**Combining tests**. When you define the contents of the TestSuite, you can include presets and individual tests in the same list. You can also combine feature-level and dataset-level tests. 
+
+Here is an example:
+
+```python
+my_data_quality_report = TestSuite(tests=[
+    DataQuality(),
+    TestColumnAllConstantValues(column_name='education'),
+    TestNumberOfDriftedFeatures()
+])
+
+my_data_quality_report.run(reference_data=ref,current_data=curr)
+my_data_quality_report
+```
 
 ## Available tests
 
@@ -167,11 +184,15 @@ TestNumberOfDuplicatedColumns()
 TestHighlyCorrelatedFeatures()
 ```
 
-{% hint style="info" %} **Reference**: The complete list of tests is available in the [all tests](../reference/all-tests.md) table.{% endhint %}
+{% hint style="info" %} 
+**Reference**: The complete list of tests is available in the [all tests](../reference/all-tests.md) table.
+{% endhint %}
 
 # Custom test parameters
 
-**Defaults**. Each test compares the value of a specific metric in the current dataset against the reference. If you do not specify the condition explicitly, Evidently will use a default. For example, the TestShareOfOutRangeValues will fail if over 10% of values are out of range. The normal range for each feature will be automatically derived from the reference.
+**Defaults**. Each test compares the value of a specific metric in the current dataset against the reference. If you do not specify the condition explicitly, Evidently will use a default. 
+
+For example, the TestShareOfOutRangeValues will fail if over 10% of values are out of range. The normal range for each feature will be automatically derived from the reference.
 
 {% hint style="info" %} **Reference**: All defaults are described in the same table with [all tests](../reference/all-tests.md).{% endhint %}
 
@@ -214,18 +235,11 @@ The following standard parameters are available:
 
 ### Approx
 
-If you want to set an upper and/or lower limit to the value, you can use approx instead of calculating the value itself. You can set the relative or absolute range. 
+If you want to set an upper and/or lower limit to the value, you can use **approx** instead of calculating the value itself. You can set the relative or absolute range. 
 
 ```python
 approx(value, relative=None, absolute=None)
 ```
-
-This simplifies the definition of parameters.
-
-`eq=approx(5, relative=0.1, absolute=None)` is the same as `lte=5 + 5 * 0.1` and `gte=5 - 5 * 0.1`
-
-`eq=approx(5, relative=None, absolute=0.1)` is the same as `lte=5 + 0.1` and `gte=5 - 0.1`
-
 To apply approx, you need to first import this component:
 
 ```python
@@ -249,7 +263,9 @@ Some tests require additional parameters or might have optional parameters.
 
 For example, if you want to test a quantile value, you need to pass the quantile as a parameter (required). Or, you can pass the K parameter to evaluate classification precision@K instead of using the default decision threshold of 0.5 (optional). 
 
-{% hint style="info" %} **Reference**: the additional parameters that apply to specific tests and defaults are described in the same table with [all tests](../reference/all-tests.md).{% endhint %}
+{% hint style="info" %} 
+**Reference**: the additional parameters that apply to specific tests and defaults are described in the same table with [all tests](../reference/all-tests.md).
+{% endhint %}
 
 # Tests generation 
 
@@ -328,9 +344,7 @@ suite
  
 ### Column parameter
 
-You can use the parameter `columns` to define a list of columns to which you apply the tests. 
- 
-If it is a list, you can just use it as a list of the columns. If `columns` is a string, it can take the following values:
+You can use the parameter `columns` to define a list of columns to which you apply the tests. If it is a list, just use it as a list of the columns. If `columns` is a string, it can take the following values:
 * `"all"` - apply tests for all columns, including target/prediction columns.
 * `"num"` - for numerical features, as provided by column mapping or defined automatically
 * `"cat"` - for categorical features, as provided by column mapping or defined automatically
