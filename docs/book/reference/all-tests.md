@@ -5,8 +5,8 @@ description: List of all tests available in Evidently.
 How to read the tables:
 
 * **Test**: the name of an individual test that you can include in a Test Suite. If a test has an optional parameter, we include an example. 
-* **Description**: plain text explanation of how the test works. We also specify whether the test applies to the whole dataset or individual columns.(Note that you can still apply column-level tests to all the columns in the dataset).
-* **Default**: plain text explanation of the default parameters. Many tests have two types of defaults. The first applies when you pass a reference dataset and Evidently can derive expectations from this baseline. The second applies if you do not provide the reference. You can always override the defaults by specifying a custom condition.   
+* **Description**: plain text explanation of how the test works. We also specify whether the test applies to the whole dataset or individual columns.
+* **Default**: description of the default parameters. Many tests have two types of the defaults. The first applies when you pass a reference dataset and Evidently can derive expectations from it. The second applies if you do not provide the reference. You can always override the defaults by specifying a custom condition.   
 
 We organize the tests into logical groups. Note that the groups do not match the presets with the same name, e.g., there are more Data Quality tests below than in the DataQuality preset.
 
@@ -16,7 +16,9 @@ We are doing our best to maintain this page up to date. In case of discrepancies
 
 ## Data integrity
 
-Note: the tests that evaluate the number or share of nulls detect four types of nulls by default: Pandas nulls (None, NAN, etc.), "" (empty string), Numpy "-inf" value, Numpy "inf" value. You can also pass a custom list of nulls as a parameter and specify if you want to replace the default list. Example:
+If you provide the reference dataset, Evidently will automatically derive all relevant statistics (e.g., share of nulls, etc.) to shape expectations. You can also pass these conditions as a parameter or run the tests with defaults.  
+
+**Note on Null-related tests**. The tests that evaluate the number or share of nulls detect four types of nulls by default: Pandas nulls (None, NAN, etc.), "" (empty string), Numpy "-inf" value, Numpy "inf" value. You can also pass a custom list of nulls as a parameter and specify if you want to replace the default list. Example:
 
 ```python
 TestNumberOfNulls(null_values=["", 0, "n/a", -9999, None], replace=True)
@@ -47,7 +49,7 @@ TestNumberOfNulls(null_values=["", 0, "n/a", -9999, None], replace=True)
 
 ## Data quality
 
-If you provide the reference dataset Evidently will automatically derive all relevant statistics (e.g., minimum value, maximum value, value range, value list, etc.) to shape expectations. If you do not provide the reference, you can pass these conditions as a parameter.  
+If you provide the reference dataset, Evidently will automatically derive all relevant statistics (e.g., min value, max value, value range, value list, etc.) to shape expectations. If you do not provide the reference, you can pass these conditions as a parameter, or run tests with default parameters.  
 
 | Test | Description | Default |
 |---|---|---|
@@ -76,7 +78,7 @@ If you provide the reference dataset Evidently will automatically derive all rel
 
 ## Data drift
 
-By default, all data drift tests use the Evidently [drift detection logic](data-drift-algorithm.md) that selects a different statistical test or metric based on feature type and volume.  
+By default, all data drift tests use the Evidently [drift detection logic](data-drift-algorithm.md) that selects a different statistical test or metric based on feature type and volume. You always need a reference dataset.
 
 To modify the logic or select a different test, you should pass a DataDrift [Options](../user-guide/customization/options-for-statistical-tests) object. 
 
