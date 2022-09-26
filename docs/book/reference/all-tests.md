@@ -10,7 +10,9 @@ How to read the tables:
 
 We organize the tests into logical groups. Note that the groups do not match the presets with the same name, e.g., there are more Data Quality tests below than in the DataQuality preset.
 
-{% hint style="info" %} We are doing our best to maintain this page up to date. In case of discrepancies, consult the code on GitHub (API reference coming soon!) or the current version of the "All tests" example notebook in the [Examples](https://docs.evidentlyai.com/examples) section. If you notice an error, please send us a pull request to update the documentation! {% endhint %}
+{% hint style="info" %} 
+We are doing our best to maintain this page up to date. In case of discrepancies, consult the code on GitHub (API reference coming soon!) or the current version of the "All tests" example notebook in the [Examples](../examples) section. If you notice an error, please send us a pull request to update the documentation! 
+{% endhint %}
 
 ## Data integrity
 
@@ -74,9 +76,9 @@ If you provide the reference dataset Evidently will automatically derive all rel
 
 ## Data drift
 
-By default, all data drift tests use the Evidently [drift detection logic](https://docs.evidentlyai.com/reference/data-drift-algorithm) that selects a different statistical test or metric based on feature type and volume.  
+By default, all data drift tests use the Evidently [drift detection logic](data-drift-algorithm.md) that selects a different statistical test or metric based on feature type and volume.  
 
-To modify the logic or select a different test, you should pass a DataDrift [Options](https://docs.evidentlyai.com/user-guide/customization/options-for-statistical-tests) object. 
+To modify the logic or select a different test, you should pass a DataDrift [Options](../user-guide/customization/options-for-statistical-tests) object. 
 
 | Test | Description | Default |
 |---|---|---|
