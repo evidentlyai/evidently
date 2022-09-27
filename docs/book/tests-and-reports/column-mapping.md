@@ -2,9 +2,7 @@
 description: How to use column mapping in Evidently.
 ---
 
-**TL;DR:** Evidently expects a certain dataset structure and input column names. You can specify any differences by creating a ColumnMapping object.
- 
-Column mapping works identically for Test Suites and Reports. 
+**TL;DR:** Evidently expects a certain dataset structure and input column names. You can specify any differences by creating a ColumnMapping object. It works the same way for test suites and reports. 
 
 # Default mapping strategy
 
@@ -35,7 +33,7 @@ Data structure requirements depend on the type of analysis. Here are example req
 | Classification Performance | Optional | Required | Required | Optional | Optional |
 | Regression Performance | Optional | Required | Required | Optional | Optional |
 
-# ColumnMapping Object 
+# Primary mapping options
 
 You can create a `ColumnMapping` object to map your column names and feature types. 
 
@@ -54,7 +52,7 @@ column_mapping.id = None #there is no ID column in the dataset
 column_mapping.datetime = 'date' #'date' is the name of the column with datetime
 ```
 
-## Categorical and Numerical features
+## Categorical and numerical features
 
 To split the features into numerical and categorical types: 
 
@@ -63,11 +61,13 @@ column_mapping.numerical_features = ['temp', 'atemp', 'humidity'] #list of numer
 column_mapping.categorical_features = ['season', 'holiday'] #list of categorical features
 ```
 
-{% hint style="info" %} **Why map them:** the column types affect some of the tests, metrics and visualizations. For example, the [drift algorithm](../reference/data-drift-algorithm.md) selects a statistical test based on the column type and ignores DateTime features. Some of the data quality visualizations are different for specific feature types. Some of the tests (e.g. on value ranges) only considers numeral columns, etc.{% endhint %}
+{% hint style="info" %} 
+**Why map them:** the column types affect some of the tests, metrics and visualizations. For example, the [drift algorithm](../reference/data-drift-algorithm.md) selects a statistical test based on the column type and ignores DateTime features. Some of the data quality visualizations are different for specific feature types. Some of the tests (e.g. on value ranges) only considers numeral columns, etc.
+{% endhint %}
 
 # Additional mapping options
 
-There are additional mapping options that apply to specific Test Suites and Reports.
+There are additional mapping options that apply to specific test suites and reports.
 
 ## DateTime features 
 
@@ -84,7 +84,9 @@ column_mapping.datetime_features = ['last_call_date', 'join_date'] #list of Date
  
 **Note**: do not confuse DateTime features with the DateTime column, which is used as the x-axis in some plots. You will typically use the DateTime column as a prediction timestamp. 
 
-{% hint style="info" %} **Why map them:** if you specify DateTime features, they will be ignored in data drift calculation. Evidently will also calculate appropriate statistics and generate different visualizations for DateTime features in the data quality report.{% endhint %}
+{% hint style="info" %} 
+**Why map them:** if you specify DateTime features, they will be ignored in data drift calculation. Evidently will also calculate appropriate statistics and generate different visualizations for DateTime features in the data quality report.
+{% endhint %}
 
 ## Task parameter for target function
 
@@ -101,7 +103,9 @@ It accepts two values: 'regression' and 'classification'.
  
 **Default**: If you don't specify the task, Evidently will use a simple strategy: if the target has a numeric type and the number of unique values > 5: task == ‘regression.’ In all other cases, the task == ‘classification’.
 
-{% hint style="info" %} **Why map it:**  If you have a multi-class problem where classes are encoded as numbers, it might look the same way as a regression problem. Thus it is best to explicitly specify it. It will affect how the target (prediction) is visualized and help pick the correct statistical tests for the target (prediction) drift detection. It will also affect the calculation of statistics and tests that differ for numerical and categorical data types.{% endhint %} 
+{% hint style="info" %} 
+**Why map it:**  If you have a multi-class problem where classes are encoded as numbers, it might look the same way as a regression problem. Thus it is best to explicitly specify it. It will affect how the target (prediction) is visualized and help pick the correct statistical tests for the target (prediction) drift detection. It will also affect the calculation of statistics and tests that differ for numerical and categorical data types.
+{% endhint %} 
 
 ## Prediction column(s) in classification 
 

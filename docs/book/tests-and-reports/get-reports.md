@@ -17,13 +17,15 @@ from evidently.metric_preset import DataDrift, NumTargetDrift
 
 You need to prepare two datasets for comparison: **reference** and **current**. You can also generate some of the reports with a single current dataset. 
 
-{% hint style="info" %} Refer to the [input data](input-data.md) and [column mapping](column-mapping.md) for more details on data preparation and requirements.{% endhint %}
+{% hint style="info" %} 
+Refer to the [input data](input-data.md) and [column mapping](column-mapping.md) for more details on data preparation and requirements.
+{% endhint %}
 
 # Metric presets 
 
 Evidently has ready-made `metric_presets` that group relevant metrics together in a single Report. You can use them as templates to evaluate a specific aspect of the data or model performance.
 
-You need to create a `report` object and include the specific preset in the list of metrics. You should also point to the current dataset and reference dataset (if available).
+You need to create a `report` object and specify the preset to generate. You should also point to the current dataset and reference dataset (if available).
 
 If nothing else is specified, the reports will run with the default parameters.
 
@@ -83,7 +85,7 @@ To export JSON as a separate file:
 
 ```python
 drift_report.save_json(“file.json”)
-```python
+```
 
 **Python dictionary**. You can get the output in the Python dictionary format. Using a Python object might be more convenient if you want to apply multiple transformations to the output.
 
