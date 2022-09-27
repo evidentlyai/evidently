@@ -131,6 +131,6 @@ class DataDriftOptions:
             return func
         return self.per_feature_stattest.get(feature_name, func)
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         """Calculate hash for data drift options - for using in metrics deduplication via dicts."""
         return str(self.as_dict()).__hash__()
