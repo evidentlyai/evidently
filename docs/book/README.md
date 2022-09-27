@@ -36,7 +36,7 @@ You can create a **Test Suite** from 50+ individual tests or run one of the **pr
  
 Tests are best for automated batch model checks.
 
-![Example of an Evidently test](gitbook/assets/main/evidently_tests_main-min.png)
+![Example of an Evidently test](.gitbook/assets/main/evidently_tests_main-min.png)
 
 **Required input**: one or two datasets as pandas.DataFrames or csv.
  
@@ -45,7 +45,7 @@ Tests are best for automated batch model checks.
 **Primary use case: test-based ML monitoring**. You can integrate and run tests automatically as a step in the ML pipeline. For example, when you receive a new batch of data, new labels, or generate predictions. You can build a conditional workflow based on the test results, e.g., to trigger an alert, retrain, or get a visual report for debugging.  
 
 Read more:
-* [Overview: how tests look](tests/overview.md) 
+* [Overview: how the tests look](tests/overview.md) 
 * [User guide: how to generate tests](tests-and-reports/run-tests.md) 
 * [All presets](tests/readme.md)
 * [All tests](reference/all-tests.md) 
@@ -62,7 +62,7 @@ You can create a custom **Report** from individual metrics or run one of the **P
  
 Reports are best for exploratory analysis, debugging, and documentation.
 
-![Evidently reports]!(.gitbook/assets/main/evidently_reports_main-min.png)
+![Evidently reports](.gitbook/assets/main/evidently_reports_main-min.png)
 
 **Required input**: one or two datasets as pandas.DataFrames or csv. Due to rich embedded visualizations, it is recommended to take a smaller sample. Otherwise, reports might not render.
  
@@ -72,7 +72,7 @@ Reports are best for exploratory analysis, debugging, and documentation.
  
 **Secondary use cases**: 
 * **Performance logging**. You can integrate a model/data evaluation step in the ML pipeline, get outputs as JSON, and log it for further analysis. For example, you can later visualize it using other BI tools.
-* **Reporting and documentation*. You can generate visual HTML reports to document your model performance.   
+* **Reporting and documentation**. You can generate visual HTML reports to document your model performance.   
 
 Read more:
 * [Available reports](reports/readme.md) 
@@ -86,7 +86,7 @@ Evidently also has `Monitors` that collect data and model metrics from a deploye
 
 In this scenario, Evidently is deployed as a monitoring service. You can use configuration to define the monitoring logic. Evidently calculates the metrics over the streaming data and emits them in Prometheus format. There are pre-built Grafana dashboards to visualize them.
 
-![Evidently and Grafana]!(.gitbook/assets/main/evidently_monitoring_main.png)
+![Evidently and Grafana](.gitbook/assets/main/evidently_monitoring_main.png)
 
 **Required input**: POST live data from the ML service. 
 
