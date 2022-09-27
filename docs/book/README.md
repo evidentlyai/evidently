@@ -50,7 +50,7 @@ Read more:
 * [All presets](tests/readme.md)
 * [All tests](reference/all-tests.md) 
 
-# 2. [Reports]: interactive dashboards(reports/README.md)
+# 2. [Reports](reports/README.md): interactive dashboards
 
 {% hint style="info" %}
 We added a new Report object starting from **v0.1.57.dev0**. Reports unite the functionality of Dashboards and JSON profiles with a new, cleaner API. 
