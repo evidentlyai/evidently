@@ -47,8 +47,8 @@ Tests are best for automated batch model checks.
 **Read more**:
 * [Overview: how the tests look](tests/overview.md) 
 * [User guide: how to generate tests](tests-and-reports/run-tests.md) 
-* [All presets](tests/README.md)
-* [All tests](reference/all-tests.md) 
+* [Available presets](tests/README.md)
+* [Available tests](reference/all-tests.md) 
 
 # 2. [Reports](reports/README.md): interactive dashboards
 
