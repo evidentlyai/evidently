@@ -3,6 +3,7 @@ import pandas as pd
 import pytest
 
 from evidently.metrics.data_drift_metrics import DataDriftMetrics
+from evidently.options import DataDriftOptions
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.report import Report
 
@@ -123,3 +124,24 @@ def test_data_drift_metrics_value_error() -> None:
     with pytest.raises(ValueError):
         # noinspection PyTypeChecker
         report.run(current_data=None, reference_data=test_data, column_mapping=data_mapping)
+
+
+def test_data_drift_metrics_with_options() -> None:
+    current_dataset = pd.DataFrame(
+        {
+            "category_feature": ["a", "b", "a"],
+            "target": [1, 2, 3],
+            "prediction": [1, 0, 1],
+        }
+    )
+    reference_dataset = pd.DataFrame(
+        {
+            "category_feature": ["a", "a", "b"],
+            "target": [1, 4, 5],
+            "prediction": [1, 0, 1],
+        }
+    )
+    report = Report(metrics=[DataDriftMetrics(options=DataDriftOptions(threshold=0.7))])
+    report.run(current_data=current_dataset, reference_data=reference_dataset)
+    assert report.show()
+    assert report.json()
