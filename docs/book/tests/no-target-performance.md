@@ -2,7 +2,7 @@
 
 You can use the NoTargetPerformance test preset when you generate model predictions in batches and get the true labels or values with a delay. 
 
-This preset helps evaluate the model quality through proxy metrics. It combines several metrics that check for data quality, data integrity, and data drift. For example, it will help detect prediction drift or input values far off the expected range that signals that the model operates in an unfamiliar environment.   
+This preset helps evaluate the production model quality through proxy metrics. It combines several metrics that check for data quality, data integrity, and data and prediction drift. For example, it will help detect when inputs or predictions are far off the expected range that signals that the model operates in an unfamiliar environment.   
 
 
 ### Code example
