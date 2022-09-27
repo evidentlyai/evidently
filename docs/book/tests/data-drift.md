@@ -24,8 +24,7 @@ The preset contains the following tests:
 
 ```python
 TestShareOfDriftedFeatures()
-TestValueDrift(column=target)
-TestValueDrift(column=prediction)
+TestValueDrift(column=all)
 ```
 
 Unless specified otherwise, the default settings are applied. 
