@@ -26,7 +26,7 @@ You can integrate Evidently into various ML stacks as a monitoring or evaluation
 
 Evidently currently works with tabular data. 
 
-# 1.[Tests](tests/README.md): batch model checks 
+# 1. [Tests](tests/README.md): batch model checks 
 
 Tests perform structured data and ML model quality checks. You typically compare two datasets: **reference** and **current**. 
  
@@ -47,7 +47,7 @@ Tests are best for automated batch model checks.
 Read more:
 * [Overview: how the tests look](tests/overview.md) 
 * [User guide: how to generate tests](tests-and-reports/run-tests.md) 
-* [All presets](tests/readme.md)
+* [All presets](tests/README.md)
 * [All tests](reference/all-tests.md) 
 
 # 2. [Reports](reports/README.md): interactive dashboards
@@ -75,7 +75,7 @@ Reports are best for exploratory analysis, debugging, and documentation.
 * **Reporting and documentation**. You can generate visual HTML reports to document your model performance.   
 
 Read more:
-* [Available reports](reports/readme.md) 
+* [Available reports](reports/README.md) 
 * [User guide: how to run reports](tests-and-reports/get-reports.md) 
 
 # 3. [Real-time ML monitoring](integrations/evidently-and-grafana.md)
