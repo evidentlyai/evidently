@@ -1,6 +1,8 @@
 ---
-Description: Overview of the tests and test suites in Evidently.
+Description: Overview of the Evidently test suites and when to use them.
 ---
+
+This is an explanatory page to describe the functionality of the tests. For code instructions, head to the [user guide](../tests-and-reports/run-tests.md).
 
 ![](../../images/evidently_tests.png)
 
