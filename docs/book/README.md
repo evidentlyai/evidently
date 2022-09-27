@@ -74,7 +74,7 @@ Reports are best for exploratory analysis, debugging, and documentation.
 * **Performance logging**. You can integrate a model/data evaluation step in the ML pipeline, get outputs as JSON, and log it for further analysis. For example, you can later visualize it using other BI tools.
 * **Reporting and documentation**. You can generate visual HTML reports to document your model performance.   
 
-Read more:
+**Read more**:
 * [Available reports](reports/README.md) 
 * [User guide: how to run reports](tests-and-reports/get-reports.md) 
 
