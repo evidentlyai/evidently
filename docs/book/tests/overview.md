@@ -30,7 +30,10 @@ If the test execution fails, it will return an error.
 
 Evidently contains 50+ individual tests that cover different aspects of model and data quality. 
 
--> All tests
+{% content-ref url="../reference/all-tests.md" %}
+[All tests](all-tests.md)
+{% endcontent-ref %}
+
 
 # What is a Test Suite?
 
@@ -82,4 +85,6 @@ To start, you can run tests with the default Evidently parameters. They use heur
 
 Head here for a complete user guide with the code snippets:
  
--> How to run tests    
+{% content-ref url="../tests-and-reports/run-tests.md" %}
+[Run tests](run-tests.md)
+{% endcontent-ref %}
