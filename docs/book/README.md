@@ -2,7 +2,7 @@ Evidently is an open-source Python library for data scientists and ML engineers.
 
 It helps evaluate, test, and monitor the performance of ML models from validation to production.
 
-## Quick Start 
+# Quick Start 
 
 Understand the basic functionality in under 10 minutes:
 {% content-ref url="get-started/tutorial.md" %}
@@ -18,9 +18,9 @@ See the code examples:
 
 Evidently helps evaluate and test data and ML model quality throughout the model lifecycle.
 
-Evidently has three main components: **Reports**, **Tests**, and **Monitors** (in development). These interfaces cover alternative usage scenarios: from ad hoc visual model debugging to automated pipeline testing and real-time monitoring.
+Evidently has three components: **Reports**, **Tests**, and **Monitors** (in development). These interfaces cover alternative usage scenarios: from ad hoc visual model debugging to automated pipeline testing and real-time monitoring.
 
-To use the tool, you need to provide the data, choose what to evaluate, and the output format. Evidently has a simple, declarative API and a library of metrics, tests, and visualizations to choose from.
+You need to provide the data, choose what to evaluate, and the output format. Evidently has a simple, declarative API and a library of metrics, tests, and visualizations to choose from.
 
 You can integrate Evidently into various ML stacks as a monitoring or evaluation component.
 
@@ -44,7 +44,7 @@ Tests are best for automated batch model checks.
  
 **Primary use case: test-based ML monitoring**. You can integrate and run tests automatically as a step in the ML pipeline. For example, when you receive a new batch of data, new labels, or generate predictions. You can build a conditional workflow based on the test results, e.g., to trigger an alert, retrain, or get a visual report for debugging.  
 
-Read more:
+**Read more**:
 * [Overview: how the tests look](tests/overview.md) 
 * [User guide: how to generate tests](tests-and-reports/run-tests.md) 
 * [All presets](tests/README.md)
@@ -94,7 +94,7 @@ In this scenario, Evidently is deployed as a monitoring service. You can use con
  
 **Primary use case: online monitoring**. When you need a live dashboard that is updated close to real-time. 
  
-Read more:
+**Read more**:
 * [Example integration with Prometheus and Grafana](integrations/evidently-and-grafana.md)
 
 # Community and support 
