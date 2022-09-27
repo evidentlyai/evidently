@@ -36,7 +36,7 @@ You can create a **Test Suite** from 50+ individual tests or run one of the **pr
  
 Tests are best for automated batch model checks.
 
-![Example of an Evidently test]!(.gitbook/assets/main/evidently_tests_main-min.png)
+![Example of an Evidently test]!(gitbook/assets/main/evidently_tests_main-min.png)
 
 **Required input**: one or two datasets as pandas.DataFrames or csv.
  
