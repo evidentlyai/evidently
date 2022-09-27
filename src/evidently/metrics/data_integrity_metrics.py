@@ -1,6 +1,7 @@
 import collections
 import re
 from itertools import combinations
+import json
 from typing import Any
 from typing import Dict
 from typing import List
@@ -15,8 +16,12 @@ from dataclasses import dataclass
 
 from evidently.calculations.data_quality import FeatureQualityStats
 from evidently.calculations.data_quality import get_features_stats
+# from evidently.calculations.data_quality import DataQualityPlot
+from evidently.calculations.data_quality import DataQualityGetPlotData
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
+from evidently.model.widget import AdditionalGraphInfo
+from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricHtmlInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -24,8 +29,10 @@ from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import table_data
+from evidently.renderers.html_widgets import rich_table_data
 from evidently.utils.data_operations import process_columns
 from evidently.utils.types import Numeric
+from evidently.utils.visualizations import plot_distr, plot_num_feature_in_time, plot_cat_feature_in_time
 
 
 @dataclass
@@ -61,6 +68,11 @@ class DatetimeCharacteristics:
 
 ColumnCharacteristics = Union[NumericCharacteristics, CategoricalCharacteristics, DatetimeCharacteristics]
 
+@dataclass
+class DataQualityPlot:
+    bins_for_hist: Dict[str, pd.DataFrame]
+    data_in_time: Optional[Dict[str, Union[pd.DataFrame, str]]]
+
 
 @dataclass
 class ColumnSummary:
@@ -68,6 +80,7 @@ class ColumnSummary:
     column_type: str
     reference_characteristics: Optional[ColumnCharacteristics]
     current_characteristics: ColumnCharacteristics
+    plot_data: DataQualityPlot
 
 
 class ColumnSummaryMetric(Metric[ColumnSummary]):
@@ -79,20 +92,39 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
         if self.column_name in columns.num_feature_names:
             column_type = "num"
         elif self.column_name in columns.cat_feature_names:
-            column_type = "num"
+            column_type = "cat"
         elif self.column_name in columns.datetime_feature_names:
-            column_type = "num"
+            column_type = "datetime"
         else:
             raise ValueError(f"column {self.column_name} not in num, cat or datetime features lists")
+        reference_data = None
         ref_characteristics = None
         if data.reference_data is not None:
+            reference_data = data.reference_data
             ref_characteristics = self.map_data(get_features_stats(data.reference_data[self.column_name], column_type))
         curr_characteristics = self.map_data(get_features_stats(data.current_data[self.column_name], column_type))
+        target_name = None
+        if columns.utility_columns.target is not None:
+            target_name = columns.utility_columns.target
+
+        # plot data
+        bins_for_hist = DataQualityGetPlotData().calculate_main_plot(data.current_data, reference_data, self.column_name,
+                                                                   column_type)
+        data_in_time = None
+        if columns.utility_columns.date is not None:
+            data_in_time = DataQualityGetPlotData().calculate_data_in_time(data.current_data, reference_data, self.column_name,
+                                                                         column_type, columns.utility_columns.date)
+
+        plot_data = DataQualityPlot(
+            bins_for_hist=bins_for_hist,
+            data_in_time=data_in_time
+        ) 
         return ColumnSummary(
             column_name=self.column_name,
             column_type=column_type,
             reference_characteristics=ref_characteristics,
             current_characteristics=curr_characteristics,
+            plot_data=plot_data
         )
 
     @staticmethod
@@ -130,6 +162,91 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
                 last=stats.max,
             )
         raise ValueError(f"unknown feature type {stats.feature_type}")
+
+
+@default_renderer(wrap_type=ColumnSummaryMetric)
+class ColumnSummaryMetricRenderer(MetricRenderer):
+
+    def render_html(self, obj: ColumnSummaryMetric) -> List[MetricHtmlInfo]:
+        metric_result = obj.get_result()
+        column_type = metric_result.column_type
+        column_name = metric_result.column_name
+        # main plot
+        bins_for_hist = metric_result.plot_data.bins_for_hist
+        hist_curr = bins_for_hist["current"]
+        hist_ref = None
+        metrics_values_headers = [""]
+        if "reference" in bins_for_hist.keys():
+            hist_ref = bins_for_hist["reference"]
+            metrics_values_headers = ["reference", "current"]
+
+        fig = plot_distr(hist_curr, hist_ref)
+        fig = json.loads(fig.to_json())
+
+        # additional plots
+        additional_graphs = []
+        parts = []
+        if metric_result.plot_data.data_in_time is not None:
+            if column_type == "num":
+                feature_in_time_figure = plot_num_feature_in_time(
+                    metric_result.plot_data.data_in_time["current"],
+                    metric_result.plot_data.data_in_time["reference"],
+                    column_name,
+                    metric_result.plot_data.data_in_time["datetime_name"],
+                    metric_result.plot_data.data_in_time["freq"]
+                )
+            if column_type == "cat":
+                feature_in_time_figure = plot_cat_feature_in_time(
+                    metric_result.plot_data.data_in_time["current"],
+                    metric_result.plot_data.data_in_time["reference"],
+                    column_name,
+                    metric_result.plot_data.data_in_time["datetime_name"],
+                    metric_result.plot_data.data_in_time["freq"]
+                )
+            additional_graphs.append(
+                AdditionalGraphInfo(
+                    column_name + "_in_time",
+                    {
+                        "data": feature_in_time_figure["data"],
+                        "layout": feature_in_time_figure["layout"],
+                    },
+                )
+            )
+            parts.append({"title": column_name + " in time", "id": column_name + "_in_time"})
+
+        wi = BaseWidgetInfo(
+                type="rich_data",
+                title="",
+                size=2,
+                params={
+                    "header": metric_result.column_name,
+                    "description": column_type,
+                    "metricsValuesHeaders": metrics_values_headers,
+                    "metrics": [],
+                    "graph": {"data": fig["data"], "layout": fig["layout"]},
+                    "details": {"parts": parts, "insights": []},
+                },
+                additionalGraphs=additional_graphs,
+            )
+        result = [
+            MetricHtmlInfo(
+                name="",
+                info=wi,
+            )]
+        return result
+
+        # result = [
+        #     MetricHtmlInfo(
+        #         name="data_integrity_null_values_title",
+        #         info=rich_table_data(label="Data Integrity Metric: Null Values Statistic"),
+        #     ),
+            
+        # ]
+
+        # if metric_result.reference_null_values is not None:
+        #     result.append(self._get_table_stat(dataset_name="reference", stats=metric_result.reference_null_values))
+
+        
 
 
 @dataclass

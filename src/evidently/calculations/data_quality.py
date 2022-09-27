@@ -10,6 +10,8 @@ from dataclasses import dataclass
 from dataclasses import fields
 from scipy.stats import chi2_contingency
 
+from evidently.metrics.utils import make_hist_for_cat_plot
+from evidently.metrics.utils import make_hist_for_num_plot
 from evidently.utils.data_operations import DatasetColumns
 
 
@@ -248,6 +250,141 @@ def calculate_data_quality_stats(
             result.prediction_stats[prediction_name] = get_features_stats(dataset[prediction_name], feature_type="num")
 
     return result
+
+import logging
+@dataclass
+class DataQualityPlot:
+    bins_for_hist: Dict[str, pd.DataFrame]
+
+class DataQualityGetPlotData():
+    def __init__(self) -> None:
+        self.period_prefix: Optional[str]=None
+
+    def calculate_main_plot(
+        self,
+        curr: pd.DataFrame,
+        ref: Optional[pd.DataFrame], 
+        feature_name: str,
+        feature_type: str,
+    ):
+        logging.warning(feature_type)
+        bins_for_hist = None
+        if feature_type == 'num':
+            bins_for_hist = make_hist_for_num_plot(curr[feature_name], ref[feature_name])
+        elif feature_type == 'cat':
+            bins_for_hist = make_hist_for_cat_plot(curr[feature_name], ref[feature_name])
+        return bins_for_hist
+
+    def calculate_data_in_time(
+        self,
+        curr: pd.DataFrame,
+        ref: Optional[pd.DataFrame], 
+        feature_name: str,
+        feature_type: str,
+        datetime_name: str
+    ):
+        freq = self._choose_agg_period(datetime_name, ref, curr)
+        df_for_time_plot_curr = (
+            curr
+            .assign(period=lambda x: x[datetime_name].dt.to_period(freq=freq))
+            .loc[:, ["period", feature_name]]
+            .copy()
+        )
+        df_for_time_plot_ref = None
+        if ref is not None:
+            df_for_time_plot_ref = (
+                ref
+                .assign(period=lambda x: x[datetime_name].dt.to_period(freq=freq))
+                .loc[:, ["period", feature_name]]
+                .copy()
+            )
+        if feature_type == 'num':
+            df_for_time_plot_curr = self._transform_df_to_time_mean_view(df_for_time_plot_curr, datetime_name, feature_name)
+            if df_for_time_plot_ref is not None:
+                df_for_time_plot_ref = self._transform_df_to_time_mean_view(df_for_time_plot_ref, datetime_name,
+                                                                             feature_name)
+            result = {"current": df_for_time_plot_curr,
+                      "reference": df_for_time_plot_ref,
+                      "freq": self.period_prefix,
+                      "datetime_name": datetime_name}
+
+        if feature_type == 'cat':
+            df_for_time_plot_curr = self._transform_df_to_time_count_view(df_for_time_plot_curr, datetime_name,
+                                                                          feature_name)
+            if df_for_time_plot_ref is not None:
+                df_for_time_plot_ref = self._transform_df_to_time_count_view(df_for_time_plot_ref, datetime_name,
+                                                                             feature_name)
+            result = {"current": df_for_time_plot_curr,
+                      "reference": df_for_time_plot_ref,
+                      "freq": self.period_prefix,
+                      "datetime_name": datetime_name}
+                      
+        return result
+        
+
+    def _choose_agg_period(self, date_column: str, reference_data: pd.DataFrame, current_data: Optional[pd.DataFrame]
+    ) -> str:
+        optimal_points = 150
+        prefix_dict = {"A": "year", "Q": "quarter", "M": "month", "W": "week", "D": "day", "H": "hour"}
+        datetime_feature = reference_data[date_column]
+        if current_data is not None:
+            datetime_feature = datetime_feature.append(current_data[date_column])
+        days = (datetime_feature.max() - datetime_feature.min()).days
+        time_points = pd.Series(
+            index=["A", "Q", "M", "W", "D", "H"],
+            data=[
+                abs(optimal_points - days / 365),
+                abs(optimal_points - days / 90),
+                abs(optimal_points - days / 30),
+                abs(optimal_points - days / 7),
+                abs(optimal_points - days),
+                abs(optimal_points - days * 24),
+            ],
+        )
+        self.period_prefix = prefix_dict[time_points.idxmin()]
+        return str(time_points.idxmin())
+
+    def _transform_df_to_time_mean_view(self, df: pd.DataFrame, date_column: str, feature_name: str):
+        df = df.groupby("period")[feature_name].mean().reset_index()
+        df[date_column] = df["period"].dt.to_timestamp()
+        return df
+    def _transform_df_to_time_count_view(self, df: pd.DataFrame, date_column: str, feature_name: str):
+        df = df.groupby(["period", feature_name]).size()
+        df.name = "num"
+        df = df.reset_index()
+        df[date_column] = df["period"].dt.to_timestamp()
+        return df
+    
+
+def data_quality_get_plot_data(
+        curr: pd.DataFrame,
+        ref: Optional[pd.DataFrame], 
+        feature_name: str,
+        feature_type: str,
+        target_name: Optional[str],
+        datetime_name: Optional[str]
+    ) -> DataQualityPlot:
+
+    if feature_type== 'num':
+        bins_for_hist = make_hist_for_num_plot(curr[feature_name], ref[feature_name])
+                
+    return bins_for_hist
+
+
+
+
+def transform_df_to_time_mean_view(df: pd.DataFrame, date_column: str, feature_name: str):
+    df = df.groupby("period")[feature_name].mean().reset_index()
+    df[date_column] = df["period"].dt.to_timestamp()
+    return df
+
+
+def transform_df_to_time_count_view(df: pd.DataFrame, date_column: str, feature_name: str):
+    df = df.groupby([date_column + "_period", feature_name]).size()
+    df.name = "num"
+    df = df.reset_index()
+    df[date_column] = df[date_column + "_period"].dt.to_timestamp()
+    return df
 
 
 def _select_features_for_corr(reference_features_stats: DataQualityStats, target_name: Optional[str]) -> tuple:

@@ -18,7 +18,7 @@ from evidently.dashboard.widgets.widget import Widget
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import ColorOptions
-
+import logging
 
 class DataQualityFeaturesWidget(Widget):
     period_prefix: str
@@ -120,7 +120,7 @@ class DataQualityFeaturesWidget(Widget):
                         },
                     )
                 )
-
+            logging.warning(self._metrics_for_table(feature_name, data_quality_results, is_current_data))
             wi = BaseWidgetInfo(
                 type="rich_data",
                 title="",
