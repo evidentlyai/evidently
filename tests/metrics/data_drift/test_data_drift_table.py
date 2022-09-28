@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from evidently.metrics.data_drift_metrics import DataDriftMetrics
+from evidently.metrics.data_drift.data_drift_table import DataDriftTable
 from evidently.options import DataDriftOptions
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.report import Report
@@ -100,7 +100,7 @@ from evidently.report import Report
 def test_data_drift_metrics_no_errors(
     current_dataset: pd.DataFrame, reference_dataset: pd.DataFrame, data_mapping: ColumnMapping
 ) -> None:
-    report = Report(metrics=[DataDriftMetrics()])
+    report = Report(metrics=[DataDriftTable()])
     report.run(current_data=current_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
     assert report.show()
     assert report.json()
@@ -116,7 +116,7 @@ def test_data_drift_metrics_value_error() -> None:
         }
     )
     data_mapping = ColumnMapping()
-    report = Report(metrics=[DataDriftMetrics()])
+    report = Report(metrics=[DataDriftTable()])
 
     with pytest.raises(ValueError):
         report.run(current_data=test_data, reference_data=None, column_mapping=data_mapping)
@@ -141,7 +141,7 @@ def test_data_drift_metrics_with_options() -> None:
             "prediction": [1, 0, 1],
         }
     )
-    report = Report(metrics=[DataDriftMetrics(options=DataDriftOptions(threshold=0.7))])
+    report = Report(metrics=[DataDriftTable(options=DataDriftOptions(threshold=0.7))])
     report.run(current_data=current_dataset, reference_data=reference_dataset)
     assert report.show()
     assert report.json()

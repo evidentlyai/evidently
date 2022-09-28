@@ -1,3 +1,4 @@
+from typing import Dict
 from typing import Tuple
 
 import numpy as np
@@ -68,3 +69,16 @@ def apply_func_to_binned_data(df_for_bins, func, target_column, preds_column, is
     if is_ref_data:
         result["reference"] = df_for_bins[df_for_bins.data == "ref"].groupby("target_binned").apply(_apply)
     return result
+
+
+def get_distribution_for_column(
+    *, column_name: str, column_type: str, current_data: pd.DataFrame, reference_data: pd.DataFrame
+) -> Dict[str, pd.DataFrame]:
+    if column_type == "cat":
+        return make_hist_for_cat_plot(current_data[column_name], reference_data[column_name])
+
+    elif column_type == "num":
+        return make_hist_for_num_plot(current_data[column_name], reference_data[column_name])
+
+    else:
+        raise ValueError(f"Cannot get distribution for column {column_name} with type {column_type}")

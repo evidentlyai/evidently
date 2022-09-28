@@ -33,6 +33,7 @@ def analyzer() -> RegressionPerformanceAnalyzer:
                     cat_feature_names=[],
                     datetime_feature_names=[],
                     target_names=None,
+                    task="classification",
                 ),
                 reference_metrics=RegressionPerformanceMetrics(
                     mean_error=0.0,
@@ -79,6 +80,7 @@ def analyzer() -> RegressionPerformanceAnalyzer:
                     cat_feature_names=[],
                     datetime_feature_names=[],
                     target_names=None,
+                    task="classification",
                 ),
                 reference_metrics=RegressionPerformanceMetrics(
                     mean_error=0.0,
@@ -175,6 +177,7 @@ def analyzer() -> RegressionPerformanceAnalyzer:
                     cat_feature_names=["category_feature_1", "category_feature_2"],
                     datetime_feature_names=[],
                     target_names=None,
+                    task="classification",
                 ),
                 reference_metrics=RegressionPerformanceMetrics(
                     mean_error=-0.25,

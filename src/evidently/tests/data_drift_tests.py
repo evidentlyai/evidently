@@ -9,7 +9,7 @@ import dataclasses
 import numpy as np
 import pandas as pd
 
-from evidently.metrics import DataDriftMetrics
+from evidently.metrics import DataDriftTable
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import DataDriftOptions
 from evidently.renderers.base_renderer import DetailsInfo
@@ -38,7 +38,7 @@ class TestDataDriftResult(TestResult):
 
 class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
     group = DATA_DRIFT_GROUP.id
-    metric: DataDriftMetrics
+    metric: DataDriftTable
 
     def __init__(
         self,
@@ -50,14 +50,14 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        metric: Optional[DataDriftMetrics] = None,
+        metric: Optional[DataDriftTable] = None,
         options: Optional[DataDriftOptions] = None,
     ):
         if metric is not None:
             self.metric = metric
 
         else:
-            self.metric = DataDriftMetrics(options=options)
+            self.metric = DataDriftTable(options=options)
 
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
 
@@ -125,13 +125,13 @@ class TestShareOfDriftedFeatures(BaseDataDriftMetricsTest):
 class TestFeatureValueDrift(Test):
     name = "Drift per Feature"
     group = DATA_DRIFT_GROUP.id
-    metric: DataDriftMetrics
+    metric: DataDriftTable
     column_name: str
 
     def __init__(
         self,
         column_name: str,
-        metric: Optional[DataDriftMetrics] = None,
+        metric: Optional[DataDriftTable] = None,
         options: Optional[DataDriftOptions] = None,
     ):
         self.column_name = column_name
@@ -140,7 +140,7 @@ class TestFeatureValueDrift(Test):
             self.metric = metric
 
         else:
-            self.metric = DataDriftMetrics(options=options)
+            self.metric = DataDriftTable(options=options)
 
     def check(self):
         drift_info = self.metric.get_result().metrics

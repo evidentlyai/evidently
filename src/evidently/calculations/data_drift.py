@@ -16,6 +16,7 @@ from evidently.calculations.stattests import PossibleStatTestType
 from evidently.calculations.stattests import get_stattest
 from evidently.options import DataDriftOptions
 from evidently.utils.data_operations import DatasetColumns
+from evidently.utils.data_operations import process_columns
 from evidently.utils.data_operations import recognize_task
 
 PValueWithDrift = collections.namedtuple("PValueWithDrift", ["p_value", "drifted"])
@@ -73,6 +74,7 @@ class DataDriftMetrics:
     stattest_name: str
     drift_score: float
     drift_detected: bool
+    threshold: float
     # correlations for numeric features
     reference_correlations: Optional[Dict[str, float]] = None
     current_correlations: Optional[Dict[str, float]] = None
@@ -94,6 +96,7 @@ def calculate_data_drift(
         stattest_name=drift_test_function.display_name,
         drift_score=drift_result.drift_score,
         drift_detected=drift_result.drifted,
+        threshold=drift_result.actual_threshold,
     )
 
 
@@ -302,3 +305,70 @@ def get_overall_data_drift(
         dataset_drift=dataset_drift,
         features=features_metrics,
     )
+
+
+def calculate_column_data_drift(
+    *,
+    column_name: str,
+    column_type: str,
+    current_data: pd.DataFrame,
+    reference_data: pd.DataFrame,
+    drift_options: DataDriftOptions,
+) -> DataDriftMetrics:
+    """Calculate data drift for a single column."""
+    stattest = drift_options.get_feature_stattest_func(column_name, column_type)
+    threshold = drift_options.get_threshold(column_name)
+    return calculate_data_drift(
+        current_data=current_data,
+        reference_data=reference_data,
+        column_name=column_name,
+        stattest=stattest,
+        threshold=threshold,
+        feature_type=column_type,
+    )
+
+
+@dataclass
+class DatasetDriftResults:
+    options: DataDriftOptions
+    columns: DatasetColumns
+    metrics: DataDriftAnalyzerMetrics
+    distr_for_plots: Dict[str, Dict[str, pd.DataFrame]]
+
+
+def calculate_all_drifts_for_metrics(data, options: DataDriftOptions) -> DatasetDriftResults:
+    """Calculate all drifts for all columns."""
+    from evidently.metrics.utils import get_distribution_for_column
+
+    if data.current_data is None:
+        raise ValueError("Current dataset should be present")
+
+    if data.reference_data is None:
+        raise ValueError("Reference dataset should be present")
+
+    columns = process_columns(data.current_data, data.column_mapping)
+    drift_metrics = get_overall_data_drift(
+        current_data=data.current_data,
+        reference_data=data.reference_data,
+        columns=columns,
+        data_drift_options=options,
+    )
+    distr_for_plots = {}
+
+    for column_name in columns.num_feature_names:
+        distr_for_plots[column_name] = get_distribution_for_column(
+            column_name=column_name,
+            column_type="num",
+            current_data=data.current_data,
+            reference_data=data.reference_data,
+        )
+
+    for column_name in columns.cat_feature_names:
+        distr_for_plots[column_name] = get_distribution_for_column(
+            column_name=column_name,
+            column_type="cat",
+            current_data=data.current_data,
+            reference_data=data.reference_data,
+        )
+
+    return DatasetDriftResults(options=options, columns=columns, metrics=drift_metrics, distr_for_plots=distr_for_plots)

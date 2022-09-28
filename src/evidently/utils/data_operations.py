@@ -42,6 +42,7 @@ class DatasetColumns:
     cat_feature_names: List[str]
     datetime_feature_names: List[str]
     target_names: Optional[List[str]]
+    task: Optional[str]
 
     def as_dict(self) -> Dict[str, Union[Optional[List[str]], Dict]]:
         return {
@@ -174,12 +175,18 @@ def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping) -> Dat
     else:
         cat_feature_names = dataset[cat_feature_names].columns.tolist()
 
+    task = column_mapping.task
+
+    if task is None and target_column is not None:
+        task = recognize_task(target_name=target_column, dataset=dataset)
+
     return DatasetColumns(
         DatasetUtilityColumns(date_column, id_column, target_column, prediction_column),
         num_feature_names or [],
         cat_feature_names or [],
         datetime_feature_names or [],
         target_names,
+        task=task,
     )
 
 
@@ -202,3 +209,41 @@ def recognize_task(target_name: str, dataset: pd.DataFrame) -> str:
         task = "classification"
 
     return task
+
+
+def recognize_column_type(
+    column_name: str,
+    columns: DatasetColumns,
+) -> str:
+    """Try to get the column type."""
+    if column_name == columns.utility_columns.target:
+        if columns.task == "regression":
+            return "num"
+
+        else:
+            return "cat"
+
+    if column_name == columns.utility_columns.prediction:
+        if columns.task == "regression":
+            return "num"
+
+        else:
+            # TODO: add support for case when prediction column is a float
+            return "cat"
+
+    if column_name in columns.num_feature_names:
+        return "num"
+
+    if column_name in columns.cat_feature_names:
+        return "cat"
+
+    if column_name in columns.datetime_feature_names:
+        return "datetime"
+
+    if column_name == columns.utility_columns.id_column:
+        return "id"
+
+    if column_name == columns.utility_columns.date:
+        return "date"
+
+    return "unknown"
