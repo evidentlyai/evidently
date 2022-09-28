@@ -50,7 +50,7 @@ class DatasetDriftMetric(Metric[DatasetDriftMetricResults]):
             options=self.options,
             columns=result.columns,
             metrics=result.metrics,
-            distr_for_plots=result.distr_for_plots
+            distr_for_plots=result.distr_for_plots,
         )
 
 

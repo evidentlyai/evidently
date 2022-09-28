@@ -10,12 +10,12 @@ from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.metrics.utils import get_distribution_for_column
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.render_utils import plot_distr
 from evidently.options import DataDriftOptions
 from evidently.renderers.base_renderer import MetricHtmlInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
+from evidently.renderers.render_utils import plot_distr
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_operations import recognize_column_type
 from evidently.utils.types import Numeric
@@ -112,7 +112,7 @@ class ColumnDriftMetricRenderer(MetricRenderer):
                 "column_data_drift_title",
                 header_text(
                     label=f"Column '{result.column_name}' Data Drift: {drift}, "
-                          f"Drift Score: {drift_score} ({result.stattest_name})"
+                    f"Drift Score: {drift_score} ({result.stattest_name})"
                 ),
             ),
             MetricHtmlInfo(
