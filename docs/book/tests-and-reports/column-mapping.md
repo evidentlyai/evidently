@@ -80,7 +80,7 @@ column_mapping = ColumnMapping()
 column_mapping.datetime_features = ['last_call_date', 'join_date'] #list of DateTime features
 ```
 
-**Default** by default, Evidently only treats columns with DateTime format (np.datetime64) as DateTime features.
+**Default**: Evidently treats columns with DateTime format (np.datetime64) as DateTime features.
  
 **Note**: do not confuse DateTime features with the DateTime column, which is used as the x-axis in some plots. You will typically use the DateTime column as a prediction timestamp. 
 
