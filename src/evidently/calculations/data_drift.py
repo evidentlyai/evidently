@@ -1,6 +1,5 @@
-"""Methods for data drift calculations"""
+"""Methods and types for data drift calculations"""
 
-import collections
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -16,11 +15,88 @@ from evidently.calculations.stattests import PossibleStatTestType
 from evidently.calculations.stattests import get_stattest
 from evidently.options import DataDriftOptions
 from evidently.utils.data_operations import DatasetColumns
-from evidently.utils.data_operations import process_columns
+from evidently.utils.data_operations import recognize_column_type
 from evidently.utils.data_operations import recognize_task
 from evidently.utils.visualizations import get_distribution_for_column
 
-PValueWithDrift = collections.namedtuple("PValueWithDrift", ["p_value", "drifted"])
+
+@dataclass
+class ColumnDataDriftMetrics:
+    """One column drift metrics"""
+
+    column_name: str
+    column_type: str
+    stattest_name: str
+    drift_score: float
+    drift_detected: bool
+    threshold: float
+    # distributions for the column
+    current_distribution: Optional[pd.DataFrame] = None
+    reference_distribution: Optional[pd.DataFrame] = None
+    current_small_distribution: Optional[list] = None
+    reference_small_distribution: Optional[list] = None
+    # correlations for numeric features only
+    current_correlations: Optional[Dict[str, float]] = None
+    reference_correlations: Optional[Dict[str, float]] = None
+
+
+@dataclass
+class DatasetDriftMetrics:
+    n_features: int
+    n_drifted_features: int
+    share_drifted_features: float
+    dataset_drift: bool
+    features: Dict[str, ColumnDataDriftMetrics]
+
+
+@dataclass
+class DatasetDriftResults:
+    options: DataDriftOptions
+    columns: DatasetColumns
+    metrics: DatasetDriftMetrics
+
+
+def get_one_column_drift(
+    *,
+    current_data: pd.DataFrame,
+    reference_data: pd.DataFrame,
+    column_name: str,
+    options: DataDriftOptions,
+    dataset_columns: DatasetColumns,
+    column_type: Optional[str] = None,
+) -> ColumnDataDriftMetrics:
+
+    if column_type is None:
+        column_type = recognize_column_type(column_name, dataset_columns)
+
+    if column_type not in ("cat", "num"):
+        raise ValueError(f"Cannot calculate drift metric for column {column_name} with type {column_type}")
+
+    stattest = options.get_feature_stattest_func(column_name, column_type)
+    threshold = options.get_threshold(column_name)
+    result = calculate_data_drift(
+        current_column=current_data[column_name],
+        reference_column=reference_data[column_name],
+        column_name=column_name,
+        stattest=stattest,
+        threshold=threshold,
+        column_type=column_type,
+    )
+
+    if column_type == "num":
+        numeric_columns = dataset_columns.num_feature_names
+        result.current_correlations = current_data[numeric_columns + [column_name]].corr()[column_name].to_dict()
+        result.reference_correlations = reference_data[numeric_columns + [column_name]].corr()[column_name].to_dict()
+
+    distribution_for_plot = get_distribution_for_column(
+        column_name=column_name,
+        column_type=column_type,
+        current_data=current_data,
+        reference_data=reference_data,
+    )
+    result.current_distribution = distribution_for_plot["current"]
+    result.reference_distribution = distribution_for_plot["reference"]
+    return result
 
 
 def _get_pred_labels_from_prob(dataframe: pd.DataFrame, prediction_column: list) -> List[str]:
@@ -67,20 +143,6 @@ def define_predictions_type(
     return result_prediction_column
 
 
-@dataclass
-class DataDriftMetrics:
-    """Class for drift values"""
-
-    column_name: str
-    stattest_name: str
-    drift_score: float
-    drift_detected: bool
-    threshold: float
-    # correlations for numeric features
-    reference_correlations: Optional[Dict[str, float]] = None
-    current_correlations: Optional[Dict[str, float]] = None
-
-
 def calculate_data_drift(
     *,
     current_column: pd.Series,
@@ -89,7 +151,7 @@ def calculate_data_drift(
     stattest: Optional[PossibleStatTestType],
     threshold: Optional[float],
     column_type: str,
-) -> DataDriftMetrics:
+) -> ColumnDataDriftMetrics:
     reference_column = reference_column.replace([-np.inf, np.inf], np.nan).dropna()
 
     if reference_column.empty:
@@ -102,8 +164,9 @@ def calculate_data_drift(
 
     drift_test_function = get_stattest(reference_column, current_column, column_type, stattest)
     drift_result = drift_test_function(reference_column, current_column, column_type, threshold)
-    return DataDriftMetrics(
+    return ColumnDataDriftMetrics(
         column_name=column_name,
+        column_type=column_type,
         stattest_name=drift_test_function.display_name,
         drift_score=drift_result.drift_score,
         drift_detected=drift_result.drifted,
@@ -136,7 +199,7 @@ def calculate_data_drift_for_numeric_feature(
     numeric_columns: List[str],
     stattest: Optional[PossibleStatTestType],
     threshold: Optional[float],
-) -> Optional[DataDriftMetrics]:
+) -> Optional[ColumnDataDriftMetrics]:
     reference_column = reference_data[column_name]
     current_column = current_data[column_name]
 
@@ -156,29 +219,9 @@ def calculate_data_drift_for_numeric_feature(
     return result
 
 
-@dataclass
-class DataDriftAnalyzerFeatureMetrics:
-    current_small_hist: list
-    ref_small_hist: list
-    feature_type: str
-    stattest_name: str
-    p_value: float
-    threshold: float
-    drift_detected: bool
-
-
-@dataclass
-class DataDriftAnalyzerMetrics:
-    n_features: int
-    n_drifted_features: int
-    share_drifted_features: float
-    dataset_drift: bool
-    features: Dict[str, DataDriftAnalyzerFeatureMetrics]
-
-
-def dataset_drift_evaluation(p_values, drift_share=0.5) -> Tuple[int, float, bool]:
-    n_drifted_features = sum([1 if x.drifted else 0 for _, x in p_values.items()])
-    share_drifted_features = n_drifted_features / len(p_values)
+def dataset_drift_evaluation(drift_metrics, drift_share=0.5) -> Tuple[int, float, bool]:
+    n_drifted_features = sum([1 if drift.drift_detected else 0 for _, drift in drift_metrics.items()])
+    share_drifted_features = n_drifted_features / len(drift_metrics)
     dataset_drift = bool(share_drifted_features >= drift_share)
     return n_drifted_features, share_drifted_features, dataset_drift
 
@@ -189,7 +232,7 @@ def get_overall_data_drift(
     columns: DatasetColumns,
     data_drift_options: DataDriftOptions,
     drift_share_threshold: Optional[float] = None,
-) -> DataDriftAnalyzerMetrics:
+) -> DatasetDriftMetrics:
     num_feature_names = columns.num_feature_names
     cat_feature_names = columns.cat_feature_names
     target_column = columns.utility_columns.target
@@ -226,25 +269,30 @@ def get_overall_data_drift(
                 cat_feature_names += [prediction_column]
 
     # calculate result
-    features_metrics = {}
-    p_values = {}
+    drift_by_columns = {}
 
     for feature_name in num_feature_names:
-        threshold = data_drift_options.get_threshold(feature_name)
         feature_type = "num"
-        drift_result = calculate_data_drift(
-            current_column=current_data[feature_name],
-            reference_column=reference_data[feature_name],
+        drift_result = get_one_column_drift(
+            current_data=current_data,
+            reference_data=reference_data,
             column_name=feature_name,
-            stattest=data_drift_options.get_feature_stattest_func(feature_name, feature_type),
-            threshold=threshold,
+            options=data_drift_options,
+            dataset_columns=columns,
             column_type=feature_type,
         )
 
-        p_values[feature_name] = PValueWithDrift(drift_result.drift_score, drift_result.drift_detected)
         current_nbinsx = data_drift_options.get_nbinsx(feature_name)
-        features_metrics[feature_name] = DataDriftAnalyzerFeatureMetrics(
-            current_small_hist=[
+        drift_by_columns[feature_name] = ColumnDataDriftMetrics(
+            column_name=feature_name,
+            column_type=feature_type,
+            stattest_name=drift_result.stattest_name,
+            drift_score=drift_result.drift_score,
+            drift_detected=drift_result.drift_detected,
+            threshold=drift_result.threshold,
+            current_distribution=drift_result.current_distribution,
+            reference_distribution=drift_result.reference_distribution,
+            current_small_distribution=[
                 t.tolist()
                 for t in np.histogram(
                     current_data[feature_name][np.isfinite(current_data[feature_name])],
@@ -252,7 +300,7 @@ def get_overall_data_drift(
                     density=True,
                 )
             ],
-            ref_small_hist=[
+            reference_small_distribution=[
                 t.tolist()
                 for t in np.histogram(
                     reference_data[feature_name][np.isfinite(reference_data[feature_name])],
@@ -260,11 +308,6 @@ def get_overall_data_drift(
                     density=True,
                 )
             ],
-            feature_type=feature_type,
-            stattest_name=drift_result.stattest_name,
-            p_value=drift_result.drift_score,
-            drift_detected=drift_result.drift_detected,
-            threshold=drift_result.threshold,
         )
 
     for feature_name in cat_feature_names:
@@ -273,16 +316,14 @@ def get_overall_data_drift(
         feature_cur_data = current_data[feature_name].dropna()
 
         feature_type = "cat"
-        drift_result = calculate_data_drift(
-            current_column=current_data[feature_name],
-            reference_column=reference_data[feature_name],
+        drift_result = get_one_column_drift(
+            current_data=current_data,
+            reference_data=reference_data,
             column_name=feature_name,
-            stattest=data_drift_options.get_feature_stattest_func(feature_name, feature_type),
-            threshold=threshold,
+            options=data_drift_options,
+            dataset_columns=columns,
             column_type=feature_type,
         )
-        p_values[feature_name] = PValueWithDrift(drift_result.drift_score, drift_result.drift_detected)
-
         ref_counts = feature_ref_data.value_counts(sort=False)
         cur_counts = feature_cur_data.value_counts(sort=False)
         keys = set(ref_counts.keys()).union(set(cur_counts.keys()))
@@ -295,89 +336,46 @@ def get_overall_data_drift(
 
         ref_small_hist = list(reversed(list(map(list, zip(*sorted(ref_counts.items(), key=lambda x: x[0]))))))
         cur_small_hist = list(reversed(list(map(list, zip(*sorted(cur_counts.items(), key=lambda x: x[0]))))))
-        features_metrics[feature_name] = DataDriftAnalyzerFeatureMetrics(
-            ref_small_hist=ref_small_hist,
-            current_small_hist=cur_small_hist,
-            feature_type=feature_type,
+        drift_by_columns[feature_name] = ColumnDataDriftMetrics(
+            reference_small_distribution=ref_small_hist,
+            current_small_distribution=cur_small_hist,
+            current_distribution=drift_result.current_distribution,
+            reference_distribution=drift_result.reference_distribution,
+            column_name=feature_name,
+            column_type=feature_type,
             stattest_name=drift_result.stattest_name,
-            p_value=drift_result.drift_score,
+            drift_score=drift_result.drift_score,
             drift_detected=drift_result.drift_detected,
             threshold=drift_result.threshold,
         )
 
-    n_drifted_features, share_drifted_features, dataset_drift = dataset_drift_evaluation(p_values, drift_share)
-    return DataDriftAnalyzerMetrics(
+    n_drifted_features, share_drifted_features, dataset_drift = dataset_drift_evaluation(drift_by_columns, drift_share)
+    return DatasetDriftMetrics(
         n_features=len(num_feature_names) + len(cat_feature_names),
         n_drifted_features=n_drifted_features,
         share_drifted_features=share_drifted_features,
         dataset_drift=dataset_drift,
-        features=features_metrics,
+        features=drift_by_columns,
     )
 
 
-def calculate_column_data_drift(
+def get_drift_for_columns(
     *,
-    column_name: str,
-    column_type: str,
-    current_column: pd.Series,
-    reference_column: pd.Series,
-    drift_options: DataDriftOptions,
-) -> DataDriftMetrics:
-    """Calculate data drift for a single column."""
-    stattest = drift_options.get_feature_stattest_func(column_name, column_type)
-    threshold = drift_options.get_threshold(column_name)
-    return calculate_data_drift(
-        current_column=current_column,
-        reference_column=reference_column,
-        column_name=column_name,
-        stattest=stattest,
-        threshold=threshold,
-        column_type=column_type,
-    )
-
-
-@dataclass
-class DatasetDriftResults:
-    options: DataDriftOptions
-    columns: DatasetColumns
-    metrics: DataDriftAnalyzerMetrics
-    distr_for_plots: Dict[str, Dict[str, pd.DataFrame]]
-
-
-def calculate_all_drifts_for_metrics(
-    data, options: DataDriftOptions, drift_share_threshold: Optional[float] = None
+    current_data: pd.DataFrame,
+    reference_data: pd.DataFrame,
+    options: DataDriftOptions,
+    dataset_columns: DatasetColumns,
+    columns: Optional[List[str]] = None,
+    drift_share_threshold: Optional[float] = None,
 ) -> DatasetDriftResults:
     """Calculate all drifts for all columns."""
-    if data.current_data is None:
-        raise ValueError("Current dataset should be present")
 
-    if data.reference_data is None:
-        raise ValueError("Reference dataset should be present")
-
-    columns = process_columns(data.current_data, data.column_mapping)
     drift_metrics = get_overall_data_drift(
-        current_data=data.current_data,
-        reference_data=data.reference_data,
-        columns=columns,
+        current_data=current_data,
+        reference_data=reference_data,
+        columns=dataset_columns,
         data_drift_options=options,
         drift_share_threshold=drift_share_threshold,
     )
-    distr_for_plots = {}
 
-    for column_name in columns.num_feature_names:
-        distr_for_plots[column_name] = get_distribution_for_column(
-            column_name=column_name,
-            column_type="num",
-            current_data=data.current_data,
-            reference_data=data.reference_data,
-        )
-
-    for column_name in columns.cat_feature_names:
-        distr_for_plots[column_name] = get_distribution_for_column(
-            column_name=column_name,
-            column_type="cat",
-            current_data=data.current_data,
-            reference_data=data.reference_data,
-        )
-
-    return DatasetDriftResults(options=options, columns=columns, metrics=drift_metrics, distr_for_plots=distr_for_plots)
+    return DatasetDriftResults(options=options, columns=dataset_columns, metrics=drift_metrics)

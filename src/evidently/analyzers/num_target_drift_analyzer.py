@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.analyzers.base_analyzer import BaseAnalyzerResult
-from evidently.calculations.data_drift import DataDriftMetrics
+from evidently.calculations.data_drift import ColumnDataDriftMetrics
 from evidently.calculations.data_drift import calculate_data_drift_for_numeric_feature
 from evidently.calculations.data_quality import get_rows_count
 from evidently.options import DataDriftOptions
@@ -18,8 +18,8 @@ from evidently.utils.data_operations import process_columns
 class NumTargetDriftAnalyzerResults(BaseAnalyzerResult):
     reference_data_count: int = 0
     current_data_count: int = 0
-    target_metrics: Optional[DataDriftMetrics] = None
-    prediction_metrics: Optional[DataDriftMetrics] = None
+    target_metrics: Optional[ColumnDataDriftMetrics] = None
+    prediction_metrics: Optional[ColumnDataDriftMetrics] = None
 
 
 class NumTargetDriftAnalyzer(Analyzer):

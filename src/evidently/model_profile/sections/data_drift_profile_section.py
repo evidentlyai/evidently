@@ -4,7 +4,11 @@ from typing import Dict
 from typing import Optional
 from typing import Union
 
+import pandas as pd
+
+from evidently import ColumnMapping
 from evidently.analyzers.data_drift_analyzer import DataDriftAnalyzer
+from evidently.calculations.data_drift import DatasetDriftMetrics
 from evidently.model_profile.sections.base_profile_section import ProfileSection
 
 
@@ -33,11 +37,11 @@ class DataDriftProfileSection(ProfileSection):
         # add metrics to a flat dict with data drift results
         for feature_name, feature_metrics in data_drift_results.metrics.features.items():
             metrics_dict[feature_name] = {
-                "current_small_hist": feature_metrics.current_small_hist,
-                "ref_small_hist": feature_metrics.ref_small_hist,
-                "feature_type": feature_metrics.feature_type,
+                "current_small_hist": feature_metrics.current_small_distribution,
+                "ref_small_hist": feature_metrics.reference_small_distribution,
+                "feature_type": feature_metrics.column_type,
                 "stattest_name": feature_metrics.stattest_name,
-                "drift_score": feature_metrics.p_value,
+                "drift_score": feature_metrics.drift_score,
                 "drift_detected": feature_metrics.drift_detected,
             }
 

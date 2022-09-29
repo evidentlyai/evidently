@@ -1,7 +1,7 @@
 from typing import Generator
 
 from evidently.analyzers.num_target_drift_analyzer import NumTargetDriftAnalyzer
-from evidently.calculations.data_drift import DataDriftMetrics
+from evidently.calculations.data_drift import ColumnDataDriftMetrics
 from evidently.model_monitoring.monitoring import MetricsType
 from evidently.model_monitoring.monitoring import ModelMonitor
 from evidently.model_monitoring.monitoring import ModelMonitoringMetric
@@ -36,7 +36,7 @@ class NumTargetDriftMonitor(ModelMonitor):
         return [NumTargetDriftAnalyzer]
 
     @staticmethod
-    def _yield_metrics(metrics: DataDriftMetrics, kind: str) -> Generator[MetricsType, None, None]:
+    def _yield_metrics(metrics: ColumnDataDriftMetrics, kind: str) -> Generator[MetricsType, None, None]:
         yield NumTargetDriftMonitorMetrics.drift.create(metrics.drift_score, dict(kind=kind))
 
         if metrics.reference_correlations is not None:

@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.analyzers.base_analyzer import BaseAnalyzerResult
-from evidently.calculations.data_drift import DataDriftAnalyzerMetrics
+from evidently.calculations.data_drift import DatasetDriftMetrics
 from evidently.calculations.data_drift import get_overall_data_drift
 from evidently.options import DataDriftOptions
 from evidently.utils.data_operations import process_columns
@@ -18,7 +18,7 @@ from evidently.utils.data_operations import process_columns
 @dataclass
 class DataDriftAnalyzerResults(BaseAnalyzerResult):
     options: DataDriftOptions
-    metrics: DataDriftAnalyzerMetrics
+    metrics: DatasetDriftMetrics
 
 
 class DataDriftAnalyzer(Analyzer):

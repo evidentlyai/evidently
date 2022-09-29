@@ -1,5 +1,4 @@
 import uuid
-from typing import Dict
 from typing import List
 from typing import Optional
 
@@ -7,9 +6,9 @@ import dataclasses
 import pandas as pd
 from dataclasses import dataclass
 
-from evidently.calculations.data_drift import DataDriftAnalyzerFeatureMetrics
-from evidently.calculations.data_drift import DataDriftAnalyzerMetrics
-from evidently.calculations.data_drift import calculate_all_drifts_for_metrics
+from evidently.calculations.data_drift import ColumnDataDriftMetrics
+from evidently.calculations.data_drift import DatasetDriftMetrics
+from evidently.calculations.data_drift import get_drift_for_columns
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.options import ColorOptions
@@ -25,17 +24,17 @@ from evidently.renderers.html_widgets import plotly_figure
 from evidently.renderers.html_widgets import rich_table_data
 from evidently.renderers.render_utils import plot_distr
 from evidently.utils.data_operations import DatasetColumns
+from evidently.utils.data_operations import process_columns
 
 
 @dataclass
-class DataDriftMetricsResults:
+class DataDriftTableResults:
     options: DataDriftOptions
     columns: DatasetColumns
-    metrics: DataDriftAnalyzerMetrics
-    distr_for_plots: Dict[str, Dict[str, pd.DataFrame]]
+    metrics: DatasetDriftMetrics
 
 
-class DataDriftTable(Metric[DataDriftMetricsResults]):
+class DataDriftTable(Metric[DataDriftTableResults]):
     options: DataDriftOptions
 
     def __init__(self, options: Optional[DataDriftOptions] = None):
@@ -48,18 +47,28 @@ class DataDriftTable(Metric[DataDriftMetricsResults]):
     def get_parameters(self) -> tuple:
         return tuple((self.options,))
 
-    def calculate(self, data: InputData) -> DataDriftMetricsResults:
-        result = calculate_all_drifts_for_metrics(data, self.options)
-        return DataDriftMetricsResults(
-            options=self.options, columns=result.columns, metrics=result.metrics, distr_for_plots=result.distr_for_plots
+    def calculate(self, data: InputData) -> DataDriftTableResults:
+        if data.reference_data is None:
+            raise ValueError("Reference dataset should be present")
+
+        dataset_columns = process_columns(data.reference_data, data.column_mapping)
+        result = get_drift_for_columns(
+            current_data=data.current_data,
+            reference_data=data.reference_data,
+            options=self.options,
+            dataset_columns=dataset_columns,
         )
+        return DataDriftTableResults(options=self.options, columns=result.columns, metrics=result.metrics)
 
 
-def _generate_feature_params(item_id: str, name: str, data: DataDriftAnalyzerFeatureMetrics) -> dict:
-    current_small_hist = data.current_small_hist
-    ref_small_hist = data.ref_small_hist
-    feature_type = data.feature_type
-    p_value = data.p_value
+def _generate_feature_params(item_id: str, name: str, data: ColumnDataDriftMetrics) -> dict:
+    if data.current_small_distribution is None or data.reference_small_distribution is None:
+        return {}
+
+    current_small_hist = data.current_small_distribution
+    ref_small_hist = data.reference_small_distribution
+    feature_type = data.column_type
+    drift_score = data.drift_score
     distr_sim_test = "Detected" if data.drift_detected else "Not Detected"
     parts = []
     parts.append({"title": "Data distribution", "id": f"{item_id}_{name}_distr", "type": "widget"})
@@ -71,22 +80,23 @@ def _generate_feature_params(item_id: str, name: str, data: DataDriftAnalyzerFea
         "f3": {"x": list(ref_small_hist[1]), "y": list(ref_small_hist[0])},
         "f4": {"x": list(current_small_hist[1]), "y": list(current_small_hist[0])},
         "f2": distr_sim_test,
-        "f5": round(p_value, 6),
+        "f5": round(drift_score, 6),
     }
 
 
 @default_renderer(wrap_type=DataDriftTable)
-class DataDriftMetricsRenderer(MetricRenderer):
+class DataDriftTableRenderer(MetricRenderer):
     def render_json(self, obj: DataDriftTable) -> dict:
-        return dataclasses.asdict(obj.get_result().metrics)
+        result = dataclasses.asdict(obj.get_result().metrics)
+        result.pop("features", None)
+        return result
 
     def render_html(self, obj: DataDriftTable) -> List[MetricHtmlInfo]:
+        results = obj.get_result()
         color_options = ColorOptions()
-
-        data_drift_results = obj.get_result()
-        all_features = data_drift_results.columns.get_all_features_list()
-        target_column = data_drift_results.columns.utility_columns.target
-        prediction_column = data_drift_results.columns.utility_columns.prediction
+        all_features = results.columns.get_all_features_list()
+        target_column = results.columns.utility_columns.target
+        prediction_column = results.columns.utility_columns.prediction
 
         # set params data
         params_data = []
@@ -94,7 +104,7 @@ class DataDriftMetricsRenderer(MetricRenderer):
         # sort columns by drift score
         df_for_sort = pd.DataFrame()
         df_for_sort["features"] = all_features
-        df_for_sort["scores"] = [data_drift_results.metrics.features[feature].p_value for feature in all_features]
+        df_for_sort["scores"] = [results.metrics.features[feature].drift_score for feature in all_features]
         all_features = df_for_sort.sort_values("scores", ascending=False).features.tolist()
         columns = []
         if target_column:
@@ -107,15 +117,13 @@ class DataDriftMetricsRenderer(MetricRenderer):
 
         item_id = str(uuid.uuid4())
         for feature_name in columns:
-            params_data.append(
-                _generate_feature_params(item_id, feature_name, data_drift_results.metrics.features[feature_name])
-            )
+            params_data.append(_generate_feature_params(item_id, feature_name, results.metrics.features[feature_name]))
 
         # set additionalGraphs
         additional_graphs_data = []
         for feature_name in columns:
-            curr_distr = obj.get_result().distr_for_plots[feature_name]["current"]
-            ref_distr = obj.get_result().distr_for_plots[feature_name]["reference"]
+            curr_distr = results.metrics.features[feature_name].current_distribution
+            ref_distr = results.metrics.features[feature_name].reference_distribution
             fig = plot_distr(curr_distr, ref_distr)
             additional_graphs_data.append(
                 DetailsInfo(
@@ -124,9 +132,9 @@ class DataDriftMetricsRenderer(MetricRenderer):
                     info=plotly_figure(title="", figure=fig),
                 ),
             )
-        n_drifted_features = data_drift_results.metrics.n_drifted_features
-        n_features = data_drift_results.metrics.n_features
-        drift_share = data_drift_results.metrics.share_drifted_features
+        n_drifted_features = results.metrics.n_drifted_features
+        n_features = results.metrics.n_features
+        drift_share = results.metrics.share_drifted_features
 
         title_prefix = (
             f"Drift is detected for {drift_share * 100:.2f}% of features ({n_drifted_features}"

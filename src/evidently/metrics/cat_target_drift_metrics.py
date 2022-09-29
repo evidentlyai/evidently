@@ -7,7 +7,7 @@ from typing import Sequence
 import dataclasses
 from dataclasses import dataclass
 
-from evidently.calculations.data_drift import DataDriftMetrics
+from evidently.calculations.data_drift import ColumnDataDriftMetrics
 from evidently.calculations.data_drift import calculate_data_drift_for_category_feature
 from evidently.calculations.data_drift import define_predictions_type
 from evidently.calculations.data_quality import get_rows_count
@@ -32,8 +32,8 @@ class CatTargetDriftAnalyzerResults:
     """Class for all results of category target drift calculations"""
 
     columns: DatasetColumns
-    target_metrics: Optional[DataDriftMetrics] = None
-    prediction_metrics: Optional[DataDriftMetrics] = None
+    target_metrics: Optional[ColumnDataDriftMetrics] = None
+    prediction_metrics: Optional[ColumnDataDriftMetrics] = None
     target_histogram_data = None
     prediction_histogram_data = None
     reference_data_count: int = 0

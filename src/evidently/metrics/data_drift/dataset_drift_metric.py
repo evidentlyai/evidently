@@ -1,13 +1,11 @@
-from typing import Dict
 from typing import List
 from typing import Optional
 
 import dataclasses
-import pandas as pd
 from dataclasses import dataclass
 
-from evidently.calculations.data_drift import DataDriftAnalyzerMetrics
-from evidently.calculations.data_drift import calculate_all_drifts_for_metrics
+from evidently.calculations.data_drift import DatasetDriftMetrics
+from evidently.calculations.data_drift import get_drift_for_columns
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.options import DataDriftOptions
@@ -18,6 +16,7 @@ from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import DatasetColumns
+from evidently.utils.data_operations import process_columns
 
 
 @dataclass
@@ -25,15 +24,18 @@ class DatasetDriftMetricResults:
     threshold: float
     options: DataDriftOptions
     columns: DatasetColumns
-    metrics: DataDriftAnalyzerMetrics
-    distr_for_plots: Dict[str, Dict[str, pd.DataFrame]]
+    metrics: DatasetDriftMetrics
 
 
 class DatasetDriftMetric(Metric[DatasetDriftMetricResults]):
+    columns: Optional[List[str]]
     threshold: float
     options: DataDriftOptions
 
-    def __init__(self, threshold: float = 0.5, options: Optional[DataDriftOptions] = None):
+    def __init__(
+        self, columns: Optional[List[str]], threshold: float = 0.5, options: Optional[DataDriftOptions] = None
+    ):
+        self.columns = columns
         self.threshold = threshold
 
         if options is None:
@@ -43,23 +45,34 @@ class DatasetDriftMetric(Metric[DatasetDriftMetricResults]):
             self.options = options
 
     def get_parameters(self) -> tuple:
-        return tuple((self.options,))
+        return self.threshold, self.columns, self.options
 
     def calculate(self, data: InputData) -> DatasetDriftMetricResults:
-        result = calculate_all_drifts_for_metrics(data, self.options, drift_share_threshold=self.threshold)
+        if data.reference_data is None:
+            raise ValueError("Reference dataset should be present")
+
+        dataset_columns = process_columns(data.reference_data, data.column_mapping)
+        result = get_drift_for_columns(
+            current_data=data.current_data,
+            reference_data=data.reference_data,
+            options=self.options,
+            drift_share_threshold=self.threshold,
+            dataset_columns=dataset_columns,
+        )
         return DatasetDriftMetricResults(
             threshold=self.threshold,
             options=self.options,
             columns=result.columns,
             metrics=result.metrics,
-            distr_for_plots=result.distr_for_plots,
         )
 
 
 @default_renderer(wrap_type=DatasetDriftMetric)
 class DataDriftMetricsRenderer(MetricRenderer):
     def render_json(self, obj: DatasetDriftMetric) -> dict:
-        return dataclasses.asdict(obj.get_result().metrics)
+        result = dataclasses.asdict(obj.get_result().metrics)
+        result.pop("metrics", None)
+        return result
 
     def render_html(self, obj: DatasetDriftMetric) -> List[MetricHtmlInfo]:
         result = obj.get_result()
@@ -89,7 +102,7 @@ class DataDriftMetricsRenderer(MetricRenderer):
                 "dataset_drift_details",
                 counter(
                     counters=counters,
-                    title=f"Dataset Drift Details",
+                    title="Dataset Drift Details",
                 ),
             ),
         ]

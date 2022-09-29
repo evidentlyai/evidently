@@ -9,7 +9,7 @@ import plotly.graph_objs as go
 
 from evidently import ColumnMapping
 from evidently.analyzers.data_drift_analyzer import DataDriftAnalyzer
-from evidently.calculations.data_drift import DataDriftAnalyzerFeatureMetrics
+from evidently.calculations.data_drift import ColumnDataDriftMetrics
 from evidently.dashboard.widgets.utils import CutQuantileTransformer
 from evidently.dashboard.widgets.utils import fig_to_json
 from evidently.dashboard.widgets.widget import Widget
@@ -20,15 +20,20 @@ from evidently.options import DataDriftOptions
 from evidently.options import QualityMetricsOptions
 
 
-def _generate_feature_params(name: str, data: DataDriftAnalyzerFeatureMetrics) -> dict:
-    current_small_hist = data.current_small_hist
-    ref_small_hist = data.ref_small_hist
-    feature_type = data.feature_type
-    p_value = data.p_value
+def _generate_feature_params(name: str, data: ColumnDataDriftMetrics) -> dict:
+    if data.current_small_distribution is None or data.reference_small_distribution is None:
+        return {}
+
+    current_small_hist = data.current_small_distribution
+    ref_small_hist = data.reference_small_distribution
+    feature_type = data.column_type
+    drift_score = data.drift_score
     distr_sim_test = "Detected" if data.drift_detected else "Not Detected"
     parts = []
-    if data.feature_type == "num":
+
+    if data.column_type == "num":
         parts.append({"title": "Data drift", "id": f"{name}_drift", "type": "widget"})
+
     parts.append({"title": "Data distribution", "id": f"{name}_distr"})
     return {
         "details": {"parts": parts, "insights": []},
@@ -38,7 +43,7 @@ def _generate_feature_params(name: str, data: DataDriftAnalyzerFeatureMetrics) -
         "f3": {"x": list(ref_small_hist[1]), "y": list(ref_small_hist[0])},
         "f4": {"x": list(current_small_hist[1]), "y": list(current_small_hist[0])},
         "f2": distr_sim_test,
-        "f5": round(p_value, 6),
+        "f5": round(drift_score, 6),
     }
 
 
@@ -256,7 +261,7 @@ class DataDriftTableWidget(Widget):
         # sort columns by drift score
         df_for_sort = pd.DataFrame()
         df_for_sort["features"] = all_features
-        df_for_sort["scores"] = [data_drift_results.metrics.features[feature].p_value for feature in all_features]
+        df_for_sort["scores"] = [data_drift_results.metrics.features[feature].drift_score for feature in all_features]
         all_features = df_for_sort.sort_values("scores", ascending=False).features.tolist()
         columns = []
         if target_column:
@@ -276,7 +281,7 @@ class DataDriftTableWidget(Widget):
         additional_graphs_data = []
         for feature_name in columns:
             # plot distributions
-            if data_drift_results.metrics.features[feature_name].feature_type == "num":
+            if data_drift_results.metrics.features[feature_name].column_type == "num":
                 additional_graphs_data += _generate_additional_graph_num_feature(
                     feature_name,
                     reference_data,
@@ -286,7 +291,7 @@ class DataDriftTableWidget(Widget):
                     quality_metrics_options,
                     color_options,
                 )
-            elif data_drift_results.metrics.features[feature_name].feature_type == "cat":
+            elif data_drift_results.metrics.features[feature_name].column_type == "cat":
                 additional_graphs_data += _generate_additional_graph_cat_feature(
                     feature_name, reference_data, current_data, color_options
                 )

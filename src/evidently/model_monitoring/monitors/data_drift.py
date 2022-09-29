@@ -30,10 +30,10 @@ class DataDriftMonitor(ModelMonitor):
         for feature_name in data_drift_results.columns.get_all_features_list(cat_before_num=True):
             feature_metric = data_drift_results.metrics.features[feature_name]
             yield DataDriftMonitorMetrics.value.create(
-                feature_metric.p_value,
+                feature_metric.drift_score,
                 dict(
                     feature=feature_name,
-                    feature_type=feature_metric.feature_type,
+                    feature_type=feature_metric.column_type,
                     stat_test=feature_metric.stattest_name,
                 ),
             )

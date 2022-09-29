@@ -1,11 +1,10 @@
-from typing import Dict
 from typing import List
 from typing import Optional
 
 import dataclasses
 import pandas as pd
 
-from evidently.calculations.data_drift import calculate_column_data_drift
+from evidently.calculations.data_drift import get_one_column_drift
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
@@ -16,9 +15,7 @@ from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.render_utils import plot_distr
 from evidently.utils.data_operations import process_columns
-from evidently.utils.data_operations import recognize_column_type
 from evidently.utils.types import Numeric
-from evidently.utils.visualizations import get_distribution_for_column
 
 
 @dataclasses.dataclass
@@ -29,7 +26,8 @@ class ColumnDriftMetricResults:
     threshold: Optional[float]
     drift_score: Numeric
     drift_detected: bool
-    distr_for_plots: Dict[str, pd.DataFrame]
+    current_distribution: pd.DataFrame
+    reference_distribution: pd.DataFrame
 
 
 class ColumnDriftMetric(Metric[ColumnDriftMetricResults]):
@@ -61,34 +59,24 @@ class ColumnDriftMetric(Metric[ColumnDriftMetricResults]):
         if self.column_name not in data.reference_data:
             raise ValueError(f"Cannot find column {self.column_name} in reference dataset")
 
-        columns = process_columns(data.reference_data, data.column_mapping)
-        column_type = recognize_column_type(self.column_name, columns)
-
-        if column_type not in ("cat", "num"):
-            raise ValueError(f"Cannot calculate drift metric for column {self.column_name} with type {column_type}")
-
-        drift_result = calculate_column_data_drift(
-            current_column=data.current_data[self.column_name],
-            reference_column=data.reference_data[self.column_name],
-            column_name=self.column_name,
-            column_type=column_type,
-            drift_options=self.options,
-        )
-        distribution_for_plot = get_distribution_for_column(
-            column_name=self.column_name,
-            column_type=column_type,
+        dataset_columns = process_columns(data.reference_data, data.column_mapping)
+        drift_result = get_one_column_drift(
             current_data=data.current_data,
             reference_data=data.reference_data,
+            column_name=self.column_name,
+            dataset_columns=dataset_columns,
+            options=self.options,
         )
 
         return ColumnDriftMetricResults(
             column_name=drift_result.column_name,
-            column_type=column_type,
+            column_type=drift_result.column_type,
             stattest_name=drift_result.stattest_name,
             threshold=drift_result.threshold,
             drift_score=drift_result.drift_score,
             drift_detected=drift_result.drift_detected,
-            distr_for_plots=distribution_for_plot,
+            current_distribution=drift_result.current_distribution,
+            reference_distribution=drift_result.reference_distribution,
         )
 
 
@@ -105,7 +93,7 @@ class ColumnDriftMetricRenderer(MetricRenderer):
 
         drift_score = round(result.drift_score, 3)
 
-        fig = plot_distr(result.distr_for_plots["current"], result.distr_for_plots["reference"])
+        fig = plot_distr(result.current_distribution, result.reference_distribution)
         fig_json = fig.to_plotly_json()
         return [
             MetricHtmlInfo(
@@ -129,5 +117,6 @@ class ColumnDriftMetricRenderer(MetricRenderer):
     def render_json(self, obj: ColumnDriftMetric) -> dict:
         result = dataclasses.asdict(obj.get_result())
         # remove distribution data with pandas dataframes
-        result.pop("distr_for_plots", None)
+        result.pop("current_distribution", None)
+        result.pop("reference_distribution", None)
         return result

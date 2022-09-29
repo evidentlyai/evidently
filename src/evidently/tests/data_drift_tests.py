@@ -72,7 +72,7 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
             features={
                 feature: (
                     data.stattest_name,
-                    np.round(data.p_value, 3),
+                    np.round(data.drift_score, 3),
                     data.threshold,
                     "Detected" if data.drift_detected else "Not Detected",
                 )
@@ -150,7 +150,7 @@ class TestFeatureValueDrift(Test):
             description = f"Cannot find column {self.column_name} in the dataset"
 
         else:
-            p_value = np.round(drift_info.features[self.column_name].p_value, 3)
+            p_value = np.round(drift_info.features[self.column_name].drift_score, 3)
             stattest_name = drift_info.features[self.column_name].stattest_name
             threshold = drift_info.features[self.column_name].threshold
             description = (
@@ -272,7 +272,7 @@ class TestFeatureValueDriftRenderer(TestRenderer):
         base["parameters"]["features"] = {
             feature_name: {
                 "stattest": drift_data.stattest_name,
-                "score": np.round(drift_data.p_value, 3),
+                "score": np.round(drift_data.drift_score, 3),
                 "threshold": drift_data.threshold,
                 "data_drift": drift_data.drift_detected,
             }
@@ -280,10 +280,11 @@ class TestFeatureValueDriftRenderer(TestRenderer):
         return base
 
     def render_html(self, obj: TestFeatureValueDrift) -> TestHtmlInfo:
+        result = obj.metric.get_result()
         feature_name = obj.column_name
         info = super().render_html(obj)
-        curr_distr = obj.metric.get_result().distr_for_plots[feature_name]["current"]
-        ref_distr = obj.metric.get_result().distr_for_plots[feature_name]["reference"]
+        curr_distr = result.metrics.features[feature_name].current_distribution
+        ref_distr = result.metrics.features[feature_name].reference_distribution
         fig = plot_distr(curr_distr, ref_distr)
         fig_json = fig.to_plotly_json()
         info.details.append(

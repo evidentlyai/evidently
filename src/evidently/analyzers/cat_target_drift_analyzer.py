@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.analyzers.base_analyzer import BaseAnalyzerResult
-from evidently.calculations.data_drift import DataDriftMetrics
+from evidently.calculations.data_drift import ColumnDataDriftMetrics
 from evidently.calculations.data_drift import calculate_data_drift_for_category_feature
 from evidently.calculations.data_drift import define_predictions_type
 from evidently.calculations.data_quality import get_rows_count
@@ -23,8 +23,8 @@ from evidently.utils.data_operations import replace_infinity_values_to_nan
 class CatTargetDriftAnalyzerResults(BaseAnalyzerResult):
     """Class for all results of category target drift calculations"""
 
-    target_metrics: Optional[DataDriftMetrics] = None
-    prediction_metrics: Optional[DataDriftMetrics] = None
+    target_metrics: Optional[ColumnDataDriftMetrics] = None
+    prediction_metrics: Optional[ColumnDataDriftMetrics] = None
     reference_data_count: int = 0
     current_data_count: int = 0
 

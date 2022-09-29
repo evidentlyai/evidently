@@ -9,7 +9,7 @@ import plotly.figure_factory as ff
 import plotly.graph_objs as go
 from dataclasses import dataclass
 
-from evidently.calculations.data_drift import DataDriftMetrics
+from evidently.calculations.data_drift import ColumnDataDriftMetrics
 from evidently.calculations.data_drift import calculate_data_drift_for_numeric_feature
 from evidently.calculations.data_quality import get_rows_count
 from evidently.dashboard.widgets.utils import CutQuantileTransformer
@@ -37,8 +37,8 @@ class NumTargetDriftAnalyzerResults:
     prediction_values_plot: Optional[dict] = None
     reference_data_count: int = 0
     current_data_count: int = 0
-    target_metrics: Optional[DataDriftMetrics] = None
-    prediction_metrics: Optional[DataDriftMetrics] = None
+    target_metrics: Optional[ColumnDataDriftMetrics] = None
+    prediction_metrics: Optional[ColumnDataDriftMetrics] = None
 
 
 class NumTargetDriftMetrics(Metric[NumTargetDriftAnalyzerResults]):
@@ -370,7 +370,7 @@ class NumTargetDriftMetricsRenderer(MetricRenderer):
         return dataclasses.asdict(obj.get_result())
 
 
-def _plot_correlations(metrics: DataDriftMetrics, color_options: ColorOptions):
+def _plot_correlations(metrics: ColumnDataDriftMetrics, color_options: ColorOptions):
     output_corr = go.Figure()
     ref_output_corr = metrics.reference_correlations
     curr_output_corr = metrics.current_correlations
