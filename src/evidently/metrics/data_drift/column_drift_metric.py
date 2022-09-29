@@ -68,10 +68,10 @@ class ColumnDriftMetric(Metric[ColumnDriftMetricResults]):
             raise ValueError(f"Cannot calculate drift metric for column {self.column_name} with type {column_type}")
 
         drift_result = calculate_column_data_drift(
+            current_column=data.current_data[self.column_name],
+            reference_column=data.reference_data[self.column_name],
             column_name=self.column_name,
             column_type=column_type,
-            current_data=data.current_data,
-            reference_data=data.reference_data,
             drift_options=self.options,
         )
         distribution_for_plot = get_distribution_for_column(

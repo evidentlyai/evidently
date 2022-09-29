@@ -1,5 +1,6 @@
 from typing import Optional
 
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -58,6 +59,12 @@ def test_column_drift_metric_success(
         (
             pd.DataFrame({"col": [1, 2, 3]}),
             pd.DataFrame({"feature": [1, 2, 3]}),
+            None,
+            ColumnDriftMetric(column_name="col"),
+        ),
+        (
+            pd.DataFrame({"col": [None, np.inf, -np.inf]}),
+            pd.DataFrame({"col": [1, 2, 3]}),
             None,
             ColumnDriftMetric(column_name="col"),
         ),

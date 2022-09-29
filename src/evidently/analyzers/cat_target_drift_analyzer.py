@@ -111,8 +111,8 @@ class CatTargetDriftAnalyzer(Analyzer):
 
         if target_column is not None:
             result.target_metrics = calculate_data_drift_for_category_feature(
-                current_data=current_data,
-                reference_data=reference_data,
+                current_column=current_data[target_column],
+                reference_column=reference_data[target_column],
                 column_name=target_column,
                 stattest=data_drift_options.cat_target_stattest_func,
                 threshold=threshold,
@@ -120,8 +120,8 @@ class CatTargetDriftAnalyzer(Analyzer):
 
         if prediction_column is not None:
             result.prediction_metrics = calculate_data_drift_for_category_feature(
-                current_data=current_data,
-                reference_data=reference_data,
+                current_column=current_data[prediction_column],
+                reference_column=reference_data[prediction_column],
                 column_name=prediction_column,
                 stattest=data_drift_options.cat_target_stattest_func,
                 threshold=threshold,
