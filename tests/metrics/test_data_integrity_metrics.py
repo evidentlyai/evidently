@@ -2,9 +2,9 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from evidently.metrics import ColumnRegExpMetric
 from evidently.metrics import DataIntegrityMetrics
 from evidently.metrics import DataIntegrityNullValuesMetrics
-from evidently.metrics import DataIntegrityValueByRegexpMetrics
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.metrics.data_integrity_metrics import DataIntegrityValueByRegexpMetricResult
@@ -100,7 +100,7 @@ def test_data_integrity_value_by_regexp_metric(
     reg_exp: str,
     expected_result: DataIntegrityValueByRegexpMetricResult,
 ) -> None:
-    metric = DataIntegrityValueByRegexpMetrics(column_name=column_name, reg_exp=reg_exp)
+    metric = ColumnRegExpMetric(column_name=column_name, reg_exp=reg_exp)
     result = metric.calculate(
         data=InputData(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
     )
@@ -111,7 +111,7 @@ def test_data_integrity_value_by_regexp_metric(
     "metric_object",
     (
         DataIntegrityMetrics(),
-        DataIntegrityValueByRegexpMetrics(column_name="feature", reg_exp=r".*a.*"),
+        ColumnRegExpMetric(column_name="feature", reg_exp=r".*a.*"),
         DataIntegrityNullValuesMetrics(null_values=[None]),
     ),
 )

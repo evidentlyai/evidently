@@ -14,7 +14,7 @@ from dataclasses import dataclass
 
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
-from evidently.model.widget import WidgetType
+from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricHtmlInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -198,23 +198,26 @@ class DataIntegrityValueByRegexpMetricResult:
     column_name: str
     # the regular expression as a string
     reg_exp: str
+    top: int
     # match statistic for current dataset
     current: DataIntegrityValueByRegexpStat
     # match statistic for reference dataset, equals None if the reference is not present
     reference: Optional[DataIntegrityValueByRegexpStat] = None
 
 
-class DataIntegrityValueByRegexpMetrics(Metric[DataIntegrityValueByRegexpMetricResult]):
+class ColumnRegExpMetric(Metric[DataIntegrityValueByRegexpMetricResult]):
     """Count number of values in a column matched or not by a regular expression (regexp)"""
 
     # name of the column that we check
     column_name: str
     # the regular expression
     reg_exp: str
+    top: int
     # compiled regular expression for speed optimization
     _reg_exp_compiled: Pattern
 
-    def __init__(self, column_name: str, reg_exp: str):
+    def __init__(self, column_name: str, reg_exp: str, top: int = 10):
+        self.top = top
         self.reg_exp = reg_exp
         self.column_name = column_name
         self._reg_exp_compiled = re.compile(reg_exp)
@@ -260,58 +263,61 @@ class DataIntegrityValueByRegexpMetrics(Metric[DataIntegrityValueByRegexpMetricR
             reference = self._calculate_stats_by_regexp(data.reference_data[self.column_name])
 
         return DataIntegrityValueByRegexpMetricResult(
-            column_name=self.column_name, reg_exp=self.reg_exp, current=current, reference=reference
+            column_name=self.column_name, reg_exp=self.reg_exp, top=self.top, current=current, reference=reference
         )
 
 
-@default_renderer(wrap_type=DataIntegrityValueByRegexpMetrics)
-class DataIntegrityValueByRegexpMetricsRenderer(MetricRenderer):
-    def render_json(self, obj: DataIntegrityValueByRegexpMetrics) -> dict:
+@default_renderer(wrap_type=ColumnRegExpMetric)
+class ColumnRegExpMetricRenderer(MetricRenderer):
+    def render_json(self, obj: ColumnRegExpMetric) -> dict:
         return dataclasses.asdict(obj.get_result())
 
     @staticmethod
-    def _get_table_stat(dataset_name: str, metrics: DataIntegrityValueByRegexpStat) -> MetricHtmlInfo:
-        matched_stat = [(f"{k} (matched)", v) for k, v in metrics.table_of_matched.items()]
-        matched_stat += [(f"{k} (not matched)", v) for k, v in metrics.table_of_not_matched.items()]
-        matched_stat += [
-            ("NaN", metrics.number_of_rows - metrics.number_of_matched - metrics.number_of_not_matched),
-            ("Total", metrics.number_of_rows),
+    def _get_counters(dataset_name: str, metrics: DataIntegrityValueByRegexpStat) -> MetricHtmlInfo:
+        percents = round(metrics.number_of_not_matched * 100 / metrics.number_of_rows, 3)
+        counters = [
+            CounterData(label="Number of Values", value=f"{metrics.number_of_rows}"),
+            CounterData(label="Mismatched", value=f"{metrics.number_of_not_matched} ({percents}%)"),
         ]
-        matched_stat_headers = ["Value", "Count"]
         return MetricHtmlInfo(
-            name=f"data_integrity_value_by_regexp_stats_{dataset_name.lower()}",
-            info=table_data(
-                title=f"{dataset_name.capitalize()}: Match Statistics",
-                column_names=matched_stat_headers,
-                data=matched_stat,
+            f"column_reg_exp_metric_{dataset_name.lower()}_table",
+            counter(
+                counters=counters,
+                title=f"{dataset_name.capitalize()} dataset",
             ),
         )
 
-    def render_html(self, obj: DataIntegrityValueByRegexpMetrics) -> List[MetricHtmlInfo]:
+    @staticmethod
+    def _get_table_stat(dataset_name: str, top: int, metrics: DataIntegrityValueByRegexpStat) -> MetricHtmlInfo:
+        data = sorted(metrics.table_of_not_matched.items(), key=lambda x: x[1], reverse=True)
+        return MetricHtmlInfo(
+            f"column_reg_exp_metric_{dataset_name.lower()}_details",
+            BaseWidgetInfo(
+                title=f"{dataset_name.capitalize()} Dataset: top {top} mismatched values",
+                type="table",
+                params={"header": ["value", "count"], "data": data[:top]},
+                size=2,
+            ),
+        )
+
+    def render_html(self, obj: ColumnRegExpMetric) -> List[MetricHtmlInfo]:
         metric_result = obj.get_result()
-        number_of_matched = metric_result.current.number_of_matched
-        number_of_rows = metric_result.current.number_of_rows
+        column_name = metric_result.column_name
 
         result = [
             MetricHtmlInfo(
-                name="data_integrity_value_by_regexp_title",
-                info=counter(
-                    title="Data Integrity Metric: Values Matching By Regexp In a Column",
-                    counters=[
-                        CounterData(
-                            label="",
-                            value=f"Founded {number_of_matched} of {number_of_rows} with "
-                            f"regexp '{metric_result.reg_exp}' in "
-                            f"column '{metric_result.column_name}' in current dataset.",
-                        )
-                    ],
-                ),
+                "column_reg_exp_metric_title",
+                header_text(label=f"RegExp Match for column '{column_name}'."),
             ),
-            self._get_table_stat(dataset_name="current", metrics=metric_result.current),
+            self._get_counters("current", metric_result.current),
+            self._get_table_stat("current", metric_result.top, metric_result.current),
         ]
 
         if metric_result.reference is not None:
-            result.append(self._get_table_stat(dataset_name="reference", metrics=metric_result.reference))
+            result.append(self._get_counters("reference", metric_result.reference))
+            result.append(
+                self._get_table_stat("reference", metric_result.top, metric_result.reference),
+            )
 
         return result
 
