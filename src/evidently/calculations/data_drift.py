@@ -282,8 +282,8 @@ def get_overall_data_drift(
             if key not in cur_counts:
                 cur_counts.loc[key] = 0
 
-        ref_small_hist = list(reversed(list(map(list, zip(*sorted(ref_counts.items(), key=lambda x: x[0]))))))
-        cur_small_hist = list(reversed(list(map(list, zip(*sorted(cur_counts.items(), key=lambda x: x[0]))))))
+        ref_small_hist = list(reversed(list(map(list, zip(*sorted(ref_counts.items(), key=lambda x: str(x[0])))))))
+        cur_small_hist = list(reversed(list(map(list, zip(*sorted(cur_counts.items(), key=lambda x: str(x[0])))))))
         features_metrics[feature_name] = DataDriftAnalyzerFeatureMetrics(
             ref_small_hist=ref_small_hist,
             current_small_hist=cur_small_hist,
