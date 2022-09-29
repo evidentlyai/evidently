@@ -62,13 +62,13 @@ def make_hist_for_cat_plot(curr: pd.Series, ref: pd.Series = None, normalize: bo
 
 
 def get_distribution_for_column(
-    *, column_name: str, column_type: str, current_data: pd.DataFrame, reference_data: pd.DataFrame
+    *, column_name: str, column_type: str, current: pd.Series, reference: pd.DataFrame
 ) -> Dict[str, pd.DataFrame]:
     if column_type == "cat":
-        return make_hist_for_cat_plot(current_data[column_name], reference_data[column_name])
+        return make_hist_for_cat_plot(current, reference)
 
     elif column_type == "num":
-        return make_hist_for_num_plot(current_data[column_name], reference_data[column_name])
+        return make_hist_for_num_plot(current, reference)
 
     else:
         raise ValueError(f"Cannot get distribution for column {column_name} with type {column_type}")

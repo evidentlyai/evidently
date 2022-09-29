@@ -33,7 +33,7 @@ class DatasetDriftMetric(Metric[DatasetDriftMetricResults]):
     options: DataDriftOptions
 
     def __init__(
-        self, columns: Optional[List[str]], threshold: float = 0.5, options: Optional[DataDriftOptions] = None
+        self, columns: Optional[List[str]] = None, threshold: float = 0.5, options: Optional[DataDriftOptions] = None
     ):
         self.columns = columns
         self.threshold = threshold
@@ -55,7 +55,7 @@ class DatasetDriftMetric(Metric[DatasetDriftMetricResults]):
         result = get_drift_for_columns(
             current_data=data.current_data,
             reference_data=data.reference_data,
-            options=self.options,
+            data_drift_options=self.options,
             drift_share_threshold=self.threshold,
             dataset_columns=dataset_columns,
         )
@@ -63,7 +63,7 @@ class DatasetDriftMetric(Metric[DatasetDriftMetricResults]):
             threshold=self.threshold,
             options=self.options,
             columns=result.columns,
-            metrics=result.metrics,
+            metrics=result,
         )
 
 

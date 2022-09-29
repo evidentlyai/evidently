@@ -10,8 +10,8 @@ from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.analyzers.base_analyzer import BaseAnalyzerResult
 from evidently.calculations.data_drift import ColumnDataDriftMetrics
-from evidently.calculations.data_drift import calculate_data_drift_for_category_feature
 from evidently.calculations.data_drift import define_predictions_type
+from evidently.calculations.data_drift import get_one_column_drift
 from evidently.calculations.data_quality import get_rows_count
 from evidently.options import DataDriftOptions
 from evidently.options import QualityMetricsOptions
@@ -110,21 +110,23 @@ class CatTargetDriftAnalyzer(Analyzer):
         current_data = replace_infinity_values_to_nan(current_data)
 
         if target_column is not None:
-            result.target_metrics = calculate_data_drift_for_category_feature(
-                current_column=current_data[target_column],
-                reference_column=reference_data[target_column],
+            result.target_metrics = get_one_column_drift(
+                current_data=current_data,
+                reference_data=reference_data,
                 column_name=target_column,
-                stattest=data_drift_options.cat_target_stattest_func,
-                threshold=threshold,
+                dataset_columns=columns,
+                options=data_drift_options,
+                column_type="cat",
             )
 
         if prediction_column is not None:
-            result.prediction_metrics = calculate_data_drift_for_category_feature(
-                current_column=current_data[prediction_column],
-                reference_column=reference_data[prediction_column],
+            result.prediction_metrics = get_one_column_drift(
+                current_data=current_data,
+                reference_data=reference_data,
                 column_name=prediction_column,
-                stattest=data_drift_options.cat_target_stattest_func,
-                threshold=threshold,
+                dataset_columns=columns,
+                options=data_drift_options,
+                column_type="cat",
             )
 
         return result

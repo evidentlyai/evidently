@@ -261,7 +261,9 @@ class DataDriftTableWidget(Widget):
         # sort columns by drift score
         df_for_sort = pd.DataFrame()
         df_for_sort["features"] = all_features
-        df_for_sort["scores"] = [data_drift_results.metrics.features[feature].drift_score for feature in all_features]
+        df_for_sort["scores"] = [
+            data_drift_results.metrics.drift_by_columns[feature].drift_score for feature in all_features
+        ]
         all_features = df_for_sort.sort_values("scores", ascending=False).features.tolist()
         columns = []
         if target_column:
@@ -274,14 +276,14 @@ class DataDriftTableWidget(Widget):
 
         for feature_name in columns:
             params_data.append(
-                _generate_feature_params(feature_name, data_drift_results.metrics.features[feature_name])
+                _generate_feature_params(feature_name, data_drift_results.metrics.drift_by_columns[feature_name])
             )
 
         # set additionalGraphs
         additional_graphs_data = []
         for feature_name in columns:
             # plot distributions
-            if data_drift_results.metrics.features[feature_name].column_type == "num":
+            if data_drift_results.metrics.drift_by_columns[feature_name].column_type == "num":
                 additional_graphs_data += _generate_additional_graph_num_feature(
                     feature_name,
                     reference_data,
@@ -291,7 +293,7 @@ class DataDriftTableWidget(Widget):
                     quality_metrics_options,
                     color_options,
                 )
-            elif data_drift_results.metrics.features[feature_name].column_type == "cat":
+            elif data_drift_results.metrics.drift_by_columns[feature_name].column_type == "cat":
                 additional_graphs_data += _generate_additional_graph_cat_feature(
                     feature_name, reference_data, current_data, color_options
                 )

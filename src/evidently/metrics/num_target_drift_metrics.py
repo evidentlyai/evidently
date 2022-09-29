@@ -10,7 +10,7 @@ import plotly.graph_objs as go
 from dataclasses import dataclass
 
 from evidently.calculations.data_drift import ColumnDataDriftMetrics
-from evidently.calculations.data_drift import calculate_data_drift_for_numeric_feature
+from evidently.calculations.data_drift import get_one_column_drift
 from evidently.calculations.data_quality import get_rows_count
 from evidently.dashboard.widgets.utils import CutQuantileTransformer
 from evidently.metrics.base_metric import InputData
@@ -23,7 +23,6 @@ from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import WidgetSize
 from evidently.renderers.html_widgets import plotly_data
-from evidently.renderers.html_widgets import plotly_figure
 from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.data_operations import process_columns
 
@@ -111,16 +110,14 @@ class NumTargetDriftMetrics(Metric[NumTargetDriftAnalyzerResults]):
             current_data_count=get_rows_count(data.current_data),
         )
 
-        threshold = self.options.num_target_threshold
-
         if target_column is not None:
-            result.target_metrics = calculate_data_drift_for_numeric_feature(
+            result.target_metrics = get_one_column_drift(
                 current_data=data.current_data,
                 reference_data=data.reference_data,
                 column_name=target_column,
-                numeric_columns=columns.num_feature_names,
-                stattest=self.options.num_target_stattest_func,
-                threshold=threshold,
+                dataset_columns=columns,
+                options=self.options,
+                column_type="num",
             )
             result.target_output_distr = _dist_plot(
                 target_column,
@@ -140,13 +137,13 @@ class NumTargetDriftMetrics(Metric[NumTargetDriftAnalyzerResults]):
             )
 
         if prediction_column is not None:
-            result.prediction_metrics = calculate_data_drift_for_numeric_feature(
+            result.prediction_metrics = get_one_column_drift(
                 current_data=data.current_data,
                 reference_data=data.reference_data,
                 column_name=prediction_column,
-                numeric_columns=columns.num_feature_names,
-                stattest=self.options.num_target_stattest_func,
-                threshold=threshold,
+                dataset_columns=columns,
+                options=self.options,
+                column_type="num",
             )
             result.prediction_output_distr = _dist_plot(
                 prediction_column,

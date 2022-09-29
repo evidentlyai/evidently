@@ -10,7 +10,7 @@ from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.analyzers.base_analyzer import BaseAnalyzerResult
 from evidently.calculations.data_drift import DatasetDriftMetrics
-from evidently.calculations.data_drift import get_overall_data_drift
+from evidently.calculations.data_drift import get_drift_for_columns
 from evidently.options import DataDriftOptions
 from evidently.utils.data_operations import process_columns
 
@@ -34,10 +34,10 @@ class DataDriftAnalyzer(Analyzer):
 
         data_drift_options = self.options_provider.get(DataDriftOptions)
         columns = process_columns(reference_data, column_mapping)
-        result_metrics = get_overall_data_drift(
+        result_metrics = get_drift_for_columns(
             current_data=current_data,
             reference_data=reference_data,
-            columns=columns,
+            dataset_columns=columns,
             data_drift_options=data_drift_options,
         )
 

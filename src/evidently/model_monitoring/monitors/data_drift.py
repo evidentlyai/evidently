@@ -28,7 +28,7 @@ class DataDriftMonitor(ModelMonitor):
         yield DataDriftMonitorMetrics.dataset_drift.create(data_drift_results.metrics.dataset_drift)
 
         for feature_name in data_drift_results.columns.get_all_features_list(cat_before_num=True):
-            feature_metric = data_drift_results.metrics.features[feature_name]
+            feature_metric = data_drift_results.metrics.drift_by_columns[feature_name]
             yield DataDriftMonitorMetrics.value.create(
                 feature_metric.drift_score,
                 dict(

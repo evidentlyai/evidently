@@ -76,7 +76,7 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
                     data.threshold,
                     "Detected" if data.drift_detected else "Not Detected",
                 )
-                for feature, data in metrics.features.items()
+                for feature, data in metrics.drift_by_columns.items()
             },
         )
 
@@ -145,21 +145,21 @@ class TestFeatureValueDrift(Test):
     def check(self):
         drift_info = self.metric.get_result().metrics
 
-        if self.column_name not in drift_info.features:
+        if self.column_name not in drift_info.drift_by_columns:
             result_status = TestResult.ERROR
             description = f"Cannot find column {self.column_name} in the dataset"
 
         else:
-            p_value = np.round(drift_info.features[self.column_name].drift_score, 3)
-            stattest_name = drift_info.features[self.column_name].stattest_name
-            threshold = drift_info.features[self.column_name].threshold
+            p_value = np.round(drift_info.drift_by_columns[self.column_name].drift_score, 3)
+            stattest_name = drift_info.drift_by_columns[self.column_name].stattest_name
+            threshold = drift_info.drift_by_columns[self.column_name].threshold
             description = (
                 f"The drift score for the feature **{self.column_name}** is {p_value:.3g}. "
                 f"The drift detection method is {stattest_name}. "
                 f"The drift detection threshold is {threshold}."
             )
 
-            if not drift_info.features[self.column_name].drift_detected:
+            if not drift_info.drift_by_columns[self.column_name].drift_detected:
                 result_status = TestResult.SUCCESS
 
             else:
@@ -267,7 +267,7 @@ class TestShareOfDriftedFeaturesRenderer(TestRenderer):
 class TestFeatureValueDriftRenderer(TestRenderer):
     def render_json(self, obj: TestFeatureValueDrift) -> dict:
         feature_name = obj.column_name
-        drift_data = obj.metric.get_result().metrics.features[feature_name]
+        drift_data = obj.metric.get_result().metrics.drift_by_columns[feature_name]
         base = super().render_json(obj)
         base["parameters"]["features"] = {
             feature_name: {
@@ -283,8 +283,8 @@ class TestFeatureValueDriftRenderer(TestRenderer):
         result = obj.metric.get_result()
         feature_name = obj.column_name
         info = super().render_html(obj)
-        curr_distr = result.metrics.features[feature_name].current_distribution
-        ref_distr = result.metrics.features[feature_name].reference_distribution
+        curr_distr = result.metrics.drift_by_columns[feature_name].current_distribution
+        ref_distr = result.metrics.drift_by_columns[feature_name].reference_distribution
         fig = plot_distr(curr_distr, ref_distr)
         fig_json = fig.to_plotly_json()
         info.details.append(

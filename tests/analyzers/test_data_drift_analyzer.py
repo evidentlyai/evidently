@@ -57,11 +57,11 @@ def test_data_drift_analyzer_as_dict_format(data_drift_analyzer: DataDriftAnalyz
     assert result.metrics.n_features == 5
     assert result.columns.cat_feature_names == ["categorical_feature_1", "categorical_feature_2", "target"]
     assert result.columns.num_feature_names == ["numerical_feature_1", "numerical_feature_2"]
-    assert "numerical_feature_1" in result.metrics.features
-    assert "numerical_feature_2" in result.metrics.features
-    assert "categorical_feature_1" in result.metrics.features
-    assert "categorical_feature_2" in result.metrics.features
-    assert "numerical_feature_3" not in result.metrics.features
+    assert "numerical_feature_1" in result.metrics.drift_by_columns
+    assert "numerical_feature_2" in result.metrics.drift_by_columns
+    assert "categorical_feature_1" in result.metrics.drift_by_columns
+    assert "categorical_feature_2" in result.metrics.drift_by_columns
+    assert "numerical_feature_3" not in result.metrics.drift_by_columns
 
     # check data drift results
     assert result.columns.target_names == ["drift_target"]

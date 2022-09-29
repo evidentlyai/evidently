@@ -55,10 +55,10 @@ class DataDriftTable(Metric[DataDriftTableResults]):
         result = get_drift_for_columns(
             current_data=data.current_data,
             reference_data=data.reference_data,
-            options=self.options,
+            data_drift_options=self.options,
             dataset_columns=dataset_columns,
         )
-        return DataDriftTableResults(options=self.options, columns=result.columns, metrics=result.metrics)
+        return DataDriftTableResults(options=self.options, columns=result.columns, metrics=result)
 
 
 def _generate_feature_params(item_id: str, name: str, data: ColumnDataDriftMetrics) -> dict:
@@ -87,8 +87,8 @@ def _generate_feature_params(item_id: str, name: str, data: ColumnDataDriftMetri
 @default_renderer(wrap_type=DataDriftTable)
 class DataDriftTableRenderer(MetricRenderer):
     def render_json(self, obj: DataDriftTable) -> dict:
-        result = dataclasses.asdict(obj.get_result().metrics)
-        result.pop("features", None)
+        result = dataclasses.asdict(obj.get_result())
+        result.pop("metrics", None)
         return result
 
     def render_html(self, obj: DataDriftTable) -> List[MetricHtmlInfo]:
@@ -104,7 +104,7 @@ class DataDriftTableRenderer(MetricRenderer):
         # sort columns by drift score
         df_for_sort = pd.DataFrame()
         df_for_sort["features"] = all_features
-        df_for_sort["scores"] = [results.metrics.features[feature].drift_score for feature in all_features]
+        df_for_sort["scores"] = [results.metrics.drift_by_columns[feature].drift_score for feature in all_features]
         all_features = df_for_sort.sort_values("scores", ascending=False).features.tolist()
         columns = []
         if target_column:
@@ -117,13 +117,15 @@ class DataDriftTableRenderer(MetricRenderer):
 
         item_id = str(uuid.uuid4())
         for feature_name in columns:
-            params_data.append(_generate_feature_params(item_id, feature_name, results.metrics.features[feature_name]))
+            params_data.append(
+                _generate_feature_params(item_id, feature_name, results.metrics.drift_by_columns[feature_name])
+            )
 
         # set additionalGraphs
         additional_graphs_data = []
         for feature_name in columns:
-            curr_distr = results.metrics.features[feature_name].current_distribution
-            ref_distr = results.metrics.features[feature_name].reference_distribution
+            curr_distr = results.metrics.drift_by_columns[feature_name].current_distribution
+            ref_distr = results.metrics.drift_by_columns[feature_name].reference_distribution
             fig = plot_distr(curr_distr, ref_distr)
             additional_graphs_data.append(
                 DetailsInfo(
