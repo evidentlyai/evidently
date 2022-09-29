@@ -161,7 +161,7 @@ You can also save the test results as a separate HTML file. You might need that 
 To save the HTML, run:
 
 ```python
-data_stability.save_html(“file.html”)
+data_stability.save_html("file.html")
 ```
 
 Go to the specified directory and open the file. If you get a security alert, press "trust HTML."
@@ -209,7 +209,7 @@ Since you combined the two reports in a single output, you can scroll to the Tar
 To save the report as HTML, run:
 
 ```python
-drift_report.save_html(“file.html”)
+drift_report.save_html("file.html")
 ```
 
 {% hint style="info" %}
@@ -245,7 +245,7 @@ tests.run(reference_data=reference, current_data=current)
 Call the object to see the HTML with the test results for this custom test suite.
 
 ```python
-Tests
+tests
 ```
 
 It works the same for custom Reports which you can create from individual Metrics (coming soon).
