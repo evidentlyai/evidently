@@ -188,12 +188,13 @@ def get_overall_data_drift(
     reference_data: pd.DataFrame,
     columns: DatasetColumns,
     data_drift_options: DataDriftOptions,
+    drift_share_threshold: Optional[float] = None,
 ) -> DataDriftAnalyzerMetrics:
     num_feature_names = columns.num_feature_names
     cat_feature_names = columns.cat_feature_names
     target_column = columns.utility_columns.target
     prediction_column = columns.utility_columns.prediction
-    drift_share = data_drift_options.drift_share
+    drift_share = drift_share_threshold or data_drift_options.drift_share
     # define type of target and prediction
     if target_column is not None:
         task = recognize_task(target_column, reference_data)
@@ -343,7 +344,9 @@ class DatasetDriftResults:
     distr_for_plots: Dict[str, Dict[str, pd.DataFrame]]
 
 
-def calculate_all_drifts_for_metrics(data, options: DataDriftOptions) -> DatasetDriftResults:
+def calculate_all_drifts_for_metrics(
+    data, options: DataDriftOptions, drift_share_threshold: Optional[float] = None
+) -> DatasetDriftResults:
     """Calculate all drifts for all columns."""
     if data.current_data is None:
         raise ValueError("Current dataset should be present")
@@ -357,6 +360,7 @@ def calculate_all_drifts_for_metrics(data, options: DataDriftOptions) -> Dataset
         reference_data=data.reference_data,
         columns=columns,
         data_drift_options=options,
+        drift_share_threshold=drift_share_threshold,
     )
     distr_for_plots = {}
 

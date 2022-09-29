@@ -125,7 +125,6 @@ class DataDriftMetricsRenderer(MetricRenderer):
                 ),
             )
         n_drifted_features = data_drift_results.metrics.n_drifted_features
-        dataset_drift = data_drift_results.metrics.dataset_drift
         n_features = data_drift_results.metrics.n_features
         drift_share = data_drift_results.metrics.share_drifted_features
 
@@ -133,7 +132,6 @@ class DataDriftMetricsRenderer(MetricRenderer):
             f"Drift is detected for {drift_share * 100:.2f}% of features ({n_drifted_features}"
             f" out of {n_features}). "
         )
-        title_suffix = "Dataset Drift is detected." if dataset_drift else "Dataset Drift is NOT detected."
 
         return [
             MetricHtmlInfo(
@@ -143,7 +141,7 @@ class DataDriftMetricsRenderer(MetricRenderer):
             MetricHtmlInfo(
                 name="data_drift_table",
                 info=rich_table_data(
-                    title=title_prefix + title_suffix,
+                    title=title_prefix,
                     columns=[
                         ColumnDefinition("Feature", "f1"),
                         ColumnDefinition("Type", "f6"),

@@ -14,6 +14,8 @@ from evidently.options import DataDriftOptions
 from evidently.renderers.base_renderer import MetricHtmlInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
+from evidently.renderers.html_widgets import CounterData
+from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import DatasetColumns
 
@@ -44,7 +46,7 @@ class DatasetDriftMetric(Metric[DatasetDriftMetricResults]):
         return tuple((self.options,))
 
     def calculate(self, data: InputData) -> DatasetDriftMetricResults:
-        result = calculate_all_drifts_for_metrics(data, self.options)
+        result = calculate_all_drifts_for_metrics(data, self.options, drift_share_threshold=self.threshold)
         return DatasetDriftMetricResults(
             threshold=self.threshold,
             options=self.options,
@@ -66,7 +68,13 @@ class DataDriftMetricsRenderer(MetricRenderer):
             drift_detected = "detected"
 
         else:
-            drift_detected = "not detected"
+            drift_detected = "NOT detected"
+
+        counters = [
+            CounterData.int("Columns", result.metrics.n_features),
+            CounterData.int("Drifted Columns", result.metrics.n_drifted_features),
+            CounterData.float("Dataset Drift Score", result.metrics.share_drifted_features, 3),
+        ]
 
         return [
             MetricHtmlInfo(
@@ -76,5 +84,12 @@ class DataDriftMetricsRenderer(MetricRenderer):
             MetricHtmlInfo(
                 "dataset_drift_threshold",
                 header_text(label=f"Dataset Drift Threshold is {result.threshold}"),
+            ),
+            MetricHtmlInfo(
+                "dataset_drift_details",
+                counter(
+                    counters=counters,
+                    title=f"Dataset Drift Details",
+                ),
             ),
         ]
