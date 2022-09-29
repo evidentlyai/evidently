@@ -15,8 +15,6 @@ from evidently.calculations.data_quality import calculate_correlations
 from evidently.calculations.data_quality import calculate_data_quality_stats
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
-from evidently.metrics.utils import make_hist_for_cat_plot
-from evidently.metrics.utils import make_hist_for_num_plot
 from evidently.renderers.base_renderer import MetricHtmlInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -28,6 +26,8 @@ from evidently.renderers.html_widgets import table_data
 from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_operations import recognize_task
+from evidently.utils.visualizations import make_hist_for_cat_plot
+from evidently.utils.visualizations import make_hist_for_num_plot
 from evidently.utils.visualizations import plot_distr
 
 

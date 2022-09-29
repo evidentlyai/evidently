@@ -13,7 +13,6 @@ from evidently.calculations.data_drift import define_predictions_type
 from evidently.calculations.data_quality import get_rows_count
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
-from evidently.metrics.utils import make_hist_for_cat_plot
 from evidently.options import DataDriftOptions
 from evidently.options import OptionsProvider
 from evidently.options import QualityMetricsOptions
@@ -25,6 +24,7 @@ from evidently.renderers.html_widgets import histogram
 from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_operations import replace_infinity_values_to_nan
+from evidently.utils.visualizations import make_hist_for_cat_plot
 
 
 @dataclass

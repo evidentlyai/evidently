@@ -8,7 +8,6 @@ import pandas as pd
 from evidently.calculations.data_drift import calculate_column_data_drift
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
-from evidently.metrics.utils import get_distribution_for_column
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import DataDriftOptions
 from evidently.renderers.base_renderer import MetricHtmlInfo
@@ -19,6 +18,7 @@ from evidently.renderers.render_utils import plot_distr
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_operations import recognize_column_type
 from evidently.utils.types import Numeric
+from evidently.utils.visualizations import get_distribution_for_column
 
 
 @dataclasses.dataclass

@@ -18,6 +18,7 @@ from evidently.options import DataDriftOptions
 from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_operations import recognize_task
+from evidently.utils.visualizations import get_distribution_for_column
 
 PValueWithDrift = collections.namedtuple("PValueWithDrift", ["p_value", "drifted"])
 
@@ -344,8 +345,6 @@ class DatasetDriftResults:
 
 def calculate_all_drifts_for_metrics(data, options: DataDriftOptions) -> DatasetDriftResults:
     """Calculate all drifts for all columns."""
-    from evidently.metrics.utils import get_distribution_for_column
-
     if data.current_data is None:
         raise ValueError("Current dataset should be present")
 
