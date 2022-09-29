@@ -2,17 +2,19 @@
 Description: Test Suites navigation page.
 ---
 
-# Overview
+# Test Suites
 
-An introductory overview on how tests and test suites look and when to use them. 
+## Overview
+
+An introductory overview on how tests and test suites look and when to use them.
 
 {% content-ref url="overview.md" %}
-[Overview](overview.md)
+[overview.md](overview.md)
 {% endcontent-ref %}
 
-# Presets
+## Presets
 
-Prests are ready-made test suites that group relevant checks. Explore the contents and when to use each one:
+Presets are ready-made test suites that group relevant checks. Explore the contents and when to use each one:
 
 {% content-ref url="no-target-performance.md" %}
 [no-target-performance.md](no-target-performance.md)
@@ -38,25 +40,26 @@ Prests are ready-made test suites that group relevant checks. Explore the conten
 [classification.md](classification.md)
 {% endcontent-ref %}
 
-# User guide
-Code snippets and a step-by-step guide on how to run tests: 
+## User guide
+
+Code snippets and a step-by-step guide on how to run tests:
 
 {% content-ref url="../tests-and-reports/run-tests.md" %}
-[Run tests](run-tests.md)
+[run-tests.md](../tests-and-reports/run-tests.md)
 {% endcontent-ref %}
 
-# Code examples
+## Code examples
 
-Example Jupyter notebooks and Colabs:  
+Example Jupyter notebooks and Colabs:
 
 {% content-ref url="../get-started/examples.md" %}
-[Examples](examples.md)
+[examples.md](../get-started/examples.md)
 {% endcontent-ref %}
 
-# All available tests
+## All available tests
 
 To see the complete list of individual tests and default parameters:
 
 {% content-ref url="../reference/all-tests.md" %}
-[All tests](all-tests.md)
+[all-tests.md](../reference/all-tests.md)
 {% endcontent-ref %}

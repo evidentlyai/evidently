@@ -23,7 +23,7 @@ You can use both **numerical labels** like "0", "1", "2" or **class names** like
 
 To generate a comparative report, you will need the **two** datasets. The **reference** dataset serves as a benchmark. We analyze the change by comparing the **current** production data to the **reference** data.
 
-![](../.gitbook/assets/two_datasets_classification.png)
+![](<../.gitbook/assets/two\_datasets\_classification (1) (1).png>)
 
 You can also run this report for a **single** `DataFrame` , with no comparison performed. In this case, pass it as `reference_data`.
 
@@ -35,7 +35,7 @@ The report includes 5 components. All plots are interactive.
 
 We calculate a few standard model quality metrics: Accuracy, Precision, Recall, and F1-score.
 
-![](../.gitbook/assets/class_perf_model_quality_summary.png)
+![](<../.gitbook/assets/class\_perf\_model\_quality\_summary (1).png>)
 
 **To support the model performance analysis, we also generate interactive visualizations. They help analyze where the model makes mistakes and come up with improvement ideas.**
 
@@ -43,37 +43,37 @@ We calculate a few standard model quality metrics: Accuracy, Precision, Recall, 
 
 Shows the number of objects of each class.
 
-![](../.gitbook/assets/class_perf_class_representation.png)
+![](<../.gitbook/assets/class\_perf\_class\_representation (1).png>)
 
 ### 3. Confusion Matrix
 
 Visualizes the classification errors and their type.
 
-![](../.gitbook/assets/class_perf_confusion_matrix.png)
+![](<../.gitbook/assets/class\_perf\_confusion\_matrix (1).png>)
 
 ### 4. Quality Metrics by Class
 
-&#x20;Shows the model quality metrics for the individual classes.
+Shows the model quality metrics for the individual classes.
 
-![](../.gitbook/assets/class_perf_quality_by_class.png)
+![](<../.gitbook/assets/class\_perf\_quality\_by\_class (1).png>)
 
 ### 5. Classification Quality by Feature
 
 In this table, we show a number of plots for each feature. To expand the plots, click on the feature name.
 
-![](../.gitbook/assets/class_perf_classification_quality_by_feature.png)
+![](<../.gitbook/assets/class\_perf\_classification\_quality\_by\_feature (1).png>)
 
-In the tab “**ALL**”, we plot the distribution of classes against the values of the feature. This is the “Target Behavior by Feature” plot from the [Categorial Target Drift ](categorical-target-drift.md)report.&#x20;
+In the tab “**ALL**”, we plot the distribution of classes against the values of the feature. This is the “Target Behavior by Feature” plot from the [Categorial Target Drift ](categorical-target-drift.md)report.
 
-![](../.gitbook/assets/class_perf_classification_quality_by_feature_exampl.png)
+![](<../.gitbook/assets/class\_perf\_classification\_quality\_by\_feature\_exampl (1).png>)
 
-If you compare the two datasets, it visually shows the changes in the feature distribution and in the relationship between the values of the feature and the target. 
+If you compare the two datasets, it visually shows the changes in the feature distribution and in the relationship between the values of the feature and the target.
 
 Then, for each class, we plot the **distribution of the True Positive, True Negative, False Positive, and False Negative predictions** alongside the values of the feature.
 
-![](../.gitbook/assets/class_perf_classification_quality_by_feature_example_fp_fn.png)
+![](<../.gitbook/assets/class\_perf\_classification\_quality\_by\_feature\_example\_fp\_fn (1).png>)
 
-It visualizes the regions where the model makes errors of each type and reveals the low-performance segments. This helps explore if a **specific type of misclassification error is sensitive to the values of a given feature.**&#x20;
+It visualizes the regions where the model makes errors of each type and reveals the low-performance segments. This helps explore if a **specific type of misclassification error is sensitive to the values of a given feature.**
 
 ## Report customization
 
@@ -93,13 +93,13 @@ Here are our suggestions on when to use it—you can also combine it with the [D
 
 **3. To analyze the model performance on the slices of data.** By manipulating the input data frame, you can explore how the model performs on different data segments (e.g. users from a specific region).
 
-**4. To trigger or decide on the model retraining.** You can use this report to check if your performance is below the threshold to initiate a model update and evaluate if retraining is likely to improve performance. 
+**4. To trigger or decide on the model retraining.** You can use this report to check if your performance is below the threshold to initiate a model update and evaluate if retraining is likely to improve performance.
 
 **5. To debug or improve model performance.** You can use the Classification Quality table to identify underperforming segments and decide on ways to address them.
 
 ## JSON Profile
 
-If you choose to generate a JSON profile, it will contain the following information:&#x20;
+If you choose to generate a JSON profile, it will contain the following information:
 
 ```yaml
 {

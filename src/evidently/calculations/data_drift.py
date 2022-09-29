@@ -286,8 +286,8 @@ def get_drift_for_columns(
             if key not in cur_counts:
                 cur_counts.loc[key] = 0
 
-        ref_small_hist = list(reversed(list(map(list, zip(*sorted(ref_counts.items(), key=lambda x: x[0]))))))
-        cur_small_hist = list(reversed(list(map(list, zip(*sorted(cur_counts.items(), key=lambda x: x[0]))))))
+        ref_small_hist = list(reversed(list(map(list, zip(*sorted(ref_counts.items(), key=lambda x: str(x[0])))))))
+        cur_small_hist = list(reversed(list(map(list, zip(*sorted(cur_counts.items(), key=lambda x: str(x[0])))))))
         drift_by_columns[feature_name] = ColumnDataDriftMetrics(
             reference_small_distribution=ref_small_hist,
             current_small_distribution=cur_small_hist,

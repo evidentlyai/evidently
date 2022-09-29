@@ -124,7 +124,9 @@ def _generate_additional_graph_num_feature(
     )
 
     if date_column:
-        x0 = current_data[date_column].sort_values()[1]
+        # take the second value because of some plotly issues
+        x0 = current_data[date_column].sort_values().iloc[1]
+
     else:
         x0 = current_data.index.sort_values()[1]
 

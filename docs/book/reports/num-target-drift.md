@@ -1,6 +1,6 @@
 # Numerical Target Drift
 
-**TL;DR:**  The report explores the changes in the numerical target function (prediction).
+**TL;DR:** The report explores the changes in the numerical target function (prediction).
 
 * Performs a suitable **statistical test** to compare target (prediction) **distribution**
 * Calculates the **correlations** between the feature and the target (prediction)
@@ -26,29 +26,32 @@ We estimate the drift for the **target** (actual values) and **predictions** in 
 
 If only one of them (either target or predictions) is provided, we build one set of plots. If neither target nor predictions column is available, you will get an error.
 
-To **estimate the numerical target (prediction) drift**, we compare the distribution of the target (prediction) in the two datasets. 
+To **estimate the numerical target (prediction) drift**, we compare the distribution of the target (prediction) in the two datasets.
 
 There is a default logic to choosing the appropriate statistical test, based on:
-* the number of observations in the reference dataset, 
-* the number of unique values in the target (n_unique).
+
+* the number of observations in the reference dataset,
+* the number of unique values in the target (n\_unique).
 
 For **small data with <= 1000 observations** in the reference dataset:
-* For target with **n_unique > 5**: [two-sample Kolmogorov-Smirnov test](https://en.wikipedia.org/wiki/Kolmogorov%E2%80%93Smirnov\_test).
-* For target with **n_unique <= 5**: [chi-squared test](https://en.wikipedia.org/wiki/Chi-squared\_test).
-* For target with **n_unique <= 2**:  we use the proportion difference test for independent samples based on Z-score.
+
+* For target with **n\_unique > 5**: [two-sample Kolmogorov-Smirnov test](https://en.wikipedia.org/wiki/Kolmogorov%E2%80%93Smirnov\_test).
+* For target with **n\_unique <= 5**: [chi-squared test](https://en.wikipedia.org/wiki/Chi-squared\_test).
+* For target with **n\_unique <= 2**: we use the proportion difference test for independent samples based on Z-score.
 
 All tests use a 0.95 confidence level by default.
 
 For **larger data with > 1000 observations** in the reference dataset:
-* For target with **n_unique > 5**: [Wasserstein Distance](https://en.wikipedia.org/wiki/Wasserstein_metric).
-* For target with **n_unique <= 5**: [Jensen–Shannon divergence](https://en.wikipedia.org/wiki/Jensen–Shannon_divergence).
+
+* For target with **n\_unique > 5**: [Wasserstein Distance](https://en.wikipedia.org/wiki/Wasserstein\_metric).
+* For target with **n\_unique <= 5**: [Jensen–Shannon divergence](https://en.wikipedia.org/wiki/Jensen%E2%80%93Shannon\_divergence).
 
 All tests use a threshold = 0.1 by default.
 
 We also calculate the [Pearson correlation](https://en.wikipedia.org/wiki/Pearson\_correlation\_coefficient) between the target (prediction) and each individual feature in the two datasets to detect a **change in the relationship.**
 
 {% hint style="info" %}
-You can modify the drift detection logic by selecting a statistical test already available in the library, including PSI, K–L divergence, Jensen-Shannon distance, Wasserstein distance. See more details about [available tests](../customization/options-for-statistical-tests.md). You can also set a different confidence level or implement a custom test, by defining [custom options](../customization/options-for-data-target-drift.md). 
+You can modify the drift detection logic by selecting a statistical test already available in the library, including PSI, K–L divergence, Jensen-Shannon distance, Wasserstein distance. See more details about [available tests](../customization/options-for-statistical-tests.md). You can also set a different confidence level or implement a custom test, by defining [custom options](../customization/options-for-data-target-drift.md).
 {% endhint %}
 
 ## How it looks
@@ -59,36 +62,35 @@ The report includes 4 components. All plots are interactive.
 
 The report first shows the **comparison of target (prediction) distributions** in the current and reference dataset. The result of the statistical test and P-value are displayed in the title.
 
-![](../.gitbook/assets/num_targ_drift.png)
+![](<../.gitbook/assets/num\_targ\_drift (1).png>)
 
 ### 2. Target (Prediction) Correlations
 
 The report shows the **correlations between individual features and the target (prediction)** in the current and reference dataset. It helps detects shifts in the relationship.
 
-![](../.gitbook/assets/num_targ_drift_target_correlations.png)
+![](<../.gitbook/assets/num\_targ\_drift\_target\_correlations (1).png>)
 
-### 3. Target (Prediction) Values&#x20;
+### 3. Target (Prediction) Values
 
 The report visualizes the **target (prediction) values by index or time** (if the`datetime` column is available or defined in the `column_mapping` dictionary). This plot helps explore the target behavior and compare it between the datasets.
 
-![](../.gitbook/assets/num_targ_drift_target_values.png)
+![](<../.gitbook/assets/num\_targ\_drift\_target\_values (1).png>)
 
 ### 4. Target (Prediction) Behavior By Feature
 
-Finally, we generate an interactive table with the **visualizations of dependencies between the target and each feature**.&#x20;
+Finally, we generate an interactive table with the **visualizations of dependencies between the target and each feature**.
 
-![](../.gitbook/assets/num_targ_drift_behavior_by_feature.png)
+![](<../.gitbook/assets/num\_targ\_drift\_behavior\_by\_feature (1).png>)
 
 If you click on any feature in the table, you get an overview of its behavior.
 
 The plot shows how **feature values relate to the target (prediction) values** and if there are differences between the datasets. It helps explore if they can explain the target (prediction) shift.
 
-![](../.gitbook/assets/num_targ_drift_behavior_by_feature_example_tax.png)
+![](../.gitbook/assets/num\_targ\_drift\_behavior\_by\_feature\_example\_tax.png)
 
 We recommend paying attention to the behavior of the **most important features** since significant changes might confuse the model and cause higher errors.
 
 For example, in a Boston house pricing dataset, we can see a new segment with values of TAX above 600 but the low value of the target (house price).
-
 
 ## Report customization
 
@@ -110,7 +112,7 @@ Here are our suggestions on when to use it—best combined with the [Data Drift 
 
 ## JSON Profile
 
-If you choose to generate a JSON profile, it will contain the following information:&#x20;
+If you choose to generate a JSON profile, it will contain the following information:
 
 ```yaml
 {
