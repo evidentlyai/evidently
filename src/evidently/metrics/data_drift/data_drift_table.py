@@ -88,6 +88,7 @@ def _generate_feature_params(item_id: str, name: str, data: ColumnDataDriftMetri
 class DataDriftTableRenderer(MetricRenderer):
     def render_json(self, obj: DataDriftTable) -> dict:
         result = dataclasses.asdict(obj.get_result())
+        # TODO: do not remove all metrics
         result.pop("metrics", None)
         return result
 

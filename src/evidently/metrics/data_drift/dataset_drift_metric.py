@@ -70,7 +70,7 @@ class DatasetDriftMetric(Metric[DatasetDriftMetricResults]):
 @default_renderer(wrap_type=DatasetDriftMetric)
 class DataDriftMetricsRenderer(MetricRenderer):
     def render_json(self, obj: DatasetDriftMetric) -> dict:
-        result = dataclasses.asdict(obj.get_result().metrics)
+        result = dataclasses.asdict(obj.get_result())
         result.pop("metrics", None)
         return result
 
