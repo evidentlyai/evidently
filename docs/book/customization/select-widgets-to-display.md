@@ -2,9 +2,9 @@
 description: You can decide which components to include in the Dashboards or HTML Reports.
 ---
 
-# Select Widgets to display
+# Select Widgets
 
-There are two ways to modify the composition of the default Evidently [reports](../reports).
+There are two ways to modify the composition of the default Evidently [reports](../reports/).
 
 ### 1. Choose between the short and full version
 
@@ -21,9 +21,9 @@ The short report contains a reduced number of widgets.
 
 ### 2. Specify the exact list of widgets in the Tabs
 
-![](<../.gitbook/assets/customization_select_widgets.png>)
+![](../.gitbook/assets/customization\_select\_widgets.png)
 
-You can also specify the individual widgets you want to include in a given Tab.&#x20;
+You can also specify the individual widgets you want to include in a given Tab.
 
 To select the widgets in the Tab, you should define the **include\_widgets** parameter in the Tab class. To see the available widgets, run the `list_widgets()` method of the Tab object:
 
@@ -31,7 +31,7 @@ To select the widgets in the Tab, you should define the **include\_widgets** par
 RegressionPerformanceTab.list_widgets()
 ```
 
-![](<../.gitbook/assets/image (10).png>)
+![](<../.gitbook/assets/image (10) (1).png>)
 
 Next, choose the widgets you need (**include\_widgets** overwrites the **verbose\_level** parameter):
 

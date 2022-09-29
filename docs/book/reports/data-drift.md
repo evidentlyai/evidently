@@ -15,7 +15,7 @@ You will need **two** datasets. The **reference** dataset serves as a benchmark.
 
 The dataset should include the features you want to evaluate for drift. The schema of both datasets should be identical.
 
-* In the case of pandas `DataFrame,`all column names should be `string` 
+* In the case of pandas `DataFrame,`all column names should be `string`
 * All feature columns analyzed for drift should have the **numerical** type (`np.number)`
 * **Categorical** data can be encoded as numerical labels and specified in the **column\_mapping**.
 * **DateTime** column is the only exception. If available, it can be used as the x-axis in the plots.
@@ -27,20 +27,23 @@ You can potentially choose any two datasets for comparison. But keep in mind tha
 To estimate the data drift Evidently compares the distributions of each feature in the two datasets.
 
 Evidently applies **statistical tests** to detect if the distribution has changed significantly. There is a default logic to choosing the appropriate statistical test based on:
+
 * feature type: categorical or numerical
-* the number of observations in the reference dataset 
-* the number of unique values in the feature (n_unique)
+* the number of observations in the reference dataset
+* the number of unique values in the feature (n\_unique)
 
 For **small data with <= 1000 observations** in the reference dataset:
-* For **numerical** features (n_unique > 5): [two-sample Kolmogorov-Smirnov test](https://en.wikipedia.org/wiki/Kolmogorov%E2%80%93Smirnov\_test).
-* For **categorical features** or numerical features with **n_unique <= 5**: [chi-squared test](https://en.wikipedia.org/wiki/Chi-squared\_test).
-* For **binary categorical features** (n_unique <= 2), we use the proportion difference test for independent samples based on Z-score.
+
+* For **numerical** features (n\_unique > 5): [two-sample Kolmogorov-Smirnov test](https://en.wikipedia.org/wiki/Kolmogorov%E2%80%93Smirnov\_test).
+* For **categorical features** or numerical features with **n\_unique <= 5**: [chi-squared test](https://en.wikipedia.org/wiki/Chi-squared\_test).
+* For **binary categorical features** (n\_unique <= 2), we use the proportion difference test for independent samples based on Z-score.
 
 All tests use a 0.95 confidence level by default.
 
 For **larger data with > 1000 observations** in the reference dataset:
-* For numerical features (n_unique > 5): [Wasserstein Distance](https://en.wikipedia.org/wiki/Wasserstein_metric).
-* For categorical features or numerical with n_unique <= 5): [Jensen–Shannon divergence](https://en.wikipedia.org/wiki/Jensen–Shannon_divergence).
+
+* For numerical features (n\_unique > 5): [Wasserstein Distance](https://en.wikipedia.org/wiki/Wasserstein\_metric).
+* For categorical features or numerical with n\_unique <= 5): [Jensen–Shannon divergence](https://en.wikipedia.org/wiki/Jensen%E2%80%93Shannon\_divergence).
 
 All tests use a threshold = 0.1 by default.
 
@@ -58,9 +61,9 @@ The default report includes 4 components. All plots are interactive.
 
 The report returns **the share of drifting features** and an aggregate **Dataset Drift** result. For example:
 
-![](<../.gitbook/assets/reports_data_drift_summary.png>)
+![](../.gitbook/assets/reports\_data\_drift\_summary.png)
 
-Dataset Drift sets a rule on top of the results of the statistical tests for individual features. By default, Dataset Drift is detected if at least 50% of features drift at a 0.95 confidence level.&#x20;
+Dataset Drift sets a rule on top of the results of the statistical tests for individual features. By default, Dataset Drift is detected if at least 50% of features drift at a 0.95 confidence level.
 
 {% hint style="info" %}
 To set different Dataset Drift conditions, you can define [custom options](../../step-by-step-guides/report-customization/options-for-data-target-drift.md).
@@ -70,22 +73,22 @@ To set different Dataset Drift conditions, you can define [custom options](../..
 
 The table shows the drifting features first, sorting them by P-value. You can also choose to sort the rows by the feature name or type.
 
-![](../.gitbook/assets/reports_data_drift_table.png)
+![](../.gitbook/assets/reports\_data\_drift\_table.png)
 
 ### 3. Data Drift by Feature
 
-By clicking on each feature, you can explore the values mapped in a plot.&#x20;
+By clicking on each feature, you can explore the values mapped in a plot.
 
-* The dark green line is the **mean**, as seen in the reference dataset.&#x20;
-* The green area covers **one standard deviation** from the mean.&#x20;
+* The dark green line is the **mean**, as seen in the reference dataset.
+* The green area covers **one standard deviation** from the mean.
 
-![](../.gitbook/assets/reports_data_drift_drift_by_feature.png)
+![](<../.gitbook/assets/reports\_data\_drift\_drift\_by\_feature (2).png>)
 
 ### 4. Data Distribution by Feature
 
 You can also zoom on distributions to understand what has changed.
 
-![](../.gitbook/assets/reports_data_drift_distr_by_feature.png)
+![](<../.gitbook/assets/reports\_data\_drift\_distr\_by\_feature (2).png>)
 
 {% hint style="info" %}
 To change the bins displayed, you can define [custom options](../customization/options-for-data-target-drift.md).
@@ -95,7 +98,7 @@ To change the bins displayed, you can define [custom options](../customization/o
 
 You can set different [options-for-data-target-drift.md](../customization/options-for-data-target-drift.md "mention") to modify the existing components of the report. Use this to change the statistical tests used, define Dataset Drift conditions, or change histogram Bins.
 
-![](../.gitbook/assets/reports_data_drift_customization.png)
+![](../.gitbook/assets/reports\_data\_drift\_customization.png)
 
 You can also set [options-for-quality-metrics.md](../customization/options-for-quality-metrics.md "mention") to define the width of the confidence interval displayed for individual feature drift.
 
@@ -107,7 +110,7 @@ If you want to create a new plot or metric, you can [add-a-custom-widget-or-tab.
 
 Here are a few ideas on when to use the report:
 
-1. **In production: as early monitoring of model quality.** In absence of ground truth labels, you can monitor for changes in the input data. Use it e.g. to decide when to retrain the model, apply business logic on top of the model output, or whether to act on predictions. You can combine it with monitoring model outputs using the [Numerical](num-target-drift.md) or [Categorical Target Drift ](categorical-target-drift.md)report.&#x20;
+1. **In production: as early monitoring of model quality.** In absence of ground truth labels, you can monitor for changes in the input data. Use it e.g. to decide when to retrain the model, apply business logic on top of the model output, or whether to act on predictions. You can combine it with monitoring model outputs using the [Numerical](num-target-drift.md) or [Categorical Target Drift ](categorical-target-drift.md)report.
 2. **In production: to debug the model decay**. Use the tool to explore how the input data has changed.
 3. **In A/B test or trial use.** Detect training-serving skew and get the context to interpret test results.
 4. **Before deployment.** Understand drift in the offline environment. Explore past shifts in the data to define retraining needs and monitoring strategies. Here is a [blog](https://evidentlyai.com/blog/tutorial-3-historical-data-drift) about it.
@@ -115,7 +118,7 @@ Here are a few ideas on when to use the report:
 
 ## JSON Profile
 
-If you choose to generate a JSON profile, it will contain the following information:&#x20;
+If you choose to generate a JSON profile, it will contain the following information:
 
 ```yaml
 {
