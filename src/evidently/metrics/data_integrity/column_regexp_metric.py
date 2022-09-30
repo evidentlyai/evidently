@@ -124,7 +124,7 @@ class ColumnRegExpMetricRenderer(MetricRenderer):
             table_data(
                 title=f"{dataset_name.capitalize()} Dataset: top {top} mismatched values",
                 column_names=["Value", "Count"],
-                data=metrics.table_of_not_matched,
+                data=metrics.table_of_not_matched.items(),
             ),
         )
 
