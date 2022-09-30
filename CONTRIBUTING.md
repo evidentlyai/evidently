@@ -49,12 +49,13 @@ py -m venv venv
 ```
 
 ## 3. Use local copy as editable dependency
-To use the cloned version in the virtual environment as a package, you need to install the package in the editable mode:
+To use the cloned version in the virtual environment as a package, you need to install the package in the editable mode.
+See official pip documentation for examples and explanations: https://pip.pypa.io/en/stable/cli/pip_install/#examples
 
 #### MacOS / Linux
 ```sh
 cd /path/to/evidently_repo
-pip install -e .[dev]
+pip install -e ".[dev]"
 ```
 
 #### Windows
