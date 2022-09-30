@@ -268,12 +268,20 @@ class DataDriftTableWidget(Widget):
         ]
         all_features = df_for_sort.sort_values("scores", ascending=False).features.tolist()
         columns = []
+
+        # move target and prediction to the top of the table
         if target_column:
             columns.append(target_column)
-            all_features.remove(target_column)
+
+            if target_column in all_features:
+                all_features.remove(target_column)
+
         if prediction_column and isinstance(prediction_column, str):
             columns.append(prediction_column)
-            all_features.remove(prediction_column)
+
+            if prediction_column in all_features:
+                all_features.remove(prediction_column)
+
         columns = columns + all_features
 
         for feature_name in columns:
@@ -299,10 +307,10 @@ class DataDriftTableWidget(Widget):
                 additional_graphs_data += _generate_additional_graph_cat_feature(
                     feature_name, reference_data, current_data, color_options
                 )
-        n_drifted_features = data_drift_results.metrics.n_drifted_features
+        n_drifted_features = data_drift_results.metrics.number_of_drifted_columns
         dataset_drift = data_drift_results.metrics.dataset_drift
-        n_features = data_drift_results.metrics.n_features
-        drift_share = data_drift_results.metrics.share_drifted_features
+        n_features = data_drift_results.metrics.number_of_columns
+        drift_share = data_drift_results.metrics.share_of_drifted_columns
 
         title_prefix = (
             f"Drift is detected for {drift_share * 100:.2f}% of features ({n_drifted_features}"

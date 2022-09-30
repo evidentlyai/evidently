@@ -88,13 +88,13 @@ class TestNumberOfDriftedFeatures(BaseDataDriftMetricsTest):
         if self.condition.has_condition():
             return self.condition
         else:
-            return TestValueCondition(lt=max(0, self.metric.get_result().metrics.n_features // 3))
+            return TestValueCondition(lt=max(0, self.metric.get_result().metrics.number_of_columns // 3))
 
     def calculate_value_for_test(self) -> Numeric:
-        return self.metric.get_result().metrics.n_drifted_features
+        return self.metric.get_result().metrics.number_of_drifted_columns
 
     def get_description(self, value: Numeric) -> str:
-        n_features = self.metric.get_result().metrics.n_features
+        n_features = self.metric.get_result().metrics.number_of_columns
         return (
             f"The drift is detected for {value} out of {n_features} features. "
             f"The test threshold is {self.get_condition()}."
@@ -111,11 +111,11 @@ class TestShareOfDriftedFeatures(BaseDataDriftMetricsTest):
             return TestValueCondition(lt=0.3)
 
     def calculate_value_for_test(self) -> Numeric:
-        return self.metric.get_result().metrics.share_drifted_features
+        return self.metric.get_result().metrics.share_of_drifted_columns
 
     def get_description(self, value: Numeric) -> str:
-        n_drifted_features = self.metric.get_result().metrics.n_drifted_features
-        n_features = self.metric.get_result().metrics.n_features
+        n_drifted_features = self.metric.get_result().metrics.number_of_drifted_columns
+        n_features = self.metric.get_result().metrics.number_of_columns
         return (
             f"The drift is detected for {value * 100:.3g}% features "
             f"({n_drifted_features} out of {n_features}). The test threshold is {self.get_condition()}"

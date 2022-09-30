@@ -3,7 +3,6 @@ from typing import List
 from typing import Optional
 
 import dataclasses
-import pandas as pd
 from dataclasses import dataclass
 
 from evidently.calculations.data_drift import ColumnDataDriftMetrics
@@ -30,14 +29,16 @@ from evidently.utils.data_operations import process_columns
 @dataclass
 class DataDriftTableResults:
     options: DataDriftOptions
-    columns: DatasetColumns
+    dataset_columns: DatasetColumns
     metrics: DatasetDriftMetrics
 
 
 class DataDriftTable(Metric[DataDriftTableResults]):
+    columns: Optional[List[str]]
     options: DataDriftOptions
 
-    def __init__(self, options: Optional[DataDriftOptions] = None):
+    def __init__(self, columns: Optional[List[str]] = None, options: Optional[DataDriftOptions] = None):
+        self.columns = columns
         if options is None:
             self.options = DataDriftOptions()
 
@@ -57,30 +58,28 @@ class DataDriftTable(Metric[DataDriftTableResults]):
             reference_data=data.reference_data,
             data_drift_options=self.options,
             dataset_columns=dataset_columns,
+            columns=self.columns,
         )
-        return DataDriftTableResults(options=self.options, columns=result.columns, metrics=result)
+        return DataDriftTableResults(options=self.options, dataset_columns=result.dataset_columns, metrics=result)
 
 
-def _generate_feature_params(item_id: str, name: str, data: ColumnDataDriftMetrics) -> dict:
+def _generate_column_params(item_id: str, column_name: str, data: ColumnDataDriftMetrics) -> dict:
     if data.current_small_distribution is None or data.reference_small_distribution is None:
         return {}
 
     current_small_hist = data.current_small_distribution
     ref_small_hist = data.reference_small_distribution
-    feature_type = data.column_type
-    drift_score = data.drift_score
     distr_sim_test = "Detected" if data.drift_detected else "Not Detected"
-    parts = []
-    parts.append({"title": "Data distribution", "id": f"{item_id}_{name}_distr", "type": "widget"})
+    parts = [{"title": "Data distribution", "id": f"{item_id}_{column_name}_distribution", "type": "widget"}]
     return {
         "details": {"parts": parts, "insights": []},
-        "f1": name,
-        "f6": feature_type,
+        "f1": column_name,
+        "f6": data.column_type,
         "stattest_name": data.stattest_name,
         "f3": {"x": list(ref_small_hist[1]), "y": list(ref_small_hist[0])},
         "f4": {"x": list(current_small_hist[1]), "y": list(current_small_hist[0])},
         "f2": distr_sim_test,
-        "f5": round(drift_score, 6),
+        "f5": round(data.drift_score, 6),
     }
 
 
@@ -95,53 +94,61 @@ class DataDriftTableRenderer(MetricRenderer):
     def render_html(self, obj: DataDriftTable) -> List[MetricHtmlInfo]:
         results = obj.get_result()
         color_options = ColorOptions()
-        all_features = results.columns.get_all_features_list()
-        target_column = results.columns.utility_columns.target
-        prediction_column = results.columns.utility_columns.prediction
+        target_column = results.dataset_columns.utility_columns.target
+        prediction_column = results.dataset_columns.utility_columns.prediction
 
         # set params data
         params_data = []
 
         # sort columns by drift score
-        df_for_sort = pd.DataFrame()
-        df_for_sort["features"] = all_features
-        df_for_sort["scores"] = [results.metrics.drift_by_columns[feature].drift_score for feature in all_features]
-        all_features = df_for_sort.sort_values("scores", ascending=False).features.tolist()
+        all_columns = sorted(
+            results.metrics.drift_by_columns.keys(),
+            key=lambda x: results.metrics.drift_by_columns[x].drift_score,
+            reverse=True,
+        )
+        # move target and prediction to the top of the table
         columns = []
+
         if target_column:
             columns.append(target_column)
-            all_features.remove(target_column)
+
+            if target_column in all_columns:
+                all_columns.remove(target_column)
+
         if prediction_column and isinstance(prediction_column, str):
             columns.append(prediction_column)
-            all_features.remove(prediction_column)
-        columns = columns + all_features
+
+            if prediction_column in all_columns:
+                all_columns.remove(prediction_column)
+
+        columns = columns + all_columns
 
         item_id = str(uuid.uuid4())
-        for feature_name in columns:
+
+        for column_name in columns:
             params_data.append(
-                _generate_feature_params(item_id, feature_name, results.metrics.drift_by_columns[feature_name])
+                _generate_column_params(item_id, column_name, results.metrics.drift_by_columns[column_name])
             )
 
         # set additionalGraphs
         additional_graphs_data = []
-        for feature_name in columns:
-            curr_distr = results.metrics.drift_by_columns[feature_name].current_distribution
-            ref_distr = results.metrics.drift_by_columns[feature_name].reference_distribution
-            fig = plot_distr(curr_distr, ref_distr)
+
+        for column_name in columns:
+            current_distribution = results.metrics.drift_by_columns[column_name].current_distribution
+            reference_distribution = results.metrics.drift_by_columns[column_name].reference_distribution
+            fig = plot_distr(current_distribution, reference_distribution)
             additional_graphs_data.append(
                 DetailsInfo(
-                    id=f"{item_id}_{feature_name}_distr",
+                    id=f"{item_id}_{column_name}_distribution",
                     title="",
                     info=plotly_figure(title="", figure=fig),
                 ),
             )
-        n_drifted_features = results.metrics.n_drifted_features
-        n_features = results.metrics.n_features
-        drift_share = results.metrics.share_drifted_features
 
+        drift_percents = round(results.metrics.share_of_drifted_columns * 100, 3)
         title_prefix = (
-            f"Drift is detected for {drift_share * 100:.2f}% of columns ({n_drifted_features}"
-            f" out of {n_features}). "
+            f"Drift is detected for {drift_percents}% of columns ({results.metrics.number_of_drifted_columns}"
+            f" out of {results.metrics.number_of_columns}). "
         )
 
         return [
@@ -154,7 +161,7 @@ class DataDriftTableRenderer(MetricRenderer):
                 info=rich_table_data(
                     title=title_prefix,
                     columns=[
-                        ColumnDefinition("Feature", "f1"),
+                        ColumnDefinition("Column", "f1"),
                         ColumnDefinition("Type", "f6"),
                         ColumnDefinition(
                             "Reference Distribution",

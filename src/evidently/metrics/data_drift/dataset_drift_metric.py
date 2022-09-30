@@ -23,7 +23,7 @@ from evidently.utils.data_operations import process_columns
 class DatasetDriftMetricResults:
     threshold: float
     options: DataDriftOptions
-    columns: DatasetColumns
+    dataset_columns: DatasetColumns
     metrics: DatasetDriftMetrics
 
 
@@ -58,11 +58,12 @@ class DatasetDriftMetric(Metric[DatasetDriftMetricResults]):
             data_drift_options=self.options,
             drift_share_threshold=self.threshold,
             dataset_columns=dataset_columns,
+            columns=self.columns,
         )
         return DatasetDriftMetricResults(
             threshold=self.threshold,
             options=self.options,
-            columns=result.columns,
+            dataset_columns=result.dataset_columns,
             metrics=result,
         )
 
@@ -84,9 +85,9 @@ class DataDriftMetricsRenderer(MetricRenderer):
             drift_detected = "NOT detected"
 
         counters = [
-            CounterData.int("Columns", result.metrics.n_features),
-            CounterData.int("Drifted Columns", result.metrics.n_drifted_features),
-            CounterData.float("Dataset Drift Score", result.metrics.share_drifted_features, 3),
+            CounterData.int("Columns", result.metrics.number_of_columns),
+            CounterData.int("Drifted Columns", result.metrics.number_of_drifted_columns),
+            CounterData.float("Dataset Drift Score", result.metrics.share_of_drifted_columns, 3),
         ]
 
         return [

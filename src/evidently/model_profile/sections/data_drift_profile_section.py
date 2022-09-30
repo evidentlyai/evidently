@@ -25,9 +25,9 @@ class DataDriftProfileSection(ProfileSection):
         result_json: Dict[str, Any] = data_drift_results.columns.as_dict()
 
         metrics_dict: Dict[str, Union[int, bool, float, Dict]] = {
-            "n_features": data_drift_results.metrics.n_features,
-            "n_drifted_features": data_drift_results.metrics.n_drifted_features,
-            "share_drifted_features": data_drift_results.metrics.share_drifted_features,
+            "n_features": data_drift_results.metrics.number_of_columns,
+            "n_drifted_features": data_drift_results.metrics.number_of_drifted_columns,
+            "share_drifted_features": data_drift_results.metrics.share_of_drifted_columns,
             "dataset_drift": data_drift_results.metrics.dataset_drift,
         }
         # add metrics to a flat dict with data drift results

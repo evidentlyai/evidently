@@ -8,7 +8,7 @@ import dataclasses
 from dataclasses import dataclass
 
 from evidently.calculations.data_drift import ColumnDataDriftMetrics
-from evidently.calculations.data_drift import define_predictions_type
+from evidently.calculations.data_drift import ensure_prediction_column_is_string
 from evidently.calculations.data_drift import get_one_column_drift
 from evidently.calculations.data_quality import get_rows_count
 from evidently.metrics.base_metric import InputData
@@ -99,7 +99,7 @@ class CatTargetDriftMetrics(Metric[CatTargetDriftAnalyzerResults]):
             raise ValueError("target should not be a sequence")
 
         classification_threshold = self.quality_options.classification_threshold
-        prediction_column = define_predictions_type(
+        prediction_column = ensure_prediction_column_is_string(
             prediction_column=columns.utility_columns.prediction,
             current_data=current_data,
             reference_data=reference_data,

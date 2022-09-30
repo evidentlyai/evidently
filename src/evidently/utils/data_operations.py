@@ -212,6 +212,7 @@ def recognize_task(target_name: str, dataset: pd.DataFrame) -> str:
 
 
 def recognize_column_type(
+    dataset: pd.DataFrame,
     column_name: str,
     columns: DatasetColumns,
 ) -> str:
@@ -224,11 +225,12 @@ def recognize_column_type(
             return "cat"
 
     if column_name == columns.utility_columns.prediction:
-        if columns.task == "regression":
+        column = dataset[column_name]
+
+        if columns.task == "regression" or (pd.api.types.is_numeric_dtype(column.dtype) and column.nunique() > 5):
             return "num"
 
         else:
-            # TODO: add support for case when prediction column is a float
             return "cat"
 
     if column_name in columns.num_feature_names:
