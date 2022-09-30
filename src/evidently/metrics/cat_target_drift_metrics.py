@@ -83,13 +83,13 @@ class CatTargetDriftMetrics(Metric[CatTargetDriftAnalyzerResults]):
         """
         if data.reference_data is None:
             raise ValueError("reference_data should be present")
+
         reference_data = data.reference_data.copy()
 
         if data.current_data is None:
             raise ValueError("current_data should be present")
-        current_data = data.current_data.copy()
 
-        # threshold = self.options.cat_target_threshold
+        current_data = data.current_data.copy()
         provider = OptionsProvider()
         options = provider.get(DataDriftOptions)
         columns = process_columns(reference_data, data.column_mapping)

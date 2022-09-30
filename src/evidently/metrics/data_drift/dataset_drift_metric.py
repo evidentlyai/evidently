@@ -96,7 +96,7 @@ class DataDriftMetricsRenderer(MetricRenderer):
             ),
             MetricHtmlInfo(
                 "dataset_drift_threshold",
-                header_text(label=f"Dataset Drift Threshold is {result.threshold}"),
+                header_text(label=f"Dataset drift detection threshold is {result.threshold}"),
             ),
             MetricHtmlInfo(
                 "dataset_drift_details",

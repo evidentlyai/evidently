@@ -84,7 +84,6 @@ class CatTargetDriftAnalyzer(Analyzer):
             raise ValueError("current_data should be present")
 
         data_drift_options = self.options_provider.get(DataDriftOptions)
-        threshold = data_drift_options.cat_target_threshold
         columns = process_columns(reference_data, column_mapping)
         target_column = columns.utility_columns.target
 

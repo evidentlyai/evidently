@@ -99,8 +99,15 @@ class ColumnDriftMetricRenderer(MetricRenderer):
             MetricHtmlInfo(
                 "column_data_drift_title",
                 header_text(
-                    label=f"Column '{result.column_name}' Data Drift: {drift}, "
-                    f"Drift Score: {drift_score} ({result.stattest_name})"
+                    label=f"Drift per column '{result.column_name}'"
+                ),
+            ),
+            MetricHtmlInfo(
+                "column_data_drift_title",
+                header_text(
+                    label=f"Data drift {drift}. "
+                          f"Drift detection method: {result.stattest_name}. "
+                          f"Drift score: {drift_score}"
                 ),
             ),
             MetricHtmlInfo(

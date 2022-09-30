@@ -140,7 +140,7 @@ class DataDriftTableRenderer(MetricRenderer):
         drift_share = results.metrics.share_drifted_features
 
         title_prefix = (
-            f"Drift is detected for {drift_share * 100:.2f}% of features ({n_drifted_features}"
+            f"Drift is detected for {drift_share * 100:.2f}% of columns ({n_drifted_features}"
             f" out of {n_features}). "
         )
 
