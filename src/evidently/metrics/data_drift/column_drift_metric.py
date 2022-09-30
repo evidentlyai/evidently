@@ -98,7 +98,7 @@ class ColumnDriftMetricRenderer(MetricRenderer):
         return [
             MetricHtmlInfo(
                 "column_data_drift_title",
-                header_text(label=f"Drift per column '{result.column_name}'"),
+                header_text(label=f"Drift in column '{result.column_name}'"),
             ),
             MetricHtmlInfo(
                 "column_data_drift_title",
