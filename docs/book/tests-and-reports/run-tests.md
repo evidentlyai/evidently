@@ -55,10 +55,6 @@ No_target_performance
 ```
 You can use the `most_important_features` argument as shown above. In this case, some of the per-feature tests only apply to the features from the list. This way, you decrease the overall number of tests. 
 
-{% hint style="info" %} 
-Refer to the Test Suites to see the complete list of presets and contents, and to the All Tests [All tests](../reference/all-tests.md) to learn about defaults.
-{% endhint %}
-
 ## Available presets 
 
 Here are other test presets you can try:
@@ -73,6 +69,9 @@ MulticlassClassification
 BinaryClassificationTopK
 BinaryClassification
 ```
+{% hint style="info" %} 
+Refer to the [Test Suites] to see the contents of each preset, and to the [All tests table](../reference/all-tests.md) to see the individual tests and their default parameters.
+{% endhint %}
 
 ## Output formats 
 
