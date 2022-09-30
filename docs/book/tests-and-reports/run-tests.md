@@ -70,7 +70,7 @@ BinaryClassificationTopK
 BinaryClassification
 ```
 {% hint style="info" %} 
-Refer to the [Test Suites] to see the contents of each preset, and to the [All tests table](../reference/all-tests.md) to see the individual tests and their default parameters.
+Refer to the [Test Suites] section to see the contents of each preset, and to the [All tests](../reference/all-tests.md) table to see the individual tests and their default parameters.
 {% endhint %}
 
 ## Output formats 
@@ -116,7 +116,7 @@ You need to create a `TestSuite` object and specify which tests to include.
 
 ## Dataset-level tests
 
-You can apply some of the tests on the dataset level, for example, to evaluate data drift for the whole dataset dataset. 
+You can apply some of the tests on the dataset level. For example, to evaluate data drift for the whole dataset. 
 
 To create a custom data drift test suite with dataset-level tests:
 
@@ -137,7 +137,7 @@ data_drift_suite
 
 ## Column-level tests
 
-You can apply some tests to the individual columns, for example, to check if a specific feature or model prediction stays within the range. (Note that you can still apply column-level tests to all the individual columns in the dataset).
+You can apply some tests to the individual columns. For example, to check if a specific feature or model prediction stays within the range. (Note that you can still apply column-level tests to all the individual columns in the dataset).
 
 To create a custom data drift test suite with column-level tests:
 
@@ -184,16 +184,18 @@ TestHighlyCorrelatedFeatures()
 ```
 
 {% hint style="info" %} 
-**Reference**: The complete list of tests is available in the [all tests](../reference/all-tests.md) table.
+**Reference**: The complete list of tests is available in the [All tests](../reference/all-tests.md) table.
 {% endhint %}
 
 # Custom test parameters
 
 **Defaults**. Each test compares the value of a specific metric in the current dataset against the reference. If you do not specify the condition explicitly, Evidently will use a default. 
 
-For example, the TestShareOfOutRangeValues will fail if over 10% of values are out of range. The normal range for each feature will be automatically derived from the reference.
+For example, the `TestShareOfOutRangeValues` test will fail if over 10% of values are out of range. The normal range for each feature will be automatically derived from the reference.
 
-{% hint style="info" %} **Reference**: All defaults are described in the same table with [all tests](../reference/all-tests.md).{% endhint %}
+{% hint style="info" %} 
+**Reference**: The defaults are described in the same [All tests](../reference/all-tests.md) table.
+{% endhint %}
 
 ## How to set the parameters
 
@@ -263,7 +265,7 @@ Some tests require additional parameters or might have optional parameters.
 For example, if you want to test a quantile value, you need to pass the quantile as a parameter (required). Or, you can pass the K parameter to evaluate classification precision@K instead of using the default decision threshold of 0.5 (optional). 
 
 {% hint style="info" %} 
-**Reference**: the additional parameters that apply to specific tests and defaults are described in the same table with [all tests](../reference/all-tests.md).
+**Reference**: the additional parameters that apply to specific tests and defaults are described in the same [All tests](../reference/all-tests.md) table.
 {% endhint %}
 
 # Tests generation 
