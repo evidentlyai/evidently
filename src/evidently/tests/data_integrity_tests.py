@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 from pandas.core.dtypes.common import infer_dtype_from_object
 
-from evidently.metrics.data_integrity_metrics import ColumnRegExpMetric
+from evidently.metrics import ColumnRegExpMetric
 from evidently.metrics.data_integrity_metrics import DataIntegrityMetrics
 from evidently.metrics.data_integrity_metrics import DataIntegrityNullValuesMetrics
 from evidently.metrics.data_integrity_metrics import DataIntegrityNullValuesMetricsResult

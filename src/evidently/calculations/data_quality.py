@@ -13,9 +13,9 @@ from scipy.stats import chi2_contingency
 from evidently.utils.data_operations import DatasetColumns
 
 
-def get_rows_count(dataset: pd.DataFrame):
+def get_rows_count(data: Union[pd.DataFrame, pd.Series]) -> int:
     """Count quantity of rows in  a dataset"""
-    return dataset.shape[0]
+    return data.shape[0]
 
 
 @dataclass
