@@ -12,6 +12,8 @@ from evidently.metric_preset.metric_preset import MetricPreset
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.model.dashboard import DashboardInfo
+from evidently.model.widget import AdditionalGraphInfo
+from evidently.renderers.base_renderer import DetailsInfo
 from evidently.suite.base_suite import Display
 from evidently.suite.base_suite import Suite
 from evidently.suite.base_suite import find_metric_renderer
@@ -94,13 +96,20 @@ class Report(Display):
         metrics_results = []
         for test, _ in self._inner_suite.context.metric_results.items():
             renderer = find_metric_renderer(type(test), self._inner_suite.context.renderers)
-            metrics_results.extend(renderer.render_html(test))
+            html_info = renderer.render_html(test)
+            for info_item in html_info:
+                for additional_graph in info_item.info.additionalGraphs:
+                    if isinstance(additional_graph, AdditionalGraphInfo):
+                        info_item.details.append(DetailsInfo(additional_graph.id, "", additional_graph.params))
+                    else:
+                        info_item.details.append(DetailsInfo(additional_graph.id, "", additional_graph))
+            metrics_results.extend(html_info)
 
         return (
             "evidently_dashboard_" + str(uuid.uuid4()).replace("-", ""),
             DashboardInfo("Report", widgets=[result.info for result in metrics_results]),
             {
-                f"{item.id}": dataclasses.asdict(item.info)
+                f"{item.id}": dataclasses.asdict(item.info) if dataclasses.is_dataclass(item.info) else item.info
                 for idx, info in enumerate(metrics_results)
                 for item in info.details
             },
