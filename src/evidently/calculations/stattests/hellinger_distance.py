@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
+import typing
 from collections import defaultdict
 from math import sqrt
-from typing import Tuple, DefaultDict
-import typing
+from typing import DefaultDict
+from typing import Tuple
 
 import numpy as np
 import pandas as pd
