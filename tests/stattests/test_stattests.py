@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import pytest
 from pytest import approx
 
 from evidently.calculations.stattests import z_stat_test
@@ -19,10 +20,25 @@ def test_chi_stat_test_cat_feature() -> None:
     assert chi_stat_test.func(reference, current, "cat", 0.5) == (approx(1.0, abs=1e-5), False)
 
 
-def test_z_stat_test_cat_feature() -> None:
-    reference = pd.Series(["a", "b"]).repeat([10, 10])
-    current = pd.Series(["a", "b"]).repeat([10, 10])
-    assert z_stat_test.func(reference, current, "cat", 0.5) == (approx(1.0, abs=1e-5), False)
+@pytest.mark.parametrize(
+    "reference, current, expected_score, expected_condition_result",
+    (
+        (
+            pd.Series(["a", "b"] * 10),
+            pd.Series(["a", "b"] * 10),
+            approx(1.0, abs=1e-5),
+            False,
+        ),
+        (
+            pd.Series(["a", np.nan] * 10),
+            pd.Series(["a", "b"] * 10),
+            approx(1.0, abs=1e-5),
+            False,
+        ),
+    ),
+)
+def test_z_stat_test_cat_feature(reference, current, expected_score, expected_condition_result: bool) -> None:
+    assert z_stat_test.func(reference, current, "cat", 0.5) == (expected_score, expected_condition_result)
 
 
 def test_cat_feature_with_nans() -> None:
