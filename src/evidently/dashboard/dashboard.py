@@ -21,6 +21,9 @@ from dataclasses import asdict
 import evidently
 from evidently.dashboard.tabs.base_tab import Tab
 from evidently.model.dashboard import DashboardInfo
+from evidently.model.widget import AdditionalGraphInfo
+from evidently.model.widget import BaseWidgetInfo
+from evidently.model.widget import PlotlyGraphInfo
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.pipeline.pipeline import Pipeline
 from evidently.utils import NumpyEncoder
@@ -194,7 +197,10 @@ class Dashboard(Pipeline):
             if widget is None:
                 continue
             for graph in widget.get_additional_graphs():
-                additional_graphs[graph.id] = graph.params
+                if isinstance(graph, AdditionalGraphInfo):
+                    additional_graphs[graph.id] = graph.params
+                elif isinstance(graph, (BaseWidgetInfo, PlotlyGraphInfo)):
+                    additional_graphs[graph.id] = graph
         return dashboard_id, dashboard_info, additional_graphs
 
     def __render(self, dashboard_id, dashboard_info, additional_graphs, template: Callable[[TemplateParams], str]):

@@ -9,6 +9,7 @@ import dataclasses
 import plotly.graph_objs as go
 
 from evidently.model.widget import BaseWidgetInfo
+from evidently.model.widget import PlotlyGraphInfo
 from evidently.model.widget import TabInfo
 from evidently.model.widget import WidgetType
 from evidently.options import ColorOptions
@@ -303,13 +304,44 @@ def widget_tabs(*, title: str = "", size: WidgetSize = WidgetSize.FULL, tabs: Li
     )
 
 
+class DetailsPartInfo:
+    title: str
+    info: Union[BaseWidgetInfo, PlotlyGraphInfo]
+
+    def __init__(self, title: str, info: Union[BaseWidgetInfo, PlotlyGraphInfo]):
+        self.title = title
+        self.info = info
+
+
+class RowDetails:
+    parts: List[DetailsPartInfo]
+
+    def __init__(self, parts: Optional[List[DetailsPartInfo]] = None):
+        if parts is None:
+            parts = []
+        self.parts = parts
+
+    def with_part(self, title: str, info: Union[BaseWidgetInfo, PlotlyGraphInfo]):
+        self.parts.append(DetailsPartInfo(title, info))
+        return self
+
+
+class RichTableDataRow:
+    details: Optional[RowDetails]
+    fields: dict
+
+    def __init__(self, fields: dict, details: Optional[RowDetails] = None):
+        self.fields = fields
+        self.details = details
+
+
 def rich_table_data(
     *,
     title: str = "",
     size: WidgetSize = WidgetSize.FULL,
     rows_per_page: int = 10,
     columns: List[ColumnDefinition],
-    data: List[dict],
+    data: List[RichTableDataRow],
 ) -> BaseWidgetInfo:
     """
     generate widget with rich table: with additional column types and details for rows
@@ -329,11 +361,34 @@ def rich_table_data(
         ...     ColumnDefinition("Column C", "field_3", sort=SortDirection.ASC),
         ... ]
         >>> in_table_data = [
-        ...     dict(field_1="a", field_2=dict(x=[1, 2, 3], y=[10, 11, 3]), field_3="2"),
-        ...     dict(field_1="b", field_2=dict(x=[1, 2, 3], y=[10, 11, 3]), field_3="1"),
+        ...     RichTableDataRow(fields=dict(field_1="a", field_2=dict(x=[1, 2, 3], y=[10, 11, 3]), field_3="2")),
+        ...     RichTableDataRow(
+        ...         fields=dict(field_1="b", field_2=dict(x=[1, 2, 3], y=[10, 11, 3]), field_3="1"),
+        ...         details=RowDetails()
+        ...             .with_part("Some details", counter(counters=[CounterData("counter 1", "value")])
+        ...         )
+        ...     )
         ... ]
         >>> widget_info = rich_table_data(title="Rich table", rows_per_page=10, columns=columns_def, data=in_table_data)
     """
+    additional_graphs = []
+
+    converted_data = []
+    for row in data:
+        if row.details is None or row.details.parts is None:
+            continue
+        parts = []
+        for part in row.details.parts:
+            parts.append(
+                dict(
+                    title=part.title,
+                    id=part.info.id,
+                    type="widget" if isinstance(part.info, BaseWidgetInfo) else "graph",
+                )
+            )
+            additional_graphs.append(part.info)
+        converted_data.append(dict(details={"parts": parts}, **row.fields))
+
     return BaseWidgetInfo(
         title=title,
         type=WidgetType.BIG_TABLE.value,
@@ -345,9 +400,9 @@ def rich_table_data(
         params={
             "rowsPerPage": min(len(data), rows_per_page),
             "columns": [column.as_dict() for column in columns],
-            "data": data,
+            "data": converted_data,
         },
-        additionalGraphs=[],
+        additionalGraphs=additional_graphs,
     )
 
 

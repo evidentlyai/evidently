@@ -1,5 +1,4 @@
 import abc
-import json
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -21,8 +20,8 @@ from evidently.calculations.classification_performance import ConfusionMatrix
 from evidently.calculations.classification_performance import calculate_confusion_by_classes
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
+from evidently.model.widget import BaseWidgetInfo
 from evidently.options import ColorOptions
-from evidently.renderers.base_renderer import MetricHtmlInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
@@ -154,7 +153,7 @@ def classification_performance_metrics(
 
     # calculate confusion matrix
     # labels = target_names if target_names else sorted(set(target.unique()) | set(prediction.unique()))
-    labels = sorted(set(target.unique()))
+    labels = sorted(set(target.unique().astype(str)))
     conf_matrix = sklearn.metrics.confusion_matrix(target, prediction_labels)
     confusion_by_classes = calculate_confusion_by_classes(conf_matrix, labels)
     tpr: Optional[float] = None
@@ -286,7 +285,7 @@ class ClassificationPerformanceMetricsRenderer(MetricRenderer):
         return dataclasses.asdict(obj.get_result())
 
     @staticmethod
-    def _get_metrics_table(dataset_name: str, metrics: DatasetClassificationPerformanceMetrics) -> MetricHtmlInfo:
+    def _get_metrics_table(dataset_name: str, metrics: DatasetClassificationPerformanceMetrics) -> BaseWidgetInfo:
         counters = [
             CounterData.float("Accuracy", metrics.accuracy, 3),
             CounterData.float("Precision", metrics.precision, 3),
@@ -300,12 +299,9 @@ class ClassificationPerformanceMetricsRenderer(MetricRenderer):
         if metrics.log_loss is not None:
             counters.append(CounterData.float(label="LogLoss", value=metrics.log_loss, precision=3))
 
-        return MetricHtmlInfo(
-            f"classification_performance_metrics_table_{dataset_name.lower()}",
-            counter(
-                counters=counters,
-                title=f"{dataset_name.capitalize()}: Model Quality With Macro-average Metrics",
-            ),
+        return counter(
+            counters=counters,
+            title=f"{dataset_name.capitalize()}: Model Quality With Macro-average Metrics",
         )
 
     @staticmethod
@@ -315,7 +311,7 @@ class ClassificationPerformanceMetricsRenderer(MetricRenderer):
         size: WidgetSize,
         columns: DatasetColumns,
         color_options: ColorOptions,
-    ) -> MetricHtmlInfo:
+    ) -> BaseWidgetInfo:
         metrics_frame = pd.DataFrame(metrics.metrics_matrix)
         fig = go.Figure()
         fig.add_trace(
@@ -330,13 +326,10 @@ class ClassificationPerformanceMetricsRenderer(MetricRenderer):
             xaxis_title="Class",
             yaxis_title="Number of Objects",
         )
-        return MetricHtmlInfo(
-            f"classification_performance_metrics_class_representation_{dataset_name.lower()}",
-            plotly_figure(
-                title=f"{dataset_name.capitalize()}: Class Representation",
-                figure=fig,
-                size=size,
-            ),
+        return plotly_figure(
+            title=f"{dataset_name.capitalize()}: Class Representation",
+            figure=fig,
+            size=size,
         )
 
     @staticmethod
@@ -344,7 +337,7 @@ class ClassificationPerformanceMetricsRenderer(MetricRenderer):
         dataset_name: str,
         metrics: DatasetClassificationPerformanceMetrics,
         size: WidgetSize,
-    ) -> MetricHtmlInfo:
+    ) -> BaseWidgetInfo:
         conf_matrix = metrics.confusion_matrix.values
         labels = metrics.confusion_matrix.labels
         z = [[int(y) for y in x] for x in conf_matrix]
@@ -358,15 +351,12 @@ class ClassificationPerformanceMetricsRenderer(MetricRenderer):
 
         fig.update_layout(xaxis_title="Predicted value", yaxis_title="Actual value")
 
-        return MetricHtmlInfo(
-            f"classification_performance_current_metrics_confusion_matrix_{dataset_name.lower()}",
-            plotly_figure(title=f"{dataset_name.capitalize()}: Confusion Matrix", figure=fig, size=size),
-        )
+        return plotly_figure(title=f"{dataset_name.capitalize()}: Confusion Matrix", figure=fig, size=size)
 
     @staticmethod
     def _get_metrics_matrix_graph(
         dataset_name: str, metrics: DatasetClassificationPerformanceMetrics, size: WidgetSize, columns: DatasetColumns
-    ) -> MetricHtmlInfo:
+    ) -> BaseWidgetInfo:
         # plot support bar
         metrics_matrix = metrics.metrics_matrix
         metrics_frame = pd.DataFrame(metrics_matrix)
@@ -382,21 +372,15 @@ class ClassificationPerformanceMetricsRenderer(MetricRenderer):
         fig = ff.create_annotated_heatmap(z, x=x, y=y, annotation_text=z_text, colorscale="bluered", showscale=True)
         fig.update_layout(xaxis_title="Class", yaxis_title="Metric")
 
-        return MetricHtmlInfo(
-            f"classification_performance_current_metrics_metrix_matrix_{dataset_name.lower()}",
-            plotly_figure(title=f"{dataset_name.capitalize()}: Quality Metrics by Class", figure=fig, size=size),
-        )
+        return plotly_figure(title=f"{dataset_name.capitalize()}: Quality Metrics by Class", figure=fig, size=size)
 
-    def render_html(self, obj: ClassificationPerformanceMetrics) -> List[MetricHtmlInfo]:
+    def render_html(self, obj: ClassificationPerformanceMetrics) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         color_options = ColorOptions()
         columns = metric_result.columns
         target_name = columns.utility_columns.target
         result = [
-            MetricHtmlInfo(
-                "classification_performance_title",
-                header_text(label=f"Classification Model Performance. Target: '{target_name}'"),
-            ),
+            header_text(label=f"Classification Model Performance. Target: '{target_name}'"),
         ]
         # add tables with perf metrics
         if metric_result.reference is not None:
@@ -577,7 +561,7 @@ class ClassificationPerformanceMetricsTopKRenderer(MetricRenderer):
         return dataclasses.asdict(obj.get_result())
 
     @staticmethod
-    def _get_metrics_table(dataset_name: str, metrics: DatasetClassificationPerformanceMetrics) -> MetricHtmlInfo:
+    def _get_metrics_table(dataset_name: str, metrics: DatasetClassificationPerformanceMetrics) -> BaseWidgetInfo:
         counters = [
             CounterData.float("Accuracy", metrics.accuracy, 3),
             CounterData.float("Precision", metrics.precision, 3),
@@ -585,18 +569,15 @@ class ClassificationPerformanceMetricsTopKRenderer(MetricRenderer):
             CounterData.float("F1", metrics.f1, 3),
         ]
 
-        return MetricHtmlInfo(
-            f"classification_performance_top_k_table_{dataset_name.lower()}",
-            counter(title=f"{dataset_name.capitalize()}: Model Quality With Macro-average Metrics", counters=counters),
+        return counter(
+            title=f"{dataset_name.capitalize()}: Model Quality With Macro-average Metrics",
+            counters=counters,
         )
 
-    def render_html(self, obj: ClassificationPerformanceMetricsTopK) -> List[MetricHtmlInfo]:
+    def render_html(self, obj: ClassificationPerformanceMetricsTopK) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         result = [
-            MetricHtmlInfo(
-                "classification_performance_top_k_title",
-                header_text(label=f"Classification Performance With Top K (k={obj.k})"),
-            ),
+            header_text(label=f"Classification Performance With Top K (k={obj.k})"),
             self._get_metrics_table(dataset_name="current", metrics=metric_result.current),
         ]
 
@@ -633,7 +614,7 @@ class ClassificationPerformanceMetricsThresholdRenderer(MetricRenderer):
     def _get_metrics_table(
         dataset_name: str,
         metrics: DatasetClassificationPerformanceMetrics,
-    ) -> MetricHtmlInfo:
+    ) -> BaseWidgetInfo:
         counters = [
             CounterData.float("Accuracy", metrics.accuracy, 3),
             CounterData.float("Precision", metrics.precision, 3),
@@ -641,18 +622,15 @@ class ClassificationPerformanceMetricsThresholdRenderer(MetricRenderer):
             CounterData.float("F1", metrics.f1, 3),
         ]
 
-        return MetricHtmlInfo(
-            f"classification_performance_threshold_table_{dataset_name.lower()}",
-            counter(title=f"{dataset_name.capitalize()}: Model Quality With Macro-average Metrics", counters=counters),
+        return counter(
+            title=f"{dataset_name.capitalize()}: Model Quality With Macro-average Metrics",
+            counters=counters,
         )
 
-    def render_html(self, obj: ClassificationPerformanceMetricsThreshold) -> List[MetricHtmlInfo]:
+    def render_html(self, obj: ClassificationPerformanceMetricsThreshold) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         result = [
-            MetricHtmlInfo(
-                "classification_performance_threshold_title",
-                header_text(label=f"Classification Performance With Threshold (threshold={obj.threshold})"),
-            ),
+            header_text(label=f"Classification Performance With Threshold (threshold={obj.threshold})"),
             self._get_metrics_table(dataset_name="current", metrics=metric_result.current),
         ]
 

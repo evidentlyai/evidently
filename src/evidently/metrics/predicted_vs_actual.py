@@ -9,12 +9,11 @@ from scipy.stats import probplot
 
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
+from evidently.model.widget import BaseWidgetInfo
 from evidently.options import ColorOptions
-from evidently.renderers.base_renderer import MetricHtmlInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import WidgetSize
-from evidently.renderers.html_widgets import plotly_data
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.utils.data_operations import process_columns
 
@@ -79,7 +78,7 @@ def _plot_data(dataset: pd.DataFrame, target_name: str, prediction_name: str, da
 
 @default_renderer(wrap_type=PredictedVsActualMetric)
 class PredictedVsActualRenderer(MetricRenderer):
-    def render_html(self, obj: PredictedVsActualMetric) -> List[MetricHtmlInfo]:
+    def render_html(self, obj: PredictedVsActualMetric) -> List[BaseWidgetInfo]:
         color_options = ColorOptions()
         generators = [
             _plot_data_to_plotly,
@@ -93,10 +92,8 @@ class PredictedVsActualRenderer(MetricRenderer):
         for gen in generators:
             ref_data = obj.get_result().reference_data
             if ref_data is not None:
-                result.append(MetricHtmlInfo(name="", info=gen(ref_data, "reference", color_options), details=[]))
-            result.append(
-                MetricHtmlInfo(name="", info=gen(obj.get_result().current_data, "current", color_options), details=[])
-            )
+                result.append(gen(ref_data, "reference", color_options))
+            result.append(gen(obj.get_result().current_data, "current", color_options))
         return result
 
     def render_json(self, obj) -> dict:

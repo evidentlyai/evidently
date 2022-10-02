@@ -43,7 +43,7 @@ def test_classification_performance_metrics_binary_labels() -> None:
         "macro avg": {"precision": 0.7, "recall": 0.7083333333333333, "f1-score": 0.6969696969696968, "support": 10},
         "weighted avg": {"precision": 0.7200000000000001, "recall": 0.7, "f1-score": 0.7030303030303029, "support": 10},
     }
-    assert result.current.confusion_matrix == ConfusionMatrix(labels=[0, 1], values=[[4, 2], [1, 3]])
+    assert result.current.confusion_matrix == ConfusionMatrix(labels=["0", "1"], values=[[4, 2], [1, 3]])
 
 
 def test_classification_performance_metrics_with_report() -> None:
@@ -100,7 +100,7 @@ def test_classification_performance_metrics_binary_probas_threshold() -> None:
     assert result.current.f1 == 0.5
     assert result.current.roc_auc == 0.625
     assert result.current.log_loss == 3.928216092142768
-    assert result.current.confusion_matrix == ConfusionMatrix(labels=[0, 1], values=[[4, 2], [2, 2]])
+    assert result.current.confusion_matrix == ConfusionMatrix(labels=["0", "1"], values=[[4, 2], [2, 2]])
 
 
 def test_classification_performance_metrics_binary_probas_threshold_with_report() -> None:
