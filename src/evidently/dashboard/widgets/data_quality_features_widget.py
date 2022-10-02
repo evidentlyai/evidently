@@ -120,7 +120,7 @@ class DataQualityFeaturesWidget(Widget):
                         },
                     )
                 )
-            logging.warning(self._metrics_for_table(feature_name, data_quality_results, is_current_data))
+
             wi = BaseWidgetInfo(
                 type="rich_data",
                 title="",

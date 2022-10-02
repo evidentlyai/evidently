@@ -1,4 +1,5 @@
 """Methods for overall dataset quality calculations - rows count, a specific values count, etc."""
+from ast import Tuple
 from typing import Callable
 from typing import Dict
 from typing import Optional
@@ -13,6 +14,8 @@ from scipy.stats import chi2_contingency
 from evidently.metrics.utils import make_hist_for_cat_plot
 from evidently.metrics.utils import make_hist_for_num_plot
 from evidently.utils.data_operations import DatasetColumns
+
+MAX_CATEGORIES = 5
 
 
 def get_rows_count(dataset: pd.DataFrame):
@@ -258,7 +261,9 @@ class DataQualityPlot:
 
 class DataQualityGetPlotData():
     def __init__(self) -> None:
-        self.period_prefix: Optional[str]=None
+        self.period_prefix: Optional[str] = None
+        self.curr: Optional[pd.Series] = None
+        self.ref: Optional[pd.Series] = None
 
     def calculate_main_plot(
         self,
@@ -266,13 +271,39 @@ class DataQualityGetPlotData():
         ref: Optional[pd.DataFrame], 
         feature_name: str,
         feature_type: str,
+        merge_small_cat: Optional[int] = MAX_CATEGORIES
     ):
-        logging.warning(feature_type)
+        if feature_type == 'cat' and merge_small_cat is not None:
+            curr, ref = self._transform_cat_data(curr.copy(), ref.copy(), feature_name, merge_small_cat)
+        curr_data = curr[feature_name]
+        ref_data = None
+        if ref is not None:
+            ref_data = ref[feature_name]
         bins_for_hist = None
         if feature_type == 'num':
-            bins_for_hist = make_hist_for_num_plot(curr[feature_name], ref[feature_name])
-        elif feature_type == 'cat':
-            bins_for_hist = make_hist_for_cat_plot(curr[feature_name], ref[feature_name])
+            bins_for_hist = make_hist_for_num_plot(curr_data, ref_data)
+        if feature_type == 'cat':
+            bins_for_hist = make_hist_for_cat_plot(curr_data, ref_data)
+        if feature_type == 'datetime':
+            bins_for_hist = {}
+            freq = self._choose_agg_period(feature_name, ref, curr)
+            curr_data = curr[feature_name].dt.to_period(freq=freq)
+            curr_data = curr_data.value_counts().reset_index()
+            curr_data.columns = [feature_name, "number_of_items"]
+            curr_data[feature_name] = curr_data[feature_name].dt.to_timestamp()
+            bins_for_hist["current"] = curr_data
+            if ref is not None:
+                ref_data = ref[feature_name].dt.to_period(freq=freq)
+                ref_data = ref_data.value_counts().reset_index()
+                ref_data.columns = [feature_name, "number_of_items"]
+                ref_data[feature_name] = ref_data[feature_name].dt.to_timestamp()
+                # 
+                max_ref_date = ref_data[feature_name].max()
+                min_curr_date = curr_data[feature_name].min()
+                if max_ref_date == min_curr_date:
+                    curr_data, ref_data = self._split_periods(curr_data, ref_data, feature_name)
+                bins_for_hist["reference"] = ref_data
+            
         return bins_for_hist
 
     def calculate_data_in_time(
@@ -281,8 +312,13 @@ class DataQualityGetPlotData():
         ref: Optional[pd.DataFrame], 
         feature_name: str,
         feature_type: str,
-        datetime_name: str
+        datetime_name: str,
+        merge_small_cat: Optional[int] = MAX_CATEGORIES
     ):
+        result = None
+        if feature_type == 'cat' and merge_small_cat is not None:
+            curr, ref = self._transform_cat_data(curr.copy(), ref.copy(), feature_name, merge_small_cat)
+        
         freq = self._choose_agg_period(datetime_name, ref, curr)
         df_for_time_plot_curr = (
             curr
@@ -318,9 +354,132 @@ class DataQualityGetPlotData():
                       "reference": df_for_time_plot_ref,
                       "freq": self.period_prefix,
                       "datetime_name": datetime_name}
-                      
+
         return result
-        
+
+    def calculate_data_by_target(
+        self,
+        curr: pd.DataFrame,
+        ref: Optional[pd.DataFrame], 
+        feature_name: str,
+        feature_type: str,
+        target_name: str,
+        target_type: str,
+        merge_small_cat: Optional[int] = MAX_CATEGORIES
+    ):
+        result = None
+        if feature_type == 'cat' and target_type == 'num':
+            curr, ref = self._transform_cat_data(curr.copy(), ref.copy(), feature_name, merge_small_cat)
+            result = self._prepare_box_data(curr, ref, feature_name, target_name)
+        if feature_type == 'num' and target_type == 'cat':
+            curr, ref = self._transform_cat_data(curr.copy(), ref.copy(), target_name, merge_small_cat)
+            result = self._prepare_box_data(curr, ref, target_name, feature_name)
+        if feature_type == 'num' and target_type == 'num':
+            result = {}
+            result['current'] = {
+                feature_name: curr[feature_name].tolist(),
+                target_name: curr[target_name].tolist()
+            }
+            if ref is not None:
+                result['reference'] = {
+                    feature_name: ref[feature_name].tolist(),
+                    target_name: ref[target_name].tolist()
+                }
+        if feature_type == "cat" and target_type == "cat":
+            curr, ref = self._transform_cat_data(curr.copy(), ref.copy(), feature_name, merge_small_cat)
+            curr, ref = self._transform_cat_data(curr.copy(), ref.copy(), target_name, merge_small_cat, True)
+            result = {}
+            result["current"] = self._get_count_values(curr, target_name, feature_name)
+            if ref is not None:
+                result["reference"] = self._get_count_values(ref, target_name, feature_name)
+
+        return result
+
+    def _split_periods(self, curr_data, ref_data, feature_name):
+        max_ref_date = ref_data[feature_name].max()
+        min_curr_date = curr_data[feature_name].min()
+
+        if (
+            curr_data.loc[curr_data[feature_name] == min_curr_date, "number_of_items"].iloc[0]
+            > ref_data.loc[ref_data[feature_name] == max_ref_date, "number_of_items"].iloc[0]
+        ):
+            curr_data.loc[curr_data[feature_name] == min_curr_date, "number_of_items"] = (
+                curr_data.loc[curr_data[feature_name] == min_curr_date, "number_of_items"]
+                + ref_data.loc[ref_data[feature_name] == max_ref_date, "number_of_items"]
+            )
+            ref_data = ref_data[ref_data[feature_name] != max_ref_date]
+        else:
+            ref_data.loc[ref_data[feature_name] == max_ref_date, "number_of_items"] = (
+                ref_data.loc[ref_data[feature_name] == max_ref_date, "number_of_items"]
+                + curr_data.loc[curr_data[feature_name] == min_curr_date, "number_of_items"]
+            )
+            curr_data = curr_data[curr_data[feature_name] != min_curr_date]
+        return curr_data, ref_data
+
+    def _get_count_values(self, df: pd.DataFrame, target_column: str, feature_name: Optional[str]):
+        df = df.groupby([target_column, feature_name]).size()
+        df.name = "count_objects"
+        df = df.reset_index()
+        return df
+
+
+    def _prepare_box_data(
+        self,
+        curr: pd.DataFrame,
+        ref: Optional[pd.DataFrame], 
+        cat_feature_name: str,
+        num_feature_name: str,
+    ) -> Dict[str, Dict[str, Union[list, str]]]:
+        dfs = [curr]
+        names = ["current"]
+        if ref is not None:
+            dfs.append(ref)
+            names.append("reference")
+        res = {} 
+        for df, name in zip(dfs, names):
+            df_for_plot = df.groupby(cat_feature_name)[num_feature_name].quantile([0, 0.25, 0.5, 0.75, 1]).reset_index()
+            df_for_plot.columns = [cat_feature_name, 'q', num_feature_name]
+            res_df = {}    
+            values = df_for_plot[cat_feature_name].unique()
+            res_df["mins"] = df_for_plot[df_for_plot.q == 0].set_index(cat_feature_name).loc[values, num_feature_name].tolist()
+            res_df["lowers"] = df_for_plot[df_for_plot.q == 0.25].set_index(cat_feature_name).loc[values, num_feature_name].tolist()
+            res_df["means"] = df_for_plot[df_for_plot.q == 0.5].set_index(cat_feature_name).loc[values, num_feature_name].tolist()
+            res_df["uppers"] = df_for_plot[df_for_plot.q == 0.75].set_index(cat_feature_name).loc[values, num_feature_name].tolist()
+            res_df["maxs"] = df_for_plot[df_for_plot.q == 1].set_index(cat_feature_name).loc[values, num_feature_name].tolist()
+            res_df['values'] = values
+            res[name] = res_df
+        return res
+
+    def _transform_cat_data(
+        self, curr: pd.DataFrame, ref: Optional[pd.DataFrame], feature_name: str, merge_small_cat: int, rewrite: bool=False
+    ) -> tuple[pd.DataFrame]:
+        if self.curr is not None and rewrite != True:
+            return self.curr, self.ref
+        if ref is not None:
+            unique_values = len(
+                np.union1d(curr[feature_name].astype(str).unique(), ref[feature_name].astype(str).unique())
+            )
+        else:
+            unique_values = curr[feature_name].astype(str).nique()
+        if unique_values > merge_small_cat:
+            curr_cats = curr[feature_name].value_counts(normalize=True)
+            ref_cats = pd.Series()
+            if ref is not None:
+                ref_cats = ref[feature_name].value_counts(normalize=True)
+            cats = (
+                curr_cats
+                    .append(ref_cats)
+                    .sort_values(ascending=False)
+                    .index
+                    .drop_duplicates(keep='first')[:merge_small_cat].values
+            )
+
+            curr[feature_name] = curr[feature_name].apply(lambda x: x if str(x) in cats else "other")
+            if ref is not None:
+                ref[feature_name] = ref[feature_name].apply(lambda x: x if str(x) in cats else "other")
+            self.curr = curr
+            self.ref = ref
+        return curr, ref
 
     def _choose_agg_period(self, date_column: str, reference_data: pd.DataFrame, current_data: Optional[pd.DataFrame]
     ) -> str:
@@ -348,43 +507,13 @@ class DataQualityGetPlotData():
         df = df.groupby("period")[feature_name].mean().reset_index()
         df[date_column] = df["period"].dt.to_timestamp()
         return df
+
     def _transform_df_to_time_count_view(self, df: pd.DataFrame, date_column: str, feature_name: str):
         df = df.groupby(["period", feature_name]).size()
         df.name = "num"
         df = df.reset_index()
         df[date_column] = df["period"].dt.to_timestamp()
         return df
-    
-
-def data_quality_get_plot_data(
-        curr: pd.DataFrame,
-        ref: Optional[pd.DataFrame], 
-        feature_name: str,
-        feature_type: str,
-        target_name: Optional[str],
-        datetime_name: Optional[str]
-    ) -> DataQualityPlot:
-
-    if feature_type== 'num':
-        bins_for_hist = make_hist_for_num_plot(curr[feature_name], ref[feature_name])
-                
-    return bins_for_hist
-
-
-
-
-def transform_df_to_time_mean_view(df: pd.DataFrame, date_column: str, feature_name: str):
-    df = df.groupby("period")[feature_name].mean().reset_index()
-    df[date_column] = df["period"].dt.to_timestamp()
-    return df
-
-
-def transform_df_to_time_count_view(df: pd.DataFrame, date_column: str, feature_name: str):
-    df = df.groupby([date_column + "_period", feature_name]).size()
-    df.name = "num"
-    df = df.reset_index()
-    df[date_column] = df[date_column + "_period"].dt.to_timestamp()
-    return df
 
 
 def _select_features_for_corr(reference_features_stats: DataQualityStats, target_name: Optional[str]) -> tuple:

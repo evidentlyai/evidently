@@ -32,7 +32,7 @@ from evidently.renderers.html_widgets import table_data
 from evidently.renderers.html_widgets import rich_table_data
 from evidently.utils.data_operations import process_columns
 from evidently.utils.types import Numeric
-from evidently.utils.visualizations import plot_distr, plot_num_feature_in_time, plot_cat_feature_in_time
+from evidently.utils.visualizations import plot_distr, plot_num_feature_in_time, plot_cat_feature_in_time, plot_boxes, plot_num_num_rel, plot_cat_cat_rel, plot_time_feature_distr
 
 
 @dataclass
@@ -69,9 +69,16 @@ class DatetimeCharacteristics:
 ColumnCharacteristics = Union[NumericCharacteristics, CategoricalCharacteristics, DatetimeCharacteristics]
 
 @dataclass
+class DataByTarget:
+    data_for_plots: Dict[str, Dict[str, Union[list, str, pd.DataFrame]]]
+    target_name: str
+    target_type: str
+
+@dataclass
 class DataQualityPlot:
     bins_for_hist: Dict[str, pd.DataFrame]
     data_in_time: Optional[Dict[str, Union[pd.DataFrame, str]]]
+    data_by_target: DataByTarget
 
 
 @dataclass
@@ -82,7 +89,7 @@ class ColumnSummary:
     current_characteristics: ColumnCharacteristics
     plot_data: DataQualityPlot
 
-
+import logging
 class ColumnSummaryMetric(Metric[ColumnSummary]):
     def __init__(self, column_name: str):
         self.column_name = column_name
@@ -97,27 +104,49 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
             column_type = "datetime"
         else:
             raise ValueError(f"column {self.column_name} not in num, cat or datetime features lists")
+
         reference_data = None
         ref_characteristics = None
         if data.reference_data is not None:
             reference_data = data.reference_data
             ref_characteristics = self.map_data(get_features_stats(data.reference_data[self.column_name], column_type))
         curr_characteristics = self.map_data(get_features_stats(data.current_data[self.column_name], column_type))
-        target_name = None
-        if columns.utility_columns.target is not None:
-            target_name = columns.utility_columns.target
 
         # plot data
-        bins_for_hist = DataQualityGetPlotData().calculate_main_plot(data.current_data, reference_data, self.column_name,
+        gpd = DataQualityGetPlotData()
+        bins_for_hist = gpd.calculate_main_plot(data.current_data, reference_data, self.column_name,
                                                                    column_type)
         data_in_time = None
         if columns.utility_columns.date is not None:
-            data_in_time = DataQualityGetPlotData().calculate_data_in_time(data.current_data, reference_data, self.column_name,
+            data_in_time = gpd.calculate_data_in_time(data.current_data, reference_data, self.column_name,
                                                                          column_type, columns.utility_columns.date)
+        data_by_target = None
+        if columns.utility_columns.target is not None:
+            target_name = columns.utility_columns.target
+            if data.column_mapping.task == 'regression':
+                target_type = 'num'
+            elif data.column_mapping.task == 'classification':
+                target_type = 'cat'
+            elif data.current_data[columns.utility_columns.target].nunique() <= 5:
+                target_type = 'cat'
+            else:
+                target_type = 'num'
+            logging.warning(target_type)
+            logging.warning(column_type)
+            logging.warning(self.column_name)
 
+        data_for_plots = gpd.calculate_data_by_target(data.current_data, reference_data, self.column_name, column_type,
+                                                      target_name, target_type)
+        data_by_target = DataByTarget(
+            data_for_plots=data_for_plots,
+            target_name=target_name,
+            target_type=target_type
+        )
+            
         plot_data = DataQualityPlot(
             bins_for_hist=bins_for_hist,
-            data_in_time=data_in_time
+            data_in_time=data_in_time,
+            data_by_target=data_by_target
         ) 
         return ColumnSummary(
             column_name=self.column_name,
@@ -180,8 +209,11 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
             hist_ref = bins_for_hist["reference"]
             metrics_values_headers = ["reference", "current"]
 
-        fig = plot_distr(hist_curr, hist_ref)
-        fig = json.loads(fig.to_json())
+        if column_type in ['num', 'cat']:
+            fig = plot_distr(hist_curr, hist_ref)
+            fig = json.loads(fig.to_json())
+        if column_type == 'datetime':
+            fig = plot_time_feature_distr(hist_curr, hist_ref, column_name)
 
         # additional plots
         additional_graphs = []
@@ -213,6 +245,52 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
                 )
             )
             parts.append({"title": column_name + " in time", "id": column_name + "_in_time"})
+
+        if metric_result.plot_data.data_by_target.data_for_plots is not None:
+            ref_data_by_target = None
+            if "reference" in metric_result.plot_data.data_by_target.data_for_plots.keys():
+                ref_data_by_target = metric_result.plot_data.data_by_target.data_for_plots["reference"]
+            target_type = metric_result.plot_data.data_by_target.target_type
+            target_name = metric_result.plot_data.data_by_target.target_name
+            if column_type == "num" and target_type == "cat":
+                feature_by_target_figure = plot_boxes(
+                    metric_result.plot_data.data_by_target.data_for_plots["current"],
+                    ref_data_by_target,
+                    column_name,
+                    target_name
+                )
+            if column_type == "cat" and target_type == "num":
+                feature_by_target_figure = plot_boxes(
+                    metric_result.plot_data.data_by_target.data_for_plots["current"],
+                    ref_data_by_target,
+                    target_name,
+                    column_name
+                )
+            if column_type == "num" and target_type == "num":
+                feature_by_target_figure = plot_num_num_rel(
+                    metric_result.plot_data.data_by_target.data_for_plots["current"],
+                    ref_data_by_target,
+                    target_name,
+                    column_name
+                )
+            if column_type == "cat" and target_type == "cat":
+                feature_by_target_figure = plot_cat_cat_rel(
+                    metric_result.plot_data.data_by_target.data_for_plots["current"],
+                    ref_data_by_target,
+                    target_name,
+                    column_name
+                )
+
+            additional_graphs.append(
+                AdditionalGraphInfo(
+                    column_name + "_by_target",
+                    {
+                        "data": feature_by_target_figure["data"],
+                        "layout": feature_by_target_figure["layout"],
+                    },
+                )
+            )
+            parts.append({"title": column_name + " by target", "id": column_name + "_by_target"})
 
         wi = BaseWidgetInfo(
                 type="rich_data",
