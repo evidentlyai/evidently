@@ -1,6 +1,6 @@
 """Test common-cases with different dataset types and a few monitors"""
 
-from typing import ClassVar
+from typing import Type
 
 import pandas as pd
 import pytest
@@ -149,7 +149,7 @@ def test_metric_creation_with_incorrect_labels():
         (NumTargetDriftMonitor, True),
     ),
 )
-def test_model_monitoring_without_current_data(monitor_class: ClassVar[ModelMonitor], raises_value_error: bool) -> None:
+def test_model_monitoring_without_current_data(monitor_class: Type[ModelMonitor], raises_value_error: bool) -> None:
     """Check that monitors
     - that can be executed with one dataset only do not get an error
     - that cannot be executed with one dataset raise correct error
