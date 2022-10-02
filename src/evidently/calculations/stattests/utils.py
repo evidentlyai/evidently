@@ -11,7 +11,7 @@ def get_binned_data(reference: pd.Series, current: pd.Series, feature_type: str,
         n: number of quantiles
     Returns:
         reference_percents: % of records in each bucket for reference
-        current_percents: % of records in each bucket for reference
+        current_percents: % of records in each bucket for current
     """
     n_vals = reference.nunique()
     if feature_type == "num" and n_vals > 20:
