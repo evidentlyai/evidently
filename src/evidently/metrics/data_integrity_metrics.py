@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.renderers.base_renderer import MetricHtmlInfo
+from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
@@ -133,7 +134,7 @@ class DataIntegrityMetricsRenderer(MetricRenderer):
         return result
 
     @staticmethod
-    def _get_metrics_table(dataset_name: str, metrics: DataIntegrityMetricsValues) -> MetricHtmlInfo:
+    def _get_metrics_table(dataset_name: str, metrics: DataIntegrityMetricsValues) -> BaseWidgetInfo:
         headers = ("Quality Metric", "Value")
         stats = (
             ("Number of columns", metrics.number_of_columns),
@@ -148,19 +149,13 @@ class DataIntegrityMetricsRenderer(MetricRenderer):
             ("Number of duplicated columns", metrics.number_of_duplicated_columns),
         )
 
-        return MetricHtmlInfo(
-            f"data_integrity_metrics_table_{dataset_name.lower()}",
-            table_data(column_names=headers, data=stats),
-        )
+        return table_data(column_names=headers, data=stats)
 
-    def render_html(self, obj: DataIntegrityMetrics) -> List[MetricHtmlInfo]:
+    def render_html(self, obj: DataIntegrityMetrics) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
 
         result = [
-            MetricHtmlInfo(
-                "data_integrity_title",
-                header_text(label="Data Integrity"),
-            ),
+            header_text(label="Data Integrity"),
             self._get_metrics_table(dataset_name="current", metrics=metric_result.current),
         ]
 
@@ -389,31 +384,22 @@ class DataIntegrityNullValuesMetricsRenderer(MetricRenderer):
         return dataclasses.asdict(obj.get_result().current_null_values)
 
     @staticmethod
-    def _get_table_stat(dataset_name: str, stats: DataIntegrityNullValuesStat) -> MetricHtmlInfo:
+    def _get_table_stat(dataset_name: str, stats: DataIntegrityNullValuesStat) -> BaseWidgetInfo:
         matched_stat = [(k, v) for k, v in stats.number_of_nulls_by_column.items()]
         matched_stat_headers = ["Value", "Count"]
-        return MetricHtmlInfo(
-            name=f"data_integrity_null_values_stats_{dataset_name.lower()}",
-            info=table_data(
-                title=f"{dataset_name.capitalize()}: Nulls Statistic",
-                column_names=matched_stat_headers,
-                data=matched_stat,
-            ),
+        return table_data(
+            title=f"{dataset_name.capitalize()}: Nulls Statistic",
+            column_names=matched_stat_headers,
+            data=matched_stat,
         )
 
-    def render_html(self, obj: DataIntegrityNullValuesMetrics) -> List[MetricHtmlInfo]:
+    def render_html(self, obj: DataIntegrityNullValuesMetrics) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         number_of_nulls = metric_result.current_null_values.number_of_nulls
 
         result = [
-            MetricHtmlInfo(
-                name="data_integrity_null_values_title",
-                info=header_text(label="Data Integrity Metric: Null Values Statistic"),
-            ),
-            MetricHtmlInfo(
-                name="data_integrity_null_values_title",
-                info=header_text(label=f"In current dataset {number_of_nulls} null values."),
-            ),
+            header_text(label="Data Integrity Metric: Null Values Statistic"),
+            header_text(label=f"In current dataset {number_of_nulls} null values."),
             self._get_table_stat(dataset_name="current", stats=metric_result.current_null_values),
         ]
 

@@ -1,4 +1,4 @@
-from typing import ClassVar
+from typing import Type
 
 import pandas as pd
 import pytest
@@ -26,7 +26,7 @@ from evidently.dashboard.tabs.base_tab import Tab
         (CatTargetDriftTab, True),
     ),
 )
-def test_dashboards_without_current_data(tab_class: ClassVar[Tab], raises_value_error: bool) -> None:
+def test_dashboards_without_current_data(tab_class: Type[Tab], raises_value_error: bool) -> None:
     """Check that dashboards
     - that can be executed with one dataset only do not get an error
     - that cannot be executed with one dataset raise correct error

@@ -15,15 +15,14 @@ from evidently.calculations.data_quality import get_rows_count
 from evidently.dashboard.widgets.utils import CutQuantileTransformer
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
+from evidently.model.widget import BaseWidgetInfo
 from evidently.options import ColorOptions
 from evidently.options import DataDriftOptions
 from evidently.options import QualityMetricsOptions
-from evidently.renderers.base_renderer import MetricHtmlInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import WidgetSize
 from evidently.renderers.html_widgets import plotly_data
-from evidently.renderers.html_widgets import plotly_figure
 from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.data_operations import process_columns
 
@@ -299,7 +298,7 @@ def _values_plots(
 
 @default_renderer(wrap_type=NumTargetDriftMetrics)
 class NumTargetDriftMetricsRenderer(MetricRenderer):
-    def render_html(self, obj: NumTargetDriftMetrics) -> List[MetricHtmlInfo]:
+    def render_html(self, obj: NumTargetDriftMetrics) -> List[BaseWidgetInfo]:
         result = []
         target_output_distr = obj.get_result().target_output_distr
         target_metrics = obj.get_result().target_metrics
@@ -308,27 +307,21 @@ class NumTargetDriftMetricsRenderer(MetricRenderer):
         if target_output_distr is not None and target_metrics is not None and target_values_plot is not None:
             output_sim_test = "detected" if target_metrics.drift_detected else "not detected"
             result.append(
-                MetricHtmlInfo(
-                    name="",
-                    info=plotly_data(
-                        title=f"Target Drift: {output_sim_test}, "
-                        f" drift score={round(target_metrics.drift_score, 6)} ({target_metrics.stattest_name})",
-                        data=target_output_distr["data"],
-                        layout=target_output_distr["layout"],
-                    ),
-                )
+                plotly_data(
+                    title=f"Target Drift: {output_sim_test}, "
+                    f" drift score={round(target_metrics.drift_score, 6)} ({target_metrics.stattest_name})",
+                    data=target_output_distr["data"],
+                    layout=target_output_distr["layout"],
+                ),
             )
 
             result.append(_plot_correlations(target_metrics, color_options))
             result.append(
-                MetricHtmlInfo(
-                    name="",
-                    info=plotly_data(
-                        title="Target Values",
-                        size=WidgetSize.HALF,
-                        data=target_values_plot["data"],
-                        layout=target_values_plot["layout"],
-                    ),
+                plotly_data(
+                    title="Target Values",
+                    size=WidgetSize.HALF,
+                    data=target_values_plot["data"],
+                    layout=target_values_plot["layout"],
                 ),
             )
         prediction_output_distr = obj.get_result().prediction_output_distr
@@ -341,28 +334,22 @@ class NumTargetDriftMetricsRenderer(MetricRenderer):
         ):
             output_sim_test = "detected" if prediction_metrics.drift_detected else "not detected"
             result.append(
-                MetricHtmlInfo(
-                    name="",
-                    info=plotly_data(
-                        title=f"Prediction Drift: {output_sim_test},"
-                        f" drift score={round(prediction_metrics.drift_score, 6)}"
-                        f" ({prediction_metrics.stattest_name})",
-                        data=prediction_output_distr["data"],
-                        layout=prediction_output_distr["layout"],
-                    ),
+                plotly_data(
+                    title=f"Prediction Drift: {output_sim_test},"
+                    f" drift score={round(prediction_metrics.drift_score, 6)}"
+                    f" ({prediction_metrics.stattest_name})",
+                    data=prediction_output_distr["data"],
+                    layout=prediction_output_distr["layout"],
                 )
             )
             result.append(_plot_correlations(prediction_metrics, color_options))
             result.append(
-                MetricHtmlInfo(
-                    name="",
-                    info=plotly_data(
-                        title="Prediction Values",
-                        size=WidgetSize.HALF,
-                        data=prediction_values_plot["data"],
-                        layout=prediction_values_plot["layout"],
-                    ),
-                ),
+                plotly_data(
+                    title="Prediction Values",
+                    size=WidgetSize.HALF,
+                    data=prediction_values_plot["data"],
+                    layout=prediction_values_plot["layout"],
+                )
             )
         return result
 
@@ -397,12 +384,9 @@ def _plot_correlations(metrics: DataDriftMetrics, color_options: ColorOptions):
     )
 
     output_corr_json = output_corr.to_plotly_json()
-    return MetricHtmlInfo(
-        name="",
-        info=plotly_data(
-            title="Target Correlations",
-            size=WidgetSize.HALF,
-            data=output_corr_json["data"],
-            layout=output_corr_json["layout"],
-        ),
+    return plotly_data(
+        title="Target Correlations",
+        size=WidgetSize.HALF,
+        data=output_corr_json["data"],
+        layout=output_corr_json["layout"],
     )
