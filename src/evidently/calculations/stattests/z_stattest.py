@@ -8,7 +8,7 @@ from scipy.stats import norm
 
 from evidently.calculations.stattests.registry import StatTest
 from evidently.calculations.stattests.registry import register_stattest
-from evidently.calculations.stattests.utils import get_unique_values_list_from_series
+from evidently.calculations.stattests.utils import get_unique_not_nan_values_list_from_series
 
 
 def proportions_diff_z_stat_ind(ref: pd.DataFrame, curr: pd.DataFrame):
@@ -46,7 +46,7 @@ def _z_stat_test(
     ):
         p_value = 1
     else:
-        keys = sorted(get_unique_values_list_from_series(current_data=current_data, reference_data=reference_data))
+        keys = sorted(get_unique_not_nan_values_list_from_series(current_data=current_data, reference_data=reference_data))
         p_value = proportions_diff_z_test(
             proportions_diff_z_stat_ind(
                 reference_data.apply(lambda x, key=keys[0]: 0 if x == key else 1),

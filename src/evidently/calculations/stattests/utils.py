@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 
-def get_unique_values_list_from_series(current_data: pd.Series, reference_data: pd.Series) -> list:
+def get_unique_not_nan_values_list_from_series(current_data: pd.Series, reference_data: pd.Series) -> list:
     """Get unique values from current and reference series, drop NaNs"""
     return list(set(reference_data.dropna().unique()) | set(current_data.dropna().unique()))
 
@@ -28,7 +28,7 @@ def get_binned_data(
         current_percents = np.histogram(current_data, bins)[0] / len(current_data)
 
     else:
-        keys = get_unique_values_list_from_series(current_data=current_data, reference_data=reference_data)
+        keys = get_unique_not_nan_values_list_from_series(current_data=current_data, reference_data=reference_data)
         ref_feature_dict = {**dict.fromkeys(keys, 0), **dict(reference_data.value_counts())}
         current_feature_dict = {**dict.fromkeys(keys, 0), **dict(current_data.value_counts())}
         reference_percents = np.array([ref_feature_dict[key] / len(reference_data) for key in keys])
