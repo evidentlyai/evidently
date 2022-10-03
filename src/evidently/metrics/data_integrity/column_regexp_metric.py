@@ -13,7 +13,6 @@ from evidently.metrics.base_metric import Metric
 from evidently.metrics.data_integrity_metrics import DataIntegrityValueByRegexpMetricResult
 from evidently.metrics.data_integrity_metrics import DataIntegrityValueByRegexpStat
 from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricHtmlInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
@@ -106,18 +105,15 @@ class ColumnRegExpMetricRenderer(MetricRenderer):
         return dataclasses.asdict(obj.get_result())
 
     @staticmethod
-    def _get_counters(dataset_name: str, metrics: DataIntegrityValueByRegexpStat) -> MetricHtmlInfo:
+    def _get_counters(dataset_name: str, metrics: DataIntegrityValueByRegexpStat) -> BaseWidgetInfo:
         percents = round(metrics.number_of_not_matched * 100 / metrics.number_of_rows, 3)
         counters = [
             CounterData(label="Number of Values", value=f"{metrics.number_of_rows}"),
             CounterData(label="Mismatched", value=f"{metrics.number_of_not_matched} ({percents}%)"),
         ]
-        return MetricHtmlInfo(
-            f"column_reg_exp_metric_{dataset_name.lower()}_table",
-            counter(
-                counters=counters,
-                title=f"{dataset_name.capitalize()} dataset",
-            ),
+        return counter(
+            counters=counters,
+            title=f"{dataset_name.capitalize()} dataset",
         )
 
     @staticmethod
@@ -128,15 +124,12 @@ class ColumnRegExpMetricRenderer(MetricRenderer):
             data=metrics.table_of_not_matched.items(),
         )
 
-    def render_html(self, obj: ColumnRegExpMetric) -> List[MetricHtmlInfo]:
+    def render_html(self, obj: ColumnRegExpMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         column_name = metric_result.column_name
 
         result = [
-            MetricHtmlInfo(
-                "column_reg_exp_metric_title",
-                header_text(label=f"RegExp Match for column '{column_name}'."),
-            ),
+            header_text(label=f"RegExp Match for column '{column_name}'."),
             self._get_counters("current", metric_result.current),
         ]
 
@@ -158,10 +151,5 @@ class ColumnRegExpMetricRenderer(MetricRenderer):
         else:
             tables = current_table
 
-        result.append(
-            MetricHtmlInfo(
-                "column_reg_exp_metric_tables",
-                tables,
-            )
-        )
+        result.append(tables)
         return result
