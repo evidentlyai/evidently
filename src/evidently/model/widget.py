@@ -64,6 +64,7 @@ class WidgetType(Enum):
     BIG_GRAPH = "big_graph"
     RICH_DATA = "rich_data"
     TABBED_GRAPH = "tabbed_graph"
+    TABS = "tabs"
 
 
 @dataclass

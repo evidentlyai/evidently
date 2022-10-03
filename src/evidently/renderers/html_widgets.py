@@ -9,6 +9,7 @@ import dataclasses
 import plotly.graph_objs as go
 
 from evidently.model.widget import BaseWidgetInfo
+from evidently.model.widget import TabInfo
 from evidently.model.widget import WidgetType
 from evidently.options import ColorOptions
 
@@ -193,6 +194,10 @@ def counter(
         title: widget title
         counters: list of counters in widget
         size: widget size
+
+    Example:
+        >>> display_counters = [CounterData("value1", "some value"), CounterData.float("float", 0.111, 2)]
+        >>> widget_info = counter(counters=display_counters, title="counters example")
     """
     return BaseWidgetInfo(
         title=title,
@@ -275,6 +280,38 @@ class ColumnDefinition:
         if self.options is not None:
             result["options"] = self.options
         return result
+
+
+@dataclasses.dataclass
+class TabData:
+    title: str
+    widget: BaseWidgetInfo
+
+
+def widget_tabs(*, title: str = "", size: WidgetSize = WidgetSize.FULL, tabs: List[TabData]) -> BaseWidgetInfo:
+    """
+    generate widget with tabs which can contain any other widget.
+
+    Args:
+        title: widget title
+        size: widget size
+        tabs: list of TabData with widgets to include
+
+    Example:
+        >>> columns = ["Column A", "Column B"]
+        >>> in_table_data = [[1, 2], [3, 4]]
+        >>> tab_data = [
+        ...     TabData("Counters", counter(counters=[CounterData("counter", "value")], title="Counter")),
+        ...     TabData("Table", table_data(column_names=columns, data=in_table_data, title="Table")),
+        ... ]
+        >>> widget_info = widget_tabs(title="Tabs", tabs=tab_data)
+    """
+    return BaseWidgetInfo(
+        title=title,
+        type=WidgetType.TABS.value,
+        size=size.value,
+        tabs=[TabInfo(str(uuid4()), tab.title, tab.widget) for tab in tabs],
+    )
 
 
 def rich_table_data(
