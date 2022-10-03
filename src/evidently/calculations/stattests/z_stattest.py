@@ -8,6 +8,7 @@ from scipy.stats import norm
 
 from evidently.calculations.stattests.registry import StatTest
 from evidently.calculations.stattests.registry import register_stattest
+from evidently.calculations.stattests.utils import get_unique_not_nan_values_list_from_series
 
 
 def proportions_diff_z_stat_ind(ref: pd.DataFrame, curr: pd.DataFrame):
@@ -38,7 +39,6 @@ def proportions_diff_z_test(z_stat, alternative="two-sided"):
 def _z_stat_test(
     reference_data: pd.Series, current_data: pd.Series, feature_type: str, threshold: float
 ) -> Tuple[float, bool]:
-    #  TODO: simplify ignoring NaN values here, in chi_stat_test and data_drift_analyzer
     if (
         reference_data.nunique() == 1
         and current_data.nunique() == 1
@@ -46,12 +46,13 @@ def _z_stat_test(
     ):
         p_value = 1
     else:
-        keys = set(list(reference_data.unique()) + list(current_data.unique())) - {np.nan}
-        ordered_keys = sorted(list(keys))
+        keys = sorted(
+            get_unique_not_nan_values_list_from_series(current_data=current_data, reference_data=reference_data)
+        )
         p_value = proportions_diff_z_test(
             proportions_diff_z_stat_ind(
-                reference_data.apply(lambda x, key=ordered_keys[0]: 0 if x == key else 1),
-                current_data.apply(lambda x, key=ordered_keys[0]: 0 if x == key else 1),
+                reference_data.apply(lambda x, key=keys[0]: 0 if x == key else 1),
+                current_data.apply(lambda x, key=keys[0]: 0 if x == key else 1),
             )
         )
     return p_value, p_value < threshold
