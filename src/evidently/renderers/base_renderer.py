@@ -1,3 +1,4 @@
+import uuid
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -9,20 +10,13 @@ from evidently.model.widget import BaseWidgetInfo
 
 @dataclasses.dataclass
 class DetailsInfo:
-    id: str
     title: str
     info: BaseWidgetInfo
-
-
-@dataclasses.dataclass
-class MetricHtmlInfo:
-    name: str
-    info: BaseWidgetInfo
-    details: List[DetailsInfo] = dataclasses.field(default_factory=list)
+    id: str = dataclasses.field(default_factory=lambda: str(uuid.uuid4()))
 
 
 class MetricRenderer:
-    def render_html(self, obj) -> List[MetricHtmlInfo]:
+    def render_html(self, obj) -> List[BaseWidgetInfo]:
         raise NotImplementedError()
 
     def render_json(self, obj) -> dict:
@@ -36,6 +30,10 @@ class TestHtmlInfo:
     status: str
     details: List[DetailsInfo]
     groups: Dict[str, str]
+
+    def with_details(self, title: str, info: BaseWidgetInfo):
+        self.details.append(DetailsInfo(title, info))
+        return self
 
 
 class TestRenderer:

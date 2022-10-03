@@ -1,6 +1,7 @@
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Tuple
 
 import numpy as np
 import pandas as pd
@@ -10,6 +11,8 @@ from plotly.subplots import make_subplots
 
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import DetailsInfo
+from evidently.renderers.html_widgets import plotly_figure
+from evidently.renderers.html_widgets import table_data
 from evidently.renderers.render_utils import COLOR_DISCRETE_SEQUENCE
 from evidently.renderers.render_utils import GREY
 from evidently.renderers.render_utils import RED
@@ -140,28 +143,16 @@ def plot_value_counts_tables(feature_name, values, curr_df, ref_df, id_prfx):
         if curr_vals_inside_lst.shape[0] > 0:
             additional_plots.append(
                 DetailsInfo(
-                    id=f"{id_prfx}_incide_{feature_name}",
                     title="Values inside the list (top 10)",
-                    info=BaseWidgetInfo(
-                        title="",
-                        type="table",
-                        params={"header": ["value", "count"], "data": curr_vals_inside_lst[:10].values},
-                        size=2,
-                    ),
+                    info=table_data(column_names=["value", "count"], data=curr_vals_inside_lst[:10].values),
                 )
             )
         curr_vals_outside_lst = curr_df[~curr_df.x.isin(values)].sort_values("count", ascending=False)
         if curr_vals_outside_lst.shape[0] > 0:
             additional_plots.append(
                 DetailsInfo(
-                    id=f"{id_prfx}_outside_{feature_name}",
                     title="Values outside the list (top 10)",
-                    info=BaseWidgetInfo(
-                        title="",
-                        type="table",
-                        params={"header": ["value", "count"], "data": curr_vals_outside_lst[:10].values},
-                        size=2,
-                    ),
+                    info=table_data(column_names=["value", "count"], data=curr_vals_outside_lst[:10].values),
                 )
             )
     elif ref_df is not None:
@@ -180,26 +171,14 @@ def plot_value_counts_tables(feature_name, values, curr_df, ref_df, id_prfx):
         missed_values_data = ref_df[ref_df.x.isin(missed_values)].sort_values("count", ascending=False)
         additional_plots.append(
             DetailsInfo(
-                id=f"{id_prfx}_new_{feature_name}",
                 title="New values (top 10)",
-                info=BaseWidgetInfo(
-                    title="",
-                    type="table",
-                    params={"header": ["value", "count"], "data": new_values_data[:10].values},
-                    size=2,
-                ),
+                info=table_data(column_names=["value", "count"], data=new_values_data[:10].values),
             )
         )
         additional_plots.append(
             DetailsInfo(
-                id=f"{id_prfx}_missed_{feature_name}",
                 title="Missing values (top 10)",
-                info=BaseWidgetInfo(
-                    title="",
-                    type="table",
-                    params={"header": ["value", "count"], "data": missed_values_data[:10].values},
-                    size=2,
-                ),
+                info=table_data(column_names=["value", "count"], data=missed_values_data[:10].values),
             )
         )
 
@@ -212,28 +191,16 @@ def plot_value_counts_tables_ref_curr(feature_name, curr_df, ref_df, id_prfx):
 
     additional_plots.append(
         DetailsInfo(
-            id=f"{id_prfx}_curr_{feature_name}",
             title="Current value counts (top 10)",
-            info=BaseWidgetInfo(
-                title="",
-                type="table",
-                params={"header": ["value", "count"], "data": curr_df[:10].values},
-                size=2,
-            ),
+            info=table_data(column_names=["value", "count"], data=curr_df[:10].values),
         )
     )
     if ref_df is not None:
         ref_df = ref_df[ref_df["count"] != 0]
         additional_plots.append(
             DetailsInfo(
-                id=f"{id_prfx}_ref_{feature_name}",
                 title="Reference value counts (top 10)",
-                info=BaseWidgetInfo(
-                    title="",
-                    type="table",
-                    params={"header": ["value", "count"], "data": ref_df[:10].values},
-                    size=2,
-                ),
+                info=table_data(column_names=["value", "count"], data=ref_df[:10].values),
             )
         )
     return additional_plots
@@ -291,7 +258,12 @@ def dataframes_to_table(
 
 
 def plot_dicts_to_table(
-    dict_curr: dict, dict_ref: Optional[dict], columns: list, id_prfx: str, sort_by: str = "curr", asc: bool = False
+    dict_curr: dict,
+    dict_ref: Optional[dict],
+    columns: list,
+    id_prfx: str,
+    sort_by: str = "curr",
+    asc: bool = False,
 ):
     return dataframes_to_table(
         pd.DataFrame.from_dict(dict_curr, orient="index", columns=["value"]),
@@ -350,7 +322,6 @@ def plot_correlations(current_correlations, reference_correlations):
 
 
 def plot_conf_mtrx(curr_mtrx, ref_mtrx):
-
     if ref_mtrx is not None:
         cols = 2
         subplot_titles = ["current", "reference"]
@@ -382,7 +353,7 @@ def plot_conf_mtrx(curr_mtrx, ref_mtrx):
     return fig
 
 
-def plot_roc_auc(curr_roc_curve: dict, ref_roc_curve: Optional[dict]) -> list:
+def plot_roc_auc(curr_roc_curve: dict, ref_roc_curve: Optional[dict]) -> List[Tuple[str, BaseWidgetInfo]]:
     additional_plots = []
     cols = 1
     subplot_titles = [""]
@@ -415,19 +386,8 @@ def plot_roc_auc(curr_roc_curve: dict, ref_roc_curve: Optional[dict]) -> list:
             )
             fig.append_trace(trace, 1, 2)
         fig.update_layout(yaxis_title="True Positive Rate", xaxis_title="False Positive Rate", showlegend=True)
-        fig_json = fig.to_plotly_json()
-        additional_plots.append(
-            DetailsInfo(
-                f"Roc_auc_{label}",
-                f"ROC Curve for label {label}",
-                BaseWidgetInfo(
-                    title="",
-                    size=2,
-                    type="big_graph",
-                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
-                ),
-            )
-        )
+
+        additional_plots.append((f"ROC Curve for label {label}", plotly_figure(title="", figure=fig)))
     return additional_plots
 
 

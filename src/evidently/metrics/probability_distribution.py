@@ -8,8 +8,8 @@ from plotly import figure_factory as ff
 
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
+from evidently.model.widget import BaseWidgetInfo
 from evidently.options import ColorOptions
-from evidently.renderers.base_renderer import MetricHtmlInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import GraphData
@@ -80,7 +80,7 @@ class CatTargetDriftRenderer(MetricRenderer):
     def render_json(self, obj: ProbabilityDistributionMetric) -> dict:
         return {}
 
-    def render_html(self, obj: ProbabilityDistributionMetric) -> List[MetricHtmlInfo]:
+    def render_html(self, obj: ProbabilityDistributionMetric) -> List[BaseWidgetInfo]:
         ref = obj.get_result().ref_distplot
         curr = obj.get_result().curr_distplot
         result = []
@@ -88,24 +88,18 @@ class CatTargetDriftRenderer(MetricRenderer):
         if ref is not None:
             size = WidgetSize.HALF
             result.append(
-                MetricHtmlInfo(
-                    name="",
-                    info=plotly_graph_tabs(
-                        title="Reference: Probability Distribution",
-                        size=size,
-                        figures=[GraphData(graph["title"], graph["data"], graph["layout"]) for graph in ref],
-                    ),
+                plotly_graph_tabs(
+                    title="Reference: Probability Distribution",
+                    size=size,
+                    figures=[GraphData(graph["title"], graph["data"], graph["layout"]) for graph in ref],
                 )
             )
         if curr is not None:
             result.append(
-                MetricHtmlInfo(
-                    name="",
-                    info=plotly_graph_tabs(
-                        title="Current: Probability Distribution",
-                        size=size,
-                        figures=[GraphData(graph["title"], graph["data"], graph["layout"]) for graph in curr],
-                    ),
+                plotly_graph_tabs(
+                    title="Current: Probability Distribution",
+                    size=size,
+                    figures=[GraphData(graph["title"], graph["data"], graph["layout"]) for graph in curr],
                 )
             )
         return result

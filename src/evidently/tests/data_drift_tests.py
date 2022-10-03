@@ -16,6 +16,8 @@ from evidently.renderers.base_renderer import DetailsInfo
 from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import default_renderer
+from evidently.renderers.html_widgets import plotly_figure
+from evidently.renderers.html_widgets import table_data
 from evidently.renderers.render_utils import plot_distr
 from evidently.tests.base_test import BaseCheckValueTest
 from evidently.tests.base_test import GroupData
@@ -215,18 +217,7 @@ class TestNumberOfDriftedFeaturesRenderer(TestRenderer):
             columns=["Feature name", "Stattest", "Drift score", "Threshold", "Data Drift"],
         )
         df = df.sort_values("Data Drift")
-        info.details = [
-            DetailsInfo(
-                id="drift_table",
-                title="",
-                info=BaseWidgetInfo(
-                    title="",
-                    type="table",
-                    params={"header": df.columns.to_list(), "data": df.values},
-                    size=2,
-                ),
-            ),
-        ]
+        info.with_details(title="Drift Table", info=table_data(column_names=df.columns.to_list(), data=df.values))
         return info
 
 
@@ -285,17 +276,5 @@ class TestFeatureValueDriftRenderer(TestRenderer):
         curr_distr = obj.metric.get_result().distr_for_plots[feature_name]["current"]
         ref_distr = obj.metric.get_result().distr_for_plots[feature_name]["reference"]
         fig = plot_distr(curr_distr, ref_distr)
-        fig_json = fig.to_plotly_json()
-        info.details.append(
-            DetailsInfo(
-                id=feature_name,
-                title="",
-                info=BaseWidgetInfo(
-                    title="",
-                    size=2,
-                    type="big_graph",
-                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
-                ),
-            )
-        )
+        info.with_details(f"{feature_name}", plotly_figure(title="", figure=fig))
         return info

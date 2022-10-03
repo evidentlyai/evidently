@@ -17,7 +17,7 @@ from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.metrics.utils import make_hist_for_cat_plot
 from evidently.metrics.utils import make_hist_for_num_plot
-from evidently.renderers.base_renderer import MetricHtmlInfo
+from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
@@ -145,7 +145,7 @@ class DataQualityMetricsRenderer(MetricRenderer):
         return result
 
     @staticmethod
-    def _get_data_quality_summary_table(metric_result: DataQualityMetricsResults) -> MetricHtmlInfo:
+    def _get_data_quality_summary_table(metric_result: DataQualityMetricsResults) -> BaseWidgetInfo:
         headers = ["Quality Metric", "Current"]
         target_name = str(metric_result.columns.utility_columns.target)
         date_column = metric_result.columns.utility_columns.date
@@ -193,15 +193,12 @@ class DataQualityMetricsRenderer(MetricRenderer):
             # remove reference values from stats
             stats = [item[:2] for item in stats]
 
-        return MetricHtmlInfo(
-            "data_quality_summary_table",
-            table_data(title="Data Summary", column_names=headers, data=stats),
-        )
+        return table_data(title="Data Summary", column_names=headers, data=stats)
 
     @staticmethod
     def _get_data_quality_distribution_graph(
         features_stat: Dict[str, Dict[str, pd.DataFrame]],
-    ) -> List[MetricHtmlInfo]:
+    ) -> List[BaseWidgetInfo]:
         result = []
 
         for column_name, stat in features_stat.items():
@@ -209,21 +206,13 @@ class DataQualityMetricsRenderer(MetricRenderer):
             ref_distr = stat.get("reference")
             fig = plot_distr(curr_distr, ref_distr)
 
-            result.append(
-                MetricHtmlInfo(
-                    f"data_quality_{column_name}",
-                    plotly_figure(title=f"Column: {column_name}", figure=fig),
-                )
-            )
+            result.append(plotly_figure(title=f"Column: {column_name}", figure=fig))
         return result
 
-    def render_html(self, obj: DataQualityMetrics) -> List[MetricHtmlInfo]:
+    def render_html(self, obj: DataQualityMetrics) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         result = [
-            MetricHtmlInfo(
-                "data_quality_title",
-                header_text(label="Data Quality Report"),
-            ),
+            header_text(label="Data Quality Report"),
             self._get_data_quality_summary_table(metric_result=metric_result),
         ]
         result.extend(self._get_data_quality_distribution_graph(features_stat=metric_result.distr_for_plots))
@@ -270,21 +259,15 @@ class DataQualityStabilityMetricsRenderer(MetricRenderer):
     def render_json(self, obj: DataQualityStabilityMetrics) -> dict:
         return dataclasses.asdict(obj.get_result())
 
-    def render_html(self, obj: DataQualityStabilityMetrics) -> List[MetricHtmlInfo]:
+    def render_html(self, obj: DataQualityStabilityMetrics) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         result = [
-            MetricHtmlInfo(
-                "data_quality_stability_title",
-                header_text(label="Data Stability Metrics"),
-            ),
-            MetricHtmlInfo(
-                "data_quality_stability_info",
-                counter(
-                    counters=[
-                        CounterData("Not stable target", str(metric_result.number_not_stable_target)),
-                        CounterData("Not stable prediction", str(metric_result.number_not_stable_prediction)),
-                    ]
-                ),
+            header_text(label="Data Stability Metrics"),
+            counter(
+                counters=[
+                    CounterData("Not stable target", str(metric_result.number_not_stable_target)),
+                    CounterData("Not stable prediction", str(metric_result.number_not_stable_prediction)),
+                ]
             ),
         ]
         return result
@@ -351,7 +334,7 @@ class DataQualityValueListMetricsRenderer(MetricRenderer):
         return result
 
     @staticmethod
-    def _get_table_stat(dataset_name: str, metrics: DataQualityValueListMetricsResults) -> MetricHtmlInfo:
+    def _get_table_stat(dataset_name: str, metrics: DataQualityValueListMetricsResults) -> BaseWidgetInfo:
         matched_stat = [
             ("Values from the list", metrics.number_in_list),
             ("Share from the list", np.round(metrics.share_in_list, 3)),
@@ -361,27 +344,18 @@ class DataQualityValueListMetricsRenderer(MetricRenderer):
         ]
 
         matched_stat_headers = ["Metric", "Value"]
-        return MetricHtmlInfo(
-            name=f"data_quality_values_list_stat_{dataset_name.lower()}",
-            info=table_data(
-                title=f"{dataset_name.capitalize()}: Values list statistic",
-                column_names=matched_stat_headers,
-                data=matched_stat,
-            ),
+        return table_data(
+            title=f"{dataset_name.capitalize()}: Values list statistic",
+            column_names=matched_stat_headers,
+            data=matched_stat,
         )
 
-    def render_html(self, obj: DataQualityValueListMetrics) -> List[MetricHtmlInfo]:
+    def render_html(self, obj: DataQualityValueListMetrics) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         values_list_info = ",".join(metric_result.values)
         result = [
-            MetricHtmlInfo(
-                "data_quality_values_list_title",
-                header_text(label=f"Data Value List Metrics for the column: {metric_result.column_name}"),
-            ),
-            MetricHtmlInfo(
-                "data_quality_values_list_info",
-                header_text(label=f"Values: {values_list_info}"),
-            ),
+            header_text(label=f"Data Value List Metrics for the column: {metric_result.column_name}"),
+            header_text(label=f"Values: {values_list_info}"),
             self._get_table_stat(dataset_name="current", metrics=metric_result),
         ]
         return result
@@ -476,7 +450,7 @@ class DataQualityValueRangeMetricsRenderer(MetricRenderer):
         return result
 
     @staticmethod
-    def _get_table_stat(dataset_name: str, metrics: DataQualityValueRangeMetricsResults) -> MetricHtmlInfo:
+    def _get_table_stat(dataset_name: str, metrics: DataQualityValueRangeMetricsResults) -> BaseWidgetInfo:
         matched_stat = [
             ("Values from the range", metrics.number_in_range),
             ("Share from the range", np.round(metrics.share_in_range, 3)),
@@ -486,29 +460,20 @@ class DataQualityValueRangeMetricsRenderer(MetricRenderer):
         ]
 
         matched_stat_headers = ["Metric", "Value"]
-        return MetricHtmlInfo(
-            name=f"data_quality_values_range_stat_{dataset_name.lower()}",
-            info=table_data(
-                title=f"{dataset_name.capitalize()}: Values statistic",
-                column_names=matched_stat_headers,
-                data=matched_stat,
-            ),
+        return table_data(
+            title=f"{dataset_name.capitalize()}: Values statistic",
+            column_names=matched_stat_headers,
+            data=matched_stat,
         )
 
-    def render_html(self, obj: DataQualityValueRangeMetrics) -> List[MetricHtmlInfo]:
+    def render_html(self, obj: DataQualityValueRangeMetrics) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         column_name = metric_result.column_name
         left = metric_result.range_left_value
         right = metric_result.range_right_value
         result = [
-            MetricHtmlInfo(
-                "data_quality_value_range_title",
-                header_text(label=f"Data Value Range Metrics for the column: {column_name}"),
-            ),
-            MetricHtmlInfo(
-                "data_quality_value_range_title",
-                header_text(label=f"Range is from {left} to {right}"),
-            ),
+            header_text(label=f"Data Value Range Metrics for the column: {column_name}"),
+            header_text(label=f"Range is from {left} to {right}"),
             self._get_table_stat(dataset_name="current", metrics=metric_result),
         ]
         return result
@@ -565,7 +530,7 @@ class DataQualityValueQuantileMetricsRenderer(MetricRenderer):
         result.pop("distr_for_plot", None)
         return result
 
-    def render_html(self, obj: DataQualityValueQuantileMetrics) -> List[MetricHtmlInfo]:
+    def render_html(self, obj: DataQualityValueQuantileMetrics) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         column_name = metric_result.column_name
         counters = [
@@ -579,14 +544,8 @@ class DataQualityValueQuantileMetricsRenderer(MetricRenderer):
             )
 
         result = [
-            MetricHtmlInfo(
-                "data_quality_value_quantile_title",
-                header_text(label=f"Data Value Quantile Metrics for the column: {column_name}"),
-            ),
-            MetricHtmlInfo(
-                "data_quality_value_quantile_stat",
-                counter(counters=counters),
-            ),
+            header_text(label=f"Data Value Quantile Metrics for the column: {column_name}"),
+            counter(counters=counters),
         ]
         return result
 
@@ -714,7 +673,7 @@ class DataQualityCorrelationMetricsRenderer(MetricRenderer):
         return result
 
     @staticmethod
-    def _get_table_stat(dataset_name: str, correlation: DataCorrelation) -> MetricHtmlInfo:
+    def _get_table_stat(dataset_name: str, correlation: DataCorrelation) -> BaseWidgetInfo:
         matched_stat = [
             ("Abs max correlation", np.round(correlation.abs_max_correlation, 3)),
             ("Abs max num features correlation", np.round(correlation.abs_max_num_features_correlation, 3)),
@@ -732,23 +691,17 @@ class DataQualityCorrelationMetricsRenderer(MetricRenderer):
             )
 
         matched_stat_headers = ["Metric", "Value"]
-        return MetricHtmlInfo(
-            name=f"data_quality_correlation_stat_{dataset_name.lower()}",
-            info=table_data(
-                title=f"{dataset_name.capitalize()}: Correlation statistic",
-                column_names=matched_stat_headers,
-                data=matched_stat,
-            ),
+        return table_data(
+            title=f"{dataset_name.capitalize()}: Correlation statistic",
+            column_names=matched_stat_headers,
+            data=matched_stat,
         )
 
-    def render_html(self, obj: DataQualityCorrelationMetrics) -> List[MetricHtmlInfo]:
+    def render_html(self, obj: DataQualityCorrelationMetrics) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
 
         result = [
-            MetricHtmlInfo(
-                "data_quality_correlation_title",
-                header_text(label="Data Correlation Metrics"),
-            ),
+            header_text(label="Data Correlation Metrics"),
             self._get_table_stat(dataset_name="current", correlation=metric_result.current),
         ]
 
