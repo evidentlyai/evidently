@@ -12,13 +12,16 @@ from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.metrics.data_integrity_metrics import DataIntegrityValueByRegexpMetricResult
 from evidently.metrics.data_integrity_metrics import DataIntegrityValueByRegexpStat
+from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricHtmlInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
+from evidently.renderers.html_widgets import TabData
 from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import table_data
+from evidently.renderers.html_widgets import widget_tabs
 
 
 class ColumnRegExpMetric(Metric[DataIntegrityValueByRegexpMetricResult]):
@@ -118,14 +121,11 @@ class ColumnRegExpMetricRenderer(MetricRenderer):
         )
 
     @staticmethod
-    def _get_table_stat(dataset_name: str, top: int, metrics: DataIntegrityValueByRegexpStat) -> MetricHtmlInfo:
-        return MetricHtmlInfo(
-            f"column_reg_exp_metric_{dataset_name.lower()}_details",
-            table_data(
-                title=f"{dataset_name.capitalize()} Dataset: top {top} mismatched values",
-                column_names=["Value", "Count"],
-                data=metrics.table_of_not_matched.items(),
-            ),
+    def _get_table_stat(dataset_name: str, top: int, metrics: DataIntegrityValueByRegexpStat) -> BaseWidgetInfo:
+        return table_data(
+            title=f"{dataset_name.capitalize()} Dataset: top {top} mismatched values",
+            column_names=["Value", "Count"],
+            data=metrics.table_of_not_matched.items(),
         )
 
     def render_html(self, obj: ColumnRegExpMetric) -> List[MetricHtmlInfo]:
@@ -143,11 +143,25 @@ class ColumnRegExpMetricRenderer(MetricRenderer):
         if metric_result.reference is not None:
             result.append(self._get_counters("reference", metric_result.reference))
 
-        result.append(self._get_table_stat("current", metric_result.top, metric_result.current))
+        current_table = self._get_table_stat("current", metric_result.top, metric_result.current)
 
         if metric_result.reference is not None:
-            result.append(
-                self._get_table_stat("reference", metric_result.top, metric_result.reference),
-            )
+            tables_tabs = [
+                TabData(title="Current dataset", widget=current_table),
+                TabData(
+                    title="Reference dataset",
+                    widget=self._get_table_stat("reference", metric_result.top, metric_result.reference),
+                ),
+            ]
+            tables = widget_tabs(tabs=tables_tabs)
 
+        else:
+            tables = current_table
+
+        result.append(
+            MetricHtmlInfo(
+                "column_reg_exp_metric_tables",
+                tables,
+            )
+        )
         return result
