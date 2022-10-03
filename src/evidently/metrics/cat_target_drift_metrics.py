@@ -13,7 +13,6 @@ from evidently.calculations.data_drift import get_one_column_drift
 from evidently.calculations.data_quality import get_rows_count
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
-from evidently.metrics.utils import make_hist_for_cat_plot
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import DataDriftOptions
 from evidently.options import OptionsProvider

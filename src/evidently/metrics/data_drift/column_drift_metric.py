@@ -9,7 +9,6 @@ from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import DataDriftOptions
-from evidently.renderers.base_renderer import MetricHtmlInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
@@ -82,7 +81,7 @@ class ColumnDriftMetric(Metric[ColumnDriftMetricResults]):
 
 @default_renderer(wrap_type=ColumnDriftMetric)
 class ColumnDriftMetricRenderer(MetricRenderer):
-    def render_html(self, obj: ColumnDriftMetric) -> List[MetricHtmlInfo]:
+    def render_html(self, obj: ColumnDriftMetric) -> List[BaseWidgetInfo]:
         result = obj.get_result()
 
         if result.drift_detected:
@@ -96,26 +95,17 @@ class ColumnDriftMetricRenderer(MetricRenderer):
         fig = plot_distr(result.current_distribution, result.reference_distribution)
         fig_json = fig.to_plotly_json()
         return [
-            MetricHtmlInfo(
-                "column_data_drift_title",
-                header_text(label=f"Drift in column '{result.column_name}'"),
+            header_text(label=f"Drift in column '{result.column_name}'"),
+            header_text(
+                label=f"Data drift {drift}. "
+                f"Drift detection method: {result.stattest_name}. "
+                f"Drift score: {drift_score}"
             ),
-            MetricHtmlInfo(
-                "column_data_drift_title",
-                header_text(
-                    label=f"Data drift {drift}. "
-                    f"Drift detection method: {result.stattest_name}. "
-                    f"Drift score: {drift_score}"
-                ),
-            ),
-            MetricHtmlInfo(
-                "column_data_drift_distribution",
-                BaseWidgetInfo(
-                    title="",
-                    size=2,
-                    type="big_graph",
-                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
-                ),
+            BaseWidgetInfo(
+                title="",
+                size=2,
+                type="big_graph",
+                params={"data": fig_json["data"], "layout": fig_json["layout"]},
             ),
         ]
 

@@ -10,14 +10,15 @@ from evidently.calculations.data_drift import ColumnDataDriftMetrics
 from evidently.calculations.data_drift import get_drift_for_columns
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
+from evidently.model.widget import BaseWidgetInfo
 from evidently.options import ColorOptions
 from evidently.options import DataDriftOptions
-from evidently.renderers.base_renderer import DetailsInfo
-from evidently.renderers.base_renderer import MetricHtmlInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import ColumnDefinition
 from evidently.renderers.html_widgets import ColumnType
+from evidently.renderers.html_widgets import RichTableDataRow
+from evidently.renderers.html_widgets import RowDetails
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.renderers.html_widgets import rich_table_data
@@ -73,26 +74,6 @@ class DataDriftTable(Metric[DataDriftTableResults]):
         )
 
 
-def _generate_column_params(item_id: str, column_name: str, data: ColumnDataDriftMetrics) -> dict:
-    if data.current_small_distribution is None or data.reference_small_distribution is None:
-        return {}
-
-    current_small_hist = data.current_small_distribution
-    ref_small_hist = data.reference_small_distribution
-    distr_sim_test = "Detected" if data.drift_detected else "Not Detected"
-    parts = [{"title": "Data distribution", "id": f"{item_id}_{column_name}_distribution", "type": "widget"}]
-    return {
-        "details": {"parts": parts, "insights": []},
-        "f1": column_name,
-        "f6": data.column_type,
-        "stattest_name": data.stattest_name,
-        "f3": {"x": list(ref_small_hist[1]), "y": list(ref_small_hist[0])},
-        "f4": {"x": list(current_small_hist[1]), "y": list(current_small_hist[0])},
-        "f2": distr_sim_test,
-        "f5": round(data.drift_score, 6),
-    }
-
-
 @default_renderer(wrap_type=DataDriftTable)
 class DataDriftTableRenderer(MetricRenderer):
     def render_json(self, obj: DataDriftTable) -> dict:
@@ -111,7 +92,32 @@ class DataDriftTableRenderer(MetricRenderer):
 
         return result
 
-    def render_html(self, obj: DataDriftTable) -> List[MetricHtmlInfo]:
+    @staticmethod
+    def _generate_column_params(
+        item_id: str, column_name: str, data: ColumnDataDriftMetrics
+    ) -> Optional[RichTableDataRow]:
+        if data.current_small_distribution is None or data.reference_small_distribution is None:
+            return None
+
+        current_small_hist = data.current_small_distribution
+        ref_small_hist = data.reference_small_distribution
+        data_drift = "Detected" if data.drift_detected else "Not Detected"
+        fig = plot_distr(data.current_distribution, data.reference_distribution)
+        distribution = plotly_figure(title="", figure=fig)
+        return RichTableDataRow(
+            details=RowDetails().with_part("Data distribution", info=distribution),
+            fields={
+                "column_name": column_name,
+                "column_type": data.column_type,
+                "stattest_name": data.stattest_name,
+                "reference_distribution": {"x": list(ref_small_hist[1]), "y": list(ref_small_hist[0])},
+                "current_distribution": {"x": list(current_small_hist[1]), "y": list(current_small_hist[0])},
+                "data_drift": data_drift,
+                "drift_score": round(data.drift_score, 6),
+            }
+        )
+
+    def render_html(self, obj: DataDriftTable) -> List[BaseWidgetInfo]:
         results = obj.get_result()
         color_options = ColorOptions()
         target_column = results.dataset_columns.utility_columns.target
@@ -146,59 +152,37 @@ class DataDriftTableRenderer(MetricRenderer):
         item_id = str(uuid.uuid4())
 
         for column_name in columns:
-            params_data.append(_generate_column_params(item_id, column_name, results.drift_by_columns[column_name]))
+            column_params = self._generate_column_params(item_id, column_name, results.drift_by_columns[column_name])
 
-        # set additionalGraphs
-        additional_graphs_data = []
-
-        for column_name in columns:
-            current_distribution = results.drift_by_columns[column_name].current_distribution
-            reference_distribution = results.drift_by_columns[column_name].reference_distribution
-            fig = plot_distr(current_distribution, reference_distribution)
-            additional_graphs_data.append(
-                DetailsInfo(
-                    id=f"{item_id}_{column_name}_distribution",
-                    title="",
-                    info=plotly_figure(title="", figure=fig),
-                ),
-            )
+            if column_params is not None:
+                params_data.append(column_params)
 
         drift_percents = round(results.share_of_drifted_columns * 100, 3)
-        title_prefix = (
-            f"Drift is detected for {drift_percents}% of columns ({results.number_of_drifted_columns}"
-            f" out of {results.number_of_columns}). "
-        )
 
         return [
-            MetricHtmlInfo(
-                "data_drift_title",
-                header_text(label="Data Drift Report"),
-            ),
-            MetricHtmlInfo(
-                name="data_drift_table",
-                info=rich_table_data(
-                    title=title_prefix,
-                    columns=[
-                        ColumnDefinition("Column", "f1"),
-                        ColumnDefinition("Type", "f6"),
-                        ColumnDefinition(
-                            "Reference Distribution",
-                            "f3",
-                            ColumnType.HISTOGRAM,
-                            options={"xField": "x", "yField": "y", "color": color_options.primary_color},
-                        ),
-                        ColumnDefinition(
-                            "Current Distribution",
-                            "f4",
-                            ColumnType.HISTOGRAM,
-                            options={"xField": "x", "yField": "y", "color": color_options.primary_color},
-                        ),
-                        ColumnDefinition("Data Drift", "f2"),
-                        ColumnDefinition("Stat Test", "stattest_name"),
-                        ColumnDefinition("Drift Score", "f5"),
-                    ],
-                    data=params_data,
-                ),
-                details=additional_graphs_data,
+            header_text(label="Data Drift Report"),
+            rich_table_data(
+                title=f"Drift is detected for {drift_percents}% of columns "
+                f"({results.number_of_drifted_columns} out of {results.number_of_columns}).",
+                columns=[
+                    ColumnDefinition("Column", "column_name"),
+                    ColumnDefinition("Type", "column_type"),
+                    ColumnDefinition(
+                        "Reference Distribution",
+                        "reference_distribution",
+                        ColumnType.HISTOGRAM,
+                        options={"xField": "x", "yField": "y", "color": color_options.primary_color},
+                    ),
+                    ColumnDefinition(
+                        "Current Distribution",
+                        "current_distribution",
+                        ColumnType.HISTOGRAM,
+                        options={"xField": "x", "yField": "y", "color": color_options.primary_color},
+                    ),
+                    ColumnDefinition("Data Drift", "data_drift"),
+                    ColumnDefinition("Stat Test", "stattest_name"),
+                    ColumnDefinition("Drift Score", "drift_score"),
+                ],
+                data=params_data,
             ),
         ]
