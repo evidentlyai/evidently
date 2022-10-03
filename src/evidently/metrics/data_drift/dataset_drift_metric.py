@@ -4,7 +4,6 @@ from typing import Optional
 import dataclasses
 from dataclasses import dataclass
 
-from evidently.calculations.data_drift import DatasetDriftMetrics
 from evidently.calculations.data_drift import get_drift_for_columns
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
@@ -15,16 +14,16 @@ from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import header_text
-from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.data_operations import process_columns
 
 
 @dataclass
 class DatasetDriftMetricResults:
     threshold: float
-    options: DataDriftOptions
-    dataset_columns: DatasetColumns
-    metrics: DatasetDriftMetrics
+    number_of_columns: int
+    number_of_drifted_columns: int
+    share_of_drifted_columns: float
+    dataset_drift: bool
 
 
 class DatasetDriftMetric(Metric[DatasetDriftMetricResults]):
@@ -62,9 +61,10 @@ class DatasetDriftMetric(Metric[DatasetDriftMetricResults]):
         )
         return DatasetDriftMetricResults(
             threshold=self.threshold,
-            options=self.options,
-            dataset_columns=result.dataset_columns,
-            metrics=result,
+            number_of_columns=result.number_of_columns,
+            number_of_drifted_columns=result.number_of_drifted_columns,
+            share_of_drifted_columns=result.share_of_drifted_columns,
+            dataset_drift=result.dataset_drift,
         )
 
 
@@ -72,22 +72,21 @@ class DatasetDriftMetric(Metric[DatasetDriftMetricResults]):
 class DataDriftMetricsRenderer(MetricRenderer):
     def render_json(self, obj: DatasetDriftMetric) -> dict:
         result = dataclasses.asdict(obj.get_result())
-        result.pop("metrics", None)
         return result
 
     def render_html(self, obj: DatasetDriftMetric) -> List[MetricHtmlInfo]:
         result = obj.get_result()
 
-        if result.metrics.dataset_drift:
+        if result.dataset_drift:
             drift_detected = "detected"
 
         else:
             drift_detected = "NOT detected"
 
         counters = [
-            CounterData.int("Columns", result.metrics.number_of_columns),
-            CounterData.int("Drifted Columns", result.metrics.number_of_drifted_columns),
-            CounterData.float("Dataset Drift Score", result.metrics.share_of_drifted_columns, 3),
+            CounterData.int("Columns", result.number_of_columns),
+            CounterData.int("Drifted Columns", result.number_of_drifted_columns),
+            CounterData.float("Dataset Drift Score", result.share_of_drifted_columns, 3),
         ]
 
         return [

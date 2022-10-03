@@ -1,3 +1,5 @@
+import json
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -145,3 +147,31 @@ def test_dataset_drift_metric_with_options() -> None:
     report.run(current_data=current_dataset, reference_data=reference_dataset)
     assert report.show()
     assert report.json()
+
+
+def test_dataset_drift_metric_json_output() -> None:
+    current_dataset = pd.DataFrame(
+        {
+            "category_feature": ["a", "b", None],
+            "target": [1, np.NAN, 3],
+            "prediction": [1, 0, 1],
+        }
+    )
+    reference_dataset = pd.DataFrame(
+        {
+            "category_feature": ["a", "a", "b", "b"],
+            "target": [1, 4, 5, 1],
+            "prediction": [1, 0, 1, 0],
+        }
+    )
+    report = Report(metrics=[DatasetDriftMetric(options=DataDriftOptions(threshold=0.7))])
+    report.run(current_data=current_dataset, reference_data=reference_dataset)
+    result_json = report.json()
+    result = json.loads(result_json)["metrics"]["DatasetDriftMetric"]
+    assert result == {
+        "dataset_drift": True,
+        "number_of_columns": 3,
+        "number_of_drifted_columns": 2,
+        "share_of_drifted_columns": 0.6666666666666666,
+        "threshold": 0.5,
+    }
