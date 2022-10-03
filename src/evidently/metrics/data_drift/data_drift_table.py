@@ -114,7 +114,7 @@ class DataDriftTableRenderer(MetricRenderer):
                 "current_distribution": {"x": list(current_small_hist[1]), "y": list(current_small_hist[0])},
                 "data_drift": data_drift,
                 "drift_score": round(data.drift_score, 6),
-            }
+            },
         )
 
     def render_html(self, obj: DataDriftTable) -> List[BaseWidgetInfo]:
