@@ -63,7 +63,7 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
 
     def check(self):
         result = super().check()
-        metrics = self.metric.get_result().metrics
+        metrics = self.metric.get_result()
 
         return TestDataDriftResult(
             name=result.name,
@@ -88,13 +88,13 @@ class TestNumberOfDriftedFeatures(BaseDataDriftMetricsTest):
         if self.condition.has_condition():
             return self.condition
         else:
-            return TestValueCondition(lt=max(0, self.metric.get_result().metrics.number_of_columns // 3))
+            return TestValueCondition(lt=max(0, self.metric.get_result().number_of_columns // 3))
 
     def calculate_value_for_test(self) -> Numeric:
-        return self.metric.get_result().metrics.number_of_drifted_columns
+        return self.metric.get_result().number_of_drifted_columns
 
     def get_description(self, value: Numeric) -> str:
-        n_features = self.metric.get_result().metrics.number_of_columns
+        n_features = self.metric.get_result().number_of_columns
         return (
             f"The drift is detected for {value} out of {n_features} features. "
             f"The test threshold is {self.get_condition()}."
@@ -111,11 +111,11 @@ class TestShareOfDriftedFeatures(BaseDataDriftMetricsTest):
             return TestValueCondition(lt=0.3)
 
     def calculate_value_for_test(self) -> Numeric:
-        return self.metric.get_result().metrics.share_of_drifted_columns
+        return self.metric.get_result().share_of_drifted_columns
 
     def get_description(self, value: Numeric) -> str:
-        n_drifted_features = self.metric.get_result().metrics.number_of_drifted_columns
-        n_features = self.metric.get_result().metrics.number_of_columns
+        n_drifted_features = self.metric.get_result().number_of_drifted_columns
+        n_features = self.metric.get_result().number_of_columns
         return (
             f"The drift is detected for {value * 100:.3g}% features "
             f"({n_drifted_features} out of {n_features}). The test threshold is {self.get_condition()}"
@@ -143,7 +143,7 @@ class TestFeatureValueDrift(Test):
             self.metric = DataDriftTable(options=options)
 
     def check(self):
-        drift_info = self.metric.get_result().metrics
+        drift_info = self.metric.get_result()
 
         if self.column_name not in drift_info.drift_by_columns:
             result_status = TestResult.ERROR
@@ -267,7 +267,7 @@ class TestShareOfDriftedFeaturesRenderer(TestRenderer):
 class TestFeatureValueDriftRenderer(TestRenderer):
     def render_json(self, obj: TestFeatureValueDrift) -> dict:
         feature_name = obj.column_name
-        drift_data = obj.metric.get_result().metrics.drift_by_columns[feature_name]
+        drift_data = obj.metric.get_result().drift_by_columns[feature_name]
         base = super().render_json(obj)
         base["parameters"]["features"] = {
             feature_name: {
@@ -283,8 +283,8 @@ class TestFeatureValueDriftRenderer(TestRenderer):
         result = obj.metric.get_result()
         feature_name = obj.column_name
         info = super().render_html(obj)
-        curr_distr = result.metrics.drift_by_columns[feature_name].current_distribution
-        ref_distr = result.metrics.drift_by_columns[feature_name].reference_distribution
+        curr_distr = result.drift_by_columns[feature_name].current_distribution
+        ref_distr = result.drift_by_columns[feature_name].reference_distribution
         fig = plot_distr(curr_distr, ref_distr)
         fig_json = fig.to_plotly_json()
         info.details.append(

@@ -1,4 +1,5 @@
 import uuid
+from typing import Dict
 from typing import List
 from typing import Optional
 
@@ -6,7 +7,6 @@ import dataclasses
 from dataclasses import dataclass
 
 from evidently.calculations.data_drift import ColumnDataDriftMetrics
-from evidently.calculations.data_drift import DatasetDriftMetrics
 from evidently.calculations.data_drift import get_drift_for_columns
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
@@ -28,9 +28,12 @@ from evidently.utils.data_operations import process_columns
 
 @dataclass
 class DataDriftTableResults:
-    options: DataDriftOptions
+    number_of_columns: int
+    number_of_drifted_columns: int
+    share_of_drifted_columns: float
+    dataset_drift: bool
+    drift_by_columns: Dict[str, ColumnDataDriftMetrics]
     dataset_columns: DatasetColumns
-    metrics: DatasetDriftMetrics
 
 
 class DataDriftTable(Metric[DataDriftTableResults]):
@@ -60,7 +63,14 @@ class DataDriftTable(Metric[DataDriftTableResults]):
             dataset_columns=dataset_columns,
             columns=self.columns,
         )
-        return DataDriftTableResults(options=self.options, dataset_columns=result.dataset_columns, metrics=result)
+        return DataDriftTableResults(
+            number_of_columns=result.number_of_columns,
+            number_of_drifted_columns=result.number_of_drifted_columns,
+            share_of_drifted_columns=result.share_of_drifted_columns,
+            dataset_drift=result.dataset_drift,
+            drift_by_columns=result.drift_by_columns,
+            dataset_columns=result.dataset_columns,
+        )
 
 
 def _generate_column_params(item_id: str, column_name: str, data: ColumnDataDriftMetrics) -> dict:
@@ -87,8 +97,18 @@ def _generate_column_params(item_id: str, column_name: str, data: ColumnDataDrif
 class DataDriftTableRenderer(MetricRenderer):
     def render_json(self, obj: DataDriftTable) -> dict:
         result = dataclasses.asdict(obj.get_result())
-        # TODO: do not remove all metrics
-        result.pop("metrics", None)
+
+        # remove pandas dataset values and other useless for JSON fields
+        result.pop("dataset_columns", None)
+
+        for column_name, data in result["drift_by_columns"].items():
+            data.pop("current_distribution", None)
+            data.pop("reference_distribution", None)
+            data.pop("current_small_distribution", None)
+            data.pop("reference_small_distribution", None)
+            data.pop("current_correlations", None)
+            data.pop("reference_correlations", None)
+
         return result
 
     def render_html(self, obj: DataDriftTable) -> List[MetricHtmlInfo]:
@@ -102,8 +122,8 @@ class DataDriftTableRenderer(MetricRenderer):
 
         # sort columns by drift score
         all_columns = sorted(
-            results.metrics.drift_by_columns.keys(),
-            key=lambda x: results.metrics.drift_by_columns[x].drift_score,
+            results.drift_by_columns.keys(),
+            key=lambda x: results.drift_by_columns[x].drift_score,
             reverse=True,
         )
         # move target and prediction to the top of the table
@@ -126,16 +146,14 @@ class DataDriftTableRenderer(MetricRenderer):
         item_id = str(uuid.uuid4())
 
         for column_name in columns:
-            params_data.append(
-                _generate_column_params(item_id, column_name, results.metrics.drift_by_columns[column_name])
-            )
+            params_data.append(_generate_column_params(item_id, column_name, results.drift_by_columns[column_name]))
 
         # set additionalGraphs
         additional_graphs_data = []
 
         for column_name in columns:
-            current_distribution = results.metrics.drift_by_columns[column_name].current_distribution
-            reference_distribution = results.metrics.drift_by_columns[column_name].reference_distribution
+            current_distribution = results.drift_by_columns[column_name].current_distribution
+            reference_distribution = results.drift_by_columns[column_name].reference_distribution
             fig = plot_distr(current_distribution, reference_distribution)
             additional_graphs_data.append(
                 DetailsInfo(
@@ -145,10 +163,10 @@ class DataDriftTableRenderer(MetricRenderer):
                 ),
             )
 
-        drift_percents = round(results.metrics.share_of_drifted_columns * 100, 3)
+        drift_percents = round(results.share_of_drifted_columns * 100, 3)
         title_prefix = (
-            f"Drift is detected for {drift_percents}% of columns ({results.metrics.number_of_drifted_columns}"
-            f" out of {results.metrics.number_of_columns}). "
+            f"Drift is detected for {drift_percents}% of columns ({results.number_of_drifted_columns}"
+            f" out of {results.number_of_columns}). "
         )
 
         return [
