@@ -4,11 +4,10 @@ from typing import Optional
 from typing import Union
 
 from evidently.metrics import RegressionPerformanceMetrics
-from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import DetailsInfo
 from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import default_renderer
+from evidently.renderers.html_widgets import plotly_figure
 from evidently.renderers.render_utils import plot_distr
 from evidently.tests.base_test import BaseCheckValueTest
 from evidently.tests.base_test import GroupData
@@ -92,19 +91,7 @@ class TestValueMAERenderer(TestRenderer):
             ref_metric=obj.metric.get_result().mean_abs_error_ref,
             is_ref_data=is_ref_data,
         )
-        fig_json = fig.to_plotly_json()
-        info.details.append(
-            DetailsInfo(
-                "MAE",
-                "",
-                BaseWidgetInfo(
-                    title=fig_json["layout"]["title"]["text"],
-                    size=2,
-                    type="big_graph",
-                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
-                ),
-            )
-        )
+        info.with_details("MAE", plotly_figure(title="", figure=fig))
         return info
 
 
@@ -152,19 +139,7 @@ class TestValueMAPERenderer(TestRenderer):
             ref_metric=obj.metric.get_result().mean_abs_perc_error_ref,
             is_ref_data=is_ref_data,
         )
-        fig_json = fig.to_plotly_json()
-        info.details.append(
-            DetailsInfo(
-                "MAPE",
-                "",
-                BaseWidgetInfo(
-                    title=fig_json["layout"]["title"]["text"],
-                    size=2,
-                    type="big_graph",
-                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
-                ),
-            )
-        )
+        info.with_details("MAPE", plotly_figure(title="", figure=fig))
         return info
 
 
@@ -210,19 +185,7 @@ class TestValueRMSERenderer(TestRenderer):
             ref_metric=obj.metric.get_result().rmse_ref,
             is_ref_data=is_ref_data,
         )
-        fig_json = fig.to_plotly_json()
-        info.details.append(
-            DetailsInfo(
-                "RMSE",
-                "",
-                BaseWidgetInfo(
-                    title=fig_json["layout"]["title"]["text"],
-                    size=2,
-                    type="big_graph",
-                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
-                ),
-            )
-        )
+        info.with_details("RMSE", plotly_figure(title="", figure=fig))
         return info
 
 
@@ -260,20 +223,7 @@ class TestValueMeanErrorRenderer(TestRenderer):
         fig = plot_distr(hist_curr, hist_ref)
         fig = plot_check(fig, obj.get_condition())
         fig = plot_metric_value(fig, obj.metric.get_result().mean_error, "current mean error")
-
-        fig_json = fig.to_plotly_json()
-        info.details.append(
-            DetailsInfo(
-                id="",
-                title="",
-                info=BaseWidgetInfo(
-                    title="",
-                    size=2,
-                    type="big_graph",
-                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
-                ),
-            )
-        )
+        info.with_details("", plotly_figure(title="", figure=fig))
         return info
 
 
@@ -314,20 +264,7 @@ class TestValueAbsMaxErrorRenderer(TestRenderer):
         if "reference" in obj.metric.get_result().me_hist_for_plot.keys():
             hist_ref = me_hist_for_plot["reference"]
         fig = plot_distr(hist_curr, hist_ref)
-
-        fig_json = fig.to_plotly_json()
-        info.details.append(
-            DetailsInfo(
-                id="",
-                title="",
-                info=BaseWidgetInfo(
-                    title="",
-                    size=2,
-                    type="big_graph",
-                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
-                ),
-            )
-        )
+        info.with_details("", plotly_figure(title="", figure=fig))
         return info
 
 
@@ -372,17 +309,5 @@ class TestValueR2ScoreRenderer(TestRenderer):
             ref_metric=obj.metric.get_result().r2_score_ref,
             is_ref_data=is_ref_data,
         )
-        fig_json = fig.to_plotly_json()
-        info.details.append(
-            DetailsInfo(
-                "R2_score",
-                "",
-                BaseWidgetInfo(
-                    title="",
-                    size=2,
-                    type="big_graph",
-                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
-                ),
-            )
-        )
+        info.with_details("R2 Score", plotly_figure(title="", figure=fig))
         return info

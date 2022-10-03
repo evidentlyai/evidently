@@ -11,11 +11,10 @@ from evidently.metrics.classification_performance_metrics import ClassificationP
 from evidently.metrics.classification_performance_metrics import ClassificationPerformanceMetricsTopK
 from evidently.metrics.classification_performance_metrics import ClassificationPerformanceResults
 from evidently.metrics.classification_performance_metrics import DatasetClassificationPerformanceMetrics
-from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import DetailsInfo
 from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import default_renderer
+from evidently.renderers.html_widgets import plotly_figure
 from evidently.tests.base_test import BaseCheckValueTest
 from evidently.tests.base_test import GroupData
 from evidently.tests.base_test import GroupingTypes
@@ -147,19 +146,7 @@ class TestAccuracyScoreRenderer(TestRenderer):
         if ref_metrics is not None:
             ref_matrix = ref_metrics.confusion_matrix
         fig = plot_conf_mtrx(curr_matrix, ref_matrix)
-        fig_json = fig.to_plotly_json()
-        info.details.append(
-            DetailsInfo(
-                "AccuracyScore",
-                "",
-                BaseWidgetInfo(
-                    title="",
-                    size=2,
-                    type="big_graph",
-                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
-                ),
-            )
-        )
+        info.with_details("Accuracy Score", plotly_figure(figure=fig, title=""))
         return info
 
 
@@ -190,19 +177,7 @@ class TestPrecisionScoreRenderer(TestRenderer):
         if ref_metrics is not None:
             ref_matrix = ref_metrics.confusion_matrix
         fig = plot_conf_mtrx(curr_matrix, ref_matrix)
-        fig_json = fig.to_plotly_json()
-        info.details.append(
-            DetailsInfo(
-                "PrecisionScore",
-                "",
-                BaseWidgetInfo(
-                    title="",
-                    size=2,
-                    type="big_graph",
-                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
-                ),
-            )
-        )
+        info.with_details("Precision Score", plotly_figure(figure=fig, title=""))
         return info
 
 
@@ -233,19 +208,7 @@ class TestF1ScoreRenderer(TestRenderer):
         if ref_metrics is not None:
             ref_matrix = ref_metrics.confusion_matrix
         fig = plot_conf_mtrx(curr_matrix, ref_matrix)
-        fig_json = fig.to_plotly_json()
-        info.details.append(
-            DetailsInfo(
-                "F1Score",
-                "",
-                BaseWidgetInfo(
-                    title="",
-                    size=2,
-                    type="big_graph",
-                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
-                ),
-            )
-        )
+        info.with_details("F1 Score", plotly_figure(title="", figure=fig))
         return info
 
 
@@ -276,19 +239,7 @@ class TestRecallScoreRenderer(TestRenderer):
         if ref_metrics is not None:
             ref_matrix = ref_metrics.confusion_matrix
         fig = plot_conf_mtrx(curr_matrix, ref_matrix)
-        fig_json = fig.to_plotly_json()
-        info.details.append(
-            DetailsInfo(
-                "RecallScore",
-                "",
-                BaseWidgetInfo(
-                    title="",
-                    size=2,
-                    type="big_graph",
-                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
-                ),
-            )
-        )
+        info.with_details("Recall Score", plotly_figure(title="", figure=fig))
         return info
 
 
@@ -322,7 +273,8 @@ class TestRocAucRenderer(TestRenderer):
         if ref_metrics is not None:
             ref_roc_curve = ref_metrics.roc_curve
         if curr_roc_curve is not None:
-            info.details = plot_roc_auc(curr_roc_curve, ref_roc_curve)
+            for title, plot in plot_roc_auc(curr_roc_curve, ref_roc_curve):
+                info.with_details(title, plot)
         return info
 
 
@@ -366,19 +318,7 @@ class TestLogLossRenderer(TestRenderer):
 
         if curr_metrics is not None:
             fig = plot_boxes(curr_metrics, ref_metrics)
-            fig_json = fig.to_plotly_json()
-            info.details.append(
-                DetailsInfo(
-                    "TestLogLoss",
-                    "",
-                    BaseWidgetInfo(
-                        title="",
-                        size=2,
-                        type="big_graph",
-                        params={"data": fig_json["data"], "layout": fig_json["layout"]},
-                    ),
-                )
-            )
+            info.with_details("Logarithmic Loss", plotly_figure(title="", figure=fig))
         return info
 
 
@@ -413,19 +353,7 @@ class TestTPRRenderer(TestRenderer):
             ref_rate_plots_data = ref_metrics.rate_plots_data
         if curr_rate_plots_data is not None:
             fig = plot_rates(curr_rate_plots_data, ref_rate_plots_data)
-            fig_json = fig.to_plotly_json()
-            info.details.append(
-                DetailsInfo(
-                    "TPR",
-                    "",
-                    BaseWidgetInfo(
-                        title="",
-                        size=2,
-                        type="big_graph",
-                        params={"data": fig_json["data"], "layout": fig_json["layout"]},
-                    ),
-                )
-            )
+            info.with_details("TPR", plotly_figure(title="", figure=fig))
         return info
 
 
@@ -460,19 +388,7 @@ class TestTNRRenderer(TestRenderer):
             ref_rate_plots_data = ref_metrics.rate_plots_data
         if curr_rate_plots_data is not None:
             fig = plot_rates(curr_rate_plots_data, ref_rate_plots_data)
-            fig_json = fig.to_plotly_json()
-            info.details.append(
-                DetailsInfo(
-                    "TNR",
-                    "",
-                    BaseWidgetInfo(
-                        title="",
-                        size=2,
-                        type="big_graph",
-                        params={"data": fig_json["data"], "layout": fig_json["layout"]},
-                    ),
-                )
-            )
+            info.with_details("TNR", plotly_figure(title="", figure=fig))
         return info
 
 
@@ -519,19 +435,7 @@ class TestFPRRenderer(TestRenderer):
             ref_rate_plots_data = ref_metrics.rate_plots_data
         if curr_rate_plots_data is not None:
             fig = plot_rates(curr_rate_plots_data, ref_rate_plots_data)
-            fig_json = fig.to_plotly_json()
-            info.details.append(
-                DetailsInfo(
-                    "FPR",
-                    "",
-                    BaseWidgetInfo(
-                        title="",
-                        size=2,
-                        type="big_graph",
-                        params={"data": fig_json["data"], "layout": fig_json["layout"]},
-                    ),
-                )
-            )
+            info.with_details("FPR", plotly_figure(title="", figure=fig))
         return info
 
 
@@ -578,19 +482,7 @@ class TestFNRRenderer(TestRenderer):
             ref_rate_plots_data = ref_metrics.rate_plots_data
         if curr_rate_plots_data is not None:
             fig = plot_rates(curr_rate_plots_data, ref_rate_plots_data)
-            fig_json = fig.to_plotly_json()
-            info.details.append(
-                DetailsInfo(
-                    "FNR",
-                    "",
-                    BaseWidgetInfo(
-                        title="",
-                        size=2,
-                        type="big_graph",
-                        params={"data": fig_json["data"], "layout": fig_json["layout"]},
-                    ),
-                )
-            )
+            info.with_details("FNR", plotly_figure(title="", figure=fig))
         return info
 
 
@@ -644,19 +536,7 @@ class TestPrecisionByClassRenderer(TestRenderer):
         if ref_metrics is not None:
             ref_matrix = ref_metrics.confusion_matrix
         fig = plot_conf_mtrx(curr_matrix, ref_matrix)
-        fig_json = fig.to_plotly_json()
-        info.details.append(
-            DetailsInfo(
-                "TestPrecisionByClass",
-                "",
-                BaseWidgetInfo(
-                    title="",
-                    size=2,
-                    type="big_graph",
-                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
-                ),
-            )
-        )
+        info.with_details("Precision by Class", plotly_figure(title="", figure=fig))
         return info
 
 
@@ -690,19 +570,7 @@ class TestRecallByClassRenderer(TestRenderer):
         if ref_metrics is not None:
             ref_matrix = ref_metrics.confusion_matrix
         fig = plot_conf_mtrx(curr_matrix, ref_matrix)
-        fig_json = fig.to_plotly_json()
-        info.details.append(
-            DetailsInfo(
-                "TestRecallByClass",
-                "",
-                BaseWidgetInfo(
-                    title="",
-                    size=2,
-                    type="big_graph",
-                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
-                ),
-            )
-        )
+        info.with_details("Recall by Class", plotly_figure(title="", figure=fig))
         return info
 
 
@@ -735,17 +603,5 @@ class TestF1ByClassRenderer(TestRenderer):
         if ref_metrics is not None:
             ref_matrix = ref_metrics.confusion_matrix
         fig = plot_conf_mtrx(curr_matrix, ref_matrix)
-        fig_json = fig.to_plotly_json()
-        info.details.append(
-            DetailsInfo(
-                "TestF1ByClass",
-                "confusion matrix",
-                BaseWidgetInfo(
-                    title="",
-                    size=2,
-                    type="big_graph",
-                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
-                ),
-            )
-        )
+        info.with_details("F1 by Class", plotly_figure(title="", figure=fig))
         return info

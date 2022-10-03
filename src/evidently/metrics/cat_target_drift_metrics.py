@@ -13,10 +13,11 @@ from evidently.calculations.data_drift import get_one_column_drift
 from evidently.calculations.data_quality import get_rows_count
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
+from evidently.metrics.utils import make_hist_for_cat_plot
+from evidently.model.widget import BaseWidgetInfo
 from evidently.options import DataDriftOptions
 from evidently.options import OptionsProvider
 from evidently.options import QualityMetricsOptions
-from evidently.renderers.base_renderer import MetricHtmlInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import HistogramData
@@ -154,7 +155,7 @@ class CatTargetDriftRenderer(MetricRenderer):
     def render_json(self, obj: CatTargetDriftMetrics) -> dict:
         return dataclasses.asdict(obj.get_result())
 
-    def render_html(self, obj: CatTargetDriftMetrics) -> List[MetricHtmlInfo]:
+    def render_html(self, obj: CatTargetDriftMetrics) -> List[BaseWidgetInfo]:
         result = []
         target_metrics = obj.get_result().target_metrics
         if target_metrics is None:
@@ -199,12 +200,4 @@ def _hist(histogram_data, title):
             ref_hist_data["x"],
             ref_hist_data["count"],
         )
-    return MetricHtmlInfo(
-        name="",
-        info=histogram(
-            title,
-            curr_hist,
-            ref_hist,
-        ),
-        details=[],
-    )
+    return histogram(title, curr_hist, ref_hist)
