@@ -11,10 +11,10 @@ import pandas as pd
 from pandas.core.dtypes.common import infer_dtype_from_object
 
 from evidently.metrics import ColumnRegExpMetric
+from evidently.metrics import DataIntegrityMetrics
 from evidently.metrics import DatasetMissingValuesMetric
 from evidently.metrics.data_integrity.dataset_missing_values_metric import DataIntegrityNullValuesMetricsResult
 from evidently.metrics.data_integrity.dataset_missing_values_metric import DataIntegrityNullValuesStat
-from evidently.metrics import DataIntegrityMetrics
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import DetailsInfo
 from evidently.renderers.base_renderer import TestHtmlInfo

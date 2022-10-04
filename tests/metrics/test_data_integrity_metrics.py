@@ -32,8 +32,8 @@ def test_data_integrity_metrics() -> None:
 @pytest.mark.parametrize(
     "metric_object",
     (
-            DataIntegrityMetrics(),
-            DatasetMissingValuesMetric(null_values=[None]),
+        DataIntegrityMetrics(),
+        DatasetMissingValuesMetric(null_values=[None]),
     ),
 )
 def test_data_integrity_metrics_with_report(metric_object: Metric) -> None:

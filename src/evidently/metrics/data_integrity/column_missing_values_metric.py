@@ -184,7 +184,7 @@ class ColumnMissingValuesMetricRenderer(MetricRenderer):
                 self._get_details_missing_values_info(dataset_name="reference", stats=metric_result.reference),
             )
 
-        result.append(self._get_table_stat(dataset_name="current", stats=metric_result.reference))
+        result.append(self._get_table_stat(dataset_name="current", stats=metric_result.current))
 
         if metric_result.reference is not None:
             result.append(self._get_table_stat(dataset_name="reference", stats=metric_result.reference))
