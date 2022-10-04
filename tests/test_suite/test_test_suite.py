@@ -151,6 +151,7 @@ def test_export_to_json():
         "datetime_feature_names": [],
         "num_feature_names": ["num_feature_1", "num_feature_2"],
         "target_names": None,
+        "task": "classification",
         "utility_columns": {"date": None, "id_column": None, "prediction": "pred_result", "target": "result"},
     }
     assert "summary" in json_result

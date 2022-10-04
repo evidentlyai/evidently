@@ -25,19 +25,19 @@ class DataDriftProfileSection(ProfileSection):
         result_json: Dict[str, Any] = data_drift_results.columns.as_dict()
 
         metrics_dict: Dict[str, Union[int, bool, float, Dict]] = {
-            "n_features": data_drift_results.metrics.n_features,
-            "n_drifted_features": data_drift_results.metrics.n_drifted_features,
-            "share_drifted_features": data_drift_results.metrics.share_drifted_features,
+            "n_features": data_drift_results.metrics.number_of_columns,
+            "n_drifted_features": data_drift_results.metrics.number_of_drifted_columns,
+            "share_drifted_features": data_drift_results.metrics.share_of_drifted_columns,
             "dataset_drift": data_drift_results.metrics.dataset_drift,
         }
         # add metrics to a flat dict with data drift results
-        for feature_name, feature_metrics in data_drift_results.metrics.features.items():
+        for feature_name, feature_metrics in data_drift_results.metrics.drift_by_columns.items():
             metrics_dict[feature_name] = {
-                "current_small_hist": feature_metrics.current_small_hist,
-                "ref_small_hist": feature_metrics.ref_small_hist,
-                "feature_type": feature_metrics.feature_type,
+                "current_small_hist": feature_metrics.current_small_distribution,
+                "ref_small_hist": feature_metrics.reference_small_distribution,
+                "feature_type": feature_metrics.column_type,
                 "stattest_name": feature_metrics.stattest_name,
-                "drift_score": feature_metrics.p_value,
+                "drift_score": feature_metrics.drift_score,
                 "drift_detected": feature_metrics.drift_detected,
             }
 
