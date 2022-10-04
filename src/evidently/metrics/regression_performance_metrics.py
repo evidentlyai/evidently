@@ -15,8 +15,6 @@ from evidently.calculations.regression_performance import calculate_regression_p
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.metrics.utils import apply_func_to_binned_data
-from evidently.metrics.utils import make_hist_for_cat_plot
-from evidently.metrics.utils import make_hist_for_num_plot
 from evidently.metrics.utils import make_target_bins_for_reg_plots
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
@@ -26,6 +24,8 @@ from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.data_operations import process_columns
+from evidently.utils.visualizations import make_hist_for_cat_plot
+from evidently.utils.visualizations import make_hist_for_num_plot
 
 
 @dataclass

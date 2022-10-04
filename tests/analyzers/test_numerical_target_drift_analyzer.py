@@ -148,10 +148,9 @@ def test_computing_of_only_prediction(analyzer: NumTargetDriftAnalyzer):
 def test_computing_with_nans(analyzer: NumTargetDriftAnalyzer):
     df1 = DataFrame({"target": list(range(20)) + [np.nan, np.inf]})
     df2 = DataFrame({"target": [np.nan, np.inf] + list(range(10, 30))})
-
     result = analyzer.calculate(df1, df2, ColumnMapping())
     assert result.target_metrics.column_name == "target"
-    assert result.target_metrics.drift_score == approx(0.02004, abs=1e-3)
+    assert result.target_metrics.drift_score == approx(0.0123, abs=1e-3)
     assert result.target_metrics.reference_correlations == {"target": 1.0}
     assert result.target_metrics.current_correlations == {"target": 1.0}
 

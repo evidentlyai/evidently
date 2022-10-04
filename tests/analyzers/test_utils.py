@@ -39,6 +39,7 @@ from evidently.utils.data_operations import process_columns
                 datetime="datetime_column",
                 id="some_id",
                 target_names=["apple", "lemon", "peach"],
+                task="classification",
             ),
             DatasetColumns(
                 utility_columns=DatasetUtilityColumns(
@@ -48,6 +49,7 @@ from evidently.utils.data_operations import process_columns
                 cat_feature_names=["cat_feature_1", "cat_feature_2", "cat_feature_3", "cat_feature_4"],
                 datetime_feature_names=[],
                 target_names=["apple", "lemon", "peach"],
+                task="classification",
             ),
         ),
         (
@@ -61,7 +63,11 @@ from evidently.utils.data_operations import process_columns
                 }
             ),
             ColumnMapping(
-                target="el_target", prediction="el_prediction", categorical_features=["cat_feature_1"], id="index"
+                target="el_target",
+                prediction="el_prediction",
+                categorical_features=["cat_feature_1"],
+                id="index",
+                task="regression",
             ),
             DatasetColumns(
                 utility_columns=DatasetUtilityColumns(
@@ -71,6 +77,7 @@ from evidently.utils.data_operations import process_columns
                 cat_feature_names=["cat_feature_1"],
                 datetime_feature_names=[],
                 target_names=None,
+                task="regression",
             ),
         ),
     ),
