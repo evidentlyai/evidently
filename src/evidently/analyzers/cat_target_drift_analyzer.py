@@ -9,9 +9,9 @@ from dataclasses import dataclass
 from evidently import ColumnMapping
 from evidently.analyzers.base_analyzer import Analyzer
 from evidently.analyzers.base_analyzer import BaseAnalyzerResult
-from evidently.calculations.data_drift import DataDriftMetrics
-from evidently.calculations.data_drift import calculate_data_drift_for_category_feature
-from evidently.calculations.data_drift import define_predictions_type
+from evidently.calculations.data_drift import ColumnDataDriftMetrics
+from evidently.calculations.data_drift import ensure_prediction_column_is_string
+from evidently.calculations.data_drift import get_one_column_drift
 from evidently.calculations.data_quality import get_rows_count
 from evidently.options import DataDriftOptions
 from evidently.options import QualityMetricsOptions
@@ -23,8 +23,8 @@ from evidently.utils.data_operations import replace_infinity_values_to_nan
 class CatTargetDriftAnalyzerResults(BaseAnalyzerResult):
     """Class for all results of category target drift calculations"""
 
-    target_metrics: Optional[DataDriftMetrics] = None
-    prediction_metrics: Optional[DataDriftMetrics] = None
+    target_metrics: Optional[ColumnDataDriftMetrics] = None
+    prediction_metrics: Optional[ColumnDataDriftMetrics] = None
     reference_data_count: int = 0
     current_data_count: int = 0
 
@@ -84,7 +84,6 @@ class CatTargetDriftAnalyzer(Analyzer):
             raise ValueError("current_data should be present")
 
         data_drift_options = self.options_provider.get(DataDriftOptions)
-        threshold = data_drift_options.cat_target_threshold
         columns = process_columns(reference_data, column_mapping)
         target_column = columns.utility_columns.target
 
@@ -92,7 +91,7 @@ class CatTargetDriftAnalyzer(Analyzer):
             raise ValueError("target should not be a sequence")
 
         classification_threshold = self.options_provider.get(QualityMetricsOptions).classification_threshold
-        prediction_column = define_predictions_type(
+        prediction_column = ensure_prediction_column_is_string(
             prediction_column=columns.utility_columns.prediction,
             current_data=current_data,
             reference_data=reference_data,
@@ -110,21 +109,23 @@ class CatTargetDriftAnalyzer(Analyzer):
         current_data = replace_infinity_values_to_nan(current_data)
 
         if target_column is not None:
-            result.target_metrics = calculate_data_drift_for_category_feature(
+            result.target_metrics = get_one_column_drift(
                 current_data=current_data,
                 reference_data=reference_data,
                 column_name=target_column,
-                stattest=data_drift_options.cat_target_stattest_func,
-                threshold=threshold,
+                dataset_columns=columns,
+                options=data_drift_options,
+                column_type="cat",
             )
 
         if prediction_column is not None:
-            result.prediction_metrics = calculate_data_drift_for_category_feature(
+            result.prediction_metrics = get_one_column_drift(
                 current_data=current_data,
                 reference_data=reference_data,
                 column_name=prediction_column,
-                stattest=data_drift_options.cat_target_stattest_func,
-                threshold=threshold,
+                dataset_columns=columns,
+                options=data_drift_options,
+                column_type="cat",
             )
 
         return result
