@@ -1,7 +1,7 @@
 from typing import Tuple
 
 import pandas as pd
-from scipy.stats import cramervonmises_2samp
+from scipy import stats
 
 from evidently.calculations.stattests.registry import StatTest
 from evidently.calculations.stattests.registry import register_stattest
@@ -23,7 +23,7 @@ def _cramer_von_mises(
         p_value: p-value
         test_result: whether the drift is detected
     """
-    res = cramervonmises_2samp(reference_data, current_data)
+    res = stats.cramervonmises_2samp(reference_data, current_data)
     return res.pvalue, res.pvalue <= threshold
 
 
