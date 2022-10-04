@@ -13,13 +13,14 @@ from scipy.stats import chi2_contingency
 
 from evidently.metrics.utils import make_hist_for_cat_plot
 from evidently.metrics.utils import make_hist_for_num_plot
+from evidently.metrics.utils import make_hist_df
 from evidently.utils.data_operations import DatasetColumns
 
 MAX_CATEGORIES = 5
 
 
 def get_rows_count(dataset: pd.DataFrame):
-    """Count quantity of rows in  a dataset"""
+    """Count quantity of rows in a dataset"""
     return dataset.shape[0]
 
 
@@ -254,7 +255,7 @@ def calculate_data_quality_stats(
 
     return result
 
-import logging
+
 @dataclass
 class DataQualityPlot:
     bins_for_hist: Dict[str, pd.DataFrame]
@@ -274,16 +275,27 @@ class DataQualityGetPlotData():
         merge_small_cat: Optional[int] = MAX_CATEGORIES
     ):
         if feature_type == 'cat' and merge_small_cat is not None:
-            curr, ref = self._transform_cat_data(curr.copy(), ref.copy(), feature_name, merge_small_cat)
-        curr_data = curr[feature_name]
+            if ref is not None:
+                ref = ref.copy()
+            curr, ref = self._transform_cat_data(curr.copy(), ref, feature_name, merge_small_cat)
+        curr_data = curr[feature_name].dropna()
         ref_data = None
         if ref is not None:
-            ref_data = ref[feature_name]
+            ref_data = ref[feature_name].dropna()
         bins_for_hist = None
         if feature_type == 'num':
             bins_for_hist = make_hist_for_num_plot(curr_data, ref_data)
+            log_ref_data = None
+            if ref_data is not None:
+                log_ref_data = np.log10(ref_data[ref_data > 0])
+            bins_for_hist_log = make_hist_for_num_plot(
+                np.log10(curr_data[curr_data > 0]), log_ref_data
+            )
+            bins_for_hist["current_log"] = bins_for_hist_log["current"]
+            if "reference" in bins_for_hist_log.keys():
+                bins_for_hist["reference_log"] = bins_for_hist_log["reference"]
         if feature_type == 'cat':
-            bins_for_hist = make_hist_for_cat_plot(curr_data, ref_data)
+            bins_for_hist = make_hist_for_cat_plot(curr_data, ref_data, dropna=True)
         if feature_type == 'datetime':
             bins_for_hist = {}
             freq = self._choose_agg_period(feature_name, ref, curr)
@@ -317,7 +329,9 @@ class DataQualityGetPlotData():
     ):
         result = None
         if feature_type == 'cat' and merge_small_cat is not None:
-            curr, ref = self._transform_cat_data(curr.copy(), ref.copy(), feature_name, merge_small_cat)
+            if ref is not None:
+                ref = ref.copy()
+            curr, ref = self._transform_cat_data(curr.copy(), ref, feature_name, merge_small_cat)
         
         freq = self._choose_agg_period(datetime_name, ref, curr)
         df_for_time_plot_curr = (
@@ -369,10 +383,14 @@ class DataQualityGetPlotData():
     ):
         result = None
         if feature_type == 'cat' and target_type == 'num':
-            curr, ref = self._transform_cat_data(curr.copy(), ref.copy(), feature_name, merge_small_cat)
+            if ref is not None:
+                ref = ref.copy()
+            curr, ref = self._transform_cat_data(curr.copy(), ref, feature_name, merge_small_cat)
             result = self._prepare_box_data(curr, ref, feature_name, target_name)
         if feature_type == 'num' and target_type == 'cat':
-            curr, ref = self._transform_cat_data(curr.copy(), ref.copy(), target_name, merge_small_cat)
+            if ref is not None:
+                ref = ref.copy()
+            curr, ref = self._transform_cat_data(curr.copy(), ref, target_name, merge_small_cat)
             result = self._prepare_box_data(curr, ref, target_name, feature_name)
         if feature_type == 'num' and target_type == 'num':
             result = {}
@@ -386,8 +404,12 @@ class DataQualityGetPlotData():
                     target_name: ref[target_name].tolist()
                 }
         if feature_type == "cat" and target_type == "cat":
-            curr, ref = self._transform_cat_data(curr.copy(), ref.copy(), feature_name, merge_small_cat)
-            curr, ref = self._transform_cat_data(curr.copy(), ref.copy(), target_name, merge_small_cat, True)
+            if ref is not None:
+                ref = ref.copy()
+            curr, ref = self._transform_cat_data(curr.copy(), ref, feature_name, merge_small_cat)
+            if ref is not None:
+                ref = ref.copy()
+            curr, ref = self._transform_cat_data(curr.copy(), ref, target_name, merge_small_cat, True)
             result = {}
             result["current"] = self._get_count_values(curr, target_name, feature_name)
             if ref is not None:
@@ -420,7 +442,7 @@ class DataQualityGetPlotData():
         df = df.groupby([target_column, feature_name]).size()
         df.name = "count_objects"
         df = df.reset_index()
-        return df
+        return df[df["count_objects"] > 0]
 
 
     def _prepare_box_data(
@@ -453,19 +475,20 @@ class DataQualityGetPlotData():
     def _transform_cat_data(
         self, curr: pd.DataFrame, ref: Optional[pd.DataFrame], feature_name: str, merge_small_cat: int, rewrite: bool=False
     ) -> tuple[pd.DataFrame]:
-        if self.curr is not None and rewrite != True:
+        if self.curr is not None and rewrite is not True:
             return self.curr, self.ref
         if ref is not None:
             unique_values = len(
                 np.union1d(curr[feature_name].astype(str).unique(), ref[feature_name].astype(str).unique())
             )
         else:
-            unique_values = curr[feature_name].astype(str).nique()
+            unique_values = curr[feature_name].astype(str).nunique()
+
         if unique_values > merge_small_cat:
-            curr_cats = curr[feature_name].value_counts(normalize=True)
+            curr_cats = curr[feature_name].astype(str).value_counts(normalize=True)
             ref_cats = pd.Series()
             if ref is not None:
-                ref_cats = ref[feature_name].value_counts(normalize=True)
+                ref_cats = ref[feature_name].astype(str).value_counts(normalize=True)
             cats = (
                 curr_cats
                     .append(ref_cats)
@@ -481,13 +504,13 @@ class DataQualityGetPlotData():
             self.ref = ref
         return curr, ref
 
-    def _choose_agg_period(self, date_column: str, reference_data: pd.DataFrame, current_data: Optional[pd.DataFrame]
+    def _choose_agg_period(self, date_column: str, reference_data: Optional[pd.DataFrame], current_data: pd.DataFrame
     ) -> str:
         optimal_points = 150
         prefix_dict = {"A": "year", "Q": "quarter", "M": "month", "W": "week", "D": "day", "H": "hour"}
-        datetime_feature = reference_data[date_column]
-        if current_data is not None:
-            datetime_feature = datetime_feature.append(current_data[date_column])
+        datetime_feature = current_data[date_column]
+        if reference_data is not None:
+            datetime_feature = datetime_feature.append(reference_data[date_column])
         days = (datetime_feature.max() - datetime_feature.min()).days
         time_points = pd.Series(
             index=["A", "Q", "M", "W", "D", "H"],
@@ -513,7 +536,7 @@ class DataQualityGetPlotData():
         df.name = "num"
         df = df.reset_index()
         df[date_column] = df["period"].dt.to_timestamp()
-        return df
+        return df[df["num"] > 0]
 
 
 def _select_features_for_corr(reference_features_stats: DataQualityStats, target_name: Optional[str]) -> tuple:

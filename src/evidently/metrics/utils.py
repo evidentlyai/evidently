@@ -28,13 +28,13 @@ def make_hist_for_num_plot(curr: pd.Series, ref: pd.Series = None):
     return result
 
 
-def make_hist_for_cat_plot(curr: pd.Series, ref: pd.Series = None, normalize: bool = False):
+def make_hist_for_cat_plot(curr: pd.Series, ref: pd.Series = None, normalize: bool = False, dropna=False):
     result = {}
-    hist_df = curr.value_counts(normalize=normalize, dropna=False).reset_index()
+    hist_df = curr.astype(str).value_counts(normalize=normalize, dropna=dropna).reset_index()
     hist_df.columns = ["x", "count"]
     result["current"] = hist_df
     if ref is not None:
-        hist_df = ref.value_counts(normalize=normalize).reset_index()
+        hist_df = ref.astype(str).value_counts(normalize=normalize, dropna=dropna).reset_index()
         hist_df.columns = ["x", "count"]
         result["reference"] = hist_df
     return result

@@ -23,6 +23,7 @@ def plot_distr(hist_curr, hist_ref=None, orientation="v", color_options: Optiona
             orientation=orientation,
         )
     )
+    cats = list(hist_curr["x"]) 
     if hist_ref is not None:
         fig.add_trace(
             go.Bar(
@@ -33,12 +34,83 @@ def plot_distr(hist_curr, hist_ref=None, orientation="v", color_options: Optiona
                 orientation=orientation,
             )
         )
-    if 'other' in hist_curr["x"] or (hist_ref is not None and 'other' in hist_ref["x"]):
-        cats = list(fig.layout.xaxis.categoryarray)
+        cats = cats + list(np.setdiff1d(hist_ref["x"], cats))
+    if 'other' in cats:
         cats.remove("other")
         cats = cats + ["other"]
         fig.update_xaxes(categoryorder="array", categoryarray=cats)
 
+    return fig
+
+
+def plot_distr_with_log_button(curr_data: pd.DataFrame, curr_data_log: pd.DataFrame, ref_data: Optional[pd.DataFrame],
+                               ref_data_log: Optional[pd.DataFrame]):
+    color_options = ColorOptions()
+    traces = []
+    visible = [True, False]
+    traces.append(
+        go.Bar(
+            x=curr_data["x"],
+            y=curr_data["count"],
+            marker_color=color_options.get_current_data_color(),
+            name="current",
+        )
+    )
+    traces.append(
+        go.Bar(
+            x=curr_data_log["x"],
+            y=curr_data_log["count"],
+            visible=False,
+            marker_color=color_options.get_current_data_color(),
+            name="current",
+        )
+    )
+    if ref_data is not None:
+        traces.append(
+            go.Bar(
+                x=ref_data["x"],
+                y=ref_data["count"],
+                marker_color=color_options.get_reference_data_color(),
+                name="reference",
+            )
+        )
+        traces.append(
+            go.Bar(
+                x=ref_data_log["x"],
+                y=ref_data_log["count"],
+                visible=False,
+                marker_color=color_options.get_reference_data_color(),
+                name="reference",
+            )
+        )
+        visible.extend([True, False])
+
+
+    updatemenus = [
+        dict(
+            type="buttons",
+            direction="right",
+            x=1.0,
+            yanchor="top",
+            buttons=list(
+                [
+                    dict(
+                        label="Linear Scale",
+                        method="update",
+                        args=[{"visible": visible}],
+                    ),
+                    dict(
+                        label="Log Scale", method="update", args=[{"visible": [not x for x in visible]}]
+                    ),
+                ]
+            ),
+        )
+    ]
+    layout = dict(updatemenus=updatemenus)
+
+    fig = go.Figure(data=traces, layout=layout)
+    fig.update_layout(legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1))
+    fig = json.loads(fig.to_json())
     return fig
 
 
@@ -67,8 +139,8 @@ def plot_num_feature_in_time(curr_data: pd.DataFrame, ref_data: Optional[pd.Data
             )
         )
         
-        fig.update_layout(yaxis_title="Mean " + feature_name + " per " + freq)
-        feature_in_time_figure = json.loads(fig.to_json())
+    fig.update_layout(yaxis_title="Mean " + feature_name + " per " + freq)
+    feature_in_time_figure = json.loads(fig.to_json())
     return feature_in_time_figure
 
 
@@ -95,7 +167,7 @@ def plot_time_feature_distr(curr_data: pd.DataFrame, ref_data: Optional[pd.DataF
                 name="reference",
             )
         )
-    # fig.update_layout(legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1))
+    fig.update_layout(legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1))
     fig = json.loads(fig.to_json())
     return fig
 
@@ -108,14 +180,14 @@ def plot_cat_feature_in_time(curr_data: pd.DataFrame, ref_data: Optional[pd.Data
     color_options = ColorOptions()
     title = "current"
     fig = go.Figure()
-    values = curr_data[feature_name].unique()
+    values = curr_data[feature_name].astype(str).unique()
     if ref_data is not None:
-        values = np.union1d(curr_data[feature_name].unique(), ref_data[feature_name].unique())
+        values = np.union1d(curr_data[feature_name].astype(str).unique(), ref_data[feature_name].astype(str).unique())
     for i, val in enumerate(values):
         fig.add_trace(
             go.Bar(
-                x=curr_data.loc[curr_data[feature_name] == val, datetime_name],
-                y=curr_data.loc[curr_data[feature_name] == val, "num"],
+                x=curr_data.loc[curr_data[feature_name].astype(str) == val, datetime_name],
+                y=curr_data.loc[curr_data[feature_name].astype(str) == val, "num"],
                 name=str(val),
                 marker_color=color_options.color_sequence[i],
                 legendgroup=str(val)
@@ -125,8 +197,8 @@ def plot_cat_feature_in_time(curr_data: pd.DataFrame, ref_data: Optional[pd.Data
             title = "reference/current"
             fig.add_trace(
                 go.Bar(
-                    x=ref_data.loc[ref_data[feature_name] == val, datetime_name],
-                    y=ref_data.loc[ref_data[feature_name] == val, "num"],
+                    x=ref_data.loc[ref_data[feature_name].astype(str) == val, datetime_name],
+                    y=ref_data.loc[ref_data[feature_name].astype(str) == val, "num"],
                     name=str(val),
                     marker_color=color_options.color_sequence[i],
                     # showlegend=False,
@@ -191,7 +263,7 @@ def plot_cat_cat_rel(curr: pd.DataFrame, ref: pd.DataFrame, target_name: str, fe
         cols = 2
         subplot_titles = ["current", "reference"]
     fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
-    for i, val in enumerate(curr[target_name].unique()):
+    for i, val in enumerate(curr[target_name].astype(str).unique()):
         trace = go.Bar(
             x=curr.loc[curr[target_name] == val, feature_name],
             y=curr.loc[curr[target_name] == val, "count_objects"],
@@ -201,8 +273,9 @@ def plot_cat_cat_rel(curr: pd.DataFrame, ref: pd.DataFrame, target_name: str, fe
             # showlegend=False,
         )
         fig.append_trace(trace, 1, 1)
+
     if ref is not None:
-        for i, val in enumerate(ref[target_name].unique()):
+        for i, val in enumerate(ref[target_name].astype(str).unique()):
             trace = go.Bar(
                 x=ref.loc[ref[target_name] == val, feature_name],
                 y=ref.loc[ref[target_name] == val, "count_objects"],
