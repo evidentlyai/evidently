@@ -5,9 +5,9 @@ from .classification_performance_metrics import ClassificationPerformanceMetrics
 from .data_drift.column_drift_metric import ColumnDriftMetric
 from .data_drift.data_drift_table import DataDriftTable
 from .data_drift.dataset_drift_metric import DatasetDriftMetric
+from .data_integrity.column_regexp_metric import ColumnRegExpMetric
 from .data_integrity_metrics import DataIntegrityMetrics
 from .data_integrity_metrics import DataIntegrityNullValuesMetrics
-from .data_integrity_metrics import DataIntegrityValueByRegexpMetrics
 from .data_quality_metrics import DataQualityCorrelationMetrics
 from .data_quality_metrics import DataQualityMetrics
 from .data_quality_metrics import DataQualityStabilityMetrics
