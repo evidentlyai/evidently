@@ -221,9 +221,7 @@ class DatasetMissingValuesMetricRenderer(MetricRenderer):
     @staticmethod
     def _get_overall_missing_values_info(dataset_name: str, stats: DatasetMissingValues) -> BaseWidgetInfo:
         percents = round(stats.share_of_nulls * 100, 3)
-        return header_text(
-            label=f"In {dataset_name} dataset {stats.number_of_nulls}({percents}%) missed values."
-        )
+        return header_text(label=f"In {dataset_name} dataset {stats.number_of_nulls}({percents}%) missed values.")
 
     def render_html(self, obj: DatasetMissingValuesMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
