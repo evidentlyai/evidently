@@ -1,11 +1,8 @@
-import collections
-import re
 from itertools import combinations
 from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
-from typing import Pattern
 
 import dataclasses
 import numpy as np
@@ -17,8 +14,6 @@ from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
-from evidently.renderers.html_widgets import CounterData
-from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import table_data
 
@@ -191,116 +186,11 @@ class DataIntegrityValueByRegexpMetricResult:
     column_name: str
     # the regular expression as a string
     reg_exp: str
+    top: int
     # match statistic for current dataset
     current: DataIntegrityValueByRegexpStat
     # match statistic for reference dataset, equals None if the reference is not present
     reference: Optional[DataIntegrityValueByRegexpStat] = None
-
-
-class DataIntegrityValueByRegexpMetrics(Metric[DataIntegrityValueByRegexpMetricResult]):
-    """Count number of values in a column matched or not by a regular expression (regexp)"""
-
-    # name of the column that we check
-    column_name: str
-    # the regular expression
-    reg_exp: str
-    # compiled regular expression for speed optimization
-    _reg_exp_compiled: Pattern
-
-    def __init__(self, column_name: str, reg_exp: str):
-        self.reg_exp = reg_exp
-        self.column_name = column_name
-        self._reg_exp_compiled = re.compile(reg_exp)
-
-    def _calculate_stats_by_regexp(self, column: pd.Series) -> DataIntegrityValueByRegexpStat:
-        number_of_matched = 0
-        number_of_na = 0
-        number_of_not_matched = 0
-        table_of_matched: Dict[str, int] = collections.defaultdict(int)
-        table_of_not_matched: Dict[str, int] = collections.defaultdict(int)
-
-        for item in column:
-            if pd.isna(item):
-                number_of_na += 1
-                continue
-
-            item = str(item)
-
-            if bool(self._reg_exp_compiled.match(str(item))):
-                number_of_matched += 1
-                table_of_matched[item] += 1
-
-            else:
-                number_of_not_matched += 1
-                table_of_not_matched[item] += 1
-
-        return DataIntegrityValueByRegexpStat(
-            number_of_matched=number_of_matched,
-            number_of_not_matched=number_of_not_matched,
-            number_of_rows=column.shape[0],
-            table_of_matched=dict(table_of_matched),
-            table_of_not_matched=dict(table_of_not_matched),
-        )
-
-    def calculate(self, data: InputData) -> DataIntegrityValueByRegexpMetricResult:
-        current = self._calculate_stats_by_regexp(data.current_data[self.column_name])
-        reference = None
-
-        if data.reference_data is not None:
-            if self.column_name not in data.reference_data:
-                raise ValueError(f"Column {self.column_name} was not found in reference dataset.")
-
-            reference = self._calculate_stats_by_regexp(data.reference_data[self.column_name])
-
-        return DataIntegrityValueByRegexpMetricResult(
-            column_name=self.column_name, reg_exp=self.reg_exp, current=current, reference=reference
-        )
-
-
-@default_renderer(wrap_type=DataIntegrityValueByRegexpMetrics)
-class DataIntegrityValueByRegexpMetricsRenderer(MetricRenderer):
-    def render_json(self, obj: DataIntegrityValueByRegexpMetrics) -> dict:
-        return dataclasses.asdict(obj.get_result())
-
-    @staticmethod
-    def _get_table_stat(dataset_name: str, metrics: DataIntegrityValueByRegexpStat) -> BaseWidgetInfo:
-        matched_stat = [(f"{k} (matched)", v) for k, v in metrics.table_of_matched.items()]
-        matched_stat += [(f"{k} (not matched)", v) for k, v in metrics.table_of_not_matched.items()]
-        matched_stat += [
-            ("NaN", metrics.number_of_rows - metrics.number_of_matched - metrics.number_of_not_matched),
-            ("Total", metrics.number_of_rows),
-        ]
-        matched_stat_headers = ["Value", "Count"]
-        return table_data(
-            title=f"{dataset_name.capitalize()}: Match Statistics",
-            column_names=matched_stat_headers,
-            data=matched_stat,
-        )
-
-    def render_html(self, obj: DataIntegrityValueByRegexpMetrics) -> List[BaseWidgetInfo]:
-        metric_result = obj.get_result()
-        number_of_matched = metric_result.current.number_of_matched
-        number_of_rows = metric_result.current.number_of_rows
-
-        result = [
-            counter(
-                title="Data Integrity Metric: Values Matching By Regexp In a Column",
-                counters=[
-                    CounterData(
-                        label="",
-                        value=f"Founded {number_of_matched} of {number_of_rows} with "
-                        f"regexp '{metric_result.reg_exp}' in "
-                        f"column '{metric_result.column_name}' in current dataset.",
-                    )
-                ],
-            ),
-            self._get_table_stat(dataset_name="current", metrics=metric_result.current),
-        ]
-
-        if metric_result.reference is not None:
-            result.append(self._get_table_stat(dataset_name="reference", metrics=metric_result.reference))
-
-        return result
 
 
 @dataclass
