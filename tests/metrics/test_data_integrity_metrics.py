@@ -3,7 +3,7 @@ import pandas as pd
 import pytest
 
 from evidently.metrics import DataIntegrityMetrics
-from evidently.metrics import DataIntegrityNullValuesMetrics
+from evidently.metrics import DatasetMissingValuesMetric
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.pipeline.column_mapping import ColumnMapping
@@ -32,8 +32,8 @@ def test_data_integrity_metrics() -> None:
 @pytest.mark.parametrize(
     "metric_object",
     (
-        DataIntegrityMetrics(),
-        DataIntegrityNullValuesMetrics(null_values=[None]),
+            DataIntegrityMetrics(),
+            DatasetMissingValuesMetric(null_values=[None]),
     ),
 )
 def test_data_integrity_metrics_with_report(metric_object: Metric) -> None:
@@ -65,7 +65,7 @@ def test_data_integrity_metrics_different_null_values() -> None:
         }
     )
     data_mapping = ColumnMapping()
-    metric = DataIntegrityNullValuesMetrics()
+    metric = DatasetMissingValuesMetric()
     result = metric.calculate(
         data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
     )
@@ -100,7 +100,7 @@ def test_data_integrity_metrics_different_null_values() -> None:
     }
     assert result.reference_null_values is None
 
-    metric = DataIntegrityNullValuesMetrics(null_values=["n/a"], replace=False)
+    metric = DatasetMissingValuesMetric(null_values=["n/a"], replace=False)
     result = metric.calculate(
         data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
     )
@@ -111,7 +111,7 @@ def test_data_integrity_metrics_different_null_values() -> None:
     assert result.reference_null_values is None
 
     # test custom list of null values, no default, but with Pandas nulls
-    metric = DataIntegrityNullValuesMetrics(null_values=["", 0, "n/a", -9999, None], replace=True)
+    metric = DatasetMissingValuesMetric(null_values=["", 0, "n/a", -9999, None], replace=True)
     result = metric.calculate(
         data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
     )
@@ -121,7 +121,7 @@ def test_data_integrity_metrics_different_null_values() -> None:
     assert result.reference_null_values is None
 
     # test custom list of null values and ignore pandas null values
-    metric = DataIntegrityNullValuesMetrics(null_values=["", 0, "n/a", -9999], replace=True)
+    metric = DatasetMissingValuesMetric(null_values=["", 0, "n/a", -9999], replace=True)
     result = metric.calculate(
         data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
     )

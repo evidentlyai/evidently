@@ -11,10 +11,10 @@ import pandas as pd
 from pandas.core.dtypes.common import infer_dtype_from_object
 
 from evidently.metrics import ColumnRegExpMetric
-from evidently.metrics.data_integrity_metrics import DataIntegrityMetrics
-from evidently.metrics.data_integrity_metrics import DataIntegrityNullValuesMetrics
-from evidently.metrics.data_integrity_metrics import DataIntegrityNullValuesMetricsResult
-from evidently.metrics.data_integrity_metrics import DataIntegrityNullValuesStat
+from evidently.metrics import DatasetMissingValuesMetric
+from evidently.metrics.data_integrity.dataset_missing_values_metric import DataIntegrityNullValuesMetricsResult
+from evidently.metrics.data_integrity.dataset_missing_values_metric import DataIntegrityNullValuesStat
+from evidently.metrics import DataIntegrityMetrics
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import DetailsInfo
 from evidently.renderers.base_renderer import TestHtmlInfo
@@ -144,7 +144,7 @@ class TestNumberOfRowsRenderer(TestRenderer):
 
 class BaseIntegrityNullValuesTest(BaseCheckValueTest, ABC):
     group = DATA_INTEGRITY_GROUP.id
-    metric: DataIntegrityNullValuesMetrics
+    metric: DatasetMissingValuesMetric
 
     def __init__(
         self,
@@ -158,12 +158,12 @@ class BaseIntegrityNullValuesTest(BaseCheckValueTest, ABC):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        metric: Optional[DataIntegrityNullValuesMetrics] = None,
+        metric: Optional[DatasetMissingValuesMetric] = None,
     ):
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
 
         if metric is None:
-            self.metric = DataIntegrityNullValuesMetrics(null_values=null_values, replace=replace)
+            self.metric = DatasetMissingValuesMetric(null_values=null_values, replace=replace)
 
         else:
             self.metric = metric
@@ -527,7 +527,7 @@ class TestShareOfRowsWithNullsRenderer(BaseTestNullValuesRenderer):
 
 class BaseIntegrityColumnNullValuesTest(BaseCheckValueTest, ABC):
     group = DATA_INTEGRITY_GROUP.id
-    metric: DataIntegrityNullValuesMetrics
+    metric: DatasetMissingValuesMetric
     column_name: str
 
     def __init__(
@@ -543,13 +543,13 @@ class BaseIntegrityColumnNullValuesTest(BaseCheckValueTest, ABC):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        metric: Optional[DataIntegrityNullValuesMetrics] = None,
+        metric: Optional[DatasetMissingValuesMetric] = None,
     ):
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
         self.column_name = column_name
 
         if metric is None:
-            self.metric = DataIntegrityNullValuesMetrics(null_values=null_values, replace=replace)
+            self.metric = DatasetMissingValuesMetric(null_values=null_values, replace=replace)
 
         else:
             self.metric = metric
