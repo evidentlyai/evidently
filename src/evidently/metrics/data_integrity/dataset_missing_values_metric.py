@@ -18,16 +18,16 @@ from evidently.renderers.html_widgets import table_data
 
 
 @dataclass
-class DataIntegrityNullValuesStat:
+class DatasetMissingValues:
     """Statistics about null values in a dataset"""
 
-    # set of different null-like values in the dataset
+    # set of different missed values in the dataset
     different_nulls: Dict[Any, int]
-    # number of different null-like values in the dataset
+    # number of different missed values in the dataset
     number_of_different_nulls: int
-    # set of different null-like values for each column
+    # set of different missed values for each column
     different_nulls_by_column: Dict[str, Dict[Any, int]]
-    # count of different null-like values for each column
+    # count of different missed values for each column
     number_of_different_nulls_by_column: Dict[str, int]
     # count of null-values in all dataset
     number_of_nulls: int
@@ -54,17 +54,17 @@ class DataIntegrityNullValuesStat:
 
 
 @dataclass
-class DataIntegrityNullValuesMetricsResult:
-    current_null_values: DataIntegrityNullValuesStat
-    reference_null_values: Optional[DataIntegrityNullValuesStat] = None
+class DatasetMissingValuesMetricResult:
+    current_null_values: DatasetMissingValues
+    reference_null_values: Optional[DatasetMissingValues] = None
 
 
-class DatasetMissingValuesMetric(Metric[DataIntegrityNullValuesMetricsResult]):
+class DatasetMissingValuesMetric(Metric[DatasetMissingValuesMetricResult]):
     """Count missing values in a dataset.
 
     Missing value is a null or NaN value.
 
-    Calculate an amount of null-like values kinds and count for such values.
+    Calculate an amount of missed values kinds and count for such values.
     NA-types like numpy.NaN, pandas.NaT are counted as one type.
 
     You can set you own null-line values list with `null_values` parameter.
@@ -90,7 +90,7 @@ class DatasetMissingValuesMetric(Metric[DataIntegrityNullValuesMetricsResult]):
         # use frozenset because metrics parameters should be immutable/hashable for deduplication
         self.null_values = frozenset(null_values)
 
-    def _calculate_null_values_stats(self, dataset: pd.DataFrame) -> DataIntegrityNullValuesStat:
+    def _calculate_null_values_stats(self, dataset: pd.DataFrame) -> DatasetMissingValues:
         different_nulls = {null_value: 0 for null_value in self.null_values}
         columns_with_nulls = set()
         number_of_nulls = 0
@@ -165,7 +165,7 @@ class DatasetMissingValuesMetric(Metric[DataIntegrityNullValuesMetricsResult]):
         number_of_columns_with_nulls = len(columns_with_nulls)
         number_of_different_nulls = len({k for k in different_nulls if different_nulls[k] > 0})
 
-        return DataIntegrityNullValuesStat(
+        return DatasetMissingValues(
             different_nulls=different_nulls,
             number_of_different_nulls=number_of_different_nulls,
             different_nulls_by_column=different_nulls_by_column,
@@ -183,33 +183,33 @@ class DatasetMissingValuesMetric(Metric[DataIntegrityNullValuesMetricsResult]):
             share_of_columns_with_nulls=number_of_columns_with_nulls / number_of_columns,
         )
 
-    def calculate(self, data: InputData) -> DataIntegrityNullValuesMetricsResult:
+    def calculate(self, data: InputData) -> DatasetMissingValuesMetricResult:
         if not self.null_values:
             raise ValueError("Null-values list should not be empty.")
 
         current_null_values = self._calculate_null_values_stats(data.current_data)
 
         if data.reference_data is not None:
-            reference_null_values: Optional[DataIntegrityNullValuesStat] = self._calculate_null_values_stats(
+            reference_null_values: Optional[DatasetMissingValues] = self._calculate_null_values_stats(
                 data.reference_data
             )
 
         else:
             reference_null_values = None
 
-        return DataIntegrityNullValuesMetricsResult(
+        return DatasetMissingValuesMetricResult(
             current_null_values=current_null_values,
             reference_null_values=reference_null_values,
         )
 
 
 @default_renderer(wrap_type=DatasetMissingValuesMetric)
-class DataIntegrityNullValuesMetricsRenderer(MetricRenderer):
+class DatasetMissingValuesMetricRenderer(MetricRenderer):
     def render_json(self, obj: DatasetMissingValuesMetric) -> dict:
         return dataclasses.asdict(obj.get_result().current_null_values)
 
     @staticmethod
-    def _get_table_stat(dataset_name: str, stats: DataIntegrityNullValuesStat) -> BaseWidgetInfo:
+    def _get_table_stat(dataset_name: str, stats: DatasetMissingValues) -> BaseWidgetInfo:
         matched_stat = [(k, v) for k, v in stats.number_of_nulls_by_column.items()]
         matched_stat_headers = ["Value", "Count"]
         return table_data(
@@ -218,15 +218,29 @@ class DataIntegrityNullValuesMetricsRenderer(MetricRenderer):
             data=matched_stat,
         )
 
+    @staticmethod
+    def _get_overall_missing_values_info(dataset_name: str, stats: DatasetMissingValues) -> BaseWidgetInfo:
+        percents = round(stats.share_of_nulls * 100, 3)
+        return header_text(
+            label=f"In {dataset_name} dataset {stats.number_of_nulls}({percents}%) missed values."
+        )
+
     def render_html(self, obj: DatasetMissingValuesMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
-        number_of_nulls = metric_result.current_null_values.number_of_nulls
 
         result = [
-            header_text(label="Data Integrity Metric: Null Values Statistic"),
-            header_text(label=f"In current dataset {number_of_nulls} null values."),
-            self._get_table_stat(dataset_name="current", stats=metric_result.current_null_values),
+            header_text(label="Dataset Missing Values"),
+            self._get_overall_missing_values_info(dataset_name="current", stats=metric_result.current_null_values),
         ]
+
+        if metric_result.reference_null_values is not None:
+            result.append(
+                self._get_overall_missing_values_info(
+                    dataset_name="reference", stats=metric_result.reference_null_values
+                )
+            )
+
+        self._get_table_stat(dataset_name="current", stats=metric_result.current_null_values)
 
         if metric_result.reference_null_values is not None:
             result.append(self._get_table_stat(dataset_name="reference", stats=metric_result.reference_null_values))

@@ -13,8 +13,8 @@ from pandas.core.dtypes.common import infer_dtype_from_object
 from evidently.metrics import ColumnRegExpMetric
 from evidently.metrics import DataIntegrityMetrics
 from evidently.metrics import DatasetMissingValuesMetric
-from evidently.metrics.data_integrity.dataset_missing_values_metric import DataIntegrityNullValuesMetricsResult
-from evidently.metrics.data_integrity.dataset_missing_values_metric import DataIntegrityNullValuesStat
+from evidently.metrics.data_integrity.dataset_missing_values_metric import DatasetMissingValuesMetricResult
+from evidently.metrics.data_integrity.dataset_missing_values_metric import DatasetMissingValues
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import DetailsInfo
 from evidently.renderers.base_renderer import TestHtmlInfo
@@ -175,7 +175,7 @@ class BaseTestNullValuesRenderer(TestRenderer):
     """
 
     @staticmethod
-    def _get_number_and_percents_of_nulls(nulls_info: DataIntegrityNullValuesStat) -> pd.DataFrame:
+    def _get_number_and_percents_of_nulls(nulls_info: DatasetMissingValues) -> pd.DataFrame:
         """Get a string with nulls numbers and percents from nulls info for results table"""
         result = {}
 
@@ -198,7 +198,7 @@ class BaseTestNullValuesRenderer(TestRenderer):
         )
 
     def get_table_with_nulls_and_percents_by_column(
-        self, info: TestHtmlInfo, metric_result: DataIntegrityNullValuesMetricsResult, name: str
+        self, info: TestHtmlInfo, metric_result: DatasetMissingValuesMetricResult, name: str
     ) -> TestHtmlInfo:
         """Get a table with nulls number and percents"""
         columns = ["column name", "current number of nulls"]
