@@ -2,10 +2,10 @@ from .cat_target_drift_metrics import CatTargetDriftMetrics
 from .classification_performance_metrics import ClassificationPerformanceMetrics
 from .classification_performance_metrics import ClassificationPerformanceMetricsThreshold
 from .classification_performance_metrics import ClassificationPerformanceMetricsTopK
-from .data_integrity.column_regexp_metric import ColumnRegExpMetric
 from .data_drift.column_drift_metric import ColumnDriftMetric
 from .data_drift.data_drift_table import DataDriftTable
 from .data_drift.dataset_drift_metric import DatasetDriftMetric
+from .data_integrity.column_regexp_metric import ColumnRegExpMetric
 from .data_integrity_metrics import DataIntegrityMetrics
 from .data_integrity_metrics import DataIntegrityNullValuesMetrics
 from .data_quality_metrics import DataQualityCorrelationMetrics
