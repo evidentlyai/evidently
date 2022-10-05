@@ -35,7 +35,7 @@ from evidently.report import Report
         ),
     ),
 )
-def test_dataset_missing_values_metrics_with_report(
+def test_dataset_missing_values_metric_with_report(
     current_data: pd.DataFrame, reference_data: pd.DataFrame, metric: DatasetMissingValuesMetric
 ) -> None:
     report = Report(metrics=[metric])
@@ -44,7 +44,7 @@ def test_dataset_missing_values_metrics_with_report(
     assert report.json()
 
 
-def test_dataset_missing_values_metrics_different_null_values() -> None:
+def test_dataset_missing_values_metric_different_null_values() -> None:
     test_dataset = pd.DataFrame(
         {
             "category_feature_1": ["", "n/a", "3"],
@@ -120,3 +120,28 @@ def test_dataset_missing_values_metrics_different_null_values() -> None:
     assert result.current.number_of_different_nulls == 4
     assert result.current.number_of_missed_values == 6
     assert result.reference is None
+
+
+@pytest.mark.parametrize(
+    "current_data, reference_data, metric",
+    (
+        (
+            pd.DataFrame(
+                {
+                    "col": [1, 2, 1, 2, 1],
+                }
+            ),
+            None,
+            DatasetMissingValuesMetric(values=[], replace=True),
+        ),
+    ),
+)
+def test_dataset_missing_values_metrics_value_error(
+    current_data: pd.DataFrame,
+    reference_data: pd.DataFrame,
+    metric: DatasetMissingValuesMetric,
+) -> None:
+    with pytest.raises(ValueError):
+        metric.calculate(
+            data=InputData(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
+        )
