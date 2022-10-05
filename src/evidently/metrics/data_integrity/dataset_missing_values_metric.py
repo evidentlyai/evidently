@@ -137,25 +137,15 @@ class DatasetMissingValuesMetric(Metric[DatasetMissingValuesMetricResult]):
                     columns_with_nulls.add(column_name)
 
         for _, row in dataset.iterrows():
-            if None in self.values:
-                # check pandas null values
-                if row.isnull().any():
-                    # if there is a null-value - just increase the counter and move to check the next row
-                    number_of_rows_with_nulls += 1
-                    continue
-
             for null_value in self.values:
-                if null_value is None:
-                    # if there is a pandas null-value
-                    increase_counter = row.isnull().any()
-
-                else:
-                    # if there is another null value
-                    increase_counter = null_value in row
-
-                if increase_counter:
+                if None in self.values and row.isnull().any():
+                    # check pandas null values
                     number_of_rows_with_nulls += 1
-                    continue
+                    break
+
+                elif null_value in row.values:
+                    number_of_rows_with_nulls += 1
+                    break
 
         share_of_nulls_by_column = {
             column_name: value / number_of_rows for column_name, value in number_of_nulls_by_column.items()

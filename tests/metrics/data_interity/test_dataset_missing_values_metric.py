@@ -65,6 +65,7 @@ def test_dataset_missing_values_metric_different_null_values() -> None:
     assert result.current.different_nulls == {None: 5, -np.inf: 1, np.inf: 1, "": 2}
     assert result.current.number_of_different_nulls == 4
     assert result.current.number_of_missed_values == 9
+    assert result.current.number_of_rows_with_nulls == 3
     assert result.current.different_nulls_by_column == {
         "category_feature_1": {None: 0, -np.inf: 0, np.inf: 0, "": 1},
         "category_feature_2": {None: 1, -np.inf: 0, np.inf: 1, "": 1},
