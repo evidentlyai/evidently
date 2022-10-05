@@ -1,0 +1,105 @@
+from typing import List
+from typing import Optional
+from typing import Sequence
+from typing import Union
+
+import dataclasses
+import pandas as pd
+
+from evidently import ColumnMapping
+from evidently.calculations.data_quality import get_rows_count
+from evidently.metrics.base_metric import InputData
+from evidently.metrics.base_metric import Metric
+from evidently.model.widget import BaseWidgetInfo
+from evidently.renderers.base_renderer import MetricRenderer
+from evidently.renderers.base_renderer import default_renderer
+from evidently.renderers.html_widgets import header_text
+from evidently.utils.data_operations import process_columns
+
+
+@dataclasses.dataclass
+class DatasetSummary:
+    """Columns information in a dataset"""
+
+    target: Optional[str]
+    prediction: Optional[Union[str, Sequence[str]]]
+    date_column: Optional[str]
+    id_column: Optional[str]
+    number_of_columns: int
+    number_of_rows: int
+    number_of_missing_values: int
+    values_number_of_categorical_columns: int
+    number_of_numeric_columns: int
+    number_of_datetime_columns: int
+    number_of_constant_columns: int
+    number_of_empty_columns: int
+    number_of_almost_constant_columns: int
+    number_of_duplicated_columns: int
+    number_of_almost_duplicated_columns: int
+
+
+@dataclasses.dataclass
+class DatasetSummaryMetricResult:
+    almost_duplicated_threshold: float
+    current: DatasetSummary
+    reference: Optional[DatasetSummary] = None
+
+
+class DatasetSummaryMetric(Metric[DatasetSummaryMetricResult]):
+    """Common dataset(s) columns/features characteristics"""
+
+    # threshold for calculating the number of almost duplicated columns
+    almost_duplicated_threshold: float
+
+    def __init__(self, almost_duplicated_threshold: float = 0.95):
+        self.almost_duplicated_threshold = almost_duplicated_threshold
+
+    @staticmethod
+    def _calculate_dataset_common_stats(dataset: pd.DataFrame, column_mapping: ColumnMapping) -> DatasetSummary:
+        columns = process_columns(dataset, column_mapping)
+        return DatasetSummary(
+            target=columns.utility_columns.target,
+            prediction=columns.utility_columns.prediction,
+            date_column=columns.utility_columns.date,
+            id_column=columns.utility_columns.id_column,
+            number_of_columns=len(dataset.columns),
+            number_of_rows=get_rows_count(dataset),
+            number_of_missing_values=0,
+            values_number_of_categorical_columns=len(columns.cat_feature_names),
+            number_of_numeric_columns=len(columns.num_feature_names),
+            number_of_datetime_columns=len(columns.datetime_feature_names),
+            number_of_constant_columns=0,
+            number_of_empty_columns=0,
+            number_of_almost_constant_columns=0,
+            number_of_duplicated_columns=0,
+            number_of_almost_duplicated_columns=0,
+        )
+
+    def calculate(self, data: InputData) -> DatasetSummaryMetricResult:
+        if self.almost_duplicated_threshold < 0 or self.almost_duplicated_threshold > 1:
+            raise ValueError("Almost duplicated threshold should be in range [0, 1]")
+
+        current = self._calculate_dataset_common_stats(data.current_data, data.column_mapping)
+        reference = None
+
+        if data.reference_data is not None:
+            reference = self._calculate_dataset_common_stats(data.reference_data, data.column_mapping)
+
+        return DatasetSummaryMetricResult(
+            current=current,
+            reference=reference,
+            almost_duplicated_threshold=self.almost_duplicated_threshold,
+        )
+
+
+@default_renderer(wrap_type=DatasetSummaryMetric)
+class DatasetSummaryMetricRenderer(MetricRenderer):
+    def render_json(self, obj: DatasetSummaryMetric) -> dict:
+        return dataclasses.asdict(obj.get_result())
+
+    def render_html(self, obj: DatasetSummaryMetric) -> List[BaseWidgetInfo]:
+        # metric_result = obj.get_result()
+        result = [
+            header_text(label="Dataset Summary"),
+        ]
+        return result
