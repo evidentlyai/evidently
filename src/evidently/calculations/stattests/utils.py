@@ -18,7 +18,7 @@ def get_binned_data(
         n: number of quantiles
     Returns:
         reference_percents: % of records in each bucket for reference
-        current_percents: % of records in each bucket for reference
+        current_percents: % of records in each bucket for current
     """
     n_vals = reference_data.nunique()
 

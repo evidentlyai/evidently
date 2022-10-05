@@ -10,11 +10,11 @@ import numpy as np
 import pandas as pd
 from pandas.core.dtypes.common import infer_dtype_from_object
 
+from evidently.metrics import ColumnRegExpMetric
 from evidently.metrics.data_integrity_metrics import DataIntegrityMetrics
 from evidently.metrics.data_integrity_metrics import DataIntegrityNullValuesMetrics
 from evidently.metrics.data_integrity_metrics import DataIntegrityNullValuesMetricsResult
 from evidently.metrics.data_integrity_metrics import DataIntegrityNullValuesStat
-from evidently.metrics.data_integrity_metrics import DataIntegrityValueByRegexpMetrics
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import DetailsInfo
 from evidently.renderers.base_renderer import TestHtmlInfo
@@ -1141,7 +1141,7 @@ class TestNumberOfDriftedFeaturesRenderer(TestRenderer):
 class TestColumnValueRegExp(BaseCheckValueTest, ABC):
     group = DATA_INTEGRITY_GROUP.id
     name = "RegExp Match"
-    metric: DataIntegrityValueByRegexpMetrics
+    metric: ColumnRegExpMetric
     column_name: Optional[str]
 
     def __init__(
@@ -1156,7 +1156,7 @@ class TestColumnValueRegExp(BaseCheckValueTest, ABC):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        metric: Optional[DataIntegrityValueByRegexpMetrics] = None,
+        metric: Optional[ColumnRegExpMetric] = None,
     ):
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
         self.column_name = column_name
@@ -1171,7 +1171,7 @@ class TestColumnValueRegExp(BaseCheckValueTest, ABC):
             if column_name is None:
                 raise ValueError("Column name should be present")
 
-            self.metric = DataIntegrityValueByRegexpMetrics(column_name=column_name, reg_exp=reg_exp)
+            self.metric = ColumnRegExpMetric(column_name=column_name, reg_exp=reg_exp)
 
         else:
             self.metric = metric

@@ -7,13 +7,12 @@ from typing import Sequence
 import dataclasses
 from dataclasses import dataclass
 
-from evidently.calculations.data_drift import DataDriftMetrics
-from evidently.calculations.data_drift import calculate_data_drift_for_category_feature
-from evidently.calculations.data_drift import define_predictions_type
+from evidently.calculations.data_drift import ColumnDataDriftMetrics
+from evidently.calculations.data_drift import ensure_prediction_column_is_string
+from evidently.calculations.data_drift import get_one_column_drift
 from evidently.calculations.data_quality import get_rows_count
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
-from evidently.metrics.utils import make_hist_for_cat_plot
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import DataDriftOptions
 from evidently.options import OptionsProvider
@@ -25,6 +24,7 @@ from evidently.renderers.html_widgets import histogram
 from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_operations import replace_infinity_values_to_nan
+from evidently.utils.visualizations import make_hist_for_cat_plot
 
 
 @dataclass
@@ -32,8 +32,8 @@ class CatTargetDriftAnalyzerResults:
     """Class for all results of category target drift calculations"""
 
     columns: DatasetColumns
-    target_metrics: Optional[DataDriftMetrics] = None
-    prediction_metrics: Optional[DataDriftMetrics] = None
+    target_metrics: Optional[ColumnDataDriftMetrics] = None
+    prediction_metrics: Optional[ColumnDataDriftMetrics] = None
     target_histogram_data = None
     prediction_histogram_data = None
     reference_data_count: int = 0
@@ -83,16 +83,15 @@ class CatTargetDriftMetrics(Metric[CatTargetDriftAnalyzerResults]):
         """
         if data.reference_data is None:
             raise ValueError("reference_data should be present")
+
         reference_data = data.reference_data.copy()
 
         if data.current_data is None:
             raise ValueError("current_data should be present")
-        current_data = data.current_data.copy()
 
-        # threshold = self.options.cat_target_threshold
+        current_data = data.current_data.copy()
         provider = OptionsProvider()
         options = provider.get(DataDriftOptions)
-        threshold = options.cat_target_threshold
         columns = process_columns(reference_data, data.column_mapping)
         target_column = columns.utility_columns.target
 
@@ -100,7 +99,7 @@ class CatTargetDriftMetrics(Metric[CatTargetDriftAnalyzerResults]):
             raise ValueError("target should not be a sequence")
 
         classification_threshold = self.quality_options.classification_threshold
-        prediction_column = define_predictions_type(
+        prediction_column = ensure_prediction_column_is_string(
             prediction_column=columns.utility_columns.prediction,
             current_data=current_data,
             reference_data=reference_data,
@@ -118,13 +117,15 @@ class CatTargetDriftMetrics(Metric[CatTargetDriftAnalyzerResults]):
         current_data = replace_infinity_values_to_nan(current_data)
 
         if target_column is not None:
-            result.target_metrics = calculate_data_drift_for_category_feature(
+            result.target_metrics = get_one_column_drift(
                 current_data=current_data,
                 reference_data=reference_data,
                 column_name=target_column,
-                stattest=self.options.cat_target_stattest_func,
-                threshold=threshold,
+                dataset_columns=columns,
+                options=options,
+                column_type="cat",
             )
+
             result.target_histogram_data = make_hist_for_cat_plot(
                 current_data[target_column],
                 reference_data[target_column] if reference_data is not None else None,
@@ -132,12 +133,13 @@ class CatTargetDriftMetrics(Metric[CatTargetDriftAnalyzerResults]):
             )
 
         if prediction_column is not None:
-            result.prediction_metrics = calculate_data_drift_for_category_feature(
+            result.prediction_metrics = get_one_column_drift(
                 current_data=current_data,
                 reference_data=reference_data,
                 column_name=prediction_column,
-                stattest=self.options.cat_target_stattest_func,
-                threshold=threshold,
+                dataset_columns=columns,
+                options=options,
+                column_type="cat",
             )
             result.prediction_histogram_data = make_hist_for_cat_plot(
                 current_data[prediction_column],
