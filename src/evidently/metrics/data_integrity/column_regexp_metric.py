@@ -2,16 +2,16 @@ import collections
 import re
 from typing import Dict
 from typing import List
+from typing import Optional
 from typing import Pattern
 
 import dataclasses
 import pandas as pd
+from dataclasses import dataclass
 
 from evidently.calculations.data_quality import get_rows_count
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
-from evidently.metrics.data_integrity_metrics import DataIntegrityValueByRegexpMetricResult
-from evidently.metrics.data_integrity_metrics import DataIntegrityValueByRegexpStat
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -21,6 +21,35 @@ from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import table_data
 from evidently.renderers.html_widgets import widget_tabs
+
+
+@dataclass
+class DataIntegrityValueByRegexpStat:
+    """Statistics about matched by a regular expression values in a column for one dataset"""
+
+    # count of matched values in the column, without NaNs
+    number_of_matched: int
+    # count of not matched values in the column, without NaNs
+    number_of_not_matched: int
+    # count of rows in the column, including matched, not matched and NaNs
+    number_of_rows: int
+    # map with matched values (keys) and count of the values (value)
+    table_of_matched: Dict[str, int]
+    # map with not matched values (keys) and count of the values (values)
+    table_of_not_matched: Dict[str, int]
+
+
+@dataclass
+class DataIntegrityValueByRegexpMetricResult:
+    # name of the column that we check by the regular expression
+    column_name: str
+    # the regular expression as a string
+    reg_exp: str
+    top: int
+    # match statistic for current dataset
+    current: DataIntegrityValueByRegexpStat
+    # match statistic for reference dataset, equals None if the reference is not present
+    reference: Optional[DataIntegrityValueByRegexpStat] = None
 
 
 class ColumnRegExpMetric(Metric[DataIntegrityValueByRegexpMetricResult]):
