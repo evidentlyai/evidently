@@ -25,7 +25,7 @@ from evidently.renderers.html_widgets import widget_tabs
 
 @dataclass
 class DatasetMissingValues:
-    """Statistics about null values in a dataset"""
+    """Statistics about missed values in a dataset"""
 
     # set of different missed values in the dataset
     different_nulls: Dict[Any, int]
@@ -35,13 +35,13 @@ class DatasetMissingValues:
     different_nulls_by_column: Dict[str, Dict[Any, int]]
     # count of different missed values for each column
     number_of_different_nulls_by_column: Dict[str, int]
-    # count of null-values in all dataset
-    number_of_nulls: int
-    # share of null-values in all dataset
-    share_of_nulls: float
-    # count of null-values for each column
+    # count of missed values in all dataset
+    number_of_missed_values: int
+    # share of missed values in all dataset
+    share_of_missed_values: float
+    # count of missed values for each column
     number_of_nulls_by_column: Dict[str, int]
-    # share of null-values for each column
+    # share of missed values for each column
     share_of_nulls_by_column: Dict[str, float]
     # count of rows in the dataset
     number_of_rows: int
@@ -73,31 +73,31 @@ class DatasetMissingValuesMetric(Metric[DatasetMissingValuesMetricResult]):
     Calculate an amount of missed values kinds and count for such values.
     NA-types like numpy.NaN, pandas.NaT are counted as one type.
 
-    You can set you own null-line values list with `null_values` parameter.
-    Value None in the list means that Pandas null values will be included in the calculation.
+    You can set you own missed values list with `values` parameter.
+    Value `None` in the list means that Pandas null values will be included in the calculation.
 
     If `replace` parameter is False - add defaults to user's list.
-    If `replace` parameter is True - use values from `null_values` list only.
+    If `replace` parameter is True - use values from `values` list only.
     """
 
-    # default null values list
-    DEFAULT_NULL_VALUES = ["", np.inf, -np.inf, None]
-    null_values: frozenset
+    # default missed values list
+    DEFAULT_MISSED_VALUES = ["", np.inf, -np.inf, None]
+    values: frozenset
 
-    def __init__(self, null_values: Optional[list] = None, replace: bool = True) -> None:
-        if null_values is None:
-            # use default null-values list if we have no user-defined null values
-            null_values = self.DEFAULT_NULL_VALUES
+    def __init__(self, values: Optional[list] = None, replace: bool = True) -> None:
+        if values is None:
+            # use default missed values list if we have no user-defined values
+            values = self.DEFAULT_MISSED_VALUES
 
         elif not replace:
-            # add default nulls to user-defined nulls list
-            null_values = self.DEFAULT_NULL_VALUES + null_values
+            # add default values to the user-defined list
+            values = self.DEFAULT_MISSED_VALUES + values
 
         # use frozenset because metrics parameters should be immutable/hashable for deduplication
-        self.null_values = frozenset(null_values)
+        self.values = frozenset(values)
 
-    def _calculate_null_values_stats(self, dataset: pd.DataFrame) -> DatasetMissingValues:
-        different_nulls = {null_value: 0 for null_value in self.null_values}
+    def _calculate_missed_values_stats(self, dataset: pd.DataFrame) -> DatasetMissingValues:
+        different_nulls = {value: 0 for value in self.values}
         columns_with_nulls = set()
         number_of_nulls = 0
         number_of_nulls_by_column: Dict[str, int] = {}
@@ -107,16 +107,16 @@ class DatasetMissingValuesMetric(Metric[DatasetMissingValuesMetricResult]):
             number_of_nulls_by_column[column_name] = 0
             different_nulls_by_column[column_name] = {}
 
-            for null_value in self.null_values:
-                different_nulls_by_column[column_name][null_value] = 0
+            for value in self.values:
+                different_nulls_by_column[column_name][value] = 0
 
         number_of_rows_with_nulls = 0
         number_of_columns = len(dataset.columns)
         number_of_rows = dataset.shape[0]
 
         for column_name in dataset.columns:
-            # iterate by each value in custom null-values list and check the value in a column
-            for null_value in self.null_values:
+            # iterate by each value in custom missed values list and check the value in a column
+            for null_value in self.values:
                 if null_value is None:
                     # check all pandas null-types like numpy.NAN, pandas.NA, pandas.NaT, etc
                     column_null = dataset[column_name].isnull().sum()
@@ -137,14 +137,14 @@ class DatasetMissingValuesMetric(Metric[DatasetMissingValuesMetricResult]):
                     columns_with_nulls.add(column_name)
 
         for _, row in dataset.iterrows():
-            if None in self.null_values:
-                # check pandas null-values
+            if None in self.values:
+                # check pandas null values
                 if row.isnull().any():
                     # if there is a null-value - just increase the counter and move to check the next row
                     number_of_rows_with_nulls += 1
                     continue
 
-            for null_value in self.null_values:
+            for null_value in self.values:
                 if null_value is None:
                     # if there is a pandas null-value
                     increase_counter = row.isnull().any()
@@ -163,7 +163,7 @@ class DatasetMissingValuesMetric(Metric[DatasetMissingValuesMetricResult]):
         number_of_different_nulls_by_column = {}
 
         for column_name, nulls in different_nulls_by_column.items():
-            # count a number of null-values that have a value in the column
+            # count a number of missed values that have a value in the column
             number_of_different_nulls_by_column[column_name] = len(
                 {keys for keys, values in nulls.items() if values > 0}
             )
@@ -176,8 +176,8 @@ class DatasetMissingValuesMetric(Metric[DatasetMissingValuesMetricResult]):
             number_of_different_nulls=number_of_different_nulls,
             different_nulls_by_column=different_nulls_by_column,
             number_of_different_nulls_by_column=number_of_different_nulls_by_column,
-            number_of_nulls=number_of_nulls,
-            share_of_nulls=number_of_nulls / (number_of_columns * number_of_rows),
+            number_of_missed_values=number_of_nulls,
+            share_of_missed_values=number_of_nulls / (number_of_columns * number_of_rows),
             number_of_nulls_by_column=number_of_nulls_by_column,
             share_of_nulls_by_column=share_of_nulls_by_column,
             number_of_rows=number_of_rows,
@@ -190,13 +190,13 @@ class DatasetMissingValuesMetric(Metric[DatasetMissingValuesMetricResult]):
         )
 
     def calculate(self, data: InputData) -> DatasetMissingValuesMetricResult:
-        if not self.null_values:
+        if not self.values:
             raise ValueError("Null-values list should not be empty.")
 
-        current_null_values = self._calculate_null_values_stats(data.current_data)
+        current_null_values = self._calculate_missed_values_stats(data.current_data)
 
         if data.reference_data is not None:
-            reference_null_values: Optional[DatasetMissingValues] = self._calculate_null_values_stats(
+            reference_null_values: Optional[DatasetMissingValues] = self._calculate_missed_values_stats(
                 data.reference_data
             )
 
@@ -245,8 +245,8 @@ class DatasetMissingValuesMetricRenderer(MetricRenderer):
 
     @staticmethod
     def _get_info_string(stats: DatasetMissingValues) -> str:
-        percents = round(stats.share_of_nulls * 100, 3)
-        return f"{stats.number_of_nulls} ({percents}%)"
+        percents = round(stats.share_of_missed_values * 100, 3)
+        return f"{stats.number_of_missed_values} ({percents}%)"
 
     def _get_overall_missing_values_info(self, metric_result: DatasetMissingValuesMetricResult) -> BaseWidgetInfo:
         counters = [

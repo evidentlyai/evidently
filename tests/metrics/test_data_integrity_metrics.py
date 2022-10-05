@@ -33,7 +33,7 @@ def test_data_integrity_metrics() -> None:
     "metric_object",
     (
         DataIntegrityMetrics(),
-        DatasetMissingValuesMetric(null_values=[None]),
+        DatasetMissingValuesMetric(values=[None]),
     ),
 )
 def test_data_integrity_metrics_with_report(metric_object: Metric) -> None:
@@ -73,7 +73,7 @@ def test_data_integrity_metrics_different_null_values() -> None:
     # expect na values and an empty string as null-values
     assert result.current.different_nulls == {None: 5, -np.inf: 1, np.inf: 1, "": 2}
     assert result.current.number_of_different_nulls == 4
-    assert result.current.number_of_nulls == 9
+    assert result.current.number_of_missed_values == 9
     assert result.current.different_nulls_by_column == {
         "category_feature_1": {None: 0, -np.inf: 0, np.inf: 0, "": 1},
         "category_feature_2": {None: 1, -np.inf: 0, np.inf: 1, "": 1},
@@ -100,32 +100,32 @@ def test_data_integrity_metrics_different_null_values() -> None:
     }
     assert result.reference is None
 
-    metric = DatasetMissingValuesMetric(null_values=["n/a"], replace=False)
+    metric = DatasetMissingValuesMetric(values=["n/a"], replace=False)
     result = metric.calculate(
         data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
     )
     assert result is not None
     # expect n/a and other defaults as null-values
     assert result.current.number_of_different_nulls == 5
-    assert result.current.number_of_nulls == 10
+    assert result.current.number_of_missed_values == 10
     assert result.reference is None
 
     # test custom list of null values, no default, but with Pandas nulls
-    metric = DatasetMissingValuesMetric(null_values=["", 0, "n/a", -9999, None], replace=True)
+    metric = DatasetMissingValuesMetric(values=["", 0, "n/a", -9999, None], replace=True)
     result = metric.calculate(
         data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
     )
     assert result is not None
     assert result.current.number_of_different_nulls == 5
-    assert result.current.number_of_nulls == 11
+    assert result.current.number_of_missed_values == 11
     assert result.reference is None
 
     # test custom list of null values and ignore pandas null values
-    metric = DatasetMissingValuesMetric(null_values=["", 0, "n/a", -9999], replace=True)
+    metric = DatasetMissingValuesMetric(values=["", 0, "n/a", -9999], replace=True)
     result = metric.calculate(
         data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
     )
     assert result is not None
     assert result.current.number_of_different_nulls == 4
-    assert result.current.number_of_nulls == 6
+    assert result.current.number_of_missed_values == 6
     assert result.reference is None

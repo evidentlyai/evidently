@@ -163,7 +163,7 @@ class BaseIntegrityNullValuesTest(BaseCheckValueTest, ABC):
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
 
         if metric is None:
-            self.metric = DatasetMissingValuesMetric(null_values=null_values, replace=replace)
+            self.metric = DatasetMissingValuesMetric(values=null_values, replace=replace)
 
         else:
             self.metric = metric
@@ -310,12 +310,12 @@ class TestNumberOfNulls(BaseIntegrityNullValuesTest):
             curr_number_of_rows = self.metric.get_result().current.number_of_rows
             ref_number_of_rows = reference_null_values.number_of_rows
             mult = curr_number_of_rows / ref_number_of_rows
-            return TestValueCondition(lte=approx(reference_null_values.number_of_nulls * mult, relative=0.1))
+            return TestValueCondition(lte=approx(reference_null_values.number_of_missed_values * mult, relative=0.1))
 
         return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
-        return self.metric.get_result().current.number_of_nulls
+        return self.metric.get_result().current.number_of_missed_values
 
     def get_description(self, value: Numeric) -> str:
         return f"The number of nulls and missing values is {value}. The test threshold is {self.get_condition()}."
@@ -347,12 +347,12 @@ class TestShareOfNulls(BaseIntegrityNullValuesTest):
         reference = self.metric.get_result().reference
 
         if reference is not None:
-            return TestValueCondition(lte=approx(reference.share_of_nulls, relative=0.1))
+            return TestValueCondition(lte=approx(reference.share_of_missed_values, relative=0.1))
 
         return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
-        return self.metric.get_result().current.share_of_nulls
+        return self.metric.get_result().current.share_of_missed_values
 
     def get_description(self, value: Numeric) -> str:
         return f"The share of nulls and missing values is {value:.3g}. The test threshold is {self.get_condition()}."
@@ -549,7 +549,7 @@ class BaseIntegrityColumnNullValuesTest(BaseCheckValueTest, ABC):
         self.column_name = column_name
 
         if metric is None:
-            self.metric = DatasetMissingValuesMetric(null_values=null_values, replace=replace)
+            self.metric = DatasetMissingValuesMetric(values=null_values, replace=replace)
 
         else:
             self.metric = metric
