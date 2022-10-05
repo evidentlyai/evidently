@@ -1,16 +1,26 @@
+from itertools import combinations
+from typing import Generator
 from typing import Tuple
 
-import pandas as pd
 import numpy as np
-import scipy
-from itertools import combinations
-from scipy.special import gamma, kv, gammaln
+import pandas as pd
+from scipy.special import gamma
+from scipy.special import gammaln
+from scipy.special import kv
+from scipy.stats import rankdata
 
 from evidently.calculations.stattests.registry import StatTest
 from evidently.calculations.stattests.registry import register_stattest
 
 
-def _all_partitions(nx, ny):
+def _all_partitions(nx: int, ny: int) -> Generator[Tuple[int, int], None, None]:
+    """
+    Args:
+        nx: int
+        ny: int
+    Return:
+        None
+    """
     z = np.arange(nx + ny)
     for c in combinations(z, nx):
         x = np.array(c)
@@ -20,7 +30,15 @@ def _all_partitions(nx, ny):
         yield x, y
 
 
-def _pval_cvm_2samp_exact(s, nx, ny):
+def _pval_cvm_2samp_exact(s: float, nx: int, ny: int):
+    """Compute the exact p
+    Args:
+        s: test statistic
+        nx: sample size
+        ny: sample size
+    Returns:
+        p_value: p_value
+    """
     rangex = np.arange(nx)
     rangey = np.arange(ny)
 
@@ -32,7 +50,8 @@ def _pval_cvm_2samp_exact(s, nx, ny):
         us.append(u)
 
     u, cnt = np.unique(us, return_counts=True)
-    return np.sum(cnt[u >= s]) / np.sum(cnt)
+    p_value = np.sum(cnt[u >= s]) / np.sum(cnt)
+    return p_value
 
 
 class CramerVonMisesResult:
@@ -41,14 +60,16 @@ class CramerVonMisesResult:
         self.pvalue = pvalue
 
     def __repr__(self):
-        return (
-            f"{self.__class__.__name__}(statistic={self.statistic}, "
-            f"pvalue={self.pvalue})"
-        )
+        return f"{self.__class__.__name__}(statistic={self.statistic}, " f"pvalue={self.pvalue})"
 
 
-def _cdf_cvm_inf(x):
-
+def _cdf_cvm_inf(x: float) -> float:
+    """Calculate the cdf of the Cramér-von Mises statistic
+    Args:
+        x: float
+    Returns:
+        tot: float
+    """
     x = np.asarray(x)
 
     def term(x, k):
@@ -62,7 +83,7 @@ def _cdf_cvm_inf(x):
     cond = np.ones_like(x, dtype="bool")
     k = 0
     while np.any(cond):
-        z = term(x[cond], k)
+        z = term(x[cond], k)  # type: ignore
         tot[cond] = tot[cond] + z
         cond[cond] = np.abs(z) >= 1e-7
         k += 1
@@ -70,9 +91,27 @@ def _cdf_cvm_inf(x):
     return tot
 
 
-def CVM_2samp(x, y, method="auto"):
+def CVM_2samp(x: np.ndarray, y: np.ndarray, method: str = "auto") -> CramerVonMisesResult:
+    """Perform the two-sample Cramér-von Mises test
+    Args:
+        x : array_like
+        y : array_like
+        method : {'auto', 'asymptotic', 'exact'}, optional
+    Returns:
+        res : object with attributes
+        statistic : Cramér-von Mises statistic.
+        pvalue : float
+    """
+
     xa = np.sort(np.asarray(x))
     ya = np.sort(np.asarray(y))
+
+    if xa.size <= 1 or ya.size <= 1:
+        raise ValueError("x and y must contain at least two observations.")
+    if xa.ndim > 1 or ya.ndim > 1:
+        raise ValueError("The samples must be one-dimensional.")
+    if method not in ["auto", "exact", "asymptotic"]:
+        raise ValueError("method must be either auto, exact or asymptotic.")
 
     nx = len(xa)
     ny = len(ya)
@@ -84,11 +123,13 @@ def CVM_2samp(x, y, method="auto"):
             method = "exact"
 
     z = np.concatenate([xa, ya])
-    r = scipy.stats.rankdata(z, method="average")
+    r = rankdata(z, method="average")
+
     rx = r[:nx]
     ry = r[nx:]
 
     u = nx * np.sum((rx - np.arange(1, nx + 1)) ** 2)
+
     u += ny * np.sum((ry - np.arange(1, ny + 1)) ** 2)
 
     k, N = nx * ny, nx + ny
@@ -98,8 +139,9 @@ def CVM_2samp(x, y, method="auto"):
         p = _pval_cvm_2samp_exact(u, nx, ny)
     else:
         et = (1 + 1 / N) / 6
+
         vt = (N + 1) * (4 * k * N - 3 * (nx**2 + ny**2) - 2 * k)
-        vt = vt / (45 * N**2 * 4 * k)
+        vt = vt / (45 * N**2 * 4 * k)  # type: ignore
 
         tn = 1 / 6 + (t - et) / np.sqrt(45 * vt)
 
