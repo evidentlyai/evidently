@@ -13,8 +13,14 @@ from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
+from evidently.renderers.html_widgets import CounterData
+from evidently.renderers.html_widgets import HistogramData
+from evidently.renderers.html_widgets import TabData
+from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import header_text
+from evidently.renderers.html_widgets import histogram
 from evidently.renderers.html_widgets import table_data
+from evidently.renderers.html_widgets import widget_tabs
 
 
 @dataclass
@@ -55,8 +61,8 @@ class DatasetMissingValues:
 
 @dataclass
 class DatasetMissingValuesMetricResult:
-    current_null_values: DatasetMissingValues
-    reference_null_values: Optional[DatasetMissingValues] = None
+    current: DatasetMissingValues
+    reference: Optional[DatasetMissingValues] = None
 
 
 class DatasetMissingValuesMetric(Metric[DatasetMissingValuesMetricResult]):
@@ -198,49 +204,73 @@ class DatasetMissingValuesMetric(Metric[DatasetMissingValuesMetricResult]):
             reference_null_values = None
 
         return DatasetMissingValuesMetricResult(
-            current_null_values=current_null_values,
-            reference_null_values=reference_null_values,
+            current=current_null_values,
+            reference=reference_null_values,
         )
 
 
 @default_renderer(wrap_type=DatasetMissingValuesMetric)
 class DatasetMissingValuesMetricRenderer(MetricRenderer):
     def render_json(self, obj: DatasetMissingValuesMetric) -> dict:
-        return dataclasses.asdict(obj.get_result().current_null_values)
+        return dataclasses.asdict(obj.get_result().current)
 
     @staticmethod
     def _get_table_stat(dataset_name: str, stats: DatasetMissingValues) -> BaseWidgetInfo:
         matched_stat = [(k, v) for k, v in stats.number_of_nulls_by_column.items()]
+        matched_stat = sorted(matched_stat, key=lambda x: x[1], reverse=True)
         matched_stat_headers = ["Value", "Count"]
-        return table_data(
-            title=f"{dataset_name.capitalize()}: Nulls Statistic",
+        table_tab = table_data(
+            title="",
             column_names=matched_stat_headers,
             data=matched_stat,
         )
+        histogram_tab = histogram(
+            title="",
+            primary_hist=HistogramData(
+                name="",
+                x=list(stats.number_of_nulls_by_column.keys()),
+                y=list(stats.number_of_nulls_by_column.values()),
+            ),
+        )
+        return widget_tabs(
+            title=f"{dataset_name.capitalize()} dataset",
+            tabs=[
+                TabData(title="Table", widget=table_tab),
+                TabData(
+                    title="Histogram",
+                    widget=histogram_tab,
+                ),
+            ],
+        )
 
     @staticmethod
-    def _get_overall_missing_values_info(dataset_name: str, stats: DatasetMissingValues) -> BaseWidgetInfo:
+    def _get_info_string(stats: DatasetMissingValues) -> str:
         percents = round(stats.share_of_nulls * 100, 3)
-        return header_text(label=f"In {dataset_name} dataset {stats.number_of_nulls}({percents}%) missed values.")
+        return f"{stats.number_of_nulls} ({percents}%)"
+
+    def _get_overall_missing_values_info(self, metric_result: DatasetMissingValuesMetricResult) -> BaseWidgetInfo:
+        counters = [
+            CounterData.string("Current dataset missed values", self._get_info_string(metric_result.current)),
+        ]
+        if metric_result.reference is not None:
+            counters.append(
+                CounterData.string("Reference dataset missed values", self._get_info_string(metric_result.reference)),
+            )
+
+        return counter(
+            title="",
+            counters=counters,
+        )
 
     def render_html(self, obj: DatasetMissingValuesMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
-
         result = [
             header_text(label="Dataset Missing Values"),
-            self._get_overall_missing_values_info(dataset_name="current", stats=metric_result.current_null_values),
+            self._get_overall_missing_values_info(metric_result),
+            self._get_table_stat(dataset_name="current", stats=metric_result.current),
         ]
 
-        if metric_result.reference_null_values is not None:
-            result.append(
-                self._get_overall_missing_values_info(
-                    dataset_name="reference", stats=metric_result.reference_null_values
-                )
-            )
-
-        result.append(self._get_table_stat(dataset_name="current", stats=metric_result.current_null_values))
-
-        if metric_result.reference_null_values is not None:
-            result.append(self._get_table_stat(dataset_name="reference", stats=metric_result.reference_null_values))
+        if metric_result.reference is not None:
+            result.append(self._get_table_stat(dataset_name="reference", stats=metric_result.reference))
 
         return result

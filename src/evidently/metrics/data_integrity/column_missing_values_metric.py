@@ -179,19 +179,13 @@ class ColumnMissingValuesMetricRenderer(MetricRenderer):
         percents = round(stats.share_of_missing_values * 100, 3)
         return f"{stats.number_of_missing_values} ({percents}%)"
 
-    def _get_details_missing_values_info(
-        self, metric_result: ColumnMissingValuesMetricResult
-    ) -> BaseWidgetInfo:
+    def _get_details_missing_values_info(self, metric_result: ColumnMissingValuesMetricResult) -> BaseWidgetInfo:
         counters = [
-            CounterData.string(
-                "Current dataset missed values", self._get_info_string(metric_result.current)
-            ),
+            CounterData.string("Current missed values", self._get_info_string(metric_result.current)),
         ]
         if metric_result.reference is not None:
             counters.append(
-                CounterData.string(
-                    "Reference dataset missed values", self._get_info_string(metric_result.reference)
-                ),
+                CounterData.string("Reference missed values", self._get_info_string(metric_result.reference)),
             )
 
         return counter(

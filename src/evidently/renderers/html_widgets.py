@@ -436,10 +436,10 @@ class HistogramData:
 
 
 def histogram(
+    *,
     title: str,
     primary_hist: HistogramData,
-    secondary_hist: Optional[HistogramData],
-    *,
+    secondary_hist: Optional[HistogramData] = None,
     color_options: Optional[ColorOptions] = None,
     orientation: str = "v",
     size: WidgetSize = WidgetSize.FULL,
@@ -457,7 +457,7 @@ def histogram(
     Example:
         >>> ref_hist = HistogramData("Histogram 1", x=["a", "b", "c"], y=[1, 2, 3])
         >>> curr_hist = HistogramData("Histogram 2", x=["a", "b", "c"], y=[3, 2 ,1])
-        >>> widget_info = histogram("Histogram example", ref_hist, curr_hist)
+        >>> widget_info = histogram(title="Histogram example", primary_hist=ref_hist, secondary_hist=curr_hist)
     """
     color_options = color_options if color_options is not None else ColorOptions()
     figure = go.Figure()
