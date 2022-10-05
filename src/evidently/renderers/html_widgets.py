@@ -171,6 +171,17 @@ class CounterData:
         return CounterData(label, f"{value:.{precision}}")
 
     @staticmethod
+    def string(label: str, value: str) -> "CounterData":
+        """
+        create CounterData for string value with given precision.
+
+        Args:
+            label: counter label
+            value: string value of counter
+        """
+        return CounterData(label, f"{value}")
+
+    @staticmethod
     def int(label: str, value: int) -> "CounterData":
         """
         create CounterData for int value.

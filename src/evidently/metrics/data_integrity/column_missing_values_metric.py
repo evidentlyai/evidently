@@ -12,8 +12,12 @@ from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
+from evidently.renderers.html_widgets import CounterData
+from evidently.renderers.html_widgets import TabData
+from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import table_data
+from evidently.renderers.html_widgets import widget_tabs
 
 
 @dataclasses.dataclass
@@ -98,7 +102,8 @@ class ColumnMissingValuesMetric(Metric[ColumnMissingValuesMetricResult]):
 
         # sort by missing values count
         different_missing_values = {
-            value: count for value, count in sorted(different_missing_values.items(), key=lambda item: item[1], reverse=True)
+            value: count
+            for value, count in sorted(different_missing_values.items(), key=lambda item: item[1], reverse=True)
         }
 
         number_of_different_missing_values = sum(
@@ -144,7 +149,7 @@ class ColumnMissingValuesMetricRenderer(MetricRenderer):
         return dataclasses.asdict(obj.get_result())
 
     @staticmethod
-    def _get_table_stat(dataset_name: str, stats: ColumnMissingValues) -> BaseWidgetInfo:
+    def _get_table_stat(stats: ColumnMissingValues) -> BaseWidgetInfo:
         data = []
 
         for missed_value, count_of_missed in stats.different_missing_values.items():
@@ -164,16 +169,34 @@ class ColumnMissingValuesMetricRenderer(MetricRenderer):
 
         matched_stat_headers = ["Missed Value", "Count"]
         return table_data(
-            title=f"{dataset_name.capitalize()}: Missed values",
+            title=f"All missed values table",
             column_names=matched_stat_headers,
             data=data,
         )
 
     @staticmethod
-    def _get_details_missing_values_info(dataset_name: str, stats: ColumnMissingValues) -> BaseWidgetInfo:
+    def _get_info_string(stats: ColumnMissingValues) -> str:
         percents = round(stats.share_of_missing_values * 100, 3)
-        return header_text(
-            label=f"In {dataset_name} dataset {stats.number_of_missing_values} ({percents}%) missed values."
+        return f"{stats.number_of_missing_values} ({percents}%)"
+
+    def _get_details_missing_values_info(
+        self, metric_result: ColumnMissingValuesMetricResult
+    ) -> BaseWidgetInfo:
+        counters = [
+            CounterData.string(
+                "Current dataset missed values", self._get_info_string(metric_result.current)
+            ),
+        ]
+        if metric_result.reference is not None:
+            counters.append(
+                CounterData.string(
+                    "Reference dataset missed values", self._get_info_string(metric_result.reference)
+                ),
+            )
+
+        return counter(
+            title="",
+            counters=counters,
         )
 
     def render_html(self, obj: ColumnMissingValuesMetric) -> List[BaseWidgetInfo]:
@@ -181,17 +204,24 @@ class ColumnMissingValuesMetricRenderer(MetricRenderer):
 
         result = [
             header_text(label=f"Missing values in column '{metric_result.column_name}'"),
-            self._get_details_missing_values_info(dataset_name="current", stats=metric_result.current),
+            self._get_details_missing_values_info(metric_result=metric_result),
         ]
 
+        current_table = self._get_table_stat(metric_result.current)
+
         if metric_result.reference is not None:
-            result.append(
-                self._get_details_missing_values_info(dataset_name="reference", stats=metric_result.reference),
+            tables = widget_tabs(
+                tabs=[
+                    TabData(title="Current dataset", widget=current_table),
+                    TabData(
+                        title="Reference dataset",
+                        widget=self._get_table_stat(metric_result.reference),
+                    ),
+                ]
             )
 
-        result.append(self._get_table_stat(dataset_name="current", stats=metric_result.current))
+        else:
+            tables = current_table
 
-        if metric_result.reference is not None:
-            result.append(self._get_table_stat(dataset_name="reference", stats=metric_result.reference))
-
+        result.append(tables)
         return result
