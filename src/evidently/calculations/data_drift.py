@@ -119,8 +119,10 @@ def get_one_column_drift(
             raise ValueError(f"Column {column_name} should only contain numerical values.")
 
         numeric_columns = dataset_columns.num_feature_names
+
         if column_name not in numeric_columns:
-            numeric_columns.append(column_name)
+            # for target and prediction cases add the column_name in the numeric columns list
+            numeric_columns = numeric_columns + [column_name]
 
         result.current_correlations = current_data[numeric_columns].corr()[column_name].to_dict()
         result.reference_correlations = reference_data[numeric_columns].corr()[column_name].to_dict()
