@@ -169,7 +169,7 @@ class ColumnMissingValuesMetricRenderer(MetricRenderer):
 
         matched_stat_headers = ["Missed Value", "Count"]
         return table_data(
-            title=f"All missed values table",
+            title="All missed values table",
             column_names=matched_stat_headers,
             data=data,
         )
