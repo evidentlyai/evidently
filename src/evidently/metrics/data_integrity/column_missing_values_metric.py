@@ -168,7 +168,7 @@ class ColumnMissingValuesMetricRenderer(MetricRenderer):
     def _get_details_missing_values_info(dataset_name: str, stats: ColumnMissingValues) -> BaseWidgetInfo:
         percents = round(stats.share_of_missing_values * 100, 3)
         return header_text(
-            label=f"In {dataset_name} dataset {stats.number_of_missing_values}({percents}%) missed values."
+            label=f"In {dataset_name} dataset {stats.number_of_missing_values} ({percents}%) missed values."
         )
 
     def render_html(self, obj: ColumnMissingValuesMetric) -> List[BaseWidgetInfo]:

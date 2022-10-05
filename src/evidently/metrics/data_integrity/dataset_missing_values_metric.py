@@ -238,7 +238,7 @@ class DatasetMissingValuesMetricRenderer(MetricRenderer):
                 )
             )
 
-        self._get_table_stat(dataset_name="current", stats=metric_result.current_null_values)
+        result.append(self._get_table_stat(dataset_name="current", stats=metric_result.current_null_values))
 
         if metric_result.reference_null_values is not None:
             result.append(self._get_table_stat(dataset_name="reference", stats=metric_result.reference_null_values))
