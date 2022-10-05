@@ -7,8 +7,8 @@ import pytest
 from evidently import ColumnMapping
 from evidently.metrics import ColumnRegExpMetric
 from evidently.metrics.base_metric import InputData
-from evidently.metrics.data_integrity_metrics import DataIntegrityValueByRegexpMetricResult
-from evidently.metrics.data_integrity_metrics import DataIntegrityValueByRegexpStat
+from evidently.metrics.data_integrity.column_regexp_metric import DataIntegrityValueByRegexpMetricResult
+from evidently.metrics.data_integrity.column_regexp_metric import DataIntegrityValueByRegexpStat
 from evidently.report import Report
 
 
