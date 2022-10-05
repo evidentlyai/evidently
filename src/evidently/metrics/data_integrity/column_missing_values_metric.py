@@ -96,6 +96,11 @@ class ColumnMissingValuesMetric(Metric[ColumnMissingValuesMetricResult]):
 
         share_of_missing_values = number_of_missing_values / number_of_rows
 
+        # sort by missing values count
+        different_missing_values = {
+            value: count for value, count in sorted(different_missing_values.items(), key=lambda item: item[1], reverse=True)
+        }
+
         number_of_different_missing_values = sum(
             [1 for null_value in different_missing_values if different_missing_values[null_value] > 0]
         )
