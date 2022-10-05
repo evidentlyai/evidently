@@ -119,8 +119,11 @@ def get_one_column_drift(
             raise ValueError(f"Column {column_name} should only contain numerical values.")
 
         numeric_columns = dataset_columns.num_feature_names
-        result.current_correlations = current_data[numeric_columns + [column_name]].corr()[column_name].to_dict()
-        result.reference_correlations = reference_data[numeric_columns + [column_name]].corr()[column_name].to_dict()
+        if column_name not in numeric_columns:
+            numeric_columns.append(column_name)
+
+        result.current_correlations = current_data[numeric_columns].corr()[column_name].to_dict()
+        result.reference_correlations = reference_data[numeric_columns].corr()[column_name].to_dict()
         current_nbinsx = options.get_nbinsx(column_name)
         result.current_small_distribution = [
             t.tolist()
