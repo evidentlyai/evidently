@@ -27,7 +27,7 @@ Evidently has a modular approach with 3 interfaces on top of the shared `metrics
 
 Tests perform structured data and ML model quality checks. They verify a condition and return an explicit **pass** or **fail** result. 
 
-You can create a custom Test Suite from 50+ individual tests or run one of the presets (for example, **Data Drift** or **Regression Performance** tests). You can get test results as an interactive visual dashboard inside Jupyter notebook or colab, or export the results as JSON or Python dictionary. 
+You can create a custom Test Suite from 50+ individual tests or run a presets (for example, **Data Drift** or **Regression Performance** tests). You can get results as an interactive visual dashboard inside Jupyter notebook or Colab, or export as JSON or Python dictionary. 
 
 Tests are best for automated batch model checks. You can integrate them as a pipeline step using tools like Airlfow. 
 
