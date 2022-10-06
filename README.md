@@ -58,7 +58,7 @@ Evidently is available as a PyPI package. To install it using pip package manage
 ```sh
 $ pip install evidently
 ```
-If you want to get results as HTML or JSON files, the installation is now complete. If you want to display the dashboards directly in a Jupyter notebook, you should install `jupyter nbextension`. After installing `evidently`, run the two following commands in the terminal from the evidently directory.
+If you only want to get results as HTML or JSON files, the installation is now complete. To display the dashboards inside a Jupyter notebook, you need `jupyter nbextension`. After installing `evidently`, run the two following commands in the terminal from the evidently directory.
 
 To install jupyter nbextension, run:
 ```sh
