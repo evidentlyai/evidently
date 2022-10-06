@@ -11,9 +11,9 @@ from dataclasses import dataclass
 from dataclasses import fields
 from scipy.stats import chi2_contingency
 
-from evidently.metrics.utils import make_hist_for_cat_plot
-from evidently.metrics.utils import make_hist_for_num_plot
-from evidently.metrics.utils import make_hist_df
+from evidently.calculations.utils import make_hist_for_cat_plot
+from evidently.calculations.utils import make_hist_for_num_plot
+from evidently.calculations.utils import make_hist_df
 from evidently.utils.data_operations import DatasetColumns
 
 MAX_CATEGORIES = 5
@@ -65,6 +65,7 @@ class FeatureQualityStats:
     # feature type - cat for category, num for numeric, datetime for datetime features
     feature_type: str
     # quantity on
+    number_of_rows: int = 0
     count: int = 0
     infinite_count: Optional[int] = None
     infinite_percentage: Optional[float] = None
@@ -117,7 +118,6 @@ class FeatureQualityStats:
 
 @dataclass
 class DataQualityStats:
-    rows_count: int
     num_features_stats: Optional[Dict[str, FeatureQualityStats]] = None
     cat_features_stats: Optional[Dict[str, FeatureQualityStats]] = None
     datetime_features_stats: Optional[Dict[str, FeatureQualityStats]] = None
@@ -163,7 +163,7 @@ def get_features_stats(feature: pd.Series, feature_type: str) -> FeatureQualityS
     if not all_values_count > 0:
         # we have no data, return default stats for en empty dataset
         return result
-
+    result.number_of_rows = all_values_count
     result.missing_count = int(feature.isnull().sum())
     result.count = int(feature.count())
     all_values_count = feature.shape[0]
@@ -260,6 +260,7 @@ def calculate_data_quality_stats(
 class DataQualityPlot:
     bins_for_hist: Dict[str, pd.DataFrame]
 
+
 class DataQualityGetPlotData():
     def __init__(self) -> None:
         self.period_prefix: Optional[str] = None
@@ -269,7 +270,7 @@ class DataQualityGetPlotData():
     def calculate_main_plot(
         self,
         curr: pd.DataFrame,
-        ref: Optional[pd.DataFrame], 
+        ref: Optional[pd.DataFrame],
         feature_name: str,
         feature_type: str,
         merge_small_cat: Optional[int] = MAX_CATEGORIES
@@ -309,19 +310,18 @@ class DataQualityGetPlotData():
                 ref_data = ref_data.value_counts().reset_index()
                 ref_data.columns = [feature_name, "number_of_items"]
                 ref_data[feature_name] = ref_data[feature_name].dt.to_timestamp()
-                # 
                 max_ref_date = ref_data[feature_name].max()
                 min_curr_date = curr_data[feature_name].min()
                 if max_ref_date == min_curr_date:
                     curr_data, ref_data = self._split_periods(curr_data, ref_data, feature_name)
                 bins_for_hist["reference"] = ref_data
-            
+
         return bins_for_hist
 
     def calculate_data_in_time(
         self,
         curr: pd.DataFrame,
-        ref: Optional[pd.DataFrame], 
+        ref: Optional[pd.DataFrame],
         feature_name: str,
         feature_type: str,
         datetime_name: str,
@@ -332,7 +332,7 @@ class DataQualityGetPlotData():
             if ref is not None:
                 ref = ref.copy()
             curr, ref = self._transform_cat_data(curr.copy(), ref, feature_name, merge_small_cat)
-        
+
         freq = self._choose_agg_period(datetime_name, ref, curr)
         df_for_time_plot_curr = (
             curr
@@ -352,7 +352,7 @@ class DataQualityGetPlotData():
             df_for_time_plot_curr = self._transform_df_to_time_mean_view(df_for_time_plot_curr, datetime_name, feature_name)
             if df_for_time_plot_ref is not None:
                 df_for_time_plot_ref = self._transform_df_to_time_mean_view(df_for_time_plot_ref, datetime_name,
-                                                                             feature_name)
+                                                                            feature_name)
             result = {"current": df_for_time_plot_curr,
                       "reference": df_for_time_plot_ref,
                       "freq": self.period_prefix,
@@ -374,7 +374,7 @@ class DataQualityGetPlotData():
     def calculate_data_by_target(
         self,
         curr: pd.DataFrame,
-        ref: Optional[pd.DataFrame], 
+        ref: Optional[pd.DataFrame],
         feature_name: str,
         feature_type: str,
         target_name: str,
@@ -444,11 +444,10 @@ class DataQualityGetPlotData():
         df = df.reset_index()
         return df[df["count_objects"] > 0]
 
-
     def _prepare_box_data(
         self,
         curr: pd.DataFrame,
-        ref: Optional[pd.DataFrame], 
+        ref: Optional[pd.DataFrame],
         cat_feature_name: str,
         num_feature_name: str,
     ) -> Dict[str, Dict[str, Union[list, str]]]:
@@ -457,11 +456,11 @@ class DataQualityGetPlotData():
         if ref is not None:
             dfs.append(ref)
             names.append("reference")
-        res = {} 
+        res = {}
         for df, name in zip(dfs, names):
             df_for_plot = df.groupby(cat_feature_name)[num_feature_name].quantile([0, 0.25, 0.5, 0.75, 1]).reset_index()
             df_for_plot.columns = [cat_feature_name, 'q', num_feature_name]
-            res_df = {}    
+            res_df = {}
             values = df_for_plot[cat_feature_name].unique()
             res_df["mins"] = df_for_plot[df_for_plot.q == 0].set_index(cat_feature_name).loc[values, num_feature_name].tolist()
             res_df["lowers"] = df_for_plot[df_for_plot.q == 0.25].set_index(cat_feature_name).loc[values, num_feature_name].tolist()
@@ -472,9 +471,8 @@ class DataQualityGetPlotData():
             res[name] = res_df
         return res
 
-    def _transform_cat_data(
-        self, curr: pd.DataFrame, ref: Optional[pd.DataFrame], feature_name: str, merge_small_cat: int, rewrite: bool=False
-    ) -> tuple[pd.DataFrame]:
+    def _transform_cat_data(self, curr: pd.DataFrame, ref: Optional[pd.DataFrame], feature_name: str, merge_small_cat: int,
+                            rewrite: bool = False) -> tuple[pd.DataFrame]:
         if self.curr is not None and rewrite is not True:
             return self.curr, self.ref
         if ref is not None:
@@ -491,10 +489,10 @@ class DataQualityGetPlotData():
                 ref_cats = ref[feature_name].astype(str).value_counts(normalize=True)
             cats = (
                 curr_cats
-                    .append(ref_cats)
-                    .sort_values(ascending=False)
-                    .index
-                    .drop_duplicates(keep='first')[:merge_small_cat].values
+                .append(ref_cats)
+                .sort_values(ascending=False)
+                .index
+                .drop_duplicates(keep='first')[:merge_small_cat].values
             )
 
             curr[feature_name] = curr[feature_name].apply(lambda x: x if str(x) in cats else "other")
@@ -505,7 +503,7 @@ class DataQualityGetPlotData():
         return curr, ref
 
     def _choose_agg_period(self, date_column: str, reference_data: Optional[pd.DataFrame], current_data: pd.DataFrame
-    ) -> str:
+                           ) -> str:
         optimal_points = 150
         prefix_dict = {"A": "year", "Q": "quarter", "M": "month", "W": "week", "D": "day", "H": "hour"}
         datetime_feature = current_data[date_column]

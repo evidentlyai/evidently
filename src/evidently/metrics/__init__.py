@@ -6,6 +6,7 @@ from .data_drift_metrics import DataDriftMetrics
 from .data_integrity_metrics import DataIntegrityMetrics
 from .data_integrity_metrics import DataIntegrityNullValuesMetrics
 from .data_integrity_metrics import DataIntegrityValueByRegexpMetrics
+from .data_integrity_metrics import ColumnSummaryMetric
 from .data_quality_metrics import DataQualityCorrelationMetrics
 from .data_quality_metrics import DataQualityMetrics
 from .data_quality_metrics import DataQualityStabilityMetrics

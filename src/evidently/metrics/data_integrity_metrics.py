@@ -36,11 +36,19 @@ from evidently.renderers.html_widgets import table_data
 from evidently.renderers.html_widgets import rich_table_data
 from evidently.utils.data_operations import process_columns
 from evidently.utils.types import Numeric
-from evidently.utils.visualizations import plot_distr, plot_num_feature_in_time, plot_cat_feature_in_time, plot_boxes, plot_num_num_rel, plot_cat_cat_rel, plot_time_feature_distr, plot_distr_with_log_button
+from evidently.utils.visualizations import plot_boxes
+from evidently.utils.visualizations import plot_cat_cat_rel
+from evidently.utils.visualizations import plot_cat_feature_in_time
+from evidently.utils.visualizations import plot_distr
+from evidently.utils.visualizations import plot_distr_with_log_button
+from evidently.utils.visualizations import plot_num_feature_in_time
+from evidently.utils.visualizations import plot_num_num_rel
+from evidently.utils.visualizations import plot_time_feature_distr
 
 
 @dataclass
 class NumericCharacteristics:
+    number_of_rows: int
     count: int
     mean: Optional[Numeric]
     std: Optional[Numeric]
@@ -61,6 +69,7 @@ class NumericCharacteristics:
 
 @dataclass
 class CategoricalCharacteristics:
+    number_of_rows: int
     count: int
     unique: Optional[int]
     unique_percentage: Optional[float]
@@ -74,6 +83,7 @@ class CategoricalCharacteristics:
 
 @dataclass
 class DatetimeCharacteristics:
+    number_of_rows: int
     count: int
     unique: Optional[int]
     unique_percentage: Optional[float]
@@ -100,6 +110,7 @@ class DataQualityPlot:
     bins_for_hist: Dict[str, pd.DataFrame]
     data_in_time: Optional[Dict[str, Union[pd.DataFrame, str]]]
     data_by_target: DataByTarget
+    counts_of_values: Optional[Dict[str, pd.DataFrame]]
 
 
 @dataclass
@@ -201,11 +212,23 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
                 target_name=target_name,
                 target_type=target_type
             )
+        counts_of_values = None
+        if column_type in ["cat", "num"]:
+            counts_of_values = {}
+            current_counts = data.current_data[self.column_name].value_counts(dropna=False).reset_index()
+            current_counts.columns = ["x", "count"]
+            counts_of_values["current"] = current_counts.head(10)
+            if reference_data is not None:
+                reference_counts = data.reference_data[self.column_name].value_counts(dropna=False).reset_index()
+                reference_counts.columns = ["x", "count"]
+                counts_of_values["reference"] = reference_counts.head(10)
+
 
         plot_data = DataQualityPlot(
             bins_for_hist=bins_for_hist,
             data_in_time=data_in_time,
-            data_by_target=data_by_target
+            data_by_target=data_by_target,
+            counts_of_values=counts_of_values
         )
 
         return ColumnSummary(
@@ -222,6 +245,7 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
             if isinstance(stats.max, str) or isinstance(stats.min, str):
                 raise ValueError("max / min stats should be int or float type, but got str")
             return NumericCharacteristics(
+                number_of_rows=stats.number_of_rows,
                 count=stats.count,
                 mean=stats.mean,
                 std=stats.std,
@@ -241,6 +265,7 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
             )
         if stats.feature_type == "cat":
             return CategoricalCharacteristics(
+                number_of_rows=stats.number_of_rows,
                 count=stats.count,
                 unique=stats.unique_count,
                 unique_percentage=stats.unique_percentage,
@@ -254,6 +279,7 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
             if not isinstance(stats.min, str) or not isinstance(stats.max, str):
                 raise ValueError(f"min / max expected to be str for datetime, got {type(stats.min)}/{type(stats.max)}")
             return DatetimeCharacteristics(
+                number_of_rows=stats.number_of_rows,
                 count=stats.count,
                 unique=stats.unique_count,
                 unique_percentage=stats.unique_percentage,
@@ -412,7 +438,7 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
                 return f"{field_value} ({stats_dict[field_percentage_name]}%)"
 
         result = []
-        
+
         current_stats_dict = {field.name: getattr(current_stats, field.name) for field in fields(current_stats)}
 
         if reference_stats is None:
@@ -490,21 +516,6 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
             metrics.extend(self._get_stats_with_names(datetime_features, current_stats, reference_stats))
 
         return metrics
-
-
-
-        # result = [
-        #     MetricHtmlInfo(
-        #         name="data_integrity_null_values_title",
-        #         info=rich_table_data(label="Data Integrity Metric: Null Values Statistic"),
-        #     ),
-            
-        # ]
-
-        # if metric_result.reference_null_values is not None:
-        #     result.append(self._get_table_stat(dataset_name="reference", stats=metric_result.reference_null_values))
-
-        
 
 
 @dataclass

@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 from pandas.core.dtypes.common import infer_dtype_from_object
 
+from evidently.metrics import ColumnSummaryMetric
 from evidently.metrics.data_integrity_metrics import DataIntegrityMetrics
 from evidently.metrics.data_integrity_metrics import DataIntegrityNullValuesMetrics
 from evidently.metrics.data_integrity_metrics import DataIntegrityNullValuesMetricsResult
@@ -915,14 +916,14 @@ class BaseIntegrityByColumnsConditionTest(BaseCheckValueTest, ABC):
 
 class BaseIntegrityOneColumnTest(Test, ABC):
     group = DATA_INTEGRITY_GROUP.id
-    data_integrity_metric: DataIntegrityMetrics
+    data_integrity_metric: ColumnSummaryMetric
     column_name: str
 
-    def __init__(self, column_name: str, data_integrity_metric: Optional[DataIntegrityMetrics] = None):
+    def __init__(self, column_name: str, data_integrity_metric: Optional[ColumnSummaryMetric] = None):
         self.column_name = column_name
 
         if data_integrity_metric is None:
-            self.data_integrity_metric = DataIntegrityMetrics()
+            self.data_integrity_metric = ColumnSummaryMetric(column_name)
 
         else:
             self.data_integrity_metric = data_integrity_metric
@@ -935,30 +936,23 @@ class TestColumnAllConstantValues(BaseIntegrityOneColumnTest):
     """Test that there is only one unique value in a column"""
 
     name = "All Constant Values in a Column"
-    data_integrity_metric: DataIntegrityMetrics
+    data_integrity_metric: ColumnSummaryMetric
 
     def check(self):
-        uniques_by_columns = self.data_integrity_metric.get_result().current.number_uniques_by_columns
-        number_of_rows = self.data_integrity_metric.get_result().current.number_of_rows
+        uniques_in_column = self.data_integrity_metric.get_result().current_characteristics.unique
+        number_of_rows = self.data_integrity_metric.get_result().current_characteristics.number_of_rows
         column_name = self.column_name
 
-        if column_name not in uniques_by_columns:
-            status = TestResult.ERROR
-            description = f"No column {column_name} in the metrics data"
+        description = (
+            f"The number of the unique values in the column **{column_name}** "
+            f"is {uniques_in_column} out of {number_of_rows}"
+        )
+
+        if uniques_in_column <= 1:
+            status = TestResult.FAIL
 
         else:
-            uniques_in_column = uniques_by_columns[self.column_name]
-
-            description = (
-                f"The number of the unique values in the column **{column_name}** "
-                f"is {uniques_in_column} out of {number_of_rows}"
-            )
-
-            if uniques_in_column <= 1:
-                status = TestResult.FAIL
-
-            else:
-                status = TestResult.SUCCESS
+            status = TestResult.SUCCESS
 
         return TestResult(name=self.name, description=description, status=status, groups=self.groups())
 
@@ -968,11 +962,10 @@ class TestColumnAllConstantValuesRenderer(TestRenderer):
     def render_html(self, obj: TestColumnAllConstantValues) -> TestHtmlInfo:
         info = super().render_html(obj)
         column_name = obj.column_name
-        curr_df = obj.data_integrity_metric.get_result().current.counts_of_values[column_name]
+        curr_df = obj.data_integrity_metric.get_result().plot_data.counts_of_values["current"]
         ref_df = None
-        reference_stats = obj.data_integrity_metric.get_result().reference
-        if reference_stats is not None:
-            ref_df = reference_stats.counts_of_values[column_name]
+        if "reference" in obj.data_integrity_metric.get_result().plot_data.counts_of_values.keys():
+            ref_df = obj.data_integrity_metric.get_result().plot_data.counts_of_values["reference"]
         additional_plots = plot_value_counts_tables_ref_curr(column_name, curr_df, ref_df, "AllConstantValues")
         info.details = additional_plots
         return info
@@ -984,29 +977,21 @@ class TestColumnAllUniqueValues(BaseIntegrityOneColumnTest):
     name = "All Unique Values in a Column"
 
     def check(self):
-        uniques_by_columns = self.data_integrity_metric.get_result().current.number_uniques_by_columns
-        number_of_rows = self.data_integrity_metric.get_result().current.number_of_rows
-        nans_by_columns = self.data_integrity_metric.get_result().current.nans_by_columns
+        uniques_in_column = self.data_integrity_metric.get_result().current_characteristics.unique
+        number_of_rows = self.data_integrity_metric.get_result().current_characteristics.number_of_rows
+        nans_in_column = self.data_integrity_metric.get_result().current_characteristics.missing
         column_name = self.column_name
 
-        if column_name not in uniques_by_columns or column_name not in nans_by_columns:
-            status = TestResult.ERROR
-            description = f"No column {column_name} in the metrics data"
+        description = (
+            f"The number of the unique values in the column **{column_name}** "
+            f"is {uniques_in_column}  out of {number_of_rows}"
+        )
+
+        if uniques_in_column != number_of_rows - nans_in_column:
+            status = TestResult.FAIL
 
         else:
-            uniques_in_column = uniques_by_columns[column_name]
-            nans_in_column = nans_by_columns[column_name]
-
-            description = (
-                f"The number of the unique values in the column **{column_name}** "
-                f"is {uniques_in_column}  out of {number_of_rows}"
-            )
-
-            if uniques_in_column != number_of_rows - nans_in_column:
-                status = TestResult.FAIL
-
-            else:
-                status = TestResult.SUCCESS
+            status = TestResult.SUCCESS
 
         return TestResult(name=self.name, description=description, status=status, groups=self.groups())
 
@@ -1016,11 +1001,10 @@ class TestColumnAllUniqueValuesRenderer(TestRenderer):
     def render_html(self, obj: TestColumnAllUniqueValues) -> TestHtmlInfo:
         info = super().render_html(obj)
         column_name = obj.column_name
-        curr_df = obj.data_integrity_metric.get_result().current.counts_of_values[column_name]
+        curr_df = obj.data_integrity_metric.get_result().plot_data.counts_of_values["current"]
         ref_df = None
-        reference_stats = obj.data_integrity_metric.get_result().reference
-        if reference_stats is not None:
-            ref_df = reference_stats.counts_of_values[column_name]
+        if "reference" in obj.data_integrity_metric.get_result().plot_data.counts_of_values.keys():
+            ref_df = obj.data_integrity_metric.get_result().plot_data.counts_of_values["reference"]
         additional_plots = plot_value_counts_tables_ref_curr(column_name, curr_df, ref_df, "AllUniqueValues")
         info.details = additional_plots
         return info

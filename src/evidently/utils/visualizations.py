@@ -1,5 +1,5 @@
 import json
-from typing import Dict, Optional
+from typing import Dict, Optional, Union
 
 import pandas as pd
 import numpy as np
@@ -23,7 +23,7 @@ def plot_distr(hist_curr, hist_ref=None, orientation="v", color_options: Optiona
             orientation=orientation,
         )
     )
-    cats = list(hist_curr["x"]) 
+    cats = list(hist_curr["x"])
     if hist_ref is not None:
         fig.add_trace(
             go.Bar(
@@ -74,17 +74,18 @@ def plot_distr_with_log_button(curr_data: pd.DataFrame, curr_data_log: pd.DataFr
                 name="reference",
             )
         )
-        traces.append(
-            go.Bar(
-                x=ref_data_log["x"],
-                y=ref_data_log["count"],
-                visible=False,
-                marker_color=color_options.get_reference_data_color(),
-                name="reference",
+        visible.append(True)
+        if ref_data_log is not None:
+            traces.append(
+                go.Bar(
+                    x=ref_data_log["x"],
+                    y=ref_data_log["count"],
+                    visible=False,
+                    marker_color=color_options.get_reference_data_color(),
+                    name="reference",
+                )
             )
-        )
-        visible.extend([True, False])
-
+            visible.append(False)
 
     updatemenus = [
         dict(
@@ -115,9 +116,9 @@ def plot_distr_with_log_button(curr_data: pd.DataFrame, curr_data_log: pd.DataFr
 
 
 def plot_num_feature_in_time(curr_data: pd.DataFrame, ref_data: Optional[pd.DataFrame], feature_name: str,
-                             datetime_name:str, freq: str):
+                             datetime_name: str, freq: str):
     """
-    Accepts current and reference data as pandas dataframes with two columns: datetime_name and feature_name. 
+    Accepts current and reference data as pandas dataframes with two columns: datetime_name and feature_name.
     """
     color_options = ColorOptions()
     fig = go.Figure()
@@ -138,7 +139,7 @@ def plot_num_feature_in_time(curr_data: pd.DataFrame, ref_data: Optional[pd.Data
                 name="reference",
             )
         )
-        
+
     fig.update_layout(yaxis_title="Mean " + feature_name + " per " + freq)
     feature_in_time_figure = json.loads(fig.to_json())
     return feature_in_time_figure
@@ -146,7 +147,7 @@ def plot_num_feature_in_time(curr_data: pd.DataFrame, ref_data: Optional[pd.Data
 
 def plot_time_feature_distr(curr_data: pd.DataFrame, ref_data: Optional[pd.DataFrame], feature_name: str):
     """
-    Accepts current and reference data as pandas dataframes with two columns: feature_name, "number_of_items" 
+    Accepts current and reference data as pandas dataframes with two columns: feature_name, "number_of_items"
     """
     color_options = ColorOptions()
     fig = go.Figure()
@@ -173,9 +174,9 @@ def plot_time_feature_distr(curr_data: pd.DataFrame, ref_data: Optional[pd.DataF
 
 
 def plot_cat_feature_in_time(curr_data: pd.DataFrame, ref_data: Optional[pd.DataFrame], feature_name: str,
-                             datetime_name:str, freq: str):
+                             datetime_name: str, freq: str):
     """
-    Accepts current and reference data as pandas dataframes with two columns: datetime_name and feature_name. 
+    Accepts current and reference data as pandas dataframes with two columns: datetime_name and feature_name.
     """
     color_options = ColorOptions()
     title = "current"
@@ -252,13 +253,14 @@ def plot_boxes(curr_for_plots: dict, ref_for_plots: Optional[dict], yaxis_title:
     fig = json.loads(fig.to_json())
     return fig
 
+
 def plot_cat_cat_rel(curr: pd.DataFrame, ref: pd.DataFrame, target_name: str, feature_name: str):
     """
-    Accepts current and reference data as pandas dataframes with two columns: feature_name and "count_objects". 
+    Accepts current and reference data as pandas dataframes with two columns: feature_name and "count_objects".
     """
     color_options = ColorOptions()
     cols = 1
-    subplot_titles = ""
+    subplot_titles: Union[list, str] = ""
     if ref is not None:
         cols = 2
         subplot_titles = ["current", "reference"]
@@ -289,6 +291,7 @@ def plot_cat_cat_rel(curr: pd.DataFrame, ref: pd.DataFrame, target_name: str, fe
     fig = json.loads(fig.to_json())
     return fig
 
+
 def plot_num_num_rel(curr: Dict[str, list], ref: Optional[Dict[str, list]], target_name: str, column_name: str):
     color_options = ColorOptions()
     cols = 1
@@ -318,81 +321,3 @@ def plot_num_num_rel(curr: Dict[str, list], ref: Optional[Dict[str, list]], targ
     fig.update_traces(marker_size=4)
     fig = json.loads(fig.to_json())
     return fig
-
-
-# def plot_distr_with_log_button(hist_curr, hist_ref=None):
-#     color_options = ColorOptions()
-
-    # fig = go.Figure()
-    # trace_1 = go.Bar(name="current", x=hist_curr["x"], y=hist_curr["count"], 
-    #                  marker_color=color_options.get_current_data_color())
-
-    # if current_data is None:
-    #             trace1 = go.Histogram(x=reference_data[feature_name], marker_color=color_options.primary_color)
-    #             trace2 = go.Histogram(
-    #                 x=np.log10(reference_data.loc[reference_data[feature_name] > 0, feature_name]),
-    #                 marker_color=color_options.primary_color,
-    #                 visible=False,
-    #             )
-    #             data = [trace1, trace2]
-    #             updatemenus = [
-    #                 dict(
-    #                     type="buttons",
-    #                     direction="right",
-    #                     x=1.0,
-    #                     yanchor="top",
-    #                     buttons=list(
-    #                         [
-    #                             dict(label="Linear Scale", method="update", args=[{"visible": [True, False]}]),
-    #                             dict(label="Log Scale", method="update", args=[{"visible": [False, True]}]),
-    #                         ]
-    #                     ),
-            #         )
-            #     ]
-
-            # else:
-            #     trace1 = go.Histogram(
-            #         x=reference_data[feature_name],
-            #         marker_color=color_options.get_reference_data_color(),
-            #         name="reference",
-            #     )
-            #     trace2 = go.Histogram(
-            #         x=np.log10(reference_data.loc[reference_data[feature_name] > 0, feature_name]),
-            #         marker_color=color_options.get_reference_data_color(),
-            #         visible=False,
-            #         name="reference",
-            #     )
-            #     trace3 = go.Histogram(
-            #         x=current_data[feature_name], marker_color=color_options.get_current_data_color(), name="current"
-            #     )
-            #     trace4 = go.Histogram(
-            #         x=np.log10(current_data.loc[current_data[feature_name] > 0, feature_name]),
-            #         marker_color=color_options.get_current_data_color(),
-            #         visible=False,
-            #         name="current",
-            #     )
-            #     data = [trace1, trace2, trace3, trace4]
-
-            #     updatemenus = [
-            #         dict(
-            #             type="buttons",
-            #             direction="right",
-            #             x=1.0,
-            #             yanchor="top",
-            #             buttons=list(
-            #                 [
-            #                     dict(
-            #                         label="Linear Scale",
-            #                         method="update",
-            #                         args=[{"visible": [True, False, True, False]}],
-            #                     ),
-            #                     dict(
-            #                         label="Log Scale", method="update", args=[{"visible": [False, True, False, True]}]
-            #                     ),
-            #                 ]
-            #             ),
-            #         )
-            #     ]
-            # layout = dict(updatemenus=updatemenus)
-
-            # fig = go.Figure(data=data, layout=layout)
