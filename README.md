@@ -58,9 +58,7 @@ Evidently is available as a PyPI package. To install it using pip package manage
 ```sh
 $ pip install evidently
 ```
-If you want to generate reports as HTML files or export as JSON, the installation is now complete.
-
-If you want to display the dashboards directly in a Jupyter notebook, you should install `jupyter nbextension`. After installing `evidently`, run the two following commands in the terminal from the evidently directory.
+If you want to get results as HTML or JSON files, the installation is now complete. If you want to display the dashboards directly in a Jupyter notebook, you should install `jupyter nbextension`. After installing `evidently`, run the two following commands in the terminal from the evidently directory.
 
 To install jupyter nbextension, run:
 ```sh
@@ -72,7 +70,7 @@ $ jupyter nbextension enable evidently --py --sys-prefix
 ```
 That's it! A single run after the installation is enough. 
 
-**Note**: if you use Jupyter Lab, the dashboard might not display in the notebook. However, the report generation in a separate HTML file will work correctly.
+**Note**: if you use Jupyter Lab, the reports might not display in the notebook. However, you can still save them as HTML files. 
 
 ### Windows
 Evidently is available as a PyPI package. To install it using pip package manager, run:
@@ -86,15 +84,23 @@ Unfortunately, building reports inside a Jupyter notebook is not yet possible fo
 ## Jupyter Notebook
 To start, prepare your data as two pandas `DataFrames`. The first should include your reference data, the second - current production data. The structure of both datasets should be identical. 
 
-* For **Data Drift** report, include the input features only.
-* For **Target Drift** reports, include the column with Target and/or Prediction.
-* For **Model Performance** reports, include the columns with Target and Prediction.
+To run some of the evaluations (e.g. Data Drift), you need input features only. In other cases (e.g. Target Drift, Classification Performance), you need Target and/or Prediction. To load the toy data example:
 
-Calculation results can be available in one of the two formats:
-* Option 1: an interactive **Dashboard** displayed inside the Jupyter notebook or exportable as a HTML report.
-* Option 2: a JSON **Profile** that includes the values of metrics and the results of statistical tests.  
+```python
+import pandas as pd
+import numpy as np
+ 
+from sklearn.datasets import fetch_california_housing
+```
 
-### Option 1: Dashboard
+### Option 1: Test Suites
+
+from evidently.report import Report
+from evidently.metric_preset import DataDrift, NumTargetDrift
+ 
+from evidently.test_suite import TestSuite
+from evidently.test_preset import DataQuality, DataStability
+from evidently.tests import *
 
 After installing the tool, import Evidently **dashboard** and required tabs:
 
