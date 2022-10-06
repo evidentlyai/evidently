@@ -29,7 +29,10 @@ def _hellinger_distance(
         hellinger_distance: normed Hellinger distance
         test_result: whether the drift is detected
     """
-    keys = list((set(reference_data.unique()) | set(current_data.unique())) - {np.nan})
+    reference_data.dropna(inplace=True)
+    current_data.dropna(inplace=True)
+
+    keys = list((set(reference_data.unique()) | set(current_data.unique())))
 
     if feature_type == "cat":
         dd: DefaultDict[int, int] = defaultdict(int)
@@ -42,6 +45,7 @@ def _hellinger_distance(
             p2 = curr[key]
             hellinger_distance += sqrt(p1 * p2)
 
+        hellinger_distance = np.clip(hellinger_distance, 0, 1)
         hellinger_distance = sqrt(1 - hellinger_distance)
 
     else:
@@ -56,6 +60,7 @@ def _hellinger_distance(
             p2 = h2[i]
             hellinger_distance += sqrt(p1 * p2) * bin_width
 
+        hellinger_distance = np.clip(hellinger_distance, 0, 1)
         hellinger_distance = sqrt(1 - hellinger_distance)
 
     return hellinger_distance, hellinger_distance >= threshold
