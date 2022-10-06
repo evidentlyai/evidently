@@ -4,7 +4,9 @@ import pytest
 from pytest import approx
 
 from evidently.calculations.stattests import z_stat_test
-from evidently.calculations.stattests.anderson_darling_stattest import anderson_darling_test
+from evidently.calculations.stattests.anderson_darling_stattest import (
+    anderson_darling_test,
+)
 from evidently.calculations.stattests.chisquare_stattest import chi_stat_test
 from evidently.calculations.stattests.hellinger_distance import hellinger_stat_test
 
