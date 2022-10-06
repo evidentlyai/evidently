@@ -38,7 +38,7 @@ Tests are best for automated batch model checks. You can integrate them as a pip
 
 ![Report example](docs/images/evidently_reports_main-min.png)
 
-Reports calculate various data and ML metrics. They return metrics and rich visualizations. You can create a custom Report or run one of the presets to evaluate specific aspect of the model or data performance. For example, a [**Data Quality**](https://docs.evidentlyai.com/reports/data-quality) or [**Classification Performance**](https://docs.evidentlyai.com/reports/classification-performance) report.
+Reports calculate various data and ML metrics. They return metrics and rich visualizations. You can create a custom Report or run a presets to evaluate specific aspect of the model or data performance. For example, a [**Data Quality**](https://docs.evidentlyai.com/reports/data-quality) or [**Classification Performance**](https://docs.evidentlyai.com/reports/classification-performance) report.
 
 You can get the visual HTML report (best for exploratory analysis and debugging) or export results as JSON or Python dictionary (best for logging, documention or to visualise the results in other BI tools). 
 
