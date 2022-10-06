@@ -36,7 +36,7 @@ Tests are best for automated batch model checks. You can integrate them as a pip
 > **Note**
 > We added a new Report object starting from v0.1.57.dev0. Reports unite the functionality of Dashboards and JSON profiles with a new, cleaner API. You can still use the old [Dashboards API](https://docs.evidentlyai.com/features/dashboards/generate_dashboards) but it will soon be depreciated.
 
-![Report example](docs/images/evidently_tests_reports-min.png)
+![Report example](docs/images/evidently_reports_main-min.png)
 
 Reports calculate various data and ML metrics. They return metrics and **rich visualizations**. You can create a custom Report from individual metrics or run one of the Presets that cover a specific aspect of the model or data performance. For example, a [**Data Quality**](https://docs.evidentlyai.com/reports/data-quality) or [**Classification Performance**](https://docs.evidentlyai.com/reports/classification-performance) report.
 
