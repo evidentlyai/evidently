@@ -23,32 +23,31 @@ Evidently has a modular approach with 3 interfaces on top of the shared `metrics
 
 ## 1. Tests: batch model checks
 
-![Tests example](docs/images/evidently_4_reports_preview_small.png)
+![Tests example](docs/images/evidently_tests_main-min.png)
 
-Evidently generates interactive `dashboards` from pandas `DataFrame` or `csv` files. You can use them for model evaluation, debugging and documentation. 
+Tests perform structured data and ML model quality checks. They verify a condition and return an explicit pass or fail result. You can create a custom Test Suite from 50+ individual tests or run one of the presets (for example, Data Drift or Regression Performance tests). You can get test results as an interactive visual dashboard inside Jupyter notebook or colab, or export the results as JSON or Python dictionary. 
 
-Each report covers a particular aspect of the model performance. You can display reports in Jupyter notebook or Colab or export as an HTML file. Currently 7 pre-built reports are available:
-* [**Data Drift**](https://docs.evidentlyai.com/reports/data-drift). Detects changes in the input feature distribution. 
-* [**Data Quality**](https://docs.evidentlyai.com/reports/data-quality). Provides the detailed feature stats and behavior overview. 
-* **Target Drift**: [Numerical](https://docs.evidentlyai.com/reports/num-target-drift), [Categorical](https://docs.evidentlyai.com/reports/categorical-target-drift). Detects changes in the model output.
-* **Model Performance**: [Classification](https://docs.evidentlyai.com/reports/classification-performance), [Probabilistic Classification](https://docs.evidentlyai.com/reports/probabilistic-classification-performance), [Regression](https://docs.evidentlyai.com/reports/reg-performance). Evaluates the quality of the model and model errors.
+Tests are best for automated batch model checks. You can integrate them as a pipeline step using tools like Airlfow. 
 
-## 2. Data and ML model profiling 
-![Pipeline example](docs/images/evidently_drift_pipeline.png)
+## 2. Reports: interactive dashboards
 
-Evidently also generates JSON `profiles`. You can use them to integrate the data or model evaluation step into the ML pipeline. 
+> **Note**
+> We added a new Report object starting from v0.1.57.dev0. Reports unite the functionality of Dashboards and JSON profiles with a new, cleaner API. You can still use the old [Dashboards API](https://docs.evidentlyai.com/features/dashboards/generate_dashboards) but it will soon be depreciated.
 
-You can log and store JSON profiles for further analysis, or build a conditional workflow based on the result of the check (e.g. to trigger alert, retraining, or generate a visual report). The profiles calculate the same metrics and statistical tests as visual reports. 
+![Report example](docs/images/evidently_tests_reports-min.png)
 
-You can explore example integrations with tools like Airflow and Mlflow.
+Reports calculate various data and ML metrics. They return metrics and rich visualizations. You can create a custom Report from individual metrics or run one of the Presets that cover a specific aspect of the model or data performance. For example, a [**Data Quality**](https://docs.evidentlyai.com/reports/data-quality) or [Classification Performance](https://docs.evidentlyai.com/reports/classification-performance) report.
+
+You can get the visual HTML report (best for exploratory analysis and debugging) or export results as JSON or Python dictionary (best for logging, documention or to visualise the results in other BI tools). 
 
 ## 3. Real-time ML monitoring 
-**Note**: this functionality is in active development and subject to API change.
-![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/docs/images/evidently_data_drift_grafana_dashboard_top.png)
 
-Evidently has `monitors` that collect the data and model metrics from a deployed ML service. You can use it to build live monitoring dashboards. Evidently configures the monitoring on top of the streaming data and emits the metrics. 
+> **Note**
+> This functionality is in development and subject to API change.
 
-There is a lightweight integration with Prometheus and Grafana that comes with pre-built dashboards.
+![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/docs/images/evidently_monitoring_main.png)
+
+Evidently has `monitors` that collect the data and model metrics from a deployed ML service. You can use it to build live monitoring dashboards. Evidently configures the monitoring on top of the streaming data and emits the metrics in Prometheus format. There are pre-built Grafana dashboards to visualize them.
 
 # :woman_technologist: Installing from PyPI
 
@@ -57,7 +56,7 @@ Evidently is available as a PyPI package. To install it using pip package manage
 ```sh
 $ pip install evidently
 ```
-If you want to generate reports as HTML files or export as JSON profiles, the installation is now complete.
+If you want to generate reports as HTML files or export as JSON, the installation is now complete.
 
 If you want to display the dashboards directly in a Jupyter notebook, you should install `jupyter nbextension`. After installing `evidently`, run the two following commands in the terminal from the evidently directory.
 
@@ -78,7 +77,7 @@ Evidently is available as a PyPI package. To install it using pip package manage
 ```sh
 $ pip install evidently
 ```
-The tool allows building interactive reports both inside a Jupyter notebook and as a separate HTML file. Unfortunately, building reports inside a Jupyter notebook is not yet possible for Windows. The reason is Windows requires administrator privileges to create symlink. In later versions we will address this issue.
+Unfortunately, building reports inside a Jupyter notebook is not yet possible for Windows. The reason is Windows requires administrator privileges to create symlink. In later versions we will address this issue. You can still generate the HTML to view externally.
 
 # :arrow_forward: Getting started
 
