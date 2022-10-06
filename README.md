@@ -47,9 +47,9 @@ You can get an **HTML report** (best for exploratory analysis and debugging) or 
 > **Note**
 > This functionality is in development and subject to API change.
 
-![Dashboard example](https://github.com/evidentlyai/evidently/blob/main/docs/images/evidently_monitoring_main.png)
+![Dashboard example](docs/images/evidently_monitoring_main.png)
 
-Evidently has `monitors` that collect the data and model metrics from a deployed ML service. You can use it to build live monitoring dashboards. Evidently configures the monitoring on top of the streaming data and emits the metrics in Prometheus format. There are pre-built Grafana dashboards to visualize them.
+Evidently has `monitors` that collect data and model metrics from a deployed ML service. You can use it to build live monitoring dashboards. Evidently configures the monitoring on top of streaming data and emits the metrics in Prometheus format. There are pre-built Grafana dashboards to visualize them.
 
 # :woman_technologist: Installing from PyPI
 
