@@ -3,7 +3,7 @@
 <p align="center"><b>An open-source framework to evaluate, test and monitor ML models in production.</b></p>
 
 <p align="center">
-  <a href="https://evidentlyai.gitbook.io/docs/">Docs</a>
+  <a href="https://docs.evidentlyai.com">Docs</a>
   |
   <a href="https://discord.gg/xZjKRaNp8b">Discord Community</a>
   |
