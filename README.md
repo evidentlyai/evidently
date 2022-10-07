@@ -86,85 +86,81 @@ Unfortunately, building reports inside a Jupyter notebook is not yet possible fo
 ## Jupyter Notebook
 To start, prepare your data as two pandas `DataFrames`. The first should include your reference data, the second - current production data. The structure of both datasets should be identical. 
 
-To run some of the evaluations (e.g. Data Drift), you need input features only. In other cases (e.g. Target Drift, Classification Performance), you need Target and/or Prediction. To load the toy data example:
-
-```python
-import pandas as pd
-import numpy as np
- 
-from sklearn.datasets import fetch_california_housing
-```
+To run some of the evaluations (e.g. Data Drift), you need input features only. In other cases (e.g. Target Drift, Classification Performance), you need Target and/or Prediction. We'll use a simple toy dataset and s. 
 
 ### Option 1: Test Suites
 
-from evidently.report import Report
-from evidently.metric_preset import DataDrift, NumTargetDrift
- 
-from evidently.test_suite import TestSuite
-from evidently.test_preset import DataQuality, DataStability
-from evidently.tests import *
-
-After installing the tool, import Evidently **dashboard** and required tabs:
+After installing the tool, import Evidently **test suite** and required presets:
 
 ```python
+import pandas as pd
+
 from sklearn import datasets
 
-from evidently.dashboard import Dashboard
-from evidently.dashboard.tabs import (
-    DataDriftTab,
-    CatTargetDriftTab
-)
+from evidently.test_suite import TestSuite
+from evidently.test_preset import DataStability, DataQuality
 
-iris = datasets.load_iris(as_frame=True)
-iris_frame, iris_frame["target"] = iris.data, iris.target
+iris_data = datasets.load_iris(as_frame='auto')
+iris = iris_data.frame
+```
+
+To run the **Data Stability** test suite and display the reports in the notebook:
+```python
+data_stability= TestSuite(tests=[
+    DataStability(),
+])
+data_stability.run(current_data=iris_frame[:75], reference_data=iris_frame[75:], column_mapping=None)
+data_stability 
+```
+
+To save the results as an HTML file:
+```python
+data_stability.save_html("file.html")
+```
+
+You'll need to open it from the destination folder.
+
+To get the output as JSON:
+```python
+data_stability.json()
+```
+
+### Option 2: Reports
+
+After installing the tool, import Evidently **report** and required presets:
+
+```python
+import pandas as pd
+
+from sklearn import datasets
+
+from evidently.report import Report
+from evidently.metric_preset import DataDrift, CatTargetDrift
+
+iris_data = datasets.load_iris(as_frame='auto')
+iris = iris_data.frame
 ```
 
 To generate the **Data Drift** report, run:
 ```python
-iris_data_drift_report = Dashboard(tabs=[DataDriftTab()])
-iris_data_drift_report.calculate(iris_frame[:100], iris_frame[100:], column_mapping = None)
-iris_data_drift_report.save("reports/my_report.html")
+data_drift_report = Report(metrics=[
+    DataDrift(),
+])
+
+data_drift_report.run(current_data=iris_frame[:75], reference_data=iris_frame[75:], column_mapping=None)
+data_drift_report
+
+```
+To save the report as HTML:
+```python
+data_drift_report.save_html("file.html")
 ```
 
-To generate the **Data Drift** and the **Categorical Target Drift** reports, run:
+You'll need to open it from the destination folder.
+
+To get the output as JSON:
 ```python
-iris_data_and_target_drift_report = Dashboard(tabs=[DataDriftTab(), CatTargetDriftTab()])
-iris_data_and_target_drift_report.calculate(iris_frame[:100], iris_frame[100:], column_mapping = None)
-iris_data_and_target_drift_report.save("reports/my_report_with_2_tabs.html")
-```
-
-If you get a security alert, press "trust html".
-HTML report does not open automatically. To explore it, you should open it from the destination folder.
-
-### Option 2: Profile
-
-After installing the tool, import Evidently **profile** and required sections:
-
-```python
-from sklearn import datasets
-
-from evidently.model_profile import Profile
-from evidently.model_profile.sections import (
-    DataDriftProfileSection,
-    CatTargetDriftProfileSection
-)
-
-iris = datasets.load_iris(as_frame=True)
-iris_frame = iris.data
-```
-
-To generate the **Data Drift** profile, run:
-```python
-iris_data_drift_profile = Profile(sections=[DataDriftProfileSection()])
-iris_data_drift_profile.calculate(iris_frame, iris_frame, column_mapping = None)
-iris_data_drift_profile.json() 
-```
-
-To generate the **Data Drift** and the **Categorical Target Drift** profile, run:
-```python
-iris_target_and_data_drift_profile = Profile(sections=[DataDriftProfileSection(), CatTargetDriftProfileSection()])
-iris_target_and_data_drift_profile.calculate(iris_frame[:75], iris_frame[75:], column_mapping = None) 
-iris_target_and_data_drift_profile.json() 
+data_drift_report.json()
 ```
 
 # :computer: Contributions
