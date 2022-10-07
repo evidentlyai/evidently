@@ -10,7 +10,10 @@ Examples of reports and tests using new API (version 0.1.57 and above):
 
 Contents| Jupyter notebook | Colab notebook | Data source 
 --- | --- | --- | --- 
-All tests and tests presets | [link](https://github.com/evidentlyai/evidently/blob/main/examples/sample_notebooks/tests_and_test_presets.ipynb) | (N/A) | Iris, Breast cancer, California housing from sklearn.datasets; Adult dataset from openml 
+All tests| [link](sample_notebooks/evidently_tests.ipynb) | [link](https://colab.research.google.com/drive/1nQhfXft4VZ3G7agvXgH_LqVHdCh-WaMl) | Adult data set openml, California housing sklearn.datasets, Breast cancer sklearn.datasets, Iris plants sklearn.datasets
+All test presets| [link](sample_notebooks/evidently_test_presets.ipynb) | [link](https://colab.research.google.com/drive/1CBAFY1qmHHV_72SC7YBeaD4c6LLpPQan) | Adult data set openml, California housing sklearn.datasets, Breast cancer sklearn.datasets, Iris plants sklearn.datasets
+All metrics| [link](sample_notebooks/evidently_metrics.ipynb) | [link](https://colab.research.google.com/drive/1IpfQsq5dmjuG_Qbn6BNtghq6aubZBP5A) | Adult data set openml
+All metric presets| [link](sample_notebooks/evidently_metric_presets.ipynb) | [link](https://colab.research.google.com/drive/1wmHWipPd6iEy9Ce8NWBcxs_BSa9hgKgk) | Adult data set openml, California housing sklearn.datasets, Breast cancer sklearn.datasets, Iris plants sklearn.datasets
 
 ## Sample notebooks
 
