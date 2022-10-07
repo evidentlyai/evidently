@@ -84,13 +84,11 @@ Unfortunately, building reports inside a Jupyter notebook is not yet possible fo
 > This is a simple Hello World example. You can find a complete [Getting Started Tutorial](https://docs.evidentlyai.com/tutorial) in the docs.
 
 ## Jupyter Notebook
-To start, prepare your data as two pandas `DataFrames`. The first should include your reference data, the second - current production data. The structure of both datasets should be identical. 
-
-To run some of the evaluations (e.g. Data Drift), you need input features only. In other cases (e.g. Target Drift, Classification Performance), you need Target and/or Prediction. We'll use a simple toy dataset and s. 
+To start, prepare your data as two pandas `DataFrames`. The first should include your reference data, the second - current production data. The structure of both datasets should be identical. To run some of the evaluations (e.g. Data Drift), you need input features only. In other cases (e.g. Target Drift, Classification Performance), you need Target and/or Prediction. 
 
 ### Option 1: Test Suites
 
-After installing the tool, import Evidently **test suite** and required presets:
+After installing the tool, import Evidently **test suite** and required presets. We'll use a simple toy dataset:
 
 ```python
 import pandas as pd
