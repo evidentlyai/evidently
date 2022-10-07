@@ -164,53 +164,9 @@ iris_target_and_data_drift_profile = Profile(sections=[DataDriftProfileSection()
 iris_target_and_data_drift_profile.calculate(iris_frame[:75], iris_frame[75:], column_mapping = None) 
 iris_target_and_data_drift_profile.json() 
 ```
-## Google Colab, Kaggle Kernel, Deepnote
-
-<details><summary>Read instructions on how to run Evidently in other notebook environments.</summary>
-<p>
-
-You can run ```evidently``` in [Google Colab](https://colab.research.google.com/), [Kaggle Notebook](https://www.kaggle.com/code) and [Deepnote](https://deepnote.com/).
-
-First, install ```evidently```. Run the following command in the notebook cell:
-```!pip install evidently```
-
-There is no need to enable nbextension for this case, because ```evidently``` uses an alternative way to display visuals in the hosted notebooks.
-
-To build a ```Dashboard``` or a ```Profile``` simply repeat the steps described in the previous paragraph. For example, to build the **Data Drift** dashboard, run:
-
-```python
-from sklearn import datasets
-
-from evidently.dashboard import Dashboard
-from evidently.dashboard.tabs import DataDriftTab
-
-iris = datasets.load_iris(as_frame=True)
-iris_frame = iris.data
-
-iris_data_drift_report = Dashboard(tabs=[DataDriftTab()])
-iris_data_drift_report.calculate(iris_frame[:100], iris_frame[100:], column_mapping = None)
-```
-
-To display the dashboard in the Google Colab, Kaggle Kernel, Deepnote, run:
-```python
-iris_data_drift_report.show()
-```
-
-The ```show()``` method has the argument ```mode```, which can take the following options:
-
-* **auto** - the default option. Ideally, you will not need to specify the value for ```mode``` and use the default. But, if it does not work (in case we failed to determine the environment automatically), consider setting the correct value explicitly.
-* **nbextension** - to show the UI using nbextension. Use this option to display dashboards in Jupyter notebooks (it should work automatically).
-* **inline** - to insert the UI directly into the cell. Use this option for PyLab, Google Colab, Kaggle Kernels and Deepnote. For Google Colab, this should work automatically, for **PyLab**, **Kaggle Kernels** and **Deepnote** the option should be specified explicitly.
-
-</p>
-</details>
 
 # :computer: Contributions
 We welcome contributions! Read the [Guide](CONTRIBUTING.md) to learn more. 
-
-# :framed_picture: Community Reports
-You can also contribute custom reports with a combination of own metrics and widgets. We'll be glad to showcase some of them!
-* A simple dashboard which contains two custom widgets with target distribution information: [link to repository](https://github.com/0lgaF/my_tab_with_evidently)
 
 # :books: Documentation
 For more information, refer to a complete <a href="https://docs.evidentlyai.com">Documentation</a>. You can start with this [Tutorial](https://docs.evidentlyai.com/tutorial) for a quick introduction.
@@ -220,10 +176,10 @@ Here you can find simple examples on toy datasets to quickly explore what Eviden
 
 | Report                                                | Jupyter notebook                                                                                 | Colab notebook                                                                    | Data source                                                                            |
 | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| Evidently Metrics| [link](sample_notebooks/evidently_metrics.ipynb) | [link](https://colab.research.google.com/drive/1IpfQsq5dmjuG_Qbn6BNtghq6aubZBP5A) | Adult data set openml |
-| Evidently Metric Presets| [link](sample_notebooks/evidently_metric_presets.ipynb) | [link](https://colab.research.google.com/drive/1wmHWipPd6iEy9Ce8NWBcxs_BSa9hgKgk) | Adult data set openml, California housing sklearn.datasets, Breast cancer sklearn.datasets, Iris plants sklearn.datasets |
 | Evidently Tests| [link](sample_notebooks/evidently_tests.ipynb) | [link](https://colab.research.google.com/drive/1nQhfXft4VZ3G7agvXgH_LqVHdCh-WaMl) | Adult data set openml, California housing sklearn.datasets, Breast cancer sklearn.datasets, Iris plants sklearn.datasets |
 | Evidently Test Presets| [link](sample_notebooks/evidently_test_presets.ipynb) | [link](https://colab.research.google.com/drive/1CBAFY1qmHHV_72SC7YBeaD4c6LLpPQan) | Adult data set openml, California housing sklearn.datasets, Breast cancer sklearn.datasets, Iris plants sklearn.datasets |
+| Evidently Metrics| [link](sample_notebooks/evidently_metrics.ipynb) | [link](https://colab.research.google.com/drive/1IpfQsq5dmjuG_Qbn6BNtghq6aubZBP5A) | Adult data set openml |
+| Evidently Metric Presets| [link](sample_notebooks/evidently_metric_presets.ipynb) | [link](https://colab.research.google.com/drive/1wmHWipPd6iEy9Ce8NWBcxs_BSa9hgKgk) | Adult data set openml, California housing sklearn.datasets, Breast cancer sklearn.datasets, Iris plants sklearn.datasets |
 
 You can see examples from old Dashboard API [here](https://github.com/evidentlyai/evidently/tree/main/examples/sample_notebooks). 
 
