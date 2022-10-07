@@ -104,6 +104,10 @@ Here you can find simple examples on toy datasets to quickly explore what Eviden
 
 Report | Jupyter notebook | Colab notebook | Data source 
 --- | --- | --- | --- 
+Evidently Metrics| [link](sample_notebooks/evidently_metrics.ipynb) | [link](https://colab.research.google.com/drive/1IpfQsq5dmjuG_Qbn6BNtghq6aubZBP5A) | Adult data set openml
+Evidently Metric Presets| [link](sample_notebooks/evidently_metric_presets.ipynb) | [link](https://colab.research.google.com/drive/1wmHWipPd6iEy9Ce8NWBcxs_BSa9hgKgk) | Adult data set openml, California housing sklearn.datasets, Breast cancer sklearn.datasets, Iris plants sklearn.datasets
+Evidently Tests| [link](sample_notebooks/evidently_tests.ipynb) | [link](https://colab.research.google.com/drive/1nQhfXft4VZ3G7agvXgH_LqVHdCh-WaMl) | Adult data set openml, California housing sklearn.datasets, Breast cancer sklearn.datasets, Iris plants sklearn.datasets
+Evidently Test Presets| [link](sample_notebooks/evidently_test_presets.ipynb) | [link](https://colab.research.google.com/drive/1CBAFY1qmHHV_72SC7YBeaD4c6LLpPQan) | Adult data set openml, California housing sklearn.datasets, Breast cancer sklearn.datasets, Iris plants sklearn.datasets
 Data Drift + Categorical Target Drift (Multiclass) | [link](sample_notebooks/multiclass_target_and_data_drift_iris.ipynb) | [link](https://colab.research.google.com/drive/1Dd6ZzIgeBYkD_4bqWZ0RAdUpCU0b6Y6H) | Iris plants sklearn.datasets 
 Data Drift + Categorical Target Drift (Multiclass, Probabilistic predictions) | [link](sample_notebooks/prob_multiclass_target_and_data_drift_iris.ipynb) | [link](https://colab.research.google.com/drive/1zJ0-_keElHzM6Uaj-RnVPfTYoBO8fQ6H) | Iris plants sklearn.datasets 
 Data Drift + Categorical Target Drift (Binary) | [link](sample_notebooks/binary_target_and_data_drift_breast_cancer.ipynb) | [link](https://colab.research.google.com/drive/1gpzNuFbhoGc4-DLAPMJofQXrsX7Sqsl5) | Breast cancer sklearn.datasets
@@ -115,7 +119,6 @@ Probabilistic Classification Performance (Multiclass) | [link](sample_notebooks/
 Classification Performance (Binary) | [link](sample_notebooks/classification_performance_breast_cancer.ipynb) | [link](https://colab.research.google.com/drive/1b2kTLUIVJkKJybYeD3ZjpaREr_9dDTpz) | Breast cancer sklearn.datasets
 Probabilistic Classification Performance (Binary) | [link](sample_notebooks/probabilistic_classification_performance_breast_cancer.ipynb) | [link](https://colab.research.google.com/drive/1sE2H4mFSgtNe34JZMAeC3eLntid6oe1g) | Breast cancer sklearn.datasets
 Data Quality | [link](sample_notebooks/data_quality_bike_sharing_demand.ipynb) | [link](https://colab.research.google.com/drive/1XDxs4k2wNHU9Xbxb9WI2rOgMkZFavyRd) | Bike sharing UCI: [link](https://archive.ics.uci.edu/ml/datasets/bike+sharing+dataset)
-Tests and Test Presets | [link](sample_notebooks/tests_and_test_presets.ipynb) | [link](https://colab.research.google.com/drive/1xQJs6aQlU_7ludwpGGPnRLQpwQh65omr) | Adult data set openml
 
 ### How-to notebooks
 These examples answer “how-to” questions - they help you to adjust evidently as you need
