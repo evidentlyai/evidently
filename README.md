@@ -220,6 +220,10 @@ Here you can find simple examples on toy datasets to quickly explore what Eviden
 
 | Report                                                | Jupyter notebook                                                                                 | Colab notebook                                                                    | Data source                                                                            |
 | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| Evidently Metrics| [link](sample_notebooks/evidently_metrics.ipynb) | [link](https://colab.research.google.com/drive/1IpfQsq5dmjuG_Qbn6BNtghq6aubZBP5A) | Adult data set openml |
+| Evidently Metric Presets| [link](sample_notebooks/evidently_metric_presets.ipynb) | [link](https://colab.research.google.com/drive/1wmHWipPd6iEy9Ce8NWBcxs_BSa9hgKgk) | Adult data set openml, California housing sklearn.datasets, Breast cancer sklearn.datasets, Iris plants sklearn.datasets |
+| Evidently Tests| [link](sample_notebooks/evidently_tests.ipynb) | [link](https://colab.research.google.com/drive/1nQhfXft4VZ3G7agvXgH_LqVHdCh-WaMl) | Adult data set openml, California housing sklearn.datasets, Breast cancer sklearn.datasets, Iris plants sklearn.datasets |
+| Evidently Test Presets| [link](sample_notebooks/evidently_test_presets.ipynb) | [link](https://colab.research.google.com/drive/1CBAFY1qmHHV_72SC7YBeaD4c6LLpPQan) | Adult data set openml, California housing sklearn.datasets, Breast cancer sklearn.datasets, Iris plants sklearn.datasets |
 | Data Drift + Categorical Target Drift (Multiclass)    | [link](examples/sample_notebooks/multiclass_target_and_data_drift_iris.ipynb)                    | [link](https://colab.research.google.com/drive/1Dd6ZzIgeBYkD_4bqWZ0RAdUpCU0b6Y6H) | Iris plants sklearn.datasets                                                           |
 | Data Drift + Categorical Target Drift (Binary)        | [link](examples/sample_notebooks/binary_target_and_data_drift_breast_cancer.ipynb)               | [link](https://colab.research.google.com/drive/1gpzNuFbhoGc4-DLAPMJofQXrsX7Sqsl5) | Breast cancer sklearn.datasets                                                         |
 | Data Drift + Numerical Target Drift                   | [link](examples/sample_notebooks/numerical_target_and_data_drift_california_housing.ipynb)       | [link](https://colab.research.google.com/drive/1TGt-0rA7MiXsxwtKB4eaAGIUwnuZtyxc) | California housing sklearn.datasets                                                    |
@@ -244,8 +248,6 @@ See how to integrate Evidently in your prediction pipelines and use it with othe
 We host monthly community call for users and contributors. [Sign up](https://evidentlyai.com/community-call-sign-up) to join the next one. 
 
 # :white_check_mark: Stay updated
-- If you want to receive updates, follow us on [Twitter](https://twitter.com/EvidentlyAI), or sign up for our [newsletter](https://evidentlyai.com/sign-up). 
+- If you want to receive updates, sign up for our [newsletter](https://evidentlyai.com/sign-up). 
 - You can also find more tutorials and explanations in our [Blog](https://evidentlyai.com/blog). 
 - If you want to chat and connect, join our [Discord community](https://discord.gg/xZjKRaNp8b)!
-
-
