@@ -66,6 +66,11 @@ def get_one_column_drift(
     dataset_columns: DatasetColumns,
     column_type: Optional[str] = None,
 ) -> ColumnDataDriftMetrics:
+    if column_name not in current_data:
+        raise ValueError(f"Cannot find column '{column_name}' in current dataset")
+
+    if column_name not in reference_data:
+        raise ValueError(f"Cannot find column '{column_name}' in reference dataset")
 
     if column_type is None:
         column_type = recognize_column_type(dataset=reference_data, column_name=column_name, columns=dataset_columns)

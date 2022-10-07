@@ -98,7 +98,7 @@ def test_ensure_prediction_column_is_string(
         ),
         (
             pd.DataFrame({"test": [1, 2, 3], "target": [1, 2, 3]}),
-            pd.DataFrame({"test": [1, 2, 3], "target": [3, 2, 1]}),
+            pd.DataFrame({"test": [4, 5, 6], "target": [1, 2, 3]}),
             "target",
             DataDriftOptions(),
             None,
@@ -135,7 +135,15 @@ def test_get_one_column_drift_success(
             "feature",
             DataDriftOptions(),
             None,
-            "Cannot calculate drift metric for column 'feature' with type unknown",
+            "Cannot find column 'feature' in current dataset",
+        ),
+        (
+            pd.DataFrame({"feature": [1, 2, 3]}),
+            pd.DataFrame({"test": [1, 2, 3]}),
+            "feature",
+            DataDriftOptions(),
+            None,
+            "Cannot find column 'feature' in reference dataset",
         ),
         (
             pd.DataFrame({"test": [None, None, None]}),
