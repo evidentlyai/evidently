@@ -167,9 +167,9 @@ class ColumnMissingValuesMetricRenderer(MetricRenderer):
 
             data.append((missed_value_str, value))
 
-        matched_stat_headers = ["Missed Value", "Count"]
+        matched_stat_headers = ["Missing values type", "Count"]
         return table_data(
-            title="All missed values table",
+            title="",
             column_names=matched_stat_headers,
             data=data,
         )
@@ -181,11 +181,11 @@ class ColumnMissingValuesMetricRenderer(MetricRenderer):
 
     def _get_details_missing_values_info(self, metric_result: ColumnMissingValuesMetricResult) -> BaseWidgetInfo:
         counters = [
-            CounterData.string("Current missed values", self._get_info_string(metric_result.current)),
+            CounterData.string("Missing values (Current data)", self._get_info_string(metric_result.current)),
         ]
         if metric_result.reference is not None:
             counters.append(
-                CounterData.string("Reference missed values", self._get_info_string(metric_result.reference)),
+                CounterData.string("Missing values (Reference data)", self._get_info_string(metric_result.reference)),
             )
 
         return counter(

@@ -240,11 +240,11 @@ class DatasetMissingValuesMetricRenderer(MetricRenderer):
 
     def _get_overall_missing_values_info(self, metric_result: DatasetMissingValuesMetricResult) -> BaseWidgetInfo:
         counters = [
-            CounterData.string("Current dataset missed values", self._get_info_string(metric_result.current)),
+            CounterData.string("Missing values (Current data)", self._get_info_string(metric_result.current)),
         ]
         if metric_result.reference is not None:
             counters.append(
-                CounterData.string("Reference dataset missed values", self._get_info_string(metric_result.reference)),
+                CounterData.string("Missing values (Reference data)", self._get_info_string(metric_result.reference)),
             )
 
         return counter(
@@ -255,7 +255,7 @@ class DatasetMissingValuesMetricRenderer(MetricRenderer):
     def render_html(self, obj: DatasetMissingValuesMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         result = [
-            header_text(label="Dataset Missing Values"),
+            header_text(label="Missing values in the dataset"),
             self._get_overall_missing_values_info(metric_result),
             self._get_table_stat(dataset_name="current", stats=metric_result.current),
         ]
