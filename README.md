@@ -80,6 +80,8 @@ $ pip install evidently
 Unfortunately, building reports inside a Jupyter notebook is not yet possible for Windows. The reason is Windows requires administrator privileges to create symlink. In later versions we will address this issue. You can still generate the HTML to view externally.
 
 # :arrow_forward: Getting started
+> **Note**
+> This is a simple Hello World example. You can find a complete [Getting Started Tutorial](https://docs.evidentlyai.com/tutorial) in the docs.
 
 ## Jupyter Notebook
 To start, prepare your data as two pandas `DataFrames`. The first should include your reference data, the second - current production data. The structure of both datasets should be identical. 
