@@ -56,13 +56,13 @@ def test_freq_obs_not_eq_freq_exp() -> None:
     assert chi_stat_test.func(reference, current, "cat", 0.5) == (approx(0.67309, abs=1e-5), False)
 
 
-def test_g_test() -> None:
+def test_anderson_darling() -> None:
     reference = pd.Series([38.7, 41.5, 43.8, 44.5, 45.5, 46.0, 47.7, 58.0])
     current = pd.Series([39.2, 39.3, 39.7, 41.4, 41.8, 42.9, 43.3, 45.8])
     assert anderson_darling_test.func(reference, current, "num", 0.001) == (approx(0.0635, abs=1e-3), False)
 
 
-def test_anderson_darling() -> None:
+def test_g_test() -> None:
     reference = pd.Series(["a", "b", "c"]).repeat([5, 5, 8])
     current = pd.Series(["a", "b", "c"]).repeat([4, 7, 8])
-    assert anderson_darling_test.func(reference, current, "cat", 0.5) == (approx(0.231, abs=1e-3), True)
+    assert g_test.func(reference, current, "cat", 0.5) == (approx(0.231, abs=1e-3), True)
