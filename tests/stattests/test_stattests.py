@@ -27,9 +27,7 @@ def test_freq_obs_eq_freq_exp() -> None:
 
 def test_freq_obs_not_eq_freq_exp() -> None:
     # observed and expected frequencies is not the same
-    reference = pd.Series([1, 2, 3, 4, 5, 6]).repeat(
-        [x * 2 for x in [16, 18, 16, 14, 12, 12]]
-    )
+    reference = pd.Series([1, 2, 3, 4, 5, 6]).repeat([x * 2 for x in [16, 18, 16, 14, 12, 12]])
     current = pd.Series([1, 2, 3, 4, 5, 6]).repeat([16, 16, 16, 16, 16, 8])
     assert chi_stat_test.func(reference, current, "cat", 0.5) == (
         approx(0.67309, abs=1e-5),
@@ -89,9 +87,7 @@ def test_chi_stat_test_cat_feature() -> None:
         ),
     ),
 )
-def test_z_stat_test_cat_feature(
-    reference, current, expected_score, expected_condition_result: bool
-) -> None:
+def test_z_stat_test_cat_feature(reference, current, expected_score, expected_condition_result: bool) -> None:
     assert z_stat_test.func(reference, current, "cat", 0.5) == (
         expected_score,
         expected_condition_result,
