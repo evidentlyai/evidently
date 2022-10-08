@@ -6,6 +6,7 @@ from pytest import approx
 from evidently.calculations.stattests import z_stat_test
 from evidently.calculations.stattests.anderson_darling_stattest import anderson_darling_test
 from evidently.calculations.stattests.chisquare_stattest import chi_stat_test
+from evidently.calculations.stattests.two_sample_t_stattest import two_sample_t_test
 
 
 def test_freq_obs_eq_freq_exp() -> None:
@@ -59,3 +60,9 @@ def test_anderson_darling() -> None:
     reference = pd.Series([38.7, 41.5, 43.8, 44.5, 45.5, 46.0, 47.7, 58.0])
     current = pd.Series([39.2, 39.3, 39.7, 41.4, 41.8, 42.9, 43.3, 45.8])
     assert anderson_darling_test.func(reference, current, "num", 0.001) == (approx(0.0635, abs=1e-3), False)
+
+# test for two sample t test
+def test_two_sample_t_test() -> None:
+    reference = pd.Series([30.02, 29.99, 30.11, 29.97, 30.01, 29.99])
+    current = pd.Series([29.89, 29.93, 29.72, 29.98,30.02, 29.98])
+    assert two_sample_t_test.func(reference, current, "num", 0.05) == (approx(0.07856, abs=1e-6), False)
