@@ -7,14 +7,12 @@ import pandas as pd
 import pytest
 from pytest import approx
 
-from evidently.calculations.classification_performance import ConfusionMatrix
+from evidently.calculations.classification_performance import ConfusionMatrix, k_probability_threshold, \
+    get_prediction_data, threshold_probability_labels
 from evidently.metrics import ClassificationPerformanceMetrics
 from evidently.metrics import ClassificationPerformanceMetricsThreshold
 from evidently.metrics import ClassificationPerformanceMetricsTopK
 from evidently.metrics.base_metric import InputData
-from evidently.metrics.classification_performance_metrics import get_prediction_data
-from evidently.metrics.classification_performance_metrics import k_probability_threshold
-from evidently.metrics.classification_performance_metrics import threshold_probability_labels
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.report import Report
 
