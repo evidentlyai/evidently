@@ -1,19 +1,25 @@
-from typing import Dict, Union, Optional, List
+from typing import Dict
 from typing import List
+from typing import Optional
+from typing import Sequence
+from typing import Union
 
 import dataclasses
 import numpy as np
 import pandas as pd
 from dataclasses import dataclass
 from numpy import dtype
-from pandas.core.dtypes.common import is_float_dtype, is_string_dtype, is_object_dtype
+from pandas.core.dtypes.common import is_float_dtype
+from pandas.core.dtypes.common import is_integer_dtype
+from pandas.core.dtypes.common import is_object_dtype
+from pandas.core.dtypes.common import is_string_dtype
 
 from evidently import ColumnMapping
 
 
 @dataclass
 class ConfusionMatrix:
-    labels: List[str]
+    labels: Sequence[Union[str, int]]
     values: list
 
 
@@ -178,7 +184,7 @@ def get_prediction_data(data: pd.DataFrame, mapping: ColumnMapping, threshold: f
     # binary target and preds are numbers
     elif (
         isinstance(mapping.prediction, str)
-        and data[mapping.target].dtype == dtype("int")
+        and is_integer_dtype(data[mapping.target].dtype)
         and data[mapping.prediction].dtype == dtype("float")
     ):
         predictions = (data[mapping.prediction] >= threshold).astype(int)
@@ -188,13 +194,17 @@ def get_prediction_data(data: pd.DataFrame, mapping: ColumnMapping, threshold: f
                 0: data[mapping.prediction].apply(lambda x: 1.0 - x),
             }
         )
-        return PredictionData(predictions=predictions, prediction_probas=prediction_probas)
+        return PredictionData(
+            predictions=predictions,
+            prediction_probas=prediction_probas,
+            labels=[0, 1],
+        )
 
     # for other cases return just prediction values, probabilities are None by default
     return PredictionData(
         predictions=data[mapping.prediction],
         prediction_probas=None,
-        labels=data[mapping.prediction].unique().tolist()
+        labels=data[mapping.prediction].unique().tolist(),
     )
 
 

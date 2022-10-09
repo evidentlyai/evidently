@@ -12,9 +12,11 @@ import plotly.graph_objs as go
 import sklearn
 
 from evidently import ColumnMapping
-from evidently.calculations.classification_performance import ConfusionMatrix, k_probability_threshold, \
-    get_prediction_data, threshold_probability_labels
+from evidently.calculations.classification_performance import ConfusionMatrix
 from evidently.calculations.classification_performance import calculate_confusion_by_classes
+from evidently.calculations.classification_performance import get_prediction_data
+from evidently.calculations.classification_performance import k_probability_threshold
+from evidently.calculations.classification_performance import threshold_probability_labels
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
