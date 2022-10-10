@@ -119,7 +119,7 @@ class DataDriftTableRenderer(MetricRenderer):
                 y0=data.plot_shape["y0"],
                 y1=data.plot_shape["y1"],
                 y_name=data.column_name,
-                x_name=data.x_name
+                x_name=data.x_name,
             )
             scatter = plotly_figure(title="", figure=scatter_fig)
             details.with_part("DATA DRIFT", info=scatter)

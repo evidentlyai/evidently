@@ -12,9 +12,9 @@ from evidently.model.widget import BaseWidgetInfo
 from evidently.options import DataDriftOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
-from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import GraphData
+from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import plotly_graph_tabs
 from evidently.renderers.render_utils import plot_distr
@@ -87,7 +87,7 @@ class ColumnDriftMetric(Metric[ColumnDriftMetricResults]):
             reference_distribution=drift_result.reference_distribution,
             current_scatter=drift_result.current_scatter,
             x_name=drift_result.x_name,
-            plot_shape=drift_result.plot_shape
+            plot_shape=drift_result.plot_shape,
         )
 
 
@@ -114,7 +114,8 @@ class ColumnDriftMetricRenderer(MetricRenderer):
                 y0=result.plot_shape["y0"],
                 y1=result.plot_shape["y1"],
                 y_name=result.column_name,
-                x_name=result.x_name)
+                x_name=result.x_name,
+            )
             figures.append(GraphData.figure("DATA DRIFT", scatter_fig))
 
         distr_fig = plot_distr(result.current_distribution, result.reference_distribution)
@@ -137,9 +138,8 @@ class ColumnDriftMetricRenderer(MetricRenderer):
                         f"Drfit in column {result.column_name}",
                     )
                 ],
-                title=""
+                title="",
             ),
-
             plotly_graph_tabs(
                 title="",
                 figures=figures,

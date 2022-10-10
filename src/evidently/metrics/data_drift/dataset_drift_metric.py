@@ -97,7 +97,7 @@ class DataDriftMetricsRenderer(MetricRenderer):
                         f"Dataset drift detection threshold is {result.threshold}",
                     )
                 ],
-                title=""
+                title="",
             ),
             counter(
                 counters=counters,
