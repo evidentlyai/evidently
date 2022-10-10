@@ -199,4 +199,4 @@ def _hist(histogram_data, title):
             ref_hist_data["x"],
             ref_hist_data["count"],
         )
-    return histogram(title, curr_hist, ref_hist)
+    return histogram(title=title, primary_hist=curr_hist, secondary_hist=ref_hist)
