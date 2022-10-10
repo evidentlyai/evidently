@@ -1,3 +1,4 @@
+from typing import Dict
 from typing import List
 from typing import Optional
 
@@ -11,10 +12,15 @@ from evidently.model.widget import BaseWidgetInfo
 from evidently.options import DataDriftOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
+from evidently.renderers.html_widgets import counter
+from evidently.renderers.html_widgets import CounterData
+from evidently.renderers.html_widgets import GraphData
 from evidently.renderers.html_widgets import header_text
+from evidently.renderers.html_widgets import plotly_graph_tabs
 from evidently.renderers.render_utils import plot_distr
 from evidently.utils.data_operations import process_columns
 from evidently.utils.types import Numeric
+from evidently.utils.visualizations import plot_scatter_for_data_drift
 
 
 @dataclasses.dataclass
@@ -27,6 +33,9 @@ class ColumnDriftMetricResults:
     drift_detected: bool
     current_distribution: pd.DataFrame
     reference_distribution: pd.DataFrame
+    current_scatter: Optional[Dict[str, list]]
+    x_name: Optional[str]
+    plot_shape: Optional[Dict[str, float]]
 
 
 class ColumnDriftMetric(Metric[ColumnDriftMetricResults]):
@@ -76,6 +85,9 @@ class ColumnDriftMetric(Metric[ColumnDriftMetricResults]):
             drift_detected=drift_result.drift_detected,
             current_distribution=drift_result.current_distribution,
             reference_distribution=drift_result.reference_distribution,
+            current_scatter=drift_result.current_scatter,
+            x_name=drift_result.x_name,
+            plot_shape=drift_result.plot_shape
         )
 
 
@@ -92,21 +104,52 @@ class ColumnDriftMetricRenderer(MetricRenderer):
 
         drift_score = round(result.drift_score, 3)
 
-        fig = plot_distr(result.current_distribution, result.reference_distribution)
-        fig_json = fig.to_plotly_json()
+        figures = []
+
+        # fig_json = fig.to_plotly_json()
+        if result.current_scatter is not None and result.plot_shape is not None and result.x_name is not None:
+            scatter_fig = plot_scatter_for_data_drift(
+                curr_y=result.current_scatter[result.column_name],
+                curr_x=result.current_scatter[result.x_name],
+                y0=result.plot_shape["y0"],
+                y1=result.plot_shape["y1"],
+                y_name=result.column_name,
+                x_name=result.x_name)
+            figures.append(GraphData.figure("DATA DRIFT", scatter_fig))
+
+        distr_fig = plot_distr(result.current_distribution, result.reference_distribution)
+        figures.append(GraphData.figure("DATA DISTRIBUTION", distr_fig))
         return [
-            header_text(label=f"Drift in column '{result.column_name}'"),
-            header_text(
-                label=f"Data drift {drift}. "
-                f"Drift detection method: {result.stattest_name}. "
-                f"Drift score: {drift_score}"
+            # header_text(label=f"Drift in column '{result.column_name}'"),
+            # header_text(
+            #     label=f"Data drift {drift}. "
+            #     f"Drift detection method: {result.stattest_name}. "
+            #     f"Drift score: {drift_score}"
+            # ),
+            counter(
+                counters=[
+                    CounterData(
+                        (
+                            f"Data drift {drift}. "
+                            f"Drift detection method: {result.stattest_name}. "
+                            f"Drift score: {drift_score}"
+                        ),
+                        f"Drfit in column {result.column_name}",
+                    )
+                ],
+                title=""
             ),
-            BaseWidgetInfo(
+
+            plotly_graph_tabs(
                 title="",
-                size=2,
-                type="big_graph",
-                params={"data": fig_json["data"], "layout": fig_json["layout"]},
-            ),
+                figures=figures,
+            )
+            # BaseWidgetInfo(
+            #     title="",
+            #     size=2,
+            #     type="big_graph",
+            #     params={"data": fig_json["data"], "layout": fig_json["layout"]},
+            # ),
         ]
 
     def render_json(self, obj: ColumnDriftMetric) -> dict:
@@ -114,4 +157,7 @@ class ColumnDriftMetricRenderer(MetricRenderer):
         # remove distribution data with pandas dataframes
         result.pop("current_distribution", None)
         result.pop("reference_distribution", None)
+        result.pop("current_scatter", None)
+        result.pop("x_name", None)
+        result.pop("plot_shape", None)
         return result
