@@ -53,10 +53,10 @@ class ColumnDriftMetric(Metric[ColumnDriftMetricResults]):
             raise ValueError("Reference dataset should be present")
 
         if self.column_name not in data.current_data:
-            raise ValueError(f"Cannot find column {self.column_name} in current dataset")
+            raise ValueError(f"Cannot find column '{self.column_name}' in current dataset")
 
         if self.column_name not in data.reference_data:
-            raise ValueError(f"Cannot find column {self.column_name} in reference dataset")
+            raise ValueError(f"Cannot find column '{self.column_name}' in reference dataset")
 
         dataset_columns = process_columns(data.reference_data, data.column_mapping)
         drift_result = get_one_column_drift(
