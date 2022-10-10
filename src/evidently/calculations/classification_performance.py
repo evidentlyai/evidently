@@ -23,7 +23,10 @@ class ConfusionMatrix:
     values: list
 
 
-def calculate_confusion_by_classes(confusion_matrix: pd.DataFrame, class_names: List[str]) -> Dict[str, Dict[str, int]]:
+def calculate_confusion_by_classes(
+    confusion_matrix: np.ndarray,
+    class_names: Sequence[Union[str, int]],
+) -> Dict[Union[str, int], Dict[str, int]]:
     """Calculate metrics
         TP (true positive)
         TN (true negative)
@@ -49,7 +52,7 @@ def calculate_confusion_by_classes(confusion_matrix: pd.DataFrame, class_names: 
     confusion_by_classes = {}
 
     for idx, class_name in enumerate(class_names):
-        confusion_by_classes[str(class_name)] = {
+        confusion_by_classes[class_name] = {
             "tp": true_positive[idx],
             "tn": true_negative[idx],
             "fp": false_positive[idx],

@@ -29,7 +29,7 @@ class ClassificationPerformanceMetrics:
     f1: float
     metrics_matrix: Dict[str, Dict]
     confusion_matrix: ConfusionMatrix
-    confusion_by_classes: Dict[str, Dict[str, int]]
+    confusion_by_classes: Dict[Union[str, int], Dict[str, int]]
 
 
 @dataclass

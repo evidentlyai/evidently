@@ -21,14 +21,16 @@ from evidently.metrics.classification_performance.class_balance_metric import Cl
             dict(a=2, b=3, c=4),
             dict(a=3, b=3, c=3),
         ),
-    ]
+    ],
 )
 def test_class_balance_metric(reference, current, expected_reference, expected_current):
     metric = ClassificationClassBalance()
-    results = metric.calculate(data=InputData(
-        reference_data=reference,
-        current_data=current,
-        column_mapping=ColumnMapping(),
-    ))
+    results = metric.calculate(
+        data=InputData(
+            reference_data=reference,
+            current_data=current,
+            column_mapping=ColumnMapping(),
+        )
+    )
     assert results.reference_label_count == expected_reference
     assert results.current_label_count == expected_current

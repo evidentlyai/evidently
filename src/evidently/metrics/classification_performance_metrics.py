@@ -42,7 +42,7 @@ class DatasetClassificationPerformanceMetrics:
     f1: float
     metrics_matrix: dict
     confusion_matrix: ConfusionMatrix
-    confusion_by_classes: Dict[str, Dict[str, int]]
+    confusion_by_classes: Dict[Union[str, int], Dict[str, int]]
     roc_auc: Optional[float] = None
     log_loss: Optional[float] = None
     roc_aucs: Optional[list] = None
