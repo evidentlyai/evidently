@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
+from .anderson_darling_stattest import anderson_darling_test
 from .chisquare_stattest import chi_stat_test
 from .jensenshannon import jensenshannon_stat_test
 from .kl_div import kl_div_stat_test
