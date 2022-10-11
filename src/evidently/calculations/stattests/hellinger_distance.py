@@ -53,7 +53,8 @@ def _hellinger_distance(
         h1 = np.histogram(reference_data.values, bins=bins, density=True)[0]
         h2 = np.histogram(current_data.values, bins=bins, density=True)[0]
 
-        bin_width = (max(keys) - min(keys)) / len(h1)
+        bin_width = (max(bins) - min(bins)) / (len(bins)-1)
+
         hellinger_distance = 0.0
         for i in range(len(h1)):
             p1 = h1[i]
