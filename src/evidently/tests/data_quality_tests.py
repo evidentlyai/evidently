@@ -976,7 +976,7 @@ class TestValueRangeRenderer(TestRenderer):
     def render_html(self, obj: TestValueRange) -> TestHtmlInfo:
         column_name = obj.column_name
         metric_result = obj.metric.get_result()
-        condition_ = TestValueCondition(gt=metric_result.range_left_value, lt=metric_result.range_right_value)
+        condition_ = TestValueCondition(gt=metric_result.left, lt=metric_result.right)
         info = super().render_html(obj)
         curr_distr = metric_result.current_distribution
         ref_distr = metric_result.reference_distribution

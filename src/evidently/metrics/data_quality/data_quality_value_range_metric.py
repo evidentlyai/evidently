@@ -34,13 +34,22 @@ class ValuesInRangeStat:
 @dataclasses.dataclass
 class DataQualityValueRangeMetricResult:
     column_name: str
-    range_left_value: Numeric
-    range_right_value: Numeric
+    left: Numeric
+    right: Numeric
     current: ValuesInRangeStat
     reference: Optional[ValuesInRangeStat] = None
     # distributions for the column
     current_distribution: Optional[pd.Series] = None
     reference_distribution: Optional[pd.Series] = None
+
+    def __eq__(self, other):
+        return (
+            self.column_name == other.column_name
+            and self.left == other.left
+            and self.right == other.right
+            and self.current == other.current
+            and self.reference == other.reference
+        )
 
 
 class DataQualityValueRangeMetric(Metric[DataQualityValueRangeMetricResult]):
@@ -59,17 +68,41 @@ class DataQualityValueRangeMetric(Metric[DataQualityValueRangeMetricResult]):
     def _calculate_in_range_stats(column: pd.Series, left: Numeric, right: Numeric) -> ValuesInRangeStat:
         column = column.dropna()
         rows_count = get_rows_count(column)
-        number_in_range = column.between(left=float(left), right=float(right), inclusive="both").sum()
-        number_not_in_range = rows_count - number_in_range
+
+        if rows_count == 0:
+            number_in_range = 0
+            number_not_in_range = 0
+            share_in_range = 0.0
+            share_not_in_range = 0.0
+
+        else:
+            number_in_range = column.between(left=float(left), right=float(right), inclusive="both").sum()
+            number_not_in_range = rows_count - number_in_range
+            share_in_range = number_in_range / rows_count
+            share_not_in_range = number_not_in_range / rows_count
+
         return ValuesInRangeStat(
             number_in_range=number_in_range,
             number_not_in_range=number_not_in_range,
-            share_in_range=number_in_range / rows_count,
-            share_not_in_range=number_not_in_range / rows_count,
+            share_in_range=share_in_range,
+            share_not_in_range=share_not_in_range,
             number_of_values=rows_count,
         )
 
     def calculate(self, data: InputData) -> DataQualityValueRangeMetricResult:
+        if self.column_name not in data.current_data:
+            raise ValueError(f"Column {self.column_name} is not in current data.")
+
+        if not pd.api.types.is_numeric_dtype(data.current_data[self.column_name].dtype):
+            raise ValueError(f"Column {self.column_name} in current data should be numeric.")
+
+        if data.reference_data is not None:
+            if self.column_name not in data.reference_data:
+                raise ValueError(f"Column {self.column_name} is not in reference data.")
+
+            if not pd.api.types.is_numeric_dtype(data.reference_data[self.column_name].dtype):
+                raise ValueError(f"Column {self.column_name} in reference data should be numeric.")
+
         if self.left is None:
             if data.reference_data is None:
                 raise ValueError("Reference should be present")
@@ -89,9 +122,6 @@ class DataQualityValueRangeMetric(Metric[DataQualityValueRangeMetricResult]):
 
         else:
             right = self.right
-
-        if left is None or right is None:
-            raise ValueError("Cannot define one or both of range parameters")
 
         current = self._calculate_in_range_stats(data.current_data[self.column_name], left, right)
 
@@ -114,8 +144,8 @@ class DataQualityValueRangeMetric(Metric[DataQualityValueRangeMetricResult]):
 
         return DataQualityValueRangeMetricResult(
             column_name=self.column_name,
-            range_left_value=left,
-            range_right_value=right,
+            left=left,
+            right=right,
             current=current,
             reference=reference,
             current_distribution=distribution_for_plot["current"],
@@ -127,7 +157,8 @@ class DataQualityValueRangeMetric(Metric[DataQualityValueRangeMetricResult]):
 class DataQualityValueRangeMetricRenderer(MetricRenderer):
     def render_json(self, obj: DataQualityValueRangeMetric) -> dict:
         result = dataclasses.asdict(obj.get_result())
-        result.pop("distr_for_plot", None)
+        result.pop("current_distribution", None)
+        result.pop("reference_distribution", None)
         return result
 
     @staticmethod
@@ -150,8 +181,8 @@ class DataQualityValueRangeMetricRenderer(MetricRenderer):
     def render_html(self, obj: DataQualityValueRangeMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         column_name = metric_result.column_name
-        left = metric_result.range_left_value
-        right = metric_result.range_right_value
+        left = metric_result.left
+        right = metric_result.right
         number_in_range = metric_result.current.number_in_range
         percents = round(metric_result.current.share_in_range * 100, 3)
 
@@ -169,8 +200,8 @@ class DataQualityValueRangeMetricRenderer(MetricRenderer):
                             title="",
                             figure=plot_distribution_with_range(
                                 distribution_data=metric_result.current_distribution,
-                                left=metric_result.range_left_value,
-                                right=metric_result.range_right_value,
+                                left=metric_result.left,
+                                right=metric_result.right,
                             ),
                         ),
                     ),
@@ -192,8 +223,8 @@ class DataQualityValueRangeMetricRenderer(MetricRenderer):
                                 title="",
                                 figure=plot_distribution_with_range(
                                     distribution_data=metric_result.reference_distribution,
-                                    left=metric_result.range_left_value,
-                                    right=metric_result.range_right_value,
+                                    left=metric_result.left,
+                                    right=metric_result.right,
                                 ),
                             ),
                         ),
