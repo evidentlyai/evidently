@@ -4,7 +4,7 @@ description: List of all tests available in Evidently.
 
 How to read the tables:
 
-* **Test**: the name of an individual test that you can include in a Test Suite. If a test has an optional parameter, we include an example. 
+* **Test**: the name of an individual test that you can include in a Test Suite. If a test has an optional parameter, we include an example.  
 * **Description**: plain text explanation of the test. We also specify whether the test applies to the whole dataset or individual columns.
 * **Default**: description of the default parameters. Many tests have two types of the defaults. The first applies when you pass a reference dataset and Evidently can derive expectations from it. The second applies if you do not provide the reference. You can always override the defaults by specifying a custom condition.   
 
@@ -16,7 +16,7 @@ We are doing our best to maintain this page up to date. In case of discrepancies
 
 ## Data integrity
 
-If you provide the reference dataset, Evidently will automatically derive all relevant statistics (e.g., share of nulls, etc.) to shape expectations. You can also pass these conditions as a parameter or run the tests with defaults.  
+If you provide the reference dataset, Evidently will automatically derive all relevant statistics (e.g., share of nulls, etc.) to shape expectations. If you do not provide the reference, you can pass these conditions as a parameter, or run tests with default parameters.
 
 **Note on Null-related tests**. The tests that evaluate the number or share of nulls detect four types of nulls by default: Pandas nulls (None, NAN, etc.), "" (empty string), Numpy "-inf" value, Numpy "inf" value. You can also pass a custom list of nulls as a parameter and specify if you want to replace the default list. Example:
 
