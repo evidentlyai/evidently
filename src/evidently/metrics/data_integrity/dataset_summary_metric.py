@@ -7,6 +7,12 @@ import dataclasses
 import pandas as pd
 
 from evidently import ColumnMapping
+from evidently.calculations.data_integration import get_number_of_all_pandas_missed_values
+from evidently.calculations.data_integration import get_number_of_almost_constant_columns
+from evidently.calculations.data_integration import get_number_of_almost_duplicated_columns
+from evidently.calculations.data_integration import get_number_of_constant_columns
+from evidently.calculations.data_integration import get_number_of_duplicated_columns
+from evidently.calculations.data_integration import get_number_of_empty_columns
 from evidently.calculations.data_quality import get_rows_count
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
@@ -31,8 +37,8 @@ class DatasetSummary:
     values_number_of_categorical_columns: int
     number_of_numeric_columns: int
     number_of_datetime_columns: int
-    number_of_constant_columns: int
     number_of_empty_columns: int
+    number_of_constant_columns: int
     number_of_almost_constant_columns: int
     number_of_duplicated_columns: int
     number_of_almost_duplicated_columns: int
@@ -50,12 +56,13 @@ class DatasetSummaryMetric(Metric[DatasetSummaryMetricResult]):
 
     # threshold for calculating the number of almost duplicated columns
     almost_duplicated_threshold: float
+    almost_constant_threshold: float
 
-    def __init__(self, almost_duplicated_threshold: float = 0.95):
+    def __init__(self, almost_duplicated_threshold: float = 0.95, almost_constant_threshold: float = 0.95):
         self.almost_duplicated_threshold = almost_duplicated_threshold
+        self.almost_constant_threshold = almost_constant_threshold
 
-    @staticmethod
-    def _calculate_dataset_common_stats(dataset: pd.DataFrame, column_mapping: ColumnMapping) -> DatasetSummary:
+    def _calculate_dataset_common_stats(self, dataset: pd.DataFrame, column_mapping: ColumnMapping) -> DatasetSummary:
         columns = process_columns(dataset, column_mapping)
         return DatasetSummary(
             target=columns.utility_columns.target,
@@ -64,20 +71,27 @@ class DatasetSummaryMetric(Metric[DatasetSummaryMetricResult]):
             id_column=columns.utility_columns.id_column,
             number_of_columns=len(dataset.columns),
             number_of_rows=get_rows_count(dataset),
-            number_of_missing_values=0,
+            number_of_missing_values=get_number_of_all_pandas_missed_values(dataset),
             values_number_of_categorical_columns=len(columns.cat_feature_names),
             number_of_numeric_columns=len(columns.num_feature_names),
             number_of_datetime_columns=len(columns.datetime_feature_names),
-            number_of_constant_columns=0,
-            number_of_empty_columns=0,
-            number_of_almost_constant_columns=0,
-            number_of_duplicated_columns=0,
-            number_of_almost_duplicated_columns=0,
+            number_of_empty_columns=get_number_of_empty_columns(dataset),
+            number_of_constant_columns=get_number_of_constant_columns(dataset),
+            number_of_almost_constant_columns=get_number_of_almost_constant_columns(
+                dataset, self.almost_constant_threshold
+            ),
+            number_of_duplicated_columns=get_number_of_duplicated_columns(dataset),
+            number_of_almost_duplicated_columns=get_number_of_almost_duplicated_columns(
+                dataset, self.almost_duplicated_threshold
+            ),
         )
 
     def calculate(self, data: InputData) -> DatasetSummaryMetricResult:
-        if self.almost_duplicated_threshold < 0 or self.almost_duplicated_threshold > 1:
-            raise ValueError("Almost duplicated threshold should be in range [0, 1]")
+        if self.almost_duplicated_threshold < 0.5 or self.almost_duplicated_threshold > 1:
+            raise ValueError("Almost duplicated threshold should be in range [0.5, 1]")
+
+        if self.almost_constant_threshold < 0.5 or self.almost_duplicated_threshold > 1:
+            raise ValueError("Almost constant threshold should be in range [0.5, 1]")
 
         current = self._calculate_dataset_common_stats(data.current_data, data.column_mapping)
         reference = None
