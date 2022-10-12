@@ -47,6 +47,18 @@ def test_get_number_of_all_pandas_missed_values(dataset: pd.DataFrame, expected_
             0.9,
             1,
         ),
+        (
+            pd.DataFrame(
+                {
+                    "feature1": ["a", "a", "a"],
+                    "feature2": ["b", 1, np.NaN],
+                    "feature3": ["a", "a", "a"],
+                },
+                dtype="category",
+            ),
+            0.9,
+            1,
+        ),
     ),
 )
 def test_get_number_of_almost_duplicated_columns(
