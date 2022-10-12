@@ -32,6 +32,10 @@ class ColumnDataDriftMetrics:
     reference_distribution: Optional[pd.DataFrame] = None
     current_small_distribution: Optional[list] = None
     reference_small_distribution: Optional[list] = None
+    # data for scatter plot for numeric features only
+    current_scatter: Optional[Dict[str, list]] = None
+    x_name: Optional[str] = None
+    plot_shape: Optional[Dict[str, float]] = None
     # correlations for numeric features only
     current_correlations: Optional[Dict[str, float]] = None
     reference_correlations: Optional[Dict[str, float]] = None
@@ -149,6 +153,24 @@ def get_one_column_drift(
                 density=True,
             )
         ]
+        current_scatter = {}
+        current_scatter[column_name] = current_data[column_name]
+        datetime_column_name = dataset_columns.utility_columns.date
+        if datetime_column_name is not None:
+            current_scatter["Timestamp"] = current_data[datetime_column_name]
+            x_name = "Timestamp"
+        else:
+            current_scatter["Index"] = current_data.index
+            x_name = "Index"
+
+        plot_shape = {}
+        reference_mean = reference_data[column_name].mean()
+        reference_std = reference_data[column_name].std()
+        plot_shape["y0"] = reference_mean - reference_std
+        plot_shape["y1"] = reference_mean + reference_std
+        result.current_scatter = current_scatter
+        result.x_name = x_name
+        result.plot_shape = plot_shape
 
     if column_type == "cat":
         reference_counts = reference_data[column_name].value_counts(sort=False)
