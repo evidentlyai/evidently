@@ -25,6 +25,7 @@ from evidently.renderers.html_widgets import rich_table_data
 from evidently.renderers.render_utils import plot_distr
 from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.data_operations import process_columns
+from evidently.utils.visualizations import plot_scatter_for_data_drift
 
 
 @dataclass
@@ -89,6 +90,9 @@ class DataDriftTableRenderer(MetricRenderer):
             data.pop("reference_small_distribution", None)
             data.pop("current_correlations", None)
             data.pop("reference_correlations", None)
+            data.pop("current_scatter", None)
+            data.pop("x_name", None)
+            data.pop("plot_shape", None)
 
         return result
 
@@ -102,10 +106,28 @@ class DataDriftTableRenderer(MetricRenderer):
         current_small_hist = data.current_small_distribution
         ref_small_hist = data.reference_small_distribution
         data_drift = "Detected" if data.drift_detected else "Not Detected"
+        details = RowDetails()
+        if (
+            data.column_type == "num"
+            and data.current_scatter is not None
+            and data.x_name is not None
+            and data.plot_shape is not None
+        ):
+            scatter_fig = plot_scatter_for_data_drift(
+                curr_y=data.current_scatter[data.column_name],
+                curr_x=data.current_scatter[data.x_name],
+                y0=data.plot_shape["y0"],
+                y1=data.plot_shape["y1"],
+                y_name=data.column_name,
+                x_name=data.x_name,
+            )
+            scatter = plotly_figure(title="", figure=scatter_fig)
+            details.with_part("DATA DRIFT", info=scatter)
         fig = plot_distr(data.current_distribution, data.reference_distribution)
         distribution = plotly_figure(title="", figure=fig)
+        details.with_part("DATA DISTRIBUTION", info=distribution)
         return RichTableDataRow(
-            details=RowDetails().with_part("Data distribution", info=distribution),
+            details=details,
             fields={
                 "column_name": column_name,
                 "column_type": data.column_type,

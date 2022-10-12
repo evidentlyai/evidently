@@ -86,14 +86,21 @@ class DataDriftMetricsRenderer(MetricRenderer):
         counters = [
             CounterData.int("Columns", result.number_of_columns),
             CounterData.int("Drifted Columns", result.number_of_drifted_columns),
-            CounterData.float("Dataset Drift Score", result.share_of_drifted_columns, 3),
+            CounterData.float("Share of Drifted Columns", result.share_of_drifted_columns, 3),
         ]
 
         return [
-            header_text(label=f"Dataset Drift is {drift_detected}"),
-            header_text(label=f"Dataset drift detection threshold is {result.threshold}"),
+            counter(
+                counters=[
+                    CounterData(
+                        f"Dataset Drift is {drift_detected}",
+                        f"Dataset drift detection threshold is {result.threshold}",
+                    )
+                ],
+                title="",
+            ),
             counter(
                 counters=counters,
-                title="Dataset Drift Details",
+                title="",
             ),
         ]
