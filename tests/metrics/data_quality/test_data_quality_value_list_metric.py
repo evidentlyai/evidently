@@ -14,10 +14,10 @@ from evidently.metrics.data_quality.data_quality_value_list_metric import ValueL
     "current_dataset, reference_dataset, metric, expected_result",
     (
         (
-                pd.DataFrame({"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 2, 2, 432]}),
-                None,
-                DataQualityValueListMetric(column_name="category_feature", values=["d"]),
-                DataQualityValueListMetricsResult(
+            pd.DataFrame({"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 2, 2, 432]}),
+            None,
+            DataQualityValueListMetric(column_name="category_feature", values=["d"]),
+            DataQualityValueListMetricsResult(
                 column_name="category_feature",
                 values=["d"],
                 current=ValueListStat(
@@ -32,10 +32,10 @@ from evidently.metrics.data_quality.data_quality_value_list_metric import ValueL
             ),
         ),
         (
-                pd.DataFrame({"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 2, 2, 432]}),
-                None,
-                DataQualityValueListMetric(column_name="numerical_feature", values=[2]),
-                DataQualityValueListMetricsResult(
+            pd.DataFrame({"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 2, 2, 432]}),
+            None,
+            DataQualityValueListMetric(column_name="numerical_feature", values=[2]),
+            DataQualityValueListMetricsResult(
                 column_name="numerical_feature",
                 values=[2],
                 current=ValueListStat(
@@ -50,10 +50,10 @@ from evidently.metrics.data_quality.data_quality_value_list_metric import ValueL
             ),
         ),
         (
-                pd.DataFrame({"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 2, 2, 432]}),
-                pd.DataFrame({"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 2, 2, 432]}),
-                DataQualityValueListMetric(column_name="category_feature"),
-                DataQualityValueListMetricsResult(
+            pd.DataFrame({"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 2, 2, 432]}),
+            pd.DataFrame({"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 2, 2, 432]}),
+            DataQualityValueListMetric(column_name="category_feature"),
+            DataQualityValueListMetricsResult(
                 column_name="category_feature",
                 values=["n", "d", "p"],
                 current=ValueListStat(
@@ -77,8 +77,10 @@ from evidently.metrics.data_quality.data_quality_value_list_metric import ValueL
     ),
 )
 def test_data_quality_value_list_metric_success(
-    current_dataset: pd.DataFrame, reference_dataset: Optional[pd.DataFrame],
-        metric: DataQualityValueListMetric, expected_result: DataQualityValueListMetricsResult
+    current_dataset: pd.DataFrame,
+    reference_dataset: Optional[pd.DataFrame],
+    metric: DataQualityValueListMetric,
+    expected_result: DataQualityValueListMetricsResult,
 ) -> None:
     data_mapping = ColumnMapping()
     result = metric.calculate(

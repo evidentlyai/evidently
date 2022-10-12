@@ -4,7 +4,6 @@ from typing import Optional
 
 import dataclasses
 import pandas as pd
-from dataclasses import dataclass
 
 from evidently.calculations.data_quality import calculate_cramer_v_correlations
 from evidently.metrics.base_metric import InputData
@@ -17,7 +16,7 @@ from evidently.utils.data_operations import process_columns
 from evidently.utils.data_operations import recognize_column_type
 
 
-@dataclass
+@dataclasses.dataclass
 class ColumnCorrelationsMetricResult:
     column_name: str
     column_type: str
@@ -92,9 +91,8 @@ class ColumnCorrelationsMetricRenderer(MetricRenderer):
         return result
 
     def render_html(self, obj: ColumnCorrelationsMetric) -> List[BaseWidgetInfo]:
-        # metric_result = obj.get_result()
-
+        metric_result = obj.get_result()
         result = [
-            header_text(label=f"Correlations for column '{self.column_name}'."),
+            header_text(label=f"Correlations for column '{metric_result.column_name}'."),
         ]
         return result

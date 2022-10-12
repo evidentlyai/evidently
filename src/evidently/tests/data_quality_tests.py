@@ -1070,11 +1070,9 @@ class TestShareOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
 
     def get_description(self, value: Numeric) -> str:
         current_result = self.metric.get_result().current
-        number_not_in_range = current_result.number_not_in_range
-        values_count = current_result.number_of_values
         return (
             f"The share of values out of range in the column **{self.column_name}** is {value:.3g} "
-            f"({number_not_in_range} out of {values_count}). "
+            f"({current_result.number_not_in_range} out of {current_result.number_of_values}). "
             f" The test threshold is {self.get_condition()}."
         )
 
@@ -1319,13 +1317,16 @@ class TestValueQuantile(BaseCheckValueTest):
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
             return self.condition
-        ref_value = self.metric.get_result().ref_value
-        if ref_value is not None:
-            return TestValueCondition(eq=approx(ref_value, 0.1))
+
+        reference_value = self.metric.get_result().reference
+
+        if reference_value is not None:
+            return TestValueCondition(eq=approx(reference_value, 0.1))
+
         raise ValueError("Neither required test parameters nor reference data has been provided.")
 
     def calculate_value_for_test(self) -> Numeric:
-        return self.metric.get_result().value
+        return self.metric.get_result().current
 
     def get_description(self, value: Numeric) -> str:
         return (
@@ -1337,15 +1338,14 @@ class TestValueQuantile(BaseCheckValueTest):
 @default_renderer(wrap_type=TestValueQuantile)
 class TestValueQuantileRenderer(TestRenderer):
     def render_html(self, obj: TestValueQuantile) -> TestHtmlInfo:
-        column_name = obj.column_name
         info = super().render_html(obj)
-        curr_distr = obj.metric.get_result().distr_for_plot["current"]
-        ref_distr = None
-        if "reference" in obj.metric.get_result().distr_for_plot.keys():
-            ref_distr = obj.metric.get_result().distr_for_plot["reference"]
-        fig = plot_distr(curr_distr, ref_distr)
+        metric_result = obj.metric.get_result()
+        column_name = metric_result.column_name
+        fig = plot_distr(metric_result.current_distribution, metric_result.reference_distribution)
         fig = plot_check(fig, obj.get_condition())
-        fig = plot_metric_value(fig, obj.metric.get_result().value, f"current {column_name} {obj.quantile} quantile")
+        fig = plot_metric_value(
+            fig, obj.metric.get_result().current, f"current {column_name} {metric_result.quantile} quantile"
+        )
         info.with_details("", plotly_figure(title="", figure=fig))
         return info
 

@@ -1,4 +1,3 @@
-from typing import Dict
 from typing import List
 from typing import Optional
 
@@ -20,12 +19,15 @@ from evidently.utils.visualizations import make_hist_for_num_plot
 @dataclass
 class DataQualityValueQuantileMetricResults:
     column_name: str
-    # calculated value of the quantile
-    value: float
     # range of the quantile (from 0 to 1)
     quantile: float
-    distr_for_plot: Dict[str, pd.DataFrame]
-    ref_value: Optional[float]
+    # calculated value of the quantile in current data
+    current: float
+    # calculated value of the quantile in reference data
+    reference: Optional[float] = None
+    # distributions for the column
+    current_distribution: Optional[pd.DataFrame] = None
+    reference_distribution: Optional[pd.DataFrame] = None
 
 
 class DataQualityValueQuantileMetric(Metric[DataQualityValueQuantileMetricResults]):
@@ -43,21 +45,39 @@ class DataQualityValueQuantileMetric(Metric[DataQualityValueQuantileMetricResult
         self.quantile = quantile
 
     def calculate(self, data: InputData) -> DataQualityValueQuantileMetricResults:
-        curr_feature = data.current_data[self.column_name]
-        ref_feature = None
-        ref_value = None
+        if self.column_name not in data.current_data:
+            raise ValueError(f"Column {self.column_name} is not in current data.")
+
+        current_column = data.current_data[self.column_name]
+
+        if not pd.api.types.is_numeric_dtype(current_column.dtype):
+            raise ValueError(f"Column {self.column_name} in current data is not numeric.")
+
+        current_quantile = data.current_data[self.column_name].quantile(self.quantile)
 
         if data.reference_data is not None:
-            ref_feature = data.reference_data[self.column_name]
-            ref_value = data.reference_data[self.column_name].quantile(self.quantile)
+            if self.column_name not in data.reference_data:
+                raise ValueError(f"Column {self.column_name} is not in reference data.")
 
-        distr_for_plot = make_hist_for_num_plot(curr_feature, ref_feature)
+            reference_column = data.reference_data[self.column_name]
+
+            if not pd.api.types.is_numeric_dtype(reference_column.dtype):
+                raise ValueError(f"Column {self.column_name} in reference data is not numeric.")
+
+            reference_quantile = reference_column.quantile(self.quantile)
+
+        else:
+            reference_column = None
+            reference_quantile = None
+
+        distributions = make_hist_for_num_plot(current_column, reference_column)
         return DataQualityValueQuantileMetricResults(
             column_name=self.column_name,
-            value=data.current_data[self.column_name].quantile(self.quantile),
+            current=current_quantile,
             quantile=self.quantile,
-            distr_for_plot=distr_for_plot,
-            ref_value=ref_value,
+            current_distribution=distributions["current"],
+            reference_distribution=distributions.get("reference"),
+            reference=reference_quantile,
         )
 
 
@@ -65,7 +85,8 @@ class DataQualityValueQuantileMetric(Metric[DataQualityValueQuantileMetricResult
 class DataQualityValueQuantileMetricsRenderer(MetricRenderer):
     def render_json(self, obj: DataQualityValueQuantileMetric) -> dict:
         result = dataclasses.asdict(obj.get_result())
-        result.pop("distr_for_plot", None)
+        result.pop("current_distribution", None)
+        result.pop("reference_distribution", None)
         return result
 
     def render_html(self, obj: DataQualityValueQuantileMetric) -> List[BaseWidgetInfo]:
@@ -73,12 +94,12 @@ class DataQualityValueQuantileMetricsRenderer(MetricRenderer):
         column_name = metric_result.column_name
         counters = [
             CounterData.float(label="Quantile", value=metric_result.quantile, precision=3),
-            CounterData.float(label="Current dataset value", value=metric_result.value, precision=3),
+            CounterData.float(label="Current dataset value", value=metric_result.current, precision=3),
         ]
 
-        if metric_result.ref_value:
+        if metric_result.reference is not None:
             counters.append(
-                CounterData.float(label="Reference dataset value", value=metric_result.ref_value, precision=3),
+                CounterData.float(label="Reference dataset value", value=metric_result.reference, precision=3),
             )
 
         result = [

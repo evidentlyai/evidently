@@ -3,7 +3,6 @@ from typing import Optional
 
 import dataclasses
 import pandas as pd
-from dataclasses import dataclass
 
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
@@ -17,13 +16,12 @@ from evidently.utils.visualizations import get_distribution_for_column
 from evidently.utils.visualizations import plot_distr
 
 
-@dataclass
+@dataclasses.dataclass
 class ColumnDistributionMetricResult:
     column_name: str
     column_type: str
-    # distributions for the column
-    current_distribution: pd.Series
-    reference_distribution: Optional[pd.Series] = None
+    current: pd.Series
+    reference: Optional[pd.Series] = None
 
 
 class ColumnDistributionMetric(Metric[ColumnDistributionMetricResult]):
@@ -65,8 +63,8 @@ class ColumnDistributionMetric(Metric[ColumnDistributionMetricResult]):
         return ColumnDistributionMetricResult(
             column_name=self.column_name,
             column_type=column_type,
-            current_distribution=distribution_for_plot["current"],
-            reference_distribution=distribution_for_plot.get("reference"),
+            current=distribution_for_plot["current"],
+            reference=distribution_for_plot.get("reference"),
         )
 
 
@@ -80,9 +78,8 @@ class ColumnDistributionMetricRenderer(MetricRenderer):
 
     def render_html(self, obj: ColumnDistributionMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
-
         result = [
-            header_text(label=f"Distribution for column '{self.column_name}'."),
-            plot_distr(metric_result.current_distribution, metric_result.reference_distribution),
+            header_text(label=f"Distribution for column '{metric_result.column_name}'."),
+            plot_distr(metric_result.current, metric_result.reference),
         ]
         return result

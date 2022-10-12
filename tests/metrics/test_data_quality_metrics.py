@@ -66,11 +66,11 @@ def test_data_quality_stability_metrics_no_other_columns() -> None:
 @pytest.mark.parametrize(
     "metric_object",
     (
-            DataQualityMetrics(),
-            DataQualityStabilityMetrics(),
-            DataQualityValueListMetric(column_name="feature", values=[1, 0]),
-            DataQualityValueQuantileMetric(column_name="feature", quantile=0.5),
-            DataQualityCorrelationMetrics(),
+        DataQualityMetrics(),
+        DataQualityStabilityMetrics(),
+        DataQualityValueListMetric(column_name="feature", values=[1, 0]),
+        DataQualityValueQuantileMetric(column_name="feature", quantile=0.5),
+        DataQualityCorrelationMetrics(),
     ),
 )
 def test_data_quality_metrics_with_report(metric_object: Metric) -> None:

@@ -54,8 +54,8 @@ class DataQualityValueListMetric(Metric[DataQualityValueListMetricsResult]):
         if rows_count == 0:
             values_in_list = 0
             number_not_in_list = 0
-            share_in_list = 0
-            share_not_in_list = 0
+            share_in_list = 0.0
+            share_not_in_list = 0.0
             current_counts = {}
 
         else:
@@ -86,7 +86,9 @@ class DataQualityValueListMetric(Metric[DataQualityValueListMetricsResult]):
         current_stats = self._calculate_stats(values, data.current_data[self.column_name])
 
         if data.reference_data is not None:
-            reference_stats = self._calculate_stats(values, data.reference_data[self.column_name])
+            reference_stats: Optional[ValueListStat] = self._calculate_stats(
+                values, data.reference_data[self.column_name]
+            )
 
         else:
             reference_stats = None
