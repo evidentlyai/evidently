@@ -10,8 +10,8 @@ from evidently.metrics import DataQualityCorrelationMetrics
 from evidently.metrics import DataQualityMetrics
 from evidently.metrics import DataQualityStabilityMetrics
 from evidently.metrics import DataQualityValueListMetrics
-from evidently.metrics import DataQualityValueQuantileMetrics
-from evidently.metrics import DataQualityValueRangeMetrics
+from evidently.metrics import DataQualityValueQuantileMetric
+from evidently.metrics import DataQualityValueRangeMetric
 from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -931,7 +931,7 @@ class TestNumColumnsMeanInNSigmas(BaseGenerator):
 class TestValueRange(Test):
     group = DATA_QUALITY_GROUP.id
     name = "Value Range"
-    metric: DataQualityValueRangeMetrics
+    metric: DataQualityValueRangeMetric
     column: str
     left: Optional[float]
     right: Optional[float]
@@ -941,7 +941,7 @@ class TestValueRange(Test):
         column_name: str,
         left: Optional[float] = None,
         right: Optional[float] = None,
-        metric: Optional[DataQualityValueRangeMetrics] = None,
+        metric: Optional[DataQualityValueRangeMetric] = None,
     ):
         self.column_name = column_name
         self.left = left
@@ -951,7 +951,7 @@ class TestValueRange(Test):
             self.metric = metric
 
         else:
-            self.metric = DataQualityValueRangeMetrics(column_name=column_name, left=left, right=right)
+            self.metric = DataQualityValueRangeMetric(column_name=column_name, left=left, right=right)
 
     def check(self):
         number_not_in_range = self.metric.get_result().number_not_in_range
@@ -975,15 +975,11 @@ class TestValueRange(Test):
 class TestValueRangeRenderer(TestRenderer):
     def render_html(self, obj: TestValueRange) -> TestHtmlInfo:
         column_name = obj.column_name
-        if obj.left is not None and obj.right is not None:
-            condition_ = TestValueCondition(gt=obj.left, lt=obj.right)
-        else:
-            condition_ = TestValueCondition(gt=obj.metric.get_result().ref_min, lt=obj.metric.get_result().ref_max)
+        metric_result = obj.metric.get_result()
+        condition_ = TestValueCondition(gt=metric_result.range_left_value, lt=metric_result.range_right_value)
         info = super().render_html(obj)
-        curr_distr = obj.metric.get_result().distr_for_plot["current"]
-        ref_distr = None
-        if "reference" in obj.metric.get_result().distr_for_plot.keys():
-            ref_distr = obj.metric.get_result().distr_for_plot["reference"]
+        curr_distr = metric_result.current_distribution
+        ref_distr = metric_result.reference_distribution
         fig = plot_distr(curr_distr, ref_distr)
         fig = plot_check(fig, condition_)
         info.with_details(f"Value Range {column_name}", plotly_figure(title="", figure=fig))
@@ -992,7 +988,7 @@ class TestValueRangeRenderer(TestRenderer):
 
 class BaseDataQualityValueRangeMetricsTest(BaseCheckValueTest, ABC):
     group = DATA_QUALITY_GROUP.id
-    metric: DataQualityValueRangeMetrics
+    metric: DataQualityValueRangeMetric
     column: str
     left: Optional[float]
     right: Optional[float]
@@ -1010,7 +1006,7 @@ class BaseDataQualityValueRangeMetricsTest(BaseCheckValueTest, ABC):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        metric: Optional[DataQualityValueRangeMetrics] = None,
+        metric: Optional[DataQualityValueRangeMetric] = None,
     ):
         self.column_name = column_name
         self.left = left
@@ -1020,7 +1016,7 @@ class BaseDataQualityValueRangeMetricsTest(BaseCheckValueTest, ABC):
             self.metric = metric
 
         else:
-            self.metric = DataQualityValueRangeMetrics(column_name=column_name, left=left, right=right)
+            self.metric = DataQualityValueRangeMetric(column_name=column_name, left=left, right=right)
 
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
 
@@ -1037,7 +1033,7 @@ class TestNumberOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
         return TestValueCondition(eq=approx(0))
 
     def calculate_value_for_test(self) -> Numeric:
-        return self.metric.get_result().number_not_in_range
+        return self.metric.get_result().current.number_not_in_range
 
     def get_description(self, value: Numeric) -> str:
         return (
@@ -1050,18 +1046,12 @@ class TestNumberOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
 class TestNumberOfOutRangeValuesRenderer(TestRenderer):
     def render_html(self, obj: TestNumberOfOutRangeValues) -> TestHtmlInfo:
         column_name = obj.column_name
-        if obj.left is not None and obj.right is not None:
-            condition_ = TestValueCondition(gt=obj.left, lt=obj.right)
-        else:
-            condition_ = TestValueCondition(gt=obj.metric.get_result().ref_min, lt=obj.metric.get_result().ref_max)
+        metric_result = obj.metric.get_result()
         info = super().render_html(obj)
-        curr_distr = obj.metric.get_result().distr_for_plot["current"]
-        ref_distr = None
-        if "reference" in obj.metric.get_result().distr_for_plot.keys():
-            ref_distr = obj.metric.get_result().distr_for_plot["reference"]
-
+        curr_distr = metric_result.current_distribution
+        ref_distr = metric_result.reference_distribution
         fig = plot_distr(curr_distr, ref_distr)
-        fig = plot_check(fig, condition_)
+        fig = plot_check(fig, obj.condition)
         info.with_details(f"Number Out of Range for {column_name}", plotly_figure(title="", figure=fig))
         return info
 
@@ -1075,14 +1065,15 @@ class TestShareOfOutRangeValues(BaseDataQualityValueRangeMetricsTest):
         return TestValueCondition(eq=approx(0))
 
     def calculate_value_for_test(self) -> Numeric:
-        return self.metric.get_result().share_not_in_range
+        return self.metric.get_result().current.share_not_in_range
 
     def get_description(self, value: Numeric) -> str:
-        number_not_in_range = self.metric.get_result().number_not_in_range
-        rows_count = self.metric.get_result().rows_count
+        current_result = self.metric.get_result().current
+        number_not_in_range = current_result.number_not_in_range
+        values_count = current_result.number_of_values
         return (
             f"The share of values out of range in the column **{self.column_name}** is {value:.3g} "
-            f"({number_not_in_range} out of {rows_count}). "
+            f"({number_not_in_range} out of {values_count}). "
             f" The test threshold is {self.get_condition()}."
         )
 
@@ -1099,17 +1090,12 @@ class TestShareOfOutRangeValuesRenderer(TestRenderer):
 
     def render_html(self, obj: TestShareOfOutRangeValues) -> TestHtmlInfo:
         column_name = obj.column_name
-        if obj.left and obj.right:
-            condition_ = TestValueCondition(gt=obj.left, lt=obj.right)
-        else:
-            condition_ = TestValueCondition(gt=obj.metric.get_result().ref_min, lt=obj.metric.get_result().ref_max)
+        metric_result = obj.metric.get_result()
         info = super().render_html(obj)
-        curr_distr = obj.metric.get_result().distr_for_plot["current"]
-        ref_distr = None
-        if "reference" in obj.metric.get_result().distr_for_plot.keys():
-            ref_distr = obj.metric.get_result().distr_for_plot["reference"]
+        curr_distr = metric_result.current_distribution
+        ref_distr = metric_result.reference_distribution
         fig = plot_distr(curr_distr, ref_distr)
-        fig = plot_check(fig, condition_)
+        fig = plot_check(fig, obj.condition)
         info.with_details(f"Share Out of Range for {column_name}", plotly_figure(title="", figure=fig))
         return info
 
@@ -1284,7 +1270,7 @@ class TestCatColumnsOutOfListValues(BaseGenerator):
 class TestValueQuantile(BaseCheckValueTest):
     group = DATA_QUALITY_GROUP.id
     name = "Quantile Value"
-    metric: DataQualityValueQuantileMetrics
+    metric: DataQualityValueQuantileMetric
     column_name: str
     quantile: Optional[float]
 
@@ -1300,7 +1286,7 @@ class TestValueQuantile(BaseCheckValueTest):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        metric: Optional[DataQualityValueQuantileMetrics] = None,
+        metric: Optional[DataQualityValueQuantileMetric] = None,
     ):
         self.column_name = column_name
         self.quantile = quantile
@@ -1315,7 +1301,7 @@ class TestValueQuantile(BaseCheckValueTest):
             if quantile is None:
                 raise ValueError("Quantile parameter should be present")
 
-            self.metric = DataQualityValueQuantileMetrics(column_name=column_name, quantile=quantile)
+            self.metric = DataQualityValueQuantileMetric(column_name=column_name, quantile=quantile)
 
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
 

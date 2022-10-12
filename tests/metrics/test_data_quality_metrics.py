@@ -6,8 +6,7 @@ from evidently.metrics import DataQualityCorrelationMetrics
 from evidently.metrics import DataQualityMetrics
 from evidently.metrics import DataQualityStabilityMetrics
 from evidently.metrics import DataQualityValueListMetrics
-from evidently.metrics import DataQualityValueQuantileMetrics
-from evidently.metrics import DataQualityValueRangeMetrics
+from evidently.metrics import DataQualityValueQuantileMetric
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.pipeline.column_mapping import ColumnMapping
@@ -115,46 +114,10 @@ def test_data_quality_values_in_list_metrics_reference_defaults() -> None:
     assert result.share_not_in_list == 0.25
 
 
-def test_data_quality_values_in_range_metrics() -> None:
-    test_dataset = pd.DataFrame({"numerical_feature": [0, 2, 2, 432]})
-    data_mapping = ColumnMapping()
-    metric = DataQualityValueRangeMetrics(column_name="numerical_feature", left=0, right=10.5)
-    result = metric.calculate(
-        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
-    )
-    assert result is not None
-    assert result.number_in_range == 3
-    assert result.number_not_in_range == 1
-    assert result.share_in_range == 0.75
-    assert result.share_not_in_range == 0.25
-
-    reference_dataset = pd.DataFrame({"numerical_feature": [0, 1, 1, 1]})
-
-    metric = DataQualityValueRangeMetrics(column_name="numerical_feature")
-    result = metric.calculate(
-        data=InputData(current_data=test_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
-    )
-    assert result is not None
-    assert result.number_in_range == 1
-    assert result.number_not_in_range == 3
-    assert result.share_in_range == 0.25
-    assert result.share_not_in_range == 0.75
-
-    metric = DataQualityValueRangeMetrics(column_name="numerical_feature", right=5)
-    result = metric.calculate(
-        data=InputData(current_data=test_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
-    )
-    assert result is not None
-    assert result.number_in_range == 3
-    assert result.number_not_in_range == 1
-    assert result.share_in_range == 0.75
-    assert result.share_not_in_range == 0.25
-
-
 def test_data_quality_quantile_metrics() -> None:
     test_dataset = pd.DataFrame({"numerical_feature": [0, 2, 2, 2, 0]})
     data_mapping = ColumnMapping()
-    metric = DataQualityValueQuantileMetrics(column_name="numerical_feature", quantile=0.5)
+    metric = DataQualityValueQuantileMetric(column_name="numerical_feature", quantile=0.5)
     result = metric.calculate(
         data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
     )
@@ -196,8 +159,7 @@ def test_data_quality_correlation_metrics() -> None:
         DataQualityMetrics(),
         DataQualityStabilityMetrics(),
         DataQualityValueListMetrics(column_name="feature", values=[1, 0]),
-        DataQualityValueRangeMetrics(column_name="feature", left=0, right=1),
-        DataQualityValueQuantileMetrics(column_name="feature", quantile=0.5),
+        DataQualityValueQuantileMetric(column_name="feature", quantile=0.5),
         DataQualityCorrelationMetrics(),
     ),
 )

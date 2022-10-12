@@ -1,12 +1,14 @@
 from typing import Dict
 from typing import Optional
 from typing import Tuple
+from typing import Union
 
 import numpy as np
 import pandas as pd
 from plotly import graph_objs as go
 
 from evidently.options.color_scheme import ColorOptions
+from evidently.utils.types import Numeric
 
 
 def plot_distr(hist_curr, hist_ref=None, orientation="v", color_options: Optional[ColorOptions] = None):
@@ -36,7 +38,35 @@ def plot_distr(hist_curr, hist_ref=None, orientation="v", color_options: Optiona
     return fig
 
 
-def make_hist_for_num_plot(curr: pd.Series, ref: pd.Series = None):
+def plot_distribution_with_range(
+    *,
+    current: pd.Series,
+    reference: Optional[pd.Series] = None,
+    left: Optional[Numeric] = None,
+    right: Optional[Numeric] = None,
+    orientation: str = "v",
+    color_options: Optional[ColorOptions] = None,
+) -> go.Figure:
+    """Get a plot with distribution and range from `left` to `right` markers"""
+
+    if color_options is None:
+        color_options = ColorOptions()
+
+    fig = plot_distr(current, reference, orientation, color_options)
+
+    if left is not None:
+        fig.add_vline(x=left, line_width=2, line_dash="dash", line_color="black")
+
+    if right is not None:
+        fig.add_vline(x=right, line_width=2, line_dash="dash", line_color="black")
+
+    if left and right:
+        fig.add_vrect(x0=left, x1=right, fillcolor=color_options.fill_color, opacity=0.25, line_width=0)
+
+    return fig
+
+
+def make_hist_for_num_plot(curr: pd.Series, ref: pd.Series = None) -> Dict[str, pd.DataFrame]:
     result = {}
     if ref is not None:
         ref = ref.dropna()
@@ -49,7 +79,7 @@ def make_hist_for_num_plot(curr: pd.Series, ref: pd.Series = None):
     return result
 
 
-def make_hist_for_cat_plot(curr: pd.Series, ref: pd.Series = None, normalize: bool = False):
+def make_hist_for_cat_plot(curr: pd.Series, ref: pd.Series = None, normalize: bool = False) -> Dict[str, pd.Series]:
     result = {}
     hist_df = curr.value_counts(normalize=normalize, dropna=False).reset_index()
     hist_df.columns = ["x", "count"]
@@ -62,8 +92,8 @@ def make_hist_for_cat_plot(curr: pd.Series, ref: pd.Series = None, normalize: bo
 
 
 def get_distribution_for_column(
-    *, column_name: str, column_type: str, current: pd.Series, reference: pd.DataFrame
-) -> Dict[str, pd.DataFrame]:
+    *, column_name: str, column_type: str, current: pd.Series, reference: pd.Series
+) -> Dict[str, Union[pd.Series, pd.DataFrame]]:
     if column_type == "cat":
         return make_hist_for_cat_plot(current, reference)
 

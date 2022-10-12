@@ -219,16 +219,17 @@ def counter(
     )
 
 
-def header_text(*, label: str, size: WidgetSize = WidgetSize.FULL):
+def header_text(*, label: str, title: str = "", size: WidgetSize = WidgetSize.FULL):
     """
     generate widget with some text as header
 
     Args:
         label: text to display
+        title: widget title
         size: widget size
     """
     return BaseWidgetInfo(
-        title="",
+        title=title,
         type=WidgetType.COUNTER.value,
         size=size.value,
         params={"counters": [{"value": "", "label": label}]},

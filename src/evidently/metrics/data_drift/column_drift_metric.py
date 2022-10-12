@@ -15,7 +15,6 @@ from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import GraphData
 from evidently.renderers.html_widgets import counter
-from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import plotly_graph_tabs
 from evidently.renderers.render_utils import plot_distr
 from evidently.utils.data_operations import process_columns
@@ -121,12 +120,6 @@ class ColumnDriftMetricRenderer(MetricRenderer):
         distr_fig = plot_distr(result.current_distribution, result.reference_distribution)
         figures.append(GraphData.figure("DATA DISTRIBUTION", distr_fig))
         return [
-            # header_text(label=f"Drift in column '{result.column_name}'"),
-            # header_text(
-            #     label=f"Data drift {drift}. "
-            #     f"Drift detection method: {result.stattest_name}. "
-            #     f"Drift score: {drift_score}"
-            # ),
             counter(
                 counters=[
                     CounterData(
@@ -143,13 +136,7 @@ class ColumnDriftMetricRenderer(MetricRenderer):
             plotly_graph_tabs(
                 title="",
                 figures=figures,
-            )
-            # BaseWidgetInfo(
-            #     title="",
-            #     size=2,
-            #     type="big_graph",
-            #     params={"data": fig_json["data"], "layout": fig_json["layout"]},
-            # ),
+            ),
         ]
 
     def render_json(self, obj: ColumnDriftMetric) -> dict:

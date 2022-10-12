@@ -362,125 +362,7 @@ class DataQualityValueListMetricsRenderer(MetricRenderer):
 
 
 @dataclass
-class DataQualityValueRangeMetricsResults:
-    column_name: str
-    range_left_value: float
-    range_right_value: float
-    number_in_range: int
-    number_not_in_range: int
-    share_in_range: float
-    share_not_in_range: float
-    distr_for_plot: Dict[str, pd.DataFrame]
-    rows_count: int
-    ref_min: Optional[float] = None
-    ref_max: Optional[float] = None
-
-
-class DataQualityValueRangeMetrics(Metric[DataQualityValueRangeMetricsResults]):
-    """Calculates count and shares of values in the predefined values range"""
-
-    column_name: str
-    left: Optional[float]
-    right: Optional[float]
-
-    def __init__(self, column_name: str, left: Optional[float] = None, right: Optional[float] = None) -> None:
-        self.left = left
-        self.right = right
-        self.column_name = column_name
-
-    def calculate(self, data: InputData) -> DataQualityValueRangeMetricsResults:
-        if (self.left is None or self.right is None) and data.reference_data is None:
-            raise ValueError("Reference should be present")
-
-        ref_min = None
-        ref_max = None
-
-        if data.reference_data is not None:
-            ref_min = data.reference_data[self.column_name].min()
-            ref_max = data.reference_data[self.column_name].max()
-
-        if self.left is None and data.reference_data is not None:
-            self.left = ref_min
-
-        if self.right is None and data.reference_data is not None:
-            self.right = ref_max
-
-        rows_count = data.current_data[self.column_name].dropna().shape[0]
-
-        if self.left is None or self.right is None:
-            raise ValueError("Cannot define one or both of range parameters")
-
-        number_in_range = (
-            data.current_data[self.column_name]
-            .dropna()
-            .between(left=float(self.left), right=float(self.right), inclusive="both")
-            .sum()
-        )
-        number_not_in_range = rows_count - number_in_range
-
-        # visualisation
-        curr_feature = data.current_data[self.column_name]
-
-        ref_feature = None
-        if data.reference_data is not None:
-            ref_feature = data.reference_data[self.column_name]
-
-        distr_for_plot = make_hist_for_num_plot(curr_feature, ref_feature)
-
-        return DataQualityValueRangeMetricsResults(
-            column_name=self.column_name,
-            range_left_value=self.left,
-            range_right_value=self.right,
-            number_in_range=number_in_range,
-            number_not_in_range=number_not_in_range,
-            share_in_range=number_in_range / rows_count,
-            share_not_in_range=number_not_in_range / rows_count,
-            distr_for_plot=distr_for_plot,
-            rows_count=rows_count,
-            ref_min=ref_min,
-            ref_max=ref_max,
-        )
-
-
-@default_renderer(wrap_type=DataQualityValueRangeMetrics)
-class DataQualityValueRangeMetricsRenderer(MetricRenderer):
-    def render_json(self, obj: DataQualityValueRangeMetrics) -> dict:
-        result = dataclasses.asdict(obj.get_result())
-        result.pop("distr_for_plot", None)
-        return result
-
-    @staticmethod
-    def _get_table_stat(dataset_name: str, metrics: DataQualityValueRangeMetricsResults) -> BaseWidgetInfo:
-        matched_stat = [
-            ("Values from the range", metrics.number_in_range),
-            ("Share from the range", np.round(metrics.share_in_range, 3)),
-            ("Values not in the range", metrics.number_not_in_range),
-            ("Share not in the range", np.round(metrics.share_not_in_range, 3)),
-            ("Rows count", metrics.rows_count),
-        ]
-
-        matched_stat_headers = ["Metric", "Value"]
-        return table_data(
-            title=f"{dataset_name.capitalize()}: Values statistic",
-            column_names=matched_stat_headers,
-            data=matched_stat,
-        )
-
-    def render_html(self, obj: DataQualityValueRangeMetrics) -> List[BaseWidgetInfo]:
-        metric_result = obj.get_result()
-        column_name = metric_result.column_name
-        left = metric_result.range_left_value
-        right = metric_result.range_right_value
-        result = [
-            header_text(label=f"Data Value Range Metrics for the column: {column_name}"),
-            header_text(label=f"Range is from {left} to {right}"),
-            self._get_table_stat(dataset_name="current", metrics=metric_result),
-        ]
-        return result
-
-
-@dataclass
-class DataQualityValueQuantileMetricsResults:
+class DataQualityValueQuantileMetricResults:
     column_name: str
     # calculated value of the quantile
     value: float
@@ -490,7 +372,7 @@ class DataQualityValueQuantileMetricsResults:
     ref_value: Optional[float]
 
 
-class DataQualityValueQuantileMetrics(Metric[DataQualityValueQuantileMetricsResults]):
+class DataQualityValueQuantileMetric(Metric[DataQualityValueQuantileMetricResults]):
     """Calculates quantile with specified range"""
 
     column_name: str
@@ -504,7 +386,7 @@ class DataQualityValueQuantileMetrics(Metric[DataQualityValueQuantileMetricsResu
         self.column_name = column_name
         self.quantile = quantile
 
-    def calculate(self, data: InputData) -> DataQualityValueQuantileMetricsResults:
+    def calculate(self, data: InputData) -> DataQualityValueQuantileMetricResults:
         curr_feature = data.current_data[self.column_name]
         ref_feature = None
         ref_value = None
@@ -514,7 +396,7 @@ class DataQualityValueQuantileMetrics(Metric[DataQualityValueQuantileMetricsResu
             ref_value = data.reference_data[self.column_name].quantile(self.quantile)
 
         distr_for_plot = make_hist_for_num_plot(curr_feature, ref_feature)
-        return DataQualityValueQuantileMetricsResults(
+        return DataQualityValueQuantileMetricResults(
             column_name=self.column_name,
             value=data.current_data[self.column_name].quantile(self.quantile),
             quantile=self.quantile,
@@ -523,14 +405,14 @@ class DataQualityValueQuantileMetrics(Metric[DataQualityValueQuantileMetricsResu
         )
 
 
-@default_renderer(wrap_type=DataQualityValueQuantileMetrics)
+@default_renderer(wrap_type=DataQualityValueQuantileMetric)
 class DataQualityValueQuantileMetricsRenderer(MetricRenderer):
-    def render_json(self, obj: DataQualityValueQuantileMetrics) -> dict:
+    def render_json(self, obj: DataQualityValueQuantileMetric) -> dict:
         result = dataclasses.asdict(obj.get_result())
         result.pop("distr_for_plot", None)
         return result
 
-    def render_html(self, obj: DataQualityValueQuantileMetrics) -> List[BaseWidgetInfo]:
+    def render_html(self, obj: DataQualityValueQuantileMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         column_name = metric_result.column_name
         counters = [
