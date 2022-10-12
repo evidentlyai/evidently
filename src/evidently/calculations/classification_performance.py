@@ -226,3 +226,25 @@ def threshold_probability_labels(
 ) -> pd.Series:
     """Get prediction values by probabilities with the threshold apply"""
     return prediction_probas[pos_label].apply(lambda x: pos_label if x >= threshold else neg_label)
+
+
+STEP_SIZE = 0.05
+
+
+def calculate_pr_table(binded):
+    result = []
+    binded.sort(key=lambda item: item[1], reverse=True)
+    data_size = len(binded)
+    target_class_size = sum([x[0] for x in binded])
+    offset = max(round(data_size * STEP_SIZE), 1)
+
+    for step in np.arange(offset, data_size + offset, offset):
+        count = min(step, data_size)
+        prob = round(binded[min(step, data_size - 1)][1], 2)
+        top = round(100.0 * min(step, data_size) / data_size, 1)
+        tp = sum([x[0] for x in binded[: min(step, data_size)]])
+        fp = count - tp
+        precision = round(100.0 * tp / count, 1)
+        recall = round(100.0 * tp / target_class_size, 1)
+        result.append([top, int(count), prob, int(tp), int(fp), precision, recall])
+    return result

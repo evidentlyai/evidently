@@ -2,8 +2,8 @@ import pandas as pd
 import pytest
 
 from evidently import ColumnMapping
+from evidently.metrics import ClassificationClassBalance
 from evidently.metrics.base_metric import InputData
-from evidently.metrics.classification_performance.class_balance_metric import ClassificationClassBalance
 
 
 @pytest.mark.parametrize(
@@ -32,5 +32,6 @@ def test_class_balance_metric(reference, current, expected_reference, expected_c
             column_mapping=ColumnMapping(),
         )
     )
+
     assert results.reference_label_count == expected_reference
     assert results.current_label_count == expected_current
