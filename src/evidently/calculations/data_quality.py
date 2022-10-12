@@ -1,6 +1,7 @@
 """Methods for overall dataset quality calculations - rows count, a specific values count, etc."""
 from typing import Callable
 from typing import Dict
+from typing import List
 from typing import Optional
 from typing import Union
 
@@ -365,3 +366,17 @@ def calculate_correlations(dataset: pd.DataFrame, reference_features_stats: Data
         correlations[kind] = _calculate_correlations(dataset, num_for_corr, cat_for_corr, kind)
 
     return correlations
+
+
+def calculate_column_distribution(column: pd.Series, bins_count: int) -> List[list]:
+    if column.empty:
+        return []
+
+    return [
+        list(t.tolist())
+        for t in np.histogram(
+            column[np.isfinite(column)],
+            bins=bins_count,
+            density=True,
+        )
+    ]

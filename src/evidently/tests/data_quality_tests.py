@@ -954,7 +954,7 @@ class TestValueRange(Test):
             self.metric = DataQualityValueRangeMetric(column_name=column_name, left=left, right=right)
 
     def check(self):
-        number_not_in_range = self.metric.get_result().number_not_in_range
+        number_not_in_range = self.metric.get_result().current.number_not_in_range
 
         if number_not_in_range > 0:
             description = f"The column **{self.column_name}** has values out of range."
