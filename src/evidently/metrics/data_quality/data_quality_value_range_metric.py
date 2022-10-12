@@ -148,44 +148,60 @@ class DataQualityValueRangeMetricRenderer(MetricRenderer):
         )
 
     def render_html(self, obj: DataQualityValueRangeMetric) -> List[BaseWidgetInfo]:
-        result = obj.get_result()
-        column_name = result.column_name
-        left = result.range_left_value
-        right = result.range_right_value
-        number_in_range = result.current.number_in_range
-        distribution = plot_distribution_with_range(
-            current=result.current_distribution,
-            reference=result.reference_distribution,
-            left=result.range_left_value,
-            right=result.range_right_value,
-        )
-        percents = round(result.current.share_in_range * 100, 3)
-        details_tabs = [
-            TabData(
-                title="Distribution",
-                widget=plotly_figure(
-                    title="",
-                    figure=distribution,
-                ),
-            ),
-            TabData(
-                title="Current Statistics Table",
-                widget=self._get_table_stat(result.current),
-            ),
-        ]
+        metric_result = obj.get_result()
+        column_name = metric_result.column_name
+        left = metric_result.range_left_value
+        right = metric_result.range_right_value
+        number_in_range = metric_result.current.number_in_range
+        percents = round(metric_result.current.share_in_range * 100, 3)
 
-        if result.reference is not None:
-            details_tabs.append(
-                TabData(
-                    title="Reference Statistics Table",
-                    widget=self._get_table_stat(result.reference),
-                ),
-            )
-
-        return [
+        result: List[BaseWidgetInfo] = [
             header_text(
                 title=f"Value range for column '{column_name}'",
                 label=f"The number of values in range [{left}, {right}] is {number_in_range} ({percents}%)",
             ),
-            widget_tabs(tabs=details_tabs),
+            widget_tabs(
+                title="Current dataset",
+                tabs=[
+                    TabData(
+                        title="Distribution",
+                        widget=plotly_figure(
+                            title="",
+                            figure=plot_distribution_with_range(
+                                distribution_data=metric_result.current_distribution,
+                                left=metric_result.range_left_value,
+                                right=metric_result.range_right_value,
+                            ),
+                        ),
+                    ),
+                    TabData(
+                        title="Statistics",
+                        widget=self._get_table_stat(metric_result.current),
+                    ),
+                ],
+            ),
         ]
+        if metric_result.reference:
+            result.append(
+                widget_tabs(
+                    title="Reference dataset",
+                    tabs=[
+                        TabData(
+                            title="Distribution",
+                            widget=plotly_figure(
+                                title="",
+                                figure=plot_distribution_with_range(
+                                    distribution_data=metric_result.reference_distribution,
+                                    left=metric_result.range_left_value,
+                                    right=metric_result.range_right_value,
+                                ),
+                            ),
+                        ),
+                        TabData(
+                            title="Statistics",
+                            widget=self._get_table_stat(metric_result.reference),
+                        ),
+                    ],
+                )
+            )
+        return result

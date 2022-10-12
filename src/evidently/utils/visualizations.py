@@ -40,8 +40,7 @@ def plot_distr(hist_curr, hist_ref=None, orientation="v", color_options: Optiona
 
 def plot_distribution_with_range(
     *,
-    current: pd.Series,
-    reference: Optional[pd.Series] = None,
+    distribution_data: pd.Series,
     left: Optional[Numeric] = None,
     right: Optional[Numeric] = None,
     orientation: str = "v",
@@ -52,7 +51,7 @@ def plot_distribution_with_range(
     if color_options is None:
         color_options = ColorOptions()
 
-    fig = plot_distr(current, reference, orientation, color_options)
+    fig = plot_distr(distribution_data, None, orientation, color_options)
 
     if left is not None:
         fig.add_vline(x=left, line_width=2, line_dash="dash", line_color="black")
