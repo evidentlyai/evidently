@@ -3,6 +3,7 @@ import pandas as pd
 import pytest
 
 from evidently.calculations.data_quality import calculate_column_distribution
+from evidently.calculations.data_quality import calculate_cramer_v_correlations
 from evidently.calculations.data_quality import get_rows_count
 
 
@@ -29,3 +30,19 @@ def test_get_rows_count(dataset: pd.DataFrame, expected_rows: int) -> None:
 )
 def test_calculate_column_distribution(dataset: pd.DataFrame, bins_count: int, expected_distribution: list) -> None:
     assert calculate_column_distribution(dataset["test"], bins_count=bins_count) == expected_distribution
+
+
+def test_calculate_cramer_v_correlations():
+    data = pd.DataFrame(
+        {
+            "test1": ["a", "b", "c"],
+            "test2": ["b", "a", "a"],
+            "test3": ["a", "b", "a"],
+            "test4": ["a", "b", "c"],
+        }
+    )
+    assert calculate_cramer_v_correlations("test1", data, ["test2", "test3", "test4"]) == {
+        "test2": 1.0,
+        "test3": 1.0,
+        "test4": 1.0,
+    }

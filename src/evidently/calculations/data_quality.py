@@ -368,6 +368,15 @@ def calculate_correlations(dataset: pd.DataFrame, reference_features_stats: Data
     return correlations
 
 
+def calculate_cramer_v_correlations(column_name: str, dataset: pd.DataFrame, columns: List[str]) -> Dict:
+    result = {}
+
+    for correlation_columns_name in columns:
+        result[correlation_columns_name] = _cramer_v(dataset[column_name], dataset[correlation_columns_name])
+
+    return result
+
+
 def calculate_column_distribution(column: pd.Series, bins_count: int) -> List[list]:
     if column.empty:
         return []

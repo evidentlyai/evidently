@@ -5,11 +5,12 @@ from typing import Optional
 from typing import Union
 
 import numpy as np
+import pandas as pd
 
 from evidently.metrics import DataQualityCorrelationMetrics
 from evidently.metrics import DataQualityMetrics
 from evidently.metrics import DataQualityStabilityMetrics
-from evidently.metrics import DataQualityValueListMetrics
+from evidently.metrics import DataQualityValueListMetric
 from evidently.metrics import DataQualityValueQuantileMetric
 from evidently.metrics import DataQualityValueRangeMetric
 from evidently.renderers.base_renderer import TestHtmlInfo
@@ -1110,12 +1111,12 @@ class TestNumColumnsOutOfRangeValues(BaseGenerator):
 class TestValueList(Test):
     group = DATA_QUALITY_GROUP.id
     name = "Out-of-List Values"
-    metric: DataQualityValueListMetrics
+    metric: DataQualityValueListMetric
     column_name: str
     values: Optional[list]
 
     def __init__(
-        self, column_name: str, values: Optional[list] = None, metric: Optional[DataQualityValueListMetrics] = None
+        self, column_name: str, values: Optional[list] = None, metric: Optional[DataQualityValueListMetric] = None
     ):
         self.column_name = column_name
         self.values = values
@@ -1124,12 +1125,12 @@ class TestValueList(Test):
             self.metric = metric
 
         else:
-            self.metric = DataQualityValueListMetrics(column_name=column_name, values=values)
+            self.metric = DataQualityValueListMetric(column_name=column_name, values=values)
 
     def check(self):
         metric_result = self.metric.get_result()
 
-        if metric_result.number_not_in_list > 0:
+        if metric_result.current.number_not_in_list > 0:
             test_result = TestResult.FAIL
             description = f"The column **{self.column_name}** has values out of list."
 
@@ -1151,17 +1152,18 @@ class TestValueListRenderer(TestRenderer):
         base = super().render_json(obj)
         base["parameters"]["column_name"] = obj.column_name
         base["parameters"]["values"] = obj.values
-        base["parameters"]["number_not_in_list"] = obj.metric.get_result().number_not_in_list
+        base["parameters"]["number_not_in_list"] = obj.metric.get_result().current.number_not_in_list
         return base
 
     def render_html(self, obj: TestValueList) -> TestHtmlInfo:
         info = super().render_html(obj)
-        column_name = obj.column_name
-        values = obj.values
-        curr_df = obj.metric.get_result().counts_of_value["current"]
+        metric_result = obj.metric.get_result()
+        column_name = metric_result.column_name
+        values = metric_result.values
+        curr_df = pd.DataFrame(metric_result.current.values_count.items(), columns=["x", "count"])
 
-        if "reference" in obj.metric.get_result().counts_of_value.keys():
-            ref_df = obj.metric.get_result().counts_of_value["reference"]
+        if metric_result.reference is not None:
+            ref_df = pd.DataFrame(metric_result.reference.values_count.items(), columns=["x", "count"])
 
         else:
             ref_df = None
@@ -1173,7 +1175,7 @@ class TestValueListRenderer(TestRenderer):
 
 class BaseDataQualityValueListMetricsTest(BaseCheckValueTest, ABC):
     group = DATA_QUALITY_GROUP.id
-    metric: DataQualityValueListMetrics
+    metric: DataQualityValueListMetric
     column_name: str
     values: Optional[list]
 
@@ -1189,7 +1191,7 @@ class BaseDataQualityValueListMetricsTest(BaseCheckValueTest, ABC):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        metric: Optional[DataQualityValueListMetrics] = None,
+        metric: Optional[DataQualityValueListMetric] = None,
     ):
         self.column_name = column_name
         self.values = values
@@ -1198,7 +1200,7 @@ class BaseDataQualityValueListMetricsTest(BaseCheckValueTest, ABC):
             self.metric = metric
 
         else:
-            self.metric = DataQualityValueListMetrics(column_name=column_name, values=values)
+            self.metric = DataQualityValueListMetric(column_name=column_name, values=values)
 
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
 
@@ -1215,7 +1217,7 @@ class TestNumberOfOutListValues(BaseDataQualityValueListMetricsTest):
         return TestValueCondition(eq=approx(0))
 
     def calculate_value_for_test(self) -> Numeric:
-        return self.metric.get_result().number_not_in_list
+        return self.metric.get_result().current.number_not_in_list
 
     def get_description(self, value: Numeric) -> str:
         return (
@@ -1228,12 +1230,17 @@ class TestNumberOfOutListValues(BaseDataQualityValueListMetricsTest):
 class TestNumberOfOutListValuesRenderer(TestRenderer):
     def render_html(self, obj: TestNumberOfOutListValues) -> TestHtmlInfo:
         info = super().render_html(obj)
-        column_name = obj.column_name
-        values = obj.values
-        curr_df = obj.metric.get_result().counts_of_value["current"]
-        ref_df = None
-        if "reference" in obj.metric.get_result().counts_of_value.keys():
-            ref_df = obj.metric.get_result().counts_of_value["reference"]
+        metric_result = obj.metric.get_result()
+        column_name = metric_result.column_name
+        values = metric_result.values
+        curr_df = pd.DataFrame(metric_result.current.values_count.items(), columns=["x", "count"])
+
+        if metric_result.reference is not None:
+            ref_df = pd.DataFrame(metric_result.reference.values_count.items(), columns=["x", "count"])
+
+        else:
+            ref_df = None
+
         additional_plots = plot_value_counts_tables(column_name, values, curr_df, ref_df, "number_value_list")
         info.details = additional_plots
         return info
@@ -1248,11 +1255,12 @@ class TestShareOfOutListValues(BaseDataQualityValueListMetricsTest):
         return TestValueCondition(eq=approx(0))
 
     def calculate_value_for_test(self) -> Numeric:
-        return self.metric.get_result().share_not_in_list
+        return self.metric.get_result().current.share_not_in_list
 
     def get_description(self, value: Numeric) -> str:
-        number_not_in_range = self.metric.get_result().number_not_in_list
-        rows_count = self.metric.get_result().rows_count
+        metric_result = self.metric.get_result()
+        number_not_in_range = metric_result.current.number_not_in_list
+        rows_count = metric_result.current.rows_count
         return (
             f"The share of values out of list in the column **{self.column_name}** is {value:.3g} "
             f"({number_not_in_range} out of {rows_count}). "
@@ -1353,12 +1361,17 @@ class TestShareOfOutListValuesRenderer(TestRenderer):
 
     def render_html(self, obj: TestShareOfOutListValues) -> TestHtmlInfo:
         info = super().render_html(obj)
-        column_name = obj.column_name
-        values = obj.values
-        curr_df = obj.metric.get_result().counts_of_value["current"]
-        ref_df = None
-        if "reference" in obj.metric.get_result().counts_of_value.keys():
-            ref_df = obj.metric.get_result().counts_of_value["reference"]
+        metric_result = obj.metric.get_result()
+        column_name = metric_result.column_name
+        values = metric_result.values
+        curr_df = pd.DataFrame(metric_result.current.values_count.items(), columns=["x", "count"])
+
+        if metric_result.reference is not None:
+            ref_df = pd.DataFrame(metric_result.reference.values_count.items(), columns=["x", "count"])
+
+        else:
+            ref_df = None
+
         additional_plots = plot_value_counts_tables(column_name, values, curr_df, ref_df, "share_value_list")
         info.details = additional_plots
         return info
