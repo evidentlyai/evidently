@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 from .anderson_darling_stattest import anderson_darling_test
+from .mann_whitney_urank_stattest import mann_whitney_u_stat_test
 from .chisquare_stattest import chi_stat_test
 from .cramer_von_mises_stattest import cramer_von_mises
 from .jensenshannon import jensenshannon_stat_test
