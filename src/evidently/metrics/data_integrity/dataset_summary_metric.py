@@ -121,6 +121,7 @@ class DatasetSummaryMetricRenderer(MetricRenderer):
             column_names=["Value", "Count"],
             data=(
                 ("target column", stats.target),
+                ("prediction column", stats.prediction),
                 ("date column", stats.date_column),
                 ("number of columns", stats.number_of_columns),
                 ("number of rows", stats.number_of_rows),
