@@ -44,7 +44,7 @@ To evaluate data or prediction drift in the dataset, you need to ensure that the
 ### Rows with empty values 
 
 Evidently applies the following pre-processing before calculating the drift metric or test:
-- Filters out rows with infinite values (+- np.inf)
+- Filters out rows with infinite values '(+- np.inf)'
 - Filters out rows with nulls 
 
 By default, drift tests do not react to changes or increases in the number of empty values. Drift calculations only consider complete rows.
