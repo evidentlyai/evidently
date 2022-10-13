@@ -378,8 +378,9 @@ class ColumnCorrelations:
 def calculate_cramer_v_correlations(column_name: str, dataset: pd.DataFrame, columns: List[str]) -> ColumnCorrelations:
     result = {}
 
-    for correlation_columns_name in columns:
-        result[correlation_columns_name] = _cramer_v(dataset[column_name], dataset[correlation_columns_name])
+    if not dataset[column_name].empty:
+        for correlation_columns_name in columns:
+            result[correlation_columns_name] = _cramer_v(dataset[column_name], dataset[correlation_columns_name])
 
     return ColumnCorrelations(column_name=column_name, kind="cramer_v", correlations=result)
 
@@ -388,20 +389,32 @@ def calculate_category_column_correlations(
     column_name: str, dataset: pd.DataFrame, columns: List[str]
 ) -> List[ColumnCorrelations]:
     """For category columns calculate cramer_v correlation"""
+    if dataset[column_name].empty:
+        return []
+
     return [calculate_cramer_v_correlations(column_name, dataset, columns)]
 
 
 def calculate_numerical_column_correlations(
     column_name: str, dataset: pd.DataFrame, columns: List[str]
 ) -> List[ColumnCorrelations]:
+    if dataset[column_name].empty or not columns:
+        return []
+
     result = []
+    column = dataset[column_name]
 
     for kind in ["pearson", "spearman", "kendall"]:
+
+        correlation = {
+            other_column_name: column.corr(method=kind, other=dataset[other_column_name])
+            for other_column_name in columns
+        }
         result.append(
             ColumnCorrelations(
                 column_name=column_name,
                 kind=kind,
-                correlations=_calculate_correlations(dataset, column_name, columns, "num"),
+                correlations=correlation,
             )
         )
 

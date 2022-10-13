@@ -16,7 +16,7 @@ from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import TabData
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import table_data
-from evidently.renderers.html_widgets import widget_tabs
+from evidently.renderers.html_widgets import widget_tabs_for_more_than_one
 
 
 @dataclasses.dataclass
@@ -128,28 +128,22 @@ class DataQualityValueListMetricsRenderer(MetricRenderer):
     def render_html(self, obj: DataQualityValueListMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         values_list_info = ",".join(map(str, metric_result.values))
-        current_table = self._get_table_stat(dataset_name="current", stats=metric_result.current)
         result = [
             header_text(label=f"Data Value List Metrics for the column '{metric_result.column_name}'"),
             header_text(label=f"Values: {values_list_info}"),
         ]
 
+        tabs = [
+            TabData(title="Current", widget=self._get_table_stat(dataset_name="current", stats=metric_result.current))
+        ]
+
         if metric_result.reference:
-            table = widget_tabs(
-                tabs=[
-                    TabData(
-                        title="Current",
-                        widget=current_table,
-                    ),
-                    TabData(
-                        title="Reference",
-                        widget=self._get_table_stat(dataset_name="reference", stats=metric_result.reference),
-                    ),
-                ]
+            tabs.append(
+                TabData(
+                    title="Reference",
+                    widget=self._get_table_stat(dataset_name="reference", stats=metric_result.reference),
+                )
             )
 
-        else:
-            table = current_table
-
-        result.append(table)
+        result.append(widget_tabs_for_more_than_one(tabs=tabs))
         return result

@@ -1,8 +1,10 @@
 import json
 from typing import Optional
 
+import numpy as np
 import pandas as pd
 import pytest
+from pytest import approx
 
 from evidently import ColumnMapping
 from evidently.calculations.data_quality import ColumnCorrelations
@@ -13,17 +15,33 @@ from evidently.report import Report
 
 
 @pytest.mark.parametrize(
-    "current_dataset, reference_dataset, metric, expected_result",
+    "current_dataset, reference_dataset, column_mapping, metric, expected_result",
     (
         (
-            pd.DataFrame({"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 2, 2, 432]}),
+            pd.DataFrame({"category_feature": []}),
             None,
+            ColumnMapping(),
             ColumnCorrelationsMetric(column_name="category_feature"),
             ColumnCorrelationsMetricResult(
                 column_name="category_feature",
+                current=[],
+                reference=None,
+            ),
+        ),
+        (
+            pd.DataFrame(
+                {"feature1": ["n", "d", "p", "n"], "feature2": [0, 2, 2, 432], "feature3": ["f", "f", np.NaN, 432]}
+            ),
+            None,
+            ColumnMapping(categorical_features=["feature1", "feature2", "feature3"]),
+            ColumnCorrelationsMetric(column_name="feature1"),
+            ColumnCorrelationsMetricResult(
+                column_name="feature1",
                 current=[
                     ColumnCorrelations(
-                        column_name="category_feature", kind="cramer_v", correlations={"category_feature": 1.0}
+                        column_name="feature1",
+                        kind="cramer_v",
+                        correlations={"feature2": approx(0.7, abs=0.1), "feature3": 0.5},
                     )
                 ],
                 reference=None,
@@ -34,12 +52,12 @@ from evidently.report import Report
 def test_column_correlations_metric_success(
     current_dataset: pd.DataFrame,
     reference_dataset: Optional[pd.DataFrame],
+    column_mapping: ColumnMapping,
     metric: ColumnCorrelationsMetric,
     expected_result: ColumnCorrelationsMetricResult,
 ) -> None:
-    data_mapping = ColumnMapping()
     result = metric.calculate(
-        data=InputData(current_data=current_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
+        data=InputData(current_data=current_dataset, reference_data=reference_dataset, column_mapping=column_mapping)
     )
     assert result == expected_result
 
@@ -86,11 +104,7 @@ def test_column_correlations_metric_value_error(
             ColumnCorrelationsMetric(column_name="col"),
             {
                 "column_name": "col",
-                "current": [
-                    {"column_name": "col", "correlations": None, "kind": "pearson"},
-                    {"column_name": "col", "correlations": None, "kind": "spearman"},
-                    {"column_name": "col", "correlations": None, "kind": "kendall"},
-                ],
+                "current": [],
                 "reference": None,
             },
         ),
@@ -106,14 +120,14 @@ def test_column_correlations_metric_value_error(
             {
                 "column_name": "col1",
                 "current": [
-                    {"column_name": "col1", "correlations": None, "kind": "pearson"},
-                    {"column_name": "col1", "correlations": None, "kind": "spearman"},
-                    {"column_name": "col1", "correlations": None, "kind": "kendall"},
+                    {"column_name": "col1", "correlations": {"col2": approx(-0.391, abs=0.01)}, "kind": "pearson"},
+                    {"column_name": "col1", "correlations": {"col2": -0.5}, "kind": "spearman"},
+                    {"column_name": "col1", "correlations": {"col2": approx(-0.333, abs=0.01)}, "kind": "kendall"},
                 ],
                 "reference": [
-                    {"column_name": "col1", "correlations": None, "kind": "pearson"},
-                    {"column_name": "col1", "correlations": None, "kind": "spearman"},
-                    {"column_name": "col1", "correlations": None, "kind": "kendall"},
+                    {"column_name": "col1", "correlations": {"col2": approx(-0.391, abs=0.01)}, "kind": "pearson"},
+                    {"column_name": "col1", "correlations": {"col2": -0.5}, "kind": "spearman"},
+                    {"column_name": "col1", "correlations": {"col2": approx(-0.333, abs=0.01)}, "kind": "kendall"},
                 ],
             },
         ),

@@ -327,6 +327,20 @@ def widget_tabs(*, title: str = "", size: WidgetSize = WidgetSize.FULL, tabs: Li
     )
 
 
+def widget_tabs_for_more_than_one(
+    *, title: str = "", size: WidgetSize = WidgetSize.FULL, tabs: List[TabData]
+) -> Optional[BaseWidgetInfo]:
+    """Draw tabs widget only if there is more than one tab, otherwise just draw one widget"""
+    if len(tabs) > 1:
+        return widget_tabs(title=title, size=size, tabs=tabs)
+
+    elif len(tabs) < 1:
+        return None
+
+    else:
+        return tabs[0].widget
+
+
 class DetailsPartInfo:
     title: str
     info: Union[BaseWidgetInfo, PlotlyGraphInfo]

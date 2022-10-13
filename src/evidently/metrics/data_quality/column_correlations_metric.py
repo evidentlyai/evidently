@@ -13,9 +13,13 @@ from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
+from evidently.renderers.html_widgets import TabData
 from evidently.renderers.html_widgets import header_text
+from evidently.renderers.html_widgets import plotly_figure
+from evidently.renderers.html_widgets import widget_tabs_for_more_than_one
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_operations import recognize_column_type
+from evidently.utils.visualizations import get_distribution_plot
 
 
 @dataclasses.dataclass
@@ -39,10 +43,16 @@ class ColumnCorrelationsMetric(Metric[ColumnCorrelationsMetricResult]):
         column_type = recognize_column_type(dataset=dataset, column_name=self.column_name, columns=columns)
 
         if column_type == "cat":
-            return calculate_category_column_correlations(self.column_name, dataset, columns.cat_feature_names)
+            correlation_columns = [
+                column_name for column_name in columns.cat_feature_names if column_name != self.column_name
+            ]
+            return calculate_category_column_correlations(self.column_name, dataset, correlation_columns)
 
         elif column_type == "num":
-            return calculate_numerical_column_correlations(self.column_name, dataset, columns.num_feature_names)
+            correlation_columns = [
+                column_name for column_name in columns.num_feature_names if column_name != self.column_name
+            ]
+            return calculate_numerical_column_correlations(self.column_name, dataset, correlation_columns)
 
         else:
             raise ValueError(f"Cannot calculate correlations for '{column_type}' column type.")
@@ -78,9 +88,48 @@ class ColumnCorrelationsMetricRenderer(MetricRenderer):
         result = dataclasses.asdict(obj.get_result())
         return result
 
+    @staticmethod
+    def _get_plots_correlations(correlations: List[ColumnCorrelations]) -> Optional[BaseWidgetInfo]:
+        tabs = []
+
+        for correlation in correlations:
+            if not correlation.correlations:
+                continue
+            distribution_data = [(k, v) for k, v in correlation.correlations.items()]
+            tabs.append(
+                TabData(
+                    title=correlation.kind,
+                    widget=plotly_figure(title="", figure=get_distribution_plot(distribution_data)),
+                )
+            )
+
+        return widget_tabs_for_more_than_one(tabs=tabs)
+
     def render_html(self, obj: ColumnCorrelationsMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         result = [
             header_text(label=f"Correlations for column '{metric_result.column_name}'."),
         ]
+        tabs = []
+
+        current_plot = self._get_plots_correlations(metric_result.current)
+
+        if current_plot:
+            tabs.append(TabData(title="Current", widget=current_plot))
+
+        if metric_result.reference:
+            reference_plot = self._get_plots_correlations(metric_result.reference)
+            if reference_plot:
+                tabs.append(
+                    TabData(
+                        title="Reference",
+                        widget=reference_plot,
+                    )
+                )
+
+        if tabs:
+            result.append(widget_tabs_for_more_than_one(tabs=tabs))
+
+        else:
+            result.append(header_text(label="No correlations."))
         return result
