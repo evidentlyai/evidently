@@ -34,7 +34,7 @@ class DataQualityCorrelationMetricsResults:
     reference: Optional[DataCorrelation]
 
 
-class DataQualityCorrelationMetrics(Metric[DataQualityCorrelationMetricsResults]):
+class DatasetCorrelationsMetric(Metric[DataQualityCorrelationMetricsResults]):
     """Calculate different correlations with target, predictions and features"""
 
     method: str
@@ -84,7 +84,13 @@ class DataQualityCorrelationMetrics(Metric[DataQualityCorrelationMetricsResults]
 
         abs_max_correlation = correlation_matrix.loc[corr_features, corr_features].abs().max().max()
 
+        if pd.isnull(abs_max_correlation):
+            abs_max_correlation = None
+
         abs_max_num_features_correlation = correlation_matrix.loc[num_features, num_features].abs().max().max()
+
+        if pd.isnull(abs_max_num_features_correlation):
+            abs_max_num_features_correlation = None
 
         return DataCorrelation(
             num_features=num_features,
@@ -128,9 +134,9 @@ class DataQualityCorrelationMetrics(Metric[DataQualityCorrelationMetricsResults]
         )
 
 
-@default_renderer(wrap_type=DataQualityCorrelationMetrics)
+@default_renderer(wrap_type=DatasetCorrelationsMetric)
 class DataQualityCorrelationMetricsRenderer(MetricRenderer):
-    def render_json(self, obj: DataQualityCorrelationMetrics) -> dict:
+    def render_json(self, obj: DatasetCorrelationsMetric) -> dict:
         result = dataclasses.asdict(obj.get_result())
         result["current"].pop("correlation_matrix", None)
 
@@ -141,10 +147,23 @@ class DataQualityCorrelationMetricsRenderer(MetricRenderer):
 
     @staticmethod
     def _get_table_stat(dataset_name: str, correlation: DataCorrelation) -> BaseWidgetInfo:
+        if correlation.abs_max_correlation is None:
+            abs_max_correlation = "None"
+
+        else:
+            abs_max_correlation = np.round(correlation.abs_max_correlation, 3)
+
+        if correlation.abs_max_num_features_correlation is None:
+            abs_max_num_features_correlation = "None"
+
+        else:
+            abs_max_num_features_correlation = np.round(correlation.abs_max_num_features_correlation, 3)
+
         matched_stat = [
-            ("Abs max correlation", np.round(correlation.abs_max_correlation, 3)),
-            ("Abs max num features correlation", np.round(correlation.abs_max_num_features_correlation, 3)),
+            ("Abs max correlation", abs_max_correlation),
+            ("Abs max num features correlation", abs_max_num_features_correlation),
         ]
+
         if correlation.abs_max_target_features_correlation is not None:
             matched_stat.append(
                 ("Abs max target features correlation", np.round(correlation.abs_max_target_features_correlation, 3))
@@ -164,7 +183,7 @@ class DataQualityCorrelationMetricsRenderer(MetricRenderer):
             data=matched_stat,
         )
 
-    def render_html(self, obj: DataQualityCorrelationMetrics) -> List[BaseWidgetInfo]:
+    def render_html(self, obj: DatasetCorrelationsMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
 
         result = [

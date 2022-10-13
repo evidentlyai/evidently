@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 from dataclasses import dataclass
 
+from evidently.calculations.data_quality import get_rows_count
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
@@ -112,7 +113,7 @@ class DatasetMissingValuesMetric(Metric[DatasetMissingValuesMetricResult]):
 
         number_of_rows_with_nulls = 0
         number_of_columns = len(dataset.columns)
-        number_of_rows = dataset.shape[0]
+        number_of_rows = get_rows_count(dataset)
 
         for column_name in dataset.columns:
             # iterate by each value in custom missed values list and check the value in a column
@@ -147,9 +148,18 @@ class DatasetMissingValuesMetric(Metric[DatasetMissingValuesMetricResult]):
                     number_of_rows_with_nulls += 1
                     break
 
-        share_of_nulls_by_column = {
-            column_name: value / number_of_rows for column_name, value in number_of_nulls_by_column.items()
-        }
+        if number_of_rows == 0:
+            share_of_nulls_by_column = {}
+            share_of_rows_with_nulls = 0.0
+            share_of_missed_values = 0.0
+
+        else:
+            share_of_nulls_by_column = {
+                column_name: value / number_of_rows for column_name, value in number_of_nulls_by_column.items()
+            }
+            share_of_missed_values = number_of_nulls / (number_of_columns * number_of_rows)
+            share_of_rows_with_nulls = number_of_rows_with_nulls / number_of_rows
+
         number_of_different_nulls_by_column = {}
 
         for column_name, nulls in different_nulls_by_column.items():
@@ -161,22 +171,28 @@ class DatasetMissingValuesMetric(Metric[DatasetMissingValuesMetricResult]):
         number_of_columns_with_nulls = len(columns_with_nulls)
         number_of_different_nulls = len({k for k in different_nulls if different_nulls[k] > 0})
 
+        if number_of_columns == 0:
+            share_of_columns_with_nulls = 0.0
+
+        else:
+            share_of_columns_with_nulls = number_of_columns_with_nulls / number_of_columns
+
         return DatasetMissingValues(
             different_nulls=different_nulls,
             number_of_different_nulls=number_of_different_nulls,
             different_nulls_by_column=different_nulls_by_column,
             number_of_different_nulls_by_column=number_of_different_nulls_by_column,
             number_of_missed_values=number_of_nulls,
-            share_of_missed_values=number_of_nulls / (number_of_columns * number_of_rows),
+            share_of_missed_values=share_of_missed_values,
             number_of_nulls_by_column=number_of_nulls_by_column,
             share_of_nulls_by_column=share_of_nulls_by_column,
             number_of_rows=number_of_rows,
             number_of_rows_with_nulls=number_of_rows_with_nulls,
-            share_of_rows_with_nulls=number_of_rows_with_nulls / number_of_rows,
+            share_of_rows_with_nulls=share_of_rows_with_nulls,
             number_of_columns=number_of_columns,
             columns_with_nulls=sorted(columns_with_nulls),
             number_of_columns_with_nulls=len(columns_with_nulls),
-            share_of_columns_with_nulls=number_of_columns_with_nulls / number_of_columns,
+            share_of_columns_with_nulls=share_of_columns_with_nulls,
         )
 
     def calculate(self, data: InputData) -> DatasetMissingValuesMetricResult:

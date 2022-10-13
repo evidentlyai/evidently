@@ -2,11 +2,11 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from evidently.metrics import DataQualityCorrelationMetrics
 from evidently.metrics import DataQualityMetrics
 from evidently.metrics import DataQualityStabilityMetrics
 from evidently.metrics import DataQualityValueListMetric
 from evidently.metrics import DataQualityValueQuantileMetric
+from evidently.metrics import DatasetCorrelationsMetric
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.pipeline.column_mapping import ColumnMapping
@@ -70,7 +70,7 @@ def test_data_quality_stability_metrics_no_other_columns() -> None:
         DataQualityStabilityMetrics(),
         DataQualityValueListMetric(column_name="feature", values=[1, 0]),
         DataQualityValueQuantileMetric(column_name="feature", quantile=0.5),
-        DataQualityCorrelationMetrics(),
+        DatasetCorrelationsMetric(),
     ),
 )
 def test_data_quality_metrics_with_report(metric_object: Metric) -> None:

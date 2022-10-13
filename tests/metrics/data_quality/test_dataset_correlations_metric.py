@@ -1,7 +1,7 @@
 import pandas as pd
 
 from evidently import ColumnMapping
-from evidently.metrics import DataQualityCorrelationMetrics
+from evidently.metrics import DatasetCorrelationsMetric
 from evidently.metrics.base_metric import InputData
 
 
@@ -16,7 +16,7 @@ def test_data_quality_correlation_metrics() -> None:
         }
     )
     data_mapping = ColumnMapping()
-    metric = DataQualityCorrelationMetrics()
+    metric = DatasetCorrelationsMetric()
     result = metric.calculate(
         data=InputData(current_data=current_dataset, reference_data=None, column_mapping=data_mapping)
     )

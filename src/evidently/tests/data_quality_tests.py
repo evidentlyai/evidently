@@ -7,12 +7,12 @@ from typing import Union
 import numpy as np
 import pandas as pd
 
-from evidently.metrics import DataQualityCorrelationMetrics
 from evidently.metrics import DataQualityMetrics
 from evidently.metrics import DataQualityStabilityMetrics
 from evidently.metrics import DataQualityValueListMetric
 from evidently.metrics import DataQualityValueQuantileMetric
 from evidently.metrics import DataQualityValueRangeMetric
+from evidently.metrics import DatasetCorrelationsMetric
 from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -125,7 +125,7 @@ class TestConflictPrediction(Test):
 
 class BaseDataQualityCorrelationsMetricsValueTest(BaseCheckValueTest, ABC):
     group = DATA_QUALITY_GROUP.id
-    metric: DataQualityCorrelationMetrics
+    metric: DatasetCorrelationsMetric
     method: str
 
     def __init__(
@@ -139,14 +139,14 @@ class BaseDataQualityCorrelationsMetricsValueTest(BaseCheckValueTest, ABC):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        metric: Optional[DataQualityCorrelationMetrics] = None,
+        metric: Optional[DatasetCorrelationsMetric] = None,
     ):
         self.method = method
         if metric is not None:
             self.metric = metric
 
         else:
-            self.metric = DataQualityCorrelationMetrics(method=method)
+            self.metric = DatasetCorrelationsMetric(method=method)
 
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
 
@@ -343,7 +343,7 @@ class TestPredictionFeaturesCorrelationsRenderer(TestRenderer):
 class TestCorrelationChanges(BaseDataQualityCorrelationsMetricsValueTest):
     group = DATA_QUALITY_GROUP.id
     name = "Change in Correlation"
-    metric: DataQualityCorrelationMetrics
+    metric: DatasetCorrelationsMetric
     corr_diff: float
 
     def __init__(
@@ -358,7 +358,7 @@ class TestCorrelationChanges(BaseDataQualityCorrelationsMetricsValueTest):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        metric: Optional[DataQualityCorrelationMetrics] = None,
+        metric: Optional[DatasetCorrelationsMetric] = None,
     ):
         super().__init__(
             method=method,
