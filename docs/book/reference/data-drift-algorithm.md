@@ -49,7 +49,7 @@ Evidently applies the following pre-processing before calculating the drift metr
 
 By default, drift tests do not react to changes or increases in the number of empty values. Drift calculations only consider complete rows.
 
-Since the high number of nulls can be an important indicator, we recommend grouping the data drift tests (that check for distribution shift) with data integrity tests (that check for a share of nulls). You can choose from several null-related [tests](reference/all-tests.md#data-integrity) and metrics and set a thresholds.
+Since the high number of nulls can be an important indicator, we recommend grouping the data drift tests (that check for distribution shift) with data integrity tests (that check for a share of nulls). You can choose from several null-related [tests](all-tests.md#data-integrity) and metrics and set a thresholds.
 
 ## Resources
 
