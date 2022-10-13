@@ -63,7 +63,7 @@ class DataQualityValueListMetric(Metric[DataQualityValueListMetricsResult]):
             share_in_list = values_in_list / rows_count
             number_not_in_list = rows_count - values_in_list
             share_not_in_list = number_not_in_list / rows_count
-            current_counts = dict(column.value_counts(dropna=False))
+            current_counts = dict(column.value_counts(dropna=True))
 
         return ValueListStat(
             number_in_list=values_in_list,

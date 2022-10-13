@@ -1,5 +1,6 @@
 from typing import Optional
 
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -13,6 +14,60 @@ from evidently.metrics.data_quality.data_quality_value_list_metric import ValueL
 @pytest.mark.parametrize(
     "current_dataset, reference_dataset, metric, expected_result",
     (
+        (
+            pd.DataFrame({"category_feature": []}),
+            None,
+            DataQualityValueListMetric(column_name="category_feature", values=["test"]),
+            DataQualityValueListMetricsResult(
+                column_name="category_feature",
+                values=["test"],
+                current=ValueListStat(
+                    number_in_list=0,
+                    number_not_in_list=0,
+                    share_in_list=0,
+                    share_not_in_list=0,
+                    values_count={},
+                    rows_count=0,
+                ),
+                reference=None,
+            ),
+        ),
+        (
+            pd.DataFrame({"category_feature": [np.NaN, np.NaN, np.NaN]}),
+            None,
+            DataQualityValueListMetric(column_name="category_feature", values=["test"]),
+            DataQualityValueListMetricsResult(
+                column_name="category_feature",
+                values=["test"],
+                current=ValueListStat(
+                    number_in_list=0,
+                    number_not_in_list=3,
+                    share_in_list=0,
+                    share_not_in_list=1,
+                    values_count={},
+                    rows_count=3,
+                ),
+                reference=None,
+            ),
+        ),
+        (
+            pd.DataFrame({"category_feature": [1, np.NaN, 1, 2]}),
+            None,
+            DataQualityValueListMetric(column_name="category_feature", values=[1, 2, 3]),
+            DataQualityValueListMetricsResult(
+                column_name="category_feature",
+                values=[1, 2, 3],
+                current=ValueListStat(
+                    number_in_list=3,
+                    number_not_in_list=1,
+                    share_in_list=0.75,
+                    share_not_in_list=0.25,
+                    values_count={1: 2, 2: 1},
+                    rows_count=4,
+                ),
+                reference=None,
+            ),
+        ),
         (
             pd.DataFrame({"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 2, 2, 432]}),
             None,
