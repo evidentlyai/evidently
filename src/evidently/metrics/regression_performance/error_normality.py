@@ -1,15 +1,15 @@
+import json
 from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Union
-import json
+
 import dataclasses
 import numpy as np
 import pandas as pd
-from scipy.stats import probplot
-
 from plotly import graph_objs as go
 from plotly.subplots import make_subplots
+from scipy.stats import probplot
 
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
@@ -36,27 +36,22 @@ class RegErrorNormality(Metric[RegErrorNormalityResults]):
         ref_df = data.reference_data
         if target_name is None or prediction_name is None:
             raise ValueError("The columns 'target' and 'prediction' columns should be present")
+        if not isinstance(prediction_name, str):
+            raise ValueError("Expect one column for prediction. List of columns was provided.")
         curr_df = self._make_df_for_plot(curr_df, target_name, prediction_name, None)
         current_error = curr_df[prediction_name] - curr_df[target_name]
         reference_error = None
         if ref_df is not None:
             ref_df = self._make_df_for_plot(ref_df, target_name, prediction_name, None)
             reference_error = ref_df[prediction_name] - ref_df[target_name]
-        return RegErrorNormalityResults(
-            current_error=current_error,
-            reference_error=reference_error
-        )
+        return RegErrorNormalityResults(current_error=current_error, reference_error=reference_error)
 
     def _make_df_for_plot(self, df, target_name: str, prediction_name: str, datetime_column_name: Optional[str]):
         result = df.replace([np.inf, -np.inf], np.nan)
         if datetime_column_name is not None:
-            result.dropna(
-                axis=0, how="any", inplace=True, subset=[target_name, prediction_name, datetime_column_name]
-            )
+            result.dropna(axis=0, how="any", inplace=True, subset=[target_name, prediction_name, datetime_column_name])
             return result.sort_values(datetime_column_name)
-        result.dropna(
-            axis=0, how="any", inplace=True, subset=[target_name, prediction_name]
-        )
+        result.dropna(axis=0, how="any", inplace=True, subset=[target_name, prediction_name])
         return result.sort_index()
 
 

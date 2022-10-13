@@ -1,5 +1,4 @@
 import json
-
 from typing import Dict
 from typing import Optional
 from typing import Tuple
@@ -41,8 +40,9 @@ def plot_distr(hist_curr, hist_ref=None, orientation="v", color_options: Optiona
     return fig
 
 
-def plot_distr_subplots(hist_curr, hist_ref=None, xaxis_name: str = "", yaxis_name: str = "",
-                        same_color: Optional[str] = None):
+def plot_distr_subplots(
+    hist_curr, hist_ref=None, xaxis_name: str = "", yaxis_name: str = "", same_color: Optional[str] = None
+):
     color_options = ColorOptions()
     if same_color is None:
         curr_color = color_options.get_current_data_color()
@@ -59,22 +59,12 @@ def plot_distr_subplots(hist_curr, hist_ref=None, xaxis_name: str = "", yaxis_na
         subplot_titles = ["current", "reference"]
 
     fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
-    trace = go.Bar(
-        x=hist_curr["x"],
-        y=hist_curr["count"],
-        marker_color=curr_color,
-        showlegend=False
-    )
+    trace = go.Bar(x=hist_curr["x"], y=hist_curr["count"], marker_color=curr_color, showlegend=False)
     fig.append_trace(trace, 1, 1)
     fig.update_xaxes(title_text=xaxis_name, row=1, col=1)
 
     if hist_ref is not None:
-        trace = go.Bar(
-            x=hist_ref["x"],
-            y=hist_ref["count"],
-            marker_color=ref_color,
-            showlegend=False
-        )
+        trace = go.Bar(x=hist_ref["x"], y=hist_ref["count"], marker_color=ref_color, showlegend=False)
         fig.append_trace(trace, 1, 2)
         fig.update_xaxes(title_text=xaxis_name, row=1, col=2)
     fig.update_layout(yaxis_title=yaxis_name)
@@ -131,8 +121,14 @@ def make_hist_df(hist: Tuple[np.array, np.array]) -> pd.DataFrame:
     return hist_df
 
 
-def plot_scatter(curr: Dict[str, list], ref: Optional[Dict[str, list]], x: str, y: str, xaxis_name: str = None,
-                 yaxis_name: str = None):
+def plot_scatter(
+    curr: Dict[str, list],
+    ref: Optional[Dict[str, list]],
+    x: str,
+    y: str,
+    xaxis_name: str = None,
+    yaxis_name: str = None,
+):
     color_options = ColorOptions()
     cols = 1
     if xaxis_name is None:
@@ -167,8 +163,13 @@ def plot_scatter(curr: Dict[str, list], ref: Optional[Dict[str, list]], x: str, 
     return fig
 
 
-def plot_pred_actual_time(curr: Dict[str, pd.Series], ref: Optional[Dict[str, pd.Series]], x_name: str = "x",
-                          xaxis_name: str = "", yaxis_name: str = ""):
+def plot_pred_actual_time(
+    curr: Dict[str, pd.Series],
+    ref: Optional[Dict[str, pd.Series]],
+    x_name: str = "x",
+    xaxis_name: str = "",
+    yaxis_name: str = "",
+):
     color_options = ColorOptions()
     cols = 1
     subplot_titles: Union[list, str] = ""
@@ -181,14 +182,7 @@ def plot_pred_actual_time(curr: Dict[str, pd.Series], ref: Optional[Dict[str, pd
     for name, color in zip(
         ["Predicted", "Actual"], [color_options.get_current_data_color(), color_options.get_reference_data_color()]
     ):
-        trace = go.Scatter(
-            x=curr[x_name],
-            y=curr[name],
-            mode="lines",
-            marker_color=color,
-            name=name,
-            legendgroup=name
-        )
+        trace = go.Scatter(x=curr[x_name], y=curr[name], mode="lines", marker_color=color, name=name, legendgroup=name)
         fig.append_trace(trace, 1, 1)
 
         if ref is not None:
@@ -199,7 +193,7 @@ def plot_pred_actual_time(curr: Dict[str, pd.Series], ref: Optional[Dict[str, pd
                 marker_color=color,
                 name=name,
                 legendgroup=name,
-                showlegend=False
+                showlegend=False,
             )
             fig.append_trace(trace, 1, 2)
 
@@ -230,8 +224,14 @@ def plot_pred_actual_time(curr: Dict[str, pd.Series], ref: Optional[Dict[str, pd
     return fig
 
 
-def plot_line_in_time(curr: Dict[str, pd.Series], ref: Optional[Dict[str, pd.Series]], y_name: str, x_name: str = "x",
-                      xaxis_name: str = "", yaxis_name: str = ""):
+def plot_line_in_time(
+    curr: Dict[str, pd.Series],
+    ref: Optional[Dict[str, pd.Series]],
+    y_name: str,
+    x_name: str = "x",
+    xaxis_name: str = "",
+    yaxis_name: str = "",
+):
     color_options = ColorOptions()
     cols = 1
     subplot_titles: Union[list, str] = ""
@@ -247,7 +247,7 @@ def plot_line_in_time(curr: Dict[str, pd.Series], ref: Optional[Dict[str, pd.Ser
         mode="lines",
         marker_color=color_options.get_current_data_color(),
         name=y_name,
-        legendgroup=y_name
+        legendgroup=y_name,
     )
     fig.append_trace(trace, 1, 1)
     # Add zero trace
@@ -268,7 +268,7 @@ def plot_line_in_time(curr: Dict[str, pd.Series], ref: Optional[Dict[str, pd.Ser
             marker_color=color_options.get_current_data_color(),
             name=y_name,
             legendgroup=y_name,
-            showlegend=False
+            showlegend=False,
         )
         fig.append_trace(trace, 1, 2)
         # Add zero trace

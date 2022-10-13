@@ -33,41 +33,36 @@ class RegPredActualTime(Metric[RegPredActualTimeResults]):
         ref_df = data.reference_data
         if target_name is None or prediction_name is None:
             raise ValueError("The columns 'target' and 'prediction' columns should be present")
-
+        if not isinstance(prediction_name, str):
+            raise ValueError("Expect one column for prediction. List of columns was provided.")
         curr_df = self._make_df_for_plot(curr_df, target_name, prediction_name, datetime_column_name)
         current_scatter = {}
-        current_scatter['Predicted'] = curr_df[prediction_name]
-        current_scatter['Actual'] = curr_df[target_name]
+        current_scatter["Predicted"] = curr_df[prediction_name]
+        current_scatter["Actual"] = curr_df[target_name]
         if datetime_column_name is not None:
-            current_scatter['x'] = curr_df[datetime_column_name]
+            current_scatter["x"] = curr_df[datetime_column_name]
             x_name = "Timestamp"
         else:
-            current_scatter['x'] = curr_df.index
+            current_scatter["x"] = curr_df.index
             x_name = "Index"
 
         reference_scatter: Optional[dict] = None
         if data.reference_data is not None:
             ref_df = self._make_df_for_plot(ref_df, target_name, prediction_name, datetime_column_name)
             reference_scatter = {}
-            reference_scatter['Predicted'] = ref_df[prediction_name]
-            reference_scatter['Actual'] = ref_df[target_name]
-            reference_scatter['x'] = ref_df[datetime_column_name] if datetime_column_name else ref_df.index
+            reference_scatter["Predicted"] = ref_df[prediction_name]
+            reference_scatter["Actual"] = ref_df[target_name]
+            reference_scatter["x"] = ref_df[datetime_column_name] if datetime_column_name else ref_df.index
         return RegPredActualTimeResults(
-            current_scatter=current_scatter,
-            reference_scatter=reference_scatter,
-            x_name=x_name
+            current_scatter=current_scatter, reference_scatter=reference_scatter, x_name=x_name
         )
 
     def _make_df_for_plot(self, df, target_name: str, prediction_name: str, datetime_column_name: Optional[str]):
         result = df.replace([np.inf, -np.inf], np.nan)
         if datetime_column_name is not None:
-            result.dropna(
-                axis=0, how="any", inplace=True, subset=[target_name, prediction_name, datetime_column_name]
-            )
+            result.dropna(axis=0, how="any", inplace=True, subset=[target_name, prediction_name, datetime_column_name])
             return result.sort_values(datetime_column_name)
-        result.dropna(
-            axis=0, how="any", inplace=True, subset=[target_name, prediction_name]
-        )
+        result.dropna(axis=0, how="any", inplace=True, subset=[target_name, prediction_name])
         return result.sort_index()
 
 
@@ -79,8 +74,9 @@ class RegPredActualTimeRenderer(MetricRenderer):
         reference_scatter = None
         if result.reference_scatter is not None:
             reference_scatter = result.reference_scatter
-        fig = plot_pred_actual_time(current_scatter, reference_scatter, x_name="x", xaxis_name=result.x_name,
-                                    yaxis_name="Value")
+        fig = plot_pred_actual_time(
+            current_scatter, reference_scatter, x_name="x", xaxis_name=result.x_name, yaxis_name="Value"
+        )
         return [
             header_text(label="Predicted vs Actual in Time"),
             BaseWidgetInfo(

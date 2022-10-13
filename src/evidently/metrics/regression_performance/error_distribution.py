@@ -33,6 +33,8 @@ class RegErrorDistr(Metric[RegErrorDistrResults]):
         ref_df = data.reference_data
         if target_name is None or prediction_name is None:
             raise ValueError("The columns 'target' and 'prediction' columns should be present")
+        if not isinstance(prediction_name, str):
+            raise ValueError("Expect one column for prediction. List of columns was provided.")
         curr_df = self._make_df_for_plot(curr_df, target_name, prediction_name, None)
         curr_error = curr_df[prediction_name] - curr_df[target_name]
         ref_error = None
@@ -46,21 +48,14 @@ class RegErrorDistr(Metric[RegErrorDistrResults]):
         if "reference" in result.keys():
             reference_bins = result["reference"]
 
-        return RegErrorDistrResults(
-            current_bins=current_bins,
-            reference_bins=reference_bins
-        )
+        return RegErrorDistrResults(current_bins=current_bins, reference_bins=reference_bins)
 
     def _make_df_for_plot(self, df, target_name: str, prediction_name: str, datetime_column_name: Optional[str]):
         result = df.replace([np.inf, -np.inf], np.nan)
         if datetime_column_name is not None:
-            result.dropna(
-                axis=0, how="any", inplace=True, subset=[target_name, prediction_name, datetime_column_name]
-            )
+            result.dropna(axis=0, how="any", inplace=True, subset=[target_name, prediction_name, datetime_column_name])
             return result.sort_values(datetime_column_name)
-        result.dropna(
-            axis=0, how="any", inplace=True, subset=[target_name, prediction_name]
-        )
+        result.dropna(axis=0, how="any", inplace=True, subset=[target_name, prediction_name])
         return result.sort_index()
 
 
@@ -73,8 +68,13 @@ class RegErrorRenderer(MetricRenderer):
         if result.reference_bins is not None:
             reference_bins = result.reference_bins
 
-        fig = plot_distr_subplots(current_bins, reference_bins, xaxis_name="Error (Predicted - Actual)",
-                                  yaxis_name="Percentage", same_color=ColorOptions().get_current_data_color())
+        fig = plot_distr_subplots(
+            current_bins,
+            reference_bins,
+            xaxis_name="Error (Predicted - Actual)",
+            yaxis_name="Percentage",
+            same_color=ColorOptions().get_current_data_color(),
+        )
         return [
             header_text(label="Error Distribution"),
             BaseWidgetInfo(
