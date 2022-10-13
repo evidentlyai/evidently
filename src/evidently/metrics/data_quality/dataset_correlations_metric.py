@@ -58,7 +58,11 @@ class DatasetCorrelationsMetric(Metric[DataQualityCorrelationMetricsResults]):
         if num_features is None:
             num_features = [i for i in correlation_matrix if i not in [target_name, prediction_name]]
 
-        if isinstance(prediction_name, str) and prediction_name in correlation_matrix and target_name in correlation_matrix:
+        if (
+            isinstance(prediction_name, str)
+            and prediction_name in correlation_matrix
+            and target_name in correlation_matrix
+        ):
             target_prediction_correlation = correlation_matrix.loc[prediction_name, target_name]
 
         else:
