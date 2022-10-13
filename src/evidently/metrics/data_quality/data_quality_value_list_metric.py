@@ -75,13 +75,22 @@ class DataQualityValueListMetric(Metric[DataQualityValueListMetricsResult]):
         )
 
     def calculate(self, data: InputData) -> DataQualityValueListMetricsResult:
+        if data.reference_data is not None and self.column_name not in data.reference_data:
+            raise ValueError(f"Column '{self.column_name}' is not in reference data.")
+
         if self.values is None:
             if data.reference_data is None:
-                raise ValueError("Reference or values list should be present")
-            values = data.reference_data[self.column_name].unique()
+                raise ValueError("Reference or values list should be present.")
+            values = list(data.reference_data[self.column_name].unique())
 
         else:
             values = self.values
+
+        if not values:
+            raise ValueError(f"Values list should not be empty.")
+
+        if self.column_name not in data.current_data:
+            raise ValueError(f"Column '{self.column_name}' is not in current data.")
 
         current_stats = self._calculate_stats(values, data.current_data[self.column_name])
 

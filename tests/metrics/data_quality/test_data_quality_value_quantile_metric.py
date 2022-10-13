@@ -1,4 +1,5 @@
 import json
+from typing import Optional
 
 import numpy as np
 import pandas as pd
@@ -22,13 +23,55 @@ def test_data_quality_quantile_metric_success() -> None:
     assert result.current == 2
 
 
-def test_data_quality_quantile_metric_value_errors() -> None:
-    test_dataset = pd.DataFrame({"category_feature": ["a", "b", "c"]})
-    data_mapping = ColumnMapping(categorical_features=["category_feature"])
-    metric = DataQualityValueQuantileMetric(column_name="category_feature", quantile=0.5)
+@pytest.mark.parametrize(
+    "current_dataset, reference_dataset, metric, error_message",
+    (
+        (
+            pd.DataFrame({"feature": [1, 2, 3]}),
+            None,
+            DataQualityValueQuantileMetric(column_name="test", quantile=0.5),
+            "Column 'test' is not in current data.",
+        ),
+        (
+            pd.DataFrame({"test": [1, 2, 3]}),
+            pd.DataFrame({"feature": [1, 2, 3]}),
+            DataQualityValueQuantileMetric(column_name="test", quantile=0.5),
+            "Column 'test' is not in reference data.",
+        ),
+        (
+            pd.DataFrame({"category_feature": ["a", "b", "c"]}),
+            None,
+            DataQualityValueQuantileMetric(column_name="category_feature", quantile=0.5),
+            "Column 'category_feature' in current data is not numeric.",
+        ),
+        (
+            pd.DataFrame({"feature": [1, 2, 3]}),
+            pd.DataFrame({"feature": [1, 2, "a"]}),
+            DataQualityValueQuantileMetric(column_name="feature", quantile=0.5),
+            "Column 'feature' in reference data is not numeric.",
+        ),
+        (
+            pd.DataFrame({"feature": [1, 2, 3]}),
+            None,
+            DataQualityValueQuantileMetric(column_name="feature", quantile=-0.5),
+            "Quantile should all be in the interval (0, 1].",
+        ),
+    ),
+)
+def test_data_quality_quantile_metric_value_errors(
+    current_dataset: pd.DataFrame,
+    reference_dataset: Optional[pd.DataFrame],
+    metric: DataQualityValueQuantileMetric,
+    error_message: str,
+) -> None:
+    data_mapping = ColumnMapping()
 
-    with pytest.raises(ValueError):
-        metric.calculate(data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping))
+    with pytest.raises(ValueError) as error:
+        metric.calculate(
+            data=InputData(current_data=current_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
+        )
+
+    assert error.value.args[0] == error_message
 
 
 def test_data_quality_quantile_metric_with_report() -> None:

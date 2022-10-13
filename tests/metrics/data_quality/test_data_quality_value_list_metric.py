@@ -1,3 +1,4 @@
+import json
 from typing import Optional
 
 import numpy as np
@@ -9,6 +10,7 @@ from evidently.metrics import DataQualityValueListMetric
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.data_quality.data_quality_value_list_metric import DataQualityValueListMetricsResult
 from evidently.metrics.data_quality.data_quality_value_list_metric import ValueListStat
+from evidently.report import Report
 
 
 @pytest.mark.parametrize(
@@ -142,3 +144,121 @@ def test_data_quality_value_list_metric_success(
         data=InputData(current_data=current_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
     )
     assert result == expected_result
+
+
+@pytest.mark.parametrize(
+    "current_dataset, reference_dataset, metric, error_message",
+    (
+        (
+            pd.DataFrame({"feature": [1, 2, 3]}),
+            None,
+            DataQualityValueListMetric(column_name="test", values=[1]),
+            "Column 'test' is not in current data.",
+        ),
+        (
+            pd.DataFrame({"test": [1, 2, 3]}),
+            pd.DataFrame({"feature": [1, 2, 3]}),
+            DataQualityValueListMetric(column_name="test"),
+            "Column 'test' is not in reference data.",
+        ),
+        (
+            pd.DataFrame({"test": ["a", "b", "c"]}),
+            None,
+            DataQualityValueListMetric(column_name="test"),
+            "Reference or values list should be present.",
+        ),
+        (
+            pd.DataFrame({"feature": [1, 2, 3]}),
+            pd.DataFrame({"feature": [1, 2, "a"]}),
+            DataQualityValueListMetric(column_name="feature", values=[]),
+            "Values list should not be empty.",
+        ),
+        (
+            pd.DataFrame({"feature": [1, 2, 3]}),
+            pd.DataFrame({"feature": [np.NaN]}),
+            DataQualityValueListMetric(column_name="feature", values=[]),
+            "Values list should not be empty.",
+        ),
+    ),
+)
+def test_data_quality_value_list_metric_value_errors(
+    current_dataset: pd.DataFrame,
+    reference_dataset: Optional[pd.DataFrame],
+    metric: DataQualityValueListMetric,
+    error_message: str,
+) -> None:
+    data_mapping = ColumnMapping()
+
+    with pytest.raises(ValueError) as error:
+        metric.calculate(
+            data=InputData(current_data=current_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
+        )
+
+    assert error.value.args[0] == error_message
+
+
+@pytest.mark.parametrize(
+    "current_data, reference_data, metric, expected_json",
+    (
+        (
+            pd.DataFrame({"col": [1, 2, 3]}),
+            None,
+            DataQualityValueListMetric(column_name="col", values=[1]),
+            {
+                "column_name": "col",
+                "current": {
+                    "number_in_list": 1,
+                    "number_not_in_list": 2,
+                    "rows_count": 3,
+                    "share_in_list": 0.3333333333333333,
+                    "share_not_in_list": 0.6666666666666666,
+                    "values_count": {"1": 1, "2": 1, "3": 1},
+                },
+                "reference": None,
+                "values": [1],
+            },
+        ),
+        (
+            pd.DataFrame({"col1": [1, 2, 3], "col2": [10, 20, 3.5]}),
+            pd.DataFrame(
+                {
+                    "col1": [10, 20, 3.5],
+                    "col2": [1, 2, 3],
+                }
+            ),
+            DataQualityValueListMetric(column_name="col1"),
+            {
+                "column_name": "col1",
+                "current": {
+                    "number_in_list": 1,
+                    "number_not_in_list": 2,
+                    "rows_count": 3,
+                    "share_in_list": 0.3333333333333333,
+                    "share_not_in_list": 0.6666666666666666,
+                    "values_count": {"1": 1, "2": 1, "3": 1},
+                },
+                "reference": {
+                    "number_in_list": 3,
+                    "number_not_in_list": 0,
+                    "rows_count": 3,
+                    "share_in_list": 1.0,
+                    "share_not_in_list": 0.0,
+                    "values_count": {"10.0": 1, "20.0": 1, "3.5": 1},
+                },
+                "values": [10.0, 20.0, 3.5],
+            },
+        ),
+    ),
+)
+def test_data_quality_value_list_metric_with_report(
+    current_data: pd.DataFrame, reference_data: pd.DataFrame, metric: DataQualityValueListMetric, expected_json: dict
+) -> None:
+    report = Report(metrics=[metric])
+    report.run(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
+    assert report.show()
+    json_result = report.json()
+    assert len(json_result) > 0
+    parsed_json_result = json.loads(json_result)
+    assert "metrics" in parsed_json_result
+    assert "DataQualityValueListMetric" in parsed_json_result["metrics"]
+    assert json.loads(json_result)["metrics"]["DataQualityValueListMetric"] == expected_json

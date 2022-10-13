@@ -37,32 +37,31 @@ class DataQualityValueQuantileMetric(Metric[DataQualityValueQuantileMetricResult
     quantile: float
 
     def __init__(self, column_name: str, quantile: float) -> None:
-        if quantile is not None:
-            if not 0 <= quantile <= 1:
-                raise ValueError("Quantile should all be in the interval [0, 1].")
-
-        self.column_name = column_name
         self.quantile = quantile
+        self.column_name = column_name
 
     def calculate(self, data: InputData) -> DataQualityValueQuantileMetricResults:
+        if not 0 < self.quantile <= 1:
+            raise ValueError("Quantile should all be in the interval (0, 1].")
+
         if self.column_name not in data.current_data:
-            raise ValueError(f"Column {self.column_name} is not in current data.")
+            raise ValueError(f"Column '{self.column_name}' is not in current data.")
 
         current_column = data.current_data[self.column_name]
 
         if not pd.api.types.is_numeric_dtype(current_column.dtype):
-            raise ValueError(f"Column {self.column_name} in current data is not numeric.")
+            raise ValueError(f"Column '{self.column_name}' in current data is not numeric.")
 
         current_quantile = data.current_data[self.column_name].quantile(self.quantile)
 
         if data.reference_data is not None:
             if self.column_name not in data.reference_data:
-                raise ValueError(f"Column {self.column_name} is not in reference data.")
+                raise ValueError(f"Column '{self.column_name}' is not in reference data.")
 
             reference_column = data.reference_data[self.column_name]
 
             if not pd.api.types.is_numeric_dtype(reference_column.dtype):
-                raise ValueError(f"Column {self.column_name} in reference data is not numeric.")
+                raise ValueError(f"Column '{self.column_name}' in reference data is not numeric.")
 
             reference_quantile = reference_column.quantile(self.quantile)
 
