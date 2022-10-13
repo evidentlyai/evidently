@@ -58,7 +58,7 @@ class DatasetCorrelationsMetric(Metric[DataQualityCorrelationMetricsResults]):
         if num_features is None:
             num_features = [i for i in correlation_matrix if i not in [target_name, prediction_name]]
 
-        if prediction_name in correlation_matrix and target_name in correlation_matrix:
+        if isinstance(prediction_name, str) and prediction_name in correlation_matrix and target_name in correlation_matrix:
             target_prediction_correlation = correlation_matrix.loc[prediction_name, target_name]
 
         else:
@@ -70,7 +70,7 @@ class DatasetCorrelationsMetric(Metric[DataQualityCorrelationMetricsResults]):
         else:
             abs_max_target_features_correlation = None
 
-        if prediction_name in correlation_matrix:
+        if isinstance(prediction_name, str) and prediction_name in correlation_matrix:
             abs_max_prediction_features_correlation = correlation_matrix.loc[prediction_name, num_features].abs().max()
 
         else:
