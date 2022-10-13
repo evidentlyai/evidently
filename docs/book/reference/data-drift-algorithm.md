@@ -2,7 +2,7 @@ In some tests and metrics, Evidently uses the default Data Drift Detection algor
 
 ## How it works
 
-Evidently compares the distributions of the values in each column of the two datasets. You should pass these datasets as **reference** and **current**. Evidently applies several statistical tests and metrics to detect if the distribution has changed significantly. It returns a "drift detected" or "not detected" result for each column.   
+Evidently compares the distributions of the values in a given column (or columns) of the two datasets. You should pass these datasets as **reference** and **current**. Evidently applies several statistical tests and metrics to detect if the distribution has changed significantly. It returns a "drift detected" or "not detected" result for each column.   
 
 There is a default logic to choosing the appropriate drift test for each column. It is based on:
 
@@ -26,7 +26,7 @@ For **larger data with \> 1000 observations** in the reference dataset:
 All metrics use a threshold = 0.1 by default.  
 
 {% hint style="info" %}
-**You can always modify this drift detection logic**. You can select any of the statistical tests available in the library (including PSI, K-L divergence, Jensen-Shannon distance, Wasserstein distance, etc.), specify custom thresholds, or pass a custom test. 
+**You can always modify this drift detection logic**. You can select any of the statistical tests available in the library (including PSI, K-L divergence, Jensen-Shannon distance, Wasserstein distance, etc.), specify custom thresholds, or pass a custom test. To do that, use the [DataDriftOptions](../customization/options-for-statistical-tests.md) object.
 {% endhint %}
 
 ## Dataset-level drift
@@ -34,6 +34,22 @@ All metrics use a threshold = 0.1 by default.
 The method above calculates drift for each column individually.   
 
 To detect dataset-level drift, you can set a rule on top of the individual feature results. For example, you can declare dataset drift if at least 50% of all features drifted or if ⅓ of the most important features drifted. Some of the Evidently tests and presets include such defaults. You can always modify them and set custom parameters.
+
+## Nulls in the input data 
+
+### Empty columns 
+
+To evaluate data or prediction drift in the dataset, you need to ensure that the columns you test for drift are not empty. If these columns are empty in either reference or current data, Evidently will not calculate distribution drift and will raise an error.
+
+### Rows with empty values 
+
+Evidently applies the following pre-processing before calculating the drift metric or test:
+- Filters out rows with infinite values (+- np.inf)
+- Filters out rows with nulls 
+
+By default, drift tests do not react to changes or increases in the number of empty values. Drift calculations only consider complete rows.
+
+Since the high number of nulls can be an important indicator, we recommend grouping the data drift tests (that check for distribution shift) with data integrity tests (that check for a share of nulls). You can choose from several null-related [tests](reference/all-tests.md#data-integrity) and metrics and set a thresholds.
 
 ## Resources
 
@@ -43,10 +59,10 @@ To build up a better intuition for which tests are better in different kinds of 
 
 Additional links:  
 
-[How to interpret data and prediction drift together? ](https://evidentlyai.com/blog/data-and-prediction-drift)  
+* [How to interpret data and prediction drift together? ](https://evidentlyai.com/blog/data-and-prediction-drift)  
 
-[Do I need to monitor data drift if I can measure the ML model quality?](https://evidentlyai.com/blog/ml-monitoring-do-i-need-data-drift)  
+* [Do I need to monitor data drift if I can measure the ML model quality?](https://evidentlyai.com/blog/ml-monitoring-do-i-need-data-drift)  
 
-["My data drifted. What's next?" How to handle ML model drift in production.](https://evidentlyai.com/blog/ml-monitoring-data-drift-how-to-handle)  
+* ["My data drifted. What's next?" How to handle ML model drift in production.](https://evidentlyai.com/blog/ml-monitoring-data-drift-how-to-handle)  
 
-[What is the difference between outlier detection and data drift detection?](https://evidentlyai.com/blog/ml-monitoring-drift-detection-vs-outlier-detection)
+* [What is the difference between outlier detection and data drift detection?](https://evidentlyai.com/blog/ml-monitoring-drift-detection-vs-outlier-detection)
