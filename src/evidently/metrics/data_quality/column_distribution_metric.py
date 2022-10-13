@@ -1,27 +1,30 @@
+from typing import Any
 from typing import List
 from typing import Optional
 
 import dataclasses
 import pandas as pd
 
+from evidently import ColumnMapping
+from evidently.calculations.data_quality import calculate_column_distribution
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
+from evidently.renderers.html_widgets import plotly_figure
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_operations import recognize_column_type
-from evidently.utils.visualizations import get_distribution_for_column
-from evidently.utils.visualizations import plot_distr
+from evidently.utils.types import ColumnDistribution
+from evidently.utils.visualizations import get_distribution_plot
 
 
 @dataclasses.dataclass
 class ColumnDistributionMetricResult:
     column_name: str
-    column_type: str
-    current: pd.Series
-    reference: Optional[pd.Series] = None
+    current: ColumnDistribution
+    reference: Optional[ColumnDistribution] = None
 
 
 class ColumnDistributionMetric(Metric[ColumnDistributionMetricResult]):
@@ -29,42 +32,42 @@ class ColumnDistributionMetric(Metric[ColumnDistributionMetricResult]):
 
     column_name: str
 
-    def __init__(self, column_name: str) -> None:
+    def __init__(
+        self,
+        column_name: str,
+    ) -> None:
         self.column_name = column_name
+
+    @staticmethod
+    def _calculate_distribution(
+        column_name: str, dataset: pd.DataFrame, column_mapping: ColumnMapping
+    ) -> ColumnDistribution:
+        columns = process_columns(dataset, column_mapping)
+        column_type = recognize_column_type(dataset=dataset, column_name=column_name, columns=columns)
+        return calculate_column_distribution(dataset[column_name], column_type)
 
     def calculate(self, data: InputData) -> ColumnDistributionMetricResult:
         if self.column_name not in data.current_data:
-            raise ValueError(f"Column {self.column_name} is not in current data.")
-
-        current_column = data.current_data[self.column_name]
+            raise ValueError(f"Column '{self.column_name}' was not found in current data.")
 
         if data.reference_data is not None:
             if self.column_name not in data.reference_data:
-                raise ValueError(f"Column {self.column_name} is not in reference data.")
+                raise ValueError(f"Column '{self.column_name}' was not found in reference data.")
 
-            reference_column = data.reference_data[self.column_name]
-            column_type_recognize_data = data.reference_data
+        current = self._calculate_distribution(self.column_name, data.current_data, data.column_mapping)
+
+        if data.reference_data is not None:
+            reference: Optional[ColumnDistribution] = self._calculate_distribution(
+                self.column_name, data.reference_data, data.column_mapping
+            )
 
         else:
-            reference_column = None
-            column_type_recognize_data = data.current_data
+            reference = None
 
-        columns = process_columns(column_type_recognize_data, data.column_mapping)
-        column_type = recognize_column_type(
-            dataset=column_type_recognize_data, column_name=self.column_name, columns=columns
-        )
-
-        distribution_for_plot = get_distribution_for_column(
-            column_name=self.column_name,
-            column_type=column_type,
-            current=current_column,
-            reference=reference_column,
-        )
         return ColumnDistributionMetricResult(
             column_name=self.column_name,
-            column_type=column_type,
-            current=distribution_for_plot["current"],
-            reference=distribution_for_plot.get("reference"),
+            current=current,
+            reference=reference,
         )
 
 
@@ -78,8 +81,9 @@ class ColumnDistributionMetricRenderer(MetricRenderer):
 
     def render_html(self, obj: ColumnDistributionMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
+        fig = get_distribution_plot(metric_result.current, metric_result.reference)
         result = [
             header_text(label=f"Distribution for column '{metric_result.column_name}'."),
-            plot_distr(metric_result.current, metric_result.reference),
+            plotly_figure(title=f"Column: {metric_result.column_name}", figure=fig),
         ]
         return result

@@ -5,13 +5,13 @@ from typing import List
 from typing import Optional
 from typing import Union
 
+import dataclasses
 import numpy as np
 import pandas as pd
-from dataclasses import dataclass
-from dataclasses import fields
 from scipy.stats import chi2_contingency
 
 from evidently.utils.data_operations import DatasetColumns
+from evidently.utils.types import ColumnDistribution
 
 
 def get_rows_count(data: Union[pd.DataFrame, pd.Series]) -> int:
@@ -19,7 +19,7 @@ def get_rows_count(data: Union[pd.DataFrame, pd.Series]) -> int:
     return data.shape[0]
 
 
-@dataclass
+@dataclasses.dataclass
 class FeatureQualityStats:
     """Class for all features data quality metrics store.
 
@@ -94,10 +94,10 @@ class FeatureQualityStats:
         return self.feature_type == "cat"
 
     def as_dict(self):
-        return {field.name: getattr(self, field.name) for field in fields(FeatureQualityStats)}
+        return {field.name: getattr(self, field.name) for field in dataclasses.fields(FeatureQualityStats)}
 
     def __eq__(self, other):
-        for field in fields(FeatureQualityStats):
+        for field in dataclasses.fields(FeatureQualityStats):
             other_field_value = getattr(other, field.name)
             self_field_value = getattr(self, field.name)
 
@@ -110,7 +110,7 @@ class FeatureQualityStats:
         return True
 
 
-@dataclass
+@dataclasses.dataclass
 class DataQualityStats:
     rows_count: int
     num_features_stats: Optional[Dict[str, FeatureQualityStats]] = None
@@ -368,24 +368,60 @@ def calculate_correlations(dataset: pd.DataFrame, reference_features_stats: Data
     return correlations
 
 
-def calculate_cramer_v_correlations(column_name: str, dataset: pd.DataFrame, columns: List[str]) -> Dict:
+@dataclasses.dataclass
+class ColumnCorrelations:
+    column_name: str
+    kind: str
+    correlations: Dict[str, float]
+
+
+def calculate_cramer_v_correlations(column_name: str, dataset: pd.DataFrame, columns: List[str]) -> ColumnCorrelations:
     result = {}
 
     for correlation_columns_name in columns:
         result[correlation_columns_name] = _cramer_v(dataset[column_name], dataset[correlation_columns_name])
 
+    return ColumnCorrelations(column_name=column_name, kind="cramer_v", correlations=result)
+
+
+def calculate_category_column_correlations(
+    column_name: str, dataset: pd.DataFrame, columns: List[str]
+) -> List[ColumnCorrelations]:
+    """For category columns calculate cramer_v correlation"""
+    return [calculate_cramer_v_correlations(column_name, dataset, columns)]
+
+
+def calculate_numerical_column_correlations(
+    column_name: str, dataset: pd.DataFrame, columns: List[str]
+) -> List[ColumnCorrelations]:
+    result = []
+
+    for kind in ["pearson", "spearman", "kendall"]:
+        result.append(
+            ColumnCorrelations(
+                column_name=column_name,
+                kind=kind,
+                correlations=_calculate_correlations(dataset, column_name, columns, "num"),
+            )
+        )
+
     return result
 
 
-def calculate_column_distribution(column: pd.Series, bins_count: int) -> List[list]:
+def calculate_column_distribution(column: pd.Series, column_type: str) -> ColumnDistribution:
     if column.empty:
-        return []
+        distribution: List = []
 
-    return [
-        list(t.tolist())
-        for t in np.histogram(
-            column[np.isfinite(column)],
-            bins=bins_count,
-            density=True,
-        )
-    ]
+    elif column_type == "num":
+        # TODO: implement distribution for num column
+        value_counts = column.value_counts(dropna=True)
+        distribution = list(value_counts.items())
+
+    elif column_type == "cat":
+        value_counts = column.value_counts(dropna=True)
+        distribution = list(value_counts.items())
+
+    else:
+        raise ValueError(f"Cannot calculate distribution for column type {column_type}")
+
+    return distribution

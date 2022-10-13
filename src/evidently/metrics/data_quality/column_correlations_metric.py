@@ -1,11 +1,13 @@
-from typing import Dict
 from typing import List
 from typing import Optional
 
 import dataclasses
 import pandas as pd
 
-from evidently.calculations.data_quality import calculate_cramer_v_correlations
+from evidently import ColumnMapping
+from evidently.calculations.data_quality import ColumnCorrelations
+from evidently.calculations.data_quality import calculate_category_column_correlations
+from evidently.calculations.data_quality import calculate_numerical_column_correlations
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
@@ -19,9 +21,8 @@ from evidently.utils.data_operations import recognize_column_type
 @dataclasses.dataclass
 class ColumnCorrelationsMetricResult:
     column_name: str
-    column_type: str
-    current: Dict[str, Dict[str, float]]
-    reference: Optional[Dict[str, Dict[str, float]]] = None
+    current: List[ColumnCorrelations]
+    reference: Optional[List[ColumnCorrelations]] = None
 
 
 class ColumnCorrelationsMetric(Metric[ColumnCorrelationsMetricResult]):
@@ -33,52 +34,39 @@ class ColumnCorrelationsMetric(Metric[ColumnCorrelationsMetricResult]):
     def __init__(self, column_name: str) -> None:
         self.column_name = column_name
 
-    def _calculate_correlation(self, data: pd.DataFrame):
-        pass
-
-    def calculate(self, data: InputData) -> ColumnCorrelationsMetricResult:
-        if self.column_name not in data.current_data:
-            raise ValueError(f"Column {self.column_name} is not in current data.")
-
-        if data.reference_data is not None:
-            if self.column_name not in data.reference_data:
-                raise ValueError(f"Column {self.column_name} is not in reference data.")
-
-            column_type_recognize_data = data.reference_data
-
-        else:
-            column_type_recognize_data = data.current_data
-
-        columns = process_columns(column_type_recognize_data, data.column_mapping)
-        column_type = recognize_column_type(
-            dataset=column_type_recognize_data, column_name=self.column_name, columns=columns
-        )
-
-        reference_correlations = None
+    def _calculate_correlation(self, dataset: pd.DataFrame, column_mapping: ColumnMapping) -> List[ColumnCorrelations]:
+        columns = process_columns(dataset, column_mapping)
+        column_type = recognize_column_type(dataset=dataset, column_name=self.column_name, columns=columns)
 
         if column_type == "cat":
-            current_correlations = {
-                "cramer_v": calculate_cramer_v_correlations(
-                    self.column_name, data.current_data, columns.cat_feature_names
-                )
-            }
-
-            if data.reference_data is not None:
-                reference_correlations = {
-                    "cramer_v": calculate_cramer_v_correlations(
-                        self.column_name, data.reference_data, columns.cat_feature_names
-                    )
-                }
+            return calculate_category_column_correlations(self.column_name, dataset, columns.cat_feature_names)
 
         elif column_type == "num":
-            pass
+            return calculate_numerical_column_correlations(self.column_name, dataset, columns.num_feature_names)
 
         else:
             raise ValueError(f"Cannot calculate correlations for '{column_type}' column type.")
 
+    def calculate(self, data: InputData) -> ColumnCorrelationsMetricResult:
+        if self.column_name not in data.current_data:
+            raise ValueError(f"Column '{self.column_name}' was not found in current data.")
+
+        if data.reference_data is not None:
+            if self.column_name not in data.reference_data:
+                raise ValueError(f"Column '{self.column_name}' was not found in reference data.")
+
+        current_correlations = self._calculate_correlation(data.current_data, data.column_mapping)
+
+        if data.reference_data is not None:
+            reference_correlations: Optional[List[ColumnCorrelations]] = self._calculate_correlation(
+                data.reference_data, data.column_mapping
+            )
+
+        else:
+            reference_correlations = None
+
         return ColumnCorrelationsMetricResult(
             column_name=self.column_name,
-            column_type=column_type,
             current=current_correlations,
             reference=reference_correlations,
         )

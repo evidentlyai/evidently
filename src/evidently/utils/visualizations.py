@@ -8,7 +8,25 @@ import pandas as pd
 from plotly import graph_objs as go
 
 from evidently.options.color_scheme import ColorOptions
+from evidently.utils.types import ColumnDistribution
 from evidently.utils.types import Numeric
+
+
+def get_distribution_plot(
+    current: ColumnDistribution,
+    reference: Optional[ColumnDistribution] = None,
+    orientation="v",
+    color_options: Optional[ColorOptions] = None,
+):
+    current_df = pd.DataFrame(current, columns=["x", "count"])
+
+    if reference is not None:
+        reference_df = pd.DataFrame(reference, columns=["x", "count"])
+
+    else:
+        reference_df = None
+
+    return plot_distr(current_df, reference_df, orientation, color_options)
 
 
 def plot_distr(hist_curr, hist_ref=None, orientation="v", color_options: Optional[ColorOptions] = None):
