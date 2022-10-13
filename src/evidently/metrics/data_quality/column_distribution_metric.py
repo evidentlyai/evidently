@@ -1,4 +1,3 @@
-from typing import Any
 from typing import List
 from typing import Optional
 
@@ -10,14 +9,15 @@ from evidently.calculations.data_quality import calculate_column_distribution
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options import ColorOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
+from evidently.renderers.html_widgets import HistogramData
 from evidently.renderers.html_widgets import header_text
-from evidently.renderers.html_widgets import plotly_figure
+from evidently.renderers.html_widgets import histogram
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_operations import recognize_column_type
 from evidently.utils.types import ColumnDistribution
-from evidently.utils.visualizations import get_distribution_plot
 
 
 @dataclasses.dataclass
@@ -81,9 +81,29 @@ class ColumnDistributionMetricRenderer(MetricRenderer):
 
     def render_html(self, obj: ColumnDistributionMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
-        fig = get_distribution_plot(metric_result.current, metric_result.reference)
+        current_histogram = HistogramData(
+            name="current",
+            x=list(metric_result.current.keys()),
+            y=list(metric_result.current.values()),
+        )
+
+        if metric_result.reference is not None:
+            reference_histogram: Optional[HistogramData] = HistogramData(
+                name="reference",
+                x=list(metric_result.reference.keys()),
+                y=list(metric_result.reference.values()),
+            )
+
+        else:
+            reference_histogram = None
+
         result = [
             header_text(label=f"Distribution for column '{metric_result.column_name}'."),
-            plotly_figure(title=f"Column: {metric_result.column_name}", figure=fig),
+            histogram(
+                title="",
+                primary_hist=current_histogram,
+                secondary_hist=reference_histogram,
+                color_options=ColorOptions(),
+            ),
         ]
         return result

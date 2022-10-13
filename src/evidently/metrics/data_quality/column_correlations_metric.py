@@ -1,3 +1,4 @@
+from typing import Dict
 from typing import List
 from typing import Optional
 
@@ -11,22 +12,23 @@ from evidently.calculations.data_quality import calculate_numerical_column_corre
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options import ColorOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
+from evidently.renderers.html_widgets import HistogramData
 from evidently.renderers.html_widgets import TabData
 from evidently.renderers.html_widgets import header_text
-from evidently.renderers.html_widgets import plotly_figure
-from evidently.renderers.html_widgets import widget_tabs_for_more_than_one
+from evidently.renderers.html_widgets import histogram
+from evidently.renderers.html_widgets import widget_tabs
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_operations import recognize_column_type
-from evidently.utils.visualizations import get_distribution_plot
 
 
 @dataclasses.dataclass
 class ColumnCorrelationsMetricResult:
     column_name: str
-    current: List[ColumnCorrelations]
-    reference: Optional[List[ColumnCorrelations]] = None
+    current: Dict[str, ColumnCorrelations]
+    reference: Optional[Dict[str, ColumnCorrelations]] = None
 
 
 class ColumnCorrelationsMetric(Metric[ColumnCorrelationsMetricResult]):
@@ -38,21 +40,20 @@ class ColumnCorrelationsMetric(Metric[ColumnCorrelationsMetricResult]):
     def __init__(self, column_name: str) -> None:
         self.column_name = column_name
 
-    def _calculate_correlation(self, dataset: pd.DataFrame, column_mapping: ColumnMapping) -> List[ColumnCorrelations]:
+    @staticmethod
+    def _calculate_correlation(
+        column_name: str, dataset: pd.DataFrame, column_mapping: ColumnMapping
+    ) -> Dict[str, ColumnCorrelations]:
         columns = process_columns(dataset, column_mapping)
-        column_type = recognize_column_type(dataset=dataset, column_name=self.column_name, columns=columns)
+        column_type = recognize_column_type(dataset=dataset, column_name=column_name, columns=columns)
 
         if column_type == "cat":
-            correlation_columns = [
-                column_name for column_name in columns.cat_feature_names if column_name != self.column_name
-            ]
-            return calculate_category_column_correlations(self.column_name, dataset, correlation_columns)
+            correlation_columns = [name for name in columns.cat_feature_names if name != column_name]
+            return calculate_category_column_correlations(column_name, dataset, correlation_columns)
 
         elif column_type == "num":
-            correlation_columns = [
-                column_name for column_name in columns.num_feature_names if column_name != self.column_name
-            ]
-            return calculate_numerical_column_correlations(self.column_name, dataset, correlation_columns)
+            correlation_columns = [name for name in columns.num_feature_names if name != column_name]
+            return calculate_numerical_column_correlations(column_name, dataset, correlation_columns)
 
         else:
             raise ValueError(f"Cannot calculate correlations for '{column_type}' column type.")
@@ -65,11 +66,11 @@ class ColumnCorrelationsMetric(Metric[ColumnCorrelationsMetricResult]):
             if self.column_name not in data.reference_data:
                 raise ValueError(f"Column '{self.column_name}' was not found in reference data.")
 
-        current_correlations = self._calculate_correlation(data.current_data, data.column_mapping)
+        current_correlations = self._calculate_correlation(self.column_name, data.current_data, data.column_mapping)
 
         if data.reference_data is not None:
-            reference_correlations: Optional[List[ColumnCorrelations]] = self._calculate_correlation(
-                data.reference_data, data.column_mapping
+            reference_correlations: Optional[Dict[str, ColumnCorrelations]] = self._calculate_correlation(
+                self.column_name, data.reference_data, data.column_mapping
             )
 
         else:
@@ -89,47 +90,54 @@ class ColumnCorrelationsMetricRenderer(MetricRenderer):
         return result
 
     @staticmethod
-    def _get_plots_correlations(correlations: List[ColumnCorrelations]) -> Optional[BaseWidgetInfo]:
+    def _get_plots_correlations(
+        metric_result: ColumnCorrelationsMetricResult, color_options: ColorOptions
+    ) -> BaseWidgetInfo:
         tabs = []
 
-        for correlation in correlations:
-            if not correlation.correlations:
+        for correlation_name, current_correlation in metric_result.current.items():
+            if not current_correlation or not current_correlation.correlations:
                 continue
-            distribution_data = [(k, v) for k, v in correlation.correlations.items()]
+
+            current_histogram = HistogramData(
+                name="current",
+                x=list(current_correlation.correlations.keys()),
+                y=list(current_correlation.correlations.values()),
+            )
+            reference_histogram = None
+
+            if metric_result.reference and correlation_name in metric_result.reference:
+                reference_correlation = metric_result.reference[correlation_name]
+
+                if reference_correlation:
+                    reference_histogram = HistogramData(
+                        name="reference",
+                        x=list(reference_correlation.correlations.keys()),
+                        y=list(reference_correlation.correlations.values()),
+                    )
+
             tabs.append(
                 TabData(
-                    title=correlation.kind,
-                    widget=plotly_figure(title="", figure=get_distribution_plot(distribution_data)),
+                    title=correlation_name,
+                    widget=histogram(
+                        title="",
+                        primary_hist=current_histogram,
+                        secondary_hist=reference_histogram,
+                        color_options=color_options,
+                    ),
                 )
             )
 
-        return widget_tabs_for_more_than_one(tabs=tabs)
+        if tabs:
+            return widget_tabs(tabs=tabs)
+
+        else:
+            return header_text(label="No correlations.")
 
     def render_html(self, obj: ColumnCorrelationsMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         result = [
             header_text(label=f"Correlations for column '{metric_result.column_name}'."),
+            self._get_plots_correlations(metric_result, color_options=ColorOptions()),
         ]
-        tabs = []
-
-        current_plot = self._get_plots_correlations(metric_result.current)
-
-        if current_plot:
-            tabs.append(TabData(title="Current", widget=current_plot))
-
-        if metric_result.reference:
-            reference_plot = self._get_plots_correlations(metric_result.reference)
-            if reference_plot:
-                tabs.append(
-                    TabData(
-                        title="Reference",
-                        widget=reference_plot,
-                    )
-                )
-
-        if tabs:
-            result.append(widget_tabs_for_more_than_one(tabs=tabs))
-
-        else:
-            result.append(header_text(label="No correlations."))
         return result

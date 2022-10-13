@@ -24,7 +24,7 @@ from evidently.report import Report
             ColumnCorrelationsMetric(column_name="category_feature"),
             ColumnCorrelationsMetricResult(
                 column_name="category_feature",
-                current=[],
+                current={},
                 reference=None,
             ),
         ),
@@ -37,13 +37,13 @@ from evidently.report import Report
             ColumnCorrelationsMetric(column_name="feature1"),
             ColumnCorrelationsMetricResult(
                 column_name="feature1",
-                current=[
-                    ColumnCorrelations(
+                current={
+                    "cramer_v": ColumnCorrelations(
                         column_name="feature1",
                         kind="cramer_v",
                         correlations={"feature2": approx(0.7, abs=0.1), "feature3": 0.5},
                     )
-                ],
+                },
                 reference=None,
             ),
         ),
@@ -104,7 +104,7 @@ def test_column_correlations_metric_value_error(
             ColumnCorrelationsMetric(column_name="col"),
             {
                 "column_name": "col",
-                "current": [],
+                "current": {},
                 "reference": None,
             },
         ),
@@ -113,22 +113,34 @@ def test_column_correlations_metric_value_error(
             pd.DataFrame(
                 {
                     "col1": [10, 20, 3.5],
-                    "col2": [1, 2, 3],
+                    "col2": [1, 1, 3],
                 }
             ),
             ColumnCorrelationsMetric(column_name="col1"),
             {
                 "column_name": "col1",
-                "current": [
-                    {"column_name": "col1", "correlations": {"col2": approx(-0.391, abs=0.01)}, "kind": "pearson"},
-                    {"column_name": "col1", "correlations": {"col2": -0.5}, "kind": "spearman"},
-                    {"column_name": "col1", "correlations": {"col2": approx(-0.333, abs=0.01)}, "kind": "kendall"},
-                ],
-                "reference": [
-                    {"column_name": "col1", "correlations": {"col2": approx(-0.391, abs=0.01)}, "kind": "pearson"},
-                    {"column_name": "col1", "correlations": {"col2": -0.5}, "kind": "spearman"},
-                    {"column_name": "col1", "correlations": {"col2": approx(-0.333, abs=0.01)}, "kind": "kendall"},
-                ],
+                "current": {
+                    "kendall": {
+                        "column_name": "col1",
+                        "correlations": {"col2": -0.33333333333333337},
+                        "kind": "kendall",
+                    },
+                    "pearson": {
+                        "column_name": "col1",
+                        "correlations": {"col2": -0.39101797181493814},
+                        "kind": "pearson",
+                    },
+                    "spearman": {"column_name": "col1", "correlations": {"col2": -0.5}, "kind": "spearman"},
+                },
+                "reference": {
+                    "kendall": {"column_name": "col1", "correlations": {"col2": -0.816496580927726}, "kind": "kendall"},
+                    "pearson": {"column_name": "col1", "correlations": {"col2": -0.798823018394266}, "kind": "pearson"},
+                    "spearman": {
+                        "column_name": "col1",
+                        "correlations": {"col2": -0.8660254037844387},
+                        "kind": "spearman",
+                    },
+                },
             },
         ),
     ),

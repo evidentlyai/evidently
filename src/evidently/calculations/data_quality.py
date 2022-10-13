@@ -1,4 +1,5 @@
 """Methods for overall dataset quality calculations - rows count, a specific values count, etc."""
+
 from typing import Callable
 from typing import Dict
 from typing import List
@@ -387,35 +388,34 @@ def calculate_cramer_v_correlations(column_name: str, dataset: pd.DataFrame, col
 
 def calculate_category_column_correlations(
     column_name: str, dataset: pd.DataFrame, columns: List[str]
-) -> List[ColumnCorrelations]:
+) -> Dict[str, ColumnCorrelations]:
     """For category columns calculate cramer_v correlation"""
     if dataset[column_name].empty:
-        return []
+        return {}
 
-    return [calculate_cramer_v_correlations(column_name, dataset, columns)]
+    correlation = calculate_cramer_v_correlations(column_name, dataset, columns)
+    return {correlation.kind: correlation}
 
 
 def calculate_numerical_column_correlations(
     column_name: str, dataset: pd.DataFrame, columns: List[str]
-) -> List[ColumnCorrelations]:
-    if dataset[column_name].empty or not columns:
-        return []
+) -> Dict[str, ColumnCorrelations]:
 
-    result = []
+    if dataset[column_name].empty or not columns:
+        return {}
+
+    result: Dict[str, ColumnCorrelations] = {}
     column = dataset[column_name]
 
     for kind in ["pearson", "spearman", "kendall"]:
-
         correlation = {
             other_column_name: column.corr(method=kind, other=dataset[other_column_name])
             for other_column_name in columns
         }
-        result.append(
-            ColumnCorrelations(
-                column_name=column_name,
-                kind=kind,
-                correlations=correlation,
-            )
+        result[kind] = ColumnCorrelations(
+            column_name=column_name,
+            kind=kind,
+            correlations=correlation,
         )
 
     return result
@@ -423,16 +423,16 @@ def calculate_numerical_column_correlations(
 
 def calculate_column_distribution(column: pd.Series, column_type: str) -> ColumnDistribution:
     if column.empty:
-        distribution: List = []
+        distribution: ColumnDistribution = {}
 
     elif column_type == "num":
         # TODO: implement distribution for num column
         value_counts = column.value_counts(dropna=True)
-        distribution = list(value_counts.items())
+        distribution = dict(value_counts)
 
     elif column_type == "cat":
         value_counts = column.value_counts(dropna=True)
-        distribution = list(value_counts.items())
+        distribution = dict(value_counts)
 
     else:
         raise ValueError(f"Cannot calculate distribution for column type {column_type}")
