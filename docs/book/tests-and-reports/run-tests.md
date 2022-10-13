@@ -70,7 +70,7 @@ BinaryClassificationTopK
 BinaryClassification
 ```
 {% hint style="info" %} 
-Refer to the [Test Suites] section to see the contents of each preset, and to the [All tests](../reference/all-tests.md) table to see the individual tests and their default parameters.
+Refer to the [Test Suites](../tests/readme.md) section to see the contents of each preset, and to the [All tests](../reference/all-tests.md) table to see the individual tests and their default parameters.
 {% endhint %}
 
 ## Output formats 
