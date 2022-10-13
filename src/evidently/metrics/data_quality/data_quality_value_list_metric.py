@@ -87,7 +87,7 @@ class DataQualityValueListMetric(Metric[DataQualityValueListMetricsResult]):
             values = self.values
 
         if not values:
-            raise ValueError(f"Values list should not be empty.")
+            raise ValueError("Values list should not be empty.")
 
         if self.column_name not in data.current_data:
             raise ValueError(f"Column '{self.column_name}' is not in current data.")
