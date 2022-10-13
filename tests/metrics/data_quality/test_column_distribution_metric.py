@@ -20,7 +20,7 @@ from evidently.report import Report
             ColumnDistributionMetric(column_name="category_feature"),
             ColumnDistributionMetricResult(
                 column_name="category_feature",
-                current=[("n", 3), ("d", 2), ("p", 1)],
+                current={"n": 3, "d": 2, "p": 1},
                 reference=None,
             ),
         ),
@@ -79,7 +79,7 @@ def test_column_distribution_metric_value_error(
             pd.DataFrame({"col": [1, 2, 3]}),
             None,
             ColumnDistributionMetric(column_name="col"),
-            {"column_name": "col", "current": [[3, 1], [2, 1], [1, 1]], "reference": None},
+            {"column_name": "col", "current": {"1": 1, "2": 1, "3": 1}, "reference": None},
         ),
         (
             pd.DataFrame({"col1": [1, 2, 3], "col2": [10, 20, 3.5]}),
@@ -90,7 +90,7 @@ def test_column_distribution_metric_value_error(
                 }
             ),
             ColumnDistributionMetric(column_name="col1"),
-            {"column_name": "col1", "current": [[3, 1], [2, 1], [1, 1]], "reference": [[3.5, 1], [20.0, 1], [10.0, 1]]},
+            {"column_name": "col1", "current": {"1": 1, "2": 1, "3": 1}, "reference": {"10.0": 1, "20.0": 1, "3.5": 1}},
         ),
     ),
 )

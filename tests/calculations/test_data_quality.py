@@ -25,9 +25,9 @@ def test_get_rows_count(dataset: pd.DataFrame, expected_rows: int) -> None:
 @pytest.mark.parametrize(
     "dataset, column_type, expected_distribution",
     (
-        (pd.DataFrame({"test": []}), "num", []),
-        (pd.DataFrame({"test": [1, 2, 1, 2]}), "num", [(2, 2), (1, 2)]),
-        (pd.DataFrame({"test": [1, 2, 1, 2]}), "cat", [(2, 2), (1, 2)]),
+        (pd.DataFrame({"test": []}), "num", {}),
+        (pd.DataFrame({"test": [1, 2, 1, 2]}), "num", {1: 2, 2: 2}),
+        (pd.DataFrame({"test": [1, 2, 1, 2]}), "cat", {1: 2, 2: 2}),
     ),
 )
 def test_calculate_column_distribution(dataset: pd.DataFrame, column_type: str, expected_distribution: list) -> None:
