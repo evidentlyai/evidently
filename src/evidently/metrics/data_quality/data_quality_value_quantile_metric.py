@@ -3,7 +3,6 @@ from typing import Optional
 
 import dataclasses
 import pandas as pd
-from dataclasses import dataclass
 
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
@@ -16,7 +15,7 @@ from evidently.renderers.html_widgets import header_text
 from evidently.utils.visualizations import make_hist_for_num_plot
 
 
-@dataclass
+@dataclasses.dataclass
 class DataQualityValueQuantileMetricResults:
     column_name: str
     # range of the quantile (from 0 to 1)

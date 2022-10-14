@@ -15,6 +15,7 @@ from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import TabData
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import table_data
+from evidently.renderers.html_widgets import widget_tabs
 from evidently.renderers.html_widgets import widget_tabs_for_more_than_one
 
 
@@ -140,7 +141,7 @@ class DataQualityValueListMetricsRenderer(MetricRenderer):
                     title="",
                     column_names=matched_stat_headers,
                     data=list(stats.values_in_list.items())[:10],
-                )
+                ),
             ),
             TabData(
                 title="missed values top 10",
@@ -148,10 +149,10 @@ class DataQualityValueListMetricsRenderer(MetricRenderer):
                     title="",
                     column_names=matched_stat_headers,
                     data=list(stats.values_not_in_list.items())[:10],
-                )
-            )
+                ),
+            ),
         ]
-        return widget_tabs_for_more_than_one(tabs=tabs)
+        return widget_tabs(tabs=tabs)
 
     def render_html(self, obj: DataQualityValueListMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
@@ -159,11 +160,7 @@ class DataQualityValueListMetricsRenderer(MetricRenderer):
             header_text(label=f"Value List Metric for the column '{metric_result.column_name}'"),
         ]
 
-        tabs = [
-            TabData(
-                title="Current",
-                widget=self._get_table_stat(metric_result.current))
-        ]
+        tabs = [TabData(title="Current", widget=self._get_table_stat(metric_result.current))]
 
         if metric_result.reference:
             tabs.append(

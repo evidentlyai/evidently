@@ -6,7 +6,6 @@ from typing import Union
 import dataclasses
 import numpy as np
 import pandas as pd
-from dataclasses import dataclass
 
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
@@ -17,7 +16,7 @@ from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import table_data
 
 
-@dataclass
+@dataclasses.dataclass
 class DataCorrelation:
     num_features: Optional[List[str]]
     correlation_matrix: pd.DataFrame
@@ -28,7 +27,7 @@ class DataCorrelation:
     abs_max_num_features_correlation: Optional[float] = None
 
 
-@dataclass
+@dataclasses.dataclass
 class DataQualityCorrelationMetricsResults:
     current: DataCorrelation
     reference: Optional[DataCorrelation]
