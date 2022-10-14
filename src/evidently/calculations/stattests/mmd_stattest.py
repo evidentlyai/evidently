@@ -1,3 +1,4 @@
+from typing import List
 from typing import Tuple
 
 import numpy as np
@@ -8,9 +9,31 @@ from evidently.calculations.stattests.registry import StatTest
 from evidently.calculations.stattests.registry import register_stattest
 
 
-def _bootstrap_results():
-    # performs bootstrapping
-    pass
+def _permutation_test(x: np.ndarray, y: np.ndarray, iterations: int = 100) -> List[float]:
+    """Permutation test.
+    Args:
+        x: array_like
+        y: array_like
+        iterations: int
+        threshold: level of significance
+    Returns:
+        mmds: list of mmd values
+    """
+    len_x = x.shape[0]
+    len_y = y.shape[0]
+    xy = np.hstack([x, y])
+    hold_mmds = []
+    for _ in range(iterations):
+        x_samp = np.random.choice(xy, len_x)
+        y_samp = np.random.choice(xy, len_y)
+        mmd_res = _emperical_mmd_rbf(
+            reference_data=pd.Series(x_samp),
+            current_data=pd.Series(y_samp),
+            feature_type="cat",
+            threshold=0.1,
+        )[0]
+        hold_mmds.append(mmd_res)
+    return hold_mmds
 
 
 def _emperical_mmd_rbf(
@@ -31,9 +54,10 @@ def _emperical_mmd_rbf(
     """
     m = reference_data.shape[0]
     n = current_data.shape[0]
-    x = reference_data.values
-    y = current_data.values
-    gamma = 1
+    x = reference_data.values.reshape(-1, 1)
+    y = current_data.values.reshape(-1, 1)
+    sigma = np.median(metrics.pairwise_distances(x.reshape(-1, 1), y.reshape(-1, 1), metric="euclidean")) ** 2
+    gamma = 1 / sigma
     Kxx = metrics.pairwise.rbf_kernel(x, x, gamma)
     Kyy = metrics.pairwise.rbf_kernel(y, y, gamma)
     Kxy = metrics.pairwise.rbf_kernel(x, y, gamma)
@@ -45,9 +69,7 @@ def _emperical_mmd_rbf(
     B = np.sum(Kyy - np.diag(np.diagonal(Kyy)))
     C = np.sum(Kxy)
     mmd_res = (t1 * A) + (t2 * B) - (2 * t3 * C)
-    p_value = mmd_res
-
-    return p_value, p_value < threshold
+    return mmd_res, mmd_res < threshold
 
 
 emperical_mmd = StatTest(
