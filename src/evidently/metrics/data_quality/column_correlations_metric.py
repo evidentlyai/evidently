@@ -96,9 +96,6 @@ class ColumnCorrelationsMetricRenderer(MetricRenderer):
         tabs = []
 
         for correlation_name, current_correlation in metric_result.current.items():
-            if not current_correlation or not current_correlation.correlations:
-                continue
-
             current_histogram = HistogramData(
                 name="current",
                 x=list(current_correlation.correlations.keys()),

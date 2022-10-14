@@ -66,6 +66,19 @@ def test_column_correlations_metric_success(
     "current_dataset, reference_dataset, metric, error_message",
     (
         (
+            pd.DataFrame(
+                {
+                    "feature": [
+                        pd.Timestamp("2018-01-05"),
+                        pd.Timestamp("2018-01-05"),
+                    ]
+                }
+            ),
+            None,
+            ColumnCorrelationsMetric(column_name="feature"),
+            "Cannot calculate correlations for 'datetime' column type.",
+        ),
+        (
             pd.DataFrame({"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 2, 2, 432]}),
             None,
             ColumnCorrelationsMetric(column_name="feature"),

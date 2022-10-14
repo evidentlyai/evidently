@@ -96,6 +96,9 @@ class DatasetCorrelationsMetric(Metric[DataQualityCorrelationMetricsResults]):
         if pd.isnull(abs_max_num_features_correlation):
             abs_max_num_features_correlation = None
 
+        if pd.isnull(target_prediction_correlation):
+            target_prediction_correlation = None
+
         return DataCorrelation(
             num_features=num_features,
             correlation_matrix=correlation_matrix_for_plot,
