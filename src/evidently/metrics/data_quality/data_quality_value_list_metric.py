@@ -4,7 +4,6 @@ from typing import List
 from typing import Optional
 
 import dataclasses
-import numpy as np
 import pandas as pd
 
 from evidently.calculations.data_quality import get_rows_count
@@ -25,7 +24,8 @@ class ValueListStat:
     number_not_in_list: int
     share_in_list: float
     share_not_in_list: float
-    values_count: Dict[Any, int]
+    values_in_list: Dict[Any, int]
+    values_not_in_list: Dict[Any, int]
     rows_count: int
 
 
@@ -50,27 +50,41 @@ class DataQualityValueListMetric(Metric[DataQualityValueListMetricsResult]):
     @staticmethod
     def _calculate_stats(values: list, column: pd.Series) -> ValueListStat:
         rows_count = get_rows_count(column)
+        values_in_list = {}
+        values_not_in_list = {}
 
         if rows_count == 0:
-            values_in_list = 0
+            number_in_list = 0
             number_not_in_list = 0
             share_in_list = 0.0
             share_not_in_list = 0.0
-            current_counts = {}
 
         else:
-            values_in_list = column.isin(values).sum()
-            share_in_list = values_in_list / rows_count
-            number_not_in_list = rows_count - values_in_list
+            value_counts = dict(column.value_counts(dropna=True))
+
+            for value in value_counts:
+                if value in values:
+                    values_in_list[value] = value_counts[value]
+
+                else:
+                    values_not_in_list[value] = value_counts[value]
+
+            number_in_list = sum(values_in_list.values())
+            share_in_list = number_in_list / rows_count
+            number_not_in_list = rows_count - number_in_list
             share_not_in_list = number_not_in_list / rows_count
-            current_counts = dict(column.value_counts(dropna=True))
+            # fill other values from list with zeroes
+            for value in values:
+                if value not in values_in_list:
+                    values_in_list[value] = 0
 
         return ValueListStat(
-            number_in_list=values_in_list,
+            number_in_list=number_in_list,
             number_not_in_list=number_not_in_list,
             share_in_list=share_in_list,
             share_not_in_list=share_not_in_list,
-            values_count=current_counts,
+            values_in_list=values_in_list,
+            values_not_in_list=values_not_in_list,
             rows_count=rows_count,
         )
 
@@ -114,43 +128,48 @@ class DataQualityValueListMetric(Metric[DataQualityValueListMetricsResult]):
 class DataQualityValueListMetricsRenderer(MetricRenderer):
     def render_json(self, obj: DataQualityValueListMetric) -> dict:
         result = dataclasses.asdict(obj.get_result())
-        result.pop("counts_of_value", None)
         return result
 
     @staticmethod
-    def _get_table_stat(dataset_name: str, stats: ValueListStat) -> BaseWidgetInfo:
-        matched_stat = [
-            ("Values from the list", stats.number_in_list),
-            ("Share from the list", np.round(stats.share_in_list, 3)),
-            ("Values not in the list", stats.number_not_in_list),
-            ("Share not in the list", np.round(stats.share_not_in_list, 3)),
-            ("Rows count", stats.rows_count),
+    def _get_table_stat(stats: ValueListStat) -> BaseWidgetInfo:
+        matched_stat_headers = ["Value", "Count"]
+        tabs = [
+            TabData(
+                title="new values top 10",
+                widget=table_data(
+                    title="",
+                    column_names=matched_stat_headers,
+                    data=list(stats.values_in_list.items())[:10],
+                )
+            ),
+            TabData(
+                title="missed values top 10",
+                widget=table_data(
+                    title="",
+                    column_names=matched_stat_headers,
+                    data=list(stats.values_not_in_list.items())[:10],
+                )
+            )
         ]
-
-        matched_stat_headers = ["Metric", "Value"]
-        return table_data(
-            title=f"{dataset_name.capitalize()}: Values list statistic",
-            column_names=matched_stat_headers,
-            data=matched_stat,
-        )
+        return widget_tabs_for_more_than_one(tabs=tabs)
 
     def render_html(self, obj: DataQualityValueListMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
-        values_list_info = ",".join(map(str, metric_result.values))
         result = [
-            header_text(label=f"Data Value List Metrics for the column '{metric_result.column_name}'"),
-            header_text(label=f"Values: {values_list_info}"),
+            header_text(label=f"Value List Metric for the column '{metric_result.column_name}'"),
         ]
 
         tabs = [
-            TabData(title="Current", widget=self._get_table_stat(dataset_name="current", stats=metric_result.current))
+            TabData(
+                title="Current",
+                widget=self._get_table_stat(metric_result.current))
         ]
 
         if metric_result.reference:
             tabs.append(
                 TabData(
                     title="Reference",
-                    widget=self._get_table_stat(dataset_name="reference", stats=metric_result.reference),
+                    widget=self._get_table_stat(metric_result.reference),
                 )
             )
 

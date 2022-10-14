@@ -1158,10 +1158,10 @@ class TestValueListRenderer(TestRenderer):
         metric_result = obj.metric.get_result()
         column_name = metric_result.column_name
         values = metric_result.values
-        curr_df = pd.DataFrame(metric_result.current.values_count.items(), columns=["x", "count"])
+        curr_df = pd.DataFrame(metric_result.current.values_in_list.items(), columns=["x", "count"])
 
         if metric_result.reference is not None:
-            ref_df = pd.DataFrame(metric_result.reference.values_count.items(), columns=["x", "count"])
+            ref_df = pd.DataFrame(metric_result.reference.values_in_list.items(), columns=["x", "count"])
 
         else:
             ref_df = None
@@ -1231,10 +1231,10 @@ class TestNumberOfOutListValuesRenderer(TestRenderer):
         metric_result = obj.metric.get_result()
         column_name = metric_result.column_name
         values = metric_result.values
-        curr_df = pd.DataFrame(metric_result.current.values_count.items(), columns=["x", "count"])
+        curr_df = pd.DataFrame(metric_result.current.values_in_list.items(), columns=["x", "count"])
 
         if metric_result.reference is not None:
-            ref_df = pd.DataFrame(metric_result.reference.values_count.items(), columns=["x", "count"])
+            ref_df = pd.DataFrame(metric_result.reference.values_in_list.items(), columns=["x", "count"])
 
         else:
             ref_df = None
@@ -1364,10 +1364,10 @@ class TestShareOfOutListValuesRenderer(TestRenderer):
         metric_result = obj.metric.get_result()
         column_name = metric_result.column_name
         values = metric_result.values
-        curr_df = pd.DataFrame(metric_result.current.values_count.items(), columns=["x", "count"])
+        curr_df = pd.DataFrame(metric_result.current.values_in_list.items(), columns=["x", "count"])
 
         if metric_result.reference is not None:
-            ref_df = pd.DataFrame(metric_result.reference.values_count.items(), columns=["x", "count"])
+            ref_df = pd.DataFrame(metric_result.reference.values_in_list.items(), columns=["x", "count"])
 
         else:
             ref_df = None
