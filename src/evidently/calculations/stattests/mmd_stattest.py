@@ -9,7 +9,7 @@ from evidently.calculations.stattests.registry import StatTest
 from evidently.calculations.stattests.registry import register_stattest
 
 
-def _permutation_test(x: pd.Series, y: pd.Series, iterations: int = 100) -> List[float]:
+def _permutation_test(x: pd.Series, y: pd.Series, iterations: int = 100) -> np.ndarray:
     """Permutation test.
     Args:
         x: array_like
