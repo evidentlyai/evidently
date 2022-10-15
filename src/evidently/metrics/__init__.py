@@ -8,6 +8,7 @@ from .data_drift.dataset_drift_metric import DatasetDriftMetric
 from .data_integrity.column_missing_values_metric import ColumnMissingValuesMetric
 from .data_integrity.column_regexp_metric import ColumnRegExpMetric
 from .data_integrity.dataset_missing_values_metric import DatasetMissingValuesMetric
+from .data_integrity.dataset_summary_metric import DatasetSummaryMetric
 from .data_integrity_metrics import DataIntegrityMetrics
 from .data_quality_metrics import DataQualityCorrelationMetrics
 from .data_quality_metrics import DataQualityMetrics
