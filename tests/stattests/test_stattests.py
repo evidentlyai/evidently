@@ -113,7 +113,7 @@ def test_cramer_von_mises() -> None:
 
 
 def test_hellinger_distance() -> None:
-    reference = pd.Series([1, 1, 1, 1, 1]*10)
+    reference = pd.Series([1, 1, 1, 1, 1] * 10)
     current = reference
     assert hellinger_stat_test.func(reference, current, "num", 0.1) == (
         approx(0.0, abs=1e-3),
