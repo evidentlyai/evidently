@@ -6,6 +6,8 @@ from pytest import approx
 from evidently.calculations.stattests import z_stat_test
 from evidently.calculations.stattests.anderson_darling_stattest import anderson_darling_test
 from evidently.calculations.stattests.chisquare_stattest import chi_stat_test
+from evidently.calculations.stattests.cramer_von_mises_stattest import cramer_von_mises
+from evidently.calculations.stattests.g_stattest import g_test
 
 
 def test_freq_obs_eq_freq_exp() -> None:
@@ -59,3 +61,15 @@ def test_anderson_darling() -> None:
     reference = pd.Series([38.7, 41.5, 43.8, 44.5, 45.5, 46.0, 47.7, 58.0])
     current = pd.Series([39.2, 39.3, 39.7, 41.4, 41.8, 42.9, 43.3, 45.8])
     assert anderson_darling_test.func(reference, current, "num", 0.001) == (approx(0.0635, abs=1e-3), False)
+
+
+def test_g_test() -> None:
+    reference = pd.Series(["a", "b", "c"]).repeat([5, 5, 8])
+    current = pd.Series(["a", "b", "c"]).repeat([4, 7, 8])
+    assert g_test.func(reference, current, "cat", 0.5) == (approx(0.231, abs=1e-3), True)
+
+
+def test_cramer_von_mises() -> None:
+    reference = pd.Series([38.7, 41.5, 43.8, 44.5, 45.5, 46.0, 47.7, 58.0])
+    current = pd.Series([39.2, 39.3, 39.7, 41.4, 41.8, 42.9, 43.3, 45.8])
+    assert cramer_von_mises.func(reference, current, "num", 0.001) == (approx(0.0643, abs=1e-3), False)
