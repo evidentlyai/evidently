@@ -105,4 +105,4 @@ def test_emperical_mmd() -> None:
             -0.29893351,
         ]
     )
-    assert emperical_mmd.func(reference, current, "num", 0.1) == (approx(0.185, abs=1e-2), False)
+    assert emperical_mmd.func(reference, current, "num", 0.1) == (approx(0.185, abs=1e-1), False)
