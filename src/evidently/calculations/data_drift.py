@@ -32,6 +32,10 @@ class ColumnDataDriftMetrics:
     reference_distribution: Optional[pd.DataFrame] = None
     current_small_distribution: Optional[list] = None
     reference_small_distribution: Optional[list] = None
+    # data for scatter plot for numeric features only
+    current_scatter: Optional[Dict[str, list]] = None
+    x_name: Optional[str] = None
+    plot_shape: Optional[Dict[str, float]] = None
     # correlations for numeric features only
     current_correlations: Optional[Dict[str, float]] = None
     reference_correlations: Optional[Dict[str, float]] = None
@@ -66,12 +70,17 @@ def get_one_column_drift(
     dataset_columns: DatasetColumns,
     column_type: Optional[str] = None,
 ) -> ColumnDataDriftMetrics:
+    if column_name not in current_data:
+        raise ValueError(f"Cannot find column '{column_name}' in current dataset")
+
+    if column_name not in reference_data:
+        raise ValueError(f"Cannot find column '{column_name}' in reference dataset")
 
     if column_type is None:
         column_type = recognize_column_type(dataset=reference_data, column_name=column_name, columns=dataset_columns)
 
     if column_type not in ("cat", "num"):
-        raise ValueError(f"Cannot calculate drift metric for column {column_name} with type {column_type}")
+        raise ValueError(f"Cannot calculate drift metric for column '{column_name}' with type {column_type}")
 
     if column_name == dataset_columns.utility_columns.target and column_type == "num":
         stattest = options.num_target_stattest_func
@@ -86,22 +95,26 @@ def get_one_column_drift(
     current_column = current_data[column_name]
     reference_column = reference_data[column_name]
 
-    if column_type == "num":
-        if not pd.api.types.is_numeric_dtype(reference_column):
-            raise ValueError(f"Column {column_name} in reference dataset should contain numerical values only.")
-
-        if not pd.api.types.is_numeric_dtype(current_column):
-            raise ValueError(f"Column {column_name} in current dataset should contain numerical values only.")
-
+    # clean and check the column in reference dataset
     reference_column = reference_column.replace([-np.inf, np.inf], np.nan).dropna()
 
     if reference_column.empty:
-        raise ValueError(f"Column '{column_name}' in reference dataset has no values for drift calculation.")
+        raise ValueError(
+            f"An empty column '{column_name}' was provided for drift calculation in the reference dataset."
+        )
 
+    # clean and check the column in current dataset
     current_column = current_column.replace([-np.inf, np.inf], np.nan).dropna()
 
     if current_column.empty:
-        raise ValueError(f"Column '{column_name}' in current dataset has no values for drift calculation.")
+        raise ValueError(f"An empty column '{column_name}' was provided for drift calculation in the current dataset.")
+
+    if column_type == "num":
+        if not pd.api.types.is_numeric_dtype(reference_column):
+            raise ValueError(f"Column '{column_name}' in reference dataset should contain numerical values only.")
+
+        if not pd.api.types.is_numeric_dtype(current_column):
+            raise ValueError(f"Column '{column_name}' in current dataset should contain numerical values only.")
 
     drift_test_function = get_stattest(reference_column, current_column, column_type, stattest)
     drift_result = drift_test_function(reference_column, current_column, column_type, threshold)
@@ -115,12 +128,14 @@ def get_one_column_drift(
     )
 
     if column_type == "num":
-        if not pd.api.types.is_numeric_dtype(reference_column) or not pd.api.types.is_numeric_dtype(current_column):
-            raise ValueError(f"Column {column_name} should only contain numerical values.")
-
         numeric_columns = dataset_columns.num_feature_names
-        result.current_correlations = current_data[numeric_columns + [column_name]].corr()[column_name].to_dict()
-        result.reference_correlations = reference_data[numeric_columns + [column_name]].corr()[column_name].to_dict()
+
+        if column_name not in numeric_columns:
+            # for target and prediction cases add the column_name in the numeric columns list
+            numeric_columns = numeric_columns + [column_name]
+
+        result.current_correlations = current_data[numeric_columns].corr()[column_name].to_dict()
+        result.reference_correlations = reference_data[numeric_columns].corr()[column_name].to_dict()
         current_nbinsx = options.get_nbinsx(column_name)
         result.current_small_distribution = [
             t.tolist()
@@ -138,6 +153,24 @@ def get_one_column_drift(
                 density=True,
             )
         ]
+        current_scatter = {}
+        current_scatter[column_name] = current_data[column_name]
+        datetime_column_name = dataset_columns.utility_columns.date
+        if datetime_column_name is not None:
+            current_scatter["Timestamp"] = current_data[datetime_column_name]
+            x_name = "Timestamp"
+        else:
+            current_scatter["Index"] = current_data.index
+            x_name = "Index"
+
+        plot_shape = {}
+        reference_mean = reference_data[column_name].mean()
+        reference_std = reference_data[column_name].std()
+        plot_shape["y0"] = reference_mean - reference_std
+        plot_shape["y1"] = reference_mean + reference_std
+        result.current_scatter = current_scatter
+        result.x_name = x_name
+        result.plot_shape = plot_shape
 
     if column_type == "cat":
         reference_counts = reference_data[column_name].value_counts(sort=False)
@@ -156,6 +189,7 @@ def get_one_column_drift(
         result.current_small_distribution = list(
             reversed(list(map(list, zip(*sorted(current_counts.items(), key=lambda x: str(x[0]))))))
         )
+
     distribution_for_plot = get_distribution_for_column(
         column_name=column_name,
         column_type=column_type,

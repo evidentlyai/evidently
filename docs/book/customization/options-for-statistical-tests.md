@@ -172,4 +172,3 @@ example_stat_test = StatTest(
   - for numerical and categorical features
   - returns `distance`
   - drift detected when `distance >= threshold`
-

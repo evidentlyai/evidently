@@ -62,6 +62,7 @@ def test_column_drift_metric_success(
             None,
             ColumnDriftMetric(column_name="col"),
         ),
+        # no not-nan values in the column
         (
             pd.DataFrame({"col": [None, np.inf, -np.inf]}),
             pd.DataFrame({"col": [1, 2, 3]}),
