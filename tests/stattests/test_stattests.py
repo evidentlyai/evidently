@@ -8,6 +8,7 @@ from evidently.calculations.stattests.anderson_darling_stattest import anderson_
 from evidently.calculations.stattests.chisquare_stattest import chi_stat_test
 from evidently.calculations.stattests.cramer_von_mises_stattest import cramer_von_mises
 from evidently.calculations.stattests.g_stattest import g_test
+from evidently.calculations.stattests.fisher_stattest import fisher_exact_test
 
 
 def test_freq_obs_eq_freq_exp() -> None:
@@ -65,7 +66,7 @@ def test_anderson_darling() -> None:
 def test_fisher_exact() -> None:
     reference = pd.Series([1, 2, 2, 1, 1, 1, 1])
     current = pd.Series(["x", "y", "y", "x", "x", "x", "y"])
-    assert anderson_darling_test.func(reference, current, "num", 0.1) == (approx(0.1428, abs=1e-3), False)
+    assert fisher_exact_test.func(reference, current, "num", 0.1) == (approx(0.1428, abs=1e-3), False)
 
 def test_g_test() -> None:
     reference = pd.Series(["a", "b", "c"]).repeat([5, 5, 8])
