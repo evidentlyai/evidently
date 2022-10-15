@@ -19,6 +19,7 @@ def _permutation_test(x: pd.Series, y: pd.Series, iterations: int = 100) -> np.n
     Returns:
         mmds: list of mmd values
     """
+    np.random.seed(0)
     x = x.values
     y = y.values
     len_x = x.shape[0]
