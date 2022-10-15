@@ -168,3 +168,7 @@ example_stat_test = StatTest(
   - for numerical and categorical features
   - returns `distance`
   - drift detected when `distance >= threshold`
+- `cramer_von_mises` - Cramer-Von-Mises test
+  - only for numerical features
+  - returns `p-value`
+  - drift detected when `p_value < threshold`
