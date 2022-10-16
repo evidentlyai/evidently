@@ -99,17 +99,49 @@ ColumnCharacteristics = Union[NumericCharacteristics, CategoricalCharacteristics
 
 
 @dataclass
+class DataInTime:
+    data_for_plots: Dict[str, pd.DataFrame]
+    freq: str
+    datetime_name: str
+
+@dataclass
 class DataByTarget:
-    data_for_plots: Dict[str, Dict[str, Union[list, str, pd.DataFrame]]]
+    data_for_plots: Dict[str, Dict[str, Union[list, pd.DataFrame]]]
     target_name: str
     target_type: str
 
 
+# @dataclass
+# class NumericPlotData:
+#     bins_for_hist: Dict[str, pd.DataFrame]
+#     data_in_time: Optional[DataInTime]
+#     data_by_target: Optional[Dict[str, Union[pd.DataFrame, list]]]
+#     target_name: Optional[str]
+#     target_type: Optional[str]
+#     counts_of_values: Optional[Dict[str, pd.DataFrame]]
+
+
+# @dataclass
+# class CategoricalPlotData:
+#     bins_for_hist: Dict[str, pd.DataFrame]
+#     data_in_time: Optional[DataInTime]
+#     data_by_target: Optional[Dict[str, pd.DataFrame]]
+#     target_name: Optional[str]
+#     target_type: Optional[str]
+#     counts_of_values: Optional[Dict[str, pd.DataFrame]]
+
+
+# @dataclass
+# class DatetimePlotData:
+#     bins_for_hist: Dict[str, pd.DataFrame]
+
+# DataQualityPlot = Union[NumericPlotData, CategoricalPlotData, DatetimePlotData]
+
 @dataclass
 class DataQualityPlot:
     bins_for_hist: Dict[str, pd.DataFrame]
-    data_in_time: Optional[Dict[str, Union[pd.DataFrame, str]]]
-    data_by_target: DataByTarget
+    data_in_time: Optional[DataInTime]
+    data_by_target: Optional[DataByTarget]
     counts_of_values: Optional[Dict[str, pd.DataFrame]]
 
 
@@ -129,6 +161,8 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
     def calculate(self, data: InputData) -> ColumnSummary:
         columns = process_columns(data.current_data, data.column_mapping)
         # define target type and prediction type. TODO move it to process_columns func
+        if self.column_name not in data.current_data.columns:
+            raise ValueError(f"{self.column_name} not in current data")
         column_type = None
         if columns.utility_columns.target is not None:
             target_name = columns.utility_columns.target
@@ -186,7 +220,8 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
             if any(pd.isnull(list(unique_in_current))) and any(pd.isnull(list(unique_in_reference))):
                 new_in_current_values_count -= 1
                 unused_in_current_values_count -= 1
-
+            if not isinstance(curr_characteristics, CategoricalCharacteristics):
+                raise ValueError(f"{self.column_name} should be categorical")
             curr_characteristics.new_in_current_values_count = new_in_current_values_count
             curr_characteristics.unused_in_current_values_count = unused_in_current_values_count
 
@@ -198,7 +233,15 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
         if columns.utility_columns.date is not None and columns.utility_columns.date != self.column_name:
             data_in_time = gpd.calculate_data_in_time(data.current_data, reference_data, self.column_name,
                                                       column_type, columns.utility_columns.date)
-        data_by_target = None
+            data_in_time = DataInTime(
+                data_for_plots={
+                    "current": data_in_time["current"],
+                    "reference": data_in_time["reference"],
+                },
+                freq=data_in_time["freq"],
+                datetime_name=data_in_time["datetime_name"],
+            )
+
         if (
             columns.utility_columns.target is not None
             and columns.utility_columns.target != self.column_name
@@ -242,7 +285,7 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
     @staticmethod
     def map_data(stats: FeatureQualityStats) -> ColumnCharacteristics:
         if stats.feature_type == "num":
-            if isinstance(stats.max, str) or isinstance(stats.min, str):
+            if isinstance(stats.max, str) or isinstance(stats.min, str) or isinstance(stats.most_common_value, str):
                 raise ValueError("max / min stats should be int or float type, but got str")
             return NumericCharacteristics(
                 number_of_rows=stats.number_of_rows,
@@ -327,19 +370,19 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
         if metric_result.plot_data.data_in_time is not None:
             if column_type == "num":
                 feature_in_time_figure = plot_num_feature_in_time(
-                    metric_result.plot_data.data_in_time["current"],
-                    metric_result.plot_data.data_in_time["reference"],
+                    metric_result.plot_data.data_in_time.data_for_plots["current"],
+                    metric_result.plot_data.data_in_time.data_for_plots["reference"],
                     column_name,
-                    metric_result.plot_data.data_in_time["datetime_name"],
-                    metric_result.plot_data.data_in_time["freq"]
+                    metric_result.plot_data.data_in_time.datetime_name,
+                    metric_result.plot_data.data_in_time.freq
                 )
             if column_type == "cat":
                 feature_in_time_figure = plot_cat_feature_in_time(
-                    metric_result.plot_data.data_in_time["current"],
-                    metric_result.plot_data.data_in_time["reference"],
+                    metric_result.plot_data.data_in_time.data_for_plots["current"],
+                    metric_result.plot_data.data_in_time.data_for_plots["reference"],
                     column_name,
-                    metric_result.plot_data.data_in_time["datetime_name"],
-                    metric_result.plot_data.data_in_time["freq"]
+                    metric_result.plot_data.data_in_time.datetime_name,
+                    metric_result.plot_data.data_in_time.freq
                 )
             additional_graphs.append(
                 AdditionalGraphInfo(

@@ -1,5 +1,5 @@
 """Methods for overall dataset quality calculations - rows count, a specific values count, etc."""
-from ast import Tuple
+from typing import Tuple
 from typing import Callable
 from typing import Dict
 from typing import Optional
@@ -118,6 +118,7 @@ class FeatureQualityStats:
 
 @dataclass
 class DataQualityStats:
+    rows_count: int
     num_features_stats: Optional[Dict[str, FeatureQualityStats]] = None
     cat_features_stats: Optional[Dict[str, FeatureQualityStats]] = None
     datetime_features_stats: Optional[Dict[str, FeatureQualityStats]] = None
@@ -210,6 +211,7 @@ def calculate_data_quality_stats(
     dataset: pd.DataFrame, columns: DatasetColumns, task: Optional[str]
 ) -> DataQualityStats:
     result = DataQualityStats(rows_count=get_rows_count(dataset))
+    # result = DataQualityStats()
 
     result.num_features_stats = {
         feature_name: get_features_stats(dataset[feature_name], feature_type="num")
@@ -278,7 +280,8 @@ class DataQualityGetPlotData():
         if feature_type == 'cat' and merge_small_cat is not None:
             if ref is not None:
                 ref = ref.copy()
-            curr, ref = self._transform_cat_data(curr.copy(), ref, feature_name, merge_small_cat)
+            if merge_small_cat is not None:
+                curr, ref = self._transform_cat_data(curr.copy(), ref, feature_name, merge_small_cat)
         curr_data = curr[feature_name].dropna()
         ref_data = None
         if ref is not None:
@@ -385,12 +388,14 @@ class DataQualityGetPlotData():
         if feature_type == 'cat' and target_type == 'num':
             if ref is not None:
                 ref = ref.copy()
-            curr, ref = self._transform_cat_data(curr.copy(), ref, feature_name, merge_small_cat)
+            if merge_small_cat is not None:
+                curr, ref = self._transform_cat_data(curr.copy(), ref, feature_name, merge_small_cat)
             result = self._prepare_box_data(curr, ref, feature_name, target_name)
         if feature_type == 'num' and target_type == 'cat':
             if ref is not None:
                 ref = ref.copy()
-            curr, ref = self._transform_cat_data(curr.copy(), ref, target_name, merge_small_cat)
+            if merge_small_cat is not None:
+                curr, ref = self._transform_cat_data(curr.copy(), ref, target_name, merge_small_cat)
             result = self._prepare_box_data(curr, ref, target_name, feature_name)
         if feature_type == 'num' and target_type == 'num':
             result = {}
@@ -406,10 +411,12 @@ class DataQualityGetPlotData():
         if feature_type == "cat" and target_type == "cat":
             if ref is not None:
                 ref = ref.copy()
-            curr, ref = self._transform_cat_data(curr.copy(), ref, feature_name, merge_small_cat)
+            if merge_small_cat is not None:
+                curr, ref = self._transform_cat_data(curr.copy(), ref, feature_name, merge_small_cat)
             if ref is not None:
                 ref = ref.copy()
-            curr, ref = self._transform_cat_data(curr.copy(), ref, target_name, merge_small_cat, True)
+            if merge_small_cat is not None:
+                curr, ref = self._transform_cat_data(curr.copy(), ref, target_name, merge_small_cat, True)
             result = {}
             result["current"] = self._get_count_values(curr, target_name, feature_name)
             if ref is not None:
@@ -450,7 +457,7 @@ class DataQualityGetPlotData():
         ref: Optional[pd.DataFrame],
         cat_feature_name: str,
         num_feature_name: str,
-    ) -> Dict[str, Dict[str, Union[list, str]]]:
+    ) -> Dict[str, Dict[str, list]]:
         dfs = [curr]
         names = ["current"]
         if ref is not None:
@@ -472,7 +479,7 @@ class DataQualityGetPlotData():
         return res
 
     def _transform_cat_data(self, curr: pd.DataFrame, ref: Optional[pd.DataFrame], feature_name: str, merge_small_cat: int,
-                            rewrite: bool = False) -> tuple[pd.DataFrame]:
+                            rewrite: bool = False) -> Tuple[pd.DataFrame, Optional[pd.DataFrame]]:
         if self.curr is not None and rewrite is not True:
             return self.curr, self.ref
         if ref is not None:

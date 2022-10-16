@@ -962,12 +962,14 @@ class TestColumnAllConstantValuesRenderer(TestRenderer):
     def render_html(self, obj: TestColumnAllConstantValues) -> TestHtmlInfo:
         info = super().render_html(obj)
         column_name = obj.column_name
-        curr_df = obj.data_integrity_metric.get_result().plot_data.counts_of_values["current"]
-        ref_df = None
-        if "reference" in obj.data_integrity_metric.get_result().plot_data.counts_of_values.keys():
-            ref_df = obj.data_integrity_metric.get_result().plot_data.counts_of_values["reference"]
-        additional_plots = plot_value_counts_tables_ref_curr(column_name, curr_df, ref_df, "AllConstantValues")
-        info.details = additional_plots
+        counts_data = obj.data_integrity_metric.get_result().plot_data.counts_of_values
+        if counts_data is not None:
+            curr_df = counts_data["current"]
+            ref_df = None
+            if "reference" in counts_data.keys():
+                ref_df = counts_data["reference"]
+            additional_plots = plot_value_counts_tables_ref_curr(column_name, curr_df, ref_df, "AllConstantValues")
+            info.details = additional_plots
         return info
 
 
@@ -1001,12 +1003,14 @@ class TestColumnAllUniqueValuesRenderer(TestRenderer):
     def render_html(self, obj: TestColumnAllUniqueValues) -> TestHtmlInfo:
         info = super().render_html(obj)
         column_name = obj.column_name
-        curr_df = obj.data_integrity_metric.get_result().plot_data.counts_of_values["current"]
-        ref_df = None
-        if "reference" in obj.data_integrity_metric.get_result().plot_data.counts_of_values.keys():
-            ref_df = obj.data_integrity_metric.get_result().plot_data.counts_of_values["reference"]
-        additional_plots = plot_value_counts_tables_ref_curr(column_name, curr_df, ref_df, "AllUniqueValues")
-        info.details = additional_plots
+        counts_data = obj.data_integrity_metric.get_result().plot_data.counts_of_values
+        if counts_data is not None:
+            curr_df = counts_data["current"]
+            ref_df = None
+            if "reference" in counts_data.keys():
+                ref_df = counts_data["reference"]
+            additional_plots = plot_value_counts_tables_ref_curr(column_name, curr_df, ref_df, "AllUniqueValues")
+            info.details = additional_plots
         return info
 
 
