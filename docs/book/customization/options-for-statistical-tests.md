@@ -164,7 +164,12 @@ example_stat_test = StatTest(
   - only for numerical features
   - returns `p_value`
   - drift detected when `p_value < threshold`
+- `fisher` - Fisher's Exact test
+  - only for categorical features
+  - returns `p_value`
+  - drift detected when `p_value < threshold`
 - `cramer_von_mises` - Cramer-Von-Mises test
   - only for numerical features
   - returns `p-value`
   - drift detected when `p_value < threshold`
+

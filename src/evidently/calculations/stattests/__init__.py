@@ -14,3 +14,4 @@ from .registry import get_stattest
 from .registry import register_stattest
 from .wasserstein_distance_norm import wasserstein_stat_test
 from .z_stattest import z_stat_test
+from .fisher_stattest import fisher_exact_test
