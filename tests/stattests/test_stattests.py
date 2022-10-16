@@ -1,3 +1,5 @@
+from tabnanny import check
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -105,4 +107,6 @@ def test_emperical_mmd() -> None:
             -0.29893351,
         ]
     )
-    assert emperical_mmd.func(reference, current, "num", 0.1) == (approx(0.185, abs=1e-1), False)
+    pval, drift_detected = emperical_mmd.func(reference, current, "num", 0.1)
+    check_pval_range = 0.11 < pval < 0.25
+    assert (True, False) == (check_pval_range, drift_detected)
