@@ -8,6 +8,7 @@ from .g_stattest import g_test
 from .jensenshannon import jensenshannon_stat_test
 from .kl_div import kl_div_stat_test
 from .ks_stattest import ks_stat_test
+from .mann_whitney_urank_stattest import mann_whitney_u_stat_test
 from .psi import psi_stat_test
 from .registry import PossibleStatTestType
 from .registry import StatTest
