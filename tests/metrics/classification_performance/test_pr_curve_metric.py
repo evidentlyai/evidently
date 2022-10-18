@@ -15,7 +15,7 @@ def test_roc_curve_no_exceptions():
         ),
     )
     m2 = ClassificationPRCurve()
-    result = m2.calculate(
+    m2.calculate(
         data=InputData(
             reference_data=None,
             current_data=current,
