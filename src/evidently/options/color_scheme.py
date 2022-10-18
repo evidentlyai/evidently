@@ -44,6 +44,7 @@ class ColorOptions:
     underestimation_color: str = "#6574f7"
     overestimation_color: str = "#ee5540"
     majority_color: str = "#1acc98"
+    lines: str = GREY
 
     def get_current_data_color(self):
         return self.current_data_color or self.primary_color

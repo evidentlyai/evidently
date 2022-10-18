@@ -13,6 +13,7 @@ from evidently.model.widget import PlotlyGraphInfo
 from evidently.model.widget import TabInfo
 from evidently.model.widget import WidgetType
 from evidently.options import ColorOptions
+from evidently.utils.types import Numeric
 from evidently.utils.visualizations import Distribution
 
 
@@ -451,6 +452,63 @@ class HistogramData:
     y: List[Union[int, float]]
 
 
+def get_histogram_figure(
+    *,
+    primary_hist: HistogramData,
+    secondary_hist: Optional[HistogramData] = None,
+    color_options: ColorOptions,
+    orientation: str = "v",
+) -> go.Figure:
+    figure = go.Figure()
+    curr_bar = go.Bar(
+        name=primary_hist.name,
+        x=primary_hist.x,
+        y=primary_hist.y,
+        marker_color=color_options.get_current_data_color(),
+        orientation=orientation,
+    )
+    figure.add_trace(curr_bar)
+
+    if secondary_hist is not None:
+        ref_bar = go.Bar(
+            name=secondary_hist.name,
+            x=secondary_hist.x,
+            y=secondary_hist.y,
+            marker_color=color_options.get_reference_data_color(),
+            orientation=orientation,
+        )
+        figure.add_trace(ref_bar)
+
+    return figure
+
+
+def get_histogram_figure_with_range(
+    *,
+    primary_hist: HistogramData,
+    secondary_hist: Optional[HistogramData] = None,
+    left: Optional[Numeric] = None,
+    right: Optional[Numeric],
+    color_options: ColorOptions,
+    orientation: str = "v",
+) -> go.Figure:
+    figure = get_histogram_figure(
+        primary_hist=primary_hist,
+        secondary_hist=secondary_hist,
+        color_options=color_options,
+        orientation=orientation,
+    )
+    if left is not None:
+        figure.add_vline(x=left, line_width=3, line_dash="dash", line_color=color_options.lines)
+
+    if right is not None:
+        figure.add_vline(x=right, line_width=3, line_dash="dash", line_color=color_options.lines)
+
+    if left and right:
+        figure.add_vrect(x0=left, x1=right, fillcolor=color_options.fill_color, opacity=0.25, line_width=0)
+
+    return figure
+
+
 def histogram(
     *,
     title: str,
@@ -476,25 +534,12 @@ def histogram(
         >>> widget_info = histogram(title="Histogram example", primary_hist=ref_hist, secondary_hist=curr_hist)
     """
     color_options = color_options if color_options is not None else ColorOptions()
-    figure = go.Figure()
-    curr_bar = go.Bar(
-        name=primary_hist.name,
-        x=primary_hist.x,
-        y=primary_hist.y,
-        marker_color=color_options.get_current_data_color(),
+    figure = get_histogram_figure(
+        primary_hist=primary_hist,
+        secondary_hist=secondary_hist,
+        color_options=color_options,
         orientation=orientation,
     )
-    figure.add_trace(curr_bar)
-    if secondary_hist is not None:
-        ref_bar = go.Bar(
-            name=secondary_hist.name,
-            x=secondary_hist.x,
-            y=secondary_hist.y,
-            marker_color=color_options.get_reference_data_color(),
-            orientation=orientation,
-        )
-        figure.add_trace(ref_bar)
-
     return plotly_figure(title=title, figure=figure, size=size)
 
 

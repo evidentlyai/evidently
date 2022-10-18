@@ -11,10 +11,12 @@ from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
+from evidently.renderers.html_widgets import CounterData, counter
 from evidently.renderers.html_widgets import HistogramData
 from evidently.renderers.html_widgets import TabData
+from evidently.renderers.html_widgets import get_histogram_figure_with_range
 from evidently.renderers.html_widgets import header_text
-from evidently.renderers.html_widgets import histogram
+from evidently.renderers.html_widgets import plotly_figure
 from evidently.renderers.html_widgets import table_data
 from evidently.renderers.html_widgets import widget_tabs
 from evidently.utils.types import Numeric
@@ -163,10 +165,10 @@ class ColumnValueRangeMetricRenderer(MetricRenderer):
     @staticmethod
     def _get_table_stat(metrics: ValuesInRangeStat) -> BaseWidgetInfo:
         matched_stat = [
-            ("Values in the range", metrics.number_in_range),
-            ("Share in the range", np.round(metrics.share_in_range, 3)),
-            ("Values not in the range", metrics.number_not_in_range),
-            ("Share not in the range", np.round(metrics.share_not_in_range, 3)),
+            ("Values in range", metrics.number_in_range),
+            ("%", np.round(metrics.share_in_range * 100, 3)),
+            ("Values out of range", metrics.number_not_in_range),
+            ("%", np.round(metrics.share_not_in_range * 100, 3)),
             ("Values count", metrics.number_of_values),
         ]
 
@@ -177,21 +179,31 @@ class ColumnValueRangeMetricRenderer(MetricRenderer):
             data=matched_stat,
         )
 
-    def _get_tabs(self, dataset_name: str, stats: ValuesInRangeStat, distribution: Optional[Distribution]):
+    def _get_tabs(
+        self,
+        dataset_name: str,
+        stats: ValuesInRangeStat,
+        distribution: Optional[Distribution],
+        left: Numeric,
+        right: Numeric,
+    ) -> BaseWidgetInfo:
         if distribution is not None:
-            data_histogram = HistogramData(
-                name=dataset_name.lower(),
-                x=list(distribution.x),
-                y=list(distribution.y),
+            figure = get_histogram_figure_with_range(
+                primary_hist=HistogramData(
+                    name=dataset_name.lower(),
+                    x=list(distribution.x),
+                    y=list(distribution.y),
+                ),
+                secondary_hist=None,
+                color_options=self.color_options,
+                left=left,
+                right=right,
             )
+
             tabs: List[TabData] = [
                 TabData(
                     title="Distribution",
-                    widget=histogram(
-                        title="",
-                        primary_hist=data_histogram,
-                        secondary_hist=None,
-                    ),
+                    widget=plotly_figure(title="", figure=figure),
                 ),
             ]
 
@@ -209,16 +221,50 @@ class ColumnValueRangeMetricRenderer(MetricRenderer):
             tabs=tabs,
         )
 
+    @staticmethod
+    def _get_in_range_info(stat: ValuesInRangeStat) -> str:
+        percents = round(stat.share_in_range * 100, 3)
+        return f"{stat.number_in_range} ({percents}%)"
+
     def render_html(self, obj: ColumnValueRangeMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         column_name = metric_result.column_name
+
+        counters = [
+            CounterData.string(label="Value range", value=f"[{metric_result.left}, {metric_result.right}]"),
+            CounterData.string(label="In range (current)", value=self._get_in_range_info(metric_result.current)),
+        ]
+
+        if metric_result.reference is not None:
+            counters.append(
+                CounterData.string(
+                    label="In range (reference)", value=self._get_in_range_info(metric_result.reference)
+                ),
+            )
 
         result: List[BaseWidgetInfo] = [
             header_text(
                 label=f"Column '{column_name}'. Value range.",
             ),
-            self._get_tabs("current", metric_result.current, metric_result.current_distribution),
+            counter(counters=counters),
+            self._get_tabs(
+                "current",
+                metric_result.current,
+                metric_result.current_distribution,
+                metric_result.left,
+                metric_result.right,
+            ),
         ]
+
         if metric_result.reference is not None:
-            self._get_tabs("reference", metric_result.reference, metric_result.reference_distribution),
+            result.append(
+                self._get_tabs(
+                    "reference",
+                    metric_result.reference,
+                    metric_result.reference_distribution,
+                    metric_result.left,
+                    metric_result.right,
+                )
+            )
+
         return result
