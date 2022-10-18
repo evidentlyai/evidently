@@ -243,7 +243,7 @@ class RegressionQualityMetric(Metric[RegressionQualityMetricResults]):
 
 
 @default_renderer(wrap_type=RegressionQualityMetric)
-class RegressionQualityRenderer(MetricRenderer):
+class RegressionQualityMetricRenderer(MetricRenderer):
     def render_json(self, obj: RegressionQualityMetric) -> dict:
         result = dataclasses.asdict(obj.get_result())
         # remove values with DataFrames or Series
