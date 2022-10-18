@@ -114,27 +114,23 @@ def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping) -> Dat
     # index column name
     id_column = column_mapping.id
     target_column = column_mapping.target if column_mapping.target in dataset else None
-    prediction_column = column_mapping.prediction
     num_feature_names = column_mapping.numerical_features
     cat_feature_names = column_mapping.categorical_features
     datetime_feature_names = column_mapping.datetime_features
     target_names = column_mapping.target_names
     utility_columns = [date_column, id_column, target_column]
 
-    if isinstance(prediction_column, str):
-        if prediction_column in dataset:
-            prediction_column = prediction_column
-
+    prediction_column: Optional[str] = None
+    if isinstance(column_mapping.prediction, str):
+        if column_mapping.prediction in dataset:
+            prediction_column = column_mapping.prediction
         else:
             prediction_column = None
-
         utility_columns.append(prediction_column)
-
-    elif prediction_column is None:
-        pass
-
+    elif column_mapping.prediction is None:
+        prediction_column = None
     else:
-        prediction_column = dataset[prediction_column].columns.tolist()
+        prediction_column = dataset[column_mapping.prediction].columns.tolist()
 
         if prediction_column:
             utility_columns += prediction_column
