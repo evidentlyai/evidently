@@ -14,7 +14,7 @@ class TaskType:
 @dataclass
 class ColumnMapping:
     target: Optional[str] = "target"
-    prediction: Optional[Union[str, Sequence[str]]] = "prediction"
+    prediction: Optional[Union[Union[str, int], Sequence[Union[str, int]]]] = "prediction"
     datetime: Optional[str] = "datetime"
     id: Optional[str] = None
     numerical_features: Optional[List[str]] = None

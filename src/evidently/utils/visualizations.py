@@ -342,3 +342,68 @@ def plot_error_bias_colored_scatter(
     )
     fig = json.loads(fig.to_json())
     return fig
+
+
+def plot_scatter_for_data_drift(curr_y: list, curr_x: list, y0: float, y1: float, y_name: str, x_name: str):
+    color_options = ColorOptions()
+
+    fig = go.Figure()
+
+    fig.add_trace(
+        go.Scattergl(
+            x=curr_x,
+            y=curr_y,
+            mode="markers",
+            name="Current",
+            marker=dict(size=6, color=color_options.get_current_data_color()),
+        )
+    )
+
+    x0 = np.max(curr_x)
+
+    fig.add_trace(
+        go.Scattergl(
+            x=[x0, x0],
+            y=[y0, y1],
+            mode="markers",
+            name="Current",
+            marker=dict(size=0.01, color=color_options.non_visible_color, opacity=0.005),
+            showlegend=False,
+        )
+    )
+
+    fig.update_layout(
+        xaxis_title=x_name,
+        yaxis_title=y_name,
+        showlegend=True,
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        shapes=[
+            dict(
+                type="rect",
+                # x-reference is assigned to the x-values
+                xref="paper",
+                # y-reference is assigned to the plot paper [0,1]
+                yref="y",
+                x0=0,
+                y0=y0,
+                x1=1,
+                y1=y1,
+                fillcolor=color_options.fill_color,
+                opacity=0.5,
+                layer="below",
+                line_width=0,
+            ),
+            dict(
+                type="line",
+                name="Reference",
+                xref="paper",
+                yref="y",
+                x0=0,  # min(testset_agg_by_date.index),
+                y0=(y0 + y1) / 2,
+                x1=1,  # max(testset_agg_by_date.index),
+                y1=(y0 + y1) / 2,
+                line=dict(color=color_options.zero_line_color, width=3),
+            ),
+        ],
+    )
+    return fig

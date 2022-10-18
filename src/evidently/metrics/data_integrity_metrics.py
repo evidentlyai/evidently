@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 from dataclasses import dataclass
 
+from evidently.calculations.data_integration import get_number_of_empty_columns
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
@@ -59,7 +60,7 @@ class DataIntegrityMetrics(Metric[DataIntegrityMetricsResults]):
             number_of_rows_with_nans=dataset.isna().any(axis=1).sum(),
             number_of_constant_columns=len(dataset.columns[dataset.nunique() <= 1]),  # type: ignore
             number_of_empty_rows=dataset.isna().all(1).sum(),
-            number_of_empty_columns=dataset.isna().all().sum(),
+            number_of_empty_columns=get_number_of_empty_columns(dataset),
             number_of_duplicated_rows=dataset.duplicated().sum(),
             number_of_duplicated_columns=sum([1 for i, j in combinations(dataset, 2) if dataset[i].equals(dataset[j])]),
             columns_type=dict(dataset.dtypes.to_dict()),
