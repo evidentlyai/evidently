@@ -3,7 +3,11 @@
 from .anderson_darling_stattest import anderson_darling_test
 from .chisquare_stattest import chi_stat_test
 from .cramer_von_mises_stattest import cramer_von_mises
+<<<<<<< HEAD
 from .fisher_exact_stattest import fisher_exact_test
+=======
+from .g_stattest import g_test
+>>>>>>> upstream/main
 from .jensenshannon import jensenshannon_stat_test
 from .kl_div import kl_div_stat_test
 from .ks_stattest import ks_stat_test

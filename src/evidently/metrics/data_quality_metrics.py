@@ -630,9 +630,10 @@ class DataQualityCorrelationMetrics(Metric[DataQualityCorrelationMetricsResults]
         )
 
     def calculate(self, data: InputData) -> DataQualityCorrelationMetricsResults:
-        target_name = data.column_mapping.target
-        prediction_name = data.column_mapping.prediction
-        num_features: Optional[List[str]] = data.column_mapping.numerical_features
+        columns = process_columns(data.current_data, data.column_mapping)
+        target_name = columns.utility_columns.target
+        prediction_name = columns.utility_columns.prediction
+        num_features: Optional[List[str]] = columns.num_feature_names
         is_classification_task = data.column_mapping.is_classification_task()
 
         current_correlations = self._get_correlations(
