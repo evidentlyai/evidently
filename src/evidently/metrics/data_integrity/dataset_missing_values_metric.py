@@ -271,7 +271,7 @@ class DatasetMissingValuesMetricRenderer(MetricRenderer):
     def render_html(self, obj: DatasetMissingValuesMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         result = [
-            header_text(label="Missing values in the dataset"),
+            header_text(label="Dataset Missing Values"),
             self._get_overall_missing_values_info(metric_result),
             self._get_table_stat(dataset_name="current", stats=metric_result.current),
         ]

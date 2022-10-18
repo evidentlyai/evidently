@@ -6,6 +6,7 @@ from typing import Union
 from uuid import uuid4
 
 import dataclasses
+import numpy as np
 import plotly.graph_objs as go
 
 from evidently.model.widget import BaseWidgetInfo
@@ -486,10 +487,10 @@ def get_histogram_figure_with_range(
     *,
     primary_hist: HistogramData,
     secondary_hist: Optional[HistogramData] = None,
-    left: Optional[Numeric] = None,
-    right: Optional[Numeric],
-    color_options: ColorOptions,
+    left: Numeric,
+    right: Numeric,
     orientation: str = "v",
+    color_options: ColorOptions,
 ) -> go.Figure:
     figure = get_histogram_figure(
         primary_hist=primary_hist,
@@ -497,14 +498,52 @@ def get_histogram_figure_with_range(
         color_options=color_options,
         orientation=orientation,
     )
-    if left is not None:
-        figure.add_vline(x=left, line_width=3, line_dash="dash", line_color=color_options.lines)
+    figure.add_vline(x=left, line_width=3, line_dash="dash", line_color=color_options.lines)
+    figure.add_vline(x=right, line_width=3, line_dash="dash", line_color=color_options.lines)
+    figure.add_vrect(x0=left, x1=right, fillcolor=color_options.fill_color, opacity=0.25, line_width=0)
+    return figure
 
-    if right is not None:
-        figure.add_vline(x=right, line_width=3, line_dash="dash", line_color=color_options.lines)
 
-    if left and right:
-        figure.add_vrect(x0=left, x1=right, fillcolor=color_options.fill_color, opacity=0.25, line_width=0)
+def get_histogram_figure_with_quantile(
+    *,
+    current: HistogramData,
+    reference: Optional[HistogramData] = None,
+    current_quantile: float,
+    reference_quantile: Optional[float] = None,
+    color_options: ColorOptions,
+    orientation: str = "v",
+) -> go.Figure:
+    figure = get_histogram_figure(
+        primary_hist=current,
+        secondary_hist=reference,
+        color_options=color_options,
+        orientation=orientation,
+    )
+
+    if reference_quantile is not None:
+        figure.add_trace(
+            go.Scatter(
+                x=[reference_quantile, reference_quantile],
+                y=[min(current.y), max(current.y)],
+                mode="lines",
+                line=dict(color=color_options.fill_color, width=2, dash="solid"),
+                name="current quantile",
+            )
+        )
+
+    # add quantile lines. Use scatter, not `add_vline`
+    # because `add_vline` doesn't support legend, it is not interactive
+    max_y = np.max([np.max(x["y"]) for x in figure.data])
+    min_y = np.min([np.min(x["y"]) for x in figure.data])
+    figure.add_trace(
+        go.Scatter(
+            x=[current_quantile, current_quantile],
+            y=[min_y, max_y],
+            mode="lines",
+            line=dict(color=color_options.lines, width=2, dash="dash"),
+            name="reference quantile",
+        )
+    )
 
     return figure
 

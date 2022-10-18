@@ -12,8 +12,9 @@ from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import HistogramData
 from evidently.renderers.html_widgets import counter
+from evidently.renderers.html_widgets import get_histogram_figure_with_quantile
 from evidently.renderers.html_widgets import header_text
-from evidently.renderers.html_widgets import histogram
+from evidently.renderers.html_widgets import plotly_figure
 from evidently.utils.visualizations import Distribution
 from evidently.utils.visualizations import get_distribution_for_column
 
@@ -93,9 +94,8 @@ class ColumnQuantileMetricRenderer(MetricRenderer):
         result.pop("reference_distribution", None)
         return result
 
-    def render_html(self, obj: ColumnQuantileMetric) -> List[BaseWidgetInfo]:
-        metric_result = obj.get_result()
-        column_name = metric_result.column_name
+    @staticmethod
+    def _get_counters(metric_result: ColumnQuantileMetricResult) -> BaseWidgetInfo:
         counters = [
             CounterData.float(label="Quantile", value=metric_result.quantile, precision=3),
             CounterData.float(label="Quantile value (current)", value=metric_result.current, precision=3),
@@ -105,26 +105,43 @@ class ColumnQuantileMetricRenderer(MetricRenderer):
             counters.append(
                 CounterData.float(label="Quantile value (reference)", value=metric_result.reference, precision=3),
             )
+        return counter(counters=counters)
 
-        current_histogram = HistogramData(
-            name="current",
-            x=list(metric_result.current_distribution.x),
-            y=list(metric_result.current_distribution.y),
-        )
-
+    def _get_histogram(self, metric_result: ColumnQuantileMetricResult) -> BaseWidgetInfo:
         if metric_result.reference_distribution is not None:
-            reference_histogram: Optional[HistogramData] = HistogramData(
+            reference_histogram_data: Optional[HistogramData] = HistogramData(
                 name="reference",
                 x=list(metric_result.reference_distribution.x),
                 y=list(metric_result.reference_distribution.y),
             )
 
         else:
-            reference_histogram = None
+            reference_histogram_data = None
 
-        result = [
-            header_text(label=f"Data Value Quantile Metrics for the column: {column_name}"),
-            counter(counters=counters),
-            histogram(title="", primary_hist=current_histogram, secondary_hist=reference_histogram),
+        if metric_result.reference is not None:
+            reference_quantile: Optional[float] = metric_result.reference
+
+        else:
+            reference_quantile = None
+
+        figure = get_histogram_figure_with_quantile(
+            current=HistogramData(
+                name="current",
+                x=list(metric_result.current_distribution.x),
+                y=list(metric_result.current_distribution.y),
+            ),
+            reference=reference_histogram_data,
+            current_quantile=metric_result.current,
+            reference_quantile=reference_quantile,
+            color_options=self.color_options,
+        )
+        return plotly_figure(title="", figure=figure)
+
+    def render_html(self, obj: ColumnQuantileMetric) -> List[BaseWidgetInfo]:
+        metric_result = obj.get_result()
+        column_name = metric_result.column_name
+        return [
+            header_text(label=f"Column '{column_name}'. Quantile."),
+            self._get_counters(metric_result),
+            self._get_histogram(metric_result),
         ]
-        return result
