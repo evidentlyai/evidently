@@ -101,12 +101,6 @@ def test_anderson_darling() -> None:
     assert anderson_darling_test.func(reference, current, "num", 0.001) == (approx(0.0635, abs=1e-3), False)
 
 
-def test_fisher_exact() -> None:
-    reference = pd.Series([1, 2, 2, 1, 1, 1, 1])
-    current = pd.Series(["x", "y", "y", "x", "x", "x", "y"])
-    assert fisher_exact_test.func(reference, current, "num", 0.1) == (approx(0.1428, abs=1e-3), False)
-
-
 def test_g_test() -> None:
     reference = pd.Series(["a", "b", "c"]).repeat([5, 5, 8])
     current = pd.Series(["a", "b", "c"]).repeat([4, 7, 8])
@@ -130,3 +124,89 @@ def test_hellinger_distance() -> None:
         approx(0.0, abs=1e-3),
         False,
     )
+
+
+@pytest.mark.parametrize(
+    "reference, current, threshold, expected_pvalue, drift_detected",
+    (
+        (
+            pd.Series(["a", "b", "b", "a", "a", "b"]),
+            pd.Series(["b", "b", "a", "b", "b", "a"]),
+            0.1,
+            approx(0.40, abs=1e-3),
+            False,
+        ),
+        (
+            pd.Series(["a", "b", "b", "a", "a", "b"]),
+            pd.Series(["a", "a", "a", "a", "a", "a"]),
+            0.1,
+            approx(1.0, abs=1e-3),
+            False,
+        ),
+        (
+            pd.Series(["a", "a", "a", "a", "a", "a"]),
+            pd.Series(["a", "a", "a", "a", "a", "a"]),
+            0.1,
+            approx(1.0, abs=1e-3),
+            False,
+        ),
+        (
+            pd.Series(["a", "b", "a", "b", "a", "b"]),
+            pd.Series(["b", "a", "b", "a", "b", "a"]),
+            0.15,
+            approx(0.10, abs=1e-3),
+            True,
+        ),
+    ),
+)
+def test_pvalue_fisher_exact(
+    reference: pd.Series, current: pd.Series, threshold: float, expected_pvalue: float, drift_detected: bool
+) -> None:
+    assert fisher_exact_test.func(reference, current, "cat", threshold) == (
+        approx(expected_pvalue, abs=1e-3),
+        drift_detected,
+    )
+
+
+@pytest.mark.parametrize(
+    "reference, current",
+    (
+        (
+            pd.Series(["a", np.nan, "b", "a", "a", "b"]),
+            pd.Series(["b", "b", "a", "b", "b", "a"]),
+        ),
+        (
+            pd.Series(["a", np.nan, "a", "a", "b"]),
+            pd.Series(["a", "a", "a", "a", np.nan, "a"]),
+        ),
+        (pd.Series([np.inf, np.nan, np.nan, "a", "b", "a"]), pd.Series(["a", "a", np.inf, "a", "a", "b"])),
+        (pd.Series([-np.inf, "b", np.nan, "b", "a", "b"]), pd.Series(["b", np.inf, "b", "a", "b", "a"])),
+    ),
+)
+def test_for_null_fisher_exact(reference: pd.Series, current: pd.Series) -> None:
+    with pytest.raises(
+        ValueError,
+        match="Null or inf values found in either reference_data or current_data. Please ensure that no null or inf values are present",
+    ):
+        fisher_exact_test.func(reference, current, "cat", 0.1)
+
+
+@pytest.mark.parametrize(
+    "reference, current,",
+    (
+        (
+            pd.Series(["a", "c", "a", "a", "a", "b"]),
+            pd.Series(["b", "b", "a", "b", "b", "a"]),
+        ),
+        (
+            pd.Series(["a", 1, "a", 3, "b", "m"]),
+            pd.Series(["a", "a", 2, "a", "b", "a"]),
+        ),
+    ),
+)
+def test_for_multiple_categories_fisher_exact(reference: pd.Series, current: pd.Series) -> None:
+    with pytest.raises(
+        ValueError,
+        match="Expects binary data for both reference and current, but found unique categories > 2",
+    ):
+        fisher_exact_test.func(reference, current, "cat", 0.1)

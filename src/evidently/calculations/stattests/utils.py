@@ -1,3 +1,5 @@
+from itertools import product
+
 import numpy as np
 import pandas as pd
 
@@ -39,3 +41,28 @@ def get_binned_data(
         np.place(current_percents, current_percents == 0, 0.0001)
 
     return reference_percents, current_percents
+
+
+def generate2x2_contingency_table(reference_data: pd.Series, current_data: pd.Series) -> np.ndarray:
+    """Generate 2x2 contingency matrix
+    Args:
+        reference_data: reference data
+        current_data: current data
+    Raises:
+        ValueError: if reference_data and current_data are not of equal length
+    Returns:
+        contingency_matrix: contingency_matrix for binary data
+    """
+    if reference_data.shape[0] != current_data.shape[0]:
+        raise ValueError(
+            "reference_data and current_data are not of equal length, please ensure that they are of equal length"
+        )
+    data = np.array(list(zip(reference_data.tolist(), current_data.tolist())))
+    uniq = np.unique(data)
+    uniq = np.append(uniq, ["place_holder" + str(np.random.randint(1000))]) if len(uniq) == 1 else uniq
+    dict_map = {str(i) + str(j): 0 for i, j in list(product(uniq, repeat=2))}
+    for x, y in data:
+        dict_map[str(x) + str(y)] += 1
+    contingency_table = np.array(list(dict_map.values())).reshape(2, 2)
+
+    return contingency_table
