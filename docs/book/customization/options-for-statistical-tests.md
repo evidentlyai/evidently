@@ -172,3 +172,7 @@ example_stat_test = StatTest(
   - only for categorical features
   - returns `p-value`
   - drift detected when `p_value < threshold`
+- `hellinger` - Hellinger Distance (normed)
+  - for numerical and categorical features
+  - returns `distance`
+  - drift detected when `distance >= threshold`
