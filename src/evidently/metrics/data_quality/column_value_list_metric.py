@@ -12,11 +12,12 @@ from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
+from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import TabData
+from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import table_data
 from evidently.renderers.html_widgets import widget_tabs
-from evidently.renderers.html_widgets import widget_tabs_for_more_than_one
 
 
 @dataclasses.dataclass
@@ -132,19 +133,27 @@ class ColumnValueListMetricRenderer(MetricRenderer):
         return result
 
     @staticmethod
-    def _get_table_stat(stats: ValueListStat) -> BaseWidgetInfo:
+    def _get_table_stat(dataset_name: str, stats: ValueListStat) -> BaseWidgetInfo:
         matched_stat_headers = ["Value", "Count"]
         tabs = [
             TabData(
-                title="new values top 10",
+                title="In list (top-10)",
                 widget=table_data(
                     title="",
                     column_names=matched_stat_headers,
-                    data=list(stats.values_in_list.items())[:10],
+                    data=[(k, v) for k, v in stats.values_in_list.items() if v > 0][:10],
                 ),
             ),
             TabData(
-                title="missed values top 10",
+                title="Not found (top-10)",
+                widget=table_data(
+                    title="",
+                    column_names=matched_stat_headers,
+                    data=[(k, v) for k, v in stats.values_in_list.items() if v <= 0][:10],
+                ),
+            ),
+            TabData(
+                title="Out of list (top-10)",
                 widget=table_data(
                     title="",
                     column_names=matched_stat_headers,
@@ -152,23 +161,40 @@ class ColumnValueListMetricRenderer(MetricRenderer):
                 ),
             ),
         ]
-        return widget_tabs(tabs=tabs)
+        return widget_tabs(title=f"{dataset_name.capitalize()} dataset", tabs=tabs)
+
+    @staticmethod
+    def _get_count_info(stat: ValueListStat) -> str:
+        percents = round(stat.share_in_list * 100, 3)
+        return f"{stat.number_in_list} ({percents}%)"
+
+    def _get_counters(self, metric_result: ColumnValueListMetricResult) -> BaseWidgetInfo:
+        counters = [
+            CounterData.string(
+                label="In list (current)",
+                value=self._get_count_info(metric_result.current),
+            ),
+        ]
+
+        if metric_result.reference is not None:
+            counters.append(
+                CounterData.string(
+                    label="In list (reference)",
+                    value=self._get_count_info(metric_result.reference),
+                ),
+            )
+
+        return counter(counters=counters)
 
     def render_html(self, obj: ColumnValueListMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         result = [
-            header_text(label=f"Value List Metric for the column '{metric_result.column_name}'"),
+            header_text(label=f"Column '{metric_result.column_name}'. Value list."),
+            self._get_counters(metric_result),
+            self._get_table_stat("current", metric_result.current),
         ]
 
-        tabs = [TabData(title="Current", widget=self._get_table_stat(metric_result.current))]
-
         if metric_result.reference:
-            tabs.append(
-                TabData(
-                    title="Reference",
-                    widget=self._get_table_stat(metric_result.reference),
-                )
-            )
+            result.append(self._get_table_stat("reference", metric_result.reference))
 
-        result.append(widget_tabs_for_more_than_one(tabs=tabs))
         return result
