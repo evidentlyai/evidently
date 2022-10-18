@@ -13,6 +13,7 @@ from scipy.stats import chi2_contingency
 
 from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.types import ColumnDistribution
+from evidently.utils.visualizations import Distribution
 
 
 def get_rows_count(data: Union[pd.DataFrame, pd.Series]) -> int:
@@ -373,17 +374,19 @@ def calculate_correlations(dataset: pd.DataFrame, reference_features_stats: Data
 class ColumnCorrelations:
     column_name: str
     kind: str
-    correlations: Dict[str, float]
+    values: Distribution
 
 
 def calculate_cramer_v_correlations(column_name: str, dataset: pd.DataFrame, columns: List[str]) -> ColumnCorrelations:
-    result = {}
+    result_x = []
+    result_y = []
 
     if not dataset[column_name].empty:
         for correlation_columns_name in columns:
-            result[correlation_columns_name] = _cramer_v(dataset[column_name], dataset[correlation_columns_name])
+            result_x.append(correlation_columns_name)
+            result_y.append(_cramer_v(dataset[column_name], dataset[correlation_columns_name]))
 
-    return ColumnCorrelations(column_name=column_name, kind="cramer_v", correlations=result)
+    return ColumnCorrelations(column_name=column_name, kind="cramer_v", values=Distribution(x=result_x, y=result_y))
 
 
 def calculate_category_column_correlations(
@@ -408,14 +411,17 @@ def calculate_numerical_column_correlations(
     column = dataset[column_name]
 
     for kind in ["pearson", "spearman", "kendall"]:
-        correlation = {
-            other_column_name: column.corr(method=kind, other=dataset[other_column_name])
-            for other_column_name in columns
-        }
+        correlations_columns = []
+        correlations_values = []
+
+        for other_column_name in columns:
+            correlations_columns.append(other_column_name)
+            correlations_values.append(column.corr(dataset[other_column_name], method=kind))
+
         result[kind] = ColumnCorrelations(
             column_name=column_name,
             kind=kind,
-            correlations=correlation,
+            values=Distribution(x=correlations_columns, y=correlations_values),
         )
 
     return result

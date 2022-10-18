@@ -6,6 +6,7 @@ from evidently.calculations.data_quality import ColumnCorrelations
 from evidently.calculations.data_quality import calculate_column_distribution
 from evidently.calculations.data_quality import calculate_cramer_v_correlations
 from evidently.calculations.data_quality import get_rows_count
+from evidently.utils.visualizations import Distribution
 
 
 @pytest.mark.parametrize(
@@ -44,5 +45,10 @@ def test_calculate_cramer_v_correlations():
         }
     )
     assert calculate_cramer_v_correlations("test1", data, ["test2", "test3", "test4"]) == ColumnCorrelations(
-        column_name="test1", kind="cramer_v", correlations={"test2": 1.0, "test3": 1.0, "test4": 1.0}
+        column_name="test1",
+        kind="cramer_v",
+        values=Distribution(
+            x=["test2", "test3", "test4"],
+            y=[1.0, 1.0, 1.0],
+        ),
     )

@@ -543,8 +543,12 @@ def histogram(
     return plotly_figure(title=title, figure=figure, size=size)
 
 
-def get_histogram_for_column_distribution(
-    current_distribution: Distribution, reference_distribution: Optional[Distribution] = None, title: str = ""
+def get_histogram_for_distribution(
+    *,
+    current_distribution: Distribution,
+    reference_distribution: Optional[Distribution] = None,
+    title: str = "",
+    color_options: Optional[ColorOptions] = None,
 ):
     current_histogram = HistogramData(
         name="current",
@@ -562,4 +566,6 @@ def get_histogram_for_column_distribution(
     else:
         reference_histogram = None
 
-    return histogram(title=title, primary_hist=current_histogram, secondary_hist=reference_histogram)
+    return histogram(
+        title=title, primary_hist=current_histogram, secondary_hist=reference_histogram, color_options=color_options
+    )

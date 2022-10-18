@@ -12,6 +12,7 @@ from evidently.metrics.base_metric import InputData
 from evidently.metrics.data_quality.column_correlations_metric import ColumnCorrelationsMetric
 from evidently.metrics.data_quality.column_correlations_metric import ColumnCorrelationsMetricResult
 from evidently.report import Report
+from evidently.utils.visualizations import Distribution
 
 
 @pytest.mark.parametrize(
@@ -41,7 +42,7 @@ from evidently.report import Report
                     "cramer_v": ColumnCorrelations(
                         column_name="feature1",
                         kind="cramer_v",
-                        correlations={"feature2": approx(0.7, abs=0.1), "feature3": 0.5},
+                        values=Distribution(x=["feature2", "feature3"], y=[approx(0.7, abs=0.1), 0.5]),
                     )
                 },
                 reference=None,
@@ -135,23 +136,31 @@ def test_column_correlations_metric_value_error(
                 "current": {
                     "kendall": {
                         "column_name": "col1",
-                        "correlations": {"col2": -0.33333333333333337},
                         "kind": "kendall",
+                        "values": {"x": ["col2"], "y": [-0.33333333333333337]},
                     },
                     "pearson": {
                         "column_name": "col1",
-                        "correlations": {"col2": -0.39101797181493814},
                         "kind": "pearson",
+                        "values": {"x": ["col2"], "y": [-0.39101797181493814]},
                     },
-                    "spearman": {"column_name": "col1", "correlations": {"col2": -0.5}, "kind": "spearman"},
+                    "spearman": {"column_name": "col1", "kind": "spearman", "values": {"x": ["col2"], "y": [-0.5]}},
                 },
                 "reference": {
-                    "kendall": {"column_name": "col1", "correlations": {"col2": -0.816496580927726}, "kind": "kendall"},
-                    "pearson": {"column_name": "col1", "correlations": {"col2": -0.798823018394266}, "kind": "pearson"},
+                    "kendall": {
+                        "column_name": "col1",
+                        "kind": "kendall",
+                        "values": {"x": ["col2"], "y": [-0.816496580927726]},
+                    },
+                    "pearson": {
+                        "column_name": "col1",
+                        "kind": "pearson",
+                        "values": {"x": ["col2"], "y": [-0.798823018394266]},
+                    },
                     "spearman": {
                         "column_name": "col1",
-                        "correlations": {"col2": -0.8660254037844387},
                         "kind": "spearman",
+                        "values": {"x": ["col2"], "y": [-0.8660254037844387]},
                     },
                 },
             },

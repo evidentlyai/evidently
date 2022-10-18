@@ -12,13 +12,11 @@ from evidently.calculations.data_quality import calculate_numerical_column_corre
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
-from evidently.options import ColorOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
-from evidently.renderers.html_widgets import HistogramData
 from evidently.renderers.html_widgets import TabData
+from evidently.renderers.html_widgets import get_histogram_for_distribution
 from evidently.renderers.html_widgets import header_text
-from evidently.renderers.html_widgets import histogram
 from evidently.renderers.html_widgets import widget_tabs
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_operations import recognize_column_type
@@ -89,38 +87,23 @@ class ColumnCorrelationsMetricRenderer(MetricRenderer):
         result = dataclasses.asdict(obj.get_result())
         return result
 
-    @staticmethod
-    def _get_plots_correlations(
-        metric_result: ColumnCorrelationsMetricResult, color_options: ColorOptions
-    ) -> BaseWidgetInfo:
+    def _get_plots_correlations(self, metric_result: ColumnCorrelationsMetricResult) -> BaseWidgetInfo:
         tabs = []
 
         for correlation_name, current_correlation in metric_result.current.items():
-            current_histogram = HistogramData(
-                name="current",
-                x=list(current_correlation.correlations.keys()),
-                y=list(current_correlation.correlations.values()),
-            )
-            reference_histogram = None
+            reference_correlation_values = None
 
             if metric_result.reference and correlation_name in metric_result.reference:
-                reference_correlation = metric_result.reference[correlation_name]
-
-                if reference_correlation:
-                    reference_histogram = HistogramData(
-                        name="reference",
-                        x=list(reference_correlation.correlations.keys()),
-                        y=list(reference_correlation.correlations.values()),
-                    )
+                reference_correlation_values = metric_result.reference[correlation_name].values
 
             tabs.append(
                 TabData(
                     title=correlation_name,
-                    widget=histogram(
+                    widget=get_histogram_for_distribution(
                         title="",
-                        primary_hist=current_histogram,
-                        secondary_hist=reference_histogram,
-                        color_options=color_options,
+                        current_distribution=current_correlation.values,
+                        reference_distribution=reference_correlation_values,
+                        color_options=self.color_options,
                     ),
                 )
             )
@@ -135,6 +118,6 @@ class ColumnCorrelationsMetricRenderer(MetricRenderer):
         metric_result = obj.get_result()
         result = [
             header_text(label=f"Correlations for column '{metric_result.column_name}'."),
-            self._get_plots_correlations(metric_result, color_options=ColorOptions()),
+            self._get_plots_correlations(metric_result),
         ]
         return result
