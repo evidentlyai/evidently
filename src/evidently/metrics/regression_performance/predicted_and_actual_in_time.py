@@ -17,14 +17,14 @@ from evidently.utils.visualizations import plot_pred_actual_time
 
 
 @dataclasses.dataclass
-class RegressionPredictedAndActualPlotResults:
+class RegressionPredictedVsActualPlotResults:
     current_scatter: Dict[str, pd.Series]
     reference_scatter: Optional[Dict[str, pd.Series]]
     x_name: str
 
 
-class RegressionPredictedAndActualPlot(Metric[RegressionPredictedAndActualPlotResults]):
-    def calculate(self, data: InputData) -> RegressionPredictedAndActualPlotResults:
+class RegressionPredictedVsActualPlot(Metric[RegressionPredictedVsActualPlotResults]):
+    def calculate(self, data: InputData) -> RegressionPredictedVsActualPlotResults:
         dataset_columns = process_columns(data.current_data, data.column_mapping)
         target_name = dataset_columns.utility_columns.target
         prediction_name = dataset_columns.utility_columns.prediction
@@ -53,7 +53,7 @@ class RegressionPredictedAndActualPlot(Metric[RegressionPredictedAndActualPlotRe
             reference_scatter["Predicted"] = ref_df[prediction_name]
             reference_scatter["Actual"] = ref_df[target_name]
             reference_scatter["x"] = ref_df[datetime_column_name] if datetime_column_name else ref_df.index
-        return RegressionPredictedAndActualPlotResults(
+        return RegressionPredictedVsActualPlotResults(
             current_scatter=current_scatter, reference_scatter=reference_scatter, x_name=x_name
         )
 
@@ -66,9 +66,9 @@ class RegressionPredictedAndActualPlot(Metric[RegressionPredictedAndActualPlotRe
         return result.sort_index()
 
 
-@default_renderer(wrap_type=RegressionPredictedAndActualPlot)
-class RegressionPredictedAndActualPlotRenderer(MetricRenderer):
-    def render_html(self, obj: RegressionPredictedAndActualPlot) -> List[BaseWidgetInfo]:
+@default_renderer(wrap_type=RegressionPredictedVsActualPlot)
+class RegressionPredictedVsActualPlotRenderer(MetricRenderer):
+    def render_html(self, obj: RegressionPredictedVsActualPlot) -> List[BaseWidgetInfo]:
         result = obj.get_result()
         current_scatter = result.current_scatter
         reference_scatter = None
