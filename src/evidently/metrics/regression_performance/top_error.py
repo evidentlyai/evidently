@@ -10,11 +10,11 @@ from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
-from evidently.utils.data_operations import process_columns
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import header_text
+from evidently.utils.data_operations import process_columns
 from evidently.utils.visualizations import plot_error_bias_colored_scatter
 
 
@@ -61,7 +61,11 @@ class RegressionTopErrorMetric(Metric[RegressionTopErrorMetricResults]):
 
             ref_df["Error bias"] = list(
                 map(
-                    lambda x: "Underestimation" if x <= quantile_5 else "Majority" if x < quantile_95 else "Overestimation",
+                    lambda x: "Underestimation"
+                    if x <= quantile_5
+                    else "Majority"
+                    if x < quantile_95
+                    else "Overestimation",
                     ref_error,
                 )
             )
@@ -71,7 +75,7 @@ class RegressionTopErrorMetric(Metric[RegressionTopErrorMetricResults]):
             curr_mean_err_per_group=curr_mean_err_per_group,
             curr_scatter=curr_scatter,
             ref_mean_err_per_group=ref_mean_err_per_group,
-            ref_scatter=ref_scatter
+            ref_scatter=ref_scatter,
         )
 
     def _make_df_for_plot(self, df, target_name: str, prediction_name: str, datetime_column_name: Optional[str]):
@@ -86,20 +90,21 @@ class RegressionTopErrorMetric(Metric[RegressionTopErrorMetricResults]):
         scatter = {}
         scatter["Underestimation"] = {
             "Predicted value": df.loc[df["Error bias"] == "Underestimation", prediction_name],
-            "Actual value": df.loc[df["Error bias"] == "Underestimation", target_name]
+            "Actual value": df.loc[df["Error bias"] == "Underestimation", target_name],
         }
         scatter["Majority"] = {
             "Predicted value": df.loc[df["Error bias"] == "Majority", prediction_name],
-            "Actual value": df.loc[df["Error bias"] == "Majority", target_name]
+            "Actual value": df.loc[df["Error bias"] == "Majority", target_name],
         }
         scatter["Overestimation"] = {
             "Predicted value": df.loc[df["Error bias"] == "Overestimation", prediction_name],
-            "Actual value": df.loc[df["Error bias"] == "Overestimation", target_name]
+            "Actual value": df.loc[df["Error bias"] == "Overestimation", target_name],
         }
         return scatter
 
-    def _calculate_underperformance(self, error: pd.Series, quantile_5: float, quantile_95: float,
-                                    conf_interval_n_sigmas: int = 1):
+    def _calculate_underperformance(
+        self, error: pd.Series, quantile_5: float, quantile_95: float, conf_interval_n_sigmas: int = 1
+    ):
 
         mae_under = np.mean(error[error <= quantile_5])
         mae_exp = np.mean(error[(error > quantile_5) & (error < quantile_95)])
@@ -130,44 +135,26 @@ class RegressionTopErrorMetricRenderer(MetricRenderer):
             counter(
                 title="Current: Mean Error per Group (+/- std)",
                 counters=[
-                    CounterData(
-                        "Majority(90%)",
-                        self._format_value(curr_mean_err_per_group, "majority")
-                    ),
-                    CounterData(
-                        "Underestimation(5%)",
-                        self._format_value(curr_mean_err_per_group, "underestimation")
-                    ),
-                    CounterData(
-                        "Overestimation(5%)",
-                        self._format_value(curr_mean_err_per_group, "overestimation")
-                    )
-                ]
-            )
+                    CounterData("Majority(90%)", self._format_value(curr_mean_err_per_group, "majority")),
+                    CounterData("Underestimation(5%)", self._format_value(curr_mean_err_per_group, "underestimation")),
+                    CounterData("Overestimation(5%)", self._format_value(curr_mean_err_per_group, "overestimation")),
+                ],
+            ),
         ]
         if ref_mean_err_per_group is not None:
             res.append(
                 counter(
                     title="Current: Mean Error per Group (+/- std)",
                     counters=[
+                        CounterData("Majority(90%)", self._format_value(ref_mean_err_per_group, "majority")),
                         CounterData(
-                            "Majority(90%)",
-                            self._format_value(ref_mean_err_per_group, "majority")
+                            "Underestimation(5%)", self._format_value(ref_mean_err_per_group, "underestimation")
                         ),
-                        CounterData(
-                            "Underestimation(5%)",
-                            self._format_value(ref_mean_err_per_group, "underestimation")
-                        ),
-                        CounterData(
-                            "Overestimation(5%)",
-                            self._format_value(ref_mean_err_per_group, "overestimation")
-                        )
-                    ]
+                        CounterData("Overestimation(5%)", self._format_value(ref_mean_err_per_group, "overestimation")),
+                    ],
                 )
             )
-        res.append(
-            header_text(label="Predicted vs Actual per Group")
-        )
+        res.append(header_text(label="Predicted vs Actual per Group"))
         fig = plot_error_bias_colored_scatter(curr_scatter, ref_scatter)
 
         res.append(
@@ -181,7 +168,4 @@ class RegressionTopErrorMetricRenderer(MetricRenderer):
         return res
 
     def _format_value(self, result, counter_type):
-        return (
-            f"{round(result[counter_type]['mean_error'], 2)}"
-            f" ({round(result[counter_type]['std_error'], 2)})"
-        )
+        return f"{round(result[counter_type]['mean_error'], 2)}" f" ({round(result[counter_type]['std_error'], 2)})"

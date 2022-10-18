@@ -288,8 +288,9 @@ def plot_line_in_time(
     return fig
 
 
-def plot_error_bias_colored_scatter(curr_scatter_data: Dict[str, Dict[str, pd.Series]],
-                                    ref_scatter_data: Optional[Dict[str, Dict[str, pd.Series]]]):
+def plot_error_bias_colored_scatter(
+    curr_scatter_data: Dict[str, Dict[str, pd.Series]], ref_scatter_data: Optional[Dict[str, Dict[str, pd.Series]]]
+):
     color_options = ColorOptions()
     cols = 1
     subplot_titles: Union[list, str] = ""
@@ -302,7 +303,7 @@ def plot_error_bias_colored_scatter(curr_scatter_data: Dict[str, Dict[str, pd.Se
 
     for name, color in zip(
         ["Underestimation", "Overestimation", "Majority"],
-        [color_options.underestimation_color, color_options.overestimation_color, color_options.majority_color]
+        [color_options.underestimation_color, color_options.overestimation_color, color_options.majority_color],
     ):
         trace = go.Scatter(
             x=curr_scatter_data[name]["Actual value"],
@@ -319,7 +320,7 @@ def plot_error_bias_colored_scatter(curr_scatter_data: Dict[str, Dict[str, pd.Se
     if ref_scatter_data is not None:
         for name, color in zip(
             ["Underestimation", "Overestimation", "Majority"],
-            [color_options.underestimation_color, color_options.overestimation_color, color_options.majority_color]
+            [color_options.underestimation_color, color_options.overestimation_color, color_options.majority_color],
         ):
             trace = go.Scatter(
                 x=ref_scatter_data[name]["Actual value"],

@@ -3,27 +3,26 @@ from typing import List
 from typing import Optional
 
 import dataclasses
+import numpy as np
+import pandas as pd
 from sklearn.metrics import mean_absolute_error
 from sklearn.metrics import mean_absolute_percentage_error
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import r2_score
-import numpy as np
-import pandas as pd
-
-from evidently.metrics.base_metric import InputData
-from evidently.metrics.base_metric import Metric
-from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import MetricRenderer
 
 from evidently.calculations.regression_performance import calculate_regression_performance
-from evidently.utils.data_operations import process_columns
+from evidently.metrics.base_metric import InputData
+from evidently.metrics.base_metric import Metric
 from evidently.metrics.utils import apply_func_to_binned_data
 from evidently.metrics.utils import make_target_bins_for_reg_plots
+from evidently.model.widget import BaseWidgetInfo
+from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import DatasetColumns
+from evidently.utils.data_operations import process_columns
 from evidently.utils.visualizations import make_hist_for_cat_plot
 from evidently.utils.visualizations import make_hist_for_num_plot
 
@@ -191,9 +190,7 @@ class RegressionQualityMetric(Metric[RegressionQualityMetricResults]):
         err_ref = None
 
         if is_ref_data:
-            err_ref = (
-                data.reference_data[prediction_name] - data.reference_data[target_name]
-            )
+            err_ref = data.reference_data[prediction_name] - data.reference_data[target_name]
         me_hist_for_plot = make_hist_for_num_plot(err_curr, err_ref)
 
         if r2_score_ref is not None:
@@ -260,20 +257,16 @@ class RegressionQualityMetricRenderer(MetricRenderer):
             counter(
                 title="Current: Model Quality (+/- std)",
                 counters=[
+                    CounterData("ME", f"{round(metric_result.mean_error, 2)} ({round(metric_result.error_std, 2)})"),
                     CounterData(
-                        "ME",
-                        f"{round(metric_result.mean_error, 2)} ({round(metric_result.error_std, 2)})"
-                    ),
-                    CounterData(
-                        "MAE",
-                        f"{round(metric_result.mean_abs_error, 2)} ({round(metric_result.abs_error_std, 2)})"
+                        "MAE", f"{round(metric_result.mean_abs_error, 2)} ({round(metric_result.abs_error_std, 2)})"
                     ),
                     CounterData(
                         "MAPE",
                         (
                             f"{round(metric_result.mean_abs_perc_error, 2)}"
                             f" ({round(metric_result.abs_perc_error_std, 2)})"
-                        )
+                        ),
                     ),
                 ],
             ),
@@ -291,22 +284,21 @@ class RegressionQualityMetricRenderer(MetricRenderer):
                     title="Reference: Model Quality (+/- std)",
                     counters=[
                         CounterData(
-                            "ME",
-                            f"{round(metric_result.mean_error_ref, 2)} ({round(metric_result.error_std_ref, 2)})"
+                            "ME", f"{round(metric_result.mean_error_ref, 2)} ({round(metric_result.error_std_ref, 2)})"
                         ),
                         CounterData(
                             "MAE",
                             (
                                 f"{round(metric_result.mean_abs_error_ref, 2)}"
                                 f" ({round(metric_result.abs_error_std_ref, 2)})"
-                            )
+                            ),
                         ),
                         CounterData(
                             "MAPE",
                             (
                                 f"{round(metric_result.mean_abs_perc_error_ref, 2)}"
                                 f" ({round(metric_result.abs_perc_error_std_ref, 2)})"
-                            )
+                            ),
                         ),
                     ],
                 ),

@@ -7,25 +7,24 @@ from typing import Optional
 import dataclasses
 import numpy as np
 import pandas as pd
-
 import plotly.express as px
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
-from evidently.calculations.regression_performance import calculate_regression_performance
-from evidently.calculations.regression_performance import _error_with_qantiles
+
 from evidently.calculations.regression_performance import _error_bias_table
+from evidently.calculations.regression_performance import _error_with_qantiles
+from evidently.calculations.regression_performance import calculate_regression_performance
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
+from evidently.model.widget import AdditionalGraphInfo
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
-from evidently.utils.data_operations import process_columns
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
+from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import rich_table_data
-from evidently.renderers.html_widgets import header_text
+from evidently.utils.data_operations import process_columns
 from evidently.utils.visualizations import plot_error_bias_colored_scatter
-from evidently.model.widget import AdditionalGraphInfo
-from evidently.renderers.html_widgets import header_text
 
 
 @dataclasses.dataclass
@@ -501,10 +500,7 @@ class RegressionErrorBiasTableRenderer(MetricRenderer):
                 },
                 additionalGraphs=additional_graphs_data,
             )
-        return [
-            header_text(label="Error Bias: Mean/Most Common Feature Value per Group"),
-            widget_info
-        ]
+        return [header_text(label="Error Bias: Mean/Most Common Feature Value per Group"), widget_info]
 
     def _error_bias_string(self, quantile_5, quantile_95):
         def __error_bias_string(error):
