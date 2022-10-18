@@ -79,10 +79,12 @@ from sklearn.datasets import fetch_california_housing
 from evidently.pipeline.column_mapping import ColumnMapping
 
 from evidently.report import Report
-from evidently.metric_preset import DataDriftPreset, NumTargetDrift
+from evidently.metric_preset import DataDriftPreset
+from evidently.metric_preset import NumTargetDrift
 
 from evidently.test_suite import TestSuite
-from evidently.test_preset import DataQuality, DataStability
+from evidently.test_preset import DataQuality
+from evidently.test_preset import DataStability
 from evidently.tests import *
 ```
 
