@@ -133,7 +133,7 @@ import pandas as pd
 from sklearn import datasets
 
 from evidently.report import Report
-from evidently.metric_preset import DataDrift, CatTargetDrift
+from evidently.metric_preset import DataDriftPreset, CatTargetDrift
 
 iris_data = datasets.load_iris(as_frame='auto')
 iris = iris_data.frame
