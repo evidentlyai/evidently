@@ -11,14 +11,15 @@ from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
+from evidently.renderers.html_widgets import HistogramData
 from evidently.renderers.html_widgets import TabData
 from evidently.renderers.html_widgets import header_text
-from evidently.renderers.html_widgets import plotly_figure
+from evidently.renderers.html_widgets import histogram
 from evidently.renderers.html_widgets import table_data
 from evidently.renderers.html_widgets import widget_tabs
 from evidently.utils.types import Numeric
+from evidently.utils.visualizations import Distribution
 from evidently.utils.visualizations import get_distribution_for_column
-from evidently.utils.visualizations import plot_distribution_with_range
 
 
 @dataclasses.dataclass
@@ -32,15 +33,14 @@ class ValuesInRangeStat:
 
 
 @dataclasses.dataclass
-class DataQualityValueRangeMetricResult:
+class ColumnValueRangeMetricResult:
     column_name: str
     left: Numeric
     right: Numeric
     current: ValuesInRangeStat
+    current_distribution: Distribution
     reference: Optional[ValuesInRangeStat] = None
-    # distributions for the column
-    current_distribution: Optional[pd.Series] = None
-    reference_distribution: Optional[pd.Series] = None
+    reference_distribution: Optional[Distribution] = None
 
     def __eq__(self, other):
         return (
@@ -52,7 +52,7 @@ class DataQualityValueRangeMetricResult:
         )
 
 
-class DataQualityValueRangeMetric(Metric[DataQualityValueRangeMetricResult]):
+class ColumnValueRangeMetric(Metric[ColumnValueRangeMetricResult]):
     """Calculates count and shares of values in the predefined values range"""
 
     column_name: str
@@ -89,7 +89,7 @@ class DataQualityValueRangeMetric(Metric[DataQualityValueRangeMetricResult]):
             number_of_values=rows_count,
         )
 
-    def calculate(self, data: InputData) -> DataQualityValueRangeMetricResult:
+    def calculate(self, data: InputData) -> ColumnValueRangeMetricResult:
         if self.column_name not in data.current_data:
             raise ValueError(f"Column {self.column_name} is not in current data.")
 
@@ -135,27 +135,26 @@ class DataQualityValueRangeMetric(Metric[DataQualityValueRangeMetricResult]):
 
         # calculate distribution for visualisation
         current_column = data.current_data[self.column_name]
-        distribution_for_plot = get_distribution_for_column(
-            column_name=self.column_name,
+        distributions = get_distribution_for_column(
             column_type="num",
             current=current_column,
             reference=reference_column,
         )
 
-        return DataQualityValueRangeMetricResult(
+        return ColumnValueRangeMetricResult(
             column_name=self.column_name,
             left=left,
             right=right,
             current=current,
             reference=reference,
-            current_distribution=distribution_for_plot["current"],
-            reference_distribution=distribution_for_plot.get("reference", None),
+            current_distribution=distributions[0],
+            reference_distribution=distributions[1],
         )
 
 
-@default_renderer(wrap_type=DataQualityValueRangeMetric)
-class DataQualityValueRangeMetricRenderer(MetricRenderer):
-    def render_json(self, obj: DataQualityValueRangeMetric) -> dict:
+@default_renderer(wrap_type=ColumnValueRangeMetric)
+class ColumnValueRangeMetricRenderer(MetricRenderer):
+    def render_json(self, obj: ColumnValueRangeMetric) -> dict:
         result = dataclasses.asdict(obj.get_result())
         result.pop("current_distribution", None)
         result.pop("reference_distribution", None)
@@ -178,61 +177,48 @@ class DataQualityValueRangeMetricRenderer(MetricRenderer):
             data=matched_stat,
         )
 
-    def render_html(self, obj: DataQualityValueRangeMetric) -> List[BaseWidgetInfo]:
+    def _get_tabs(self, dataset_name: str, stats: ValuesInRangeStat, distribution: Optional[Distribution]):
+        if distribution is not None:
+            data_histogram = HistogramData(
+                name=dataset_name.lower(),
+                x=list(distribution.x),
+                y=list(distribution.y),
+            )
+            tabs: List[TabData] = [
+                TabData(
+                    title="Distribution",
+                    widget=histogram(
+                        title="",
+                        primary_hist=data_histogram,
+                        secondary_hist=None,
+                    ),
+                ),
+            ]
+
+        else:
+            tabs = []
+
+        tabs.append(
+            TabData(
+                title="Statistics",
+                widget=self._get_table_stat(stats),
+            )
+        )
+        return widget_tabs(
+            title=f"{dataset_name.capitalize()} dataset",
+            tabs=tabs,
+        )
+
+    def render_html(self, obj: ColumnValueRangeMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         column_name = metric_result.column_name
-        left = metric_result.left
-        right = metric_result.right
-        number_in_range = metric_result.current.number_in_range
-        percents = round(metric_result.current.share_in_range * 100, 3)
 
         result: List[BaseWidgetInfo] = [
             header_text(
-                title=f"Value range for column '{column_name}'",
-                label=f"The number of values in range [{left}, {right}] is {number_in_range} ({percents}%)",
+                label=f"Column '{column_name}'. Value range.",
             ),
-            widget_tabs(
-                title="Current dataset",
-                tabs=[
-                    TabData(
-                        title="Distribution",
-                        widget=plotly_figure(
-                            title="",
-                            figure=plot_distribution_with_range(
-                                distribution_data=metric_result.current_distribution,
-                                left=metric_result.left,
-                                right=metric_result.right,
-                            ),
-                        ),
-                    ),
-                    TabData(
-                        title="Statistics",
-                        widget=self._get_table_stat(metric_result.current),
-                    ),
-                ],
-            ),
+            self._get_tabs("current", metric_result.current, metric_result.current_distribution),
         ]
-        if metric_result.reference:
-            result.append(
-                widget_tabs(
-                    title="Reference dataset",
-                    tabs=[
-                        TabData(
-                            title="Distribution",
-                            widget=plotly_figure(
-                                title="",
-                                figure=plot_distribution_with_range(
-                                    distribution_data=metric_result.reference_distribution,
-                                    left=metric_result.left,
-                                    right=metric_result.right,
-                                ),
-                            ),
-                        ),
-                        TabData(
-                            title="Statistics",
-                            widget=self._get_table_stat(metric_result.reference),
-                        ),
-                    ],
-                )
-            )
+        if metric_result.reference is not None:
+            self._get_tabs("reference", metric_result.reference, metric_result.reference_distribution),
         return result

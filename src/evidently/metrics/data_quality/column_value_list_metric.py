@@ -31,14 +31,14 @@ class ValueListStat:
 
 
 @dataclasses.dataclass
-class DataQualityValueListMetricsResult:
+class ColumnValueListMetricResult:
     column_name: str
     values: List[Any]
     current: ValueListStat
     reference: Optional[ValueListStat] = None
 
 
-class DataQualityValueListMetric(Metric[DataQualityValueListMetricsResult]):
+class ColumnValueListMetric(Metric[ColumnValueListMetricResult]):
     """Calculates count and shares of values in the predefined values list"""
 
     column_name: str
@@ -89,7 +89,7 @@ class DataQualityValueListMetric(Metric[DataQualityValueListMetricsResult]):
             rows_count=rows_count,
         )
 
-    def calculate(self, data: InputData) -> DataQualityValueListMetricsResult:
+    def calculate(self, data: InputData) -> ColumnValueListMetricResult:
         if data.reference_data is not None and self.column_name not in data.reference_data:
             raise ValueError(f"Column '{self.column_name}' is not in reference data.")
 
@@ -117,7 +117,7 @@ class DataQualityValueListMetric(Metric[DataQualityValueListMetricsResult]):
         else:
             reference_stats = None
 
-        return DataQualityValueListMetricsResult(
+        return ColumnValueListMetricResult(
             column_name=self.column_name,
             values=list(values),
             current=current_stats,
@@ -125,9 +125,9 @@ class DataQualityValueListMetric(Metric[DataQualityValueListMetricsResult]):
         )
 
 
-@default_renderer(wrap_type=DataQualityValueListMetric)
-class DataQualityValueListMetricsRenderer(MetricRenderer):
-    def render_json(self, obj: DataQualityValueListMetric) -> dict:
+@default_renderer(wrap_type=ColumnValueListMetric)
+class ColumnValueListMetricRenderer(MetricRenderer):
+    def render_json(self, obj: ColumnValueListMetric) -> dict:
         result = dataclasses.asdict(obj.get_result())
         return result
 
@@ -154,7 +154,7 @@ class DataQualityValueListMetricsRenderer(MetricRenderer):
         ]
         return widget_tabs(tabs=tabs)
 
-    def render_html(self, obj: DataQualityValueListMetric) -> List[BaseWidgetInfo]:
+    def render_html(self, obj: ColumnValueListMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         result = [
             header_text(label=f"Value List Metric for the column '{metric_result.column_name}'"),

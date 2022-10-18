@@ -7,16 +7,17 @@ from typing import Union
 import numpy as np
 import pandas as pd
 
+from evidently.metrics import ColumnQuantileMetric
+from evidently.metrics import ColumnValueListMetric
+from evidently.metrics import ColumnValueRangeMetric
 from evidently.metrics import DataQualityMetrics
 from evidently.metrics import DataQualityStabilityMetrics
-from evidently.metrics import DataQualityValueListMetric
-from evidently.metrics import DataQualityValueQuantileMetric
-from evidently.metrics import DataQualityValueRangeMetric
 from evidently.metrics import DatasetCorrelationsMetric
 from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import plotly_figure
+from evidently.renderers.render_utils import get_distribution_plot_figure
 from evidently.renderers.render_utils import plot_distr
 from evidently.tests.base_test import BaseCheckValueTest
 from evidently.tests.base_test import GroupData
@@ -932,7 +933,7 @@ class TestNumColumnsMeanInNSigmas(BaseGenerator):
 class TestValueRange(Test):
     group = DATA_QUALITY_GROUP.id
     name = "Value Range"
-    metric: DataQualityValueRangeMetric
+    metric: ColumnValueRangeMetric
     column: str
     left: Optional[float]
     right: Optional[float]
@@ -942,7 +943,7 @@ class TestValueRange(Test):
         column_name: str,
         left: Optional[float] = None,
         right: Optional[float] = None,
-        metric: Optional[DataQualityValueRangeMetric] = None,
+        metric: Optional[ColumnValueRangeMetric] = None,
     ):
         self.column_name = column_name
         self.left = left
@@ -952,7 +953,7 @@ class TestValueRange(Test):
             self.metric = metric
 
         else:
-            self.metric = DataQualityValueRangeMetric(column_name=column_name, left=left, right=right)
+            self.metric = ColumnValueRangeMetric(column_name=column_name, left=left, right=right)
 
     def check(self):
         number_not_in_range = self.metric.get_result().current.number_not_in_range
@@ -979,9 +980,7 @@ class TestValueRangeRenderer(TestRenderer):
         metric_result = obj.metric.get_result()
         condition_ = TestValueCondition(gt=metric_result.left, lt=metric_result.right)
         info = super().render_html(obj)
-        curr_distr = metric_result.current_distribution
-        ref_distr = metric_result.reference_distribution
-        fig = plot_distr(curr_distr, ref_distr)
+        fig = get_distribution_plot_figure(metric_result.current_distribution, metric_result.reference_distribution)
         fig = plot_check(fig, condition_)
         info.with_details(f"Value Range {column_name}", plotly_figure(title="", figure=fig))
         return info
@@ -989,7 +988,7 @@ class TestValueRangeRenderer(TestRenderer):
 
 class BaseDataQualityValueRangeMetricsTest(BaseCheckValueTest, ABC):
     group = DATA_QUALITY_GROUP.id
-    metric: DataQualityValueRangeMetric
+    metric: ColumnValueRangeMetric
     column: str
     left: Optional[float]
     right: Optional[float]
@@ -1007,7 +1006,7 @@ class BaseDataQualityValueRangeMetricsTest(BaseCheckValueTest, ABC):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        metric: Optional[DataQualityValueRangeMetric] = None,
+        metric: Optional[ColumnValueRangeMetric] = None,
     ):
         self.column_name = column_name
         self.left = left
@@ -1017,7 +1016,7 @@ class BaseDataQualityValueRangeMetricsTest(BaseCheckValueTest, ABC):
             self.metric = metric
 
         else:
-            self.metric = DataQualityValueRangeMetric(column_name=column_name, left=left, right=right)
+            self.metric = ColumnValueRangeMetric(column_name=column_name, left=left, right=right)
 
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
 
@@ -1049,9 +1048,7 @@ class TestNumberOfOutRangeValuesRenderer(TestRenderer):
         column_name = obj.column_name
         metric_result = obj.metric.get_result()
         info = super().render_html(obj)
-        curr_distr = metric_result.current_distribution
-        ref_distr = metric_result.reference_distribution
-        fig = plot_distr(curr_distr, ref_distr)
+        fig = get_distribution_plot_figure(metric_result.current_distribution, metric_result.reference_distribution)
         fig = plot_check(fig, obj.condition)
         info.with_details(f"Number Out of Range for {column_name}", plotly_figure(title="", figure=fig))
         return info
@@ -1091,9 +1088,7 @@ class TestShareOfOutRangeValuesRenderer(TestRenderer):
         column_name = obj.column_name
         metric_result = obj.metric.get_result()
         info = super().render_html(obj)
-        curr_distr = metric_result.current_distribution
-        ref_distr = metric_result.reference_distribution
-        fig = plot_distr(curr_distr, ref_distr)
+        fig = get_distribution_plot_figure(metric_result.current_distribution, metric_result.reference_distribution)
         fig = plot_check(fig, obj.condition)
         info.with_details(f"Share Out of Range for {column_name}", plotly_figure(title="", figure=fig))
         return info
@@ -1109,13 +1104,11 @@ class TestNumColumnsOutOfRangeValues(BaseGenerator):
 class TestValueList(Test):
     group = DATA_QUALITY_GROUP.id
     name = "Out-of-List Values"
-    metric: DataQualityValueListMetric
+    metric: ColumnValueListMetric
     column_name: str
     values: Optional[list]
 
-    def __init__(
-        self, column_name: str, values: Optional[list] = None, metric: Optional[DataQualityValueListMetric] = None
-    ):
+    def __init__(self, column_name: str, values: Optional[list] = None, metric: Optional[ColumnValueListMetric] = None):
         self.column_name = column_name
         self.values = values
 
@@ -1123,7 +1116,7 @@ class TestValueList(Test):
             self.metric = metric
 
         else:
-            self.metric = DataQualityValueListMetric(column_name=column_name, values=values)
+            self.metric = ColumnValueListMetric(column_name=column_name, values=values)
 
     def check(self):
         metric_result = self.metric.get_result()
@@ -1173,7 +1166,7 @@ class TestValueListRenderer(TestRenderer):
 
 class BaseDataQualityValueListMetricsTest(BaseCheckValueTest, ABC):
     group = DATA_QUALITY_GROUP.id
-    metric: DataQualityValueListMetric
+    metric: ColumnValueListMetric
     column_name: str
     values: Optional[list]
 
@@ -1189,7 +1182,7 @@ class BaseDataQualityValueListMetricsTest(BaseCheckValueTest, ABC):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        metric: Optional[DataQualityValueListMetric] = None,
+        metric: Optional[ColumnValueListMetric] = None,
     ):
         self.column_name = column_name
         self.values = values
@@ -1198,7 +1191,7 @@ class BaseDataQualityValueListMetricsTest(BaseCheckValueTest, ABC):
             self.metric = metric
 
         else:
-            self.metric = DataQualityValueListMetric(column_name=column_name, values=values)
+            self.metric = ColumnValueListMetric(column_name=column_name, values=values)
 
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
 
@@ -1276,7 +1269,7 @@ class TestCatColumnsOutOfListValues(BaseGenerator):
 class TestValueQuantile(BaseCheckValueTest):
     group = DATA_QUALITY_GROUP.id
     name = "Quantile Value"
-    metric: DataQualityValueQuantileMetric
+    metric: ColumnQuantileMetric
     column_name: str
     quantile: Optional[float]
 
@@ -1292,7 +1285,7 @@ class TestValueQuantile(BaseCheckValueTest):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        metric: Optional[DataQualityValueQuantileMetric] = None,
+        metric: Optional[ColumnQuantileMetric] = None,
     ):
         self.column_name = column_name
         self.quantile = quantile
@@ -1307,7 +1300,7 @@ class TestValueQuantile(BaseCheckValueTest):
             if quantile is None:
                 raise ValueError("Quantile parameter should be present")
 
-            self.metric = DataQualityValueQuantileMetric(column_name=column_name, quantile=quantile)
+            self.metric = ColumnQuantileMetric(column_name=column_name, quantile=quantile)
 
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
 
@@ -1341,7 +1334,7 @@ class TestValueQuantileRenderer(TestRenderer):
         info = super().render_html(obj)
         metric_result = obj.metric.get_result()
         column_name = metric_result.column_name
-        fig = plot_distr(metric_result.current_distribution, metric_result.reference_distribution)
+        fig = get_distribution_plot_figure(metric_result.current_distribution, metric_result.reference_distribution)
         fig = plot_check(fig, obj.get_condition())
         fig = plot_metric_value(
             fig, obj.metric.get_result().current, f"current {column_name} {metric_result.quantile} quantile"

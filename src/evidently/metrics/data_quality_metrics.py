@@ -5,6 +5,7 @@ from typing import Optional
 import dataclasses
 import pandas as pd
 from dataclasses import dataclass
+from plotly import graph_objs as go
 
 from evidently import TaskType
 from evidently.calculations.data_quality import DataQualityStats
@@ -13,6 +14,7 @@ from evidently.calculations.data_quality import calculate_data_quality_stats
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options import ColorOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
@@ -25,7 +27,6 @@ from evidently.utils.data_operations import process_columns
 from evidently.utils.data_operations import recognize_task
 from evidently.utils.visualizations import make_hist_for_cat_plot
 from evidently.utils.visualizations import make_hist_for_num_plot
-from evidently.utils.visualizations import plot_distr
 
 
 @dataclass
@@ -193,7 +194,34 @@ class DataQualityMetricsRenderer(MetricRenderer):
         return table_data(title="Data Summary", column_names=headers, data=stats)
 
     @staticmethod
+    def plot_distr(hist_curr, hist_ref=None, orientation="v", color_options: Optional[ColorOptions] = None):
+        color_options = color_options or ColorOptions()
+        fig = go.Figure()
+
+        fig.add_trace(
+            go.Bar(
+                name="current",
+                x=hist_curr["x"],
+                y=hist_curr["count"],
+                marker_color=color_options.get_current_data_color(),
+                orientation=orientation,
+            )
+        )
+        if hist_ref is not None:
+            fig.add_trace(
+                go.Bar(
+                    name="reference",
+                    x=hist_ref["x"],
+                    y=hist_ref["count"],
+                    marker_color=color_options.get_reference_data_color(),
+                    orientation=orientation,
+                )
+            )
+
+        return fig
+
     def _get_data_quality_distribution_graph(
+        self,
         features_stat: Dict[str, Dict[str, pd.DataFrame]],
     ) -> List[BaseWidgetInfo]:
         result = []
@@ -201,7 +229,7 @@ class DataQualityMetricsRenderer(MetricRenderer):
         for column_name, stat in features_stat.items():
             curr_distr = stat["current"]
             ref_distr = stat.get("reference")
-            fig = plot_distr(curr_distr, ref_distr)
+            fig = self.plot_distr(curr_distr, ref_distr)
 
             result.append(plotly_figure(title=f"Column: {column_name}", figure=fig))
         return result

@@ -2,10 +2,10 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from evidently.metrics import ColumnQuantileMetric
+from evidently.metrics import ColumnValueListMetric
 from evidently.metrics import DataQualityMetrics
 from evidently.metrics import DataQualityStabilityMetrics
-from evidently.metrics import DataQualityValueListMetric
-from evidently.metrics import DataQualityValueQuantileMetric
 from evidently.metrics import DatasetCorrelationsMetric
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
@@ -68,8 +68,8 @@ def test_data_quality_stability_metrics_no_other_columns() -> None:
     (
         DataQualityMetrics(),
         DataQualityStabilityMetrics(),
-        DataQualityValueListMetric(column_name="feature", values=[1, 0]),
-        DataQualityValueQuantileMetric(column_name="feature", quantile=0.5),
+        ColumnValueListMetric(column_name="feature", values=[1, 0]),
+        ColumnQuantileMetric(column_name="feature", quantile=0.5),
         DatasetCorrelationsMetric(),
     ),
 )

@@ -3,7 +3,6 @@ from typing import List
 from typing import Optional
 
 import dataclasses
-import pandas as pd
 
 from evidently.calculations.data_drift import get_one_column_drift
 from evidently.metrics.base_metric import InputData
@@ -16,9 +15,10 @@ from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import GraphData
 from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import plotly_graph_tabs
-from evidently.renderers.render_utils import plot_distr
+from evidently.renderers.render_utils import get_distribution_plot_figure
 from evidently.utils.data_operations import process_columns
 from evidently.utils.types import Numeric
+from evidently.utils.visualizations import Distribution
 from evidently.utils.visualizations import plot_scatter_for_data_drift
 
 
@@ -30,8 +30,8 @@ class ColumnDriftMetricResults:
     threshold: Optional[float]
     drift_score: Numeric
     drift_detected: bool
-    current_distribution: pd.DataFrame
-    reference_distribution: pd.DataFrame
+    current_distribution: Distribution
+    reference_distribution: Distribution
     current_scatter: Optional[Dict[str, list]]
     x_name: Optional[str]
     plot_shape: Optional[Dict[str, float]]
@@ -117,7 +117,7 @@ class ColumnDriftMetricRenderer(MetricRenderer):
             )
             figures.append(GraphData.figure("DATA DRIFT", scatter_fig))
 
-        distr_fig = plot_distr(result.current_distribution, result.reference_distribution)
+        distr_fig = get_distribution_plot_figure(result.current_distribution, result.reference_distribution)
         figures.append(GraphData.figure("DATA DISTRIBUTION", distr_fig))
         return [
             counter(
@@ -128,7 +128,7 @@ class ColumnDriftMetricRenderer(MetricRenderer):
                             f"Drift detection method: {result.stattest_name}. "
                             f"Drift score: {drift_score}"
                         ),
-                        f"Drfit in column {result.column_name}",
+                        f"Drift in column {result.column_name}",
                     )
                 ],
                 title="",

@@ -6,10 +6,10 @@ import pandas as pd
 import pytest
 
 from evidently import ColumnMapping
-from evidently.metrics import DataQualityValueListMetric
+from evidently.metrics import ColumnValueListMetric
 from evidently.metrics.base_metric import InputData
-from evidently.metrics.data_quality.data_quality_value_list_metric import DataQualityValueListMetricsResult
-from evidently.metrics.data_quality.data_quality_value_list_metric import ValueListStat
+from evidently.metrics.data_quality.column_value_list_metric import ColumnValueListMetricResult
+from evidently.metrics.data_quality.column_value_list_metric import ValueListStat
 from evidently.report import Report
 
 
@@ -19,8 +19,8 @@ from evidently.report import Report
         (
             pd.DataFrame({"category_feature": []}),
             None,
-            DataQualityValueListMetric(column_name="category_feature", values=["test"]),
-            DataQualityValueListMetricsResult(
+            ColumnValueListMetric(column_name="category_feature", values=["test"]),
+            ColumnValueListMetricResult(
                 column_name="category_feature",
                 values=["test"],
                 current=ValueListStat(
@@ -38,8 +38,8 @@ from evidently.report import Report
         (
             pd.DataFrame({"category_feature": [np.NaN, np.NaN, np.NaN]}),
             None,
-            DataQualityValueListMetric(column_name="category_feature", values=["test"]),
-            DataQualityValueListMetricsResult(
+            ColumnValueListMetric(column_name="category_feature", values=["test"]),
+            ColumnValueListMetricResult(
                 column_name="category_feature",
                 values=["test"],
                 current=ValueListStat(
@@ -57,8 +57,8 @@ from evidently.report import Report
         (
             pd.DataFrame({"category_feature": [1, np.NaN, 1, 2]}),
             None,
-            DataQualityValueListMetric(column_name="category_feature", values=[1, 2, 3]),
-            DataQualityValueListMetricsResult(
+            ColumnValueListMetric(column_name="category_feature", values=[1, 2, 3]),
+            ColumnValueListMetricResult(
                 column_name="category_feature",
                 values=[1, 2, 3],
                 current=ValueListStat(
@@ -76,8 +76,8 @@ from evidently.report import Report
         (
             pd.DataFrame({"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 2, 2, 432]}),
             None,
-            DataQualityValueListMetric(column_name="category_feature", values=["d"]),
-            DataQualityValueListMetricsResult(
+            ColumnValueListMetric(column_name="category_feature", values=["d"]),
+            ColumnValueListMetricResult(
                 column_name="category_feature",
                 values=["d"],
                 current=ValueListStat(
@@ -95,8 +95,8 @@ from evidently.report import Report
         (
             pd.DataFrame({"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 2, 2, 432]}),
             None,
-            DataQualityValueListMetric(column_name="numerical_feature", values=[2]),
-            DataQualityValueListMetricsResult(
+            ColumnValueListMetric(column_name="numerical_feature", values=[2]),
+            ColumnValueListMetricResult(
                 column_name="numerical_feature",
                 values=[2],
                 current=ValueListStat(
@@ -114,8 +114,8 @@ from evidently.report import Report
         (
             pd.DataFrame({"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 2, 2, 432]}),
             pd.DataFrame({"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 2, 2, 432]}),
-            DataQualityValueListMetric(column_name="category_feature"),
-            DataQualityValueListMetricsResult(
+            ColumnValueListMetric(column_name="category_feature"),
+            ColumnValueListMetricResult(
                 column_name="category_feature",
                 values=["n", "d", "p"],
                 current=ValueListStat(
@@ -143,8 +143,8 @@ from evidently.report import Report
 def test_data_quality_value_list_metric_success(
     current_dataset: pd.DataFrame,
     reference_dataset: Optional[pd.DataFrame],
-    metric: DataQualityValueListMetric,
-    expected_result: DataQualityValueListMetricsResult,
+    metric: ColumnValueListMetric,
+    expected_result: ColumnValueListMetricResult,
 ) -> None:
     data_mapping = ColumnMapping()
     result = metric.calculate(
@@ -159,31 +159,31 @@ def test_data_quality_value_list_metric_success(
         (
             pd.DataFrame({"feature": [1, 2, 3]}),
             None,
-            DataQualityValueListMetric(column_name="test", values=[1]),
+            ColumnValueListMetric(column_name="test", values=[1]),
             "Column 'test' is not in current data.",
         ),
         (
             pd.DataFrame({"test": [1, 2, 3]}),
             pd.DataFrame({"feature": [1, 2, 3]}),
-            DataQualityValueListMetric(column_name="test"),
+            ColumnValueListMetric(column_name="test"),
             "Column 'test' is not in reference data.",
         ),
         (
             pd.DataFrame({"test": ["a", "b", "c"]}),
             None,
-            DataQualityValueListMetric(column_name="test"),
+            ColumnValueListMetric(column_name="test"),
             "Reference or values list should be present.",
         ),
         (
             pd.DataFrame({"feature": [1, 2, 3]}),
             pd.DataFrame({"feature": [1, 2, "a"]}),
-            DataQualityValueListMetric(column_name="feature", values=[]),
+            ColumnValueListMetric(column_name="feature", values=[]),
             "Values list should not be empty.",
         ),
         (
             pd.DataFrame({"feature": [1, 2, 3]}),
             pd.DataFrame({"feature": [np.NaN]}),
-            DataQualityValueListMetric(column_name="feature", values=[]),
+            ColumnValueListMetric(column_name="feature", values=[]),
             "Values list should not be empty.",
         ),
     ),
@@ -191,7 +191,7 @@ def test_data_quality_value_list_metric_success(
 def test_data_quality_value_list_metric_value_errors(
     current_dataset: pd.DataFrame,
     reference_dataset: Optional[pd.DataFrame],
-    metric: DataQualityValueListMetric,
+    metric: ColumnValueListMetric,
     error_message: str,
 ) -> None:
     data_mapping = ColumnMapping()
@@ -210,7 +210,7 @@ def test_data_quality_value_list_metric_value_errors(
         (
             pd.DataFrame({"col": [1, 2, 3]}),
             None,
-            DataQualityValueListMetric(column_name="col", values=[1]),
+            ColumnValueListMetric(column_name="col", values=[1]),
             {
                 "column_name": "col",
                 "current": {
@@ -234,7 +234,7 @@ def test_data_quality_value_list_metric_value_errors(
                     "col2": [1, 2, 3],
                 }
             ),
-            DataQualityValueListMetric(column_name="col1"),
+            ColumnValueListMetric(column_name="col1"),
             {
                 "column_name": "col1",
                 "current": {
@@ -261,7 +261,7 @@ def test_data_quality_value_list_metric_value_errors(
     ),
 )
 def test_data_quality_value_list_metric_with_report(
-    current_data: pd.DataFrame, reference_data: pd.DataFrame, metric: DataQualityValueListMetric, expected_json: dict
+    current_data: pd.DataFrame, reference_data: pd.DataFrame, metric: ColumnValueListMetric, expected_json: dict
 ) -> None:
     report = Report(metrics=[metric])
     report.run(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
@@ -270,5 +270,5 @@ def test_data_quality_value_list_metric_with_report(
     assert len(json_result) > 0
     parsed_json_result = json.loads(json_result)
     assert "metrics" in parsed_json_result
-    assert "DataQualityValueListMetric" in parsed_json_result["metrics"]
-    assert json.loads(json_result)["metrics"]["DataQualityValueListMetric"] == expected_json
+    assert "ColumnValueListMetric" in parsed_json_result["metrics"]
+    assert json.loads(json_result)["metrics"]["ColumnValueListMetric"] == expected_json

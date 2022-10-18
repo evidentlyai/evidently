@@ -3,84 +3,18 @@ from typing import Optional
 from typing import Tuple
 from typing import Union
 
+import dataclasses
 import numpy as np
 import pandas as pd
 from plotly import graph_objs as go
 
 from evidently.options.color_scheme import ColorOptions
-from evidently.utils.types import ColumnDistribution
-from evidently.utils.types import Numeric
 
 
-def get_distribution_plot(
-    current: ColumnDistribution,
-    reference: Optional[ColumnDistribution] = None,
-    orientation="v",
-    color_options: Optional[ColorOptions] = None,
-):
-    current_df = pd.DataFrame(current, columns=["x", "count"])
-
-    if reference is not None:
-        reference_df = pd.DataFrame(reference, columns=["x", "count"])
-
-    else:
-        reference_df = None
-
-    return plot_distr(current_df, reference_df, orientation, color_options)
-
-
-def plot_distr(hist_curr, hist_ref=None, orientation="v", color_options: Optional[ColorOptions] = None):
-    color_options = color_options or ColorOptions()
-    fig = go.Figure()
-
-    fig.add_trace(
-        go.Bar(
-            name="current",
-            x=hist_curr["x"],
-            y=hist_curr["count"],
-            marker_color=color_options.get_current_data_color(),
-            orientation=orientation,
-        )
-    )
-    if hist_ref is not None:
-        fig.add_trace(
-            go.Bar(
-                name="reference",
-                x=hist_ref["x"],
-                y=hist_ref["count"],
-                marker_color=color_options.get_reference_data_color(),
-                orientation=orientation,
-            )
-        )
-
-    return fig
-
-
-def plot_distribution_with_range(
-    *,
-    distribution_data: pd.Series,
-    left: Optional[Numeric] = None,
-    right: Optional[Numeric] = None,
-    orientation: str = "v",
-    color_options: Optional[ColorOptions] = None,
-) -> go.Figure:
-    """Get a plot with distribution and range from `left` to `right` markers"""
-
-    if color_options is None:
-        color_options = ColorOptions()
-
-    fig = plot_distr(distribution_data, None, orientation, color_options)
-
-    if left is not None:
-        fig.add_vline(x=left, line_width=2, line_dash="dash", line_color="black")
-
-    if right is not None:
-        fig.add_vline(x=right, line_width=2, line_dash="dash", line_color="black")
-
-    if left and right:
-        fig.add_vrect(x0=left, x1=right, fillcolor=color_options.fill_color, opacity=0.25, line_width=0)
-
-    return fig
+@dataclasses.dataclass
+class Distribution:
+    x: Union[np.array, list]
+    y: Union[np.array, list]
 
 
 def make_hist_for_num_plot(curr: pd.Series, ref: pd.Series = None) -> Dict[str, pd.DataFrame]:
@@ -108,17 +42,53 @@ def make_hist_for_cat_plot(curr: pd.Series, ref: pd.Series = None, normalize: bo
     return result
 
 
+def get_distribution_for_category_column(column: pd.Series, normalize: bool = False) -> Distribution:
+    value_counts = column.value_counts(normalize=normalize, dropna=False)
+    return Distribution(
+        x=value_counts.index.values,
+        y=value_counts.values,
+    )
+
+
+def get_distribution_for_numerical_column(
+    column: pd.Series,
+    bins: Optional[Union[list, np.array]] = None,
+) -> Distribution:
+    if bins is None:
+        bins = np.histogram_bin_edges(column, bins="doane")
+
+    histogram = np.histogram(column, bins=bins)
+    return Distribution(
+        x=histogram[1],
+        y=histogram[0],
+    )
+
+
 def get_distribution_for_column(
-    *, column_name: str, column_type: str, current: pd.Series, reference: pd.Series
-) -> Dict[str, Union[pd.Series, pd.DataFrame]]:
+    *, column_type: str, current: pd.Series, reference: Optional[pd.Series] = None
+) -> Tuple[Distribution, Optional[Distribution]]:
+    reference_distribution: Optional[Distribution] = None
+
     if column_type == "cat":
-        return make_hist_for_cat_plot(current, reference)
+        current_distribution = get_distribution_for_category_column(current)
+
+        if reference is not None:
+            reference_distribution = get_distribution_for_category_column(reference)
 
     elif column_type == "num":
-        return make_hist_for_num_plot(current, reference)
+        if reference is not None:
+            bins = np.histogram_bin_edges(pd.concat([current.dropna(), reference.dropna()]), bins="doane")
+            reference_distribution = get_distribution_for_numerical_column(reference, bins)
+
+        else:
+            bins = np.histogram_bin_edges(current.dropna(), bins="doane")
+
+        current_distribution = get_distribution_for_numerical_column(current, bins)
 
     else:
-        raise ValueError(f"Cannot get distribution for column {column_name} with type {column_type}")
+        raise ValueError(f"Cannot get distribution for a column with type {column_type}")
+
+    return current_distribution, reference_distribution
 
 
 def make_hist_df(hist: Tuple[np.array, np.array]) -> pd.DataFrame:

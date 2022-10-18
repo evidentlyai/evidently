@@ -13,6 +13,7 @@ from evidently.model.widget import PlotlyGraphInfo
 from evidently.model.widget import TabInfo
 from evidently.model.widget import WidgetType
 from evidently.options import ColorOptions
+from evidently.utils.visualizations import Distribution
 
 
 class WidgetSize(Enum):
@@ -495,3 +496,25 @@ def histogram(
         figure.add_trace(ref_bar)
 
     return plotly_figure(title=title, figure=figure, size=size)
+
+
+def get_histogram_for_column_distribution(
+    current_distribution: Distribution, reference_distribution: Optional[Distribution] = None, title: str = ""
+):
+    current_histogram = HistogramData(
+        name="current",
+        x=current_distribution.x,
+        y=current_distribution.y,
+    )
+
+    if reference_distribution is not None:
+        reference_histogram: Optional[HistogramData] = HistogramData(
+            name="reference",
+            x=reference_distribution.x,
+            y=reference_distribution.y,
+        )
+
+    else:
+        reference_histogram = None
+
+    return histogram(title=title, primary_hist=current_histogram, secondary_hist=reference_histogram)
