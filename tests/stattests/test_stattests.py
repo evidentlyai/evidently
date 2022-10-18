@@ -1,5 +1,3 @@
-from tabnanny import check
-
 import numpy as np
 import pandas as pd
 import pytest
