@@ -215,9 +215,9 @@ def plot_pred_actual_time(
             showlegend=False,
         )
         fig.append_trace(trace, 1, 2)
+        fig.update_xaxes(title_text=xaxis_name, row=1, col=2)
 
     fig.update_xaxes(title_text=xaxis_name, row=1, col=1)
-    fig.update_xaxes(title_text=xaxis_name, row=1, col=2)
     fig.update_layout(yaxis_title=yaxis_name)
     fig.update_traces(marker_size=6)
     fig = json.loads(fig.to_json())
@@ -280,9 +280,64 @@ def plot_line_in_time(
             showlegend=False,
         )
         fig.append_trace(trace, 1, 2)
+        fig.update_xaxes(title_text=xaxis_name, row=1, col=2)
     fig.update_xaxes(title_text=xaxis_name, row=1, col=1)
-    fig.update_xaxes(title_text=xaxis_name, row=1, col=2)
     fig.update_layout(yaxis_title=yaxis_name)
     fig.update_traces(marker_size=6)
+    fig = json.loads(fig.to_json())
+    return fig
+
+
+def plot_error_bias_colored_scatter(curr_scatter_data: Dict[str, Dict[str, pd.Series]],
+                                    ref_scatter_data: Optional[Dict[str, Dict[str, pd.Series]]]):
+    color_options = ColorOptions()
+    cols = 1
+    subplot_titles: Union[list, str] = ""
+
+    if ref_scatter_data is not None:
+        cols = 2
+        subplot_titles = ["current", "reference"]
+
+    fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
+
+    for name, color in zip(
+        ["Underestimation", "Overestimation", "Majority"],
+        [color_options.underestimation_color, color_options.overestimation_color, color_options.majority_color]
+    ):
+        trace = go.Scatter(
+            x=curr_scatter_data[name]["Actual value"],
+            y=curr_scatter_data[name]["Predicted value"],
+            mode="markers",
+            name=name,
+            legendgroup=name,
+            marker_color=color
+            # marker=dict(color=color_options.underestimation_color, showscale=False),
+        )
+        fig.append_trace(trace, 1, 1)
+    fig.update_xaxes(title_text="Actual value", row=1, col=1)
+
+    if ref_scatter_data is not None:
+        for name, color in zip(
+            ["Underestimation", "Overestimation", "Majority"],
+            [color_options.underestimation_color, color_options.overestimation_color, color_options.majority_color]
+        ):
+            trace = go.Scatter(
+                x=ref_scatter_data[name]["Actual value"],
+                y=ref_scatter_data[name]["Predicted value"],
+                mode="markers",
+                name=name,
+                legendgroup=name,
+                showlegend=False,
+                marker_color=color
+                # marker=dict(color=color_options.underestimation_color, showscale=False),
+            )
+            fig.append_trace(trace, 1, 2)
+        fig.update_xaxes(title_text="Actual value", row=1, col=2)
+
+    fig.update_layout(
+        yaxis_title="Predicted value",
+        xaxis=dict(showticklabels=True),
+        yaxis=dict(showticklabels=True),
+    )
     fig = json.loads(fig.to_json())
     return fig

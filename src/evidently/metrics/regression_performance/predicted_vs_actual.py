@@ -17,13 +17,13 @@ from evidently.utils.visualizations import plot_scatter
 
 
 @dataclasses.dataclass
-class RegressionPredictedVsActualResults:
+class RegressionPredictedVsActualScatterResults:
     current_scatter: Dict[str, pd.Series]
     reference_scatter: Optional[Dict[str, pd.Series]]
 
 
-class RegressionPredictedVsActual(Metric[RegressionPredictedVsActualResults]):
-    def calculate(self, data: InputData) -> RegressionPredictedVsActualResults:
+class RegressionPredictedVsActualScatter(Metric[RegressionPredictedVsActualScatterResults]):
+    def calculate(self, data: InputData) -> RegressionPredictedVsActualScatterResults:
         dataset_columns = process_columns(data.current_data, data.column_mapping)
         target_name = dataset_columns.utility_columns.target
         prediction_name = dataset_columns.utility_columns.prediction
@@ -43,7 +43,7 @@ class RegressionPredictedVsActual(Metric[RegressionPredictedVsActualResults]):
             reference_scatter = {}
             reference_scatter["predicted"] = ref_df[prediction_name]
             reference_scatter["actual"] = ref_df[target_name]
-        return RegressionPredictedVsActualResults(current_scatter=current_scatter, reference_scatter=reference_scatter)
+        return RegressionPredictedVsActualScatterResults(current_scatter=current_scatter, reference_scatter=reference_scatter)
 
     def _make_df_for_plot(self, df, target_name: str, prediction_name: str, datetime_column_name: Optional[str]):
         result = df.replace([np.inf, -np.inf], np.nan)
@@ -54,9 +54,9 @@ class RegressionPredictedVsActual(Metric[RegressionPredictedVsActualResults]):
         return result.sort_index()
 
 
-@default_renderer(wrap_type=RegressionPredictedVsActual)
+@default_renderer(wrap_type=RegressionPredictedVsActualScatter)
 class RegressionPredictedVsActualRenderer(MetricRenderer):
-    def render_html(self, obj: RegressionPredictedVsActual) -> List[BaseWidgetInfo]:
+    def render_html(self, obj: RegressionPredictedVsActualScatter) -> List[BaseWidgetInfo]:
         result = obj.get_result()
         current_scatter = result.current_scatter
         reference_scatter = None

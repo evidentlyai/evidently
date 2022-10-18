@@ -19,13 +19,13 @@ from evidently.utils.visualizations import plot_distr_subplots
 
 
 @dataclasses.dataclass
-class RegErrorDistrResults:
+class RegressionErrorDistributionResults:
     current_bins: pd.DataFrame
     reference_bins: Optional[pd.DataFrame]
 
 
-class RegErrorDistr(Metric[RegErrorDistrResults]):
-    def calculate(self, data: InputData) -> RegErrorDistrResults:
+class RegressionErrorDistribution(Metric[RegressionErrorDistributionResults]):
+    def calculate(self, data: InputData) -> RegressionErrorDistributionResults:
         dataset_columns = process_columns(data.current_data, data.column_mapping)
         target_name = dataset_columns.utility_columns.target
         prediction_name = dataset_columns.utility_columns.prediction
@@ -48,7 +48,7 @@ class RegErrorDistr(Metric[RegErrorDistrResults]):
         if "reference" in result.keys():
             reference_bins = result["reference"]
 
-        return RegErrorDistrResults(current_bins=current_bins, reference_bins=reference_bins)
+        return RegressionErrorDistributionResults(current_bins=current_bins, reference_bins=reference_bins)
 
     def _make_df_for_plot(self, df, target_name: str, prediction_name: str, datetime_column_name: Optional[str]):
         result = df.replace([np.inf, -np.inf], np.nan)
@@ -59,9 +59,9 @@ class RegErrorDistr(Metric[RegErrorDistrResults]):
         return result.sort_index()
 
 
-@default_renderer(wrap_type=RegErrorDistr)
-class RegErrorRenderer(MetricRenderer):
-    def render_html(self, obj: RegErrorDistr) -> List[BaseWidgetInfo]:
+@default_renderer(wrap_type=RegressionErrorDistribution)
+class RegressionErrorDistributionRenderer(MetricRenderer):
+    def render_html(self, obj: RegressionErrorDistribution) -> List[BaseWidgetInfo]:
         result = obj.get_result()
         current_bins = result.current_bins
         reference_bins = None

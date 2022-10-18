@@ -17,14 +17,14 @@ from evidently.utils.visualizations import plot_line_in_time
 
 
 @dataclasses.dataclass
-class RegAbsPercErrorInTimeResults:
+class RegressionAbsPercentageErrorPlotResults:
     current_scatter: Dict[str, pd.Series]
     reference_scatter: Optional[Dict[str, pd.Series]]
     x_name: str
 
 
-class RegAbsPercErrorInTime(Metric[RegAbsPercErrorInTimeResults]):
-    def calculate(self, data: InputData) -> RegAbsPercErrorInTimeResults:
+class RegressionAbsPercentageErrorPlot(Metric[RegressionAbsPercentageErrorPlotResults]):
+    def calculate(self, data: InputData) -> RegressionAbsPercentageErrorPlotResults:
         dataset_columns = process_columns(data.current_data, data.column_mapping)
         target_name = dataset_columns.utility_columns.target
         prediction_name = dataset_columns.utility_columns.prediction
@@ -57,7 +57,7 @@ class RegAbsPercErrorInTime(Metric[RegAbsPercErrorInTimeResults]):
             reference_scatter["Absolute Percentage Error"] = ref_df["abs_perc_err"]
             reference_scatter["x"] = ref_df[datetime_column_name] if datetime_column_name else ref_df.index
 
-        return RegAbsPercErrorInTimeResults(
+        return RegressionAbsPercentageErrorPlotResults(
             current_scatter=current_scatter, reference_scatter=reference_scatter, x_name=x_name
         )
 
@@ -70,9 +70,9 @@ class RegAbsPercErrorInTime(Metric[RegAbsPercErrorInTimeResults]):
         return result.sort_index()
 
 
-@default_renderer(wrap_type=RegAbsPercErrorInTime)
-class RegAbsPercErrorInTimeRenderer(MetricRenderer):
-    def render_html(self, obj: RegAbsPercErrorInTime) -> List[BaseWidgetInfo]:
+@default_renderer(wrap_type=RegressionAbsPercentageErrorPlot)
+class RegressionAbsPercentageErrorPlotRenderer(MetricRenderer):
+    def render_html(self, obj: RegressionAbsPercentageErrorPlot) -> List[BaseWidgetInfo]:
         result = obj.get_result()
         current_scatter = result.current_scatter
         reference_scatter = None

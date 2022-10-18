@@ -22,13 +22,13 @@ from evidently.utils.data_operations import process_columns
 
 
 @dataclasses.dataclass
-class RegErrorNormalityResults:
+class RegressionErrorNormalityResults:
     current_error: pd.Series
     reference_error: Optional[pd.Series]
 
 
-class RegErrorNormality(Metric[RegErrorNormalityResults]):
-    def calculate(self, data: InputData) -> RegErrorNormalityResults:
+class RegressionErrorNormality(Metric[RegressionErrorNormalityResults]):
+    def calculate(self, data: InputData) -> RegressionErrorNormalityResults:
         dataset_columns = process_columns(data.current_data, data.column_mapping)
         target_name = dataset_columns.utility_columns.target
         prediction_name = dataset_columns.utility_columns.prediction
@@ -44,7 +44,7 @@ class RegErrorNormality(Metric[RegErrorNormalityResults]):
         if ref_df is not None:
             ref_df = self._make_df_for_plot(ref_df, target_name, prediction_name, None)
             reference_error = ref_df[prediction_name] - ref_df[target_name]
-        return RegErrorNormalityResults(current_error=current_error, reference_error=reference_error)
+        return RegressionErrorNormalityResults(current_error=current_error, reference_error=reference_error)
 
     def _make_df_for_plot(self, df, target_name: str, prediction_name: str, datetime_column_name: Optional[str]):
         result = df.replace([np.inf, -np.inf], np.nan)
@@ -55,9 +55,9 @@ class RegErrorNormality(Metric[RegErrorNormalityResults]):
         return result.sort_index()
 
 
-@default_renderer(wrap_type=RegErrorNormality)
-class RegErrorNormalityRenderer(MetricRenderer):
-    def render_html(self, obj: RegErrorNormality) -> List[BaseWidgetInfo]:
+@default_renderer(wrap_type=RegressionErrorNormality)
+class RegressionErrorNormalityRenderer(MetricRenderer):
+    def render_html(self, obj: RegressionErrorNormality) -> List[BaseWidgetInfo]:
         result = obj.get_result()
         current_error = result.current_error
         reference_error = result.reference_error
@@ -69,7 +69,7 @@ class RegErrorNormalityRenderer(MetricRenderer):
             cols = 2
             subplot_titles = ["current", "reference"]
 
-        fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
+        fig = make_subplots(rows=1, cols=cols, shared_yaxes=False, subplot_titles=subplot_titles)
         curr_qq_lines = probplot(current_error, dist="norm", plot=None)
         сurr_theoretical_q_x = np.linspace(curr_qq_lines[0][0][0], curr_qq_lines[0][0][-1], 100)
         sample_quantile_trace = go.Scatter(
