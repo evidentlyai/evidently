@@ -25,6 +25,7 @@ from evidently.renderers.html_widgets import rich_table_data
 from evidently.renderers.html_widgets import header_text
 from evidently.utils.visualizations import plot_error_bias_colored_scatter
 from evidently.model.widget import AdditionalGraphInfo
+from evidently.renderers.html_widgets import header_text
 
 
 @dataclasses.dataclass
@@ -500,7 +501,10 @@ class RegressionErrorBiasTableRenderer(MetricRenderer):
                 },
                 additionalGraphs=additional_graphs_data,
             )
-        return [widget_info]
+        return [
+            header_text(label="Error Bias: Mean/Most Common Feature Value per Group"),
+            widget_info
+        ]
 
     def _error_bias_string(self, quantile_5, quantile_95):
         def __error_bias_string(error):

@@ -126,6 +126,7 @@ class RegressionTopErrorMetricRenderer(MetricRenderer):
         ref_scatter = result.ref_scatter
 
         res = [
+            header_text(label="Error Bias Table"),
             counter(
                 title="Current: Mean Error per Group (+/- std)",
                 counters=[
@@ -164,7 +165,9 @@ class RegressionTopErrorMetricRenderer(MetricRenderer):
                     ]
                 )
             )
-
+        res.append(
+            header_text(label="Predicted vs Actual per Group")
+        )
         fig = plot_error_bias_colored_scatter(curr_scatter, ref_scatter)
 
         res.append(
