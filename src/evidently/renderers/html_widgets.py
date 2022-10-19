@@ -9,6 +9,8 @@ import dataclasses
 import plotly.graph_objs as go
 
 from evidently.model.widget import BaseWidgetInfo
+from evidently.model.widget import PlotlyGraphInfo
+from evidently.model.widget import TabInfo
 from evidently.model.widget import WidgetType
 from evidently.options import ColorOptions
 
@@ -168,6 +170,28 @@ class CounterData:
         """
         return CounterData(label, f"{value:.{precision}}")
 
+    @staticmethod
+    def string(label: str, value: str) -> "CounterData":
+        """
+        create CounterData for string value with given precision.
+
+        Args:
+            label: counter label
+            value: string value of counter
+        """
+        return CounterData(label, f"{value}")
+
+    @staticmethod
+    def int(label: str, value: int) -> "CounterData":
+        """
+        create CounterData for int value.
+
+        Args:
+            label: counter label
+            value: int value
+        """
+        return CounterData(label, f"{value}")
+
 
 def counter(
     *,
@@ -182,6 +206,10 @@ def counter(
         title: widget title
         counters: list of counters in widget
         size: widget size
+
+    Example:
+        >>> display_counters = [CounterData("value1", "some value"), CounterData.float("float", 0.111, 2)]
+        >>> widget_info = counter(counters=display_counters, title="counters example")
     """
     return BaseWidgetInfo(
         title=title,
@@ -266,13 +294,76 @@ class ColumnDefinition:
         return result
 
 
+@dataclasses.dataclass
+class TabData:
+    title: str
+    widget: BaseWidgetInfo
+
+
+def widget_tabs(*, title: str = "", size: WidgetSize = WidgetSize.FULL, tabs: List[TabData]) -> BaseWidgetInfo:
+    """
+    generate widget with tabs which can contain any other widget.
+
+    Args:
+        title: widget title
+        size: widget size
+        tabs: list of TabData with widgets to include
+
+    Example:
+        >>> columns = ["Column A", "Column B"]
+        >>> in_table_data = [[1, 2], [3, 4]]
+        >>> tab_data = [
+        ...     TabData("Counters", counter(counters=[CounterData("counter", "value")], title="Counter")),
+        ...     TabData("Table", table_data(column_names=columns, data=in_table_data, title="Table")),
+        ... ]
+        >>> widget_info = widget_tabs(title="Tabs", tabs=tab_data)
+    """
+    return BaseWidgetInfo(
+        title=title,
+        type=WidgetType.TABS.value,
+        size=size.value,
+        tabs=[TabInfo(str(uuid4()), tab.title, tab.widget) for tab in tabs],
+    )
+
+
+class DetailsPartInfo:
+    title: str
+    info: Union[BaseWidgetInfo, PlotlyGraphInfo]
+
+    def __init__(self, title: str, info: Union[BaseWidgetInfo, PlotlyGraphInfo]):
+        self.title = title
+        self.info = info
+
+
+class RowDetails:
+    parts: List[DetailsPartInfo]
+
+    def __init__(self, parts: Optional[List[DetailsPartInfo]] = None):
+        if parts is None:
+            parts = []
+        self.parts = parts
+
+    def with_part(self, title: str, info: Union[BaseWidgetInfo, PlotlyGraphInfo]):
+        self.parts.append(DetailsPartInfo(title, info))
+        return self
+
+
+class RichTableDataRow:
+    details: Optional[RowDetails]
+    fields: dict
+
+    def __init__(self, fields: dict, details: Optional[RowDetails] = None):
+        self.fields = fields
+        self.details = details
+
+
 def rich_table_data(
     *,
     title: str = "",
     size: WidgetSize = WidgetSize.FULL,
     rows_per_page: int = 10,
     columns: List[ColumnDefinition],
-    data: List[dict],
+    data: List[RichTableDataRow],
 ) -> BaseWidgetInfo:
     """
     generate widget with rich table: with additional column types and details for rows
@@ -292,11 +383,34 @@ def rich_table_data(
         ...     ColumnDefinition("Column C", "field_3", sort=SortDirection.ASC),
         ... ]
         >>> in_table_data = [
-        ...     dict(field_1="a", field_2=dict(x=[1, 2, 3], y=[10, 11, 3]), field_3="2"),
-        ...     dict(field_1="b", field_2=dict(x=[1, 2, 3], y=[10, 11, 3]), field_3="1"),
+        ...     RichTableDataRow(fields=dict(field_1="a", field_2=dict(x=[1, 2, 3], y=[10, 11, 3]), field_3="2")),
+        ...     RichTableDataRow(
+        ...         fields=dict(field_1="b", field_2=dict(x=[1, 2, 3], y=[10, 11, 3]), field_3="1"),
+        ...         details=RowDetails()
+        ...             .with_part("Some details", counter(counters=[CounterData("counter 1", "value")])
+        ...         )
+        ...     )
         ... ]
         >>> widget_info = rich_table_data(title="Rich table", rows_per_page=10, columns=columns_def, data=in_table_data)
     """
+    additional_graphs = []
+
+    converted_data = []
+    for row in data:
+        if row.details is None or row.details.parts is None:
+            continue
+        parts = []
+        for part in row.details.parts:
+            parts.append(
+                dict(
+                    title=part.title,
+                    id=part.info.id,
+                    type="widget" if isinstance(part.info, BaseWidgetInfo) else "graph",
+                )
+            )
+            additional_graphs.append(part.info)
+        converted_data.append(dict(details={"parts": parts}, **row.fields))
+
     return BaseWidgetInfo(
         title=title,
         type=WidgetType.BIG_TABLE.value,
@@ -308,9 +422,9 @@ def rich_table_data(
         params={
             "rowsPerPage": min(len(data), rows_per_page),
             "columns": [column.as_dict() for column in columns],
-            "data": data,
+            "data": converted_data,
         },
-        additionalGraphs=[],
+        additionalGraphs=additional_graphs,
     )
 
 
@@ -322,10 +436,10 @@ class HistogramData:
 
 
 def histogram(
+    *,
     title: str,
     primary_hist: HistogramData,
-    secondary_hist: Optional[HistogramData],
-    *,
+    secondary_hist: Optional[HistogramData] = None,
     color_options: Optional[ColorOptions] = None,
     orientation: str = "v",
     size: WidgetSize = WidgetSize.FULL,
@@ -343,7 +457,7 @@ def histogram(
     Example:
         >>> ref_hist = HistogramData("Histogram 1", x=["a", "b", "c"], y=[1, 2, 3])
         >>> curr_hist = HistogramData("Histogram 2", x=["a", "b", "c"], y=[3, 2 ,1])
-        >>> widget_info = histogram("Histogram example", ref_hist, curr_hist)
+        >>> widget_info = histogram(title="Histogram example", primary_hist=ref_hist, secondary_hist=curr_hist)
     """
     color_options = color_options if color_options is not None else ColorOptions()
     figure = go.Figure()

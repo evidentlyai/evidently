@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 # pylint: disable=invalid-name
+import uuid
 from enum import Enum
 from typing import Any
 from typing import Iterable
@@ -8,6 +9,7 @@ from typing import List
 from typing import Optional
 from typing import Union
 
+import dataclasses
 from dataclasses import dataclass
 
 
@@ -57,6 +59,13 @@ class AdditionalGraphInfo:
     params: Any
 
 
+@dataclass
+class PlotlyGraphInfo:
+    data: Any
+    layout: Any
+    id: str = dataclasses.field(default_factory=lambda: str(uuid.uuid4()))
+
+
 class WidgetType(Enum):
     COUNTER = "counter"
     TABLE = "table"
@@ -64,6 +73,7 @@ class WidgetType(Enum):
     BIG_GRAPH = "big_graph"
     RICH_DATA = "rich_data"
     TABBED_GRAPH = "tabbed_graph"
+    TABS = "tabs"
 
 
 @dataclass
@@ -71,19 +81,19 @@ class BaseWidgetInfo:
     type: str
     title: str
     size: int
-    id: str = ""
+    id: str = dataclasses.field(default_factory=lambda: str(uuid.uuid4()))
     details: str = ""
     alertsPosition: Optional[str] = None
     alertStats: Optional[AlertStats] = None
     params: Any = None
     insights: Iterable[Insight] = ()
-    additionalGraphs: Iterable[Union[AdditionalGraphInfo, "BaseWidgetInfo"]] = ()
+    additionalGraphs: Iterable[Union[AdditionalGraphInfo, "BaseWidgetInfo", PlotlyGraphInfo]] = ()
     alerts: Iterable[Alert] = ()
     tabs: Iterable["TabInfo"] = ()
     widgets: Iterable["BaseWidgetInfo"] = ()
     pageSize: int = 5
 
-    def get_additional_graphs(self) -> List[Union[AdditionalGraphInfo, "BaseWidgetInfo"]]:
+    def get_additional_graphs(self) -> List[Union[AdditionalGraphInfo, PlotlyGraphInfo, "BaseWidgetInfo"]]:
         return list(self.additionalGraphs) + [
             graph for widget in self.widgets for graph in widget.get_additional_graphs()
         ]

@@ -1,4 +1,4 @@
-from typing import ClassVar
+from typing import Type
 
 import pandas as pd
 import pytest
@@ -26,7 +26,7 @@ from evidently.model_profile.sections.base_profile_section import ProfileSection
         (NumTargetDriftProfileSection, True),
     ),
 )
-def test_model_profile_without_current_data(section_class: ClassVar[ProfileSection], raises_value_error: bool) -> None:
+def test_model_profile_without_current_data(section_class: Type[ProfileSection], raises_value_error: bool) -> None:
     """Check that profiles
     - that can be executed with one dataset only do not get an error
     - that cannot be executed with one dataset raise correct error

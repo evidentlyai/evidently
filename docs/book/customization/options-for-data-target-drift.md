@@ -24,13 +24,13 @@ You can specify the following parameters:
 * **drift\_share**: _float._ Default = 0.5.
   * Sets the share of drifting features as a condition for Dataset Drift in the Data Drift report.
 * **nbinsx**: _int or dict\[str, int]._ Default = 10.
-  * Defines the number of bins in a histogram. 
+  * Defines the number of bins in a histogram.
   * Applies to all features (if passed as _int_) or certain features (if passed as _dictionary_).
 * **xbins**: _dict\[str, int]._ Default = None.
   * Defines the boundaries for the size of a specific bin in a histogram.
-* **feature\_stattest\_func**: _Callable_ or _Dict\[str, Callable_].  Default = None.
+* **feature\_stattest\_func**: _Callable_ or _Dict\[str, Callable_]. Default = None.
   * Defines a custom statistical test for drift detection in the Data Drift report.
-  * Applies to all features (if passed as a _functio_n) or individual features (if a _dictionary_).
+  * Applies to all features (if passed as a \_functio\_n) or individual features (if a _dictionary_).
 * **cat\_target\_stattest\_func**: _Callable._ Default = None.
   * Defines a custom statistical test to detect target drift in the Categorical Target Drift report.
 * **num\_target\_stattest\_func**: _Callable._ Default = None.
@@ -61,7 +61,7 @@ options=[options])
 
 ### **Customization using CLI**
 
-You can also set the options from the command-line interface. In this case, you cannot define the functions (e.g. change statistical tests). 
+You can also set the options from the command-line interface. In this case, you cannot define the functions (e.g. change statistical tests).
 
 ```json
 "options": {
@@ -82,11 +82,11 @@ The section below explains specific popular customizations in more detail.
 
 ### **1. Choose a different statistical test to detect Data Drift**
 
-You can override the default statistical tests that Evidently uses in the [Data Drift report](../reports/data-drift.md). &#x20;
+You can override the default statistical tests that Evidently uses in the [Data Drift report](../reports/data-drift.md).
 
 To do that, set the following option:
 
-* **feature\_stattest\_func**: _Callable_ or _Dict\[str, Callable_]. 
+* **feature\_stattest\_func**: _Callable_ or _Dict\[str, Callable_].
 
 This option can take a function or a dictionary as an argument.
 
@@ -131,10 +131,10 @@ To customize the plots, specify the following **options**:
 * “**nbinsx**” - to set the number of bins (default value = 10, integer or dictionary)
   * If you pass an integer value, the selected number of bins will apply to all features.
   * If you pass a dictionary, then specified features will have a custom number of bins. The rest will have the default number of bins = 10.
-* “**xbins**” - to define the specific bin sizes (default value = none).&#x20;
+* “**xbins**” - to define the specific bin sizes (default value = none).
   * Dict("start"=value, "end"=value, "size"=value) or [plotly.graph\_objects.histogram.XBins](https://plotly.github.io/plotly.py-docs/generated/plotly.graph\_objects.histogram.html#plotly.graph\_objects.histogram.XBins)
 
-You can set different options for each feature. For example, you can specify “**nbinsx**” for one subset of the features, “**xbins**” for another, and apply defaults for the rest. [Here](../../../../examples/how_to_questions/drift_dashboard_with_options_california_housing.ipynb) is an example.
+You can set different options for each feature. For example, you can specify “**nbinsx**” for one subset of the features, “**xbins**” for another, and apply defaults for the rest. [Here](../../../examples/how\_to\_questions/drift\_dashboard\_with\_options\_california\_housing.ipynb) is an example.
 
 Once you specify the options, define the **DataDriftOptions** object as shown above.
 
@@ -145,7 +145,7 @@ The Data Drift report has two sets of histograms:
 1. preview in the Data Drift table
 2. an interactive plot inside the Data Drift table that expands when you click on each feature
 
-![](<../.gitbook/assets/Screenshot 2021-09-07 at 23.54.08.png>)
+![](<../.gitbook/assets/Screenshot 2021-09-07 at 23.54.08 (1).png>)
 
 Only “**nbinsx**”, if specified, impacts the **histogram previews** in the DataDrift table. In case you set both parameters, “**xbins**” will define the interactive plot, while “**nbinsx**” will affect the preview.
 

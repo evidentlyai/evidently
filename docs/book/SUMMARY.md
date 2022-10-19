@@ -11,7 +11,14 @@
   * [Regression Performance](reports/reg-performance.md)
   * [Classification Performance](reports/classification-performance.md)
   * [Probabilistic Classification Performance](reports/probabilistic-classification-performance.md)
-* [Tests](tests/README.md)
+* [Test Suites](tests/README.md)
+  * [Overview](tests/overview.md)
+  * [NoTargetPerformance](tests/no-target-performance.md)
+  * [Data Stability](tests/data-stability.md)
+  * [Data Quality](tests/data-quality.md)
+  * [Data Drift](tests/data-drift.md)
+  * [Regression Performance](tests/regression.md)
+  * [Classification Performance](tests/classification.md)
 * [Examples](get-started/examples.md)
 * [Integrations](integrations/README.md)
   * [Evidently and Grafana](integrations/evidently-and-grafana.md)
@@ -34,6 +41,12 @@
 * [Monitoring](monitoring/README.md)
 
 ## User Guide
+* [Tests and reports](tests-and-reports/README.md)
+  * [Input data](tests-and-reports/input-data.md)
+  * [Column mapping](tests-and-reports/column-mapping.md)
+  * [Run tests](tests-and-reports/run-tests.md)
+  * [Get reports](tests-and-reports/get-reports.md)
+  * [Supported environments](tests-and-reports/supported-environments.md)
 * [Customization](customization/README.md)
   * [Select Widgets](customization/select-widgets-to-display.md)
   * [Custom Widgets and Tabs](customization/add-a-custom-widget-or-tab.md)
@@ -44,7 +57,7 @@
 * [Recipes](recipes/README.md)
 
 ## Reference
-* [Dara drift algorithm](reference/data-drift-algorithm.md)
+* [Data drift algorithm](reference/data-drift-algorithm.md)
 * [All tests](reference/all-tests.md)
 
 ## SUPPORT

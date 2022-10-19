@@ -42,6 +42,7 @@ class DatasetColumns:
     cat_feature_names: List[str]
     datetime_feature_names: List[str]
     target_names: Optional[List[str]]
+    task: Optional[str]
 
     def as_dict(self) -> Dict[str, Union[Optional[List[str]], Dict]]:
         return {
@@ -113,27 +114,23 @@ def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping) -> Dat
     # index column name
     id_column = column_mapping.id
     target_column = column_mapping.target if column_mapping.target in dataset else None
-    prediction_column = column_mapping.prediction
     num_feature_names = column_mapping.numerical_features
     cat_feature_names = column_mapping.categorical_features
     datetime_feature_names = column_mapping.datetime_features
     target_names = column_mapping.target_names
     utility_columns = [date_column, id_column, target_column]
 
-    if isinstance(prediction_column, str):
-        if prediction_column in dataset:
-            prediction_column = prediction_column
-
+    prediction_column: Optional[str] = None
+    if isinstance(column_mapping.prediction, str):
+        if column_mapping.prediction in dataset:
+            prediction_column = column_mapping.prediction
         else:
             prediction_column = None
-
         utility_columns.append(prediction_column)
-
-    elif prediction_column is None:
-        pass
-
+    elif column_mapping.prediction is None:
+        prediction_column = None
     else:
-        prediction_column = dataset[prediction_column].columns.tolist()
+        prediction_column = dataset[column_mapping.prediction].columns.tolist()
 
         if prediction_column:
             utility_columns += prediction_column
@@ -174,12 +171,18 @@ def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping) -> Dat
     else:
         cat_feature_names = dataset[cat_feature_names].columns.tolist()
 
+    task = column_mapping.task
+
+    if task is None and target_column is not None:
+        task = recognize_task(target_name=target_column, dataset=dataset)
+
     return DatasetColumns(
         DatasetUtilityColumns(date_column, id_column, target_column, prediction_column),
         num_feature_names or [],
         cat_feature_names or [],
         datetime_feature_names or [],
         target_names,
+        task=task,
     )
 
 
@@ -202,3 +205,43 @@ def recognize_task(target_name: str, dataset: pd.DataFrame) -> str:
         task = "classification"
 
     return task
+
+
+def recognize_column_type(
+    dataset: pd.DataFrame,
+    column_name: str,
+    columns: DatasetColumns,
+) -> str:
+    """Try to get the column type."""
+    if column_name == columns.utility_columns.target:
+        if columns.task == "regression":
+            return "num"
+
+        else:
+            return "cat"
+
+    if column_name == columns.utility_columns.prediction:
+        column = dataset[column_name]
+
+        if columns.task == "regression" or (pd.api.types.is_numeric_dtype(column.dtype) and column.nunique() > 5):
+            return "num"
+
+        else:
+            return "cat"
+
+    if column_name in columns.num_feature_names:
+        return "num"
+
+    if column_name in columns.cat_feature_names:
+        return "cat"
+
+    if column_name in columns.datetime_feature_names:
+        return "datetime"
+
+    if column_name == columns.utility_columns.id_column:
+        return "id"
+
+    if column_name == columns.utility_columns.date:
+        return "date"
+
+    return "unknown"

@@ -32,7 +32,9 @@ Here is the general workflow:
 git clone https://github.com/evidentlyai/evidently.git
 ```
 
-## 2. (Optional, but recommended!) Create virtual environment
+## 2. (Optional, but recommended!) Create virtual environment with python 3.6
+Note: 3.6 is the earliest python version we support. 
+Although you probably use one of the most recent python version, it is important to make sure that your changes do not cause any issues in older python versions. This is why we sugget you test them under the oldest supported python version.
 
 #### MacOS / Linux
 ```sh
@@ -48,13 +50,19 @@ py -m venv venv
 .\venv\Scripts\activate
 ```
 
-## 3. Use local copy as editable dependency
-To use the cloned version in the virtual environment as a package, you need to install the package in the editable mode:
+## 3. Install requirements
+You need to have installed:
+- `nodejs` and `npm` https://nodejs.org/en/download/
+- `yarn` https://yarnpkg.com/getting-started/install
+
+## 4. Use local copy as editable dependency
+To use the cloned version in the virtual environment as a package, you need to install the package in the editable mode.
+See official pip documentation for examples and explanations: https://pip.pypa.io/en/stable/cli/pip_install/#examples
 
 #### MacOS / Linux
 ```sh
 cd /path/to/evidently_repo
-pip install -e .[dev]
+pip install -e ".[dev]"
 ```
 
 #### Windows
@@ -63,7 +71,7 @@ cd C:\path\to\evidently_repo
 pip install -e .[dev]
 ```
 
-## 4. Run formatters, linters, unit tests
+## 5. Run formatters, linters, unit tests
 ### Running black 
 We use black for code auto formatting.
 ```sh
@@ -107,14 +115,7 @@ curl https://archive.ics.uci.edu/ml/machine-learning-databases/00275/Bike-Sharin
 python example_test.py
 ```
 
-## 5. (first come to our [Discord channel](https://discord.gg/xZjKRaNp8b) for a quick chat) Working with UI
-
-
-### Requirements
-To build UI, you need:
-- `nodejs` and `npm` https://nodejs.org/en/download/
-- `yarn` https://yarnpkg.com/getting-started/install
-
+## 6. (first come to our [Discord channel](https://discord.gg/xZjKRaNp8b) for a quick chat) Working with UI
 
 ### Building UI
 One-time build:

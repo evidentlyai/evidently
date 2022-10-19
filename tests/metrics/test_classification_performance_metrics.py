@@ -8,13 +8,13 @@ import pytest
 from pytest import approx
 
 from evidently.calculations.classification_performance import ConfusionMatrix
+from evidently.calculations.classification_performance import get_prediction_data
+from evidently.calculations.classification_performance import k_probability_threshold
+from evidently.calculations.classification_performance import threshold_probability_labels
 from evidently.metrics import ClassificationPerformanceMetrics
 from evidently.metrics import ClassificationPerformanceMetricsThreshold
 from evidently.metrics import ClassificationPerformanceMetricsTopK
 from evidently.metrics.base_metric import InputData
-from evidently.metrics.classification_performance_metrics import get_prediction_data
-from evidently.metrics.classification_performance_metrics import k_probability_threshold
-from evidently.metrics.classification_performance_metrics import threshold_probability_labels
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.report import Report
 
@@ -43,7 +43,7 @@ def test_classification_performance_metrics_binary_labels() -> None:
         "macro avg": {"precision": 0.7, "recall": 0.7083333333333333, "f1-score": 0.6969696969696968, "support": 10},
         "weighted avg": {"precision": 0.7200000000000001, "recall": 0.7, "f1-score": 0.7030303030303029, "support": 10},
     }
-    assert result.current.confusion_matrix == ConfusionMatrix(labels=[0, 1], values=[[4, 2], [1, 3]])
+    assert result.current.confusion_matrix == ConfusionMatrix(labels=["0", "1"], values=[[4, 2], [1, 3]])
 
 
 def test_classification_performance_metrics_with_report() -> None:
@@ -100,7 +100,7 @@ def test_classification_performance_metrics_binary_probas_threshold() -> None:
     assert result.current.f1 == 0.5
     assert result.current.roc_auc == 0.625
     assert result.current.log_loss == 3.928216092142768
-    assert result.current.confusion_matrix == ConfusionMatrix(labels=[0, 1], values=[[4, 2], [2, 2]])
+    assert result.current.confusion_matrix == ConfusionMatrix(labels=["0", "1"], values=[[4, 2], [2, 2]])
 
 
 def test_classification_performance_metrics_binary_probas_threshold_with_report() -> None:
@@ -563,3 +563,4 @@ def test_classification_performance_top_k_metrics_no_probas() -> None:
 
     with pytest.raises(ValueError):
         report.run(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+        report.json()

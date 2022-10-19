@@ -19,9 +19,9 @@ from evidently.utils.data_operations import DatasetColumns
 MAX_CATEGORIES = 5
 
 
-def get_rows_count(dataset: pd.DataFrame):
-    """Count quantity of rows in a dataset"""
-    return dataset.shape[0]
+def get_rows_count(data: Union[pd.DataFrame, pd.Series]) -> int:
+    """Count quantity of rows in  a dataset"""
+    return data.shape[0]
 
 
 @dataclass

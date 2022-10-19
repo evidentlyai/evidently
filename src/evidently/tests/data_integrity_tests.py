@@ -11,11 +11,11 @@ import pandas as pd
 from pandas.core.dtypes.common import infer_dtype_from_object
 
 from evidently.metrics import ColumnSummaryMetric
-from evidently.metrics.data_integrity_metrics import DataIntegrityMetrics
-from evidently.metrics.data_integrity_metrics import DataIntegrityNullValuesMetrics
-from evidently.metrics.data_integrity_metrics import DataIntegrityNullValuesMetricsResult
-from evidently.metrics.data_integrity_metrics import DataIntegrityNullValuesStat
-from evidently.metrics.data_integrity_metrics import DataIntegrityValueByRegexpMetrics
+from evidently.metrics import ColumnRegExpMetric
+from evidently.metrics import DataIntegrityMetrics
+from evidently.metrics import DatasetMissingValuesMetric
+from evidently.metrics.data_integrity.dataset_missing_values_metric import DatasetMissingValues
+from evidently.metrics.data_integrity.dataset_missing_values_metric import DatasetMissingValuesMetricResult
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import DetailsInfo
 from evidently.renderers.base_renderer import TestHtmlInfo
@@ -145,7 +145,7 @@ class TestNumberOfRowsRenderer(TestRenderer):
 
 class BaseIntegrityNullValuesTest(BaseCheckValueTest, ABC):
     group = DATA_INTEGRITY_GROUP.id
-    metric: DataIntegrityNullValuesMetrics
+    metric: DatasetMissingValuesMetric
 
     def __init__(
         self,
@@ -159,12 +159,12 @@ class BaseIntegrityNullValuesTest(BaseCheckValueTest, ABC):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        metric: Optional[DataIntegrityNullValuesMetrics] = None,
+        metric: Optional[DatasetMissingValuesMetric] = None,
     ):
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
 
         if metric is None:
-            self.metric = DataIntegrityNullValuesMetrics(null_values=null_values, replace=replace)
+            self.metric = DatasetMissingValuesMetric(values=null_values, replace=replace)
 
         else:
             self.metric = metric
@@ -176,7 +176,7 @@ class BaseTestNullValuesRenderer(TestRenderer):
     """
 
     @staticmethod
-    def _get_number_and_percents_of_nulls(nulls_info: DataIntegrityNullValuesStat) -> pd.DataFrame:
+    def _get_number_and_percents_of_nulls(nulls_info: DatasetMissingValues) -> pd.DataFrame:
         """Get a string with nulls numbers and percents from nulls info for results table"""
         result = {}
 
@@ -199,13 +199,13 @@ class BaseTestNullValuesRenderer(TestRenderer):
         )
 
     def get_table_with_nulls_and_percents_by_column(
-        self, info: TestHtmlInfo, metric_result: DataIntegrityNullValuesMetricsResult, name: str
+        self, info: TestHtmlInfo, metric_result: DatasetMissingValuesMetricResult, name: str
     ) -> TestHtmlInfo:
         """Get a table with nulls number and percents"""
         columns = ["column name", "current number of nulls"]
-        dict_curr = self._get_number_and_percents_of_nulls(metric_result.current_null_values)
+        dict_curr = self._get_number_and_percents_of_nulls(metric_result.current)
         dict_ref = None
-        reference_stats = metric_result.reference_null_values
+        reference_stats = metric_result.reference
 
         if reference_stats is not None:
             # add one more column and values for reference data
@@ -254,7 +254,7 @@ class TestNumberOfDifferentNulls(BaseIntegrityNullValuesTest):
         if self.condition.has_condition():
             return self.condition
 
-        reference_null_values = self.metric.get_result().reference_null_values
+        reference_null_values = self.metric.get_result().reference
 
         if reference_null_values is not None:
             return TestValueCondition(eq=reference_null_values.number_of_different_nulls)
@@ -262,7 +262,7 @@ class TestNumberOfDifferentNulls(BaseIntegrityNullValuesTest):
         return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
-        return self.metric.get_result().current_null_values.number_of_different_nulls
+        return self.metric.get_result().current.number_of_different_nulls
 
     def get_description(self, value: Numeric) -> str:
         return (
@@ -283,13 +283,13 @@ class TestNumberOfDifferentNullsRenderer(BaseTestNullValuesRenderer):
         """Get a table with a null value and number of the value in the dataset"""
         info = super().render_html(obj)
         metric_result = obj.metric.get_result()
-        current_nulls = metric_result.current_null_values.different_nulls
+        current_nulls = metric_result.current.different_nulls
 
-        if metric_result.reference_null_values is None:
+        if metric_result.reference is None:
             reference_nulls = None
 
         else:
-            reference_nulls = metric_result.reference_null_values.different_nulls
+            reference_nulls = metric_result.reference.different_nulls
 
         return self.get_table_with_number_of_nulls_by_null_values(
             info, current_nulls, reference_nulls, "number_of_different_nulls"
@@ -305,18 +305,18 @@ class TestNumberOfNulls(BaseIntegrityNullValuesTest):
         if self.condition.has_condition():
             return self.condition
 
-        reference_null_values = self.metric.get_result().reference_null_values
+        reference_null_values = self.metric.get_result().reference
 
         if reference_null_values is not None:
-            curr_number_of_rows = self.metric.get_result().current_null_values.number_of_rows
+            curr_number_of_rows = self.metric.get_result().current.number_of_rows
             ref_number_of_rows = reference_null_values.number_of_rows
             mult = curr_number_of_rows / ref_number_of_rows
-            return TestValueCondition(lte=approx(reference_null_values.number_of_nulls * mult, relative=0.1))
+            return TestValueCondition(lte=approx(reference_null_values.number_of_missed_values * mult, relative=0.1))
 
         return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
-        return self.metric.get_result().current_null_values.number_of_nulls
+        return self.metric.get_result().current.number_of_missed_values
 
     def get_description(self, value: Numeric) -> str:
         return f"The number of nulls and missing values is {value}. The test threshold is {self.get_condition()}."
@@ -345,15 +345,15 @@ class TestShareOfNulls(BaseIntegrityNullValuesTest):
         if self.condition.has_condition():
             return self.condition
 
-        reference = self.metric.get_result().reference_null_values
+        reference = self.metric.get_result().reference
 
         if reference is not None:
-            return TestValueCondition(lte=approx(reference.share_of_nulls, relative=0.1))
+            return TestValueCondition(lte=approx(reference.share_of_missed_values, relative=0.1))
 
         return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
-        return self.metric.get_result().current_null_values.share_of_nulls
+        return self.metric.get_result().current.share_of_missed_values
 
     def get_description(self, value: Numeric) -> str:
         return f"The share of nulls and missing values is {value:.3g}. The test threshold is {self.get_condition()}."
@@ -382,7 +382,7 @@ class TestNumberOfColumnsWithNulls(BaseIntegrityNullValuesTest):
         if self.condition.has_condition():
             return self.condition
 
-        reference = self.metric.get_result().reference_null_values
+        reference = self.metric.get_result().reference
 
         if reference is not None:
             return TestValueCondition(lte=reference.number_of_columns_with_nulls)
@@ -390,7 +390,7 @@ class TestNumberOfColumnsWithNulls(BaseIntegrityNullValuesTest):
         return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
-        return self.metric.get_result().current_null_values.number_of_columns_with_nulls
+        return self.metric.get_result().current.number_of_columns_with_nulls
 
     def get_description(self, value: Numeric) -> str:
         return (
@@ -422,7 +422,7 @@ class TestShareOfColumnsWithNulls(BaseIntegrityNullValuesTest):
         if self.condition.has_condition():
             return self.condition
 
-        reference = self.metric.get_result().reference_null_values
+        reference = self.metric.get_result().reference
 
         if reference is not None:
             return TestValueCondition(lte=reference.share_of_columns_with_nulls)
@@ -430,7 +430,7 @@ class TestShareOfColumnsWithNulls(BaseIntegrityNullValuesTest):
         return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
-        return self.metric.get_result().current_null_values.share_of_columns_with_nulls
+        return self.metric.get_result().current.share_of_columns_with_nulls
 
     def get_description(self, value: Numeric) -> str:
         return (
@@ -462,10 +462,10 @@ class TestNumberOfRowsWithNulls(BaseIntegrityNullValuesTest):
         if self.condition.has_condition():
             return self.condition
 
-        reference = self.metric.get_result().reference_null_values
+        reference = self.metric.get_result().reference
 
         if reference is not None:
-            curr_number_of_rows = self.metric.get_result().current_null_values.number_of_rows
+            curr_number_of_rows = self.metric.get_result().current.number_of_rows
             ref_number_of_rows = reference.number_of_rows
             mult = curr_number_of_rows / ref_number_of_rows
             return TestValueCondition(lte=approx(reference.number_of_rows_with_nulls * mult, relative=0.1))
@@ -473,7 +473,7 @@ class TestNumberOfRowsWithNulls(BaseIntegrityNullValuesTest):
         return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
-        return self.metric.get_result().current_null_values.number_of_rows_with_nulls
+        return self.metric.get_result().current.number_of_rows_with_nulls
 
     def get_description(self, value: Numeric) -> str:
         return (
@@ -500,7 +500,7 @@ class TestShareOfRowsWithNulls(BaseIntegrityNullValuesTest):
         if self.condition.has_condition():
             return self.condition
 
-        reference = self.metric.get_result().reference_null_values
+        reference = self.metric.get_result().reference
 
         if reference is not None:
             return TestValueCondition(lte=approx(reference.share_of_rows_with_nulls, relative=0.1))
@@ -508,7 +508,7 @@ class TestShareOfRowsWithNulls(BaseIntegrityNullValuesTest):
         return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
-        return self.metric.get_result().current_null_values.share_of_rows_with_nulls
+        return self.metric.get_result().current.share_of_rows_with_nulls
 
     def get_description(self, value: Numeric) -> str:
         return (
@@ -528,7 +528,7 @@ class TestShareOfRowsWithNullsRenderer(BaseTestNullValuesRenderer):
 
 class BaseIntegrityColumnNullValuesTest(BaseCheckValueTest, ABC):
     group = DATA_INTEGRITY_GROUP.id
-    metric: DataIntegrityNullValuesMetrics
+    metric: DatasetMissingValuesMetric
     column_name: str
 
     def __init__(
@@ -544,13 +544,13 @@ class BaseIntegrityColumnNullValuesTest(BaseCheckValueTest, ABC):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        metric: Optional[DataIntegrityNullValuesMetrics] = None,
+        metric: Optional[DatasetMissingValuesMetric] = None,
     ):
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
         self.column_name = column_name
 
         if metric is None:
-            self.metric = DataIntegrityNullValuesMetrics(null_values=null_values, replace=replace)
+            self.metric = DatasetMissingValuesMetric(values=null_values, replace=replace)
 
         else:
             self.metric = metric
@@ -565,7 +565,7 @@ class TestColumnNumberOfDifferentNulls(BaseIntegrityColumnNullValuesTest):
         if self.condition.has_condition():
             return self.condition
 
-        reference_null_values = self.metric.get_result().reference_null_values
+        reference_null_values = self.metric.get_result().reference
 
         if reference_null_values is not None:
             if self.column_name not in reference_null_values.number_of_different_nulls_by_column:
@@ -579,7 +579,7 @@ class TestColumnNumberOfDifferentNulls(BaseIntegrityColumnNullValuesTest):
         return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
-        metric_data = self.metric.get_result().current_null_values
+        metric_data = self.metric.get_result().current
         return metric_data.number_of_different_nulls_by_column[self.column_name]
 
     def get_description(self, value: Numeric) -> str:
@@ -602,13 +602,13 @@ class TestColumnNumberOfDifferentNullsRenderer(BaseTestNullValuesRenderer):
         """Get a table with a null value and number of the value in the dataset"""
         info = super().render_html(obj)
         metric_result = obj.metric.get_result()
-        current_nulls = metric_result.current_null_values.different_nulls_by_column[obj.column_name]
+        current_nulls = metric_result.current.different_nulls_by_column[obj.column_name]
 
-        if metric_result.reference_null_values is None:
+        if metric_result.reference is None:
             reference_nulls = None
 
         else:
-            reference_nulls = metric_result.reference_null_values.different_nulls_by_column[obj.column_name]
+            reference_nulls = metric_result.reference.different_nulls_by_column[obj.column_name]
 
         return self.get_table_with_number_of_nulls_by_null_values(
             info, current_nulls, reference_nulls, "number_of_different_nulls"
@@ -624,10 +624,10 @@ class TestColumnNumberOfNulls(BaseIntegrityColumnNullValuesTest):
         if self.condition.has_condition():
             return self.condition
 
-        reference_null_values = self.metric.get_result().reference_null_values
+        reference_null_values = self.metric.get_result().reference
 
         if reference_null_values is not None:
-            curr_number_of_rows = self.metric.get_result().current_null_values.number_of_rows
+            curr_number_of_rows = self.metric.get_result().current.number_of_rows
             ref_number_of_rows = reference_null_values.number_of_rows
             mult = curr_number_of_rows / ref_number_of_rows
             ref_value = reference_null_values.number_of_nulls_by_column[self.column_name]
@@ -636,7 +636,7 @@ class TestColumnNumberOfNulls(BaseIntegrityColumnNullValuesTest):
         return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
-        return self.metric.get_result().current_null_values.number_of_nulls_by_column[self.column_name]
+        return self.metric.get_result().current.number_of_nulls_by_column[self.column_name]
 
     def get_description(self, value: Numeric) -> str:
         return (
@@ -664,7 +664,7 @@ class TestColumnShareOfNulls(BaseIntegrityColumnNullValuesTest):
         if self.condition.has_condition():
             return self.condition
 
-        reference = self.metric.get_result().reference_null_values
+        reference = self.metric.get_result().reference
 
         if reference is not None:
             ref_value = reference.share_of_nulls_by_column[self.column_name]
@@ -673,7 +673,7 @@ class TestColumnShareOfNulls(BaseIntegrityColumnNullValuesTest):
         return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
-        return self.metric.get_result().current_null_values.share_of_nulls_by_column[self.column_name]
+        return self.metric.get_result().current.share_of_nulls_by_column[self.column_name]
 
     def get_description(self, value: Numeric) -> str:
         return (
@@ -1129,7 +1129,7 @@ class TestNumberOfDriftedFeaturesRenderer(TestRenderer):
 class TestColumnValueRegExp(BaseCheckValueTest, ABC):
     group = DATA_INTEGRITY_GROUP.id
     name = "RegExp Match"
-    metric: DataIntegrityValueByRegexpMetrics
+    metric: ColumnRegExpMetric
     column_name: Optional[str]
 
     def __init__(
@@ -1144,7 +1144,7 @@ class TestColumnValueRegExp(BaseCheckValueTest, ABC):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        metric: Optional[DataIntegrityValueByRegexpMetrics] = None,
+        metric: Optional[ColumnRegExpMetric] = None,
     ):
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
         self.column_name = column_name
@@ -1159,7 +1159,7 @@ class TestColumnValueRegExp(BaseCheckValueTest, ABC):
             if column_name is None:
                 raise ValueError("Column name should be present")
 
-            self.metric = DataIntegrityValueByRegexpMetrics(column_name=column_name, reg_exp=reg_exp)
+            self.metric = ColumnRegExpMetric(column_name=column_name, reg_exp=reg_exp)
 
         else:
             self.metric = metric

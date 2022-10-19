@@ -1,9 +1,9 @@
-import json
-from typing import Dict, Optional, Union
+from typing import Dict
+from typing import Optional
+from typing import Tuple
 
-import pandas as pd
 import numpy as np
-
+import pandas as pd
 from plotly import graph_objs as go
 from plotly.subplots import make_subplots
 
@@ -320,4 +320,118 @@ def plot_num_num_rel(curr: Dict[str, list], ref: Optional[Dict[str, list]], targ
     fig.update_layout(yaxis_title=target_name, legend={"itemsizing": "constant"})
     fig.update_traces(marker_size=4)
     fig = json.loads(fig.to_json())
+    return fig
+
+
+def make_hist_for_num_plot(curr: pd.Series, ref: pd.Series = None):
+    result = {}
+    if ref is not None:
+        ref = ref.dropna()
+    bins = np.histogram_bin_edges(pd.concat([curr.dropna(), ref]), bins="doane")
+    curr_hist = np.histogram(curr, bins=bins)
+    result["current"] = make_hist_df(curr_hist)
+    if ref is not None:
+        ref_hist = np.histogram(ref, bins=bins)
+        result["reference"] = make_hist_df(ref_hist)
+    return result
+
+
+def make_hist_for_cat_plot(curr: pd.Series, ref: pd.Series = None, normalize: bool = False):
+    result = {}
+    hist_df = curr.value_counts(normalize=normalize, dropna=False).reset_index()
+    hist_df.columns = ["x", "count"]
+    result["current"] = hist_df
+    if ref is not None:
+        hist_df = ref.value_counts(normalize=normalize).reset_index()
+        hist_df.columns = ["x", "count"]
+        result["reference"] = hist_df
+    return result
+
+
+def get_distribution_for_column(
+    *, column_name: str, column_type: str, current: pd.Series, reference: pd.DataFrame
+) -> Dict[str, pd.DataFrame]:
+    if column_type == "cat":
+        return make_hist_for_cat_plot(current, reference)
+
+    elif column_type == "num":
+        return make_hist_for_num_plot(current, reference)
+
+    else:
+        raise ValueError(f"Cannot get distribution for column {column_name} with type {column_type}")
+
+
+def make_hist_df(hist: Tuple[np.array, np.array]) -> pd.DataFrame:
+    hist_df = pd.DataFrame(
+        np.array([hist[1][:-1], hist[0], [f"{x[0]}-{x[1]}" for x in zip(hist[1][:-1], hist[1][1:])]]).T,
+        columns=["x", "count", "range"],
+    )
+
+    hist_df["x"] = hist_df["x"].astype(float)
+    hist_df["count"] = hist_df["count"].astype(int)
+    return hist_df
+
+
+def plot_scatter_for_data_drift(curr_y: list, curr_x: list, y0: float, y1: float, y_name: str, x_name: str):
+    color_options = ColorOptions()
+
+    fig = go.Figure()
+
+    fig.add_trace(
+        go.Scattergl(
+            x=curr_x,
+            y=curr_y,
+            mode="markers",
+            name="Current",
+            marker=dict(size=6, color=color_options.get_current_data_color()),
+        )
+    )
+
+    x0 = np.max(curr_x)
+
+    fig.add_trace(
+        go.Scattergl(
+            x=[x0, x0],
+            y=[y0, y1],
+            mode="markers",
+            name="Current",
+            marker=dict(size=0.01, color=color_options.non_visible_color, opacity=0.005),
+            showlegend=False,
+        )
+    )
+
+    fig.update_layout(
+        xaxis_title=x_name,
+        yaxis_title=y_name,
+        showlegend=True,
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        shapes=[
+            dict(
+                type="rect",
+                # x-reference is assigned to the x-values
+                xref="paper",
+                # y-reference is assigned to the plot paper [0,1]
+                yref="y",
+                x0=0,
+                y0=y0,
+                x1=1,
+                y1=y1,
+                fillcolor=color_options.fill_color,
+                opacity=0.5,
+                layer="below",
+                line_width=0,
+            ),
+            dict(
+                type="line",
+                name="Reference",
+                xref="paper",
+                yref="y",
+                x0=0,  # min(testset_agg_by_date.index),
+                y0=(y0 + y1) / 2,
+                x1=1,  # max(testset_agg_by_date.index),
+                y1=(y0 + y1) / 2,
+                line=dict(color=color_options.zero_line_color, width=3),
+            ),
+        ],
+    )
     return fig

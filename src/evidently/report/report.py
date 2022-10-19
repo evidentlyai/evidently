@@ -94,23 +94,23 @@ class Report(Display):
 
     def _build_dashboard_info(self):
         metrics_results = []
-        for test, _ in self._inner_suite.context.metric_results.items():
+        additional_graphs = []
+        for test in self._first_level_metrics:
             renderer = find_metric_renderer(type(test), self._inner_suite.context.renderers)
             html_info = renderer.render_html(test)
             for info_item in html_info:
-                for additional_graph in info_item.info.additionalGraphs:
+                for additional_graph in info_item.get_additional_graphs():
                     if isinstance(additional_graph, AdditionalGraphInfo):
-                        info_item.details.append(DetailsInfo(additional_graph.id, "", additional_graph.params))
+                        additional_graphs.append(DetailsInfo("", additional_graph.params, additional_graph.id))
                     else:
-                        info_item.details.append(DetailsInfo(additional_graph.id, "", additional_graph))
+                        additional_graphs.append(DetailsInfo("", additional_graph, additional_graph.id))
             metrics_results.extend(html_info)
 
         return (
             "evidently_dashboard_" + str(uuid.uuid4()).replace("-", ""),
-            DashboardInfo("Report", widgets=[result.info for result in metrics_results]),
+            DashboardInfo("Report", widgets=[result for result in metrics_results]),
             {
                 f"{item.id}": dataclasses.asdict(item.info) if dataclasses.is_dataclass(item.info) else item.info
-                for idx, info in enumerate(metrics_results)
-                for item in info.details
+                for item in additional_graphs
             },
         )

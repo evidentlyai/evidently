@@ -26,45 +26,46 @@ We estimate the drift for the **target** (actual values) and **predictions** in 
 If only one of them (either target or predictions) is provided, we build one set of plots. If neither target nor predictions column is available, you will get an error.
 
 To estimate the **categorical target (prediction) drift**, we compare the distribution of the target (prediction) in the two datasets. There is a default logic to choosing the appropriate statistical test, based on:
-* the number of observations in the reference dataset 
-* the number of unique values in the target (n_unique)
+
+* the number of observations in the reference dataset
+* the number of unique values in the target (n\_unique)
 
 For **small data with <= 1000 observations** in the reference dataset:
-* For categorical target with **n_unique > 2**: [chi-squared test](https://en.wikipedia.org/wiki/Chi-squared\_test).
-* For **binary** categorical target (n_unique <= 2), we use the proportion difference test for independent samples based on Z-score.
+
+* For categorical target with **n\_unique > 2**: [chi-squared test](https://en.wikipedia.org/wiki/Chi-squared\_test).
+* For **binary** categorical target (n\_unique <= 2), we use the proportion difference test for independent samples based on Z-score.
 
 All tests use a 0.95 confidence level by default.
 
-For **larger data with > 1000 observations** in the reference dataset we use [Jensen–Shannon divergence](https://en.wikipedia.org/wiki/Jensen–Shannon_divergence) with a threshold = 0.1.
-
+For **larger data with > 1000 observations** in the reference dataset we use [Jensen–Shannon divergence](https://en.wikipedia.org/wiki/Jensen%E2%80%93Shannon\_divergence) with a threshold = 0.1.
 
 {% hint style="info" %}
-You can modify the drift detection logic by selecting a statistical test already available in the library, including PSI, K–L divergence, Jensen-Shannon distance, Wasserstein distance. See more details about [available tests](../customization/options-for-statistical-tests.md). You can also set a different confidence level or implement a custom test, by defining [custom options](../customization/options-for-data-target-drift.md). 
+You can modify the drift detection logic by selecting a statistical test already available in the library, including PSI, K–L divergence, Jensen-Shannon distance, Wasserstein distance. See more details about [available tests](../customization/options-for-statistical-tests.md). You can also set a different confidence level or implement a custom test, by defining [custom options](../customization/options-for-data-target-drift.md).
 {% endhint %}
 
 ## How it looks
 
 The report includes 2 components. All plots are interactive.
 
-### 1. Target (Prediction) Drift&#x20;
+### 1. Target (Prediction) Drift
 
 The report first shows the **comparison of target (prediction) distributions** in the current and reference dataset. The result of the statistical test and P-value are displayed in the title.
 
 For a classification problem with three classes, it can look like this (an example of the extreme target drift with the appearance of a new class):
 
-![](../.gitbook/assets/cat_target_drift.png)
+![](<../.gitbook/assets/cat\_target\_drift (1).png>)
 
 ### 2. Target (Prediction) Behavior By Feature
 
-The report generates an interactive table with the **visualizations of dependencies between the target and each feature**.&#x20;
+The report generates an interactive table with the **visualizations of dependencies between the target and each feature**.
 
-![](../.gitbook/assets/cat_target_drift_behavior_by_feature.png)
+![](<../.gitbook/assets/cat\_target\_drift\_behavior\_by\_feature (1).png>)
 
-If you click on any feature, you get a plot that shows the feature distribution for the different target labels.&#x20;
+If you click on any feature, you get a plot that shows the feature distribution for the different target labels.
 
-![](../.gitbook/assets/cat_target_drift_behavior_by_feature_example.png)
+![](../.gitbook/assets/cat\_target\_drift\_behavior\_by\_feature\_example.png)
 
-These plots help analyze how feature values relate to the target labels and identify the differences between the datasets.&#x20;
+These plots help analyze how feature values relate to the target labels and identify the differences between the datasets.
 
 We recommend paying attention to the behavior of the most important features since significant changes might confuse the model and cause higher errors.
 

@@ -19,6 +19,7 @@ from evidently.renderers.base_renderer import DetailsInfo
 from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import default_renderer
+from evidently.renderers.html_widgets import plotly_figure
 from evidently.renderers.render_utils import plot_distr
 from evidently.tests.base_test import BaseCheckValueTest
 from evidently.tests.base_test import GroupData
@@ -222,19 +223,7 @@ class TestHighlyCorrelatedFeaturesRenderer(TestRenderer):
             reference_correlations_matrix = None
 
         fig = plot_correlations(current_correlations, reference_correlations_matrix)
-        fig_json = fig.to_plotly_json()
-        info.details.append(
-            DetailsInfo(
-                id="HighlyCorrelatedFeatures",
-                title="",
-                info=BaseWidgetInfo(
-                    title="",
-                    size=2,
-                    type="big_graph",
-                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
-                ),
-            )
-        )
+        info.with_details("Highly Correlated Features", plotly_figure(title="", figure=fig))
         return info
 
 
@@ -291,19 +280,7 @@ class TestTargetFeaturesCorrelationsRenderer(TestRenderer):
             reference_correlations_matrix = None
 
         fig = plot_correlations(current_correlations_matrix, reference_correlations_matrix)
-        fig_json = fig.to_plotly_json()
-        info.details.append(
-            DetailsInfo(
-                id="TestTargetFeaturesCorrelations",
-                title="",
-                info=BaseWidgetInfo(
-                    title="",
-                    size=2,
-                    type="big_graph",
-                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
-                ),
-            )
-        )
+        info.with_details("Target Features Correlations", plotly_figure(title="", figure=fig))
         return info
 
 
@@ -363,19 +340,7 @@ class TestPredictionFeaturesCorrelationsRenderer(TestRenderer):
             reference_correlations_matrix = None
 
         fig = plot_correlations(current_correlations_matrix, reference_correlations_matrix)
-        fig_json = fig.to_plotly_json()
-        info.details.append(
-            DetailsInfo(
-                id="TestTargetFeaturesCorrelations",
-                title="",
-                info=BaseWidgetInfo(
-                    title="",
-                    size=2,
-                    type="big_graph",
-                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
-                ),
-            )
-        )
+        info.with_details("Target-Features Correlations", plotly_figure(title="", figure=fig))
         return info
 
 
@@ -445,19 +410,7 @@ class TestCorrelationChangesRenderer(TestRenderer):
             reference_correlations_matrix = None
 
         fig = plot_correlations(current_correlations_matrix, reference_correlations_matrix)
-        fig_json = fig.to_plotly_json()
-        info.details.append(
-            DetailsInfo(
-                id="TestTargetFeaturesCorrelations",
-                title="",
-                info=BaseWidgetInfo(
-                    title="",
-                    size=2,
-                    type="big_graph",
-                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
-                ),
-            )
-        )
+        info.with_details("Target-Features Correlations", plotly_figure(title="", figure=fig))
         return info
 
 
@@ -548,20 +501,7 @@ class TestFeatureValueMinRenderer(TestRenderer):
 
         if min_value is not None:
             fig = plot_metric_value(fig, float(min_value), f"current {column_name} min value")
-
-        fig_json = fig.to_plotly_json()
-        info.details.append(
-            DetailsInfo(
-                id=f"min_{column_name}",
-                title="",
-                info=BaseWidgetInfo(
-                    title="",
-                    size=2,
-                    type="big_graph",
-                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
-                ),
-            )
-        )
+        info.with_details(f"Min Value {column_name}", plotly_figure(title="", figure=fig))
         return info
 
 
@@ -610,20 +550,7 @@ class TestFeatureValueMaxRenderer(TestRenderer):
 
         if max_value is not None:
             fig = plot_metric_value(fig, float(max_value), f"current {column_name} max value")
-
-        fig_json = fig.to_plotly_json()
-        info.details.append(
-            DetailsInfo(
-                id=f"max_{column_name}",
-                title="",
-                info=BaseWidgetInfo(
-                    title="",
-                    size=2,
-                    type="big_graph",
-                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
-                ),
-            )
-        )
+        info.with_details(f"Max Value {column_name}", plotly_figure(title="", figure=fig))
         return info
 
 
@@ -668,20 +595,7 @@ class TestFeatureValueMeanRenderer(TestRenderer):
 
         if mean_value is not None:
             fig = plot_metric_value(fig, mean_value, f"current {column_name} mean value")
-
-        fig_json = fig.to_plotly_json()
-        info.details.append(
-            DetailsInfo(
-                id=f"mean_{column_name}",
-                title="",
-                info=BaseWidgetInfo(
-                    title="",
-                    size=2,
-                    type="big_graph",
-                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
-                ),
-            )
-        )
+        info.with_details(f"Mean Value {column_name}", plotly_figure(title="", figure=fig))
         return info
 
 
@@ -730,20 +644,7 @@ class TestFeatureValueMedianRenderer(TestRenderer):
 
         if percentile_50 is not None:
             fig = plot_metric_value(fig, percentile_50, f"current {column_name} median value")
-
-        fig_json = fig.to_plotly_json()
-        info.details.append(
-            DetailsInfo(
-                id=f"median_{column_name}",
-                title="",
-                info=BaseWidgetInfo(
-                    title="",
-                    size=2,
-                    type="big_graph",
-                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
-                ),
-            )
-        )
+        info.with_details(f"Median Value {column_name}", plotly_figure(title="", figure=fig))
         return info
 
 
@@ -783,20 +684,7 @@ class TestFeatureValueStdRenderer(TestRenderer):
         if "reference" in obj.metric.get_result().plot_data.bins_for_hist.keys():
             ref_distr = obj.metric.get_result().plot_data.bins_for_hist["reference"]
         fig = plot_distr(curr_distr, ref_distr)
-
-        fig_json = fig.to_plotly_json()
-        info.details.append(
-            DetailsInfo(
-                id=f"std_{column_name}",
-                title="",
-                info=BaseWidgetInfo(
-                    title="",
-                    size=2,
-                    type="big_graph",
-                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
-                ),
-            )
-        )
+        info.with_details(f"Std Value {column_name}", plotly_figure(title="", figure=fig))
         return info
 
 
@@ -835,8 +723,8 @@ class TestNumberOfUniqueValuesRenderer(TestRenderer):
             ref_df = None
             if "reference" in counts_data.keys():
                 ref_df = counts_data["reference"]
-            additional_plots = plot_value_counts_tables_ref_curr(column_name, curr_df, ref_df, "num_of_unique_vals")
-            info.details = additional_plots
+            info.details = plot_value_counts_tables_ref_curr(column_name, curr_df, ref_df, "num_of_unique_vals")
+
         return info
 
 
@@ -883,8 +771,8 @@ class TestUniqueValuesShareRenderer(TestRenderer):
             ref_df = None
             if "reference" in counts_data.keys():
                 ref_df = counts_data["reference"]
-            additional_plots = plot_value_counts_tables_ref_curr(column_name, curr_df, ref_df, "unique_vals_sare")
-            info.details = additional_plots
+            info.details = plot_value_counts_tables_ref_curr(column_name, curr_df, ref_df, "unique_vals_sare")
+
         return info
 
 
@@ -1035,7 +923,7 @@ class TestMeanInNSigmasRenderer(TestRenderer):
         column_name = obj.column_name
         metric_result = obj.metric.get_result()
         info = super().render_html(obj)
-        
+
         if metric_result.reference_characteristics is None:
             return info
 
@@ -1065,19 +953,7 @@ class TestMeanInNSigmasRenderer(TestRenderer):
         if mean_value is not None:
             fig = plot_metric_value(fig, mean_value, f"current {column_name} mean value")
 
-        fig_json = fig.to_plotly_json()
-        info.details.append(
-            DetailsInfo(
-                id=f"mean_in_n_sigmas_{column_name}",
-                title="",
-                info=BaseWidgetInfo(
-                    title="",
-                    size=2,
-                    type="big_graph",
-                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
-                ),
-            )
-        )
+        info.with_details("", plotly_figure(title="", figure=fig))
         return info
 
 
@@ -1146,20 +1022,7 @@ class TestValueRangeRenderer(TestRenderer):
             ref_distr = obj.metric.get_result().distr_for_plot["reference"]
         fig = plot_distr(curr_distr, ref_distr)
         fig = plot_check(fig, condition_)
-
-        fig_json = fig.to_plotly_json()
-        info.details.append(
-            DetailsInfo(
-                id=f"value_range_{column_name}",
-                title="",
-                info=BaseWidgetInfo(
-                    title="",
-                    size=2,
-                    type="big_graph",
-                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
-                ),
-            )
-        )
+        info.with_details(f"Value Range {column_name}", plotly_figure(title="", figure=fig))
         return info
 
 
@@ -1235,20 +1098,7 @@ class TestNumberOfOutRangeValuesRenderer(TestRenderer):
 
         fig = plot_distr(curr_distr, ref_distr)
         fig = plot_check(fig, condition_)
-
-        fig_json = fig.to_plotly_json()
-        info.details.append(
-            DetailsInfo(
-                id=f"num_out_of_range_{column_name}",
-                title="",
-                info=BaseWidgetInfo(
-                    title="",
-                    size=2,
-                    type="big_graph",
-                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
-                ),
-            )
-        )
+        info.with_details(f"Number Out of Range for {column_name}", plotly_figure(title="", figure=fig))
         return info
 
 
@@ -1296,20 +1146,7 @@ class TestShareOfOutRangeValuesRenderer(TestRenderer):
             ref_distr = obj.metric.get_result().distr_for_plot["reference"]
         fig = plot_distr(curr_distr, ref_distr)
         fig = plot_check(fig, condition_)
-
-        fig_json = fig.to_plotly_json()
-        info.details.append(
-            DetailsInfo(
-                id=f"share_out_of_range_{column_name}",
-                title="",
-                info=BaseWidgetInfo(
-                    title="",
-                    size=2,
-                    type="big_graph",
-                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
-                ),
-            )
-        )
+        info.with_details(f"Share Out of Range for {column_name}", plotly_figure(title="", figure=fig))
         return info
 
 
@@ -1551,20 +1388,7 @@ class TestValueQuantileRenderer(TestRenderer):
         fig = plot_distr(curr_distr, ref_distr)
         fig = plot_check(fig, obj.get_condition())
         fig = plot_metric_value(fig, obj.metric.get_result().value, f"current {column_name} {obj.quantile} quantile")
-
-        fig_json = fig.to_plotly_json()
-        info.details.append(
-            DetailsInfo(
-                id=f"{obj.quantile}_quantile_{column_name}",
-                title="",
-                info=BaseWidgetInfo(
-                    title="",
-                    size=2,
-                    type="big_graph",
-                    params={"data": fig_json["data"], "layout": fig_json["layout"]},
-                ),
-            )
-        )
+        info.with_details("", plotly_figure(title="", figure=fig))
         return info
 
 
