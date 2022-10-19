@@ -179,7 +179,7 @@ def test_data_quality_correlation_metrics() -> None:
         data=InputData(current_data=current_dataset, reference_data=None, column_mapping=data_mapping)
     )
     assert result is not None
-    assert result.current.num_features == ["numerical_feature_1", "numerical_feature_2", "category_feature"]
+    assert set(result.current.num_features) == {"numerical_feature_1", "numerical_feature_2", "category_feature"}
     assert result.current.correlation_matrix is not None
     assert result.current.target_prediction_correlation == 1.0
     assert result.current.abs_max_target_features_correlation == 1.0
