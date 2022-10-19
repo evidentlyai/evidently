@@ -45,7 +45,7 @@ class DatasetCorrelationsMetric(Metric[DataQualityCorrelationMetricsResults]):
         self,
         dataset: pd.DataFrame,
         target_name: Optional[str],
-        prediction_name: Optional[Union[str, Sequence[str]]],
+        prediction_name: Union[int, Sequence[Union[str, int]], None],
         num_features: Optional[List[str]],
         is_classification_task: bool,
     ) -> DataCorrelation:
