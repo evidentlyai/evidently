@@ -1,5 +1,6 @@
+import json
 from itertools import combinations
-from typing import List
+from typing import List, Dict, Union, Tuple
 from typing import Optional
 
 import dataclasses
@@ -11,9 +12,10 @@ from dataclasses import dataclass
 from dataclasses import fields
 
 from evidently.calculations.data_integration import get_number_of_empty_columns
+from evidently.calculations.data_quality import get_features_stats, DataQualityGetPlotData, FeatureQualityStats
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
-from evidently.model.widget import BaseWidgetInfo
+from evidently.model.widget import BaseWidgetInfo, AdditionalGraphInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
@@ -89,38 +91,13 @@ class DataInTime:
     freq: str
     datetime_name: str
 
+
 @dataclass
 class DataByTarget:
     data_for_plots: Dict[str, Dict[str, Union[list, pd.DataFrame]]]
     target_name: str
     target_type: str
 
-
-# @dataclass
-# class NumericPlotData:
-#     bins_for_hist: Dict[str, pd.DataFrame]
-#     data_in_time: Optional[DataInTime]
-#     data_by_target: Optional[Dict[str, Union[pd.DataFrame, list]]]
-#     target_name: Optional[str]
-#     target_type: Optional[str]
-#     counts_of_values: Optional[Dict[str, pd.DataFrame]]
-
-
-# @dataclass
-# class CategoricalPlotData:
-#     bins_for_hist: Dict[str, pd.DataFrame]
-#     data_in_time: Optional[DataInTime]
-#     data_by_target: Optional[Dict[str, pd.DataFrame]]
-#     target_name: Optional[str]
-#     target_type: Optional[str]
-#     counts_of_values: Optional[Dict[str, pd.DataFrame]]
-
-
-# @dataclass
-# class DatetimePlotData:
-#     bins_for_hist: Dict[str, pd.DataFrame]
-
-# DataQualityPlot = Union[NumericPlotData, CategoricalPlotData, DatetimePlotData]
 
 @dataclass
 class DataQualityPlot:
@@ -149,16 +126,18 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
         if self.column_name not in data.current_data.columns:
             raise ValueError(f"{self.column_name} not in current data")
         column_type = None
+        target_name = columns.utility_columns.target
+        target_type = None
+        data_by_target = None
         if columns.utility_columns.target is not None:
-            target_name = columns.utility_columns.target
-            if data.column_mapping.task == 'regression' or is_numeric_dtype(data.current_data[target_name]):
-                target_type = 'num'
-            elif data.column_mapping.task == 'classification' or is_string_dtype(data.current_data[target_name]):
-                target_type = 'cat'
+            if data.column_mapping.task == "regression" or is_numeric_dtype(data.current_data[target_name]):
+                target_type = "num"
+            elif data.column_mapping.task == "classification" or is_string_dtype(data.current_data[target_name]):
+                target_type = "cat"
             elif data.current_data[columns.utility_columns.target].nunique() <= 5:
-                target_type = 'cat'
+                target_type = "cat"
             else:
-                target_type = 'num'
+                target_type = "num"
             if target_name == self.column_name:
                 column_type = target_type
 
@@ -168,14 +147,14 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
                 and columns.utility_columns.prediction == self.column_name
             ):
                 if is_string_dtype(data.current_data[columns.utility_columns.prediction]):
-                    column_type = 'cat'
+                    column_type = "cat"
                 if is_numeric_dtype(data.current_data[columns.utility_columns.prediction]):
-                    column_type = 'num'
+                    column_type = "num"
             if (
                 isinstance(columns.utility_columns.prediction, list)
                 and self.column_name in columns.utility_columns.prediction
             ):
-                column_type = 'num'
+                column_type = "num"
         if self.column_name in columns.num_feature_names:
             column_type = "num"
         elif self.column_name in columns.cat_feature_names:
@@ -212,12 +191,16 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
 
         # plot data
         gpd = DataQualityGetPlotData()
-        bins_for_hist = gpd.calculate_main_plot(data.current_data, reference_data, self.column_name,
-                                                column_type)
+        bins_for_hist = gpd.calculate_main_plot(data.current_data, reference_data, self.column_name, column_type)
         data_in_time = None
         if columns.utility_columns.date is not None and columns.utility_columns.date != self.column_name:
-            data_in_time = gpd.calculate_data_in_time(data.current_data, reference_data, self.column_name,
-                                                      column_type, columns.utility_columns.date)
+            data_in_time = gpd.calculate_data_in_time(
+                data.current_data,
+                reference_data,
+                self.column_name,
+                column_type,
+                columns.utility_columns.date,
+            )
             data_in_time = DataInTime(
                 data_for_plots={
                     "current": data_in_time["current"],
@@ -230,15 +213,21 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
         if (
             columns.utility_columns.target is not None
             and columns.utility_columns.target != self.column_name
-            and column_type != 'datetime'
+            and column_type != "datetime"
         ):
 
-            data_for_plots = gpd.calculate_data_by_target(data.current_data, reference_data, self.column_name, column_type,
-                                                          target_name, target_type)
+            data_for_plots = gpd.calculate_data_by_target(
+                data.current_data,
+                reference_data,
+                self.column_name,
+                column_type,
+                target_name,
+                target_type,
+            )
             data_by_target = DataByTarget(
                 data_for_plots=data_for_plots,
                 target_name=target_name,
-                target_type=target_type
+                target_type=target_type,
             )
         counts_of_values = None
         if column_type in ["cat", "num"]:
@@ -251,12 +240,11 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
                 reference_counts.columns = ["x", "count"]
                 counts_of_values["reference"] = reference_counts.head(10)
 
-
         plot_data = DataQualityPlot(
             bins_for_hist=bins_for_hist,
             data_in_time=data_in_time,
             data_by_target=data_by_target,
-            counts_of_values=counts_of_values
+            counts_of_values=counts_of_values,
         )
 
         return ColumnSummary(
@@ -264,7 +252,7 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
             column_type=column_type,
             reference_characteristics=ref_characteristics,
             current_characteristics=curr_characteristics,
-            plot_data=plot_data
+            plot_data=plot_data,
         )
 
     @staticmethod
@@ -301,7 +289,6 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
                 most_common_percentage=stats.most_common_value_percentage,
                 missing=stats.missing_count,
                 missing_percentage=stats.missing_percentage,
-                # new_categories=[],
             )
         if stats.feature_type == "datetime":
             if not isinstance(stats.min, str) or not isinstance(stats.max, str):
@@ -323,8 +310,7 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
 
 @default_renderer(wrap_type=ColumnSummaryMetric)
 class ColumnSummaryMetricRenderer(MetricRenderer):
-
-    def render_html(self, obj: ColumnSummaryMetric) -> List[MetricHtmlInfo]:
+    def render_html(self, obj: ColumnSummaryMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         column_type = metric_result.column_type
         column_name = metric_result.column_name
@@ -337,7 +323,7 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
             hist_ref = bins_for_hist["reference"]
             metrics_values_headers = ["current", "reference"]
 
-        if column_type == 'cat':
+        if column_type == "cat":
             fig = plot_distr(hist_curr, hist_ref)
             fig.update_layout(legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1))
             fig = json.loads(fig.to_json())
@@ -346,7 +332,7 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
             if "reference_log" in bins_for_hist.keys():
                 ref_log = bins_for_hist["reference_log"]
             fig = plot_distr_with_log_button(hist_curr, bins_for_hist["current_log"], hist_ref, ref_log)
-        if column_type == 'datetime':
+        if column_type == "datetime":
             fig = plot_time_feature_distr(hist_curr, hist_ref, column_name)
 
         # additional plots
@@ -359,7 +345,7 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
                     metric_result.plot_data.data_in_time.data_for_plots["reference"],
                     column_name,
                     metric_result.plot_data.data_in_time.datetime_name,
-                    metric_result.plot_data.data_in_time.freq
+                    metric_result.plot_data.data_in_time.freq,
                 )
             if column_type == "cat":
                 feature_in_time_figure = plot_cat_feature_in_time(
@@ -367,7 +353,7 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
                     metric_result.plot_data.data_in_time.data_for_plots["reference"],
                     column_name,
                     metric_result.plot_data.data_in_time.datetime_name,
-                    metric_result.plot_data.data_in_time.freq
+                    metric_result.plot_data.data_in_time.freq,
                 )
             additional_graphs.append(
                 AdditionalGraphInfo(
@@ -391,28 +377,28 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
                     metric_result.plot_data.data_by_target.data_for_plots["current"],
                     ref_data_by_target,
                     column_name,
-                    target_name
+                    target_name,
                 )
             if column_type == "cat" and target_type == "num":
                 feature_by_target_figure = plot_boxes(
                     metric_result.plot_data.data_by_target.data_for_plots["current"],
                     ref_data_by_target,
                     target_name,
-                    column_name
+                    column_name,
                 )
             if column_type == "num" and target_type == "num":
                 feature_by_target_figure = plot_num_num_rel(
                     metric_result.plot_data.data_by_target.data_for_plots["current"],
                     ref_data_by_target,
                     target_name,
-                    column_name
+                    column_name,
                 )
             if column_type == "cat" and target_type == "cat":
                 feature_by_target_figure = plot_cat_cat_rel(
                     metric_result.plot_data.data_by_target.data_for_plots["current"],
                     ref_data_by_target,
                     target_name,
-                    column_name
+                    column_name,
                 )
 
             additional_graphs.append(
@@ -440,12 +426,7 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
             },
             additionalGraphs=additional_graphs,
         )
-        result = [
-            MetricHtmlInfo(
-                name="",
-                info=wi,
-            )]
-        return result
+        return [wi]
 
     @staticmethod
     def _get_stats_with_names(
@@ -473,7 +454,9 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
             reference_stats_dict = None
 
         else:
-            reference_stats_dict = {field.name: getattr(reference_stats, field.name) for field in fields(reference_stats)}
+            reference_stats_dict = {
+                field.name: getattr(reference_stats, field.name) for field in fields(reference_stats)
+            }
 
         for stat_label, stat_field, stat_field_percentage in stats_list:
             values = [get_values_as_string(current_stats_dict, stat_field, stat_field_percentage)]
@@ -498,7 +481,7 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
             reference_stats = data_quality_results.reference_characteristics
 
         metrics = []
-        if column_type == 'cat':
+        if column_type == "cat":
             # mapping for category stats: (label, field_name_for_main_value, field_name_for_percentage)
             cat_features = [
                 ("count", "count", None),
@@ -513,7 +496,7 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
 
             metrics.extend(self._get_stats_with_names(cat_features, current_stats, reference_stats))
 
-        elif column_type == 'num':
+        elif column_type == "num":
             # mapping for num stats: (label, field_name_for_main_value, field_name_for_percentage)
             num_features = [
                 ("count", "count", None),
@@ -531,7 +514,7 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
             ]
             metrics.extend(self._get_stats_with_names(num_features, current_stats, reference_stats))
 
-        elif column_type == 'datetime':
+        elif column_type == "datetime":
             # mapping for datetime stats: (label, field_name_for_main_value, field_name_for_percentage)
             datetime_features = [
                 ("count", "count", None),

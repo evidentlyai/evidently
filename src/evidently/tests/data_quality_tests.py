@@ -432,7 +432,16 @@ class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest, ABC):
     ):
         self.column_name = column_name
         super().__init__(
-            column_name=column_name, eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in, metric=metric
+            column_name=column_name,
+            eq=eq,
+            gt=gt,
+            gte=gte,
+            is_in=is_in,
+            lt=lt,
+            lte=lte,
+            not_eq=not_eq,
+            not_in=not_in,
+            metric=metric,
         )
 
     def groups(self) -> Dict[str, str]:
@@ -456,7 +465,7 @@ class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest, ABC):
 
         return result
 
-import logging
+
 class TestFeatureValueMin(BaseFeatureDataQualityMetricsTest):
     name = "Min Value"
 
@@ -609,9 +618,7 @@ class TestFeatureValueMedian(BaseFeatureDataQualityMetricsTest):
         if ref_features_stats is not None:
             if not isinstance(ref_features_stats, NumericCharacteristics):
                 raise ValueError(f"{self.column_name} should be numerical or bool")
-            return TestValueCondition(
-                eq=approx(ref_features_stats.p50, 0.1)
-            )
+            return TestValueCondition(eq=approx(ref_features_stats.p50, 0.1))
         raise ValueError("Neither required test parameters nor reference data has been provided.")
 
     def calculate_value_for_test(self) -> Optional[Numeric]:

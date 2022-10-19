@@ -11,9 +11,8 @@ from dataclasses import dataclass
 from dataclasses import fields
 from scipy.stats import chi2_contingency
 
-from evidently.calculations.utils import make_hist_for_cat_plot
-from evidently.calculations.utils import make_hist_for_num_plot
-from evidently.calculations.utils import make_hist_df
+from evidently.utils.visualizations import make_hist_for_cat_plot
+from evidently.utils.visualizations import make_hist_for_num_plot
 from evidently.utils.data_operations import DatasetColumns
 
 MAX_CATEGORIES = 5
@@ -263,7 +262,7 @@ class DataQualityPlot:
     bins_for_hist: Dict[str, pd.DataFrame]
 
 
-class DataQualityGetPlotData():
+class DataQualityGetPlotData:
     def __init__(self) -> None:
         self.period_prefix: Optional[str] = None
         self.curr: Optional[pd.Series] = None
@@ -275,9 +274,9 @@ class DataQualityGetPlotData():
         ref: Optional[pd.DataFrame],
         feature_name: str,
         feature_type: str,
-        merge_small_cat: Optional[int] = MAX_CATEGORIES
+        merge_small_cat: Optional[int] = MAX_CATEGORIES,
     ):
-        if feature_type == 'cat' and merge_small_cat is not None:
+        if feature_type == "cat" and merge_small_cat is not None:
             if ref is not None:
                 ref = ref.copy()
             if merge_small_cat is not None:
@@ -287,7 +286,7 @@ class DataQualityGetPlotData():
         if ref is not None:
             ref_data = ref[feature_name].dropna()
         bins_for_hist = None
-        if feature_type == 'num':
+        if feature_type == "num":
             bins_for_hist = make_hist_for_num_plot(curr_data, ref_data)
             log_ref_data = None
             if ref_data is not None:
@@ -298,9 +297,9 @@ class DataQualityGetPlotData():
             bins_for_hist["current_log"] = bins_for_hist_log["current"]
             if "reference" in bins_for_hist_log.keys():
                 bins_for_hist["reference_log"] = bins_for_hist_log["reference"]
-        if feature_type == 'cat':
+        if feature_type == "cat":
             bins_for_hist = make_hist_for_cat_plot(curr_data, ref_data, dropna=True)
-        if feature_type == 'datetime':
+        if feature_type == "datetime":
             bins_for_hist = {}
             freq = self._choose_agg_period(feature_name, ref, curr)
             curr_data = curr[feature_name].dt.to_period(freq=freq)
@@ -331,7 +330,7 @@ class DataQualityGetPlotData():
         merge_small_cat: Optional[int] = MAX_CATEGORIES
     ):
         result = None
-        if feature_type == 'cat' and merge_small_cat is not None:
+        if feature_type == "cat" and merge_small_cat is not None:
             if ref is not None:
                 ref = ref.copy()
             curr, ref = self._transform_cat_data(curr.copy(), ref, feature_name, merge_small_cat)
@@ -361,16 +360,24 @@ class DataQualityGetPlotData():
                       "freq": self.period_prefix,
                       "datetime_name": datetime_name}
 
-        if feature_type == 'cat':
-            df_for_time_plot_curr = self._transform_df_to_time_count_view(df_for_time_plot_curr, datetime_name,
-                                                                          feature_name)
+        if feature_type == "cat":
+            df_for_time_plot_curr = self._transform_df_to_time_count_view(
+                df_for_time_plot_curr,
+                datetime_name,
+                feature_name,
+            )
             if df_for_time_plot_ref is not None:
-                df_for_time_plot_ref = self._transform_df_to_time_count_view(df_for_time_plot_ref, datetime_name,
-                                                                             feature_name)
-            result = {"current": df_for_time_plot_curr,
-                      "reference": df_for_time_plot_ref,
-                      "freq": self.period_prefix,
-                      "datetime_name": datetime_name}
+                df_for_time_plot_ref = self._transform_df_to_time_count_view(
+                    df_for_time_plot_ref,
+                    datetime_name,
+                    feature_name,
+                )
+            result = {
+                "current": df_for_time_plot_curr,
+                "reference": df_for_time_plot_ref,
+                "freq": self.period_prefix,
+                "datetime_name": datetime_name,
+            }
 
         return result
 
@@ -382,29 +389,29 @@ class DataQualityGetPlotData():
         feature_type: str,
         target_name: str,
         target_type: str,
-        merge_small_cat: Optional[int] = MAX_CATEGORIES
+        merge_small_cat: Optional[int] = MAX_CATEGORIES,
     ):
         result = None
-        if feature_type == 'cat' and target_type == 'num':
+        if feature_type == "cat" and target_type == "num":
             if ref is not None:
                 ref = ref.copy()
             if merge_small_cat is not None:
                 curr, ref = self._transform_cat_data(curr.copy(), ref, feature_name, merge_small_cat)
             result = self._prepare_box_data(curr, ref, feature_name, target_name)
-        if feature_type == 'num' and target_type == 'cat':
+        if feature_type == "num" and target_type == "cat":
             if ref is not None:
                 ref = ref.copy()
             if merge_small_cat is not None:
                 curr, ref = self._transform_cat_data(curr.copy(), ref, target_name, merge_small_cat)
             result = self._prepare_box_data(curr, ref, target_name, feature_name)
-        if feature_type == 'num' and target_type == 'num':
+        if feature_type == "num" and target_type == "num":
             result = {}
-            result['current'] = {
+            result["current"] = {
                 feature_name: curr[feature_name].tolist(),
                 target_name: curr[target_name].tolist()
             }
             if ref is not None:
-                result['reference'] = {
+                result["reference"] = {
                     feature_name: ref[feature_name].tolist(),
                     target_name: ref[target_name].tolist()
                 }
@@ -509,8 +516,12 @@ class DataQualityGetPlotData():
             self.ref = ref
         return curr, ref
 
-    def _choose_agg_period(self, date_column: str, reference_data: Optional[pd.DataFrame], current_data: pd.DataFrame
-                           ) -> str:
+    def _choose_agg_period(
+        self,
+        date_column: str,
+        reference_data: Optional[pd.DataFrame],
+        current_data: pd.DataFrame,
+    ) -> str:
         optimal_points = 150
         prefix_dict = {"A": "year", "Q": "quarter", "M": "month", "W": "week", "D": "day", "H": "hour"}
         datetime_feature = current_data[date_column]
