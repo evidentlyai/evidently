@@ -7,6 +7,7 @@ from evidently.calculations.stattests import z_stat_test
 from evidently.calculations.stattests.anderson_darling_stattest import anderson_darling_test
 from evidently.calculations.stattests.chisquare_stattest import chi_stat_test
 from evidently.calculations.stattests.cramer_von_mises_stattest import cramer_von_mises
+from evidently.calculations.stattests.energy_distance import energy_dist_test
 from evidently.calculations.stattests.g_stattest import g_test
 from evidently.calculations.stattests.hellinger_distance import hellinger_stat_test
 from evidently.calculations.stattests.mann_whitney_urank_stattest import mann_whitney_u_stat_test
@@ -130,3 +131,10 @@ def test_mann_whitney() -> None:
     reference = pd.Series([1, 2, 3, 4, 5, 6]).repeat([16, 18, 16, 14, 12, 12])
     current = pd.Series([1, 2, 3, 4, 5, 6]).repeat([16, 16, 16, 16, 16, 8])
     assert mann_whitney_u_stat_test.func(reference, current, "num", 0.05) == (approx(0.481, abs=1e-2), False)
+
+
+def test_energy_distance() -> None:
+    reference = pd.Series([38.7, 41.5, 43.8, 44.5, 45.5, 46.0, 47.7, 58.0, np.nan])
+    current = pd.Series([38.7, 41.5, 43.8, 44.5, 45.5, 46.0, 47.7, 58.0, np.nan])
+    assert energy_dist_test.func(reference, current, "num", 0.1) == (approx(0, abs=1e-5), False)
+    assert energy_dist_test.func(reference, current + 5, "num", 0.1) == (approx(1.9, abs=1e-1), True)

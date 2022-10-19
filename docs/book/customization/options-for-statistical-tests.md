@@ -180,3 +180,7 @@ example_stat_test = StatTest(
   - only for numerical features
   - returns `p_value`
   - drift detected when `p_value < threshold`
+- `ed` - Energy distance
+  - only for numerical features
+  - returns `distance`
+  - drift detected when `distance >= threshold`
