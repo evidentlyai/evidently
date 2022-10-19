@@ -204,8 +204,6 @@ class Suite:
         if self.context.state in [States.Calculated, States.Tested]:
             return
 
-        results: dict = {}
-
         if self.context.execution_graph is not None:
             execution_graph: ExecutionGraph = self.context.execution_graph
 
@@ -216,9 +214,8 @@ class Suite:
                     calculations[calculation] = calculation.calculate(data)
                 else:
                     logging.debug(f"Using cached result for {type(calculation)}")
-                results[metric] = calculations[calculation]
+                self.context.metric_results[metric] = calculations[calculation]
 
-        self.context.metric_results = results
         self.context.state = States.Calculated
 
     def run_checks(self):

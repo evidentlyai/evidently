@@ -2,7 +2,7 @@ import pandas as pd
 import pytest
 
 from evidently.metric_preset import ClassificationPerformance
-from evidently.metric_preset import DataDrift
+from evidently.metric_preset import DataDriftPreset
 from evidently.metric_preset import DataQuality
 from evidently.metric_preset import RegressionPerformance
 from evidently.metric_preset.metric_preset import MetricPreset
@@ -14,7 +14,7 @@ from evidently.report import Report
     "preset",
     (
         ClassificationPerformance(),
-        DataDrift(),
+        DataDriftPreset(),
         DataQuality(),
         RegressionPerformance(),
     ),

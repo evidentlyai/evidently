@@ -12,7 +12,7 @@ After [installation](../get-started/install-evidently.md), import the Report com
 
 ```python
 from evidently.report import Report
-from evidently.metric_preset import DataDrift, NumTargetDrift
+from evidently.metric_preset import DataDriftPreset, NumTargetDrift
 ```
 
 You need to prepare two datasets for comparison: **reference** and **current**. You can also generate some of the reports with a single current dataset. 
