@@ -1,7 +1,8 @@
 import json
-from typing import Dict, Union
+from typing import Dict
 from typing import Optional
 from typing import Tuple
+from typing import Union
 
 import numpy as np
 import pandas as pd
@@ -36,7 +37,7 @@ def plot_distr(hist_curr, hist_ref=None, orientation="v", color_options: Optiona
             )
         )
         cats = cats + list(np.setdiff1d(hist_ref["x"], cats))
-    if 'other' in cats:
+    if "other" in cats:
         cats.remove("other")
         cats = cats + ["other"]
         fig.update_xaxes(categoryorder="array", categoryarray=cats)
@@ -44,8 +45,12 @@ def plot_distr(hist_curr, hist_ref=None, orientation="v", color_options: Optiona
     return fig
 
 
-def plot_distr_with_log_button(curr_data: pd.DataFrame, curr_data_log: pd.DataFrame, ref_data: Optional[pd.DataFrame],
-                               ref_data_log: Optional[pd.DataFrame]):
+def plot_distr_with_log_button(
+    curr_data: pd.DataFrame,
+    curr_data_log: pd.DataFrame,
+    ref_data: Optional[pd.DataFrame],
+    ref_data_log: Optional[pd.DataFrame],
+):
     color_options = ColorOptions()
     traces = []
     visible = [True, False]
@@ -102,7 +107,9 @@ def plot_distr_with_log_button(curr_data: pd.DataFrame, curr_data_log: pd.DataFr
                         args=[{"visible": visible}],
                     ),
                     dict(
-                        label="Log Scale", method="update", args=[{"visible": [not x for x in visible]}]
+                        label="Log Scale",
+                        method="update",
+                        args=[{"visible": [not x for x in visible]}],
                     ),
                 ]
             ),
@@ -116,8 +123,13 @@ def plot_distr_with_log_button(curr_data: pd.DataFrame, curr_data_log: pd.DataFr
     return fig
 
 
-def plot_num_feature_in_time(curr_data: pd.DataFrame, ref_data: Optional[pd.DataFrame], feature_name: str,
-                             datetime_name: str, freq: str):
+def plot_num_feature_in_time(
+    curr_data: pd.DataFrame,
+    ref_data: Optional[pd.DataFrame],
+    feature_name: str,
+    datetime_name: str,
+    freq: str,
+):
     """
     Accepts current and reference data as pandas dataframes with two columns: datetime_name and feature_name.
     """
@@ -174,8 +186,13 @@ def plot_time_feature_distr(curr_data: pd.DataFrame, ref_data: Optional[pd.DataF
     return fig
 
 
-def plot_cat_feature_in_time(curr_data: pd.DataFrame, ref_data: Optional[pd.DataFrame], feature_name: str,
-                             datetime_name: str, freq: str):
+def plot_cat_feature_in_time(
+    curr_data: pd.DataFrame,
+    ref_data: Optional[pd.DataFrame],
+    feature_name: str,
+    datetime_name: str,
+    freq: str,
+):
     """
     Accepts current and reference data as pandas dataframes with two columns: datetime_name and feature_name.
     """
@@ -192,7 +209,7 @@ def plot_cat_feature_in_time(curr_data: pd.DataFrame, ref_data: Optional[pd.Data
                 y=curr_data.loc[curr_data[feature_name].astype(str) == val, "num"],
                 name=str(val),
                 marker_color=color_options.color_sequence[i],
-                legendgroup=str(val)
+                legendgroup=str(val),
             )
         )
         if ref_data is not None:
@@ -272,8 +289,7 @@ def plot_cat_cat_rel(curr: pd.DataFrame, ref: pd.DataFrame, target_name: str, fe
             y=curr.loc[curr[target_name] == val, "count_objects"],
             marker_color=color_options.color_sequence[i],
             name=str(val),
-            legendgroup=str(val)
-            # showlegend=False,
+            legendgroup=str(val),
         )
         fig.append_trace(trace, 1, 1)
 
@@ -285,7 +301,7 @@ def plot_cat_cat_rel(curr: pd.DataFrame, ref: pd.DataFrame, target_name: str, fe
                 marker_color=color_options.color_sequence[i],
                 opacity=0.6,
                 name=str(val),
-                legendgroup=str(val)
+                legendgroup=str(val),
             )
             fig.append_trace(trace, 1, 2)
     fig.update_layout(yaxis_title="count")

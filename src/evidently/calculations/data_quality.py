@@ -1,8 +1,8 @@
 """Methods for overall dataset quality calculations - rows count, a specific values count, etc."""
-from typing import Tuple
 from typing import Callable
 from typing import Dict
 from typing import Optional
+from typing import Tuple
 from typing import Union
 
 import numpy as np
@@ -11,9 +11,9 @@ from dataclasses import dataclass
 from dataclasses import fields
 from scipy.stats import chi2_contingency
 
+from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.visualizations import make_hist_for_cat_plot
 from evidently.utils.visualizations import make_hist_for_num_plot
-from evidently.utils.data_operations import DatasetColumns
 
 MAX_CATEGORIES = 5
 
@@ -292,7 +292,8 @@ class DataQualityGetPlotData:
             if ref_data is not None:
                 log_ref_data = np.log10(ref_data[ref_data > 0])
             bins_for_hist_log = make_hist_for_num_plot(
-                np.log10(curr_data[curr_data > 0]), log_ref_data
+                np.log10(curr_data[curr_data > 0]),
+                log_ref_data,
             )
             bins_for_hist["current_log"] = bins_for_hist_log["current"]
             if "reference" in bins_for_hist_log.keys():
@@ -327,7 +328,7 @@ class DataQualityGetPlotData:
         feature_name: str,
         feature_type: str,
         datetime_name: str,
-        merge_small_cat: Optional[int] = MAX_CATEGORIES
+        merge_small_cat: Optional[int] = MAX_CATEGORIES,
     ):
         result = None
         if feature_type == "cat" and merge_small_cat is not None:
@@ -337,28 +338,35 @@ class DataQualityGetPlotData:
 
         freq = self._choose_agg_period(datetime_name, ref, curr)
         df_for_time_plot_curr = (
-            curr
-            .assign(period=lambda x: x[datetime_name].dt.to_period(freq=freq))
+            curr.assign(period=lambda x: x[datetime_name].dt.to_period(freq=freq))
             .loc[:, ["period", feature_name]]
             .copy()
         )
         df_for_time_plot_ref = None
         if ref is not None:
             df_for_time_plot_ref = (
-                ref
-                .assign(period=lambda x: x[datetime_name].dt.to_period(freq=freq))
+                ref.assign(period=lambda x: x[datetime_name].dt.to_period(freq=freq))
                 .loc[:, ["period", feature_name]]
                 .copy()
             )
-        if feature_type == 'num':
-            df_for_time_plot_curr = self._transform_df_to_time_mean_view(df_for_time_plot_curr, datetime_name, feature_name)
+        if feature_type == "num":
+            df_for_time_plot_curr = self._transform_df_to_time_mean_view(
+                df_for_time_plot_curr,
+                datetime_name,
+                feature_name,
+            )
             if df_for_time_plot_ref is not None:
-                df_for_time_plot_ref = self._transform_df_to_time_mean_view(df_for_time_plot_ref, datetime_name,
-                                                                            feature_name)
-            result = {"current": df_for_time_plot_curr,
-                      "reference": df_for_time_plot_ref,
-                      "freq": self.period_prefix,
-                      "datetime_name": datetime_name}
+                df_for_time_plot_ref = self._transform_df_to_time_mean_view(
+                    df_for_time_plot_ref,
+                    datetime_name,
+                    feature_name,
+                )
+            result = {
+                "current": df_for_time_plot_curr,
+                "reference": df_for_time_plot_ref,
+                "freq": self.period_prefix,
+                "datetime_name": datetime_name,
+            }
 
         if feature_type == "cat":
             df_for_time_plot_curr = self._transform_df_to_time_count_view(
@@ -408,12 +416,12 @@ class DataQualityGetPlotData:
             result = {}
             result["current"] = {
                 feature_name: curr[feature_name].tolist(),
-                target_name: curr[target_name].tolist()
+                target_name: curr[target_name].tolist(),
             }
             if ref is not None:
                 result["reference"] = {
                     feature_name: ref[feature_name].tolist(),
-                    target_name: ref[target_name].tolist()
+                    target_name: ref[target_name].tolist(),
                 }
         if feature_type == "cat" and target_type == "cat":
             if ref is not None:
@@ -473,20 +481,30 @@ class DataQualityGetPlotData:
         res = {}
         for df, name in zip(dfs, names):
             df_for_plot = df.groupby(cat_feature_name)[num_feature_name].quantile([0, 0.25, 0.5, 0.75, 1]).reset_index()
-            df_for_plot.columns = [cat_feature_name, 'q', num_feature_name]
+            df_for_plot.columns = [cat_feature_name, "q", num_feature_name]
             res_df = {}
             values = df_for_plot[cat_feature_name].unique()
-            res_df["mins"] = df_for_plot[df_for_plot.q == 0].set_index(cat_feature_name).loc[values, num_feature_name].tolist()
-            res_df["lowers"] = df_for_plot[df_for_plot.q == 0.25].set_index(cat_feature_name).loc[values, num_feature_name].tolist()
-            res_df["means"] = df_for_plot[df_for_plot.q == 0.5].set_index(cat_feature_name).loc[values, num_feature_name].tolist()
-            res_df["uppers"] = df_for_plot[df_for_plot.q == 0.75].set_index(cat_feature_name).loc[values, num_feature_name].tolist()
-            res_df["maxs"] = df_for_plot[df_for_plot.q == 1].set_index(cat_feature_name).loc[values, num_feature_name].tolist()
-            res_df['values'] = values
+
+            def _quantiles(qdf, value):
+                return qdf[df_for_plot.q == value].set_index(cat_feature_name).loc[values, num_feature_name].tolist()
+
+            res_df["mins"] = _quantiles(df_for_plot, 0)
+            res_df["lowers"] = _quantiles(df_for_plot, 0.25)
+            res_df["means"] = _quantiles(df_for_plot, 0.5)
+            res_df["uppers"] = _quantiles(df_for_plot, 0.75)
+            res_df["maxs"] = _quantiles(df_for_plot, 1)
+            res_df["values"] = values
             res[name] = res_df
         return res
 
-    def _transform_cat_data(self, curr: pd.DataFrame, ref: Optional[pd.DataFrame], feature_name: str, merge_small_cat: int,
-                            rewrite: bool = False) -> Tuple[pd.DataFrame, Optional[pd.DataFrame]]:
+    def _transform_cat_data(
+        self,
+        curr: pd.DataFrame,
+        ref: Optional[pd.DataFrame],
+        feature_name: str,
+        merge_small_cat: int,
+        rewrite: bool = False,
+    ) -> Tuple[pd.DataFrame, Optional[pd.DataFrame]]:
         if self.curr is not None and rewrite is not True:
             return self.curr, self.ref
         if ref is not None:
@@ -502,11 +520,10 @@ class DataQualityGetPlotData:
             if ref is not None:
                 ref_cats = ref[feature_name].astype(str).value_counts(normalize=True)
             cats = (
-                curr_cats
-                .append(ref_cats)
+                curr_cats.append(ref_cats)
                 .sort_values(ascending=False)
-                .index
-                .drop_duplicates(keep='first')[:merge_small_cat].values
+                .index.drop_duplicates(keep="first")[:merge_small_cat]
+                .values
             )
 
             curr[feature_name] = curr[feature_name].apply(lambda x: x if str(x) in cats else "other")

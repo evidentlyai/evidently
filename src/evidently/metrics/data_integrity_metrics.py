@@ -1,26 +1,32 @@
 import json
 from itertools import combinations
-from typing import List, Dict, Union, Tuple
+from typing import Dict
+from typing import List
 from typing import Optional
+from typing import Tuple
+from typing import Union
 
 import dataclasses
 import numpy as np
 import pandas as pd
-from pandas.api.types import is_string_dtype
-from pandas.api.types import is_numeric_dtype
 from dataclasses import dataclass
 from dataclasses import fields
+from pandas.api.types import is_numeric_dtype
+from pandas.api.types import is_string_dtype
 
 from evidently.calculations.data_integration import get_number_of_empty_columns
-from evidently.calculations.data_quality import get_features_stats, DataQualityGetPlotData, FeatureQualityStats
+from evidently.calculations.data_quality import DataQualityGetPlotData
+from evidently.calculations.data_quality import FeatureQualityStats
+from evidently.calculations.data_quality import get_features_stats
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
-from evidently.model.widget import BaseWidgetInfo, AdditionalGraphInfo
+from evidently.model.widget import AdditionalGraphInfo
+from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
-from evidently.renderers.html_widgets import table_data
 from evidently.renderers.html_widgets import rich_table_data
+from evidently.renderers.html_widgets import table_data
 from evidently.utils.data_operations import process_columns
 from evidently.utils.types import Numeric
 from evidently.utils.visualizations import plot_boxes
@@ -159,9 +165,8 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
             column_type = "num"
         elif self.column_name in columns.cat_feature_names:
             column_type = "cat"
-        elif (
-            self.column_name in columns.datetime_feature_names
-            or (columns.utility_columns.date is not None and columns.utility_columns.date == self.column_name)
+        elif self.column_name in columns.datetime_feature_names or (
+            columns.utility_columns.date is not None and columns.utility_columns.date == self.column_name
         ):
             column_type = "datetime"
         if column_type is None:
