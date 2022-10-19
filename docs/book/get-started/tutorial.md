@@ -68,21 +68,23 @@ $ pip install evidently
 
 After installing the tool, import `evidently` and the required components. In this tutorial, you will use several **test suites** and **reports**. Each of them corresponds to a specific type of analysis. 
  
-You will also need to import `pandas`, `numpy`, and the toy `california_housing` dataset. 
+You will also need to import `pandas`, `numpy`, and the toy `california_housing` dataset.
 
 ```python
 import pandas as pd
 import numpy as np
- 
+
 from sklearn.datasets import fetch_california_housing
- 
+
 from evidently.pipeline.column_mapping import ColumnMapping
- 
+
 from evidently.report import Report
-from evidently.metric_preset import DataDrift, NumTargetDrift
- 
+from evidently.metric_preset import DataDriftPreset
+from evidently.metric_preset import NumTargetDrift
+
 from evidently.test_suite import TestSuite
-from evidently.test_preset import DataQuality, DataStability
+from evidently.test_preset import DataQuality
+from evidently.test_preset import DataStability
 from evidently.tests import *
 ```
 
