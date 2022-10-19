@@ -1,5 +1,5 @@
 from typing import Optional
-
+from typing import List
 import dataclasses
 import pandas as pd
 from sklearn import metrics
@@ -8,7 +8,13 @@ from evidently.calculations.classification_performance import PredictionData
 from evidently.calculations.classification_performance import get_prediction_data
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
-
+from evidently.model.widget import BaseWidgetInfo
+from evidently.renderers.base_renderer import MetricRenderer
+from evidently.renderers.base_renderer import default_renderer
+from evidently.utils.visualizations import get_roc_auc_tab_data
+from evidently.renderers.html_widgets import widget_tabs
+from evidently.renderers.html_widgets import TabData
+from evidently.renderers.html_widgets import header_text
 
 @dataclasses.dataclass
 class ClassificationRocCurveResults:
@@ -36,17 +42,17 @@ class ClassificationRocCurve(Metric[ClassificationRocCurveResults]):
         if prediction.prediction_probas is None:
             raise ValueError("Roc Curve can be calculated only on binary probabilistic predictions")
         binaraized_target = (target_data.values.reshape(-1, 1) == labels).astype(int)
+        roc_curve = {}
         if len(labels) <= 2:
             binaraized_target = pd.DataFrame(binaraized_target[:, 0])
             binaraized_target.columns = ["target"]
 
             fpr, tpr, thrs = metrics.roc_curve(binaraized_target, prediction.prediction_probas[labels[0]])
-            roc_curve: dict = {"fpr": fpr.tolist(), "tpr": tpr.tolist(), "thrs": thrs.tolist()}
+            roc_curve[labels[0]] = {"fpr": fpr.tolist(), "tpr": tpr.tolist(), "thrs": thrs.tolist()}
         else:
             binaraized_target = pd.DataFrame(binaraized_target)
             binaraized_target.columns = labels
 
-            roc_curve = {}
             for label in labels:
                 fpr, tpr, thrs = metrics.roc_curve(binaraized_target[label], prediction.prediction_probas[label])
                 roc_curve[label] = {
@@ -55,3 +61,27 @@ class ClassificationRocCurve(Metric[ClassificationRocCurveResults]):
                     "thrs": thrs.tolist(),
                 }
         return roc_curve
+
+
+@default_renderer(wrap_type=ClassificationRocCurve)
+class ClassificationRocCurveRenderer(MetricRenderer):
+    def render_json(self, obj: ClassificationRocCurve) -> dict:
+        return {}
+
+    def render_html(self, obj: ClassificationRocCurve) -> List[BaseWidgetInfo]:
+        current_roc_curve = obj.get_result().current_roc_curve
+        reference_roc_curve = obj.get_result().reference_roc_curve
+        if current_roc_curve is None:
+            return []
+        
+        tab_data = get_roc_auc_tab_data(current_roc_curve, reference_roc_curve)
+        if len(tab_data) == 1:
+            return [
+                header_text(label="ROC Curve"),
+                tab_data[0][1]
+            ]
+        tab_data = [TabData(name, widget) for name, widget in tab_data]
+        return [
+            header_text(label="ROC Curve"),
+            widget_tabs(title="", tabs=tab_data)
+        ]

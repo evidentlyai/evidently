@@ -95,7 +95,8 @@ class Report(Display):
     def _build_dashboard_info(self):
         metrics_results = []
         additional_graphs = []
-        for test, _ in self._inner_suite.context.metric_results.items():
+        # for test, _ in self._inner_suite.context.metric_results.items():
+        for test in self._first_level_metrics:
             renderer = find_metric_renderer(type(test), self._inner_suite.context.renderers)
             html_info = renderer.render_html(test)
             for info_item in html_info:

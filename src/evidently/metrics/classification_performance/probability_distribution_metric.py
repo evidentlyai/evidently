@@ -27,7 +27,7 @@ class ProbabilityDistributionResults:
 
 class ProbabilityDistribution(Metric[ProbabilityDistributionResults]):
     def calculate(self, data: InputData) -> ProbabilityDistributionResults:
-        columns = process_columns(data.reference_data, data.column_mapping)
+        columns = process_columns(data.current_data, data.column_mapping)
 
         return ProbabilityDistributionResults(
             ref_distplot=_plot(data.reference_data.copy(), columns) if data.reference_data is not None else None,
@@ -76,7 +76,7 @@ def _plot(dataset_to_plot, columns: DatasetColumns, color_options: Optional[Colo
 
 
 @default_renderer(wrap_type=ProbabilityDistribution)
-class CatTargetDriftRenderer(MetricRenderer):
+class ProbabilityDistributionRenderer(MetricRenderer):
     def render_json(self, obj: ProbabilityDistribution) -> dict:
         return {}
 
@@ -87,19 +87,20 @@ class CatTargetDriftRenderer(MetricRenderer):
         size = WidgetSize.FULL
         if ref is not None:
             size = WidgetSize.HALF
-            result.append(
-                plotly_graph_tabs(
-                    title="Reference: Probability Distribution",
-                    size=size,
-                    figures=[GraphData(graph["title"], graph["data"], graph["layout"]) for graph in ref],
-                )
-            )
         if curr is not None:
             result.append(
                 plotly_graph_tabs(
                     title="Current: Probability Distribution",
                     size=size,
                     figures=[GraphData(graph["title"], graph["data"], graph["layout"]) for graph in curr],
+                )
+            )
+        if ref is not None:
+            result.append(
+                plotly_graph_tabs(
+                    title="Reference: Probability Distribution",
+                    size=size,
+                    figures=[GraphData(graph["title"], graph["data"], graph["layout"]) for graph in ref],
                 )
             )
         return result

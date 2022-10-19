@@ -1,5 +1,6 @@
 from .cat_target_drift_metrics import CatTargetDriftMetrics
 from .classification_performance.class_balance_metric import ClassificationClassBalance
+from .classification_performance.classification_quality_metric import ClassificationQuality
 from .classification_performance.confusion_matrix_metric import ClassificationConfusionMatrix
 from .classification_performance.pr_curve_metric import ClassificationPRCurve
 from .classification_performance.pr_table_metric import ClassificationPRTable

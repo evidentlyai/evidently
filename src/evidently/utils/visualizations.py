@@ -1,12 +1,18 @@
+import json
 from typing import Dict
+from typing import List
 from typing import Optional
 from typing import Tuple
+from typing import Union
 
 import numpy as np
 import pandas as pd
 from plotly import graph_objs as go
+from plotly.subplots import make_subplots
+from evidently.renderers.html_widgets import plotly_figure
 
 from evidently.options.color_scheme import ColorOptions
+from evidently.model.widget import BaseWidgetInfo
 
 
 def plot_distr(hist_curr, hist_ref=None, orientation="v", color_options: Optional[ColorOptions] = None):
@@ -33,6 +39,38 @@ def plot_distr(hist_curr, hist_ref=None, orientation="v", color_options: Optiona
             )
         )
 
+    return fig
+
+
+def plot_distr_subplots(
+    hist_curr, hist_ref=None, xaxis_name: str = "", yaxis_name: str = "", same_color: Optional[str] = None
+):
+    color_options = ColorOptions()
+    if same_color is None:
+        curr_color = color_options.get_current_data_color()
+        ref_color = color_options.get_reference_data_color()
+    else:
+        curr_color = same_color
+        ref_color = same_color
+
+    cols = 1
+    subplot_titles: Union[list, str] = ""
+
+    if hist_ref is not None:
+        cols = 2
+        subplot_titles = ["current", "reference"]
+
+    fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
+    trace = go.Bar(x=hist_curr["x"], y=hist_curr["count"], marker_color=curr_color, showlegend=False)
+    fig.append_trace(trace, 1, 1)
+    fig.update_xaxes(title_text=xaxis_name, row=1, col=1)
+
+    if hist_ref is not None:
+        trace = go.Bar(x=hist_ref["x"], y=hist_ref["count"], marker_color=ref_color, showlegend=False)
+        fig.append_trace(trace, 1, 2)
+        fig.update_xaxes(title_text=xaxis_name, row=1, col=2)
+    fig.update_layout(yaxis_title=yaxis_name)
+    fig = json.loads(fig.to_json())
     return fig
 
 
@@ -148,3 +186,123 @@ def plot_scatter_for_data_drift(curr_y: list, curr_x: list, y0: float, y1: float
         ],
     )
     return fig
+
+
+def plot_conf_mtrx(curr_mtrx, ref_mtrx):
+    if ref_mtrx is not None:
+        cols = 2
+        subplot_titles = ["current", "reference"]
+    else:
+        cols = 1
+        subplot_titles = [""]
+    fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
+    trace = go.Heatmap(
+        z=curr_mtrx.values,
+        x=curr_mtrx.labels,
+        y=curr_mtrx.labels,
+        text=np.array(curr_mtrx.values).astype(str),
+        texttemplate="%{text}",
+        coloraxis="coloraxis",
+    )
+    fig.append_trace(trace, 1, 1)
+
+    if ref_mtrx is not None:
+        trace = go.Heatmap(
+            z=ref_mtrx.values,
+            x=ref_mtrx.labels,
+            y=ref_mtrx.labels,
+            text=np.array(ref_mtrx.values).astype(str),
+            texttemplate="%{text}",
+            coloraxis="coloraxis",
+        )
+        fig.append_trace(trace, 1, 2)
+    fig.update_layout(coloraxis={"colorscale": "RdBu_r"})
+    return fig
+
+
+def get_roc_auc_tab_data(curr_roc_curve: dict, ref_roc_curve: Optional[dict]) -> List[Tuple[str, BaseWidgetInfo]]:
+    color_options = ColorOptions()
+    additional_plots = []
+    cols = 1
+    subplot_titles = [""]
+    if ref_roc_curve is not None:
+        cols = 2
+        subplot_titles = ["current", "reference"]
+    for label in curr_roc_curve.keys():
+        fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
+        trace = go.Scatter(
+            x=curr_roc_curve[label]["fpr"],
+            y=curr_roc_curve[label]["tpr"],
+            mode="lines",
+            name="ROC",
+            legendgroup="ROC",
+            marker=dict(
+                size=6,
+                color=color_options.get_current_data_color(),
+            ),
+        )
+        fig.append_trace(trace, 1, 1)
+        fig.update_xaxes(title_text="False Positive Rate", row=1, col=1)
+        if ref_roc_curve is not None:
+            trace = go.Scatter(
+                x=ref_roc_curve[label]["fpr"],
+                y=ref_roc_curve[label]["tpr"],
+                mode="lines",
+                name="ROC",
+                legendgroup="ROC",
+                showlegend=False,
+                marker=dict(
+                    size=6,
+                    color=color_options.get_current_data_color(),
+                ),
+            )
+            fig.append_trace(trace, 1, 2)
+            fig.update_xaxes(title_text="False Positive Rate", row=1, col=1)
+        fig.update_layout(yaxis_title="True Positive Rate", showlegend=True)
+
+        additional_plots.append((str(label), plotly_figure(title="", figure=fig)))
+    return additional_plots
+
+
+def get_pr_rec_plot_data(current_pr_curve: dict, reference_pr_curve: Optional[dict]) -> List[Tuple[str, BaseWidgetInfo]]:
+    color_options = ColorOptions()
+    additional_plots = []
+    cols = 1
+    subplot_titles = [""]
+    if reference_pr_curve is not None:
+        cols = 2
+        subplot_titles = ["current", "reference"]
+    for label in current_pr_curve.keys():
+        fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
+        trace = go.Scatter(
+            x=current_pr_curve[label]["rcl"],
+            y=current_pr_curve[label]["pr"],
+            mode="lines",
+            name="PR",
+            legendgroup="PR",
+            marker=dict(
+                size=6,
+                color=color_options.get_current_data_color(),
+            ),
+        )
+        fig.append_trace(trace, 1, 1)
+        fig.update_xaxes(title_text="Recall", row=1, col=1)
+        if reference_pr_curve is not None:
+            trace = go.Scatter(
+                x=reference_pr_curve[label]["rcl"],
+                y=reference_pr_curve[label]["pr"],
+                mode="lines",
+                name="PR",
+                legendgroup="PR",
+                showlegend=False,
+                marker=dict(
+                    size=6,
+                    color=color_options.get_current_data_color(),
+                ),
+            )
+            fig.append_trace(trace, 1, 2)
+            fig.update_xaxes(title_text="Recall", row=1, col=1)
+        fig.update_layout(yaxis_title="Precision", showlegend=True)
+
+        additional_plots.append((str(label), plotly_figure(title="", figure=fig)))
+    return additional_plots
