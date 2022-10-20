@@ -137,12 +137,12 @@ def test_column_correlations_metric_value_error(
                     "kendall": {
                         "column_name": "col1",
                         "kind": "kendall",
-                        "values": {"x": ["col2"], "y": [-0.33333333333333337]},
+                        "values": {"x": ["col2"], "y": [approx(-0.33, abs=0.01)]},
                     },
                     "pearson": {
                         "column_name": "col1",
                         "kind": "pearson",
-                        "values": {"x": ["col2"], "y": [-0.39101797181493814]},
+                        "values": {"x": ["col2"], "y": [approx(-0.39, abs=0.01)]},
                     },
                     "spearman": {"column_name": "col1", "kind": "spearman", "values": {"x": ["col2"], "y": [-0.5]}},
                 },
@@ -150,17 +150,17 @@ def test_column_correlations_metric_value_error(
                     "kendall": {
                         "column_name": "col1",
                         "kind": "kendall",
-                        "values": {"x": ["col2"], "y": [-0.816496580927726]},
+                        "values": {"x": ["col2"], "y": [approx(-0.81, abs =0.01)]},
                     },
                     "pearson": {
                         "column_name": "col1",
                         "kind": "pearson",
-                        "values": {"x": ["col2"], "y": [-0.798823018394266]},
+                        "values": {"x": ["col2"], "y": [approx(-0.79, abs=0.01)]},
                     },
                     "spearman": {
                         "column_name": "col1",
                         "kind": "spearman",
-                        "values": {"x": ["col2"], "y": [-0.8660254037844387]},
+                        "values": {"x": ["col2"], "y": [approx(-0.86, abs=0.01)]},
                     },
                 },
             },
