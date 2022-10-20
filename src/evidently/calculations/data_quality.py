@@ -285,7 +285,7 @@ def _select_features_for_corr(dataset: pd.DataFrame, columns: DatasetColumns) ->
         unique_count = dataset[target_name].nunique()
 
         if unique_count > 1:
-            if columns.task == "classification" and unique_count > 1:
+            if columns.task == "classification":
                 cat_for_corr.append(target_name)
 
             else:
@@ -295,7 +295,7 @@ def _select_features_for_corr(dataset: pd.DataFrame, columns: DatasetColumns) ->
         unique_count = dataset[prediction_name].nunique()
 
         if unique_count > 1:
-            if columns.task == "classification" and unique_count > 1:
+            if columns.task == "classification":
                 cat_for_corr.append(prediction_name)
 
             else:

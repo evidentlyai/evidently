@@ -17,6 +17,7 @@ from evidently.renderers.html_widgets import HeatmapData
 from evidently.renderers.html_widgets import TabData
 from evidently.renderers.html_widgets import get_heatmaps_widget
 from evidently.renderers.html_widgets import header_text
+from evidently.renderers.html_widgets import table_data
 from evidently.renderers.html_widgets import widget_tabs
 from evidently.utils.data_operations import process_columns
 
@@ -48,7 +49,6 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
     @staticmethod
     def _get_correlations_stats(correlation: pd.DataFrame, column_mapping: ColumnMapping) -> CorrelationStats:
         correlation_matrix = correlation.copy()
-
         target_name = column_mapping.target
         prediction_name = column_mapping.prediction
         columns = [i for i in correlation_matrix.columns if i not in [target_name, prediction_name]]
@@ -146,6 +146,42 @@ class DataQualityCorrelationMetricsRenderer(MetricRenderer):
 
         return result
 
+    @staticmethod
+    def _get_tables(dataset_name: str, correlation: DatasetCorrelation) -> BaseWidgetInfo:
+        tabs = []
+        for correlation_name, correlation_stats in correlation.stats.items():
+            matched_stat = [
+                ("Abs max correlation", np.round(correlation_stats.abs_max_correlation, 3)),
+                ("Abs max features correlation", np.round(correlation_stats.abs_max_features_correlation, 3)),
+            ]
+            if correlation_stats.abs_max_target_features_correlation is not None:
+                matched_stat.append(
+                    (
+                        "Abs max target features correlation",
+                        np.round(correlation_stats.abs_max_target_features_correlation, 3),
+                    )
+                )
+            if correlation_stats.abs_max_prediction_features_correlation is not None:
+                matched_stat.append(
+                    (
+                        "Abs max prediction features correlation",
+                        np.round(correlation_stats.abs_max_prediction_features_correlation, 3),
+                    )
+                )
+
+            matched_stat_headers = ["Metric", "Value"]
+            tabs.append(
+                TabData(
+                    title=correlation_name,
+                    widget=table_data(
+                        title="",
+                        column_names=matched_stat_headers,
+                        data=matched_stat,
+                    ),
+                )
+            )
+        return widget_tabs(title=f"Correlations statistic ({dataset_name.lower()})", tabs=tabs)
+
     def _get_heatmaps(self, metric_result: DatasetCorrelationsMetricResult) -> BaseWidgetInfo:
         tabs = []
         for correlation_method in metric_result.current.correlation:
@@ -176,6 +212,11 @@ class DataQualityCorrelationMetricsRenderer(MetricRenderer):
         metric_result = obj.get_result()
         result = [
             header_text(label="Dataset Correlations Metric"),
-            self._get_heatmaps(metric_result=metric_result),
+            self._get_tables("current", metric_result.current),
         ]
+
+        if metric_result.reference is not None:
+            result.append(self._get_tables("reference", metric_result.reference))
+
+        result.append(self._get_heatmaps(metric_result=metric_result))
         return result
