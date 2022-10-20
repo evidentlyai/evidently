@@ -150,7 +150,7 @@ def test_column_correlations_metric_value_error(
                     "kendall": {
                         "column_name": "col1",
                         "kind": "kendall",
-                        "values": {"x": ["col2"], "y": [approx(-0.81, abs =0.01)]},
+                        "values": {"x": ["col2"], "y": [approx(-0.81, abs=0.01)]},
                     },
                     "pearson": {
                         "column_name": "col1",
