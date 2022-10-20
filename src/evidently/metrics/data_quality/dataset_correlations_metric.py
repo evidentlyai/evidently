@@ -7,8 +7,7 @@ import numpy as np
 import pandas as pd
 
 from evidently import ColumnMapping
-
-# from evidently.calculations.data_quality import calculate_dataset_cramer_v_correlation
+from evidently.calculations.data_quality import calculate_correlations
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
@@ -19,16 +18,22 @@ from evidently.renderers.html_widgets import TabData
 from evidently.renderers.html_widgets import get_heatmaps_widget
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import widget_tabs
+from evidently.utils.data_operations import process_columns
+
+
+@dataclasses.dataclass
+class CorrelationStats:
+    target_prediction_correlation: Optional[float] = None
+    abs_max_target_features_correlation: Optional[float] = None
+    abs_max_prediction_features_correlation: Optional[float] = None
+    abs_max_correlation: Optional[float] = None
+    abs_max_features_correlation: Optional[float] = None
 
 
 @dataclasses.dataclass
 class DatasetCorrelation:
     correlation: Dict[str, pd.DataFrame]
-    target_prediction_correlation: Optional[float] = None
-    abs_max_target_features_correlation: Optional[float] = None
-    abs_max_prediction_features_correlation: Optional[float] = None
-    abs_max_correlation: Optional[float] = None
-    abs_max_num_features_correlation: Optional[float] = None
+    stats: Dict[str, CorrelationStats]
 
 
 @dataclasses.dataclass
@@ -41,22 +46,14 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
     """Calculate different correlations with target, predictions and features"""
 
     @staticmethod
-    def _get_correlations(dataset: pd.DataFrame, columns_mapping: ColumnMapping) -> DatasetCorrelation:
-        correlation = {}
-        num_features = columns_mapping.numerical_features
-        target_name = columns_mapping.target
-        prediction_name = columns_mapping.prediction
+    def _get_correlations_stats(correlation: pd.DataFrame, column_mapping: ColumnMapping) -> CorrelationStats:
+        correlation_matrix = correlation.copy()
 
-        for method in ["pearson", "spearman", "kendall"]:
-            correlation_matrix = dataset.corr(method=method)
-            correlation[method] = correlation_matrix
-        # correlation["cramer_v"] = calculate_dataset_cramer_v_correlation(dataset)
-        correlation_matrix = correlation["pearson"].copy()
+        target_name = column_mapping.target
+        prediction_name = column_mapping.prediction
+        columns = [i for i in correlation_matrix.columns if i not in [target_name, prediction_name]]
         # fill diagonal with 1 values for getting abs max values
         np.fill_diagonal(correlation_matrix.values, 0)
-
-        if num_features is None:
-            num_features = [i for i in correlation_matrix if i not in [target_name, prediction_name]]
 
         if (
             isinstance(prediction_name, str)
@@ -65,61 +62,68 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
         ):
             target_prediction_correlation = correlation_matrix.loc[prediction_name, target_name]
 
+            if pd.isnull(target_prediction_correlation):
+                target_prediction_correlation = None
+
         else:
             target_prediction_correlation = None
 
         if target_name in correlation_matrix:
-            abs_max_target_features_correlation = correlation_matrix.loc[target_name, num_features].abs().max()
+            abs_max_target_features_correlation = correlation_matrix.loc[target_name, columns].abs().max()
+
+            if pd.isnull(abs_max_target_features_correlation):
+                abs_max_target_features_correlation = None
 
         else:
             abs_max_target_features_correlation = None
 
         if isinstance(prediction_name, str) and prediction_name in correlation_matrix:
-            abs_max_prediction_features_correlation = correlation_matrix.loc[prediction_name, num_features].abs().max()
+            abs_max_prediction_features_correlation = correlation_matrix.loc[prediction_name, columns].abs().max()
+
+            if pd.isnull(abs_max_prediction_features_correlation):
+                abs_max_prediction_features_correlation = None
 
         else:
             abs_max_prediction_features_correlation = None
 
-        if columns_mapping.is_classification_task() is not None:
-            corr_features = num_features
-
-        else:
-            corr_features = num_features
-
-            if target_name is not None:
-                corr_features.append(target_name)
-
-            if prediction_name is not None and isinstance(prediction_name, str):
-                corr_features.append(prediction_name)
-
-        abs_max_correlation = correlation_matrix.loc[corr_features, corr_features].abs().max().max()
+        abs_max_correlation = correlation_matrix.abs().max().max()
 
         if pd.isnull(abs_max_correlation):
             abs_max_correlation = None
 
-        abs_max_num_features_correlation = correlation_matrix.loc[num_features, num_features].abs().max().max()
+        abs_max_features_correlation = correlation_matrix.loc[columns, columns].abs().max().max()
 
-        if pd.isnull(abs_max_num_features_correlation):
-            abs_max_num_features_correlation = None
+        if pd.isnull(abs_max_features_correlation):
+            abs_max_features_correlation = None
 
-        if pd.isnull(target_prediction_correlation):
-            target_prediction_correlation = None
-
-        return DatasetCorrelation(
-            correlation=correlation,
+        return CorrelationStats(
             target_prediction_correlation=target_prediction_correlation,
             abs_max_target_features_correlation=abs_max_target_features_correlation,
             abs_max_prediction_features_correlation=abs_max_prediction_features_correlation,
             abs_max_correlation=abs_max_correlation,
-            abs_max_num_features_correlation=abs_max_num_features_correlation,
+            abs_max_features_correlation=abs_max_features_correlation,
+        )
+
+    def _get_correlations(self, dataset: pd.DataFrame, column_mapping: ColumnMapping) -> DatasetCorrelation:
+        columns = process_columns(dataset, column_mapping)
+        correlations = calculate_correlations(dataset, columns)
+
+        stats = {
+            name: self._get_correlations_stats(correlation, column_mapping)
+            for name, correlation in correlations.items()
+        }
+
+        return DatasetCorrelation(
+            correlation=correlations,
+            stats=stats,
         )
 
     def calculate(self, data: InputData) -> DatasetCorrelationsMetricResult:
-        current_correlations = self._get_correlations(dataset=data.current_data, columns_mapping=data.column_mapping)
+        current_correlations = self._get_correlations(dataset=data.current_data, column_mapping=data.column_mapping)
 
         if data.reference_data is not None:
             reference_correlation: Optional[DatasetCorrelation] = self._get_correlations(
-                dataset=data.reference_data, columns_mapping=data.column_mapping
+                dataset=data.reference_data, column_mapping=data.column_mapping
             )
 
         else:

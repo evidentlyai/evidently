@@ -159,15 +159,18 @@ class TestTargetPredictionCorrelation(BaseDataQualityCorrelationsMetricsValueTes
         if self.condition.has_condition():
             return self.condition
 
-        reference_correlation = self.metric.get_result().reference
-        if reference_correlation is not None and reference_correlation.target_prediction_correlation is not None:
-            value = reference_correlation.target_prediction_correlation
-            return TestValueCondition(eq=approx(value, absolute=0.25))
+        reference = self.metric.get_result().reference
+
+        if reference is not None:
+            value = reference.stats[self.method].target_prediction_correlation
+
+            if value is not None:
+                return TestValueCondition(eq=approx(value, absolute=0.25))
 
         return TestValueCondition(gt=0)
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
-        return self.metric.get_result().current.target_prediction_correlation
+        return self.metric.get_result().current.stats[self.method].target_prediction_correlation
 
     def get_description(self, value: Numeric) -> str:
         if value is None:
@@ -186,14 +189,17 @@ class TestHighlyCorrelatedFeatures(BaseDataQualityCorrelationsMetricsValueTest):
             return self.condition
 
         reference_correlation = self.metric.get_result().reference
-        if reference_correlation is not None and reference_correlation.abs_max_num_features_correlation is not None:
-            value = reference_correlation.abs_max_num_features_correlation
-            return TestValueCondition(eq=approx(value, relative=0.1))
+
+        if reference_correlation is not None:
+            value = reference_correlation.stats[self.method].abs_max_features_correlation
+
+            if value is not None:
+                return TestValueCondition(eq=approx(value, relative=0.1))
 
         return TestValueCondition(lt=0.9)
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
-        return self.metric.get_result().current.abs_max_num_features_correlation
+        return self.metric.get_result().current.stats[self.method].abs_max_features_correlation
 
     def get_description(self, value: Numeric) -> str:
         return f"The maximum correlation is {value:.3g}. The test threshold is {self.get_condition()}."
@@ -232,14 +238,16 @@ class TestTargetFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValueTest
 
         reference_correlation = self.metric.get_result().reference
 
-        if reference_correlation is not None and reference_correlation.abs_max_target_features_correlation is not None:
-            value = reference_correlation.abs_max_target_features_correlation
-            return TestValueCondition(eq=approx(value, relative=0.1))
+        if reference_correlation is not None:
+            value = reference_correlation.stats[self.method].abs_max_target_features_correlation
+
+            if value is not None:
+                return TestValueCondition(eq=approx(value, relative=0.1))
 
         return TestValueCondition(lt=0.9)
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
-        return self.metric.get_result().current.abs_max_target_features_correlation
+        return self.metric.get_result().current.stats[self.method].abs_max_target_features_correlation
 
     def get_description(self, value: Numeric) -> str:
         if value is None:
@@ -289,17 +297,16 @@ class TestPredictionFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValue
 
         reference_correlation = self.metric.get_result().reference
 
-        if (
-            reference_correlation is not None
-            and reference_correlation.abs_max_prediction_features_correlation is not None
-        ):
-            value = reference_correlation.abs_max_prediction_features_correlation
-            return TestValueCondition(eq=approx(value, relative=0.1))
+        if reference_correlation is not None:
+            value = reference_correlation.stats[self.method].abs_max_prediction_features_correlation
+
+            if value is not None:
+                return TestValueCondition(eq=approx(value, relative=0.1))
 
         return TestValueCondition(lt=0.9)
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
-        return self.metric.get_result().current.abs_max_prediction_features_correlation
+        return self.metric.get_result().current.stats[self.method].abs_max_prediction_features_correlation
 
     def get_description(self, value: Numeric) -> str:
         if value is None:

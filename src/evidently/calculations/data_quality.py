@@ -253,40 +253,53 @@ def calculate_data_quality_stats(
     return result
 
 
-def _select_features_for_corr(reference_features_stats: DataQualityStats, target_name: Optional[str]) -> tuple:
+def _select_features_for_corr(dataset: pd.DataFrame, columns: DatasetColumns) -> tuple:
     """Define which features should be used for calculating correlation matrices:
         - for pearson, spearman, and kendall correlation matrices we select numerical features which have > 1
             unique values;
         - for kramer_v correlation matrix, we select categorical features which have > 1 unique values.
     Args:
-        reference_features_stats: all features data quality metrics.
-        target_name: name of target column.
+        columns: all columns data information.
     Returns:
         num_for_corr: list of feature names for pearson, spearman, and kendall correlation matrices.
         cat_for_corr: list of feature names for kramer_v correlation matrix.
     """
+    target_name = columns.utility_columns.target
+    prediction_name = columns.utility_columns.prediction
     num_for_corr = []
-    if reference_features_stats.num_features_stats is not None:
-        for feature in reference_features_stats.num_features_stats:
-            unique_count = reference_features_stats[feature].unique_count
-            if unique_count and unique_count > 1:
-                num_for_corr.append(feature)
+    for feature in columns.num_feature_names:
+        unique_count = dataset[feature].nunique()
+
+        if unique_count and unique_count > 1:
+            num_for_corr.append(feature)
+
     cat_for_corr = []
-    if reference_features_stats.cat_features_stats is not None:
-        for feature in reference_features_stats.cat_features_stats:
-            unique_count = reference_features_stats[feature].unique_count
-            if unique_count and unique_count > 1:
-                cat_for_corr.append(feature)
 
-    if target_name is not None and reference_features_stats.target_stats is not None:
-        target_type = reference_features_stats.target_stats[target_name].feature_type
-        unique_count = reference_features_stats.target_stats[target_name].unique_count
+    for feature in columns.cat_feature_names:
+        unique_count = dataset[feature].nunique()
 
-        if target_type == "num" and unique_count and unique_count > 1:
-            num_for_corr.append(target_name)
+        if unique_count and unique_count > 1:
+            cat_for_corr.append(feature)
 
-        elif target_type == "cat" and unique_count and unique_count > 1:
-            cat_for_corr.append(target_name)
+    if target_name is not None:
+        unique_count = dataset[target_name].nunique()
+
+        if unique_count > 1:
+            if columns.task == "classification" and unique_count > 1:
+                cat_for_corr.append(target_name)
+
+            else:
+                num_for_corr.append(target_name)
+
+    if isinstance(prediction_name, str):
+        unique_count = dataset[prediction_name].nunique()
+
+        if unique_count > 1:
+            if columns.task == "classification" and unique_count > 1:
+                cat_for_corr.append(prediction_name)
+
+            else:
+                num_for_corr.append(prediction_name)
 
     return num_for_corr, cat_for_corr
 
@@ -360,8 +373,8 @@ def _calculate_correlations(df: pd.DataFrame, num_for_corr, cat_for_corr, kind):
         return get_pairwise_correlation(df[cat_for_corr], _cramer_v)
 
 
-def calculate_correlations(dataset: pd.DataFrame, reference_features_stats: DataQualityStats, target_name) -> Dict:
-    num_for_corr, cat_for_corr = _select_features_for_corr(reference_features_stats, target_name)
+def calculate_correlations(dataset: pd.DataFrame, columns: DatasetColumns) -> Dict:
+    num_for_corr, cat_for_corr = _select_features_for_corr(dataset, columns)
     correlations = {}
 
     for kind in ["pearson", "spearman", "kendall", "cramer_v"]:
@@ -387,10 +400,6 @@ def calculate_cramer_v_correlation(column_name: str, dataset: pd.DataFrame, colu
             result_y.append(_cramer_v(dataset[column_name], dataset[correlation_columns_name]))
 
     return ColumnCorrelations(column_name=column_name, kind="cramer_v", values=Distribution(x=result_x, y=result_y))
-
-
-def calculate_dataset_cramer_v_correlation(dataset: pd.DataFrame) -> pd.DataFrame:
-    return get_pairwise_correlation(dataset, _cramer_v)
 
 
 def calculate_category_column_correlations(

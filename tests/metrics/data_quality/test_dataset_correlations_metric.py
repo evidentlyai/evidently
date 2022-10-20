@@ -20,17 +20,14 @@ def test_dataset_correlation_metric_success() -> None:
             "prediction": [0, 2, 2, 2, 0],
         }
     )
-    data_mapping = ColumnMapping()
+    data_mapping = ColumnMapping(task="regression")
     metric = DatasetCorrelationsMetric()
     result = metric.calculate(
         data=InputData(current_data=current_dataset, reference_data=None, column_mapping=data_mapping)
     )
     assert result is not None
-    assert result.current.target_prediction_correlation == 1.0
-    assert result.current.abs_max_target_features_correlation == 1.0
-    assert result.current.abs_max_prediction_features_correlation == 1.0
-    assert result.current.abs_max_correlation == 1.0
-    assert result.current.abs_max_num_features_correlation == 1.0
+    assert result.current is not None
+    assert result.current.stats is not None
     assert result.reference is None
 
 
@@ -44,11 +41,36 @@ def test_dataset_correlation_metric_success() -> None:
             DatasetCorrelationsMetric(),
             {
                 "current": {
-                    "abs_max_correlation": 0.0,
-                    "abs_max_num_features_correlation": 0.0,
-                    "abs_max_prediction_features_correlation": None,
-                    "abs_max_target_features_correlation": None,
-                    "target_prediction_correlation": None,
+                    "stats": {
+                        "cramer_v": {
+                            "abs_max_correlation": None,
+                            "abs_max_features_correlation": None,
+                            "abs_max_prediction_features_correlation": None,
+                            "abs_max_target_features_correlation": None,
+                            "target_prediction_correlation": None,
+                        },
+                        "kendall": {
+                            "abs_max_correlation": 0.0,
+                            "abs_max_features_correlation": 0.0,
+                            "abs_max_prediction_features_correlation": None,
+                            "abs_max_target_features_correlation": None,
+                            "target_prediction_correlation": None,
+                        },
+                        "pearson": {
+                            "abs_max_correlation": 0.0,
+                            "abs_max_features_correlation": 0.0,
+                            "abs_max_prediction_features_correlation": None,
+                            "abs_max_target_features_correlation": None,
+                            "target_prediction_correlation": None,
+                        },
+                        "spearman": {
+                            "abs_max_correlation": 0.0,
+                            "abs_max_features_correlation": 0.0,
+                            "abs_max_prediction_features_correlation": None,
+                            "abs_max_target_features_correlation": None,
+                            "target_prediction_correlation": None,
+                        },
+                    }
                 },
                 "reference": None,
             },
@@ -74,18 +96,68 @@ def test_dataset_correlation_metric_success() -> None:
             DatasetCorrelationsMetric(),
             {
                 "current": {
-                    "abs_max_correlation": 0.0,
-                    "abs_max_num_features_correlation": 0.0,
-                    "abs_max_prediction_features_correlation": 1.0,
-                    "abs_max_target_features_correlation": 1.0,
-                    "target_prediction_correlation": None,
+                    "stats": {
+                        "cramer_v": {
+                            "abs_max_correlation": 0.0,
+                            "abs_max_features_correlation": None,
+                            "abs_max_prediction_features_correlation": None,
+                            "abs_max_target_features_correlation": None,
+                            "target_prediction_correlation": None,
+                        },
+                        "kendall": {
+                            "abs_max_correlation": 0.0,
+                            "abs_max_features_correlation": 0.0,
+                            "abs_max_prediction_features_correlation": None,
+                            "abs_max_target_features_correlation": None,
+                            "target_prediction_correlation": None,
+                        },
+                        "pearson": {
+                            "abs_max_correlation": 0.0,
+                            "abs_max_features_correlation": 0.0,
+                            "abs_max_prediction_features_correlation": None,
+                            "abs_max_target_features_correlation": None,
+                            "target_prediction_correlation": None,
+                        },
+                        "spearman": {
+                            "abs_max_correlation": 0.0,
+                            "abs_max_features_correlation": 0.0,
+                            "abs_max_prediction_features_correlation": None,
+                            "abs_max_target_features_correlation": None,
+                            "target_prediction_correlation": None,
+                        },
+                    }
                 },
                 "reference": {
-                    "abs_max_correlation": 0.0,
-                    "abs_max_num_features_correlation": 0.0,
-                    "abs_max_prediction_features_correlation": 0.0,
-                    "abs_max_target_features_correlation": 1.0,
-                    "target_prediction_correlation": 0.0,
+                    "stats": {
+                        "cramer_v": {
+                            "abs_max_correlation": 0.9999999999999999,
+                            "abs_max_features_correlation": None,
+                            "abs_max_prediction_features_correlation": None,
+                            "abs_max_target_features_correlation": None,
+                            "target_prediction_correlation": 0.9999999999999999,
+                        },
+                        "kendall": {
+                            "abs_max_correlation": 0.0,
+                            "abs_max_features_correlation": 0.0,
+                            "abs_max_prediction_features_correlation": None,
+                            "abs_max_target_features_correlation": None,
+                            "target_prediction_correlation": None,
+                        },
+                        "pearson": {
+                            "abs_max_correlation": 0.0,
+                            "abs_max_features_correlation": 0.0,
+                            "abs_max_prediction_features_correlation": None,
+                            "abs_max_target_features_correlation": None,
+                            "target_prediction_correlation": None,
+                        },
+                        "spearman": {
+                            "abs_max_correlation": 0.0,
+                            "abs_max_features_correlation": 0.0,
+                            "abs_max_prediction_features_correlation": None,
+                            "abs_max_target_features_correlation": None,
+                            "target_prediction_correlation": None,
+                        },
+                    }
                 },
             },
         ),

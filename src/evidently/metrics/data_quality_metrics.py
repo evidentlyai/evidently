@@ -64,7 +64,7 @@ class DataQualityMetrics(Metric[DataQualityMetricsResults]):
             task = data.column_mapping.task
 
         current_features_stats = calculate_data_quality_stats(data.current_data, columns, task)
-        current_correlations = calculate_correlations(data.current_data, current_features_stats, target_name)
+        current_correlations = calculate_correlations(data.current_data, columns)
         reference_features_stats = None
 
         if data.reference_data is not None:
