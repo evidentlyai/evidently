@@ -802,7 +802,7 @@ def test_cramer_v() -> None:
     ],
 )
 def test_corr_matrix(df: pd.DataFrame, expected: np.array) -> None:
-    corr_matrix = data_quality._corr_matrix(df, data_quality._cramer_v)
+    corr_matrix = data_quality.get_pairwise_correlation(df, data_quality._cramer_v)
     assert np.allclose(corr_matrix.values, expected)
 
 

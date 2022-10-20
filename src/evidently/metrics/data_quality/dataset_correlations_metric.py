@@ -1,25 +1,29 @@
+from typing import Dict
 from typing import List
 from typing import Optional
-from typing import Sequence
-from typing import Union
 
 import dataclasses
 import numpy as np
 import pandas as pd
 
+from evidently import ColumnMapping
+
+# from evidently.calculations.data_quality import calculate_dataset_cramer_v_correlation
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
+from evidently.renderers.html_widgets import HeatmapData
+from evidently.renderers.html_widgets import TabData
+from evidently.renderers.html_widgets import get_heatmaps_widget
 from evidently.renderers.html_widgets import header_text
-from evidently.renderers.html_widgets import table_data
+from evidently.renderers.html_widgets import widget_tabs
 
 
 @dataclasses.dataclass
-class DataCorrelation:
-    num_features: Optional[List[str]]
-    correlation_matrix: pd.DataFrame
+class DatasetCorrelation:
+    correlation: Dict[str, pd.DataFrame]
     target_prediction_correlation: Optional[float] = None
     abs_max_target_features_correlation: Optional[float] = None
     abs_max_prediction_features_correlation: Optional[float] = None
@@ -28,29 +32,26 @@ class DataCorrelation:
 
 
 @dataclasses.dataclass
-class DataQualityCorrelationMetricsResults:
-    current: DataCorrelation
-    reference: Optional[DataCorrelation]
+class DatasetCorrelationsMetricResult:
+    current: DatasetCorrelation
+    reference: Optional[DatasetCorrelation]
 
 
-class DatasetCorrelationsMetric(Metric[DataQualityCorrelationMetricsResults]):
+class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
     """Calculate different correlations with target, predictions and features"""
 
-    method: str
+    @staticmethod
+    def _get_correlations(dataset: pd.DataFrame, columns_mapping: ColumnMapping) -> DatasetCorrelation:
+        correlation = {}
+        num_features = columns_mapping.numerical_features
+        target_name = columns_mapping.target
+        prediction_name = columns_mapping.prediction
 
-    def __init__(self, method: str = "pearson") -> None:
-        self.method = method
-
-    def _get_correlations(
-        self,
-        dataset: pd.DataFrame,
-        target_name: Optional[str],
-        prediction_name: Union[int, Sequence[Union[str, int]], None],
-        num_features: Optional[List[str]],
-        is_classification_task: bool,
-    ) -> DataCorrelation:
-        correlation_matrix = dataset.corr(method=self.method)
-        correlation_matrix_for_plot = correlation_matrix.copy()
+        for method in ["pearson", "spearman", "kendall"]:
+            correlation_matrix = dataset.corr(method=method)
+            correlation[method] = correlation_matrix
+        # correlation["cramer_v"] = calculate_dataset_cramer_v_correlation(dataset)
+        correlation_matrix = correlation["pearson"].copy()
         # fill diagonal with 1 values for getting abs max values
         np.fill_diagonal(correlation_matrix.values, 0)
 
@@ -79,11 +80,17 @@ class DatasetCorrelationsMetric(Metric[DataQualityCorrelationMetricsResults]):
         else:
             abs_max_prediction_features_correlation = None
 
-        if is_classification_task is not None:
+        if columns_mapping.is_classification_task() is not None:
             corr_features = num_features
 
         else:
-            corr_features = num_features + [target_name, prediction_name]
+            corr_features = num_features
+
+            if target_name is not None:
+                corr_features.append(target_name)
+
+            if prediction_name is not None and isinstance(prediction_name, str):
+                corr_features.append(prediction_name)
 
         abs_max_correlation = correlation_matrix.loc[corr_features, corr_features].abs().max().max()
 
@@ -98,9 +105,8 @@ class DatasetCorrelationsMetric(Metric[DataQualityCorrelationMetricsResults]):
         if pd.isnull(target_prediction_correlation):
             target_prediction_correlation = None
 
-        return DataCorrelation(
-            num_features=num_features,
-            correlation_matrix=correlation_matrix_for_plot,
+        return DatasetCorrelation(
+            correlation=correlation,
             target_prediction_correlation=target_prediction_correlation,
             abs_max_target_features_correlation=abs_max_target_features_correlation,
             abs_max_prediction_features_correlation=abs_max_prediction_features_correlation,
@@ -108,33 +114,18 @@ class DatasetCorrelationsMetric(Metric[DataQualityCorrelationMetricsResults]):
             abs_max_num_features_correlation=abs_max_num_features_correlation,
         )
 
-    def calculate(self, data: InputData) -> DataQualityCorrelationMetricsResults:
-        target_name = data.column_mapping.target
-        prediction_name = data.column_mapping.prediction
-        num_features: Optional[List[str]] = data.column_mapping.numerical_features
-        is_classification_task = data.column_mapping.is_classification_task()
-
-        current_correlations = self._get_correlations(
-            dataset=data.current_data,
-            target_name=target_name,
-            prediction_name=prediction_name,
-            num_features=num_features,
-            is_classification_task=is_classification_task,
-        )
+    def calculate(self, data: InputData) -> DatasetCorrelationsMetricResult:
+        current_correlations = self._get_correlations(dataset=data.current_data, columns_mapping=data.column_mapping)
 
         if data.reference_data is not None:
-            reference_correlation: Optional[DataCorrelation] = self._get_correlations(
-                dataset=data.reference_data,
-                target_name=target_name,
-                prediction_name=prediction_name,
-                num_features=num_features,
-                is_classification_task=is_classification_task,
+            reference_correlation: Optional[DatasetCorrelation] = self._get_correlations(
+                dataset=data.reference_data, columns_mapping=data.column_mapping
             )
 
         else:
             reference_correlation = None
 
-        return DataQualityCorrelationMetricsResults(
+        return DatasetCorrelationsMetricResult(
             current=current_correlations,
             reference=reference_correlation,
         )
@@ -144,60 +135,43 @@ class DatasetCorrelationsMetric(Metric[DataQualityCorrelationMetricsResults]):
 class DataQualityCorrelationMetricsRenderer(MetricRenderer):
     def render_json(self, obj: DatasetCorrelationsMetric) -> dict:
         result = dataclasses.asdict(obj.get_result())
-        result["current"].pop("correlation_matrix", None)
+        result["current"].pop("correlation", None)
 
         if result["reference"]:
-            result["reference"].pop("correlation_matrix", None)
+            result["reference"].pop("correlation", None)
 
         return result
 
-    @staticmethod
-    def _get_table_stat(dataset_name: str, correlation: DataCorrelation) -> BaseWidgetInfo:
-        if correlation.abs_max_correlation is None:
-            abs_max_correlation = "None"
+    def _get_heatmaps(self, metric_result: DatasetCorrelationsMetricResult) -> BaseWidgetInfo:
+        tabs = []
+        for correlation_method in metric_result.current.correlation:
+            current_correlation = metric_result.current.correlation[correlation_method]
 
-        else:
-            abs_max_correlation = np.round(correlation.abs_max_correlation, 3)
+            if metric_result.reference is not None:
+                reference_heatmap_data: Optional[HeatmapData] = HeatmapData(
+                    name="Reference", matrix=metric_result.reference.correlation[correlation_method]
+                )
 
-        if correlation.abs_max_num_features_correlation is None:
-            abs_max_num_features_correlation = "None"
+            else:
+                reference_heatmap_data = None
 
-        else:
-            abs_max_num_features_correlation = np.round(correlation.abs_max_num_features_correlation, 3)
-
-        matched_stat = [
-            ("Abs max correlation", abs_max_correlation),
-            ("Abs max num features correlation", abs_max_num_features_correlation),
-        ]
-
-        if correlation.abs_max_target_features_correlation is not None:
-            matched_stat.append(
-                ("Abs max target features correlation", np.round(correlation.abs_max_target_features_correlation, 3))
-            )
-        if correlation.abs_max_prediction_features_correlation is not None:
-            matched_stat.append(
-                (
-                    "Abs max prediction features correlation",
-                    np.round(correlation.abs_max_prediction_features_correlation, 3),
+            tabs.append(
+                TabData(
+                    title=correlation_method,
+                    widget=get_heatmaps_widget(
+                        primary_data=HeatmapData(name="Current", matrix=current_correlation),
+                        secondary_data=reference_heatmap_data,
+                        color_options=self.color_options,
+                    ),
                 )
             )
 
-        matched_stat_headers = ["Metric", "Value"]
-        return table_data(
-            title=f"{dataset_name.capitalize()}: Correlation statistic",
-            column_names=matched_stat_headers,
-            data=matched_stat,
-        )
+        return widget_tabs(title="", tabs=tabs)
 
     def render_html(self, obj: DatasetCorrelationsMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
-
         result = [
-            header_text(label="Data Correlation Metrics"),
-            self._get_table_stat(dataset_name="current", correlation=metric_result.current),
+            header_text(label="Dataset Correlations Metric"),
+            self._get_heatmaps(metric_result=metric_result),
         ]
-
-        if metric_result.reference is not None:
-            result.append(self._get_table_stat(dataset_name="reference", correlation=metric_result.reference))
-
         return result

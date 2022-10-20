@@ -311,7 +311,7 @@ def _cramer_v(x: pd.Series, y: pd.Series) -> float:
     return value
 
 
-def _corr_matrix(df, func: Callable[[pd.Series, pd.Series], float]) -> pd.DataFrame:
+def get_pairwise_correlation(df, func: Callable[[pd.Series, pd.Series], float]) -> pd.DataFrame:
     """Compute pairwise correlation of columns
     Args:
         df: initial data frame.
@@ -357,7 +357,7 @@ def _calculate_correlations(df: pd.DataFrame, num_for_corr, cat_for_corr, kind):
     elif kind == "kendall":
         return df[num_for_corr].corr("kendall")
     elif kind == "cramer_v":
-        return _corr_matrix(df[cat_for_corr], _cramer_v)
+        return get_pairwise_correlation(df[cat_for_corr], _cramer_v)
 
 
 def calculate_correlations(dataset: pd.DataFrame, reference_features_stats: DataQualityStats, target_name) -> Dict:
@@ -377,7 +377,7 @@ class ColumnCorrelations:
     values: Distribution
 
 
-def calculate_cramer_v_correlations(column_name: str, dataset: pd.DataFrame, columns: List[str]) -> ColumnCorrelations:
+def calculate_cramer_v_correlation(column_name: str, dataset: pd.DataFrame, columns: List[str]) -> ColumnCorrelations:
     result_x = []
     result_y = []
 
@@ -389,6 +389,10 @@ def calculate_cramer_v_correlations(column_name: str, dataset: pd.DataFrame, col
     return ColumnCorrelations(column_name=column_name, kind="cramer_v", values=Distribution(x=result_x, y=result_y))
 
 
+def calculate_dataset_cramer_v_correlation(dataset: pd.DataFrame) -> pd.DataFrame:
+    return get_pairwise_correlation(dataset, _cramer_v)
+
+
 def calculate_category_column_correlations(
     column_name: str, dataset: pd.DataFrame, columns: List[str]
 ) -> Dict[str, ColumnCorrelations]:
@@ -396,7 +400,7 @@ def calculate_category_column_correlations(
     if dataset[column_name].empty:
         return {}
 
-    correlation = calculate_cramer_v_correlations(column_name, dataset, columns)
+    correlation = calculate_cramer_v_correlation(column_name, dataset, columns)
     return {correlation.kind: correlation}
 
 

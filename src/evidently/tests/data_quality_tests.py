@@ -147,7 +147,7 @@ class BaseDataQualityCorrelationsMetricsValueTest(BaseCheckValueTest, ABC):
             self.metric = metric
 
         else:
-            self.metric = DatasetCorrelationsMetric(method=method)
+            self.metric = DatasetCorrelationsMetric()
 
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
 
@@ -209,17 +209,16 @@ class TestHighlyCorrelatedFeaturesRenderer(TestRenderer):
 
     def render_html(self, obj: TestHighlyCorrelatedFeatures) -> TestHtmlInfo:
         info = super().render_html(obj)
-        num_features = obj.metric.get_result().current.num_features
-        current_correlations = obj.metric.get_result().current.correlation_matrix[num_features]
-        reference_correlation = obj.metric.get_result().reference
+        metric_result = obj.metric.get_result()
+        current_correlations = metric_result.current.correlation[obj.method]
 
-        if reference_correlation is not None:
-            reference_correlations_matrix = reference_correlation.correlation_matrix[num_features]
+        if metric_result.reference is not None:
+            reference_correlations: Optional[pd.DataFrame] = metric_result.reference.correlation[obj.method]
 
         else:
-            reference_correlations_matrix = None
+            reference_correlations = None
 
-        fig = plot_correlations(current_correlations, reference_correlations_matrix)
+        fig = plot_correlations(current_correlations, reference_correlations)
         info.with_details("Highly Correlated Features", plotly_figure(title="", figure=fig))
         return info
 
@@ -267,16 +266,16 @@ class TestTargetFeaturesCorrelationsRenderer(TestRenderer):
 
     def render_html(self, obj: TestTargetFeaturesCorrelations) -> TestHtmlInfo:
         info = super().render_html(obj)
-        current_correlations_matrix = obj.metric.get_result().current.correlation_matrix
-        reference_correlation = obj.metric.get_result().reference
+        metric_result = obj.metric.get_result()
+        current_correlations = metric_result.current.correlation[obj.method]
 
-        if reference_correlation is not None:
-            reference_correlations_matrix = reference_correlation.correlation_matrix
+        if metric_result.reference is not None:
+            reference_correlations: Optional[pd.DataFrame] = metric_result.reference.correlation[obj.method]
 
         else:
-            reference_correlations_matrix = None
+            reference_correlations = None
 
-        fig = plot_correlations(current_correlations_matrix, reference_correlations_matrix)
+        fig = plot_correlations(current_correlations, reference_correlations)
         info.with_details("Target Features Correlations", plotly_figure(title="", figure=fig))
         return info
 
@@ -327,16 +326,16 @@ class TestPredictionFeaturesCorrelationsRenderer(TestRenderer):
 
     def render_html(self, obj: TestTargetFeaturesCorrelations) -> TestHtmlInfo:
         info = super().render_html(obj)
-        current_correlations_matrix = obj.metric.get_result().current.correlation_matrix
-        reference_correlation = obj.metric.get_result().reference
+        metric_result = obj.metric.get_result()
+        current_correlations = metric_result.current.correlation[obj.method]
 
-        if reference_correlation is not None:
-            reference_correlations_matrix = reference_correlation.correlation_matrix
+        if metric_result.reference is not None:
+            reference_correlations: Optional[pd.DataFrame] = metric_result.reference.correlation[obj.method]
 
         else:
-            reference_correlations_matrix = None
+            reference_correlations = None
 
-        fig = plot_correlations(current_correlations_matrix, reference_correlations_matrix)
+        fig = plot_correlations(current_correlations, reference_correlations)
         info.with_details("Target-Features Correlations", plotly_figure(title="", figure=fig))
         return info
 
@@ -382,11 +381,14 @@ class TestCorrelationChanges(BaseDataQualityCorrelationsMetricsValueTest):
         return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
-        reference_correlation = self.metric.get_result().reference
-        current_correlation = self.metric.get_result().current
-        if reference_correlation is None:
+        metric_result = self.metric.get_result()
+
+        if metric_result.reference is None:
             raise ValueError("Reference should be present")
-        diff = reference_correlation.correlation_matrix - current_correlation.correlation_matrix
+
+        current_correlations = metric_result.current.correlation[self.method]
+        reference_correlations: Optional[pd.DataFrame] = metric_result.reference.correlation[self.method]
+        diff = reference_correlations - current_correlations
         return (diff.abs() > self.corr_diff).sum().sum() / 2
 
     def get_description(self, value: Numeric) -> str:
@@ -397,16 +399,16 @@ class TestCorrelationChanges(BaseDataQualityCorrelationsMetricsValueTest):
 class TestCorrelationChangesRenderer(TestRenderer):
     def render_html(self, obj: TestCorrelationChanges) -> TestHtmlInfo:
         info = super().render_html(obj)
-        current_correlations_matrix = obj.metric.get_result().current.correlation_matrix
-        reference_correlation = obj.metric.get_result().reference
+        metric_result = obj.metric.get_result()
+        current_correlations = metric_result.current.correlation[obj.method]
 
-        if reference_correlation is not None:
-            reference_correlations_matrix = reference_correlation.correlation_matrix
+        if metric_result.reference is not None:
+            reference_correlations: Optional[pd.DataFrame] = metric_result.reference.correlation[obj.method]
 
         else:
-            reference_correlations_matrix = None
+            reference_correlations = None
 
-        fig = plot_correlations(current_correlations_matrix, reference_correlations_matrix)
+        fig = plot_correlations(current_correlations, reference_correlations)
         info.with_details("Target-Features Correlations", plotly_figure(title="", figure=fig))
         return info
 

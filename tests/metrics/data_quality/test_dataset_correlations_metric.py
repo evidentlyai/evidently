@@ -26,8 +26,6 @@ def test_dataset_correlation_metric_success() -> None:
         data=InputData(current_data=current_dataset, reference_data=None, column_mapping=data_mapping)
     )
     assert result is not None
-    assert result.current.num_features == ["numerical_feature_1", "numerical_feature_2", "category_feature"]
-    assert result.current.correlation_matrix is not None
     assert result.current.target_prediction_correlation == 1.0
     assert result.current.abs_max_target_features_correlation == 1.0
     assert result.current.abs_max_prediction_features_correlation == 1.0
@@ -40,7 +38,7 @@ def test_dataset_correlation_metric_success() -> None:
     "current_data, reference_data, column_mapping, metric, expected_json",
     (
         (
-            pd.DataFrame({"col": [1, 2, 3]}),
+            pd.DataFrame({"col": [1, 2, 3] * 1000}),
             None,
             ColumnMapping(),
             DatasetCorrelationsMetric(),
@@ -50,7 +48,6 @@ def test_dataset_correlation_metric_success() -> None:
                     "abs_max_num_features_correlation": 0.0,
                     "abs_max_prediction_features_correlation": None,
                     "abs_max_target_features_correlation": None,
-                    "num_features": ["col"],
                     "target_prediction_correlation": None,
                 },
                 "reference": None,
@@ -59,18 +56,18 @@ def test_dataset_correlation_metric_success() -> None:
         (
             pd.DataFrame(
                 {
-                    "my_target": [1, np.NaN, 3],
-                    "my_prediction": [1, 2, np.NaN],
-                    "feature_1": [1, 2, 3],
-                    "feature_2": ["a", np.NaN, "a"],
+                    "my_target": [1, np.NaN, 3] * 1000,
+                    "my_prediction": [1, 2, np.NaN] * 1000,
+                    "feature_1": [1, 2, 3] * 1000,
+                    "feature_2": ["a", np.NaN, "a"] * 1000,
                 }
             ),
             pd.DataFrame(
                 {
-                    "my_target": [1, 2, 3],
-                    "my_prediction": [1, 2, 1],
-                    "feature_1": [1, 2, 3],
-                    "feature_2": ["a", "a", "a"],
+                    "my_target": [1, 2, 3] * 10000,
+                    "my_prediction": [1, 2, 1] * 10000,
+                    "feature_1": [1, 2, 3] * 10000,
+                    "feature_2": ["a", "a", "a"] * 10000,
                 }
             ),
             ColumnMapping(target="my_target", prediction="my_prediction"),
@@ -81,7 +78,6 @@ def test_dataset_correlation_metric_success() -> None:
                     "abs_max_num_features_correlation": 0.0,
                     "abs_max_prediction_features_correlation": 1.0,
                     "abs_max_target_features_correlation": 1.0,
-                    "num_features": ["feature_1"],
                     "target_prediction_correlation": None,
                 },
                 "reference": {
@@ -89,7 +85,6 @@ def test_dataset_correlation_metric_success() -> None:
                     "abs_max_num_features_correlation": 0.0,
                     "abs_max_prediction_features_correlation": 0.0,
                     "abs_max_target_features_correlation": 1.0,
-                    "num_features": ["feature_1"],
                     "target_prediction_correlation": 0.0,
                 },
             },

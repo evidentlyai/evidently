@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Dict
 from typing import Iterable
 from typing import List
 from typing import Optional
@@ -7,7 +8,9 @@ from uuid import uuid4
 
 import dataclasses
 import numpy as np
+import pandas as pd
 import plotly.graph_objs as go
+from plotly.subplots import make_subplots
 
 from evidently.model.widget import BaseWidgetInfo
 from evidently.model.widget import PlotlyGraphInfo
@@ -498,8 +501,8 @@ def get_histogram_figure_with_range(
         color_options=color_options,
         orientation=orientation,
     )
-    figure.add_vline(x=left, line_width=3, line_dash="dash", line_color=color_options.lines)
-    figure.add_vline(x=right, line_width=3, line_dash="dash", line_color=color_options.lines)
+    figure.add_vline(x=left, line_width=3, line_dash="dash", line_color=color_options.vertical_lines)
+    figure.add_vline(x=right, line_width=3, line_dash="dash", line_color=color_options.vertical_lines)
     figure.add_vrect(x0=left, x1=right, fillcolor=color_options.fill_color, opacity=0.25, line_width=0)
     return figure
 
@@ -540,7 +543,7 @@ def get_histogram_figure_with_quantile(
             x=[current_quantile, current_quantile],
             y=[min_y, max_y],
             mode="lines",
-            line=dict(color=color_options.lines, width=2, dash="dash"),
+            line=dict(color=color_options.vertical_lines, width=2, dash="dash"),
             name="reference quantile",
         )
     )
@@ -608,3 +611,63 @@ def get_histogram_for_distribution(
     return histogram(
         title=title, primary_hist=current_histogram, secondary_hist=reference_histogram, color_options=color_options
     )
+
+
+@dataclasses.dataclass
+class HeatmapData:
+    name: str
+    matrix: pd.DataFrame
+
+
+def get_heatmaps_widget(
+    *,
+    title: str = "",
+    primary_data: HeatmapData,
+    secondary_data: Optional[HeatmapData] = None,
+    size: WidgetSize = WidgetSize.FULL,
+    color_options: ColorOptions,
+) -> BaseWidgetInfo:
+    """
+    Create a widget with heatmap(s)
+    """
+
+    if secondary_data is not None:
+        subplot_titles = [primary_data.name, secondary_data.name]
+        heatmaps_count = 2
+
+    else:
+        subplot_titles = [""]
+        heatmaps_count = 1
+
+    figure = make_subplots(rows=1, cols=heatmaps_count, subplot_titles=subplot_titles, shared_yaxes=True)
+
+    for idx, heatmap_data in enumerate([primary_data, secondary_data]):
+        if heatmap_data is None:
+            continue
+        data = heatmap_data.matrix
+        columns = heatmap_data.matrix.columns
+
+        # show values if thw heatmap is small
+        if len(columns) < 15:
+            heatmap_text = np.round(data, 2).astype(str)
+            heatmap_text_template: Optional[str] = "%{text}"
+
+        else:
+            heatmap_text = None
+            heatmap_text_template = None
+
+        figure.append_trace(
+            go.Heatmap(
+                z=data,
+                x=columns,
+                y=columns,
+                text=heatmap_text,
+                texttemplate=heatmap_text_template,
+                coloraxis="coloraxis",
+            ),
+            1,
+            idx + 1,
+        )
+
+    figure.update_layout(coloraxis={"colorscale": color_options.heatmap})
+    return plotly_figure(title=title, figure=figure, size=size)

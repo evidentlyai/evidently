@@ -4,7 +4,7 @@ import pytest
 
 from evidently.calculations.data_quality import ColumnCorrelations
 from evidently.calculations.data_quality import calculate_column_distribution
-from evidently.calculations.data_quality import calculate_cramer_v_correlations
+from evidently.calculations.data_quality import calculate_cramer_v_correlation
 from evidently.calculations.data_quality import get_rows_count
 from evidently.utils.visualizations import Distribution
 
@@ -44,7 +44,7 @@ def test_calculate_cramer_v_correlations():
             "test4": ["a", "b", "c"],
         }
     )
-    assert calculate_cramer_v_correlations("test1", data, ["test2", "test3", "test4"]) == ColumnCorrelations(
+    assert calculate_cramer_v_correlation("test1", data, ["test2", "test3", "test4"]) == ColumnCorrelations(
         column_name="test1",
         kind="cramer_v",
         values=Distribution(
