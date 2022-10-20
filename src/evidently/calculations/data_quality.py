@@ -18,7 +18,6 @@ from evidently.utils.visualizations import Distribution
 from evidently.utils.visualizations import make_hist_for_cat_plot
 from evidently.utils.visualizations import make_hist_for_num_plot
 
-
 MAX_CATEGORIES = 5
 
 
