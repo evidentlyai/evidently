@@ -14,6 +14,7 @@ from evidently.dashboard.dashboard import SaveModeMap
 from evidently.dashboard.dashboard import TemplateParams
 from evidently.dashboard.dashboard import save_data_file
 from evidently.dashboard.dashboard import save_lib_files
+from evidently.metrics.base_metric import ErrorResult
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.renderers.base_renderer import DEFAULT_RENDERERS
@@ -211,7 +212,10 @@ class Suite:
             for metric, calculation in execution_graph.get_metric_execution_iterator():
                 if calculation not in calculations:
                     logging.debug(f"Executing {type(calculation)}...")
-                    calculations[calculation] = calculation.calculate(data)
+                    try:
+                        calculations[calculation] = calculation.calculate(data)
+                    except BaseException as ex:
+                        calculations[calculation] = ErrorResult(ex)
                 else:
                     logging.debug(f"Using cached result for {type(calculation)}")
                 self.context.metric_results[metric] = calculations[calculation]

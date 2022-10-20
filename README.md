@@ -96,7 +96,8 @@ import pandas as pd
 from sklearn import datasets
 
 from evidently.test_suite import TestSuite
-from evidently.test_preset import DataStability, DataQuality
+from evidently.test_preset import DataStability
+from evidently.test_preset import DataQuality
 
 iris_data = datasets.load_iris(as_frame='auto')
 iris = iris_data.frame
@@ -133,7 +134,8 @@ import pandas as pd
 from sklearn import datasets
 
 from evidently.report import Report
-from evidently.metric_preset import DataDrift, CatTargetDrift
+from evidently.metric_preset import DataDriftPreset
+from evidently.metric_preset import CatTargetDrift
 
 iris_data = datasets.load_iris(as_frame='auto')
 iris = iris_data.frame
