@@ -198,7 +198,11 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
         gpd = DataQualityGetPlotData()
         bins_for_hist = gpd.calculate_main_plot(data.current_data, reference_data, self.column_name, column_type)
         data_in_time = None
-        if columns.utility_columns.date is not None and columns.utility_columns.date != self.column_name:
+        if (
+            columns.utility_columns.date is not None
+            and columns.utility_columns.date != self.column_name
+            and column_type != "datetime"
+        ):
             data_in_time = gpd.calculate_data_in_time(
                 data.current_data,
                 reference_data,
@@ -216,7 +220,8 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
             )
 
         if (
-            columns.utility_columns.target is not None
+            target_name is not None
+            and target_type is not None
             and columns.utility_columns.target != self.column_name
             and column_type != "datetime"
         ):
