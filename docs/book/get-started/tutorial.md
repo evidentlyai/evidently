@@ -83,7 +83,7 @@ from evidently.metric_preset import DataDriftPreset
 from evidently.metric_preset import NumTargetDrift
 
 from evidently.test_suite import TestSuite
-from evidently.test_preset import DataQuality
+from evidently.test_preset import DataQualityTestPreset
 from evidently.test_preset import DataStability
 from evidently.tests import *
 ```

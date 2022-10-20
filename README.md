@@ -97,7 +97,7 @@ from sklearn import datasets
 
 from evidently.test_suite import TestSuite
 from evidently.test_preset import DataStability
-from evidently.test_preset import DataQuality
+from evidently.test_preset import DataQualityTestPreset
 
 iris_data = datasets.load_iris(as_frame='auto')
 iris = iris_data.frame

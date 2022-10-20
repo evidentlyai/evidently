@@ -11,8 +11,10 @@ After [installation](../get-started/install-evidently.md), import the TestSuite 
 ```python
 from evidently.test_suite import TestSuite
 from evidently.tests import *
-from evidently.test_preset import NoTargetPerformanceTestPreset, DataQuality, DataStability, DataDrift, Regression,
-    MulticlassClassification, BinaryClassificationTopK, BinaryClassification
+from evidently.test_preset import NoTargetPerformanceTestPreset, DataQualityTestPreset, DataStability, DataDrift,
+    Regression,
+
+MulticlassClassification, BinaryClassificationTopK, BinaryClassification
 ```
 You need two datasets for comparison: **reference** and **current**. The reference dataset is optional. 
 
