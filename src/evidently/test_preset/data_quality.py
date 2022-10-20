@@ -9,7 +9,7 @@ from evidently.tests import TestNumberOfDuplicatedRows
 from evidently.utils.data_operations import DatasetColumns
 
 
-class DataQuality(TestPreset):
+class DataQualityTestPreset(TestPreset):
     def generate_tests(self, data: InputData, columns: DatasetColumns):
         return [
             TestAllColumnsShareOfNulls(),

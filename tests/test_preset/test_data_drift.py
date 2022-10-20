@@ -1,7 +1,7 @@
 import pandas as pd
 
 from evidently import ColumnMapping
-from evidently.test_preset import DataDrift
+from evidently.test_preset import DataDriftTestPreset
 from evidently.test_suite import TestSuite
 
 
@@ -28,7 +28,7 @@ def test_data_drift_preset():
     )
     data_quality_suite = TestSuite(
         tests=[
-            DataDrift(),
+            DataDriftTestPreset(),
         ]
     )
     column_mapping = ColumnMapping(

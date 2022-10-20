@@ -8,7 +8,7 @@ from evidently.calculations.stattests.registry import register_stattest
 from evidently.calculations.stattests.utils import get_binned_data
 
 
-def kl_div(
+def _kl_div(
     reference_data: pd.Series, current_data: pd.Series, feature_type: str, threshold: float, n_bins: int = 30
 ) -> Tuple[float, bool]:
     """Compute the Kullback-Leibler divergence between two arrays
@@ -30,7 +30,7 @@ def kl_div(
 kl_div_stat_test = StatTest(
     name="kl_div",
     display_name="Kullback-Leibler divergence",
-    func=kl_div,
+    func=_kl_div,
     allowed_feature_types=["cat", "num"],
     default_threshold=0.1,
 )
