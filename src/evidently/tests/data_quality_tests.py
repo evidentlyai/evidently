@@ -7,20 +7,13 @@ from typing import Union
 import numpy as np
 import pandas as pd
 
-from evidently.metrics import ColumnSummaryMetric
-from evidently.metrics import DataQualityCorrelationMetrics
 from evidently.metrics import ColumnQuantileMetric
+from evidently.metrics import ColumnSummaryMetric
 from evidently.metrics import ColumnValueListMetric
 from evidently.metrics import ColumnValueRangeMetric
-from evidently.metrics import DataQualityMetrics
 from evidently.metrics import DataQualityStabilityMetrics
-from evidently.metrics import DataQualityValueListMetrics
-from evidently.metrics import DataQualityValueQuantileMetrics
-from evidently.metrics import DataQualityValueRangeMetrics
-from evidently.metrics.data_integrity.column_summary_metric import NumericCharacteristics
-from evidently.model.widget import BaseWidgetInfo
-from evidently.renderers.base_renderer import DetailsInfo
 from evidently.metrics import DatasetCorrelationsMetric
+from evidently.metrics.data_integrity.column_summary_metric import NumericCharacteristics
 from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import default_renderer

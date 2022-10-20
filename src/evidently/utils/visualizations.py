@@ -42,11 +42,12 @@ def plot_distr(hist_curr, hist_ref=None, orientation="v", color_options: Optiona
         cats.remove("other")
         cats = cats + ["other"]
         fig.update_xaxes(categoryorder="array", categoryarray=cats)
+
+
 @dataclasses.dataclass
 class Distribution:
     x: Union[np.array, list]
     y: Union[np.array, list]
-
 
 
 def plot_distr_with_log_button(
@@ -357,7 +358,9 @@ def make_hist_for_num_plot(curr: pd.Series, ref: pd.Series = None) -> Dict[str, 
     return result
 
 
-def make_hist_for_cat_plot(curr: pd.Series, ref: pd.Series = None, normalize: bool = False, dropna=False) -> Dict[str, pd.Series]:
+def make_hist_for_cat_plot(
+    curr: pd.Series, ref: pd.Series = None, normalize: bool = False, dropna=False
+) -> Dict[str, pd.Series]:
     result = {}
     hist_df = curr.astype(str).value_counts(normalize=normalize, dropna=dropna).reset_index()
     hist_df.columns = ["x", "count"]

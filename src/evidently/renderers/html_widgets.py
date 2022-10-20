@@ -501,8 +501,27 @@ def get_histogram_figure_with_range(
         color_options=color_options,
         orientation=orientation,
     )
-    figure.add_vline(x=left, line_width=3, line_dash="dash", line_color=color_options.vertical_lines)
-    figure.add_vline(x=right, line_width=3, line_dash="dash", line_color=color_options.vertical_lines)
+    max_y = np.max([np.max(x["y"]) for x in figure.data])
+    min_y = np.min([np.min(x["y"]) for x in figure.data])
+
+    figure.add_trace(
+        go.Scatter(
+            x=[left, left],
+            y=[min_y, max_y],
+            mode="lines",
+            line={"color": color_options.vertical_lines, "width": 2, "dash": "dash"},
+            name="range left value",
+        )
+    )
+    figure.add_trace(
+        go.Scatter(
+            x=[right, right],
+            y=[min_y, max_y],
+            mode="lines",
+            line={"color": color_options.vertical_lines, "width": 2, "dash": "solid"},
+            name="range right value",
+        )
+    )
     figure.add_vrect(x0=left, x1=right, fillcolor=color_options.fill_color, opacity=0.25, line_width=0)
     return figure
 
@@ -522,31 +541,31 @@ def get_histogram_figure_with_quantile(
         color_options=color_options,
         orientation=orientation,
     )
-
-    if reference_quantile is not None:
-        figure.add_trace(
-            go.Scatter(
-                x=[reference_quantile, reference_quantile],
-                y=[min(current.y), max(current.y)],
-                mode="lines",
-                line=dict(color=color_options.fill_color, width=2, dash="solid"),
-                name="current quantile",
-            )
-        )
-
     # add quantile lines. Use scatter, not `add_vline`
     # because `add_vline` doesn't support legend, it is not interactive
     max_y = np.max([np.max(x["y"]) for x in figure.data])
     min_y = np.min([np.min(x["y"]) for x in figure.data])
+
     figure.add_trace(
         go.Scatter(
             x=[current_quantile, current_quantile],
             y=[min_y, max_y],
             mode="lines",
-            line=dict(color=color_options.vertical_lines, width=2, dash="dash"),
+            line={"color": color_options.vertical_lines, "width": 2, "dash": "dash"},
             name="reference quantile",
         )
     )
+
+    if reference_quantile is not None:
+        figure.add_trace(
+            go.Scatter(
+                x=[reference_quantile, reference_quantile],
+                y=[min_y, max_y],
+                mode="lines",
+                line={"color": color_options.vertical_lines, "width": 2, "dash": "solid"},
+                name="current quantile",
+            )
+        )
 
     return figure
 
