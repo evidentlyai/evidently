@@ -13,12 +13,13 @@ import pandas as pd
 from scipy.stats import chi2_contingency
 
 from evidently.utils.data_operations import DatasetColumns
+from evidently.utils.types import ColumnDistribution
+from evidently.utils.visualizations import Distribution
 from evidently.utils.visualizations import make_hist_for_cat_plot
 from evidently.utils.visualizations import make_hist_for_num_plot
 
+
 MAX_CATEGORIES = 5
-from evidently.utils.types import ColumnDistribution
-from evidently.utils.visualizations import Distribution
 
 
 def get_rows_count(data: Union[pd.DataFrame, pd.Series]) -> int:

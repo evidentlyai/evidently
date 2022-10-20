@@ -1,5 +1,4 @@
 from enum import Enum
-from typing import Dict
 from typing import Iterable
 from typing import List
 from typing import Optional
