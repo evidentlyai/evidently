@@ -11,12 +11,14 @@ After [installation](../get-started/install-evidently.md), import the TestSuite 
 ```python
 from evidently.test_suite import TestSuite
 from evidently.tests import *
-from evidently.test_preset import NoTargetPerformanceTestPreset, DataQualityTestPreset, DataStabilityTestPreset,
-    DataDrift,
-
-Regression,
-
-MulticlassClassification, BinaryClassificationTopK, BinaryClassification
+from evidently.test_preset import NoTargetPerformanceTestPreset
+from evidently.test_preset import DataQualityTestPreset
+from evidently.test_preset import DataStabilityTestPreset
+from evidently.test_preset import DataDriftTestPreset
+from evidently.test_preset import RegressionTestPreset
+from evidently.test_preset import MulticlassClassification
+from evidently.test_preset import BinaryClassificationTopK
+from evidently.test_preset import BinaryClassification
 ```
 You need two datasets for comparison: **reference** and **current**. The reference dataset is optional. 
 
@@ -67,12 +69,12 @@ Here are other test presets you can try:
 ```python
 NoTargetPerformanceTestPreset
 DataStabilityTestPreset
-DataQuality
-DataDrift
-Regression
-MulticlassClassification
-BinaryClassificationTopK
-BinaryClassification
+DataQualityTestPreset
+DataDriftTestPreset
+RegressionTestPreset
+MulticlassClassificationTestPreset
+BinaryClassificationTopKTestPreset
+BinaryClassificationTestPreset
 ```
 {% hint style="info" %} 
 Refer to the [Test Suites](../tests/README.md) section to see the contents of each preset, and to the [All tests](../reference/all-tests.md) table to see the individual tests and their default parameters.
