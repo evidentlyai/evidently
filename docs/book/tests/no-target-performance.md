@@ -22,7 +22,7 @@ You can pass the list of the most important features for data drift evaluation.
 
 ```python
 no_target_performance_top = TestSuite(tests=[
-   NoTargetPerformanceTestPreset(most_important_features=['education-num', 'hours-per-week']),
+   NoTargetPerformanceTestPreset(columns=['education-num', 'hours-per-week']),
 ])
 
 no_target_performance_top.run(reference_data=ref,current_data=curr)

@@ -15,9 +15,11 @@ from evidently.utils.data_operations import DatasetColumns
 
 
 class NoTargetPerformanceTestPreset(TestPreset):
-    def __init__(self, most_important_features: Optional[List[str]] = None):
+    columns: List[str]
+
+    def __init__(self, columns: Optional[List[str]] = None):
         super().__init__()
-        self.most_important_features = [] if most_important_features is None else most_important_features
+        self.columns = [] if columns is None else columns
 
     def generate_tests(self, data: InputData, columns: DatasetColumns):
         preset_tests: List = []
@@ -32,7 +34,7 @@ class NoTargetPerformanceTestPreset(TestPreset):
         preset_tests.append(TestCatColumnsOutOfListValues())
         preset_tests.append(TestNumColumnsMeanInNSigmas())
 
-        if self.most_important_features:
-            preset_tests.append(TestCustomFeaturesValueDrift(features=self.most_important_features))
+        if self.columns:
+            preset_tests.append(TestCustomFeaturesValueDrift(features=self.columns))
 
         return preset_tests

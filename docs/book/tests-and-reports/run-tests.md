@@ -16,9 +16,9 @@ from evidently.test_preset import DataQualityTestPreset
 from evidently.test_preset import DataStabilityTestPreset
 from evidently.test_preset import DataDriftTestPreset
 from evidently.test_preset import RegressionTestPreset
-from evidently.test_preset import MulticlassClassification
-from evidently.test_preset import BinaryClassificationTopK
-from evidently.test_preset import BinaryClassification
+from evidently.test_preset import MulticlassClassificationTestPreset
+from evidently.test_preset import BinaryClassificationTopKTestPreset
+from evidently.test_preset import BinaryClassificationTestPreset
 ```
 You need two datasets for comparison: **reference** and **current**. The reference dataset is optional. 
 
@@ -55,12 +55,12 @@ data_stability
 
 ```python
 no_target_performance = TestSuite(tests=[
-NoTargetPerformanceTestPreset(most_important_features=['education-num', 'hours-per-week']),
+NoTargetPerformanceTestPreset(columns=['education-num', 'hours-per-week']),
 ])
 no_target_performance.run(reference_data=ref,current_data=curr)
 no_target_performance
 ```
-You can use the `most_important_features` argument as shown above. In this case, some of the per-feature tests only apply to the features from the list. This way, you decrease the overall number of tests. 
+You can use the `columns` argument as shown above. In this case, some of the per-feature tests only apply to the features from the list. This way, you decrease the overall number of tests. 
 
 ## Available presets 
 
