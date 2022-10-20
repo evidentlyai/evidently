@@ -11,8 +11,10 @@ After [installation](../get-started/install-evidently.md), import the TestSuite 
 ```python
 from evidently.test_suite import TestSuite
 from evidently.tests import *
-from evidently.test_preset import NoTargetPerformanceTestPreset, DataQualityTestPreset, DataStability, DataDrift,
-    Regression,
+from evidently.test_preset import NoTargetPerformanceTestPreset, DataQualityTestPreset, DataStabilityTestPreset,
+    DataDrift,
+
+Regression,
 
 MulticlassClassification, BinaryClassificationTopK, BinaryClassification
 ```
@@ -32,11 +34,11 @@ If nothing else is specified, the tests will run with the default parameters.
 
 ## How to run test presets
 
-**Example 1**. To apply the DataStability test preset:
+**Example 1**. To apply the DataStabilityTestPreset:
 
 ```python
 data_stability = TestSuite(tests=[
-DataStability(),
+DataStabilityTestPreset(),
 ])
 data_stability.run(reference_data=ref, current_data=curr)
 ```
@@ -64,7 +66,7 @@ Here are other test presets you can try:
 
 ```python
 NoTargetPerformanceTestPreset
-DataStability
+DataStabilityTestPreset
 DataQuality
 DataDrift
 Regression

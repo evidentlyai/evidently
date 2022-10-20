@@ -84,7 +84,7 @@ from evidently.metric_preset import NumTargetDrift
 
 from evidently.test_suite import TestSuite
 from evidently.test_preset import DataQualityTestPreset
-from evidently.test_preset import DataStability
+from evidently.test_preset import DataStabilityTestPreset
 from evidently.tests import *
 ```
 
@@ -131,13 +131,13 @@ Test suites help compare the two datasets in a structured way. A **test suite** 
 
 You can create a custom test suite or use one of the **presets** that work out of the box.
 
-Let’s start by running the **DataStability preset**. It will run several checks for data quality and integrity and help detect issues like feature values out of the expected range. 
+Let’s start by running the **DataStabilityTestPreset**. It will run several checks for data quality and integrity and help detect issues like feature values out of the expected range. 
 
 You need to create a `TestSuite` object and specify the preset to include. You will also point to the reference and current datasets created at the previous step.
 
 ```python
 data_stability = TestSuite(tests=[
-    DataStability(),
+    DataStabilityTestPreset(),
 ])
 data_stability.run(reference_data=reference, current_data=current)
 ```
@@ -150,7 +150,7 @@ data_stability
 
 It will display the HTML report with the outcomes of the tests.
 
-![The output of the DataStability test suite](../.gitbook/assets/tutorial/get_started_1_tests_html_report-min.png)
+![The output of the DataStabilityTestPreset](../.gitbook/assets/tutorial/get_started_1_tests_html_report-min.png)
 
 You can group the outputs by test status, feature, test group, and type. By clicking on “details,” you can also explore the visuals related to a specific test. 
 
