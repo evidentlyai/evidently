@@ -4,5 +4,5 @@ from .classification_multiclass import MulticlassClassification
 from .data_drift import DataDrift
 from .data_quality import DataQuality
 from .data_stability import DataStability
-from .no_target_performance import NoTargetPerformance
+from .no_target_performance import NoTargetPerformanceTestPreset
 from .regression import Regression

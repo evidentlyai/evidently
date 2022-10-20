@@ -14,7 +14,7 @@ from evidently.tests import TestShareOfDriftedFeatures
 from evidently.utils.data_operations import DatasetColumns
 
 
-class NoTargetPerformance(TestPreset):
+class NoTargetPerformanceTestPreset(TestPreset):
     def __init__(self, most_important_features: Optional[List[str]] = None):
         super().__init__()
         self.most_important_features = [] if most_important_features is None else most_important_features

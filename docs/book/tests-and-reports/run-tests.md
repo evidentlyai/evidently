@@ -11,7 +11,8 @@ After [installation](../get-started/install-evidently.md), import the TestSuite 
 ```python
 from evidently.test_suite import TestSuite
 from evidently.tests import *
-from evidently.test_preset import NoTargetPerformance, DataQuality, DataStability, DataDrift, Regression, MulticlassClassification, BinaryClassificationTopK, BinaryClassification
+from evidently.test_preset import NoTargetPerformanceTestPreset, DataQuality, DataStability, DataDrift, Regression,
+    MulticlassClassification, BinaryClassificationTopK, BinaryClassification
 ```
 You need two datasets for comparison: **reference** and **current**. The reference dataset is optional. 
 
@@ -44,14 +45,14 @@ You get the visual report automatically if you call the object in Jupyter notebo
 data_stability
 ```
 
-**Example 2**. To apply and call NoTargetPerformance preset:
+**Example 2**. To apply and call NoTargetPerformanceTestPreset:
 
 ```python
 no_target_performance = TestSuite(tests=[
-NoTargetPerformance(most_important_features=['education-num', 'hours-per-week']),
+NoTargetPerformanceTestPreset(most_important_features=['education-num', 'hours-per-week']),
 ])
 no_target_performance.run(reference_data=ref,current_data=curr)
-No_target_performance
+no_target_performance
 ```
 You can use the `most_important_features` argument as shown above. In this case, some of the per-feature tests only apply to the features from the list. This way, you decrease the overall number of tests. 
 
@@ -60,7 +61,7 @@ You can use the `most_important_features` argument as shown above. In this case,
 Here are other test presets you can try:
 
 ```python
-NoTargetPerformance
+NoTargetPerformanceTestPreset
 DataStability
 DataQuality
 DataDrift
