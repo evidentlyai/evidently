@@ -13,7 +13,7 @@ from evidently.metrics import DataQualityStabilityMetrics
 from evidently.metrics import DataQualityValueListMetrics
 from evidently.metrics import DataQualityValueQuantileMetrics
 from evidently.metrics import DataQualityValueRangeMetrics
-from evidently.metrics.data_integrity_metrics import NumericCharacteristics
+from evidently.metrics.data_integrity.column_summary_metric import NumericCharacteristics
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import DetailsInfo
 from evidently.renderers.base_renderer import TestHtmlInfo
