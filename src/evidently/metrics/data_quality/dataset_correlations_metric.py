@@ -147,27 +147,32 @@ class DataQualityCorrelationMetricsRenderer(MetricRenderer):
         return result
 
     @staticmethod
-    def _get_tables(dataset_name: str, correlation: DatasetCorrelation) -> BaseWidgetInfo:
+    def _get_table_value(value: Optional[float]):
+        if value is None:
+            return value
+
+        else:
+            return round(value, 3)
+
+    def _get_tables(self, dataset_name: str, correlation: DatasetCorrelation) -> BaseWidgetInfo:
         tabs = []
         for correlation_name, correlation_stats in correlation.stats.items():
             matched_stat = [
-                ("Abs max correlation", np.round(correlation_stats.abs_max_correlation, 3)),
-                ("Abs max features correlation", np.round(correlation_stats.abs_max_features_correlation, 3)),
+                ("Abs max correlation", self._get_table_value(correlation_stats.abs_max_correlation)),
+                ("Abs max features correlation", self._get_table_value(correlation_stats.abs_max_features_correlation)),
+                (
+                    "Abs max target features correlation",
+                    self._get_table_value(correlation_stats.abs_max_target_features_correlation),
+                ),
+                (
+                    "Abs max prediction features correlation",
+                    self._get_table_value(correlation_stats.abs_max_prediction_features_correlation),
+                ),
+                (
+                    "Target prediction correlation",
+                    self._get_table_value(correlation_stats.target_prediction_correlation),
+                ),
             ]
-            if correlation_stats.abs_max_target_features_correlation is not None:
-                matched_stat.append(
-                    (
-                        "Abs max target features correlation",
-                        np.round(correlation_stats.abs_max_target_features_correlation, 3),
-                    )
-                )
-            if correlation_stats.abs_max_prediction_features_correlation is not None:
-                matched_stat.append(
-                    (
-                        "Abs max prediction features correlation",
-                        np.round(correlation_stats.abs_max_prediction_features_correlation, 3),
-                    )
-                )
 
             matched_stat_headers = ["Metric", "Value"]
             tabs.append(
