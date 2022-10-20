@@ -167,7 +167,7 @@ class ClassificationQualityRenderer(MetricRenderer):
             )
         result.append(header_text(label=f"Classification Model Performance. Target: '{target_name}’"))
         result.append(counter(title="Current: Model Quality Metrics", counters=counters))
-        
+
         if metric_result.reference is not None:
             counters = [
                 CounterData("Accuracy", f"{round(metric_result.reference.accuracy, 3)}"),

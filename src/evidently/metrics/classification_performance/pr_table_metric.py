@@ -82,7 +82,7 @@ class ClassificationPRTableRenderer(MetricRenderer):
                 tab_data = []
                 for label in current_pr_table.keys():
                     table = table_data(column_names=columns, data=current_pr_table[label],
-                               title="", size=size)
+                                       title="", size=size)
                     tab_data.append(TabData(label, table))
                 result.append(widget_tabs(title="Current: Precision-Recall Table", tabs=tab_data))
         if reference_pr_table is not None:
@@ -95,8 +95,7 @@ class ClassificationPRTableRenderer(MetricRenderer):
                 tab_data = []
                 for label in reference_pr_table.keys():
                     table = table_data(column_names=columns, data=reference_pr_table[label],
-                               title="", size=size)
+                                       title="", size=size)
                     tab_data.append(TabData(label, table))
                 result.append(widget_tabs(title="Reference: Precision-Recall Table", tabs=tab_data))
-                
         return result

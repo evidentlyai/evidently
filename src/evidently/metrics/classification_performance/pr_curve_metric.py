@@ -47,7 +47,7 @@ class ClassificationPRCurve(Metric[ClassificationPRCurveResults]):
             binaraized_target = pd.DataFrame(binaraized_target[:, 0])
             binaraized_target.columns = ["target"]
             pr, rcl, thrs = metrics.precision_recall_curve(binaraized_target, prediction.prediction_probas[labels[0]])
-            pr_curve[labels[0]]= {"pr": pr.tolist(), "rcl": rcl.tolist(), "thrs": thrs.tolist()}
+            pr_curve[labels[0]] = {"pr": pr.tolist(), "rcl": rcl.tolist(), "thrs": thrs.tolist()}
         else:
             binaraized_target = pd.DataFrame(binaraized_target)
             binaraized_target.columns = labels
@@ -76,15 +76,15 @@ class ClassificationPRCurveRenderer(MetricRenderer):
         reference_pr_curve = obj.get_result().reference_pr_curve
         if current_pr_curve is None:
             return []
-        
+
         tab_data = get_pr_rec_plot_data(current_pr_curve, reference_pr_curve)
         if len(tab_data) == 1:
             return [
                 header_text(label="Precision-Recall Curve"),
                 tab_data[0][1]
             ]
-        tab_data = [TabData(name, widget) for name, widget in tab_data]
+        tabs = [TabData(name, widget) for name, widget in tab_data]
         return [
             header_text(label="Precision-Recall Curve"),
-            widget_tabs(title="", tabs=tab_data)
+            widget_tabs(title="", tabs=tabs)
         ]

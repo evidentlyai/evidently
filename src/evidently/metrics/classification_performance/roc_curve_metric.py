@@ -16,6 +16,7 @@ from evidently.renderers.html_widgets import widget_tabs
 from evidently.renderers.html_widgets import TabData
 from evidently.renderers.html_widgets import header_text
 
+
 @dataclasses.dataclass
 class ClassificationRocCurveResults:
     current_roc_curve: Optional[dict] = None
@@ -73,15 +74,15 @@ class ClassificationRocCurveRenderer(MetricRenderer):
         reference_roc_curve = obj.get_result().reference_roc_curve
         if current_roc_curve is None:
             return []
-        
+
         tab_data = get_roc_auc_tab_data(current_roc_curve, reference_roc_curve)
         if len(tab_data) == 1:
             return [
                 header_text(label="ROC Curve"),
                 tab_data[0][1]
             ]
-        tab_data = [TabData(name, widget) for name, widget in tab_data]
+        tabs = [TabData(name, widget) for name, widget in tab_data]
         return [
             header_text(label="ROC Curve"),
-            widget_tabs(title="", tabs=tab_data)
+            widget_tabs(title="", tabs=tabs)
         ]

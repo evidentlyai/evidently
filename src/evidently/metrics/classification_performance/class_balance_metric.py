@@ -22,6 +22,7 @@ from evidently.utils.data_operations import process_columns
 class ClassificationClassBalanceResult:
     plot_data: Dict[str, int]
 
+
 class ClassificationClassBalance(Metric[ClassificationClassBalanceResult]):
     def calculate(self, data: InputData) -> ClassificationClassBalanceResult:
         dataset_columns = process_columns(data.current_data, data.column_mapping)
@@ -33,7 +34,7 @@ class ClassificationClassBalance(Metric[ClassificationClassBalanceResult]):
         if data.reference_data is not None:
             ref_target = data.reference_data[target_name]
         plot_data = make_hist_for_cat_plot(data.current_data[target_name], ref_target)
-        
+
         return ClassificationClassBalanceResult(
             plot_data=plot_data
         )
