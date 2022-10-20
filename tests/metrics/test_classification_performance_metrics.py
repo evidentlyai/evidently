@@ -563,3 +563,4 @@ def test_classification_performance_top_k_metrics_no_probas() -> None:
 
     with pytest.raises(ValueError):
         report.run(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+        report.json()
