@@ -46,7 +46,7 @@ class ColorOptions:
     underestimation_color: str = "#6574f7"
     overestimation_color: str = "#ee5540"
     majority_color: str = "#1acc98"
-    vertical_lines: str = GREY
+    vertical_lines: str = "green"
     heatmap: str = "RdBu_r"
 
     def get_current_data_color(self):
