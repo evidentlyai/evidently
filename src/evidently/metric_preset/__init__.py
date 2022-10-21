@@ -7,3 +7,4 @@ from .data_quality import DataQualityPreset
 from .num_target_drift import NumTargetDrift
 from .regression_performance import RegressionPerformance
 from .regression_performance import RegressionPreset
+from .target_drift import TargetDriftPreset

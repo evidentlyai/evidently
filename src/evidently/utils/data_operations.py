@@ -38,13 +38,14 @@ class DatasetUtilityColumns:
 @dataclass
 class DatasetColumns:
     utility_columns: DatasetUtilityColumns
+    target_type: Optional[str]
     num_feature_names: List[str]
     cat_feature_names: List[str]
     datetime_feature_names: List[str]
     target_names: Optional[List[str]]
     task: Optional[str]
 
-    def as_dict(self) -> Dict[str, Union[Optional[List[str]], Dict]]:
+    def as_dict(self) -> Dict[str, Union[str, Optional[List[str]], Dict]]:
         return {
             "utility_columns": self.utility_columns.as_dict(),
             "cat_feature_names": self.cat_feature_names,
@@ -113,7 +114,13 @@ def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping) -> Dat
     date_column = column_mapping.datetime if column_mapping.datetime in dataset else None
     # index column name
     id_column = column_mapping.id
+
+    task = column_mapping.task
+
     target_column = column_mapping.target if column_mapping.target in dataset else None
+    if task is None and target_column is not None:
+        task = recognize_task(target_name=target_column, dataset=dataset)
+    target_type = _get_target_type(dataset, column_mapping, task)
     num_feature_names = column_mapping.numerical_features
     cat_feature_names = column_mapping.categorical_features
     datetime_feature_names = column_mapping.datetime_features
@@ -171,19 +178,48 @@ def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping) -> Dat
     else:
         cat_feature_names = dataset[cat_feature_names].columns.tolist()
 
-    task = column_mapping.task
-
-    if task is None and target_column is not None:
-        task = recognize_task(target_name=target_column, dataset=dataset)
-
     return DatasetColumns(
         DatasetUtilityColumns(date_column, id_column, target_column, prediction_column),
-        num_feature_names or [],
-        cat_feature_names or [],
-        datetime_feature_names or [],
-        target_names,
+        target_type=target_type,
+        num_feature_names=num_feature_names or [],
+        cat_feature_names=cat_feature_names or [],
+        datetime_feature_names=datetime_feature_names or [],
+        target_names=target_names,
         task=task,
     )
+
+
+def _get_target_type(dataset: pd.DataFrame, column_mapping: ColumnMapping, task: Optional[str]) -> Optional[str]:
+    """
+    Args:
+        dataset: input dataset
+        column_mapping: column definition from user
+    Returns:
+        type of target (or prediction, if there are only prediction) or None if both columns missing.
+    """
+    column = None
+    if column_mapping.target is not None and column_mapping.target in dataset:
+        column = dataset[column_mapping.target]
+    if (
+        column is None
+        and column_mapping.prediction is not None
+        and isinstance(column_mapping.prediction, str)
+        and column_mapping.prediction in dataset
+    ):
+        column = dataset[column_mapping.prediction]
+
+    if column is None:
+        return None
+
+    if column_mapping.target_names is not None or task == "classification":
+        column_type = "cat"
+    elif pd.api.types.is_numeric_dtype(column.dtype):
+        column_type = "num"
+    elif pd.api.types.is_datetime64_dtype(column.dtype):
+        column_type = "datetime"
+    else:
+        column_type = "cat"
+    return column_type
 
 
 def recognize_task(target_name: str, dataset: pd.DataFrame) -> str:
