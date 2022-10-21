@@ -76,8 +76,8 @@ class ClassificationPRTableRenderer(MetricRenderer):
         columns = ["Top(%)", "Count", "Prob", "TP", "FP", "Precision", "Recall"]
         result = []
         size = WidgetSize.FULL
-        if reference_pr_table is not None:
-            size = WidgetSize.HALF
+        # if reference_pr_table is not None:
+        #     size = WidgetSize.HALF
         if current_pr_table is not None:
             if len(current_pr_table.keys()) == 1:
                 result.append(
