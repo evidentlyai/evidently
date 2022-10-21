@@ -309,6 +309,19 @@ def plot_boxes(curr_for_plots: dict, ref_for_plots: Optional[dict], yaxis_title:
     return fig
 
 
+def make_hist_for_num_plot(curr: pd.Series, ref: pd.Series = None):
+    result = {}
+    if ref is not None:
+        ref = ref.dropna()
+    bins = np.histogram_bin_edges(pd.concat([curr.dropna(), ref]), bins="doane")
+    curr_hist = np.histogram(curr, bins=bins)
+    result["current"] = make_hist_df(curr_hist)
+    if ref is not None:
+        ref_hist = np.histogram(ref, bins=bins)
+        result["reference"] = make_hist_df(ref_hist)
+    return result
+
+
 def plot_cat_cat_rel(curr: pd.DataFrame, ref: pd.DataFrame, target_name: str, feature_name: str):
     """
     Accepts current and reference data as pandas dataframes with two columns: feature_name and "count_objects".
@@ -375,19 +388,6 @@ def plot_num_num_rel(curr: Dict[str, list], ref: Optional[Dict[str, list]], targ
     fig.update_traces(marker_size=4)
     fig = json.loads(fig.to_json())
     return fig
-
-
-def make_hist_for_num_plot(curr: pd.Series, ref: pd.Series = None) -> Dict[str, pd.DataFrame]:
-    result = {}
-    if ref is not None:
-        ref = ref.dropna()
-    bins = np.histogram_bin_edges(pd.concat([curr.dropna(), ref]), bins="doane")
-    curr_hist = np.histogram(curr, bins=bins)
-    result["current"] = make_hist_df(curr_hist)
-    if ref is not None:
-        ref_hist = np.histogram(ref, bins=bins)
-        result["reference"] = make_hist_df(ref_hist)
-    return result
 
 
 def make_hist_for_cat_plot(
@@ -749,4 +749,36 @@ def plot_scatter_for_data_drift(curr_y: list, curr_x: list, y0: float, y1: float
             ),
         ],
     )
+    return fig
+
+
+def plot_conf_mtrx(curr_mtrx, ref_mtrx):
+    if ref_mtrx is not None:
+        cols = 2
+        subplot_titles = ["current", "reference"]
+    else:
+        cols = 1
+        subplot_titles = [""]
+    fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
+    trace = go.Heatmap(
+        z=curr_mtrx.values,
+        x=curr_mtrx.labels,
+        y=curr_mtrx.labels,
+        text=np.array(curr_mtrx.values).astype(str),
+        texttemplate="%{text}",
+        coloraxis="coloraxis",
+    )
+    fig.append_trace(trace, 1, 1)
+
+    if ref_mtrx is not None:
+        trace = go.Heatmap(
+            z=ref_mtrx.values,
+            x=ref_mtrx.labels,
+            y=ref_mtrx.labels,
+            text=np.array(ref_mtrx.values).astype(str),
+            texttemplate="%{text}",
+            coloraxis="coloraxis",
+        )
+        fig.append_trace(trace, 1, 2)
+    fig.update_layout(coloraxis={"colorscale": "RdBu_r"})
     return fig
