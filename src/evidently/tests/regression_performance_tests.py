@@ -3,7 +3,7 @@ from typing import List
 from typing import Optional
 from typing import Union
 
-from evidently.metrics import RegressionPerformanceMetrics
+from evidently.metrics import RegressionQualityMetric
 from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -25,7 +25,7 @@ GroupingTypes.TestGroup.add_value(REGRESSION_GROUP)
 
 class BaseRegressionPerformanceMetricsTest(BaseCheckValueTest, ABC):
     group = REGRESSION_GROUP.id
-    metric: RegressionPerformanceMetrics
+    metric: RegressionQualityMetric
 
     def __init__(
         self,
@@ -37,13 +37,13 @@ class BaseRegressionPerformanceMetricsTest(BaseCheckValueTest, ABC):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        metric: Optional[RegressionPerformanceMetrics] = None,
+        metric: Optional[RegressionQualityMetric] = None,
     ):
         if metric is not None:
             self.metric = metric
 
         else:
-            self.metric = RegressionPerformanceMetrics()
+            self.metric = RegressionQualityMetric()
 
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
 

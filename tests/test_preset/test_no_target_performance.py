@@ -1,6 +1,6 @@
 import pandas as pd
 
-from evidently.test_preset import NoTargetPerformance
+from evidently.test_preset import NoTargetPerformanceTestPreset
 from evidently.test_suite import TestSuite
 
 
@@ -23,7 +23,7 @@ def test_no_target_performance_preset():
     )
     data_quality_suite = TestSuite(
         tests=[
-            NoTargetPerformance(),
+            NoTargetPerformanceTestPreset(),
         ]
     )
 

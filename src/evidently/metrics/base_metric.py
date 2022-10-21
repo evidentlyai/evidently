@@ -16,6 +16,13 @@ from evidently.utils.generators import make_generator_by_columns
 TResult = TypeVar("TResult")
 
 
+class ErrorResult:
+    exception: BaseException
+
+    def __init__(self, exception: BaseException):
+        self.exception = exception
+
+
 @dataclass
 class InputData:
     reference_data: Optional[pd.DataFrame]
@@ -40,6 +47,8 @@ class Metric(Generic[TResult]):
         if self.context is None:
             raise ValueError("No context is set")
         result = self.context.metric_results.get(self, None)
+        if isinstance(result, ErrorResult):
+            raise result.exception
         if result is None:
             raise ValueError(f"No result found for metric {self} of type {type(self).__name__}")
         return result

@@ -11,7 +11,7 @@ from evidently.tests import TestRocAuc
 from evidently.utils.data_operations import DatasetColumns
 
 
-class MulticlassClassification(TestPreset):
+class MulticlassClassificationTestPreset(TestPreset):
     def __init__(self, prediction_type: str):
         super().__init__()
         if prediction_type not in ["probas", "labels"]:

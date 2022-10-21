@@ -193,6 +193,7 @@ def get_prediction_data(data: pd.DataFrame, data_columns: DatasetColumns, pos_la
         and is_integer_dtype(data[target].dtype)
         and data[prediction].dtype == dtype("float")
     ):
+        predictions = (data[mapping.prediction] >= threshold).astype(dtype("int64"))
         predictions = (data[prediction] >= threshold).astype(int)
         prediction_probas = pd.DataFrame.from_dict(
             {

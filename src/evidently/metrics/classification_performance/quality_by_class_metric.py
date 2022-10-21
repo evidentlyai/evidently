@@ -1,5 +1,6 @@
 from typing import List
 from typing import Optional
+
 from typing import Union
 
 import dataclasses
@@ -28,9 +29,8 @@ class ClassificationQualityByClassResult:
     current_metrics: dict
     current_roc_aucs: Optional[list]
     reference_metrics: Optional[dict]
-    reference_roc_aucs: Optional[list]
 
-import logging
+
 class ClassificationQualityByClass(ThresholdClassificationMetric[ClassificationQualityByClassResult]):
     def __init__(
         self,
@@ -50,6 +50,7 @@ class ClassificationQualityByClass(ThresholdClassificationMetric[ClassificationQ
             prediction.predictions,
             output_dict=True,
         )
+
         current_roc_aucs = None
         if prediction.prediction_probas is not None:
             binaraized_target = (target.values.reshape(-1, 1) == list(prediction.prediction_probas.columns)).astype(int)
@@ -57,7 +58,8 @@ class ClassificationQualityByClass(ThresholdClassificationMetric[ClassificationQ
                 binaraized_target, prediction.prediction_probas, average=None
             ).tolist()
         ref_metrics = None
-        reference_roc_aucs =None
+        reference_roc_aucs = None
+
         if data.reference_data is not None:
             ref_target, ref_prediction = self.get_target_prediction_data(
                 data.reference_data,
@@ -75,6 +77,7 @@ class ClassificationQualityByClass(ThresholdClassificationMetric[ClassificationQ
                 reference_roc_aucs = sklearn.metrics.roc_auc_score(
                     binaraized_target, ref_prediction.prediction_probas, average=None
                 ).tolist()
+
         return ClassificationQualityByClassResult(
             columns=columns,
             current_metrics=metrics_matrix,
@@ -88,12 +91,31 @@ class ClassificationQualityByClass(ThresholdClassificationMetric[ClassificationQ
 class ClassificationQualityByClassRenderer(MetricRenderer):
     def render_html(self, obj: ClassificationQualityByClass) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
+        result = [
+            _plot_metrics(
+                metric_result.columns,
+                metric_result.current_metrics,
+                "Current: Quality Metrics by Class",
+                WidgetSize.FULL if metric_result.reference_metrics is None else WidgetSize.HALF,
+            )
+        ]
+        if metric_result.reference_metrics is not None:
+            result.append(
+                _plot_metrics(
+                    metric_result.columns,
+                    metric_result.current_metrics,
+                    "Reference: Quality Metrics by Class",
+                    WidgetSize.HALF,
+                )
+            )
+        return result
+
         columns = metric_result.columns
         current_metrics = metric_result.current_metrics
         current_roc_aucs = metric_result.current_roc_aucs
         reference_metrics = metric_result.reference_metrics
         reference_roc_aucs = metric_result.reference_roc_aucs
-        
+
         metrics_frame = pd.DataFrame(current_metrics)
         z = metrics_frame.iloc[:-1, :-3].values
         x = columns.target_names if columns.target_names else metrics_frame.columns.tolist()[:-3]
@@ -141,7 +163,7 @@ class ClassificationQualityByClassRenderer(MetricRenderer):
             )
             fig.append_trace(trace, 1, 2)
         fig.update_layout(coloraxis={"colorscale": "RdBu_r"})
-        
+
         return [
             header_text(label="Quality Metrics by Class"),
             plotly_figure(figure=fig, title="")
@@ -149,3 +171,31 @@ class ClassificationQualityByClassRenderer(MetricRenderer):
 
     def render_json(self, obj) -> dict:
         return {}
+
+
+def _plot_metrics(
+    columns: DatasetColumns,
+    metrics_matrix: dict,
+    title: str,
+    size: WidgetSize,
+):
+    metrics_frame = pd.DataFrame(metrics_matrix)
+
+    z = metrics_frame.iloc[:-1, :-3].values
+
+    x = columns.target_names if columns.target_names else metrics_frame.columns.tolist()[:-3]
+
+    y = ["precision", "recall", "f1-score"]
+
+    # change each element of z to type string for annotations
+    z_text = [[str(round(y, 3)) for y in x] for x in z]
+
+    # set up figure
+    fig = ff.create_annotated_heatmap(z, x=x, y=y, annotation_text=z_text, colorscale="bluered", showscale=True)
+    fig.update_layout(xaxis_title="Class", yaxis_title="Metric")
+
+    return plotly_figure(
+        title=title,
+        figure=fig,
+        size=size,
+    )

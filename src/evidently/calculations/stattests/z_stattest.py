@@ -39,6 +39,16 @@ def proportions_diff_z_test(z_stat, alternative="two-sided"):
 def _z_stat_test(
     reference_data: pd.Series, current_data: pd.Series, feature_type: str, threshold: float
 ) -> Tuple[float, bool]:
+    """Compute the Z test between two arrays
+    Args:
+        reference_data: reference data
+        current_data: current data
+        feature_type: feature type
+        threshold: all values above this threshold means data drift
+    Returns:
+        pvalue: the two-tailed p-value for the test
+        test_result: whether the drift is detected
+    """
     if (
         reference_data.nunique() == 1
         and current_data.nunique() == 1

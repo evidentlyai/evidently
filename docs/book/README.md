@@ -32,7 +32,7 @@ Tests perform structured data and ML model quality checks. You typically compare
  
 You can set test parameters manually or let Evidently learn the expectations from the reference dataset. Tests verify a condition and return an explicit **pass** or **fail** result. 
  
-You can create a **Test Suite** from 50+ individual tests or run one of the **presets** that combine relevant tests. For example, DataStability or Regression performance presets.
+You can create a **Test Suite** from 50+ individual tests or run one of the **presets** that combine relevant tests. For example, DataStabilityTestPreset or RegressionTestPreset.
  
 Tests are best for automated batch model checks.
 

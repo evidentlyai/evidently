@@ -12,7 +12,7 @@ from evidently.tests import TestRocAuc
 from evidently.utils.data_operations import DatasetColumns
 
 
-class BinaryClassificationTopK(TestPreset):
+class BinaryClassificationTopKTestPreset(TestPreset):
     def __init__(self, k: Union[float, int]):
         super().__init__()
         self.k = k

@@ -6,13 +6,18 @@ from typing import Union
 from uuid import uuid4
 
 import dataclasses
+import numpy as np
+import pandas as pd
 import plotly.graph_objs as go
+from plotly.subplots import make_subplots
 
 from evidently.model.widget import BaseWidgetInfo
 from evidently.model.widget import PlotlyGraphInfo
 from evidently.model.widget import TabInfo
 from evidently.model.widget import WidgetType
 from evidently.options import ColorOptions
+from evidently.utils.types import Numeric
+from evidently.utils.visualizations import Distribution
 
 
 class WidgetSize(Enum):
@@ -219,16 +224,17 @@ def counter(
     )
 
 
-def header_text(*, label: str, size: WidgetSize = WidgetSize.FULL):
+def header_text(*, label: str, title: str = "", size: WidgetSize = WidgetSize.FULL):
     """
     generate widget with some text as header
 
     Args:
         label: text to display
+        title: widget title
         size: widget size
     """
     return BaseWidgetInfo(
-        title="",
+        title=title,
         type=WidgetType.COUNTER.value,
         size=size.value,
         params={"counters": [{"value": "", "label": label}]},
@@ -324,6 +330,20 @@ def widget_tabs(*, title: str = "", size: WidgetSize = WidgetSize.FULL, tabs: Li
         size=size.value,
         tabs=[TabInfo(str(uuid4()), tab.title, tab.widget) for tab in tabs],
     )
+
+
+def widget_tabs_for_more_than_one(
+    *, title: str = "", size: WidgetSize = WidgetSize.FULL, tabs: List[TabData]
+) -> Optional[BaseWidgetInfo]:
+    """Draw tabs widget only if there is more than one tab, otherwise just draw one widget"""
+    if len(tabs) > 1:
+        return widget_tabs(title=title, size=size, tabs=tabs)
+
+    elif len(tabs) < 1:
+        return None
+
+    else:
+        return tabs[0].widget
 
 
 class DetailsPartInfo:
@@ -435,6 +455,120 @@ class HistogramData:
     y: List[Union[int, float]]
 
 
+def get_histogram_figure(
+    *,
+    primary_hist: HistogramData,
+    secondary_hist: Optional[HistogramData] = None,
+    color_options: ColorOptions,
+    orientation: str = "v",
+) -> go.Figure:
+    figure = go.Figure()
+    curr_bar = go.Bar(
+        name=primary_hist.name,
+        x=primary_hist.x,
+        y=primary_hist.y,
+        marker_color=color_options.get_current_data_color(),
+        orientation=orientation,
+    )
+    figure.add_trace(curr_bar)
+
+    if secondary_hist is not None:
+        ref_bar = go.Bar(
+            name=secondary_hist.name,
+            x=secondary_hist.x,
+            y=secondary_hist.y,
+            marker_color=color_options.get_reference_data_color(),
+            orientation=orientation,
+        )
+        figure.add_trace(ref_bar)
+
+    return figure
+
+
+def get_histogram_figure_with_range(
+    *,
+    primary_hist: HistogramData,
+    secondary_hist: Optional[HistogramData] = None,
+    left: Numeric,
+    right: Numeric,
+    orientation: str = "v",
+    color_options: ColorOptions,
+) -> go.Figure:
+    figure = get_histogram_figure(
+        primary_hist=primary_hist,
+        secondary_hist=secondary_hist,
+        color_options=color_options,
+        orientation=orientation,
+    )
+    max_y = np.max([np.max(x["y"]) for x in figure.data])
+    min_y = np.min([np.min(x["y"]) for x in figure.data])
+
+    figure.add_trace(
+        go.Scatter(
+            x=[left, left],
+            y=[min_y, max_y],
+            mode="lines",
+            line={"color": color_options.vertical_lines, "width": 2, "dash": "dash"},
+            name="range left value",
+        )
+    )
+    figure.add_trace(
+        go.Scatter(
+            x=[right, right],
+            y=[min_y, max_y],
+            mode="lines",
+            line={"color": color_options.vertical_lines, "width": 2, "dash": "solid"},
+            name="range right value",
+        )
+    )
+    figure.add_vrect(x0=left, x1=right, fillcolor=color_options.fill_color, opacity=0.25, line_width=0)
+    return figure
+
+
+def get_histogram_figure_with_quantile(
+    *,
+    current: HistogramData,
+    reference: Optional[HistogramData] = None,
+    current_quantile: float,
+    reference_quantile: Optional[float] = None,
+    color_options: ColorOptions,
+    orientation: str = "v",
+) -> go.Figure:
+    figure = get_histogram_figure(
+        primary_hist=current,
+        secondary_hist=reference,
+        color_options=color_options,
+        orientation=orientation,
+    )
+    # add quantile lines. Use scatter, not `add_vline`
+    # because `add_vline` doesn't support legend, it is not interactive
+    max_y = np.max([np.max(x["y"]) for x in figure.data])
+    min_y = np.min([np.min(x["y"]) for x in figure.data])
+
+    figure.add_trace(
+        go.Scatter(
+            x=[current_quantile, current_quantile],
+            y=[min_y, max_y],
+            mode="lines",
+            line={"color": color_options.vertical_lines, "width": 2, "dash": "dash"},
+            name="reference quantile",
+        )
+    )
+
+    if reference_quantile is not None:
+        figure.add_trace(
+            go.Scatter(
+                x=[reference_quantile, reference_quantile],
+                y=[min_y, max_y],
+                mode="lines",
+                line={"color": color_options.vertical_lines, "width": 2, "dash": "solid"},
+                name="current quantile",
+            )
+        )
+
+    return figure
+
+
 def histogram(
     *,
     title: str,
@@ -443,6 +577,8 @@ def histogram(
     color_options: Optional[ColorOptions] = None,
     orientation: str = "v",
     size: WidgetSize = WidgetSize.FULL,
+    xaxis_title: Optional[str] = None,
+    yaxis_title: Optional[str] = None,
 ) -> BaseWidgetInfo:
     """
     generate widget with one or two histogram
@@ -454,29 +590,123 @@ def histogram(
         orientation: bars orientation in histograms
         color_options: color options to use for widgets
         size: widget size
+        xaxis_title: title for x-axis
+        yaxis_title: title for y-axis
     Example:
         >>> ref_hist = HistogramData("Histogram 1", x=["a", "b", "c"], y=[1, 2, 3])
         >>> curr_hist = HistogramData("Histogram 2", x=["a", "b", "c"], y=[3, 2 ,1])
         >>> widget_info = histogram(title="Histogram example", primary_hist=ref_hist, secondary_hist=curr_hist)
     """
     color_options = color_options if color_options is not None else ColorOptions()
-    figure = go.Figure()
-    curr_bar = go.Bar(
-        name=primary_hist.name,
-        x=primary_hist.x,
-        y=primary_hist.y,
-        marker_color=color_options.get_current_data_color(),
+    figure = get_histogram_figure(
+        primary_hist=primary_hist,
+        secondary_hist=secondary_hist,
+        color_options=color_options,
         orientation=orientation,
     )
-    figure.add_trace(curr_bar)
-    if secondary_hist is not None:
-        ref_bar = go.Bar(
-            name=secondary_hist.name,
-            x=secondary_hist.x,
-            y=secondary_hist.y,
-            marker_color=color_options.get_reference_data_color(),
-            orientation=orientation,
+    if xaxis_title is not None:
+        figure.update_layout(
+            xaxis_title=xaxis_title,
         )
-        figure.add_trace(ref_bar)
 
+    if yaxis_title is not None:
+        figure.update_layout(
+            yaxis_title=yaxis_title,
+        )
+
+    return plotly_figure(title=title, figure=figure, size=size)
+
+
+def get_histogram_for_distribution(
+    *,
+    current_distribution: Distribution,
+    reference_distribution: Optional[Distribution] = None,
+    title: str = "",
+    xaxis_title: Optional[str] = None,
+    yaxis_title: Optional[str] = None,
+    color_options: Optional[ColorOptions] = None,
+):
+    current_histogram = HistogramData(
+        name="current",
+        x=current_distribution.x,
+        y=current_distribution.y,
+    )
+
+    if reference_distribution is not None:
+        reference_histogram: Optional[HistogramData] = HistogramData(
+            name="reference",
+            x=reference_distribution.x,
+            y=reference_distribution.y,
+        )
+
+    else:
+        reference_histogram = None
+
+    return histogram(
+        title=title,
+        primary_hist=current_histogram,
+        secondary_hist=reference_histogram,
+        xaxis_title=xaxis_title,
+        yaxis_title=yaxis_title,
+        color_options=color_options,
+    )
+
+
+@dataclasses.dataclass
+class HeatmapData:
+    name: str
+    matrix: pd.DataFrame
+
+
+def get_heatmaps_widget(
+    *,
+    title: str = "",
+    primary_data: HeatmapData,
+    secondary_data: Optional[HeatmapData] = None,
+    size: WidgetSize = WidgetSize.FULL,
+    color_options: ColorOptions,
+) -> BaseWidgetInfo:
+    """
+    Create a widget with heatmap(s)
+    """
+
+    if secondary_data is not None:
+        subplot_titles = [primary_data.name, secondary_data.name]
+        heatmaps_count = 2
+
+    else:
+        subplot_titles = [""]
+        heatmaps_count = 1
+
+    figure = make_subplots(rows=1, cols=heatmaps_count, subplot_titles=subplot_titles, shared_yaxes=True)
+
+    for idx, heatmap_data in enumerate([primary_data, secondary_data]):
+        if heatmap_data is None:
+            continue
+        data = heatmap_data.matrix
+        columns = heatmap_data.matrix.columns
+
+        # show values if thw heatmap is small
+        if len(columns) < 15:
+            heatmap_text = np.round(data, 2).astype(str)
+            heatmap_text_template: Optional[str] = "%{text}"
+
+        else:
+            heatmap_text = None
+            heatmap_text_template = None
+
+        figure.append_trace(
+            go.Heatmap(
+                z=data,
+                x=columns,
+                y=columns,
+                text=heatmap_text,
+                texttemplate=heatmap_text_template,
+                coloraxis="coloraxis",
+            ),
+            1,
+            idx + 1,
+        )
+
+    figure.update_layout(coloraxis={"colorscale": color_options.heatmap})
     return plotly_figure(title=title, figure=figure, size=size)
