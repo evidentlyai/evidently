@@ -75,9 +75,8 @@ import pandas as pd
 import numpy as np
 
 from sklearn.datasets import fetch_california_housing
-
-from evidently.pipeline.column_mapping import ColumnMapping
-
+ 
+from evidently import ColumnMapping
 from evidently.report import Report
 from evidently.metric_preset import DataDriftPreset
 from evidently.metric_preset import NumTargetDrift
@@ -106,7 +105,7 @@ housing_data.rename(columns={'MedHouseVal': 'target'}, inplace=True)
 housing_data['prediction'] = housing_data['target'].values + np.random.normal(0, 5, housing_data.shape[0])
 ```
 
-Split the dataset by taking 5000 objects for **reference** and **current** datasets. This way, you’ll get two samples you can compare.  
+Split the dataset by taking 5000 objects for **reference** and **current** datasets. This way, you get two samples to compare.  
 
 ```python
 reference = housing_data.sample(n=5000, replace=False)
