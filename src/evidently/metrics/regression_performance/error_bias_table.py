@@ -281,7 +281,6 @@ class RegressionErrorBiasTableRenderer(MetricRenderer):
 
                 feature_hist_json = json.loads(feature_hist.to_json())
 
-                merged_data.dropna(axis=0, how="any", inplace=True)
                 segment_fig = px.scatter(
                     merged_data, x=target_name, y=prediction_name, color=feature_name, facet_col="dataset"
                 )
