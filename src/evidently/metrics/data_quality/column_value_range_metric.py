@@ -164,16 +164,25 @@ class ColumnValueRangeMetricRenderer(MetricRenderer):
         return result
 
     @staticmethod
-    def _get_table_stat(metrics: ValuesInRangeStat) -> BaseWidgetInfo:
+    def _get_table_stat(metric_result: ColumnValueRangeMetricResult) -> BaseWidgetInfo:
+        matched_stat_headers = ["Metric", "Current"]
         matched_stat = [
-            ("Values in range", metrics.number_in_range),
-            ("%", np.round(metrics.share_in_range * 100, 3)),
-            ("Values out of range", metrics.number_not_in_range),
-            ("%", np.round(metrics.share_not_in_range * 100, 3)),
-            ("Values count", metrics.number_of_values),
+            ["Values in range", metric_result.current.number_in_range],
+            ["%", np.round(metric_result.current.share_in_range * 100, 3)],
+            ["Values out of range", metric_result.current.number_not_in_range],
+            ["%", np.round(metric_result.current.share_not_in_range * 100, 3)],
+            ["Values count", metric_result.current.number_of_values],
         ]
 
-        matched_stat_headers = ["Metric", "Value"]
+        if metric_result.reference is not None:
+            matched_stat_headers.append("Reference")
+
+            matched_stat[0].append(metric_result.reference.number_in_range)
+            matched_stat[1].append(np.round(metric_result.reference.share_in_range * 100, 3))
+            matched_stat[2].append(metric_result.reference.number_not_in_range)
+            matched_stat[3].append(np.round(metric_result.reference.share_not_in_range * 100, 3))
+            matched_stat[4].append(metric_result.reference.number_of_values)
+
         return table_data(
             title="",
             column_names=matched_stat_headers,
@@ -182,43 +191,42 @@ class ColumnValueRangeMetricRenderer(MetricRenderer):
 
     def _get_tabs(
         self,
-        dataset_name: str,
-        stats: ValuesInRangeStat,
-        distribution: Optional[Distribution],
-        left: Numeric,
-        right: Numeric,
+        metric_result: ColumnValueRangeMetricResult,
     ) -> BaseWidgetInfo:
-        if distribution is not None:
-            figure = get_histogram_figure_with_range(
-                primary_hist=HistogramData(
-                    name=dataset_name.lower(),
-                    x=list(distribution.x),
-                    y=list(distribution.y),
-                ),
-                secondary_hist=None,
-                color_options=self.color_options,
-                left=left,
-                right=right,
+        if metric_result.reference_distribution is not None:
+            reference_histogram: Optional[HistogramData] = HistogramData(
+                name="reference",
+                x=list(metric_result.reference_distribution.x),
+                y=list(metric_result.reference_distribution.y),
             )
-
-            tabs: List[TabData] = [
-                TabData(
-                    title="Distribution",
-                    widget=plotly_figure(title="", figure=figure),
-                ),
-            ]
 
         else:
-            tabs = []
+            reference_histogram = None
 
-        tabs.append(
+        figure = get_histogram_figure_with_range(
+            primary_hist=HistogramData(
+                name="current",
+                x=list(metric_result.current_distribution.x),
+                y=list(metric_result.current_distribution.y),
+            ),
+            secondary_hist=reference_histogram,
+            color_options=self.color_options,
+            left=metric_result.left,
+            right=metric_result.right,
+        )
+
+        tabs: List[TabData] = [
+            TabData(
+                title="Distribution",
+                widget=plotly_figure(title="", figure=figure),
+            ),
             TabData(
                 title="Statistics",
-                widget=self._get_table_stat(stats),
+                widget=self._get_table_stat(metric_result),
             )
-        )
+        ]
         return widget_tabs(
-            title=f"{dataset_name.capitalize()} dataset",
+            title="",
             tabs=tabs,
         )
 
@@ -248,24 +256,6 @@ class ColumnValueRangeMetricRenderer(MetricRenderer):
                 label=f"Column '{column_name}'. Value range.",
             ),
             counter(counters=counters),
-            self._get_tabs(
-                "current",
-                metric_result.current,
-                metric_result.current_distribution,
-                metric_result.left,
-                metric_result.right,
-            ),
+            self._get_tabs(metric_result),
         ]
-
-        if metric_result.reference is not None:
-            result.append(
-                self._get_tabs(
-                    "reference",
-                    metric_result.reference,
-                    metric_result.reference_distribution,
-                    metric_result.left,
-                    metric_result.right,
-                )
-            )
-
         return result
