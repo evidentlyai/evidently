@@ -22,7 +22,8 @@ from evidently.report import Report
         (
             pd.DataFrame(
                 {
-                    "target": [1, 2, 3],
+                    "my_target": [1, 2, 3],
+                    "prediction": [1, 2, 3],
                     "feature1": [1, 2, 3],
                     "feature2": ["a", "b", "c"],
                     "datetime": pd.date_range("2020-01-01", periods=3),
@@ -31,6 +32,7 @@ from evidently.report import Report
             pd.DataFrame(
                 {
                     "my_target": [1, np.NaN, 3, 3, 2, 1],
+                    "prediction": [1, 2, 3, 3, 2, 1],
                     "feature1": [1, 2, 3, np.NaN, 2, np.NaN],
                     "feature2": [np.NaN, "b", "c", "a", "b", "c"],
                     "feature3": [np.NaN, "b", "c", "a", "b", "c"],
