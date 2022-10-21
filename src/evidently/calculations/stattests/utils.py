@@ -59,11 +59,10 @@ def generate_fisher2x2_contingency_table(reference_data: pd.Series, current_data
         )
     unique_categories = set(reference_data.unique().tolist() + current_data.unique().tolist())
     if len(unique_categories) != 2:
-        print("1 category is missing")
         unique_categories.add("placeholder")
 
-    unique_categories = list(unique_categories)# type: ignore
-    unique_categories = dict(zip(unique_categories, [0, 1]))# type: ignore
+    unique_categories = list(unique_categories)  # type: ignore
+    unique_categories = dict(zip(unique_categories, [0, 1]))  # type: ignore
 
     reference_data = reference_data.map(unique_categories).values
     current_data = current_data.map(unique_categories).values
