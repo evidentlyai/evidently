@@ -223,7 +223,7 @@ class ColumnValueRangeMetricRenderer(MetricRenderer):
             TabData(
                 title="Statistics",
                 widget=self._get_table_stat(metric_result),
-            )
+            ),
         ]
         return widget_tabs(
             title="",
