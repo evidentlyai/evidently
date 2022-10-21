@@ -148,11 +148,7 @@ class DatasetSummaryMetricRenderer(MetricRenderer):
             rows[12].append(metric_result.reference.number_of_duplicated_columns)
             rows[13].append(metric_result.reference.number_of_almost_duplicated_columns)
 
-        return table_data(
-            title="",
-            column_names=column_names,
-            data=rows
-        )
+        return table_data(title="", column_names=column_names, data=rows)
 
     def render_html(self, obj: DatasetSummaryMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
