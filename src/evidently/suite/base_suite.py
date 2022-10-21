@@ -183,6 +183,7 @@ class Suite:
 
     def add_metric(self, metric: Metric):
         metric.set_context(self.context)
+
         for field_name, dependency in _discover_dependencies(metric):
             if isinstance(dependency, Metric):
                 self.add_metric(dependency)

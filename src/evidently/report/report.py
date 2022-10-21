@@ -66,7 +66,14 @@ class Report(Display):
                         raise ValueError(f"Incorrect metric type in generator {item}")
 
             elif isinstance(item, MetricPreset):
-                metrics = item.generate_metrics(data=data, columns=self._columns_info)
+                metrics = []
+
+                for metric_item in item.generate_metrics(data=data, columns=self._columns_info):
+                    if isinstance(metric_item, BaseGenerator):
+                        metrics.extend(metric_item.generate(columns_info=self._columns_info))
+
+                    else:
+                        metrics.append(metric_item)
 
                 for metric in metrics:
                     self._first_level_metrics.append(metric)
