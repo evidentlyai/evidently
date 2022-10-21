@@ -214,6 +214,10 @@ class ColumnValueRangeMetricRenderer(MetricRenderer):
             left=metric_result.left,
             right=metric_result.right,
         )
+        figure.update_layout(
+            yaxis_title="count",
+            xaxis_title=metric_result.column_name,
+        )
 
         tabs: List[TabData] = [
             TabData(

@@ -135,6 +135,10 @@ class ColumnQuantileMetricRenderer(MetricRenderer):
             reference_quantile=reference_quantile,
             color_options=self.color_options,
         )
+        figure.update_layout(
+            yaxis_title="count",
+            xaxis_title=metric_result.column_name,
+        )
         return plotly_figure(title="", figure=figure)
 
     def render_html(self, obj: ColumnQuantileMetric) -> List[BaseWidgetInfo]:
