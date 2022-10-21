@@ -1,6 +1,5 @@
 import copy
 import json
-from typing import Dict
 from typing import List
 from typing import Optional
 
@@ -11,20 +10,16 @@ import plotly.express as px
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
 
-from evidently.calculations.regression_performance import _error_bias_table
-from evidently.calculations.regression_performance import _error_with_qantiles
-from evidently.calculations.regression_performance import calculate_regression_performance
+from evidently.calculations.regression_performance import error_bias_table
+from evidently.calculations.regression_performance import error_with_quantiles
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
-from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import header_text
-from evidently.renderers.html_widgets import rich_table_data
 from evidently.utils.data_operations import process_columns
-from evidently.utils.visualizations import plot_error_bias_colored_scatter
 
 
 @dataclasses.dataclass
@@ -66,9 +61,8 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
         if ref_df is not None:
             ref_df = self._make_df_for_plot(ref_df[columns_ext], target_name, prediction_name, None)
 
-        err_quantiles = _error_with_qantiles(curr_df, prediction_name, target_name)
-        error_bias = {}
-        feature_bias = _error_bias_table(curr_df, err_quantiles, num_feature_names, cat_feature_names)
+        err_quantiles = error_with_quantiles(curr_df, prediction_name, target_name)
+        feature_bias = error_bias_table(curr_df, err_quantiles, num_feature_names, cat_feature_names)
         error_bias = {
             feature: dict(feature_type=bias.feature_type, **bias.as_dict("current_"))
             for feature, bias in feature_bias.items()
@@ -81,9 +75,8 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
             error_bias = None
 
         if ref_df is not None:
-            ref_err_quantiles = _error_with_qantiles(ref_df, prediction_name, target_name)
-            ref_error_bias = {}
-            ref_feature_bias = _error_bias_table(ref_df, ref_err_quantiles, num_feature_names, cat_feature_names)
+            ref_err_quantiles = error_with_quantiles(ref_df, prediction_name, target_name)
+            ref_feature_bias = error_bias_table(ref_df, ref_err_quantiles, num_feature_names, cat_feature_names)
             ref_error_bias = {
                 feature: dict(feature_type=bias.feature_type, **bias.as_dict("ref_"))
                 for feature, bias in ref_feature_bias.items()
@@ -108,13 +101,16 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
             reference_plot_data=ref_df,
             target_name=target_name,
             prediction_name=prediction_name,
-            num_feature_names=num_feature_names,
-            cat_feature_names=cat_feature_names,
+            num_feature_names=[str(v) for v in num_feature_names],
+            cat_feature_names=[str(v) for v in cat_feature_names],
             error_bias=error_bias_res,
-            columns=columns,
+            columns=[str(v) for v in columns],
         )
 
-    def _make_df_for_plot(self, df, target_name: str, prediction_name: str, datetime_column_name: Optional[str]):
+    @staticmethod
+    def _make_df_for_plot(
+        df: pd.DataFrame, target_name: str, prediction_name: str, datetime_column_name: Optional[str]
+    ):
         result = df.replace([np.inf, -np.inf], np.nan)
         if datetime_column_name is not None:
             result.dropna(axis=0, how="any", inplace=True, subset=[target_name, prediction_name, datetime_column_name])
@@ -125,13 +121,19 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
 
 @default_renderer(wrap_type=RegressionErrorBiasTable)
 class RegressionErrorBiasTableRenderer(MetricRenderer):
+    def render_json(self, obj: RegressionErrorBiasTable) -> dict:
+        result = dataclasses.asdict(obj.get_result())
+        result.pop("current_plot_data", None)
+        result.pop("reference_plot_data", None)
+        return result
+
     def render_html(self, obj: RegressionErrorBiasTable) -> List[BaseWidgetInfo]:
         result = obj.get_result()
         current_data = result.current_plot_data
         reference_data = result.reference_plot_data
         target_name = result.target_name
         prediction_name = result.prediction_name
-        widget_info = None
+
         if reference_data is not None:
             ref_error = reference_data[prediction_name] - reference_data[target_name]
             current_error = current_data[prediction_name] - current_data[target_name]
@@ -502,7 +504,8 @@ class RegressionErrorBiasTableRenderer(MetricRenderer):
             )
         return [header_text(label="Error Bias: Mean/Most Common Feature Value per Group"), widget_info]
 
-    def _error_bias_string(self, quantile_5, quantile_95):
+    @staticmethod
+    def _error_bias_string(quantile_5, quantile_95):
         def __error_bias_string(error):
             if error <= quantile_5:
                 return "Underestimation"
