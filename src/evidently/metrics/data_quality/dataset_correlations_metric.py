@@ -17,7 +17,6 @@ from evidently.renderers.html_widgets import HeatmapData
 from evidently.renderers.html_widgets import TabData
 from evidently.renderers.html_widgets import get_heatmaps_widget
 from evidently.renderers.html_widgets import header_text
-from evidently.renderers.html_widgets import table_data
 from evidently.renderers.html_widgets import widget_tabs
 from evidently.utils.data_operations import process_columns
 
@@ -146,49 +145,9 @@ class DataQualityCorrelationMetricsRenderer(MetricRenderer):
 
         return result
 
-    @staticmethod
-    def _get_table_value(value: Optional[float]):
-        if value is None:
-            return value
-
-        else:
-            return round(value, 3)
-
-    def _get_tables(self, dataset_name: str, correlation: DatasetCorrelation) -> BaseWidgetInfo:
-        tabs = []
-        for correlation_name, correlation_stats in correlation.stats.items():
-            matched_stat = [
-                ("Abs max correlation", self._get_table_value(correlation_stats.abs_max_correlation)),
-                ("Abs max features correlation", self._get_table_value(correlation_stats.abs_max_features_correlation)),
-                (
-                    "Abs max target features correlation",
-                    self._get_table_value(correlation_stats.abs_max_target_features_correlation),
-                ),
-                (
-                    "Abs max prediction features correlation",
-                    self._get_table_value(correlation_stats.abs_max_prediction_features_correlation),
-                ),
-                (
-                    "Target prediction correlation",
-                    self._get_table_value(correlation_stats.target_prediction_correlation),
-                ),
-            ]
-
-            matched_stat_headers = ["Metric", "Value"]
-            tabs.append(
-                TabData(
-                    title=correlation_name,
-                    widget=table_data(
-                        title="",
-                        column_names=matched_stat_headers,
-                        data=matched_stat,
-                    ),
-                )
-            )
-        return widget_tabs(title=f"Correlations statistic ({dataset_name.lower()})", tabs=tabs)
-
     def _get_heatmaps(self, metric_result: DatasetCorrelationsMetricResult) -> BaseWidgetInfo:
         tabs = []
+
         for correlation_method in metric_result.current.correlation:
             current_correlation = metric_result.current.correlation[correlation_method]
 
@@ -217,11 +176,6 @@ class DataQualityCorrelationMetricsRenderer(MetricRenderer):
         metric_result = obj.get_result()
         result = [
             header_text(label="Dataset Correlations Metric"),
-            self._get_tables("current", metric_result.current),
+            self._get_heatmaps(metric_result=metric_result),
         ]
-
-        if metric_result.reference is not None:
-            result.append(self._get_tables("reference", metric_result.reference))
-
-        result.append(self._get_heatmaps(metric_result=metric_result))
         return result
