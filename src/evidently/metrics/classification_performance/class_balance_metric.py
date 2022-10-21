@@ -42,6 +42,9 @@ class ClassificationClassBalance(Metric[ClassificationClassBalanceResult]):
 
 @default_renderer(wrap_type=ClassificationClassBalance)
 class ClassificationClassBalanceRenderer(MetricRenderer):
+    def render_json(self, obj: ClassificationClassBalance) -> dict:
+        return {}
+
     def render_html(self, obj: ClassificationClassBalance) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         current_plot_data = metric_result.plot_data["current"]

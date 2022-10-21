@@ -257,7 +257,7 @@ def get_roc_auc_tab_data(curr_roc_curve: dict, ref_roc_curve: Optional[dict]) ->
                 ),
             )
             fig.append_trace(trace, 1, 2)
-            fig.update_xaxes(title_text="False Positive Rate", row=1, col=1)
+            fig.update_xaxes(title_text="False Positive Rate", row=1, col=2)
         fig.update_layout(yaxis_title="True Positive Rate", showlegend=True)
 
         additional_plots.append((str(label), plotly_figure(title="", figure=fig)))
@@ -301,8 +301,69 @@ def get_pr_rec_plot_data(current_pr_curve: dict, reference_pr_curve: Optional[di
                 ),
             )
             fig.append_trace(trace, 1, 2)
-            fig.update_xaxes(title_text="Recall", row=1, col=1)
+            fig.update_xaxes(title_text="Recall", row=1, col=2)
         fig.update_layout(yaxis_title="Precision", showlegend=True)
+
+        additional_plots.append((str(label), plotly_figure(title="", figure=fig)))
+    return additional_plots
+
+
+def get_class_separation_plot_data(current_plot: pd.DataFrame, reference_plot: Optional[pd.DataFrame], target_name: str
+                         ) -> List[Tuple[str, BaseWidgetInfo]]:
+    color_options = ColorOptions()
+    additional_plots = []
+    cols = 1
+    subplot_titles = [""]
+    if reference_plot is not None:
+        cols = 2
+        subplot_titles = ["current", "reference"]
+    for label in current_plot.columns.drop(target_name):
+        fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
+        trace = go.Scatter(
+            x=np.random.random(current_plot[current_plot[target_name] == label].shape[0]),
+            y=current_plot[current_plot[target_name] == label][label],
+            mode="markers",
+            name=str(label),
+            legendgroup=str(label),
+            marker=dict(size=6, color=color_options.primary_color),
+        )
+        fig.append_trace(trace, 1, 1)
+
+        trace = go.Scatter(
+            x=np.random.random(current_plot[current_plot[target_name] != label].shape[0]),
+            y=current_plot[current_plot[target_name] != label][label],
+            mode="markers",
+            name="other",
+            legendgroup="other",
+            marker=dict(size=6, color=color_options.secondary_color),
+        )
+        fig.append_trace(trace, 1, 1)
+        fig.update_xaxes(dict(range=(-2, 3), showticklabels=False), row=1, col=1)
+
+        if reference_plot is not None:
+            trace = go.Scatter(
+                x=np.random.random(reference_plot[reference_plot[target_name] == label].shape[0]),
+                y=reference_plot[reference_plot[target_name] == label][label],
+                mode="markers",
+                name=str(label),
+                legendgroup=str(label),
+                showlegend=False,
+                marker=dict(size=6, color=color_options.primary_color),
+            )
+            fig.append_trace(trace, 1, 2)
+
+            trace = go.Scatter(
+                x=np.random.random(reference_plot[reference_plot[target_name] != label].shape[0]),
+                y=reference_plot[reference_plot[target_name] != label][label],
+                mode="markers",
+                name="other",
+                legendgroup="other",
+                showlegend=False,
+                marker=dict(size=6, color=color_options.secondary_color),
+            )
+            fig.append_trace(trace, 1, 2)
+            fig.update_xaxes(dict(range=(-2, 3), showticklabels=False), row=1, col=2)
+        fig.update_layout(yaxis_title="Probability", showlegend=True)
 
         additional_plots.append((str(label), plotly_figure(title="", figure=fig)))
     return additional_plots

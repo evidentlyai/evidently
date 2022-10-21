@@ -16,6 +16,7 @@ from evidently.utils.visualizations import get_pr_rec_plot_data
 from evidently.renderers.html_widgets import widget_tabs
 from evidently.renderers.html_widgets import TabData
 from evidently.renderers.html_widgets import header_text
+from evidently.utils.data_operations import process_columns
 
 
 @dataclasses.dataclass
@@ -26,12 +27,17 @@ class ClassificationPRCurveResults:
 
 class ClassificationPRCurve(Metric[ClassificationPRCurveResults]):
     def calculate(self, data: InputData) -> ClassificationPRCurveResults:
-        curr_predictions = get_prediction_data(data.current_data, data.column_mapping)
-        curr_pr_curve = self.calculate_metrics(data.current_data[data.column_mapping.target], curr_predictions)
+        dataset_columns = process_columns(data.current_data, data.column_mapping)
+        target_name = dataset_columns.utility_columns.target
+        prediction_name = dataset_columns.utility_columns.prediction
+        if target_name is None or prediction_name is None:
+            raise ValueError("The columns 'target' and 'prediction' columns should be present")
+        curr_predictions = get_prediction_data(data.current_data, dataset_columns, data.column_mapping.pos_label)
+        curr_pr_curve = self.calculate_metrics(data.current_data[target_name], curr_predictions)
         ref_pr_curve = None
         if data.reference_data is not None:
-            ref_predictions = get_prediction_data(data.reference_data, data.column_mapping)
-            ref_pr_curve = self.calculate_metrics(data.reference_data[data.column_mapping.target], ref_predictions)
+            ref_predictions = get_prediction_data(data.reference_data, dataset_columns, data.column_mapping.pos_label)
+            ref_pr_curve = self.calculate_metrics(data.reference_data[target_name], ref_predictions)
         return ClassificationPRCurveResults(
             current_pr_curve=curr_pr_curve,
             reference_pr_curve=ref_pr_curve,
@@ -46,8 +52,10 @@ class ClassificationPRCurve(Metric[ClassificationPRCurveResults]):
         if len(labels) <= 2:
             binaraized_target = pd.DataFrame(binaraized_target[:, 0])
             binaraized_target.columns = ["target"]
-            pr, rcl, thrs = metrics.precision_recall_curve(binaraized_target, prediction.prediction_probas[labels[0]])
-            pr_curve[labels[0]] = {"pr": pr.tolist(), "rcl": rcl.tolist(), "thrs": thrs.tolist()}
+            pr, rcl, thrs = metrics.precision_recall_curve(binaraized_target, prediction.prediction_probas.iloc[:, 0])
+            pr_curve[prediction.prediction_probas.columns[0]] = {
+                "pr": pr.tolist(), "rcl": rcl.tolist(), "thrs": thrs.tolist()
+            }
         else:
             binaraized_target = pd.DataFrame(binaraized_target)
             binaraized_target.columns = labels

@@ -7,16 +7,18 @@ import numpy as np
 import pandas as pd
 
 from evidently import ColumnMapping
+from evidently.utils.data_operations import DatasetColumns
 from evidently.calculations.classification_performance import PredictionData
 from evidently.calculations.classification_performance import get_prediction_data
 from evidently.calculations.classification_performance import k_probability_threshold
 from evidently.metrics.base_metric import Metric
 from evidently.metrics.base_metric import TResult
+from evidently.utils.data_operations import process_columns
 
 
-def _cleanup_data(data: pd.DataFrame, mapping: ColumnMapping) -> pd.DataFrame:
-    target = mapping.target
-    prediction = mapping.prediction
+def _cleanup_data(data: pd.DataFrame, dataset_columns: DatasetColumns) -> pd.DataFrame:
+    target = dataset_columns.utility_columns.target
+    prediction = dataset_columns.utility_columns.prediction
     subset = []
     if target is not None:
         subset.append(target)
@@ -41,11 +43,11 @@ class ThresholdClassificationMetric(Metric[TResult], ABC):
         data: pd.DataFrame,
         column_mapping: ColumnMapping,
     ) -> Tuple[pd.Series, PredictionData]:
-        data = _cleanup_data(data, column_mapping)
-
-        prediction = get_prediction_data(data, column_mapping)
+        dataset_columns = process_columns(data, column_mapping)
+        data = _cleanup_data(data, dataset_columns)
+        prediction = get_prediction_data(data, dataset_columns, column_mapping.pos_label)
         if self.threshold is None and self.k is None:
-            return data[column_mapping.target], prediction
+            return data[dataset_columns.utility_columns.target], prediction
         if len(prediction.labels) > 2 or prediction.prediction_probas is None:
             raise ValueError("Top K / Threshold parameter can be used only with binary classification with probas")
         pos_label, neg_label = prediction.prediction_probas.columns
@@ -55,7 +57,7 @@ class ThresholdClassificationMetric(Metric[TResult], ABC):
         prediction_labels = prediction.prediction_probas[pos_label].apply(
             lambda x: pos_label if x >= threshold else neg_label
         )
-        return data[column_mapping.target], PredictionData(
+        return data[dataset_columns.utility_columns.target], PredictionData(
             predictions=prediction_labels,
             prediction_probas=prediction.prediction_probas,
             labels=prediction.labels,
