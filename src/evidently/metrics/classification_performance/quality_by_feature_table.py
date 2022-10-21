@@ -33,7 +33,7 @@ class ClassificationQualityByFeatureTableResults:
     # cat_feature_names: List[str]
     columns: List[str]
 
-import logging
+
 class ClassificationQualityByFeatureTable(Metric[ClassificationQualityByFeatureTableResults]):
     columns: Optional[List[str]]
 
@@ -58,7 +58,7 @@ class ClassificationQualityByFeatureTable(Metric[ClassificationQualityByFeatureT
             columns = list(
                 np.intersect1d(self.columns, dataset_columns.num_feature_names + dataset_columns.cat_feature_names)
             )
-        logging.warning(columns)
+
         num_feature_names = list(np.intersect1d(dataset_columns.num_feature_names, columns))
         cat_feature_names = list(np.intersect1d(dataset_columns.cat_feature_names, columns))
         
