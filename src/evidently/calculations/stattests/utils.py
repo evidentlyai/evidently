@@ -43,8 +43,8 @@ def get_binned_data(
     return reference_percents, current_percents
 
 
-def generate2x2_contingency_table(reference_data: pd.Series, current_data: pd.Series) -> np.ndarray:
-    """Generate 2x2 contingency matrix
+def generate_fisher2x2_contingency_table(reference_data: pd.Series, current_data: pd.Series) -> np.ndarray:
+    """Generate 2x2 contingency matrix for fisher exact test
     Args:
         reference_data: reference data
         current_data: current data
@@ -57,12 +57,23 @@ def generate2x2_contingency_table(reference_data: pd.Series, current_data: pd.Se
         raise ValueError(
             "reference_data and current_data are not of equal length, please ensure that they are of equal length"
         )
-    data = np.array(list(zip(reference_data.tolist(), current_data.tolist())))
-    uniq = np.unique(data)
-    uniq = np.append(uniq, ["place_holder" + str(np.random.randint(1000))]) if len(uniq) == 1 else uniq
-    dict_map = {str(i) + str(j): 0 for i, j in list(product(uniq, repeat=2))}
-    for x, y in data:
-        dict_map[str(x) + str(y)] += 1
-    contingency_table = np.array(list(dict_map.values())).reshape(2, 2)
+    unique_categories = set(reference_data.unique().tolist() + current_data.unique().tolist())
+    if len(unique_categories) != 2:
+        print("1 category is missing")
+        unique_categories.add("placeholder")
+
+    unique_categories = list(unique_categories)
+    unique_categories = dict(zip(unique_categories, [0, 1]))
+
+    reference_data = reference_data.map(unique_categories).values
+    current_data = current_data.map(unique_categories).values
+
+    zero_ref = reference_data.size - np.count_nonzero(reference_data)
+    one_ref = np.count_nonzero(reference_data)
+
+    zero_cur = current_data.size - np.count_nonzero(current_data)
+    one_cur = np.count_nonzero(current_data)
+
+    contingency_table = np.array([[one_cur, zero_cur], [one_ref, zero_ref]])
 
     return contingency_table

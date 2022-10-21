@@ -7,7 +7,7 @@ from scipy.stats import fisher_exact
 from evidently.calculations.stattests.registry import StatTest
 from evidently.calculations.stattests.registry import register_stattest
 
-from .utils import generate2x2_contingency_table
+from .utils import generate_fisher2x2_contingency_table
 
 
 def _fisher_exact_stattest(
@@ -40,7 +40,7 @@ def _fisher_exact_stattest(
     if (reference_data.nunique() > 2) or (current_data.nunique() > 2):
         raise ValueError("Expects binary data for both reference and current, but found unique categories > 2")
 
-    contingency_matrix = generate2x2_contingency_table(reference_data, current_data)
+    contingency_matrix = generate_fisher2x2_contingency_table(reference_data, current_data)
     _, p_value = fisher_exact(contingency_matrix)
     return p_value, p_value < threshold
 
