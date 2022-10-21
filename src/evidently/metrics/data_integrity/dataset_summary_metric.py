@@ -19,10 +19,8 @@ from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
-from evidently.renderers.html_widgets import TabData
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import table_data
-from evidently.renderers.html_widgets import widget_tabs
 from evidently.utils.data_operations import process_columns
 
 
@@ -115,47 +113,46 @@ class DatasetSummaryMetricRenderer(MetricRenderer):
         return dataclasses.asdict(obj.get_result())
 
     @staticmethod
-    def _get_table(stats: DatasetSummary) -> BaseWidgetInfo:
-        return table_data(
-            title="",
-            column_names=["Value", "Count"],
-            data=(
-                ("target column", stats.target),
-                ("prediction column", stats.prediction),
-                ("date column", stats.date_column),
-                ("number of columns", stats.number_of_columns),
-                ("number of rows", stats.number_of_rows),
-                ("missing values", stats.number_of_missing_values),
-                ("categorical columns", stats.number_of_categorical_columns),
-                ("numeric columns", stats.number_of_numeric_columns),
-                ("datetime columns", stats.number_of_datetime_columns),
-                ("empty columns", stats.number_of_empty_columns),
-                ("constant columns", stats.number_of_constant_columns),
-                ("almost constant features", stats.number_of_almost_constant_columns),
-                ("duplicated columns", stats.number_of_duplicated_columns),
-                ("almost duplicated features", stats.number_of_almost_duplicated_columns),
-            ),
+    def _get_table(metric_result: DatasetSummaryMetricResult) -> BaseWidgetInfo:
+        column_names = ["Metric", "Current"]
+        rows = (
+            ["target column", metric_result.current.target],
+            ["prediction column", metric_result.current.prediction],
+            ["date column", metric_result.current.date_column],
+            ["number of columns", metric_result.current.number_of_columns],
+            ["number of rows", metric_result.current.number_of_rows],
+            ["missing values", metric_result.current.number_of_missing_values],
+            ["categorical columns", metric_result.current.number_of_categorical_columns],
+            ["numeric columns", metric_result.current.number_of_numeric_columns],
+            ["datetime columns", metric_result.current.number_of_datetime_columns],
+            ["empty columns", metric_result.current.number_of_empty_columns],
+            ["constant columns", metric_result.current.number_of_constant_columns],
+            ["almost constant features", metric_result.current.number_of_almost_constant_columns],
+            ["duplicated columns", metric_result.current.number_of_duplicated_columns],
+            ["almost duplicated features", metric_result.current.number_of_almost_duplicated_columns],
         )
+        if metric_result.reference is not None:
+            column_names.append("Reference")
+            rows[0].append(metric_result.reference.target)
+            rows[1].append(metric_result.reference.prediction)
+            rows[2].append(metric_result.reference.date_column)
+            rows[3].append(metric_result.reference.number_of_columns)
+            rows[4].append(metric_result.reference.number_of_rows)
+            rows[5].append(metric_result.reference.number_of_missing_values)
+            rows[6].append(metric_result.reference.number_of_categorical_columns)
+            rows[7].append(metric_result.reference.number_of_numeric_columns)
+            rows[8].append(metric_result.reference.number_of_datetime_columns)
+            rows[9].append(metric_result.reference.number_of_empty_columns)
+            rows[10].append(metric_result.reference.number_of_constant_columns)
+            rows[11].append(metric_result.reference.number_of_almost_constant_columns)
+            rows[12].append(metric_result.reference.number_of_duplicated_columns)
+            rows[13].append(metric_result.reference.number_of_almost_duplicated_columns)
+
+        return table_data(title="", column_names=column_names, data=rows)
 
     def render_html(self, obj: DatasetSummaryMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
-        current_table = self._get_table(metric_result.current)
-
-        if metric_result.reference is not None:
-            tables = widget_tabs(
-                tabs=[
-                    TabData(title="Current dataset", widget=current_table),
-                    TabData(
-                        title="Reference dataset",
-                        widget=self._get_table(metric_result.reference),
-                    ),
-                ]
-            )
-
-        else:
-            tables = current_table
-
         return [
             header_text(label="Dataset Summary"),
-            tables,
+            self._get_table(metric_result),
         ]
