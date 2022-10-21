@@ -104,6 +104,8 @@ class ColumnCorrelationsMetricRenderer(MetricRenderer):
                         current_distribution=current_correlation.values,
                         reference_distribution=reference_correlation_values,
                         color_options=self.color_options,
+                        xaxis_title="Columns",
+                        yaxis_title="Correlation",
                     ),
                 )
             )

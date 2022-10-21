@@ -577,6 +577,8 @@ def histogram(
     color_options: Optional[ColorOptions] = None,
     orientation: str = "v",
     size: WidgetSize = WidgetSize.FULL,
+    xaxis_title: Optional[str] = None,
+    yaxis_title: Optional[str] = None,
 ) -> BaseWidgetInfo:
     """
     generate widget with one or two histogram
@@ -588,6 +590,8 @@ def histogram(
         orientation: bars orientation in histograms
         color_options: color options to use for widgets
         size: widget size
+        xaxis_title: title for x-axis
+        yaxis_title: title for y-axis
     Example:
         >>> ref_hist = HistogramData("Histogram 1", x=["a", "b", "c"], y=[1, 2, 3])
         >>> curr_hist = HistogramData("Histogram 2", x=["a", "b", "c"], y=[3, 2 ,1])
@@ -600,6 +604,16 @@ def histogram(
         color_options=color_options,
         orientation=orientation,
     )
+    if xaxis_title is not None:
+        figure.update_layout(
+            xaxis_title=xaxis_title,
+        )
+
+    if yaxis_title is not None:
+        figure.update_layout(
+            yaxis_title=yaxis_title,
+        )
+
     return plotly_figure(title=title, figure=figure, size=size)
 
 
@@ -608,6 +622,8 @@ def get_histogram_for_distribution(
     current_distribution: Distribution,
     reference_distribution: Optional[Distribution] = None,
     title: str = "",
+    xaxis_title: Optional[str] = None,
+    yaxis_title: Optional[str] = None,
     color_options: Optional[ColorOptions] = None,
 ):
     current_histogram = HistogramData(
@@ -627,7 +643,12 @@ def get_histogram_for_distribution(
         reference_histogram = None
 
     return histogram(
-        title=title, primary_hist=current_histogram, secondary_hist=reference_histogram, color_options=color_options
+        title=title,
+        primary_hist=current_histogram,
+        secondary_hist=reference_histogram,
+        xaxis_title=xaxis_title,
+        yaxis_title=yaxis_title,
+        color_options=color_options,
     )
 
 

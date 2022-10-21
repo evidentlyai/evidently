@@ -104,6 +104,8 @@ class ColumnDistributionMetricRenderer(MetricRenderer):
                 primary_hist=current_histogram,
                 secondary_hist=reference_histogram,
                 color_options=ColorOptions(),
+                xaxis_title=metric_result.column_name,
+                yaxis_title="Count",
             ),
         ]
         return result
