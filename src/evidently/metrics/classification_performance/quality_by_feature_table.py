@@ -44,8 +44,10 @@ class ClassificationQualityByFeatureTable(Metric[ClassificationQualityByFeatureT
         dataset_columns = process_columns(data.current_data, data.column_mapping)
         target_name = dataset_columns.utility_columns.target
         prediction_name = dataset_columns.utility_columns.prediction
-        curr_df = data.current_data
-        ref_df = data.reference_data
+        curr_df = data.current_data.copy()
+        ref_df = None
+        if data.reference_data is not None:
+            ref_df = data.reference_data.copy()
         if target_name is None or prediction_name is None:
             raise ValueError("The columns 'target' and 'prediction' columns should be present")
         curr_predictions = get_prediction_data(data.current_data, dataset_columns, data.column_mapping.pos_label)
