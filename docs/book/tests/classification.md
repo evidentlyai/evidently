@@ -5,9 +5,9 @@ You can use one of the classification test presets to evaluate the quality of a 
 There are several presets for different classification tasks: 
 
 ```python
-MulticlassClassification
-BinaryClassificationTopK
-BinaryClassification
+MulticlassClassificationTestPreset
+BinaryClassificationTopKTestPreset
+BinaryClassificationTestPreset
 ```
 
 ## Multiclass Classification
@@ -18,7 +18,7 @@ You can set prediction type as `probas` or `labels`.
 
 ```python
 classification_performance = TestSuite(tests=[
-   MulticlassClassification(prediction_type='labels')
+   MulticlassClassificationTestPreset(prediction_type='labels')
 ])
 
 classification_performance.run(reference_data=iris_ref, current_data=iris_cur)
@@ -39,13 +39,13 @@ TestFeatureValueDrift(column=target)
 
 If prediction type is `probas`, also: `TestLogLoss()`, `TestRocAuc()`.
 
-## BinaryClassificationTopK
+## Binary Classification Top K
 
 ### Code example
 
 ```python
 binary_topK_classification_performance = TestSuite(tests=[
-    BinaryClassificationTopK(k=10),
+    BinaryClassificationTopKTestPreset(k=10),
 ])
 
 binary_topK_classification_performance.run(reference_data=bcancer_ref, current_data=bcancer_cur)
@@ -66,7 +66,7 @@ TestRocAuc(),
 TestLogLoss(),     
 ```
 
-## BinaryClassification
+## Binary Classification
 
 You can set prediction type as `probas` or `labels`.
 
@@ -74,7 +74,7 @@ You can set prediction type as `probas` or `labels`.
 
 ```python
 binary_classification_performance = TestSuite(tests=[
-    BinaryClassification(prediction_type='probas'),
+    BinaryClassificationTestPreset(prediction_type='probas'),
 ])
 
 binary_classification_performance.run(reference_data=bcancer_ref, current_data=bcancer_cur)

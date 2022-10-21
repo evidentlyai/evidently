@@ -122,10 +122,12 @@ def test_dataset_drift_metric_value_error() -> None:
 
     with pytest.raises(ValueError):
         report.run(current_data=test_data, reference_data=None, column_mapping=data_mapping)
+        report.json()
 
     with pytest.raises(ValueError):
         # noinspection PyTypeChecker
         report.run(current_data=None, reference_data=test_data, column_mapping=data_mapping)
+        report.json()
 
 
 def test_dataset_drift_metric_with_options() -> None:

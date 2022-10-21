@@ -50,6 +50,15 @@ def test_data_quality_monitor_regression() -> None:
     assert "data_quality:quality_stat" in result
     assert result["data_quality:quality_stat"] == [
         {
+            "labels": {
+                "dataset": "reference",
+                "feature": "my_target",
+                "feature_type": "num",
+                "metric": "number_of_rows",
+            },
+            "value": 4,
+        },
+        {
             "labels": {"dataset": "reference", "feature": "my_target", "feature_type": "num", "metric": "count"},
             "value": 4,
         },
@@ -162,6 +171,15 @@ def test_data_quality_monitor_regression() -> None:
         {
             "labels": {"dataset": "reference", "feature": "my_target", "feature_type": "num", "metric": "std"},
             "value": 1.41,
+        },
+        {
+            "labels": {
+                "dataset": "reference",
+                "feature": "my_prediction",
+                "feature_type": "num",
+                "metric": "number_of_rows",
+            },
+            "value": 4,
         },
         {
             "labels": {"dataset": "reference", "feature": "my_prediction", "feature_type": "num", "metric": "count"},
@@ -287,6 +305,15 @@ def test_data_quality_monitor_regression() -> None:
                 "dataset": "reference",
                 "feature": "datetime_feature",
                 "feature_type": "datetime",
+                "metric": "number_of_rows",
+            },
+            "value": 4,
+        },
+        {
+            "labels": {
+                "dataset": "reference",
+                "feature": "datetime_feature",
+                "feature_type": "datetime",
                 "metric": "count",
             },
             "value": 4,
@@ -368,6 +395,15 @@ def test_data_quality_monitor_regression() -> None:
                 "dataset": "reference",
                 "feature": "categorical_feature",
                 "feature_type": "cat",
+                "metric": "number_of_rows",
+            },
+            "value": 4,
+        },
+        {
+            "labels": {
+                "dataset": "reference",
+                "feature": "categorical_feature",
+                "feature_type": "cat",
                 "metric": "count",
             },
             "value": 4,
@@ -425,6 +461,15 @@ def test_data_quality_monitor_regression() -> None:
                 "metric": "most_common_value_percentage",
             },
             "value": 50.0,
+        },
+        {
+            "labels": {
+                "dataset": "reference",
+                "feature": "numerical_feature",
+                "feature_type": "num",
+                "metric": "number_of_rows",
+            },
+            "value": 4,
         },
         {
             "labels": {
@@ -551,6 +596,15 @@ def test_data_quality_monitor_regression() -> None:
             "value": 2.36,
         },
         {
+            "labels": {
+                "dataset": "current",
+                "feature": "my_target",
+                "feature_type": "num",
+                "metric": "number_of_rows",
+            },
+            "value": 1,
+        },
+        {
             "labels": {"dataset": "current", "feature": "my_target", "feature_type": "num", "metric": "count"},
             "value": 1,
         },
@@ -632,6 +686,15 @@ def test_data_quality_monitor_regression() -> None:
         {
             "labels": {"dataset": "current", "feature": "my_target", "feature_type": "num", "metric": "std"},
             "value": None,
+        },
+        {
+            "labels": {
+                "dataset": "current",
+                "feature": "my_prediction",
+                "feature_type": "num",
+                "metric": "number_of_rows",
+            },
+            "value": 1,
         },
         {
             "labels": {"dataset": "current", "feature": "my_prediction", "feature_type": "num", "metric": "count"},
@@ -757,6 +820,15 @@ def test_data_quality_monitor_regression() -> None:
                 "dataset": "current",
                 "feature": "datetime_feature",
                 "feature_type": "datetime",
+                "metric": "number_of_rows",
+            },
+            "value": 1,
+        },
+        {
+            "labels": {
+                "dataset": "current",
+                "feature": "datetime_feature",
+                "feature_type": "datetime",
                 "metric": "count",
             },
             "value": 1,
@@ -838,6 +910,15 @@ def test_data_quality_monitor_regression() -> None:
                 "dataset": "current",
                 "feature": "categorical_feature",
                 "feature_type": "cat",
+                "metric": "number_of_rows",
+            },
+            "value": 1,
+        },
+        {
+            "labels": {
+                "dataset": "current",
+                "feature": "categorical_feature",
+                "feature_type": "cat",
                 "metric": "count",
             },
             "value": 1,
@@ -913,6 +994,15 @@ def test_data_quality_monitor_regression() -> None:
                 "metric": "unused_in_current_values_count",
             },
             "value": 2,
+        },
+        {
+            "labels": {
+                "dataset": "current",
+                "feature": "numerical_feature",
+                "feature_type": "num",
+                "metric": "number_of_rows",
+            },
+            "value": 1,
         },
         {
             "labels": {"dataset": "current", "feature": "numerical_feature", "feature_type": "num", "metric": "count"},
