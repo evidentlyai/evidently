@@ -4,6 +4,7 @@ from typing import Optional
 from typing import Tuple
 from typing import Union
 
+import dataclasses
 import numpy as np
 import pandas as pd
 from plotly import graph_objs as go
@@ -42,7 +43,11 @@ def plot_distr(hist_curr, hist_ref=None, orientation="v", color_options: Optiona
         cats = cats + ["other"]
         fig.update_xaxes(categoryorder="array", categoryarray=cats)
 
-    return fig
+
+@dataclasses.dataclass
+class Distribution:
+    x: Union[np.array, list]
+    y: Union[np.array, list]
 
 
 def plot_distr_with_log_button(
@@ -340,7 +345,7 @@ def plot_num_num_rel(curr: Dict[str, list], ref: Optional[Dict[str, list]], targ
     return fig
 
 
-def make_hist_for_num_plot(curr: pd.Series, ref: pd.Series = None):
+def make_hist_for_num_plot(curr: pd.Series, ref: pd.Series = None) -> Dict[str, pd.DataFrame]:
     result = {}
     if ref is not None:
         ref = ref.dropna()
@@ -353,7 +358,9 @@ def make_hist_for_num_plot(curr: pd.Series, ref: pd.Series = None):
     return result
 
 
-def make_hist_for_cat_plot(curr: pd.Series, ref: pd.Series = None, normalize: bool = False, dropna=False):
+def make_hist_for_cat_plot(
+    curr: pd.Series, ref: pd.Series = None, normalize: bool = False, dropna=False
+) -> Dict[str, pd.Series]:
     result = {}
     hist_df = curr.astype(str).value_counts(normalize=normalize, dropna=dropna).reset_index()
     hist_df.columns = ["x", "count"]
@@ -365,17 +372,53 @@ def make_hist_for_cat_plot(curr: pd.Series, ref: pd.Series = None, normalize: bo
     return result
 
 
+def get_distribution_for_category_column(column: pd.Series, normalize: bool = False) -> Distribution:
+    value_counts = column.value_counts(normalize=normalize, dropna=False)
+    return Distribution(
+        x=value_counts.index.values,
+        y=value_counts.values,
+    )
+
+
+def get_distribution_for_numerical_column(
+    column: pd.Series,
+    bins: Optional[Union[list, np.array]] = None,
+) -> Distribution:
+    if bins is None:
+        bins = np.histogram_bin_edges(column, bins="doane")
+
+    histogram = np.histogram(column, bins=bins)
+    return Distribution(
+        x=histogram[1],
+        y=histogram[0],
+    )
+
+
 def get_distribution_for_column(
-    *, column_name: str, column_type: str, current: pd.Series, reference: pd.DataFrame
-) -> Dict[str, pd.DataFrame]:
+    *, column_type: str, current: pd.Series, reference: Optional[pd.Series] = None
+) -> Tuple[Distribution, Optional[Distribution]]:
+    reference_distribution: Optional[Distribution] = None
+
     if column_type == "cat":
-        return make_hist_for_cat_plot(current, reference)
+        current_distribution = get_distribution_for_category_column(current)
+
+        if reference is not None:
+            reference_distribution = get_distribution_for_category_column(reference)
 
     elif column_type == "num":
-        return make_hist_for_num_plot(current, reference)
+        if reference is not None:
+            bins = np.histogram_bin_edges(pd.concat([current.dropna(), reference.dropna()]), bins="doane")
+            reference_distribution = get_distribution_for_numerical_column(reference, bins)
+
+        else:
+            bins = np.histogram_bin_edges(current.dropna(), bins="doane")
+
+        current_distribution = get_distribution_for_numerical_column(current, bins)
 
     else:
-        raise ValueError(f"Cannot get distribution for column {column_name} with type {column_type}")
+        raise ValueError(f"Cannot get distribution for a column with type {column_type}")
+
+    return current_distribution, reference_distribution
 
 
 def make_hist_df(hist: Tuple[np.array, np.array]) -> pd.DataFrame:

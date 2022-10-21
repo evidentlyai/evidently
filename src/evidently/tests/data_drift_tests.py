@@ -18,7 +18,7 @@ from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.renderers.html_widgets import table_data
-from evidently.renderers.render_utils import plot_distr
+from evidently.renderers.render_utils import get_distribution_plot_figure
 from evidently.tests.base_test import BaseCheckValueTest
 from evidently.tests.base_test import GroupData
 from evidently.tests.base_test import GroupingTypes
@@ -272,10 +272,9 @@ class TestFeatureValueDriftRenderer(TestRenderer):
 
     def render_html(self, obj: TestFeatureValueDrift) -> TestHtmlInfo:
         result = obj.metric.get_result()
-        feature_name = obj.column_name
+        column_name = obj.column_name
         info = super().render_html(obj)
-        curr_distr = result.drift_by_columns[feature_name].current_distribution
-        ref_distr = result.drift_by_columns[feature_name].reference_distribution
-        fig = plot_distr(curr_distr, ref_distr)
-        info.with_details(f"{feature_name}", plotly_figure(title="", figure=fig))
+        column_info = result.drift_by_columns[column_name]
+        fig = get_distribution_plot_figure(column_info.current_distribution, column_info.reference_distribution)
+        info.with_details(f"{column_name}", plotly_figure(title="", figure=fig))
         return info

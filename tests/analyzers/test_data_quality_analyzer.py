@@ -8,7 +8,6 @@ from evidently import ColumnMapping
 from evidently.analyzers.data_quality_analyzer import DataQualityAnalyzer
 from evidently.calculations import data_quality
 from evidently.calculations.data_quality import FeatureQualityStats
-from evidently.calculations.data_quality import calculate_data_quality_stats
 from evidently.utils.data_operations import process_columns
 
 
@@ -789,10 +788,7 @@ def test_select_features_for_corr() -> None:
         task="regression",
     )
     columns = process_columns(reference_data, column_mapping)
-    reference_features_stats = calculate_data_quality_stats(reference_data, columns, "regression")
-    num_for_corr, cat_for_corr = data_quality._select_features_for_corr(
-        reference_features_stats, target_name="my_target"
-    )
+    num_for_corr, cat_for_corr = data_quality._select_features_for_corr(reference_data, columns)
     assert num_for_corr == ["numerical_feature_1", "numerical_feature_2", "my_target"]
     assert cat_for_corr == ["categorical_feature_1", "categorical_feature_2"]
 
@@ -822,7 +818,7 @@ def test_cramer_v() -> None:
     ],
 )
 def test_corr_matrix(df: pd.DataFrame, expected: np.array) -> None:
-    corr_matrix = data_quality._corr_matrix(df, data_quality._cramer_v)
+    corr_matrix = data_quality.get_pairwise_correlation(df, data_quality._cramer_v)
     assert np.allclose(corr_matrix.values, expected)
 
 
@@ -919,10 +915,7 @@ def test_calculate_correlations(kind: str, expected_corr_df: np.array) -> None:
         task="regression",
     )
     columns = process_columns(df, column_mapping)
-    reference_features_stats = calculate_data_quality_stats(df, columns, column_mapping.task)
-    num_for_corr, cat_for_corr = data_quality._select_features_for_corr(
-        reference_features_stats, target_name=column_mapping.target
-    )
+    num_for_corr, cat_for_corr = data_quality._select_features_for_corr(df, columns)
     corr_df = data_quality._calculate_correlations(df, num_for_corr, cat_for_corr, kind)
     assert num_for_corr == ["num_feature_1", "num_feature_2", "num_feature_3", "num_feature_4", "target"]
     assert cat_for_corr == ["cat_feature_1", "cat_feature_2", "cat_feature_3", "cat_feature_4"]

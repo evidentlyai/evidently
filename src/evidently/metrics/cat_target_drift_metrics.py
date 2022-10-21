@@ -5,6 +5,7 @@ from typing import Optional
 from typing import Sequence
 
 import dataclasses
+import pandas as pd
 from dataclasses import dataclass
 
 from evidently.calculations.data_drift import ColumnDataDriftMetrics
@@ -34,8 +35,8 @@ class CatTargetDriftAnalyzerResults:
     columns: DatasetColumns
     target_metrics: Optional[ColumnDataDriftMetrics] = None
     prediction_metrics: Optional[ColumnDataDriftMetrics] = None
-    target_histogram_data = None
-    prediction_histogram_data = None
+    target_histogram_data: pd.Series = None
+    prediction_histogram_data: pd.Series = None
     reference_data_count: int = 0
     current_data_count: int = 0
 

@@ -18,11 +18,13 @@ from .data_integrity.column_summary_metric import ColumnSummaryMetric
 from .data_integrity.dataset_missing_values_metric import DatasetMissingValuesMetric
 from .data_integrity.dataset_summary_metric import DatasetSummaryMetric
 from .data_integrity_metrics import DataIntegrityMetrics
-from .data_quality_metrics import DataQualityCorrelationMetrics
+from .data_quality.column_correlations_metric import ColumnCorrelationsMetric
+from .data_quality.column_distribution_metric import ColumnDistributionMetric
+from .data_quality.column_quantile_metric import ColumnQuantileMetric
+from .data_quality.column_value_list_metric import ColumnValueListMetric
+from .data_quality.column_value_range_metric import ColumnValueRangeMetric
+from .data_quality.dataset_correlations_metric import DatasetCorrelationsMetric
 from .data_quality_metrics import DataQualityMetrics
 from .data_quality_metrics import DataQualityStabilityMetrics
-from .data_quality_metrics import DataQualityValueListMetrics
-from .data_quality_metrics import DataQualityValueQuantileMetrics
-from .data_quality_metrics import DataQualityValueRangeMetrics
 from .num_target_drift_metrics import NumTargetDriftMetrics
 from .regression_performance_metrics import RegressionPerformanceMetrics

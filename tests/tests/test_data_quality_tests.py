@@ -233,7 +233,7 @@ def test_data_quality_test_target_prediction_correlation() -> None:
             "prediction": [0, 0, 1, 1],
         }
     )
-    suite = TestSuite(tests=[TestTargetPredictionCorrelation(gt=0.5)])
+    suite = TestSuite(tests=[TestTargetPredictionCorrelation(gt=0.5, method="cramer_v")])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
     assert suite.show()
@@ -763,16 +763,18 @@ def test_data_quality_test_target_features_correlation() -> None:
             "target": [0, 0, 0, 1],
         }
     )
+    column_mapping = ColumnMapping(task="regression")
+
     suite = TestSuite(tests=[TestTargetFeaturesCorrelations()])
-    suite.run(current_data=test_dataset, reference_data=test_dataset)
+    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=column_mapping)
     assert suite
 
     suite = TestSuite(tests=[TestTargetFeaturesCorrelations(gt=1)])
-    suite.run(current_data=test_dataset, reference_data=None)
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
     assert not suite
 
     suite = TestSuite(tests=[TestTargetFeaturesCorrelations(lt=1)])
-    suite.run(current_data=test_dataset, reference_data=None)
+    suite.run(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
     assert suite
     assert suite.show()
     assert suite.json()
@@ -806,8 +808,9 @@ def test_data_quality_test_target_features_correlation_json_render() -> None:
             "prediction": [0, 0, 0, 1],
         }
     )
+    column_mapping = ColumnMapping(task="regression")
     suite = TestSuite(tests=[TestTargetFeaturesCorrelations()])
-    suite.run(current_data=test_dataset, reference_data=test_dataset)
+    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=column_mapping)
     assert suite
 
     result_from_json = json.loads(suite.json())

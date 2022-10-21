@@ -1,17 +1,20 @@
 """Methods for overall dataset quality calculations - rows count, a specific values count, etc."""
+
 from typing import Callable
 from typing import Dict
+from typing import List
 from typing import Optional
 from typing import Tuple
 from typing import Union
 
+import dataclasses
 import numpy as np
 import pandas as pd
-from dataclasses import dataclass
-from dataclasses import fields
 from scipy.stats import chi2_contingency
 
 from evidently.utils.data_operations import DatasetColumns
+from evidently.utils.types import ColumnDistribution
+from evidently.utils.visualizations import Distribution
 from evidently.utils.visualizations import make_hist_for_cat_plot
 from evidently.utils.visualizations import make_hist_for_num_plot
 
@@ -23,7 +26,7 @@ def get_rows_count(data: Union[pd.DataFrame, pd.Series]) -> int:
     return data.shape[0]
 
 
-@dataclass
+@dataclasses.dataclass
 class FeatureQualityStats:
     """Class for all features data quality metrics store.
 
@@ -99,10 +102,10 @@ class FeatureQualityStats:
         return self.feature_type == "cat"
 
     def as_dict(self):
-        return {field.name: getattr(self, field.name) for field in fields(FeatureQualityStats)}
+        return {field.name: getattr(self, field.name) for field in dataclasses.fields(FeatureQualityStats)}
 
     def __eq__(self, other):
-        for field in fields(FeatureQualityStats):
+        for field in dataclasses.fields(FeatureQualityStats):
             other_field_value = getattr(other, field.name)
             self_field_value = getattr(self, field.name)
 
@@ -115,7 +118,7 @@ class FeatureQualityStats:
         return True
 
 
-@dataclass
+@dataclasses.dataclass
 class DataQualityStats:
     rows_count: int
     num_features_stats: Optional[Dict[str, FeatureQualityStats]] = None
@@ -210,7 +213,6 @@ def calculate_data_quality_stats(
     dataset: pd.DataFrame, columns: DatasetColumns, task: Optional[str]
 ) -> DataQualityStats:
     result = DataQualityStats(rows_count=get_rows_count(dataset))
-    # result = DataQualityStats()
 
     result.num_features_stats = {
         feature_name: get_features_stats(dataset[feature_name], feature_type="num")
@@ -257,7 +259,7 @@ def calculate_data_quality_stats(
     return result
 
 
-@dataclass
+@dataclasses.dataclass
 class DataQualityPlot:
     bins_for_hist: Dict[str, pd.DataFrame]
 
@@ -572,40 +574,53 @@ class DataQualityGetPlotData:
         return df[df["num"] > 0]
 
 
-def _select_features_for_corr(reference_features_stats: DataQualityStats, target_name: Optional[str]) -> tuple:
+def _select_features_for_corr(dataset: pd.DataFrame, columns: DatasetColumns) -> tuple:
     """Define which features should be used for calculating correlation matrices:
         - for pearson, spearman, and kendall correlation matrices we select numerical features which have > 1
             unique values;
         - for kramer_v correlation matrix, we select categorical features which have > 1 unique values.
     Args:
-        reference_features_stats: all features data quality metrics.
-        target_name: name of target column.
+        columns: all columns data information.
     Returns:
         num_for_corr: list of feature names for pearson, spearman, and kendall correlation matrices.
         cat_for_corr: list of feature names for kramer_v correlation matrix.
     """
+    target_name = columns.utility_columns.target
+    prediction_name = columns.utility_columns.prediction
     num_for_corr = []
-    if reference_features_stats.num_features_stats is not None:
-        for feature in reference_features_stats.num_features_stats:
-            unique_count = reference_features_stats[feature].unique_count
-            if unique_count and unique_count > 1:
-                num_for_corr.append(feature)
+    for feature in columns.num_feature_names:
+        unique_count = dataset[feature].nunique()
+
+        if unique_count and unique_count > 1:
+            num_for_corr.append(feature)
+
     cat_for_corr = []
-    if reference_features_stats.cat_features_stats is not None:
-        for feature in reference_features_stats.cat_features_stats:
-            unique_count = reference_features_stats[feature].unique_count
-            if unique_count and unique_count > 1:
-                cat_for_corr.append(feature)
 
-    if target_name is not None and reference_features_stats.target_stats is not None:
-        target_type = reference_features_stats.target_stats[target_name].feature_type
-        unique_count = reference_features_stats.target_stats[target_name].unique_count
+    for feature in columns.cat_feature_names:
+        unique_count = dataset[feature].nunique()
 
-        if target_type == "num" and unique_count and unique_count > 1:
-            num_for_corr.append(target_name)
+        if unique_count and unique_count > 1:
+            cat_for_corr.append(feature)
 
-        elif target_type == "cat" and unique_count and unique_count > 1:
-            cat_for_corr.append(target_name)
+    if target_name is not None:
+        unique_count = dataset[target_name].nunique()
+
+        if unique_count > 1:
+            if columns.task == "classification":
+                cat_for_corr.append(target_name)
+
+            else:
+                num_for_corr.append(target_name)
+
+    if isinstance(prediction_name, str):
+        unique_count = dataset[prediction_name].nunique()
+
+        if unique_count > 1:
+            if columns.task == "classification":
+                cat_for_corr.append(prediction_name)
+
+            else:
+                num_for_corr.append(prediction_name)
 
     return num_for_corr, cat_for_corr
 
@@ -630,7 +645,7 @@ def _cramer_v(x: pd.Series, y: pd.Series) -> float:
     return value
 
 
-def _corr_matrix(df, func: Callable[[pd.Series, pd.Series], float]) -> pd.DataFrame:
+def get_pairwise_correlation(df, func: Callable[[pd.Series, pd.Series], float]) -> pd.DataFrame:
     """Compute pairwise correlation of columns
     Args:
         df: initial data frame.
@@ -676,14 +691,90 @@ def _calculate_correlations(df: pd.DataFrame, num_for_corr, cat_for_corr, kind):
     elif kind == "kendall":
         return df[num_for_corr].corr("kendall")
     elif kind == "cramer_v":
-        return _corr_matrix(df[cat_for_corr], _cramer_v)
+        return get_pairwise_correlation(df[cat_for_corr], _cramer_v)
 
 
-def calculate_correlations(dataset: pd.DataFrame, reference_features_stats: DataQualityStats, target_name) -> Dict:
-    num_for_corr, cat_for_corr = _select_features_for_corr(reference_features_stats, target_name)
+def calculate_correlations(dataset: pd.DataFrame, columns: DatasetColumns) -> Dict:
+    num_for_corr, cat_for_corr = _select_features_for_corr(dataset, columns)
     correlations = {}
 
     for kind in ["pearson", "spearman", "kendall", "cramer_v"]:
         correlations[kind] = _calculate_correlations(dataset, num_for_corr, cat_for_corr, kind)
 
     return correlations
+
+
+@dataclasses.dataclass
+class ColumnCorrelations:
+    column_name: str
+    kind: str
+    values: Distribution
+
+
+def calculate_cramer_v_correlation(column_name: str, dataset: pd.DataFrame, columns: List[str]) -> ColumnCorrelations:
+    result_x = []
+    result_y = []
+
+    if not dataset[column_name].empty:
+        for correlation_columns_name in columns:
+            result_x.append(correlation_columns_name)
+            result_y.append(_cramer_v(dataset[column_name], dataset[correlation_columns_name]))
+
+    return ColumnCorrelations(column_name=column_name, kind="cramer_v", values=Distribution(x=result_x, y=result_y))
+
+
+def calculate_category_column_correlations(
+    column_name: str, dataset: pd.DataFrame, columns: List[str]
+) -> Dict[str, ColumnCorrelations]:
+    """For category columns calculate cramer_v correlation"""
+    if dataset[column_name].empty:
+        return {}
+
+    correlation = calculate_cramer_v_correlation(column_name, dataset, columns)
+    return {correlation.kind: correlation}
+
+
+def calculate_numerical_column_correlations(
+    column_name: str, dataset: pd.DataFrame, columns: List[str]
+) -> Dict[str, ColumnCorrelations]:
+
+    if dataset[column_name].empty or not columns:
+        return {}
+
+    result: Dict[str, ColumnCorrelations] = {}
+    column = dataset[column_name]
+
+    for kind in ["pearson", "spearman", "kendall"]:
+        correlations_columns = []
+        correlations_values = []
+
+        for other_column_name in columns:
+            correlations_columns.append(other_column_name)
+            correlations_values.append(column.corr(dataset[other_column_name], method=kind))
+
+        result[kind] = ColumnCorrelations(
+            column_name=column_name,
+            kind=kind,
+            values=Distribution(x=correlations_columns, y=correlations_values),
+        )
+
+    return result
+
+
+def calculate_column_distribution(column: pd.Series, column_type: str) -> ColumnDistribution:
+    if column.empty:
+        distribution: ColumnDistribution = {}
+
+    elif column_type == "num":
+        # TODO: implement distribution for num column
+        value_counts = column.value_counts(dropna=True)
+        distribution = dict(value_counts)
+
+    elif column_type == "cat":
+        value_counts = column.value_counts(dropna=True)
+        distribution = dict(value_counts)
+
+    else:
+        raise ValueError(f"Cannot calculate distribution for column type {column_type}")
+
+    return distribution
