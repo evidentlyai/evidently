@@ -19,10 +19,8 @@ from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
-from evidently.renderers.html_widgets import TabData
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import table_data
-from evidently.renderers.html_widgets import widget_tabs
 from evidently.utils.data_operations import process_columns
 
 
