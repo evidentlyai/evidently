@@ -1,6 +1,6 @@
 ## When to use it?
 
-You can use the Data Drift test preset when you receive a new batch of input data or generate a new set of predictions.
+You can use the `DataDriftTestPreset` when you receive a new batch of input data or generate a new set of predictions.
 
 It will help detect data and concept drift. It compares the feature and predictions distributions using statistical tests and distance metrics. By default, it uses the in-built Evidently [drift detection logic](../reference/data-drift-algorithm.md) that selects the detection method based on data volume and type.
 
@@ -8,7 +8,7 @@ It will help detect data and concept drift. It compares the feature and predicti
 
 ```python
 data_drift = TestSuite(tests=[
-   DataDrift(),
+   DataDriftTestPreset(),
 ])
  
 data_drift.run(reference_data=ref, current_data=curr)
