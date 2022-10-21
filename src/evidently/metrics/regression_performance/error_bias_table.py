@@ -1,6 +1,5 @@
 import copy
 import json
-from typing import Dict
 from typing import List
 from typing import Optional
 
@@ -13,18 +12,14 @@ from plotly.subplots import make_subplots
 
 from evidently.calculations.regression_performance import _error_bias_table
 from evidently.calculations.regression_performance import _error_with_qantiles
-from evidently.calculations.regression_performance import calculate_regression_performance
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
-from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import header_text
-from evidently.renderers.html_widgets import rich_table_data
 from evidently.utils.data_operations import process_columns
-from evidently.utils.visualizations import plot_error_bias_colored_scatter
 
 
 @dataclasses.dataclass

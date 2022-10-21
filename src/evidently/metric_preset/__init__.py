@@ -5,3 +5,4 @@ from .data_quality import DataQuality
 from .data_quality import DataQualityPreset
 from .num_target_drift import NumTargetDrift
 from .regression_performance import RegressionPerformance
+from .regression_performance import RegressionPreset
