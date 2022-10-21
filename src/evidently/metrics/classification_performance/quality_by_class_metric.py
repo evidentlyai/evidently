@@ -1,13 +1,14 @@
 from typing import List
 from typing import Optional
-
 from typing import Union
 
 import dataclasses
-import pandas as pd
 import numpy as np
+import pandas as pd
 import plotly.figure_factory as ff
 import sklearn
+from plotly import graph_objs as go
+from plotly.subplots import make_subplots
 
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.classification_performance.base_classification_metric import ThresholdClassificationMetric
@@ -15,12 +16,10 @@ from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import WidgetSize
+from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.data_operations import process_columns
-from plotly import graph_objs as go
-from plotly.subplots import make_subplots
-from evidently.renderers.html_widgets import header_text
 
 
 @dataclasses.dataclass
@@ -29,6 +28,7 @@ class ClassificationQualityByClassResult:
     current_metrics: dict
     current_roc_aucs: Optional[list]
     reference_metrics: Optional[dict]
+    reference_roc_aucs: Optional[dict]
 
 
 class ClassificationQualityByClass(ThresholdClassificationMetric[ClassificationQualityByClassResult]):
@@ -91,25 +91,6 @@ class ClassificationQualityByClass(ThresholdClassificationMetric[ClassificationQ
 class ClassificationQualityByClassRenderer(MetricRenderer):
     def render_html(self, obj: ClassificationQualityByClass) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
-        result = [
-            _plot_metrics(
-                metric_result.columns,
-                metric_result.current_metrics,
-                "Current: Quality Metrics by Class",
-                WidgetSize.FULL if metric_result.reference_metrics is None else WidgetSize.HALF,
-            )
-        ]
-        if metric_result.reference_metrics is not None:
-            result.append(
-                _plot_metrics(
-                    metric_result.columns,
-                    metric_result.current_metrics,
-                    "Reference: Quality Metrics by Class",
-                    WidgetSize.HALF,
-                )
-            )
-        return result
-
         columns = metric_result.columns
         current_metrics = metric_result.current_metrics
         current_roc_aucs = metric_result.current_roc_aucs
@@ -120,7 +101,7 @@ class ClassificationQualityByClassRenderer(MetricRenderer):
         z = metrics_frame.iloc[:-1, :-3].values
         x = columns.target_names if columns.target_names else metrics_frame.columns.tolist()[:-3]
         y = ["precision", "recall", "f1-score"]
-        if len(current_roc_aucs) > 2:
+        if current_roc_aucs is not None and len(current_roc_aucs) > 2:
             z = np.append(z, [current_roc_aucs], axis=0)
             y.append("roc-auc")
 
@@ -149,9 +130,11 @@ class ClassificationQualityByClassRenderer(MetricRenderer):
             z = ref_metrics_frame.iloc[:-1, :-3].values
             x = columns.target_names if columns.target_names else metrics_frame.columns.tolist()[:-3]
             y = ["precision", "recall", "f1-score"]
-            if len(current_roc_aucs) > 2:
+
+            if current_roc_aucs is not None and len(current_roc_aucs) > 2:
                 z = np.append(z, [reference_roc_aucs], axis=0)
                 y.append("roc-auc")
+
             z_text = [[str(round(y, 3)) for y in x] for x in z]
             trace = go.Heatmap(
                 z=z,
@@ -164,13 +147,10 @@ class ClassificationQualityByClassRenderer(MetricRenderer):
             fig.append_trace(trace, 1, 2)
         fig.update_layout(coloraxis={"colorscale": "RdBu_r"})
 
-        return [
-            header_text(label="Quality Metrics by Class"),
-            plotly_figure(figure=fig, title="")
-        ]
+        return [header_text(label="Quality Metrics by Class"), plotly_figure(figure=fig, title="")]
 
-    def render_json(self, obj) -> dict:
-        return {}
+    def render_json(self, obj: ClassificationQualityByClass) -> dict:
+        return dataclasses.asdict(obj.get_result())
 
 
 def _plot_metrics(

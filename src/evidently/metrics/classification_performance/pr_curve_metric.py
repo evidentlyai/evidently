@@ -12,10 +12,10 @@ from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
-from evidently.utils.visualizations import get_pr_rec_plot_data
-from evidently.renderers.html_widgets import widget_tabs
 from evidently.renderers.html_widgets import TabData
+from evidently.renderers.html_widgets import get_pr_rec_plot_data
 from evidently.renderers.html_widgets import header_text
+from evidently.renderers.html_widgets import widget_tabs
 from evidently.utils.data_operations import process_columns
 
 
@@ -54,7 +54,9 @@ class ClassificationPRCurve(Metric[ClassificationPRCurveResults]):
             binaraized_target.columns = ["target"]
             pr, rcl, thrs = metrics.precision_recall_curve(binaraized_target, prediction.prediction_probas.iloc[:, 0])
             pr_curve[prediction.prediction_probas.columns[0]] = {
-                "pr": pr.tolist(), "rcl": rcl.tolist(), "thrs": thrs.tolist()
+                "pr": pr.tolist(),
+                "rcl": rcl.tolist(),
+                "thrs": thrs.tolist(),
             }
         else:
             binaraized_target = pd.DataFrame(binaraized_target)
@@ -87,12 +89,6 @@ class ClassificationPRCurveRenderer(MetricRenderer):
 
         tab_data = get_pr_rec_plot_data(current_pr_curve, reference_pr_curve)
         if len(tab_data) == 1:
-            return [
-                header_text(label="Precision-Recall Curve"),
-                tab_data[0][1]
-            ]
+            return [header_text(label="Precision-Recall Curve"), tab_data[0][1]]
         tabs = [TabData(name, widget) for name, widget in tab_data]
-        return [
-            header_text(label="Precision-Recall Curve"),
-            widget_tabs(title="", tabs=tabs)
-        ]
+        return [header_text(label="Precision-Recall Curve"), widget_tabs(title="", tabs=tabs)]

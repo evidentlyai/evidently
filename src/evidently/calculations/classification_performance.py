@@ -80,8 +80,12 @@ class PredictionData:
     labels: List[Union[str, int]]
 
 
-def get_prediction_data(data: pd.DataFrame, data_columns: DatasetColumns, pos_label: Optional[Union[str, int]],
-                        threshold: float = 0.5) -> PredictionData:
+def get_prediction_data(
+    data: pd.DataFrame,
+    data_columns: DatasetColumns,
+    pos_label: Optional[Union[str, int]],
+    threshold: float = 0.5,
+) -> PredictionData:
     """Get predicted values and optional prediction probabilities from source data.
     Also take into account a threshold value - if a probability is less than the value, do not take it into account.
 
@@ -193,7 +197,6 @@ def get_prediction_data(data: pd.DataFrame, data_columns: DatasetColumns, pos_la
         and is_integer_dtype(data[target].dtype)
         and data[prediction].dtype == dtype("float")
     ):
-        predictions = (data[mapping.prediction] >= threshold).astype(dtype("int64"))
         predictions = (data[prediction] >= threshold).astype(int)
         prediction_probas = pd.DataFrame.from_dict(
             {

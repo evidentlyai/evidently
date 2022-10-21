@@ -9,13 +9,13 @@ from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.metrics.base_metric import TResult
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.color_scheme import ColorOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
-from evidently.utils.visualizations import plot_distr_subplots
-from evidently.options.color_scheme import ColorOptions
 from evidently.renderers.html_widgets import header_text
-from evidently.utils.visualizations import make_hist_for_cat_plot
 from evidently.utils.data_operations import process_columns
+from evidently.utils.visualizations import make_hist_for_cat_plot
+from evidently.utils.visualizations import plot_distr_subplots
 
 
 @dataclasses.dataclass
@@ -35,9 +35,7 @@ class ClassificationClassBalance(Metric[ClassificationClassBalanceResult]):
             ref_target = data.reference_data[target_name]
         plot_data = make_hist_for_cat_plot(data.current_data[target_name], ref_target)
 
-        return ClassificationClassBalanceResult(
-            plot_data=plot_data
-        )
+        return ClassificationClassBalanceResult(plot_data=plot_data)
 
 
 @default_renderer(wrap_type=ClassificationClassBalance)
@@ -52,8 +50,13 @@ class ClassificationClassBalanceRenderer(MetricRenderer):
         if "reference" in metric_result.plot_data.keys():
             reference_plot_data = metric_result.plot_data["reference"]
 
-        fig = plot_distr_subplots(current_plot_data, reference_plot_data, "Class", "Number Of Objects",
-                                  ColorOptions().get_current_data_color())
+        fig = plot_distr_subplots(
+            current_plot_data,
+            reference_plot_data,
+            "Class",
+            "Number Of Objects",
+            ColorOptions().get_current_data_color(),
+        )
         return [
             header_text(label="Class Representation"),
             BaseWidgetInfo(

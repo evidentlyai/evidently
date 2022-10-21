@@ -1,5 +1,4 @@
 import json
-from typing import Dict
 from typing import List
 from typing import Optional
 
@@ -9,17 +8,18 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
+
+from evidently.calculations.classification_performance import PredictionData
 from evidently.calculations.classification_performance import get_prediction_data
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.color_scheme import ColorOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
-from evidently.utils.data_operations import process_columns
-from evidently.options.color_scheme import ColorOptions
-from evidently.calculations.classification_performance import PredictionData
 from evidently.renderers.html_widgets import header_text
+from evidently.utils.data_operations import process_columns
 
 
 @dataclasses.dataclass
@@ -29,8 +29,6 @@ class ClassificationQualityByFeatureTableResults:
     target_name: str
     curr_predictions: PredictionData
     ref_predictions: Optional[PredictionData]
-    # num_feature_names: List[str]
-    # cat_feature_names: List[str]
     columns: List[str]
 
 
@@ -61,9 +59,6 @@ class ClassificationQualityByFeatureTable(Metric[ClassificationQualityByFeatureT
                 np.intersect1d(self.columns, dataset_columns.num_feature_names + dataset_columns.cat_feature_names)
             )
 
-        num_feature_names = list(np.intersect1d(dataset_columns.num_feature_names, columns))
-        cat_feature_names = list(np.intersect1d(dataset_columns.cat_feature_names, columns))
-        
         return ClassificationQualityByFeatureTableResults(
             current_plot_data=curr_df,
             reference_plot_data=ref_df,
@@ -76,6 +71,9 @@ class ClassificationQualityByFeatureTable(Metric[ClassificationQualityByFeatureT
 
 @default_renderer(wrap_type=ClassificationQualityByFeatureTable)
 class ClassificationQualityByFeatureTableRenderer(MetricRenderer):
+    def render_json(self, obj: ClassificationQualityByFeatureTable) -> dict:
+        return {}
+
     def render_html(self, obj: ClassificationQualityByFeatureTable) -> List[BaseWidgetInfo]:
         result = obj.get_result()
         current_data = result.current_plot_data
@@ -89,8 +87,10 @@ class ClassificationQualityByFeatureTableRenderer(MetricRenderer):
         color_options = ColorOptions()
 
         current_data["prediction_labels"] = curr_predictions.predictions.values
-        if reference_data is not None:
+
+        if reference_data is not None and ref_predictions is not None:
             reference_data["prediction_labels"] = ref_predictions.predictions.values
+
         additional_graphs_data = []
         params_data = []
         for feature_name in columns:
@@ -106,7 +106,7 @@ class ClassificationQualityByFeatureTableRenderer(MetricRenderer):
                     "f1": feature_name,
                 }
             )
-            
+
             # create confusion based plots
             current_data["dataset"] = "Current"
             merged_data = current_data
@@ -140,14 +140,14 @@ class ClassificationQualityByFeatureTableRenderer(MetricRenderer):
 
             # Probas plots
             if curr_predictions.prediction_probas is not None:
-                cols = columns + ["prediction_labels", target_name]
-                current_data = pd.concat([current_data[cols], curr_predictions.prediction_probas], axis=1)
+                ref_columns = columns + ["prediction_labels", target_name]
+                current_data = pd.concat([current_data[ref_columns], curr_predictions.prediction_probas], axis=1)
                 if (
                     reference_data is not None
                     and ref_predictions is not None
                     and ref_predictions.prediction_probas is not None
                 ):
-                    reference_data = pd.concat([reference_data[cols], ref_predictions.prediction_probas], axis=1)
+                    reference_data = pd.concat([reference_data[ref_columns], ref_predictions.prediction_probas], axis=1)
 
                 if reference_data is not None:
                     cols = 2
@@ -244,6 +244,7 @@ class ClassificationQualityByFeatureTableRenderer(MetricRenderer):
             # labels plots
             else:
                 for label in labels:
+
                     def confusion_func(row, label=label):
                         return self._confusion(row, target_name, "prediction_labels", label)
 
@@ -279,9 +280,9 @@ class ClassificationQualityByFeatureTableRenderer(MetricRenderer):
                     "data": params_data,
                 },
                 additionalGraphs=additional_graphs_data,
-            )
+            ),
         ]
-        
+
     def _confusion(self, row, target_column, prediction_column, label):
         if row[target_column] == label and row[prediction_column] == label:
             return "TP"
@@ -290,4 +291,3 @@ class ClassificationQualityByFeatureTableRenderer(MetricRenderer):
         if row[target_column] == label and row[prediction_column] != label:
             return "FN"
         return "TN"  # last option
-

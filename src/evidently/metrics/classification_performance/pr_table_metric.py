@@ -9,13 +9,13 @@ from evidently.calculations.classification_performance import calculate_pr_table
 from evidently.calculations.classification_performance import get_prediction_data
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
+from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
-from evidently.renderers.html_widgets import table_data
-from evidently.renderers.html_widgets import WidgetSize
 from evidently.renderers.html_widgets import TabData
+from evidently.renderers.html_widgets import WidgetSize
+from evidently.renderers.html_widgets import table_data
 from evidently.renderers.html_widgets import widget_tabs
-from evidently.model.widget import BaseWidgetInfo
 from evidently.utils.data_operations import process_columns
 
 
@@ -81,27 +81,33 @@ class ClassificationPRTableRenderer(MetricRenderer):
         if current_pr_table is not None:
             if len(current_pr_table.keys()) == 1:
                 result.append(
-                    table_data(column_names=columns, data=current_pr_table[list(current_pr_table.keys())[0]],
-                               title="Current: Precision-Recall Table", size=size)
+                    table_data(
+                        column_names=columns,
+                        data=current_pr_table[list(current_pr_table.keys())[0]],
+                        title="Current: Precision-Recall Table",
+                        size=size,
+                    )
                 )
             else:
                 tab_data = []
                 for label in current_pr_table.keys():
-                    table = table_data(column_names=columns, data=current_pr_table[label],
-                                       title="", size=size)
+                    table = table_data(column_names=columns, data=current_pr_table[label], title="", size=size)
                     tab_data.append(TabData(label, table))
                 result.append(widget_tabs(title="Current: Precision-Recall Table", tabs=tab_data))
         if reference_pr_table is not None:
             if len(reference_pr_table.keys()) == 1:
                 result.append(
-                    table_data(column_names=columns, data=reference_pr_table[list(reference_pr_table.keys())[0]],
-                               title="Reference: Precision-Recall Table", size=size)
+                    table_data(
+                        column_names=columns,
+                        data=reference_pr_table[list(reference_pr_table.keys())[0]],
+                        title="Reference: Precision-Recall Table",
+                        size=size,
+                    )
                 )
             else:
                 tab_data = []
                 for label in reference_pr_table.keys():
-                    table = table_data(column_names=columns, data=reference_pr_table[label],
-                                       title="", size=size)
+                    table = table_data(column_names=columns, data=reference_pr_table[label], title="", size=size)
                     tab_data.append(TabData(label, table))
                 result.append(widget_tabs(title="Reference: Precision-Recall Table", tabs=tab_data))
         return result

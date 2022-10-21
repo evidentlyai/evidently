@@ -10,13 +10,12 @@ from evidently.calculations.classification_performance import ConfusionMatrix
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.classification_performance.base_classification_metric import ThresholdClassificationMetric
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options.color_scheme import ColorOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
-from evidently.options.color_scheme import ColorOptions
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.utils.visualizations import plot_conf_mtrx
-
 
 DEFAULT_THRESHOLD = 0.5
 
@@ -75,7 +74,4 @@ class ClassificationConfusionMatrixRenderer(MetricRenderer):
         fig = plot_conf_mtrx(metric_result.current_matrix, metric_result.reference_matrix)
         fig.for_each_xaxis(lambda axis: axis.update(title_text="Predicted Value"))
         fig.update_layout(yaxis_title="Actual Value")
-        return [
-            header_text(label="Confusion Matrix"),
-            plotly_figure(figure=fig, title="")
-        ]
+        return [header_text(label="Confusion Matrix"), plotly_figure(figure=fig, title="")]

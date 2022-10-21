@@ -7,12 +7,12 @@ import numpy as np
 import pandas as pd
 
 from evidently import ColumnMapping
-from evidently.utils.data_operations import DatasetColumns
 from evidently.calculations.classification_performance import PredictionData
 from evidently.calculations.classification_performance import get_prediction_data
 from evidently.calculations.classification_performance import k_probability_threshold
 from evidently.metrics.base_metric import Metric
 from evidently.metrics.base_metric import TResult
+from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.data_operations import process_columns
 
 

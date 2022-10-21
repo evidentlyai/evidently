@@ -2,8 +2,8 @@ from typing import List
 from typing import Optional
 
 import dataclasses
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 from evidently.calculations.classification_performance import get_prediction_data
 from evidently.metrics.base_metric import InputData
@@ -11,19 +11,20 @@ from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
-from evidently.utils.visualizations import get_class_separation_plot_data
-from evidently.renderers.html_widgets import widget_tabs
 from evidently.renderers.html_widgets import TabData
+from evidently.renderers.html_widgets import get_class_separation_plot_data
 from evidently.renderers.html_widgets import header_text
+from evidently.renderers.html_widgets import widget_tabs
 from evidently.utils.data_operations import process_columns
+
 
 @dataclasses.dataclass
 class ClassificationClassSeparationPlotResults:
+    target_name: str
     current_plot: Optional[pd.DataFrame] = None
     reference_plot: Optional[pd.DataFrame] = None
-    target_name: Optional[str] = None
 
-import logging
+
 class ClassificationClassSeparationPlot(Metric[ClassificationClassSeparationPlotResults]):
     def calculate(self, data: InputData) -> ClassificationClassSeparationPlotResults:
         dataset_columns = process_columns(data.current_data, data.column_mapping)
@@ -33,15 +34,19 @@ class ClassificationClassSeparationPlot(Metric[ClassificationClassSeparationPlot
             raise ValueError("The columns 'target' and 'prediction' columns should be present")
         curr_predictions = get_prediction_data(data.current_data, dataset_columns, data.column_mapping.pos_label)
         if curr_predictions.prediction_probas is None:
-            raise ValueError("ClassificationClassSeparationPlot can be calculated only on binary probabilistic predictions")
+            raise ValueError(
+                "ClassificationClassSeparationPlot can be calculated only on binary probabilistic predictions"
+            )
         current_plot = curr_predictions.prediction_probas.copy()
         current_plot[target_name] = data.current_data[target_name]
         reference_plot = None
         if data.reference_data is not None:
             ref_predictions = get_prediction_data(data.reference_data, dataset_columns, data.column_mapping.pos_label)
             if ref_predictions.prediction_probas is None:
-                raise ValueError("ClassificationClassSeparationPlot can be calculated only on binary probabilistic predictions")
-            reference_plot =  ref_predictions.prediction_probas.copy()
+                raise ValueError(
+                    "ClassificationClassSeparationPlot can be calculated only on binary probabilistic predictions"
+                )
+            reference_plot = ref_predictions.prediction_probas.copy()
             reference_plot[target_name] = data.reference_data[target_name]
         return ClassificationClassSeparationPlotResults(
             current_plot=current_plot,
@@ -66,7 +71,4 @@ class ClassificationClassSeparationPlotRenderer(MetricRenderer):
             reference_plot.replace([np.inf, -np.inf], np.nan, inplace=True)
         tab_data = get_class_separation_plot_data(current_plot, reference_plot, target_name)
         tabs = [TabData(name, widget) for name, widget in tab_data]
-        return [
-            header_text(label="Class Separation Quality"),
-            widget_tabs(title="", tabs=tabs)
-        ]
+        return [header_text(label="Class Separation Quality"), widget_tabs(title="", tabs=tabs)]

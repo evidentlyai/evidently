@@ -11,19 +11,31 @@ from evidently.metrics.base_metric import InputData
     [
         (
             None,
-            pd.DataFrame({"target": ["a", "a", "a", "a", "a", "b", "c", "c", "c"],
-                          "prediction": ["a", "a", "a", "b", "b", "b", "c", "c", "c"]}),
+            pd.DataFrame(
+                {
+                    "target": ["a", "a", "a", "a", "a", "b", "c", "c", "c"],
+                    "prediction": ["a", "a", "a", "b", "b", "b", "c", "c", "c"],
+                }
+            ),
             {"current": pd.DataFrame({"x": ["a", "c", "b"], "count": [5, 3, 1]})},
         ),
         (
-            pd.DataFrame({"target": ["a", "a", "b", "b", "b", "c", "c", "c", "c"],
-                          "prediction": ["a", "a", "a", "b", "b", "b", "c", "c", "c"]}),
-            pd.DataFrame({"target": ["a", "a", "a", "a", "a", "b", "c", "c", "c"],
-                          "prediction": ["a", "a", "a", "b", "b", "b", "c", "c", "c"]}),
+            pd.DataFrame(
+                {
+                    "target": ["a", "a", "b", "b", "b", "c", "c", "c", "c"],
+                    "prediction": ["a", "a", "a", "b", "b", "b", "c", "c", "c"],
+                }
+            ),
+            pd.DataFrame(
+                {
+                    "target": ["a", "a", "a", "a", "a", "b", "c", "c", "c"],
+                    "prediction": ["a", "a", "a", "b", "b", "b", "c", "c", "c"],
+                }
+            ),
             {
                 "current": pd.DataFrame({"x": ["a", "c", "b"], "count": [5, 3, 1]}),
                 "reference": pd.DataFrame({"x": ["c", "b", "a"], "count": [4, 3, 2]}),
-            }
+            },
         ),
     ],
 )

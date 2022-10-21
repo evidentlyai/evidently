@@ -1,6 +1,6 @@
+from typing import List
 from typing import Optional
 from typing import Union
-from typing import List
 
 import dataclasses
 import numpy as np
@@ -77,11 +77,7 @@ class ClassificationQuality(ThresholdClassificationMetric[ClassificationQualityR
                 data.column_mapping,
                 ref_matrix,
             )
-        return ClassificationQualityResult(
-            current=current,
-            reference=reference,
-            target_name=target_name
-        )
+        return ClassificationQualityResult(current=current, reference=reference, target_name=target_name)
 
     def calculate_metrics(
         self,
@@ -155,10 +151,7 @@ class ClassificationQualityRenderer(MetricRenderer):
             CounterData("Recall", f"{round(metric_result.current.recall, 3)}"),
             CounterData("F1", f"{round(metric_result.current.f1, 3)}"),
         ]
-        if (
-            metric_result.current.roc_auc is not None
-            and metric_result.current.log_loss is not None
-        ):
+        if metric_result.current.roc_auc is not None and metric_result.current.log_loss is not None:
             counters.extend(
                 [
                     CounterData("ROC AUC", f"{round(metric_result.current.roc_auc, 3)}"),
@@ -175,10 +168,7 @@ class ClassificationQualityRenderer(MetricRenderer):
                 CounterData("Recall", f"{round(metric_result.reference.recall, 3)}"),
                 CounterData("F1", f"{round(metric_result.reference.f1, 3)}"),
             ]
-            if (
-                metric_result.reference.roc_auc is not None
-                and metric_result.reference.log_loss is not None
-            ):
+            if metric_result.reference.roc_auc is not None and metric_result.reference.log_loss is not None:
                 counters.extend(
                     [
                         CounterData("ROC AUC", f"{round(metric_result.reference.roc_auc, 3)}"),

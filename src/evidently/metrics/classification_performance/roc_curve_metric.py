@@ -1,5 +1,6 @@
-from typing import Optional
 from typing import List
+from typing import Optional
+
 import dataclasses
 import pandas as pd
 from sklearn import metrics
@@ -11,10 +12,10 @@ from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
-from evidently.utils.visualizations import get_roc_auc_tab_data
-from evidently.renderers.html_widgets import widget_tabs
 from evidently.renderers.html_widgets import TabData
+from evidently.renderers.html_widgets import get_roc_auc_tab_data
 from evidently.renderers.html_widgets import header_text
+from evidently.renderers.html_widgets import widget_tabs
 from evidently.utils.data_operations import process_columns
 
 
@@ -56,7 +57,9 @@ class ClassificationRocCurve(Metric[ClassificationRocCurveResults]):
 
             fpr, tpr, thrs = metrics.roc_curve(binaraized_target, prediction.prediction_probas.iloc[:, 0])
             roc_curve[prediction.prediction_probas.columns[0]] = {
-                "fpr": fpr.tolist(), "tpr": tpr.tolist(), "thrs": thrs.tolist()
+                "fpr": fpr.tolist(),
+                "tpr": tpr.tolist(),
+                "thrs": thrs.tolist(),
             }
         else:
             binaraized_target = pd.DataFrame(binaraized_target)
@@ -85,12 +88,6 @@ class ClassificationRocCurveRenderer(MetricRenderer):
 
         tab_data = get_roc_auc_tab_data(current_roc_curve, reference_roc_curve)
         if len(tab_data) == 1:
-            return [
-                header_text(label="ROC Curve"),
-                tab_data[0][1]
-            ]
+            return [header_text(label="ROC Curve"), tab_data[0][1]]
         tabs = [TabData(name, widget) for name, widget in tab_data]
-        return [
-            header_text(label="ROC Curve"),
-            widget_tabs(title="", tabs=tabs)
-        ]
+        return [header_text(label="ROC Curve"), widget_tabs(title="", tabs=tabs)]
