@@ -13,7 +13,7 @@ from plotly.subplots import make_subplots
 from evidently.options.color_scheme import ColorOptions
 
 
-def plot_distr(hist_curr, hist_ref=None, orientation="v", color_options: Optional[ColorOptions] = None):
+def plot_distr(hist_curr, hist_ref=None, orientation="v", color_options: Optional[ColorOptions] = None) -> go.Figure:
     color_options = color_options or ColorOptions()
     fig = go.Figure()
 
@@ -38,10 +38,13 @@ def plot_distr(hist_curr, hist_ref=None, orientation="v", color_options: Optiona
             )
         )
         cats = cats + list(np.setdiff1d(hist_ref["x"], cats))
+
     if "other" in cats:
         cats.remove("other")
         cats = cats + ["other"]
         fig.update_xaxes(categoryorder="array", categoryarray=cats)
+
+    return fig
 
 
 @dataclasses.dataclass

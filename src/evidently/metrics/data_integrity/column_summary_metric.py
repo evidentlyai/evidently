@@ -5,9 +5,8 @@ from typing import Optional
 from typing import Tuple
 from typing import Union
 
+import dataclasses
 import pandas as pd
-from dataclasses import dataclass
-from dataclasses import fields
 from pandas.api.types import is_numeric_dtype
 from pandas.api.types import is_string_dtype
 
@@ -32,7 +31,7 @@ from evidently.utils.visualizations import plot_num_num_rel
 from evidently.utils.visualizations import plot_time_feature_distr
 
 
-@dataclass
+@dataclasses.dataclass
 class NumericCharacteristics:
     number_of_rows: int
     count: int
@@ -53,7 +52,7 @@ class NumericCharacteristics:
     most_common_percentage: Optional[float]
 
 
-@dataclass
+@dataclasses.dataclass
 class CategoricalCharacteristics:
     number_of_rows: int
     count: int
@@ -67,7 +66,7 @@ class CategoricalCharacteristics:
     unused_in_current_values_count: Optional[int] = None
 
 
-@dataclass
+@dataclasses.dataclass
 class DatetimeCharacteristics:
     number_of_rows: int
     count: int
@@ -84,21 +83,21 @@ class DatetimeCharacteristics:
 ColumnCharacteristics = Union[NumericCharacteristics, CategoricalCharacteristics, DatetimeCharacteristics]
 
 
-@dataclass
+@dataclasses.dataclass
 class DataInTime:
     data_for_plots: Dict[str, pd.DataFrame]
     freq: str
     datetime_name: str
 
 
-@dataclass
+@dataclasses.dataclass
 class DataByTarget:
     data_for_plots: Dict[str, Dict[str, Union[list, pd.DataFrame]]]
     target_name: str
     target_type: str
 
 
-@dataclass
+@dataclasses.dataclass
 class DataQualityPlot:
     bins_for_hist: Dict[str, pd.DataFrame]
     data_in_time: Optional[DataInTime]
@@ -106,7 +105,7 @@ class DataQualityPlot:
     counts_of_values: Optional[Dict[str, pd.DataFrame]]
 
 
-@dataclass
+@dataclasses.dataclass
 class ColumnSummary:
     column_name: str
     column_type: str
@@ -313,6 +312,11 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
 
 @default_renderer(wrap_type=ColumnSummaryMetric)
 class ColumnSummaryMetricRenderer(MetricRenderer):
+    def render_json(self, obj: ColumnSummaryMetric) -> dict:
+        result = dataclasses.asdict(obj.get_result())
+        result.pop("plot_data", None)
+        return result
+
     def render_html(self, obj: ColumnSummaryMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         column_type = metric_result.column_type
@@ -451,14 +455,16 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
 
         result = []
 
-        current_stats_dict = {field.name: getattr(current_stats, field.name) for field in fields(current_stats)}
+        current_stats_dict = {
+            field.name: getattr(current_stats, field.name) for field in dataclasses.fields(current_stats)
+        }
 
         if reference_stats is None:
             reference_stats_dict = None
 
         else:
             reference_stats_dict = {
-                field.name: getattr(reference_stats, field.name) for field in fields(reference_stats)
+                field.name: getattr(reference_stats, field.name) for field in dataclasses.fields(reference_stats)
             }
 
         for stat_label, stat_field, stat_field_percentage in stats_list:
