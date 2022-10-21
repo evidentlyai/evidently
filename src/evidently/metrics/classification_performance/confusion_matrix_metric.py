@@ -69,6 +69,9 @@ class ClassificationConfusionMatrix(ThresholdClassificationMetric[Classification
 
 @default_renderer(wrap_type=ClassificationConfusionMatrix)
 class ClassificationConfusionMatrixRenderer(MetricRenderer):
+    def render_json(self, obj: ClassificationConfusionMatrix) -> dict:
+        return {}
+
     def render_html(self, obj: ClassificationConfusionMatrix) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         fig = plot_conf_mtrx(metric_result.current_matrix, metric_result.reference_matrix)

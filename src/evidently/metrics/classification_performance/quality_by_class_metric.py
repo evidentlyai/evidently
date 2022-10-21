@@ -89,6 +89,9 @@ class ClassificationQualityByClass(ThresholdClassificationMetric[ClassificationQ
 
 @default_renderer(wrap_type=ClassificationQualityByClass)
 class ClassificationQualityByClassRenderer(MetricRenderer):
+    def render_json(self, obj: ClassificationQualityByClass) -> dict:
+        return dataclasses.asdict(obj.get_result())
+
     def render_html(self, obj: ClassificationQualityByClass) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         columns = metric_result.columns
@@ -148,9 +151,6 @@ class ClassificationQualityByClassRenderer(MetricRenderer):
         fig.update_layout(coloraxis={"colorscale": "RdBu_r"})
 
         return [header_text(label="Quality Metrics by Class"), plotly_figure(figure=fig, title="")]
-
-    def render_json(self, obj: ClassificationQualityByClass) -> dict:
-        return dataclasses.asdict(obj.get_result())
 
 
 def _plot_metrics(
