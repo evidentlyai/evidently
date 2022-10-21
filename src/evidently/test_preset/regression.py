@@ -7,7 +7,7 @@ from evidently.tests import TestValueRMSE
 from evidently.utils.data_operations import DatasetColumns
 
 
-class Regression(TestPreset):
+class RegressionTestPreset(TestPreset):
     def generate_tests(self, data: InputData, columns: DatasetColumns):
         return [
             TestValueMeanError(),
