@@ -12,7 +12,7 @@ After [installation](../get-started/install-evidently.md), import the Report com
 
 ```python
 from evidently.report import Report
-from evidently.metric_preset import DataDriftPreset, NumTargetDrift
+from evidently.metric_preset import DataDriftPreset, TargetDriftPreset
 ```
 
 You need to prepare two datasets for comparison: **reference** and **current**. You can also generate some of the reports with a single current dataset. 
@@ -34,7 +34,7 @@ If nothing else is specified, the reports will run with the default parameters.
 **Example**. To generate the report for Data Drift together with numerical Target Drift:
 
 ```python
-drift_report = Report(metrics=[DataDrift(), NumTargetDrift()])
+drift_report = Report(metrics=[DataDriftPreset(), TargetDriftPreset()])
  
 drift_report.run(reference_data=reference, current_data=current)
 drift_report
@@ -47,12 +47,11 @@ It will display the HTML combined report.
 Here is a list of metric presets you can try:
 
 ```python
-DataQuality
-DataDrift
-NumTargetDrift
-CatTargetDrift 
-RegressionPerformance
-ClassificationPerformance
+DataQualityPreset
+DataDriftPreset
+TargetDriftPreset 
+RegressionPreset
+ClassificationPreset
 ```
 
 ## Output formats 
