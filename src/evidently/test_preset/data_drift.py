@@ -6,7 +6,7 @@ from evidently.tests import TestShareOfDriftedFeatures
 from evidently.utils.data_operations import DatasetColumns
 
 
-class DataDrift(TestPreset):
+class DataDriftTestPreset(TestPreset):
     def generate_tests(self, data: InputData, columns: DatasetColumns):
         preset_tests: list = [TestShareOfDriftedFeatures()]
 

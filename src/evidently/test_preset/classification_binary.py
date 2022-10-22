@@ -9,7 +9,7 @@ from evidently.tests import TestRocAuc
 from evidently.utils.data_operations import DatasetColumns
 
 
-class BinaryClassification(TestPreset):
+class BinaryClassificationTestPreset(TestPreset):
     def __init__(self, prediction_type: str, threshold: float = 0.5):
         super().__init__()
         if prediction_type not in ["probas", "labels"]:

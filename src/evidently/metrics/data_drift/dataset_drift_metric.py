@@ -13,7 +13,6 @@ from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import counter
-from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import process_columns
 
 

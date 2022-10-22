@@ -26,6 +26,7 @@ def analyzer() -> RegressionPerformanceAnalyzer:
             ColumnMapping(),
             RegressionPerformanceAnalyzerResults(
                 columns=DatasetColumns(
+                    target_type="cat",
                     utility_columns=DatasetUtilityColumns(
                         date=None, id_column=None, target="target", prediction="prediction"
                     ),
@@ -73,6 +74,7 @@ def analyzer() -> RegressionPerformanceAnalyzer:
             ColumnMapping(),
             RegressionPerformanceAnalyzerResults(
                 columns=DatasetColumns(
+                    target_type="cat",
                     utility_columns=DatasetUtilityColumns(
                         date=None, id_column=None, target="target", prediction="prediction"
                     ),
@@ -170,6 +172,7 @@ def analyzer() -> RegressionPerformanceAnalyzer:
             ),
             RegressionPerformanceAnalyzerResults(
                 columns=DatasetColumns(
+                    target_type="cat",
                     utility_columns=DatasetUtilityColumns(
                         date=None, id_column=None, target="test_target", prediction="test_prediction"
                     ),

@@ -22,7 +22,7 @@ from evidently.renderers.html_widgets import RowDetails
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.renderers.html_widgets import rich_table_data
-from evidently.renderers.render_utils import plot_distr
+from evidently.renderers.render_utils import get_distribution_plot_figure
 from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.data_operations import process_columns
 from evidently.utils.visualizations import plot_scatter_for_data_drift
@@ -123,7 +123,7 @@ class DataDriftTableRenderer(MetricRenderer):
             )
             scatter = plotly_figure(title="", figure=scatter_fig)
             details.with_part("DATA DRIFT", info=scatter)
-        fig = plot_distr(data.current_distribution, data.reference_distribution)
+        fig = get_distribution_plot_figure(data.current_distribution, data.reference_distribution)
         distribution = plotly_figure(title="", figure=fig)
         details.with_part("DATA DISTRIBUTION", info=distribution)
         return RichTableDataRow(

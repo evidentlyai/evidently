@@ -81,3 +81,4 @@ def test_column_drift_metric_errors(
 
     with pytest.raises(ValueError):
         report.run(current_data=current_data, reference_data=reference_data, column_mapping=data_mapping)
+        report.json()

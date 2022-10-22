@@ -10,7 +10,7 @@ from evidently.tests import TestNumColumnsOutOfRangeValues
 from evidently.utils.data_operations import DatasetColumns
 
 
-class DataStability(TestPreset):
+class DataStabilityTestPreset(TestPreset):
     def generate_tests(self, data: InputData, columns: DatasetColumns):
         return [
             TestNumberOfRows(),

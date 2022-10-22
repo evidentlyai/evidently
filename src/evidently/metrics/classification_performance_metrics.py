@@ -205,7 +205,7 @@ class ClassificationPerformanceMetrics(Metric[ClassificationPerformanceResults])
 
         current_data = _cleanup_data(data.current_data, data.column_mapping)
         target_data = current_data[data.column_mapping.target]
-        predictions = get_prediction_data(current_data, data.column_mapping)
+        predictions = get_prediction_data(current_data, columns, pos_label=data.column_mapping.pos_label)
         prediction_data = predictions.predictions
         prediction_probas = predictions.prediction_probas
 
@@ -220,7 +220,7 @@ class ClassificationPerformanceMetrics(Metric[ClassificationPerformanceResults])
 
         if data.reference_data is not None:
             reference_data = _cleanup_data(data.reference_data, data.column_mapping)
-            ref_predictions = get_prediction_data(reference_data, data.column_mapping)
+            ref_predictions = get_prediction_data(reference_data, columns, pos_label=data.column_mapping.pos_label)
             ref_prediction_data = ref_predictions.predictions
             ref_probas = ref_predictions.prediction_probas
             ref_target = reference_data[data.column_mapping.target]
@@ -515,8 +515,9 @@ class ClassificationPerformanceMetricsTopK(ClassificationPerformanceMetricsThres
     def __init__(self, k: Union[float, int]):
         self.k = k
 
-    def get_threshold(self, dataset: pd.DataFrame, mapping: ColumnMapping) -> float:
-        predictions = get_prediction_data(dataset, mapping)
+    def get_threshold(self, dataset: pd.DataFrame, columns: ColumnMapping) -> float:
+        processed_columns = process_columns(dataset, columns)
+        predictions = get_prediction_data(dataset, processed_columns, pos_label=columns.pos_label)
 
         if predictions.prediction_probas is None:
             raise ValueError("Top K parameter can be used only with binary classification with probas")
@@ -526,7 +527,8 @@ class ClassificationPerformanceMetricsTopK(ClassificationPerformanceMetricsThres
     def calculate_metric(self, dataset: pd.DataFrame, mapping: ColumnMapping):
         data = _cleanup_data(dataset, mapping)
         target_data = data[mapping.target]
-        predictions = get_prediction_data(data, mapping)
+        columns = process_columns(dataset, mapping)
+        predictions = get_prediction_data(data, columns, pos_label=mapping.pos_label)
         labels = sorted(set(target_data.unique()))
         prediction_probas = predictions.prediction_probas
         return _calculate_k_variant(target_data, prediction_probas, labels, self.k)
@@ -577,7 +579,8 @@ class ClassificationPerformanceMetricsThreshold(ClassificationPerformanceMetrics
     def calculate_metric(self, dataset: pd.DataFrame, mapping: ColumnMapping):
         data = _cleanup_data(dataset, mapping)
         target_data = data[mapping.target]
-        predictions = get_prediction_data(data, mapping)
+        columns = process_columns(dataset, mapping)
+        predictions = get_prediction_data(data, columns, pos_label=mapping.pos_label)
         prediction_probas = predictions.prediction_probas
         return _calculate_threshold(target_data, prediction_probas, self.threshold)
 
