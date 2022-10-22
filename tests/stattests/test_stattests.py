@@ -115,37 +115,10 @@ def test_cramer_von_mises() -> None:
 
 
 def test_emperical_mmd() -> None:
-    reference = pd.Series(
-        [
-            0.88202617,
-            0.2000786,
-            0.48936899,
-            1.1204466,
-            0.933779,
-            -0.48863894,
-            0.47504421,
-            -0.0756786,
-            -0.05160943,
-            0.20529925,
-        ]
-    )
-    current = pd.Series(
-        [
-            0.05041525,
-            0.50899573,
-            0.2663632,
-            0.04258626,
-            0.15535213,
-            0.11678601,
-            0.52292768,
-            -0.07180539,
-            0.1095737,
-            -0.29893351,
-        ]
-    )
-    pval, drift_detected = emperical_mmd.func(reference, current, "num", 0.1)
-    check_pval_range = 0.11 < pval < 0.25
-    assert (True, False) == (check_pval_range, drift_detected)
+    np.random.seed(0)
+    reference = pd.Series(np.random.normal(0, 0.5, 1000))
+    current = pd.Series(np.random.normal(2, 1, 1000))
+    assert emperical_mmd.func(reference, current, "num", 0.1) == (approx(0, abs=1e-3), True)
 
 
 def test_hellinger_distance() -> None:
