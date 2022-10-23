@@ -1,4 +1,3 @@
-from .cat_target_drift_metrics import CatTargetDriftMetrics
 from .classification_performance.class_balance_metric import ClassificationClassBalance
 from .classification_performance.class_separation_metric import ClassificationClassSeparationPlot
 from .classification_performance.classification_quality_metric import ClassificationQuality
@@ -30,7 +29,6 @@ from .data_quality.column_value_range_metric import ColumnValueRangeMetric
 from .data_quality.dataset_correlations_metric import DatasetCorrelationsMetric
 from .data_quality_metrics import DataQualityMetrics
 from .data_quality_metrics import DataQualityStabilityMetrics
-from .num_target_drift_metrics import NumTargetDriftMetrics
 from .regression_performance.abs_perc_error_in_time import RegressionAbsPercentageErrorPlot
 from .regression_performance.error_bias_table import RegressionErrorBiasTable
 from .regression_performance.error_distribution import RegressionErrorDistribution

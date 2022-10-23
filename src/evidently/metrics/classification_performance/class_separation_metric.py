@@ -69,6 +69,8 @@ class ClassificationClassSeparationPlotRenderer(MetricRenderer):
         current_plot.replace([np.inf, -np.inf], np.nan, inplace=True)
         if reference_plot is not None:
             reference_plot.replace([np.inf, -np.inf], np.nan, inplace=True)
-        tab_data = get_class_separation_plot_data(current_plot, reference_plot, target_name)
+        tab_data = get_class_separation_plot_data(
+            current_plot, reference_plot, target_name, color_options=self.color_options
+        )
         tabs = [TabData(name, widget) for name, widget in tab_data]
         return [header_text(label="Class Separation Quality"), widget_tabs(title="", tabs=tabs)]

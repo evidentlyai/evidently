@@ -331,16 +331,18 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
             metrics_values_headers = ["current", "reference"]
 
         if column_type == "cat":
-            fig = plot_distr(hist_curr, hist_ref)
+            fig = plot_distr(hist_curr=hist_curr, hist_ref=hist_ref, color_options=self.color_options)
             fig.update_layout(legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1))
             fig = json.loads(fig.to_json())
         if column_type == "num":
             ref_log = None
             if "reference_log" in bins_for_hist.keys():
                 ref_log = bins_for_hist["reference_log"]
-            fig = plot_distr_with_log_button(hist_curr, bins_for_hist["current_log"], hist_ref, ref_log)
+            fig = plot_distr_with_log_button(
+                hist_curr, bins_for_hist["current_log"], hist_ref, ref_log, color_options=self.color_options
+            )
         if column_type == "datetime":
-            fig = plot_time_feature_distr(hist_curr, hist_ref, column_name)
+            fig = plot_time_feature_distr(hist_curr, hist_ref, column_name, color_options=self.color_options)
 
         # additional plots
         additional_graphs = []
@@ -353,6 +355,7 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
                     column_name,
                     metric_result.plot_data.data_in_time.datetime_name,
                     metric_result.plot_data.data_in_time.freq,
+                    color_options=self.color_options,
                 )
             if column_type == "cat":
                 feature_in_time_figure = plot_cat_feature_in_time(
@@ -361,6 +364,7 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
                     column_name,
                     metric_result.plot_data.data_in_time.datetime_name,
                     metric_result.plot_data.data_in_time.freq,
+                    color_options=self.color_options,
                 )
             additional_graphs.append(
                 AdditionalGraphInfo(
@@ -385,6 +389,7 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
                     ref_data_by_target,
                     column_name,
                     target_name,
+                    self.color_options,
                 )
             if column_type == "cat" and target_type == "num":
                 feature_by_target_figure = plot_boxes(
@@ -392,6 +397,7 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
                     ref_data_by_target,
                     target_name,
                     column_name,
+                    self.color_options,
                 )
             if column_type == "num" and target_type == "num":
                 feature_by_target_figure = plot_num_num_rel(
@@ -399,6 +405,7 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
                     ref_data_by_target,
                     target_name,
                     column_name,
+                    color_options=self.color_options,
                 )
             if column_type == "cat" and target_type == "cat":
                 feature_by_target_figure = plot_cat_cat_rel(
@@ -406,6 +413,7 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
                     ref_data_by_target,
                     target_name,
                     column_name,
+                    color_options=self.color_options,
                 )
 
             additional_graphs.append(

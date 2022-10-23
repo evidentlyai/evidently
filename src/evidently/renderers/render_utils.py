@@ -30,15 +30,13 @@ def plot_distr(hist_curr, hist_ref=None, orientation="v"):
 
 
 def get_distribution_plot_figure(
+    *,
     current_distribution: Distribution,
     reference_distribution: Optional[Distribution],
+    color_options: ColorOptions,
     orientation: str = "v",
-    color_options: Optional[ColorOptions] = None,
 ) -> go.Figure:
     fig = go.Figure()
-    if color_options is None:
-        color_options = ColorOptions()
-
     fig.add_trace(
         go.Bar(
             name="current",

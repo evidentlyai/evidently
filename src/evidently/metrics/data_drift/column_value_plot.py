@@ -103,7 +103,7 @@ class ColumnValuePlotRenderer(MetricRenderer):
             ref_x = reference_scatter.index
             x_name = "Index"
 
-        color_options = ColorOptions()
+        color_options = self.color_options
 
         fig = go.Figure()
 

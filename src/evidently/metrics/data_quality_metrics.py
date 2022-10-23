@@ -14,7 +14,6 @@ from evidently.calculations.data_quality import calculate_data_quality_stats
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
-from evidently.options import ColorOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
@@ -193,9 +192,7 @@ class DataQualityMetricsRenderer(MetricRenderer):
 
         return table_data(title="Data Summary", column_names=headers, data=stats)
 
-    @staticmethod
-    def plot_distr(hist_curr, hist_ref=None, orientation="v", color_options: Optional[ColorOptions] = None):
-        color_options = color_options or ColorOptions()
+    def plot_distr(self, hist_curr, hist_ref=None, orientation="v"):
         fig = go.Figure()
 
         fig.add_trace(
@@ -203,7 +200,7 @@ class DataQualityMetricsRenderer(MetricRenderer):
                 name="current",
                 x=hist_curr["x"],
                 y=hist_curr["count"],
-                marker_color=color_options.get_current_data_color(),
+                marker_color=self.color_options.get_current_data_color(),
                 orientation=orientation,
             )
         )
@@ -213,7 +210,7 @@ class DataQualityMetricsRenderer(MetricRenderer):
                     name="reference",
                     x=hist_ref["x"],
                     y=hist_ref["count"],
-                    marker_color=color_options.get_reference_data_color(),
+                    marker_color=self.color_options.get_reference_data_color(),
                     orientation=orientation,
                 )
             )

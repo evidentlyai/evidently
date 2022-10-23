@@ -1029,7 +1029,11 @@ class TestValueRangeRenderer(TestRenderer):
         metric_result = obj.metric.get_result()
         condition_ = TestValueCondition(gt=metric_result.left, lt=metric_result.right)
         info = super().render_html(obj)
-        fig = get_distribution_plot_figure(metric_result.current_distribution, metric_result.reference_distribution)
+        fig = get_distribution_plot_figure(
+            current_distribution=metric_result.current_distribution,
+            reference_distribution=metric_result.reference_distribution,
+            color_options=self.color_options,
+        )
         fig = plot_check(fig, condition_)
         info.with_details(f"Value Range {column_name}", plotly_figure(title="", figure=fig))
         return info
@@ -1097,7 +1101,11 @@ class TestNumberOfOutRangeValuesRenderer(TestRenderer):
         column_name = obj.column_name
         metric_result = obj.metric.get_result()
         info = super().render_html(obj)
-        fig = get_distribution_plot_figure(metric_result.current_distribution, metric_result.reference_distribution)
+        fig = get_distribution_plot_figure(
+            current_distribution=metric_result.current_distribution,
+            reference_distribution=metric_result.reference_distribution,
+            color_options=self.color_options,
+        )
         fig = plot_check(fig, obj.condition)
         info.with_details(f"Number Out of Range for {column_name}", plotly_figure(title="", figure=fig))
         return info
@@ -1137,7 +1145,11 @@ class TestShareOfOutRangeValuesRenderer(TestRenderer):
         column_name = obj.column_name
         metric_result = obj.metric.get_result()
         info = super().render_html(obj)
-        fig = get_distribution_plot_figure(metric_result.current_distribution, metric_result.reference_distribution)
+        fig = get_distribution_plot_figure(
+            current_distribution=metric_result.current_distribution,
+            reference_distribution=metric_result.reference_distribution,
+            color_options=self.color_options,
+        )
         fig = plot_check(fig, obj.condition)
         info.with_details(f"Share Out of Range for {column_name}", plotly_figure(title="", figure=fig))
         return info
@@ -1383,7 +1395,11 @@ class TestValueQuantileRenderer(TestRenderer):
         info = super().render_html(obj)
         metric_result = obj.metric.get_result()
         column_name = metric_result.column_name
-        fig = get_distribution_plot_figure(metric_result.current_distribution, metric_result.reference_distribution)
+        fig = get_distribution_plot_figure(
+            current_distribution=metric_result.current_distribution,
+            reference_distribution=metric_result.reference_distribution,
+            color_options=self.color_options,
+        )
         fig = plot_check(fig, obj.get_condition())
         fig = plot_metric_value(
             fig, obj.metric.get_result().current, f"current {column_name} {metric_result.quantile} quantile"

@@ -1,4 +1,3 @@
-from typing import Dict
 from typing import List
 from typing import Optional
 
@@ -9,7 +8,6 @@ import pandas as pd
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
-from evidently.options.color_scheme import ColorOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
@@ -69,11 +67,12 @@ class RegressionErrorDistributionRenderer(MetricRenderer):
             reference_bins = result.reference_bins
 
         fig = plot_distr_subplots(
-            current_bins,
-            reference_bins,
+            hist_curr=current_bins,
+            hist_ref=reference_bins,
             xaxis_name="Error (Predicted - Actual)",
             yaxis_name="Percentage",
-            same_color=ColorOptions().get_current_data_color(),
+            same_color=True,
+            color_options=self.color_options,
         )
         return [
             header_text(label="Error Distribution"),

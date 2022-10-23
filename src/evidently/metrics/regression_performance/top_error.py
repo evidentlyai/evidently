@@ -155,7 +155,7 @@ class RegressionTopErrorMetricRenderer(MetricRenderer):
                 )
             )
         res.append(header_text(label="Predicted vs Actual per Group"))
-        fig = plot_error_bias_colored_scatter(curr_scatter, ref_scatter)
+        fig = plot_error_bias_colored_scatter(curr_scatter, ref_scatter, color_options=self.color_options)
 
         res.append(
             BaseWidgetInfo(

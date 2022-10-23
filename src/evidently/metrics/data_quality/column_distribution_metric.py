@@ -9,7 +9,6 @@ from evidently.calculations.data_quality import calculate_column_distribution
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
-from evidently.options import ColorOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import HistogramData
@@ -103,7 +102,7 @@ class ColumnDistributionMetricRenderer(MetricRenderer):
                 title="",
                 primary_hist=current_histogram,
                 secondary_hist=reference_histogram,
-                color_options=ColorOptions(),
+                color_options=self.color_options,
                 xaxis_title=metric_result.column_name,
                 yaxis_title="Count",
             ),

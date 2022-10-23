@@ -79,7 +79,13 @@ class RegressionAbsPercentageErrorPlotRenderer(MetricRenderer):
         if result.reference_scatter is not None:
             reference_scatter = result.reference_scatter
         fig = plot_line_in_time(
-            current_scatter, reference_scatter, "Absolute Percentage Error", "x", result.x_name, "Percent"
+            curr=current_scatter,
+            ref=reference_scatter,
+            x_name="Absolute Percentage Error",
+            y_name="x",
+            xaxis_name=result.x_name,
+            yaxis_name="Percent",
+            color_options=self.color_options,
         )
         return [
             header_text(label="Absolute Percentage Error"),

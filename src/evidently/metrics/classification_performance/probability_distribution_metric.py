@@ -35,10 +35,9 @@ class ProbabilityDistribution(Metric[ProbabilityDistributionResults]):
         )
 
 
-def _plot(dataset_to_plot, columns: DatasetColumns, color_options: Optional[ColorOptions] = None):
+def _plot(dataset_to_plot, columns: DatasetColumns):
+    color_options = ColorOptions()
     utility_columns = columns.utility_columns
-    color_options = color_options if color_options is not None else ColorOptions()
-
     dataset_to_plot.replace([np.inf, -np.inf], np.nan, inplace=True)
 
     # plot distributions

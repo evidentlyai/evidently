@@ -575,7 +575,7 @@ def histogram(
     title: str,
     primary_hist: HistogramData,
     secondary_hist: Optional[HistogramData] = None,
-    color_options: Optional[ColorOptions] = None,
+    color_options: ColorOptions,
     orientation: str = "v",
     size: WidgetSize = WidgetSize.FULL,
     xaxis_title: Optional[str] = None,
@@ -596,9 +596,13 @@ def histogram(
     Example:
         >>> ref_hist = HistogramData("Histogram 1", x=["a", "b", "c"], y=[1, 2, 3])
         >>> curr_hist = HistogramData("Histogram 2", x=["a", "b", "c"], y=[3, 2 ,1])
-        >>> widget_info = histogram(title="Histogram example", primary_hist=ref_hist, secondary_hist=curr_hist)
+        >>> widget_info = histogram(
+        >>>     title="Histogram example",
+        >>>     primary_hist=ref_hist,
+        >>>     secondary_hist=curr_hist,
+        >>>     color_options=color_options
+        >>> )
     """
-    color_options = color_options if color_options is not None else ColorOptions()
     figure = get_histogram_figure(
         primary_hist=primary_hist,
         secondary_hist=secondary_hist,
@@ -625,7 +629,7 @@ def get_histogram_for_distribution(
     title: str = "",
     xaxis_title: Optional[str] = None,
     yaxis_title: Optional[str] = None,
-    color_options: Optional[ColorOptions] = None,
+    color_options: ColorOptions,
 ):
     current_histogram = HistogramData(
         name="current",
@@ -713,8 +717,9 @@ def get_heatmaps_widget(
     return plotly_figure(title=title, figure=figure, size=size)
 
 
-def get_roc_auc_tab_data(curr_roc_curve: dict, ref_roc_curve: Optional[dict]) -> List[Tuple[str, BaseWidgetInfo]]:
-    color_options = ColorOptions()
+def get_roc_auc_tab_data(
+    curr_roc_curve: dict, ref_roc_curve: Optional[dict], color_options: ColorOptions
+) -> List[Tuple[str, BaseWidgetInfo]]:
     additional_plots = []
     cols = 1
     subplot_titles = [""]
@@ -758,9 +763,8 @@ def get_roc_auc_tab_data(curr_roc_curve: dict, ref_roc_curve: Optional[dict]) ->
 
 
 def get_pr_rec_plot_data(
-    current_pr_curve: dict, reference_pr_curve: Optional[dict]
+    current_pr_curve: dict, reference_pr_curve: Optional[dict], color_options: ColorOptions
 ) -> List[Tuple[str, BaseWidgetInfo]]:
-    color_options = ColorOptions()
     additional_plots = []
     cols = 1
     subplot_titles = [""]
@@ -804,9 +808,8 @@ def get_pr_rec_plot_data(
 
 
 def get_class_separation_plot_data(
-    current_plot: pd.DataFrame, reference_plot: Optional[pd.DataFrame], target_name: str
+    current_plot: pd.DataFrame, reference_plot: Optional[pd.DataFrame], target_name: str, color_options: ColorOptions
 ) -> List[Tuple[str, BaseWidgetInfo]]:
-    color_options = ColorOptions()
     additional_plots = []
     cols = 1
     subplot_titles = [""]
