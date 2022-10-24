@@ -2,9 +2,9 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from evidently.calculations.stattests.tvd_stattest import _total_variation_distance
 from evidently.calculations.stattests.utils import get_unique_not_nan_values_list_from_series
 from evidently.calculations.stattests.utils import permutation_test
-from evidently.calculations.stattests.tvd_stattest import _total_variation_distance
 
 
 @pytest.mark.parametrize(
@@ -31,31 +31,30 @@ def test_get_unique_not_nan_values_list_from_series(current_data: pd.Series, ref
             pd.Series([1, 2, 3, 4, 5, 6]).repeat([16, 16, 16, 16, 16, 8]),
             0.0628,
             _total_variation_distance,
-            0.99
+            0.99,
         ),
-    (
-        pd.Series([1, 2, 3, 4, 5, 6]).repeat([16, 18, 16, 14, 12, 12]),
-        pd.Series([1, 2, 3, 4, 5, 6]).repeat([16, 16, 16, 16, 16, 8]),
-        0.204,
-        _total_variation_distance,
-        0.14
+        (
+            pd.Series([1, 2, 3, 4, 5, 6]).repeat([16, 18, 16, 14, 12, 12]),
+            pd.Series([1, 2, 3, 4, 5, 6]).repeat([16, 16, 16, 16, 16, 8]),
+            0.204,
+            _total_variation_distance,
+            0.14,
+        ),
+        (
+            pd.Series([1, 2, 3, 4, 5, 6]).repeat([16, 18, 16, 14, 12, 12]),
+            pd.Series([1, 2, 3, 4, 5, 6]).repeat([0, 0, 0, 0, 0, 88]),
+            0.863,
+            _total_variation_distance,
+            0.0,
+        ),
+        (
+            pd.Series([1, 2, 3, 4, 5, 6]).repeat([16, 18, 16, 14, 12, 12]),
+            pd.Series([1, 2, 3, 4, 5, 6]).repeat([16, 18, 16, 14, 12, 12]),
+            0.0,
+            _total_variation_distance,
+            1.0,
+        ),
     ),
-    (
-        pd.Series([1, 2, 3, 4, 5, 6]).repeat([16, 18, 16, 14, 12, 12]),
-        pd.Series([1, 2, 3, 4, 5, 6]).repeat([0, 0, 0, 0, 0, 88]),
-        0.863,
-        _total_variation_distance,
-        0.0
-    ),
-    (
-        pd.Series([1, 2, 3, 4, 5, 6]).repeat([16, 18, 16, 14, 12, 12]),
-        pd.Series([1, 2, 3, 4, 5, 6]).repeat([16, 18, 16, 14, 12, 12]),
-        0.0,
-        _total_variation_distance,
-        1.0
-    ),
-    )
 )
 def test_permutation_test(reference, current, observed, test_statistic_func, pvalue):
     assert permutation_test(reference, current, observed, test_statistic_func) == pvalue
-    
