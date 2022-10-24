@@ -2,8 +2,7 @@ import numpy as np
 import pandas as pd
 
 from evidently import ColumnMapping
-from evidently.metrics.base_metric import InputData
-from evidently.metrics.classification_performance.classification_quality_metric import ClassificationQuality
+from evidently.metrics import ClassificationQuality
 from evidently.report import Report
 
 
