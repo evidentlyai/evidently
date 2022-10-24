@@ -167,11 +167,11 @@ def test_mann_whitney() -> None:
         (
             pd.Series([1, 2, 3, 4, 5, 6]).repeat([16, 18, 16, 14, 12, 12]),
             pd.Series([1, 2, 3, 4, 5, 6]).repeat([10, 24, 12, 16, 8, 16]),
-            0.4,
+            0.5,
             approx(0.309, abs=1e-3),
             True,
         ),
     ),
 )
-def test_tvd_stattest(reference, current, threshold, pvalue, driftdetected) -> None:
-    assert tvd_test.func(reference, current, "cat", 0.1) == (approx(pvalue, abs=1e-3), driftdetected)
+def test_tvd_stattest(reference, current, threshold, pvalue, drift_detected) -> None:
+    assert tvd_test.func(reference, current, "cat", threshold) == (pvalue, drift_detected)
