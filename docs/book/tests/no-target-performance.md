@@ -1,6 +1,6 @@
 ## When to use it?
 
-You can use the NoTargetPerformanceTestPreset when you generate model predictions in batches and get the true labels or values with a delay. 
+You can use the `NoTargetPerformanceTestPreset` when you generate model predictions in batches and get the true labels or values with a delay. 
 
 This preset helps evaluate the production model quality through proxy metrics. It combines several metrics that check for data quality, data integrity, and data and prediction drift. For example, it will help detect when inputs or predictions are far off the expected range that signals that the model operates in an unfamiliar environment.   
 

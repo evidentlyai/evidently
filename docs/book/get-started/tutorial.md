@@ -79,7 +79,7 @@ from sklearn.datasets import fetch_california_housing
 from evidently import ColumnMapping
 from evidently.report import Report
 from evidently.metric_preset import DataDriftPreset
-from evidently.metric_preset import NumTargetDrift
+from evidently.metric_preset import TargetDriftPreset
 
 from evidently.test_suite import TestSuite
 from evidently.test_preset import DataQualityTestPreset
@@ -130,7 +130,7 @@ Test suites help compare the two datasets in a structured way. A **test suite** 
 
 You can create a custom test suite or use one of the **presets** that work out of the box.
 
-Let’s start by running the **DataStabilityTestPreset**. It will run several checks for data quality and integrity and help detect issues like feature values out of the expected range. 
+Let’s start by running the **DataStability** test preset. It will run several checks for data quality and integrity and help detect issues like feature values out of the expected range. 
 
 You need to create a `TestSuite` object and specify the preset to include. You will also point to the reference and current datasets created at the previous step.
 
@@ -149,7 +149,7 @@ data_stability
 
 It will display the HTML report with the outcomes of the tests.
 
-![The output of the DataStabilityTestPreset](../.gitbook/assets/tutorial/get_started_1_tests_html_report-min.png)
+![The output of the Data Stability Test Preset](../.gitbook/assets/tutorial/get_started_1_tests_html_report-min.png)
 
 You can group the outputs by test status, feature, test group, and type. By clicking on “details,” you can also explore the visuals related to a specific test. 
 
@@ -184,7 +184,7 @@ Let’s generate the pre-built report for Data Drift and combine it with Target 
 To get the report, create a corresponding object and list the two presets. In the toy dataset, the target is numerical, so you will use the Numerical Target Drift report in addition to Data Drift.
 
 ```python
-drift_report = Report(metrics=[DataDrift(), NumTargetDrift()])
+drift_report = Report(metrics=[DataDriftPreset(), TargetDriftPreset()])
  
 drift_report.run(reference_data=reference, current_data=current)
 drift_report

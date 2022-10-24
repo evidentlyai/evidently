@@ -13,7 +13,7 @@
   * [Probabilistic Classification Performance](reports/probabilistic-classification-performance.md)
 * [Test Suites](tests/README.md)
   * [Overview](tests/overview.md)
-  * [NoTargetPerformanceTestPreset](tests/no-target-performance.md)
+  * [NoTargetPerformance](tests/no-target-performance.md)
   * [Data Stability](tests/data-stability.md)
   * [Data Quality](tests/data-quality.md)
   * [Data Drift](tests/data-drift.md)

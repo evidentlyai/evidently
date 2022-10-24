@@ -1,6 +1,6 @@
 ## When to use it?
 
-You can use the Data Quality test preset when you want to evaluate the data quality, even without a reference dataset.
+You can use the `DataQualityTestPreset` when you want to evaluate the data quality, even without a reference dataset.
 
 It will help assess whether a data batch is e.g. suitable for training or retraining. It can detect issues like missing data, duplicates, or constant and almost constant features.  
 
@@ -8,7 +8,7 @@ It will help assess whether a data batch is e.g. suitable for training or retrai
 
 ```python
 data_quality = TestSuite(tests=[
-   DataQuality(),
+   DataQualityTestPreset(),
 ])
  
 data_quality.run(reference_data=ref,current_data=curr)

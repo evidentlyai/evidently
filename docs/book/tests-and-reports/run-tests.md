@@ -169,7 +169,7 @@ Here is an example:
 
 ```python
 my_data_quality_report = TestSuite(tests=[
-    DataQuality(),
+    DataQualityTestPreset(),
     TestColumnAllConstantValues(column_name='education'),
     TestNumberOfDriftedFeatures()
 ])
