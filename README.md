@@ -96,18 +96,19 @@ import pandas as pd
 from sklearn import datasets
 
 from evidently.test_suite import TestSuite
-from evidently.test_preset import DataStability, DataQuality
+from evidently.test_preset import DataStabilityTestPreset
+from evidently.test_preset import DataQualityTestPreset
 
 iris_data = datasets.load_iris(as_frame='auto')
-iris = iris_data.frame
+iris_frame = iris_data.frame
 ```
 
 To run the **Data Stability** test suite and display the reports in the notebook:
 ```python
 data_stability= TestSuite(tests=[
-    DataStability(),
+    DataStabilityTestPreset(),
 ])
-data_stability.run(current_data=iris_frame[:75], reference_data=iris_frame[75:], column_mapping=None)
+data_stability.run(current_data=iris_frame.iloc[:90], reference_data=iris_frame.iloc[90:], column_mapping=None)
 data_stability 
 ```
 
@@ -133,19 +134,19 @@ import pandas as pd
 from sklearn import datasets
 
 from evidently.report import Report
-from evidently.metric_preset import DataDrift, CatTargetDrift
+from evidently.metric_preset import DataDriftPreset
 
 iris_data = datasets.load_iris(as_frame='auto')
-iris = iris_data.frame
+iris_frame = iris_data.frame
 ```
 
 To generate the **Data Drift** report, run:
 ```python
 data_drift_report = Report(metrics=[
-    DataDrift(),
+    DataDriftPreset(),
 ])
 
-data_drift_report.run(current_data=iris_frame[:75], reference_data=iris_frame[75:], column_mapping=None)
+data_drift_report.run(current_data=iris_frame.iloc[:90], reference_data=iris_frame.iloc[90:], column_mapping=None)
 data_drift_report
 
 ```

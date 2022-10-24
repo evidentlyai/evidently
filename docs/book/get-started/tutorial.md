@@ -68,21 +68,22 @@ $ pip install evidently
 
 After installing the tool, import `evidently` and the required components. In this tutorial, you will use several **test suites** and **reports**. Each of them corresponds to a specific type of analysis. 
  
-You will also need to import `pandas`, `numpy`, and the toy `california_housing` dataset. 
+You will also need to import `pandas`, `numpy`, and the toy `california_housing` dataset.
 
 ```python
 import pandas as pd
 import numpy as np
- 
+
 from sklearn.datasets import fetch_california_housing
  
-from evidently.pipeline.column_mapping import ColumnMapping
- 
+from evidently import ColumnMapping
 from evidently.report import Report
-from evidently.metric_preset import DataDrift, NumTargetDrift
- 
+from evidently.metric_preset import DataDriftPreset
+from evidently.metric_preset import TargetDriftPreset
+
 from evidently.test_suite import TestSuite
-from evidently.test_preset import DataQuality, DataStability
+from evidently.test_preset import DataQualityTestPreset
+from evidently.test_preset import DataStabilityTestPreset
 from evidently.tests import *
 ```
 
@@ -104,7 +105,7 @@ housing_data.rename(columns={'MedHouseVal': 'target'}, inplace=True)
 housing_data['prediction'] = housing_data['target'].values + np.random.normal(0, 5, housing_data.shape[0])
 ```
 
-Split the dataset by taking 5000 objects for **reference** and **current** datasets. This way, you’ll get two samples you can compare.  
+Split the dataset by taking 5000 objects for **reference** and **current** datasets. This way, you get two samples to compare.  
 
 ```python
 reference = housing_data.sample(n=5000, replace=False)
@@ -129,13 +130,13 @@ Test suites help compare the two datasets in a structured way. A **test suite** 
 
 You can create a custom test suite or use one of the **presets** that work out of the box.
 
-Let’s start by running the **DataStability preset**. It will run several checks for data quality and integrity and help detect issues like feature values out of the expected range. 
+Let’s start by running the **DataStability** test preset. It will run several checks for data quality and integrity and help detect issues like feature values out of the expected range. 
 
 You need to create a `TestSuite` object and specify the preset to include. You will also point to the reference and current datasets created at the previous step.
 
 ```python
 data_stability = TestSuite(tests=[
-    DataStability(),
+    DataStabilityTestPreset(),
 ])
 data_stability.run(reference_data=reference, current_data=current)
 ```
@@ -148,7 +149,7 @@ data_stability
 
 It will display the HTML report with the outcomes of the tests.
 
-![The output of the DataStability test suite](../.gitbook/assets/tutorial/get_started_1_tests_html_report-min.png)
+![The output of the Data Stability Test Preset](../.gitbook/assets/tutorial/get_started_1_tests_html_report-min.png)
 
 You can group the outputs by test status, feature, test group, and type. By clicking on “details,” you can also explore the visuals related to a specific test. 
 
@@ -183,7 +184,7 @@ Let’s generate the pre-built report for Data Drift and combine it with Target 
 To get the report, create a corresponding object and list the two presets. In the toy dataset, the target is numerical, so you will use the Numerical Target Drift report in addition to Data Drift.
 
 ```python
-drift_report = Report(metrics=[DataDrift(), NumTargetDrift()])
+drift_report = Report(metrics=[DataDriftPreset(), TargetDriftPreset()])
  
 drift_report.run(reference_data=reference, current_data=current)
 drift_report

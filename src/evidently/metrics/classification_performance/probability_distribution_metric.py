@@ -25,9 +25,9 @@ class ProbabilityDistributionResults:
     curr_distplot: List[dict]
 
 
-class ProbabilityDistributionMetric(Metric[ProbabilityDistributionResults]):
+class ProbabilityDistribution(Metric[ProbabilityDistributionResults]):
     def calculate(self, data: InputData) -> ProbabilityDistributionResults:
-        columns = process_columns(data.reference_data, data.column_mapping)
+        columns = process_columns(data.current_data, data.column_mapping)
 
         return ProbabilityDistributionResults(
             ref_distplot=_plot(data.reference_data.copy(), columns) if data.reference_data is not None else None,
@@ -75,31 +75,32 @@ def _plot(dataset_to_plot, columns: DatasetColumns, color_options: Optional[Colo
     return graphs
 
 
-@default_renderer(wrap_type=ProbabilityDistributionMetric)
-class CatTargetDriftRenderer(MetricRenderer):
-    def render_json(self, obj: ProbabilityDistributionMetric) -> dict:
+@default_renderer(wrap_type=ProbabilityDistribution)
+class ProbabilityDistributionRenderer(MetricRenderer):
+    def render_json(self, obj: ProbabilityDistribution) -> dict:
         return {}
 
-    def render_html(self, obj: ProbabilityDistributionMetric) -> List[BaseWidgetInfo]:
+    def render_html(self, obj: ProbabilityDistribution) -> List[BaseWidgetInfo]:
         ref = obj.get_result().ref_distplot
         curr = obj.get_result().curr_distplot
         result = []
         size = WidgetSize.FULL
         if ref is not None:
             size = WidgetSize.HALF
-            result.append(
-                plotly_graph_tabs(
-                    title="Reference: Probability Distribution",
-                    size=size,
-                    figures=[GraphData(graph["title"], graph["data"], graph["layout"]) for graph in ref],
-                )
-            )
         if curr is not None:
             result.append(
                 plotly_graph_tabs(
                     title="Current: Probability Distribution",
                     size=size,
                     figures=[GraphData(graph["title"], graph["data"], graph["layout"]) for graph in curr],
+                )
+            )
+        if ref is not None:
+            result.append(
+                plotly_graph_tabs(
+                    title="Reference: Probability Distribution",
+                    size=size,
+                    figures=[GraphData(graph["title"], graph["data"], graph["layout"]) for graph in ref],
                 )
             )
         return result

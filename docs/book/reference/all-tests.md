@@ -8,7 +8,7 @@ How to read the tables:
 * **Description**: plain text explanation of the test. We also specify whether the test applies to the whole dataset or individual columns.
 * **Default**: description of the default parameters. Many tests have two types of the defaults. The first applies when you pass a reference dataset and Evidently can derive expectations from it. The second applies if you do not provide the reference. You can always override the defaults by specifying a custom condition.   
 
-We organize the tests into logical groups. Note that the groups do not match the presets with the same name, e.g., there are more Data Quality tests below than in the DataQuality preset.
+We organize the tests into logical groups. Note that the groups do not match the presets with the same name, e.g., there are more Data Quality tests below than in the `DataQualityTestPreset`.
 
 {% hint style="info" %} 
 We are doing our best to maintain this page up to date. In case of discrepancies, consult the code on GitHub (API reference coming soon!) or the current version of the "All tests" example notebook in the [Examples](../get-started/examples.md) section. If you notice an error, please send us a pull request to update the documentation! 

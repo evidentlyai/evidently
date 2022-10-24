@@ -1,6 +1,6 @@
 ## When to use it?
 
-You can use the NoTargetPerformance test preset when you generate model predictions in batches and get the true labels or values with a delay. 
+You can use the `NoTargetPerformanceTestPreset` when you generate model predictions in batches and get the true labels or values with a delay. 
 
 This preset helps evaluate the production model quality through proxy metrics. It combines several metrics that check for data quality, data integrity, and data and prediction drift. For example, it will help detect when inputs or predictions are far off the expected range that signals that the model operates in an unfamiliar environment.   
 
@@ -9,7 +9,7 @@ This preset helps evaluate the production model quality through proxy metrics. I
 
 ```python
 no_target_performance_all = TestSuite(tests=[
-   NoTargetPerformance(),
+   NoTargetPerformanceTestPreset(),
 ])
  
 no_target_performance_all.run(reference_data=ref, current_data=curr)
@@ -22,7 +22,7 @@ You can pass the list of the most important features for data drift evaluation.
 
 ```python
 no_target_performance_top = TestSuite(tests=[
-   NoTargetPerformance(most_important_features=['education-num', 'hours-per-week']),
+   NoTargetPerformanceTestPreset(columns=['education-num', 'hours-per-week']),
 ])
 
 no_target_performance_top.run(reference_data=ref,current_data=curr)

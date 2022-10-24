@@ -8,7 +8,7 @@ from evidently.calculations.stattests.registry import register_stattest
 from evidently.calculations.stattests.utils import get_binned_data
 
 
-def psi(
+def _psi(
     reference_data: pd.Series, current_data: pd.Series, feature_type: str, threshold: float, n_bins: int = 30
 ) -> Tuple[float, bool]:
     """Calculate the PSI
@@ -41,7 +41,7 @@ def psi(
 psi_stat_test = StatTest(
     name="psi",
     display_name="PSI",
-    func=psi,
+    func=_psi,
     allowed_feature_types=["cat", "num"],
     default_threshold=0.1,
 )

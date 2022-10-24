@@ -11,7 +11,14 @@ After [installation](../get-started/install-evidently.md), import the TestSuite 
 ```python
 from evidently.test_suite import TestSuite
 from evidently.tests import *
-from evidently.test_preset import NoTargetPerformance, DataQuality, DataStability, DataDrift, Regression, MulticlassClassification, BinaryClassificationTopK, BinaryClassification
+from evidently.test_preset import NoTargetPerformanceTestPreset
+from evidently.test_preset import DataQualityTestPreset
+from evidently.test_preset import DataStabilityTestPreset
+from evidently.test_preset import DataDriftTestPreset
+from evidently.test_preset import RegressionTestPreset
+from evidently.test_preset import MulticlassClassificationTestPreset
+from evidently.test_preset import BinaryClassificationTopKTestPreset
+from evidently.test_preset import BinaryClassificationTestPreset
 ```
 You need two datasets for comparison: **reference** and **current**. The reference dataset is optional. 
 
@@ -29,11 +36,11 @@ If nothing else is specified, the tests will run with the default parameters.
 
 ## How to run test presets
 
-**Example 1**. To apply the DataStability test preset:
+**Example 1**. To apply the DataStabilityTestPreset:
 
 ```python
 data_stability = TestSuite(tests=[
-DataStability(),
+DataStabilityTestPreset(),
 ])
 data_stability.run(reference_data=ref, current_data=curr)
 ```
@@ -44,30 +51,30 @@ You get the visual report automatically if you call the object in Jupyter notebo
 data_stability
 ```
 
-**Example 2**. To apply and call NoTargetPerformance preset:
+**Example 2**. To apply and call NoTargetPerformanceTestPreset:
 
 ```python
 no_target_performance = TestSuite(tests=[
-NoTargetPerformance(most_important_features=['education-num', 'hours-per-week']),
+NoTargetPerformanceTestPreset(columns=['education-num', 'hours-per-week']),
 ])
 no_target_performance.run(reference_data=ref,current_data=curr)
-No_target_performance
+no_target_performance
 ```
-You can use the `most_important_features` argument as shown above. In this case, some of the per-feature tests only apply to the features from the list. This way, you decrease the overall number of tests. 
+You can use the `columns` argument as shown above. In this case, some of the per-feature tests only apply to the features from the list. This way, you decrease the overall number of tests. 
 
 ## Available presets 
 
 Here are other test presets you can try:
 
 ```python
-NoTargetPerformance
-DataStability
-DataQuality
-DataDrift
-Regression
-MulticlassClassification
-BinaryClassificationTopK
-BinaryClassification
+NoTargetPerformanceTestPreset
+DataStabilityTestPreset
+DataQualityTestPreset
+DataDriftTestPreset
+RegressionTestPreset
+MulticlassClassificationTestPreset
+BinaryClassificationTopKTestPreset
+BinaryClassificationTestPreset
 ```
 {% hint style="info" %} 
 Refer to the [Test Suites](../tests/README.md) section to see the contents of each preset, and to the [All tests](../reference/all-tests.md) table to see the individual tests and their default parameters.
@@ -162,7 +169,7 @@ Here is an example:
 
 ```python
 my_data_quality_report = TestSuite(tests=[
-    DataQuality(),
+    DataQualityTestPreset(),
     TestColumnAllConstantValues(column_name='education'),
     TestNumberOfDriftedFeatures()
 ])

@@ -36,7 +36,7 @@ class ProbClassificationPerformanceMetrics:
     log_loss: float
     metrics_matrix: dict
     confusion_matrix: ConfusionMatrix
-    confusion_by_classes: Dict[str, Dict[str, int]]
+    confusion_by_classes: Dict[Union[str, int], Dict[str, int]]
     roc_aucs: Optional[list] = None
     roc_curve: Optional[dict] = None
     pr_curve: Optional[dict] = None

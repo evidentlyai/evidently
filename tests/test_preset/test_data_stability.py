@@ -1,6 +1,6 @@
 import pandas as pd
 
-from evidently.test_preset import DataStability
+from evidently.test_preset import DataStabilityTestPreset
 from evidently.test_suite import TestSuite
 
 
@@ -23,7 +23,7 @@ def test_data_stability_preset():
     )
     data_quality_suite = TestSuite(
         tests=[
-            DataStability(),
+            DataStabilityTestPreset(),
         ]
     )
 
