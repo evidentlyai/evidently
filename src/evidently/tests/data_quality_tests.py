@@ -509,7 +509,7 @@ class TestFeatureValueMinRenderer(TestRenderer):
         ref_distr = None
         if "reference" in obj.metric.get_result().plot_data.bins_for_hist.keys():
             ref_distr = obj.metric.get_result().plot_data.bins_for_hist["reference"]
-        fig = plot_distr(curr_distr, ref_distr)
+        fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
         fig = plot_check(fig, obj.get_condition())
         current_characteristics = obj.metric.get_result().current_characteristics
         if not isinstance(current_characteristics, NumericCharacteristics):
@@ -558,7 +558,7 @@ class TestFeatureValueMaxRenderer(TestRenderer):
         ref_distr = None
         if "reference" in obj.metric.get_result().plot_data.bins_for_hist.keys():
             ref_distr = obj.metric.get_result().plot_data.bins_for_hist["reference"]
-        fig = plot_distr(curr_distr, ref_distr)
+        fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
         fig = plot_check(fig, obj.get_condition())
         current_characteristics = obj.metric.get_result().current_characteristics
         if not isinstance(current_characteristics, NumericCharacteristics):
@@ -603,7 +603,7 @@ class TestFeatureValueMeanRenderer(TestRenderer):
         ref_distr = None
         if "reference" in obj.metric.get_result().plot_data.bins_for_hist.keys():
             ref_distr = obj.metric.get_result().plot_data.bins_for_hist["reference"]
-        fig = plot_distr(curr_distr, ref_distr)
+        fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
         fig = plot_check(fig, obj.get_condition())
         current_characteristics = obj.metric.get_result().current_characteristics
         if not isinstance(current_characteristics, NumericCharacteristics):
@@ -650,7 +650,7 @@ class TestFeatureValueMedianRenderer(TestRenderer):
         if "reference" in obj.metric.get_result().plot_data.bins_for_hist.keys():
             ref_distr = obj.metric.get_result().plot_data.bins_for_hist["reference"]
 
-        fig = plot_distr(curr_distr, ref_distr)
+        fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
         fig = plot_check(fig, obj.get_condition())
         current_characteristics = obj.metric.get_result().current_characteristics
         if not isinstance(current_characteristics, NumericCharacteristics):
@@ -698,7 +698,7 @@ class TestFeatureValueStdRenderer(TestRenderer):
         ref_distr = None
         if "reference" in obj.metric.get_result().plot_data.bins_for_hist.keys():
             ref_distr = obj.metric.get_result().plot_data.bins_for_hist["reference"]
-        fig = plot_distr(curr_distr, ref_distr)
+        fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
         info.with_details(f"Std Value {column_name}", plotly_figure(title="", figure=fig))
         return info
 
@@ -959,7 +959,7 @@ class TestMeanInNSigmasRenderer(TestRenderer):
         if "reference" in metric_result.plot_data.bins_for_hist.keys():
             ref_distr = metric_result.plot_data.bins_for_hist["reference"]
 
-        fig = plot_distr(curr_distr, ref_distr)
+        fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
         fig = plot_check(fig, ref_condition)
         if not isinstance(metric_result.current_characteristics, NumericCharacteristics):
             raise ValueError(f"{obj.column_name} should be numerical or bool")

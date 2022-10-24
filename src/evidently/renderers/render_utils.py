@@ -15,15 +15,15 @@ COLOR_DISCRETE_SEQUENCE = (
 )
 
 
-def plot_distr(hist_curr, hist_ref=None, orientation="v"):
+def plot_distr(*, hist_curr, hist_ref=None, orientation="v", color_options: ColorOptions):
     fig = go.Figure()
 
     fig.add_trace(
-        go.Bar(name="current", x=hist_curr["x"], y=hist_curr["count"], marker_color=RED, orientation=orientation)
+        go.Bar(name="current", x=hist_curr["x"], y=hist_curr["count"], marker_color=color_options.get_current_data_color(), orientation=orientation)
     )
     if hist_ref is not None:
         fig.add_trace(
-            go.Bar(name="reference", x=hist_ref["x"], y=hist_ref["count"], marker_color=GREY, orientation=orientation)
+            go.Bar(name="reference", x=hist_ref["x"], y=hist_ref["count"], marker_color=color_options.get_reference_data_color(), orientation=orientation)
         )
 
     return fig
@@ -42,7 +42,7 @@ def get_distribution_plot_figure(
             name="current",
             x=current_distribution.x,
             y=current_distribution.y,
-            marker_color=color_options.current_data_color,
+            marker_color=color_options.get_current_data_color(),
             orientation=orientation,
         )
     )
@@ -52,7 +52,7 @@ def get_distribution_plot_figure(
                 name="reference",
                 x=reference_distribution.x,
                 y=reference_distribution.y,
-                marker_color=color_options.reference_data_color,
+                marker_color=color_options.get_reference_data_color(),
                 orientation=orientation,
             )
         )

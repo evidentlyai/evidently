@@ -220,7 +220,7 @@ class TestValueMeanErrorRenderer(TestRenderer):
         hist_ref = None
         if "reference" in obj.metric.get_result().me_hist_for_plot.keys():
             hist_ref = me_hist_for_plot["reference"]
-        fig = plot_distr(hist_curr, hist_ref)
+        fig = plot_distr(hist_curr=hist_curr, hist_ref=hist_ref, color_options=self.color_options)
         fig = plot_check(fig, obj.get_condition())
         fig = plot_metric_value(fig, obj.metric.get_result().mean_error, "current mean error")
         info.with_details("", plotly_figure(title="", figure=fig))
@@ -261,9 +261,11 @@ class TestValueAbsMaxErrorRenderer(TestRenderer):
         me_hist_for_plot = obj.metric.get_result().me_hist_for_plot
         hist_curr = me_hist_for_plot["current"]
         hist_ref = None
+
         if "reference" in obj.metric.get_result().me_hist_for_plot.keys():
             hist_ref = me_hist_for_plot["reference"]
-        fig = plot_distr(hist_curr, hist_ref)
+
+        fig = plot_distr(hist_curr=hist_curr, hist_ref=hist_ref, color_options=self.color_options)
         info.with_details("", plotly_figure(title="", figure=fig))
         return info
 
