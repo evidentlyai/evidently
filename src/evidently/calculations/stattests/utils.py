@@ -1,3 +1,5 @@
+from collections import Counter
+
 import numpy as np
 import pandas as pd
 
@@ -39,3 +41,29 @@ def get_binned_data(
         np.place(current_percents, current_percents == 0, 0.0001)
 
     return reference_percents, current_percents
+
+
+def permutation_test(reference_data, current_data, observed, test_statistic_func, iterations=100):
+
+    """Perform a two-sided permutation test
+    Args:
+        reference_data: reference data
+        current_data: current data
+        observed: observed value
+        test_statistic_func: the test statistic function
+        iterations: number of times to permute
+    Returns:
+        p_value: two-sided p_value
+    """
+    np.random.seed(0)
+    hold_test_statistic = []
+    for i in range(iterations):
+        combined_data = reference_data.tolist() + current_data.tolist()
+        new_reference = np.random.choice(combined_data, len(reference_data), replace=False).tolist()
+        count_combined = Counter(combined_data)
+        count_new_reference = Counter(new_reference)
+        new_current = list((count_combined - count_new_reference).elements())
+        hold_test_statistic.append(test_statistic_func(pd.Series(new_reference), pd.Series(new_current)))
+
+    p_val = sum(observed <= abs(np.array(hold_test_statistic))) / len(hold_test_statistic)
+    return p_val
