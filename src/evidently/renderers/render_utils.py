@@ -44,7 +44,7 @@ def get_distribution_plot_figure(
             name="current",
             x=current_distribution.x,
             y=current_distribution.y,
-            marker_color=color_options.current_data_color,
+            marker_color=color_options.get_current_data_color(),
             orientation=orientation,
         )
     )
@@ -54,7 +54,7 @@ def get_distribution_plot_figure(
                 name="reference",
                 x=reference_distribution.x,
                 y=reference_distribution.y,
-                marker_color=color_options.reference_data_color,
+                marker_color=color_options.get_reference_data_color(),
                 orientation=orientation,
             )
         )
