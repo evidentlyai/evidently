@@ -8,7 +8,7 @@ from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.test_suite import TestSuite
 from evidently.tests import TestConflictPrediction
 from evidently.tests import TestConflictTarget
-from evidently.tests import TestFeatureValueMax
+from evidently.tests import TestColumnValueMax
 from evidently.tests import TestFeatureValueMean
 from evidently.tests import TestFeatureValueMedian
 from evidently.tests import TestColumnValueMin
@@ -136,23 +136,23 @@ def test_data_quality_test_max() -> None:
     test_dataset = pd.DataFrame(
         {"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 1, 2, 5], "target": [0, 0, 0, 1]}
     )
-    suite = TestSuite(tests=[TestFeatureValueMax(column_name="numerical_feature", gt=10)])
+    suite = TestSuite(tests=[TestColumnValueMax(column_name="numerical_feature", gt=10)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
 
-    suite = TestSuite(tests=[TestFeatureValueMax(column_name="numerical_feature", eq=5)])
+    suite = TestSuite(tests=[TestColumnValueMax(column_name="numerical_feature", eq=5)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
 
 
 def test_data_quality_test_max_render():
     test_dataset = pd.DataFrame({"numerical_feature": [0, 1, 2, 5], "target": [0, 0, 0, 1]})
-    suite = TestSuite(tests=[TestFeatureValueMax(column_name="numerical_feature", eq=0)])
+    suite = TestSuite(tests=[TestColumnValueMax(column_name="numerical_feature", eq=0)])
     suite.run(current_data=test_dataset, reference_data=None)
     assert suite.show()
     assert suite.json()
 
-    suite = TestSuite(tests=[TestFeatureValueMax(column_name="numerical_feature")])
+    suite = TestSuite(tests=[TestColumnValueMax(column_name="numerical_feature")])
     suite.run(current_data=test_dataset, reference_data=test_dataset)
     assert suite.show()
     assert suite.json()
