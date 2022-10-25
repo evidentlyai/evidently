@@ -10,9 +10,9 @@ from evidently.tests import TestConflictPrediction
 from evidently.tests import TestConflictTarget
 from evidently.tests import TestColumnValueMax
 from evidently.tests import TestColumnValueMean
-from evidently.tests import TestFeatureValueMedian
+from evidently.tests import TestColumnValueMedian
 from evidently.tests import TestColumnValueMin
-from evidently.tests import TestFeatureValueStd
+from evidently.tests import TestColumnValueStd
 from evidently.tests import TestHighlyCorrelatedColumns
 from evidently.tests import TestMeanInNSigmas
 from evidently.tests import TestMostCommonValueShare
@@ -248,10 +248,10 @@ def test_data_quality_test_median() -> None:
             "prediction": [0, 0, 1, 1],
         }
     )
-    suite = TestSuite(tests=[TestFeatureValueMedian(column_name="no_existing_feature", eq=1.5)])
+    suite = TestSuite(tests=[TestColumnValueMedian(column_name="no_existing_feature", eq=1.5)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
-    suite = TestSuite(tests=[TestFeatureValueMedian(column_name="feature1", eq=1.5)])
+    suite = TestSuite(tests=[TestColumnValueMedian(column_name="feature1", eq=1.5)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
     assert suite.show()
@@ -266,13 +266,13 @@ def test_data_quality_test_std() -> None:
             "prediction": [0, 0, 1, 1],
         }
     )
-    suite = TestSuite(tests=[TestFeatureValueStd(column_name="no_existing_feature", eq=1.5)])
+    suite = TestSuite(tests=[TestColumnValueStd(column_name="no_existing_feature", eq=1.5)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
-    suite = TestSuite(tests=[TestFeatureValueStd(column_name="feature1", lt=2)])
+    suite = TestSuite(tests=[TestColumnValueStd(column_name="feature1", lt=2)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
-    suite = TestSuite(tests=[TestFeatureValueStd(column_name="feature1", gt=2, lt=3)])
+    suite = TestSuite(tests=[TestColumnValueStd(column_name="feature1", gt=2, lt=3)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
     assert suite.show()

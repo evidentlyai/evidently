@@ -616,7 +616,7 @@ class TestColumnValueMeanRenderer(TestRenderer):
         return info
 
 
-class TestFeatureValueMedian(BaseFeatureDataQualityMetricsTest):
+class TestColumnValueMedian(BaseFeatureDataQualityMetricsTest):
     name = "Median Value"
 
     def get_condition(self) -> TestValueCondition:
@@ -639,9 +639,9 @@ class TestFeatureValueMedian(BaseFeatureDataQualityMetricsTest):
         return f"The median value of the column **{self.column_name}** is {value:.3g}. The test threshold is {self.get_condition()}."
 
 
-@default_renderer(wrap_type=TestFeatureValueMedian)
-class TestFeatureValueMedianRenderer(TestRenderer):
-    def render_html(self, obj: TestFeatureValueMedian) -> TestHtmlInfo:
+@default_renderer(wrap_type=TestColumnValueMedian)
+class TestColumnValueMedianRenderer(TestRenderer):
+    def render_html(self, obj: TestColumnValueMedian) -> TestHtmlInfo:
         column_name = obj.column_name
         info = super().render_html(obj)
         curr_distr = obj.metric.get_result().plot_data.bins_for_hist["current"]
@@ -663,7 +663,7 @@ class TestFeatureValueMedianRenderer(TestRenderer):
         return info
 
 
-class TestFeatureValueStd(BaseFeatureDataQualityMetricsTest):
+class TestColumnValueStd(BaseFeatureDataQualityMetricsTest):
     name = "Standard Deviation (SD)"
 
     def get_condition(self) -> TestValueCondition:
@@ -689,9 +689,9 @@ class TestFeatureValueStd(BaseFeatureDataQualityMetricsTest):
         )
 
 
-@default_renderer(wrap_type=TestFeatureValueStd)
-class TestFeatureValueStdRenderer(TestRenderer):
-    def render_html(self, obj: TestFeatureValueStd) -> TestHtmlInfo:
+@default_renderer(wrap_type=TestColumnValueStd)
+class TestColumnValueStdRenderer(TestRenderer):
+    def render_html(self, obj: TestColumnValueStd) -> TestHtmlInfo:
         column_name = obj.column_name
         info = super().render_html(obj)
         curr_distr = obj.metric.get_result().plot_data.bins_for_hist["current"]
