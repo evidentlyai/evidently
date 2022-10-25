@@ -6,8 +6,8 @@ from evidently.test_preset.test_preset import TestPreset
 from evidently.tests import TestAllColumnsShareOfNulls
 from evidently.tests import TestCatColumnsOutOfListValues
 from evidently.tests import TestColumnsType
-from evidently.tests import TestCustomFeaturesValueDrift
 from evidently.tests import TestColumnValueDrift
+from evidently.tests import TestCustomFeaturesValueDrift
 from evidently.tests import TestNumColumnsMeanInNSigmas
 from evidently.tests import TestNumColumnsOutOfRangeValues
 from evidently.tests import TestShareOfDriftedColumns

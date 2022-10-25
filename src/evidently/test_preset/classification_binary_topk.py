@@ -3,8 +3,8 @@ from typing import Union
 from evidently.metrics.base_metric import InputData
 from evidently.test_preset.test_preset import TestPreset
 from evidently.tests import TestAccuracyScore
-from evidently.tests import TestF1Score
 from evidently.tests import TestColumnValueDrift
+from evidently.tests import TestF1Score
 from evidently.tests import TestLogLoss
 from evidently.tests import TestPrecisionScore
 from evidently.tests import TestRecallScore

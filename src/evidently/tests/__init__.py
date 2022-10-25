@@ -12,8 +12,8 @@ from .classification_performance_tests import TestRocAuc
 from .classification_performance_tests import TestTNR
 from .classification_performance_tests import TestTPR
 from .data_drift_tests import TestAllFeaturesValueDrift
-from .data_drift_tests import TestCustomFeaturesValueDrift
 from .data_drift_tests import TestColumnValueDrift
+from .data_drift_tests import TestCustomFeaturesValueDrift
 from .data_drift_tests import TestNumberOfDriftedColumns
 from .data_drift_tests import TestShareOfDriftedColumns
 from .data_integrity_tests import TestAllColumnsShareOfNulls
@@ -40,14 +40,14 @@ from .data_integrity_tests import TestShareOfNulls
 from .data_integrity_tests import TestShareOfRowsWithNulls
 from .data_quality_tests import TestAllColumnsMostCommonValueShare
 from .data_quality_tests import TestCatColumnsOutOfListValues
-from .data_quality_tests import TestConflictPrediction
-from .data_quality_tests import TestConflictTarget
-from .data_quality_tests import TestCorrelationChanges
 from .data_quality_tests import TestColumnValueMax
 from .data_quality_tests import TestColumnValueMean
 from .data_quality_tests import TestColumnValueMedian
 from .data_quality_tests import TestColumnValueMin
 from .data_quality_tests import TestColumnValueStd
+from .data_quality_tests import TestConflictPrediction
+from .data_quality_tests import TestConflictTarget
+from .data_quality_tests import TestCorrelationChanges
 from .data_quality_tests import TestHighlyCorrelatedColumns
 from .data_quality_tests import TestMeanInNSigmas
 from .data_quality_tests import TestMostCommonValueShare
