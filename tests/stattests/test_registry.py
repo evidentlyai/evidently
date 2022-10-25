@@ -34,7 +34,7 @@ def _custom_stattest(reference_data: pd.Series, current_data: pd.Series, feature
     ],
 )
 def test_get_stattest_valid_resolve(stattest_func, feature_type, expected):
-    test = get_stattest(pd.Series(), pd.Series(), feature_type, stattest_func)
+    test = get_stattest(pd.Series(dtype="float64"), pd.Series(dtype="float64"), feature_type, stattest_func)
     assert test.display_name == expected.display_name
     assert test.func == expected.func
 
@@ -76,7 +76,7 @@ def test_get_default_stattest(reference_data, current_data, feature_type, expect
 )
 def test_get_stattest_invalid_type(stattest_func, feature_type):
     with pytest.raises(StatTestInvalidFeatureTypeError):
-        get_stattest(pd.Series(), pd.Series(), feature_type, stattest_func)
+        get_stattest(pd.Series(dtype="float64"), pd.Series(dtype="float64"), feature_type, stattest_func)
 
 
 @pytest.mark.parametrize(
@@ -88,7 +88,7 @@ def test_get_stattest_invalid_type(stattest_func, feature_type):
 )
 def test_get_stattest_missing_stattest(stattest_func, feature_type):
     with pytest.raises(StatTestNotFoundError):
-        get_stattest(pd.Series(), pd.Series(), feature_type, stattest_func)
+        get_stattest(pd.Series(dtype="float64"), pd.Series(dtype="float64"), feature_type, stattest_func)
 
 
 @pytest.mark.parametrize(
@@ -100,5 +100,5 @@ def test_get_stattest_missing_stattest(stattest_func, feature_type):
     ],
 )
 def test_stattest_default_threshold(stat_test, override_threshold, expected_threshold):
-    result = stat_test(pd.Series(), pd.Series(), "", override_threshold)
+    result = stat_test(pd.Series(dtype="float64"), pd.Series(dtype="float64"), "", override_threshold)
     assert result.drift_score == expected_threshold

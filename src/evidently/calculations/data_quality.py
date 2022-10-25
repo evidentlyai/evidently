@@ -518,7 +518,7 @@ class DataQualityGetPlotData:
 
         if unique_values > merge_small_cat:
             curr_cats = curr[feature_name].astype(str).value_counts(normalize=True)
-            ref_cats = pd.Series()
+            ref_cats = pd.Series(dtype="float64")
             if ref is not None:
                 ref_cats = ref[feature_name].astype(str).value_counts(normalize=True)
             cats = (
