@@ -571,7 +571,7 @@ class TestColumnValueMaxRenderer(TestRenderer):
         return info
 
 
-class TestFeatureValueMean(BaseFeatureDataQualityMetricsTest):
+class TestColumnValueMean(BaseFeatureDataQualityMetricsTest):
     name = "Mean Value"
 
     def get_condition(self) -> TestValueCondition:
@@ -594,9 +594,9 @@ class TestFeatureValueMean(BaseFeatureDataQualityMetricsTest):
         return f"The mean value of the column **{self.column_name}** is {value:.3g}. The test threshold is {self.get_condition()}."
 
 
-@default_renderer(wrap_type=TestFeatureValueMean)
-class TestFeatureValueMeanRenderer(TestRenderer):
-    def render_html(self, obj: TestFeatureValueMean) -> TestHtmlInfo:
+@default_renderer(wrap_type=TestColumnValueMean)
+class TestColumnValueMeanRenderer(TestRenderer):
+    def render_html(self, obj: TestColumnValueMean) -> TestHtmlInfo:
         column_name = obj.column_name
         info = super().render_html(obj)
         curr_distr = obj.metric.get_result().plot_data.bins_for_hist["current"]

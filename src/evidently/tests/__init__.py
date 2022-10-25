@@ -44,7 +44,7 @@ from .data_quality_tests import TestConflictPrediction
 from .data_quality_tests import TestConflictTarget
 from .data_quality_tests import TestCorrelationChanges
 from .data_quality_tests import TestColumnValueMax
-from .data_quality_tests import TestFeatureValueMean
+from .data_quality_tests import TestColumnValueMean
 from .data_quality_tests import TestFeatureValueMedian
 from .data_quality_tests import TestColumnValueMin
 from .data_quality_tests import TestFeatureValueStd
