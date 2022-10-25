@@ -162,6 +162,10 @@ DataDriftTable()
 
 **Defaults**. Some metrics include default parameters. For example, probabilistic classification quality metrics have a default 0.5 decision threshold. You can override the defaults by setting custom parameters. 
 
+{% hint style="info" %} 
+**Reference**: The available parameters are lsited in the same [All metrics](../reference/all-metrics.md) table.
+{% endhint %}
+
 ## How to set the parameters
 
 **Example 1**. Some metrics might require setting a parameter. For example, if you want to calculate the number of values that match a regular expression, you need to specify it. 
