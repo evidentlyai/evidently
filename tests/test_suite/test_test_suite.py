@@ -12,7 +12,7 @@ from evidently.tests import TestColumnsType
 from evidently.tests import TestColumnValueRegExp
 from evidently.tests import TestConflictPrediction
 from evidently.tests import TestConflictTarget
-from evidently.tests import TestFeatureValueDrift
+from evidently.tests import TestColumnValueDrift
 from evidently.tests import TestColumnValueMax
 from evidently.tests import TestColumnValueMean
 from evidently.tests import TestColumnValueMedian
@@ -84,7 +84,7 @@ def test_export_to_json():
     tests = [
         TestNumberOfDriftedColumns(),
         TestShareOfDriftedColumns(),
-        TestFeatureValueDrift(column_name="num_feature_1"),
+        TestColumnValueDrift(column_name="num_feature_1"),
         TestNumberOfColumns(),
         TestNumberOfRows(),
         TestNumberOfNulls(),

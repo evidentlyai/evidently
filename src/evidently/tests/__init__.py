@@ -13,7 +13,7 @@ from .classification_performance_tests import TestTNR
 from .classification_performance_tests import TestTPR
 from .data_drift_tests import TestAllFeaturesValueDrift
 from .data_drift_tests import TestCustomFeaturesValueDrift
-from .data_drift_tests import TestFeatureValueDrift
+from .data_drift_tests import TestColumnValueDrift
 from .data_drift_tests import TestNumberOfDriftedColumns
 from .data_drift_tests import TestShareOfDriftedColumns
 from .data_integrity_tests import TestAllColumnsShareOfNulls

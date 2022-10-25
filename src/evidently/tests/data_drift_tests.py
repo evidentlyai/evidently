@@ -124,8 +124,8 @@ class TestShareOfDriftedColumns(BaseDataDriftMetricsTest):
         )
 
 
-class TestFeatureValueDrift(Test):
-    name = "Drift per Feature"
+class TestColumnValueDrift(Test):
+    name = "Drift per Column"
     group = DATA_DRIFT_GROUP.id
     metric: DataDriftTable
     column_name: str
@@ -180,9 +180,9 @@ class TestFeatureValueDrift(Test):
 class TestAllFeaturesValueDrift(BaseGenerator):
     """Create value drift tests for numeric and category features"""
 
-    def generate(self, columns_info: DatasetColumns) -> List[TestFeatureValueDrift]:
+    def generate(self, columns_info: DatasetColumns) -> List[TestColumnValueDrift]:
         return [
-            TestFeatureValueDrift(column_name=name)
+            TestColumnValueDrift(column_name=name)
             for name in columns_info.get_all_features_list(include_datetime_feature=False)
         ]
 
@@ -195,8 +195,8 @@ class TestCustomFeaturesValueDrift(BaseGenerator):
     def __init__(self, features: List[str]):
         self.features = features
 
-    def generate(self, columns_info: DatasetColumns) -> List[TestFeatureValueDrift]:
-        return [TestFeatureValueDrift(column_name=name) for name in self.features]
+    def generate(self, columns_info: DatasetColumns) -> List[TestColumnValueDrift]:
+        return [TestColumnValueDrift(column_name=name) for name in self.features]
 
 
 @default_renderer(wrap_type=TestNumberOfDriftedColumns)
@@ -254,9 +254,9 @@ class TestShareOfDriftedColumnsRenderer(TestRenderer):
         return info
 
 
-@default_renderer(wrap_type=TestFeatureValueDrift)
-class TestFeatureValueDriftRenderer(TestRenderer):
-    def render_json(self, obj: TestFeatureValueDrift) -> dict:
+@default_renderer(wrap_type=TestColumnValueDrift)
+class TestColumnValueDriftRenderer(TestRenderer):
+    def render_json(self, obj: TestColumnValueDrift) -> dict:
         feature_name = obj.column_name
         drift_data = obj.metric.get_result().drift_by_columns[feature_name]
         base = super().render_json(obj)
@@ -270,7 +270,7 @@ class TestFeatureValueDriftRenderer(TestRenderer):
         }
         return base
 
-    def render_html(self, obj: TestFeatureValueDrift) -> TestHtmlInfo:
+    def render_html(self, obj: TestColumnValueDrift) -> TestHtmlInfo:
         result = obj.metric.get_result()
         column_name = obj.column_name
         info = super().render_html(obj)

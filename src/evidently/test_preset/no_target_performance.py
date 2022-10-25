@@ -7,7 +7,7 @@ from evidently.tests import TestAllColumnsShareOfNulls
 from evidently.tests import TestCatColumnsOutOfListValues
 from evidently.tests import TestColumnsType
 from evidently.tests import TestCustomFeaturesValueDrift
-from evidently.tests import TestFeatureValueDrift
+from evidently.tests import TestColumnValueDrift
 from evidently.tests import TestNumColumnsMeanInNSigmas
 from evidently.tests import TestNumColumnsOutOfRangeValues
 from evidently.tests import TestShareOfDriftedColumns
@@ -25,7 +25,7 @@ class NoTargetPerformanceTestPreset(TestPreset):
         preset_tests: List = []
 
         if columns.utility_columns.prediction is not None and isinstance(columns.utility_columns.prediction, str):
-            preset_tests.append(TestFeatureValueDrift(column_name=columns.utility_columns.prediction))
+            preset_tests.append(TestColumnValueDrift(column_name=columns.utility_columns.prediction))
 
         preset_tests.append(TestShareOfDriftedColumns(lt=data.current_data.shape[1] // 3))
         preset_tests.append(TestColumnsType())

@@ -153,9 +153,9 @@ To create a custom data drift test suite with column-level tests:
 
 ```python
 feature_suite = TestSuite(tests=[
-TestColumnShareOfNulls(column_name='hours-per-week'),
-TestFeatureValueDrift(column_name='education'),
-TestMeanInNSigmas(column_name='hours-per-week')
+    TestColumnShareOfNulls(column_name='hours-per-week'),
+    TestColumnValueDrift(column_name='education'),
+    TestMeanInNSigmas(column_name='hours-per-week')
 ])
 ```
 

@@ -4,7 +4,7 @@ import pandas as pd
 
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.test_suite import TestSuite
-from evidently.tests import TestFeatureValueDrift
+from evidently.tests import TestColumnValueDrift
 from evidently.tests import TestNumberOfDriftedColumns
 from evidently.tests import TestShareOfDriftedColumns
 
@@ -171,7 +171,7 @@ def test_data_drift_test_feature_value_drift() -> None:
     test_reference_dataset = pd.DataFrame(
         {"feature_1": [0, 1, 2, 0], "target": [0, 0, 0, 1], "prediction": [0, 0, 0, 1]}
     )
-    suite = TestSuite(tests=[TestFeatureValueDrift(column_name="feature_1")])
+    suite = TestSuite(tests=[TestColumnValueDrift(column_name="feature_1")])
     suite.run(current_data=test_current_dataset, reference_data=test_reference_dataset, column_mapping=ColumnMapping())
     assert suite
     assert suite.show()
@@ -183,7 +183,7 @@ def test_data_drift_test_feature_value_drift_json_render() -> None:
     test_reference_dataset = pd.DataFrame(
         {"feature_1": [1, 1, 2, 0], "target": [0, 0, 0, 1], "prediction": [0, 0, 0, 1]}
     )
-    suite = TestSuite(tests=[TestFeatureValueDrift(column_name="feature_1")])
+    suite = TestSuite(tests=[TestColumnValueDrift(column_name="feature_1")])
     suite.run(current_data=test_current_dataset, reference_data=test_reference_dataset)
     assert suite
 
