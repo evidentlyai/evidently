@@ -36,7 +36,7 @@ If nothing else is specified, the tests will run with the default parameters.
 
 ## How to run test presets
 
-**Example 1**. To apply the DataStabilityTestPreset:
+**Example 1**. To apply the `DataStabilityTestPreset`:
 
 ```python
 data_stability = TestSuite(tests=[
@@ -51,7 +51,7 @@ You get the visual report automatically if you call the object in Jupyter notebo
 data_stability
 ```
 
-**Example 2**. To apply and call NoTargetPerformanceTestPreset:
+**Example 2**. To apply and call `NoTargetPerformanceTestPreset`:
 
 ```python
 no_target_performance = TestSuite(tests=[
