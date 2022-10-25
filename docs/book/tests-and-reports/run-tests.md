@@ -298,7 +298,7 @@ suite
 
 ```python
 suite = TestSuite(tests=[
-   TestFeatureValueMin(column_name=column_name, gt=0) for column_name in ["age", "fnlwgt", "education-num"]
+   TestColumnValueMin(column_name=column_name, gt=0) for column_name in ["age", "fnlwgt", "education-num"]
 ])
  
 suite.run(current_data=current_data, reference_data=reference_data)
@@ -328,7 +328,7 @@ suite
 You can generate tests for different subsets of columns. Here is how you generate tests only for **numerical columns**:
 
 ```python
-suite = TestSuite(tests=[generate_column_tests(TestFeatureValueMin, columns="num")])
+suite = TestSuite(tests=[generate_column_tests(TestColumnValueMin, columns="num")])
 suite.run(current_data=current_data, reference_data=reference_data)
 suite
 ```
@@ -344,7 +344,7 @@ suite
 You can also generate tests with defined parameters, for a custom defined column list:
  
 ```python
-suite = TestSuite(tests=[generate_column_tests(TestFeatureValueMin, columns=["age", "fnlwgt", "education-num"],
+suite = TestSuite(tests=[generate_column_tests(TestColumnValueMin, columns=["age", "fnlwgt", "education-num"],
                                               parameters={"gt": 0})])
 suite.run(current_data=current_data, reference_data=reference_data)
 suite

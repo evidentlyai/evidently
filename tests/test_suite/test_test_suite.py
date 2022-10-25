@@ -16,7 +16,7 @@ from evidently.tests import TestFeatureValueDrift
 from evidently.tests import TestFeatureValueMax
 from evidently.tests import TestFeatureValueMean
 from evidently.tests import TestFeatureValueMedian
-from evidently.tests import TestFeatureValueMin
+from evidently.tests import TestColumnValueMin
 from evidently.tests import TestFeatureValueStd
 from evidently.tests import TestMeanInNSigmas
 from evidently.tests import TestMostCommonValueShare
@@ -102,7 +102,7 @@ def test_export_to_json():
         TestConflictPrediction(),
         TestColumnAllConstantValues(column_name="num_feature_1"),
         TestColumnAllUniqueValues(column_name="num_feature_1"),
-        TestFeatureValueMin(column_name="num_feature_1"),
+        TestColumnValueMin(column_name="num_feature_1"),
         TestFeatureValueMax(column_name="num_feature_1"),
         TestFeatureValueMean(column_name="num_feature_1"),
         TestFeatureValueMedian(column_name="num_feature_1"),
