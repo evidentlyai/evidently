@@ -747,7 +747,7 @@ def test_data_quality_test_highly_correlated_features_json_render() -> None:
     assert test_info == {
         "description": "The maximum correlation is 0.983. The test threshold is eq=0.983 ± 0.0983.",
         "group": "data_quality",
-        "name": "Highly Correlated Features",
+        "name": "Highly Correlated Columns",
         "parameters": {
             "abs_max_num_features_correlation": 0.983,
             "condition": {"eq": {"absolute": 1e-12, "relative": 0.1, "value": 0.9827076298239908}},

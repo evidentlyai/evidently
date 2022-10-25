@@ -137,7 +137,7 @@ def test_data_drift_test_share_of_drifted_features_json_render() -> None:
     assert test_info == {
         "description": "The drift is detected for 0% features (0 out of 4). The test " "threshold is lt=0.3",
         "group": "data_drift",
-        "name": "Share of Drifted Features",
+        "name": "Share of Drifted Columns",
         "parameters": {
             "condition": {"lt": 0.3},
             "features": {
@@ -194,7 +194,7 @@ def test_data_drift_test_feature_value_drift_json_render() -> None:
         "description": "The drift score for the feature **feature_1** is 0.064."
         " The drift detection method is chi-square p_value. The drift detection threshold is 0.05.",
         "group": "data_drift",
-        "name": "Drift per Feature",
+        "name": "Drift per Column",
         "parameters": {
             "features": {
                 "feature_1": {"data_drift": False, "score": 0.064, "stattest": "chi-square p_value", "threshold": 0.05}
