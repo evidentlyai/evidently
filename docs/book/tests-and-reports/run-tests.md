@@ -130,7 +130,7 @@ To create a custom data drift test suite with dataset-level tests:
 ```python
 data_drift_suite = TestSuite(tests=[
 TestShareOfDriftedFeatures(),
-TestNumberOfDriftedFeatures(),
+TestNumberOfDriftedColumns(),
 ])
 ```
 
@@ -171,7 +171,7 @@ Here is an example:
 my_data_quality_report = TestSuite(tests=[
     DataQualityTestPreset(),
     TestColumnAllConstantValues(column_name='education'),
-    TestNumberOfDriftedFeatures()
+    TestNumberOfDriftedColumns()
 ])
 
 my_data_quality_report.run(reference_data=ref,current_data=curr)

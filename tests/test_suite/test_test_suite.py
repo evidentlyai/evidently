@@ -23,7 +23,7 @@ from evidently.tests import TestMostCommonValueShare
 from evidently.tests import TestNumberOfColumns
 from evidently.tests import TestNumberOfColumnsWithNulls
 from evidently.tests import TestNumberOfConstantColumns
-from evidently.tests import TestNumberOfDriftedFeatures
+from evidently.tests import TestNumberOfDriftedColumns
 from evidently.tests import TestNumberOfDuplicatedColumns
 from evidently.tests import TestNumberOfDuplicatedRows
 from evidently.tests import TestNumberOfEmptyColumns
@@ -82,7 +82,7 @@ def test_export_to_json():
     )
 
     tests = [
-        TestNumberOfDriftedFeatures(),
+        TestNumberOfDriftedColumns(),
         TestShareOfDriftedFeatures(),
         TestFeatureValueDrift(column_name="num_feature_1"),
         TestNumberOfColumns(),

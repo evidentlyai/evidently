@@ -83,7 +83,7 @@ To modify the logic or select a different test, you should pass a DataDrift [Opt
 
 | Test | Description | Default |
 |---|---|---|
-| TestNumberOfDriftedFeatures()<br>options: DataDriftOptions | Dataset-level.  <br><br> Compares the distribution of each column in the current dataset to the reference and computes the number of drifting features. | Expects =< ⅓ features to drift.<br>With reference: If > 1/3 of features drifted, the test fails.<br>No reference: N/A |
+| TestNumberOfDriftedColumns()<br>options: DataDriftOptions | Dataset-level.  <br><br> Compares the distribution of each column in the current dataset to the reference and computes the number of drifting features. | Expects =< ⅓ features to drift.<br>With reference: If > 1/3 of features drifted, the test fails.<br>No reference: N/A |
 | TestShareOfDriftedFeatures()<br>options: DataDriftOptions | Dataset-level.  <br><br> Compares the distribution of each column in the current dataset to the reference and computes the share of drifting features. | Expects =< ⅓ features to drift.<br>With reference: If > 1/3 of features drifted, the test fails.<br>No reference: N/A |
 | TestFeatureValueDrift(column_name='name')<br>options: DataDriftOptions<br>    | Column-level. <br><br> Compares the distribution of values in a given column to the reference.  | Expects no drift.<br>With reference: the test fails if the distribution drift is detected in a given column.<br>No reference: N/A |
 

@@ -83,7 +83,7 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
         )
 
 
-class TestNumberOfDriftedFeatures(BaseDataDriftMetricsTest):
+class TestNumberOfDriftedColumns(BaseDataDriftMetricsTest):
     name = "Number of Drifted Features"
 
     def get_condition(self) -> TestValueCondition:
@@ -199,9 +199,9 @@ class TestCustomFeaturesValueDrift(BaseGenerator):
         return [TestFeatureValueDrift(column_name=name) for name in self.features]
 
 
-@default_renderer(wrap_type=TestNumberOfDriftedFeatures)
-class TestNumberOfDriftedFeaturesRenderer(TestRenderer):
-    def render_json(self, obj: TestNumberOfDriftedFeatures) -> dict:
+@default_renderer(wrap_type=TestNumberOfDriftedColumns)
+class TestNumberOfDriftedColumnsRenderer(TestRenderer):
+    def render_json(self, obj: TestNumberOfDriftedColumns) -> dict:
         base = super().render_json(obj)
         base["parameters"]["condition"] = obj.get_condition().as_dict()
         base["parameters"]["features"] = {
@@ -210,7 +210,7 @@ class TestNumberOfDriftedFeaturesRenderer(TestRenderer):
         }
         return base
 
-    def render_html(self, obj: TestNumberOfDriftedFeatures) -> TestHtmlInfo:
+    def render_html(self, obj: TestNumberOfDriftedColumns) -> TestHtmlInfo:
         info = super().render_html(obj)
         df = pd.DataFrame(
             data=[[feature] + list(data) for feature, data in obj.get_result().features.items()],

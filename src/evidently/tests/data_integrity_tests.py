@@ -1090,7 +1090,7 @@ class TestColumnsType(Test):
 
 
 @default_renderer(wrap_type=TestColumnsType)
-class TestNumberOfDriftedFeaturesRenderer(TestRenderer):
+class TestColumnsTypeRenderer(TestRenderer):
     def render_json(self, obj: TestColumnsType) -> dict:
         base = super().render_json(obj)
         base["parameters"]["columns"] = [
