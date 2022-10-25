@@ -40,7 +40,7 @@ def data_quality_tests_execute(**context):
     data_quality_suite = TestSuite(
         tests=[
             TestShareOfDriftedFeatures(),
-            TestHighlyCorrelatedFeatures(),
+            TestHighlyCorrelatedColumns(),
             TestNumberOfColumns(),
             TestNumberOfConstantColumns(),
             TestNumberOfDuplicatedColumns(),

@@ -48,7 +48,7 @@ from .data_quality_tests import TestFeatureValueMean
 from .data_quality_tests import TestFeatureValueMedian
 from .data_quality_tests import TestFeatureValueMin
 from .data_quality_tests import TestFeatureValueStd
-from .data_quality_tests import TestHighlyCorrelatedFeatures
+from .data_quality_tests import TestHighlyCorrelatedColumns
 from .data_quality_tests import TestMeanInNSigmas
 from .data_quality_tests import TestMostCommonValueShare
 from .data_quality_tests import TestNumberOfOutListValues

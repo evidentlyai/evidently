@@ -183,8 +183,8 @@ class TestTargetPredictionCorrelation(BaseDataQualityCorrelationsMetricsValueTes
         )
 
 
-class TestHighlyCorrelatedFeatures(BaseDataQualityCorrelationsMetricsValueTest):
-    name = "Highly Correlated Features"
+class TestHighlyCorrelatedColumns(BaseDataQualityCorrelationsMetricsValueTest):
+    name = "Highly Correlated Columns"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
@@ -207,15 +207,15 @@ class TestHighlyCorrelatedFeatures(BaseDataQualityCorrelationsMetricsValueTest):
         return f"The maximum correlation is {value:.3g}. The test threshold is {self.get_condition()}."
 
 
-@default_renderer(wrap_type=TestHighlyCorrelatedFeatures)
-class TestHighlyCorrelatedFeaturesRenderer(TestRenderer):
-    def render_json(self, obj: TestHighlyCorrelatedFeatures) -> dict:
+@default_renderer(wrap_type=TestHighlyCorrelatedColumns)
+class TestHighlyCorrelatedColumnsRenderer(TestRenderer):
+    def render_json(self, obj: TestHighlyCorrelatedColumns) -> dict:
         base = super().render_json(obj)
         base["parameters"]["condition"] = obj.get_condition().as_dict()
         base["parameters"]["abs_max_num_features_correlation"] = np.round(obj.value, 3)
         return base
 
-    def render_html(self, obj: TestHighlyCorrelatedFeatures) -> TestHtmlInfo:
+    def render_html(self, obj: TestHighlyCorrelatedColumns) -> TestHtmlInfo:
         info = super().render_html(obj)
         metric_result = obj.metric.get_result()
         current_correlations = metric_result.current.correlation[obj.method]

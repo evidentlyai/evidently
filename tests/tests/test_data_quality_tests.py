@@ -13,7 +13,7 @@ from evidently.tests import TestFeatureValueMean
 from evidently.tests import TestFeatureValueMedian
 from evidently.tests import TestFeatureValueMin
 from evidently.tests import TestFeatureValueStd
-from evidently.tests import TestHighlyCorrelatedFeatures
+from evidently.tests import TestHighlyCorrelatedColumns
 from evidently.tests import TestMeanInNSigmas
 from evidently.tests import TestMostCommonValueShare
 from evidently.tests import TestNumberOfOutListValues
@@ -713,15 +713,15 @@ def test_data_quality_test_highly_correlated_features() -> None:
             "feature3": [0, 0, 1, 1],
         }
     )
-    suite = TestSuite(tests=[TestHighlyCorrelatedFeatures()])
+    suite = TestSuite(tests=[TestHighlyCorrelatedColumns()])
     suite.run(current_data=test_dataset, reference_data=test_dataset)
     assert suite
 
-    suite = TestSuite(tests=[TestHighlyCorrelatedFeatures(gt=1)])
+    suite = TestSuite(tests=[TestHighlyCorrelatedColumns(gt=1)])
     suite.run(current_data=test_dataset, reference_data=None)
     assert not suite
 
-    suite = TestSuite(tests=[TestHighlyCorrelatedFeatures(lt=1)])
+    suite = TestSuite(tests=[TestHighlyCorrelatedColumns(lt=1)])
     suite.run(current_data=test_dataset, reference_data=None)
     assert suite
     assert suite.show()
@@ -737,7 +737,7 @@ def test_data_quality_test_highly_correlated_features_json_render() -> None:
             "prediction": [0, 0, 1, 1],
         }
     )
-    suite = TestSuite(tests=[TestHighlyCorrelatedFeatures()])
+    suite = TestSuite(tests=[TestHighlyCorrelatedColumns()])
     suite.run(current_data=test_dataset, reference_data=test_dataset)
     assert suite
 

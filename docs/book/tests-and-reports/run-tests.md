@@ -187,7 +187,7 @@ TestShareOfOutRangeValues()
 TestMostCommonValueShare()
 TestNumberOfConstantColumns()
 TestNumberOfDuplicatedColumns()
-TestHighlyCorrelatedFeatures()
+TestHighlyCorrelatedColumns()
 ```
 
 {% hint style="info" %} 
