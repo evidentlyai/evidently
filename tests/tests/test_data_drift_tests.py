@@ -6,7 +6,7 @@ from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.test_suite import TestSuite
 from evidently.tests import TestFeatureValueDrift
 from evidently.tests import TestNumberOfDriftedColumns
-from evidently.tests import TestShareOfDriftedFeatures
+from evidently.tests import TestShareOfDriftedColumns
 
 
 def test_data_drift_test_number_of_drifted_features() -> None:
@@ -103,15 +103,15 @@ def test_data_drift_test_share_of_drifted_features() -> None:
             "prediction": [1, 0, 0, 1],
         }
     )
-    suite = TestSuite(tests=[TestShareOfDriftedFeatures()])
+    suite = TestSuite(tests=[TestShareOfDriftedColumns()])
     suite.run(current_data=test_current_dataset, reference_data=test_current_dataset)
     assert suite
 
-    suite = TestSuite(tests=[TestShareOfDriftedFeatures(gt=0.6)])
+    suite = TestSuite(tests=[TestShareOfDriftedColumns(gt=0.6)])
     suite.run(current_data=test_current_dataset, reference_data=test_current_dataset)
     assert not suite
 
-    suite = TestSuite(tests=[TestShareOfDriftedFeatures(lte=0.5)])
+    suite = TestSuite(tests=[TestShareOfDriftedColumns(lte=0.5)])
     suite.run(current_data=test_current_dataset, reference_data=test_current_dataset)
     assert suite
     assert suite.show()
@@ -127,7 +127,7 @@ def test_data_drift_test_share_of_drifted_features_json_render() -> None:
             "prediction": [0, 0, 0, 1],
         }
     )
-    suite = TestSuite(tests=[TestShareOfDriftedFeatures()])
+    suite = TestSuite(tests=[TestShareOfDriftedColumns()])
     suite.run(current_data=test_current_dataset, reference_data=test_current_dataset)
     assert suite
 

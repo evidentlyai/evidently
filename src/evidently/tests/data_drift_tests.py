@@ -103,8 +103,8 @@ class TestNumberOfDriftedColumns(BaseDataDriftMetricsTest):
         )
 
 
-class TestShareOfDriftedFeatures(BaseDataDriftMetricsTest):
-    name = "Share of Drifted Features"
+class TestShareOfDriftedColumns(BaseDataDriftMetricsTest):
+    name = "Share of Drifted Columns"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
@@ -221,9 +221,9 @@ class TestNumberOfDriftedColumnsRenderer(TestRenderer):
         return info
 
 
-@default_renderer(wrap_type=TestShareOfDriftedFeatures)
-class TestShareOfDriftedFeaturesRenderer(TestRenderer):
-    def render_json(self, obj: TestShareOfDriftedFeatures) -> dict:
+@default_renderer(wrap_type=TestShareOfDriftedColumns)
+class TestShareOfDriftedColumnsRenderer(TestRenderer):
+    def render_json(self, obj: TestShareOfDriftedColumns) -> dict:
         base = super().render_json(obj)
         base["parameters"]["condition"] = obj.get_condition().as_dict()
         base["parameters"]["features"] = {
@@ -232,7 +232,7 @@ class TestShareOfDriftedFeaturesRenderer(TestRenderer):
         }
         return base
 
-    def render_html(self, obj: TestShareOfDriftedFeatures) -> TestHtmlInfo:
+    def render_html(self, obj: TestShareOfDriftedColumns) -> TestHtmlInfo:
         info = super().render_html(obj)
         df = pd.DataFrame(
             data=[[feature] + list(data) for feature, data in obj.get_result().features.items()],

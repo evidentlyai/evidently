@@ -15,7 +15,7 @@ from .data_drift_tests import TestAllFeaturesValueDrift
 from .data_drift_tests import TestCustomFeaturesValueDrift
 from .data_drift_tests import TestFeatureValueDrift
 from .data_drift_tests import TestNumberOfDriftedColumns
-from .data_drift_tests import TestShareOfDriftedFeatures
+from .data_drift_tests import TestShareOfDriftedColumns
 from .data_integrity_tests import TestAllColumnsShareOfNulls
 from .data_integrity_tests import TestColumnAllConstantValues
 from .data_integrity_tests import TestColumnAllUniqueValues

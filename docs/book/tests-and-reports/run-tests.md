@@ -129,16 +129,19 @@ To create a custom data drift test suite with dataset-level tests:
 
 ```python
 data_drift_suite = TestSuite(tests=[
-TestShareOfDriftedFeatures(),
-TestNumberOfDriftedColumns(),
+    TestShareOfDriftedColumns(),
+    TestNumberOfDriftedColumns(),
 ])
 ```
 
 To run the tests and get the visual report:
 
 ```python
-data_drift_suite.run(reference_data=ref, current_data=curr,
-column_mapping=ColumnMapping()
+data_drift_suite.run(
+    reference_data=ref,
+    current_data=curr,
+    column_mapping=ColumnMapping(),
+)
 data_drift_suite
 ```
 
