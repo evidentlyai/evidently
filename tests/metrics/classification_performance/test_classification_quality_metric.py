@@ -2,8 +2,7 @@ import numpy as np
 import pandas as pd
 
 from evidently import ColumnMapping
-from evidently.metrics.base_metric import InputData
-from evidently.metrics.classification_performance.classification_quality_metric import ClassificationQuality
+from evidently.metrics import ClassificationQualityMetric
 from evidently.report import Report
 
 
@@ -15,7 +14,7 @@ def test_classification_quality():
         ),
     )
 
-    metric = ClassificationQuality()
+    metric = ClassificationQualityMetric()
     report = Report(metrics=[metric])
     report.run(reference_data=None, current_data=current, column_mapping=ColumnMapping())
 
@@ -34,7 +33,7 @@ def test_classification_quality_binary():
         ),
     )
 
-    metric = ClassificationQuality()
+    metric = ClassificationQualityMetric()
     report = Report(metrics=[metric])
     report.run(reference_data=None, current_data=current, column_mapping=ColumnMapping())
 

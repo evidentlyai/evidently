@@ -43,7 +43,7 @@ class ClassificationQualityResult:
     target_name: str
 
 
-class ClassificationQuality(ThresholdClassificationMetric[ClassificationQualityResult]):
+class ClassificationQualityMetric(ThresholdClassificationMetric[ClassificationQualityResult]):
     confusion_matrix_metric: ClassificationConfusionMatrix
 
     def __init__(
@@ -135,13 +135,13 @@ class ClassificationQuality(ThresholdClassificationMetric[ClassificationQualityR
         )
 
 
-@default_renderer(wrap_type=ClassificationQuality)
+@default_renderer(wrap_type=ClassificationQualityMetric)
 class ClassificationQualityRenderer(MetricRenderer):
-    def render_json(self, obj: ClassificationQuality) -> dict:
+    def render_json(self, obj: ClassificationQualityMetric) -> dict:
         result = dataclasses.asdict(obj.get_result())
         return result
 
-    def render_html(self, obj: ClassificationQuality) -> List[BaseWidgetInfo]:
+    def render_html(self, obj: ClassificationQualityMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         target_name = metric_result.target_name
         result = []

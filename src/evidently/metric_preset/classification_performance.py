@@ -6,7 +6,7 @@ from evidently.metrics import ClassificationConfusionMatrix
 from evidently.metrics import ClassificationPerformanceMetrics
 from evidently.metrics import ClassificationPRCurve
 from evidently.metrics import ClassificationPRTable
-from evidently.metrics import ClassificationQuality
+from evidently.metrics import ClassificationQualityMetric
 from evidently.metrics import ClassificationQualityByClass
 from evidently.metrics import ClassificationQualityByFeatureTable
 from evidently.metrics import ClassificationRocCurve
@@ -24,7 +24,7 @@ class ClassificationPerformance(MetricPreset):
 class ClassificationPreset(MetricPreset):
     def generate_metrics(self, data: InputData, columns: DatasetColumns):
         result = [
-            ClassificationQuality(),
+            ClassificationQualityMetric(),
             ClassificationClassBalance(),
             ClassificationConfusionMatrix(),
             ClassificationQualityByClass(),
