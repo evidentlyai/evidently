@@ -36,7 +36,7 @@ Consult the [user guide](../tests-and-reports/run-tests.md) for the complete ins
 The preset contains the following tests:
 
 ```python
-TestShareOfDriftedFeatures()
+TestShareOfDriftedColumns()
 TestValueDrift(column=prediction)
 TestColumnsType()
 TestColumnShareOfNulls(column=’all’)

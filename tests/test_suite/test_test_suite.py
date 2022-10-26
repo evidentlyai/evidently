@@ -9,21 +9,21 @@ from evidently.tests import TestColumnAllConstantValues
 from evidently.tests import TestColumnAllUniqueValues
 from evidently.tests import TestColumnShareOfNulls
 from evidently.tests import TestColumnsType
+from evidently.tests import TestColumnValueDrift
+from evidently.tests import TestColumnValueMax
+from evidently.tests import TestColumnValueMean
+from evidently.tests import TestColumnValueMedian
+from evidently.tests import TestColumnValueMin
 from evidently.tests import TestColumnValueRegExp
+from evidently.tests import TestColumnValueStd
 from evidently.tests import TestConflictPrediction
 from evidently.tests import TestConflictTarget
-from evidently.tests import TestFeatureValueDrift
-from evidently.tests import TestFeatureValueMax
-from evidently.tests import TestFeatureValueMean
-from evidently.tests import TestFeatureValueMedian
-from evidently.tests import TestFeatureValueMin
-from evidently.tests import TestFeatureValueStd
 from evidently.tests import TestMeanInNSigmas
 from evidently.tests import TestMostCommonValueShare
 from evidently.tests import TestNumberOfColumns
 from evidently.tests import TestNumberOfColumnsWithNulls
 from evidently.tests import TestNumberOfConstantColumns
-from evidently.tests import TestNumberOfDriftedFeatures
+from evidently.tests import TestNumberOfDriftedColumns
 from evidently.tests import TestNumberOfDuplicatedColumns
 from evidently.tests import TestNumberOfDuplicatedRows
 from evidently.tests import TestNumberOfEmptyColumns
@@ -34,7 +34,7 @@ from evidently.tests import TestNumberOfOutRangeValues
 from evidently.tests import TestNumberOfRows
 from evidently.tests import TestNumberOfRowsWithNulls
 from evidently.tests import TestNumberOfUniqueValues
-from evidently.tests import TestShareOfDriftedFeatures
+from evidently.tests import TestShareOfDriftedColumns
 from evidently.tests import TestShareOfOutListValues
 from evidently.tests import TestShareOfOutRangeValues
 from evidently.tests import TestUniqueValuesShare
@@ -82,9 +82,9 @@ def test_export_to_json():
     )
 
     tests = [
-        TestNumberOfDriftedFeatures(),
-        TestShareOfDriftedFeatures(),
-        TestFeatureValueDrift(column_name="num_feature_1"),
+        TestNumberOfDriftedColumns(),
+        TestShareOfDriftedColumns(),
+        TestColumnValueDrift(column_name="num_feature_1"),
         TestNumberOfColumns(),
         TestNumberOfRows(),
         TestNumberOfNulls(),
@@ -102,11 +102,11 @@ def test_export_to_json():
         TestConflictPrediction(),
         TestColumnAllConstantValues(column_name="num_feature_1"),
         TestColumnAllUniqueValues(column_name="num_feature_1"),
-        TestFeatureValueMin(column_name="num_feature_1"),
-        TestFeatureValueMax(column_name="num_feature_1"),
-        TestFeatureValueMean(column_name="num_feature_1"),
-        TestFeatureValueMedian(column_name="num_feature_1"),
-        TestFeatureValueStd(column_name="num_feature_1"),
+        TestColumnValueMin(column_name="num_feature_1"),
+        TestColumnValueMax(column_name="num_feature_1"),
+        TestColumnValueMean(column_name="num_feature_1"),
+        TestColumnValueMedian(column_name="num_feature_1"),
+        TestColumnValueStd(column_name="num_feature_1"),
         TestNumberOfUniqueValues(column_name="num_feature_1"),
         TestUniqueValuesShare(column_name="num_feature_1"),
         TestMostCommonValueShare(column_name="num_feature_1"),

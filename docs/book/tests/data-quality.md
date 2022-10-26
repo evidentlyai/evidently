@@ -12,7 +12,7 @@ data_quality = TestSuite(tests=[
 ])
  
 data_quality.run(reference_data=ref,current_data=curr)
-Data_quality
+data_quality
 ```
 
 Consult the [user guide](../tests-and-reports/run-tests.md) for the complete instructions on how to run tests. 
@@ -23,12 +23,12 @@ The preset contains the following tests:
 
 
 ```python
-TestColumnShareOfNulls(column=’all’),
-TestMostCommonValueShare(column=’all’)
+TestColumnShareOfNulls(column="all"),
+TestMostCommonValueShare(column="all")
 TestNumberOfConstantColumns(),
 TestNumberOfDuplicatedColumns(),
 TestNumberOfDuplicatedRows(),
-TestHighlyCorrelatedFeatures(),
+TestHighlyCorrelatedColumns(),
 
 ```
 
