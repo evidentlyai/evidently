@@ -92,8 +92,8 @@ class DataDriftMetricsRenderer(MetricRenderer):
             counter(
                 counters=[
                     CounterData(
-                        f"Dataset drift detection threshold is {result.threshold}",
-                        f"Dataset Drift is {drift_detected}",
+                        f"Dataset Drift is {drift_detected}. Dataset drift detection threshold is {result.threshold}",
+                        "Dataset Drift",
                     )
                 ],
                 title="",
