@@ -120,13 +120,19 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
 
     def calculate(self, data: InputData) -> ColumnSummary:
         columns = process_columns(data.current_data, data.column_mapping)
-        # define target type and prediction type. TODO move it to process_columns func
-        if self.column_name not in data.current_data.columns:
-            raise ValueError(f"{self.column_name} not in current data")
+
+        if self.column_name not in data.current_data:
+            raise ValueError(f"Column '{self.column_name}' not found in current dataset.")
+
+        if data.reference_data is not None and self.column_name not in data.reference_data:
+            raise ValueError(f"Column '{self.column_name}' not found in reference dataset.")
+
         column_type = None
         target_name = columns.utility_columns.target
         target_type = None
         data_by_target = None
+
+        # define target type and prediction type. TODO move it to process_columns func
         if columns.utility_columns.target is not None:
             if data.column_mapping.task == "regression" or is_numeric_dtype(data.current_data[target_name]):
                 target_type = "num"

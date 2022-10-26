@@ -1,4 +1,3 @@
-from typing import Dict
 from typing import List
 from typing import Optional
 
@@ -8,22 +7,15 @@ import pandas as pd
 from pandas.api.types import is_numeric_dtype
 from plotly import graph_objs as go
 
-from evidently.calculations.data_drift import get_one_column_drift
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
-from evidently.options import DataDriftOptions
 from evidently.options.color_scheme import ColorOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
-from evidently.renderers.html_widgets import CounterData
-from evidently.renderers.html_widgets import GraphData
 from evidently.renderers.html_widgets import WidgetSize
 from evidently.renderers.html_widgets import plotly_figure
-from evidently.renderers.render_utils import get_distribution_plot_figure
 from evidently.utils.data_operations import process_columns
-from evidently.utils.types import Numeric
-from evidently.utils.visualizations import Distribution
 
 
 @dataclasses.dataclass
@@ -173,4 +165,4 @@ class ColumnValuePlotRenderer(MetricRenderer):
                 ),
             ],
         )
-        return [plotly_figure(title=f"{column_name} Values", figure=fig, size=WidgetSize.HALF)]
+        return [plotly_figure(title=f"Column '{column_name}' Values", figure=fig, size=WidgetSize.FULL)]

@@ -46,7 +46,7 @@ class ClassificationQualityByFeatureTable(Metric[ClassificationQualityByFeatureT
         if data.reference_data is not None:
             ref_df = data.reference_data.copy()
         if target_name is None or prediction_name is None:
-            raise ValueError("The columns 'target' and 'prediction' columns should be present")
+            raise ValueError("The columns 'target' and 'prediction' should be present")
         curr_predictions = get_prediction_data(data.current_data, dataset_columns, data.column_mapping.pos_label)
         ref_predictions = None
         if ref_df is not None:

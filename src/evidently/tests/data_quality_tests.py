@@ -183,8 +183,8 @@ class TestTargetPredictionCorrelation(BaseDataQualityCorrelationsMetricsValueTes
         )
 
 
-class TestHighlyCorrelatedFeatures(BaseDataQualityCorrelationsMetricsValueTest):
-    name = "Highly Correlated Features"
+class TestHighlyCorrelatedColumns(BaseDataQualityCorrelationsMetricsValueTest):
+    name = "Highly Correlated Columns"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
@@ -207,15 +207,15 @@ class TestHighlyCorrelatedFeatures(BaseDataQualityCorrelationsMetricsValueTest):
         return f"The maximum correlation is {value:.3g}. The test threshold is {self.get_condition()}."
 
 
-@default_renderer(wrap_type=TestHighlyCorrelatedFeatures)
-class TestHighlyCorrelatedFeaturesRenderer(TestRenderer):
-    def render_json(self, obj: TestHighlyCorrelatedFeatures) -> dict:
+@default_renderer(wrap_type=TestHighlyCorrelatedColumns)
+class TestHighlyCorrelatedColumnsRenderer(TestRenderer):
+    def render_json(self, obj: TestHighlyCorrelatedColumns) -> dict:
         base = super().render_json(obj)
         base["parameters"]["condition"] = obj.get_condition().as_dict()
         base["parameters"]["abs_max_num_features_correlation"] = np.round(obj.value, 3)
         return base
 
-    def render_html(self, obj: TestHighlyCorrelatedFeatures) -> TestHtmlInfo:
+    def render_html(self, obj: TestHighlyCorrelatedColumns) -> TestHtmlInfo:
         info = super().render_html(obj)
         metric_result = obj.metric.get_result()
         current_correlations = metric_result.current.correlation[obj.method]
@@ -474,7 +474,7 @@ class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest, ABC):
         return result
 
 
-class TestFeatureValueMin(BaseFeatureDataQualityMetricsTest):
+class TestColumnValueMin(BaseFeatureDataQualityMetricsTest):
     name = "Min Value"
 
     def get_condition(self) -> TestValueCondition:
@@ -500,9 +500,9 @@ class TestFeatureValueMin(BaseFeatureDataQualityMetricsTest):
         return f"The minimum value of the column **{self.column_name}** is {value} The test threshold is {self.get_condition()}."
 
 
-@default_renderer(wrap_type=TestFeatureValueMin)
-class TestFeatureValueMinRenderer(TestRenderer):
-    def render_html(self, obj: TestFeatureValueMin) -> TestHtmlInfo:
+@default_renderer(wrap_type=TestColumnValueMin)
+class TestColumnValueMinRenderer(TestRenderer):
+    def render_html(self, obj: TestColumnValueMin) -> TestHtmlInfo:
         column_name = obj.column_name
         info = super().render_html(obj)
         curr_distr = obj.metric.get_result().plot_data.bins_for_hist["current"]
@@ -522,7 +522,7 @@ class TestFeatureValueMinRenderer(TestRenderer):
         return info
 
 
-class TestFeatureValueMax(BaseFeatureDataQualityMetricsTest):
+class TestColumnValueMax(BaseFeatureDataQualityMetricsTest):
     name = "Max Value"
 
     def get_condition(self) -> TestValueCondition:
@@ -549,9 +549,9 @@ class TestFeatureValueMax(BaseFeatureDataQualityMetricsTest):
         return f"The maximum value of the column **{self.column_name}** is {value}. The test threshold is {self.get_condition()}."
 
 
-@default_renderer(wrap_type=TestFeatureValueMax)
-class TestFeatureValueMaxRenderer(TestRenderer):
-    def render_html(self, obj: TestFeatureValueMax) -> TestHtmlInfo:
+@default_renderer(wrap_type=TestColumnValueMax)
+class TestColumnValueMaxRenderer(TestRenderer):
+    def render_html(self, obj: TestColumnValueMax) -> TestHtmlInfo:
         column_name = obj.column_name
         info = super().render_html(obj)
         curr_distr = obj.metric.get_result().plot_data.bins_for_hist["current"]
@@ -571,7 +571,7 @@ class TestFeatureValueMaxRenderer(TestRenderer):
         return info
 
 
-class TestFeatureValueMean(BaseFeatureDataQualityMetricsTest):
+class TestColumnValueMean(BaseFeatureDataQualityMetricsTest):
     name = "Mean Value"
 
     def get_condition(self) -> TestValueCondition:
@@ -594,9 +594,9 @@ class TestFeatureValueMean(BaseFeatureDataQualityMetricsTest):
         return f"The mean value of the column **{self.column_name}** is {value:.3g}. The test threshold is {self.get_condition()}."
 
 
-@default_renderer(wrap_type=TestFeatureValueMean)
-class TestFeatureValueMeanRenderer(TestRenderer):
-    def render_html(self, obj: TestFeatureValueMean) -> TestHtmlInfo:
+@default_renderer(wrap_type=TestColumnValueMean)
+class TestColumnValueMeanRenderer(TestRenderer):
+    def render_html(self, obj: TestColumnValueMean) -> TestHtmlInfo:
         column_name = obj.column_name
         info = super().render_html(obj)
         curr_distr = obj.metric.get_result().plot_data.bins_for_hist["current"]
@@ -616,7 +616,7 @@ class TestFeatureValueMeanRenderer(TestRenderer):
         return info
 
 
-class TestFeatureValueMedian(BaseFeatureDataQualityMetricsTest):
+class TestColumnValueMedian(BaseFeatureDataQualityMetricsTest):
     name = "Median Value"
 
     def get_condition(self) -> TestValueCondition:
@@ -639,9 +639,9 @@ class TestFeatureValueMedian(BaseFeatureDataQualityMetricsTest):
         return f"The median value of the column **{self.column_name}** is {value:.3g}. The test threshold is {self.get_condition()}."
 
 
-@default_renderer(wrap_type=TestFeatureValueMedian)
-class TestFeatureValueMedianRenderer(TestRenderer):
-    def render_html(self, obj: TestFeatureValueMedian) -> TestHtmlInfo:
+@default_renderer(wrap_type=TestColumnValueMedian)
+class TestColumnValueMedianRenderer(TestRenderer):
+    def render_html(self, obj: TestColumnValueMedian) -> TestHtmlInfo:
         column_name = obj.column_name
         info = super().render_html(obj)
         curr_distr = obj.metric.get_result().plot_data.bins_for_hist["current"]
@@ -663,7 +663,7 @@ class TestFeatureValueMedianRenderer(TestRenderer):
         return info
 
 
-class TestFeatureValueStd(BaseFeatureDataQualityMetricsTest):
+class TestColumnValueStd(BaseFeatureDataQualityMetricsTest):
     name = "Standard Deviation (SD)"
 
     def get_condition(self) -> TestValueCondition:
@@ -689,9 +689,9 @@ class TestFeatureValueStd(BaseFeatureDataQualityMetricsTest):
         )
 
 
-@default_renderer(wrap_type=TestFeatureValueStd)
-class TestFeatureValueStdRenderer(TestRenderer):
-    def render_html(self, obj: TestFeatureValueStd) -> TestHtmlInfo:
+@default_renderer(wrap_type=TestColumnValueStd)
+class TestColumnValueStdRenderer(TestRenderer):
+    def render_html(self, obj: TestColumnValueStd) -> TestHtmlInfo:
         column_name = obj.column_name
         info = super().render_html(obj)
         curr_distr = obj.metric.get_result().plot_data.bins_for_hist["current"]

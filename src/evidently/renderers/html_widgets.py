@@ -700,7 +700,7 @@ def get_heatmaps_widget(
             heatmap_text = None
             heatmap_text_template = None
 
-        figure.append_trace(
+        figure.add_trace(
             go.Heatmap(
                 z=data,
                 x=columns,
@@ -739,7 +739,7 @@ def get_roc_auc_tab_data(
                 color=color_options.get_current_data_color(),
             ),
         )
-        fig.append_trace(trace, 1, 1)
+        fig.add_trace(trace, 1, 1)
         fig.update_xaxes(title_text="False Positive Rate", row=1, col=1)
         if ref_roc_curve is not None:
             trace = go.Scatter(
@@ -754,7 +754,7 @@ def get_roc_auc_tab_data(
                     color=color_options.get_current_data_color(),
                 ),
             )
-            fig.append_trace(trace, 1, 2)
+            fig.add_trace(trace, 1, 2)
             fig.update_xaxes(title_text="False Positive Rate", row=1, col=2)
         fig.update_layout(yaxis_title="True Positive Rate", showlegend=True)
 
@@ -784,7 +784,7 @@ def get_pr_rec_plot_data(
                 color=color_options.get_current_data_color(),
             ),
         )
-        fig.append_trace(trace, 1, 1)
+        fig.add_trace(trace, 1, 1)
         fig.update_xaxes(title_text="Recall", row=1, col=1)
         if reference_pr_curve is not None:
             trace = go.Scatter(
@@ -799,7 +799,7 @@ def get_pr_rec_plot_data(
                     color=color_options.get_current_data_color(),
                 ),
             )
-            fig.append_trace(trace, 1, 2)
+            fig.add_trace(trace, 1, 2)
             fig.update_xaxes(title_text="Recall", row=1, col=2)
         fig.update_layout(yaxis_title="Precision", showlegend=True)
 
@@ -826,7 +826,7 @@ def get_class_separation_plot_data(
             legendgroup=str(label),
             marker=dict(size=6, color=color_options.primary_color),
         )
-        fig.append_trace(trace, 1, 1)
+        fig.add_trace(trace, 1, 1)
 
         trace = go.Scatter(
             x=np.random.random(current_plot[current_plot[target_name] != label].shape[0]),
@@ -836,7 +836,7 @@ def get_class_separation_plot_data(
             legendgroup="other",
             marker=dict(size=6, color=color_options.secondary_color),
         )
-        fig.append_trace(trace, 1, 1)
+        fig.add_trace(trace, 1, 1)
         fig.update_xaxes(dict(range=(-2, 3), showticklabels=False), row=1, col=1)
 
         if reference_plot is not None:
@@ -849,7 +849,7 @@ def get_class_separation_plot_data(
                 showlegend=False,
                 marker=dict(size=6, color=color_options.primary_color),
             )
-            fig.append_trace(trace, 1, 2)
+            fig.add_trace(trace, 1, 2)
 
             trace = go.Scatter(
                 x=np.random.random(reference_plot[reference_plot[target_name] != label].shape[0]),
@@ -860,7 +860,7 @@ def get_class_separation_plot_data(
                 showlegend=False,
                 marker=dict(size=6, color=color_options.secondary_color),
             )
-            fig.append_trace(trace, 1, 2)
+            fig.add_trace(trace, 1, 2)
             fig.update_xaxes(dict(range=(-2, 3), showticklabels=False), row=1, col=2)
         fig.update_layout(yaxis_title="Probability", showlegend=True)
 

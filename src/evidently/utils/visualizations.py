@@ -156,12 +156,12 @@ def plot_distr_subplots(
 
     fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
     trace = go.Bar(x=hist_curr["x"], y=hist_curr["count"], marker_color=curr_color, showlegend=False)
-    fig.append_trace(trace, 1, 1)
+    fig.add_trace(trace, 1, 1)
     fig.update_xaxes(title_text=xaxis_name, row=1, col=1)
 
     if hist_ref is not None:
         trace = go.Bar(x=hist_ref["x"], y=hist_ref["count"], marker_color=ref_color, showlegend=False)
-        fig.append_trace(trace, 1, 2)
+        fig.add_trace(trace, 1, 2)
         fig.update_xaxes(title_text=xaxis_name, row=1, col=2)
     fig.update_layout(yaxis_title=yaxis_name)
     fig = json.loads(fig.to_json())
@@ -352,7 +352,7 @@ def plot_cat_cat_rel(
             name=str(val),
             legendgroup=str(val),
         )
-        fig.append_trace(trace, 1, 1)
+        fig.add_trace(trace, 1, 1)
 
     if ref is not None:
         for i, val in enumerate(ref[target_name].astype(str).unique()):
@@ -364,7 +364,7 @@ def plot_cat_cat_rel(
                 name=str(val),
                 legendgroup=str(val),
             )
-            fig.append_trace(trace, 1, 2)
+            fig.add_trace(trace, 1, 2)
     fig.update_layout(yaxis_title="count")
     fig = json.loads(fig.to_json())
     return fig
@@ -388,7 +388,7 @@ def plot_num_num_rel(
         marker_color=color_options.get_current_data_color(),
         name="current",
     )
-    fig.append_trace(trace, 1, 1)
+    fig.add_trace(trace, 1, 1)
     fig.update_xaxes(title_text=column_name, row=1, col=1)
     if ref is not None:
         trace = go.Scatter(
@@ -398,7 +398,7 @@ def plot_num_num_rel(
             marker_color=color_options.get_reference_data_color(),
             name="reference",
         )
-        fig.append_trace(trace, 1, 2)
+        fig.add_trace(trace, 1, 2)
         fig.update_xaxes(title_text=column_name, row=1, col=2)
     fig.update_layout(yaxis_title=target_name, legend={"itemsizing": "constant"})
     fig.update_traces(marker_size=4)
@@ -505,7 +505,7 @@ def plot_scatter(
         marker_color=color_options.get_current_data_color(),
         name="current",
     )
-    fig.append_trace(trace, 1, 1)
+    fig.add_trace(trace, 1, 1)
     fig.update_xaxes(title_text=xaxis_name, row=1, col=1)
     if ref is not None:
         trace = go.Scatter(
@@ -515,7 +515,7 @@ def plot_scatter(
             marker_color=color_options.get_reference_data_color(),
             name="reference",
         )
-        fig.append_trace(trace, 1, 2)
+        fig.add_trace(trace, 1, 2)
         fig.update_xaxes(title_text=xaxis_name, row=1, col=2)
     fig.update_layout(yaxis_title=yaxis_name, legend={"itemsizing": "constant"})
     fig.update_traces(marker_size=4)
@@ -544,7 +544,7 @@ def plot_pred_actual_time(
         ["Predicted", "Actual"], [color_options.get_current_data_color(), color_options.get_reference_data_color()]
     ):
         trace = go.Scatter(x=curr[x_name], y=curr[name], mode="lines", marker_color=color, name=name, legendgroup=name)
-        fig.append_trace(trace, 1, 1)
+        fig.add_trace(trace, 1, 1)
 
         if ref is not None:
             trace = go.Scatter(
@@ -556,7 +556,7 @@ def plot_pred_actual_time(
                 legendgroup=name,
                 showlegend=False,
             )
-            fig.append_trace(trace, 1, 2)
+            fig.add_trace(trace, 1, 2)
 
     # Add zero trace
     trace = go.Scatter(
@@ -566,7 +566,7 @@ def plot_pred_actual_time(
         marker_color=color_options.zero_line_color,
         showlegend=False,
     )
-    fig.append_trace(trace, 1, 1)
+    fig.add_trace(trace, 1, 1)
     if ref is not None:
         trace = go.Scatter(
             x=ref[x_name],
@@ -575,7 +575,7 @@ def plot_pred_actual_time(
             marker_color=color_options.zero_line_color,
             showlegend=False,
         )
-        fig.append_trace(trace, 1, 2)
+        fig.add_trace(trace, 1, 2)
         fig.update_xaxes(title_text=xaxis_name, row=1, col=2)
 
     fig.update_xaxes(title_text=xaxis_name, row=1, col=1)
@@ -611,7 +611,7 @@ def plot_line_in_time(
         name=y_name,
         legendgroup=y_name,
     )
-    fig.append_trace(trace, 1, 1)
+    fig.add_trace(trace, 1, 1)
     # Add zero trace
     trace = go.Scatter(
         x=curr[x_name],
@@ -620,7 +620,7 @@ def plot_line_in_time(
         marker_color=color_options.zero_line_color,
         showlegend=False,
     )
-    fig.append_trace(trace, 1, 1)
+    fig.add_trace(trace, 1, 1)
 
     if ref is not None:
         trace = go.Scatter(
@@ -632,7 +632,7 @@ def plot_line_in_time(
             legendgroup=y_name,
             showlegend=False,
         )
-        fig.append_trace(trace, 1, 2)
+        fig.add_trace(trace, 1, 2)
         # Add zero trace
         trace = go.Scatter(
             x=ref[x_name],
@@ -641,7 +641,7 @@ def plot_line_in_time(
             marker_color=color_options.zero_line_color,
             showlegend=False,
         )
-        fig.append_trace(trace, 1, 2)
+        fig.add_trace(trace, 1, 2)
         fig.update_xaxes(title_text=xaxis_name, row=1, col=2)
     fig.update_xaxes(title_text=xaxis_name, row=1, col=1)
     fig.update_layout(yaxis_title=yaxis_name)
@@ -677,7 +677,7 @@ def plot_error_bias_colored_scatter(
             marker_color=color
             # marker=dict(color=color_options.underestimation_color, showscale=False),
         )
-        fig.append_trace(trace, 1, 1)
+        fig.add_trace(trace, 1, 1)
     fig.update_xaxes(title_text="Actual value", row=1, col=1)
 
     if ref_scatter_data is not None:
@@ -695,7 +695,7 @@ def plot_error_bias_colored_scatter(
                 marker_color=color
                 # marker=dict(color=color_options.underestimation_color, showscale=False),
             )
-            fig.append_trace(trace, 1, 2)
+            fig.add_trace(trace, 1, 2)
         fig.update_xaxes(title_text="Actual value", row=1, col=2)
 
     fig.update_layout(
@@ -787,7 +787,7 @@ def plot_conf_mtrx(curr_mtrx, ref_mtrx):
         texttemplate="%{text}",
         coloraxis="coloraxis",
     )
-    fig.append_trace(trace, 1, 1)
+    fig.add_trace(trace, 1, 1)
 
     if ref_mtrx is not None:
         trace = go.Heatmap(
@@ -798,6 +798,6 @@ def plot_conf_mtrx(curr_mtrx, ref_mtrx):
             texttemplate="%{text}",
             coloraxis="coloraxis",
         )
-        fig.append_trace(trace, 1, 2)
+        fig.add_trace(trace, 1, 2)
     fig.update_layout(coloraxis={"colorscale": "RdBu_r"})
     return fig

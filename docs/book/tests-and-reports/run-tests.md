@@ -129,16 +129,19 @@ To create a custom data drift test suite with dataset-level tests:
 
 ```python
 data_drift_suite = TestSuite(tests=[
-TestShareOfDriftedFeatures(),
-TestNumberOfDriftedFeatures(),
+    TestShareOfDriftedColumns(),
+    TestNumberOfDriftedColumns(),
 ])
 ```
 
 To run the tests and get the visual report:
 
 ```python
-data_drift_suite.run(reference_data=ref, current_data=curr,
-column_mapping=ColumnMapping()
+data_drift_suite.run(
+    reference_data=ref,
+    current_data=curr,
+    column_mapping=ColumnMapping(),
+)
 data_drift_suite
 ```
 
@@ -150,9 +153,9 @@ To create a custom data drift test suite with column-level tests:
 
 ```python
 feature_suite = TestSuite(tests=[
-TestColumnShareOfNulls(column_name='hours-per-week'),
-TestFeatureValueDrift(column_name='education'),
-TestMeanInNSigmas(column_name='hours-per-week')
+    TestColumnShareOfNulls(column_name='hours-per-week'),
+    TestColumnValueDrift(column_name='education'),
+    TestMeanInNSigmas(column_name='hours-per-week')
 ])
 ```
 
@@ -169,9 +172,9 @@ Here is an example:
 
 ```python
 my_data_quality_report = TestSuite(tests=[
-    DataQuality(),
+    DataQualityTestPreset(),
     TestColumnAllConstantValues(column_name='education'),
-    TestNumberOfDriftedFeatures()
+    TestNumberOfDriftedColumns()
 ])
 
 my_data_quality_report.run(reference_data=ref,current_data=curr)
@@ -187,7 +190,7 @@ TestShareOfOutRangeValues()
 TestMostCommonValueShare()
 TestNumberOfConstantColumns()
 TestNumberOfDuplicatedColumns()
-TestHighlyCorrelatedFeatures()
+TestHighlyCorrelatedColumns()
 ```
 
 {% hint style="info" %} 
@@ -298,7 +301,7 @@ suite
 
 ```python
 suite = TestSuite(tests=[
-   TestFeatureValueMin(column_name=column_name, gt=0) for column_name in ["age", "fnlwgt", "education-num"]
+   TestColumnValueMin(column_name=column_name, gt=0) for column_name in ["age", "fnlwgt", "education-num"]
 ])
  
 suite.run(current_data=current_data, reference_data=reference_data)
@@ -328,7 +331,7 @@ suite
 You can generate tests for different subsets of columns. Here is how you generate tests only for **numerical columns**:
 
 ```python
-suite = TestSuite(tests=[generate_column_tests(TestFeatureValueMin, columns="num")])
+suite = TestSuite(tests=[generate_column_tests(TestColumnValueMin, columns="num")])
 suite.run(current_data=current_data, reference_data=reference_data)
 suite
 ```
@@ -344,7 +347,7 @@ suite
 You can also generate tests with defined parameters, for a custom defined column list:
  
 ```python
-suite = TestSuite(tests=[generate_column_tests(TestFeatureValueMin, columns=["age", "fnlwgt", "education-num"],
+suite = TestSuite(tests=[generate_column_tests(TestColumnValueMin, columns=["age", "fnlwgt", "education-num"],
                                               parameters={"gt": 0})])
 suite.run(current_data=current_data, reference_data=reference_data)
 suite

@@ -87,8 +87,8 @@ class RegressionErrorNormalityRenderer(MetricRenderer):
             legendgroup="Theoretical Quantiles",
             marker=dict(size=6, color=color_options.secondary_color),
         )
-        fig.append_trace(sample_quantile_trace, 1, 1)
-        fig.append_trace(theoretical_quantile_trace, 1, 1)
+        fig.add_trace(sample_quantile_trace, 1, 1)
+        fig.add_trace(theoretical_quantile_trace, 1, 1)
         fig.update_xaxes(title_text="Theoretical Quantiles", row=1, col=1)
         if reference_error is not None:
             ref_qq_lines = probplot(reference_error, dist="norm", plot=None)
@@ -112,8 +112,8 @@ class RegressionErrorNormalityRenderer(MetricRenderer):
                 showlegend=False,
                 marker=dict(size=6, color=color_options.secondary_color),
             )
-            fig.append_trace(sample_quantile_trace, 1, 2)
-            fig.append_trace(theoretical_quantile_trace, 1, 2)
+            fig.add_trace(sample_quantile_trace, 1, 2)
+            fig.add_trace(theoretical_quantile_trace, 1, 2)
             fig.update_xaxes(title_text="Theoretical Quantiles", row=1, col=2)
         fig.update_layout(yaxis_title="Dataset Quantiles")
         fig = json.loads(fig.to_json())
