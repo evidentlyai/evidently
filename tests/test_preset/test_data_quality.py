@@ -1,6 +1,6 @@
 import pandas as pd
 
-from evidently.test_preset import DataQuality
+from evidently.test_preset import DataQualityTestPreset
 from evidently.test_suite import TestSuite
 
 
@@ -23,7 +23,7 @@ def test_data_quality_preset():
     )
     data_quality_suite = TestSuite(
         tests=[
-            DataQuality(),
+            DataQualityTestPreset(),
         ]
     )
 

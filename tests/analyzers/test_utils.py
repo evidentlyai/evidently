@@ -42,6 +42,7 @@ from evidently.utils.data_operations import process_columns
                 task="classification",
             ),
             DatasetColumns(
+                target_type="cat",
                 utility_columns=DatasetUtilityColumns(
                     date="datetime_column", id_column="some_id", target="my_target", prediction="my_prediction"
                 ),
@@ -70,6 +71,7 @@ from evidently.utils.data_operations import process_columns
                 task="regression",
             ),
             DatasetColumns(
+                target_type="num",
                 utility_columns=DatasetUtilityColumns(
                     date="datetime", id_column="index", target="el_target", prediction="el_prediction"
                 ),

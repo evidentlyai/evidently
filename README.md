@@ -96,19 +96,19 @@ import pandas as pd
 from sklearn import datasets
 
 from evidently.test_suite import TestSuite
-from evidently.test_preset import DataStability
-from evidently.test_preset import DataQuality
+from evidently.test_preset import DataStabilityTestPreset
+from evidently.test_preset import DataQualityTestPreset
 
 iris_data = datasets.load_iris(as_frame='auto')
-iris = iris_data.frame
+iris_frame = iris_data.frame
 ```
 
 To run the **Data Stability** test suite and display the reports in the notebook:
 ```python
 data_stability= TestSuite(tests=[
-    DataStability(),
+    DataStabilityTestPreset(),
 ])
-data_stability.run(current_data=iris_frame[:75], reference_data=iris_frame[75:], column_mapping=None)
+data_stability.run(current_data=iris_frame.iloc[:90], reference_data=iris_frame.iloc[90:], column_mapping=None)
 data_stability 
 ```
 
@@ -135,19 +135,18 @@ from sklearn import datasets
 
 from evidently.report import Report
 from evidently.metric_preset import DataDriftPreset
-from evidently.metric_preset import CatTargetDrift
 
 iris_data = datasets.load_iris(as_frame='auto')
-iris = iris_data.frame
+iris_frame = iris_data.frame
 ```
 
 To generate the **Data Drift** report, run:
 ```python
 data_drift_report = Report(metrics=[
-    DataDrift(),
+    DataDriftPreset(),
 ])
 
-data_drift_report.run(current_data=iris_frame[:75], reference_data=iris_frame[75:], column_mapping=None)
+data_drift_report.run(current_data=iris_frame.iloc[:90], reference_data=iris_frame.iloc[90:], column_mapping=None)
 data_drift_report
 
 ```
@@ -174,10 +173,10 @@ Here you can find simple examples on toy datasets to quickly explore what Eviden
 
 | Contents                                               | Jupyter notebook                                                                                 | Colab notebook                                                                    | Data source                                                                            |
 | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| Evidently Tests| [link](sample_notebooks/evidently_tests.ipynb) | [link](https://colab.research.google.com/drive/1nQhfXft4VZ3G7agvXgH_LqVHdCh-WaMl) | Adult data set openml, California housing sklearn.datasets, Breast cancer sklearn.datasets, Iris plants sklearn.datasets |
-| Evidently Test Presets| [link](sample_notebooks/evidently_test_presets.ipynb) | [link](https://colab.research.google.com/drive/1CBAFY1qmHHV_72SC7YBeaD4c6LLpPQan) | Adult data set openml, California housing sklearn.datasets, Breast cancer sklearn.datasets, Iris plants sklearn.datasets |
-| Evidently Metrics| [link](sample_notebooks/evidently_metrics.ipynb) | [link](https://colab.research.google.com/drive/1IpfQsq5dmjuG_Qbn6BNtghq6aubZBP5A) | Adult data set openml |
-| Evidently Metric Presets| [link](sample_notebooks/evidently_metric_presets.ipynb) | [link](https://colab.research.google.com/drive/1wmHWipPd6iEy9Ce8NWBcxs_BSa9hgKgk) | Adult data set openml, California housing sklearn.datasets, Breast cancer sklearn.datasets, Iris plants sklearn.datasets |
+| Evidently Tests| [link](sample_notebooks/evidently_tests.ipynb) | [link](https://colab.research.google.com/drive/1p9bgJZDcr_NS5IKVNvlxzswn6er9-abl) | Adult data set openml, California housing sklearn.datasets, Breast cancer sklearn.datasets, Iris plants sklearn.datasets |
+| Evidently Test Presets| [link](sample_notebooks/evidently_test_presets.ipynb) | [link](https://colab.research.google.com/drive/15YIqTWbjzGHRIvxrP7HxwtvBCFgbNIps) | Adult data set openml, California housing sklearn.datasets, Breast cancer sklearn.datasets, Iris plants sklearn.datasets |
+| Evidently Metrics| [link](sample_notebooks/evidently_metrics.ipynb) | [link](https://colab.research.google.com/drive/1c7HQz920Q-BPazDOujL4PgckuKIzFebn ) | Adult data set openml |
+| Evidently Metric Presets| [link](sample_notebooks/evidently_metric_presets.ipynb) | [link](https://colab.research.google.com/drive/1-0-itoET4dQHo8dcoC0fKZ5VhugliLxj) | Adult data set openml, California housing sklearn.datasets, Breast cancer sklearn.datasets, Iris plants sklearn.datasets |
 
 You can see examples from old Dashboard API [here](https://github.com/evidentlyai/evidently/tree/main/examples/sample_notebooks). 
 

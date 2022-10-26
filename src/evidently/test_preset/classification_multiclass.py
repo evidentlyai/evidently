@@ -1,8 +1,8 @@
 from evidently.metrics.base_metric import InputData
 from evidently.test_preset.test_preset import TestPreset
 from evidently.tests import TestAccuracyScore
+from evidently.tests import TestColumnValueDrift
 from evidently.tests import TestF1Score
-from evidently.tests import TestFeatureValueDrift
 from evidently.tests import TestLogLoss
 from evidently.tests import TestNumberOfRows
 from evidently.tests import TestPrecisionByClass
@@ -11,7 +11,7 @@ from evidently.tests import TestRocAuc
 from evidently.utils.data_operations import DatasetColumns
 
 
-class MulticlassClassification(TestPreset):
+class MulticlassClassificationTestPreset(TestPreset):
     def __init__(self, prediction_type: str):
         super().__init__()
         if prediction_type not in ["probas", "labels"]:
@@ -31,7 +31,7 @@ class MulticlassClassification(TestPreset):
             *[TestPrecisionByClass(str(label)) for label in labels],
             *[TestRecallByClass(str(label)) for label in labels],
             TestNumberOfRows(),
-            TestFeatureValueDrift(column_name=target),
+            TestColumnValueDrift(column_name=target),
         ]
 
         if self.prediction_type == "labels":

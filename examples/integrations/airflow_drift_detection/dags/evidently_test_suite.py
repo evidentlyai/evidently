@@ -39,8 +39,8 @@ def load_data_execute(**context):
 def data_quality_tests_execute(**context):
     data_quality_suite = TestSuite(
         tests=[
-            TestShareOfDriftedFeatures(),
-            TestHighlyCorrelatedFeatures(),
+            TestShareOfDriftedColumns(),
+            TestHighlyCorrelatedColumns(),
             TestNumberOfColumns(),
             TestNumberOfConstantColumns(),
             TestNumberOfDuplicatedColumns(),

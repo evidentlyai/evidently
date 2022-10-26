@@ -1,15 +1,19 @@
+import json
 from typing import Dict
 from typing import Optional
 from typing import Tuple
+from typing import Union
 
+import dataclasses
 import numpy as np
 import pandas as pd
 from plotly import graph_objs as go
+from plotly.subplots import make_subplots
 
 from evidently.options.color_scheme import ColorOptions
 
 
-def plot_distr(hist_curr, hist_ref=None, orientation="v", color_options: Optional[ColorOptions] = None):
+def plot_distr(hist_curr, hist_ref=None, orientation="v", color_options: Optional[ColorOptions] = None) -> go.Figure:
     color_options = color_options or ColorOptions()
     fig = go.Figure()
 
@@ -22,6 +26,7 @@ def plot_distr(hist_curr, hist_ref=None, orientation="v", color_options: Optiona
             orientation=orientation,
         )
     )
+    cats = list(hist_curr["x"])
     if hist_ref is not None:
         fig.add_trace(
             go.Bar(
@@ -32,7 +37,278 @@ def plot_distr(hist_curr, hist_ref=None, orientation="v", color_options: Optiona
                 orientation=orientation,
             )
         )
+        cats = cats + list(np.setdiff1d(hist_ref["x"], cats))
 
+    if "other" in cats:
+        cats.remove("other")
+        cats = cats + ["other"]
+        fig.update_xaxes(categoryorder="array", categoryarray=cats)
+
+    return fig
+
+
+@dataclasses.dataclass
+class Distribution:
+    x: Union[np.array, list]
+    y: Union[np.array, list]
+
+
+def plot_distr_with_log_button(
+    curr_data: pd.DataFrame,
+    curr_data_log: pd.DataFrame,
+    ref_data: Optional[pd.DataFrame],
+    ref_data_log: Optional[pd.DataFrame],
+):
+    color_options = ColorOptions()
+    traces = []
+    visible = [True, False]
+    traces.append(
+        go.Bar(
+            x=curr_data["x"],
+            y=curr_data["count"],
+            marker_color=color_options.get_current_data_color(),
+            name="current",
+        )
+    )
+    traces.append(
+        go.Bar(
+            x=curr_data_log["x"],
+            y=curr_data_log["count"],
+            visible=False,
+            marker_color=color_options.get_current_data_color(),
+            name="current",
+        )
+    )
+    if ref_data is not None:
+        traces.append(
+            go.Bar(
+                x=ref_data["x"],
+                y=ref_data["count"],
+                marker_color=color_options.get_reference_data_color(),
+                name="reference",
+            )
+        )
+        visible.append(True)
+        if ref_data_log is not None:
+            traces.append(
+                go.Bar(
+                    x=ref_data_log["x"],
+                    y=ref_data_log["count"],
+                    visible=False,
+                    marker_color=color_options.get_reference_data_color(),
+                    name="reference",
+                )
+            )
+            visible.append(False)
+
+    updatemenus = [
+        dict(
+            type="buttons",
+            direction="right",
+            x=1.0,
+            yanchor="top",
+            buttons=list(
+                [
+                    dict(
+                        label="Linear Scale",
+                        method="update",
+                        args=[{"visible": visible}],
+                    ),
+                    dict(
+                        label="Log Scale",
+                        method="update",
+                        args=[{"visible": [not x for x in visible]}],
+                    ),
+                ]
+            ),
+        )
+    ]
+    layout = dict(updatemenus=updatemenus)
+
+    fig = go.Figure(data=traces, layout=layout)
+    fig.update_layout(legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1))
+    fig = json.loads(fig.to_json())
+    return fig
+
+
+def plot_distr_subplots(
+    hist_curr, hist_ref=None, xaxis_name: str = "", yaxis_name: str = "", same_color: Optional[str] = None
+):
+    color_options = ColorOptions()
+    if same_color is None:
+        curr_color = color_options.get_current_data_color()
+        ref_color = color_options.get_reference_data_color()
+    else:
+        curr_color = same_color
+        ref_color = same_color
+
+    cols = 1
+    subplot_titles: Union[list, str] = ""
+
+    if hist_ref is not None:
+        cols = 2
+        subplot_titles = ["current", "reference"]
+
+    fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
+    trace = go.Bar(x=hist_curr["x"], y=hist_curr["count"], marker_color=curr_color, showlegend=False)
+    fig.add_trace(trace, 1, 1)
+    fig.update_xaxes(title_text=xaxis_name, row=1, col=1)
+
+    if hist_ref is not None:
+        trace = go.Bar(x=hist_ref["x"], y=hist_ref["count"], marker_color=ref_color, showlegend=False)
+        fig.add_trace(trace, 1, 2)
+        fig.update_xaxes(title_text=xaxis_name, row=1, col=2)
+    fig.update_layout(yaxis_title=yaxis_name)
+    fig = json.loads(fig.to_json())
+    return fig
+
+
+def plot_num_feature_in_time(
+    curr_data: pd.DataFrame,
+    ref_data: Optional[pd.DataFrame],
+    feature_name: str,
+    datetime_name: str,
+    freq: str,
+):
+    """
+    Accepts current and reference data as pandas dataframes with two columns: datetime_name and feature_name.
+    """
+    color_options = ColorOptions()
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(
+            x=curr_data.sort_values(datetime_name)[datetime_name],
+            y=curr_data.sort_values(datetime_name)[feature_name],
+            line=dict(color=color_options.get_current_data_color(), shape="spline"),
+            name="current",
+        )
+    )
+    if ref_data is not None:
+        fig.add_trace(
+            go.Scatter(
+                x=ref_data.sort_values(datetime_name)[datetime_name],
+                y=ref_data.sort_values(datetime_name)[feature_name],
+                line=dict(color=color_options.get_reference_data_color(), shape="spline"),
+                name="reference",
+            )
+        )
+
+    fig.update_layout(yaxis_title="Mean " + feature_name + " per " + freq)
+    feature_in_time_figure = json.loads(fig.to_json())
+    return feature_in_time_figure
+
+
+def plot_time_feature_distr(curr_data: pd.DataFrame, ref_data: Optional[pd.DataFrame], feature_name: str):
+    """
+    Accepts current and reference data as pandas dataframes with two columns: feature_name, "number_of_items"
+    """
+    color_options = ColorOptions()
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(
+            x=curr_data.sort_values(feature_name)[feature_name],
+            y=curr_data.sort_values(feature_name)["number_of_items"],
+            line=dict(color=color_options.get_current_data_color(), shape="spline"),
+            name="current",
+        )
+    )
+    if ref_data is not None:
+        fig.add_trace(
+            go.Scatter(
+                x=ref_data.sort_values(feature_name)[feature_name],
+                y=ref_data.sort_values(feature_name)["number_of_items"],
+                line=dict(color=color_options.get_reference_data_color(), shape="spline"),
+                name="reference",
+            )
+        )
+    fig.update_layout(legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1))
+    fig = json.loads(fig.to_json())
+    return fig
+
+
+def plot_cat_feature_in_time(
+    curr_data: pd.DataFrame,
+    ref_data: Optional[pd.DataFrame],
+    feature_name: str,
+    datetime_name: str,
+    freq: str,
+):
+    """
+    Accepts current and reference data as pandas dataframes with two columns: datetime_name and feature_name.
+    """
+    color_options = ColorOptions()
+    title = "current"
+    fig = go.Figure()
+    values = curr_data[feature_name].astype(str).unique()
+    if ref_data is not None:
+        values = np.union1d(curr_data[feature_name].astype(str).unique(), ref_data[feature_name].astype(str).unique())
+    for i, val in enumerate(values):
+        fig.add_trace(
+            go.Bar(
+                x=curr_data.loc[curr_data[feature_name].astype(str) == val, datetime_name],
+                y=curr_data.loc[curr_data[feature_name].astype(str) == val, "num"],
+                name=str(val),
+                marker_color=color_options.color_sequence[i],
+                legendgroup=str(val),
+            )
+        )
+        if ref_data is not None:
+            title = "reference/current"
+            fig.add_trace(
+                go.Bar(
+                    x=ref_data.loc[ref_data[feature_name].astype(str) == val, datetime_name],
+                    y=ref_data.loc[ref_data[feature_name].astype(str) == val, "num"],
+                    name=str(val),
+                    marker_color=color_options.color_sequence[i],
+                    # showlegend=False,
+                    legendgroup=str(val),
+                    opacity=0.6,
+                )
+            )
+    fig.update_traces(marker_line_width=0.01)
+    fig.update_layout(
+        barmode="stack",
+        bargap=0,
+        yaxis_title="count category values per " + freq,
+        title=title,
+    )
+    feature_in_time_figure = json.loads(fig.to_json())
+    return feature_in_time_figure
+
+
+def plot_boxes(curr_for_plots: dict, ref_for_plots: Optional[dict], yaxis_title: str, xaxis_title: str):
+    """
+    Accepts current and reference data as dicts with box parameters ("mins", "lowers", "uppers", "means", "maxs")
+    and name of boxes parameter - "values"
+    """
+    color_options = ColorOptions()
+    fig = go.Figure()
+    trace = go.Box(
+        lowerfence=curr_for_plots["mins"],
+        q1=curr_for_plots["lowers"],
+        q3=curr_for_plots["uppers"],
+        median=curr_for_plots["means"],
+        upperfence=curr_for_plots["maxs"],
+        x=curr_for_plots["values"],
+        name="current",
+        marker_color=color_options.get_current_data_color(),
+    )
+    fig.add_trace(trace)
+    if ref_for_plots is not None:
+        trace = go.Box(
+            lowerfence=curr_for_plots["mins"],
+            q1=ref_for_plots["lowers"],
+            q3=ref_for_plots["uppers"],
+            median=ref_for_plots["means"],
+            upperfence=ref_for_plots["maxs"],
+            x=ref_for_plots["values"],
+            name="reference",
+            marker_color=color_options.get_reference_data_color(),
+        )
+        fig.add_trace(trace)
+        fig.update_layout(boxmode="group")
+    fig.update_layout(yaxis_title=yaxis_title, xaxis_title=xaxis_title, boxmode="group")
+    fig = json.loads(fig.to_json())
     return fig
 
 
@@ -49,29 +325,135 @@ def make_hist_for_num_plot(curr: pd.Series, ref: pd.Series = None):
     return result
 
 
-def make_hist_for_cat_plot(curr: pd.Series, ref: pd.Series = None, normalize: bool = False):
+def plot_cat_cat_rel(curr: pd.DataFrame, ref: pd.DataFrame, target_name: str, feature_name: str):
+    """
+    Accepts current and reference data as pandas dataframes with two columns: feature_name and "count_objects".
+    """
+    color_options = ColorOptions()
+    cols = 1
+    subplot_titles: Union[list, str] = ""
+    if ref is not None:
+        cols = 2
+        subplot_titles = ["current", "reference"]
+    fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
+    for i, val in enumerate(curr[target_name].astype(str).unique()):
+        trace = go.Bar(
+            x=curr.loc[curr[target_name] == val, feature_name],
+            y=curr.loc[curr[target_name] == val, "count_objects"],
+            marker_color=color_options.color_sequence[i],
+            name=str(val),
+            legendgroup=str(val),
+        )
+        fig.add_trace(trace, 1, 1)
+
+    if ref is not None:
+        for i, val in enumerate(ref[target_name].astype(str).unique()):
+            trace = go.Bar(
+                x=ref.loc[ref[target_name] == val, feature_name],
+                y=ref.loc[ref[target_name] == val, "count_objects"],
+                marker_color=color_options.color_sequence[i],
+                opacity=0.6,
+                name=str(val),
+                legendgroup=str(val),
+            )
+            fig.add_trace(trace, 1, 2)
+    fig.update_layout(yaxis_title="count")
+    fig = json.loads(fig.to_json())
+    return fig
+
+
+def plot_num_num_rel(curr: Dict[str, list], ref: Optional[Dict[str, list]], target_name: str, column_name: str):
+    color_options = ColorOptions()
+    cols = 1
+    if ref is not None:
+        cols = 2
+    fig = make_subplots(rows=1, cols=cols, shared_yaxes=True)
+    trace = go.Scatter(
+        x=curr[column_name],
+        y=curr[target_name],
+        mode="markers",
+        marker_color=color_options.get_current_data_color(),
+        name="current",
+    )
+    fig.add_trace(trace, 1, 1)
+    fig.update_xaxes(title_text=column_name, row=1, col=1)
+    if ref is not None:
+        trace = go.Scatter(
+            x=ref[column_name],
+            y=ref[target_name],
+            mode="markers",
+            marker_color=color_options.get_reference_data_color(),
+            name="reference",
+        )
+        fig.add_trace(trace, 1, 2)
+        fig.update_xaxes(title_text=column_name, row=1, col=2)
+    fig.update_layout(yaxis_title=target_name, legend={"itemsizing": "constant"})
+    fig.update_traces(marker_size=4)
+    fig = json.loads(fig.to_json())
+    return fig
+
+
+def make_hist_for_cat_plot(
+    curr: pd.Series, ref: pd.Series = None, normalize: bool = False, dropna=False
+) -> Dict[str, pd.Series]:
     result = {}
-    hist_df = curr.value_counts(normalize=normalize, dropna=False).reset_index()
+    hist_df = curr.astype(str).value_counts(normalize=normalize, dropna=dropna).reset_index()
     hist_df.columns = ["x", "count"]
     result["current"] = hist_df
     if ref is not None:
-        hist_df = ref.value_counts(normalize=normalize).reset_index()
+        hist_df = ref.astype(str).value_counts(normalize=normalize, dropna=dropna).reset_index()
         hist_df.columns = ["x", "count"]
         result["reference"] = hist_df
     return result
 
 
+def get_distribution_for_category_column(column: pd.Series, normalize: bool = False) -> Distribution:
+    value_counts = column.value_counts(normalize=normalize, dropna=False)
+    return Distribution(
+        x=value_counts.index.values,
+        y=value_counts.values,
+    )
+
+
+def get_distribution_for_numerical_column(
+    column: pd.Series,
+    bins: Optional[Union[list, np.array]] = None,
+) -> Distribution:
+    if bins is None:
+        bins = np.histogram_bin_edges(column, bins="doane")
+
+    histogram = np.histogram(column, bins=bins)
+    return Distribution(
+        x=histogram[1],
+        y=histogram[0],
+    )
+
+
 def get_distribution_for_column(
-    *, column_name: str, column_type: str, current: pd.Series, reference: pd.DataFrame
-) -> Dict[str, pd.DataFrame]:
+    *, column_type: str, current: pd.Series, reference: Optional[pd.Series] = None
+) -> Tuple[Distribution, Optional[Distribution]]:
+    reference_distribution: Optional[Distribution] = None
+
     if column_type == "cat":
-        return make_hist_for_cat_plot(current, reference)
+        current_distribution = get_distribution_for_category_column(current)
+
+        if reference is not None:
+            reference_distribution = get_distribution_for_category_column(reference)
 
     elif column_type == "num":
-        return make_hist_for_num_plot(current, reference)
+        if reference is not None:
+            bins = np.histogram_bin_edges(pd.concat([current.dropna(), reference.dropna()]), bins="doane")
+            reference_distribution = get_distribution_for_numerical_column(reference, bins)
+
+        else:
+            bins = np.histogram_bin_edges(current.dropna(), bins="doane")
+
+        current_distribution = get_distribution_for_numerical_column(current, bins)
 
     else:
-        raise ValueError(f"Cannot get distribution for column {column_name} with type {column_type}")
+        raise ValueError(f"Cannot get distribution for a column with type {column_type}")
+
+    return current_distribution, reference_distribution
 
 
 def make_hist_df(hist: Tuple[np.array, np.array]) -> pd.DataFrame:
@@ -83,6 +465,229 @@ def make_hist_df(hist: Tuple[np.array, np.array]) -> pd.DataFrame:
     hist_df["x"] = hist_df["x"].astype(float)
     hist_df["count"] = hist_df["count"].astype(int)
     return hist_df
+
+
+def plot_scatter(
+    curr: Dict[str, list],
+    ref: Optional[Dict[str, list]],
+    x: str,
+    y: str,
+    xaxis_name: str = None,
+    yaxis_name: str = None,
+):
+    color_options = ColorOptions()
+    cols = 1
+    if xaxis_name is None:
+        xaxis_name = x
+    if yaxis_name is None:
+        yaxis_name = y
+    if ref is not None:
+        cols = 2
+    fig = make_subplots(rows=1, cols=cols, shared_yaxes=True)
+    trace = go.Scatter(
+        x=curr[x],
+        y=curr[y],
+        mode="markers",
+        marker_color=color_options.get_current_data_color(),
+        name="current",
+    )
+    fig.add_trace(trace, 1, 1)
+    fig.update_xaxes(title_text=xaxis_name, row=1, col=1)
+    if ref is not None:
+        trace = go.Scatter(
+            x=ref[x],
+            y=ref[y],
+            mode="markers",
+            marker_color=color_options.get_reference_data_color(),
+            name="reference",
+        )
+        fig.add_trace(trace, 1, 2)
+        fig.update_xaxes(title_text=xaxis_name, row=1, col=2)
+    fig.update_layout(yaxis_title=yaxis_name, legend={"itemsizing": "constant"})
+    fig.update_traces(marker_size=4)
+    fig = json.loads(fig.to_json())
+    return fig
+
+
+def plot_pred_actual_time(
+    curr: Dict[str, pd.Series],
+    ref: Optional[Dict[str, pd.Series]],
+    x_name: str = "x",
+    xaxis_name: str = "",
+    yaxis_name: str = "",
+):
+    color_options = ColorOptions()
+    cols = 1
+    subplot_titles: Union[list, str] = ""
+
+    if ref is not None:
+        cols = 2
+        subplot_titles = ["current", "reference"]
+
+    fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
+    for name, color in zip(
+        ["Predicted", "Actual"], [color_options.get_current_data_color(), color_options.get_reference_data_color()]
+    ):
+        trace = go.Scatter(x=curr[x_name], y=curr[name], mode="lines", marker_color=color, name=name, legendgroup=name)
+        fig.add_trace(trace, 1, 1)
+
+        if ref is not None:
+            trace = go.Scatter(
+                x=ref[x_name],
+                y=ref[name],
+                mode="lines",
+                marker_color=color,
+                name=name,
+                legendgroup=name,
+                showlegend=False,
+            )
+            fig.add_trace(trace, 1, 2)
+
+    # Add zero trace
+    trace = go.Scatter(
+        x=curr[x_name],
+        y=[0] * curr[x_name].shape[0],
+        mode="lines",
+        marker_color=color_options.zero_line_color,
+        showlegend=False,
+    )
+    fig.add_trace(trace, 1, 1)
+    if ref is not None:
+        trace = go.Scatter(
+            x=ref[x_name],
+            y=[0] * ref[x_name].shape[0],
+            mode="lines",
+            marker_color=color_options.zero_line_color,
+            showlegend=False,
+        )
+        fig.add_trace(trace, 1, 2)
+        fig.update_xaxes(title_text=xaxis_name, row=1, col=2)
+
+    fig.update_xaxes(title_text=xaxis_name, row=1, col=1)
+    fig.update_layout(yaxis_title=yaxis_name)
+    fig.update_traces(marker_size=6)
+    fig = json.loads(fig.to_json())
+    return fig
+
+
+def plot_line_in_time(
+    curr: Dict[str, pd.Series],
+    ref: Optional[Dict[str, pd.Series]],
+    y_name: str,
+    x_name: str = "x",
+    xaxis_name: str = "",
+    yaxis_name: str = "",
+):
+    color_options = ColorOptions()
+    cols = 1
+    subplot_titles: Union[list, str] = ""
+
+    if ref is not None:
+        cols = 2
+        subplot_titles = ["current", "reference"]
+
+    fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
+    trace = go.Scatter(
+        x=curr[x_name],
+        y=curr[y_name],
+        mode="lines",
+        marker_color=color_options.get_current_data_color(),
+        name=y_name,
+        legendgroup=y_name,
+    )
+    fig.add_trace(trace, 1, 1)
+    # Add zero trace
+    trace = go.Scatter(
+        x=curr[x_name],
+        y=[0] * curr[x_name].shape[0],
+        mode="lines",
+        marker_color=color_options.zero_line_color,
+        showlegend=False,
+    )
+    fig.add_trace(trace, 1, 1)
+
+    if ref is not None:
+        trace = go.Scatter(
+            x=ref[x_name],
+            y=ref[y_name],
+            mode="lines",
+            marker_color=color_options.get_current_data_color(),
+            name=y_name,
+            legendgroup=y_name,
+            showlegend=False,
+        )
+        fig.add_trace(trace, 1, 2)
+        # Add zero trace
+        trace = go.Scatter(
+            x=ref[x_name],
+            y=[0] * ref[x_name].shape[0],
+            mode="lines",
+            marker_color=color_options.zero_line_color,
+            showlegend=False,
+        )
+        fig.add_trace(trace, 1, 2)
+        fig.update_xaxes(title_text=xaxis_name, row=1, col=2)
+    fig.update_xaxes(title_text=xaxis_name, row=1, col=1)
+    fig.update_layout(yaxis_title=yaxis_name)
+    fig.update_traces(marker_size=6)
+    fig = json.loads(fig.to_json())
+    return fig
+
+
+def plot_error_bias_colored_scatter(
+    curr_scatter_data: Dict[str, Dict[str, pd.Series]], ref_scatter_data: Optional[Dict[str, Dict[str, pd.Series]]]
+):
+    color_options = ColorOptions()
+    cols = 1
+    subplot_titles: Union[list, str] = ""
+
+    if ref_scatter_data is not None:
+        cols = 2
+        subplot_titles = ["current", "reference"]
+
+    fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
+
+    for name, color in zip(
+        ["Underestimation", "Overestimation", "Majority"],
+        [color_options.underestimation_color, color_options.overestimation_color, color_options.majority_color],
+    ):
+        trace = go.Scatter(
+            x=curr_scatter_data[name]["Actual value"],
+            y=curr_scatter_data[name]["Predicted value"],
+            mode="markers",
+            name=name,
+            legendgroup=name,
+            marker_color=color
+            # marker=dict(color=color_options.underestimation_color, showscale=False),
+        )
+        fig.add_trace(trace, 1, 1)
+    fig.update_xaxes(title_text="Actual value", row=1, col=1)
+
+    if ref_scatter_data is not None:
+        for name, color in zip(
+            ["Underestimation", "Overestimation", "Majority"],
+            [color_options.underestimation_color, color_options.overestimation_color, color_options.majority_color],
+        ):
+            trace = go.Scatter(
+                x=ref_scatter_data[name]["Actual value"],
+                y=ref_scatter_data[name]["Predicted value"],
+                mode="markers",
+                name=name,
+                legendgroup=name,
+                showlegend=False,
+                marker_color=color
+                # marker=dict(color=color_options.underestimation_color, showscale=False),
+            )
+            fig.add_trace(trace, 1, 2)
+        fig.update_xaxes(title_text="Actual value", row=1, col=2)
+
+    fig.update_layout(
+        yaxis_title="Predicted value",
+        xaxis=dict(showticklabels=True),
+        yaxis=dict(showticklabels=True),
+    )
+    fig = json.loads(fig.to_json())
+    return fig
 
 
 def plot_scatter_for_data_drift(curr_y: list, curr_x: list, y0: float, y1: float, y_name: str, x_name: str):
@@ -147,4 +752,36 @@ def plot_scatter_for_data_drift(curr_y: list, curr_x: list, y0: float, y1: float
             ),
         ],
     )
+    return fig
+
+
+def plot_conf_mtrx(curr_mtrx, ref_mtrx):
+    if ref_mtrx is not None:
+        cols = 2
+        subplot_titles = ["current", "reference"]
+    else:
+        cols = 1
+        subplot_titles = [""]
+    fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
+    trace = go.Heatmap(
+        z=curr_mtrx.values,
+        x=curr_mtrx.labels,
+        y=curr_mtrx.labels,
+        text=np.array(curr_mtrx.values).astype(str),
+        texttemplate="%{text}",
+        coloraxis="coloraxis",
+    )
+    fig.add_trace(trace, 1, 1)
+
+    if ref_mtrx is not None:
+        trace = go.Heatmap(
+            z=ref_mtrx.values,
+            x=ref_mtrx.labels,
+            y=ref_mtrx.labels,
+            text=np.array(ref_mtrx.values).astype(str),
+            texttemplate="%{text}",
+            coloraxis="coloraxis",
+        )
+        fig.add_trace(trace, 1, 2)
+    fig.update_layout(coloraxis={"colorscale": "RdBu_r"})
     return fig

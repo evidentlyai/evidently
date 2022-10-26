@@ -3,6 +3,7 @@
 from .anderson_darling_stattest import anderson_darling_test
 from .chisquare_stattest import chi_stat_test
 from .cramer_von_mises_stattest import cramer_von_mises
+from .fisher_exact_stattest import fisher_exact_test
 from .energy_distance import energy_dist_test
 from .g_stattest import g_test
 from .jensenshannon import jensenshannon_stat_test
