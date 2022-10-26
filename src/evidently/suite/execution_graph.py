@@ -1,6 +1,5 @@
 import abc
 import functools
-import logging
 from typing import Dict
 from typing import List
 from typing import Tuple
@@ -38,12 +37,10 @@ class SimpleExecutionGraph(ExecutionGraph):
         metric_to_calculations = {}
         for metric_type, metrics in aggregated.items():
             metrics_by_parameters: Dict[tuple, List[Metric]] = functools.reduce(_aggregate_by_parameters, metrics, {})
-            calculations = []
-            for params, params_metrics in metrics_by_parameters.items():
-                logging.debug(f"{metric_type.__name__} with params ({params}): {len(params_metrics)} combined")
-                base_metric = params_metrics[0]
-                calculations += [base_metric] * len(params_metrics)
-            metric_to_calculations.update(dict(zip(metrics, calculations)))
+
+            for metric in metrics:
+                metric_to_calculations[metric] = metrics_by_parameters[metric.get_parameters()][0]
+
         return [(metric, metric_to_calculations[metric]) for metric in self.metrics]
 
     def get_test_execution_iterator(self) -> List[Test]:
