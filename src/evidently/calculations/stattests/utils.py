@@ -1,3 +1,5 @@
+from itertools import product
+
 import numpy as np
 import pandas as pd
 
@@ -39,3 +41,38 @@ def get_binned_data(
         np.place(current_percents, current_percents == 0, 0.0001)
 
     return reference_percents, current_percents
+
+
+def generate_fisher2x2_contingency_table(reference_data: pd.Series, current_data: pd.Series) -> np.ndarray:
+    """Generate 2x2 contingency matrix for fisher exact test
+    Args:
+        reference_data: reference data
+        current_data: current data
+    Raises:
+        ValueError: if reference_data and current_data are not of equal length
+    Returns:
+        contingency_matrix: contingency_matrix for binary data
+    """
+    if reference_data.shape[0] != current_data.shape[0]:
+        raise ValueError(
+            "reference_data and current_data are not of equal length, please ensure that they are of equal length"
+        )
+    unique_categories = set(reference_data.unique().tolist() + current_data.unique().tolist())
+    if len(unique_categories) != 2:
+        unique_categories.add("placeholder")
+
+    unique_categories = list(unique_categories)  # type: ignore
+    unique_categories = dict(zip(unique_categories, [0, 1]))  # type: ignore
+
+    reference_data = reference_data.map(unique_categories).values
+    current_data = current_data.map(unique_categories).values
+
+    zero_ref = reference_data.size - np.count_nonzero(reference_data)
+    one_ref = np.count_nonzero(reference_data)
+
+    zero_cur = current_data.size - np.count_nonzero(current_data)
+    one_cur = np.count_nonzero(current_data)
+
+    contingency_table = np.array([[one_cur, zero_cur], [one_ref, zero_ref]])
+
+    return contingency_table
