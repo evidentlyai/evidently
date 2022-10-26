@@ -7,8 +7,8 @@ from evidently.calculations.stattests import z_stat_test
 from evidently.calculations.stattests.anderson_darling_stattest import anderson_darling_test
 from evidently.calculations.stattests.chisquare_stattest import chi_stat_test
 from evidently.calculations.stattests.cramer_von_mises_stattest import cramer_von_mises
-from evidently.calculations.stattests.fisher_exact_stattest import fisher_exact_test
 from evidently.calculations.stattests.energy_distance import energy_dist_test
+from evidently.calculations.stattests.fisher_exact_stattest import fisher_exact_test
 from evidently.calculations.stattests.g_stattest import g_test
 from evidently.calculations.stattests.hellinger_distance import hellinger_stat_test
 from evidently.calculations.stattests.mann_whitney_urank_stattest import mann_whitney_u_stat_test
