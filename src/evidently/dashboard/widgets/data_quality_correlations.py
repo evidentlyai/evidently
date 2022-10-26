@@ -118,7 +118,7 @@ class DataQualityCorrelationsWidget(Widget):
             texttemplate=heatmap_texttemplate,
             coloraxis="coloraxis",
         )
-        fig.append_trace(trace, 1, 1)
+        fig.add_trace(trace, 1, 1)
         if current_correlations is not None:
             if len(columns) < 15:
                 heatmap_text = np.round(current_correlations[kind], 2).astype(str)
@@ -132,7 +132,7 @@ class DataQualityCorrelationsWidget(Widget):
                 texttemplate=heatmap_texttemplate,
                 coloraxis="coloraxis",
             )
-            fig.append_trace(trace, 1, 2)
+            fig.add_trace(trace, 1, 2)
         fig.update_layout(coloraxis={"colorscale": "RdBu_r"})
         correlation_figure = json.loads(fig.to_json())
         return correlation_figure

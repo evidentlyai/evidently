@@ -6,6 +6,7 @@ from typing import Optional
 import dataclasses
 
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options import ColorOptions
 
 
 @dataclasses.dataclass
@@ -16,6 +17,11 @@ class DetailsInfo:
 
 
 class MetricRenderer:
+    color_options: ColorOptions
+
+    def __init__(self, color_options: Optional[ColorOptions] = None) -> None:
+        self.color_options = color_options or ColorOptions()
+
     def render_html(self, obj) -> List[BaseWidgetInfo]:
         raise NotImplementedError()
 

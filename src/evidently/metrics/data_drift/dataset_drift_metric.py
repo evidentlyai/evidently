@@ -13,7 +13,6 @@ from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import counter
-from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import process_columns
 
 
@@ -93,8 +92,8 @@ class DataDriftMetricsRenderer(MetricRenderer):
             counter(
                 counters=[
                     CounterData(
-                        f"Dataset Drift is {drift_detected}",
                         f"Dataset drift detection threshold is {result.threshold}",
+                        f"Dataset Drift is {drift_detected}",
                     )
                 ],
                 title="",

@@ -8,15 +8,16 @@ import pytest
 from pytest import approx
 
 from evidently.calculations.classification_performance import ConfusionMatrix
+from evidently.calculations.classification_performance import get_prediction_data
+from evidently.calculations.classification_performance import k_probability_threshold
+from evidently.calculations.classification_performance import threshold_probability_labels
 from evidently.metrics import ClassificationPerformanceMetrics
 from evidently.metrics import ClassificationPerformanceMetricsThreshold
 from evidently.metrics import ClassificationPerformanceMetricsTopK
 from evidently.metrics.base_metric import InputData
-from evidently.metrics.classification_performance_metrics import get_prediction_data
-from evidently.metrics.classification_performance_metrics import k_probability_threshold
-from evidently.metrics.classification_performance_metrics import threshold_probability_labels
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.report import Report
+from evidently.utils.data_operations import process_columns
 
 
 def test_classification_performance_metrics_binary_labels() -> None:
@@ -221,7 +222,8 @@ def test_classification_performance_metrics_binary_probas_threshold_with_report(
 def test_prediction_data_with_default_threshold(
     data: pd.DataFrame, mapping: ColumnMapping, expected_predictions: list, expected_probas: Optional[dict]
 ):
-    prediction_data = get_prediction_data(data, mapping)
+    columns = process_columns(data, mapping)
+    prediction_data = get_prediction_data(data, columns, mapping.pos_label)
     assert prediction_data.predictions.tolist() == expected_predictions
 
     if expected_probas is None:
@@ -261,8 +263,10 @@ def test_prediction_data_with_default_threshold(
     ],
 )
 def test_prediction_data_raises_value_error(data: pd.DataFrame, mapping: ColumnMapping, error_text: str):
+    columns = process_columns(data, mapping)
+
     with pytest.raises(ValueError) as error:
-        get_prediction_data(data, mapping)
+        get_prediction_data(data, columns, pos_label=mapping.pos_label)
 
     assert error.value.args[0] == error_text
 
@@ -382,7 +386,8 @@ def test_classification_performance_metrics() -> None:
 def test_get_prediction_data(
     data: pd.DataFrame, mapping: ColumnMapping, threshold: float, expected: Tuple[pd.Series, Optional[pd.DataFrame]]
 ):
-    result = get_prediction_data(data, mapping, threshold)
+    columns = process_columns(data, mapping)
+    result = get_prediction_data(data, columns, pos_label=mapping.pos_label, threshold=threshold)
     assert result.predictions.equals(expected[0])
     assert np.allclose(result.prediction_probas, expected[1])
     assert list(result.prediction_probas.columns) == list(expected[1].columns)
@@ -563,3 +568,4 @@ def test_classification_performance_top_k_metrics_no_probas() -> None:
 
     with pytest.raises(ValueError):
         report.run(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+        report.json()

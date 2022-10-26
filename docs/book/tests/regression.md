@@ -1,12 +1,12 @@
 ## When to use it?
 
-You can use the Regression test preset to evaluate the quality of a regression model, when you have the ground truth data (actuals).
+You can use the `RegressionTestPreset` to evaluate the quality of a regression model, when you have the ground truth data (actuals).
 
 ### Code example
 
 ```python
 regression_performance = TestSuite(tests=[
-   Regression(),
+   RegressionTestPreset(),
 ])
  
 regression_performance.run(reference_data=ref, current_data=curr)

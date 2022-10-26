@@ -1,6 +1,6 @@
 ## When to use it?
 
-You can use the DataStability test preset when you receive a new batch of input data and want to compare it to the previous one. 
+You can use the `DataStabilityTestPreset` when you receive a new batch of input data and want to compare it to the previous one. 
 
 It will help compare the key descriptive statistics and the overall data shape between two batches you expect to be similar. For example, you can detect the appearance of new categorical values, new values, or a significant difference in the number of rows. 
 
@@ -8,7 +8,7 @@ It will help compare the key descriptive statistics and the overall data shape b
 
 ```python
 data_stability = TestSuite(tests=[
-   DataStability(),
+   DataStabilityTestPreset(),
 ])
  
 data_stability.run(reference_data=ref, current_data=curr)
