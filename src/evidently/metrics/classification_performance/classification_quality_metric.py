@@ -23,7 +23,7 @@ from evidently.utils.data_operations import process_columns
 
 
 @dataclasses.dataclass
-class DatasetClassificationQualityResult:
+class DatasetClassificationQuality:
     accuracy: float
     precision: float
     recall: float
@@ -37,13 +37,13 @@ class DatasetClassificationQualityResult:
 
 
 @dataclasses.dataclass
-class ClassificationQualityResult:
-    current: DatasetClassificationQualityResult
-    reference: Optional[DatasetClassificationQualityResult]
+class ClassificationQualityMetricResult:
+    current: DatasetClassificationQuality
+    reference: Optional[DatasetClassificationQuality]
     target_name: str
 
 
-class ClassificationQuality(ThresholdClassificationMetric[ClassificationQualityResult]):
+class ClassificationQualityMetric(ThresholdClassificationMetric[ClassificationQualityMetricResult]):
     confusion_matrix_metric: ClassificationConfusionMatrix
 
     def __init__(
@@ -56,7 +56,7 @@ class ClassificationQuality(ThresholdClassificationMetric[ClassificationQualityR
         # self.average = average
         self.confusion_matrix_metric = ClassificationConfusionMatrix(threshold, k)
 
-    def calculate(self, data: InputData) -> ClassificationQualityResult:
+    def calculate(self, data: InputData) -> ClassificationQualityMetricResult:
         dataset_columns = process_columns(data.current_data, data.column_mapping)
         target_name = dataset_columns.utility_columns.target
         prediction_name = dataset_columns.utility_columns.prediction
@@ -77,14 +77,14 @@ class ClassificationQuality(ThresholdClassificationMetric[ClassificationQualityR
                 data.column_mapping,
                 ref_matrix,
             )
-        return ClassificationQualityResult(current=current, reference=reference, target_name=target_name)
+        return ClassificationQualityMetricResult(current=current, reference=reference, target_name=target_name)
 
     def calculate_metrics(
         self,
         data: pd.DataFrame,
         column_mapping: ColumnMapping,
         confusion_matrix: ConfusionMatrix,
-    ) -> DatasetClassificationQualityResult:
+    ) -> DatasetClassificationQuality:
         target, prediction = self.get_target_prediction_data(data, column_mapping)
         if column_mapping.pos_label is not None:
             pos_label = column_mapping.pos_label
@@ -121,7 +121,7 @@ class ClassificationQuality(ThresholdClassificationMetric[ClassificationQualityR
             roc_auc = metrics.roc_auc_score(binaraized_target, prediction_probas_array, average="macro")
             log_loss = metrics.log_loss(binaraized_target, prediction_probas_array)
 
-        return DatasetClassificationQualityResult(
+        return DatasetClassificationQuality(
             accuracy=metrics.accuracy_score(target, prediction.predictions),
             precision=precision,
             recall=recall,
@@ -135,13 +135,13 @@ class ClassificationQuality(ThresholdClassificationMetric[ClassificationQualityR
         )
 
 
-@default_renderer(wrap_type=ClassificationQuality)
-class ClassificationQualityRenderer(MetricRenderer):
-    def render_json(self, obj: ClassificationQuality) -> dict:
+@default_renderer(wrap_type=ClassificationQualityMetric)
+class ClassificationQualityMetricRenderer(MetricRenderer):
+    def render_json(self, obj: ClassificationQualityMetric) -> dict:
         result = dataclasses.asdict(obj.get_result())
         return result
 
-    def render_html(self, obj: ClassificationQuality) -> List[BaseWidgetInfo]:
+    def render_html(self, obj: ClassificationQualityMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         target_name = metric_result.target_name
         result = []
