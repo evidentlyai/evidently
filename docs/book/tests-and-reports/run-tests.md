@@ -236,7 +236,7 @@ The following standard parameters are available:
 | not_eq: val              | test_result != val                         | TestFeatureMin(feature_name=”numeric_feature”, ne=0)            |
 | gt: val                  | test_result > val                          | TestFeatureMin(feature_name=”numeric_feature”, gt=5)            |
 | gte: val                 | test_result >= val                         | TestFeatureMin(feature_name=”numeric_feature”, gte=5)           |
-| lt: val                  | test_result <=val                          | TestFeatureMin(feature_name=”numeric_feature”, lt=5)            |
+| lt: val                  | test_result < val                          | TestFeatureMin(feature_name=”numeric_feature”, lt=5)            |
 | lte: val                 | test_result <= val                         | TestFeatureMin(feature_name=”numeric_feature”, lte=5)           |
 | is_in: list              | test_result == one of the values from list | TestFeatureMin(feature_name=”numeric_feature”, is_in=[3,5,7])   |
 | not_in: list             | test_result != any of the values from list | TestFeatureMin(feature_name=”numeric_feature”, not_in=[-1,0,1]) |
