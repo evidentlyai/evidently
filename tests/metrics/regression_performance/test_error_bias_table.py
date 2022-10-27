@@ -29,19 +29,19 @@ from evidently.report import Report
         (
             pd.DataFrame({"category_feature": ["a", "b", "c"], "target": [1, 2, 3], "prediction": [1, 2, 3]}),
             None,
-            RegressionErrorBiasTable(columns=["category_feature"], top=0.5),
+            RegressionErrorBiasTable(columns=["category_feature"], top_error=0.5),
             "Cannot calculate error bias - top should be in range (0, 0.5).",
         ),
         (
             pd.DataFrame({"category_feature": ["a", "b", "c"], "target": [1, 2, 3], "prediction": [1, 2, 3]}),
             None,
-            RegressionErrorBiasTable(columns=["category_feature"], top=5),
+            RegressionErrorBiasTable(columns=["category_feature"], top_error=5),
             "Cannot calculate error bias - top should be in range (0, 0.5).",
         ),
         (
             pd.DataFrame({"category_feature": ["a", "b", "c"], "target": [1, 2, 3], "prediction": [1, 2, 3]}),
             None,
-            RegressionErrorBiasTable(columns=["category_feature"], top=0),
+            RegressionErrorBiasTable(columns=["category_feature"], top_error=0),
             "Cannot calculate error bias - top should be in range (0, 0.5).",
         ),
     ),
