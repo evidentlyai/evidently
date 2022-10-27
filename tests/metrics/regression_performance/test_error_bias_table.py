@@ -1,4 +1,5 @@
 import json
+from typing import Optional
 
 import numpy as np
 import pandas as pd
@@ -6,7 +7,59 @@ import pytest
 
 from evidently import ColumnMapping
 from evidently.metrics import RegressionErrorBiasTable
+from evidently.metrics.base_metric import InputData
 from evidently.report import Report
+
+
+@pytest.mark.parametrize(
+    "current_dataset, reference_dataset, metric, error_message",
+    (
+        (
+            pd.DataFrame({"feature": [1, 2, 3]}),
+            None,
+            RegressionErrorBiasTable(),
+            "Target column should be present.",
+        ),
+        (
+            pd.DataFrame({"target": [1, 2, 3]}),
+            pd.DataFrame({"target": [1, 2, 3]}),
+            RegressionErrorBiasTable(columns=["test"]),
+            "Prediction column should be present.",
+        ),
+        (
+            pd.DataFrame({"category_feature": ["a", "b", "c"], "target": [1, 2, 3], "prediction": [1, 2, 3]}),
+            None,
+            RegressionErrorBiasTable(columns=["category_feature"], top=1),
+            "Cannot calculate error bias - top should be in range (0, 1).",
+        ),
+        (
+            pd.DataFrame({"category_feature": ["a", "b", "c"], "target": [1, 2, 3], "prediction": [1, 2, 3]}),
+            None,
+            RegressionErrorBiasTable(columns=["category_feature"], top=5),
+            "Cannot calculate error bias - top should be in range (0, 1).",
+        ),
+        (
+            pd.DataFrame({"category_feature": ["a", "b", "c"], "target": [1, 2, 3], "prediction": [1, 2, 3]}),
+            None,
+            RegressionErrorBiasTable(columns=["category_feature"], top=0),
+            "Cannot calculate error bias - top should be in range (0, 1).",
+        ),
+    ),
+)
+def test_regression_error_bias_table_value_errors(
+    current_dataset: pd.DataFrame,
+    reference_dataset: Optional[pd.DataFrame],
+    metric: RegressionErrorBiasTable,
+    error_message: str,
+) -> None:
+    data_mapping = ColumnMapping()
+
+    with pytest.raises(ValueError) as error:
+        metric.calculate(
+            data=InputData(current_data=current_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
+        )
+
+    assert error.value.args[0] == error_message
 
 
 @pytest.mark.parametrize(
