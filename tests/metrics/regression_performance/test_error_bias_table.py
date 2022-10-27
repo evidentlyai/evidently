@@ -76,7 +76,7 @@ def test_regression_error_bias_table_value_errors(
                 "num_feature_names": [],
                 "prediction_name": "prediction",
                 "target_name": "target",
-                "top_error": 0.05
+                "top_error": 0.05,
             },
         ),
         (
@@ -108,7 +108,7 @@ def test_regression_error_bias_table_value_errors(
                 "num_feature_names": [],
                 "prediction_name": "prediction",
                 "target_name": "target",
-                "top_error": 0.05
+                "top_error": 0.05,
             },
         ),
     ),
