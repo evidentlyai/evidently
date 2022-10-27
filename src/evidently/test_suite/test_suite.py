@@ -34,9 +34,9 @@ class TestSuite(Display):
     _test_generators: List[BaseGenerator]
 
     def __init__(
-            self,
-            tests: Optional[List[Union[Test, TestPreset, BaseGenerator]]],
-            color_options: Optional[ColorOptions] = None
+        self,
+        tests: Optional[List[Union[Test, TestPreset, BaseGenerator]]],
+        color_options: Optional[ColorOptions] = None,
     ):
         super().__init__(color_options)
         self._inner_suite = Suite()

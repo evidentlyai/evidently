@@ -30,9 +30,7 @@ class Report(Display):
     metrics: List[Union[Metric, MetricPreset, BaseGenerator]]
 
     def __init__(
-            self,
-            metrics: List[Union[Metric, MetricPreset, BaseGenerator]],
-            color_options: Optional[ColorOptions] = None
+        self, metrics: List[Union[Metric, MetricPreset, BaseGenerator]], color_options: Optional[ColorOptions] = None
     ):
         super().__init__(color_options)
         # just save all metrics and metric presets
