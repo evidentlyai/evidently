@@ -1,14 +1,12 @@
 ---
 description: How to generate reports in Evidently.
----
+---   
 
-{% hint style="info" %} The Report object unites the functionality of Dashboards and JSON Profiles. It is currently in development. We are migrating the existing tabs and sections to the new API. It will also soon be possible to quickly create custom reports from individual Metrics.{% endhint %} 
-
-{% hint style="info" %} If you have any issues, you can continue using Dashboards and JSON Profiles. However, they will be depreciated in the future.{% endhint %}      
+TL;DR: You can start with ready-made Metric Presets. You can also create custom Reports from individual Metrics. 
 
 # Installation and prep
 
-After [installation](../get-started/install-evidently.md), import the Report component and the required metrics (available soon) and metric presets:
+After [installation](../get-started/install-evidently.md), import the Report component and the required Metrics and Metric Presets:
 
 ```python
 from evidently.report import Report
@@ -190,6 +188,5 @@ data_drift_column_report.run(reference_data=adult_ref, current_data=adult_cur)
 data_drift_column_report
 ```
 {% hint style="info" %} 
-
 **Reference**: The available parameters are listed in the [All metrics](../reference/all-metrics.md) table.
 {% endhint %}
