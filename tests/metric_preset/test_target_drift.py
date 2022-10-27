@@ -53,7 +53,7 @@ from evidently.report import Report
         ),
     ),
 )
-def test_target_drift_preset_preset(
+def test_target_drift_preset_with_report(
     current_data: pd.DataFrame, reference_data: Optional[pd.DataFrame], column_mapping: ColumnMapping
 ) -> None:
     report = Report(metrics=[TargetDriftPreset()])
