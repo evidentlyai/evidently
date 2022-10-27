@@ -23,7 +23,6 @@ from evidently.report import Report
             pd.DataFrame(
                 {
                     "my_target": ["1", "2", "3"],
-                    "prediction": ["1", "2", "3"],
                     "1": [0.1, 0.2, 0.3],
                     "2": [0.9, 0.8, 0.7],
                     "3": [0.9, 0.8, 0.7],
@@ -34,7 +33,6 @@ from evidently.report import Report
             pd.DataFrame(
                 {
                     "my_target": ["1", np.NaN, "3", "3", "2", "1"],
-                    "prediction": ["1", "2", "3", "3", "2", "1"],
                     "1": [0.1, 0.2, np.NaN, 0.2, 0.2, 0.1],
                     "2": [0.9, 0.8, 0.5, 0.8, 0.7, 0.9],
                     "3": [0.9, 0.8, 0.5, 0.8, 0.7, 0.9],
@@ -47,8 +45,6 @@ from evidently.report import Report
                 prediction=["1", "2", "3"],
                 datetime="datetime",
                 task="classification",
-                target_names=["1", "2", "3"],
-                pos_label="1",
             ),
         ),
     ),
