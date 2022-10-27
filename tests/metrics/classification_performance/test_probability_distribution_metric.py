@@ -49,7 +49,7 @@ from evidently.report import Report
         ),
     ),
 )
-def test_probability_distribution_with_report(
+def test_classification_prob_distribution_with_report(
     current: pd.DataFrame, reference: Optional[pd.DataFrame], column_mapping: ColumnMapping, expected_json: Dict
 ):
     report = Report(metrics=[ClassificationProbDistribution()])
