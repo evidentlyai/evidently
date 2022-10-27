@@ -20,12 +20,12 @@ from evidently.utils.data_operations import process_columns
 
 
 @dataclasses.dataclass
-class ProbabilityDistributionResults:
+class ClassificationProbDistributionResults:
     current_distribution: Optional[Dict[str, list]]
     reference_distribution: Optional[Dict[str, list]]
 
 
-class ClassificationProbDistribution(Metric[ProbabilityDistributionResults]):
+class ClassificationProbDistribution(Metric[ClassificationProbDistributionResults]):
     @staticmethod
     def get_distribution(dataset: pd.DataFrame, target_name: str, prediction_labels: Iterable) -> Dict[str, list]:
         result = {}
@@ -39,7 +39,7 @@ class ClassificationProbDistribution(Metric[ProbabilityDistributionResults]):
 
         return result
 
-    def calculate(self, data: InputData) -> ProbabilityDistributionResults:
+    def calculate(self, data: InputData) -> ClassificationProbDistributionResults:
         columns = process_columns(data.current_data, data.column_mapping)
         prediction = columns.utility_columns.prediction
         target = columns.utility_columns.target
@@ -62,7 +62,7 @@ class ClassificationProbDistribution(Metric[ProbabilityDistributionResults]):
             else:
                 reference_distribution = None
 
-        return ProbabilityDistributionResults(
+        return ClassificationProbDistributionResults(
             current_distribution=current_distribution,
             reference_distribution=reference_distribution,
         )
@@ -70,7 +70,7 @@ class ClassificationProbDistribution(Metric[ProbabilityDistributionResults]):
 
 @default_renderer(wrap_type=ClassificationProbDistribution)
 class ClassificationProbDistributionRenderer(MetricRenderer):
-    def render_json(self, obj: ProbabilityDistribution) -> dict:
+    def render_json(self, obj: ClassificationProbDistribution) -> dict:
         return {}
 
     def _plot(self, distribution: Dict[str, list]):
@@ -102,7 +102,7 @@ class ClassificationProbDistributionRenderer(MetricRenderer):
             )
         return graphs
 
-    def render_html(self, obj: ProbabilityDistribution) -> List[BaseWidgetInfo]:
+    def render_html(self, obj: ClassificationProbDistribution) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         reference_distribution = metric_result.reference_distribution
         current_distribution = metric_result.current_distribution

@@ -7,7 +7,7 @@ import pandas as pd
 import pytest
 
 from evidently import ColumnMapping
-from evidently.metrics import ProbabilityDistribution
+from evidently.metrics import ClassificationProbDistribution
 from evidently.report import Report
 
 
@@ -52,9 +52,9 @@ from evidently.report import Report
 def test_probability_distribution_with_report(
     current: pd.DataFrame, reference: Optional[pd.DataFrame], column_mapping: ColumnMapping, expected_json: Dict
 ):
-    report = Report(metrics=[ProbabilityDistribution()])
+    report = Report(metrics=[ClassificationProbDistribution()])
     report.run(current_data=current, reference_data=reference, column_mapping=column_mapping)
     report.show()
     result_json = report.json()
-    result = json.loads(result_json)["metrics"]["ProbabilityDistribution"]
+    result = json.loads(result_json)["metrics"]["ClassificationProbDistribution"]
     assert result == expected_json
