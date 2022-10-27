@@ -731,7 +731,12 @@ def calculate_category_column_correlations(
         return {}
 
     correlation = calculate_cramer_v_correlation(column_name, dataset, columns)
-    return {correlation.kind: correlation}
+
+    if pd.isnull(correlation.values.y).all():
+        return {}
+
+    else:
+        return {correlation.kind: correlation}
 
 
 def calculate_numerical_column_correlations(
