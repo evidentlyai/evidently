@@ -13,6 +13,7 @@ import evidently
 from evidently.metrics.base_metric import InputData
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options import ColorOptions
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.suite.base_suite import Display
 from evidently.suite.base_suite import Suite
@@ -32,7 +33,12 @@ class TestSuite(Display):
     _test_presets: List[TestPreset]
     _test_generators: List[BaseGenerator]
 
-    def __init__(self, tests: Optional[List[Union[Test, TestPreset, BaseGenerator]]]):
+    def __init__(
+            self,
+            tests: Optional[List[Union[Test, TestPreset, BaseGenerator]]],
+            color_options: Optional[ColorOptions] = None
+    ):
+        super().__init__(color_options)
         self._inner_suite = Suite()
         self._test_presets = []
         self._test_generators = []
@@ -119,6 +125,7 @@ class TestSuite(Display):
         for test, test_result in self._inner_suite.context.test_results.items():
             # renderer = find_test_renderer(type(test.obj), self._inner_suite.context.renderers)
             renderer = find_test_renderer(type(test), self._inner_suite.context.renderers)
+            renderer.color_options = self.color_options
             by_status[test_result.status] = by_status.get(test_result.status, 0) + 1
             test_results.append(renderer.render_html(test))
 
