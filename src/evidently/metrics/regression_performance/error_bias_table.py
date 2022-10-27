@@ -53,9 +53,7 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
 
     def calculate(self, data: InputData) -> RegressionErrorBiasTableResults:
         if self.top <= self.TOP_MIN or self.top >= self.TOP_MAX:
-            raise ValueError(
-                f"Cannot calculate error bias - top should be in range ({self.TOP_MIN}, {self.TOP_MAX})."
-            )
+            raise ValueError(f"Cannot calculate error bias - top should be in range ({self.TOP_MIN}, {self.TOP_MAX}).")
 
         dataset_columns = process_columns(data.current_data, data.column_mapping)
         target_name = dataset_columns.utility_columns.target
