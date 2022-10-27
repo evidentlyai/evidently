@@ -35,12 +35,16 @@ class RegressionErrorBiasTableResults:
 
 
 class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
+    # by default, we get 5% values for the error bias calculations
+    TOP_DEFAULT = 0.05
+    TOP_MIN = 0
+    TOP_MAX = 0.5
     top: float
     columns: Optional[List[str]]
 
     def __init__(self, columns: Optional[List[str]] = None, top: Optional[float] = None):
         if top is None:
-            self.top = 0.5
+            self.top = self.TOP_DEFAULT
 
         else:
             self.top = top
@@ -48,8 +52,10 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
         self.columns = columns
 
     def calculate(self, data: InputData) -> RegressionErrorBiasTableResults:
-        if self.top <= 0 or self.top >= 1:
-            raise ValueError("Cannot calculate error bias - top should be in range (0, 1).")
+        if self.top <= self.TOP_MIN or self.top >= self.TOP_MAX:
+            raise ValueError(
+                f"Cannot calculate error bias - top should be in range ({self.TOP_MIN}, {self.TOP_MAX})."
+            )
 
         dataset_columns = process_columns(data.current_data, data.column_mapping)
         target_name = dataset_columns.utility_columns.target
