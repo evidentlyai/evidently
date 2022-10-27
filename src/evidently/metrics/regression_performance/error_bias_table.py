@@ -24,6 +24,7 @@ from evidently.utils.data_operations import process_columns
 
 @dataclasses.dataclass
 class RegressionErrorBiasTableResults:
+    top_error: float
     current_plot_data: pd.DataFrame
     reference_plot_data: Optional[pd.DataFrame]
     target_name: str
@@ -123,6 +124,7 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
         columns = list(np.intersect1d(curr_df.columns, columns))
 
         return RegressionErrorBiasTableResults(
+            top_error=self.top_error,
             current_plot_data=curr_df,
             reference_plot_data=ref_df,
             target_name=target_name,
@@ -530,13 +532,13 @@ class RegressionErrorBiasTableRenderer(MetricRenderer):
                 },
                 additionalGraphs=additional_graphs_data,
             )
-        top_error_percents = int(self.top_error * 100)
+        top_error_percents = int(result.top_error * 100)
 
         return [
             header_text(
                 label=f"Error Bias: Mean/Most Common Feature Value per Group (Top - {top_error_percents}% Errors)"
             ),
-            widget_info
+            widget_info,
         ]
 
     @staticmethod
