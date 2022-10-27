@@ -25,7 +25,7 @@ class ProbabilityDistributionResults:
     curr_distplot: List[dict]
 
 
-class ProbabilityDistribution(Metric[ProbabilityDistributionResults]):
+class ClassificationProbDistribution(Metric[ProbabilityDistributionResults]):
     def calculate(self, data: InputData) -> ProbabilityDistributionResults:
         columns = process_columns(data.current_data, data.column_mapping)
 
@@ -75,12 +75,12 @@ def _plot(dataset_to_plot, columns: DatasetColumns, color_options: Optional[Colo
     return graphs
 
 
-@default_renderer(wrap_type=ProbabilityDistribution)
-class ProbabilityDistributionRenderer(MetricRenderer):
-    def render_json(self, obj: ProbabilityDistribution) -> dict:
+@default_renderer(wrap_type=ClassificationProbDistribution)
+class ClassificationProbDistributionRenderer(MetricRenderer):
+    def render_json(self, obj: ClassificationProbDistribution) -> dict:
         return {}
 
-    def render_html(self, obj: ProbabilityDistribution) -> List[BaseWidgetInfo]:
+    def render_html(self, obj: ClassificationProbDistribution) -> List[BaseWidgetInfo]:
         ref = obj.get_result().ref_distplot
         curr = obj.get_result().curr_distplot
         result = []

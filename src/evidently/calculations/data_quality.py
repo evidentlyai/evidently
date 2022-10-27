@@ -518,15 +518,15 @@ class DataQualityGetPlotData:
 
         if unique_values > merge_small_cat:
             curr_cats = curr[feature_name].astype(str).value_counts(normalize=True)
-            ref_cats = pd.Series()
+
             if ref is not None:
                 ref_cats = ref[feature_name].astype(str).value_counts(normalize=True)
-            cats = (
-                curr_cats.append(ref_cats)
-                .sort_values(ascending=False)
-                .index.drop_duplicates(keep="first")[:merge_small_cat]
-                .values
-            )
+                categories = pd.concat([curr_cats, ref_cats])
+
+            else:
+                categories = curr_cats
+
+            cats = categories.sort_values(ascending=False).index.drop_duplicates(keep="first")[:merge_small_cat].values
 
             curr[feature_name] = curr[feature_name].apply(lambda x: x if str(x) in cats else "other")
             if ref is not None:

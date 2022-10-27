@@ -6,14 +6,14 @@ from pytest import approx as pytest_approx
 
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.test_suite import TestSuite
+from evidently.tests import TestColumnValueMax
+from evidently.tests import TestColumnValueMean
+from evidently.tests import TestColumnValueMedian
+from evidently.tests import TestColumnValueMin
+from evidently.tests import TestColumnValueStd
 from evidently.tests import TestConflictPrediction
 from evidently.tests import TestConflictTarget
-from evidently.tests import TestFeatureValueMax
-from evidently.tests import TestFeatureValueMean
-from evidently.tests import TestFeatureValueMedian
-from evidently.tests import TestFeatureValueMin
-from evidently.tests import TestFeatureValueStd
-from evidently.tests import TestHighlyCorrelatedFeatures
+from evidently.tests import TestHighlyCorrelatedColumns
 from evidently.tests import TestMeanInNSigmas
 from evidently.tests import TestMostCommonValueShare
 from evidently.tests import TestNumberOfOutListValues
@@ -39,7 +39,7 @@ from evidently.tests.utils import approx
                 {"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 1, 2, 5], "target": [0, 0, 0, 1]}
             ),
             None,
-            TestFeatureValueMin(column_name="numerical_feature", gte=10),
+            TestColumnValueMin(column_name="numerical_feature", gte=10),
             False,
         ),
         (
@@ -47,7 +47,7 @@ from evidently.tests.utils import approx
                 {"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 1, 2, 5], "target": [0, 0, 0, 1]}
             ),
             None,
-            TestFeatureValueMin(column_name="numerical_feature", eq=0),
+            TestColumnValueMin(column_name="numerical_feature", eq=0),
             True,
         ),
         (
@@ -59,7 +59,7 @@ from evidently.tests.utils import approx
                 }
             ),
             None,
-            TestFeatureValueMin(column_name="numerical_feature", eq=approx(-1, absolute=0.5)),
+            TestColumnValueMin(column_name="numerical_feature", eq=approx(-1, absolute=0.5)),
             True,
         ),
         (
@@ -71,7 +71,7 @@ from evidently.tests.utils import approx
                 }
             ),
             None,
-            TestFeatureValueMin(column_name="numerical_feature", lt=approx(10, relative=0.5)),
+            TestColumnValueMin(column_name="numerical_feature", lt=approx(10, relative=0.5)),
             True,
         ),
         (
@@ -79,7 +79,7 @@ from evidently.tests.utils import approx
                 {"category_feature": ["n", "d", "p", "n"], "numerical_feature": [10, 7, 5.1, 5], "target": [0, 0, 0, 1]}
             ),
             None,
-            TestFeatureValueMin(column_name="numerical_feature", lt=approx(10, relative=0.5)),
+            TestColumnValueMin(column_name="numerical_feature", lt=approx(10, relative=0.5)),
             False,
         ),
     ),
@@ -87,7 +87,7 @@ from evidently.tests.utils import approx
 def test_data_quality_test_min(
     test_dataset: pd.DataFrame,
     reference_dataset: pd.DataFrame,
-    test_object: TestFeatureValueMin,
+    test_object: TestColumnValueMin,
     expected_success: bool,
 ) -> None:
     suite = TestSuite(tests=[test_object])
@@ -103,7 +103,7 @@ def test_data_quality_test_min(
                 {"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 1, 2, 5], "target": [0, 0, 0, 1]}
             ),
             None,
-            TestFeatureValueMin(column_name="numerical_feature"),
+            TestColumnValueMin(column_name="numerical_feature"),
             False,
         ),
     ),
@@ -111,7 +111,7 @@ def test_data_quality_test_min(
 def test_data_quality_test_min_exception(
     test_dataset: pd.DataFrame,
     reference_dataset: pd.DataFrame,
-    test_object: TestFeatureValueMin,
+    test_object: TestColumnValueMin,
     expected_success: bool,
 ) -> None:
     suite = TestSuite(tests=[test_object])
@@ -121,12 +121,12 @@ def test_data_quality_test_min_exception(
 
 def test_data_quality_test_min_render():
     test_dataset = pd.DataFrame({"numerical_feature": [0, 1, 2, 5], "target": [0, 0, 0, 1]})
-    suite = TestSuite(tests=[TestFeatureValueMin(column_name="numerical_feature", eq=0)])
+    suite = TestSuite(tests=[TestColumnValueMin(column_name="numerical_feature", eq=0)])
     suite.run(current_data=test_dataset, reference_data=None)
     assert suite.show()
     assert suite.json()
 
-    suite = TestSuite(tests=[TestFeatureValueMin(column_name="numerical_feature")])
+    suite = TestSuite(tests=[TestColumnValueMin(column_name="numerical_feature")])
     suite.run(current_data=test_dataset, reference_data=test_dataset)
     assert suite.show()
     assert suite.json()
@@ -136,23 +136,23 @@ def test_data_quality_test_max() -> None:
     test_dataset = pd.DataFrame(
         {"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 1, 2, 5], "target": [0, 0, 0, 1]}
     )
-    suite = TestSuite(tests=[TestFeatureValueMax(column_name="numerical_feature", gt=10)])
+    suite = TestSuite(tests=[TestColumnValueMax(column_name="numerical_feature", gt=10)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
 
-    suite = TestSuite(tests=[TestFeatureValueMax(column_name="numerical_feature", eq=5)])
+    suite = TestSuite(tests=[TestColumnValueMax(column_name="numerical_feature", eq=5)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
 
 
 def test_data_quality_test_max_render():
     test_dataset = pd.DataFrame({"numerical_feature": [0, 1, 2, 5], "target": [0, 0, 0, 1]})
-    suite = TestSuite(tests=[TestFeatureValueMax(column_name="numerical_feature", eq=0)])
+    suite = TestSuite(tests=[TestColumnValueMax(column_name="numerical_feature", eq=0)])
     suite.run(current_data=test_dataset, reference_data=None)
     assert suite.show()
     assert suite.json()
 
-    suite = TestSuite(tests=[TestFeatureValueMax(column_name="numerical_feature")])
+    suite = TestSuite(tests=[TestColumnValueMax(column_name="numerical_feature")])
     suite.run(current_data=test_dataset, reference_data=test_dataset)
     assert suite.show()
     assert suite.json()
@@ -162,27 +162,27 @@ def test_data_quality_test_mean() -> None:
     test_dataset = pd.DataFrame(
         {"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 1, 2, 5], "target": [0, 0, 0, 1]}
     )
-    suite = TestSuite(tests=[TestFeatureValueMean(column_name="numerical_feature", eq=5)])
+    suite = TestSuite(tests=[TestColumnValueMean(column_name="numerical_feature", eq=5)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
 
-    suite = TestSuite(tests=[TestFeatureValueMean(column_name="numerical_feature", gt=0, lt=10)])
+    suite = TestSuite(tests=[TestColumnValueMean(column_name="numerical_feature", gt=0, lt=10)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
 
-    suite = TestSuite(tests=[TestFeatureValueMean(column_name="numerical_feature", eq=2)])
+    suite = TestSuite(tests=[TestColumnValueMean(column_name="numerical_feature", eq=2)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
 
 
 def test_data_quality_test_mean_render():
     test_dataset = pd.DataFrame({"numerical_feature": [0, 1, 2, 5], "target": [0, 0, 0, 1]})
-    suite = TestSuite(tests=[TestFeatureValueMean(column_name="numerical_feature", eq=0)])
+    suite = TestSuite(tests=[TestColumnValueMean(column_name="numerical_feature", eq=0)])
     suite.run(current_data=test_dataset, reference_data=None)
     assert suite.show()
     assert suite.json()
 
-    suite = TestSuite(tests=[TestFeatureValueMean(column_name="numerical_feature")])
+    suite = TestSuite(tests=[TestColumnValueMean(column_name="numerical_feature")])
     suite.run(current_data=test_dataset, reference_data=test_dataset)
     assert suite.show()
     assert suite.json()
@@ -248,10 +248,10 @@ def test_data_quality_test_median() -> None:
             "prediction": [0, 0, 1, 1],
         }
     )
-    suite = TestSuite(tests=[TestFeatureValueMedian(column_name="no_existing_feature", eq=1.5)])
+    suite = TestSuite(tests=[TestColumnValueMedian(column_name="no_existing_feature", eq=1.5)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
-    suite = TestSuite(tests=[TestFeatureValueMedian(column_name="feature1", eq=1.5)])
+    suite = TestSuite(tests=[TestColumnValueMedian(column_name="feature1", eq=1.5)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
     assert suite.show()
@@ -266,13 +266,13 @@ def test_data_quality_test_std() -> None:
             "prediction": [0, 0, 1, 1],
         }
     )
-    suite = TestSuite(tests=[TestFeatureValueStd(column_name="no_existing_feature", eq=1.5)])
+    suite = TestSuite(tests=[TestColumnValueStd(column_name="no_existing_feature", eq=1.5)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
-    suite = TestSuite(tests=[TestFeatureValueStd(column_name="feature1", lt=2)])
+    suite = TestSuite(tests=[TestColumnValueStd(column_name="feature1", lt=2)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
-    suite = TestSuite(tests=[TestFeatureValueStd(column_name="feature1", gt=2, lt=3)])
+    suite = TestSuite(tests=[TestColumnValueStd(column_name="feature1", gt=2, lt=3)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
     assert suite.show()
@@ -713,15 +713,15 @@ def test_data_quality_test_highly_correlated_features() -> None:
             "feature3": [0, 0, 1, 1],
         }
     )
-    suite = TestSuite(tests=[TestHighlyCorrelatedFeatures()])
+    suite = TestSuite(tests=[TestHighlyCorrelatedColumns()])
     suite.run(current_data=test_dataset, reference_data=test_dataset)
     assert suite
 
-    suite = TestSuite(tests=[TestHighlyCorrelatedFeatures(gt=1)])
+    suite = TestSuite(tests=[TestHighlyCorrelatedColumns(gt=1)])
     suite.run(current_data=test_dataset, reference_data=None)
     assert not suite
 
-    suite = TestSuite(tests=[TestHighlyCorrelatedFeatures(lt=1)])
+    suite = TestSuite(tests=[TestHighlyCorrelatedColumns(lt=1)])
     suite.run(current_data=test_dataset, reference_data=None)
     assert suite
     assert suite.show()
@@ -737,7 +737,7 @@ def test_data_quality_test_highly_correlated_features_json_render() -> None:
             "prediction": [0, 0, 1, 1],
         }
     )
-    suite = TestSuite(tests=[TestHighlyCorrelatedFeatures()])
+    suite = TestSuite(tests=[TestHighlyCorrelatedColumns()])
     suite.run(current_data=test_dataset, reference_data=test_dataset)
     assert suite
 
@@ -747,7 +747,7 @@ def test_data_quality_test_highly_correlated_features_json_render() -> None:
     assert test_info == {
         "description": "The maximum correlation is 0.983. The test threshold is eq=0.983 ± 0.0983.",
         "group": "data_quality",
-        "name": "Highly Correlated Features",
+        "name": "Highly Correlated Columns",
         "parameters": {
             "abs_max_num_features_correlation": 0.983,
             "condition": {"eq": {"absolute": 1e-12, "relative": 0.1, "value": 0.9827076298239908}},

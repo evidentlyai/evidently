@@ -23,7 +23,7 @@ The preset contains the following tests:
 
 
 ```python
-TestShareOfDriftedFeatures()
+TestShareOfDriftedColumns()
 TestValueDrift(column=all)
 ```
 

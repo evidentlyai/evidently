@@ -233,7 +233,7 @@ tests = TestSuite(tests=[
     TestNumberOfDuplicatedRows(),
     TestNumberOfDuplicatedColumns(),
     TestColumnsType(),
-    TestNumberOfDriftedFeatures(), 
+    TestNumberOfDriftedColumns(), 
 ])
 ```
 

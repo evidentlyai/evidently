@@ -103,26 +103,26 @@ def regression_perf_plot(
     x = [str(idx) for idx in sorted_index.index]
     y = list(sorted_index)
     trace = go.Scatter(x=x, y=y, mode="lines+markers", name=name, marker_color=RED)
-    fig.append_trace(trace, 1, 1)
+    fig.add_trace(trace, 1, 1)
 
     df = hist_for_plot["current"].sort_values("x")
     x = [str(x) for x in df.x]
     y = list(df["count"])
     trace = go.Bar(name="current", x=x, y=y, marker_color=RED)
-    fig.append_trace(trace, 2, 1)
+    fig.add_trace(trace, 2, 1)
 
     if is_ref_data:
         sorted_index = val_for_plot["reference"].sort_index()
         x = [str(idx) for idx in sorted_index.index]
         y = list(sorted_index)
         trace = go.Scatter(x=x, y=y, mode="lines+markers", name=name, marker_color=GREY)
-        fig.append_trace(trace, 1, 1)
+        fig.add_trace(trace, 1, 1)
 
         df = hist_for_plot["reference"].sort_values("x")
         x = [str(x) for x in df.x]
         y = list(df["count"])
         trace = go.Bar(name="reference", x=x, y=y, marker_color=GREY)
-        fig.append_trace(trace, 2, 1)
+        fig.add_trace(trace, 2, 1)
 
     fig.update_yaxes(title_text=name, row=1, col=1)
     fig.update_yaxes(title_text="count", row=2, col=1)
@@ -301,7 +301,7 @@ def plot_correlations(current_correlations, reference_correlations):
         texttemplate=heatmap_texttemplate,
         coloraxis="coloraxis",
     )
-    fig.append_trace(trace, 1, 1)
+    fig.add_trace(trace, 1, 1)
 
     if reference_correlations is not None:
         if len(columns) < 15:
@@ -316,7 +316,7 @@ def plot_correlations(current_correlations, reference_correlations):
             texttemplate=heatmap_texttemplate,
             coloraxis="coloraxis",
         )
-        fig.append_trace(trace, 1, 2)
+        fig.add_trace(trace, 1, 2)
     fig.update_layout(coloraxis={"colorscale": "RdBu_r"})
     return fig
 
@@ -337,7 +337,7 @@ def plot_conf_mtrx(curr_mtrx, ref_mtrx):
         texttemplate="%{text}",
         coloraxis="coloraxis",
     )
-    fig.append_trace(trace, 1, 1)
+    fig.add_trace(trace, 1, 1)
 
     if ref_mtrx is not None:
         trace = go.Heatmap(
@@ -348,7 +348,7 @@ def plot_conf_mtrx(curr_mtrx, ref_mtrx):
             texttemplate="%{text}",
             coloraxis="coloraxis",
         )
-        fig.append_trace(trace, 1, 2)
+        fig.add_trace(trace, 1, 2)
     fig.update_layout(coloraxis={"colorscale": "RdBu_r"})
     return fig
 
@@ -372,7 +372,7 @@ def plot_roc_auc(curr_roc_curve: dict, ref_roc_curve: Optional[dict]) -> List[Tu
                 color=RED,
             ),
         )
-        fig.append_trace(trace, 1, 1)
+        fig.add_trace(trace, 1, 1)
         if ref_roc_curve is not None:
             trace = go.Scatter(
                 x=ref_roc_curve[label]["fpr"],
@@ -384,7 +384,7 @@ def plot_roc_auc(curr_roc_curve: dict, ref_roc_curve: Optional[dict]) -> List[Tu
                     color=GREY,
                 ),
             )
-            fig.append_trace(trace, 1, 2)
+            fig.add_trace(trace, 1, 2)
         fig.update_layout(yaxis_title="True Positive Rate", xaxis_title="False Positive Rate", showlegend=True)
 
         additional_plots.append((f"ROC Curve for label {label}", plotly_figure(title="", figure=fig)))
@@ -444,7 +444,7 @@ def plot_rates(curr_rate_plots_data: dict, ref_rate_plots_data: Optional[dict] =
 
     fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
     for i, metric in enumerate(["fpr", "tpr", "fnr", "tnr"]):
-        fig.append_trace(
+        fig.add_trace(
             go.Scatter(
                 x=curr_df["thrs"],
                 y=curr_df[metric],
@@ -468,7 +468,7 @@ def plot_rates(curr_rate_plots_data: dict, ref_rate_plots_data: Optional[dict] =
         )
         ref_df = ref_df[ref_df.thrs <= 1]
         for i, metric in enumerate(["fpr", "tpr", "fnr", "tnr"]):
-            fig.append_trace(
+            fig.add_trace(
                 go.Scatter(
                     x=ref_df["thrs"],
                     y=ref_df[metric],
