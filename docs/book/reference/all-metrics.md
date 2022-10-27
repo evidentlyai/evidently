@@ -51,7 +51,7 @@ To modify the logic or select a different test, you should pass a [DataDriftOpti
 | Metric | Description | Parameters |
 |---|---|---|
 | DatasetDriftMetric()<br>  | Dataset-level.<br><br>Calculates the number and share of drifted features. Returns true/false for the dataset drift at a given threshold (defined by the share of drifting features). | **Required:**<br>n/a<br><br>**Optional:**<br>threshold (default for dataset drift = 0.5)<br><br>columns (default = all)<br><br>DataDriftOptions (default =  Evidently [data drift algorithm](data-drift-algorithm.md)) |
-| DataDriftTable() | Dataset-level.<br><br>Calculates data drift for all columns in the dataset. Visualizes distributions.  | **Required:**<br>n/a<br><br>**Optional:** <br>Columns (default = all)<br><br>DataDriftOptions (default =  [data drift algorithm](data-drift-algorithm.md))  |
+| DataDriftTable() | Dataset-level.<br><br>Calculates data drift for all columns in the dataset. Visualizes distributions.  | **Required:**<br>n/a<br><br>**Optional:** <br>columns (default = all)<br><br>DataDriftOptions (default =  [data drift algorithm](data-drift-algorithm.md))  |
 | ColumnDriftMetric('age') | Column-level. <br><br>Calculates data drift for the defined column. Visualizes distributions.  | **Required:**<br>column_name<br><br>**Optional:**<br>DataDriftOptions (default =  [data drift algorithm](data-drift-algorithm.md)) |
 
 ## Classification
@@ -69,7 +69,7 @@ The metrics work both for probabilistic and non-probabilistic classification. Al
 | ClassificationRocCurve() | Plots ROC Curve. Applicable for probabilistic classification only. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
 | ClassificationPRCurve() | Plots Precision-Recall Curve. Applicable for probabilistic classification only. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
 | ClassificationPRTable() | Calculates the Precision-Recall table that shows model quality at a different decision threshold.  | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
-| ClassificationQualityByFeatureTable() | Plots the relationship between feature values and model quality. | **Required:**<br>n/a<br><br>**Optional:**<br>columns (default = all numerical and categorical)<br>threshold (default for classification = None; default for probabilistic classification = 0.5)<br><br>top_k (default = None) |
+| ClassificationQualityByFeatureTable() | Plots the relationship between feature values and model quality. | **Required:**<br>n/a<br><br>**Optional:**<br>columns (default = all numerical and categorical)<br><br>threshold (default for classification = None; default for probabilistic classification = 0.5)<br><br>top_k (default = None) |
 
 ## Regression
 
@@ -85,4 +85,4 @@ All metrics are dataset-level.
 | RegressionErrorDistribution() | Visualizes the distribution of the model error in a histogram. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
 | RegressionErrorNormality() | Visualizes the quantile-quantile plot (Q-Q plot) to estimate value normality. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
 | RegressionTopErrorMetric() | Calculates the regression performance metrics for different groups: top-X% of predictions with overestimation, top-X% of predictions with underestimation, and the rest.<br>Visualizes the group division on a scatter plot with predicted vs. actual values. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a<br><br>**Default:**<br>By default, the metrics are calculated for top-5% predictions with overestimation and underestimation. |
-| RegressionErrorBiasTable(columns=['col_1', 'col_2']), | Plots the relationship between feature values and model quality per group (for top-X% error groups, as above). | **Required:**<br>n/a<br><br>**Optional:**<br>Columns (default = all categorical and numerical columns)<br><br>**Default:**<br>By default, the metrics are calculated for top-5% predictions with overestimation and underestimation. |
+| RegressionErrorBiasTable(columns=['col_1', 'col_2']), | Plots the relationship between feature values and model quality per group (for top-X% error groups, as above). | **Required:**<br>n/a<br><br>**Optional:**<br>columns (default = all categorical and numerical columns)<br><br>**Default:**<br>By default, the metrics are calculated for top-5% predictions with overestimation and underestimation. |
