@@ -25,7 +25,7 @@ class ProbabilityDistributionResults:
     reference_distribution: Optional[Dict[str, list]]
 
 
-class ProbabilityDistribution(Metric[ProbabilityDistributionResults]):
+class ClassificationProbDistribution(Metric[ProbabilityDistributionResults]):
     @staticmethod
     def get_distribution(dataset: pd.DataFrame, target_name: str, prediction_labels: Iterable) -> Dict[str, list]:
         result = {}
@@ -68,8 +68,8 @@ class ProbabilityDistribution(Metric[ProbabilityDistributionResults]):
         )
 
 
-@default_renderer(wrap_type=ProbabilityDistribution)
-class ProbabilityDistributionRenderer(MetricRenderer):
+@default_renderer(wrap_type=ClassificationProbDistribution)
+class ClassificationProbDistributionRenderer(MetricRenderer):
     def render_json(self, obj: ProbabilityDistribution) -> dict:
         return {}
 

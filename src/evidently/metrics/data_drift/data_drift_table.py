@@ -181,7 +181,7 @@ class DataDriftTableRenderer(MetricRenderer):
         drift_percents = round(results.share_of_drifted_columns * 100, 3)
 
         return [
-            header_text(label="Data Drift Report"),
+            header_text(label="Data Drift Summary"),
             rich_table_data(
                 title=f"Drift is detected for {drift_percents}% of columns "
                 f"({results.number_of_drifted_columns} out of {results.number_of_columns}).",
