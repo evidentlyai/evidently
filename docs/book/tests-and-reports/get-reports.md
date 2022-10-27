@@ -158,19 +158,13 @@ DataDriftTable()
 **Reference**: The complete list of metrics is available in the [All metrics](../reference/all-metrics.md) table.
 {% endhint %}
 
-# Custom test parameters
+# Metric parameters
 
-**Defaults**. Some metrics include default parameters. For example, probabilistic classification quality metrics have a default 0.5 decision threshold. You can override the defaults by setting custom parameters. 
+Some metrics include default parameters. For example, probabilistic classification quality metrics have a default 0.5 decision threshold. You can override the defaults by setting custom parameters. 
 
-{% hint style="info" %} 
-**Reference**: The available parameters are lsited in the same [All metrics](../reference/all-metrics.md) table.
-{% endhint %}
+Some metrics also have required parameters. For example, if you want to calculate the number of values that match a regular expression, you need to specify it. 
 
-## How to set the parameters
-
-**Example 1**. Some metrics might require setting a parameter. For example, if you want to calculate the number of values that match a regular expression, you need to specify it. 
-
-Here is an example:
+**Example 1**. How to specify regular expression (required parameter):
 
 ```python
 data_integrity_column_report = Report(metrics=[
@@ -181,6 +175,7 @@ data_integrity_column_report = Report(metrics=[
 data_integrity_column_report.run(reference_data=adult_ref, current_data=adult_cur)
 data_integrity_column_report
 ```
+
 **Example 2**. Some custom parameters might be set through the Options object. Here is an example of choosing the custom DataDrift test. 
 
 ```python
@@ -194,3 +189,7 @@ data_drift_column_report.run(reference_data=adult_ref, current_data=adult_cur)
 
 data_drift_column_report
 ```
+{% hint style="info" %} 
+
+**Reference**: The available parameters are listed in the [All metrics](../reference/all-metrics.md) table.
+{% endhint %}
