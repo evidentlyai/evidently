@@ -730,6 +730,9 @@ def calculate_category_column_correlations(
     if dataset[column_name].empty:
         return {}
 
+    if not columns:
+        return {}
+
     correlation = calculate_cramer_v_correlation(column_name, dataset, columns)
 
     if pd.isnull(correlation.values.y).all():
@@ -744,6 +747,9 @@ def calculate_numerical_column_correlations(
 ) -> Dict[str, ColumnCorrelations]:
 
     if dataset[column_name].empty or not columns:
+        return {}
+
+    if not columns:
         return {}
 
     result: Dict[str, ColumnCorrelations] = {}
