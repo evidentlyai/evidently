@@ -30,19 +30,19 @@ from evidently.report import Report
             pd.DataFrame({"category_feature": ["a", "b", "c"], "target": [1, 2, 3], "prediction": [1, 2, 3]}),
             None,
             RegressionErrorBiasTable(columns=["category_feature"], top_error=0.5),
-            "Cannot calculate error bias - top should be in range (0, 0.5).",
+            "Cannot calculate error bias - top error should be in range (0, 0.5).",
         ),
         (
             pd.DataFrame({"category_feature": ["a", "b", "c"], "target": [1, 2, 3], "prediction": [1, 2, 3]}),
             None,
             RegressionErrorBiasTable(columns=["category_feature"], top_error=5),
-            "Cannot calculate error bias - top should be in range (0, 0.5).",
+            "Cannot calculate error bias - top error should be in range (0, 0.5).",
         ),
         (
             pd.DataFrame({"category_feature": ["a", "b", "c"], "target": [1, 2, 3], "prediction": [1, 2, 3]}),
             None,
             RegressionErrorBiasTable(columns=["category_feature"], top_error=0),
-            "Cannot calculate error bias - top should be in range (0, 0.5).",
+            "Cannot calculate error bias - top error should be in range (0, 0.5).",
         ),
     ),
 )
@@ -76,6 +76,7 @@ def test_regression_error_bias_table_value_errors(
                 "num_feature_names": [],
                 "prediction_name": "prediction",
                 "target_name": "target",
+                "top_error": 0.05
             },
         ),
         (
@@ -107,6 +108,7 @@ def test_regression_error_bias_table_value_errors(
                 "num_feature_names": [],
                 "prediction_name": "prediction",
                 "target_name": "target",
+                "top_error": 0.05
             },
         ),
     ),
