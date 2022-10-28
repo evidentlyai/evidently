@@ -5,15 +5,6 @@ import plotly.graph_objs as go
 from evidently.options import ColorOptions
 from evidently.utils.visualizations import Distribution
 
-RED = "#ed0400"
-GREY = "#4d4d4d"
-COLOR_DISCRETE_SEQUENCE = (
-    "#ed0400",
-    "#0a5f38",
-    "#6c3461",
-    "#6b8ba4",
-)
-
 
 def plot_distr(*, hist_curr, hist_ref=None, orientation="v", color_options: ColorOptions):
     fig = go.Figure()

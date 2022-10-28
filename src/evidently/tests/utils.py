@@ -10,16 +10,14 @@ from pandas.api.types import is_numeric_dtype
 from plotly.subplots import make_subplots
 
 from evidently.model.widget import BaseWidgetInfo
+from evidently.options import ColorOptions
 from evidently.renderers.base_renderer import DetailsInfo
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.renderers.html_widgets import table_data
-from evidently.renderers.render_utils import COLOR_DISCRETE_SEQUENCE
-from evidently.renderers.render_utils import GREY
-from evidently.renderers.render_utils import RED
 from evidently.utils.types import ApproxValue
 
 
-def plot_check(fig, condition):
+def plot_check(fig, condition, color_options: ColorOptions):
     lines = []
     left_line = pd.Series([condition.gt, condition.gte]).max()
     if not pd.isnull(left_line):
@@ -45,7 +43,7 @@ def plot_check(fig, condition):
                     x=(line, line),
                     y=(0, max_y),
                     mode="lines",
-                    line=dict(color=GREY, width=3, dash="dash"),
+                    line=dict(color=color_options.secondary_color, width=3, dash="dash"),
                     name=name,
                 )
             )
@@ -90,38 +88,41 @@ def plot_metric_value(fig, metric_val: float, metric_name: str):
 
 
 def regression_perf_plot(
+    *,
     val_for_plot: Dict[str, pd.Series],
     hist_for_plot: Dict[str, pd.Series],
     name: str,
     curr_mertic: float,
     ref_metric: float = None,
     is_ref_data: bool = False,
+    color_options: ColorOptions
 ):
+    current_color = color_options.get_current_data_color()
+    reference_color = color_options.get_reference_data_color()
     fig = make_subplots(rows=2, cols=1, shared_xaxes=True)
-
     sorted_index = val_for_plot["current"].sort_index()
     x = [str(idx) for idx in sorted_index.index]
     y = list(sorted_index)
-    trace = go.Scatter(x=x, y=y, mode="lines+markers", name=name, marker_color=RED)
+    trace = go.Scatter(x=x, y=y, mode="lines+markers", name=name, marker_color=current_color)
     fig.add_trace(trace, 1, 1)
 
     df = hist_for_plot["current"].sort_values("x")
     x = [str(x) for x in df.x]
     y = list(df["count"])
-    trace = go.Bar(name="current", x=x, y=y, marker_color=RED)
+    trace = go.Bar(name="current", x=x, y=y, marker_color=current_color)
     fig.add_trace(trace, 2, 1)
 
     if is_ref_data:
         sorted_index = val_for_plot["reference"].sort_index()
         x = [str(idx) for idx in sorted_index.index]
         y = list(sorted_index)
-        trace = go.Scatter(x=x, y=y, mode="lines+markers", name=name, marker_color=GREY)
+        trace = go.Scatter(x=x, y=y, mode="lines+markers", name=name, marker_color=reference_color)
         fig.add_trace(trace, 1, 1)
 
         df = hist_for_plot["reference"].sort_values("x")
         x = [str(x) for x in df.x]
         y = list(df["count"])
-        trace = go.Bar(name="reference", x=x, y=y, marker_color=GREY)
+        trace = go.Bar(name="reference", x=x, y=y, marker_color=reference_color)
         fig.add_trace(trace, 2, 1)
 
     fig.update_yaxes(title_text=name, row=1, col=1)
@@ -353,13 +354,22 @@ def plot_conf_mtrx(curr_mtrx, ref_mtrx):
     return fig
 
 
-def plot_roc_auc(curr_roc_curve: dict, ref_roc_curve: Optional[dict]) -> List[Tuple[str, BaseWidgetInfo]]:
+def plot_roc_auc(
+        *,
+        curr_roc_curve: dict,
+        ref_roc_curve: Optional[dict],
+        color_options: ColorOptions
+) -> List[Tuple[str, BaseWidgetInfo]]:
     additional_plots = []
     cols = 1
     subplot_titles = [""]
+    current_color = color_options.get_current_data_color()
+    reference_color = color_options.get_reference_data_color()
+
     if ref_roc_curve is not None:
         cols = 2
         subplot_titles = ["current", "reference"]
+
     for label in curr_roc_curve.keys():
         fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
         trace = go.Scatter(
@@ -369,10 +379,11 @@ def plot_roc_auc(curr_roc_curve: dict, ref_roc_curve: Optional[dict]) -> List[Tu
             name="ROC",
             marker=dict(
                 size=6,
-                color=RED,
+                color=current_color,
             ),
         )
         fig.add_trace(trace, 1, 1)
+
         if ref_roc_curve is not None:
             trace = go.Scatter(
                 x=ref_roc_curve[label]["fpr"],
@@ -381,19 +392,25 @@ def plot_roc_auc(curr_roc_curve: dict, ref_roc_curve: Optional[dict]) -> List[Tu
                 name="ROC",
                 marker=dict(
                     size=6,
-                    color=GREY,
+                    color=reference_color,
                 ),
             )
             fig.add_trace(trace, 1, 2)
         fig.update_layout(yaxis_title="True Positive Rate", xaxis_title="False Positive Rate", showlegend=True)
-
         additional_plots.append((f"ROC Curve for label {label}", plotly_figure(title="", figure=fig)))
+
     return additional_plots
 
 
-def plot_boxes(curr_for_plots: dict, ref_for_plots: Optional[dict]):
+def plot_boxes(
+        *,
+        curr_for_plots: dict,
+        ref_for_plots: Optional[dict],
+        color_options: ColorOptions
+):
+    current_color = color_options.get_current_data_color()
+    reference_color = color_options.get_reference_data_color()
     fig = go.Figure()
-
     trace = go.Box(
         lowerfence=curr_for_plots["mins"],
         q1=curr_for_plots["lowers"],
@@ -401,7 +418,7 @@ def plot_boxes(curr_for_plots: dict, ref_for_plots: Optional[dict]):
         median=curr_for_plots["means"],
         upperfence=curr_for_plots["maxs"],
         name="current",
-        marker_color=RED,
+        marker_color=current_color,
     )
     fig.add_trace(trace)
     if ref_for_plots is not None:
@@ -412,10 +429,11 @@ def plot_boxes(curr_for_plots: dict, ref_for_plots: Optional[dict]):
             median=ref_for_plots["means"],
             upperfence=ref_for_plots["maxs"],
             name="reference",
-            marker_color=GREY,
+            marker_color=reference_color,
         )
         fig.add_trace(trace)
         fig.update_layout(boxmode="group")
+
     fig.update_layout(
         yaxis_title="Prerdictions",
         xaxis_title="Class",
@@ -423,7 +441,12 @@ def plot_boxes(curr_for_plots: dict, ref_for_plots: Optional[dict]):
     return fig
 
 
-def plot_rates(curr_rate_plots_data: dict, ref_rate_plots_data: Optional[dict] = None):
+def plot_rates(
+        *,
+        curr_rate_plots_data: dict,
+        ref_rate_plots_data: Optional[dict] = None,
+        color_options: ColorOptions
+):
     if ref_rate_plots_data is not None:
         cols = 2
         subplot_titles = ["current", "reference"]
@@ -451,7 +474,7 @@ def plot_rates(curr_rate_plots_data: dict, ref_rate_plots_data: Optional[dict] =
                 mode="lines",
                 legendgroup=metric,
                 name=metric,
-                marker_color=COLOR_DISCRETE_SEQUENCE[i],
+                marker_color=color_options.color_sequence[i],
             ),
             1,
             1,
@@ -476,7 +499,7 @@ def plot_rates(curr_rate_plots_data: dict, ref_rate_plots_data: Optional[dict] =
                     legendgroup=metric,
                     name=metric,
                     showlegend=False,
-                    marker_color=COLOR_DISCRETE_SEQUENCE[i],
+                    marker_color=color_options.color_sequence[i],
                 ),
                 1,
                 2,

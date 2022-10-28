@@ -90,6 +90,7 @@ class TestValueMAERenderer(TestRenderer):
             curr_mertic=obj.metric.get_result().mean_abs_error,
             ref_metric=obj.metric.get_result().mean_abs_error_ref,
             is_ref_data=is_ref_data,
+            color_options=self.color_options
         )
         info.with_details("MAE", plotly_figure(title="", figure=fig))
         return info
@@ -138,6 +139,7 @@ class TestValueMAPERenderer(TestRenderer):
             curr_mertic=obj.metric.get_result().mean_abs_perc_error,
             ref_metric=obj.metric.get_result().mean_abs_perc_error_ref,
             is_ref_data=is_ref_data,
+            color_options=self.color_options
         )
         info.with_details("MAPE", plotly_figure(title="", figure=fig))
         return info
@@ -184,6 +186,7 @@ class TestValueRMSERenderer(TestRenderer):
             curr_mertic=obj.metric.get_result().rmse,
             ref_metric=obj.metric.get_result().rmse_ref,
             is_ref_data=is_ref_data,
+            color_options=self.color_options
         )
         info.with_details("RMSE", plotly_figure(title="", figure=fig))
         return info
@@ -221,7 +224,7 @@ class TestValueMeanErrorRenderer(TestRenderer):
         if "reference" in obj.metric.get_result().me_hist_for_plot.keys():
             hist_ref = me_hist_for_plot["reference"]
         fig = plot_distr(hist_curr=hist_curr, hist_ref=hist_ref, color_options=self.color_options)
-        fig = plot_check(fig, obj.get_condition())
+        fig = plot_check(fig, obj.get_condition(), color_options=self.color_options)
         fig = plot_metric_value(fig, obj.metric.get_result().mean_error, "current mean error")
         info.with_details("", plotly_figure(title="", figure=fig))
         return info
@@ -310,6 +313,7 @@ class TestValueR2ScoreRenderer(TestRenderer):
             curr_mertic=obj.metric.get_result().r2_score,
             ref_metric=obj.metric.get_result().r2_score_ref,
             is_ref_data=is_ref_data,
+            color_options=self.color_options
         )
         info.with_details("R2 Score", plotly_figure(title="", figure=fig))
         return info
