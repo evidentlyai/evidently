@@ -1,5 +1,4 @@
 import json
-from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Union
@@ -14,7 +13,6 @@ from scipy.stats import probplot
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
-from evidently.options.color_scheme import ColorOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
@@ -61,7 +59,7 @@ class RegressionErrorNormalityRenderer(MetricRenderer):
         result = obj.get_result()
         current_error = result.current_error
         reference_error = result.reference_error
-        color_options = ColorOptions()
+        color_options = self.color_options
         cols = 1
         subplot_titles: Union[list, str] = ""
 

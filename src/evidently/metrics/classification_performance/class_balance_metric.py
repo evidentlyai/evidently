@@ -51,11 +51,12 @@ class ClassificationClassBalanceRenderer(MetricRenderer):
             reference_plot_data = metric_result.plot_data["reference"]
 
         fig = plot_distr_subplots(
-            current_plot_data,
-            reference_plot_data,
-            "Class",
-            "Number Of Objects",
-            ColorOptions().get_current_data_color(),
+            hist_curr=current_plot_data,
+            hist_ref=reference_plot_data,
+            xaxis_name="Class",
+            yaxis_name="Number Of Objects",
+            same_color=True,
+            color_options=self.color_options,
         )
         return [
             header_text(label="Class Representation"),

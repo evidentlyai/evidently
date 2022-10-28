@@ -87,7 +87,7 @@ class ClassificationPRCurveRenderer(MetricRenderer):
         if current_pr_curve is None:
             return []
 
-        tab_data = get_pr_rec_plot_data(current_pr_curve, reference_pr_curve)
+        tab_data = get_pr_rec_plot_data(current_pr_curve, reference_pr_curve, color_options=self.color_options)
         if len(tab_data) == 1:
             return [header_text(label="Precision-Recall Curve"), tab_data[0][1]]
         tabs = [TabData(name, widget) for name, widget in tab_data]

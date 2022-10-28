@@ -65,12 +65,13 @@ class RegressionPredictedVsActualRenderer(MetricRenderer):
         if result.reference_scatter is not None:
             reference_scatter = result.reference_scatter
         fig = plot_scatter(
-            current_scatter,
-            reference_scatter,
+            curr=current_scatter,
+            ref=reference_scatter,
             x="actual",
             y="predicted",
             xaxis_name="Actual value",
             yaxis_name="Predicted value",
+            color_options=self.color_options,
         )
         return [
             header_text(label="Predicted vs Actual"),

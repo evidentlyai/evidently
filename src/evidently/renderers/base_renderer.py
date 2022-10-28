@@ -9,6 +9,19 @@ from evidently.model.widget import BaseWidgetInfo
 from evidently.options import ColorOptions
 
 
+class BaseRenderer:
+    """Base class for all renderers"""
+
+    color_options: ColorOptions
+
+    def __init__(self, color_options: Optional[ColorOptions] = None) -> None:
+        if color_options is None:
+            self.color_options = ColorOptions()
+
+        else:
+            self.color_options = color_options
+
+
 @dataclasses.dataclass
 class DetailsInfo:
     title: str
@@ -16,12 +29,7 @@ class DetailsInfo:
     id: str = dataclasses.field(default_factory=lambda: str(uuid.uuid4()))
 
 
-class MetricRenderer:
-    color_options: ColorOptions
-
-    def __init__(self, color_options: Optional[ColorOptions] = None) -> None:
-        self.color_options = color_options or ColorOptions()
-
+class MetricRenderer(BaseRenderer):
     def render_html(self, obj) -> List[BaseWidgetInfo]:
         raise NotImplementedError()
 
@@ -42,7 +50,7 @@ class TestHtmlInfo:
         return self
 
 
-class TestRenderer:
+class TestRenderer(BaseRenderer):
     def html_description(self, obj):
         return obj.get_result().description
 

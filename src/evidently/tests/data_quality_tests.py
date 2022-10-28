@@ -509,8 +509,8 @@ class TestColumnValueMinRenderer(TestRenderer):
         ref_distr = None
         if "reference" in obj.metric.get_result().plot_data.bins_for_hist.keys():
             ref_distr = obj.metric.get_result().plot_data.bins_for_hist["reference"]
-        fig = plot_distr(curr_distr, ref_distr)
-        fig = plot_check(fig, obj.get_condition())
+        fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
+        fig = plot_check(fig, obj.get_condition(), color_options=self.color_options)
         current_characteristics = obj.metric.get_result().current_characteristics
         if not isinstance(current_characteristics, NumericCharacteristics):
             raise ValueError(f"{column_name} should be numerical or bool")
@@ -558,8 +558,8 @@ class TestColumnValueMaxRenderer(TestRenderer):
         ref_distr = None
         if "reference" in obj.metric.get_result().plot_data.bins_for_hist.keys():
             ref_distr = obj.metric.get_result().plot_data.bins_for_hist["reference"]
-        fig = plot_distr(curr_distr, ref_distr)
-        fig = plot_check(fig, obj.get_condition())
+        fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
+        fig = plot_check(fig, obj.get_condition(), color_options=self.color_options)
         current_characteristics = obj.metric.get_result().current_characteristics
         if not isinstance(current_characteristics, NumericCharacteristics):
             raise ValueError(f"{column_name} should be numerical or bool")
@@ -603,8 +603,8 @@ class TestColumnValueMeanRenderer(TestRenderer):
         ref_distr = None
         if "reference" in obj.metric.get_result().plot_data.bins_for_hist.keys():
             ref_distr = obj.metric.get_result().plot_data.bins_for_hist["reference"]
-        fig = plot_distr(curr_distr, ref_distr)
-        fig = plot_check(fig, obj.get_condition())
+        fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
+        fig = plot_check(fig, obj.get_condition(), color_options=self.color_options)
         current_characteristics = obj.metric.get_result().current_characteristics
         if not isinstance(current_characteristics, NumericCharacteristics):
             raise ValueError(f"{column_name} should be numerical or bool")
@@ -650,8 +650,8 @@ class TestColumnValueMedianRenderer(TestRenderer):
         if "reference" in obj.metric.get_result().plot_data.bins_for_hist.keys():
             ref_distr = obj.metric.get_result().plot_data.bins_for_hist["reference"]
 
-        fig = plot_distr(curr_distr, ref_distr)
-        fig = plot_check(fig, obj.get_condition())
+        fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
+        fig = plot_check(fig, obj.get_condition(), color_options=self.color_options)
         current_characteristics = obj.metric.get_result().current_characteristics
         if not isinstance(current_characteristics, NumericCharacteristics):
             raise ValueError(f"{column_name} should be numerical or bool")
@@ -698,7 +698,7 @@ class TestColumnValueStdRenderer(TestRenderer):
         ref_distr = None
         if "reference" in obj.metric.get_result().plot_data.bins_for_hist.keys():
             ref_distr = obj.metric.get_result().plot_data.bins_for_hist["reference"]
-        fig = plot_distr(curr_distr, ref_distr)
+        fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
         info.with_details(f"Std Value {column_name}", plotly_figure(title="", figure=fig))
         return info
 
@@ -959,8 +959,8 @@ class TestMeanInNSigmasRenderer(TestRenderer):
         if "reference" in metric_result.plot_data.bins_for_hist.keys():
             ref_distr = metric_result.plot_data.bins_for_hist["reference"]
 
-        fig = plot_distr(curr_distr, ref_distr)
-        fig = plot_check(fig, ref_condition)
+        fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
+        fig = plot_check(fig, ref_condition, color_options=self.color_options)
         if not isinstance(metric_result.current_characteristics, NumericCharacteristics):
             raise ValueError(f"{obj.column_name} should be numerical or bool")
         mean_value = metric_result.current_characteristics.mean
@@ -1029,8 +1029,12 @@ class TestValueRangeRenderer(TestRenderer):
         metric_result = obj.metric.get_result()
         condition_ = TestValueCondition(gt=metric_result.left, lt=metric_result.right)
         info = super().render_html(obj)
-        fig = get_distribution_plot_figure(metric_result.current_distribution, metric_result.reference_distribution)
-        fig = plot_check(fig, condition_)
+        fig = get_distribution_plot_figure(
+            current_distribution=metric_result.current_distribution,
+            reference_distribution=metric_result.reference_distribution,
+            color_options=self.color_options,
+        )
+        fig = plot_check(fig, condition_, color_options=self.color_options)
         info.with_details(f"Value Range {column_name}", plotly_figure(title="", figure=fig))
         return info
 
@@ -1097,8 +1101,12 @@ class TestNumberOfOutRangeValuesRenderer(TestRenderer):
         column_name = obj.column_name
         metric_result = obj.metric.get_result()
         info = super().render_html(obj)
-        fig = get_distribution_plot_figure(metric_result.current_distribution, metric_result.reference_distribution)
-        fig = plot_check(fig, obj.condition)
+        fig = get_distribution_plot_figure(
+            current_distribution=metric_result.current_distribution,
+            reference_distribution=metric_result.reference_distribution,
+            color_options=self.color_options,
+        )
+        fig = plot_check(fig, obj.condition, color_options=self.color_options)
         info.with_details(f"Number Out of Range for {column_name}", plotly_figure(title="", figure=fig))
         return info
 
@@ -1137,8 +1145,12 @@ class TestShareOfOutRangeValuesRenderer(TestRenderer):
         column_name = obj.column_name
         metric_result = obj.metric.get_result()
         info = super().render_html(obj)
-        fig = get_distribution_plot_figure(metric_result.current_distribution, metric_result.reference_distribution)
-        fig = plot_check(fig, obj.condition)
+        fig = get_distribution_plot_figure(
+            current_distribution=metric_result.current_distribution,
+            reference_distribution=metric_result.reference_distribution,
+            color_options=self.color_options,
+        )
+        fig = plot_check(fig, obj.condition, color_options=self.color_options)
         info.with_details(f"Share Out of Range for {column_name}", plotly_figure(title="", figure=fig))
         return info
 
@@ -1383,8 +1395,12 @@ class TestValueQuantileRenderer(TestRenderer):
         info = super().render_html(obj)
         metric_result = obj.metric.get_result()
         column_name = metric_result.column_name
-        fig = get_distribution_plot_figure(metric_result.current_distribution, metric_result.reference_distribution)
-        fig = plot_check(fig, obj.get_condition())
+        fig = get_distribution_plot_figure(
+            current_distribution=metric_result.current_distribution,
+            reference_distribution=metric_result.reference_distribution,
+            color_options=self.color_options,
+        )
+        fig = plot_check(fig, obj.get_condition(), color_options=self.color_options)
         fig = plot_metric_value(
             fig, obj.metric.get_result().current, f"current {column_name} {metric_result.quantile} quantile"
         )

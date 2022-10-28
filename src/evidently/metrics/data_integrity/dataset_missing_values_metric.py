@@ -220,8 +220,7 @@ class DatasetMissingValuesMetricRenderer(MetricRenderer):
     def render_json(self, obj: DatasetMissingValuesMetric) -> dict:
         return dataclasses.asdict(obj.get_result().current)
 
-    @staticmethod
-    def _get_table_stat(dataset_name: str, stats: DatasetMissingValues) -> BaseWidgetInfo:
+    def _get_table_stat(self, dataset_name: str, stats: DatasetMissingValues) -> BaseWidgetInfo:
         matched_stat = [(k, v) for k, v in stats.number_of_nulls_by_column.items()]
         matched_stat = sorted(matched_stat, key=lambda x: x[1], reverse=True)
         matched_stat_headers = ["Value", "Count"]
@@ -237,6 +236,7 @@ class DatasetMissingValuesMetricRenderer(MetricRenderer):
                 x=list(stats.number_of_nulls_by_column.keys()),
                 y=list(stats.number_of_nulls_by_column.values()),
             ),
+            color_options=self.color_options,
         )
         return widget_tabs(
             title=f"{dataset_name.capitalize()} dataset",

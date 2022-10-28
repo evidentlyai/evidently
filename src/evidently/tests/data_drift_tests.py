@@ -275,6 +275,10 @@ class TestColumnValueDriftRenderer(TestRenderer):
         column_name = obj.column_name
         info = super().render_html(obj)
         column_info = result.drift_by_columns[column_name]
-        fig = get_distribution_plot_figure(column_info.current_distribution, column_info.reference_distribution)
+        fig = get_distribution_plot_figure(
+            current_distribution=column_info.current_distribution,
+            reference_distribution=column_info.reference_distribution,
+            color_options=self.color_options,
+        )
         info.with_details(f"{column_name}", plotly_figure(title="", figure=fig))
         return info
