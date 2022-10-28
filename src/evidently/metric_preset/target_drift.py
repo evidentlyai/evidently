@@ -39,11 +39,8 @@ class TargetDriftPreset(MetricPreset):
                 )
 
                 if prediction_column is not None:
-                    # in case that a new prediction column was not created
-                    if isinstance(prediction, str):
-                        prob_columns = [prediction]
-
-                    else:
+                    # in case that a new prediction column was created
+                    if not isinstance(prediction, str):
                         prob_columns = prediction
 
                     prediction = prediction_column
