@@ -63,8 +63,9 @@ class ClassificationConfusionMatrix(ThresholdClassificationMetric[Classification
         prediction: pd.Series,
         labels: List[Union[str, int]],
     ) -> ConfusionMatrix:
-        matrix = confusion_matrix(target, prediction, labels=labels)
-        return ConfusionMatrix(labels, [row.tolist() for row in matrix])
+        sorted_labels = sorted(labels)
+        matrix = confusion_matrix(target, prediction, labels=sorted_labels)
+        return ConfusionMatrix(sorted_labels, [row.tolist() for row in matrix])
 
 
 @default_renderer(wrap_type=ClassificationConfusionMatrix)
