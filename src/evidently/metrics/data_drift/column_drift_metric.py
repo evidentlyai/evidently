@@ -133,7 +133,7 @@ class ColumnDriftMetricRenderer(MetricRenderer):
                             f"Drift detection method: {result.stattest_name}. "
                             f"Drift score: {drift_score}"
                         ),
-                        f"Drift in column {result.column_name}",
+                        f"Drift in column '{result.column_name}'",
                     )
                 ],
                 title="",

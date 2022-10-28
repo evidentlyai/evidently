@@ -87,7 +87,7 @@ class ColumnCorrelationsMetricRenderer(MetricRenderer):
         result = dataclasses.asdict(obj.get_result())
         return result
 
-    def _get_plots_correlations(self, metric_result: ColumnCorrelationsMetricResult) -> BaseWidgetInfo:
+    def _get_plots_correlations(self, metric_result: ColumnCorrelationsMetricResult) -> Optional[BaseWidgetInfo]:
         tabs = []
 
         for correlation_name, current_correlation in metric_result.current.items():
@@ -96,30 +96,34 @@ class ColumnCorrelationsMetricRenderer(MetricRenderer):
             if metric_result.reference and correlation_name in metric_result.reference:
                 reference_correlation_values = metric_result.reference[correlation_name].values
 
-            tabs.append(
-                TabData(
-                    title=correlation_name,
-                    widget=get_histogram_for_distribution(
-                        title="",
-                        current_distribution=current_correlation.values,
-                        reference_distribution=reference_correlation_values,
-                        xaxis_title="Columns",
-                        yaxis_title="Correlation",
-                        color_options=self.color_options,
-                    ),
+            if current_correlation.values or reference_correlation_values:
+                tabs.append(
+                    TabData(
+                        title=correlation_name,
+                        widget=get_histogram_for_distribution(
+                            title="",
+                            current_distribution=current_correlation.values,
+                            reference_distribution=reference_correlation_values,
+                            xaxis_title="Columns",
+                            yaxis_title="Correlation",
+                            color_options=self.color_options,
+                        ),
+                    )
                 )
-            )
 
         if tabs:
             return widget_tabs(tabs=tabs)
 
         else:
-            return header_text(label="No correlations.")
+            return None
 
     def render_html(self, obj: ColumnCorrelationsMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
-        result = [
-            header_text(label=f"Correlations for column '{metric_result.column_name}'."),
-            self._get_plots_correlations(metric_result),
-        ]
-        return result
+        correlation_plots = self._get_plots_correlations(metric_result)
+
+        if correlation_plots:
+            return [header_text(label=f"Correlations for column '{metric_result.column_name}'."), correlation_plots]
+
+        else:
+            # no correlations, draw nothing
+            return []

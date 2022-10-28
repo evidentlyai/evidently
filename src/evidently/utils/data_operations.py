@@ -268,6 +268,9 @@ def recognize_column_type(
     if column_name in columns.num_feature_names:
         return "num"
 
+    if isinstance(columns.utility_columns.prediction, list) and column_name in columns.utility_columns.prediction:
+        return "num"
+
     if column_name in columns.cat_feature_names:
         return "cat"
 

@@ -37,8 +37,8 @@ class DataDriftOptions:
                                for numerical features only.
         per_feature_stattest: Defines a custom statistical test for drift detection in the Data Drift report
                               per feature.
-        cat_target_stattest_func: Defines a custom statistical test to detect target drift in CatTargetDrift.
-        num_target_stattest_func: Defines a custom statistical test to detect target drift in NumTargetDrift.
+        cat_target_stattest_func: Defines a custom statistical test to detect target drift in category target.
+        num_target_stattest_func: Defines a custom statistical test to detect target drift in numeric target.
     """
 
     confidence: Optional[Union[float, Dict[str, float]]] = None
