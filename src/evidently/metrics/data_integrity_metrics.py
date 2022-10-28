@@ -43,7 +43,9 @@ class DataIntegrityMetricsResults:
 
 class DataIntegrityMetrics(Metric[DataIntegrityMetricsResults]):
     @staticmethod
-    def _get_integrity_metrics_values(dataset: pd.DataFrame, columns: tuple) -> DataIntegrityMetricsValues:
+    def _get_integrity_metrics_values(
+        dataset: pd.DataFrame, columns: tuple
+    ) -> DataIntegrityMetricsValues:
         counts_of_values = {}
 
         for column_name in dataset.columns:
@@ -62,7 +64,13 @@ class DataIntegrityMetrics(Metric[DataIntegrityMetricsResults]):
             number_of_empty_rows=dataset.isna().all(1).sum(),
             number_of_empty_columns=get_number_of_empty_columns(dataset),
             number_of_duplicated_rows=dataset.duplicated().sum(),
-            number_of_duplicated_columns=sum([1 for i, j in combinations(dataset, 2) if dataset[i].equals(dataset[j])]),
+            number_of_duplicated_columns=sum(
+                [
+                    1
+                    for i, j in combinations(dataset, 2)
+                    if dataset[i].equals(dataset[j])
+                ]
+            ),
             columns_type=dict(dataset.dtypes.to_dict()),
             nans_by_columns=dataset.isna().sum().to_dict(),
             number_uniques_by_columns=dict(dataset.nunique().to_dict()),
@@ -72,7 +80,11 @@ class DataIntegrityMetrics(Metric[DataIntegrityMetricsResults]):
     def calculate(self, data: InputData) -> DataIntegrityMetricsResults:
         columns = []
 
-        for col in [data.column_mapping.target, data.column_mapping.datetime, data.column_mapping.id]:
+        for col in [
+            data.column_mapping.target,
+            data.column_mapping.datetime,
+            data.column_mapping.id,
+        ]:
             if col is not None:
                 columns.append(col)
 
@@ -106,9 +118,9 @@ class DataIntegrityMetrics(Metric[DataIntegrityMetricsResults]):
         if data.reference_data is not None:
             reference_columns = np.intersect1d(columns, data.reference_data.columns)
             ref_data = data.reference_data[reference_columns]
-            reference: Optional[DataIntegrityMetricsValues] = self._get_integrity_metrics_values(
-                ref_data, reference_columns
-            )
+            reference: Optional[
+                DataIntegrityMetricsValues
+            ] = self._get_integrity_metrics_values(ref_data, reference_columns)
 
         else:
             reference = None
@@ -123,16 +135,22 @@ class DataIntegrityMetricsRenderer(MetricRenderer):
         if "current" in result:
             result["current"].pop("counts_of_values", None)
 
-            result["current"]["columns_type"] = [str(t) for t in result["current"]["columns_type"]]
+            result["current"]["columns_type"] = [
+                str(t) for t in result["current"]["columns_type"]
+            ]
 
         if "reference" in result and result["reference"]:
             result["reference"].pop("counts_of_values", None)
-            result["reference"]["columns_type"] = [str(t) for t in result["reference"]["columns_type"]]
+            result["reference"]["columns_type"] = [
+                str(t) for t in result["reference"]["columns_type"]
+            ]
 
         return result
 
     @staticmethod
-    def _get_metrics_table(dataset_name: str, metrics: DataIntegrityMetricsValues) -> BaseWidgetInfo:
+    def _get_metrics_table(
+        dataset_name: str, metrics: DataIntegrityMetricsValues
+    ) -> BaseWidgetInfo:
         headers = ("Quality Metric", "Value")
         stats = (
             ("Number of columns", metrics.number_of_columns),
@@ -154,10 +172,16 @@ class DataIntegrityMetricsRenderer(MetricRenderer):
 
         result = [
             header_text(label="Data Integrity"),
-            self._get_metrics_table(dataset_name="current", metrics=metric_result.current),
+            self._get_metrics_table(
+                dataset_name="current", metrics=metric_result.current
+            ),
         ]
 
         if metric_result.reference is not None:
-            result.append(self._get_metrics_table(dataset_name="reference", metrics=metric_result.reference))
+            result.append(
+                self._get_metrics_table(
+                    dataset_name="reference", metrics=metric_result.reference
+                )
+            )
 
         return result

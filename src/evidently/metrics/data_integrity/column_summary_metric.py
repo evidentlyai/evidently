@@ -80,7 +80,9 @@ class DatetimeCharacteristics:
     last: Optional[str]
 
 
-ColumnCharacteristics = Union[NumericCharacteristics, CategoricalCharacteristics, DatetimeCharacteristics]
+ColumnCharacteristics = Union[
+    NumericCharacteristics, CategoricalCharacteristics, DatetimeCharacteristics
+]
 
 
 @dataclasses.dataclass
@@ -122,10 +124,17 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
         columns = process_columns(data.current_data, data.column_mapping)
 
         if self.column_name not in data.current_data:
-            raise ValueError(f"Column '{self.column_name}' not found in current dataset.")
+            raise ValueError(
+                f"Column '{self.column_name}' not found in current dataset."
+            )
 
-        if data.reference_data is not None and self.column_name not in data.reference_data:
-            raise ValueError(f"Column '{self.column_name}' not found in reference dataset.")
+        if (
+            data.reference_data is not None
+            and self.column_name not in data.reference_data
+        ):
+            raise ValueError(
+                f"Column '{self.column_name}' not found in reference dataset."
+            )
 
         column_type = None
         target_name = columns.utility_columns.target
@@ -134,9 +143,13 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
 
         # define target type and prediction type. TODO move it to process_columns func
         if columns.utility_columns.target is not None:
-            if data.column_mapping.task == "regression" or is_numeric_dtype(data.current_data[target_name]):
+            if data.column_mapping.task == "regression" or is_numeric_dtype(
+                data.current_data[target_name]
+            ):
                 target_type = "num"
-            elif data.column_mapping.task == "classification" or is_string_dtype(data.current_data[target_name]):
+            elif data.column_mapping.task == "classification" or is_string_dtype(
+                data.current_data[target_name]
+            ):
                 target_type = "cat"
             elif data.current_data[columns.utility_columns.target].nunique() <= 5:
                 target_type = "cat"
@@ -150,9 +163,13 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
                 isinstance(columns.utility_columns.prediction, str)
                 and columns.utility_columns.prediction == self.column_name
             ):
-                if is_string_dtype(data.current_data[columns.utility_columns.prediction]):
+                if is_string_dtype(
+                    data.current_data[columns.utility_columns.prediction]
+                ):
                     column_type = "cat"
-                if is_numeric_dtype(data.current_data[columns.utility_columns.prediction]):
+                if is_numeric_dtype(
+                    data.current_data[columns.utility_columns.prediction]
+                ):
                     column_type = "num"
             if (
                 isinstance(columns.utility_columns.prediction, list)
@@ -164,18 +181,25 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
         elif self.column_name in columns.cat_feature_names:
             column_type = "cat"
         elif self.column_name in columns.datetime_feature_names or (
-            columns.utility_columns.date is not None and columns.utility_columns.date == self.column_name
+            columns.utility_columns.date is not None
+            and columns.utility_columns.date == self.column_name
         ):
             column_type = "datetime"
         if column_type is None:
-            raise ValueError(f"column {self.column_name} not in num, cat or datetime features lists")
+            raise ValueError(
+                f"column {self.column_name} not in num, cat or datetime features lists"
+            )
 
         reference_data = None
         ref_characteristics = None
         if data.reference_data is not None:
             reference_data = data.reference_data
-            ref_characteristics = self.map_data(get_features_stats(data.reference_data[self.column_name], column_type))
-        curr_characteristics = self.map_data(get_features_stats(data.current_data[self.column_name], column_type))
+            ref_characteristics = self.map_data(
+                get_features_stats(data.reference_data[self.column_name], column_type)
+            )
+        curr_characteristics = self.map_data(
+            get_features_stats(data.current_data[self.column_name], column_type)
+        )
 
         if data.reference_data is not None and column_type == "cat":
             current_values_set = set(data.current_data[self.column_name].unique())
@@ -184,17 +208,25 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
             new_in_current_values_count: int = len(unique_in_current)
             unique_in_reference = reference_values_set - current_values_set
             unused_in_current_values_count: int = len(unique_in_reference)
-            if any(pd.isnull(list(unique_in_current))) and any(pd.isnull(list(unique_in_reference))):
+            if any(pd.isnull(list(unique_in_current))) and any(
+                pd.isnull(list(unique_in_reference))
+            ):
                 new_in_current_values_count -= 1
                 unused_in_current_values_count -= 1
             if not isinstance(curr_characteristics, CategoricalCharacteristics):
                 raise ValueError(f"{self.column_name} should be categorical")
-            curr_characteristics.new_in_current_values_count = new_in_current_values_count
-            curr_characteristics.unused_in_current_values_count = unused_in_current_values_count
+            curr_characteristics.new_in_current_values_count = (
+                new_in_current_values_count
+            )
+            curr_characteristics.unused_in_current_values_count = (
+                unused_in_current_values_count
+            )
 
         # plot data
         gpd = DataQualityGetPlotData()
-        bins_for_hist = gpd.calculate_main_plot(data.current_data, reference_data, self.column_name, column_type)
+        bins_for_hist = gpd.calculate_main_plot(
+            data.current_data, reference_data, self.column_name, column_type
+        )
         data_in_time = None
         if (
             columns.utility_columns.date is not None
@@ -240,11 +272,19 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
         counts_of_values = None
         if column_type in ["cat", "num"]:
             counts_of_values = {}
-            current_counts = data.current_data[self.column_name].value_counts(dropna=False).reset_index()
+            current_counts = (
+                data.current_data[self.column_name]
+                .value_counts(dropna=False)
+                .reset_index()
+            )
             current_counts.columns = ["x", "count"]
             counts_of_values["current"] = current_counts.head(10)
             if reference_data is not None:
-                reference_counts = data.reference_data[self.column_name].value_counts(dropna=False).reset_index()
+                reference_counts = (
+                    data.reference_data[self.column_name]
+                    .value_counts(dropna=False)
+                    .reset_index()
+                )
                 reference_counts.columns = ["x", "count"]
                 counts_of_values["reference"] = reference_counts.head(10)
 
@@ -266,8 +306,14 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
     @staticmethod
     def map_data(stats: FeatureQualityStats) -> ColumnCharacteristics:
         if stats.feature_type == "num":
-            if isinstance(stats.max, str) or isinstance(stats.min, str) or isinstance(stats.most_common_value, str):
-                raise ValueError("max / min stats should be int or float type, but got str")
+            if (
+                isinstance(stats.max, str)
+                or isinstance(stats.min, str)
+                or isinstance(stats.most_common_value, str)
+            ):
+                raise ValueError(
+                    "max / min stats should be int or float type, but got str"
+                )
             return NumericCharacteristics(
                 number_of_rows=stats.number_of_rows,
                 count=stats.count,
@@ -300,7 +346,9 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
             )
         if stats.feature_type == "datetime":
             if not isinstance(stats.min, str) or not isinstance(stats.max, str):
-                raise ValueError(f"min / max expected to be str for datetime, got {type(stats.min)}/{type(stats.max)}")
+                raise ValueError(
+                    f"min / max expected to be str for datetime, got {type(stats.min)}/{type(stats.max)}"
+                )
             return DatetimeCharacteristics(
                 number_of_rows=stats.number_of_rows,
                 count=stats.count,
@@ -337,18 +385,30 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
             metrics_values_headers = ["current", "reference"]
 
         if column_type == "cat":
-            fig = plot_distr(hist_curr=hist_curr, hist_ref=hist_ref, color_options=self.color_options)
-            fig.update_layout(legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1))
+            fig = plot_distr(
+                hist_curr=hist_curr, hist_ref=hist_ref, color_options=self.color_options
+            )
+            fig.update_layout(
+                legend=dict(
+                    orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1
+                )
+            )
             fig = json.loads(fig.to_json())
         if column_type == "num":
             ref_log = None
             if "reference_log" in bins_for_hist.keys():
                 ref_log = bins_for_hist["reference_log"]
             fig = plot_distr_with_log_button(
-                hist_curr, bins_for_hist["current_log"], hist_ref, ref_log, color_options=self.color_options
+                hist_curr,
+                bins_for_hist["current_log"],
+                hist_ref,
+                ref_log,
+                color_options=self.color_options,
             )
         if column_type == "datetime":
-            fig = plot_time_feature_distr(hist_curr, hist_ref, column_name, color_options=self.color_options)
+            fig = plot_time_feature_distr(
+                hist_curr, hist_ref, column_name, color_options=self.color_options
+            )
 
         # additional plots
         additional_graphs = []
@@ -381,12 +441,19 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
                     },
                 )
             )
-            parts.append({"title": column_name + " in time", "id": column_name + "_in_time"})
+            parts.append(
+                {"title": column_name + " in time", "id": column_name + "_in_time"}
+            )
 
         if metric_result.plot_data.data_by_target is not None:
             ref_data_by_target = None
-            if "reference" in metric_result.plot_data.data_by_target.data_for_plots.keys():
-                ref_data_by_target = metric_result.plot_data.data_by_target.data_for_plots["reference"]
+            if (
+                "reference"
+                in metric_result.plot_data.data_by_target.data_for_plots.keys()
+            ):
+                ref_data_by_target = (
+                    metric_result.plot_data.data_by_target.data_for_plots["reference"]
+                )
             target_type = metric_result.plot_data.data_by_target.target_type
             target_name = metric_result.plot_data.data_by_target.target_name
             if column_type == "num" and target_type == "cat":
@@ -431,7 +498,9 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
                     },
                 )
             )
-            parts.append({"title": column_name + " by target", "id": column_name + "_by_target"})
+            parts.append(
+                {"title": column_name + " by target", "id": column_name + "_by_target"}
+            )
 
         wi = BaseWidgetInfo(
             type="rich_data",
@@ -470,7 +539,8 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
         result = []
 
         current_stats_dict = {
-            field.name: getattr(current_stats, field.name) for field in dataclasses.fields(current_stats)
+            field.name: getattr(current_stats, field.name)
+            for field in dataclasses.fields(current_stats)
         }
 
         if reference_stats is None:
@@ -478,14 +548,23 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
 
         else:
             reference_stats_dict = {
-                field.name: getattr(reference_stats, field.name) for field in dataclasses.fields(reference_stats)
+                field.name: getattr(reference_stats, field.name)
+                for field in dataclasses.fields(reference_stats)
             }
 
         for stat_label, stat_field, stat_field_percentage in stats_list:
-            values = [get_values_as_string(current_stats_dict, stat_field, stat_field_percentage)]
+            values = [
+                get_values_as_string(
+                    current_stats_dict, stat_field, stat_field_percentage
+                )
+            ]
 
             if reference_stats_dict is not None:
-                values.append(get_values_as_string(reference_stats_dict, stat_field, stat_field_percentage))
+                values.append(
+                    get_values_as_string(
+                        reference_stats_dict, stat_field, stat_field_percentage
+                    )
+                )
 
             result.append(
                 {
@@ -514,10 +593,16 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
             ]
 
             if reference_stats:
-                cat_features.append(("new categories", "new_in_current_values_count", None))
-                cat_features.append(("missing categories", "unused_in_current_values_count", None))
+                cat_features.append(
+                    ("new categories", "new_in_current_values_count", None)
+                )
+                cat_features.append(
+                    ("missing categories", "unused_in_current_values_count", None)
+                )
 
-            metrics.extend(self._get_stats_with_names(cat_features, current_stats, reference_stats))
+            metrics.extend(
+                self._get_stats_with_names(cat_features, current_stats, reference_stats)
+            )
 
         elif column_type == "num":
             # mapping for num stats: (label, field_name_for_main_value, field_name_for_percentage)
@@ -535,7 +620,9 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
                 ("missing", "missing", "missing_percentage"),
                 ("infinite", "infinite_count", "infinite_percentage"),
             ]
-            metrics.extend(self._get_stats_with_names(num_features, current_stats, reference_stats))
+            metrics.extend(
+                self._get_stats_with_names(num_features, current_stats, reference_stats)
+            )
 
         elif column_type == "datetime":
             # mapping for datetime stats: (label, field_name_for_main_value, field_name_for_percentage)
@@ -547,6 +634,10 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
                 ("first", "first", None),
                 ("last", "last", None),
             ]
-            metrics.extend(self._get_stats_with_names(datetime_features, current_stats, reference_stats))
+            metrics.extend(
+                self._get_stats_with_names(
+                    datetime_features, current_stats, reference_stats
+                )
+            )
 
         return metrics

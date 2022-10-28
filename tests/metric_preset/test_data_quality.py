@@ -48,10 +48,16 @@ from evidently.report import Report
     ),
 )
 def test_data_quality_preset(
-    current_data: pd.DataFrame, reference_data: Optional[pd.DataFrame], column_mapping: ColumnMapping
+    current_data: pd.DataFrame,
+    reference_data: Optional[pd.DataFrame],
+    column_mapping: ColumnMapping,
 ) -> None:
     report = Report(metrics=[DataQualityPreset()])
-    report.run(current_data=current_data, reference_data=reference_data, column_mapping=column_mapping)
+    report.run(
+        current_data=current_data,
+        reference_data=reference_data,
+        column_mapping=column_mapping,
+    )
     assert report.show()
     json_result = report.json()
     result = json.loads(json_result)

@@ -60,7 +60,10 @@ class CramerVonMisesResult:
         self.pvalue = pvalue
 
     def __repr__(self):
-        return f"{self.__class__.__name__}(statistic={self.statistic}, " f"pvalue={self.pvalue})"
+        return (
+            f"{self.__class__.__name__}(statistic={self.statistic}, "
+            f"pvalue={self.pvalue})"
+        )
 
 
 def _cdf_cvm_inf(x: float) -> float:
@@ -73,9 +76,9 @@ def _cdf_cvm_inf(x: float) -> float:
     x = np.asarray(x)
 
     def term(x, k):
-        u = np.exp(gammaln(k + 0.5) - gammaln(k + 1)) / (np.pi**1.5 * np.sqrt(x))
+        u = np.exp(gammaln(k + 0.5) - gammaln(k + 1)) / (np.pi ** 1.5 * np.sqrt(x))
         y = 4 * k + 1
-        q = y**2 / (16 * x)
+        q = y ** 2 / (16 * x)
         b = kv(0.25, q)
         return u * np.sqrt(y) * np.exp(-q) * b
 
@@ -91,7 +94,9 @@ def _cdf_cvm_inf(x: float) -> float:
     return tot
 
 
-def CVM_2samp(x: np.ndarray, y: np.ndarray, method: str = "auto") -> CramerVonMisesResult:
+def CVM_2samp(
+    x: np.ndarray, y: np.ndarray, method: str = "auto"
+) -> CramerVonMisesResult:
     """Perform the two-sample Cramér-von Mises test
     Args:
         x : array_like
@@ -140,8 +145,8 @@ def CVM_2samp(x: np.ndarray, y: np.ndarray, method: str = "auto") -> CramerVonMi
     else:
         et = (1 + 1 / N) / 6
 
-        vt = (N + 1) * (4 * k * N - 3 * (nx**2 + ny**2) - 2 * k)
-        vt = vt / (45 * N**2 * 4 * k)  # type: ignore
+        vt = (N + 1) * (4 * k * N - 3 * (nx ** 2 + ny ** 2) - 2 * k)
+        vt = vt / (45 * N ** 2 * 4 * k)  # type: ignore
 
         tn = 1 / 6 + (t - et) / np.sqrt(45 * vt)
 

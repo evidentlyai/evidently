@@ -34,7 +34,9 @@ class ProbClassConfMatrixWidget(Widget):
 
         if utility_columns.target is None or utility_columns.prediction is None:
             if self.dataset == "reference":
-                raise ValueError(f"Widget [{self.title}] requires 'target' and 'prediction' columns")
+                raise ValueError(
+                    f"Widget [{self.title}] requires 'target' and 'prediction' columns"
+                )
 
             return None
 
@@ -51,7 +53,9 @@ class ProbClassConfMatrixWidget(Widget):
             metrics = results.current_metrics
 
         else:
-            raise ValueError(f"Widget [{self.title}] required 'current' or 'reference' dataset value")
+            raise ValueError(
+                f"Widget [{self.title}] required 'current' or 'reference' dataset value"
+            )
 
         if metrics is None:
             return None
@@ -66,7 +70,12 @@ class ProbClassConfMatrixWidget(Widget):
         z_text = [[str(y) for y in x] for x in z]
 
         fig = ff.create_annotated_heatmap(
-            z, x=labels, y=labels, annotation_text=z_text, colorscale="bluered", showscale=True
+            z,
+            x=labels,
+            y=labels,
+            annotation_text=z_text,
+            colorscale="bluered",
+            showscale=True,
         )
 
         fig.update_layout(xaxis_title="Predicted value", yaxis_title="Actual value")
@@ -77,5 +86,8 @@ class ProbClassConfMatrixWidget(Widget):
             title=self.title,
             type="big_graph",
             size=1 if current_data is not None else 2,
-            params={"data": conf_matrix_json["data"], "layout": conf_matrix_json["layout"]},
+            params={
+                "data": conf_matrix_json["data"],
+                "layout": conf_matrix_json["layout"],
+            },
         )

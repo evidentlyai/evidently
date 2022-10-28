@@ -17,7 +17,9 @@ def widget() -> ClassConfMatrixWidget:
 
 
 @pytest.mark.parametrize("dataset", ("reference", "current"))
-def test_class_quality_metrics_bar_widget_simple_case(widget: ClassConfMatrixWidget, dataset: str) -> None:
+def test_class_quality_metrics_bar_widget_simple_case(
+    widget: ClassConfMatrixWidget, dataset: str
+) -> None:
     reference_data = pd.DataFrame(
         {
             "target": ["a", "b", "c"],
@@ -32,7 +34,10 @@ def test_class_quality_metrics_bar_widget_simple_case(widget: ClassConfMatrixWid
     widget.dataset = dataset
     assert widget.analyzers() == [ClassificationPerformanceAnalyzer]
     result = widget.calculate(
-        reference_data, reference_data, column_mapping, {ClassificationPerformanceAnalyzer: results}
+        reference_data,
+        reference_data,
+        column_mapping,
+        {ClassificationPerformanceAnalyzer: results},
     )
     assert result is not None
     assert result.title == "test_widget"

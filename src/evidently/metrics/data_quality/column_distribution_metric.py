@@ -42,18 +42,26 @@ class ColumnDistributionMetric(Metric[ColumnDistributionMetricResult]):
         column_name: str, dataset: pd.DataFrame, column_mapping: ColumnMapping
     ) -> ColumnDistribution:
         columns = process_columns(dataset, column_mapping)
-        column_type = recognize_column_type(dataset=dataset, column_name=column_name, columns=columns)
+        column_type = recognize_column_type(
+            dataset=dataset, column_name=column_name, columns=columns
+        )
         return calculate_column_distribution(dataset[column_name], column_type)
 
     def calculate(self, data: InputData) -> ColumnDistributionMetricResult:
         if self.column_name not in data.current_data:
-            raise ValueError(f"Column '{self.column_name}' was not found in current data.")
+            raise ValueError(
+                f"Column '{self.column_name}' was not found in current data."
+            )
 
         if data.reference_data is not None:
             if self.column_name not in data.reference_data:
-                raise ValueError(f"Column '{self.column_name}' was not found in reference data.")
+                raise ValueError(
+                    f"Column '{self.column_name}' was not found in reference data."
+                )
 
-        current = self._calculate_distribution(self.column_name, data.current_data, data.column_mapping)
+        current = self._calculate_distribution(
+            self.column_name, data.current_data, data.column_mapping
+        )
 
         if data.reference_data is not None:
             reference: Optional[ColumnDistribution] = self._calculate_distribution(
@@ -97,7 +105,9 @@ class ColumnDistributionMetricRenderer(MetricRenderer):
             reference_histogram = None
 
         result = [
-            header_text(label=f"Distribution for column '{metric_result.column_name}'."),
+            header_text(
+                label=f"Distribution for column '{metric_result.column_name}'."
+            ),
             histogram(
                 title="",
                 primary_hist=current_histogram,

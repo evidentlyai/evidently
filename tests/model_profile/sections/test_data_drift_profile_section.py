@@ -40,7 +40,9 @@ def test_data_drift_profile_section_with_calculated_results():
         DataDriftProfileSection, reference_data, current_data, data_columns
     )
 
-    check_profile_section_result_common_part(data_drift_profile_section_result, "data_drift")
+    check_profile_section_result_common_part(
+        data_drift_profile_section_result, "data_drift"
+    )
     result_data = data_drift_profile_section_result["data"]
     assert "options" in result_data
 

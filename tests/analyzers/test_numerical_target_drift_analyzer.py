@@ -30,7 +30,9 @@ def test_different_target_column_name(analyzer: NumTargetDriftAnalyzer):
     reference_data = DataFrame({"another_target": range(20)})
     current_data = DataFrame({"another_target": range(20)})
 
-    result = analyzer.calculate(reference_data, current_data, ColumnMapping(target="another_target"))
+    result = analyzer.calculate(
+        reference_data, current_data, ColumnMapping(target="another_target")
+    )
     assert result.columns.utility_columns.target == "another_target"
     assert result.target_metrics.drift_score == 1
     assert result.reference_data_count == 20
@@ -43,10 +45,14 @@ def test_different_prediction_column_name(analyzer: NumTargetDriftAnalyzer):
     df1 = DataFrame({"another_prediction": range(20)})
     df2 = DataFrame({"another_prediction": range(20)})
 
-    result = analyzer.calculate(df1, df2, ColumnMapping(prediction="another_prediction"))
+    result = analyzer.calculate(
+        df1, df2, ColumnMapping(prediction="another_prediction")
+    )
     assert result.prediction_metrics.column_name == "another_prediction"
     assert result.prediction_metrics.drift_score == 1
-    assert result.prediction_metrics.reference_correlations == {"another_prediction": 1.0}
+    assert result.prediction_metrics.reference_correlations == {
+        "another_prediction": 1.0
+    }
     assert result.prediction_metrics.current_correlations == {"another_prediction": 1.0}
 
 
@@ -159,7 +165,9 @@ def test_computing_uses_a_custom_function(analyzer: NumTargetDriftAnalyzer):
     df1 = DataFrame({"target": range(20)})
     df2 = DataFrame({"target": range(10)})
 
-    options = DataDriftOptions(num_target_stattest_func=lambda x, y, feature_type, threshold: (np.pi, False))
+    options = DataDriftOptions(
+        num_target_stattest_func=lambda x, y, feature_type, threshold: (np.pi, False)
+    )
     analyzer.options_provider.add(options)
     result = analyzer.calculate(df1, df2, ColumnMapping())
     assert result.target_metrics.column_name == "target"
@@ -169,20 +177,49 @@ def test_computing_uses_a_custom_function(analyzer: NumTargetDriftAnalyzer):
 
 
 def test_computing_of_correlations_between_columns(analyzer: NumTargetDriftAnalyzer):
-    df1 = DataFrame({"target": range(20), "num_1": range(0, -20, -1), "num_2": range(10, -10, -1), "cat_1": ["a"] * 20})
-    df2 = DataFrame({"target": range(10), "num_1": range(0, -10, -1), "num_2": range(10, 0, -1), "cat_1": ["b"] * 10})
+    df1 = DataFrame(
+        {
+            "target": range(20),
+            "num_1": range(0, -20, -1),
+            "num_2": range(10, -10, -1),
+            "cat_1": ["a"] * 20,
+        }
+    )
+    df2 = DataFrame(
+        {
+            "target": range(10),
+            "num_1": range(0, -10, -1),
+            "num_2": range(10, 0, -1),
+            "cat_1": ["b"] * 10,
+        }
+    )
 
     result = analyzer.calculate(df1, df2, ColumnMapping())
     assert result.target_metrics.column_name == "target"
     assert result.target_metrics.drift_score == approx(0.06228, abs=1e-4)
-    assert result.target_metrics.reference_correlations == {"num_1": -1.0, "num_2": -1.0, "target": 1.0}
-    assert result.target_metrics.current_correlations == {"num_1": -1.0, "num_2": -1.0, "target": 1.0}
+    assert result.target_metrics.reference_correlations == {
+        "num_1": -1.0,
+        "num_2": -1.0,
+        "target": 1.0,
+    }
+    assert result.target_metrics.current_correlations == {
+        "num_1": -1.0,
+        "num_2": -1.0,
+        "target": 1.0,
+    }
 
 
 def test_computing_of_correlations_between_columns_fails_for_second_data_when_columns_missing(
     analyzer: NumTargetDriftAnalyzer,
 ):
-    df1 = DataFrame({"target": range(20), "num_1": range(0, -20, -1), "num_2": range(10, -10, -1), "cat_1": ["a"] * 20})
+    df1 = DataFrame(
+        {
+            "target": range(20),
+            "num_1": range(0, -20, -1),
+            "num_2": range(10, -10, -1),
+            "cat_1": ["a"] * 20,
+        }
+    )
     df2 = DataFrame({"target": range(10)})
 
     with pytest.raises(ValueError):
@@ -193,7 +230,12 @@ def test_computing_of_correlations_between_columns_fails_for_second_data_when_co
     analyzer: NumTargetDriftAnalyzer,
 ):
     df1 = DataFrame(
-        {"prediction": range(20), "num_1": range(0, -20, -1), "num_2": range(10, -10, -1), "cat_1": ["a"] * 20}
+        {
+            "prediction": range(20),
+            "num_1": range(0, -20, -1),
+            "num_2": range(10, -10, -1),
+            "cat_1": ["a"] * 20,
+        }
     )
     df2 = DataFrame(
         {

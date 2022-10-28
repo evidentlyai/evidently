@@ -69,11 +69,17 @@ class RegressionQualityMetric(Metric[RegressionQualityMetricResults]):
         prediction_name = dataset_columns.utility_columns.prediction
 
         if target_name is None or prediction_name is None:
-            raise ValueError("The columns 'target' and 'prediction' columns should be present")
+            raise ValueError(
+                "The columns 'target' and 'prediction' columns should be present"
+            )
         if not isinstance(prediction_name, str):
-            raise ValueError("Expect one column for prediction. List of columns was provided.")
+            raise ValueError(
+                "Expect one column for prediction. List of columns was provided."
+            )
         current_metrics = calculate_regression_performance(
-            dataset=data.current_data, columns=dataset_columns, error_bias_prefix="current_"
+            dataset=data.current_data,
+            columns=dataset_columns,
+            error_bias_prefix="current_",
         )
         error_bias = current_metrics.error_bias
         reference_metrics = None
@@ -81,7 +87,9 @@ class RegressionQualityMetric(Metric[RegressionQualityMetricResults]):
         if data.reference_data is not None:
             ref_columns = process_columns(data.reference_data, data.column_mapping)
             reference_metrics = calculate_regression_performance(
-                dataset=data.reference_data, columns=ref_columns, error_bias_prefix="ref_"
+                dataset=data.reference_data,
+                columns=ref_columns,
+                error_bias_prefix="ref_",
             )
 
             if reference_metrics is not None and reference_metrics.error_bias:
@@ -104,7 +112,8 @@ class RegressionQualityMetric(Metric[RegressionQualityMetricResults]):
         # mae default values
         dummy_preds = data.current_data[target_name].median()
         mean_abs_error_default = mean_absolute_error(
-            y_true=data.current_data[target_name], y_pred=[dummy_preds] * data.current_data.shape[0]
+            y_true=data.current_data[target_name],
+            y_pred=[dummy_preds] * data.current_data.shape[0],
         )
         # rmse default values
         rmse_ref = None
@@ -115,7 +124,8 @@ class RegressionQualityMetric(Metric[RegressionQualityMetricResults]):
             )
         dummy_preds = data.current_data[target_name].mean()
         rmse_default = mean_squared_error(
-            y_true=data.current_data[target_name], y_pred=[dummy_preds] * data.current_data.shape[0]
+            y_true=data.current_data[target_name],
+            y_pred=[dummy_preds] * data.current_data.shape[0],
         )
         # mape default values
         # optimal constant for mape
@@ -163,10 +173,14 @@ class RegressionQualityMetric(Metric[RegressionQualityMetricResults]):
         df_target_binned = make_target_bins_for_reg_plots(
             data.current_data, target_name, prediction_name, data.reference_data
         )
-        curr_target_bins = df_target_binned.loc[df_target_binned.data == "curr", "target_binned"]
+        curr_target_bins = df_target_binned.loc[
+            df_target_binned.data == "curr", "target_binned"
+        ]
         ref_target_bins = None
         if data.reference_data is not None:
-            ref_target_bins = df_target_binned.loc[df_target_binned.data == "ref", "target_binned"]
+            ref_target_bins = df_target_binned.loc[
+                df_target_binned.data == "ref", "target_binned"
+            ]
         hist_for_plot = make_hist_for_cat_plot(curr_target_bins, ref_target_bins)
 
         vals_for_plots = {}
@@ -179,7 +193,12 @@ class RegressionQualityMetric(Metric[RegressionQualityMetricResults]):
 
         for name, func in zip(
             ["r2_score", "rmse", "mean_abs_error", "mean_abs_perc_error"],
-            [r2_score, mean_squared_error, mean_absolute_error, mean_absolute_percentage_error],
+            [
+                r2_score,
+                mean_squared_error,
+                mean_absolute_error,
+                mean_absolute_percentage_error,
+            ],
         ):
             vals_for_plots[name] = apply_func_to_binned_data(
                 df_target_binned, func, target_name, prediction_name, is_ref_data
@@ -190,7 +209,9 @@ class RegressionQualityMetric(Metric[RegressionQualityMetricResults]):
         err_ref = None
 
         if is_ref_data:
-            err_ref = data.reference_data[prediction_name] - data.reference_data[target_name]
+            err_ref = (
+                data.reference_data[prediction_name] - data.reference_data[target_name]
+            )
         me_hist_for_plot = make_hist_for_num_plot(err_curr, err_ref)
 
         if r2_score_ref is not None:
@@ -228,11 +249,21 @@ class RegressionQualityMetric(Metric[RegressionQualityMetricResults]):
             hist_for_plot=hist_for_plot,
             vals_for_plots=vals_for_plots,
             error_bias=error_bias,
-            mean_abs_error_ref=reference_metrics.mean_abs_error if reference_metrics is not None else None,
-            mean_abs_perc_error_ref=reference_metrics.mean_abs_perc_error if reference_metrics is not None else None,
-            error_std_ref=reference_metrics.error_std if reference_metrics is not None else None,
-            abs_error_std_ref=reference_metrics.abs_error_std if reference_metrics is not None else None,
-            abs_perc_error_std_ref=reference_metrics.abs_perc_error_std if reference_metrics is not None else None,
+            mean_abs_error_ref=reference_metrics.mean_abs_error
+            if reference_metrics is not None
+            else None,
+            mean_abs_perc_error_ref=reference_metrics.mean_abs_perc_error
+            if reference_metrics is not None
+            else None,
+            error_std_ref=reference_metrics.error_std
+            if reference_metrics is not None
+            else None,
+            abs_error_std_ref=reference_metrics.abs_error_std
+            if reference_metrics is not None
+            else None,
+            abs_perc_error_std_ref=reference_metrics.abs_perc_error_std
+            if reference_metrics is not None
+            else None,
             rmse_ref=rmse_ref,
             r2_score_ref=r2_score_ref,
             abs_error_max_ref=abs_error_max_ref,
@@ -257,9 +288,13 @@ class RegressionQualityMetricRenderer(MetricRenderer):
             counter(
                 title="Current: Model Quality (+/- std)",
                 counters=[
-                    CounterData("ME", f"{round(metric_result.mean_error, 2)} ({round(metric_result.error_std, 2)})"),
                     CounterData(
-                        "MAE", f"{round(metric_result.mean_abs_error, 2)} ({round(metric_result.abs_error_std, 2)})"
+                        "ME",
+                        f"{round(metric_result.mean_error, 2)} ({round(metric_result.error_std, 2)})",
+                    ),
+                    CounterData(
+                        "MAE",
+                        f"{round(metric_result.mean_abs_error, 2)} ({round(metric_result.abs_error_std, 2)})",
                     ),
                     CounterData(
                         "MAPE",
@@ -284,7 +319,8 @@ class RegressionQualityMetricRenderer(MetricRenderer):
                     title="Reference: Model Quality (+/- std)",
                     counters=[
                         CounterData(
-                            "ME", f"{round(metric_result.mean_error_ref, 2)} ({round(metric_result.error_std_ref, 2)})"
+                            "ME",
+                            f"{round(metric_result.mean_error_ref, 2)} ({round(metric_result.error_std_ref, 2)})",
                         ),
                         CounterData(
                             "MAE",

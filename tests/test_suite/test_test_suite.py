@@ -121,7 +121,11 @@ def test_export_to_json():
         ErrorTest(),
     ]
     suite = TestSuite(tests=tests)
-    suite.run(current_data=current_data, reference_data=reference_data, column_mapping=column_mapping)
+    suite.run(
+        current_data=current_data,
+        reference_data=reference_data,
+        column_mapping=column_mapping,
+    )
 
     # assert suite
 
@@ -153,7 +157,12 @@ def test_export_to_json():
         "target_type": "cat",
         "target_names": None,
         "task": "classification",
-        "utility_columns": {"date": None, "id_column": None, "prediction": "pred_result", "target": "result"},
+        "utility_columns": {
+            "date": None,
+            "id_column": None,
+            "prediction": "pred_result",
+            "target": "result",
+        },
     }
     assert "summary" in json_result
 

@@ -13,14 +13,18 @@ class BinaryClassificationTestPreset(TestPreset):
     def __init__(self, prediction_type: str, threshold: float = 0.5):
         super().__init__()
         if prediction_type not in ["probas", "labels"]:
-            raise ValueError("`prediction_type` argument should by one of 'probas' or 'labels'")
+            raise ValueError(
+                "`prediction_type` argument should by one of 'probas' or 'labels'"
+            )
         self.prediction_type = prediction_type
         self.threshold = threshold
 
     def generate_tests(self, data: InputData, columns: DatasetColumns):
         target = columns.utility_columns.target
         if target is None:
-            raise ValueError("Target column should be set in mapping and be present in data")
+            raise ValueError(
+                "Target column should be set in mapping and be present in data"
+            )
         if self.prediction_type == "labels":
             return [
                 TestColumnValueDrift(target),

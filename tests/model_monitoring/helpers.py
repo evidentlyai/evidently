@@ -9,7 +9,9 @@ from typing import List
 from evidently.model_monitoring.monitoring import MetricsType
 
 
-def collect_metrics_results(metrics: Generator[MetricsType, None, None]) -> Dict[str, List[Dict[str, Any]]]:
+def collect_metrics_results(
+    metrics: Generator[MetricsType, None, None]
+) -> Dict[str, List[Dict[str, Any]]]:
     """Represent monitoring results as a dict with all collected metrics. Group by a metric name.
 
     Returns a dict like:

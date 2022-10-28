@@ -41,7 +41,11 @@ class DataDriftTable(Metric[DataDriftTableResults]):
     columns: Optional[List[str]]
     options: DataDriftOptions
 
-    def __init__(self, columns: Optional[List[str]] = None, options: Optional[DataDriftOptions] = None):
+    def __init__(
+        self,
+        columns: Optional[List[str]] = None,
+        options: Optional[DataDriftOptions] = None,
+    ):
         self.columns = columns
         if options is None:
             self.options = DataDriftOptions()
@@ -95,8 +99,13 @@ class DataDriftTableRenderer(MetricRenderer):
 
         return result
 
-    def _generate_column_params(self, column_name: str, data: ColumnDataDriftMetrics) -> Optional[RichTableDataRow]:
-        if data.current_small_distribution is None or data.reference_small_distribution is None:
+    def _generate_column_params(
+        self, column_name: str, data: ColumnDataDriftMetrics
+    ) -> Optional[RichTableDataRow]:
+        if (
+            data.current_small_distribution is None
+            or data.reference_small_distribution is None
+        ):
             return None
 
         current_small_hist = data.current_small_distribution
@@ -133,8 +142,14 @@ class DataDriftTableRenderer(MetricRenderer):
                 "column_name": column_name,
                 "column_type": data.column_type,
                 "stattest_name": data.stattest_name,
-                "reference_distribution": {"x": list(ref_small_hist[1]), "y": list(ref_small_hist[0])},
-                "current_distribution": {"x": list(current_small_hist[1]), "y": list(current_small_hist[0])},
+                "reference_distribution": {
+                    "x": list(ref_small_hist[1]),
+                    "y": list(ref_small_hist[0]),
+                },
+                "current_distribution": {
+                    "x": list(current_small_hist[1]),
+                    "y": list(current_small_hist[0]),
+                },
                 "data_drift": data_drift,
                 "drift_score": round(data.drift_score, 6),
             },
@@ -173,7 +188,9 @@ class DataDriftTableRenderer(MetricRenderer):
         columns = columns + all_columns
 
         for column_name in columns:
-            column_params = self._generate_column_params(column_name, results.drift_by_columns[column_name])
+            column_params = self._generate_column_params(
+                column_name, results.drift_by_columns[column_name]
+            )
 
             if column_params is not None:
                 params_data.append(column_params)
@@ -192,13 +209,21 @@ class DataDriftTableRenderer(MetricRenderer):
                         "Reference Distribution",
                         "reference_distribution",
                         ColumnType.HISTOGRAM,
-                        options={"xField": "x", "yField": "y", "color": color_options.primary_color},
+                        options={
+                            "xField": "x",
+                            "yField": "y",
+                            "color": color_options.primary_color,
+                        },
                     ),
                     ColumnDefinition(
                         "Current Distribution",
                         "current_distribution",
                         ColumnType.HISTOGRAM,
-                        options={"xField": "x", "yField": "y", "color": color_options.primary_color},
+                        options={
+                            "xField": "x",
+                            "yField": "y",
+                            "color": color_options.primary_color,
+                        },
                     ),
                     ColumnDefinition("Data Drift", "data_drift"),
                     ColumnDefinition("Stat Test", "stattest_name"),

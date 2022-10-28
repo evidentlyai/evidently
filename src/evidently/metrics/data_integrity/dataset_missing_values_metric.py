@@ -97,7 +97,9 @@ class DatasetMissingValuesMetric(Metric[DatasetMissingValuesMetricResult]):
         # use frozenset because metrics parameters should be immutable/hashable for deduplication
         self.values = frozenset(values)
 
-    def _calculate_missed_values_stats(self, dataset: pd.DataFrame) -> DatasetMissingValues:
+    def _calculate_missed_values_stats(
+        self, dataset: pd.DataFrame
+    ) -> DatasetMissingValues:
         different_nulls = {value: 0 for value in self.values}
         columns_with_nulls = set()
         number_of_nulls = 0
@@ -155,9 +157,12 @@ class DatasetMissingValuesMetric(Metric[DatasetMissingValuesMetricResult]):
 
         else:
             share_of_nulls_by_column = {
-                column_name: value / number_of_rows for column_name, value in number_of_nulls_by_column.items()
+                column_name: value / number_of_rows
+                for column_name, value in number_of_nulls_by_column.items()
             }
-            share_of_missed_values = number_of_nulls / (number_of_columns * number_of_rows)
+            share_of_missed_values = number_of_nulls / (
+                number_of_columns * number_of_rows
+            )
             share_of_rows_with_nulls = number_of_rows_with_nulls / number_of_rows
 
         number_of_different_nulls_by_column = {}
@@ -169,13 +174,17 @@ class DatasetMissingValuesMetric(Metric[DatasetMissingValuesMetricResult]):
             )
 
         number_of_columns_with_nulls = len(columns_with_nulls)
-        number_of_different_nulls = len({k for k in different_nulls if different_nulls[k] > 0})
+        number_of_different_nulls = len(
+            {k for k in different_nulls if different_nulls[k] > 0}
+        )
 
         if number_of_columns == 0:
             share_of_columns_with_nulls = 0.0
 
         else:
-            share_of_columns_with_nulls = number_of_columns_with_nulls / number_of_columns
+            share_of_columns_with_nulls = (
+                number_of_columns_with_nulls / number_of_columns
+            )
 
         return DatasetMissingValues(
             different_nulls=different_nulls,
@@ -202,9 +211,9 @@ class DatasetMissingValuesMetric(Metric[DatasetMissingValuesMetricResult]):
         current_null_values = self._calculate_missed_values_stats(data.current_data)
 
         if data.reference_data is not None:
-            reference_null_values: Optional[DatasetMissingValues] = self._calculate_missed_values_stats(
-                data.reference_data
-            )
+            reference_null_values: Optional[
+                DatasetMissingValues
+            ] = self._calculate_missed_values_stats(data.reference_data)
 
         else:
             reference_null_values = None
@@ -220,7 +229,9 @@ class DatasetMissingValuesMetricRenderer(MetricRenderer):
     def render_json(self, obj: DatasetMissingValuesMetric) -> dict:
         return dataclasses.asdict(obj.get_result().current)
 
-    def _get_table_stat(self, dataset_name: str, stats: DatasetMissingValues) -> BaseWidgetInfo:
+    def _get_table_stat(
+        self, dataset_name: str, stats: DatasetMissingValues
+    ) -> BaseWidgetInfo:
         matched_stat = [(k, v) for k, v in stats.number_of_nulls_by_column.items()]
         matched_stat = sorted(matched_stat, key=lambda x: x[1], reverse=True)
         matched_stat_headers = ["Value", "Count"]
@@ -254,13 +265,21 @@ class DatasetMissingValuesMetricRenderer(MetricRenderer):
         percents = round(stats.share_of_missed_values * 100, 3)
         return f"{stats.number_of_missed_values} ({percents}%)"
 
-    def _get_overall_missing_values_info(self, metric_result: DatasetMissingValuesMetricResult) -> BaseWidgetInfo:
+    def _get_overall_missing_values_info(
+        self, metric_result: DatasetMissingValuesMetricResult
+    ) -> BaseWidgetInfo:
         counters = [
-            CounterData.string("Missing values (Current data)", self._get_info_string(metric_result.current)),
+            CounterData.string(
+                "Missing values (Current data)",
+                self._get_info_string(metric_result.current),
+            ),
         ]
         if metric_result.reference is not None:
             counters.append(
-                CounterData.string("Missing values (Reference data)", self._get_info_string(metric_result.reference)),
+                CounterData.string(
+                    "Missing values (Reference data)",
+                    self._get_info_string(metric_result.reference),
+                ),
             )
 
         return counter(
@@ -277,6 +296,10 @@ class DatasetMissingValuesMetricRenderer(MetricRenderer):
         ]
 
         if metric_result.reference is not None:
-            result.append(self._get_table_stat(dataset_name="reference", stats=metric_result.reference))
+            result.append(
+                self._get_table_stat(
+                    dataset_name="reference", stats=metric_result.reference
+                )
+            )
 
         return result

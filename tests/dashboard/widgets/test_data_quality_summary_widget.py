@@ -20,7 +20,9 @@ def widget() -> DataQualitySummaryWidget:
     return widget
 
 
-def test_data_quality_summary_widget_analyzer_list(widget: DataQualitySummaryWidget) -> None:
+def test_data_quality_summary_widget_analyzer_list(
+    widget: DataQualitySummaryWidget,
+) -> None:
     assert widget.analyzers() == [DataQualityAnalyzer]
 
 
@@ -69,7 +71,12 @@ def test_data_quality_summary_widget(
     analyzer = DataQualityAnalyzer()
     analyzer.options_provider = widget.options_provider
     analyzer_results = analyzer.calculate(reference_data, current_data, data_mapping)
-    result = widget.calculate(reference_data, current_data, data_mapping, {DataQualityAnalyzer: analyzer_results})
+    result = widget.calculate(
+        reference_data,
+        current_data,
+        data_mapping,
+        {DataQualityAnalyzer: analyzer_results},
+    )
     assert result.type == expected_result.type
     assert result.title == expected_result.title
     assert result.size == expected_result.size

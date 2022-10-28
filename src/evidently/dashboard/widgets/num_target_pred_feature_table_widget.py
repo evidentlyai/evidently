@@ -46,7 +46,12 @@ class NumTargetPredFeatureTable(Widget):
             # add data for table in params
             params_data.append(
                 {
-                    "details": {"parts": [{"title": "Feature values", "id": feature_name + "_values"}], "insights": []},
+                    "details": {
+                        "parts": [
+                            {"title": "Feature values", "id": feature_name + "_values"}
+                        ],
+                        "insights": [],
+                    },
                     "f1": feature_name,
                 }
             )
@@ -118,7 +123,10 @@ class NumTargetPredFeatureTable(Widget):
 
             # write plot data in table as additional data
             additional_graphs_data.append(
-                AdditionalGraphInfo(feature_name + "_values", {"data": fig_json["data"], "layout": fig_json["layout"]})
+                AdditionalGraphInfo(
+                    feature_name + "_values",
+                    {"data": fig_json["data"], "layout": fig_json["layout"]},
+                )
             )
 
         return BaseWidgetInfo(

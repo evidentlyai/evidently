@@ -20,7 +20,9 @@ class DataDriftProfileSection(ProfileSection):
     def analyzers(self):
         return self.analyzers_types
 
-    def calculate(self, reference_data, current_data, column_mapping, analyzers_results) -> None:
+    def calculate(
+        self, reference_data, current_data, column_mapping, analyzers_results
+    ) -> None:
         data_drift_results = DataDriftAnalyzer.get_results(analyzers_results)
         result_json: Dict[str, Any] = data_drift_results.columns.as_dict()
 
@@ -31,7 +33,10 @@ class DataDriftProfileSection(ProfileSection):
             "dataset_drift": data_drift_results.metrics.dataset_drift,
         }
         # add metrics to a flat dict with data drift results
-        for feature_name, feature_metrics in data_drift_results.metrics.drift_by_columns.items():
+        for (
+            feature_name,
+            feature_metrics,
+        ) in data_drift_results.metrics.drift_by_columns.items():
             metrics_dict[feature_name] = {
                 "current_small_hist": feature_metrics.current_small_distribution,
                 "ref_small_hist": feature_metrics.reference_small_distribution,
@@ -44,7 +49,11 @@ class DataDriftProfileSection(ProfileSection):
         result_json["options"] = data_drift_results.options.as_dict()
         result_json["metrics"] = metrics_dict
 
-        self._result = {"name": self.part_id(), "datetime": str(datetime.now()), "data": result_json}
+        self._result = {
+            "name": self.part_id(),
+            "datetime": str(datetime.now()),
+            "data": result_json,
+        }
 
     def get_results(self) -> Optional[Dict[str, Union[str, Dict]]]:
         return self._result

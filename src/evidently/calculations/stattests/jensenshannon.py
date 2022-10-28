@@ -9,7 +9,11 @@ from evidently.calculations.stattests.utils import get_binned_data
 
 
 def _jensenshannon(
-    reference_data: pd.Series, current_data: pd.Series, feature_type: str, threshold: float, n_bins: int = 30
+    reference_data: pd.Series,
+    current_data: pd.Series,
+    feature_type: str,
+    threshold: float,
+    n_bins: int = 30,
 ) -> Tuple[float, bool]:
     """Compute the Jensen-Shannon distance between two arrays
     Args:
@@ -22,7 +26,9 @@ def _jensenshannon(
         jensenshannon: calculated Jensen-Shannon distance
         test_result: whether the drift is detected
     """
-    reference_percents, current_percents = get_binned_data(reference_data, current_data, feature_type, n_bins, False)
+    reference_percents, current_percents = get_binned_data(
+        reference_data, current_data, feature_type, n_bins, False
+    )
     jensenshannon_value = distance.jensenshannon(reference_percents, current_percents)
     return jensenshannon_value, jensenshannon_value >= threshold
 

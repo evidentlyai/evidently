@@ -89,7 +89,9 @@ def make_generator_by_columns(
                 columns_for_generation = columns_info.num_feature_names
 
             elif columns == "features":
-                columns_for_generation = columns_info.get_all_features_list(include_datetime_feature=True)
+                columns_for_generation = columns_info.get_all_features_list(
+                    include_datetime_feature=True
+                )
 
             else:
                 raise ValueError("Incorrect parameter 'columns' for test generator")
@@ -103,7 +105,9 @@ def make_generator_by_columns(
                     result.append(base_class(**parameters_for_generation))  # type: ignore
 
                 except TypeError as error:
-                    raise TypeError(f"Cannot generate {base_class.__name__}. Error: {error}")
+                    raise TypeError(
+                        f"Cannot generate {base_class.__name__}. Error: {error}"
+                    )
 
             return result
 

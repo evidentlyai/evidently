@@ -33,23 +33,42 @@ class RegressionErrorNormality(Metric[RegressionErrorNormalityResults]):
         curr_df = data.current_data
         ref_df = data.reference_data
         if target_name is None or prediction_name is None:
-            raise ValueError("The columns 'target' and 'prediction' columns should be present")
+            raise ValueError(
+                "The columns 'target' and 'prediction' columns should be present"
+            )
         if not isinstance(prediction_name, str):
-            raise ValueError("Expect one column for prediction. List of columns was provided.")
+            raise ValueError(
+                "Expect one column for prediction. List of columns was provided."
+            )
         curr_df = self._make_df_for_plot(curr_df, target_name, prediction_name, None)
         current_error = curr_df[prediction_name] - curr_df[target_name]
         reference_error = None
         if ref_df is not None:
             ref_df = self._make_df_for_plot(ref_df, target_name, prediction_name, None)
             reference_error = ref_df[prediction_name] - ref_df[target_name]
-        return RegressionErrorNormalityResults(current_error=current_error, reference_error=reference_error)
+        return RegressionErrorNormalityResults(
+            current_error=current_error, reference_error=reference_error
+        )
 
-    def _make_df_for_plot(self, df, target_name: str, prediction_name: str, datetime_column_name: Optional[str]):
+    def _make_df_for_plot(
+        self,
+        df,
+        target_name: str,
+        prediction_name: str,
+        datetime_column_name: Optional[str],
+    ):
         result = df.replace([np.inf, -np.inf], np.nan)
         if datetime_column_name is not None:
-            result.dropna(axis=0, how="any", inplace=True, subset=[target_name, prediction_name, datetime_column_name])
+            result.dropna(
+                axis=0,
+                how="any",
+                inplace=True,
+                subset=[target_name, prediction_name, datetime_column_name],
+            )
             return result.sort_values(datetime_column_name)
-        result.dropna(axis=0, how="any", inplace=True, subset=[target_name, prediction_name])
+        result.dropna(
+            axis=0, how="any", inplace=True, subset=[target_name, prediction_name]
+        )
         return result.sort_index()
 
 
@@ -67,9 +86,13 @@ class RegressionErrorNormalityRenderer(MetricRenderer):
             cols = 2
             subplot_titles = ["current", "reference"]
 
-        fig = make_subplots(rows=1, cols=cols, shared_yaxes=False, subplot_titles=subplot_titles)
+        fig = make_subplots(
+            rows=1, cols=cols, shared_yaxes=False, subplot_titles=subplot_titles
+        )
         curr_qq_lines = probplot(current_error, dist="norm", plot=None)
-        сurr_theoretical_q_x = np.linspace(curr_qq_lines[0][0][0], curr_qq_lines[0][0][-1], 100)
+        сurr_theoretical_q_x = np.linspace(
+            curr_qq_lines[0][0][0], curr_qq_lines[0][0][-1], 100
+        )
         sample_quantile_trace = go.Scatter(
             x=curr_qq_lines[0][0],
             y=curr_qq_lines[0][1],
@@ -92,7 +115,9 @@ class RegressionErrorNormalityRenderer(MetricRenderer):
         fig.update_xaxes(title_text="Theoretical Quantiles", row=1, col=1)
         if reference_error is not None:
             ref_qq_lines = probplot(reference_error, dist="norm", plot=None)
-            ref_theoretical_q_x = np.linspace(ref_qq_lines[0][0][0], ref_qq_lines[0][0][-1], 100)
+            ref_theoretical_q_x = np.linspace(
+                ref_qq_lines[0][0][0], ref_qq_lines[0][0][-1], 100
+            )
             sample_quantile_trace = go.Scatter(
                 x=ref_qq_lines[0][0],
                 y=ref_qq_lines[0][1],

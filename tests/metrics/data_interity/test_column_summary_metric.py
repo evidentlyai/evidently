@@ -54,7 +54,11 @@ def test_column_summary_metric_success(
     expected_result: ColumnSummary,
 ) -> None:
     result = metric.calculate(
-        data=InputData(current_data=current_data, reference_data=reference_data, column_mapping=column_mapping)
+        data=InputData(
+            current_data=current_data,
+            reference_data=reference_data,
+            column_mapping=column_mapping,
+        )
     )
     assert result is not None
     # assert result == expected_result
@@ -90,11 +94,18 @@ def test_column_summary_metric_success(
     ),
 )
 def test_column_summary_metric_value_error(
-    current_data: pd.DataFrame, reference_data: pd.DataFrame, metric: ColumnSummaryMetric, error_message: str
+    current_data: pd.DataFrame,
+    reference_data: pd.DataFrame,
+    metric: ColumnSummaryMetric,
+    error_message: str,
 ) -> None:
     with pytest.raises(ValueError) as error:
         metric.calculate(
-            data=InputData(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
+            data=InputData(
+                current_data=current_data,
+                reference_data=reference_data,
+                column_mapping=ColumnMapping(),
+            )
         )
 
     assert error.value.args[0] == error_message
@@ -162,7 +173,9 @@ def test_column_summary_metric_value_error(
         ),
         (
             pd.DataFrame({"test1": [1, 2, 3], "test2": [1, 2, 3], "test3": [1, 1, 1]}),
-            pd.DataFrame({"test1": [1, 2, 3], "test2": ["a", "a", "a"], "test3": [1, 1, 1]}),
+            pd.DataFrame(
+                {"test1": [1, 2, 3], "test2": ["a", "a", "a"], "test3": [1, 1, 1]}
+            ),
             ColumnMapping(),
             ColumnSummaryMetric(column_name="test1"),
             {
@@ -218,7 +231,11 @@ def test_column_summary_metric_with_report(
     expected_json: dict,
 ) -> None:
     report = Report(metrics=[metric])
-    report.run(current_data=current_data, reference_data=reference_data, column_mapping=column_mapping)
+    report.run(
+        current_data=current_data,
+        reference_data=reference_data,
+        column_mapping=column_mapping,
+    )
     assert report.show()
     json_result = report.json()
     assert len(json_result) > 0

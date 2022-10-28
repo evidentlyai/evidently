@@ -26,16 +26,25 @@ from evidently.dashboard.tabs.base_tab import Tab
         (CatTargetDriftTab, True),
     ),
 )
-def test_dashboards_without_current_data(tab_class: Type[Tab], raises_value_error: bool) -> None:
+def test_dashboards_without_current_data(
+    tab_class: Type[Tab], raises_value_error: bool
+) -> None:
     """Check that dashboards
     - that can be executed with one dataset only do not get an error
     - that cannot be executed with one dataset raise correct error
     """
     test_data = pd.DataFrame(
-        {"target": [1, 0, 1], "prediction": [1, 0, 0], "num_feature": [1, 2, 3], "cat_feature": [3, 2, 1]}
+        {
+            "target": [1, 0, 1],
+            "prediction": [1, 0, 0],
+            "num_feature": [1, 2, 3],
+            "cat_feature": [3, 2, 1],
+        }
     )
     dashboard = Dashboard(tabs=[tab_class()])
-    data_mapping = ColumnMapping(numerical_features=["num_feature"], categorical_features=["cat_feature"])
+    data_mapping = ColumnMapping(
+        numerical_features=["num_feature"], categorical_features=["cat_feature"]
+    )
 
     if raises_value_error:
         with pytest.raises(ValueError) as error:

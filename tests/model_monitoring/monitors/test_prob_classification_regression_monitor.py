@@ -7,7 +7,10 @@ from tests.model_monitoring.helpers import collect_metrics_results
 
 
 def test_monitor_id():
-    assert ProbClassificationPerformanceMonitor().monitor_id() == "prob_classification_performance"
+    assert (
+        ProbClassificationPerformanceMonitor().monitor_id()
+        == "prob_classification_performance"
+    )
 
 
 def test_probability_classification_with_multi_classes() -> None:
@@ -84,7 +87,9 @@ def test_probability_classification_with_multi_classes() -> None:
         },
     ]
     assert "prob_classification_performance:class_representation" in result
-    class_representation = result["prob_classification_performance:class_representation"]
+    class_representation = result[
+        "prob_classification_performance:class_representation"
+    ]
     assert class_representation == [
         {
             "labels": {

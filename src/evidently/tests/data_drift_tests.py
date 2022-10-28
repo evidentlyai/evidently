@@ -35,7 +35,9 @@ GroupingTypes.TestGroup.add_value(DATA_DRIFT_GROUP)
 
 @dataclasses.dataclass
 class TestDataDriftResult(TestResult):
-    features: Dict[str, Tuple[str, float, float]] = dataclasses.field(default_factory=dict)
+    features: Dict[str, Tuple[str, float, float]] = dataclasses.field(
+        default_factory=dict
+    )
 
 
 class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
@@ -61,7 +63,16 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
         else:
             self.metric = DataDriftTable(options=options)
 
-        super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
+        super().__init__(
+            eq=eq,
+            gt=gt,
+            gte=gte,
+            is_in=is_in,
+            lt=lt,
+            lte=lte,
+            not_eq=not_eq,
+            not_in=not_in,
+        )
 
     def check(self):
         result = super().check()
@@ -90,7 +101,9 @@ class TestNumberOfDriftedColumns(BaseDataDriftMetricsTest):
         if self.condition.has_condition():
             return self.condition
         else:
-            return TestValueCondition(lt=max(0, self.metric.get_result().number_of_columns // 3))
+            return TestValueCondition(
+                lt=max(0, self.metric.get_result().number_of_columns // 3)
+            )
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().number_of_drifted_columns
@@ -152,7 +165,9 @@ class TestColumnValueDrift(Test):
             description = f"Cannot find column {self.column_name} in the dataset"
 
         else:
-            p_value = np.round(drift_info.drift_by_columns[self.column_name].drift_score, 3)
+            p_value = np.round(
+                drift_info.drift_by_columns[self.column_name].drift_score, 3
+            )
             stattest_name = drift_info.drift_by_columns[self.column_name].stattest_name
             threshold = drift_info.drift_by_columns[self.column_name].threshold
             description = (
@@ -183,7 +198,9 @@ class TestAllFeaturesValueDrift(BaseGenerator):
     def generate(self, columns_info: DatasetColumns) -> List[TestColumnValueDrift]:
         return [
             TestColumnValueDrift(column_name=name)
-            for name in columns_info.get_all_features_list(include_datetime_feature=False)
+            for name in columns_info.get_all_features_list(
+                include_datetime_feature=False
+            )
         ]
 
 
@@ -205,7 +222,12 @@ class TestNumberOfDriftedColumnsRenderer(TestRenderer):
         base = super().render_json(obj)
         base["parameters"]["condition"] = obj.get_condition().as_dict()
         base["parameters"]["features"] = {
-            feature: {"stattest": data[0], "score": np.round(data[1], 3), "threshold": data[2], "data_drift": data[3]}
+            feature: {
+                "stattest": data[0],
+                "score": np.round(data[1], 3),
+                "threshold": data[2],
+                "data_drift": data[3],
+            }
             for feature, data in obj.get_result().features.items()
         }
         return base
@@ -213,11 +235,23 @@ class TestNumberOfDriftedColumnsRenderer(TestRenderer):
     def render_html(self, obj: TestNumberOfDriftedColumns) -> TestHtmlInfo:
         info = super().render_html(obj)
         df = pd.DataFrame(
-            data=[[feature] + list(data) for feature, data in obj.get_result().features.items()],
-            columns=["Feature name", "Stattest", "Drift score", "Threshold", "Data Drift"],
+            data=[
+                [feature] + list(data)
+                for feature, data in obj.get_result().features.items()
+            ],
+            columns=[
+                "Feature name",
+                "Stattest",
+                "Drift score",
+                "Threshold",
+                "Data Drift",
+            ],
         )
         df = df.sort_values("Data Drift")
-        info.with_details(title="Drift Table", info=table_data(column_names=df.columns.to_list(), data=df.values))
+        info.with_details(
+            title="Drift Table",
+            info=table_data(column_names=df.columns.to_list(), data=df.values),
+        )
         return info
 
 
@@ -227,7 +261,12 @@ class TestShareOfDriftedColumnsRenderer(TestRenderer):
         base = super().render_json(obj)
         base["parameters"]["condition"] = obj.get_condition().as_dict()
         base["parameters"]["features"] = {
-            feature: {"stattest": data[0], "score": np.round(data[1], 3), "threshold": data[2], "data_drift": data[3]}
+            feature: {
+                "stattest": data[0],
+                "score": np.round(data[1], 3),
+                "threshold": data[2],
+                "data_drift": data[3],
+            }
             for feature, data in obj.get_result().features.items()
         }
         return base
@@ -235,8 +274,17 @@ class TestShareOfDriftedColumnsRenderer(TestRenderer):
     def render_html(self, obj: TestShareOfDriftedColumns) -> TestHtmlInfo:
         info = super().render_html(obj)
         df = pd.DataFrame(
-            data=[[feature] + list(data) for feature, data in obj.get_result().features.items()],
-            columns=["Feature name", "Stattest", "Drift score", "Threshold", "Data Drift"],
+            data=[
+                [feature] + list(data)
+                for feature, data in obj.get_result().features.items()
+            ],
+            columns=[
+                "Feature name",
+                "Stattest",
+                "Drift score",
+                "Threshold",
+                "Data Drift",
+            ],
         )
         df = df.sort_values("Data Drift")
         info.details = [

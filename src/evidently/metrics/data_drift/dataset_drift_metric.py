@@ -31,7 +31,10 @@ class DatasetDriftMetric(Metric[DatasetDriftMetricResults]):
     options: DataDriftOptions
 
     def __init__(
-        self, columns: Optional[List[str]] = None, threshold: float = 0.5, options: Optional[DataDriftOptions] = None
+        self,
+        columns: Optional[List[str]] = None,
+        threshold: float = 0.5,
+        options: Optional[DataDriftOptions] = None,
     ):
         self.columns = columns
         self.threshold = threshold
@@ -85,7 +88,9 @@ class DataDriftMetricsRenderer(MetricRenderer):
         counters = [
             CounterData.int("Columns", result.number_of_columns),
             CounterData.int("Drifted Columns", result.number_of_drifted_columns),
-            CounterData.float("Share of Drifted Columns", result.share_of_drifted_columns, 3),
+            CounterData.float(
+                "Share of Drifted Columns", result.share_of_drifted_columns, 3
+            ),
         ]
 
         return [

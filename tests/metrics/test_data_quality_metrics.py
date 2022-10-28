@@ -14,11 +14,15 @@ from evidently.report import Report
 
 
 def test_data_quality_metrics() -> None:
-    test_dataset = pd.DataFrame({"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 2, 2, 432]})
+    test_dataset = pd.DataFrame(
+        {"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 2, 2, 432]}
+    )
     data_mapping = ColumnMapping()
     metric = DataQualityMetrics()
     result = metric.calculate(
-        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+        data=InputData(
+            current_data=test_dataset, reference_data=None, column_mapping=data_mapping
+        )
     )
     assert result is not None
 
@@ -35,7 +39,9 @@ def test_data_quality_stability_metrics() -> None:
     data_mapping = ColumnMapping()
     metric = DataQualityStabilityMetrics()
     result = metric.calculate(
-        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+        data=InputData(
+            current_data=test_dataset, reference_data=None, column_mapping=data_mapping
+        )
     )
     assert result is not None
     assert result.number_not_stable_target == 2
@@ -57,7 +63,11 @@ def test_data_quality_stability_metrics_no_other_columns() -> None:
     )
     data_mapping = ColumnMapping()
     metric = DataQualityStabilityMetrics()
-    result = metric.calculate(data=InputData(current_data=curr, reference_data=ref, column_mapping=data_mapping))
+    result = metric.calculate(
+        data=InputData(
+            current_data=curr, reference_data=ref, column_mapping=data_mapping
+        )
+    )
     assert result is not None
     assert result.number_not_stable_target == 0
     assert result.number_not_stable_prediction == 0
@@ -81,10 +91,16 @@ def test_data_quality_metrics_with_report(metric_object: Metric) -> None:
     )
     data_mapping = ColumnMapping()
     report = Report(metrics=[metric_object])
-    report.run(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+    report.run(
+        current_data=test_dataset, reference_data=None, column_mapping=data_mapping
+    )
     assert report.show()
     assert report.json()
 
-    report.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=data_mapping)
+    report.run(
+        current_data=test_dataset,
+        reference_data=test_dataset,
+        column_mapping=data_mapping,
+    )
     assert report.show()
     assert report.json()

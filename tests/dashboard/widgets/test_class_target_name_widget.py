@@ -46,7 +46,9 @@ def test_class_target_name_widget_simple_case() -> None:
         ),
     ),
 )
-def test_class_target_name_widget_value_error(reference_data: pd.DataFrame, column_mapping: ColumnMapping) -> None:
+def test_class_target_name_widget_value_error(
+    reference_data: pd.DataFrame, column_mapping: ColumnMapping
+) -> None:
     widget = ClassTargetNameWidget("test_widget")
     with pytest.raises(ValueError):
         widget.calculate(reference_data, None, column_mapping, {})

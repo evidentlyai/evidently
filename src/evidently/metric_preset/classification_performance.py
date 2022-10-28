@@ -28,7 +28,9 @@ class ClassificationPreset(MetricPreset):
             ClassificationConfusionMatrix(),
             ClassificationQualityByClass(),
         ]
-        curr_predictions = get_prediction_data(data.current_data, columns, data.column_mapping.pos_label)
+        curr_predictions = get_prediction_data(
+            data.current_data, columns, data.column_mapping.pos_label
+        )
 
         if curr_predictions.prediction_probas is not None:
             result.extend(

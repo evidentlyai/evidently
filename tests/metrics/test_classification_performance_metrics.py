@@ -30,7 +30,11 @@ def test_classification_performance_metrics_binary_labels() -> None:
     column_mapping = ColumnMapping(target="target", prediction="prediction")
     metric = ClassificationPerformanceMetrics()
     result = metric.calculate(
-        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=column_mapping)
+        data=InputData(
+            current_data=test_dataset,
+            reference_data=None,
+            column_mapping=column_mapping,
+        )
     )
     assert result is not None
     assert result.current.accuracy == 0.7
@@ -38,13 +42,35 @@ def test_classification_performance_metrics_binary_labels() -> None:
     assert result.current.recall == 0.75
     assert result.current.f1 == 0.6666666666666665
     assert result.current.metrics_matrix == {
-        "0": {"precision": 0.8, "recall": 0.6666666666666666, "f1-score": 0.7272727272727272, "support": 6},
-        "1": {"precision": 0.6, "recall": 0.75, "f1-score": 0.6666666666666665, "support": 4},
+        "0": {
+            "precision": 0.8,
+            "recall": 0.6666666666666666,
+            "f1-score": 0.7272727272727272,
+            "support": 6,
+        },
+        "1": {
+            "precision": 0.6,
+            "recall": 0.75,
+            "f1-score": 0.6666666666666665,
+            "support": 4,
+        },
         "accuracy": 0.7,
-        "macro avg": {"precision": 0.7, "recall": 0.7083333333333333, "f1-score": 0.6969696969696968, "support": 10},
-        "weighted avg": {"precision": 0.7200000000000001, "recall": 0.7, "f1-score": 0.7030303030303029, "support": 10},
+        "macro avg": {
+            "precision": 0.7,
+            "recall": 0.7083333333333333,
+            "f1-score": 0.6969696969696968,
+            "support": 10,
+        },
+        "weighted avg": {
+            "precision": 0.7200000000000001,
+            "recall": 0.7,
+            "f1-score": 0.7030303030303029,
+            "support": 10,
+        },
     }
-    assert result.current.confusion_matrix == ConfusionMatrix(labels=["0", "1"], values=[[4, 2], [1, 3]])
+    assert result.current.confusion_matrix == ConfusionMatrix(
+        labels=["0", "1"], values=[[4, 2], [1, 3]]
+    )
 
 
 def test_classification_performance_metrics_with_report() -> None:
@@ -56,11 +82,17 @@ def test_classification_performance_metrics_with_report() -> None:
     )
     data_mapping = ColumnMapping(target="my_target", prediction="my_prediction")
     report = Report(metrics=[ClassificationPerformanceMetrics()])
-    report.run(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+    report.run(
+        current_data=test_dataset, reference_data=None, column_mapping=data_mapping
+    )
     assert report.show()
     assert report.json()
 
-    report.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=data_mapping)
+    report.run(
+        current_data=test_dataset,
+        reference_data=test_dataset,
+        column_mapping=data_mapping,
+    )
     assert report.show()
     assert report.json()
 
@@ -76,7 +108,11 @@ def test_classification_performance_metrics_probs_with_report() -> None:
     )
     data_mapping = ColumnMapping(prediction=["label_a", "label_b", "label_c"])
     report = Report(metrics=[ClassificationPerformanceMetrics()])
-    report.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=data_mapping)
+    report.run(
+        current_data=test_dataset,
+        reference_data=test_dataset,
+        column_mapping=data_mapping,
+    )
     assert report.show()
     assert report.json()
 
@@ -92,7 +128,9 @@ def test_classification_performance_metrics_binary_probas_threshold() -> None:
     data_mapping = ColumnMapping(target="target", prediction="prediction")
     metric = ClassificationPerformanceMetricsThreshold(class_threshold)
     result = metric.calculate(
-        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+        data=InputData(
+            current_data=test_dataset, reference_data=None, column_mapping=data_mapping
+        )
     )
     assert result is not None
     assert result.current.accuracy == 0.6
@@ -101,7 +139,9 @@ def test_classification_performance_metrics_binary_probas_threshold() -> None:
     assert result.current.f1 == 0.5
     assert result.current.roc_auc == 0.625
     assert result.current.log_loss == 3.928216092142768
-    assert result.current.confusion_matrix == ConfusionMatrix(labels=["0", "1"], values=[[4, 2], [2, 2]])
+    assert result.current.confusion_matrix == ConfusionMatrix(
+        labels=["0", "1"], values=[[4, 2], [2, 2]]
+    )
 
 
 def test_classification_performance_metrics_binary_probas_threshold_with_report() -> None:
@@ -112,12 +152,20 @@ def test_classification_performance_metrics_binary_probas_threshold_with_report(
         }
     )
     data_mapping = ColumnMapping(target="target", prediction="prediction")
-    report = Report(metrics=[ClassificationPerformanceMetricsThreshold(classification_threshold=1)])
-    report.run(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+    report = Report(
+        metrics=[ClassificationPerformanceMetricsThreshold(classification_threshold=1)]
+    )
+    report.run(
+        current_data=test_dataset, reference_data=None, column_mapping=data_mapping
+    )
     assert report.show()
     assert report.json()
 
-    report.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=data_mapping)
+    report.run(
+        current_data=test_dataset,
+        reference_data=test_dataset,
+        column_mapping=data_mapping,
+    )
     assert report.show()
     assert report.json()
 
@@ -156,17 +204,39 @@ def test_classification_performance_metrics_binary_probas_threshold_with_report(
         ),
         # multy classification, prediction is labels-strings
         (
-            pd.DataFrame({"target": ["a", "a", "a"], "a": [0.1, 0.3, 0.9], "b": [0.8, 0.7, 0.1], "c": [0.9, 0.7, 0.1]}),
+            pd.DataFrame(
+                {
+                    "target": ["a", "a", "a"],
+                    "a": [0.1, 0.3, 0.9],
+                    "b": [0.8, 0.7, 0.1],
+                    "c": [0.9, 0.7, 0.1],
+                }
+            ),
             ColumnMapping(prediction=["a", "b", "c"]),
             ["c", "b", "a"],
-            {"a": {0: 0.1, 1: 0.3, 2: 0.9}, "b": {0: 0.8, 1: 0.7, 2: 0.1}, "c": {0: 0.9, 1: 0.7, 2: 0.1}},
+            {
+                "a": {0: 0.1, 1: 0.3, 2: 0.9},
+                "b": {0: 0.8, 1: 0.7, 2: 0.1},
+                "c": {0: 0.9, 1: 0.7, 2: 0.1},
+            },
         ),
         # multy classification, prediction is labels-strings, all probabilities are lower than default threshold
         (
-            pd.DataFrame({"target": ["a", "a", "a"], "a": [0.1, 0.2, 0.2], "b": [0.2, 0.3, 0.1], "c": [0.3, 0.2, 0.1]}),
+            pd.DataFrame(
+                {
+                    "target": ["a", "a", "a"],
+                    "a": [0.1, 0.2, 0.2],
+                    "b": [0.2, 0.3, 0.1],
+                    "c": [0.3, 0.2, 0.1],
+                }
+            ),
             ColumnMapping(prediction=["a", "b", "c"]),
             ["c", "b", "a"],
-            {"a": {0: 0.1, 1: 0.2, 2: 0.2}, "b": {0: 0.2, 1: 0.3, 2: 0.1}, "c": {0: 0.3, 1: 0.2, 2: 0.1}},
+            {
+                "a": {0: 0.1, 1: 0.2, 2: 0.2},
+                "b": {0: 0.2, 1: 0.3, 2: 0.1},
+                "c": {0: 0.3, 1: 0.2, 2: 0.1},
+            },
         ),
         # binary classification, prediction is labels-numbers
         (
@@ -177,7 +247,9 @@ def test_classification_performance_metrics_binary_probas_threshold_with_report(
         ),
         # binary classification, prediction is negative, pos label is 0
         (
-            pd.DataFrame({"target": [1, 0, 1], "1": [0.1, 0.3, 0.9], 0: [0.9, 0.7, 0.1]}),
+            pd.DataFrame(
+                {"target": [1, 0, 1], "1": [0.1, 0.3, 0.9], 0: [0.9, 0.7, 0.1]}
+            ),
             ColumnMapping(prediction="1", pos_label=0),
             [0, 0, 1],
             {
@@ -187,17 +259,28 @@ def test_classification_performance_metrics_binary_probas_threshold_with_report(
         ),
         # binary classification, prediction is labels-strings
         (
-            pd.DataFrame({"target": ["true", "false", "true"], "true": [0.1, 0.3, 0.9], "false": [0.9, 0.7, 0.1]}),
+            pd.DataFrame(
+                {
+                    "target": ["true", "false", "true"],
+                    "true": [0.1, 0.3, 0.9],
+                    "false": [0.9, 0.7, 0.1],
+                }
+            ),
             ColumnMapping(prediction=["true", "false"], pos_label="true"),
             ["false", "false", "true"],
             {"false": {0: 0.9, 1: 0.7, 2: 0.1}, "true": {0: 0.1, 1: 0.3, 2: 0.9}},
         ),
         # prediction is a one column with probabilities
         (
-            pd.DataFrame({"target": ["true", "false", "true"], "true": [0.1, 0.3, 0.8]}),
+            pd.DataFrame(
+                {"target": ["true", "false", "true"], "true": [0.1, 0.3, 0.8]}
+            ),
             ColumnMapping(prediction="true", pos_label="true"),
             ["false", "false", "true"],
-            {"false": {0: 0.9, 1: 0.7, 2: approx(0.2, abs=0.01)}, "true": {0: 0.1, 1: 0.3, 2: 0.8}},
+            {
+                "false": {0: 0.9, 1: 0.7, 2: approx(0.2, abs=0.01)},
+                "true": {0: 0.1, 1: 0.3, 2: 0.8},
+            },
         ),
         (
             pd.DataFrame({"target": ["a", "b"], "a": [0.9, 0.4]}),
@@ -220,7 +303,10 @@ def test_classification_performance_metrics_binary_probas_threshold_with_report(
     ],
 )
 def test_prediction_data_with_default_threshold(
-    data: pd.DataFrame, mapping: ColumnMapping, expected_predictions: list, expected_probas: Optional[dict]
+    data: pd.DataFrame,
+    mapping: ColumnMapping,
+    expected_predictions: list,
+    expected_probas: Optional[dict],
 ):
     columns = process_columns(data, mapping)
     prediction_data = get_prediction_data(data, columns, mapping.pos_label)
@@ -238,31 +324,45 @@ def test_prediction_data_with_default_threshold(
     [
         # no pos value
         (
-            pd.DataFrame({"target": ["true", "false", "true"], "true": [0.1, 0.3, 0.8]}),
+            pd.DataFrame(
+                {"target": ["true", "false", "true"], "true": [0.1, 0.3, 0.8]}
+            ),
             ColumnMapping(prediction="true"),
             "Cannot find pos_label '1' in labels ['true' 'false']",
         ),
         # incorrect pos value
         (
-            pd.DataFrame({"target": ["true", "false", "true"], "true": [0.1, 0.3, 0.8]}),
+            pd.DataFrame(
+                {"target": ["true", "false", "true"], "true": [0.1, 0.3, 0.8]}
+            ),
             ColumnMapping(prediction="true", pos_label="pos"),
             "Cannot find pos_label 'pos' in labels ['true' 'false']",
         ),
         (
-            pd.DataFrame({"target": ["true", "false", "true"], "true": [0.1, 0.3, 0.8], "false": [0.9, 0.7, 0.2]}),
+            pd.DataFrame(
+                {
+                    "target": ["true", "false", "true"],
+                    "true": [0.1, 0.3, 0.8],
+                    "false": [0.9, 0.7, 0.2],
+                }
+            ),
             ColumnMapping(prediction=["true", "false"], pos_label="pos"),
             "Cannot find pos_label 'pos' in labels ['true' 'false']",
         ),
         # prediction not in labels list
         (
-            pd.DataFrame({"target": ["true", "false", "true"], "True": [0.1, 0.3, 0.8]}),
+            pd.DataFrame(
+                {"target": ["true", "false", "true"], "True": [0.1, 0.3, 0.8]}
+            ),
             ColumnMapping(prediction="True", pos_label="true"),
             "No prediction for the target labels were found. "
             "Consider to rename columns with the prediction to match target labels.",
         ),
     ],
 )
-def test_prediction_data_raises_value_error(data: pd.DataFrame, mapping: ColumnMapping, error_text: str):
+def test_prediction_data_raises_value_error(
+    data: pd.DataFrame, mapping: ColumnMapping, error_text: str
+):
     columns = process_columns(data, mapping)
 
     with pytest.raises(ValueError) as error:
@@ -276,7 +376,9 @@ def test_classification_performance_metrics() -> None:
     data_mapping = ColumnMapping()
     metric = ClassificationPerformanceMetrics()
     result = metric.calculate(
-        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+        data=InputData(
+            current_data=test_dataset, reference_data=None, column_mapping=data_mapping
+        )
     )
     assert result is not None
     assert result.current.accuracy == 0.75
@@ -351,7 +453,10 @@ def test_classification_performance_metrics() -> None:
         ),
         (
             pd.DataFrame(
-                {"target": [1, 1, 1, 1, 0, 0, 0, 0, 0, 0], "0": [0.1, 0.3, 1.0, 0.5, 0.9, 0.6, 0.4, 0.8, 0.8, 0.2]}
+                {
+                    "target": [1, 1, 1, 1, 0, 0, 0, 0, 0, 0],
+                    "0": [0.1, 0.3, 1.0, 0.5, 0.9, 0.6, 0.4, 0.8, 0.8, 0.2],
+                }
             ),
             ColumnMapping(prediction="0", target="target", pos_label=0),
             0.5,
@@ -367,7 +472,10 @@ def test_classification_performance_metrics() -> None:
         ),
         (
             pd.DataFrame(
-                {"target": [1, 1, 1, 1, 0, 0, 0, 0, 0, 0], "preds": [0.1, 0.3, 1.0, 0.5, 0.9, 0.6, 0.4, 0.8, 0.8, 0.2]}
+                {
+                    "target": [1, 1, 1, 1, 0, 0, 0, 0, 0, 0],
+                    "preds": [0.1, 0.3, 1.0, 0.5, 0.9, 0.6, 0.4, 0.8, 0.8, 0.2],
+                }
             ),
             ColumnMapping(prediction="preds", target="target"),
             0.5,
@@ -384,10 +492,15 @@ def test_classification_performance_metrics() -> None:
     ),
 )
 def test_get_prediction_data(
-    data: pd.DataFrame, mapping: ColumnMapping, threshold: float, expected: Tuple[pd.Series, Optional[pd.DataFrame]]
+    data: pd.DataFrame,
+    mapping: ColumnMapping,
+    threshold: float,
+    expected: Tuple[pd.Series, Optional[pd.DataFrame]],
 ):
     columns = process_columns(data, mapping)
-    result = get_prediction_data(data, columns, pos_label=mapping.pos_label, threshold=threshold)
+    result = get_prediction_data(
+        data, columns, pos_label=mapping.pos_label, threshold=threshold
+    )
     assert result.predictions.equals(expected[0])
     assert np.allclose(result.prediction_probas, expected[1])
     assert list(result.prediction_probas.columns) == list(expected[1].columns)
@@ -480,7 +593,9 @@ def test_get_prediction_data(
         ),
     ),
 )
-def test_k_probability_threshold(probas: pd.DataFrame, k: Union[int, float], expected: float):
+def test_k_probability_threshold(
+    probas: pd.DataFrame, k: Union[int, float], expected: float
+):
     assert k_probability_threshold(probas, k) == expected
 
 
@@ -533,9 +648,16 @@ def test_k_probability_threshold(probas: pd.DataFrame, k: Union[int, float], exp
     ),
 )
 def test_threshold_probability_labels(
-    probas: pd.DataFrame, pos_label: str, neg_label: str, threshold: float, expected: pd.Series
+    probas: pd.DataFrame,
+    pos_label: str,
+    neg_label: str,
+    threshold: float,
+    expected: pd.Series,
 ) -> None:
-    assert threshold_probability_labels(probas, pos_label, neg_label, threshold).tolist() == expected
+    assert (
+        threshold_probability_labels(probas, pos_label, neg_label, threshold).tolist()
+        == expected
+    )
 
 
 def test_classification_performance_top_k_metrics() -> None:
@@ -547,11 +669,17 @@ def test_classification_performance_top_k_metrics() -> None:
     )
     data_mapping = ColumnMapping(target="target", prediction="1", pos_label="2")
     report = Report(metrics=[ClassificationPerformanceMetricsTopK(k=1)])
-    report.run(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+    report.run(
+        current_data=test_dataset, reference_data=None, column_mapping=data_mapping
+    )
     assert report.show()
     assert report.json()
 
-    report.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=data_mapping)
+    report.run(
+        current_data=test_dataset,
+        reference_data=test_dataset,
+        column_mapping=data_mapping,
+    )
     assert report.show()
     assert report.json()
 
@@ -567,5 +695,7 @@ def test_classification_performance_top_k_metrics_no_probas() -> None:
     report = Report(metrics=[ClassificationPerformanceMetricsTopK(k=1)])
 
     with pytest.raises(ValueError):
-        report.run(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+        report.run(
+            current_data=test_dataset, reference_data=None, column_mapping=data_mapping
+        )
         report.json()

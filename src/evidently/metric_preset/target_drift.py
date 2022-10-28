@@ -14,7 +14,9 @@ from evidently.utils.data_operations import DatasetColumns
 
 
 class TargetDriftPreset(MetricPreset):
-    def generate_metrics(self, data: InputData, columns: DatasetColumns) -> Sequence[Metric]:
+    def generate_metrics(
+        self, data: InputData, columns: DatasetColumns
+    ) -> Sequence[Metric]:
         target = columns.utility_columns.target
         prediction = columns.utility_columns.prediction
         result: List[Metric] = []

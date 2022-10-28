@@ -55,7 +55,9 @@ def test_model_monitoring_with_simple_data():
         ],
         options=None,
     )
-    evidently_monitoring.execute(reference_data=reference_data, current_data=current_data, column_mapping=mapping)
+    evidently_monitoring.execute(
+        reference_data=reference_data, current_data=current_data, column_mapping=mapping
+    )
     result = collect_metrics_results(evidently_monitoring.metrics())
 
     assert "cat_target_drift:count" in result
@@ -110,7 +112,9 @@ def test_data_drift_monitoring_labels_with_simple_data():
         ],
         options=None,
     )
-    evidently_monitoring.execute(reference_data=reference_data, current_data=current_data, column_mapping=mapping)
+    evidently_monitoring.execute(
+        reference_data=reference_data, current_data=current_data, column_mapping=mapping
+    )
     result = collect_metrics_results(evidently_monitoring.metrics())
 
     assert "data_drift:dataset_drift" in result
@@ -149,15 +153,24 @@ def test_metric_creation_with_incorrect_labels():
         (NumTargetDriftMonitor, True),
     ),
 )
-def test_model_monitoring_without_current_data(monitor_class: Type[ModelMonitor], raises_value_error: bool) -> None:
+def test_model_monitoring_without_current_data(
+    monitor_class: Type[ModelMonitor], raises_value_error: bool
+) -> None:
     """Check that monitors
     - that can be executed with one dataset only do not get an error
     - that cannot be executed with one dataset raise correct error
     """
     test_data = pd.DataFrame(
-        {"target": [1, 0, 1], "prediction": [1, 0, 0], "num_feature": [1, 2, 3], "cat_feature": [3, 2, 1]}
+        {
+            "target": [1, 0, 1],
+            "prediction": [1, 0, 0],
+            "num_feature": [1, 2, 3],
+            "cat_feature": [3, 2, 1],
+        }
     )
-    data_mapping = ColumnMapping(numerical_features=["num_feature"], categorical_features=["cat_feature"])
+    data_mapping = ColumnMapping(
+        numerical_features=["num_feature"], categorical_features=["cat_feature"]
+    )
     evidently_monitoring = ModelMonitoring([monitor_class()])
 
     if raises_value_error:

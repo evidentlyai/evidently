@@ -33,7 +33,11 @@ def test_column_drift_metric_success(
     metric: ColumnDriftMetric,
 ) -> None:
     report = Report(metrics=[metric])
-    report.run(current_data=current_data, reference_data=reference_data, column_mapping=data_mapping)
+    report.run(
+        current_data=current_data,
+        reference_data=reference_data,
+        column_mapping=data_mapping,
+    )
     assert report.json()
     assert report.show()
 
@@ -80,5 +84,9 @@ def test_column_drift_metric_errors(
     report = Report(metrics=[metric])
 
     with pytest.raises(ValueError):
-        report.run(current_data=current_data, reference_data=reference_data, column_mapping=data_mapping)
+        report.run(
+            current_data=current_data,
+            reference_data=reference_data,
+            column_mapping=data_mapping,
+        )
         report.json()

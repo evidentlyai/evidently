@@ -23,7 +23,11 @@ def test_dataset_correlation_metric_success() -> None:
     data_mapping = ColumnMapping(task="regression")
     metric = DatasetCorrelationsMetric()
     result = metric.calculate(
-        data=InputData(current_data=current_dataset, reference_data=None, column_mapping=data_mapping)
+        data=InputData(
+            current_data=current_dataset,
+            reference_data=None,
+            column_mapping=data_mapping,
+        )
     )
     assert result is not None
     assert result.current is not None
@@ -171,11 +175,17 @@ def test_dataset_correlations_metric_with_report(
     expected_json: dict,
 ) -> None:
     report = Report(metrics=[metric])
-    report.run(current_data=current_data, reference_data=reference_data, column_mapping=column_mapping)
+    report.run(
+        current_data=current_data,
+        reference_data=reference_data,
+        column_mapping=column_mapping,
+    )
     assert report.show()
     json_result = report.json()
     assert len(json_result) > 0
     parsed_json_result = json.loads(json_result)
     assert "metrics" in parsed_json_result
     assert "DatasetCorrelationsMetric" in parsed_json_result["metrics"]
-    assert json.loads(json_result)["metrics"]["DatasetCorrelationsMetric"] == expected_json
+    assert (
+        json.loads(json_result)["metrics"]["DatasetCorrelationsMetric"] == expected_json
+    )

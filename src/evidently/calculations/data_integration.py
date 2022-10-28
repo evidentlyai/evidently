@@ -16,7 +16,9 @@ def get_number_of_duplicated_columns(dataset: pd.DataFrame) -> int:
     return dataset.duplicated().sum()
 
 
-def get_number_of_almost_duplicated_columns(dataset: pd.DataFrame, threshold: float) -> int:
+def get_number_of_almost_duplicated_columns(
+    dataset: pd.DataFrame, threshold: float
+) -> int:
     """Calculate the number of almost duplicated columns in a dataset"""
     result = 0
     all_rows = dataset.shape[0]
@@ -36,10 +38,13 @@ def get_number_of_almost_duplicated_columns(dataset: pd.DataFrame, threshold: fl
 
             # if columns are categorical, then we need to check categories lists
             # if the lists are not the same, Series.eq method raises an exception
-            if pd.api.types.is_categorical_dtype(dataset[column_name_1]) and pd.api.types.is_categorical_dtype(
-                dataset[column_name_2]
-            ):
-                if dataset[column_name_1].cat.categories.tolist() != dataset[column_name_2].cat.categories.tolist():
+            if pd.api.types.is_categorical_dtype(
+                dataset[column_name_1]
+            ) and pd.api.types.is_categorical_dtype(dataset[column_name_2]):
+                if (
+                    dataset[column_name_1].cat.categories.tolist()
+                    != dataset[column_name_2].cat.categories.tolist()
+                ):
                     continue
 
             score = dataset[column_name_1].eq(dataset[column_name_2]).sum() / all_rows
@@ -55,7 +60,9 @@ def get_number_of_constant_columns(dataset: pd.DataFrame) -> int:
     return len(dataset.columns[dataset.nunique() <= 1])  # type: ignore
 
 
-def get_number_of_almost_constant_columns(dataset: pd.DataFrame, threshold: float) -> int:
+def get_number_of_almost_constant_columns(
+    dataset: pd.DataFrame, threshold: float
+) -> int:
     """Calculate the number of almost constant columns in a dataset"""
     result = 0
     dataset_row = dataset.shape[0]

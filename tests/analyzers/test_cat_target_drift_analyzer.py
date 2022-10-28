@@ -21,7 +21,9 @@ def analyzer() -> CatTargetDriftAnalyzer:
 def test_different_target_column_name(analyzer: CatTargetDriftAnalyzer):
     reference_data = DataFrame({"another_target": ["a"] * 20})
     current_data = DataFrame({"another_target": ["a"] * 20})
-    result = analyzer.calculate(reference_data, current_data, ColumnMapping(target="another_target"))
+    result = analyzer.calculate(
+        reference_data, current_data, ColumnMapping(target="another_target")
+    )
     assert result.columns.utility_columns.target == "another_target"
     assert result.target_metrics.drift_score == 1
     assert result.reference_data_count == 20
@@ -34,7 +36,9 @@ def test_different_target_column_name(analyzer: CatTargetDriftAnalyzer):
 def test_different_prediction_column_name(analyzer: CatTargetDriftAnalyzer):
     df1 = DataFrame({"another_prediction": ["a"] * 10})
     df2 = DataFrame({"another_prediction": ["a"] * 10})
-    result = analyzer.calculate(df1, df2, ColumnMapping(prediction="another_prediction"))
+    result = analyzer.calculate(
+        df1, df2, ColumnMapping(prediction="another_prediction")
+    )
     assert result.prediction_metrics.column_name == "another_prediction"
     assert result.prediction_metrics.drift_score == 1
     assert result.prediction_metrics.reference_correlations is None

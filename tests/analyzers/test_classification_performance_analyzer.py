@@ -21,21 +21,39 @@ def analyzer() -> ClassificationPerformanceAnalyzer:
     (
         # prediction dataset only, current dataset is missed
         (
-            pd.DataFrame({"target": [1, 0, 1, 1, 0, 1], "prediction": [1, 1, 0, 1, 0, 1]}),
+            pd.DataFrame(
+                {"target": [1, 0, 1, 1, 0, 1], "prediction": [1, 1, 0, 1, 0, 1]}
+            ),
             None,
             column_mapping.ColumnMapping(),
         ),
         # prediction dataset is missed
         (
-            pd.DataFrame({"target": [1, 0, 1, 1, 0, 1], "prediction": [1, 1, 0, 1, 0, 1]}),
-            pd.DataFrame({"target": [1, 0, 0, 1, 1, 1], "prediction": [0, 1, 0, 1, 0, 0]}),
+            pd.DataFrame(
+                {"target": [1, 0, 1, 1, 0, 1], "prediction": [1, 1, 0, 1, 0, 1]}
+            ),
+            pd.DataFrame(
+                {"target": [1, 0, 0, 1, 1, 1], "prediction": [0, 1, 0, 1, 0, 0]}
+            ),
             column_mapping.ColumnMapping(),
         ),
         # test with target and prediction columns mapping
         (
-            pd.DataFrame({"test_target": [1, 0, 1, 1, 0, 1], "test_prediction": [1, 1, 0, 1, 0, 1]}),
-            pd.DataFrame({"test_target": [1, 0, 0, 1, 1, 1], "test_prediction": [0, 1, 0, 1, 0, 0]}),
-            column_mapping.ColumnMapping(target="test_target", prediction="test_prediction"),
+            pd.DataFrame(
+                {
+                    "test_target": [1, 0, 1, 1, 0, 1],
+                    "test_prediction": [1, 1, 0, 1, 0, 1],
+                }
+            ),
+            pd.DataFrame(
+                {
+                    "test_target": [1, 0, 0, 1, 1, 1],
+                    "test_prediction": [0, 1, 0, 1, 0, 0],
+                }
+            ),
+            column_mapping.ColumnMapping(
+                target="test_target", prediction="test_prediction"
+            ),
         ),
     ),
 )
@@ -100,7 +118,9 @@ def test_classification_analyser_with_numeric_binary_data(
     (
         # target and prediction are the same
         (
-            pd.DataFrame({"target": ["n", "y", "n", "y"], "prediction": ["n", "y", "n", "y"]}),
+            pd.DataFrame(
+                {"target": ["n", "y", "n", "y"], "prediction": ["n", "y", "n", "y"]}
+            ),
             column_mapping.ColumnMapping(),
             ClassificationPerformanceMetrics(
                 accuracy=1.0,
@@ -108,13 +128,35 @@ def test_classification_analyser_with_numeric_binary_data(
                 recall=1.0,
                 f1=1.0,
                 metrics_matrix={
-                    "n": {"precision": 1.0, "recall": 1.0, "f1-score": 1.0, "support": 2},
-                    "y": {"precision": 1.0, "recall": 1.0, "f1-score": 1.0, "support": 2},
+                    "n": {
+                        "precision": 1.0,
+                        "recall": 1.0,
+                        "f1-score": 1.0,
+                        "support": 2,
+                    },
+                    "y": {
+                        "precision": 1.0,
+                        "recall": 1.0,
+                        "f1-score": 1.0,
+                        "support": 2,
+                    },
                     "accuracy": 1.0,
-                    "macro avg": {"precision": 1.0, "recall": 1.0, "f1-score": 1.0, "support": 4},
-                    "weighted avg": {"precision": 1.0, "recall": 1.0, "f1-score": 1.0, "support": 4},
+                    "macro avg": {
+                        "precision": 1.0,
+                        "recall": 1.0,
+                        "f1-score": 1.0,
+                        "support": 4,
+                    },
+                    "weighted avg": {
+                        "precision": 1.0,
+                        "recall": 1.0,
+                        "f1-score": 1.0,
+                        "support": 4,
+                    },
                 },
-                confusion_matrix=ConfusionMatrix(labels=["n", "y"], values=[[2, 0], [0, 2]]),
+                confusion_matrix=ConfusionMatrix(
+                    labels=["n", "y"], values=[[2, 0], [0, 2]]
+                ),
                 confusion_by_classes={
                     "n": {"tp": 2, "tn": 2, "fp": 0, "fn": 0},
                     "y": {"tp": 2, "tn": 2, "fp": 0, "fn": 0},
@@ -123,7 +165,9 @@ def test_classification_analyser_with_numeric_binary_data(
         ),
         # prediction dataset only, current dataset is missed
         (
-            pd.DataFrame({"target": ["n", "n", "n", "n"], "prediction": ["y", "y", "y", "y"]}),
+            pd.DataFrame(
+                {"target": ["n", "n", "n", "n"], "prediction": ["y", "y", "y", "y"]}
+            ),
             column_mapping.ColumnMapping(),
             ClassificationPerformanceMetrics(
                 accuracy=0.0,
@@ -131,13 +175,35 @@ def test_classification_analyser_with_numeric_binary_data(
                 recall=0.0,
                 f1=0.0,
                 metrics_matrix={
-                    "n": {"precision": 0.0, "recall": 0.0, "f1-score": 0.0, "support": 4.0},
-                    "y": {"precision": 0.0, "recall": 0.0, "f1-score": 0.0, "support": 0.0},
+                    "n": {
+                        "precision": 0.0,
+                        "recall": 0.0,
+                        "f1-score": 0.0,
+                        "support": 4.0,
+                    },
+                    "y": {
+                        "precision": 0.0,
+                        "recall": 0.0,
+                        "f1-score": 0.0,
+                        "support": 0.0,
+                    },
                     "accuracy": 0.0,
-                    "macro avg": {"precision": 0.0, "recall": 0.0, "f1-score": 0.0, "support": 4.0},
-                    "weighted avg": {"precision": 0.0, "recall": 0.0, "f1-score": 0.0, "support": 4.0},
+                    "macro avg": {
+                        "precision": 0.0,
+                        "recall": 0.0,
+                        "f1-score": 0.0,
+                        "support": 4.0,
+                    },
+                    "weighted avg": {
+                        "precision": 0.0,
+                        "recall": 0.0,
+                        "f1-score": 0.0,
+                        "support": 4.0,
+                    },
                 },
-                confusion_matrix=ConfusionMatrix(labels=["n", "y"], values=[[0, 4], [0, 0]]),
+                confusion_matrix=ConfusionMatrix(
+                    labels=["n", "y"], values=[[0, 4], [0, 0]]
+                ),
                 confusion_by_classes={
                     "n": {"tp": 0, "tn": 0, "fp": 0, "fn": 4},
                     "y": {"tp": 0, "tn": 0, "fp": 4, "fn": 0},
@@ -159,8 +225,18 @@ def test_classification_analyser_with_numeric_binary_data(
                 recall=approx(0.66666, abs=1e-5),  # noqa
                 f1=0.5,
                 metrics_matrix={
-                    "n": {"precision": 1.0, "recall": approx(0.33333, abs=1e-5), "f1-score": 0.5, "support": 3},
-                    "y": {"precision": approx(0.33333, abs=1e-5), "recall": 1.0, "f1-score": 0.5, "support": 1},
+                    "n": {
+                        "precision": 1.0,
+                        "recall": approx(0.33333, abs=1e-5),
+                        "f1-score": 0.5,
+                        "support": 3,
+                    },
+                    "y": {
+                        "precision": approx(0.33333, abs=1e-5),
+                        "recall": 1.0,
+                        "f1-score": 0.5,
+                        "support": 1,
+                    },
                     "accuracy": 0.5,
                     "macro avg": {
                         "precision": approx(0.66666, abs=1e-5),
@@ -175,7 +251,9 @@ def test_classification_analyser_with_numeric_binary_data(
                         "support": 4,
                     },
                 },
-                confusion_matrix=ConfusionMatrix(labels=["n", "y"], values=[[1, 2], [0, 1]]),
+                confusion_matrix=ConfusionMatrix(
+                    labels=["n", "y"], values=[[1, 2], [0, 1]]
+                ),
                 confusion_by_classes={
                     "n": {"tp": 1, "tn": 1, "fp": 0, "fn": 2},
                     "y": {"tp": 1, "tn": 1, "fp": 2, "fn": 0},
@@ -184,7 +262,12 @@ def test_classification_analyser_with_numeric_binary_data(
         ),
         # non-binary classification
         (
-            pd.DataFrame({"target": ["v1", "v2", "v3", "v1"], "prediction": ["v3", "v2", "v3", "v2"]}),
+            pd.DataFrame(
+                {
+                    "target": ["v1", "v2", "v3", "v1"],
+                    "prediction": ["v3", "v2", "v3", "v2"],
+                }
+            ),
             column_mapping.ColumnMapping(),
             ClassificationPerformanceMetrics(
                 accuracy=0.5,
@@ -192,9 +275,24 @@ def test_classification_analyser_with_numeric_binary_data(
                 recall=0.6666666666666666,
                 f1=0.4444444444444444,
                 metrics_matrix={
-                    "v1": {"precision": 0.0, "recall": 0.0, "f1-score": 0.0, "support": 2},
-                    "v2": {"precision": 0.5, "recall": 1.0, "f1-score": 0.6666666666666666, "support": 1},
-                    "v3": {"precision": 0.5, "recall": 1.0, "f1-score": 0.6666666666666666, "support": 1},
+                    "v1": {
+                        "precision": 0.0,
+                        "recall": 0.0,
+                        "f1-score": 0.0,
+                        "support": 2,
+                    },
+                    "v2": {
+                        "precision": 0.5,
+                        "recall": 1.0,
+                        "f1-score": 0.6666666666666666,
+                        "support": 1,
+                    },
+                    "v3": {
+                        "precision": 0.5,
+                        "recall": 1.0,
+                        "f1-score": 0.6666666666666666,
+                        "support": 1,
+                    },
                     "accuracy": 0.5,
                     "macro avg": {
                         "precision": 0.3333333333333333,
@@ -202,9 +300,16 @@ def test_classification_analyser_with_numeric_binary_data(
                         "f1-score": 0.4444444444444444,
                         "support": 4,
                     },
-                    "weighted avg": {"precision": 0.25, "recall": 0.5, "f1-score": 0.3333333333333333, "support": 4},
+                    "weighted avg": {
+                        "precision": 0.25,
+                        "recall": 0.5,
+                        "f1-score": 0.3333333333333333,
+                        "support": 4,
+                    },
                 },
-                confusion_matrix=ConfusionMatrix(labels=["v1", "v2", "v3"], values=[[0, 1, 1], [0, 1, 0], [0, 0, 1]]),
+                confusion_matrix=ConfusionMatrix(
+                    labels=["v1", "v2", "v3"], values=[[0, 1, 1], [0, 1, 0], [0, 0, 1]]
+                ),
                 confusion_by_classes={
                     "v1": {"tp": 0, "tn": 2, "fp": 0, "fn": 2},
                     "v2": {"tp": 1, "tn": 2, "fp": 1, "fn": 0},
@@ -214,7 +319,12 @@ def test_classification_analyser_with_numeric_binary_data(
         ),
         # non-binary classification, fewer value types in target
         (
-            pd.DataFrame({"target": ["v1", "v1", "v1", "v1"], "prediction": ["v1", "v2", "v3", "v4"]}),
+            pd.DataFrame(
+                {
+                    "target": ["v1", "v1", "v1", "v1"],
+                    "prediction": ["v1", "v2", "v3", "v4"],
+                }
+            ),
             column_mapping.ColumnMapping(),
             ClassificationPerformanceMetrics(
                 accuracy=0.25,
@@ -222,16 +332,47 @@ def test_classification_analyser_with_numeric_binary_data(
                 recall=0.0625,
                 f1=0.1,
                 metrics_matrix={
-                    "v1": {"precision": 1.0, "recall": 0.25, "f1-score": 0.4, "support": 4},
-                    "v2": {"precision": 0.0, "recall": 0.0, "f1-score": 0.0, "support": 0},
-                    "v3": {"precision": 0.0, "recall": 0.0, "f1-score": 0.0, "support": 0},
-                    "v4": {"precision": 0.0, "recall": 0.0, "f1-score": 0.0, "support": 0},
+                    "v1": {
+                        "precision": 1.0,
+                        "recall": 0.25,
+                        "f1-score": 0.4,
+                        "support": 4,
+                    },
+                    "v2": {
+                        "precision": 0.0,
+                        "recall": 0.0,
+                        "f1-score": 0.0,
+                        "support": 0,
+                    },
+                    "v3": {
+                        "precision": 0.0,
+                        "recall": 0.0,
+                        "f1-score": 0.0,
+                        "support": 0,
+                    },
+                    "v4": {
+                        "precision": 0.0,
+                        "recall": 0.0,
+                        "f1-score": 0.0,
+                        "support": 0,
+                    },
                     "accuracy": 0.25,
-                    "macro avg": {"precision": 0.25, "recall": 0.0625, "f1-score": 0.1, "support": 4},
-                    "weighted avg": {"precision": 1.0, "recall": 0.25, "f1-score": 0.4, "support": 4},
+                    "macro avg": {
+                        "precision": 0.25,
+                        "recall": 0.0625,
+                        "f1-score": 0.1,
+                        "support": 4,
+                    },
+                    "weighted avg": {
+                        "precision": 1.0,
+                        "recall": 0.25,
+                        "f1-score": 0.4,
+                        "support": 4,
+                    },
                 },
                 confusion_matrix=ConfusionMatrix(
-                    labels=["v1", "v2", "v3", "v4"], values=[[1, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
+                    labels=["v1", "v2", "v3", "v4"],
+                    values=[[1, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]],
                 ),
                 confusion_by_classes={
                     "v1": {"tp": 1, "tn": 0, "fp": 0, "fn": 3},
@@ -265,20 +406,33 @@ def test_classification_performance_metrics_with_reference_data(
     (
         # simple target names mapping
         (
-            pd.DataFrame({"target": [1, 0, 1, 1, 0, 1], "prediction": [1, 1, 0, 1, 0, 1]}),
+            pd.DataFrame(
+                {"target": [1, 0, 1, 1, 0, 1], "prediction": [1, 1, 0, 1, 0, 1]}
+            ),
             column_mapping.ColumnMapping(target_names=["false", "true"]),
         ),
         # test with mapping for target and prediction and target names
         (
-            pd.DataFrame({"another_target": [1, 0, 1, 1, 0, 1], "another_prediction": [1, 1, 0, 1, 0, 1]}),
+            pd.DataFrame(
+                {
+                    "another_target": [1, 0, 1, 1, 0, 1],
+                    "another_prediction": [1, 1, 0, 1, 0, 1],
+                }
+            ),
             column_mapping.ColumnMapping(
-                target="another_target", prediction="another_prediction", target_names=["false", "true"]
+                target="another_target",
+                prediction="another_prediction",
+                target_names=["false", "true"],
             ),
         ),
         # second class is in prediction column only
         (
-            pd.DataFrame({"another_target": [0, 0, 0, 0, 0], "prediction": [0, 1, 0, 0, 0]}),
-            column_mapping.ColumnMapping(target="another_target", target_names=["false", "true"]),
+            pd.DataFrame(
+                {"another_target": [0, 0, 0, 0, 0], "prediction": [0, 1, 0, 0, 0]}
+            ),
+            column_mapping.ColumnMapping(
+                target="another_target", target_names=["false", "true"]
+            ),
         ),
     ),
 )
@@ -365,8 +519,18 @@ def test_missed_datasets_cases(
         ),
         # no data mapping but target and prediction columns have not default names
         (
-            pd.DataFrame({"another_target": [0, 1, 1, 0, 1], "another_prediction": [1, 1, 0, 0, 1]}),
-            pd.DataFrame({"another_target": [0, 1, 1, 0, 1], "another_prediction": [1, 1, 0, 0, 1]}),
+            pd.DataFrame(
+                {
+                    "another_target": [0, 1, 1, 0, 1],
+                    "another_prediction": [1, 1, 0, 0, 1],
+                }
+            ),
+            pd.DataFrame(
+                {
+                    "another_target": [0, 1, 1, 0, 1],
+                    "another_prediction": [1, 1, 0, 0, 1],
+                }
+            ),
             column_mapping.ColumnMapping(),
         ),
     ),

@@ -9,7 +9,9 @@ from .helpers import check_section_without_calculation_results
 
 
 def test_no_calculation_results() -> None:
-    check_section_without_calculation_results(CatTargetDriftProfileSection, "cat_target_drift")
+    check_section_without_calculation_results(
+        CatTargetDriftProfileSection, "cat_target_drift"
+    )
 
 
 @pytest.mark.parametrize(
@@ -37,7 +39,9 @@ def test_profile_section_with_calculated_results(reference_data, current_data) -
     is_target_data_presented = "target" in reference_data
     is_prediction_data_presented = "prediction" in reference_data
 
-    section_result = calculate_section_results(CatTargetDriftProfileSection, reference_data, current_data)
+    section_result = calculate_section_results(
+        CatTargetDriftProfileSection, reference_data, current_data
+    )
     check_profile_section_result_common_part(section_result, "cat_target_drift")
     result_data = section_result["data"]
 
@@ -74,4 +78,6 @@ def test_profile_section_with_calculated_results(reference_data, current_data) -
 )
 def test_profile_section_with_missed_data(reference_data, current_data) -> None:
     with pytest.raises(ValueError):
-        calculate_section_results(CatTargetDriftProfileSection, reference_data, current_data)
+        calculate_section_results(
+            CatTargetDriftProfileSection, reference_data, current_data
+        )

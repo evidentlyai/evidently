@@ -45,7 +45,16 @@ class BaseRegressionPerformanceMetricsTest(BaseCheckValueTest, ABC):
         else:
             self.metric = RegressionQualityMetric()
 
-        super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
+        super().__init__(
+            eq=eq,
+            gt=gt,
+            gte=gte,
+            is_in=is_in,
+            lt=lt,
+            lte=lte,
+            not_eq=not_eq,
+            not_in=not_in,
+        )
 
 
 class TestValueMAE(BaseRegressionPerformanceMetricsTest):
@@ -105,7 +114,9 @@ class TestValueMAPE(BaseRegressionPerformanceMetricsTest):
         ref_mae = self.metric.get_result().mean_abs_perc_error_ref
         if ref_mae is not None:
             return TestValueCondition(eq=approx(ref_mae, relative=0.1))
-        return TestValueCondition(lt=self.metric.get_result().mean_abs_perc_error_default)
+        return TestValueCondition(
+            lt=self.metric.get_result().mean_abs_perc_error_default
+        )
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().mean_abs_perc_error
@@ -121,8 +132,12 @@ class TestValueMAPERenderer(TestRenderer):
         metric_result = obj.metric.get_result()
         base["parameters"]["condition"] = obj.get_condition().as_dict()
         base["parameters"]["mean_abs_perc_error"] = metric_result.mean_abs_perc_error
-        base["parameters"]["mean_abs_perc_error_ref"] = metric_result.mean_abs_perc_error_ref
-        base["parameters"]["mean_abs_perc_error_default"] = metric_result.mean_abs_perc_error_default
+        base["parameters"][
+            "mean_abs_perc_error_ref"
+        ] = metric_result.mean_abs_perc_error_ref
+        base["parameters"][
+            "mean_abs_perc_error_default"
+        ] = metric_result.mean_abs_perc_error_default
         return base
 
     def render_html(self, obj: TestValueMAPE) -> TestHtmlInfo:
@@ -198,7 +213,9 @@ class TestValueMeanError(BaseRegressionPerformanceMetricsTest):
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
             return self.condition
-        return TestValueCondition(eq=approx(0, absolute=0.1 * self.metric.get_result().me_default_sigma))
+        return TestValueCondition(
+            eq=approx(0, absolute=0.1 * self.metric.get_result().me_default_sigma)
+        )
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().mean_error
@@ -223,9 +240,13 @@ class TestValueMeanErrorRenderer(TestRenderer):
         hist_ref = None
         if "reference" in obj.metric.get_result().me_hist_for_plot.keys():
             hist_ref = me_hist_for_plot["reference"]
-        fig = plot_distr(hist_curr=hist_curr, hist_ref=hist_ref, color_options=self.color_options)
+        fig = plot_distr(
+            hist_curr=hist_curr, hist_ref=hist_ref, color_options=self.color_options
+        )
         fig = plot_check(fig, obj.get_condition(), color_options=self.color_options)
-        fig = plot_metric_value(fig, obj.metric.get_result().mean_error, "current mean error")
+        fig = plot_metric_value(
+            fig, obj.metric.get_result().mean_error, "current mean error"
+        )
         info.with_details("", plotly_figure(title="", figure=fig))
         return info
 
@@ -268,7 +289,9 @@ class TestValueAbsMaxErrorRenderer(TestRenderer):
         if "reference" in obj.metric.get_result().me_hist_for_plot.keys():
             hist_ref = me_hist_for_plot["reference"]
 
-        fig = plot_distr(hist_curr=hist_curr, hist_ref=hist_ref, color_options=self.color_options)
+        fig = plot_distr(
+            hist_curr=hist_curr, hist_ref=hist_ref, color_options=self.color_options
+        )
         info.with_details("", plotly_figure(title="", figure=fig))
         return info
 
@@ -288,7 +311,9 @@ class TestValueR2Score(BaseRegressionPerformanceMetricsTest):
         return self.metric.get_result().r2_score
 
     def get_description(self, value: Numeric) -> str:
-        return f"The R2 score is {value:.3}. The test threshold is {self.get_condition()}."
+        return (
+            f"The R2 score is {value:.3}. The test threshold is {self.get_condition()}."
+        )
 
 
 @default_renderer(wrap_type=TestValueR2Score)

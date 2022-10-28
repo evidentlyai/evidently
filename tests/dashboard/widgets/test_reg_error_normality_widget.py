@@ -19,7 +19,9 @@ def widget() -> RegErrorNormalityWidget:
     return widget
 
 
-def test_reg_error_normality_widget_analyzer_list(widget: RegErrorNormalityWidget) -> None:
+def test_reg_error_normality_widget_analyzer_list(
+    widget: RegErrorNormalityWidget,
+) -> None:
     assert widget.analyzers() == [RegressionPerformanceAnalyzer]
 
 
@@ -57,7 +59,10 @@ def test_reg_error_normality_widget_simple_case(
     analyzer.options_provider = widget.options_provider
     analyzer_results = analyzer.calculate(reference_data, current_data, data_mapping)
     result = widget.calculate(
-        reference_data, current_data, data_mapping, {RegressionPerformanceAnalyzer: analyzer_results}
+        reference_data,
+        current_data,
+        data_mapping,
+        {RegressionPerformanceAnalyzer: analyzer_results},
     )
 
     if expected_result is not None:

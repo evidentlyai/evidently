@@ -95,15 +95,23 @@ from evidently.report import Report
                     "my_target": [0, 0, 0],
                 }
             ),
-            ColumnMapping(target="my_target", prediction=["label_a", "label_b", "label_c"]),
+            ColumnMapping(
+                target="my_target", prediction=["label_a", "label_b", "label_c"]
+            ),
         ),
     ),
 )
 def test_dataset_drift_metric_no_errors(
-    current_dataset: pd.DataFrame, reference_dataset: pd.DataFrame, data_mapping: ColumnMapping
+    current_dataset: pd.DataFrame,
+    reference_dataset: pd.DataFrame,
+    data_mapping: ColumnMapping,
 ) -> None:
     report = Report(metrics=[DatasetDriftMetric()])
-    report.run(current_data=current_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
+    report.run(
+        current_data=current_dataset,
+        reference_data=reference_dataset,
+        column_mapping=data_mapping,
+    )
     assert report.show()
     assert report.json()
 
@@ -121,12 +129,16 @@ def test_dataset_drift_metric_value_error() -> None:
     report = Report(metrics=[DatasetDriftMetric()])
 
     with pytest.raises(ValueError):
-        report.run(current_data=test_data, reference_data=None, column_mapping=data_mapping)
+        report.run(
+            current_data=test_data, reference_data=None, column_mapping=data_mapping
+        )
         report.json()
 
     with pytest.raises(ValueError):
         # noinspection PyTypeChecker
-        report.run(current_data=None, reference_data=test_data, column_mapping=data_mapping)
+        report.run(
+            current_data=None, reference_data=test_data, column_mapping=data_mapping
+        )
         report.json()
 
 
@@ -145,7 +157,9 @@ def test_dataset_drift_metric_with_options() -> None:
             "prediction": [1, 0, 1],
         }
     )
-    report = Report(metrics=[DatasetDriftMetric(options=DataDriftOptions(threshold=0.7))])
+    report = Report(
+        metrics=[DatasetDriftMetric(options=DataDriftOptions(threshold=0.7))]
+    )
     report.run(current_data=current_dataset, reference_data=reference_dataset)
     assert report.show()
     assert report.json()
@@ -166,7 +180,9 @@ def test_dataset_drift_metric_json_output() -> None:
             "prediction": [1, 0, 1, 0],
         }
     )
-    report = Report(metrics=[DatasetDriftMetric(options=DataDriftOptions(threshold=0.7))])
+    report = Report(
+        metrics=[DatasetDriftMetric(options=DataDriftOptions(threshold=0.7))]
+    )
     report.run(current_data=current_dataset, reference_data=reference_dataset)
     result_json = report.json()
     result = json.loads(result_json)["metrics"]["DatasetDriftMetric"]

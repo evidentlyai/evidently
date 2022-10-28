@@ -19,7 +19,9 @@ def test_data_integrity_metrics() -> None:
     data_mapping = ColumnMapping()
     metric = DataIntegrityMetrics()
     result = metric.calculate(
-        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+        data=InputData(
+            current_data=test_dataset, reference_data=None, column_mapping=data_mapping
+        )
     )
     assert result is not None
     assert result.current.number_of_columns == 4
@@ -34,10 +36,16 @@ def test_dataset_missing_values_metrics_with_report() -> None:
     )
     data_mapping = ColumnMapping()
     report = Report(metrics=[DataIntegrityMetrics()])
-    report.run(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+    report.run(
+        current_data=test_dataset, reference_data=None, column_mapping=data_mapping
+    )
     assert report.show()
     assert report.json()
 
-    report.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=data_mapping)
+    report.run(
+        current_data=test_dataset,
+        reference_data=test_dataset,
+        column_mapping=data_mapping,
+    )
     assert report.show()
     assert report.json()

@@ -61,10 +61,14 @@ class ColumnDriftMetric(Metric[ColumnDriftMetricResults]):
             raise ValueError("Reference dataset should be present")
 
         if self.column_name not in data.current_data:
-            raise ValueError(f"Cannot find column '{self.column_name}' in current dataset")
+            raise ValueError(
+                f"Cannot find column '{self.column_name}' in current dataset"
+            )
 
         if self.column_name not in data.reference_data:
-            raise ValueError(f"Cannot find column '{self.column_name}' in reference dataset")
+            raise ValueError(
+                f"Cannot find column '{self.column_name}' in reference dataset"
+            )
 
         dataset_columns = process_columns(data.reference_data, data.column_mapping)
         drift_result = get_one_column_drift(
@@ -106,7 +110,11 @@ class ColumnDriftMetricRenderer(MetricRenderer):
         figures = []
 
         # fig_json = fig.to_plotly_json()
-        if result.current_scatter is not None and result.plot_shape is not None and result.x_name is not None:
+        if (
+            result.current_scatter is not None
+            and result.plot_shape is not None
+            and result.x_name is not None
+        ):
             scatter_fig = plot_scatter_for_data_drift(
                 curr_y=result.current_scatter[result.column_name],
                 curr_x=result.current_scatter[result.x_name],

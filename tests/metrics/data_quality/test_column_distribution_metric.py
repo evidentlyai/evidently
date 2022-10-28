@@ -34,7 +34,11 @@ def test_column_distribution_metric_success(
 ) -> None:
     data_mapping = ColumnMapping()
     result = metric.calculate(
-        data=InputData(current_data=current_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
+        data=InputData(
+            current_data=current_dataset,
+            reference_data=reference_dataset,
+            column_mapping=data_mapping,
+        )
     )
     assert result == expected_result
 
@@ -43,7 +47,12 @@ def test_column_distribution_metric_success(
     "current_dataset, reference_dataset, metric, error_message",
     (
         (
-            pd.DataFrame({"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 2, 2, 432]}),
+            pd.DataFrame(
+                {
+                    "category_feature": ["n", "d", "p", "n"],
+                    "numerical_feature": [0, 2, 2, 432],
+                }
+            ),
             None,
             ColumnDistributionMetric(column_name="feature"),
             "Column 'feature' was not found in current data.",
@@ -65,7 +74,9 @@ def test_column_distribution_metric_value_error(
     with pytest.raises(ValueError) as error:
         metric.calculate(
             data=InputData(
-                current_data=current_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping()
+                current_data=current_dataset,
+                reference_data=reference_dataset,
+                column_mapping=ColumnMapping(),
             )
         )
 
@@ -79,7 +90,11 @@ def test_column_distribution_metric_value_error(
             pd.DataFrame({"col": [1, 2, 3]}),
             None,
             ColumnDistributionMetric(column_name="col"),
-            {"column_name": "col", "current": {"1": 1, "2": 1, "3": 1}, "reference": None},
+            {
+                "column_name": "col",
+                "current": {"1": 1, "2": 1, "3": 1},
+                "reference": None,
+            },
         ),
         (
             pd.DataFrame({"col1": [1, 2, 3], "col2": [10, 20, 3.5]}),
@@ -90,19 +105,32 @@ def test_column_distribution_metric_value_error(
                 }
             ),
             ColumnDistributionMetric(column_name="col1"),
-            {"column_name": "col1", "current": {"1": 1, "2": 1, "3": 1}, "reference": {"10.0": 1, "20.0": 1, "3.5": 1}},
+            {
+                "column_name": "col1",
+                "current": {"1": 1, "2": 1, "3": 1},
+                "reference": {"10.0": 1, "20.0": 1, "3.5": 1},
+            },
         ),
     ),
 )
 def test_column_distribution_metric_with_report(
-    current_data: pd.DataFrame, reference_data: pd.DataFrame, metric: ColumnDistributionMetric, expected_json: dict
+    current_data: pd.DataFrame,
+    reference_data: pd.DataFrame,
+    metric: ColumnDistributionMetric,
+    expected_json: dict,
 ) -> None:
     report = Report(metrics=[metric])
-    report.run(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
+    report.run(
+        current_data=current_data,
+        reference_data=reference_data,
+        column_mapping=ColumnMapping(),
+    )
     assert report.show()
     json_result = report.json()
     assert len(json_result) > 0
     parsed_json_result = json.loads(json_result)
     assert "metrics" in parsed_json_result
     assert "ColumnDistributionMetric" in parsed_json_result["metrics"]
-    assert json.loads(json_result)["metrics"]["ColumnDistributionMetric"] == expected_json
+    assert (
+        json.loads(json_result)["metrics"]["ColumnDistributionMetric"] == expected_json
+    )

@@ -2,6 +2,7 @@
 # coding: utf-8
 from .anderson_darling_stattest import anderson_darling_test
 from .chisquare_stattest import chi_stat_test
+from .cosine_similarity import cosine_similarity_test
 from .cramer_von_mises_stattest import cramer_von_mises
 from .energy_distance import energy_dist_test
 from .fisher_exact_stattest import fisher_exact_test

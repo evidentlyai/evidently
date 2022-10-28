@@ -19,7 +19,9 @@ def widget() -> RegColoredPredActualWidget:
     return widget
 
 
-def test_reg_colored_pred_actual_widget_analyzer_list(widget: RegColoredPredActualWidget) -> None:
+def test_reg_colored_pred_actual_widget_analyzer_list(
+    widget: RegColoredPredActualWidget,
+) -> None:
     assert widget.analyzers() == [RegressionPerformanceAnalyzer]
 
 
@@ -57,7 +59,10 @@ def test_reg_colored_pred_actual_widget_simple_case(
     analyzer.options_provider = widget.options_provider
     analyzer_results = analyzer.calculate(reference_data, current_data, data_mapping)
     result = widget.calculate(
-        reference_data, current_data, data_mapping, {RegressionPerformanceAnalyzer: analyzer_results}
+        reference_data,
+        current_data,
+        data_mapping,
+        {RegressionPerformanceAnalyzer: analyzer_results},
     )
 
     if expected_result is not None:

@@ -57,7 +57,10 @@ def test_reg_error_distr_widget_simple_case(
     analyzer.options_provider = widget.options_provider
     analyzer_results = analyzer.calculate(reference_data, current_data, data_mapping)
     result = widget.calculate(
-        reference_data, current_data, data_mapping, {RegressionPerformanceAnalyzer: analyzer_results}
+        reference_data,
+        current_data,
+        data_mapping,
+        {RegressionPerformanceAnalyzer: analyzer_results},
     )
 
     if expected_result is not None:

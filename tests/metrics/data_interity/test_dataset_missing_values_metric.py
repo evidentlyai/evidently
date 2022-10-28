@@ -36,7 +36,9 @@ from evidently.report import Report
     ),
 )
 def test_dataset_missing_values_metric_with_report(
-    current_data: pd.DataFrame, reference_data: pd.DataFrame, metric: DatasetMissingValuesMetric
+    current_data: pd.DataFrame,
+    reference_data: pd.DataFrame,
+    metric: DatasetMissingValuesMetric,
 ) -> None:
     report = Report(metrics=[metric])
     report.run(current_data=current_data, reference_data=reference_data)
@@ -58,7 +60,9 @@ def test_dataset_missing_values_metric_different_null_values() -> None:
     data_mapping = ColumnMapping()
     metric = DatasetMissingValuesMetric()
     result = metric.calculate(
-        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+        data=InputData(
+            current_data=test_dataset, reference_data=None, column_mapping=data_mapping
+        )
     )
     assert result is not None
     # expect na values and an empty string as null-values
@@ -94,7 +98,9 @@ def test_dataset_missing_values_metric_different_null_values() -> None:
 
     metric = DatasetMissingValuesMetric(values=["n/a"], replace=False)
     result = metric.calculate(
-        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+        data=InputData(
+            current_data=test_dataset, reference_data=None, column_mapping=data_mapping
+        )
     )
     assert result is not None
     # expect n/a and other defaults as null-values
@@ -103,9 +109,13 @@ def test_dataset_missing_values_metric_different_null_values() -> None:
     assert result.reference is None
 
     # test custom list of null values, no default, but with Pandas nulls
-    metric = DatasetMissingValuesMetric(values=["", 0, "n/a", -9999, None], replace=True)
+    metric = DatasetMissingValuesMetric(
+        values=["", 0, "n/a", -9999, None], replace=True
+    )
     result = metric.calculate(
-        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+        data=InputData(
+            current_data=test_dataset, reference_data=None, column_mapping=data_mapping
+        )
     )
     assert result is not None
     assert result.current.number_of_different_nulls == 5
@@ -115,7 +125,9 @@ def test_dataset_missing_values_metric_different_null_values() -> None:
     # test custom list of null values and ignore pandas null values
     metric = DatasetMissingValuesMetric(values=["", 0, "n/a", -9999], replace=True)
     result = metric.calculate(
-        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+        data=InputData(
+            current_data=test_dataset, reference_data=None, column_mapping=data_mapping
+        )
     )
     assert result is not None
     assert result.current.number_of_different_nulls == 4
@@ -144,5 +156,9 @@ def test_dataset_missing_values_metrics_value_error(
 ) -> None:
     with pytest.raises(ValueError):
         metric.calculate(
-            data=InputData(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
+            data=InputData(
+                current_data=current_data,
+                reference_data=reference_data,
+                column_mapping=ColumnMapping(),
+            )
         )

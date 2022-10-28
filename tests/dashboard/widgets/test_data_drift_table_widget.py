@@ -10,15 +10,30 @@ from evidently.options import OptionsProvider
 
 
 def sample_data(feature1, feature2, feature3):
-    return [{"feature1": t[0], "feature2": t[1], "feature3": t[2]} for t in zip(feature1, feature2, feature3)]
+    return [
+        {"feature1": t[0], "feature2": t[1], "feature3": t[2]}
+        for t in zip(feature1, feature2, feature3)
+    ]
 
 
 @pytest.mark.parametrize(
     ["reference", "current", "column_mapping"],
     [
-        (sample_data([1, 1], [1, 1], [1, 1]), sample_data([1, 1], [1, 1], [1, 1]), ColumnMapping()),
-        (sample_data(["1", "1"], [1, 1], [1, 1]), sample_data(["1", "1"], [1, 1], [1, 1]), ColumnMapping()),
-        (sample_data([True, True], [1, 1], [1, 1]), sample_data([True, True], [1, 1], [1, 1]), ColumnMapping()),
+        (
+            sample_data([1, 1], [1, 1], [1, 1]),
+            sample_data([1, 1], [1, 1], [1, 1]),
+            ColumnMapping(),
+        ),
+        (
+            sample_data(["1", "1"], [1, 1], [1, 1]),
+            sample_data(["1", "1"], [1, 1], [1, 1]),
+            ColumnMapping(),
+        ),
+        (
+            sample_data([True, True], [1, 1], [1, 1]),
+            sample_data([True, True], [1, 1], [1, 1]),
+            ColumnMapping(),
+        ),
     ],
 )
 def test_data_drift_table_widget_no_exceptions(reference, current, column_mapping):
@@ -44,7 +59,12 @@ def test_test_data_drift_table_widget_with_date_column():
     analyzer = DataDriftAnalyzer()
     analyzer.options_provider = OptionsProvider()
     data = pd.DataFrame(
-        {"target": [2, 3, 4, 5, 6] * 200, "datetime": [datetime(year=3000 - i, month=1, day=5) for i in range(0, 1000)]}
+        {
+            "target": [2, 3, 4, 5, 6] * 200,
+            "datetime": [
+                datetime(year=3000 - i, month=1, day=5) for i in range(0, 1000)
+            ],
+        }
     )
     column_mapping = ColumnMapping(datetime="datetime")
     reference_data = data[:120]

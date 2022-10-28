@@ -24,10 +24,16 @@ class NoTargetPerformanceTestPreset(TestPreset):
     def generate_tests(self, data: InputData, columns: DatasetColumns):
         preset_tests: List = []
 
-        if columns.utility_columns.prediction is not None and isinstance(columns.utility_columns.prediction, str):
-            preset_tests.append(TestColumnValueDrift(column_name=columns.utility_columns.prediction))
+        if columns.utility_columns.prediction is not None and isinstance(
+            columns.utility_columns.prediction, str
+        ):
+            preset_tests.append(
+                TestColumnValueDrift(column_name=columns.utility_columns.prediction)
+            )
 
-        preset_tests.append(TestShareOfDriftedColumns(lt=data.current_data.shape[1] // 3))
+        preset_tests.append(
+            TestShareOfDriftedColumns(lt=data.current_data.shape[1] // 3)
+        )
         preset_tests.append(TestColumnsType())
         preset_tests.append(TestAllColumnsShareOfNulls())
         preset_tests.append(TestNumColumnsOutOfRangeValues())

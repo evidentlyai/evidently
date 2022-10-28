@@ -21,21 +21,38 @@ def widget() -> DataQualityFeaturesWidget:
 
 
 def sample_data(feature1, feature2, feature3):
-    return [{"feature1": t[0], "feature2": t[1], "feature3": t[2]} for t in zip(feature1, feature2, feature3)]
+    return [
+        {"feature1": t[0], "feature2": t[1], "feature3": t[2]}
+        for t in zip(feature1, feature2, feature3)
+    ]
 
 
 @pytest.mark.parametrize(
     "reference, current, column_mapping",
     [
-        (sample_data([1, 1], [1, 1], [1, 1]), sample_data([1, 1], [1, 1], [1, 1]), ColumnMapping()),
-        (sample_data(["1", "1"], [1, 1], [1, 1]), sample_data(["1", "1"], [1, 1], [1, 1]), ColumnMapping()),
-        (sample_data([True, True], [1, 1], [1, 1]), sample_data([True, True], [1, 1], [1, 1]), ColumnMapping()),
+        (
+            sample_data([1, 1], [1, 1], [1, 1]),
+            sample_data([1, 1], [1, 1], [1, 1]),
+            ColumnMapping(),
+        ),
+        (
+            sample_data(["1", "1"], [1, 1], [1, 1]),
+            sample_data(["1", "1"], [1, 1], [1, 1]),
+            ColumnMapping(),
+        ),
+        (
+            sample_data([True, True], [1, 1], [1, 1]),
+            sample_data([True, True], [1, 1], [1, 1]),
+            ColumnMapping(),
+        ),
     ],
 )
 def test_data_profile_widget_no_exceptions(reference, current, column_mapping):
     analyzer = DataQualityAnalyzer()
     analyzer.options_provider = OptionsProvider()
-    results = analyzer.calculate(pd.DataFrame(reference), pd.DataFrame(current), column_mapping)
+    results = analyzer.calculate(
+        pd.DataFrame(reference), pd.DataFrame(current), column_mapping
+    )
 
     widget = DataQualityFeaturesWidget("test")
     widget.options_provider = OptionsProvider()
@@ -87,7 +104,9 @@ def test_data_profile_widget_regression_data():
     )
 
 
-def test_data_quality_features_widget_analyzer_list(widget: DataQualityFeaturesWidget) -> None:
+def test_data_quality_features_widget_analyzer_list(
+    widget: DataQualityFeaturesWidget,
+) -> None:
     assert widget.analyzers() == [DataQualityAnalyzer]
 
 
@@ -136,7 +155,12 @@ def test_data_quality_features_widget(
     analyzer = DataQualityAnalyzer()
     analyzer.options_provider = widget.options_provider
     analyzer_results = analyzer.calculate(reference_data, current_data, data_mapping)
-    result = widget.calculate(reference_data, current_data, data_mapping, {DataQualityAnalyzer: analyzer_results})
+    result = widget.calculate(
+        reference_data,
+        current_data,
+        data_mapping,
+        {DataQualityAnalyzer: analyzer_results},
+    )
     assert result.type == expected_result.type
     assert result.title == expected_result.title
     assert result.size == expected_result.size

@@ -27,19 +27,37 @@ from evidently.report import Report
             "Prediction column should be present.",
         ),
         (
-            pd.DataFrame({"category_feature": ["a", "b", "c"], "target": [1, 2, 3], "prediction": [1, 2, 3]}),
+            pd.DataFrame(
+                {
+                    "category_feature": ["a", "b", "c"],
+                    "target": [1, 2, 3],
+                    "prediction": [1, 2, 3],
+                }
+            ),
             None,
             RegressionErrorBiasTable(columns=["category_feature"], top_error=0.5),
             "Cannot calculate error bias - top error should be in range (0, 0.5).",
         ),
         (
-            pd.DataFrame({"category_feature": ["a", "b", "c"], "target": [1, 2, 3], "prediction": [1, 2, 3]}),
+            pd.DataFrame(
+                {
+                    "category_feature": ["a", "b", "c"],
+                    "target": [1, 2, 3],
+                    "prediction": [1, 2, 3],
+                }
+            ),
             None,
             RegressionErrorBiasTable(columns=["category_feature"], top_error=5),
             "Cannot calculate error bias - top error should be in range (0, 0.5).",
         ),
         (
-            pd.DataFrame({"category_feature": ["a", "b", "c"], "target": [1, 2, 3], "prediction": [1, 2, 3]}),
+            pd.DataFrame(
+                {
+                    "category_feature": ["a", "b", "c"],
+                    "target": [1, 2, 3],
+                    "prediction": [1, 2, 3],
+                }
+            ),
             None,
             RegressionErrorBiasTable(columns=["category_feature"], top_error=0),
             "Cannot calculate error bias - top error should be in range (0, 0.5).",
@@ -56,7 +74,11 @@ def test_regression_error_bias_table_value_errors(
 
     with pytest.raises(ValueError) as error:
         metric.calculate(
-            data=InputData(current_data=current_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
+            data=InputData(
+                current_data=current_dataset,
+                reference_data=reference_dataset,
+                column_mapping=data_mapping,
+            )
         )
 
     assert error.value.args[0] == error_message
@@ -80,7 +102,13 @@ def test_regression_error_bias_table_value_errors(
             },
         ),
         (
-            pd.DataFrame({"target": [1, np.NaN, 3], "prediction": [1, 2, 3], "feature": [np.NaN, "a", np.NaN]}),
+            pd.DataFrame(
+                {
+                    "target": [1, np.NaN, 3],
+                    "prediction": [1, 2, 3],
+                    "feature": [np.NaN, "a", np.NaN],
+                }
+            ),
             pd.DataFrame(
                 {
                     "target": [10, 20, 3.5],
@@ -114,14 +142,23 @@ def test_regression_error_bias_table_value_errors(
     ),
 )
 def test_regression_error_bias_table_with_report(
-    current_data: pd.DataFrame, reference_data: pd.DataFrame, metric: RegressionErrorBiasTable, expected_json: dict
+    current_data: pd.DataFrame,
+    reference_data: pd.DataFrame,
+    metric: RegressionErrorBiasTable,
+    expected_json: dict,
 ) -> None:
     report = Report(metrics=[metric])
-    report.run(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
+    report.run(
+        current_data=current_data,
+        reference_data=reference_data,
+        column_mapping=ColumnMapping(),
+    )
     assert report.show()
     json_result = report.json()
     assert len(json_result) > 0
     parsed_json_result = json.loads(json_result)
     assert "metrics" in parsed_json_result
     assert "RegressionErrorBiasTable" in parsed_json_result["metrics"]
-    assert json.loads(json_result)["metrics"]["RegressionErrorBiasTable"] == expected_json
+    assert (
+        json.loads(json_result)["metrics"]["RegressionErrorBiasTable"] == expected_json
+    )

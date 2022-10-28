@@ -60,7 +60,9 @@ def classification_performance_metrics(
         recall=avg_recall,
         f1=avg_f1,
         metrics_matrix=metrics_matrix,
-        confusion_matrix=ConfusionMatrix(labels=labels, values=confusion_matrix.tolist()),
+        confusion_matrix=ConfusionMatrix(
+            labels=labels, values=confusion_matrix.tolist()
+        ),
         confusion_by_classes=confusion_by_classes,
     )
 
@@ -80,7 +82,9 @@ def _calculate_performance_metrics(
         target_and_preds += prediction_column
     data.replace([np.inf, -np.inf], np.nan, inplace=True)
     data.dropna(axis=0, how="any", inplace=True, subset=target_and_preds)
-    return classification_performance_metrics(data[target_column], data[prediction_column], target_names)
+    return classification_performance_metrics(
+        data[target_column], data[prediction_column], target_names
+    )
 
 
 class ClassificationPerformanceAnalyzer(Analyzer):
@@ -89,7 +93,10 @@ class ClassificationPerformanceAnalyzer(Analyzer):
         return analyzer_results[ClassificationPerformanceAnalyzer]
 
     def calculate(
-        self, reference_data: pd.DataFrame, current_data: Optional[pd.DataFrame], column_mapping: ColumnMapping
+        self,
+        reference_data: pd.DataFrame,
+        current_data: Optional[pd.DataFrame],
+        column_mapping: ColumnMapping,
     ) -> ClassificationPerformanceAnalyzerResults:
         if reference_data is None:
             raise ValueError("reference_data should be present")

@@ -50,7 +50,9 @@ class Metric(Generic[TResult]):
         if isinstance(result, ErrorResult):
             raise result.exception
         if result is None:
-            raise ValueError(f"No result found for metric {self} of type {type(self).__name__}")
+            raise ValueError(
+                f"No result found for metric {self} of type {type(self).__name__}"
+            )
         return result
 
     def get_parameters(self) -> tuple:

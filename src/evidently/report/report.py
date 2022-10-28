@@ -30,7 +30,9 @@ class Report(Display):
     metrics: List[Union[Metric, MetricPreset, BaseGenerator]]
 
     def __init__(
-        self, metrics: List[Union[Metric, MetricPreset, BaseGenerator]], color_options: Optional[ColorOptions] = None
+        self,
+        metrics: List[Union[Metric, MetricPreset, BaseGenerator]],
+        color_options: Optional[ColorOptions] = None,
     ):
         super().__init__(color_options)
         # just save all metrics and metric presets
@@ -71,9 +73,13 @@ class Report(Display):
             elif isinstance(item, MetricPreset):
                 metrics = []
 
-                for metric_item in item.generate_metrics(data=data, columns=self._columns_info):
+                for metric_item in item.generate_metrics(
+                    data=data, columns=self._columns_info
+                ):
                     if isinstance(metric_item, BaseGenerator):
-                        metrics.extend(metric_item.generate(columns_info=self._columns_info))
+                        metrics.extend(
+                            metric_item.generate(columns_info=self._columns_info)
+                        )
 
                     else:
                         metrics.append(metric_item)
@@ -87,7 +93,9 @@ class Report(Display):
                 self._inner_suite.add_metric(item)
 
             else:
-                raise ValueError("Incorrect item instead of a metric or metric preset was passed to Report")
+                raise ValueError(
+                    "Incorrect item instead of a metric or metric preset was passed to Report"
+                )
 
         self._inner_suite.verify()
         self._inner_suite.run_calculate(data)
@@ -95,7 +103,9 @@ class Report(Display):
     def as_dict(self) -> dict:
         metrics_dicts = {}
         for metric in self._first_level_metrics:
-            renderer = find_metric_renderer(type(metric), self._inner_suite.context.renderers)
+            renderer = find_metric_renderer(
+                type(metric), self._inner_suite.context.renderers
+            )
             metrics_dicts[metric.get_id()] = renderer.render_json(metric)
         return dict(
             timestamp=str(datetime.now()),
@@ -107,7 +117,9 @@ class Report(Display):
         additional_graphs = []
 
         for test in self._first_level_metrics:
-            renderer = find_metric_renderer(type(test), self._inner_suite.context.renderers)
+            renderer = find_metric_renderer(
+                type(test), self._inner_suite.context.renderers
+            )
             # set the color scheme from the report for each render
             renderer.color_options = self.color_options
             html_info = renderer.render_html(test)
@@ -115,10 +127,16 @@ class Report(Display):
             for info_item in html_info:
                 for additional_graph in info_item.get_additional_graphs():
                     if isinstance(additional_graph, AdditionalGraphInfo):
-                        additional_graphs.append(DetailsInfo("", additional_graph.params, additional_graph.id))
+                        additional_graphs.append(
+                            DetailsInfo(
+                                "", additional_graph.params, additional_graph.id
+                            )
+                        )
 
                     else:
-                        additional_graphs.append(DetailsInfo("", additional_graph, additional_graph.id))
+                        additional_graphs.append(
+                            DetailsInfo("", additional_graph, additional_graph.id)
+                        )
 
             metrics_results.extend(html_info)
 
@@ -126,7 +144,9 @@ class Report(Display):
             "evidently_dashboard_" + str(uuid.uuid4()).replace("-", ""),
             DashboardInfo("Report", widgets=[result for result in metrics_results]),
             {
-                f"{item.id}": dataclasses.asdict(item.info) if dataclasses.is_dataclass(item.info) else item.info
+                f"{item.id}": dataclasses.asdict(item.info)
+                if dataclasses.is_dataclass(item.info)
+                else item.info
                 for item in additional_graphs
             },
         )

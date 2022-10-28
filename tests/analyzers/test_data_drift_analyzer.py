@@ -17,7 +17,10 @@ def data_drift_analyzer() -> DataDriftAnalyzer:
 
 
 def sample_data(feature1, feature2, feature3):
-    return [{"feature1": t[0], "feature2": t[1], "feature3": t[2]} for t in zip(feature1, feature2, feature3)]
+    return [
+        {"feature1": t[0], "feature2": t[1], "feature3": t[2]}
+        for t in zip(feature1, feature2, feature3)
+    ]
 
 
 @pytest.mark.parametrize(
@@ -34,7 +37,9 @@ def test_data_drift_analyzer_no_exceptions(reference, current, column_mapping):
     analyzer.calculate(pd.DataFrame(reference), pd.DataFrame(current), column_mapping)
 
 
-def test_data_drift_analyzer_as_dict_format(data_drift_analyzer: DataDriftAnalyzer) -> None:
+def test_data_drift_analyzer_as_dict_format(
+    data_drift_analyzer: DataDriftAnalyzer,
+) -> None:
     test_data = pd.DataFrame(
         {
             "target": [1, 2, 3, 4],
@@ -48,15 +53,24 @@ def test_data_drift_analyzer_as_dict_format(data_drift_analyzer: DataDriftAnalyz
 
     data_columns = ColumnMapping()
     data_columns.numerical_features = ["numerical_feature_1", "numerical_feature_2"]
-    data_columns.categorical_features = ["categorical_feature_1", "categorical_feature_2"]
+    data_columns.categorical_features = [
+        "categorical_feature_1",
+        "categorical_feature_2",
+    ]
     data_columns.target_names = ["drift_target"]
     result = data_drift_analyzer.calculate(test_data[:2], test_data, data_columns)
     assert result.options is not None
     assert result.columns is not None
     # check features in results
     assert result.metrics.number_of_columns == 5
-    assert result.columns.cat_feature_names == ["categorical_feature_1", "categorical_feature_2"]
-    assert result.columns.num_feature_names == ["numerical_feature_1", "numerical_feature_2"]
+    assert result.columns.cat_feature_names == [
+        "categorical_feature_1",
+        "categorical_feature_2",
+    ]
+    assert result.columns.num_feature_names == [
+        "numerical_feature_1",
+        "numerical_feature_2",
+    ]
     assert "numerical_feature_1" in result.metrics.drift_by_columns
     assert "numerical_feature_2" in result.metrics.drift_by_columns
     assert "categorical_feature_1" in result.metrics.drift_by_columns
@@ -89,10 +103,13 @@ def test_data_drift_analyzer_with_different_values_in_reference_and_current_data
     )
 
     data_columns = ColumnMapping(
-        categorical_features=["categorical_feature_1", "categorical_feature_2"], target="target"
+        categorical_features=["categorical_feature_1", "categorical_feature_2"],
+        target="target",
     )
     result = data_drift_analyzer.calculate(
-        current_data=curr_test_data, reference_data=ref_test_data, column_mapping=data_columns
+        current_data=curr_test_data,
+        reference_data=ref_test_data,
+        column_mapping=data_columns,
     )
     assert result.options is not None
     assert result.columns is not None
@@ -172,7 +189,8 @@ def test_data_drift_analyzer_with_different_values_in_reference_and_current_data
             pd.DataFrame(
                 {
                     "target": [1, 2, 3, 4, 5] * 1000,
-                    "categorical_feature": ["test1", "test2", "test3", "test4", "test5"] * 1000,
+                    "categorical_feature": ["test1", "test2", "test3", "test4", "test5"]
+                    * 1000,
                 }
             ),
             pd.DataFrame(

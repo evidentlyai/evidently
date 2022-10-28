@@ -16,7 +16,9 @@ def test_data_quality_quantile_metric_success() -> None:
     data_mapping = ColumnMapping()
     metric = ColumnQuantileMetric(column_name="numerical_feature", quantile=0.5)
     result = metric.calculate(
-        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+        data=InputData(
+            current_data=test_dataset, reference_data=None, column_mapping=data_mapping
+        )
     )
     assert result is not None
     assert result.quantile == 0.5
@@ -68,7 +70,11 @@ def test_data_quality_quantile_metric_value_errors(
 
     with pytest.raises(ValueError) as error:
         metric.calculate(
-            data=InputData(current_data=current_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
+            data=InputData(
+                current_data=current_dataset,
+                reference_data=reference_dataset,
+                column_mapping=data_mapping,
+            )
         )
 
     assert error.value.args[0] == error_message
@@ -79,7 +85,11 @@ def test_data_quality_quantile_metric_with_report() -> None:
     reference_data = pd.DataFrame({"numerical_feature": [0, 2, 2, 2, 0]})
     metric = ColumnQuantileMetric(column_name="numerical_feature", quantile=0.5)
     report = Report(metrics=[metric])
-    report.run(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
+    report.run(
+        current_data=current_data,
+        reference_data=reference_data,
+        column_mapping=ColumnMapping(),
+    )
     assert report.show()
     json_result = report.json()
     assert len(json_result) > 0

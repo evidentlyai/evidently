@@ -52,20 +52,32 @@ class TargetByFeaturesTable(Metric[TargetByFeaturesTableResults]):
         curr_predictions = None
         ref_predictions = None
         if prediction_name is not None:
-            curr_predictions = get_prediction_data(data.current_data, dataset_columns, data.column_mapping.pos_label)
-            ref_predictions = get_prediction_data(data.reference_data, dataset_columns, data.column_mapping.pos_label)
+            curr_predictions = get_prediction_data(
+                data.current_data, dataset_columns, data.column_mapping.pos_label
+            )
+            ref_predictions = get_prediction_data(
+                data.reference_data, dataset_columns, data.column_mapping.pos_label
+            )
 
         if self.columns is None:
-            columns = dataset_columns.num_feature_names + dataset_columns.cat_feature_names
+            columns = (
+                dataset_columns.num_feature_names + dataset_columns.cat_feature_names
+            )
         else:
             columns = list(
-                np.intersect1d(self.columns, dataset_columns.num_feature_names + dataset_columns.cat_feature_names)
+                np.intersect1d(
+                    self.columns,
+                    dataset_columns.num_feature_names
+                    + dataset_columns.cat_feature_names,
+                )
             )
         if data.column_mapping.task is not None:
             task = data.column_mapping.task
         else:
             if target_name is not None:
-                if curr_df[target_name].nunique() < 5 or is_string_dtype(curr_df[target_name]):
+                if curr_df[target_name].nunique() < 5 or is_string_dtype(
+                    curr_df[target_name]
+                ):
                     task = "classification"
                 else:
                     task = "regression"
@@ -112,21 +124,30 @@ class TargetByFeaturesTableRenderer(MetricRenderer):
             if target_name is not None:
                 parts.append({"title": "Target", "id": feature_name + "_target_values"})
                 if task == "regression":
-                    target_fig = self._get_regression_fig(feature_name, target_name, current_data, reference_data)
+                    target_fig = self._get_regression_fig(
+                        feature_name, target_name, current_data, reference_data
+                    )
                 else:
-                    target_fig = self._get_classification_fig(feature_name, target_name, current_data, reference_data)
+                    target_fig = self._get_classification_fig(
+                        feature_name, target_name, current_data, reference_data
+                    )
 
                 target_fig_json = json.loads(target_fig.to_json())
 
                 additional_graphs_data.append(
                     AdditionalGraphInfo(
                         feature_name + "_target_values",
-                        {"data": target_fig_json["data"], "layout": target_fig_json["layout"]},
+                        {
+                            "data": target_fig_json["data"],
+                            "layout": target_fig_json["layout"],
+                        },
                     )
                 )
 
             if curr_predictions is not None:
-                parts.append({"title": "Prediction", "id": feature_name + "_prediction_values"})
+                parts.append(
+                    {"title": "Prediction", "id": feature_name + "_prediction_values"}
+                )
                 if task == "regression":
                     preds_fig = self._get_regression_fig(
                         feature_name, "prediction_labels", current_data, reference_data
@@ -140,7 +161,10 @@ class TargetByFeaturesTableRenderer(MetricRenderer):
                 additional_graphs_data.append(
                     AdditionalGraphInfo(
                         feature_name + "_prediction_values",
-                        {"data": preds_fig_json["data"], "layout": preds_fig_json["layout"]},
+                        {
+                            "data": preds_fig_json["data"],
+                            "layout": preds_fig_json["layout"],
+                        },
                     )
                 )
 
@@ -167,9 +191,17 @@ class TargetByFeaturesTableRenderer(MetricRenderer):
             )
         ]
 
-    def _get_regression_fig(self, feature_name: str, main_column: str, curr_data: pd.DataFrame, ref_data: pd.DataFrame):
+    def _get_regression_fig(
+        self,
+        feature_name: str,
+        main_column: str,
+        curr_data: pd.DataFrame,
+        ref_data: pd.DataFrame,
+    ):
         color_options = ColorOptions()
-        fig = make_subplots(rows=1, cols=2, subplot_titles=("Current", "Reference"), shared_yaxes=True)
+        fig = make_subplots(
+            rows=1, cols=2, subplot_titles=("Current", "Reference"), shared_yaxes=True
+        )
         fig.add_trace(
             go.Scattergl(
                 x=curr_data[feature_name],
@@ -200,7 +232,11 @@ class TargetByFeaturesTableRenderer(MetricRenderer):
         return fig
 
     def _get_classification_fig(
-        self, feature_name: str, main_column: str, curr_data: pd.DataFrame, ref_data: pd.DataFrame
+        self,
+        feature_name: str,
+        main_column: str,
+        curr_data: pd.DataFrame,
+        ref_data: pd.DataFrame,
     ):
         curr = curr_data.copy()
         ref = ref_data.copy()

@@ -46,7 +46,9 @@ class NumOutputCorrWidget(Widget):
             metrics = results.prediction_metrics
 
         else:
-            raise ValueError(f"Widget [{self.title}] requires 'target' or 'prediction' kind parameter value")
+            raise ValueError(
+                f"Widget [{self.title}] requires 'target' or 'prediction' kind parameter value"
+            )
 
         if metrics is None:
             return None
@@ -84,7 +86,9 @@ class NumOutputCorrWidget(Widget):
         )
 
         output_corr.update_layout(
-            xaxis_title="Features", yaxis_title="Correlation", yaxis=dict(range=(-1, 1), showticklabels=True)
+            xaxis_title="Features",
+            yaxis_title="Correlation",
+            yaxis=dict(range=(-1, 1), showticklabels=True),
         )
 
         # output_corr_json = json.loads(output_corr.to_json())
@@ -94,5 +98,8 @@ class NumOutputCorrWidget(Widget):
             title=self.title,
             type="big_graph",
             size=1,
-            params={"data": output_corr_json["data"], "layout": output_corr_json["layout"]},
+            params={
+                "data": output_corr_json["data"],
+                "layout": output_corr_json["layout"],
+            },
         )

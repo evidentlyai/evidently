@@ -113,7 +113,9 @@ def test_computing_of_only_prediction(analyzer: CatTargetDriftAnalyzer) -> None:
     df1 = DataFrame({"another_prediction": ["b", "c"] * 10})
     df2 = DataFrame({"another_prediction": ["a", "b"] * 5})
     # FIXME: wtf: RuntimeWarning: divide by zero encountered in true_divide ?
-    result = analyzer.calculate(df1, df2, ColumnMapping(prediction="another_prediction"))
+    result = analyzer.calculate(
+        df1, df2, ColumnMapping(prediction="another_prediction")
+    )
     assert result.prediction_metrics is not None
     assert result.prediction_metrics.column_name == "another_prediction"
     assert result.prediction_metrics.drift_score == approx(0.0, abs=1e-3)
@@ -127,7 +129,10 @@ def test_computing_with_nans(analyzer: CatTargetDriftAnalyzer) -> None:
         }
     )
     df2 = DataFrame(
-        {"target": ["a"] * 3 + ["b"] * 7 + [np.nan] * 2, "prediction": ["a"] * 3 + ["b"] * 7 + [np.nan] * 2}
+        {
+            "target": ["a"] * 3 + ["b"] * 7 + [np.nan] * 2,
+            "prediction": ["a"] * 3 + ["b"] * 7 + [np.nan] * 2,
+        }
     )
 
     result = analyzer.calculate(df1, df2, ColumnMapping())
@@ -137,7 +142,10 @@ def test_computing_with_nans(analyzer: CatTargetDriftAnalyzer) -> None:
     assert result.prediction_metrics.drift_score == approx(0.29736, abs=1e-4)
 
     df3 = DataFrame(
-        {"target": ["a"] * 3 + ["b"] * 7 + [np.nan] * 20, "prediction": ["a"] * 3 + ["b"] * 7 + [np.nan] * 20}
+        {
+            "target": ["a"] * 3 + ["b"] * 7 + [np.nan] * 20,
+            "prediction": ["a"] * 3 + ["b"] * 7 + [np.nan] * 20,
+        }
     )
     result = analyzer.calculate(df1, df3, ColumnMapping())
     assert result.target_metrics is not None
@@ -151,7 +159,10 @@ def test_computing_uses_a_custom_function(analyzer: CatTargetDriftAnalyzer) -> N
     df2 = DataFrame({"some_column": ["a"] * 6 + ["b"] * 15})
 
     options = DataDriftOptions()
-    options.cat_target_stattest_func = lambda x, y, feature_type, threshold: (np.pi, False)
+    options.cat_target_stattest_func = lambda x, y, feature_type, threshold: (
+        np.pi,
+        False,
+    )
     analyzer.options_provider.add(options)
     result = analyzer.calculate(df1, df2, ColumnMapping(target="some_column"))
     assert result.target_metrics is not None

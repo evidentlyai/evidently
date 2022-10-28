@@ -32,18 +32,28 @@ from evidently.tests import TestShareOfRowsWithNulls
 
 def test_data_integrity_test_number_of_columns() -> None:
     test_dataset = pd.DataFrame(
-        {"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 2, 2, 432], "target": [0, 0, 0, 1]}
+        {
+            "category_feature": ["n", "d", "p", "n"],
+            "numerical_feature": [0, 2, 2, 432],
+            "target": [0, 0, 0, 1],
+        }
     )
     suite = TestSuite(tests=[TestNumberOfColumns()])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
+    )
     assert suite
 
     suite = TestSuite(tests=[TestNumberOfColumns(gte=10)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
+    )
     assert not suite
 
     suite = TestSuite(tests=[TestNumberOfColumns(eq=3)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
+    )
     assert suite
     assert suite.show()
     assert suite.json()
@@ -51,10 +61,18 @@ def test_data_integrity_test_number_of_columns() -> None:
 
 def test_data_integrity_test_number_of_columns_json_render() -> None:
     test_dataset = pd.DataFrame(
-        {"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 1, 2, 3], "target": [0, 0, 0, 1]}
+        {
+            "category_feature": ["n", "d", "p", "n"],
+            "numerical_feature": [0, 1, 2, 3],
+            "target": [0, 0, 0, 1],
+        }
     )
     suite = TestSuite(tests=[TestNumberOfColumns()])
-    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset,
+        reference_data=test_dataset,
+        column_mapping=ColumnMapping(),
+    )
     assert suite
     json_str = suite.json()
     json_result = json.loads(json_str)
@@ -70,7 +88,11 @@ def test_data_integrity_test_number_of_columns_json_render() -> None:
     }
 
     suite = TestSuite(tests=[TestNumberOfColumns(lt=5)])
-    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset,
+        reference_data=test_dataset,
+        column_mapping=ColumnMapping(),
+    )
     assert suite
     json_str = suite.json()
     json_result = json.loads(json_str)
@@ -89,19 +111,29 @@ def test_data_integrity_test_number_of_columns_json_render() -> None:
 def test_data_integrity_test_number_of_rows() -> None:
     test_dataset = pd.DataFrame({"target": [0, 0, 0, 1]})
     suite = TestSuite(tests=[TestNumberOfRows()])
-    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset,
+        reference_data=test_dataset,
+        column_mapping=ColumnMapping(),
+    )
     assert suite
 
     suite = TestSuite(tests=[TestNumberOfRows(is_in=[10, 3, 50])])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
+    )
     assert not suite
 
     suite = TestSuite(tests=[TestNumberOfRows(is_in=[10, 3, 50, 4])])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
+    )
     assert suite
 
     suite = TestSuite(tests=[TestNumberOfRows(gte=4)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
+    )
     assert suite
     assert suite.show()
     assert suite.json()
@@ -110,7 +142,11 @@ def test_data_integrity_test_number_of_rows() -> None:
 def test_data_integrity_test_number_of_rows_json_report() -> None:
     test_dataset = pd.DataFrame({"target": [0, 0, 0, 1]})
     suite = TestSuite(tests=[TestNumberOfRows()])
-    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset,
+        reference_data=test_dataset,
+        column_mapping=ColumnMapping(),
+    )
     assert suite
     json_str = suite.json()
     json_result = json.loads(json_str)
@@ -118,7 +154,10 @@ def test_data_integrity_test_number_of_rows_json_report() -> None:
         "description": "The number of rows is 4. The test threshold is eq=4 ± 0.4.",
         "group": "data_integrity",
         "name": "Number of Rows",
-        "parameters": {"condition": {"eq": {"absolute": 1e-12, "relative": 0.1, "value": 4}}, "number_of_rows": 4},
+        "parameters": {
+            "condition": {"eq": {"absolute": 1e-12, "relative": 0.1, "value": 4}},
+            "number_of_rows": 4,
+        },
         "status": "SUCCESS",
     }
 
@@ -127,14 +166,20 @@ def test_data_integrity_test_number_of_rows_json_report() -> None:
     "test_dataset, conditions, result",
     (
         (pd.DataFrame({"target": [0, 0, 0, 1]}), {"eq": 0}, True),
-        (pd.DataFrame({"target": [0, 0, None, 1], "numeric": [None, None, None, 1]}), {"lt": 3}, False),
+        (
+            pd.DataFrame({"target": [0, 0, None, 1], "numeric": [None, None, None, 1]}),
+            {"lt": 3},
+            False,
+        ),
     ),
 )
 def test_data_integrity_test_number_of_nulls_no_errors(
     test_dataset: pd.DataFrame, conditions: dict, result: bool
 ) -> None:
     suite = TestSuite(tests=[TestNumberOfNulls(**conditions)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
+    )
     assert bool(suite) is result
     assert suite.show()
     assert suite.json()
@@ -144,14 +189,22 @@ def test_data_integrity_test_number_of_nulls_no_errors(
     "test_dataset, conditions, result",
     (
         (pd.DataFrame({"target": [0, 0, 0, 5]}), {"eq": 0}, True),
-        (pd.DataFrame({"target": ["", "0", None, "1"], "numeric": [np.inf, None, -np.inf, 1]}), {"lt": 3}, False),
+        (
+            pd.DataFrame(
+                {"target": ["", "0", None, "1"], "numeric": [np.inf, None, -np.inf, 1]}
+            ),
+            {"lt": 3},
+            False,
+        ),
     ),
 )
 def test_data_integrity_test_number_of_different_null_values(
     test_dataset: pd.DataFrame, conditions: dict, result: bool
 ) -> None:
     suite = TestSuite(tests=[TestNumberOfDifferentNulls(**conditions)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
+    )
     assert bool(suite) is result
 
 
@@ -171,14 +224,22 @@ def test_data_integrity_test_null_values_with_different_metrics() -> None:
 
 def test_data_integrity_test_number_of_columns_with_nulls() -> None:
     test_dataset = pd.DataFrame(
-        {"category_feature": [None, "d", "p", "n"], "numerical_feature": [0, 2, None, 432], "target": [0, 0, 0, 1]}
+        {
+            "category_feature": [None, "d", "p", "n"],
+            "numerical_feature": [0, 2, None, 432],
+            "target": [0, 0, 0, 1],
+        }
     )
     suite = TestSuite(tests=[TestNumberOfColumnsWithNulls(gte=5)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
+    )
     assert not suite
 
     suite = TestSuite(tests=[TestNumberOfColumnsWithNulls(eq=2)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
+    )
     assert suite
     assert suite.show()
     assert suite.json()
@@ -186,14 +247,22 @@ def test_data_integrity_test_number_of_columns_with_nulls() -> None:
 
 def test_data_integrity_test_share_of_columns_with_nulls() -> None:
     test_dataset = pd.DataFrame(
-        {"category_feature": [None, "d", "p", "n"], "numerical_feature": [0, 2, None, 432], "target": [0, 0, 0, 1]}
+        {
+            "category_feature": [None, "d", "p", "n"],
+            "numerical_feature": [0, 2, None, 432],
+            "target": [0, 0, 0, 1],
+        }
     )
     suite = TestSuite(tests=[TestShareOfColumnsWithNulls(lte=0.5)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
+    )
     assert not suite
 
     suite = TestSuite(tests=[TestShareOfColumnsWithNulls(eq=2 / 3)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
+    )
     assert suite
     assert suite.show()
     assert suite.json()
@@ -201,14 +270,22 @@ def test_data_integrity_test_share_of_columns_with_nulls() -> None:
 
 def test_data_integrity_test_number_of_rows_with_nulls() -> None:
     test_dataset = pd.DataFrame(
-        {"category_feature": [None, "d", "p", "n"], "numerical_feature": [0, 2, None, 432], "target": [0, 0, 0, 1]}
+        {
+            "category_feature": [None, "d", "p", "n"],
+            "numerical_feature": [0, 2, None, 432],
+            "target": [0, 0, 0, 1],
+        }
     )
     suite = TestSuite(tests=[TestNumberOfRowsWithNulls(gte=5)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
+    )
     assert not suite
 
     suite = TestSuite(tests=[TestNumberOfRowsWithNulls(eq=2)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
+    )
     assert suite
     assert suite.show()
     assert suite.json()
@@ -216,14 +293,22 @@ def test_data_integrity_test_number_of_rows_with_nulls() -> None:
 
 def test_data_integrity_test_share_of_rows_with_nulls() -> None:
     test_dataset = pd.DataFrame(
-        {"category_feature": [None, "d", "p", "n"], "numerical_feature": [0, 2, None, 432], "target": [0, 0, 0, 1]}
+        {
+            "category_feature": [None, "d", "p", "n"],
+            "numerical_feature": [0, 2, None, 432],
+            "target": [0, 0, 0, 1],
+        }
     )
     suite = TestSuite(tests=[TestShareOfRowsWithNulls(gt=0.5)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
+    )
     assert not suite
 
     suite = TestSuite(tests=[TestShareOfRowsWithNulls(eq=0.5)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
+    )
     assert suite
     assert suite.show()
     assert suite.json()
@@ -231,25 +316,35 @@ def test_data_integrity_test_share_of_rows_with_nulls() -> None:
 
 def test_data_integrity_test_constant_columns() -> None:
     test_dataset = pd.DataFrame(
-        {"category_feature": [None, "d", "p", "n"], "numerical_feature": [0, 0, 0, 0], "target": [0, 0, 0, 1]}
+        {
+            "category_feature": [None, "d", "p", "n"],
+            "numerical_feature": [0, 0, 0, 0],
+            "target": [0, 0, 0, 1],
+        }
     )
     suite = TestSuite(tests=[TestNumberOfConstantColumns()])
     suite.run(current_data=test_dataset, reference_data=test_dataset)
     assert suite
 
     suite = TestSuite(tests=[TestNumberOfConstantColumns(gte=5)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
+    )
     assert not suite
 
     suite = TestSuite(tests=[TestNumberOfConstantColumns(eq=1)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
+    )
     assert suite
     assert suite.show()
     assert suite.json()
 
 
 def test_data_integrity_test_constant_columns_json_render() -> None:
-    test_dataset = pd.DataFrame({"numerical_feature": [0, 0, 0, 0], "target": [0, 0, 0, 1]})
+    test_dataset = pd.DataFrame(
+        {"numerical_feature": [0, 0, 0, 0], "target": [0, 0, 0, 1]}
+    )
     suite = TestSuite(tests=[TestNumberOfConstantColumns()])
     suite.run(current_data=test_dataset, reference_data=test_dataset)
     assert suite
@@ -258,7 +353,8 @@ def test_data_integrity_test_constant_columns_json_render() -> None:
     assert result_from_json["summary"]["all_passed"] is True
     test_info = result_from_json["tests"][0]
     assert test_info == {
-        "description": "The number of constant columns is 1. The test threshold is " "lte=1.",
+        "description": "The number of constant columns is 1. The test threshold is "
+        "lte=1.",
         "group": "data_integrity",
         "name": "Number of Constant Columns",
         "parameters": {"condition": {"lte": 1}, "number_of_constant_columns": 1},
@@ -275,11 +371,15 @@ def test_data_integrity_test_empty_rows() -> None:
         }
     )
     suite = TestSuite(tests=[TestNumberOfEmptyRows(gte=5)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
+    )
     assert not suite
 
     suite = TestSuite(tests=[TestNumberOfEmptyRows(eq=1)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
+    )
     assert suite
     assert suite.show()
     assert suite.json()
@@ -294,11 +394,15 @@ def test_data_integrity_test_empty_columns() -> None:
         }
     )
     suite = TestSuite(tests=[TestNumberOfEmptyColumns(gte=5)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
+    )
     assert not suite
 
     suite = TestSuite(tests=[TestNumberOfEmptyColumns(eq=1)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
+    )
     assert suite
     assert suite.show()
     assert suite.json()
@@ -313,15 +417,23 @@ def test_data_integrity_test_duplicated_rows() -> None:
         }
     )
     suite = TestSuite(tests=[TestNumberOfDuplicatedRows()])
-    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset,
+        reference_data=test_dataset,
+        column_mapping=ColumnMapping(),
+    )
     assert suite
 
     suite = TestSuite(tests=[TestNumberOfDuplicatedRows(gte=5)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
+    )
     assert not suite
 
     suite = TestSuite(tests=[TestNumberOfDuplicatedRows(eq=1)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
+    )
     assert suite
     assert suite.show()
     assert suite.json()
@@ -336,7 +448,11 @@ def test_data_integrity_test_duplicated_rows_json_render() -> None:
         }
     )
     suite = TestSuite(tests=[TestNumberOfDuplicatedRows()])
-    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset,
+        reference_data=test_dataset,
+        column_mapping=ColumnMapping(),
+    )
     assert suite
 
     result_from_json = json.loads(suite.json())
@@ -355,27 +471,43 @@ def test_data_integrity_test_duplicated_rows_json_render() -> None:
 
 
 def test_data_integrity_test_duplicated_columns() -> None:
-    test_dataset = pd.DataFrame({"numerical_feature": ["1", "1", "1", "1"], "target": ["1", "1", "1", "1"]})
+    test_dataset = pd.DataFrame(
+        {"numerical_feature": ["1", "1", "1", "1"], "target": ["1", "1", "1", "1"]}
+    )
 
     suite = TestSuite(tests=[TestNumberOfDuplicatedColumns()])
-    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset,
+        reference_data=test_dataset,
+        column_mapping=ColumnMapping(),
+    )
     assert suite
 
     suite = TestSuite(tests=[TestNumberOfDuplicatedColumns(gte=5)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
+    )
     assert not suite
 
     suite = TestSuite(tests=[TestNumberOfDuplicatedColumns(eq=1)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
+    )
     assert suite
     assert suite.show()
     assert suite.json()
 
 
 def test_data_integrity_test_duplicated_columns_json_render() -> None:
-    test_dataset = pd.DataFrame({"numerical_feature": [1, 1, 1, 1], "target": [1, 1, 1, 1]})
+    test_dataset = pd.DataFrame(
+        {"numerical_feature": [1, 1, 1, 1], "target": [1, 1, 1, 1]}
+    )
     suite = TestSuite(tests=[TestNumberOfDuplicatedColumns()])
-    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset,
+        reference_data=test_dataset,
+        column_mapping=ColumnMapping(),
+    )
     assert suite
 
     result_from_json = json.loads(suite.json())
@@ -391,7 +523,9 @@ def test_data_integrity_test_duplicated_columns_json_render() -> None:
 
 
 def test_data_integrity_test_columns_type() -> None:
-    current_dataset = pd.DataFrame({"numerical_feature": [1, 2, 3], "target": ["1", "1", "1"]})
+    current_dataset = pd.DataFrame(
+        {"numerical_feature": [1, 2, 3], "target": ["1", "1", "1"]}
+    )
     reference_dataset = pd.DataFrame(
         {
             "numerical_feature": [1.0, 2.4, 3.0],
@@ -400,41 +534,77 @@ def test_data_integrity_test_columns_type() -> None:
         }
     )
     suite = TestSuite(tests=[TestColumnsType()])
-    suite.run(current_data=current_dataset, reference_data=current_dataset, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=current_dataset,
+        reference_data=current_dataset,
+        column_mapping=ColumnMapping(),
+    )
     assert suite
 
     suite = TestSuite(tests=[TestColumnsType()])
-    suite.run(current_data=current_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=current_dataset,
+        reference_data=None,
+        column_mapping=ColumnMapping(),
+    )
     assert not suite
 
     suite = TestSuite(tests=[TestColumnsType(columns_type={})])
-    suite.run(current_data=current_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=current_dataset,
+        reference_data=reference_dataset,
+        column_mapping=ColumnMapping(),
+    )
     assert not suite
 
     suite = TestSuite(tests=[TestColumnsType(columns_type={"not_exists": "int64"})])
-    suite.run(current_data=current_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=current_dataset,
+        reference_data=None,
+        column_mapping=ColumnMapping(),
+    )
     assert not suite
 
     suite = TestSuite(
         tests=[
-            TestColumnsType(columns_type={"numerical_feature": np.float64, "target": "bool", "datetime": "datetime"})
+            TestColumnsType(
+                columns_type={
+                    "numerical_feature": np.float64,
+                    "target": "bool",
+                    "datetime": "datetime",
+                }
+            )
         ]
     )
-    suite.run(current_data=reference_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=reference_dataset,
+        reference_data=None,
+        column_mapping=ColumnMapping(),
+    )
     assert suite
 
-    suite = TestSuite(tests=[TestColumnsType(columns_type={"numerical_feature": "number"})])
-    suite.run(current_data=current_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite = TestSuite(
+        tests=[TestColumnsType(columns_type={"numerical_feature": "number"})]
+    )
+    suite.run(
+        current_data=current_dataset,
+        reference_data=None,
+        column_mapping=ColumnMapping(),
+    )
     assert suite
     assert suite.show()
     assert suite.json()
 
 
 def test_data_integrity_test_columns_type_to_json() -> None:
-    current_dataset = pd.DataFrame({"numerical_feature": [1, 2, 3], "my_target": [True, False, True]})
+    current_dataset = pd.DataFrame(
+        {"numerical_feature": [1, 2, 3], "my_target": [True, False, True]}
+    )
     suite = TestSuite(tests=[TestColumnsType()])
     suite.run(
-        current_data=current_dataset, reference_data=current_dataset, column_mapping=ColumnMapping(target="my_target")
+        current_data=current_dataset,
+        reference_data=current_dataset,
+        column_mapping=ColumnMapping(target="my_target"),
     )
     result_from_json = json.loads(suite.json())
     assert result_from_json["summary"]["all_passed"] is True
@@ -445,8 +615,16 @@ def test_data_integrity_test_columns_type_to_json() -> None:
         "name": "Column Types",
         "parameters": {
             "columns": [
-                {"actual_type": "bool_", "column_name": "my_target", "expected_type": "bool_"},
-                {"actual_type": "int64", "column_name": "numerical_feature", "expected_type": "int64"},
+                {
+                    "actual_type": "bool_",
+                    "column_name": "my_target",
+                    "expected_type": "bool_",
+                },
+                {
+                    "actual_type": "int64",
+                    "column_name": "numerical_feature",
+                    "expected_type": "int64",
+                },
             ]
         },
         "status": "SUCCESS",
@@ -454,28 +632,48 @@ def test_data_integrity_test_columns_type_to_json() -> None:
 
 
 def test_data_integrity_test_columns_null_share() -> None:
-    test_dataset = pd.DataFrame({"feature1": [1, 2, np.nan], "feature2": [1, 2, np.nan], "target": ["1", "1", "1"]})
+    test_dataset = pd.DataFrame(
+        {
+            "feature1": [1, 2, np.nan],
+            "feature2": [1, 2, np.nan],
+            "target": ["1", "1", "1"],
+        }
+    )
 
     suite = TestSuite(tests=[TestColumnShareOfNulls(column_name="feature1")])
-    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset,
+        reference_data=test_dataset,
+        column_mapping=ColumnMapping(),
+    )
     assert suite
 
     suite = TestSuite(tests=[TestColumnShareOfNulls(column_name="feature1", lt=0.1)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
+    )
     assert not suite
 
     suite = TestSuite(tests=[TestColumnShareOfNulls(column_name="feature1", lt=0.5)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
+    )
     assert suite
     assert suite.show()
     assert suite.json()
 
 
 def test_data_integrity_test_columns_null_share_json_render() -> None:
-    test_dataset = pd.DataFrame({"feature1": [1, 2, np.nan, 4], "feature2": [1, 2, np.nan, 1]})
+    test_dataset = pd.DataFrame(
+        {"feature1": [1, 2, np.nan, 4], "feature2": [1, 2, np.nan, 1]}
+    )
 
     suite = TestSuite(tests=[TestColumnShareOfNulls(column_name="feature1")])
-    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset,
+        reference_data=test_dataset,
+        column_mapping=ColumnMapping(),
+    )
     assert suite
 
     result_from_json = json.loads(suite.json())
@@ -495,14 +693,26 @@ def test_data_integrity_test_columns_null_share_json_render() -> None:
 
 
 def test_data_integrity_test_columns_all_constant_values() -> None:
-    test_dataset = pd.DataFrame({"feature1": [1, 1, np.nan], "feature2": [1, 2, np.nan], "target": ["1", "1", "1"]})
+    test_dataset = pd.DataFrame(
+        {
+            "feature1": [1, 1, np.nan],
+            "feature2": [1, 2, np.nan],
+            "target": ["1", "1", "1"],
+        }
+    )
 
-    suite = TestSuite(tests=[TestColumnAllConstantValues(column_name="not_exists_feature")])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite = TestSuite(
+        tests=[TestColumnAllConstantValues(column_name="not_exists_feature")]
+    )
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
+    )
     assert not suite
 
     suite = TestSuite(tests=[TestColumnAllConstantValues(column_name="feature1")])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
+    )
     assert not suite
     assert suite.show()
     assert suite.json()
@@ -510,37 +720,63 @@ def test_data_integrity_test_columns_all_constant_values() -> None:
 
 def test_data_integrity_test_all_unique_values() -> None:
     test_dataset = pd.DataFrame(
-        {"feature1": [1, 1, 2, 3], "feature2": [1, 2, np.nan, 4], "target": ["1", "2", "3", ""]}
+        {
+            "feature1": [1, 1, 2, 3],
+            "feature2": [1, 2, np.nan, 4],
+            "target": ["1", "2", "3", ""],
+        }
     )
 
-    suite = TestSuite(tests=[TestColumnAllUniqueValues(column_name="not_exists_feature")])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite = TestSuite(
+        tests=[TestColumnAllUniqueValues(column_name="not_exists_feature")]
+    )
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
+    )
     assert not suite
 
     suite = TestSuite(tests=[TestColumnAllUniqueValues(column_name="feature2")])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
+    )
     assert suite
     assert suite.show()
     assert suite.json()
 
 
 def test_data_integrity_test_column_values_match_regexp() -> None:
-    test_dataset = pd.DataFrame({"feature1": ["a", "aa", "baa"], "feature2": ["b", "bb", "baa"], "target": [1, 2, 3]})
-    suite = TestSuite(tests=[TestColumnValueRegExp(column_name="feature1", reg_exp=r"a.*", eq=1)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    test_dataset = pd.DataFrame(
+        {
+            "feature1": ["a", "aa", "baa"],
+            "feature2": ["b", "bb", "baa"],
+            "target": [1, 2, 3],
+        }
+    )
+    suite = TestSuite(
+        tests=[TestColumnValueRegExp(column_name="feature1", reg_exp=r"a.*", eq=1)]
+    )
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
+    )
     assert suite
     assert suite.show()
     assert suite.json()
 
-    suite = TestSuite(tests=[TestColumnValueRegExp(column_name="feature2", reg_exp=r"b.*")])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite = TestSuite(
+        tests=[TestColumnValueRegExp(column_name="feature2", reg_exp=r"b.*")]
+    )
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
+    )
     assert suite
     assert suite.show()
     assert suite.json()
 
 
 def test_data_integrity_test_number_of_nulls() -> None:
-    test_dataset = pd.DataFrame({"feature1": ["n/a", "b", "a"], "feature2": ["b", "", None]})
+    test_dataset = pd.DataFrame(
+        {"feature1": ["n/a", "b", "a"], "feature2": ["b", "", None]}
+    )
 
     suite = TestSuite(tests=[TestNumberOfNulls()])
     suite.run(current_data=test_dataset, reference_data=test_dataset)
@@ -549,41 +785,71 @@ def test_data_integrity_test_number_of_nulls() -> None:
     assert suite.json()
 
     suite = TestSuite(tests=[TestNumberOfNulls(lt=3)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
+    )
     assert suite
 
-    suite = TestSuite(tests=[TestNumberOfNulls(null_values=["", "n/a", None], replace=True, lt=3)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite = TestSuite(
+        tests=[TestNumberOfNulls(null_values=["", "n/a", None], replace=True, lt=3)]
+    )
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
+    )
     assert not suite
 
 
 def test_data_integrity_test_share_of_nulls() -> None:
-    test_dataset = pd.DataFrame({"feature1": ["", None, "null", "a"], "feature2": ["b", "null", None, None]})
+    test_dataset = pd.DataFrame(
+        {"feature1": ["", None, "null", "a"], "feature2": ["b", "null", None, None]}
+    )
 
     suite = TestSuite(tests=[TestShareOfNulls()])
-    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset,
+        reference_data=test_dataset,
+        column_mapping=ColumnMapping(),
+    )
     assert suite
     assert suite.show()
     assert suite.json()
 
     suite = TestSuite(tests=[TestShareOfNulls(lt=0.9)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
+    )
     assert suite
 
     suite = TestSuite(tests=[TestShareOfNulls(null_values=["", "null"], lt=0.4)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
+    )
     assert suite
 
-    suite = TestSuite(tests=[TestShareOfNulls(null_values=["", "null", False, None], replace=True, lt=0.4)])
-    suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
+    suite = TestSuite(
+        tests=[
+            TestShareOfNulls(
+                null_values=["", "null", False, None], replace=True, lt=0.4
+            )
+        ]
+    )
+    suite.run(
+        current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping()
+    )
     assert not suite
 
 
 def test_data_integrity_test_different_nulls_one_column() -> None:
-    test_dataset = pd.DataFrame({"feature1": ["n/a", "b", "a"], "feature2": ["b", "", None]})
+    test_dataset = pd.DataFrame(
+        {"feature1": ["n/a", "b", "a"], "feature2": ["b", "", None]}
+    )
 
     suite = TestSuite(tests=[TestColumnNumberOfDifferentNulls(column_name="feature1")])
-    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset,
+        reference_data=test_dataset,
+        column_mapping=ColumnMapping(),
+    )
     assert suite
     assert suite.show()
     assert suite.json()
@@ -594,10 +860,16 @@ def test_data_integrity_test_different_nulls_one_column_no_nulls() -> None:
 
     suite = TestSuite(
         tests=[
-            TestColumnNumberOfDifferentNulls(column_name="feature1", null_values=["null", "n/a"], replace=False, eq=0)
+            TestColumnNumberOfDifferentNulls(
+                column_name="feature1", null_values=["null", "n/a"], replace=False, eq=0
+            )
         ]
     )
-    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset,
+        reference_data=test_dataset,
+        column_mapping=ColumnMapping(),
+    )
     assert suite
 
 
@@ -607,21 +879,39 @@ def test_data_integrity_test_different_nulls_one_column_with_defaults() -> None:
     data_mapping = ColumnMapping()
 
     suite = TestSuite(
-        tests=[TestColumnNumberOfDifferentNulls(column_name="feature", null_values=["null", "n/a"], replace=False)]
+        tests=[
+            TestColumnNumberOfDifferentNulls(
+                column_name="feature", null_values=["null", "n/a"], replace=False
+            )
+        ]
     )
-    suite.run(current_data=test_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
+    suite.run(
+        current_data=test_dataset,
+        reference_data=reference_dataset,
+        column_mapping=data_mapping,
+    )
     assert not suite, suite.json()
 
     another_test_dataset = pd.DataFrame({"feature": ["null", "test", None]})
-    suite.run(current_data=another_test_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
+    suite.run(
+        current_data=another_test_dataset,
+        reference_data=reference_dataset,
+        column_mapping=data_mapping,
+    )
     assert suite, suite.json()
 
 
 def test_data_integrity_test_number_of_nulls_one_column() -> None:
-    test_dataset = pd.DataFrame({"feature1": ["", None, "null", "a"], "feature2": ["b", "null", None, None]})
+    test_dataset = pd.DataFrame(
+        {"feature1": ["", None, "null", "a"], "feature2": ["b", "null", None, None]}
+    )
 
     suite = TestSuite(tests=[TestColumnNumberOfNulls(column_name="feature1", lt=10)])
-    suite.run(current_data=test_dataset, reference_data=test_dataset, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset,
+        reference_data=test_dataset,
+        column_mapping=ColumnMapping(),
+    )
     assert suite
     assert suite.show()
     assert suite.json()

@@ -9,7 +9,14 @@ from evidently.options import OptionsProvider
 def test_single_dataset_with_two_classes() -> None:
     reference_data = pd.DataFrame(
         {
-            "target": ["label_a", "label_a", "label_a", "label_b", "label_b", "label_b"],
+            "target": [
+                "label_a",
+                "label_a",
+                "label_a",
+                "label_b",
+                "label_b",
+                "label_b",
+            ],
             "label_a": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6],
             "label_b": [0.9, 0.8, 0.7, 0.6, 0.5, 0.4],
         }
@@ -66,7 +73,12 @@ def test_single_dataset_with_two_classes() -> None:
     ]
     ###
     metrics_matrix = result.reference_metrics.metrics_matrix
-    assert metrics_matrix["label_a"], {"precision": 0.0, "recall": 0.0, "f1-score": 0.0, "support": 3}
+    assert metrics_matrix["label_a"], {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 3,
+    }
     assert metrics_matrix["label_b"] == {
         "precision": 0.25,
         "recall": 1 / 3,
@@ -91,7 +103,14 @@ def test_single_dataset_with_two_classes() -> None:
 def test_single_dataset_with_three_classes() -> None:
     df = pd.DataFrame(
         {
-            "target": ["label_a", "label_a", "label_b", "label_b", "label_c", "label_c"],
+            "target": [
+                "label_a",
+                "label_a",
+                "label_b",
+                "label_b",
+                "label_c",
+                "label_c",
+            ],
             "label_a": [0.1, 0.2, 0.3, 0.4, 0.4, 0.1],
             "label_b": [0.3, 0.1, 0.7, 0.5, 0.5, 0.1],
             "label_c": [0.7, 0.8, 0.0, 0.1, 0.1, 0.8],
@@ -107,7 +126,11 @@ def test_single_dataset_with_three_classes() -> None:
     assert result.columns.utility_columns.date is None
     assert result.columns.utility_columns.id_column is None
     assert result.columns.utility_columns.target == "target"
-    assert result.columns.utility_columns.prediction == ["label_a", "label_c", "label_b"]
+    assert result.columns.utility_columns.prediction == [
+        "label_a",
+        "label_c",
+        "label_b",
+    ]
     assert result.columns.cat_feature_names == []
     assert result.columns.num_feature_names == []
     assert result.columns.target_names is None
@@ -119,8 +142,16 @@ def test_single_dataset_with_three_classes() -> None:
     assert reference_metrics.f1 == approx(0.4)
     assert reference_metrics.roc_auc == approx(0.58, abs=0.01)
     assert reference_metrics.log_loss == approx(1.28, abs=0.01)
-    assert reference_metrics.confusion_matrix.labels == ["label_a", "label_b", "label_c"]
-    assert reference_metrics.confusion_matrix.values == [[0, 0, 2], [0, 2, 0], [0, 1, 1]]
+    assert reference_metrics.confusion_matrix.labels == [
+        "label_a",
+        "label_b",
+        "label_c",
+    ]
+    assert reference_metrics.confusion_matrix.values == [
+        [0, 0, 2],
+        [0, 2, 0],
+        [0, 1, 1],
+    ]
     assert reference_metrics.roc_curve == {
         "label_a": {
             "fpr": [0.0, 0.5, 0.75, 0.75, 1.0],
@@ -168,9 +199,24 @@ def test_single_dataset_with_three_classes() -> None:
     }
     ###
     metrics_matrix = result.reference_metrics.metrics_matrix
-    assert metrics_matrix["label_a"] == {"precision": 0.0, "recall": 0.0, "f1-score": 0.0, "support": 2}
-    assert metrics_matrix["label_b"] == {"f1-score": 0.8, "precision": 2 / 3, "recall": 1.0, "support": 2}
-    assert metrics_matrix["label_c"] == {"f1-score": 0.4, "precision": 1 / 3, "recall": 0.5, "support": 2}
+    assert metrics_matrix["label_a"] == {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 2,
+    }
+    assert metrics_matrix["label_b"] == {
+        "f1-score": 0.8,
+        "precision": 2 / 3,
+        "recall": 1.0,
+        "support": 2,
+    }
+    assert metrics_matrix["label_c"] == {
+        "f1-score": 0.4,
+        "precision": 1 / 3,
+        "recall": 0.5,
+        "support": 2,
+    }
     assert metrics_matrix["accuracy"] == 0.5
     assert metrics_matrix["macro avg"] == {
         "f1-score": approx(0.4, abs=0.01),
@@ -189,7 +235,14 @@ def test_single_dataset_with_three_classes() -> None:
 def test_two_datasets_with_two_classes_when_dataset_is_same() -> None:
     test_data = pd.DataFrame(
         {
-            "target": ["label_a", "label_a", "label_a", "label_b", "label_b", "label_b"],
+            "target": [
+                "label_a",
+                "label_a",
+                "label_a",
+                "label_b",
+                "label_b",
+                "label_b",
+            ],
             "label_a": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6],
             "label_b": [0.9, 0.8, 0.7, 0.6, 0.5, 0.4],
         }
@@ -239,7 +292,12 @@ def test_two_datasets_with_two_classes_when_dataset_is_same() -> None:
         ]
         ###
         metrics_matrix = metrics.metrics_matrix
-        assert metrics_matrix["label_a"] == {"precision": 0.0, "recall": 0.0, "f1-score": 0.0, "support": 3}
+        assert metrics_matrix["label_a"] == {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1-score": 0.0,
+            "support": 3,
+        }
         assert metrics_matrix["label_b"] == {
             "precision": 0.25,
             "recall": 1 / 3,
@@ -264,7 +322,14 @@ def test_two_datasets_with_two_classes_when_dataset_is_same() -> None:
 def test_two_dataset_with_two_classes_when_dataset_is_different() -> None:
     df1 = pd.DataFrame(
         {
-            "target": ["label_a", "label_a", "label_a", "label_b", "label_b", "label_b"],
+            "target": [
+                "label_a",
+                "label_a",
+                "label_a",
+                "label_b",
+                "label_b",
+                "label_b",
+            ],
             "label_a": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6],
             "label_b": [0.9, 0.8, 0.7, 0.6, 0.5, 0.4],
         }
@@ -324,7 +389,12 @@ def test_two_dataset_with_two_classes_when_dataset_is_different() -> None:
     ]
     ###
     metrics_matrix = result.reference_metrics.metrics_matrix
-    assert metrics_matrix["label_a"] == {"precision": 0.0, "recall": 0.0, "f1-score": 0.0, "support": 3}
+    assert metrics_matrix["label_a"] == {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 3,
+    }
     assert metrics_matrix["label_b"] == {
         "precision": 0.25,
         "recall": 1 / 3,
@@ -376,11 +446,31 @@ def test_two_dataset_with_two_classes_when_dataset_is_different() -> None:
     ]
     ###
     metrics_matrix = result.current_metrics.metrics_matrix
-    assert metrics_matrix["label_a"] == {"f1-score": 0.5, "precision": 0.5, "recall": 0.5, "support": 2}
-    assert metrics_matrix["label_b"] == {"f1-score": 0.5, "precision": 0.5, "recall": 0.5, "support": 2}
+    assert metrics_matrix["label_a"] == {
+        "f1-score": 0.5,
+        "precision": 0.5,
+        "recall": 0.5,
+        "support": 2,
+    }
+    assert metrics_matrix["label_b"] == {
+        "f1-score": 0.5,
+        "precision": 0.5,
+        "recall": 0.5,
+        "support": 2,
+    }
     assert metrics_matrix["accuracy"] == 0.5
-    assert metrics_matrix["macro avg"] == {"f1-score": 0.5, "precision": 0.5, "recall": 0.5, "support": 4}
-    assert metrics_matrix["weighted avg"] == {"f1-score": 0.5, "precision": 0.5, "recall": 0.5, "support": 4}
+    assert metrics_matrix["macro avg"] == {
+        "f1-score": 0.5,
+        "precision": 0.5,
+        "recall": 0.5,
+        "support": 4,
+    }
+    assert metrics_matrix["weighted avg"] == {
+        "f1-score": 0.5,
+        "precision": 0.5,
+        "recall": 0.5,
+        "support": 4,
+    }
 
 
 # TODO: there a lot of different tests one may think of and should be implemented here. However, it will be

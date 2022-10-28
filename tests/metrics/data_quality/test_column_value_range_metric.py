@@ -70,7 +70,11 @@ def test_data_quality_values_in_range_metric_success(
 ) -> None:
     data_mapping = ColumnMapping()
     result = metric.calculate(
-        data=InputData(current_data=current_data, reference_data=reference_data, column_mapping=data_mapping)
+        data=InputData(
+            current_data=current_data,
+            reference_data=reference_data,
+            column_mapping=data_mapping,
+        )
     )
     assert result == expected_result
 
@@ -130,7 +134,11 @@ def test_data_quality_values_in_range_metric_errors(
     data_mapping = ColumnMapping()
     with pytest.raises(ValueError):
         metric.calculate(
-            data=InputData(current_data=current_data, reference_data=reference_data, column_mapping=data_mapping)
+            data=InputData(
+                current_data=current_data,
+                reference_data=reference_data,
+                column_mapping=data_mapping,
+            )
         )
 
 
@@ -188,10 +196,17 @@ def test_data_quality_values_in_range_metric_errors(
     ),
 )
 def test_data_quality_values_in_range_metric_with_report(
-    current_data: pd.DataFrame, reference_data: pd.DataFrame, metric: ColumnValueRangeMetric, expected_json: dict
+    current_data: pd.DataFrame,
+    reference_data: pd.DataFrame,
+    metric: ColumnValueRangeMetric,
+    expected_json: dict,
 ) -> None:
     report = Report(metrics=[metric])
-    report.run(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
+    report.run(
+        current_data=current_data,
+        reference_data=reference_data,
+        column_mapping=ColumnMapping(),
+    )
     assert report.show()
     json_result = report.json()
     assert len(json_result) > 0

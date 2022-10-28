@@ -43,21 +43,44 @@ class PredictedVsActualMetric(Metric[PredictedVsActualResult]):
 
         target_name = columns.utility_columns.target
         prediction_name = columns.utility_columns.prediction
-        if target_name is None or prediction_name is None or not isinstance(prediction_name, str):
-            raise ValueError("expected target and prediction names to be set and present")
+        if (
+            target_name is None
+            or prediction_name is None
+            or not isinstance(prediction_name, str)
+        ):
+            raise ValueError(
+                "expected target and prediction names to be set and present"
+            )
         ref_result = None
         if data.reference_data is not None:
-            ref_result = _plot_data(data.reference_data, target_name, prediction_name, columns.utility_columns.date)
-        current_result = _plot_data(data.current_data, target_name, prediction_name, columns.utility_columns.date)
+            ref_result = _plot_data(
+                data.reference_data,
+                target_name,
+                prediction_name,
+                columns.utility_columns.date,
+            )
+        current_result = _plot_data(
+            data.current_data,
+            target_name,
+            prediction_name,
+            columns.utility_columns.date,
+        )
         return PredictedVsActualResult(
             reference_data=ref_result,
             current_data=current_result,
         )
 
 
-def _plot_data(dataset: pd.DataFrame, target_name: str, prediction_name: str, date_column: Optional[str]):
+def _plot_data(
+    dataset: pd.DataFrame,
+    target_name: str,
+    prediction_name: str,
+    date_column: Optional[str],
+):
     dataset.replace([np.inf, -np.inf], np.nan, inplace=True)
-    dataset.dropna(axis=0, how="any", inplace=True, subset=[target_name, prediction_name])
+    dataset.dropna(
+        axis=0, how="any", inplace=True, subset=[target_name, prediction_name]
+    )
     error = dataset[prediction_name] - dataset[target_name]
     qq_lines = probplot(error, dist="norm", plot=None)
     theoretical_q_x = np.linspace(qq_lines[0][0][0], qq_lines[0][0][-1], 100)
@@ -109,7 +132,8 @@ class PredictedVsActualRenderer(MetricRenderer):
 
         theoretical_quantile_trace = go.Scatter(
             x=plot_data.theoretical_q_x,
-            y=plot_data.qq_lines[1][0] * plot_data.theoretical_q_x + plot_data.qq_lines[1][1],
+            y=plot_data.qq_lines[1][0] * plot_data.theoretical_q_x
+            + plot_data.qq_lines[1][1],
             mode="lines",
             name="Theoretical Quantiles",
             marker=dict(size=6, color=self.color_options.secondary_color),
@@ -121,7 +145,9 @@ class PredictedVsActualRenderer(MetricRenderer):
         error_norm.update_layout(
             xaxis_title="Theoretical Quantiles",
             yaxis_title="Dataset Quantiles",
-            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+            legend=dict(
+                orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1
+            ),
         )
 
         return plotly_figure(
@@ -159,7 +185,9 @@ class PredictedVsActualRenderer(MetricRenderer):
         error_in_time.update_layout(
             xaxis_title="Timestamp" if plot_data.date_column else "Index",
             yaxis_title="Error",
-            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+            legend=dict(
+                orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1
+            ),
         )
 
         return plotly_figure(
@@ -175,7 +203,10 @@ class PredictedVsActualRenderer(MetricRenderer):
 
         error_distr.add_trace(
             go.Histogram(
-                x=error, marker_color=self.color_options.primary_color, name="error distribution", histnorm="percent"
+                x=error,
+                marker_color=self.color_options.primary_color,
+                name="error distribution",
+                histnorm="percent",
             )
         )
 
@@ -185,7 +216,9 @@ class PredictedVsActualRenderer(MetricRenderer):
         )
 
         return plotly_figure(
-            title=f"{dataset_name.title()}: Error Distribution", size=WidgetSize.HALF, figure=error_distr
+            title=f"{dataset_name.title()}: Error Distribution",
+            size=WidgetSize.HALF,
+            figure=error_distr,
         )
 
     def _abs_error_in_time(self, plot_data: PlotData, dataset_name: str):
@@ -216,11 +249,15 @@ class PredictedVsActualRenderer(MetricRenderer):
         abs_perc_error_time.update_layout(
             xaxis_title="Timestamp" if plot_data.length else "Index",
             yaxis_title="Percent",
-            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+            legend=dict(
+                orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1
+            ),
         )
 
         return plotly_figure(
-            title=f"{dataset_name.title()}: Absolute Percentage Error", size=WidgetSize.HALF, figure=abs_perc_error_time
+            title=f"{dataset_name.title()}: Absolute Percentage Error",
+            size=WidgetSize.HALF,
+            figure=abs_perc_error_time,
         )
 
     def _pred_vs_actual_in_time(self, plot_data: PlotData, dataset_name: str):
@@ -261,7 +298,9 @@ class PredictedVsActualRenderer(MetricRenderer):
         pred_actual_time.update_layout(
             xaxis_title="Timestamp" if plot_data.date_column else "Index",
             yaxis_title="Value",
-            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+            legend=dict(
+                orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1
+            ),
         )
 
         return plotly_figure(

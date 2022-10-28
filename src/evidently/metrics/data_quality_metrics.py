@@ -62,12 +62,16 @@ class DataQualityMetrics(Metric[DataQualityMetricsResults]):
         else:
             task = data.column_mapping.task
 
-        current_features_stats = calculate_data_quality_stats(data.current_data, columns, task)
+        current_features_stats = calculate_data_quality_stats(
+            data.current_data, columns, task
+        )
         current_correlations = calculate_correlations(data.current_data, columns)
         reference_features_stats = None
 
         if data.reference_data is not None:
-            reference_features_stats = calculate_data_quality_stats(data.reference_data, columns, task)
+            reference_features_stats = calculate_data_quality_stats(
+                data.reference_data, columns, task
+            )
 
         # data for visualisation
         if data.reference_data is not None:
@@ -98,7 +102,9 @@ class DataQualityMetrics(Metric[DataQualityMetricsResults]):
         for feature in num_columns:
             counts_of_value_feature = {}
             curr_feature = data.current_data[feature]
-            current_counts = data.current_data[feature].value_counts(dropna=False).reset_index()
+            current_counts = (
+                data.current_data[feature].value_counts(dropna=False).reset_index()
+            )
             current_counts.columns = ["x", "count"]
             counts_of_value_feature["current"] = current_counts
 
@@ -119,7 +125,9 @@ class DataQualityMetrics(Metric[DataQualityMetricsResults]):
             ref_feature = None
             if reference_data is not None:
                 ref_feature = reference_data[feature]
-            counts_of_values[feature] = make_hist_for_cat_plot(curr_feature, ref_feature)
+            counts_of_values[feature] = make_hist_for_cat_plot(
+                curr_feature, ref_feature
+            )
             distr_for_plots[feature] = counts_of_values[feature]
 
         return DataQualityMetricsResults(
@@ -142,12 +150,16 @@ class DataQualityMetricsRenderer(MetricRenderer):
         return result
 
     @staticmethod
-    def _get_data_quality_summary_table(metric_result: DataQualityMetricsResults) -> BaseWidgetInfo:
+    def _get_data_quality_summary_table(
+        metric_result: DataQualityMetricsResults,
+    ) -> BaseWidgetInfo:
         headers = ["Quality Metric", "Current"]
         target_name = str(metric_result.columns.utility_columns.target)
         date_column = metric_result.columns.utility_columns.date
 
-        all_features = metric_result.columns.get_all_features_list(cat_before_num=True, include_datetime_feature=True)
+        all_features = metric_result.columns.get_all_features_list(
+            cat_before_num=True, include_datetime_feature=True
+        )
 
         if date_column:
             all_features = [date_column] + all_features
@@ -164,7 +176,10 @@ class DataQualityMetricsRenderer(MetricRenderer):
             [
                 "number of observations",
                 str(metric_result.features_stats.rows_count),
-                str(metric_result.reference_features_stats and metric_result.reference_features_stats.rows_count),
+                str(
+                    metric_result.reference_features_stats
+                    and metric_result.reference_features_stats.rows_count
+                ),
             ],
             [
                 "categorical features",
@@ -237,7 +252,11 @@ class DataQualityMetricsRenderer(MetricRenderer):
             header_text(label="Data Quality Report"),
             self._get_data_quality_summary_table(metric_result=metric_result),
         ]
-        result.extend(self._get_data_quality_distribution_graph(features_stat=metric_result.distr_for_plots))
+        result.extend(
+            self._get_data_quality_distribution_graph(
+                features_stat=metric_result.distr_for_plots
+            )
+        )
         return result
 
 
@@ -254,23 +273,37 @@ class DataQualityStabilityMetrics(Metric[DataQualityStabilityMetricsResults]):
         result = DataQualityStabilityMetricsResults()
         target_name = data.column_mapping.target
         prediction_name = data.column_mapping.prediction
-        columns = [column for column in data.current_data.columns if column not in (target_name, prediction_name)]
+        columns = [
+            column
+            for column in data.current_data.columns
+            if column not in (target_name, prediction_name)
+        ]
 
         if not columns:
             result.number_not_stable_target = 0
             result.number_not_stable_prediction = 0
             return result
 
-        duplicates = data.current_data[data.current_data.duplicated(subset=columns, keep=False)]
+        duplicates = data.current_data[
+            data.current_data.duplicated(subset=columns, keep=False)
+        ]
 
         if target_name in data.current_data:
             result.number_not_stable_target = duplicates.drop(
-                data.current_data[data.current_data.duplicated(subset=columns + [target_name], keep=False)].index
+                data.current_data[
+                    data.current_data.duplicated(
+                        subset=columns + [target_name], keep=False
+                    )
+                ].index
             ).shape[0]
 
         if prediction_name in data.current_data:
             result.number_not_stable_prediction = duplicates.drop(
-                data.current_data[data.current_data.duplicated(subset=columns + [prediction_name], keep=False)].index
+                data.current_data[
+                    data.current_data.duplicated(
+                        subset=columns + [prediction_name], keep=False
+                    )
+                ].index
             ).shape[0]
 
         return result
@@ -287,8 +320,13 @@ class DataQualityStabilityMetricsRenderer(MetricRenderer):
             header_text(label="Data Stability Metrics"),
             counter(
                 counters=[
-                    CounterData("Not stable target", str(metric_result.number_not_stable_target)),
-                    CounterData("Not stable prediction", str(metric_result.number_not_stable_prediction)),
+                    CounterData(
+                        "Not stable target", str(metric_result.number_not_stable_target)
+                    ),
+                    CounterData(
+                        "Not stable prediction",
+                        str(metric_result.number_not_stable_prediction),
+                    ),
                 ]
             ),
         ]

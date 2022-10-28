@@ -26,7 +26,9 @@ class ClassificationConfusionMatrixResult:
     reference_matrix: Optional[ConfusionMatrix]
 
 
-class ClassificationConfusionMatrix(ThresholdClassificationMetric[ClassificationConfusionMatrixResult]):
+class ClassificationConfusionMatrix(
+    ThresholdClassificationMetric[ClassificationConfusionMatrixResult]
+):
     def __init__(
         self,
         threshold: Optional[float] = None,
@@ -35,7 +37,9 @@ class ClassificationConfusionMatrix(ThresholdClassificationMetric[Classification
         super().__init__(threshold, k)
 
     def calculate(self, data: InputData) -> ClassificationConfusionMatrixResult:
-        current_target_data, current_pred = self.get_target_prediction_data(data.current_data, data.column_mapping)
+        current_target_data, current_pred = self.get_target_prediction_data(
+            data.current_data, data.column_mapping
+        )
 
         current_results = self._calculate_matrix(
             current_target_data,
@@ -45,7 +49,9 @@ class ClassificationConfusionMatrix(ThresholdClassificationMetric[Classification
 
         reference_results = None
         if data.reference_data is not None:
-            ref_target_data, ref_pred = self.get_target_prediction_data(data.reference_data, data.column_mapping)
+            ref_target_data, ref_pred = self.get_target_prediction_data(
+                data.reference_data, data.column_mapping
+            )
             reference_results = self._calculate_matrix(
                 ref_target_data,
                 ref_pred.predictions,
@@ -75,7 +81,12 @@ class ClassificationConfusionMatrixRenderer(MetricRenderer):
 
     def render_html(self, obj: ClassificationConfusionMatrix) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
-        fig = plot_conf_mtrx(metric_result.current_matrix, metric_result.reference_matrix)
+        fig = plot_conf_mtrx(
+            metric_result.current_matrix, metric_result.reference_matrix
+        )
         fig.for_each_xaxis(lambda axis: axis.update(title_text="Predicted Value"))
         fig.update_layout(yaxis_title="Actual Value")
-        return [header_text(label="Confusion Matrix"), plotly_figure(figure=fig, title="")]
+        return [
+            header_text(label="Confusion Matrix"),
+            plotly_figure(figure=fig, title=""),
+        ]

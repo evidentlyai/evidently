@@ -49,6 +49,10 @@ def test_class_balance_metric(reference, current, expected_plot_data):
         )
     )
 
-    pd.testing.assert_frame_equal(results.plot_data["current"], expected_plot_data["current"])
+    pd.testing.assert_frame_equal(
+        results.plot_data["current"], expected_plot_data["current"]
+    )
     if "reference" in expected_plot_data.keys():
-        pd.testing.assert_frame_equal(results.plot_data["reference"], expected_plot_data["reference"])
+        pd.testing.assert_frame_equal(
+            results.plot_data["reference"], expected_plot_data["reference"]
+        )

@@ -43,7 +43,9 @@ class ClassificationQualityMetricResult:
     target_name: str
 
 
-class ClassificationQualityMetric(ThresholdClassificationMetric[ClassificationQualityMetricResult]):
+class ClassificationQualityMetric(
+    ThresholdClassificationMetric[ClassificationQualityMetricResult]
+):
     confusion_matrix_metric: ClassificationConfusionMatrix
 
     def __init__(
@@ -61,7 +63,9 @@ class ClassificationQualityMetric(ThresholdClassificationMetric[ClassificationQu
         target_name = dataset_columns.utility_columns.target
         prediction_name = dataset_columns.utility_columns.prediction
         if target_name is None or prediction_name is None:
-            raise ValueError("The columns 'target' and 'prediction' columns should be present")
+            raise ValueError(
+                "The columns 'target' and 'prediction' columns should be present"
+            )
         current = self.calculate_metrics(
             data.current_data,
             data.column_mapping,
@@ -71,13 +75,17 @@ class ClassificationQualityMetric(ThresholdClassificationMetric[ClassificationQu
         if data.reference_data is not None:
             ref_matrix = self.confusion_matrix_metric.get_result().reference_matrix
             if ref_matrix is None:
-                raise ValueError(f"Dependency {self.confusion_matrix_metric.__class__} should have reference data")
+                raise ValueError(
+                    f"Dependency {self.confusion_matrix_metric.__class__} should have reference data"
+                )
             reference = self.calculate_metrics(
                 data.reference_data,
                 data.column_mapping,
                 ref_matrix,
             )
-        return ClassificationQualityMetricResult(current=current, reference=reference, target_name=target_name)
+        return ClassificationQualityMetricResult(
+            current=current, reference=reference, target_name=target_name
+        )
 
     def calculate_metrics(
         self,
@@ -102,23 +110,42 @@ class ClassificationQualityMetric(ThresholdClassificationMetric[ClassificationQu
                 confusion_matrix.labels,
             )
             conf_by_pos_label = confusion_by_classes[confusion_matrix.labels[0]]
-            precision = metrics.precision_score(target, prediction.predictions, pos_label=pos_label)
-            recall = metrics.recall_score(target, prediction.predictions, pos_label=pos_label)
+            precision = metrics.precision_score(
+                target, prediction.predictions, pos_label=pos_label
+            )
+            recall = metrics.recall_score(
+                target, prediction.predictions, pos_label=pos_label
+            )
             f1 = metrics.f1_score(target, prediction.predictions, pos_label=pos_label)
-            tpr = conf_by_pos_label["tp"] / (conf_by_pos_label["tp"] + conf_by_pos_label["fn"])
-            tnr = conf_by_pos_label["tn"] / (conf_by_pos_label["tn"] + conf_by_pos_label["fp"])
-            fpr = conf_by_pos_label["fp"] / (conf_by_pos_label["fp"] + conf_by_pos_label["tn"])
-            fnr = conf_by_pos_label["fn"] / (conf_by_pos_label["fn"] + conf_by_pos_label["tp"])
+            tpr = conf_by_pos_label["tp"] / (
+                conf_by_pos_label["tp"] + conf_by_pos_label["fn"]
+            )
+            tnr = conf_by_pos_label["tn"] / (
+                conf_by_pos_label["tn"] + conf_by_pos_label["fp"]
+            )
+            fpr = conf_by_pos_label["fp"] / (
+                conf_by_pos_label["fp"] + conf_by_pos_label["tn"]
+            )
+            fnr = conf_by_pos_label["fn"] / (
+                conf_by_pos_label["fn"] + conf_by_pos_label["tp"]
+            )
         else:
-            precision = metrics.precision_score(target, prediction.predictions, average="macro")
-            recall = metrics.recall_score(target, prediction.predictions, average="macro")
+            precision = metrics.precision_score(
+                target, prediction.predictions, average="macro"
+            )
+            recall = metrics.recall_score(
+                target, prediction.predictions, average="macro"
+            )
             f1 = metrics.f1_score(target, prediction.predictions, average="macro")
         if prediction.prediction_probas is not None:
             binaraized_target = (
-                target.astype(str).values.reshape(-1, 1) == list(prediction.prediction_probas.columns.astype(str))
+                target.astype(str).values.reshape(-1, 1)
+                == list(prediction.prediction_probas.columns.astype(str))
             ).astype(int)
             prediction_probas_array = prediction.prediction_probas.to_numpy()
-            roc_auc = metrics.roc_auc_score(binaraized_target, prediction_probas_array, average="macro")
+            roc_auc = metrics.roc_auc_score(
+                binaraized_target, prediction_probas_array, average="macro"
+            )
             log_loss = metrics.log_loss(binaraized_target, prediction_probas_array)
 
         return DatasetClassificationQuality(
@@ -151,29 +178,55 @@ class ClassificationQualityMetricRenderer(MetricRenderer):
             CounterData("Recall", f"{round(metric_result.current.recall, 3)}"),
             CounterData("F1", f"{round(metric_result.current.f1, 3)}"),
         ]
-        if metric_result.current.roc_auc is not None and metric_result.current.log_loss is not None:
+        if (
+            metric_result.current.roc_auc is not None
+            and metric_result.current.log_loss is not None
+        ):
             counters.extend(
                 [
-                    CounterData("ROC AUC", f"{round(metric_result.current.roc_auc, 3)}"),
-                    CounterData("LogLoss", f"{round(metric_result.current.log_loss, 3)}"),
+                    CounterData(
+                        "ROC AUC", f"{round(metric_result.current.roc_auc, 3)}"
+                    ),
+                    CounterData(
+                        "LogLoss", f"{round(metric_result.current.log_loss, 3)}"
+                    ),
                 ]
             )
-        result.append(header_text(label=f"Classification Model Performance. Target: '{target_name}’"))
-        result.append(counter(title="Current: Model Quality Metrics", counters=counters))
+        result.append(
+            header_text(
+                label=f"Classification Model Performance. Target: '{target_name}’"
+            )
+        )
+        result.append(
+            counter(title="Current: Model Quality Metrics", counters=counters)
+        )
 
         if metric_result.reference is not None:
             counters = [
-                CounterData("Accuracy", f"{round(metric_result.reference.accuracy, 3)}"),
-                CounterData("Precision", f"{round(metric_result.reference.precision, 3)}"),
+                CounterData(
+                    "Accuracy", f"{round(metric_result.reference.accuracy, 3)}"
+                ),
+                CounterData(
+                    "Precision", f"{round(metric_result.reference.precision, 3)}"
+                ),
                 CounterData("Recall", f"{round(metric_result.reference.recall, 3)}"),
                 CounterData("F1", f"{round(metric_result.reference.f1, 3)}"),
             ]
-            if metric_result.reference.roc_auc is not None and metric_result.reference.log_loss is not None:
+            if (
+                metric_result.reference.roc_auc is not None
+                and metric_result.reference.log_loss is not None
+            ):
                 counters.extend(
                     [
-                        CounterData("ROC AUC", f"{round(metric_result.reference.roc_auc, 3)}"),
-                        CounterData("LogLoss", f"{round(metric_result.reference.log_loss, 3)}"),
+                        CounterData(
+                            "ROC AUC", f"{round(metric_result.reference.roc_auc, 3)}"
+                        ),
+                        CounterData(
+                            "LogLoss", f"{round(metric_result.reference.log_loss, 3)}"
+                        ),
                     ]
                 )
-            result.append(counter(title="Reference: Model Quality Metrics", counters=counters))
+            result.append(
+                counter(title="Reference: Model Quality Metrics", counters=counters)
+            )
         return result

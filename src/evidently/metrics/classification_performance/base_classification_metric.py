@@ -27,14 +27,18 @@ def _cleanup_data(data: pd.DataFrame, dataset_columns: DatasetColumns) -> pd.Dat
     if prediction is not None and isinstance(prediction, str):
         subset.append(prediction)
     if len(subset) > 0:
-        return data.replace([np.inf, -np.inf], np.nan).dropna(axis=0, how="any", subset=subset)
+        return data.replace([np.inf, -np.inf], np.nan).dropna(
+            axis=0, how="any", subset=subset
+        )
     return data
 
 
 class ThresholdClassificationMetric(Metric[TResult], ABC):
     def __init__(self, threshold: Optional[float], k: Optional[Union[float, int]]):
         if threshold is not None and k is not None:
-            raise ValueError(f"{self.__class__.__name__}: should provide only threshold or top_k argument, not both.")
+            raise ValueError(
+                f"{self.__class__.__name__}: should provide only threshold or top_k argument, not both."
+            )
         self.threshold = threshold
         self.k = k
 
@@ -45,11 +49,15 @@ class ThresholdClassificationMetric(Metric[TResult], ABC):
     ) -> Tuple[pd.Series, PredictionData]:
         dataset_columns = process_columns(data, column_mapping)
         data = _cleanup_data(data, dataset_columns)
-        prediction = get_prediction_data(data, dataset_columns, column_mapping.pos_label)
+        prediction = get_prediction_data(
+            data, dataset_columns, column_mapping.pos_label
+        )
         if self.threshold is None and self.k is None:
             return data[dataset_columns.utility_columns.target], prediction
         if len(prediction.labels) > 2 or prediction.prediction_probas is None:
-            raise ValueError("Top K / Threshold parameter can be used only with binary classification with probas")
+            raise ValueError(
+                "Top K / Threshold parameter can be used only with binary classification with probas"
+            )
         pos_label, neg_label = prediction.prediction_probas.columns
         threshold = self.threshold
         if self.k is not None:

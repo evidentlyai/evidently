@@ -31,7 +31,10 @@ class BaseAnalyzerResult:
 class Analyzer:
     @abc.abstractmethod
     def calculate(
-        self, reference_data: pd.DataFrame, current_data: Optional[pd.DataFrame], column_mapping: ColumnMapping
+        self,
+        reference_data: pd.DataFrame,
+        current_data: Optional[pd.DataFrame],
+        column_mapping: ColumnMapping,
     ) -> BaseAnalyzerResult:
         raise NotImplementedError()
 
