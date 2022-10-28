@@ -71,13 +71,15 @@ class RegressionErrorPlotRenderer(MetricRenderer):
         result = obj.get_result()
         current_scatter = result.current_scatter
         reference_scatter = None
+
         if result.reference_scatter is not None:
             reference_scatter = result.reference_scatter
+
         fig = plot_line_in_time(
             curr=current_scatter,
             ref=reference_scatter,
-            x_name="Predicted - Actual",
-            y_name="x",
+            x_name="x",
+            y_name="Predicted - Actual",
             xaxis_name=result.x_name,
             yaxis_name="Error",
             color_options=self.color_options,
