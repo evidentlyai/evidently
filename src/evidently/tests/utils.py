@@ -20,22 +20,29 @@ from evidently.utils.types import ApproxValue
 def plot_check(fig, condition, color_options: ColorOptions):
     lines = []
     left_line = pd.Series([condition.gt, condition.gte]).max()
+
     if not pd.isnull(left_line):
         left_line_name = ["gt", "gte"][pd.Series([condition.gt, condition.gte]).argmax()]
         lines.append((left_line, left_line_name))
+
     right_line = pd.Series([condition.lt, condition.lte]).min()
+
     if not pd.isnull(right_line):
         right_line_name = ["lt", "lte"][pd.Series([condition.lt, condition.lte]).argmin()]
         lines.append((right_line, right_line_name))
+
     if condition.eq is not None and not isinstance(condition.eq, ApproxValue):
         lines.append((condition.eq, "eq"))
+
     if condition.eq is not None and isinstance(condition.eq, ApproxValue):
         lines.append((condition.eq.value, "approx"))
+
     if condition.not_eq is not None:
         lines.append((condition.not_eq, "not_eq"))
 
     fig = go.Figure(fig)
     max_y = np.max([np.max(x["y"]) for x in fig.data])
+
     if len(lines) > 0:
         for line, name in lines:
             fig.add_trace(
@@ -52,21 +59,22 @@ def plot_check(fig, condition, color_options: ColorOptions):
         fig.add_vrect(x0=left_line, x1=right_line, fillcolor="green", opacity=0.25, line_width=0)
 
     if condition.eq is not None and isinstance(condition.eq, ApproxValue):
-        left_border = 0
-        right_border = 0
+        left_border = 0.0
+        right_border = 0.0
 
         if condition.eq._relative > 1e-6:
             left_border = condition.eq.value - condition.eq.value * condition.eq._relative
             right_border = condition.eq.value + condition.eq.value * condition.eq._relative
             fig.add_vrect(x0=left_border, x1=right_border, fillcolor="green", opacity=0.25, line_width=0)
+
         elif condition.eq._absolute > 1e-12:
             left_border = condition.eq.value - condition.eq._absolute
             right_border = condition.eq.value + condition.eq._absolute
             fig.add_vrect(x0=left_border, x1=right_border, fillcolor="green", opacity=0.25, line_width=0)
+
         fig.add_vrect(x0=left_border, x1=right_border, fillcolor="green", opacity=0.25, line_width=0)
 
     fig.update_layout(showlegend=True)
-
     return fig
 
 
@@ -95,7 +103,7 @@ def regression_perf_plot(
     curr_mertic: float,
     ref_metric: float = None,
     is_ref_data: bool = False,
-    color_options: ColorOptions
+    color_options: ColorOptions,
 ):
     current_color = color_options.get_current_data_color()
     reference_color = color_options.get_reference_data_color()
@@ -355,10 +363,7 @@ def plot_conf_mtrx(curr_mtrx, ref_mtrx):
 
 
 def plot_roc_auc(
-        *,
-        curr_roc_curve: dict,
-        ref_roc_curve: Optional[dict],
-        color_options: ColorOptions
+    *, curr_roc_curve: dict, ref_roc_curve: Optional[dict], color_options: ColorOptions
 ) -> List[Tuple[str, BaseWidgetInfo]]:
     additional_plots = []
     cols = 1
@@ -402,12 +407,7 @@ def plot_roc_auc(
     return additional_plots
 
 
-def plot_boxes(
-        *,
-        curr_for_plots: dict,
-        ref_for_plots: Optional[dict],
-        color_options: ColorOptions
-):
+def plot_boxes(*, curr_for_plots: dict, ref_for_plots: Optional[dict], color_options: ColorOptions):
     current_color = color_options.get_current_data_color()
     reference_color = color_options.get_reference_data_color()
     fig = go.Figure()
@@ -441,12 +441,7 @@ def plot_boxes(
     return fig
 
 
-def plot_rates(
-        *,
-        curr_rate_plots_data: dict,
-        ref_rate_plots_data: Optional[dict] = None,
-        color_options: ColorOptions
-):
+def plot_rates(*, curr_rate_plots_data: dict, ref_rate_plots_data: Optional[dict] = None, color_options: ColorOptions):
     if ref_rate_plots_data is not None:
         cols = 2
         subplot_titles = ["current", "reference"]

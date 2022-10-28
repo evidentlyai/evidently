@@ -90,7 +90,7 @@ class TestValueMAERenderer(TestRenderer):
             curr_mertic=obj.metric.get_result().mean_abs_error,
             ref_metric=obj.metric.get_result().mean_abs_error_ref,
             is_ref_data=is_ref_data,
-            color_options=self.color_options
+            color_options=self.color_options,
         )
         info.with_details("MAE", plotly_figure(title="", figure=fig))
         return info
@@ -139,7 +139,7 @@ class TestValueMAPERenderer(TestRenderer):
             curr_mertic=obj.metric.get_result().mean_abs_perc_error,
             ref_metric=obj.metric.get_result().mean_abs_perc_error_ref,
             is_ref_data=is_ref_data,
-            color_options=self.color_options
+            color_options=self.color_options,
         )
         info.with_details("MAPE", plotly_figure(title="", figure=fig))
         return info
@@ -186,7 +186,7 @@ class TestValueRMSERenderer(TestRenderer):
             curr_mertic=obj.metric.get_result().rmse,
             ref_metric=obj.metric.get_result().rmse_ref,
             is_ref_data=is_ref_data,
-            color_options=self.color_options
+            color_options=self.color_options,
         )
         info.with_details("RMSE", plotly_figure(title="", figure=fig))
         return info
@@ -313,7 +313,7 @@ class TestValueR2ScoreRenderer(TestRenderer):
             curr_mertic=obj.metric.get_result().r2_score,
             ref_metric=obj.metric.get_result().r2_score_ref,
             is_ref_data=is_ref_data,
-            color_options=self.color_options
+            color_options=self.color_options,
         )
         info.with_details("R2 Score", plotly_figure(title="", figure=fig))
         return info

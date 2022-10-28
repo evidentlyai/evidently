@@ -274,9 +274,7 @@ class TestRocAucRenderer(TestRenderer):
             ref_roc_curve = ref_metrics.roc_curve
         if curr_roc_curve is not None:
             for title, plot in plot_roc_auc(
-                curr_roc_curve=curr_roc_curve,
-                ref_roc_curve=ref_roc_curve,
-                color_options=self.color_options
+                curr_roc_curve=curr_roc_curve, ref_roc_curve=ref_roc_curve, color_options=self.color_options
             ):
                 info.with_details(title, plot)
         return info
@@ -362,7 +360,7 @@ class TestTPRRenderer(TestRenderer):
             fig = plot_rates(
                 curr_rate_plots_data=curr_rate_plots_data,
                 ref_rate_plots_data=ref_rate_plots_data,
-                color_options=self.color_options
+                color_options=self.color_options,
             )
             info.with_details("TPR", plotly_figure(title="", figure=fig))
 
@@ -402,7 +400,7 @@ class TestTNRRenderer(TestRenderer):
             fig = plot_rates(
                 curr_rate_plots_data=curr_rate_plots_data,
                 ref_rate_plots_data=ref_rate_plots_data,
-                color_options=self.color_options
+                color_options=self.color_options,
             )
             info.with_details("TNR", plotly_figure(title="", figure=fig))
         return info
@@ -453,7 +451,7 @@ class TestFPRRenderer(TestRenderer):
             fig = plot_rates(
                 curr_rate_plots_data=curr_rate_plots_data,
                 ref_rate_plots_data=ref_rate_plots_data,
-                color_options=self.color_options
+                color_options=self.color_options,
             )
             info.with_details("FPR", plotly_figure(title="", figure=fig))
         return info
@@ -504,7 +502,7 @@ class TestFNRRenderer(TestRenderer):
             fig = plot_rates(
                 curr_rate_plots_data=curr_rate_plots_data,
                 ref_rate_plots_data=ref_rate_plots_data,
-                color_options=self.color_options
+                color_options=self.color_options,
             )
             info.with_details("FNR", plotly_figure(title="", figure=fig))
         return info
