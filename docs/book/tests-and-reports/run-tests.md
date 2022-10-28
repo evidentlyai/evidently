@@ -36,7 +36,7 @@ If nothing else is specified, the tests will run with the default parameters.
 
 ## How to run test presets
 
-**Example 1**. To apply the DataStabilityTestPreset:
+**Example 1**. To apply the `DataStabilityTestPreset`:
 
 ```python
 data_stability = TestSuite(tests=[
@@ -51,7 +51,7 @@ You get the visual report automatically if you call the object in Jupyter notebo
 data_stability
 ```
 
-**Example 2**. To apply and call NoTargetPerformanceTestPreset:
+**Example 2**. To apply and call `NoTargetPerformanceTestPreset`:
 
 ```python
 no_target_performance = TestSuite(tests=[
@@ -239,7 +239,7 @@ The following standard parameters are available:
 | not_eq: val              | test_result != val                         | TestFeatureMin(feature_name=”numeric_feature”, ne=0)            |
 | gt: val                  | test_result > val                          | TestFeatureMin(feature_name=”numeric_feature”, gt=5)            |
 | gte: val                 | test_result >= val                         | TestFeatureMin(feature_name=”numeric_feature”, gte=5)           |
-| lt: val                  | test_result <=val                          | TestFeatureMin(feature_name=”numeric_feature”, lt=5)            |
+| lt: val                  | test_result < val                          | TestFeatureMin(feature_name=”numeric_feature”, lt=5)            |
 | lte: val                 | test_result <= val                         | TestFeatureMin(feature_name=”numeric_feature”, lte=5)           |
 | is_in: list              | test_result == one of the values from list | TestFeatureMin(feature_name=”numeric_feature”, is_in=[3,5,7])   |
 | not_in: list             | test_result != any of the values from list | TestFeatureMin(feature_name=”numeric_feature”, not_in=[-1,0,1]) |
