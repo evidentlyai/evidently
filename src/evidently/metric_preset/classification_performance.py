@@ -13,7 +13,6 @@ from evidently.metrics import ClassificationQualityMetric
 from evidently.metrics import ClassificationRocCurve
 from evidently.metrics.base_metric import InputData
 from evidently.utils.data_operations import DatasetColumns
-from evidently.utils.data_operations import process_columns
 
 
 class ClassificationPerformance(MetricPreset):
@@ -29,8 +28,7 @@ class ClassificationPreset(MetricPreset):
             ClassificationConfusionMatrix(),
             ClassificationQualityByClass(),
         ]
-        dataset_columns = process_columns(data.current_data, data.column_mapping)
-        curr_predictions = get_prediction_data(data.current_data, dataset_columns, data.column_mapping.pos_label)
+        curr_predictions = get_prediction_data(data.current_data, columns, data.column_mapping.pos_label)
 
         if curr_predictions.prediction_probas is not None:
             result.extend(
