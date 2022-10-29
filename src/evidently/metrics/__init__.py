@@ -1,3 +1,5 @@
+from evidently.metrics.regression_performance.regression_performance_metrics import RegressionPerformanceMetrics
+
 from .classification_performance.class_balance_metric import ClassificationClassBalance
 from .classification_performance.class_separation_metric import ClassificationClassSeparationPlot
 from .classification_performance.classification_quality_metric import ClassificationQualityMetric
@@ -28,7 +30,6 @@ from .data_quality.column_quantile_metric import ColumnQuantileMetric
 from .data_quality.column_value_list_metric import ColumnValueListMetric
 from .data_quality.column_value_range_metric import ColumnValueRangeMetric
 from .data_quality.dataset_correlations_metric import DatasetCorrelationsMetric
-from .data_quality_metrics import DataQualityMetrics
 from .data_quality_metrics import DataQualityStabilityMetrics
 from .regression_performance.abs_perc_error_in_time import RegressionAbsPercentageErrorPlot
 from .regression_performance.error_bias_table import RegressionErrorBiasTable
@@ -39,4 +40,3 @@ from .regression_performance.predicted_and_actual_in_time import RegressionPredi
 from .regression_performance.predicted_vs_actual import RegressionPredictedVsActualScatter
 from .regression_performance.regression_quality import RegressionQualityMetric
 from .regression_performance.top_error import RegressionTopErrorMetric
-from evidently.metrics.regression_performance.regression_performance_metrics import RegressionPerformanceMetrics

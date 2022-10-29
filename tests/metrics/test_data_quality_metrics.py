@@ -4,23 +4,12 @@ import pytest
 
 from evidently.metrics import ColumnQuantileMetric
 from evidently.metrics import ColumnValueListMetric
-from evidently.metrics import DataQualityMetrics
 from evidently.metrics import DataQualityStabilityMetrics
 from evidently.metrics import DatasetCorrelationsMetric
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.report import Report
-
-
-def test_data_quality_metrics() -> None:
-    test_dataset = pd.DataFrame({"category_feature": ["n", "d", "p", "n"], "numerical_feature": [0, 2, 2, 432]})
-    data_mapping = ColumnMapping()
-    metric = DataQualityMetrics()
-    result = metric.calculate(
-        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
-    )
-    assert result is not None
 
 
 def test_data_quality_stability_metrics() -> None:
@@ -66,7 +55,6 @@ def test_data_quality_stability_metrics_no_other_columns() -> None:
 @pytest.mark.parametrize(
     "metric_object",
     (
-        DataQualityMetrics(),
         DataQualityStabilityMetrics(),
         ColumnValueListMetric(column_name="feature", values=[1, 0]),
         ColumnQuantileMetric(column_name="feature", quantile=0.5),
