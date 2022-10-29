@@ -123,6 +123,9 @@ class RegressionTopErrorMetric(Metric[RegressionTopErrorMetricResults]):
 
 @default_renderer(wrap_type=RegressionTopErrorMetric)
 class RegressionTopErrorMetricRenderer(MetricRenderer):
+    def render_json(self, obj: RegressionTopErrorMetric) -> dict:
+        return {}
+
     def render_html(self, obj: RegressionTopErrorMetric) -> List[BaseWidgetInfo]:
         result = obj.get_result()
         curr_mean_err_per_group = result.curr_mean_err_per_group

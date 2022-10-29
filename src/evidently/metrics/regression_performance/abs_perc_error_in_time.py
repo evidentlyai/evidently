@@ -72,6 +72,9 @@ class RegressionAbsPercentageErrorPlot(Metric[RegressionAbsPercentageErrorPlotRe
 
 @default_renderer(wrap_type=RegressionAbsPercentageErrorPlot)
 class RegressionAbsPercentageErrorPlotRenderer(MetricRenderer):
+    def render_json(self, obj: RegressionAbsPercentageErrorPlot) -> dict:
+        return {}
+
     def render_html(self, obj: RegressionAbsPercentageErrorPlot) -> List[BaseWidgetInfo]:
         result = obj.get_result()
         current_scatter = result.current_scatter

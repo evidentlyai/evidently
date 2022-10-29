@@ -5,7 +5,7 @@ from evidently.metric_preset import ClassificationPerformance
 from evidently.metric_preset import ClassificationPreset
 from evidently.metric_preset import DataDriftPreset
 from evidently.metric_preset import DataQualityPreset
-from evidently.metric_preset import RegressionPerformance
+from evidently.metric_preset import RegressionPreset
 from evidently.metric_preset.metric_preset import MetricPreset
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.report import Report
@@ -18,7 +18,7 @@ from evidently.report import Report
         ClassificationPreset(),
         DataDriftPreset(),
         DataQualityPreset(),
-        RegressionPerformance(),
+        RegressionPreset(),
     ),
 )
 def test_metric_presets(preset: MetricPreset):

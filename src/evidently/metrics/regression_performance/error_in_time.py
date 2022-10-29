@@ -67,6 +67,9 @@ class RegressionErrorPlot(Metric[RegressionErrorPlotResults]):
 
 @default_renderer(wrap_type=RegressionErrorPlot)
 class RegressionErrorPlotRenderer(MetricRenderer):
+    def render_json(self, obj: RegressionErrorPlot) -> dict:
+        return {}
+
     def render_html(self, obj: RegressionErrorPlot) -> List[BaseWidgetInfo]:
         result = obj.get_result()
         current_scatter = result.current_scatter

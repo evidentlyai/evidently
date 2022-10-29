@@ -68,6 +68,9 @@ class RegressionPredictedVsActualPlot(Metric[RegressionPredictedVsActualPlotResu
 
 @default_renderer(wrap_type=RegressionPredictedVsActualPlot)
 class RegressionPredictedVsActualPlotRenderer(MetricRenderer):
+    def render_json(self, obj: RegressionPredictedVsActualPlot) -> dict:
+        return {}
+
     def render_html(self, obj: RegressionPredictedVsActualPlot) -> List[BaseWidgetInfo]:
         result = obj.get_result()
         current_scatter = result.current_scatter
