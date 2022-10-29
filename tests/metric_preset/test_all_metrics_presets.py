@@ -1,7 +1,6 @@
 import pandas as pd
 import pytest
 
-from evidently.metric_preset import ClassificationPerformance
 from evidently.metric_preset import ClassificationPreset
 from evidently.metric_preset import DataDriftPreset
 from evidently.metric_preset import DataQualityPreset
@@ -14,7 +13,6 @@ from evidently.report import Report
 @pytest.mark.parametrize(
     "preset",
     (
-        ClassificationPerformance(),
         ClassificationPreset(),
         DataDriftPreset(),
         DataQualityPreset(),
