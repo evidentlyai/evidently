@@ -4,7 +4,7 @@ import pytest
 
 from evidently.metrics import ColumnQuantileMetric
 from evidently.metrics import ColumnValueListMetric
-from evidently.metrics import DataQualityStabilityMetrics
+from evidently.metrics import DataQualityStabilityMetric
 from evidently.metrics import DatasetCorrelationsMetric
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
@@ -22,7 +22,7 @@ def test_data_quality_stability_metrics() -> None:
         }
     )
     data_mapping = ColumnMapping()
-    metric = DataQualityStabilityMetrics()
+    metric = DataQualityStabilityMetric()
     result = metric.calculate(
         data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
     )
@@ -45,7 +45,7 @@ def test_data_quality_stability_metrics_no_other_columns() -> None:
         }
     )
     data_mapping = ColumnMapping()
-    metric = DataQualityStabilityMetrics()
+    metric = DataQualityStabilityMetric()
     result = metric.calculate(data=InputData(current_data=curr, reference_data=ref, column_mapping=data_mapping))
     assert result is not None
     assert result.number_not_stable_target == 0
@@ -55,7 +55,7 @@ def test_data_quality_stability_metrics_no_other_columns() -> None:
 @pytest.mark.parametrize(
     "metric_object",
     (
-        DataQualityStabilityMetrics(),
+        DataQualityStabilityMetric(),
         ColumnValueListMetric(column_name="feature", values=[1, 0]),
         ColumnQuantileMetric(column_name="feature", quantile=0.5),
         DatasetCorrelationsMetric(),

@@ -1,9 +1,7 @@
-from typing import Dict
 from typing import List
 from typing import Optional
 
 import dataclasses
-from dataclasses import dataclass
 
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
@@ -15,17 +13,17 @@ from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import header_text
 
 
-@dataclass
-class DataQualityStabilityMetricsResults:
+@dataclasses.dataclass
+class DataQualityStabilityMetricResult:
     number_not_stable_target: Optional[int] = None
     number_not_stable_prediction: Optional[int] = None
 
 
-class DataQualityStabilityMetrics(Metric[DataQualityStabilityMetricsResults]):
+class DataQualityStabilityMetric(Metric[DataQualityStabilityMetricResult]):
     """Calculates stability by target and prediction"""
 
-    def calculate(self, data: InputData) -> DataQualityStabilityMetricsResults:
-        result = DataQualityStabilityMetricsResults()
+    def calculate(self, data: InputData) -> DataQualityStabilityMetricResult:
+        result = DataQualityStabilityMetricResult()
         target_name = data.column_mapping.target
         prediction_name = data.column_mapping.prediction
         columns = [column for column in data.current_data.columns if column not in (target_name, prediction_name)]
@@ -50,12 +48,12 @@ class DataQualityStabilityMetrics(Metric[DataQualityStabilityMetricsResults]):
         return result
 
 
-@default_renderer(wrap_type=DataQualityStabilityMetrics)
-class DataQualityStabilityMetricsRenderer(MetricRenderer):
-    def render_json(self, obj: DataQualityStabilityMetrics) -> dict:
+@default_renderer(wrap_type=DataQualityStabilityMetric)
+class DataQualityStabilityMetricRenderer(MetricRenderer):
+    def render_json(self, obj: DataQualityStabilityMetric) -> dict:
         return dataclasses.asdict(obj.get_result())
 
-    def render_html(self, obj: DataQualityStabilityMetrics) -> List[BaseWidgetInfo]:
+    def render_html(self, obj: DataQualityStabilityMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         result = [
             header_text(label="Data Stability Metrics"),
