@@ -1,6 +1,7 @@
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Union
 
 import dataclasses
 import numpy as np
@@ -36,7 +37,7 @@ class RegressionPerformanceMetricsResults:
     rmse_default: float
     mean_error: float
     me_default_sigma: float
-    me_hist_for_plot: Dict[str, pd.Series]
+    me_hist_for_plot: Dict[str, Union[pd.Series, pd.DataFrame]]
     mean_abs_error: float
     mean_abs_error_default: float
     mean_abs_perc_error: float

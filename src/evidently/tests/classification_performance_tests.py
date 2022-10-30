@@ -273,7 +273,9 @@ class TestRocAucRenderer(TestRenderer):
         if ref_metrics is not None:
             ref_roc_curve = ref_metrics.roc_curve
         if curr_roc_curve is not None:
-            for title, plot in plot_roc_auc(curr_roc_curve, ref_roc_curve):
+            for title, plot in plot_roc_auc(
+                curr_roc_curve=curr_roc_curve, ref_roc_curve=ref_roc_curve, color_options=self.color_options
+            ):
                 info.with_details(title, plot)
         return info
 
@@ -317,8 +319,9 @@ class TestLogLossRenderer(TestRenderer):
         ref_metrics = None if result.reference is None else result.reference.plot_data
 
         if curr_metrics is not None:
-            fig = plot_boxes(curr_metrics, ref_metrics)
+            fig = plot_boxes(curr_for_plots=curr_metrics, ref_for_plots=ref_metrics, color_options=self.color_options)
             info.with_details("Logarithmic Loss", plotly_figure(title="", figure=fig))
+
         return info
 
 
@@ -349,11 +352,18 @@ class TestTPRRenderer(TestRenderer):
         ref_metrics = obj.metric.get_result().reference
         curr_rate_plots_data = curr_metrics.rate_plots_data
         ref_rate_plots_data = None
+
         if ref_metrics is not None:
             ref_rate_plots_data = ref_metrics.rate_plots_data
+
         if curr_rate_plots_data is not None:
-            fig = plot_rates(curr_rate_plots_data, ref_rate_plots_data)
+            fig = plot_rates(
+                curr_rate_plots_data=curr_rate_plots_data,
+                ref_rate_plots_data=ref_rate_plots_data,
+                color_options=self.color_options,
+            )
             info.with_details("TPR", plotly_figure(title="", figure=fig))
+
         return info
 
 
@@ -387,7 +397,11 @@ class TestTNRRenderer(TestRenderer):
         if ref_metrics is not None:
             ref_rate_plots_data = ref_metrics.rate_plots_data
         if curr_rate_plots_data is not None:
-            fig = plot_rates(curr_rate_plots_data, ref_rate_plots_data)
+            fig = plot_rates(
+                curr_rate_plots_data=curr_rate_plots_data,
+                ref_rate_plots_data=ref_rate_plots_data,
+                color_options=self.color_options,
+            )
             info.with_details("TNR", plotly_figure(title="", figure=fig))
         return info
 
@@ -434,7 +448,11 @@ class TestFPRRenderer(TestRenderer):
         if ref_metrics is not None:
             ref_rate_plots_data = ref_metrics.rate_plots_data
         if curr_rate_plots_data is not None:
-            fig = plot_rates(curr_rate_plots_data, ref_rate_plots_data)
+            fig = plot_rates(
+                curr_rate_plots_data=curr_rate_plots_data,
+                ref_rate_plots_data=ref_rate_plots_data,
+                color_options=self.color_options,
+            )
             info.with_details("FPR", plotly_figure(title="", figure=fig))
         return info
 
@@ -481,7 +499,11 @@ class TestFNRRenderer(TestRenderer):
         if ref_metrics is not None:
             ref_rate_plots_data = ref_metrics.rate_plots_data
         if curr_rate_plots_data is not None:
-            fig = plot_rates(curr_rate_plots_data, ref_rate_plots_data)
+            fig = plot_rates(
+                curr_rate_plots_data=curr_rate_plots_data,
+                ref_rate_plots_data=ref_rate_plots_data,
+                color_options=self.color_options,
+            )
             info.with_details("FNR", plotly_figure(title="", figure=fig))
         return info
 

@@ -20,7 +20,6 @@ from evidently.calculations.classification_performance import threshold_probabil
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
-from evidently.options import ColorOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
@@ -205,7 +204,7 @@ class ClassificationPerformanceMetrics(Metric[ClassificationPerformanceResults])
 
         current_data = _cleanup_data(data.current_data, data.column_mapping)
         target_data = current_data[data.column_mapping.target]
-        predictions = get_prediction_data(current_data, data.column_mapping)
+        predictions = get_prediction_data(current_data, columns, pos_label=data.column_mapping.pos_label)
         prediction_data = predictions.predictions
         prediction_probas = predictions.prediction_probas
 
@@ -220,7 +219,7 @@ class ClassificationPerformanceMetrics(Metric[ClassificationPerformanceResults])
 
         if data.reference_data is not None:
             reference_data = _cleanup_data(data.reference_data, data.column_mapping)
-            ref_predictions = get_prediction_data(reference_data, data.column_mapping)
+            ref_predictions = get_prediction_data(reference_data, columns, pos_label=data.column_mapping.pos_label)
             ref_prediction_data = ref_predictions.predictions
             ref_probas = ref_predictions.prediction_probas
             ref_target = reference_data[data.column_mapping.target]
@@ -285,13 +284,12 @@ class ClassificationPerformanceMetricsRenderer(MetricRenderer):
             title=f"{dataset_name.capitalize()}: Model Quality With Macro-average Metrics",
         )
 
-    @staticmethod
     def _get_class_representation_graph(
+        self,
         dataset_name: str,
         metrics: DatasetClassificationPerformanceMetrics,
         size: WidgetSize,
         columns: DatasetColumns,
-        color_options: ColorOptions,
     ) -> BaseWidgetInfo:
         metrics_frame = pd.DataFrame(metrics.metrics_matrix)
         fig = go.Figure()
@@ -299,7 +297,7 @@ class ClassificationPerformanceMetricsRenderer(MetricRenderer):
             go.Bar(
                 x=columns.target_names if columns.target_names else metrics_frame.columns.tolist()[:-3],
                 y=metrics_frame.iloc[-1:, :-3].values[0],
-                marker_color=color_options.primary_color,
+                marker_color=self.color_options.primary_color,
                 name="Support",
             )
         )
@@ -357,7 +355,6 @@ class ClassificationPerformanceMetricsRenderer(MetricRenderer):
 
     def render_html(self, obj: ClassificationPerformanceMetrics) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
-        color_options = ColorOptions()
         columns = metric_result.columns
         target_name = columns.utility_columns.target
         result = [
@@ -383,7 +380,6 @@ class ClassificationPerformanceMetricsRenderer(MetricRenderer):
                     metrics=metric_result.reference,
                     size=WidgetSize.HALF,
                     columns=columns,
-                    color_options=color_options,
                 )
             )
 
@@ -393,7 +389,6 @@ class ClassificationPerformanceMetricsRenderer(MetricRenderer):
                 metrics=metric_result.current,
                 size=size,
                 columns=columns,
-                color_options=color_options,
             )
         )
 
@@ -515,8 +510,9 @@ class ClassificationPerformanceMetricsTopK(ClassificationPerformanceMetricsThres
     def __init__(self, k: Union[float, int]):
         self.k = k
 
-    def get_threshold(self, dataset: pd.DataFrame, mapping: ColumnMapping) -> float:
-        predictions = get_prediction_data(dataset, mapping)
+    def get_threshold(self, dataset: pd.DataFrame, columns: ColumnMapping) -> float:
+        processed_columns = process_columns(dataset, columns)
+        predictions = get_prediction_data(dataset, processed_columns, pos_label=columns.pos_label)
 
         if predictions.prediction_probas is None:
             raise ValueError("Top K parameter can be used only with binary classification with probas")
@@ -526,7 +522,8 @@ class ClassificationPerformanceMetricsTopK(ClassificationPerformanceMetricsThres
     def calculate_metric(self, dataset: pd.DataFrame, mapping: ColumnMapping):
         data = _cleanup_data(dataset, mapping)
         target_data = data[mapping.target]
-        predictions = get_prediction_data(data, mapping)
+        columns = process_columns(dataset, mapping)
+        predictions = get_prediction_data(data, columns, pos_label=mapping.pos_label)
         labels = sorted(set(target_data.unique()))
         prediction_probas = predictions.prediction_probas
         return _calculate_k_variant(target_data, prediction_probas, labels, self.k)
@@ -577,7 +574,8 @@ class ClassificationPerformanceMetricsThreshold(ClassificationPerformanceMetrics
     def calculate_metric(self, dataset: pd.DataFrame, mapping: ColumnMapping):
         data = _cleanup_data(dataset, mapping)
         target_data = data[mapping.target]
-        predictions = get_prediction_data(data, mapping)
+        columns = process_columns(dataset, mapping)
+        predictions = get_prediction_data(data, columns, pos_label=mapping.pos_label)
         prediction_probas = predictions.prediction_probas
         return _calculate_threshold(target_data, prediction_probas, self.threshold)
 

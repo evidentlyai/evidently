@@ -663,7 +663,7 @@ class DataQualityFeaturesWidget(Widget):
                         opacity=0.6,
                         showlegend=False,
                     )
-                    fig.append_trace(trace, 1, 1)
+                    fig.add_trace(trace, 1, 1)
                 for i, val in enumerate(tmp_curr[target_column].unique()):
                     trace = go.Bar(
                         x=tmp_curr.loc[tmp_curr[target_column] == val, feature_name],
@@ -671,7 +671,7 @@ class DataQualityFeaturesWidget(Widget):
                         marker_color=color_options.color_sequence[i],
                         name=str(val),
                     )
-                    fig.append_trace(trace, 1, 2)
+                    fig.add_trace(trace, 1, 2)
                 fig.update_layout(yaxis_title="count")
         else:
             if target_type == "num":
@@ -683,7 +683,7 @@ class DataQualityFeaturesWidget(Widget):
                     marker_color=color_options.get_reference_data_color(),
                     name="reference",
                 )
-                fig.append_trace(trace, 1, 1)
+                fig.add_trace(trace, 1, 1)
                 trace = go.Scatter(
                     x=tmp_curr.sample(min(2000, len(tmp_curr)), random_state=0)[feature_name],
                     y=tmp_curr.sample(min(2000, len(tmp_curr)), random_state=0)[target_column],
@@ -691,7 +691,7 @@ class DataQualityFeaturesWidget(Widget):
                     marker_color=color_options.get_current_data_color(),
                     name="current",
                 )
-                fig.append_trace(trace, 1, 2)
+                fig.add_trace(trace, 1, 2)
                 fig.update_layout(yaxis_title=target_column, legend={"itemsizing": "constant"})
                 fig.update_xaxes(title_text=feature_name, row=1, col=1)
                 fig.update_xaxes(title_text=feature_name, row=1, col=2)

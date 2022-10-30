@@ -1,18 +1,16 @@
 ---
 description: How to generate reports in Evidently.
----
+---   
 
-{% hint style="info" %} The Report object unites the functionality of Dashboards and JSON Profiles. It is currently in development. We are migrating the existing tabs and sections to the new API. It will also soon be possible to quickly create custom reports from individual Metrics.{% endhint %} 
-
-{% hint style="info" %} If you have any issues, you can continue using Dashboards and JSON Profiles. However, they will be depreciated in the future.{% endhint %}      
+TL;DR: You can start with ready-made Metric Presets. You can also create custom Reports from individual Metrics. 
 
 # Installation and prep
 
-After [installation](../get-started/install-evidently.md), import the Report component and the required metrics (available soon) and metric presets:
+After [installation](../get-started/install-evidently.md), import the Report component and the required Metrics and Metric Presets:
 
 ```python
 from evidently.report import Report
-from evidently.metric_preset import DataDriftPreset, NumTargetDrift
+from evidently.metric_preset import DataDriftPreset, TargetDriftPreset
 ```
 
 You need to prepare two datasets for comparison: **reference** and **current**. You can also generate some of the reports with a single current dataset. 
@@ -31,10 +29,10 @@ If nothing else is specified, the reports will run with the default parameters.
 
 ## How to run metric presets
 
-**Example**. To generate the report for Data Drift together with numerical Target Drift:
+**Example**. To generate the report for Data Drift together with Target Drift:
 
 ```python
-drift_report = Report(metrics=[DataDrift(), NumTargetDrift()])
+drift_report = Report(metrics=[DataDriftPreset(), TargetDriftPreset()])
  
 drift_report.run(reference_data=reference, current_data=current)
 drift_report
@@ -47,12 +45,11 @@ It will display the HTML combined report.
 Here is a list of metric presets you can try:
 
 ```python
-DataQuality
-DataDrift
-NumTargetDrift
-CatTargetDrift 
-RegressionPerformance
-ClassificationPerformance
+DataQualityPreset
+DataDriftPreset
+TargetDriftPreset 
+RegressionPreset
+ClassificationPreset
 ```
 
 ## Output formats 
@@ -94,3 +91,102 @@ To get the dictionary:
 ```python
 drift_report.as_dict()
 ```
+
+# Custom report
+
+You can create a custom report from individual metrics.
+
+You need to create a `Report` object and list which `metrics` to include.    
+
+## Dataset-level metrics
+
+Some of the metrics are calculated on the dataset level. For example, there is a metric that evaluates data drift for the whole dataset.
+
+To create a custom report with dataset-level metrics:
+
+```python
+data_drift_dataset_report = Report(metrics=[
+    DatasetDriftMetric(),
+    DataDriftTable(),    
+])
+```
+
+To calculate the metrics and get the visual report:
+
+```python
+data_drift_dataset_report.run(reference_data=ref, current_data=cur)
+data_drift_dataset_report
+```
+
+## Column-level tests
+
+Some of the metrics are calculated on the column level. For example, to calculate drift in a specific feature or model predictions.
+
+To create a custom report with column-level metrics:
+
+```python
+data_drift_column_report = Report(metrics=[
+    ColumnDriftMetric('age'),
+    ColumnDriftMetric('education'),   
+])
+```
+
+To calculate the metrics and get the visual report:
+
+```python
+data_drift_column_report.run(reference_data=adult_ref, current_data=adult_cur)
+data_drift_column_report
+```
+
+**Combining tests**. When you define the contents of the Report, you can include metrics presets and individual tests in the same list. You can also combine feature-level and dataset-level metrics. 
+
+## Available metrics
+
+Evidently library has dozens of individual metrics with different visualizations. Here are some examples: 
+
+```python
+DatasetSummaryMetric()
+DatasetMissingValuesMetric()
+DatasetCorrelationsMetric()
+DatasetDriftMetric()
+DataDriftTable()  
+```
+
+{% hint style="info" %} 
+**Reference**: The complete list of metrics is available in the [All metrics](../reference/all-metrics.md) table.
+{% endhint %}
+
+# Metric parameters
+
+Some metrics include default parameters. For example, probabilistic classification quality metrics have a default 0.5 decision threshold. You can override the defaults by setting custom parameters. 
+
+Some metrics also have required parameters. For example, if you want to calculate the number of values that match a regular expression, you need to specify it. 
+
+**Example 1**. How to specify regular expression (required parameter):
+
+```python
+data_integrity_column_report = Report(metrics=[
+    ColumnRegExpMetric(column_name="education", reg_exp=r".*-.*", top=5),
+    ColumnRegExpMetric(column_name="relationship", reg_exp=r".*child.*")
+])
+
+data_integrity_column_report.run(reference_data=adult_ref, current_data=adult_cur)
+data_integrity_column_report
+```
+
+**Example 2**. Some custom parameters might be set through the Options object. Here is an example of choosing the custom DataDrift test. 
+
+```python
+stat_test_option = DataDriftOptions(all_features_stattest='psi')
+
+data_drift_column_report = Report(metrics=[
+    ColumnDriftMetric('age'),
+    ColumnDriftMetric('age', options=stat_test_option),
+])
+data_drift_column_report.run(reference_data=adult_ref, current_data=adult_cur)
+
+data_drift_column_report
+```
+{% hint style="info" %} 
+**Reference**: The available parameters are listed in the [All metrics](../reference/all-metrics.md) table.
+{% endhint %}

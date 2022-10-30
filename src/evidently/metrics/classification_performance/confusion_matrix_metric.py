@@ -9,6 +9,13 @@ from sklearn.metrics import confusion_matrix
 from evidently.calculations.classification_performance import ConfusionMatrix
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.classification_performance.base_classification_metric import ThresholdClassificationMetric
+from evidently.model.widget import BaseWidgetInfo
+from evidently.options.color_scheme import ColorOptions
+from evidently.renderers.base_renderer import MetricRenderer
+from evidently.renderers.base_renderer import default_renderer
+from evidently.renderers.html_widgets import header_text
+from evidently.renderers.html_widgets import plotly_figure
+from evidently.utils.visualizations import plot_conf_mtrx
 
 DEFAULT_THRESHOLD = 0.5
 
@@ -20,6 +27,13 @@ class ClassificationConfusionMatrixResult:
 
 
 class ClassificationConfusionMatrix(ThresholdClassificationMetric[ClassificationConfusionMatrixResult]):
+    def __init__(
+        self,
+        threshold: Optional[float] = None,
+        k: Optional[Union[float, int]] = None,
+    ):
+        super().__init__(threshold, k)
+
     def calculate(self, data: InputData) -> ClassificationConfusionMatrixResult:
         current_target_data, current_pred = self.get_target_prediction_data(data.current_data, data.column_mapping)
 
@@ -49,5 +63,19 @@ class ClassificationConfusionMatrix(ThresholdClassificationMetric[Classification
         prediction: pd.Series,
         labels: List[Union[str, int]],
     ) -> ConfusionMatrix:
-        matrix = confusion_matrix(target, prediction, labels=labels)
-        return ConfusionMatrix(labels, [row.tolist() for row in matrix])
+        sorted_labels = sorted(labels)
+        matrix = confusion_matrix(target, prediction, labels=sorted_labels)
+        return ConfusionMatrix(sorted_labels, [row.tolist() for row in matrix])
+
+
+@default_renderer(wrap_type=ClassificationConfusionMatrix)
+class ClassificationConfusionMatrixRenderer(MetricRenderer):
+    def render_json(self, obj: ClassificationConfusionMatrix) -> dict:
+        return {}
+
+    def render_html(self, obj: ClassificationConfusionMatrix) -> List[BaseWidgetInfo]:
+        metric_result = obj.get_result()
+        fig = plot_conf_mtrx(metric_result.current_matrix, metric_result.reference_matrix)
+        fig.for_each_xaxis(lambda axis: axis.update(title_text="Predicted Value"))
+        fig.update_layout(yaxis_title="Actual Value")
+        return [header_text(label="Confusion Matrix"), plotly_figure(figure=fig, title="")]

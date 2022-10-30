@@ -115,10 +115,10 @@ class DataQualityAnalyzer(Analyzer):
             current_features_stats = None
 
         # calculate correlations
-        reference_correlations: Dict = calculate_correlations(reference_data, reference_features_stats, target_name)
+        reference_correlations: Dict = calculate_correlations(reference_data, columns)
 
         if current_features_stats is not None:
-            current_correlations: Dict = calculate_correlations(current_data, current_features_stats, target_name)
+            current_correlations: Dict = calculate_correlations(current_data, columns)
 
         else:
             current_correlations = {}

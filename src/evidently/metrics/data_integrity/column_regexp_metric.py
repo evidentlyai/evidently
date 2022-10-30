@@ -106,7 +106,7 @@ class ColumnRegExpMetric(Metric[DataIntegrityValueByRegexpMetricResult]):
 
     def calculate(self, data: InputData) -> DataIntegrityValueByRegexpMetricResult:
         if self.top < 1:
-            raise ValueError("Parameter top must be >= 1 for ColumnRegExpMetric")
+            raise ValueError("Parameter top must be >= 1")
 
         if not self.reg_exp:
             raise ValueError("Parameter reg_exp must be not empty for ColumnRegExpMetric")

@@ -18,7 +18,7 @@ from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.renderers.html_widgets import table_data
-from evidently.renderers.render_utils import plot_distr
+from evidently.renderers.render_utils import get_distribution_plot_figure
 from evidently.tests.base_test import BaseCheckValueTest
 from evidently.tests.base_test import GroupData
 from evidently.tests.base_test import GroupingTypes
@@ -83,7 +83,7 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
         )
 
 
-class TestNumberOfDriftedFeatures(BaseDataDriftMetricsTest):
+class TestNumberOfDriftedColumns(BaseDataDriftMetricsTest):
     name = "Number of Drifted Features"
 
     def get_condition(self) -> TestValueCondition:
@@ -103,8 +103,8 @@ class TestNumberOfDriftedFeatures(BaseDataDriftMetricsTest):
         )
 
 
-class TestShareOfDriftedFeatures(BaseDataDriftMetricsTest):
-    name = "Share of Drifted Features"
+class TestShareOfDriftedColumns(BaseDataDriftMetricsTest):
+    name = "Share of Drifted Columns"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
@@ -124,8 +124,8 @@ class TestShareOfDriftedFeatures(BaseDataDriftMetricsTest):
         )
 
 
-class TestFeatureValueDrift(Test):
-    name = "Drift per Feature"
+class TestColumnValueDrift(Test):
+    name = "Drift per Column"
     group = DATA_DRIFT_GROUP.id
     metric: DataDriftTable
     column_name: str
@@ -180,9 +180,9 @@ class TestFeatureValueDrift(Test):
 class TestAllFeaturesValueDrift(BaseGenerator):
     """Create value drift tests for numeric and category features"""
 
-    def generate(self, columns_info: DatasetColumns) -> List[TestFeatureValueDrift]:
+    def generate(self, columns_info: DatasetColumns) -> List[TestColumnValueDrift]:
         return [
-            TestFeatureValueDrift(column_name=name)
+            TestColumnValueDrift(column_name=name)
             for name in columns_info.get_all_features_list(include_datetime_feature=False)
         ]
 
@@ -195,13 +195,13 @@ class TestCustomFeaturesValueDrift(BaseGenerator):
     def __init__(self, features: List[str]):
         self.features = features
 
-    def generate(self, columns_info: DatasetColumns) -> List[TestFeatureValueDrift]:
-        return [TestFeatureValueDrift(column_name=name) for name in self.features]
+    def generate(self, columns_info: DatasetColumns) -> List[TestColumnValueDrift]:
+        return [TestColumnValueDrift(column_name=name) for name in self.features]
 
 
-@default_renderer(wrap_type=TestNumberOfDriftedFeatures)
-class TestNumberOfDriftedFeaturesRenderer(TestRenderer):
-    def render_json(self, obj: TestNumberOfDriftedFeatures) -> dict:
+@default_renderer(wrap_type=TestNumberOfDriftedColumns)
+class TestNumberOfDriftedColumnsRenderer(TestRenderer):
+    def render_json(self, obj: TestNumberOfDriftedColumns) -> dict:
         base = super().render_json(obj)
         base["parameters"]["condition"] = obj.get_condition().as_dict()
         base["parameters"]["features"] = {
@@ -210,7 +210,7 @@ class TestNumberOfDriftedFeaturesRenderer(TestRenderer):
         }
         return base
 
-    def render_html(self, obj: TestNumberOfDriftedFeatures) -> TestHtmlInfo:
+    def render_html(self, obj: TestNumberOfDriftedColumns) -> TestHtmlInfo:
         info = super().render_html(obj)
         df = pd.DataFrame(
             data=[[feature] + list(data) for feature, data in obj.get_result().features.items()],
@@ -221,9 +221,9 @@ class TestNumberOfDriftedFeaturesRenderer(TestRenderer):
         return info
 
 
-@default_renderer(wrap_type=TestShareOfDriftedFeatures)
-class TestShareOfDriftedFeaturesRenderer(TestRenderer):
-    def render_json(self, obj: TestShareOfDriftedFeatures) -> dict:
+@default_renderer(wrap_type=TestShareOfDriftedColumns)
+class TestShareOfDriftedColumnsRenderer(TestRenderer):
+    def render_json(self, obj: TestShareOfDriftedColumns) -> dict:
         base = super().render_json(obj)
         base["parameters"]["condition"] = obj.get_condition().as_dict()
         base["parameters"]["features"] = {
@@ -232,7 +232,7 @@ class TestShareOfDriftedFeaturesRenderer(TestRenderer):
         }
         return base
 
-    def render_html(self, obj: TestShareOfDriftedFeatures) -> TestHtmlInfo:
+    def render_html(self, obj: TestShareOfDriftedColumns) -> TestHtmlInfo:
         info = super().render_html(obj)
         df = pd.DataFrame(
             data=[[feature] + list(data) for feature, data in obj.get_result().features.items()],
@@ -254,9 +254,9 @@ class TestShareOfDriftedFeaturesRenderer(TestRenderer):
         return info
 
 
-@default_renderer(wrap_type=TestFeatureValueDrift)
-class TestFeatureValueDriftRenderer(TestRenderer):
-    def render_json(self, obj: TestFeatureValueDrift) -> dict:
+@default_renderer(wrap_type=TestColumnValueDrift)
+class TestColumnValueDriftRenderer(TestRenderer):
+    def render_json(self, obj: TestColumnValueDrift) -> dict:
         feature_name = obj.column_name
         drift_data = obj.metric.get_result().drift_by_columns[feature_name]
         base = super().render_json(obj)
@@ -270,12 +270,15 @@ class TestFeatureValueDriftRenderer(TestRenderer):
         }
         return base
 
-    def render_html(self, obj: TestFeatureValueDrift) -> TestHtmlInfo:
+    def render_html(self, obj: TestColumnValueDrift) -> TestHtmlInfo:
         result = obj.metric.get_result()
-        feature_name = obj.column_name
+        column_name = obj.column_name
         info = super().render_html(obj)
-        curr_distr = result.drift_by_columns[feature_name].current_distribution
-        ref_distr = result.drift_by_columns[feature_name].reference_distribution
-        fig = plot_distr(curr_distr, ref_distr)
-        info.with_details(f"{feature_name}", plotly_figure(title="", figure=fig))
+        column_info = result.drift_by_columns[column_name]
+        fig = get_distribution_plot_figure(
+            current_distribution=column_info.current_distribution,
+            reference_distribution=column_info.reference_distribution,
+            color_options=self.color_options,
+        )
+        info.with_details(f"{column_name}", plotly_figure(title="", figure=fig))
         return info

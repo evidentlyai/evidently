@@ -14,8 +14,10 @@ from evidently.dashboard.dashboard import SaveModeMap
 from evidently.dashboard.dashboard import TemplateParams
 from evidently.dashboard.dashboard import save_data_file
 from evidently.dashboard.dashboard import save_lib_files
+from evidently.metrics.base_metric import ErrorResult
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
+from evidently.options import ColorOptions
 from evidently.renderers.base_renderer import DEFAULT_RENDERERS
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import RenderersDefinitions
@@ -83,6 +85,16 @@ class ExecutionError(Exception):
 
 
 class Display:
+    color_options: ColorOptions
+
+    def __init__(self, color_options: Optional[ColorOptions] = None):
+        if color_options is None:
+            # set default color scheme
+            self.color_options = ColorOptions()
+
+        else:
+            self.color_options = color_options
+
     @abc.abstractmethod
     def _build_dashboard_info(self):
         raise NotImplementedError()
@@ -182,6 +194,7 @@ class Suite:
 
     def add_metric(self, metric: Metric):
         metric.set_context(self.context)
+
         for field_name, dependency in _discover_dependencies(metric):
             if isinstance(dependency, Metric):
                 self.add_metric(dependency)
@@ -211,7 +224,10 @@ class Suite:
             for metric, calculation in execution_graph.get_metric_execution_iterator():
                 if calculation not in calculations:
                     logging.debug(f"Executing {type(calculation)}...")
-                    calculations[calculation] = calculation.calculate(data)
+                    try:
+                        calculations[calculation] = calculation.calculate(data)
+                    except BaseException as ex:
+                        calculations[calculation] = ErrorResult(ex)
                 else:
                     logging.debug(f"Using cached result for {type(calculation)}")
                 self.context.metric_results[metric] = calculations[calculation]

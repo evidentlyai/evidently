@@ -57,8 +57,9 @@
 * [Recipes](recipes/README.md)
 
 ## Reference
-* [Data drift algorithm](reference/data-drift-algorithm.md)
 * [All tests](reference/all-tests.md)
+* [All metrics](reference/all-metrics.md)
+* [Data drift algorithm](reference/data-drift-algorithm.md)
 
 ## SUPPORT
 

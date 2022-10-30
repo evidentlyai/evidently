@@ -11,7 +11,14 @@ After [installation](../get-started/install-evidently.md), import the TestSuite 
 ```python
 from evidently.test_suite import TestSuite
 from evidently.tests import *
-from evidently.test_preset import NoTargetPerformance, DataQuality, DataStability, DataDrift, Regression, MulticlassClassification, BinaryClassificationTopK, BinaryClassification
+from evidently.test_preset import NoTargetPerformanceTestPreset
+from evidently.test_preset import DataQualityTestPreset
+from evidently.test_preset import DataStabilityTestPreset
+from evidently.test_preset import DataDriftTestPreset
+from evidently.test_preset import RegressionTestPreset
+from evidently.test_preset import MulticlassClassificationTestPreset
+from evidently.test_preset import BinaryClassificationTopKTestPreset
+from evidently.test_preset import BinaryClassificationTestPreset
 ```
 You need two datasets for comparison: **reference** and **current**. The reference dataset is optional. 
 
@@ -29,11 +36,11 @@ If nothing else is specified, the tests will run with the default parameters.
 
 ## How to run test presets
 
-**Example 1**. To apply the DataStability test preset:
+**Example 1**. To apply the `DataStabilityTestPreset`:
 
 ```python
 data_stability = TestSuite(tests=[
-DataStability(),
+DataStabilityTestPreset(),
 ])
 data_stability.run(reference_data=ref, current_data=curr)
 ```
@@ -44,30 +51,30 @@ You get the visual report automatically if you call the object in Jupyter notebo
 data_stability
 ```
 
-**Example 2**. To apply and call NoTargetPerformance preset:
+**Example 2**. To apply and call `NoTargetPerformanceTestPreset`:
 
 ```python
 no_target_performance = TestSuite(tests=[
-NoTargetPerformance(most_important_features=['education-num', 'hours-per-week']),
+NoTargetPerformanceTestPreset(columns=['education-num', 'hours-per-week']),
 ])
 no_target_performance.run(reference_data=ref,current_data=curr)
-No_target_performance
+no_target_performance
 ```
-You can use the `most_important_features` argument as shown above. In this case, some of the per-feature tests only apply to the features from the list. This way, you decrease the overall number of tests. 
+You can use the `columns` argument as shown above. In this case, some of the per-feature tests only apply to the features from the list. This way, you decrease the overall number of tests. 
 
 ## Available presets 
 
 Here are other test presets you can try:
 
 ```python
-NoTargetPerformance
-DataStability
-DataQuality
-DataDrift
-Regression
-MulticlassClassification
-BinaryClassificationTopK
-BinaryClassification
+NoTargetPerformanceTestPreset
+DataStabilityTestPreset
+DataQualityTestPreset
+DataDriftTestPreset
+RegressionTestPreset
+MulticlassClassificationTestPreset
+BinaryClassificationTopKTestPreset
+BinaryClassificationTestPreset
 ```
 {% hint style="info" %} 
 Refer to the [Test Suites](../tests/README.md) section to see the contents of each preset, and to the [All tests](../reference/all-tests.md) table to see the individual tests and their default parameters.
@@ -122,16 +129,19 @@ To create a custom data drift test suite with dataset-level tests:
 
 ```python
 data_drift_suite = TestSuite(tests=[
-TestShareOfDriftedFeatures(),
-TestNumberOfDriftedFeatures(),
+    TestShareOfDriftedColumns(),
+    TestNumberOfDriftedColumns(),
 ])
 ```
 
 To run the tests and get the visual report:
 
 ```python
-data_drift_suite.run(reference_data=ref, current_data=curr,
-column_mapping=ColumnMapping()
+data_drift_suite.run(
+    reference_data=ref,
+    current_data=curr,
+    column_mapping=ColumnMapping(),
+)
 data_drift_suite
 ```
 
@@ -143,9 +153,9 @@ To create a custom data drift test suite with column-level tests:
 
 ```python
 feature_suite = TestSuite(tests=[
-TestColumnShareOfNulls(column_name='hours-per-week'),
-TestFeatureValueDrift(column_name='education'),
-TestMeanInNSigmas(column_name='hours-per-week')
+    TestColumnShareOfNulls(column_name='hours-per-week'),
+    TestColumnValueDrift(column_name='education'),
+    TestMeanInNSigmas(column_name='hours-per-week')
 ])
 ```
 
@@ -162,9 +172,9 @@ Here is an example:
 
 ```python
 my_data_quality_report = TestSuite(tests=[
-    DataQuality(),
+    DataQualityTestPreset(),
     TestColumnAllConstantValues(column_name='education'),
-    TestNumberOfDriftedFeatures()
+    TestNumberOfDriftedColumns()
 ])
 
 my_data_quality_report.run(reference_data=ref,current_data=curr)
@@ -180,7 +190,7 @@ TestShareOfOutRangeValues()
 TestMostCommonValueShare()
 TestNumberOfConstantColumns()
 TestNumberOfDuplicatedColumns()
-TestHighlyCorrelatedFeatures()
+TestHighlyCorrelatedColumns()
 ```
 
 {% hint style="info" %} 
@@ -229,7 +239,7 @@ The following standard parameters are available:
 | not_eq: val              | test_result != val                         | TestFeatureMin(feature_name=”numeric_feature”, ne=0)            |
 | gt: val                  | test_result > val                          | TestFeatureMin(feature_name=”numeric_feature”, gt=5)            |
 | gte: val                 | test_result >= val                         | TestFeatureMin(feature_name=”numeric_feature”, gte=5)           |
-| lt: val                  | test_result <=val                          | TestFeatureMin(feature_name=”numeric_feature”, lt=5)            |
+| lt: val                  | test_result < val                          | TestFeatureMin(feature_name=”numeric_feature”, lt=5)            |
 | lte: val                 | test_result <= val                         | TestFeatureMin(feature_name=”numeric_feature”, lte=5)           |
 | is_in: list              | test_result == one of the values from list | TestFeatureMin(feature_name=”numeric_feature”, is_in=[3,5,7])   |
 | not_in: list             | test_result != any of the values from list | TestFeatureMin(feature_name=”numeric_feature”, not_in=[-1,0,1]) |
@@ -291,7 +301,7 @@ suite
 
 ```python
 suite = TestSuite(tests=[
-   TestFeatureValueMin(column_name=column_name, gt=0) for column_name in ["age", "fnlwgt", "education-num"]
+   TestColumnValueMin(column_name=column_name, gt=0) for column_name in ["age", "fnlwgt", "education-num"]
 ])
  
 suite.run(current_data=current_data, reference_data=reference_data)
@@ -321,7 +331,7 @@ suite
 You can generate tests for different subsets of columns. Here is how you generate tests only for **numerical columns**:
 
 ```python
-suite = TestSuite(tests=[generate_column_tests(TestFeatureValueMin, columns="num")])
+suite = TestSuite(tests=[generate_column_tests(TestColumnValueMin, columns="num")])
 suite.run(current_data=current_data, reference_data=reference_data)
 suite
 ```
@@ -337,7 +347,7 @@ suite
 You can also generate tests with defined parameters, for a custom defined column list:
  
 ```python
-suite = TestSuite(tests=[generate_column_tests(TestFeatureValueMin, columns=["age", "fnlwgt", "education-num"],
+suite = TestSuite(tests=[generate_column_tests(TestColumnValueMin, columns=["age", "fnlwgt", "education-num"],
                                               parameters={"gt": 0})])
 suite.run(current_data=current_data, reference_data=reference_data)
 suite
