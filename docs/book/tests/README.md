@@ -2,8 +2,6 @@
 Description: Test Suites navigation page.
 ---
 
-# Test Suites
-
 ## Overview
 
 An introductory overview on how tests and test suites look and when to use them.
