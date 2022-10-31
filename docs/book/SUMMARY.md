@@ -25,21 +25,6 @@
   * [Evidently and Airflow](integrations/evidently-and-airflow.md)
   * [Evidently and MLflow](integrations/evidently-and-mlflow.md)
 
-## Features
-
-* [Dashboards](dashboards/README.md)
-  * [Input data](dashboards/input_data.md)
-  * [Column mapping](dashboards/column_mapping.md)
-  * [Generate dashboards](dashboards/generate_dashboards.md)
-  * [CLI](dashboards/cli.md)
-  * [Colab and other environments](dashboards/notebook_environments.md)
-* [Profiling](profiling/README.md)
-  * [Input data](profiling/input_data.md)
-  * [Column mapping](profiling/column_mapping.md)
-  * [Generate profiles](profiling/generate_profiles.md)
-  * [CLI](profiling/cli.md)
-* [Monitoring](monitoring/README.md)
-
 ## User Guide
 * [Tests and reports](tests-and-reports/README.md)
   * [Input data](tests-and-reports/input-data.md)
