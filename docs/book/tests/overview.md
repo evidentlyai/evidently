@@ -49,7 +49,7 @@ You can create your test suite from individual tests or use one of the existing 
 
 A **preset** is a pre-built test suite that combines checks for a particular use case. 
 
-You can think of it as a template to start with. For example, there is a preset to check for Data Quality, Data Stability, or Regression model performance.
+You can think of it as a template to start with. For example, there is a preset to check for Data Quality (`DataQualityTestPreset`), Data Stability (`DataStabilityTestPreset`), or Regression model performance (`RegressionTestPreset`).
 
 ![Regression performance test suite example](../.gitbook/assets/tests/test_preset_example-min.png)
 
