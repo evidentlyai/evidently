@@ -18,7 +18,7 @@ See the code examples:
 
 Evidently helps evaluate and test data and ML model quality throughout the model lifecycle.
 
-Evidently has three components: **Reports**, **Tests**, and **Monitors** (in development). These interfaces cover alternative usage scenarios: from ad hoc visual model debugging to automated pipeline testing and real-time monitoring.
+Evidently has three components: **Reports**, **Tests**, and **Monitors** (in development). These interfaces cover alternative usage scenarios: from  visual analysis to automated pipeline testing and real-time monitoring.
 
 You need to provide the data, choose what to evaluate, and the output format. Evidently has a simple, declarative API and a library of metrics, tests, and visualizations to choose from.
 
@@ -28,27 +28,24 @@ Evidently currently works with tabular data.
 
 # 1. [Tests](tests/README.md): batch model checks 
 
-Tests perform structured data and ML model quality checks. You typically compare two datasets: **reference** and **current**. 
+Tests perform structured data and ML model quality checks. You typically compare two datasets: **reference** and **current**. You can set test parameters manually or let Evidently learn the expectations from the reference. Tests verify a condition and return an explicit **pass** or **fail** result. 
  
-You can set test parameters manually or let Evidently learn the expectations from the reference dataset. Tests verify a condition and return an explicit **pass** or **fail** result. 
- 
-You can create a **Test Suite** from 50+ individual tests or run one of the **presets** that combine relevant tests. For example, DataStabilityTestPreset or RegressionTestPreset.
- 
-Tests are best for automated batch model checks.
+You can create a **Test Suite** from 50+ individual tests or run one of the **presets** that combine relevant tests. For example, to test Data Stability or Regression Performance.
 
+Tests are best for automated batch checks.
+ 
 ![Example of an Evidently test](.gitbook/assets/main/evidently_tests_main-min.png)
 
 **Required input**: one or two datasets as pandas.DataFrames or csv.
  
 **How you get the output**: as an HTML inside Jupyter notebook or Colab, as an exportable HTML file, as a JSON, or as a Python dictionary.
  
-**Primary use case: test-based ML monitoring**. You can integrate and run tests automatically as a step in the ML pipeline. For example, when you receive a new batch of data, new labels, or generate predictions. You can build a conditional workflow based on the test results, e.g., to trigger an alert, retrain, or get a visual report for debugging.  
+**Primary use case: test-based ML monitoring**. You can run tests as a step in the ML pipeline. For example, when you receive a new batch of data, new labels, or generate predictions. You can build a conditional workflow based on the test results, e.g., to trigger an alert, retrain, or get a visual report to debug.  
 
 **Read more**:
-* [Overview: how the tests look](tests/overview.md) 
+* [Overview: what is a test and a test suite](tests/overview.md) 
 * [User guide: how to generate tests](tests-and-reports/run-tests.md) 
-* [Available presets](tests/README.md)
-* [Available tests](reference/all-tests.md) 
+* [Reference: available tests and presets](reference/all-tests.md) 
 
 # 2. [Reports](reports/README.md): interactive dashboards
 
@@ -58,13 +55,13 @@ We added a new Report object starting from **v0.1.57.dev0**. Reports unite the f
 
 Reports calculate various metrics and provide rich interactive visualizations. 
  
-You can create a custom **Report** from individual metrics or run one of the **Presets** that cover a specific aspect of the model or data performance. For example, a Data Quality report or Classification Performance report.
+You can create a custom **Report** from individual metrics or run one of the **Presets** that cover a specific aspect of the model or data performance. For example, Data Quality or Classification Performance.
  
 Reports are best for exploratory analysis, debugging, and documentation.
 
 ![Evidently reports](.gitbook/assets/main/evidently_reports_main-min.png)
 
-**Required input**: one or two datasets as pandas.DataFrames or csv. Due to rich embedded visualizations, it is recommended to take a smaller sample. Otherwise, reports might not render.
+**Required input**: one or two datasets as pandas.DataFrames or csv. Due to rich embedded visualizations, it is recommended to take a smaller sample. 
  
 **How you get the output**: as an HTML inside Jupyter notebook or Colab, as an exportable HTML file, as JSON, or as a Python dictionary.
  
@@ -75,8 +72,9 @@ Reports are best for exploratory analysis, debugging, and documentation.
 * **Reporting and documentation**. You can generate visual HTML reports to document your model performance.   
 
 **Read more**:
-* [Available reports](reports/README.md) 
+* [Overview: what is a report and a metric](reports/README.md) 
 * [User guide: how to run reports](tests-and-reports/get-reports.md) 
+* [Reference: available metrics and metric presets](reference/all-metrics.md) 
 
 # 3. [Real-time ML monitoring](integrations/evidently-and-grafana.md)
 
