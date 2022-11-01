@@ -4,6 +4,7 @@
 * [Installation](get-started/install-evidently.md)
 * [Get Started Tutorial](get-started/tutorial.md)
 * [Reports](reports/README.md)
+  * [Reports Overview](reports/overview.md)
   * [Data Drift](reports/data-drift.md)
   * [Data Quality](reports/data-quality.md)
   * [Numerical Target Drift](reports/num-target-drift.md)
@@ -12,7 +13,7 @@
   * [Classification Performance](reports/classification-performance.md)
   * [Probabilistic Classification Performance](reports/probabilistic-classification-performance.md)
 * [Test Suites](tests/README.md)
-  * [Overview](tests/overview.md)
+  * [Test Suites Overview](tests/overview.md)
   * [NoTargetPerformance](tests/no-target-performance.md)
   * [Data Stability](tests/data-stability.md)
   * [Data Quality](tests/data-quality.md)
@@ -39,7 +40,7 @@
   * [Options for Quality Metrics](customization/options-for-quality-metrics.md)
   * [Options for Statistical Tests](customization/options-for-statistical-tests.md)
   * [Options for Color Schema](customization/options-for-color-schema.md)
-* [Recipes](recipes/README.md)
+* [How to](recipes/README.md)
 
 ## Reference
 * [All tests](reference/all-tests.md)
