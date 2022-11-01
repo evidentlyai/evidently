@@ -30,7 +30,7 @@ Evidently currently works with tabular data.
 
 Tests perform structured data and ML model quality checks. You typically compare two datasets: **reference** and **current**. You can set test parameters manually or let Evidently learn the expectations from the reference. Tests verify a condition and return an explicit **pass** or **fail** result. 
  
-You can create a **Test Suite** from 50+ individual tests or run one of the **presets** that combine relevant tests. For example, to test Data Stability or Regression Performance.
+You can create a **Test Suite** from 50+ individual tests or run one of the **Presets** that combine relevant tests. For example, to test Data Stability or Regression Performance.
 
 Tests are best for automated batch checks.
  
