@@ -36,9 +36,9 @@ You can generate a **Report** by listing individual **Metrics** to include in it
 
 A **Metric** is a component of a report that evaluates a specific aspect of the data or model quality. 
 
-A **Metric** can be, literally, a single metric (such as an accuracy value). It can also be a combination of metrics, a plot, or a table. Each Metric has a visual render.
+A **Metric** can be, literally, a single metric (such as an accuracy value). It can also be a combination of metrics, a plot, or a table. Each **Metric** has a visual render.
 
-Some metrics can just return the values:  
+Some metrics simplt return the values:  
 
 ![RegressionQualityMetric](../.gitbook/assets/reports/metric_example_regression_quality-min.png)
 
