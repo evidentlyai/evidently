@@ -60,16 +60,16 @@ The metrics work both for probabilistic and non-probabilistic classification. Al
 
 | Metric | Description | Parameters |
 |---|---|---|
-| ClassificationQualityMetric() | Calculates various classification performance metrics, incl. precision, accuracy, recall, F1-score, TPR, TNR, FPR, and FNR. For probabilistic classification, also: ROC AUC score, LogLoss. | **Required:**:<br>n/a<br><br>**Optional:**<br>threshold (default for classification = None; default for probabilistic classification = 0.5)<br><br>top_k (default = None) |
+| ClassificationQualityMetric() | Calculates various classification performance metrics, incl. precision, accuracy, recall, F1-score, TPR, TNR, FPR, and FNR. For probabilistic classification, also: ROC AUC score, LogLoss. | **Required:**:<br>n/a<br><br>**Optional:**<br>threshold (default for classification = None; default for probabilistic classification = 0.5)<br><br>k (default = None) |
 | ClassificationClassBalance() | Calculates the number of objects for each label. Plots the histogram. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
-| ClassificationConfusionMatrix() | Calculates the TPR, TNR, FPR, FNR, and plots the confusion matrix.  | **Required:**<br>n/a<br><br>**Optional:**<br>threshold (default for classification = None; default for probabilistic classification = 0.5)<br><br>top_k (default = None) |
-| ClassificationQualityByClass() | Calculates the classification quality metrics for each class. Plots the matrix. | **Required:**:<br>n/a<br><br>**Optional:**<br>threshold (default for classification = None; default for probabilistic classification = 0.5)<br><br>top_k (default = None) |
+| ClassificationConfusionMatrix() | Calculates the TPR, TNR, FPR, FNR, and plots the confusion matrix.  | **Required:**<br>n/a<br><br>**Optional:**<br>threshold (default for classification = None; default for probabilistic classification = 0.5)<br><br>k (default = None) |
+| ClassificationQualityByClass() | Calculates the classification quality metrics for each class. Plots the matrix. | **Required:**:<br>n/a<br><br>**Optional:**<br>threshold (default for classification = None; default for probabilistic classification = 0.5)<br><br>k (default = None) |
 | ClassificationClassSeparationPlot() | Visualization of the predicted probabilities by class. Applicable for probabilistic classification only. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
 | ClassificationProbDistribution() | Visualization of the probability distribution by class. Applicable for probabilistic classification only. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
 | ClassificationRocCurve() | Plots ROC Curve. Applicable for probabilistic classification only. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
 | ClassificationPRCurve() | Plots Precision-Recall Curve. Applicable for probabilistic classification only. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
 | ClassificationPRTable() | Calculates the Precision-Recall table that shows model quality at a different decision threshold.  | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
-| ClassificationQualityByFeatureTable() | Plots the relationship between feature values and model quality. | **Required:**<br>n/a<br><br>**Optional:**<br>columns (default = all numerical and categorical)<br><br>threshold (default for classification = None; default for probabilistic classification = 0.5)<br><br>top_k (default = None) |
+| ClassificationQualityByFeatureTable() | Plots the relationship between feature values and model quality. | **Required:**<br>n/a<br><br>**Optional:**<br>columns (default = all numerical and categorical)<br><br>threshold (default for classification = None; default for probabilistic classification = 0.5)<br><br>k (default = None) |
 
 ## Regression
 
