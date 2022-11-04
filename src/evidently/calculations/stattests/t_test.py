@@ -2,6 +2,7 @@
 # coding: utf-8
 
 from typing import Tuple
+
 import pandas as pd
 from scipy.stats import ttest_ind
 
