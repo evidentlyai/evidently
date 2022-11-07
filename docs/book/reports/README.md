@@ -1,6 +1,4 @@
----
-Description: Reports navigation page.
----
+This is a navigation page.
 
 ## Overview
 
@@ -12,31 +10,35 @@ An introductory overview on how reports look and when to use them.
 
 ## Presets
 
-Presets are ready-made reports that group relevant metrics. Explore the contents and when to use each one:
+Presets are ready-made reports that group relevant metrics. Explore what each one contains:
 
-### Data Drift and Quality
+{% content-ref url="data-drift.md" %}
+[data-drift.md](data-drift.md)
+{% endcontent-ref %}
 
-[Data Drift](data-drift.md): detects changes in feature distribution. [Data Quality](data-quality.md): provides the feature overview.
+{% content-ref url="data-quality.md" %}
+[data-quality.md](data-quality.md)
+{% endcontent-ref %}
 
-![Data Drift](../../images/01\_data\_drift.png) ![Data Quality](../../images/07\_data\_quality.png)
+{% content-ref url="num-target-drift.md" %}
+[num-target-drift.md](num-target-drift.md)
+{% endcontent-ref %}
 
-### Target Drift
+{% content-ref url="cat-target-drift.md" %}
+[cat-target-drift.md](cat-target-drift.md)
+{% endcontent-ref %}
 
-Detect changes in [Numerical](num-target-drift.md) or [Categorical](categorical-target-drift.md) target and feature behavior.
+{% content-ref url="classification-performance.md" %}
+[classification-performance.md](classification-performance.md)
+{% endcontent-ref %}
 
-![Categorical target drift](../../images/02\_cat\_target\_drift.png) ![Numerical target drift](../../images/03\_num\_target\_drift.png)
+{% content-ref url="probabilistic-classification-performance.md" %}
+[probabilistic-classification-performance.md](probabilistic-classification-performance.md)
+{% endcontent-ref %}
 
-### Classification Performance
-
-Analyzes the performance and errors of a [Classification](classification-performance.md) or [Probabilistic Classification](probabilistic-classification-performance.md) model. Works both for binary and multi-class.
-
-![Classification Performance](../../images/05\_class\_performance.png) ![Probabilistic Classification Performance](../../images/06\_prob\_class\_performance.png)
-
-### Regression Performance
-
-Analyzes the performance and errors of a [Regression](reg-performance.md) model. Time series version coming soon.
-
-![Regression Performance](../../images/04\_reg\_performance.png) ![Time Series](../../images/08\_time\_series.png)
+{% content-ref url="reg-performance.md" %}
+[reg-performance.md](reg-performance.md)
+{% endcontent-ref %}
 
 ## User guide
 
