@@ -2,7 +2,7 @@ This is a navigation page.
 
 ## Overview
 
-An introductory overview on how reports look and when to use them.
+Explanatory overview on how reports look and when to use them. 
 
 {% content-ref url="overview.md" %}
 [overview.md](overview.md)
