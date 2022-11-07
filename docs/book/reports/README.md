@@ -10,7 +10,7 @@ An introductory overview on how reports look and when to use them.
 
 ## Presets
 
-Presets are ready-made reports that group relevant metrics. Explore what each one contains:
+Metric presets are ready-made reports that group relevant metrics. Explore what each one contains:
 
 {% content-ref url="data-drift.md" %}
 [data-drift.md](data-drift.md)
