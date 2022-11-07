@@ -1,74 +1,63 @@
 ---
-description: What each report contains and how and when to use them.
+Description: Reports navigation page.
 ---
 
-# Reports
+## Overview
 
-Evidently includes a set of pre-built Reports. Each of them addresses a specific aspect of the data or model performance. You can think of reports as combinations of the metrics and statistical tests that are grouped together.  
+An introductory overview on how reports look and when to use them.
 
-The calculation results can be available in one of the following formats:
+{% content-ref url="overview.md" %}
+[overview.md](overview.md)
+{% endcontent-ref %}
 
-* An interactive visual **Dashboard** displayed inside the Jupyter notebook.
-* An **HTML report.** Same as dashboard, but available as a standalone file.
-* A **JSON profile.** A summary of the metrics, the results of statistical tests, and simple histograms.
+## Presets
 
-## Reports by type
+Presets are ready-made reports that group relevant metrics. Explore the contents and when to use each one:
 
-Evidently currently works with **tabular data**. 7 reports are available. You can combine, customize the reports or contribute your own report. 
-
-## Data Drift and Quality
+### Data Drift and Quality
 
 [Data Drift](data-drift.md): detects changes in feature distribution. [Data Quality](data-quality.md): provides the feature overview.
 
 ![Data Drift](../../images/01\_data\_drift.png) ![Data Quality](../../images/07\_data\_quality.png)
 
-## Categorical and Numerical Target Drift
+### Target Drift
 
 Detect changes in [Numerical](num-target-drift.md) or [Categorical](categorical-target-drift.md) target and feature behavior.
 
 ![Categorical target drift](../../images/02\_cat\_target\_drift.png) ![Numerical target drift](../../images/03\_num\_target\_drift.png)
 
-## Classification Performance
+### Classification Performance
 
 Analyzes the performance and errors of a [Classification](classification-performance.md) or [Probabilistic Classification](probabilistic-classification-performance.md) model. Works both for binary and multi-class.
 
 ![Classification Performance](../../images/05\_class\_performance.png) ![Probabilistic Classification Performance](../../images/06\_prob\_class\_performance.png)
 
-## Regression Performance
+### Regression Performance
 
 Analyzes the performance and errors of a [Regression](reg-performance.md) model. Time series version coming soon.
 
 ![Regression Performance](../../images/04\_reg\_performance.png) ![Time Series](../../images/08\_time\_series.png)
 
+## User guide
 
-{% content-ref url="data-drift.md" %}
-[data-drift.md](data-drift.md)
+Code snippets and a step-by-step guide on how to generate reports:
+
+{% content-ref url="../tests-and-reports/get-reports.md" %}
+[get-reports.md](../tests-and-reports/get-reports.md)
 {% endcontent-ref %}
 
-{% content-ref url="data-quality.md" %}
-[data-quality.md](data-quality.md)
+## Code examples
+
+Example Jupyter notebooks and Colabs:
+
+{% content-ref url="../get-started/examples.md" %}
+[examples.md](../get-started/examples.md)
 {% endcontent-ref %}
 
-{% content-ref url="categorical-target-drift.md" %}
-[categorical-target-drift.md](categorical-target-drift.md)
+## All available metrics
+
+To see the complete list of individual metrics and parameters:
+
+{% content-ref url="../reference/all-metrics.md" %}
+[all-metrics.md](../reference/all-metrics.md)
 {% endcontent-ref %}
-
-{% content-ref url="num-target-drift.md" %}
-[num-target-drift.md](num-target-drift.md)
-{% endcontent-ref %}
-
-{% content-ref url="reg-performance.md" %}
-[reg-performance.md](reg-performance.md)
-{% endcontent-ref %}
-
-{% content-ref url="classification-performance.md" %}
-[classification-performance.md](classification-performance.md)
-{% endcontent-ref %}
-
-{% content-ref url="probabilistic-classification-performance.md" %}
-[probabilistic-classification-performance.md](probabilistic-classification-performance.md)
-{% endcontent-ref %}
-
-## Show me the code
-
-If you want to see the code, go straight to [examples](../get-started/examples.md).
