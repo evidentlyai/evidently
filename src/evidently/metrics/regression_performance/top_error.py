@@ -144,7 +144,7 @@ class RegressionTopErrorMetricRenderer(MetricRenderer):
         if ref_mean_err_per_group is not None:
             res.append(
                 counter(
-                    title="Current: Mean Error per Group (+/- std)",
+                    title="Reference: Mean Error per Group (+/- std)",
                     counters=[
                         CounterData("Majority(90%)", self._format_value(ref_mean_err_per_group, "majority")),
                         CounterData(
