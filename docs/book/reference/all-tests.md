@@ -84,9 +84,9 @@ To modify the logic or select a different test, you should pass a DataDrift [Opt
 
 | Test  | Description | Parameters | Default | 
 |---|---|---|---|
-| TestNumberOfDriftedColumns() | Dataset-level.  <br><br> Compares the distribution of each column in the current dataset to the reference and computes the number of drifting features. | **Optional**: DataDriftOptions <br><br>*standard parameters*| Expects =< ⅓ features to drift.<br>With reference: If > 1/3 of features drifted, the test fails.<br>No reference: N/A |
-| TestShareOfDriftedColumns() | Dataset-level.  <br><br> Compares the distribution of each column in the current dataset to the reference and computes the share of drifting features. | **Optional**: DataDriftOptions <br><br>*standard parameters* | Expects =< ⅓ features to drift.<br>With reference: If > 1/3 of features drifted, the test fails.<br>No reference: N/A |
-| TestColumnValueDrift(column_name='name')| Column-level. <br><br> Compares the distribution of values in a given column to the reference. | **Required**: column_name <br><br> **Optional**: DataDriftOptions <br><br>*standard parameters* | Expects no drift.<br>With reference: the test fails if the distribution drift is detected in a given column.<br>No reference: N/A |
+| TestNumberOfDriftedColumns() | Dataset-level.  <br><br> Compares the distribution of each column in the current dataset to the reference and computes the number of drifting features. | **Optional**: DataDriftOptions <br><br>*standard parameters*| Expects =< ⅓ features to drift.<br><br>**With reference:** If > 1/3 of features drifted, the test fails.<br>**No reference:** N/A |
+| TestShareOfDriftedColumns() | Dataset-level.  <br><br> Compares the distribution of each column in the current dataset to the reference and computes the share of drifting features. | **Optional**: DataDriftOptions <br><br>*standard parameters* | Expects =< ⅓ features to drift.<br><br>**With reference:** If > 1/3 of features drifted, the test fails.<br>No reference: N/A |
+| TestColumnValueDrift(column_name='name')| Column-level. <br><br> Compares the distribution of values in a given column to the reference. | **Required**: column_name <br><br> **Optional**: DataDriftOptions <br><br>*standard parameters* | Expects no drift.<br><br>**With reference:** the test fails if the distribution drift is detected in a given column.<br>**No reference:** N/A |
 
 ## Regression
 
