@@ -130,7 +130,7 @@ def test_data_integrity_test_number_of_rows_json_report() -> None:
         (pd.DataFrame({"target": [0, 0, None, 1], "numeric": [None, None, None, 1]}), {"lt": 3}, False),
     ),
 )
-def test_data_integrity_test_number_of_nulls_no_errors(
+def test_data_integrity_test_number_of_missing_values_no_errors(
     test_dataset: pd.DataFrame, conditions: dict, result: bool
 ) -> None:
     suite = TestSuite(tests=[TestNumberOfMissingValues(**conditions)])
@@ -169,7 +169,7 @@ def test_data_integrity_test_missing_values_with_different_metrics() -> None:
     assert suite.json()
 
 
-def test_data_integrity_test_number_of_columns_with_nulls() -> None:
+def test_data_integrity_test_number_of_columns_with_missing_values() -> None:
     test_dataset = pd.DataFrame(
         {"category_feature": [None, "d", "p", "n"], "numerical_feature": [0, 2, None, 432], "target": [0, 0, 0, 1]}
     )
@@ -184,7 +184,7 @@ def test_data_integrity_test_number_of_columns_with_nulls() -> None:
     assert suite.json()
 
 
-def test_data_integrity_test_share_of_columns_with_nulls() -> None:
+def test_data_integrity_test_share_of_columns_with_missing_values() -> None:
     test_dataset = pd.DataFrame(
         {"category_feature": [None, "d", "p", "n"], "numerical_feature": [0, 2, None, 432], "target": [0, 0, 0, 1]}
     )
@@ -199,7 +199,7 @@ def test_data_integrity_test_share_of_columns_with_nulls() -> None:
     assert suite.json()
 
 
-def test_data_integrity_test_number_of_rows_with_nulls() -> None:
+def test_data_integrity_test_number_of_rows_with_missing_values() -> None:
     test_dataset = pd.DataFrame(
         {"category_feature": [None, "d", "p", "n"], "numerical_feature": [0, 2, None, 432], "target": [0, 0, 0, 1]}
     )
@@ -214,7 +214,7 @@ def test_data_integrity_test_number_of_rows_with_nulls() -> None:
     assert suite.json()
 
 
-def test_data_integrity_test_share_of_rows_with_nulls() -> None:
+def test_data_integrity_test_share_of_rows_with_missing_values() -> None:
     test_dataset = pd.DataFrame(
         {"category_feature": [None, "d", "p", "n"], "numerical_feature": [0, 2, None, 432], "target": [0, 0, 0, 1]}
     )
@@ -540,7 +540,7 @@ def test_data_integrity_test_column_values_match_regexp() -> None:
     assert suite.json()
 
 
-def test_data_integrity_test_number_of_nulls() -> None:
+def test_data_integrity_test_number_of_missing_values() -> None:
     test_dataset = pd.DataFrame({"feature1": ["n/a", "b", "a"], "feature2": ["b", "", None]})
 
     suite = TestSuite(tests=[TestNumberOfMissingValues()])
@@ -558,7 +558,7 @@ def test_data_integrity_test_number_of_nulls() -> None:
     assert not suite
 
 
-def test_data_integrity_test_share_of_nulls() -> None:
+def test_data_integrity_test_share_of_missing_values() -> None:
     test_dataset = pd.DataFrame({"feature1": ["", None, "null", "a"], "feature2": ["b", "null", None, None]})
 
     suite = TestSuite(tests=[TestShareOfMissingValues()])
@@ -580,7 +580,7 @@ def test_data_integrity_test_share_of_nulls() -> None:
     assert not suite
 
 
-def test_data_integrity_test_different_nulls_one_column() -> None:
+def test_data_integrity_test_different_missing_values_one_column() -> None:
     test_dataset = pd.DataFrame({"feature1": ["n/a", "b", "a"], "feature2": ["b", "", None]})
 
     suite = TestSuite(tests=[TestColumnNumberOfDifferentMissingValues(column_name="feature1")])
@@ -590,7 +590,7 @@ def test_data_integrity_test_different_nulls_one_column() -> None:
     assert suite.json()
 
 
-def test_data_integrity_test_different_nulls_one_column_no_nulls() -> None:
+def test_data_integrity_test_different_missing_values_one_column_no_missing_values() -> None:
     test_dataset = pd.DataFrame({"feature1": [1, 2, 3], "feature2": ["b", "", None]})
 
     suite = TestSuite(
@@ -604,7 +604,7 @@ def test_data_integrity_test_different_nulls_one_column_no_nulls() -> None:
     assert suite
 
 
-def test_data_integrity_test_different_nulls_one_column_with_defaults() -> None:
+def test_data_integrity_test_different_missing_values_one_column_with_defaults() -> None:
     test_dataset = pd.DataFrame({"feature": ["null", "", None]})
     reference_dataset = pd.DataFrame({"feature": ["n/a", "test", None]})
     data_mapping = ColumnMapping()
@@ -624,7 +624,7 @@ def test_data_integrity_test_different_nulls_one_column_with_defaults() -> None:
     assert suite, suite.json()
 
 
-def test_data_integrity_test_number_of_nulls_one_column() -> None:
+def test_data_integrity_test_number_of_missing_values_one_column() -> None:
     test_dataset = pd.DataFrame({"feature1": ["", None, "null", "a"], "feature2": ["b", "null", None, None]})
 
     suite = TestSuite(tests=[TestColumnNumberOfMissingValues(column_name="feature1", lt=10)])

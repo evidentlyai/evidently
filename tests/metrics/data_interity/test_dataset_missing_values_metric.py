@@ -102,7 +102,7 @@ def test_dataset_missing_values_metric_different_missing_values() -> None:
     assert result.current.number_of_missing_values == 10
     assert result.reference is None
 
-    # test custom list of null values, no default, but with Pandas nulls
+    # test custom list of missing values, no default, but with Pandas null-like values
     metric = DatasetMissingValuesMetric(missing_values=["", 0, "n/a", -9999, None], replace=True)
     result = metric.calculate(
         data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
@@ -112,7 +112,7 @@ def test_dataset_missing_values_metric_different_missing_values() -> None:
     assert result.current.number_of_missing_values == 11
     assert result.reference is None
 
-    # test custom list of null values and ignore pandas null values
+    # test custom list of null values and ignore pandas null-like values
     metric = DatasetMissingValuesMetric(missing_values=["", 0, "n/a", -9999], replace=True)
     result = metric.calculate(
         data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
