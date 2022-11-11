@@ -41,7 +41,7 @@ GroupingTypes.TestGroup.add_value(DATA_INTEGRITY_GROUP)
 
 class BaseIntegrityValueTest(BaseCheckValueTest, ABC):
     group = DATA_INTEGRITY_GROUP.id
-    data_integrity_metric: DataIntegrityMetrics
+    metric: DataIntegrityMetrics
 
     def __init__(
         self,
@@ -53,15 +53,9 @@ class BaseIntegrityValueTest(BaseCheckValueTest, ABC):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        data_integrity_metric: Optional[DataIntegrityMetrics] = None,
     ):
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
-
-        if data_integrity_metric is None:
-            self.data_integrity_metric = DataIntegrityMetrics()
-
-        else:
-            self.data_integrity_metric = data_integrity_metric
+        self.metric = DataIntegrityMetrics()
 
 
 class TestNumberOfColumns(BaseIntegrityValueTest):
@@ -73,7 +67,7 @@ class TestNumberOfColumns(BaseIntegrityValueTest):
         if self.condition.has_condition():
             return self.condition
 
-        reference_stats = self.data_integrity_metric.get_result().reference
+        reference_stats = self.metric.get_result().reference
 
         if reference_stats is not None:
             return TestValueCondition(eq=reference_stats.number_of_columns)
@@ -81,7 +75,7 @@ class TestNumberOfColumns(BaseIntegrityValueTest):
         return TestValueCondition(gt=0)
 
     def calculate_value_for_test(self) -> Numeric:
-        return self.data_integrity_metric.get_result().current.number_of_columns
+        return self.metric.get_result().current.number_of_columns
 
     def get_description(self, value: Numeric) -> str:
         return f"The number of columns is {value}. The test threshold is {self.get_condition()}."
@@ -98,9 +92,9 @@ class TestNumberOfColumnsRenderer(TestRenderer):
     def render_html(self, obj: TestNumberOfColumns) -> TestHtmlInfo:
         info = super().render_html(obj)
         columns = ["column name", "current dtype"]
-        dict_curr = obj.data_integrity_metric.get_result().current.columns_type
+        dict_curr = obj.metric.get_result().current.columns_type
         dict_ref = None
-        reference_stats = obj.data_integrity_metric.get_result().reference
+        reference_stats = obj.metric.get_result().reference
 
         if reference_stats is not None:
             dict_ref = reference_stats.columns_type
@@ -120,7 +114,7 @@ class TestNumberOfRows(BaseIntegrityValueTest):
         if self.condition.has_condition():
             return self.condition
 
-        reference_stats = self.data_integrity_metric.get_result().reference
+        reference_stats = self.metric.get_result().reference
 
         if reference_stats is not None:
             return TestValueCondition(eq=approx(reference_stats.number_of_rows, relative=0.1))
@@ -128,7 +122,7 @@ class TestNumberOfRows(BaseIntegrityValueTest):
         return TestValueCondition(gt=30)
 
     def calculate_value_for_test(self) -> Numeric:
-        return self.data_integrity_metric.get_result().current.number_of_rows
+        return self.metric.get_result().current.number_of_rows
 
     def get_description(self, value: Numeric) -> str:
         return f"The number of rows is {value}. The test threshold is {self.get_condition()}."
@@ -159,15 +153,9 @@ class BaseIntegrityNullValuesTest(BaseCheckValueTest, ABC):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        metric: Optional[DatasetMissingValuesMetric] = None,
     ):
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
-
-        if metric is None:
-            self.metric = DatasetMissingValuesMetric(values=null_values, replace=replace)
-
-        else:
-            self.metric = metric
+        self.metric = DatasetMissingValuesMetric(values=null_values, replace=replace)
 
 
 class BaseTestNullValuesRenderer(TestRenderer):
@@ -544,16 +532,10 @@ class BaseIntegrityColumnNullValuesTest(BaseCheckValueTest, ABC):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        metric: Optional[DatasetMissingValuesMetric] = None,
     ):
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
         self.column_name = column_name
-
-        if metric is None:
-            self.metric = DatasetMissingValuesMetric(values=null_values, replace=replace)
-
-        else:
-            self.metric = metric
+        self.metric = DatasetMissingValuesMetric(values=null_values, replace=replace)
 
 
 class TestColumnNumberOfDifferentNulls(BaseIntegrityColumnNullValuesTest):
@@ -706,7 +688,7 @@ class TestNumberOfConstantColumns(BaseIntegrityValueTest):
         if self.condition.has_condition():
             return self.condition
 
-        reference_stats = self.data_integrity_metric.get_result().reference
+        reference_stats = self.metric.get_result().reference
 
         if reference_stats is not None:
             value = reference_stats.number_of_constant_columns
@@ -715,7 +697,7 @@ class TestNumberOfConstantColumns(BaseIntegrityValueTest):
         return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
-        return self.data_integrity_metric.get_result().current.number_of_constant_columns
+        return self.metric.get_result().current.number_of_constant_columns
 
     def get_description(self, value: Numeric) -> str:
         return f"The number of constant columns is {value}. The test threshold is {self.get_condition()}."
@@ -732,9 +714,9 @@ class TestNumberOfConstantColumnsRenderer(TestRenderer):
     def render_html(self, obj: TestNumberOfConstantColumns) -> TestHtmlInfo:
         info = super().render_html(obj)
         columns = ["column name", "current nunique"]
-        dict_curr = obj.data_integrity_metric.get_result().current.number_uniques_by_columns
+        dict_curr = obj.metric.get_result().current.number_uniques_by_columns
         dict_ref = {}
-        reference_stats = obj.data_integrity_metric.get_result().reference
+        reference_stats = obj.metric.get_result().reference
 
         if reference_stats is not None:
             dict_ref = reference_stats.number_uniques_by_columns
@@ -754,11 +736,11 @@ class TestNumberOfEmptyRows(BaseIntegrityValueTest):
         if self.condition.has_condition():
             return self.condition
 
-        reference_stats = self.data_integrity_metric.get_result().reference
+        reference_stats = self.metric.get_result().reference
 
         if reference_stats is not None:
             ref_number_of_empty_rows = reference_stats.number_of_empty_rows
-            curr_number_of_rows = self.data_integrity_metric.get_result().current.number_of_rows
+            curr_number_of_rows = self.metric.get_result().current.number_of_rows
             ref_number_of_rows = reference_stats.number_of_rows
             mult = curr_number_of_rows / ref_number_of_rows
             return TestValueCondition(eq=approx(ref_number_of_empty_rows * mult, 0.1))
@@ -766,7 +748,7 @@ class TestNumberOfEmptyRows(BaseIntegrityValueTest):
         return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
-        return self.data_integrity_metric.get_result().current.number_of_empty_rows
+        return self.metric.get_result().current.number_of_empty_rows
 
     def get_description(self, value: Numeric) -> str:
         return f"Number of Empty Rows is {value}. The test threshold is {self.get_condition()}."
@@ -781,7 +763,7 @@ class TestNumberOfEmptyColumns(BaseIntegrityValueTest):
         if self.condition.has_condition():
             return self.condition
 
-        reference_stats = self.data_integrity_metric.get_result().reference
+        reference_stats = self.metric.get_result().reference
 
         if reference_stats is not None:
             return TestValueCondition(lte=reference_stats.number_of_empty_columns)
@@ -789,7 +771,7 @@ class TestNumberOfEmptyColumns(BaseIntegrityValueTest):
         return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
-        return self.data_integrity_metric.get_result().current.number_of_empty_columns
+        return self.metric.get_result().current.number_of_empty_columns
 
     def get_description(self, value: Numeric) -> str:
         return f"Number of Empty Columns is {value}. The test threshold is {self.get_condition()}."
@@ -800,9 +782,9 @@ class TestNumberOfEmptyColumnsRenderer(TestRenderer):
     def render_html(self, obj: TestNumberOfEmptyColumns) -> TestHtmlInfo:
         info = super().render_html(obj)
         columns = ["column name", "current number of NaNs"]
-        dict_curr = obj.data_integrity_metric.get_result().current.nans_by_columns
+        dict_curr = obj.metric.get_result().current.nans_by_columns
         dict_ref = {}
-        reference_stats = obj.data_integrity_metric.get_result().reference
+        reference_stats = obj.metric.get_result().reference
 
         if reference_stats is not None:
             dict_ref = reference_stats.nans_by_columns
@@ -822,11 +804,11 @@ class TestNumberOfDuplicatedRows(BaseIntegrityValueTest):
         if self.condition.has_condition():
             return self.condition
 
-        reference_stats = self.data_integrity_metric.get_result().reference
+        reference_stats = self.metric.get_result().reference
 
         if reference_stats is not None:
             ref_num_of_duplicates = reference_stats.number_of_duplicated_rows
-            curr_number_of_rows = self.data_integrity_metric.get_result().current.number_of_rows
+            curr_number_of_rows = self.metric.get_result().current.number_of_rows
             ref_number_of_rows = reference_stats.number_of_rows
             mult = curr_number_of_rows / ref_number_of_rows
             return TestValueCondition(eq=approx(ref_num_of_duplicates * mult, 0.1))
@@ -834,7 +816,7 @@ class TestNumberOfDuplicatedRows(BaseIntegrityValueTest):
         return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
-        return self.data_integrity_metric.get_result().current.number_of_duplicated_rows
+        return self.metric.get_result().current.number_of_duplicated_rows
 
     def get_description(self, value: Numeric) -> str:
         return f"The number of duplicate rows is {value}. The test threshold is {self.get_condition()}."
@@ -858,7 +840,7 @@ class TestNumberOfDuplicatedColumns(BaseIntegrityValueTest):
         if self.condition.has_condition():
             return self.condition
 
-        reference_stats = self.data_integrity_metric.get_result().reference
+        reference_stats = self.metric.get_result().reference
 
         if reference_stats is not None:
             value = reference_stats.number_of_duplicated_columns
@@ -867,7 +849,7 @@ class TestNumberOfDuplicatedColumns(BaseIntegrityValueTest):
         return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
-        return self.data_integrity_metric.get_result().current.number_of_duplicated_columns
+        return self.metric.get_result().current.number_of_duplicated_columns
 
     def get_description(self, value: Numeric) -> str:
         return f"The number of duplicate columns is {value}. The test threshold is {self.get_condition()}."
@@ -897,16 +879,10 @@ class BaseIntegrityByColumnsConditionTest(BaseCheckValueTest, ABC):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        data_integrity_metric: Optional[DataIntegrityMetrics] = None,
     ):
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
         self.column_name = column_name
-
-        if data_integrity_metric is None:
-            self.data_integrity_metric = DataIntegrityMetrics()
-
-        else:
-            self.data_integrity_metric = data_integrity_metric
+        self.data_integrity_metric = DataIntegrityMetrics()
 
     def groups(self) -> Dict[str, str]:
         if self.column_name is not None:
@@ -916,17 +892,12 @@ class BaseIntegrityByColumnsConditionTest(BaseCheckValueTest, ABC):
 
 class BaseIntegrityOneColumnTest(Test, ABC):
     group = DATA_INTEGRITY_GROUP.id
-    data_integrity_metric: ColumnSummaryMetric
+    metric: ColumnSummaryMetric
     column_name: str
 
-    def __init__(self, column_name: str, data_integrity_metric: Optional[ColumnSummaryMetric] = None):
+    def __init__(self, column_name: str):
         self.column_name = column_name
-
-        if data_integrity_metric is None:
-            self.data_integrity_metric = ColumnSummaryMetric(column_name)
-
-        else:
-            self.data_integrity_metric = data_integrity_metric
+        self.metric = ColumnSummaryMetric(column_name)
 
     def groups(self) -> Dict[str, str]:
         return {GroupingTypes.ByFeature.id: self.column_name}
@@ -936,11 +907,11 @@ class TestColumnAllConstantValues(BaseIntegrityOneColumnTest):
     """Test that there is only one unique value in a column"""
 
     name = "All Constant Values in a Column"
-    data_integrity_metric: ColumnSummaryMetric
+    metric: ColumnSummaryMetric
 
     def check(self):
-        uniques_in_column = self.data_integrity_metric.get_result().current_characteristics.unique
-        number_of_rows = self.data_integrity_metric.get_result().current_characteristics.number_of_rows
+        uniques_in_column = self.metric.get_result().current_characteristics.unique
+        number_of_rows = self.metric.get_result().current_characteristics.number_of_rows
         column_name = self.column_name
 
         description = (
@@ -962,7 +933,7 @@ class TestColumnAllConstantValuesRenderer(TestRenderer):
     def render_html(self, obj: TestColumnAllConstantValues) -> TestHtmlInfo:
         info = super().render_html(obj)
         column_name = obj.column_name
-        counts_data = obj.data_integrity_metric.get_result().plot_data.counts_of_values
+        counts_data = obj.metric.get_result().plot_data.counts_of_values
         if counts_data is not None:
             curr_df = counts_data["current"]
             ref_df = None
@@ -979,9 +950,9 @@ class TestColumnAllUniqueValues(BaseIntegrityOneColumnTest):
     name = "All Unique Values in a Column"
 
     def check(self):
-        uniques_in_column = self.data_integrity_metric.get_result().current_characteristics.unique
-        number_of_rows = self.data_integrity_metric.get_result().current_characteristics.number_of_rows
-        nans_in_column = self.data_integrity_metric.get_result().current_characteristics.missing
+        uniques_in_column = self.metric.get_result().current_characteristics.unique
+        number_of_rows = self.metric.get_result().current_characteristics.number_of_rows
+        nans_in_column = self.metric.get_result().current_characteristics.missing
         column_name = self.column_name
 
         description = (
@@ -1003,7 +974,7 @@ class TestColumnAllUniqueValuesRenderer(TestRenderer):
     def render_html(self, obj: TestColumnAllUniqueValues) -> TestHtmlInfo:
         info = super().render_html(obj)
         column_name = obj.column_name
-        counts_data = obj.data_integrity_metric.get_result().plot_data.counts_of_values
+        counts_data = obj.metric.get_result().plot_data.counts_of_values
         if counts_data is not None:
             curr_df = counts_data["current"]
             ref_df = None
@@ -1020,35 +991,28 @@ class TestColumnsType(Test):
     group = DATA_INTEGRITY_GROUP.id
     name = "Column Types"
     columns_type: Optional[dict]
-    data_integrity_metric: DataIntegrityMetrics
+    metric: DataIntegrityMetrics
 
     @dataclasses.dataclass
     class Result(TestResult):
         columns_types: Dict[str, Tuple[str, str]] = dataclasses.field(default_factory=dict)
 
-    def __init__(
-        self, columns_type: Optional[dict] = None, data_integrity_metric: Optional[DataIntegrityMetrics] = None
-    ):
+    def __init__(self, columns_type: Optional[dict] = None):
         self.columns_type = columns_type
-
-        if data_integrity_metric is None:
-            self.data_integrity_metric = DataIntegrityMetrics()
-
-        else:
-            self.data_integrity_metric = data_integrity_metric
+        self.metric = DataIntegrityMetrics()
 
     def check(self):
         status = TestResult.SUCCESS
-        data_columns_type = self.data_integrity_metric.get_result().current.columns_type
+        data_columns_type = self.metric.get_result().current.columns_type
 
         if self.columns_type is None:
-            if self.data_integrity_metric.get_result().reference is None:
+            if self.metric.get_result().reference is None:
                 status = TestResult.ERROR
                 description = "Cannot compare column types without conditions or a reference"
                 return TestResult(name=self.name, description=description, status=status)
 
             # get types from reference
-            columns_type = self.data_integrity_metric.get_result().reference.columns_type
+            columns_type = self.metric.get_result().reference.columns_type
 
         else:
             columns_type = self.columns_type
@@ -1130,12 +1094,12 @@ class TestColumnValueRegExp(BaseCheckValueTest, ABC):
     group = DATA_INTEGRITY_GROUP.id
     name = "RegExp Match"
     metric: ColumnRegExpMetric
-    column_name: Optional[str]
+    column_name: str
 
     def __init__(
         self,
-        column_name: Optional[str] = None,
-        reg_exp: Optional[str] = None,
+        column_name: str,
+        reg_exp: str,
         eq: Optional[Numeric] = None,
         gt: Optional[Numeric] = None,
         gte: Optional[Numeric] = None,
@@ -1144,25 +1108,10 @@ class TestColumnValueRegExp(BaseCheckValueTest, ABC):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        metric: Optional[ColumnRegExpMetric] = None,
     ):
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
         self.column_name = column_name
-
-        if (column_name is None or reg_exp is None) and metric is None:
-            raise ValueError("Not enough parameters for the test")
-
-        if metric is None:
-            if reg_exp is None:
-                raise ValueError("Regexp should be present")
-
-            if column_name is None:
-                raise ValueError("Column name should be present")
-
-            self.metric = ColumnRegExpMetric(column_name=column_name, reg_exp=reg_exp)
-
-        else:
-            self.metric = metric
+        self.metric = ColumnRegExpMetric(column_name=column_name, reg_exp=reg_exp)
 
     def groups(self) -> Dict[str, str]:
         if self.column_name is not None:
