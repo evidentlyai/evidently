@@ -1,8 +1,8 @@
 ---
-description: List of all tests available in Evidently.
+description: A reference page on all the tests available in Evidently.
 ---
 
-How to read the tables:
+# How to read the tables
 
 * **Test**: the name of an individual test that you can include in a Test Suite.  
 * **Description**: plain text explanation of the test. We also specify whether it applies to the whole dataset or individual columns.
@@ -20,7 +20,7 @@ We organize the tests into logical groups. Note that the groups do not match the
 We are doing our best to maintain this page up to date. In case of discrepancies, consult the code on GitHub (API reference coming soon!) or the current version of the "All tests" example notebook in the [Examples](../get-started/examples.md) section. If you notice an error, please send us a pull request to update the documentation! 
 {% endhint %}
 
-## Data integrity
+# Data integrity
 
 If you provide the reference dataset, Evidently will automatically derive all relevant statistics (e.g., share of nulls, etc.) to shape expectations. If you do not provide the reference, you can pass these conditions as a parameter, or run tests with default parameters.
 
@@ -53,7 +53,7 @@ TestNumberOfNulls(null_values=["", 0, "n/a", -9999, None], replace=True)
 | TestColumnAllUniqueValues(column_name='name') | Column-level. <br><br> Tests if all the values in a given column are unique. | **Required**: <br> column_name <br>| Expects all unique (e.g., IDs).<br><br>The test fails if at least one value in a given column is not unique. |
 | TestColumnValueRegExp(column_name='name, reg_exp='^[0..9]') | Column-level. <br><br> Tests if the values in the column match a defined regular expression.<br>You need to specify the regular expression to run this test. | **Required**: <br> column_name <br>reg_exp | Expects +/-10% or all to match.<br><br>**With reference**: the test fails if the share of values that match a regular expression is over 10% higher or lower than in the reference.<br>**No reference**: the test fails if at least one of the values does not match a regular expression. |
 
-## Data quality
+# Data quality
 
 If you provide the reference dataset, Evidently will automatically derive all relevant statistics (e.g., min value, max value, value range, value list, etc.) to shape expectations. If you do not provide the reference, you can pass these conditions as a parameter, or run tests with default parameters.  
 
@@ -81,7 +81,7 @@ If you provide the reference dataset, Evidently will automatically derive all re
 | TestShareOfOutListValues(column_name='cat_column')    | Column-level. <br><br> Tests the share of values in a given column that are out of list.  |  **Required**: <br>column_name <br><br>**Optional**:<br> values: List[str]<br><br>*standard parameters* | Expects all values to be in the list. <br><br>**With reference**: the test fails if the column contains values out of the list (as seen in reference). <br>**No reference**: N/A |
 | TestValueQuantile(column_name='num_column', quantile=0.25) | Column-level. <br><br> Tests that a defined quantile value is within the expected range. |  **Required**: <br>column_name <br> quantile <br><br>**Optional**:<br> *standard parameters* | Expects +/-10%.<br><br>**With reference**: the test fails if the quantile value is over 10% higher or lower. <br>**No reference**: N/A |
 
-## Data drift
+# Data drift
 
 By default, all data drift tests use the Evidently [drift detection logic](data-drift-algorithm.md) that selects a different statistical test or metric based on feature type and volume. You always need a reference dataset.
 
@@ -93,7 +93,7 @@ To modify the logic or select a different test, you should pass a DataDrift [Opt
 | TestShareOfDriftedColumns() | Dataset-level.  <br><br> Compares the distribution of each column in the current dataset to the reference and computes the share of drifting features. | **Optional**:<br> DataDriftOptions <br><br>*standard parameters* | Expects =< ⅓ features to drift.<br><br>**With reference:** If > 1/3 of features drifted, the test fails.<br>No reference: N/A |
 | TestColumnValueDrift(column_name='name')| Column-level. <br><br> Compares the distribution of values in a given column to the reference. | **Required**: column_name <br><br> **Optional**:<br> DataDriftOptions <br><br>*standard parameters* | Expects no drift.<br><br>**With reference:** the test fails if the distribution drift is detected in a given column.<br>**No reference:** N/A |
 
-## Regression
+# Regression
 
 If there is no reference data, Evidently will compare the model performance to a dummy model that predicts the optimal constant (varies by the metric).  
 
@@ -106,7 +106,7 @@ If there is no reference data, Evidently will compare the model performance to a
 | TestValueAbsMaxError() | Dataset-level. <br><br> Computes the absolute maximum error and compares it to the reference or against a defined constraint.| **Optional**: <br>*standard parameters* | Expects +/-10% or better than a dummy model.<br><br>**With reference**: if the absolute maximum error is higher or lower by over 10%, the test fails. <br>**No reference**: the test fails if the absolute maximum error is higher than the absolute maximum error of the dummy model that predicts the optimal constant (median of the target value). |
 | TestValueR2Score() | Dataset-level. <br><br> Computes the R2 Score (coefficient of determination) and compares it to the reference or against a defined constraint. | **Optional**: <br>*standard parameters*  | Expects +/-10% or > 0.<br><br>**With reference**: if R2 is higher or lower by over 10%, the test fails.<br>**No reference**: the test fails if the R2 value is =< 0. |
 
-## Classification
+# Classification
 
 You can apply the tests for non-probabilistic, probabilistic classification, and ranking. Metrics will be calculated slightly differently depending on the provided inputs: only labels, probabilities, decision threshold, and/or K (to compute, e.g., precision@K). 
 
@@ -126,7 +126,7 @@ If there is no reference data, Evidently will compare the model performance to a
 | TestFPR() | Dataset-level. <br><br> Computes the False Positive Rate and compares it to the reference or against a defined constraint. | **Optional**: <br>*standard parameters*  <br><br>classification_threshold: float<br>k: union[float, int]| Expects +/-20% or better than a dummy model.<br><br>**With reference**: the test fails if the FPR is over 20% higher or lower.<br>**No reference**: the test fails if the FPR is higher than the FPR of the dummy model.<br>The default decision threshold is 0.5.  |
 | TestFNR()| Dataset-level. <br><br> Computes the False Negative Rate and compares it to the reference or against a defined constraint. | **Optional**: <br> *standard parameters* <br><br>classification_threshold: float<br>k: union[float, int]  | Expects +/-20% or better than a dummy model.<br><br>**With reference**: the test fails if the FNR is over 20% higher or lower.<br>**No reference**: the test fails if the FNR is higher than the FNR of the dummy model. <br>The default decision threshold is 0.5.  |
 
-## Probabilistic classification
+# Probabilistic classification
 
 Additional tests apply to the probabilistic classification. 
 
