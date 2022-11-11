@@ -565,8 +565,8 @@ class ClassificationPerformanceMetricsTopKRenderer(MetricRenderer):
 
 
 class ClassificationPerformanceMetricsThreshold(ClassificationPerformanceMetricsThresholdBase):
-    def __init__(self, classification_threshold: float):
-        self.threshold = classification_threshold
+    def __init__(self, threshold: float):
+        self.threshold = threshold
 
     def get_threshold(self, dataset: pd.DataFrame, mapping: ColumnMapping) -> float:
         return self.threshold
