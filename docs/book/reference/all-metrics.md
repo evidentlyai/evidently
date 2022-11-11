@@ -18,18 +18,18 @@ We are doing our best to maintain this page up to date. In case of discrepancies
 
 ## Data Integrity
 
-**Note on Null-related metrics**. The metrics that calculate the number or share of nulls detect four types of nulls by default: Pandas nulls (None, NAN, etc.), "" (empty string), Numpy "-inf" value, Numpy "inf" value. You can also pass a custom list of nulls as a parameter and specify if you want to replace the default list. Example:
+**Note on Missing values related metrics**. The metrics that calculate the number or share of missing values detect four types of the values by default: Pandas nulls (None, NAN, etc.), "" (empty string), Numpy "-inf" value, Numpy "inf" value. You can also pass a custom missing values as a parameter and specify if you want to replace the default list. Example:
 
 ```python
-DatasetMissingValuesMetric(values=["", 0, "n/a", -9999, None], replace=True)
+DatasetMissingValuesMetric(missing_values=["", 0, "n/a", -9999, None], replace=True)
 ```
-| Metric | Description | Parameters |
-|---|---|---|
-| DatasetSummaryMetric() | Dataset-level.<br><br>Calculates various descriptive statistics for the dataset, incl. the number of columns, rows, cat/num features, missing values, empty values, and duplicate values.  | **Required:**<br>n/a<br><br>**Optional:**<br>values = [], replace = True/False (default = four types of nulls, see above) <br><br>almost_constant_threshold (default = 0.95)<br><br>almost_duplicated_threshold (default = 0.95) |
-| DatasetMissingValuesMetric() | Dataset-level.<br><br>Calculates the number and share of missing values in the dataset. Displays the number of missing values per column. | **Required:**:<br>n/a<br><br>**Optional:**<br>values = [], replace = True/False (default = four types of nulls, see above)  |
-| ColumnSummaryMetric(column_name="age") | Column-level.<br><br>Calculates various descriptive statistics for the column, incl. the number of missing, empty, duplicate values, etc. <br><br>The stats depend on the column type: numerical, categorical, or DateTime. | **Required:**<br>column_name<br><br>**Optional:**<br>n/a |
-| ColumnMissingValuesMetric(column_name="education")<br>  | Column-level.<br><br>Calculates the number and share of missing values in the column. | **Required:**<br>column_name<br><br>**Optional:**<br>values = [], replace = True/False (default = four types of nulls by default, see above) |
-| ColumnRegExpMetric(column_name="relationship", reg_exp=r".*child.*") | Column-level.<br><br>Calculates the number and share of the values that do not match a defined regular expression.  | **Required:**<br>column_name<br>reg_exp<br><br>**Optional:**<br>top (the number of the most mismatched columns to return, default = 10)  |
+| Metric | Description | Parameters                                                                                                                                                                                                                       |
+|---|---|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| DatasetSummaryMetric() | Dataset-level.<br><br>Calculates various descriptive statistics for the dataset, incl. the number of columns, rows, cat/num features, missing values, empty values, and duplicate values.  | **Required:**<br>n/a<br><br>**Optional:**<br>missing_values = [], replace = True/False (default = four types of nulls, see above) <br><br>almost_constant_threshold (default = 0.95)<br><br>almost_duplicated_threshold (default = 0.95) |
+| DatasetMissingValuesMetric() | Dataset-level.<br><br>Calculates the number and share of missing values in the dataset. Displays the number of missing values per column. | **Required:**:<br>n/a<br><br>**Optional:**<br>missing_values = [], replace = True/False (default = four types of nulls, see above)                                                                                               |
+| ColumnSummaryMetric(column_name="age") | Column-level.<br><br>Calculates various descriptive statistics for the column, incl. the number of missing, empty, duplicate values, etc. <br><br>The stats depend on the column type: numerical, categorical, or DateTime. | **Required:**<br>column_name<br><br>**Optional:**<br>n/a                                                                                                                                                                         |
+| ColumnMissingValuesMetric(column_name="education")<br>  | Column-level.<br><br>Calculates the number and share of missing values in the column. | **Required:**<br>column_name<br><br>**Optional:**<br>missing_values = [], replace = True/False (default = four types of nulls by default, see above)                                                                                     |
+| ColumnRegExpMetric(column_name="relationship", reg_exp=r".*child.*") | Column-level.<br><br>Calculates the number and share of the values that do not match a defined regular expression.  | **Required:**<br>column_name<br>reg_exp<br><br>**Optional:**<br>top (the number of the most mismatched columns to return, default = 10)                                                                                          |
 
 ## Data Quality
 
