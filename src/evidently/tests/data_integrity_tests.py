@@ -12,8 +12,8 @@ from pandas.core.dtypes.common import infer_dtype_from_object
 
 from evidently.metrics import ColumnRegExpMetric
 from evidently.metrics import ColumnSummaryMetric
-from evidently.metrics import DataIntegrityMetrics
 from evidently.metrics import DatasetMissingValuesMetric
+from evidently.metrics import DatasetSummaryMetric
 from evidently.metrics.data_integrity.dataset_missing_values_metric import DatasetMissingValues
 from evidently.metrics.data_integrity.dataset_missing_values_metric import DatasetMissingValuesMetricResult
 from evidently.model.widget import BaseWidgetInfo
@@ -41,7 +41,7 @@ GroupingTypes.TestGroup.add_value(DATA_INTEGRITY_GROUP)
 
 class BaseIntegrityValueTest(BaseCheckValueTest, ABC):
     group = DATA_INTEGRITY_GROUP.id
-    data_integrity_metric: DataIntegrityMetrics
+    data_integrity_metric: DatasetSummaryMetric
 
     def __init__(
         self,
@@ -53,12 +53,12 @@ class BaseIntegrityValueTest(BaseCheckValueTest, ABC):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        data_integrity_metric: Optional[DataIntegrityMetrics] = None,
+        data_integrity_metric: Optional[DatasetSummaryMetric] = None,
     ):
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
 
         if data_integrity_metric is None:
-            self.data_integrity_metric = DataIntegrityMetrics()
+            self.data_integrity_metric = DatasetSummaryMetric()
 
         else:
             self.data_integrity_metric = data_integrity_metric
@@ -882,38 +882,6 @@ class TestNumberOfDuplicatedColumnsRenderer(TestRenderer):
         return base
 
 
-class BaseIntegrityByColumnsConditionTest(BaseCheckValueTest, ABC):
-    group = DATA_INTEGRITY_GROUP.id
-    data_integrity_metric: DataIntegrityMetrics
-
-    def __init__(
-        self,
-        column_name: Optional[str] = None,
-        eq: Optional[Numeric] = None,
-        gt: Optional[Numeric] = None,
-        gte: Optional[Numeric] = None,
-        is_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        lt: Optional[Numeric] = None,
-        lte: Optional[Numeric] = None,
-        not_eq: Optional[Numeric] = None,
-        not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        data_integrity_metric: Optional[DataIntegrityMetrics] = None,
-    ):
-        super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
-        self.column_name = column_name
-
-        if data_integrity_metric is None:
-            self.data_integrity_metric = DataIntegrityMetrics()
-
-        else:
-            self.data_integrity_metric = data_integrity_metric
-
-    def groups(self) -> Dict[str, str]:
-        if self.column_name is not None:
-            return {GroupingTypes.ByFeature.id: self.column_name}
-        return {}
-
-
 class BaseIntegrityOneColumnTest(Test, ABC):
     group = DATA_INTEGRITY_GROUP.id
     data_integrity_metric: ColumnSummaryMetric
@@ -1020,19 +988,19 @@ class TestColumnsType(Test):
     group = DATA_INTEGRITY_GROUP.id
     name = "Column Types"
     columns_type: Optional[dict]
-    data_integrity_metric: DataIntegrityMetrics
+    data_integrity_metric: DatasetSummaryMetric
 
     @dataclasses.dataclass
     class Result(TestResult):
         columns_types: Dict[str, Tuple[str, str]] = dataclasses.field(default_factory=dict)
 
     def __init__(
-        self, columns_type: Optional[dict] = None, data_integrity_metric: Optional[DataIntegrityMetrics] = None
+        self, columns_type: Optional[dict] = None, data_integrity_metric: Optional[DatasetSummaryMetric] = None
     ):
         self.columns_type = columns_type
 
         if data_integrity_metric is None:
-            self.data_integrity_metric = DataIntegrityMetrics()
+            self.data_integrity_metric = DatasetSummaryMetric()
 
         else:
             self.data_integrity_metric = data_integrity_metric
