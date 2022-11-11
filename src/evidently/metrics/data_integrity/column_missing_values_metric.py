@@ -77,7 +77,7 @@ class ColumnMissingValuesMetric(Metric[ColumnMissingValuesMetricResult]):
         # use frozenset because metrics parameters should be immutable/hashable for deduplication
         self.values = frozenset(values)
 
-    def _calculate_null_values_stats(self, column: pd.Series) -> ColumnMissingValues:
+    def _calculate_missing_values_stats(self, column: pd.Series) -> ColumnMissingValues:
         different_missing_values = {value: 0 for value in self.values}
         number_of_missing_values = 0
 
@@ -107,7 +107,7 @@ class ColumnMissingValuesMetric(Metric[ColumnMissingValuesMetricResult]):
         }
 
         number_of_different_missing_values = sum(
-            [1 for null_value in different_missing_values if different_missing_values[null_value] > 0]
+            [1 for value in different_missing_values if different_missing_values[value] > 0]
         )
 
         return ColumnMissingValues(
@@ -125,21 +125,21 @@ class ColumnMissingValuesMetric(Metric[ColumnMissingValuesMetricResult]):
         if self.column_name not in data.current_data:
             raise ValueError(f"Column {self.column_name} is not in current data.")
 
-        current_null_values = self._calculate_null_values_stats(data.current_data[self.column_name])
+        current_missing_values = self._calculate_missing_values_stats(data.current_data[self.column_name])
 
         if data.reference_data is None:
-            reference_null_values: Optional[ColumnMissingValues] = None
+            reference_missing_values: Optional[ColumnMissingValues] = None
 
         else:
             if self.column_name not in data.reference_data:
                 raise ValueError(f"Column {self.column_name} is not in reference data.")
 
-            reference_null_values = self._calculate_null_values_stats(data.reference_data[self.column_name])
+            reference_missing_values = self._calculate_missing_values_stats(data.reference_data[self.column_name])
 
         return ColumnMissingValuesMetricResult(
             column_name=self.column_name,
-            current=current_null_values,
-            reference=reference_null_values,
+            current=current_missing_values,
+            reference=reference_missing_values,
         )
 
 
