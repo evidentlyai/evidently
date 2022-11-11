@@ -55,7 +55,7 @@ class ColumnMissingValuesMetric(Metric[ColumnMissingValuesMetricResult]):
     Value None in the list means that Pandas null values will be included in the calculation.
 
     If `replace` parameter is False - add defaults to user's list.
-    If `replace` parameter is True - use values from `null_values` list only.
+    If `replace` parameter is True - use values from `missing_values` list only.
     """
 
     # default missing values list

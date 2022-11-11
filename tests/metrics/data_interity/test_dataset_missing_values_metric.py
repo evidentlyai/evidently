@@ -18,7 +18,7 @@ from evidently.report import Report
                 }
             ),
             None,
-            DatasetMissingValuesMetric(values=[None]),
+            DatasetMissingValuesMetric(missing_values=[None]),
         ),
         (
             pd.DataFrame(
@@ -31,7 +31,7 @@ from evidently.report import Report
                     "feature": [" a", np.nan, "\tb", pd.NaT, np.inf],
                 }
             ),
-            DatasetMissingValuesMetric(values=[None]),
+            DatasetMissingValuesMetric(missing_values=[None]),
         ),
     ),
 )
@@ -62,11 +62,11 @@ def test_dataset_missing_values_metric_different_null_values() -> None:
     )
     assert result is not None
     # expect na values and an empty string as null-values
-    assert result.current.different_nulls == {None: 5, -np.inf: 1, np.inf: 1, "": 2}
-    assert result.current.number_of_different_nulls == 4
-    assert result.current.number_of_missed_values == 9
-    assert result.current.number_of_rows_with_nulls == 3
-    assert result.current.different_nulls_by_column == {
+    assert result.current.different_missing_values == {None: 5, -np.inf: 1, np.inf: 1, "": 2}
+    assert result.current.number_of_different_missing_values == 4
+    assert result.current.number_of_missing_values == 9
+    assert result.current.number_of_rows_with_missing_values == 3
+    assert result.current.different_missing_values_by_column == {
         "category_feature_1": {None: 0, -np.inf: 0, np.inf: 0, "": 1},
         "category_feature_2": {None: 1, -np.inf: 0, np.inf: 1, "": 1},
         "numerical_feature_1": {None: 0, -np.inf: 0, np.inf: 0, "": 0},
@@ -74,7 +74,7 @@ def test_dataset_missing_values_metric_different_null_values() -> None:
         "prediction": {None: 1, -np.inf: 0, np.inf: 0, "": 0},
         "target": {None: 2, -np.inf: 0, np.inf: 0, "": 0},
     }
-    assert result.current.number_of_different_nulls_by_column == {
+    assert result.current.number_of_different_missing_values_by_column == {
         "category_feature_1": 1,
         "category_feature_2": 3,
         "numerical_feature_1": 0,
@@ -82,7 +82,7 @@ def test_dataset_missing_values_metric_different_null_values() -> None:
         "prediction": 1,
         "target": 1,
     }
-    assert result.current.number_of_nulls_by_column == {
+    assert result.current.number_of_missing_values_by_column == {
         "category_feature_1": 1,
         "category_feature_2": 3,
         "numerical_feature_1": 0,
@@ -92,34 +92,34 @@ def test_dataset_missing_values_metric_different_null_values() -> None:
     }
     assert result.reference is None
 
-    metric = DatasetMissingValuesMetric(values=["n/a"], replace=False)
+    metric = DatasetMissingValuesMetric(missing_values=["n/a"], replace=False)
     result = metric.calculate(
         data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
     )
     assert result is not None
     # expect n/a and other defaults as null-values
-    assert result.current.number_of_different_nulls == 5
-    assert result.current.number_of_missed_values == 10
+    assert result.current.number_of_different_missing_values == 5
+    assert result.current.number_of_missing_values == 10
     assert result.reference is None
 
     # test custom list of null values, no default, but with Pandas nulls
-    metric = DatasetMissingValuesMetric(values=["", 0, "n/a", -9999, None], replace=True)
+    metric = DatasetMissingValuesMetric(missing_values=["", 0, "n/a", -9999, None], replace=True)
     result = metric.calculate(
         data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
     )
     assert result is not None
-    assert result.current.number_of_different_nulls == 5
-    assert result.current.number_of_missed_values == 11
+    assert result.current.number_of_different_missing_values == 5
+    assert result.current.number_of_missing_values == 11
     assert result.reference is None
 
     # test custom list of null values and ignore pandas null values
-    metric = DatasetMissingValuesMetric(values=["", 0, "n/a", -9999], replace=True)
+    metric = DatasetMissingValuesMetric(missing_values=["", 0, "n/a", -9999], replace=True)
     result = metric.calculate(
         data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
     )
     assert result is not None
-    assert result.current.number_of_different_nulls == 4
-    assert result.current.number_of_missed_values == 6
+    assert result.current.number_of_different_missing_values == 4
+    assert result.current.number_of_missing_values == 6
     assert result.reference is None
 
 
@@ -133,7 +133,7 @@ def test_dataset_missing_values_metric_different_null_values() -> None:
                 }
             ),
             None,
-            DatasetMissingValuesMetric(values=[], replace=True),
+            DatasetMissingValuesMetric(missing_values=[], replace=True),
         ),
     ),
 )

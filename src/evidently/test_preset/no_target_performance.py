@@ -3,7 +3,7 @@ from typing import Optional
 
 from evidently.metrics.base_metric import InputData
 from evidently.test_preset.test_preset import TestPreset
-from evidently.tests import TestAllColumnsShareOfNulls
+from evidently.tests import TestAllColumnsShareOfMissingValues
 from evidently.tests import TestCatColumnsOutOfListValues
 from evidently.tests import TestColumnsType
 from evidently.tests import TestColumnValueDrift
@@ -29,7 +29,7 @@ class NoTargetPerformanceTestPreset(TestPreset):
 
         preset_tests.append(TestShareOfDriftedColumns(lt=data.current_data.shape[1] // 3))
         preset_tests.append(TestColumnsType())
-        preset_tests.append(TestAllColumnsShareOfNulls())
+        preset_tests.append(TestAllColumnsShareOfMissingValues())
         preset_tests.append(TestNumColumnsOutOfRangeValues())
         preset_tests.append(TestCatColumnsOutOfListValues())
         preset_tests.append(TestNumColumnsMeanInNSigmas())

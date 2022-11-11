@@ -137,13 +137,13 @@ class TestNumberOfRowsRenderer(TestRenderer):
         return base
 
 
-class BaseIntegrityNullValuesTest(BaseCheckValueTest, ABC):
+class BaseIntegrityMissingValuesValuesTest(BaseCheckValueTest, ABC):
     group = DATA_INTEGRITY_GROUP.id
     metric: DatasetMissingValuesMetric
 
     def __init__(
         self,
-        null_values: Optional[list] = None,
+        missing_values: Optional[list] = None,
         replace: bool = True,
         eq: Optional[Numeric] = None,
         gt: Optional[Numeric] = None,
@@ -155,179 +155,183 @@ class BaseIntegrityNullValuesTest(BaseCheckValueTest, ABC):
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
     ):
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
-        self.metric = DatasetMissingValuesMetric(values=null_values, replace=replace)
+        self.metric = DatasetMissingValuesMetric(missing_values=missing_values, replace=replace)
 
 
-class BaseTestNullValuesRenderer(TestRenderer):
-    """Common class for tests of null-values.
+class BaseTestMissingValuesRenderer(TestRenderer):
+    """Common class for tests of missing values.
     Some tests have the same details visualizations.
     """
 
+    MISSING_VALUES_NAMING_MAPPING = {
+        None: "Pandas nulls (None, NAN, etc.)",
+        "": '"" (empty string)',
+        np.inf: 'Numpy "inf" value',
+        -np.inf: 'Numpy "-inf" value',
+    }
+
     @staticmethod
-    def _get_number_and_percents_of_nulls(nulls_info: DatasetMissingValues) -> pd.DataFrame:
-        """Get a string with nulls numbers and percents from nulls info for results table"""
+    def _get_number_and_percents_of_missing_values(missing_values_info: DatasetMissingValues) -> pd.DataFrame:
+        """Get a string with missing values numbers and percents from info for results table"""
         result = {}
 
-        for columns_name in nulls_info.number_of_nulls_by_column:
-            nulls_count = nulls_info.number_of_nulls_by_column[columns_name]
-            percent_count = nulls_info.share_of_nulls_by_column[columns_name] * 100
-            result[columns_name] = f"{nulls_count} ({percent_count:.2f}%)"
+        for columns_name in missing_values_info.number_of_missing_values_by_column:
+            missing_values_count = missing_values_info.number_of_missing_values_by_column[columns_name]
+            percent_count = missing_values_info.share_of_missing_values_by_column[columns_name] * 100
+            result[columns_name] = f"{missing_values_count} ({percent_count:.2f}%)"
 
         return pd.DataFrame.from_dict(
             {
                 name: dict(
-                    value=nulls_info.number_of_nulls_by_column[name],
-                    display=f"{nulls_info.number_of_nulls_by_column[name]}"
-                    f" ({nulls_info.share_of_nulls_by_column[name] * 100:.2f}%)",
+                    value=missing_values_info.number_of_missing_values_by_column[name],
+                    display=f"{missing_values_info.number_of_missing_values_by_column[name]}"
+                    f" ({missing_values_info.share_of_missing_values_by_column[name] * 100:.2f}%)",
                 )
-                for name in nulls_info.number_of_nulls_by_column.keys()
+                for name in missing_values_info.number_of_missing_values_by_column.keys()
             },
             orient="index",
             columns=["value", "display"],
         )
 
-    def get_table_with_nulls_and_percents_by_column(
+    def get_table_with_missing_values_and_percents_by_column(
         self, info: TestHtmlInfo, metric_result: DatasetMissingValuesMetricResult, name: str
     ) -> TestHtmlInfo:
-        """Get a table with nulls number and percents"""
-        columns = ["column name", "current number of nulls"]
-        dict_curr = self._get_number_and_percents_of_nulls(metric_result.current)
+        """Get a table with missing values number and percents"""
+        columns = ["column name", "current number of missing values"]
+        dict_curr = self._get_number_and_percents_of_missing_values(metric_result.current)
         dict_ref = None
         reference_stats = metric_result.reference
 
         if reference_stats is not None:
             # add one more column and values for reference data
-            columns.append("reference number of nulls")
-            dict_ref = self._get_number_and_percents_of_nulls(reference_stats)
+            columns.append("reference number of missing values")
+            dict_ref = self._get_number_and_percents_of_missing_values(reference_stats)
 
         additional_plots = dataframes_to_table(dict_curr, dict_ref, columns, name)
         info.details = additional_plots
         return info
 
-    @staticmethod
-    def _replace_null_values_to_description(nulls: dict) -> dict:
-        """Replace null values in the dict keys to human-readable string"""
-        nulls_naming_mapping = {
-            None: "Pandas nulls (None, NAN, etc.)",
-            "": '"" (empty string)',
-            np.inf: 'Numpy "inf" value',
-            -np.inf: 'Numpy "-inf" value',
-        }
-        return {nulls_naming_mapping.get(k, k): v for k, v in nulls.items()}
+    def _replace_missing_values_to_description(self, values: dict) -> dict:
+        """Replace missing values in the dict keys to human-readable string"""
+        return {self.MISSING_VALUES_NAMING_MAPPING.get(k, k): v for k, v in values.items()}
 
-    def get_table_with_number_of_nulls_by_null_values(
-        self, info: TestHtmlInfo, current_nulls: dict, reference_nulls: Optional[dict], name: str
+    def get_table_with_number_of_missing_values_by_one_missing_value(
+        self, info: TestHtmlInfo, current_missing_values: dict, reference_missing_values: Optional[dict], name: str
     ) -> TestHtmlInfo:
-        columns = ["null", "current number of nulls"]
-        dict_curr = self._replace_null_values_to_description(current_nulls)
+        columns = ["missing value", "current number of missing values"]
+        dict_curr = self._replace_missing_values_to_description(current_missing_values)
         dict_ref: Optional[dict] = None
 
-        if reference_nulls is not None:
+        if reference_missing_values is not None:
             # add one more column and values for reference data
-            columns.append("reference number of nulls")
-            # cast keys to str because None could be in keys and it is not processed correctly in visual tables
-            dict_ref = self._replace_null_values_to_description(reference_nulls)
+            columns.append("reference number of missing values")
+            # cast keys to str because None could be in keys, and it is not processed correctly in visual tables
+            dict_ref = self._replace_missing_values_to_description(reference_missing_values)
 
         additional_plots = plot_dicts_to_table(dict_curr, dict_ref, columns, name)
         info.details = additional_plots
         return info
 
 
-class TestNumberOfDifferentNulls(BaseIntegrityNullValuesTest):
-    """Check a number of different encoded nulls."""
+class TestNumberOfDifferentMissingValues(BaseIntegrityMissingValuesValuesTest):
+    """Check a number of different encoded missing values."""
 
-    name = "Different Types of Nulls and Missing Values"
+    name = "Different Types of Missing Values"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
             return self.condition
 
-        reference_null_values = self.metric.get_result().reference
+        reference_missing_values = self.metric.get_result().reference
 
-        if reference_null_values is not None:
-            return TestValueCondition(eq=reference_null_values.number_of_different_nulls)
+        if reference_missing_values is not None:
+            return TestValueCondition(eq=reference_missing_values.number_of_different_missing_values)
 
         return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
-        return self.metric.get_result().current.number_of_different_nulls
+        return self.metric.get_result().current.number_of_different_missing_values
 
     def get_description(self, value: Numeric) -> str:
         return (
-            f"The number of differently encoded types of nulls and missing values is {value}. "
+            f"The number of differently encoded types of missing values is {value}. "
             f"The test threshold is {self.get_condition()}."
         )
 
 
-@default_renderer(wrap_type=TestNumberOfDifferentNulls)
-class TestNumberOfDifferentNullsRenderer(BaseTestNullValuesRenderer):
-    def render_json(self, obj: TestNumberOfDifferentNulls) -> dict:
+@default_renderer(wrap_type=TestNumberOfDifferentMissingValues)
+class TestNumberOfDifferentMissingValuesRenderer(BaseTestMissingValuesRenderer):
+    def render_json(self, obj: TestNumberOfDifferentMissingValues) -> dict:
         base = super().render_json(obj)
         base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["number_of_different_nulls"] = obj.value
+        base["parameters"]["number_of_different_missing_values"] = obj.value
         return base
 
-    def render_html(self, obj: TestNumberOfDifferentNulls) -> TestHtmlInfo:
-        """Get a table with a null value and number of the value in the dataset"""
+    def render_html(self, obj: TestNumberOfDifferentMissingValues) -> TestHtmlInfo:
+        """Get a table with a missing value and number of the value in the dataset"""
         info = super().render_html(obj)
         metric_result = obj.metric.get_result()
-        current_nulls = metric_result.current.different_nulls
+        current_missing_values = metric_result.current.different_missing_values
 
         if metric_result.reference is None:
-            reference_nulls = None
+            reference_missing_values = None
 
         else:
-            reference_nulls = metric_result.reference.different_nulls
+            reference_missing_values = metric_result.reference.different_missing_values
 
-        return self.get_table_with_number_of_nulls_by_null_values(
-            info, current_nulls, reference_nulls, "number_of_different_nulls"
+        return self.get_table_with_number_of_missing_values_by_one_missing_value(
+            info, current_missing_values, reference_missing_values, "number_of_different_missing_values"
         )
 
 
-class TestNumberOfNulls(BaseIntegrityNullValuesTest):
-    """Check a number of null values."""
+class TestNumberOfMissingValues(BaseIntegrityMissingValuesValuesTest):
+    """Check a number of missing values."""
 
-    name = "The Number of Nulls"
+    name = "The Number of Missing Values"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
             return self.condition
 
-        reference_null_values = self.metric.get_result().reference
+        reference_missing_values = self.metric.get_result().reference
 
-        if reference_null_values is not None:
+        if reference_missing_values is not None:
             curr_number_of_rows = self.metric.get_result().current.number_of_rows
-            ref_number_of_rows = reference_null_values.number_of_rows
+            ref_number_of_rows = reference_missing_values.number_of_rows
             mult = curr_number_of_rows / ref_number_of_rows
-            return TestValueCondition(lte=approx(reference_null_values.number_of_missed_values * mult, relative=0.1))
+            return TestValueCondition(
+                lte=approx(reference_missing_values.number_of_missing_values * mult, relative=0.1)
+            )
 
         return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
-        return self.metric.get_result().current.number_of_missed_values
+        return self.metric.get_result().current.number_of_missing_values
 
     def get_description(self, value: Numeric) -> str:
-        return f"The number of nulls and missing values is {value}. The test threshold is {self.get_condition()}."
+        return f"The number of missing values is {value}. The test threshold is {self.get_condition()}."
 
 
-@default_renderer(wrap_type=TestNumberOfNulls)
-class TestNumberOfNullsRenderer(BaseTestNullValuesRenderer):
-    def render_json(self, obj: TestNumberOfNulls) -> dict:
+@default_renderer(wrap_type=TestNumberOfMissingValues)
+class TestNumberOfMissingValuesRenderer(BaseTestMissingValuesRenderer):
+    def render_json(self, obj: TestNumberOfMissingValues) -> dict:
         base = super().render_json(obj)
         base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["number_of_nulls"] = obj.value
+        base["parameters"]["number_of_missing_values"] = obj.value
         return base
 
-    def render_html(self, obj: TestNumberOfNulls) -> TestHtmlInfo:
+    def render_html(self, obj: TestNumberOfMissingValues) -> TestHtmlInfo:
         info = super().render_html(obj)
         metric_result = obj.metric.get_result()
-        return self.get_table_with_nulls_and_percents_by_column(info, metric_result, "number_of_nulls")
+        return self.get_table_with_missing_values_and_percents_by_column(
+            info, metric_result, "number_of_missing_values"
+        )
 
 
-class TestShareOfNulls(BaseIntegrityNullValuesTest):
-    """Check a share of null values."""
+class TestShareOfMissingValues(BaseIntegrityMissingValuesValuesTest):
+    """Check a share of missing values."""
 
-    name = "Share of Nulls"
+    name = "Share of Missing Values"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
@@ -336,35 +340,35 @@ class TestShareOfNulls(BaseIntegrityNullValuesTest):
         reference = self.metric.get_result().reference
 
         if reference is not None:
-            return TestValueCondition(lte=approx(reference.share_of_missed_values, relative=0.1))
+            return TestValueCondition(lte=approx(reference.share_of_missing_values, relative=0.1))
 
         return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
-        return self.metric.get_result().current.share_of_missed_values
+        return self.metric.get_result().current.share_of_missing_values
 
     def get_description(self, value: Numeric) -> str:
-        return f"The share of nulls and missing values is {value:.3g}. The test threshold is {self.get_condition()}."
+        return f"The share of missing values is {value:.3g}. The test threshold is {self.get_condition()}."
 
 
-@default_renderer(wrap_type=TestShareOfNulls)
-class TestShareOfNullsRenderer(BaseTestNullValuesRenderer):
-    def render_json(self, obj: TestShareOfNulls) -> dict:
+@default_renderer(wrap_type=TestShareOfMissingValues)
+class TestShareOfMissingValuesRenderer(BaseTestMissingValuesRenderer):
+    def render_json(self, obj: TestShareOfMissingValues) -> dict:
         base = super().render_json(obj)
         base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["share_of_nulls"] = obj.value
+        base["parameters"]["share_of_missing_values"] = obj.value
         return base
 
-    def render_html(self, obj: TestNumberOfNulls) -> TestHtmlInfo:
+    def render_html(self, obj: TestNumberOfMissingValues) -> TestHtmlInfo:
         info = super().render_html(obj)
         metric_result = obj.metric.get_result()
-        return self.get_table_with_nulls_and_percents_by_column(info, metric_result, "share_of_nulls")
+        return self.get_table_with_missing_values_and_percents_by_column(info, metric_result, "share_of_missing_values")
 
 
-class TestNumberOfColumnsWithNulls(BaseIntegrityNullValuesTest):
-    """Check a number of columns with a null value."""
+class TestNumberOfColumnsWithMissingValues(BaseIntegrityMissingValuesValuesTest):
+    """Check a number of columns with a missing value."""
 
-    name = "The Number of Columns With Nulls"
+    name = "The Number of Columns With Missing Values"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
@@ -373,78 +377,81 @@ class TestNumberOfColumnsWithNulls(BaseIntegrityNullValuesTest):
         reference = self.metric.get_result().reference
 
         if reference is not None:
-            return TestValueCondition(lte=reference.number_of_columns_with_nulls)
+            return TestValueCondition(lte=reference.number_of_columns_with_missing_values)
 
         return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
-        return self.metric.get_result().current.number_of_columns_with_nulls
+        return self.metric.get_result().current.number_of_columns_with_missing_values
 
     def get_description(self, value: Numeric) -> str:
         return (
-            f"The number of columns with nulls and missing values is {value}. "
+            f"The number of columns with missing values is {value}. " f"The test threshold is {self.get_condition()}."
+        )
+
+
+@default_renderer(wrap_type=TestNumberOfColumnsWithMissingValues)
+class TestNumberOfColumnsWithMissingValuesRenderer(BaseTestMissingValuesRenderer):
+    def render_json(self, obj: TestNumberOfColumnsWithMissingValues) -> dict:
+        base = super().render_json(obj)
+        base["parameters"]["condition"] = obj.get_condition().as_dict()
+        base["parameters"]["number_of_columns_with_missing_values"] = obj.value
+        return base
+
+    def render_html(self, obj: TestNumberOfMissingValues) -> TestHtmlInfo:
+        info = super().render_html(obj)
+        metric_result = obj.metric.get_result()
+        return self.get_table_with_missing_values_and_percents_by_column(
+            info, metric_result, "number_of_columns_with_missing_values"
+        )
+
+
+class TestShareOfColumnsWithMissingValues(BaseIntegrityMissingValuesValuesTest):
+    """Check a share of columns with a missing value."""
+
+    name = "The Share of Columns With Missing Values"
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.has_condition():
+            return self.condition
+
+        reference = self.metric.get_result().reference
+
+        if reference is not None:
+            return TestValueCondition(lte=reference.share_of_columns_with_missing_values)
+
+        return TestValueCondition(eq=0)
+
+    def calculate_value_for_test(self) -> Numeric:
+        return self.metric.get_result().current.share_of_columns_with_missing_values
+
+    def get_description(self, value: Numeric) -> str:
+        return (
+            f"The share of columns with missing values is {value:.3g}. "
             f"The test threshold is {self.get_condition()}."
         )
 
 
-@default_renderer(wrap_type=TestNumberOfColumnsWithNulls)
-class TestNumberOfColumnsWithNullsRenderer(BaseTestNullValuesRenderer):
-    def render_json(self, obj: TestNumberOfColumnsWithNulls) -> dict:
+@default_renderer(wrap_type=TestShareOfColumnsWithMissingValues)
+class TestShareOfColumnsWithMissingValuesRenderer(BaseTestMissingValuesRenderer):
+    def render_json(self, obj: TestShareOfColumnsWithMissingValues) -> dict:
         base = super().render_json(obj)
         base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["number_of_columns_with_nulls"] = obj.value
+        base["parameters"]["share_of_columns_with_missing_values"] = obj.value
         return base
 
-    def render_html(self, obj: TestNumberOfNulls) -> TestHtmlInfo:
+    def render_html(self, obj: TestNumberOfMissingValues) -> TestHtmlInfo:
         info = super().render_html(obj)
         metric_result = obj.metric.get_result()
-        return self.get_table_with_nulls_and_percents_by_column(info, metric_result, "number_of_columns_with_nulls")
-
-
-class TestShareOfColumnsWithNulls(BaseIntegrityNullValuesTest):
-    """Check a share of columns with a null value."""
-
-    name = "The Share of Columns With Nulls"
-
-    def get_condition(self) -> TestValueCondition:
-        if self.condition.has_condition():
-            return self.condition
-
-        reference = self.metric.get_result().reference
-
-        if reference is not None:
-            return TestValueCondition(lte=reference.share_of_columns_with_nulls)
-
-        return TestValueCondition(eq=0)
-
-    def calculate_value_for_test(self) -> Numeric:
-        return self.metric.get_result().current.share_of_columns_with_nulls
-
-    def get_description(self, value: Numeric) -> str:
-        return (
-            f"The share of columns with nulls and missing values is {value:.3g}. "
-            f"The test threshold is {self.get_condition()}."
+        return self.get_table_with_missing_values_and_percents_by_column(
+            info, metric_result, "share_of_columns_with_missing_values"
         )
 
 
-@default_renderer(wrap_type=TestShareOfColumnsWithNulls)
-class TestShareOfColumnsWithNullsRenderer(BaseTestNullValuesRenderer):
-    def render_json(self, obj: TestShareOfColumnsWithNulls) -> dict:
-        base = super().render_json(obj)
-        base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["share_of_columns_with_nulls"] = obj.value
-        return base
+class TestNumberOfRowsWithMissingValues(BaseIntegrityMissingValuesValuesTest):
+    """Check a number of rows with a missing value."""
 
-    def render_html(self, obj: TestNumberOfNulls) -> TestHtmlInfo:
-        info = super().render_html(obj)
-        metric_result = obj.metric.get_result()
-        return self.get_table_with_nulls_and_percents_by_column(info, metric_result, "share_of_columns_with_nulls")
-
-
-class TestNumberOfRowsWithNulls(BaseIntegrityNullValuesTest):
-    """Check a number of rows with a null value."""
-
-    name = "The Number Of Rows With Nulls"
+    name = "The Number Of Rows With Missing Values"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
@@ -456,33 +463,30 @@ class TestNumberOfRowsWithNulls(BaseIntegrityNullValuesTest):
             curr_number_of_rows = self.metric.get_result().current.number_of_rows
             ref_number_of_rows = reference.number_of_rows
             mult = curr_number_of_rows / ref_number_of_rows
-            return TestValueCondition(lte=approx(reference.number_of_rows_with_nulls * mult, relative=0.1))
+            return TestValueCondition(lte=approx(reference.number_of_rows_with_missing_values * mult, relative=0.1))
 
         return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
-        return self.metric.get_result().current.number_of_rows_with_nulls
+        return self.metric.get_result().current.number_of_rows_with_missing_values
 
     def get_description(self, value: Numeric) -> str:
-        return (
-            f"The number of rows with nulls and missing values is {value}. "
-            f"The test threshold is {self.get_condition()}."
-        )
+        return f"The number of rows with missing values is {value}. " f"The test threshold is {self.get_condition()}."
 
 
-@default_renderer(wrap_type=TestNumberOfRowsWithNulls)
-class TestNumberOfRowsWithNullsRenderer(BaseTestNullValuesRenderer):
-    def render_json(self, obj: TestNumberOfRowsWithNulls) -> dict:
+@default_renderer(wrap_type=TestNumberOfRowsWithMissingValues)
+class TestNumberOfRowsWithMissingValuesRenderer(BaseTestMissingValuesRenderer):
+    def render_json(self, obj: TestNumberOfRowsWithMissingValues) -> dict:
         base = super().render_json(obj)
         base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["number_of_rows_with_nulls"] = obj.value
+        base["parameters"]["number_of_rows_with_missing_values"] = obj.value
         return base
 
 
-class TestShareOfRowsWithNulls(BaseIntegrityNullValuesTest):
-    """Check a share of rows with a null value."""
+class TestShareOfRowsWithMissingValues(BaseIntegrityMissingValuesValuesTest):
+    """Check a share of rows with a missing value."""
 
-    name = "The Share of Rows With Nulls"
+    name = "The Share of Rows With Missing Values"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
@@ -491,30 +495,29 @@ class TestShareOfRowsWithNulls(BaseIntegrityNullValuesTest):
         reference = self.metric.get_result().reference
 
         if reference is not None:
-            return TestValueCondition(lte=approx(reference.share_of_rows_with_nulls, relative=0.1))
+            return TestValueCondition(lte=approx(reference.share_of_rows_with_missing_values, relative=0.1))
 
         return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
-        return self.metric.get_result().current.share_of_rows_with_nulls
+        return self.metric.get_result().current.share_of_rows_with_missing_values
 
     def get_description(self, value: Numeric) -> str:
         return (
-            f"The share of rows with nulls and missing values is {value:.3g}. "
-            f"The test threshold is {self.get_condition()}."
+            f"The share of rows with missing values is {value:.3g}. " f"The test threshold is {self.get_condition()}."
         )
 
 
-@default_renderer(wrap_type=TestShareOfRowsWithNulls)
-class TestShareOfRowsWithNullsRenderer(BaseTestNullValuesRenderer):
-    def render_json(self, obj: TestShareOfRowsWithNulls) -> dict:
+@default_renderer(wrap_type=TestShareOfRowsWithMissingValues)
+class TestShareOfRowsWithMissingValuesRenderer(BaseTestMissingValuesRenderer):
+    def render_json(self, obj: TestShareOfRowsWithMissingValues) -> dict:
         base = super().render_json(obj)
         base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["share_of_rows_with_nulls"] = obj.value
+        base["parameters"]["share_of_rows_with_missing_values"] = obj.value
         return base
 
 
-class BaseIntegrityColumnNullValuesTest(BaseCheckValueTest, ABC):
+class BaseIntegrityColumnMissingValuesTest(BaseCheckValueTest, ABC):
     group = DATA_INTEGRITY_GROUP.id
     metric: DatasetMissingValuesMetric
     column_name: str
@@ -522,7 +525,7 @@ class BaseIntegrityColumnNullValuesTest(BaseCheckValueTest, ABC):
     def __init__(
         self,
         column_name: str,
-        null_values: Optional[list] = None,
+        missing_values: Optional[list] = None,
         replace: bool = True,
         eq: Optional[Numeric] = None,
         gt: Optional[Numeric] = None,
@@ -535,112 +538,112 @@ class BaseIntegrityColumnNullValuesTest(BaseCheckValueTest, ABC):
     ):
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
         self.column_name = column_name
-        self.metric = DatasetMissingValuesMetric(values=null_values, replace=replace)
+        self.metric = DatasetMissingValuesMetric(missing_values=missing_values, replace=replace)
 
 
-class TestColumnNumberOfDifferentNulls(BaseIntegrityColumnNullValuesTest):
-    """Check a number of differently encoded empty/null values in one column."""
+class TestColumnNumberOfDifferentMissingValues(BaseIntegrityColumnMissingValuesTest):
+    """Check a number of differently encoded missing values in one column."""
 
-    name = "Different Types of Nulls and Missing Values in a Column"
+    name = "Different Types of Missing Values in a Column"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
             return self.condition
 
-        reference_null_values = self.metric.get_result().reference
+        reference_missing_values = self.metric.get_result().reference
 
-        if reference_null_values is not None:
-            if self.column_name not in reference_null_values.number_of_different_nulls_by_column:
+        if reference_missing_values is not None:
+            if self.column_name not in reference_missing_values.number_of_different_missing_values_by_column:
                 raise ValueError(
                     f"Cannot define test default conditions: no column '{self.column_name}' in reference dataset."
                 )
 
-            ref_value = reference_null_values.number_of_different_nulls_by_column[self.column_name]
+            ref_value = reference_missing_values.number_of_different_missing_values_by_column[self.column_name]
             return TestValueCondition(lte=ref_value)
 
         return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
         metric_data = self.metric.get_result().current
-        return metric_data.number_of_different_nulls_by_column[self.column_name]
+        return metric_data.number_of_different_missing_values_by_column[self.column_name]
 
     def get_description(self, value: Numeric) -> str:
         return (
-            f"The number of differently encoded types of nulls and missing values in the column **{self.column_name}** "
+            f"The number of differently encoded types of missing values in the column **{self.column_name}** "
             f"is {value}. The test threshold is {self.get_condition()}."
         )
 
 
-@default_renderer(wrap_type=TestColumnNumberOfDifferentNulls)
-class TestColumnNumberOfDifferentNullsRenderer(BaseTestNullValuesRenderer):
-    def render_json(self, obj: TestColumnNumberOfDifferentNulls) -> dict:
+@default_renderer(wrap_type=TestColumnNumberOfDifferentMissingValues)
+class TestColumnNumberOfDifferentMissingValuesRenderer(BaseTestMissingValuesRenderer):
+    def render_json(self, obj: TestColumnNumberOfDifferentMissingValues) -> dict:
         base = super().render_json(obj)
         base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["number_of_different_nulls"] = obj.value
+        base["parameters"]["number_of_different_missing_values"] = obj.value
         base["parameters"]["column_name"] = obj.column_name
         return base
 
-    def render_html(self, obj: TestColumnNumberOfDifferentNulls) -> TestHtmlInfo:
-        """Get a table with a null value and number of the value in the dataset"""
+    def render_html(self, obj: TestColumnNumberOfDifferentMissingValues) -> TestHtmlInfo:
+        """Get a table with a missing value and number of the value in the dataset"""
         info = super().render_html(obj)
         metric_result = obj.metric.get_result()
-        current_nulls = metric_result.current.different_nulls_by_column[obj.column_name]
+        current_missing_values = metric_result.current.different_missing_values_by_column[obj.column_name]
 
         if metric_result.reference is None:
-            reference_nulls = None
+            reference_missing_values = None
 
         else:
-            reference_nulls = metric_result.reference.different_nulls_by_column[obj.column_name]
+            reference_missing_values = metric_result.reference.different_missing_values_by_column[obj.column_name]
 
-        return self.get_table_with_number_of_nulls_by_null_values(
-            info, current_nulls, reference_nulls, "number_of_different_nulls"
+        return self.get_table_with_number_of_missing_values_by_one_missing_value(
+            info, current_missing_values, reference_missing_values, "number_of_different_missing_values"
         )
 
 
-class TestColumnNumberOfNulls(BaseIntegrityColumnNullValuesTest):
-    """Check a number of empty/null values in one column."""
+class TestColumnNumberOfMissingValues(BaseIntegrityColumnMissingValuesTest):
+    """Check a number of missing values in one column."""
 
-    name = "The Number of Nulls in a Column"
+    name = "The Number of Missing Values in a Column"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
             return self.condition
 
-        reference_null_values = self.metric.get_result().reference
+        reference_missing_values = self.metric.get_result().reference
 
-        if reference_null_values is not None:
+        if reference_missing_values is not None:
             curr_number_of_rows = self.metric.get_result().current.number_of_rows
-            ref_number_of_rows = reference_null_values.number_of_rows
+            ref_number_of_rows = reference_missing_values.number_of_rows
             mult = curr_number_of_rows / ref_number_of_rows
-            ref_value = reference_null_values.number_of_nulls_by_column[self.column_name]
+            ref_value = reference_missing_values.number_of_missing_values_by_column[self.column_name]
             return TestValueCondition(lte=approx(ref_value * mult, relative=0.1))
 
         return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
-        return self.metric.get_result().current.number_of_nulls_by_column[self.column_name]
+        return self.metric.get_result().current.number_of_missing_values_by_column[self.column_name]
 
     def get_description(self, value: Numeric) -> str:
         return (
-            f"The number of nulls and missing values in the column **{self.column_name}** is {value}. "
+            f"The number of missing values in the column **{self.column_name}** is {value}. "
             f"The test threshold is {self.get_condition()}."
         )
 
 
-@default_renderer(wrap_type=TestColumnNumberOfNulls)
-class TestColumnNumberOfNullsRenderer(BaseTestNullValuesRenderer):
-    def render_json(self, obj: TestColumnNumberOfNulls) -> dict:
+@default_renderer(wrap_type=TestColumnNumberOfMissingValues)
+class TestColumnNumberOfMissingValuesRenderer(BaseTestMissingValuesRenderer):
+    def render_json(self, obj: TestColumnNumberOfMissingValues) -> dict:
         base = super().render_json(obj)
         base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["number_of_null_values"] = obj.value
+        base["parameters"]["number_of_missing_values"] = obj.value
         base["parameters"]["column_name"] = obj.column_name
         return base
 
 
-class TestColumnShareOfNulls(BaseIntegrityColumnNullValuesTest):
-    """Check a share of empty/null values in one column."""
+class TestColumnShareOfMissingValues(BaseIntegrityColumnMissingValuesTest):
+    """Check a share of missing values in one column."""
 
-    name = "The Share of Nulls in a Column"
+    name = "The Share of Missing Values in a Column"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
@@ -649,32 +652,32 @@ class TestColumnShareOfNulls(BaseIntegrityColumnNullValuesTest):
         reference = self.metric.get_result().reference
 
         if reference is not None:
-            ref_value = reference.share_of_nulls_by_column[self.column_name]
+            ref_value = reference.share_of_missing_values_by_column[self.column_name]
             return TestValueCondition(lte=approx(ref_value, relative=0.1))
 
         return TestValueCondition(eq=0)
 
     def calculate_value_for_test(self) -> Numeric:
-        return self.metric.get_result().current.share_of_nulls_by_column[self.column_name]
+        return self.metric.get_result().current.share_of_missing_values_by_column[self.column_name]
 
     def get_description(self, value: Numeric) -> str:
         return (
-            f"The share of nulls and missing values in the column **{self.column_name}** is {value:.3g}. "
+            f"The share of missing values in the column **{self.column_name}** is {value:.3g}. "
             f"The test threshold is {self.get_condition()}."
         )
 
 
-class TestAllColumnsShareOfNulls(BaseGenerator):
-    def generate(self, columns_info: DatasetColumns) -> List[TestColumnShareOfNulls]:
-        return [TestColumnShareOfNulls(column_name=name) for name in columns_info.get_all_columns_list()]
+class TestAllColumnsShareOfMissingValues(BaseGenerator):
+    def generate(self, columns_info: DatasetColumns) -> List[TestColumnShareOfMissingValues]:
+        return [TestColumnShareOfMissingValues(column_name=name) for name in columns_info.get_all_columns_list()]
 
 
-@default_renderer(wrap_type=TestColumnShareOfNulls)
-class TestColumnShareOfNullsRenderer(BaseTestNullValuesRenderer):
-    def render_json(self, obj: TestColumnShareOfNulls) -> dict:
+@default_renderer(wrap_type=TestColumnShareOfMissingValues)
+class TestColumnShareOfMissingValuesRenderer(BaseTestMissingValuesRenderer):
+    def render_json(self, obj: TestColumnShareOfMissingValues) -> dict:
         base = super().render_json(obj)
         base["parameters"]["condition"] = obj.get_condition().as_dict()
-        base["parameters"]["share_of_null_values"] = obj.value
+        base["parameters"]["share_of_missing_values"] = obj.value
         base["parameters"]["column_name"] = obj.column_name
         return base
 
