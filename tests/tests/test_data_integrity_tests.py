@@ -147,7 +147,7 @@ def test_data_integrity_test_number_of_nulls_no_errors(
         (pd.DataFrame({"target": ["", "0", None, "1"], "numeric": [np.inf, None, -np.inf, 1]}), {"lt": 3}, False),
     ),
 )
-def test_data_integrity_test_number_of_different_null_values(
+def test_data_integrity_test_number_of_different_missing_values(
     test_dataset: pd.DataFrame, conditions: dict, result: bool
 ) -> None:
     suite = TestSuite(tests=[TestNumberOfDifferentMissingValues(**conditions)])
@@ -155,7 +155,7 @@ def test_data_integrity_test_number_of_different_null_values(
     assert bool(suite) is result
 
 
-def test_data_integrity_test_null_values_with_different_metrics() -> None:
+def test_data_integrity_test_missing_values_with_different_metrics() -> None:
     test_dataframe = pd.DataFrame({"target": [None, 0, 0, ""]})
     suite = TestSuite(
         tests=[

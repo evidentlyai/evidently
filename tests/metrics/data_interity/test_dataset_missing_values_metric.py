@@ -44,7 +44,7 @@ def test_dataset_missing_values_metric_with_report(
     assert report.json()
 
 
-def test_dataset_missing_values_metric_different_null_values() -> None:
+def test_dataset_missing_values_metric_different_missing_values() -> None:
     test_dataset = pd.DataFrame(
         {
             "category_feature_1": ["", "n/a", "3"],
