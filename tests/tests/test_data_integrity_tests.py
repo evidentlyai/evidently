@@ -485,7 +485,7 @@ def test_data_integrity_test_columns_null_share_json_render() -> None:
         "description": "The share of missing values in the column **feature1** is 0.25. "
         "The test threshold is lte=0.25 ± 0.025.",
         "group": "data_integrity",
-        "name": "The Share of Nulls in a Column",
+        "name": "The Share of Missing Values in a Column",
         "parameters": {
             "column_name": "feature1",
             "condition": {"lte": {"absolute": 1e-12, "relative": 0.1, "value": 0.25}},
