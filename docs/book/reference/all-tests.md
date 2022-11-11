@@ -6,7 +6,7 @@ How to read the tables:
 
 * **Test**: the name of an individual test that you can include in a Test Suite.  
 * **Description**: plain text explanation. We also specify whether the test applies to the whole dataset or individual columns.
-* **Parameters**: required and optional parameters that apply to the given test. We do not list the standard parameters (eq, not_eq, gt...) every time, as they apply to most of tests. You can see them [here](../user-guide/tests-and-reports/run-tests#available-parameters). 
+* **Parameters**: required and optional parameters that apply to the given test. We do not list the standard optional parameters (equal, not equal, great than, etc.) every time, as they apply to most of tests. You can see them [here](../user-guide/tests-and-reports/run-tests#available-parameters). 
 * **Default**: default test conditions that apply if you do not specify anything else. Many tests have two types of the defaults. The first applies when you pass a reference dataset and Evidently can derive expectations from it. The second applies if you do not provide the reference.
 
 We organize the tests into logical groups. Note that the groups do not match the presets with the same name, e.g., there are more Data Quality tests below than in the `DataQualityTestPreset`.
