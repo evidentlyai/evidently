@@ -5,5 +5,4 @@ import warnings
 
 from .dashboard import Dashboard
 
-
 warnings.warn("dashboards are deprecated, use metrics instead")
