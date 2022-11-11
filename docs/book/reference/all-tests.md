@@ -7,9 +7,9 @@ How to read the tables:
 * **Test**: the name of an individual test that you can include in a Test Suite.  
 * **Description**: plain text explanation of the test. We also specify whether it applies to the whole dataset or individual columns.
 * **Parameters**: required and optional parameters for the test. 
-  * Required parameters are necessary to run the tests, such as the name of the column for the column-level tests.
-  * Optional parameters help define the custom test condition or change the way a underlying metric is calculated. 
-  * *Standard parameters* are a sub-group of the optional parameters that help set basic test conditions (equal, not equal, great than, etc.). They apply to most of the tests. Here you can see the complete list of the [standard parameteres](../tests-and-reports/run-tests.md#available-parameters). 
+  * Required parameters are necessary to run the test, such as the name of the column for a column-level test.
+  * Optional parameters help define a custom test condition or change how the underlying metric is calculated. 
+  * *Standard parameters* are a sub-group of the optional parameters that help set basic test conditions (equal, not equal, greater than, etc.). They apply to most of the tests. Here you can see the complete list of the [standard parameteres](../tests-and-reports/run-tests.md#available-parameters). 
 * **Default**: default test conditions that apply if you do not specify a custom condition using tests parameters. 
   * With reference: the test conditions that apply when you pass a reference dataset and Evidently can derive expectations from it. 
   * No reference: the test conditions that apply if you do not provide the reference. They are based on heuristics.
