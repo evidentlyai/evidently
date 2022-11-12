@@ -10,16 +10,7 @@ from evidently.metrics import RegressionPredictedVsActualScatter
 from evidently.metrics import RegressionQualityMetric
 from evidently.metrics import RegressionTopErrorMetric
 from evidently.metrics.base_metric import InputData
-from evidently.metrics.predicted_vs_actual import PredictedVsActualMetric
 from evidently.utils.data_operations import DatasetColumns
-
-
-class RegressionPerformance(MetricPreset):
-    def generate_metrics(self, data: InputData, columns: DatasetColumns):
-        return [
-            RegressionPerformanceMetrics(),
-            PredictedVsActualMetric(),
-        ]
 
 
 class RegressionPreset(MetricPreset):
