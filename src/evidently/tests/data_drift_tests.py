@@ -52,16 +52,10 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        metric: Optional[DataDriftTable] = None,
         options: Optional[DataDriftOptions] = None,
     ):
-        if metric is not None:
-            self.metric = metric
-
-        else:
-            self.metric = DataDriftTable(options=options)
-
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
+        self.metric = DataDriftTable(options=options)
 
     def check(self):
         result = super().check()
@@ -133,16 +127,10 @@ class TestColumnValueDrift(Test):
     def __init__(
         self,
         column_name: str,
-        metric: Optional[DataDriftTable] = None,
         options: Optional[DataDriftOptions] = None,
     ):
         self.column_name = column_name
-
-        if metric is not None:
-            self.metric = metric
-
-        else:
-            self.metric = DataDriftTable(options=options)
+        self.metric = DataDriftTable(options=options)
 
     def check(self):
         drift_info = self.metric.get_result()

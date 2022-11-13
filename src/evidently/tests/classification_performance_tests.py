@@ -45,12 +45,9 @@ class SimpleClassificationTest(BaseCheckValueTest):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        metric: Optional[ClassificationPerformanceMetrics] = None,
     ):
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
-        if metric is None:
-            metric = ClassificationPerformanceMetrics()
-        self.metric = metric
+        self.metric = ClassificationPerformanceMetrics()
 
     def calculate_value_for_test(self) -> Optional[Any]:
         return self.get_value(self.metric.get_result().current)
@@ -73,7 +70,7 @@ class SimpleClassificationTest(BaseCheckValueTest):
 class SimpleClassificationTestTopK(SimpleClassificationTest, ABC):
     def __init__(
         self,
-        classification_threshold: Optional[float] = None,
+        threshold: Optional[float] = None,
         k: Optional[Union[float, int]] = None,
         eq: Optional[Numeric] = None,
         gt: Optional[Numeric] = None,
@@ -94,14 +91,17 @@ class SimpleClassificationTestTopK(SimpleClassificationTest, ABC):
             not_eq=not_eq,
             not_in=not_in,
         )
-        if k is not None and classification_threshold is not None:
-            raise ValueError("Only one of classification_threshold or k should be given")
-        if k is not None:
-            self.metric = ClassificationPerformanceMetricsTopK(k)
-        if classification_threshold is not None:
-            self.metric = ClassificationPerformanceMetricsThreshold(classification_threshold)
+        if k is not None and threshold is not None:
+            raise ValueError("Only one of 'threshold' or 'k' should be given")
+
+        if threshold is not None:
+            self.metric = ClassificationPerformanceMetricsThreshold(threshold=threshold)
+
+        elif k is not None:
+            self.metric = ClassificationPerformanceMetricsTopK(k=k)
+
         self.k = k
-        self.threshold = classification_threshold
+        self.threshold = threshold
 
     def calculate_value_for_test(self) -> Optional[Any]:
         return self.get_value(self.metric.get_result().current)
@@ -520,11 +520,8 @@ class ByClassClassificationTest(SimpleClassificationTest, ABC):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        metric: Optional[ClassificationPerformanceMetrics] = None,
     ):
-        super().__init__(
-            eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in, metric=metric
-        )
+        super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
         self.label = label
 
 

@@ -33,9 +33,9 @@ class BinaryClassificationTestPreset(TestPreset):
             return [
                 TestColumnValueDrift(target),
                 TestRocAuc(),
-                TestPrecisionScore(classification_threshold=self.threshold),
-                TestRecallScore(classification_threshold=self.threshold),
-                TestAccuracyScore(classification_threshold=self.threshold),
-                TestF1Score(classification_threshold=self.threshold),
+                TestPrecisionScore(threshold=self.threshold),
+                TestRecallScore(threshold=self.threshold),
+                TestAccuracyScore(threshold=self.threshold),
+                TestF1Score(threshold=self.threshold),
             ]
         raise ValueError(f'Unexpected prediction_type: "{self.prediction_type}"')

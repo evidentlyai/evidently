@@ -23,7 +23,7 @@ The preset contains the following tests:
 
 
 ```python
-TestColumnShareOfNulls(column="all"),
+TestColumnShareOfMissingValues(column="all"),
 TestMostCommonValueShare(column="all")
 TestNumberOfConstantColumns(),
 TestNumberOfDuplicatedColumns(),

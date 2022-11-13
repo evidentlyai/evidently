@@ -26,7 +26,7 @@ The preset contains the following tests:
 TestNumberOfRows(),
 TestNumberOfColumns(),
 TestColumnsType(),
-TestColumnShareOfNulls(column=’all’),
+TestColumnShareOfMissingValues(column=’all’),
 TestShareOfOutRangeValues(column=numerical_columns)
 TestShareOfOutListValues(column=categorical_columns)
 TestMeanInNSigmas(column=numerical_columns, n=2)

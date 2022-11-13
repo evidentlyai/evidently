@@ -1,15 +1,11 @@
 from typing import Dict
 from typing import List
-from typing import Optional
-from typing import Union
 
 import dataclasses
 
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
-from evidently.metrics.base_metric import TResult
 from evidently.model.widget import BaseWidgetInfo
-from evidently.options.color_scheme import ColorOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text

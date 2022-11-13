@@ -37,15 +37,9 @@ class BaseRegressionPerformanceMetricsTest(BaseCheckValueTest, ABC):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        metric: Optional[RegressionQualityMetric] = None,
     ):
-        if metric is not None:
-            self.metric = metric
-
-        else:
-            self.metric = RegressionQualityMetric()
-
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
+        self.metric = RegressionQualityMetric()
 
 
 class TestValueMAE(BaseRegressionPerformanceMetricsTest):
@@ -87,7 +81,7 @@ class TestValueMAERenderer(TestRenderer):
             val_for_plot=obj.metric.get_result().vals_for_plots["mean_abs_error"],
             hist_for_plot=obj.metric.get_result().hist_for_plot,
             name="MAE",
-            curr_mertic=obj.metric.get_result().mean_abs_error,
+            curr_metric=obj.metric.get_result().mean_abs_error,
             ref_metric=obj.metric.get_result().mean_abs_error_ref,
             is_ref_data=is_ref_data,
             color_options=self.color_options,
@@ -136,7 +130,7 @@ class TestValueMAPERenderer(TestRenderer):
             val_for_plot=val_for_plot,
             hist_for_plot=obj.metric.get_result().hist_for_plot,
             name="MAPE",
-            curr_mertic=obj.metric.get_result().mean_abs_perc_error,
+            curr_metric=obj.metric.get_result().mean_abs_perc_error,
             ref_metric=obj.metric.get_result().mean_abs_perc_error_ref,
             is_ref_data=is_ref_data,
             color_options=self.color_options,
@@ -183,7 +177,7 @@ class TestValueRMSERenderer(TestRenderer):
             val_for_plot=obj.metric.get_result().vals_for_plots["rmse"],
             hist_for_plot=obj.metric.get_result().hist_for_plot,
             name="RMSE",
-            curr_mertic=obj.metric.get_result().rmse,
+            curr_metric=obj.metric.get_result().rmse,
             ref_metric=obj.metric.get_result().rmse_ref,
             is_ref_data=is_ref_data,
             color_options=self.color_options,
@@ -310,7 +304,7 @@ class TestValueR2ScoreRenderer(TestRenderer):
             val_for_plot=obj.metric.get_result().vals_for_plots["r2_score"],
             hist_for_plot=obj.metric.get_result().hist_for_plot,
             name="R2_score",
-            curr_mertic=obj.metric.get_result().r2_score,
+            curr_metric=obj.metric.get_result().r2_score,
             ref_metric=obj.metric.get_result().r2_score_ref,
             is_ref_data=is_ref_data,
             color_options=self.color_options,

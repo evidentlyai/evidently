@@ -1,6 +1,6 @@
 from evidently.metrics.base_metric import InputData
 from evidently.test_preset.test_preset import TestPreset
-from evidently.tests import TestAllColumnsShareOfNulls
+from evidently.tests import TestAllColumnsShareOfMissingValues
 from evidently.tests import TestCatColumnsOutOfListValues
 from evidently.tests import TestColumnsType
 from evidently.tests import TestNumberOfColumns
@@ -16,7 +16,7 @@ class DataStabilityTestPreset(TestPreset):
             TestNumberOfRows(),
             TestNumberOfColumns(),
             TestColumnsType(),
-            TestAllColumnsShareOfNulls(),
+            TestAllColumnsShareOfMissingValues(),
             TestNumColumnsOutOfRangeValues(),
             TestCatColumnsOutOfListValues(),
             TestNumColumnsMeanInNSigmas(),
