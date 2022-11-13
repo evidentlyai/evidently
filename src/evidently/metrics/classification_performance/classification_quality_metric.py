@@ -3,12 +3,11 @@ from typing import Optional
 from typing import Union
 
 import dataclasses
-
-import pandas as pd
 import numpy as np
+import pandas as pd
 
-from evidently.calculations.classification_performance import calculate_metrics
 from evidently.calculations.classification_performance import DatasetClassificationQuality
+from evidently.calculations.classification_performance import calculate_metrics
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.classification_performance.base_classification_metric import ThresholdClassificationMetric
 from evidently.metrics.classification_performance.confusion_matrix_metric import ClassificationConfusionMatrix
@@ -68,11 +67,7 @@ class ClassificationQualityMetric(ThresholdClassificationMetric[ClassificationQu
                 prediction,
             )
 
-        return ClassificationQualityMetricResult(
-            current=current,
-            reference=reference,
-            target_name=target_name
-        )
+        return ClassificationQualityMetricResult(current=current, reference=reference, target_name=target_name)
 
 
 @default_renderer(wrap_type=ClassificationQualityMetric)

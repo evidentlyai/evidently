@@ -7,13 +7,13 @@ from typing import Union
 import dataclasses
 import numpy as np
 import pandas as pd
-from sklearn import metrics
 from dataclasses import dataclass
 from numpy import dtype
 from pandas.core.dtypes.common import is_float_dtype
 from pandas.core.dtypes.common import is_integer_dtype
 from pandas.core.dtypes.common import is_object_dtype
 from pandas.core.dtypes.common import is_string_dtype
+from sklearn import metrics
 
 from evidently import ColumnMapping
 from evidently.utils.data_operations import DatasetColumns

@@ -5,20 +5,23 @@ from typing import List
 from typing import Optional
 from typing import Union
 
+from evidently.calculations.classification_performance import DatasetClassificationQuality
 from evidently.metrics.base_metric import Metric
+from evidently.metrics.classification_performance.classification_dummy_metric import ClassificationDummyMetric
+from evidently.metrics.classification_performance.classification_quality_metric import ClassificationConfusionMatrix
+from evidently.metrics.classification_performance.classification_quality_metric import ClassificationQualityMetric
+from evidently.metrics.classification_performance.classification_quality_metric import ClassificationQualityMetricResult
+from evidently.metrics.classification_performance.quality_by_class_metric import ClassificationQualityByClass
+from evidently.metrics.classification_performance.roc_curve_metric import ClassificationRocCurve
 from evidently.metrics.classification_performance_metrics import ClassificationPerformanceResults
 from evidently.metrics.classification_performance_metrics import DatasetClassificationPerformanceMetrics
-from evidently.metrics.classification_performance.quality_by_class_metric import ClassificationQualityByClass
-from evidently.metrics.classification_performance.classification_dummy_metric import ClassificationDummyMetric
-from evidently.metrics.classification_performance.classification_quality_metric import ClassificationQualityMetric
-from evidently.metrics.classification_performance.classification_quality_metric import ClassificationConfusionMatrix
-from evidently.metrics.classification_performance.classification_quality_metric import ClassificationQualityMetricResult
-from evidently.calculations.classification_performance import DatasetClassificationQuality
-from evidently.metrics.classification_performance.roc_curve_metric import ClassificationRocCurve
 from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import default_renderer
+from evidently.renderers.html_widgets import TabData
+from evidently.renderers.html_widgets import get_roc_auc_tab_data
 from evidently.renderers.html_widgets import plotly_figure
+from evidently.renderers.html_widgets import widget_tabs
 from evidently.tests.base_test import BaseCheckValueTest
 from evidently.tests.base_test import GroupData
 from evidently.tests.base_test import GroupingTypes
@@ -28,9 +31,6 @@ from evidently.tests.utils import plot_boxes
 from evidently.tests.utils import plot_conf_mtrx
 from evidently.tests.utils import plot_rates
 from evidently.utils.types import Numeric
-from evidently.renderers.html_widgets import get_roc_auc_tab_data
-from evidently.renderers.html_widgets import TabData
-from evidently.renderers.html_widgets import widget_tabs
 
 CLASSIFICATION_GROUP = GroupData("classification", "Classification", "")
 GroupingTypes.TestGroup.add_value(CLASSIFICATION_GROUP)
@@ -254,7 +254,9 @@ class TestRocAuc(SimpleClassificationTest):
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
         metric: Optional[ClassificationQualityMetric] = None,
     ):
-        super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in, metric=metric)
+        super().__init__(
+            eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in, metric=metric
+        )
         self.roc_curve = ClassificationRocCurve()
 
     def get_value(self, result: DatasetClassificationQuality):
@@ -517,7 +519,8 @@ class TestFNRRenderer(TestRenderer):
         return info
 
 
-class ByClassClassificationTest(SimpleClassificationTestTopK, ABC):
+class ByClassClassificationTest(BaseCheckValueTest, ABC):
+    group = CLASSIFICATION_GROUP.id
     metric: ClassificationQualityMetric
     by_class_metric: ClassificationQualityByClass
     dummy_metric: ClassificationDummyMetric
@@ -538,8 +541,7 @@ class ByClassClassificationTest(SimpleClassificationTestTopK, ABC):
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
         metric: Optional[ClassificationQualityMetric] = None,
     ):
-        super().__init__(
-            eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
+        super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
         self.label = label
         self.classification_threshold = classification_threshold
         self.k = k

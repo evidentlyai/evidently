@@ -3,8 +3,8 @@ from typing import List
 from typing import Optional
 from typing import Union
 
-from evidently.metrics import RegressionQualityMetric
 from evidently.metrics import RegressionDummyMetric
+from evidently.metrics import RegressionQualityMetric
 from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import default_renderer

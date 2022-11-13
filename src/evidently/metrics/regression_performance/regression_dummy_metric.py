@@ -14,8 +14,8 @@ from evidently.metrics.regression_performance.regression_quality import Regressi
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
-from evidently.renderers.html_widgets import table_data
 from evidently.renderers.html_widgets import header_text
+from evidently.renderers.html_widgets import table_data
 from evidently.utils.data_operations import process_columns
 
 
@@ -130,27 +130,21 @@ class RegressionDummyMetric(Metric[RegressionDummyMetricResults]):
             y_pred = data.reference_data[target_name].median()
             abs_error_max_by_ref = np.abs(y_true - y_pred).max()
 
-        return(
-            RegressionDummyMetricResults(
-                rmse_default=rmse_default,
-                mean_abs_error_default=mean_abs_error_default,
-                mean_abs_perc_error_default=mean_abs_perc_error_default,
-                abs_error_max_default=abs_error_max_default,
-                mean_abs_error_by_ref=mean_abs_error_by_ref,
-                mean_abs_error=(
-                    quality_metric.get_result().mean_abs_error if quality_metric is not None else None
-                ),
-                mean_abs_perc_error_by_ref=mean_abs_perc_error_by_ref,
-                mean_abs_perc_error=(
-                    quality_metric.get_result().mean_abs_perc_error if quality_metric is not None else None
-                ),
-                rmse_by_ref=rmse_by_ref,
-                rmse=quality_metric.get_result().rmse if quality_metric is not None else None,
-                abs_error_max_by_ref=abs_error_max_by_ref,
-                abs_error_max=(
-                    quality_metric.get_result().abs_error_max if quality_metric is not None else None
-                ),
-            )
+        return RegressionDummyMetricResults(
+            rmse_default=rmse_default,
+            mean_abs_error_default=mean_abs_error_default,
+            mean_abs_perc_error_default=mean_abs_perc_error_default,
+            abs_error_max_default=abs_error_max_default,
+            mean_abs_error_by_ref=mean_abs_error_by_ref,
+            mean_abs_error=(quality_metric.get_result().mean_abs_error if quality_metric is not None else None),
+            mean_abs_perc_error_by_ref=mean_abs_perc_error_by_ref,
+            mean_abs_perc_error=(
+                quality_metric.get_result().mean_abs_perc_error if quality_metric is not None else None
+            ),
+            rmse_by_ref=rmse_by_ref,
+            rmse=quality_metric.get_result().rmse if quality_metric is not None else None,
+            abs_error_max_by_ref=abs_error_max_by_ref,
+            abs_error_max=(quality_metric.get_result().abs_error_max if quality_metric is not None else None),
         )
 
 
@@ -170,18 +164,18 @@ class RegressionDummyMetricRenderer(MetricRenderer):
             and metric_result.rmse_by_ref is not None
             and metric_result.mean_abs_error_by_ref is not None
         ):
-            in_table_data['by_ref'] = [
+            in_table_data["by_ref"] = [
                 metric_result.mean_abs_error_by_ref,
                 metric_result.rmse_by_ref,
                 metric_result.mean_abs_perc_error_by_ref,
                 metric_result.abs_error_max_by_ref,
             ]
             columns.append("Dummy (by rerefence)")
-        in_table_data['by_carr'] = [
+        in_table_data["by_carr"] = [
             metric_result.mean_abs_error_default,
             metric_result.rmse_default,
             metric_result.mean_abs_perc_error_default,
-            metric_result.abs_error_max_default
+            metric_result.abs_error_max_default,
         ]
         if "Dummy (by rerefence)" in columns:
             columns.append("Dummy (by current)")
@@ -193,7 +187,7 @@ class RegressionDummyMetricRenderer(MetricRenderer):
             and metric_result.mean_abs_perc_error is not None
             and metric_result.abs_error_max is not None
         ):
-            in_table_data['model_quality'] = [
+            in_table_data["model_quality"] = [
                 metric_result.mean_abs_error,
                 metric_result.rmse,
                 metric_result.mean_abs_perc_error,
@@ -201,9 +195,7 @@ class RegressionDummyMetricRenderer(MetricRenderer):
             ]
             columns.append("Model")
 
-        return(
-            [
-                header_text(label="Dummy Regreesion Quality"),
-                table_data(column_names=columns, data=np.around(in_table_data, 3).values, title="")
-            ]
-        )
+        return [
+            header_text(label="Dummy Regreesion Quality"),
+            table_data(column_names=columns, data=np.around(in_table_data, 3).values, title=""),
+        ]
