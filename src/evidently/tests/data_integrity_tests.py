@@ -870,10 +870,11 @@ class TestNumberOfDuplicatedColumnsRenderer(TestRenderer):
 class BaseIntegrityByColumnsConditionTest(BaseCheckValueTest, ABC):
     group = DATA_INTEGRITY_GROUP.id
     data_integrity_metric: ColumnSummaryMetric
+    column_name: str
 
     def __init__(
         self,
-        column_name: Optional[str] = None,
+        column_name: str,
         eq: Optional[Numeric] = None,
         gt: Optional[Numeric] = None,
         gte: Optional[Numeric] = None,
@@ -885,7 +886,7 @@ class BaseIntegrityByColumnsConditionTest(BaseCheckValueTest, ABC):
     ):
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
         self.column_name = column_name
-        self.data_integrity_metric = ColumnSummaryMetric()
+        self.data_integrity_metric = ColumnSummaryMetric(column_name=column_name)
 
     def groups(self) -> Dict[str, str]:
         if self.column_name is not None:

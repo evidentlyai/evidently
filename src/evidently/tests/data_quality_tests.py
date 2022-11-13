@@ -66,7 +66,7 @@ class TestConflictTarget(Test):
     metric: DataQualityStabilityMetric
 
     def __init__(self):
-        self.metric = DataQualityStabilityMetrics()
+        self.metric = DataQualityStabilityMetric()
 
     def check(self):
         metric_result = self.metric.get_result()
@@ -92,7 +92,7 @@ class TestConflictPrediction(Test):
     metric: DataQualityStabilityMetric
 
     def __init__(self):
-        self.metric = DataQualityStabilityMetrics()
+        self.metric = DataQualityStabilityMetric()
 
     def check(self):
         metric_result = self.metric.get_result()
