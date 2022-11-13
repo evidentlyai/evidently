@@ -445,8 +445,8 @@ def test_data_integrity_test_columns_type_to_json() -> None:
         "name": "Column Types",
         "parameters": {
             "columns": [
-                {"actual_type": "bool_", "column_name": "my_target", "expected_type": "bool_"},
                 {"actual_type": "int64", "column_name": "numerical_feature", "expected_type": "int64"},
+                {"actual_type": "bool_", "column_name": "my_target", "expected_type": "bool_"},
             ]
         },
         "status": "SUCCESS",

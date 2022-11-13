@@ -59,6 +59,9 @@ class RegressionErrorDistribution(Metric[RegressionErrorDistributionResults]):
 
 @default_renderer(wrap_type=RegressionErrorDistribution)
 class RegressionErrorDistributionRenderer(MetricRenderer):
+    def render_json(self, obj: RegressionErrorDistribution) -> dict:
+        return {}
+
     def render_html(self, obj: RegressionErrorDistribution) -> List[BaseWidgetInfo]:
         result = obj.get_result()
         current_bins = result.current_bins
