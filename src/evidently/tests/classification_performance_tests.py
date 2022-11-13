@@ -6,11 +6,15 @@ from typing import Optional
 from typing import Union
 
 from evidently.metrics.base_metric import Metric
-from evidently.metrics.classification_performance_metrics import ClassificationPerformanceMetrics
-from evidently.metrics.classification_performance_metrics import ClassificationPerformanceMetricsThreshold
-from evidently.metrics.classification_performance_metrics import ClassificationPerformanceMetricsTopK
 from evidently.metrics.classification_performance_metrics import ClassificationPerformanceResults
 from evidently.metrics.classification_performance_metrics import DatasetClassificationPerformanceMetrics
+from evidently.metrics.classification_performance.quality_by_class_metric import ClassificationQualityByClass
+from evidently.metrics.classification_performance.classification_dummy_metric import ClassificationDummyMetric
+from evidently.metrics.classification_performance.classification_quality_metric import ClassificationQualityMetric
+from evidently.metrics.classification_performance.classification_quality_metric import ClassificationConfusionMatrix
+from evidently.metrics.classification_performance.classification_quality_metric import ClassificationQualityMetricResult
+from evidently.calculations.classification_performance import DatasetClassificationQuality
+from evidently.metrics.classification_performance.roc_curve_metric import ClassificationRocCurve
 from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -23,8 +27,10 @@ from evidently.tests.utils import approx
 from evidently.tests.utils import plot_boxes
 from evidently.tests.utils import plot_conf_mtrx
 from evidently.tests.utils import plot_rates
-from evidently.tests.utils import plot_roc_auc
 from evidently.utils.types import Numeric
+from evidently.renderers.html_widgets import get_roc_auc_tab_data
+from evidently.renderers.html_widgets import TabData
+from evidently.renderers.html_widgets import widget_tabs
 
 CLASSIFICATION_GROUP = GroupData("classification", "Classification", "")
 GroupingTypes.TestGroup.add_value(CLASSIFICATION_GROUP)
@@ -33,7 +39,8 @@ GroupingTypes.TestGroup.add_value(CLASSIFICATION_GROUP)
 class SimpleClassificationTest(BaseCheckValueTest):
     group = CLASSIFICATION_GROUP.id
     name: str
-    metric: Metric[ClassificationPerformanceResults]
+    metric: ClassificationQualityMetric
+    dummy_metric: ClassificationDummyMetric
 
     def __init__(
         self,
@@ -45,11 +52,12 @@ class SimpleClassificationTest(BaseCheckValueTest):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        metric: Optional[ClassificationPerformanceMetrics] = None,
+        metric: Optional[ClassificationQualityMetric] = None,
     ):
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
         if metric is None:
-            metric = ClassificationPerformanceMetrics()
+            metric = ClassificationQualityMetric()
+        self.dummy_metric = ClassificationDummyMetric()
         self.metric = metric
 
     def calculate_value_for_test(self) -> Optional[Any]:
@@ -61,16 +69,20 @@ class SimpleClassificationTest(BaseCheckValueTest):
         ref_metrics = self.metric.get_result().reference
         if ref_metrics is not None:
             return TestValueCondition(eq=approx(self.get_value(ref_metrics), relative=0.2))
-        if self.get_value(self.metric.get_result().dummy) is None:
+        if self.get_value(self.dummy_metric.get_result().dummy) is None:
             raise ValueError("Neither required test parameters nor reference data has been provided.")
-        return TestValueCondition(gt=self.get_value(self.metric.get_result().dummy))
+        return TestValueCondition(gt=self.get_value(self.dummy_metric.get_result().dummy))
 
     @abc.abstractmethod
-    def get_value(self, result: DatasetClassificationPerformanceMetrics):
+    def get_value(self, result: DatasetClassificationQuality):
         raise NotImplementedError()
 
 
 class SimpleClassificationTestTopK(SimpleClassificationTest, ABC):
+    metric: ClassificationQualityMetric
+    dummy_metric: ClassificationDummyMetric
+    conf_matrix: ClassificationConfusionMatrix
+
     def __init__(
         self,
         classification_threshold: Optional[float] = None,
@@ -96,12 +108,11 @@ class SimpleClassificationTestTopK(SimpleClassificationTest, ABC):
         )
         if k is not None and classification_threshold is not None:
             raise ValueError("Only one of classification_threshold or k should be given")
-        if k is not None:
-            self.metric = ClassificationPerformanceMetricsTopK(k)
-        if classification_threshold is not None:
-            self.metric = ClassificationPerformanceMetricsThreshold(classification_threshold)
         self.k = k
         self.threshold = classification_threshold
+        self.dummy_metric = ClassificationDummyMetric(k=self.k, threshold=self.threshold)
+        self.metric = ClassificationQualityMetric(k=self.k, threshold=self.threshold)
+        self.conf_matrix = ClassificationConfusionMatrix(k=self.k, threshold=self.threshold)
 
     def calculate_value_for_test(self) -> Optional[Any]:
         return self.get_value(self.metric.get_result().current)
@@ -113,16 +124,16 @@ class SimpleClassificationTestTopK(SimpleClassificationTest, ABC):
         ref_metrics = result.reference
         if ref_metrics is not None:
             return TestValueCondition(eq=approx(self.get_value(ref_metrics), relative=0.2))
-        if self.get_value(result.dummy) is None:
+        dummy_result = self.dummy_metric.get_result().dummy
+        if self.get_value(dummy_result) is None:
             raise ValueError("Neither required test parameters nor reference data has been provided.")
-        dummy_metrics = result.dummy
-        return TestValueCondition(gt=self.get_value(dummy_metrics))
+        return TestValueCondition(gt=self.get_value(dummy_result))
 
 
 class TestAccuracyScore(SimpleClassificationTestTopK):
     name = "Accuracy Score"
 
-    def get_value(self, result: DatasetClassificationPerformanceMetrics):
+    def get_value(self, result: DatasetClassificationQuality):
         return result.accuracy
 
     def get_description(self, value: Numeric) -> str:
@@ -139,12 +150,8 @@ class TestAccuracyScoreRenderer(TestRenderer):
 
     def render_html(self, obj: TestAccuracyScore) -> TestHtmlInfo:
         info = super().render_html(obj)
-        curr_metrics = obj.metric.get_result().current
-        ref_metrics = obj.metric.get_result().reference
-        curr_matrix = curr_metrics.confusion_matrix
-        ref_matrix = None
-        if ref_metrics is not None:
-            ref_matrix = ref_metrics.confusion_matrix
+        curr_matrix = obj.conf_matrix.get_result().current_matrix
+        ref_matrix = obj.conf_matrix.get_result().reference_matrix
         fig = plot_conf_mtrx(curr_matrix, ref_matrix)
         info.with_details("Accuracy Score", plotly_figure(figure=fig, title=""))
         return info
@@ -153,7 +160,7 @@ class TestAccuracyScoreRenderer(TestRenderer):
 class TestPrecisionScore(SimpleClassificationTestTopK):
     name = "Precision Score"
 
-    def get_value(self, result: DatasetClassificationPerformanceMetrics):
+    def get_value(self, result: DatasetClassificationQuality):
         return result.precision
 
     def get_description(self, value: Numeric) -> str:
@@ -170,12 +177,8 @@ class TestPrecisionScoreRenderer(TestRenderer):
 
     def render_html(self, obj: TestPrecisionScore) -> TestHtmlInfo:
         info = super().render_html(obj)
-        curr_metrics = obj.metric.get_result().current
-        ref_metrics = obj.metric.get_result().reference
-        curr_matrix = curr_metrics.confusion_matrix
-        ref_matrix = None
-        if ref_metrics is not None:
-            ref_matrix = ref_metrics.confusion_matrix
+        curr_matrix = obj.conf_matrix.get_result().current_matrix
+        ref_matrix = obj.conf_matrix.get_result().reference_matrix
         fig = plot_conf_mtrx(curr_matrix, ref_matrix)
         info.with_details("Precision Score", plotly_figure(figure=fig, title=""))
         return info
@@ -184,7 +187,7 @@ class TestPrecisionScoreRenderer(TestRenderer):
 class TestF1Score(SimpleClassificationTestTopK):
     name = "F1 Score"
 
-    def get_value(self, result: DatasetClassificationPerformanceMetrics):
+    def get_value(self, result: DatasetClassificationQuality):
         return result.f1
 
     def get_description(self, value: Numeric) -> str:
@@ -201,12 +204,8 @@ class TestF1ScoreRenderer(TestRenderer):
 
     def render_html(self, obj: TestF1Score) -> TestHtmlInfo:
         info = super().render_html(obj)
-        curr_metrics = obj.metric.get_result().current
-        ref_metrics = obj.metric.get_result().reference
-        curr_matrix = curr_metrics.confusion_matrix
-        ref_matrix = None
-        if ref_metrics is not None:
-            ref_matrix = ref_metrics.confusion_matrix
+        curr_matrix = obj.conf_matrix.get_result().current_matrix
+        ref_matrix = obj.conf_matrix.get_result().reference_matrix
         fig = plot_conf_mtrx(curr_matrix, ref_matrix)
         info.with_details("F1 Score", plotly_figure(title="", figure=fig))
         return info
@@ -215,7 +214,7 @@ class TestF1ScoreRenderer(TestRenderer):
 class TestRecallScore(SimpleClassificationTestTopK):
     name = "Recall Score"
 
-    def get_value(self, result: DatasetClassificationPerformanceMetrics):
+    def get_value(self, result: DatasetClassificationQuality):
         return result.recall
 
     def get_description(self, value: Numeric) -> str:
@@ -232,12 +231,8 @@ class TestRecallScoreRenderer(TestRenderer):
 
     def render_html(self, obj: TestRecallScore) -> TestHtmlInfo:
         info = super().render_html(obj)
-        curr_metrics = obj.metric.get_result().current
-        ref_metrics = obj.metric.get_result().reference
-        curr_matrix = curr_metrics.confusion_matrix
-        ref_matrix = None
-        if ref_metrics is not None:
-            ref_matrix = ref_metrics.confusion_matrix
+        curr_matrix = obj.conf_matrix.get_result().current_matrix
+        ref_matrix = obj.conf_matrix.get_result().reference_matrix
         fig = plot_conf_mtrx(curr_matrix, ref_matrix)
         info.with_details("Recall Score", plotly_figure(title="", figure=fig))
         return info
@@ -245,8 +240,24 @@ class TestRecallScoreRenderer(TestRenderer):
 
 class TestRocAuc(SimpleClassificationTest):
     name = "ROC AUC Score"
+    roc_curve: ClassificationRocCurve
 
-    def get_value(self, result: DatasetClassificationPerformanceMetrics):
+    def __init__(
+        self,
+        eq: Optional[Numeric] = None,
+        gt: Optional[Numeric] = None,
+        gte: Optional[Numeric] = None,
+        is_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        lt: Optional[Numeric] = None,
+        lte: Optional[Numeric] = None,
+        not_eq: Optional[Numeric] = None,
+        not_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        metric: Optional[ClassificationQualityMetric] = None,
+    ):
+        super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in, metric=metric)
+        self.roc_curve = ClassificationRocCurve()
+
+    def get_value(self, result: DatasetClassificationQuality):
         return result.roc_auc
 
     def get_description(self, value: Numeric) -> str:
@@ -266,18 +277,16 @@ class TestRocAucRenderer(TestRenderer):
 
     def render_html(self, obj: TestRocAuc) -> TestHtmlInfo:
         info = super().render_html(obj)
-        curr_metrics = obj.metric.get_result().current
-        ref_metrics = obj.metric.get_result().reference
-        curr_roc_curve = curr_metrics.roc_curve
-        ref_roc_curve = None
-        if ref_metrics is not None:
-            ref_roc_curve = ref_metrics.roc_curve
-        if curr_roc_curve is not None:
-            for title, plot in plot_roc_auc(
-                curr_roc_curve=curr_roc_curve, ref_roc_curve=ref_roc_curve, color_options=self.color_options
-            ):
-                info.with_details(title, plot)
-        return info
+        curr_roc_curve = obj.roc_curve.get_result().current_roc_curve
+        ref_roc_curve = obj.roc_curve.get_result().reference_roc_curve
+        if curr_roc_curve is None:
+            return info
+
+        tab_data = get_roc_auc_tab_data(curr_roc_curve, ref_roc_curve, color_options=self.color_options)
+        if len(tab_data) == 1:
+            return info.with_details("ROC Curve", tab_data[0][1])
+        tabs = [TabData(name, widget) for name, widget in tab_data]
+        return info.with_details("", widget_tabs(title="", tabs=tabs))
 
 
 class TestLogLoss(SimpleClassificationTest):
@@ -289,11 +298,11 @@ class TestLogLoss(SimpleClassificationTest):
         ref_metrics = self.metric.get_result().reference
         if ref_metrics is not None:
             return TestValueCondition(eq=approx(self.get_value(ref_metrics), relative=0.2))
-        if self.get_value(self.metric.get_result().dummy) is None:
+        if self.get_value(self.dummy_metric.get_result().dummy) is None:
             raise ValueError("Neither required test parameters nor reference data has been provided.")
-        return TestValueCondition(lt=self.get_value(self.metric.get_result().dummy))
+        return TestValueCondition(lt=self.get_value(self.dummy_metric.get_result().dummy))
 
-    def get_value(self, result: DatasetClassificationPerformanceMetrics):
+    def get_value(self, result: DatasetClassificationQuality):
         return result.log_loss
 
     def get_description(self, value: Numeric) -> str:
@@ -328,7 +337,7 @@ class TestLogLossRenderer(TestRenderer):
 class TestTPR(SimpleClassificationTestTopK):
     name = "True Positive Rate"
 
-    def get_value(self, result: DatasetClassificationPerformanceMetrics):
+    def get_value(self, result: DatasetClassificationQuality):
         return result.tpr
 
     def get_description(self, value: Numeric) -> str:
@@ -370,7 +379,7 @@ class TestTPRRenderer(TestRenderer):
 class TestTNR(SimpleClassificationTestTopK):
     name = "True Negative Rate"
 
-    def get_value(self, result: DatasetClassificationPerformanceMetrics):
+    def get_value(self, result: DatasetClassificationQuality):
         return result.tnr
 
     def get_description(self, value: Numeric) -> str:
@@ -414,14 +423,14 @@ class TestFPR(SimpleClassificationTestTopK):
             return self.condition
         result = self.metric.get_result()
         ref_metrics = result.reference
+        dummy_metrics = self.dummy_metric.get_result().dummy
         if ref_metrics is not None:
             return TestValueCondition(eq=approx(self.get_value(ref_metrics), relative=0.2))
-        if self.get_value(result.dummy) is None:
+        if self.get_value(dummy_metrics) is None:
             raise ValueError("Neither required test parameters nor reference data has been provided.")
-        dummy_metrics = result.dummy
         return TestValueCondition(lt=self.get_value(dummy_metrics))
 
-    def get_value(self, result: DatasetClassificationPerformanceMetrics):
+    def get_value(self, result: DatasetClassificationQuality):
         return result.fpr
 
     def get_description(self, value: Numeric) -> str:
@@ -465,14 +474,14 @@ class TestFNR(SimpleClassificationTestTopK):
             return self.condition
         result = self.metric.get_result()
         ref_metrics = result.reference
+        dummy_metrics = self.dummy_metric.get_result().dummy
         if ref_metrics is not None:
             return TestValueCondition(eq=approx(self.get_value(ref_metrics), relative=0.2))
-        if self.get_value(result.dummy) is None:
+        if self.get_value(dummy_metrics) is None:
             raise ValueError("Neither required test parameters nor reference data has been provided.")
-        dummy_metrics = result.dummy
         return TestValueCondition(lt=self.get_value(dummy_metrics))
 
-    def get_value(self, result: DatasetClassificationPerformanceMetrics):
+    def get_value(self, result: DatasetClassificationQuality):
         return result.fnr
 
     def get_description(self, value: Numeric) -> str:
@@ -508,10 +517,17 @@ class TestFNRRenderer(TestRenderer):
         return info
 
 
-class ByClassClassificationTest(SimpleClassificationTest, ABC):
+class ByClassClassificationTest(SimpleClassificationTestTopK, ABC):
+    metric: ClassificationQualityMetric
+    by_class_metric: ClassificationQualityByClass
+    dummy_metric: ClassificationDummyMetric
+    conf_matrix: ClassificationConfusionMatrix
+
     def __init__(
         self,
         label: str,
+        classification_threshold: Optional[float] = None,
+        k: Optional[Union[float, int]] = None,
         eq: Optional[Numeric] = None,
         gt: Optional[Numeric] = None,
         gte: Optional[Numeric] = None,
@@ -520,19 +536,47 @@ class ByClassClassificationTest(SimpleClassificationTest, ABC):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        metric: Optional[ClassificationPerformanceMetrics] = None,
+        metric: Optional[ClassificationQualityMetric] = None,
     ):
         super().__init__(
-            eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in, metric=metric
-        )
+            eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
         self.label = label
+        self.classification_threshold = classification_threshold
+        self.k = k
+        if k is not None and classification_threshold is not None:
+            raise ValueError("Only one of classification_threshold or k should be given")
+        self.k = k
+        self.threshold = classification_threshold
+        self.metric = ClassificationQualityMetric(k=self.k, threshold=self.threshold)
+        self.dummy_metric = ClassificationDummyMetric(k=self.k, threshold=self.threshold)
+        self.by_class_metric = ClassificationQualityByClass(k=self.k, threshold=self.threshold)
+        self.conf_matrix = ClassificationConfusionMatrix(k=self.k, threshold=self.threshold)
+
+    def calculate_value_for_test(self) -> Optional[Any]:
+        return self.get_value(self.by_class_metric.get_result().current_metrics[self.label])
+
+    def get_condition(self) -> TestValueCondition:
+        if self.condition.has_condition():
+            return self.condition
+        result = self.by_class_metric.get_result()
+        ref_metrics = result.reference_metrics
+        if ref_metrics is not None:
+            return TestValueCondition(eq=approx(self.get_value(ref_metrics[self.label]), relative=0.2))
+        dummy_result = self.dummy_metric.get_result().metrics_matrix[self.label]
+        if self.get_value(dummy_result) is None:
+            raise ValueError("Neither required test parameters nor reference data has been provided.")
+        return TestValueCondition(gt=self.get_value(dummy_result))
+
+    @abc.abstractmethod
+    def get_value(self, result: dict):
+        raise NotImplementedError()
 
 
 class TestPrecisionByClass(ByClassClassificationTest):
     name: str = "Precision Score by Class"
 
-    def get_value(self, result: DatasetClassificationPerformanceMetrics):
-        return result.metrics_matrix[self.label]["precision"]
+    def get_value(self, result: dict):
+        return result["precision"]
 
     def get_description(self, value: Numeric) -> str:
         return (
@@ -552,11 +596,8 @@ class TestPrecisionByClassRenderer(TestRenderer):
 
     def render_html(self, obj: TestPrecisionByClass) -> TestHtmlInfo:
         info = super().render_html(obj)
-        ref_metrics = obj.metric.get_result().reference
-        curr_matrix = obj.metric.get_result().current.confusion_matrix
-        ref_matrix = None
-        if ref_metrics is not None:
-            ref_matrix = ref_metrics.confusion_matrix
+        curr_matrix = obj.conf_matrix.get_result().current_matrix
+        ref_matrix = obj.conf_matrix.get_result().reference_matrix
         fig = plot_conf_mtrx(curr_matrix, ref_matrix)
         info.with_details("Precision by Class", plotly_figure(title="", figure=fig))
         return info
@@ -565,8 +606,8 @@ class TestPrecisionByClassRenderer(TestRenderer):
 class TestRecallByClass(ByClassClassificationTest):
     name: str = "Recall Score by Class"
 
-    def get_value(self, result: DatasetClassificationPerformanceMetrics):
-        return result.metrics_matrix[self.label]["recall"]
+    def get_value(self, result: dict):
+        return result["recall"]
 
     def get_description(self, value: Numeric) -> str:
         return (
@@ -586,11 +627,8 @@ class TestRecallByClassRenderer(TestRenderer):
 
     def render_html(self, obj: TestRecallByClass) -> TestHtmlInfo:
         info = super().render_html(obj)
-        ref_metrics = obj.metric.get_result().reference
-        curr_matrix = obj.metric.get_result().current.confusion_matrix
-        ref_matrix = None
-        if ref_metrics is not None:
-            ref_matrix = ref_metrics.confusion_matrix
+        curr_matrix = obj.conf_matrix.get_result().current_matrix
+        ref_matrix = obj.conf_matrix.get_result().reference_matrix
         fig = plot_conf_mtrx(curr_matrix, ref_matrix)
         info.with_details("Recall by Class", plotly_figure(title="", figure=fig))
         return info
@@ -599,8 +637,8 @@ class TestRecallByClassRenderer(TestRenderer):
 class TestF1ByClass(ByClassClassificationTest):
     name: str = "F1 Score by Class"
 
-    def get_value(self, result: DatasetClassificationPerformanceMetrics):
-        return result.metrics_matrix[self.label]["f1-score"]
+    def get_value(self, result: dict):
+        return result["f1-score"]
 
     def get_description(self, value: Numeric) -> str:
         return (
@@ -619,11 +657,8 @@ class TestF1ByClassRenderer(TestRenderer):
 
     def render_html(self, obj: TestF1ByClass) -> TestHtmlInfo:
         info = super().render_html(obj)
-        ref_metrics = obj.metric.get_result().reference
-        curr_matrix = obj.metric.get_result().current.confusion_matrix
-        ref_matrix = None
-        if ref_metrics is not None:
-            ref_matrix = ref_metrics.confusion_matrix
+        curr_matrix = obj.conf_matrix.get_result().current_matrix
+        ref_matrix = obj.conf_matrix.get_result().reference_matrix
         fig = plot_conf_mtrx(curr_matrix, ref_matrix)
         info.with_details("F1 by Class", plotly_figure(title="", figure=fig))
         return info

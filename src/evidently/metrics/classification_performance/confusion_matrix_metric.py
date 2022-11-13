@@ -7,6 +7,7 @@ import pandas as pd
 from sklearn.metrics import confusion_matrix
 
 from evidently.calculations.classification_performance import ConfusionMatrix
+from evidently.calculations.classification_performance import calculate_matrix
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.classification_performance.base_classification_metric import ThresholdClassificationMetric
 from evidently.model.widget import BaseWidgetInfo
@@ -37,7 +38,7 @@ class ClassificationConfusionMatrix(ThresholdClassificationMetric[Classification
     def calculate(self, data: InputData) -> ClassificationConfusionMatrixResult:
         current_target_data, current_pred = self.get_target_prediction_data(data.current_data, data.column_mapping)
 
-        current_results = self._calculate_matrix(
+        current_results = calculate_matrix(
             current_target_data,
             current_pred.predictions,
             current_pred.labels,
@@ -46,7 +47,7 @@ class ClassificationConfusionMatrix(ThresholdClassificationMetric[Classification
         reference_results = None
         if data.reference_data is not None:
             ref_target_data, ref_pred = self.get_target_prediction_data(data.reference_data, data.column_mapping)
-            reference_results = self._calculate_matrix(
+            reference_results = calculate_matrix(
                 ref_target_data,
                 ref_pred.predictions,
                 ref_pred.labels,
@@ -56,16 +57,6 @@ class ClassificationConfusionMatrix(ThresholdClassificationMetric[Classification
             current_matrix=current_results,
             reference_matrix=reference_results,
         )
-
-    @staticmethod
-    def _calculate_matrix(
-        target: pd.Series,
-        prediction: pd.Series,
-        labels: List[Union[str, int]],
-    ) -> ConfusionMatrix:
-        sorted_labels = sorted(labels)
-        matrix = confusion_matrix(target, prediction, labels=sorted_labels)
-        return ConfusionMatrix(sorted_labels, [row.tolist() for row in matrix])
 
 
 @default_renderer(wrap_type=ClassificationConfusionMatrix)

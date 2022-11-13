@@ -4,6 +4,7 @@ from typing import Optional
 from typing import Union
 
 from evidently.metrics import RegressionQualityMetric
+from evidently.metrics import RegressionDummyMetric
 from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -26,6 +27,7 @@ GroupingTypes.TestGroup.add_value(REGRESSION_GROUP)
 class BaseRegressionPerformanceMetricsTest(BaseCheckValueTest, ABC):
     group = REGRESSION_GROUP.id
     metric: RegressionQualityMetric
+    dummy_metric: RegressionDummyMetric
 
     def __init__(
         self,
@@ -44,6 +46,7 @@ class BaseRegressionPerformanceMetricsTest(BaseCheckValueTest, ABC):
 
         else:
             self.metric = RegressionQualityMetric()
+        self.dummy_metric = RegressionDummyMetric()
 
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
 
@@ -57,7 +60,7 @@ class TestValueMAE(BaseRegressionPerformanceMetricsTest):
         ref_mae = self.metric.get_result().mean_abs_error_ref
         if ref_mae is not None:
             return TestValueCondition(eq=approx(ref_mae, relative=0.1))
-        return TestValueCondition(lt=self.metric.get_result().mean_abs_error_default)
+        return TestValueCondition(lt=self.dummy_metric.get_result().mean_abs_error_default)
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().mean_abs_error
@@ -105,7 +108,7 @@ class TestValueMAPE(BaseRegressionPerformanceMetricsTest):
         ref_mae = self.metric.get_result().mean_abs_perc_error_ref
         if ref_mae is not None:
             return TestValueCondition(eq=approx(ref_mae, relative=0.1))
-        return TestValueCondition(lt=self.metric.get_result().mean_abs_perc_error_default)
+        return TestValueCondition(lt=self.dummy_metric.get_result().mean_abs_perc_error_default)
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().mean_abs_perc_error
@@ -154,7 +157,7 @@ class TestValueRMSE(BaseRegressionPerformanceMetricsTest):
         rmse_ref = self.metric.get_result().rmse_ref
         if rmse_ref is not None:
             return TestValueCondition(eq=approx(rmse_ref, relative=0.1))
-        return TestValueCondition(lt=self.metric.get_result().rmse_default)
+        return TestValueCondition(lt=self.dummy_metric.get_result().rmse_default)
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().rmse
@@ -239,7 +242,7 @@ class TestValueAbsMaxError(BaseRegressionPerformanceMetricsTest):
         abs_error_max_ref = self.metric.get_result().abs_error_max_ref
         if abs_error_max_ref is not None:
             return TestValueCondition(lte=approx(abs_error_max_ref, relative=0.1))
-        return TestValueCondition(lte=self.metric.get_result().abs_error_max_default)
+        return TestValueCondition(lte=self.dummy_metric.get_result().abs_error_max_default)
 
     def calculate_value_for_test(self) -> Numeric:
         return self.metric.get_result().abs_error_max

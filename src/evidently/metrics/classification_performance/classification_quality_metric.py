@@ -3,13 +3,12 @@ from typing import Optional
 from typing import Union
 
 import dataclasses
-import numpy as np
-import pandas as pd
-from sklearn import metrics
 
-from evidently import ColumnMapping
-from evidently.calculations.classification_performance import ConfusionMatrix
-from evidently.calculations.classification_performance import calculate_confusion_by_classes
+import pandas as pd
+import numpy as np
+
+from evidently.calculations.classification_performance import calculate_metrics
+from evidently.calculations.classification_performance import DatasetClassificationQuality
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.classification_performance.base_classification_metric import ThresholdClassificationMetric
 from evidently.metrics.classification_performance.confusion_matrix_metric import ClassificationConfusionMatrix
@@ -20,20 +19,6 @@ from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import counter
 from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import process_columns
-
-
-@dataclasses.dataclass
-class DatasetClassificationQuality:
-    accuracy: float
-    precision: float
-    recall: float
-    f1: float
-    roc_auc: Optional[float] = None
-    log_loss: Optional[float] = None
-    tpr: Optional[float] = None
-    tnr: Optional[float] = None
-    fpr: Optional[float] = None
-    fnr: Optional[float] = None
 
 
 @dataclasses.dataclass
@@ -62,76 +47,31 @@ class ClassificationQualityMetric(ThresholdClassificationMetric[ClassificationQu
         prediction_name = dataset_columns.utility_columns.prediction
         if target_name is None or prediction_name is None:
             raise ValueError("The columns 'target' and 'prediction' columns should be present")
-        current = self.calculate_metrics(
-            data.current_data,
+        target, prediction = self.get_target_prediction_data(data.current_data, data.column_mapping)
+        current = calculate_metrics(
             data.column_mapping,
             self.confusion_matrix_metric.get_result().current_matrix,
+            target,
+            prediction,
         )
+
         reference = None
         if data.reference_data is not None:
             ref_matrix = self.confusion_matrix_metric.get_result().reference_matrix
             if ref_matrix is None:
                 raise ValueError(f"Dependency {self.confusion_matrix_metric.__class__} should have reference data")
-            reference = self.calculate_metrics(
-                data.reference_data,
+            target, prediction = self.get_target_prediction_data(data.reference_data, data.column_mapping)
+            reference = calculate_metrics(
                 data.column_mapping,
                 ref_matrix,
+                target,
+                prediction,
             )
-        return ClassificationQualityMetricResult(current=current, reference=reference, target_name=target_name)
 
-    def calculate_metrics(
-        self,
-        data: pd.DataFrame,
-        column_mapping: ColumnMapping,
-        confusion_matrix: ConfusionMatrix,
-    ) -> DatasetClassificationQuality:
-        target, prediction = self.get_target_prediction_data(data, column_mapping)
-        if column_mapping.pos_label is not None:
-            pos_label = column_mapping.pos_label
-        else:
-            pos_label = 1
-        tpr = None
-        tnr = None
-        fpr = None
-        fnr = None
-        roc_auc = None
-        log_loss = None
-        if len(prediction.labels) == 2:
-            confusion_by_classes = calculate_confusion_by_classes(
-                np.array(confusion_matrix.values),
-                confusion_matrix.labels,
-            )
-            conf_by_pos_label = confusion_by_classes[confusion_matrix.labels[0]]
-            precision = metrics.precision_score(target, prediction.predictions, pos_label=pos_label)
-            recall = metrics.recall_score(target, prediction.predictions, pos_label=pos_label)
-            f1 = metrics.f1_score(target, prediction.predictions, pos_label=pos_label)
-            tpr = conf_by_pos_label["tp"] / (conf_by_pos_label["tp"] + conf_by_pos_label["fn"])
-            tnr = conf_by_pos_label["tn"] / (conf_by_pos_label["tn"] + conf_by_pos_label["fp"])
-            fpr = conf_by_pos_label["fp"] / (conf_by_pos_label["fp"] + conf_by_pos_label["tn"])
-            fnr = conf_by_pos_label["fn"] / (conf_by_pos_label["fn"] + conf_by_pos_label["tp"])
-        else:
-            precision = metrics.precision_score(target, prediction.predictions, average="macro")
-            recall = metrics.recall_score(target, prediction.predictions, average="macro")
-            f1 = metrics.f1_score(target, prediction.predictions, average="macro")
-        if prediction.prediction_probas is not None:
-            binaraized_target = (
-                target.astype(str).values.reshape(-1, 1) == list(prediction.prediction_probas.columns.astype(str))
-            ).astype(int)
-            prediction_probas_array = prediction.prediction_probas.to_numpy()
-            roc_auc = metrics.roc_auc_score(binaraized_target, prediction_probas_array, average="macro")
-            log_loss = metrics.log_loss(binaraized_target, prediction_probas_array)
-
-        return DatasetClassificationQuality(
-            accuracy=metrics.accuracy_score(target, prediction.predictions),
-            precision=precision,
-            recall=recall,
-            f1=f1,
-            tpr=tpr,
-            tnr=tnr,
-            fpr=fpr,
-            fnr=fnr,
-            roc_auc=roc_auc,
-            log_loss=log_loss,
+        return ClassificationQualityMetricResult(
+            current=current,
+            reference=reference,
+            target_name=target_name
         )
 
 
