@@ -3,7 +3,7 @@ import pandas as pd
 import pytest
 from evidently.pipeline.column_mapping import ColumnMapping
 
-from evidently.utils.data_preprocessing import ColumnPresenceState, ColumnType, DataDefinition, ColumnDefinition, InputData, PredictionColumns, _get_column_presence, _get_column_type, create_data_definition
+from evidently.utils.data_preprocessing import ColumnPresenceState, ColumnType, DataDefinition, ColumnDefinition, _InputData, PredictionColumns, _get_column_presence, _get_column_type, create_data_definition
 
 
 def test_get_columns():
@@ -61,7 +61,7 @@ def test_get_columns():
     (pd.DataFrame(dict(a=[1], c=[2])), pd.DataFrame(dict(a=[1], b=[2])), "d", ColumnPresenceState.Missing),
 ])
 def test_column_presence(reference, current, column_name, expected):
-    assert _get_column_presence(column_name, InputData(reference, current)) == expected
+    assert _get_column_presence(column_name, _InputData(reference, current)) == expected
 
 
 @pytest.mark.parametrize("reference,current,column_name,expected",
@@ -77,7 +77,7 @@ def test_column_presence(reference, current, column_name, expected):
     (pd.DataFrame(dict(a=[1], b=["a"], c=[datetime(2000, 1, 1)])), pd.DataFrame(), "c", ColumnType.Datetime),
 ])
 def test_get_column_type(reference,current,column_name,expected):
-    assert _get_column_type(column_name, InputData(reference, current)) == expected
+    assert _get_column_type(column_name, _InputData(reference, current)) == expected
 
 
 @pytest.mark.parametrize("reference,current,mapping,target,id,datetime,prediction,columns",
@@ -157,7 +157,7 @@ def test_get_column_type(reference,current,column_name,expected):
     ),
 ])
 def test_create_data_definition(reference, current, mapping, target, id, datetime, prediction, columns):
-    definition = create_data_definition(InputData(reference, current), mapping)
+    definition = create_data_definition(_InputData(reference, current), mapping)
     assert definition.get_target_column() == target
     assert definition.get_id_column() == id
     assert definition.get_datetime_column() == datetime
