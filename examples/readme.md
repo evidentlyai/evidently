@@ -42,7 +42,7 @@ column_mapping.numerical_features = ['temp', 'atemp', 'humidity']
 column_mapping.categorical_features = ['season', 'holiday'] 
 ```
 
-## Choose a Report
+# Choose a Report
 
 A report evaluates a specific aspect of the model or data performance.
 
