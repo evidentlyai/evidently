@@ -135,9 +135,9 @@ feature_suite = TestSuite(tests=[
 
 Each metric and test has parameters that you can pass to modify how the metric is calculated or to define a custom condition of the test. You can consult these documentation pages for reference:
 * [All tests](https://docs.evidentlyai.com/reference/all-tests): all individual tests and parameters
-* [All metrics[(https://docs.evidentlyai.com/reference/all-metrics): all individual metrics and parameters
+* [All metrics](https://docs.evidentlyai.com/reference/all-metrics): all individual metrics and parameters
 
-## Sample notebooks
+# Sample notebooks
 
 Here you can find simple examples on toy datasets to quickly explore what Evidently can do right out of the box.
 
