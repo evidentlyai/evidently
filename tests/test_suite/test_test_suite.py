@@ -7,7 +7,7 @@ from evidently import ColumnMapping
 from evidently.test_suite import TestSuite
 from evidently.tests import TestColumnAllConstantValues
 from evidently.tests import TestColumnAllUniqueValues
-from evidently.tests import TestColumnShareOfNulls
+from evidently.tests import TestColumnShareOfMissingValues
 from evidently.tests import TestColumnsType
 from evidently.tests import TestColumnValueDrift
 from evidently.tests import TestColumnValueMax
@@ -21,18 +21,18 @@ from evidently.tests import TestConflictTarget
 from evidently.tests import TestMeanInNSigmas
 from evidently.tests import TestMostCommonValueShare
 from evidently.tests import TestNumberOfColumns
-from evidently.tests import TestNumberOfColumnsWithNulls
+from evidently.tests import TestNumberOfColumnsWithMissingValues
 from evidently.tests import TestNumberOfConstantColumns
 from evidently.tests import TestNumberOfDriftedColumns
 from evidently.tests import TestNumberOfDuplicatedColumns
 from evidently.tests import TestNumberOfDuplicatedRows
 from evidently.tests import TestNumberOfEmptyColumns
 from evidently.tests import TestNumberOfEmptyRows
-from evidently.tests import TestNumberOfNulls
+from evidently.tests import TestNumberOfMissingValues
 from evidently.tests import TestNumberOfOutListValues
 from evidently.tests import TestNumberOfOutRangeValues
 from evidently.tests import TestNumberOfRows
-from evidently.tests import TestNumberOfRowsWithNulls
+from evidently.tests import TestNumberOfRowsWithMissingValues
 from evidently.tests import TestNumberOfUniqueValues
 from evidently.tests import TestShareOfDriftedColumns
 from evidently.tests import TestShareOfOutListValues
@@ -87,16 +87,16 @@ def test_export_to_json():
         TestColumnValueDrift(column_name="num_feature_1"),
         TestNumberOfColumns(),
         TestNumberOfRows(),
-        TestNumberOfNulls(),
-        TestNumberOfColumnsWithNulls(),
-        TestNumberOfRowsWithNulls(),
+        TestNumberOfMissingValues(),
+        TestNumberOfColumnsWithMissingValues(),
+        TestNumberOfRowsWithMissingValues(),
         TestNumberOfConstantColumns(),
         TestNumberOfEmptyRows(),
         TestNumberOfEmptyColumns(),
         TestNumberOfDuplicatedRows(),
         TestNumberOfDuplicatedColumns(),
         TestColumnsType({"num_feature_1": int, "cat_feature_2": str}),
-        TestColumnShareOfNulls(column_name="num_feature_1", gt=5),
+        TestColumnShareOfMissingValues(column_name="num_feature_1", gt=5),
         TestColumnValueRegExp(column_name="cat_feature_2", reg_exp=r"[n|y|n//a]"),
         TestConflictTarget(),
         TestConflictPrediction(),

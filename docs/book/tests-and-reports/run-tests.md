@@ -153,7 +153,7 @@ To create a custom data drift test suite with column-level tests:
 
 ```python
 feature_suite = TestSuite(tests=[
-    TestColumnShareOfNulls(column_name='hours-per-week'),
+    TestColumnShareOfMissingValues(column_name='hours-per-week'),
     TestColumnValueDrift(column_name='education'),
     TestMeanInNSigmas(column_name='hours-per-week')
 ])
@@ -220,7 +220,7 @@ feature_level_tests = TestSuite(tests=[
 TestMeanInNSigmas(column_name='hours-per-week', n_sigmas=3),
 TestShareOfOutRangeValues(column_name='hours-per-week', lte=0),
 TestNumberOfOutListValues(column_name='education', lt=0),
-TestColumnShareOfNulls(column_name='education', lt=0.2),
+TestColumnShareOfMissingValues(column_name='education', lt=0.2),
 ])
 
 feature_level_tests.run(reference_data=ref, current_data=curr)
@@ -315,7 +315,7 @@ You can also use the `generate_column_tests` function to create multiple tests.
 By default, it generates tests with the default parameters for all the columns:
 
 ```python
-suite = TestSuite(tests=[generate_column_tests(TestColumnShareOfNulls)])
+suite = TestSuite(tests=[generate_column_tests(TestColumnShareOfMissingValues)])
 suite.run(current_data=current_data, reference_data=reference_data)
 suite
 ```
@@ -323,7 +323,7 @@ suite
 You can also pass the parameters:
 
 ```python
-suite = TestSuite(tests=[generate_column_tests(TestColumnShareOfNulls, columns="all", parameters={"lt": 0.5})])
+suite = TestSuite(tests=[generate_column_tests(TestColumnShareOfMissingValues, columns="all", parameters={"lt": 0.5})])
 suite.run(current_data=current_data, reference_data=reference_data)
 suite
 ```
@@ -339,7 +339,7 @@ suite
 Here is how you generate tests only for **categorical columns**:
 
 ```python
-suite = TestSuite(tests=[generate_column_tests(TestColumnShareOfNulls, columns="cat", parameters={"lt": 0.1})])
+suite = TestSuite(tests=[generate_column_tests(TestColumnShareOfMissingValues, columns="cat", parameters={"lt": 0.1})])
 suite.run(current_data=current_data, reference_data=refernce_data)
 suite
 ```

@@ -100,7 +100,7 @@ def regression_perf_plot(
     val_for_plot: Dict[str, pd.Series],
     hist_for_plot: Dict[str, pd.Series],
     name: str,
-    curr_mertic: float,
+    curr_metric: float,
     ref_metric: float = None,
     is_ref_data: bool = False,
     color_options: ColorOptions,
@@ -135,7 +135,7 @@ def regression_perf_plot(
 
     fig.update_yaxes(title_text=name, row=1, col=1)
     fig.update_yaxes(title_text="count", row=2, col=1)
-    title = f"current {name}: {np.round(curr_mertic, 3)}"
+    title = f"current {name}: {np.round(curr_metric, 3)}"
 
     if is_ref_data:
         title += f", reference {name}: {np.round(ref_metric, 3)}"

@@ -3,7 +3,6 @@ from evidently.metric_preset.metric_preset import MetricPreset
 from evidently.metrics import ClassificationClassBalance
 from evidently.metrics import ClassificationClassSeparationPlot
 from evidently.metrics import ClassificationConfusionMatrix
-from evidently.metrics import ClassificationPerformanceMetrics
 from evidently.metrics import ClassificationPRCurve
 from evidently.metrics import ClassificationProbDistribution
 from evidently.metrics import ClassificationPRTable
@@ -13,11 +12,6 @@ from evidently.metrics import ClassificationQualityMetric
 from evidently.metrics import ClassificationRocCurve
 from evidently.metrics.base_metric import InputData
 from evidently.utils.data_operations import DatasetColumns
-
-
-class ClassificationPerformance(MetricPreset):
-    def generate_metrics(self, data: InputData, columns: DatasetColumns):
-        return [ClassificationPerformanceMetrics()]
 
 
 class ClassificationPreset(MetricPreset):

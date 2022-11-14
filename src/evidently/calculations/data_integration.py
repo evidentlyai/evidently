@@ -1,3 +1,5 @@
+from itertools import combinations
+
 import pandas as pd
 
 
@@ -13,7 +15,7 @@ def get_number_of_empty_columns(dataset: pd.DataFrame) -> int:
 
 def get_number_of_duplicated_columns(dataset: pd.DataFrame) -> int:
     """Calculate the number of duplicated columns in a dataset"""
-    return dataset.duplicated().sum()
+    return sum([1 for i, j in combinations(dataset, 2) if dataset[i].equals(dataset[j])])
 
 
 def get_number_of_almost_duplicated_columns(dataset: pd.DataFrame, threshold: float) -> int:

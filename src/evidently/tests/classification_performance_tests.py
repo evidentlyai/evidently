@@ -6,15 +6,11 @@ from typing import Optional
 from typing import Union
 
 from evidently.calculations.classification_performance import DatasetClassificationQuality
-from evidently.metrics.base_metric import Metric
 from evidently.metrics.classification_performance.classification_dummy_metric import ClassificationDummyMetric
 from evidently.metrics.classification_performance.classification_quality_metric import ClassificationConfusionMatrix
 from evidently.metrics.classification_performance.classification_quality_metric import ClassificationQualityMetric
-from evidently.metrics.classification_performance.classification_quality_metric import ClassificationQualityMetricResult
 from evidently.metrics.classification_performance.quality_by_class_metric import ClassificationQualityByClass
 from evidently.metrics.classification_performance.roc_curve_metric import ClassificationRocCurve
-from evidently.metrics.classification_performance_metrics import ClassificationPerformanceResults
-from evidently.metrics.classification_performance_metrics import DatasetClassificationPerformanceMetrics
 from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -52,13 +48,10 @@ class SimpleClassificationTest(BaseCheckValueTest):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        metric: Optional[ClassificationQualityMetric] = None,
     ):
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
-        if metric is None:
-            metric = ClassificationQualityMetric()
+        self.metric = ClassificationQualityMetric()
         self.dummy_metric = ClassificationDummyMetric()
-        self.metric = metric
 
     def calculate_value_for_test(self) -> Optional[Any]:
         return self.get_value(self.metric.get_result().current)
@@ -85,7 +78,7 @@ class SimpleClassificationTestTopK(SimpleClassificationTest, ABC):
 
     def __init__(
         self,
-        classification_threshold: Optional[float] = None,
+        threshold: Optional[float] = None,
         k: Optional[Union[float, int]] = None,
         eq: Optional[Numeric] = None,
         gt: Optional[Numeric] = None,
@@ -106,10 +99,10 @@ class SimpleClassificationTestTopK(SimpleClassificationTest, ABC):
             not_eq=not_eq,
             not_in=not_in,
         )
-        if k is not None and classification_threshold is not None:
+        if k is not None and threshold is not None:
             raise ValueError("Only one of classification_threshold or k should be given")
         self.k = k
-        self.threshold = classification_threshold
+        self.threshold = threshold
         self.dummy_metric = ClassificationDummyMetric(k=self.k, threshold=self.threshold)
         self.metric = ClassificationQualityMetric(k=self.k, threshold=self.threshold)
         self.conf_matrix = ClassificationConfusionMatrix(k=self.k, threshold=self.threshold)
@@ -252,10 +245,9 @@ class TestRocAuc(SimpleClassificationTest):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        metric: Optional[ClassificationQualityMetric] = None,
     ):
         super().__init__(
-            eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in, metric=metric
+            eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in
         )
         self.roc_curve = ClassificationRocCurve()
 
@@ -539,7 +531,6 @@ class ByClassClassificationTest(BaseCheckValueTest, ABC):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        metric: Optional[ClassificationQualityMetric] = None,
     ):
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
         self.label = label

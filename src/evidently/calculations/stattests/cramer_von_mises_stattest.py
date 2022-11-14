@@ -178,6 +178,7 @@ cramer_von_mises = StatTest(
     display_name="cramer_von_mises",
     func=_cramer_von_mises,
     allowed_feature_types=["num"],
+    default_threshold=0.1,
 )
 
 register_stattest(cramer_von_mises)
