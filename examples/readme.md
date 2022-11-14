@@ -2,7 +2,7 @@
 
 This is a short introduction to Evidently. 
 
-## Input Data
+# Input Data
 
 You should prepare the data as pandas DataFrames. It could be two datasets - reference data and current production data. Or just one - you will need to identify rows that refer to reference and current data. If you do not want to perform a comparison, you can also pass a single dataset.
 
@@ -11,7 +11,7 @@ If you deal with large datasets, you can take a sample from it:
 ```python
 df.sample(1000, random_state=0) 
 ```
-## Column mapping
+# Column mapping
 To create column mapping, you need to specify the following parameters:
 * `target` - the name of the column with the target function
 * `prediction` - the name of the column(s) with model predictions
@@ -68,7 +68,7 @@ drift_report.run(reference_data=reference, current_data=current)
 drift_report
 ```
 
-## Export the report in different formats
+## Export the Report in different formats
 
 To save the Drift report as an HTML file, run:
 
@@ -90,7 +90,7 @@ To get the output as a Python dictionary, run:
 drift_report.as_dict()
 ```
 
-## Test Suites 
+# Test Suites 
 
 You can also run the Test Suites. This is an alternative interface that helps perform an explicit comparison of each metric against a defined condition and returns a pass or fail result.
 
@@ -137,7 +137,8 @@ Each metric and test has parameters that you can pass to modify how the metric i
 * [All tests](https://docs.evidentlyai.com/reference/all-tests): all individual tests and parameters
 * [All metrics[(https://docs.evidentlyai.com/reference/all-metrics): all individual metrics and parameters
 
-### Sample notebooks
+## Sample notebooks
+
 Here you can find simple examples on toy datasets to quickly explore what Evidently can do right out of the box.
 
 Report | Jupyter notebook | Colab notebook |
