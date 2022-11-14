@@ -55,6 +55,9 @@ class RegressionErrorNormality(Metric[RegressionErrorNormalityResults]):
 
 @default_renderer(wrap_type=RegressionErrorNormality)
 class RegressionErrorNormalityRenderer(MetricRenderer):
+    def render_json(self, obj: RegressionErrorNormality) -> dict:
+        return {}
+
     def render_html(self, obj: RegressionErrorNormality) -> List[BaseWidgetInfo]:
         result = obj.get_result()
         current_error = result.current_error

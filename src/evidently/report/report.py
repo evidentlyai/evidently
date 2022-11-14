@@ -29,10 +29,8 @@ class Report(Display):
     _first_level_metrics: List[Union[Metric]]
     metrics: List[Union[Metric, MetricPreset, BaseGenerator]]
 
-    def __init__(
-        self, metrics: List[Union[Metric, MetricPreset, BaseGenerator]], color_options: Optional[ColorOptions] = None
-    ):
-        super().__init__(color_options)
+    def __init__(self, metrics: List[Union[Metric, MetricPreset, BaseGenerator]], options: Optional[List] = None):
+        super().__init__(options)
         # just save all metrics and metric presets
         self.metrics = metrics
         self._inner_suite = Suite()
@@ -106,10 +104,12 @@ class Report(Display):
         metrics_results = []
         additional_graphs = []
 
+        color_options = self.options_provider.get(ColorOptions)
+
         for test in self._first_level_metrics:
             renderer = find_metric_renderer(type(test), self._inner_suite.context.renderers)
             # set the color scheme from the report for each render
-            renderer.color_options = self.color_options
+            renderer.color_options = color_options
             html_info = renderer.render_html(test)
 
             for info_item in html_info:

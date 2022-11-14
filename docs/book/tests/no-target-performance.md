@@ -39,7 +39,7 @@ The preset contains the following tests:
 TestShareOfDriftedColumns()
 TestValueDrift(column=prediction)
 TestColumnsType()
-TestColumnShareOfNulls(column=’all’)
+TestColumnShareOfMissingValues(column=’all’)
 TestShareOfOutRangeValues(column=numerical_columns)
 TestShareOfOutListValues(column=categorical_columns)
 TestMeanInNSigmas(column=numerical_columns, n=2)

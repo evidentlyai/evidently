@@ -192,3 +192,7 @@ example_stat_test = StatTest(
   - only for numerical features
   - returns `p_value`
   - drift detected when `p_value < threshold`
+- `t_test` - T-Test
+  - only for numerical features
+  - returns `p-value`
+  - drift detected when `p_value < threshold`

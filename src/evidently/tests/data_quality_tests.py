@@ -11,7 +11,7 @@ from evidently.metrics import ColumnQuantileMetric
 from evidently.metrics import ColumnSummaryMetric
 from evidently.metrics import ColumnValueListMetric
 from evidently.metrics import ColumnValueRangeMetric
-from evidently.metrics import DataQualityStabilityMetrics
+from evidently.metrics import DataQualityStabilityMetric
 from evidently.metrics import DatasetCorrelationsMetric
 from evidently.metrics.data_integrity.column_summary_metric import NumericCharacteristics
 from evidently.renderers.base_renderer import TestHtmlInfo
@@ -55,28 +55,18 @@ class BaseDataQualityMetricsValueTest(BaseCheckValueTest, ABC):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        metric: Optional[ColumnSummaryMetric] = None,
     ):
-        if metric is not None:
-            self.metric = metric
-
-        else:
-            self.metric = ColumnSummaryMetric(column_name)
-
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
+        self.metric = ColumnSummaryMetric(column_name)
 
 
 class TestConflictTarget(Test):
     group = DATA_QUALITY_GROUP.id
     name = "Test number of conflicts in target"
-    metric: DataQualityStabilityMetrics
+    metric: DataQualityStabilityMetric
 
-    def __init__(self, metric: Optional[DataQualityStabilityMetrics] = None):
-        if metric is not None:
-            self.metric = metric
-
-        else:
-            self.metric = DataQualityStabilityMetrics()
+    def __init__(self):
+        self.metric = DataQualityStabilityMetric()
 
     def check(self):
         metric_result = self.metric.get_result()
@@ -99,14 +89,10 @@ class TestConflictTarget(Test):
 class TestConflictPrediction(Test):
     group = DATA_QUALITY_GROUP.id
     name = "Test number of conflicts in prediction"
-    metric: DataQualityStabilityMetrics
+    metric: DataQualityStabilityMetric
 
-    def __init__(self, metric: Optional[DataQualityStabilityMetrics] = None):
-        if metric is not None:
-            self.metric = metric
-
-        else:
-            self.metric = DataQualityStabilityMetrics()
+    def __init__(self):
+        self.metric = DataQualityStabilityMetric()
 
     def check(self):
         metric_result = self.metric.get_result()
@@ -142,16 +128,10 @@ class BaseDataQualityCorrelationsMetricsValueTest(BaseCheckValueTest, ABC):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        metric: Optional[DatasetCorrelationsMetric] = None,
     ):
         self.method = method
-        if metric is not None:
-            self.metric = metric
-
-        else:
-            self.metric = DatasetCorrelationsMetric()
-
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
+        self.metric = DatasetCorrelationsMetric()
 
 
 class TestTargetPredictionCorrelation(BaseDataQualityCorrelationsMetricsValueTest):
@@ -367,7 +347,6 @@ class TestCorrelationChanges(BaseDataQualityCorrelationsMetricsValueTest):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        metric: Optional[DatasetCorrelationsMetric] = None,
     ):
         super().__init__(
             method=method,
@@ -379,7 +358,6 @@ class TestCorrelationChanges(BaseDataQualityCorrelationsMetricsValueTest):
             lte=lte,
             not_eq=not_eq,
             not_in=not_in,
-            metric=metric,
         )
         self.corr_diff = corr_diff
 
@@ -436,7 +414,6 @@ class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest, ABC):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        metric: Optional[ColumnSummaryMetric] = None,
     ):
         self.column_name = column_name
         super().__init__(
@@ -449,7 +426,6 @@ class BaseFeatureDataQualityMetricsTest(BaseDataQualityMetricsValueTest, ABC):
             lte=lte,
             not_eq=not_eq,
             not_in=not_in,
-            metric=metric,
         )
 
     def groups(self) -> Dict[str, str]:
@@ -869,14 +845,10 @@ class TestMeanInNSigmas(Test):
     column_name: str
     n_sigmas: int
 
-    def __init__(self, column_name: str, n_sigmas: int = 2, metric: Optional[ColumnSummaryMetric] = None):
+    def __init__(self, column_name: str, n_sigmas: int = 2):
         self.column_name = column_name
         self.n_sigmas = n_sigmas
-        if metric is not None:
-            self.metric = metric
-
-        else:
-            self.metric = ColumnSummaryMetric(column_name)
+        self.metric = ColumnSummaryMetric(column_name)
 
     def check(self):
         reference_feature_stats = self.metric.get_result().reference_characteristics
@@ -992,17 +964,11 @@ class TestValueRange(Test):
         column_name: str,
         left: Optional[float] = None,
         right: Optional[float] = None,
-        metric: Optional[ColumnValueRangeMetric] = None,
     ):
         self.column_name = column_name
         self.left = left
         self.right = right
-
-        if metric is not None:
-            self.metric = metric
-
-        else:
-            self.metric = ColumnValueRangeMetric(column_name=column_name, left=left, right=right)
+        self.metric = ColumnValueRangeMetric(column_name=column_name, left=left, right=right)
 
     def check(self):
         number_not_in_range = self.metric.get_result().current.number_not_in_range
@@ -1059,17 +1025,11 @@ class BaseDataQualityValueRangeMetricsTest(BaseCheckValueTest, ABC):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        metric: Optional[ColumnValueRangeMetric] = None,
     ):
         self.column_name = column_name
         self.left = left
         self.right = right
-
-        if metric is not None:
-            self.metric = metric
-
-        else:
-            self.metric = ColumnValueRangeMetric(column_name=column_name, left=left, right=right)
+        self.metric = ColumnValueRangeMetric(column_name=column_name, left=left, right=right)
 
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
 
@@ -1169,15 +1129,10 @@ class TestValueList(Test):
     column_name: str
     values: Optional[list]
 
-    def __init__(self, column_name: str, values: Optional[list] = None, metric: Optional[ColumnValueListMetric] = None):
+    def __init__(self, column_name: str, values: Optional[list] = None):
         self.column_name = column_name
         self.values = values
-
-        if metric is not None:
-            self.metric = metric
-
-        else:
-            self.metric = ColumnValueListMetric(column_name=column_name, values=values)
+        self.metric = ColumnValueListMetric(column_name=column_name, values=values)
 
     def check(self):
         metric_result = self.metric.get_result()
@@ -1243,18 +1198,11 @@ class BaseDataQualityValueListMetricsTest(BaseCheckValueTest, ABC):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        metric: Optional[ColumnValueListMetric] = None,
     ):
         self.column_name = column_name
         self.values = values
-
-        if metric is not None:
-            self.metric = metric
-
-        else:
-            self.metric = ColumnValueListMetric(column_name=column_name, values=values)
-
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
+        self.metric = ColumnValueListMetric(column_name=column_name, values=values)
 
     def groups(self) -> Dict[str, str]:
         return {GroupingTypes.ByFeature.id: self.column_name}
@@ -1332,12 +1280,12 @@ class TestValueQuantile(BaseCheckValueTest):
     name = "Quantile Value"
     metric: ColumnQuantileMetric
     column_name: str
-    quantile: Optional[float]
+    quantile: float
 
     def __init__(
         self,
         column_name: str,
-        quantile: Optional[float],
+        quantile: float,
         eq: Optional[Numeric] = None,
         gt: Optional[Numeric] = None,
         gte: Optional[Numeric] = None,
@@ -1346,24 +1294,11 @@ class TestValueQuantile(BaseCheckValueTest):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        metric: Optional[ColumnQuantileMetric] = None,
     ):
         self.column_name = column_name
         self.quantile = quantile
-
-        if metric is not None:
-            if column_name is not None or quantile is not None:
-                raise ValueError("Test parameters and given  metric conflict")
-
-            self.metric = metric
-
-        else:
-            if quantile is None:
-                raise ValueError("Quantile parameter should be present")
-
-            self.metric = ColumnQuantileMetric(column_name=column_name, quantile=quantile)
-
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
+        self.metric = ColumnQuantileMetric(column_name=column_name, quantile=quantile)
 
     def groups(self) -> Dict[str, str]:
         return {GroupingTypes.ByFeature.id: self.column_name}

@@ -21,7 +21,7 @@ def _g_stat_test(
         reference_data: reference data
         current_data: current data
         feature_type: feature type
-        threshold: all values above this threshold means data drift
+        threshold: level of significance
     Returns:
         p_value: calculated p_value value
         test_result: whether the drift is detected
@@ -36,10 +36,7 @@ def _g_stat_test(
 
 
 g_test = StatTest(
-    name="g_test",
-    display_name="g_test",
-    func=_g_stat_test,
-    allowed_feature_types=["cat"],
+    name="g_test", display_name="g_test", func=_g_stat_test, allowed_feature_types=["cat"], default_threshold=0.1
 )
 
 register_stattest(g_test)

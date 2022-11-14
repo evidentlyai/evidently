@@ -17,7 +17,7 @@ from evidently.dashboard.dashboard import save_lib_files
 from evidently.metrics.base_metric import ErrorResult
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
-from evidently.options import ColorOptions
+from evidently.options import OptionsProvider
 from evidently.renderers.base_renderer import DEFAULT_RENDERERS
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import RenderersDefinitions
@@ -85,15 +85,17 @@ class ExecutionError(Exception):
 
 
 class Display:
-    color_options: ColorOptions
+    # collection of all possible common options
+    options_provider: OptionsProvider
 
-    def __init__(self, color_options: Optional[ColorOptions] = None):
-        if color_options is None:
-            # set default color scheme
-            self.color_options = ColorOptions()
+    def __init__(self, options: Optional[list] = None):
+        if options is None:
+            options = []
 
-        else:
-            self.color_options = color_options
+        self.options_provider = OptionsProvider()
+
+        for option in options:
+            self.options_provider.add(option)
 
     @abc.abstractmethod
     def _build_dashboard_info(self):
