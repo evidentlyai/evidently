@@ -3,8 +3,6 @@ from typing import Optional
 from typing import Union
 
 import dataclasses
-import numpy as np
-import pandas as pd
 
 from evidently.calculations.classification_performance import DatasetClassificationQuality
 from evidently.calculations.classification_performance import calculate_metrics
