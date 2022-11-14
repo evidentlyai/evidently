@@ -4,7 +4,8 @@ This is a short introduction to Evidently.
 
 ## Input Data
 
-You should prepare the data as pandas DataFrames. It could be two datasets - reference data and current production data. Or just one - you will need to identify rows that refer to reference and production data. If you want to generate reports with no comparison performed, you will need one dataset also.
+You should prepare the data as pandas DataFrames. It could be two datasets - reference data and current production data. Or just one - you will need to identify rows that refer to reference and current data. If you do not want to perform a comparison, you can also pass a single dataset.
+
 If you deal with large datasets, you can take a sample from it:
 
 ```python
@@ -27,8 +28,9 @@ If the column_mapping is not specified or set as None, we use the default mappin
 * The column with 'prediction' name will be treated as a model prediction.
 
 Example 
+
 ```python
-from evidently.pipeline.column_mapping import ColumnMapping
+from evidently import ColumnMapping
 
 column_mapping = ColumnMapping()
 
@@ -40,85 +42,110 @@ column_mapping.numerical_features = ['temp', 'atemp', 'humidity']
 column_mapping.categorical_features = ['season', 'holiday'] 
 ```
 
-## Choose The Tabs
-You can choose one or several of the following Tabs.
-* DataDriftTab to estimate the data drift
-* NumTargetDriftTab to estimate target drift for the numerical target (for problem statements with the numerical target function: regression, probabilistic classification or ranking, etc.)
-* CatTargetDriftTab to estimate target drift for the categorical target (for problem statements with the categorical target function: binary classification, multi-class classification, etc.)
-* RegressionPerformanceTab to explore the performance of a regression model
-* ClassificationPerformanceTab to explore the performance of a classification model
-* ProbClassificationPerformanceTab to explore the performance of a probabilistic classification model and the quality of the model calibration
-For each tab, you can specify the following parameters:
-* `verbose_level` - you can get the short version of the tab (verbose_level == 0) and the full version (verbose_level == 1) 
-* `Include_widgets` - You can list all the widgets from the particular report you want to include, and they will appear in the specified order
-You can explore short and long versions of our custom Evidently report in the Example section
+## Choose a Report
 
-## Create Your Dashboard
-To generate the report and explore it in the Jupyter notebook run these commands:
-```python
-from evidently.dashboard import Dashboard
-from evidently.dashboard.tabs import DataDriftTab
+A report evaluates a specific aspect of the model or data performance.
 
-my_dashboard = Dashboard(tabs=[DataDriftTab()])
-my_dashboard.calculate(reference_data, current_data)
-my_dashboard.show()
-```
-You can set the custom options for the following Reports: 
-* num_target_drift_tab (Numerical Target Drift)
-* cat_target_drift_tab (Categorical Target Drift)
-* data_drift_tab (Data Drift)
-See the example [here](how_to_questions/drift_dashboard_with_options_california_housing.ipynb).
+You can choose one or several Metric Presets to generate a pre-built report:
 
-## Export the report as an HTML file
-To save the Data Drift report as HTML, run:
+* `DataQualityPreset` to explore the dataset and evaluate its quality
+* `DataDriftPreset` to estimate the data drift in the input feature
+* `TargetDriftPreset` to estimate target (prediction) drift
+* `RegressionPerformancePreset` to explore the performance of a regression model
+* `ClassificationPerformancePreset` to explore the performance of a classification model
+
+## Generate the Report
+
+To generate the chosen report and explore it in the Jupyter notebook run these commands:
 
 ```python
-drift_dashboard.save("reports/my_report.html")
+from evidently.report import Report
+from evidently.metric_preset import DataDriftPreset
+from evidently.metric_preset import TargetDriftPreset
+
+drift_report = Report(metrics=[DataDriftPreset(), TargetDriftPreset()])
+drift_report.run(reference_data=reference, current_data=current)
+drift_report
 ```
 
-## Profiles
+## Export the report in different formats
 
-You can generate JSON profiles if you want to integrate the calculated metrics and statistical test results into external pipelines and visualization tools. You can include several analyses in a single JSON output. You specify each as a section in a profile: just like you choose tabs in the visual dashboards.
-You can choose one or several of the following profiles:
-* DataDriftProfileSection to estimate the data drift
-* NumTargetDriftProfileSection to estimate target drift for the numerical target (for problem statements with the numerical target function: regression, probabilistic classification or ranking, etc.)
-* CatTargetDriftProfileSection to estimate target drift for the categorical target (for problem statements with the categorical target function: binary classification, multi-class classification, etc.)
-* RegressionPerformanceProfileSection to explore the performance of a regression model.
-* ClassificationPerformanceProfileSection to explore the performance of a classification model
-* ProbClassificationPerformanceProfileSection to explore the performance of a probabilistic classification model and the quality of the model calibration
-
-To generate the Data Drift profile, run:
+To save the Drift report as an HTML file, run:
 
 ```python
-from evidently.model_profile import Profile
-from evidently.model_profile.sections import DataDriftProfileSection
-
-my_profile = Profile(sections=[DataDriftProfileSection()])
-my_profile.calculate(reference_data, current_data) 
-my_profile.json()
+drift_report.save_html("file.html")
 ```
-# Examples
+
+You can also get the output as a JSON or Python dictionary if you want to integrate the calculated metrics and statistical test results into external pipelines and visualization tools.
+
+To get the output as a JSON, run:
+
+```python
+drift_report.json()
+```
+
+To get the output as a Python dictionary, run:
+
+```python
+drift_report.as_dict()
+```
+
+## Test Suites 
+
+You can also run the Test Suites. This is an alternative interface that helps perform an explicit comparison of each metric against a defined condition and returns a pass or fail result.
+
+You can choose one or several of the several Test Presets to run the pre-built Test Suites.
+* `NoTargetPerformanceTestPreset` to evaluate the model performance without ground truth labels
+* `DataStabilityTestPreset`to compare descriptive stats and similarity between the two data batches
+* `DataQualityTestPreset`to check the data for issues like missing values or duplicates
+* `DataDriftTestPreset` to compare the column distribution
+* `RegressionTestPreset` to test the quality of a regression model
+* `MulticlassClassificationTestPreset` to test the quality of a multi-class classification model
+* `BinaryClassificationTopKTestPreset` to test the quality of a binary classification model at K
+* `BinaryClassificationTestPreset` to test the quality of a binary classification model
+
+To run the NoTargetPerformanceTestPreset and get the visual report with the result of the tests:
+
+```python
+no_target_performance = TestSuite(tests=[
+NoTargetPerformanceTestPreset(),
+])
+no_target_performance.run(reference_data=ref,current_data=curr)
+no_target_performance
+```
+To get the output as a JSON, run:
+
+```python
+no_target_performance.json()
+```
+
+# Customization
+
+You can also build a custom Report from individual Metrics or a Test Suite from individual Tests. Evidently has 50+ inidvidual metrics and tests to choose from. All you need is to list which metrics or tests to include. 
+
+Here is how you build a custom Test Suite from individual tests:
+
+```python
+feature_suite = TestSuite(tests=[
+    TestColumnShareOfMissingValues(column_name='hours-per-week'),
+    TestColumnValueDrift(column_name='education'),
+    TestMeanInNSigmas(column_name='hours-per-week')
+])
+```
+
+Each metric and test has parameters that you can pass to modify how the metric is calculated or to define a custom condition of the test. You can consult these documentation pages for reference:
+* [All tests](https://docs.evidentlyai.com/reference/all-tests): all individual tests and parameters
+* [All metrics[(https://docs.evidentlyai.com/reference/all-metrics): all individual metrics and parameters
 
 ### Sample notebooks
 Here you can find simple examples on toy datasets to quickly explore what Evidently can do right out of the box.
 
-Report | Jupyter notebook | Colab notebook | Data source 
+Report | Jupyter notebook | Colab notebook |
 --- | --- | --- | --- 
 Evidently Metrics| [link](sample_notebooks/evidently_metrics.ipynb) | [link](https://colab.research.google.com/drive/1IpfQsq5dmjuG_Qbn6BNtghq6aubZBP5A) | Adult data set openml
-Evidently Metric Presets| [link](sample_notebooks/evidently_metric_presets.ipynb) | [link](https://colab.research.google.com/drive/1wmHWipPd6iEy9Ce8NWBcxs_BSa9hgKgk) | Adult data set openml, California housing sklearn.datasets, Breast cancer sklearn.datasets, Iris plants sklearn.datasets
-Evidently Tests| [link](sample_notebooks/evidently_tests.ipynb) | [link](https://colab.research.google.com/drive/1nQhfXft4VZ3G7agvXgH_LqVHdCh-WaMl) | Adult data set openml, California housing sklearn.datasets, Breast cancer sklearn.datasets, Iris plants sklearn.datasets
-Evidently Test Presets| [link](sample_notebooks/evidently_test_presets.ipynb) | [link](https://colab.research.google.com/drive/1CBAFY1qmHHV_72SC7YBeaD4c6LLpPQan) | Adult data set openml, California housing sklearn.datasets, Breast cancer sklearn.datasets, Iris plants sklearn.datasets
-Data Drift + Categorical Target Drift (Multiclass) | [link](sample_notebooks/multiclass_target_and_data_drift_iris.ipynb) | [link](https://colab.research.google.com/drive/1Dd6ZzIgeBYkD_4bqWZ0RAdUpCU0b6Y6H) | Iris plants sklearn.datasets 
-Data Drift + Categorical Target Drift (Multiclass, Probabilistic predictions) | [link](sample_notebooks/prob_multiclass_target_and_data_drift_iris.ipynb) | [link](https://colab.research.google.com/drive/1zJ0-_keElHzM6Uaj-RnVPfTYoBO8fQ6H) | Iris plants sklearn.datasets 
-Data Drift + Categorical Target Drift (Binary) | [link](sample_notebooks/binary_target_and_data_drift_breast_cancer.ipynb) | [link](https://colab.research.google.com/drive/1gpzNuFbhoGc4-DLAPMJofQXrsX7Sqsl5) | Breast cancer sklearn.datasets
-Data Drift + Categorical Target Drift (Binary, Probabilistic predictions) | [link](sample_notebooks/prob_binary_target_and_data_drift_breast_cancer.ipynb) | [link](https://colab.research.google.com/drive/1MTkNE43ILDbu-SfVTLPBC4mkXSZ-BCA8) | Breast cancer sklearn.datasets
-Data Drift + Numerical Target Drift | [link](sample_notebooks/numerical_target_and_data_drift_california_housing.ipynb) | [link](https://colab.research.google.com/drive/1TGt-0rA7MiXsxwtKB4eaAGIUwnuZtyxc) | California housing sklearn.datasets 
-Regression Performance | [link](sample_notebooks/regression_performance_bike_sharing_demand.ipynb) | [link](https://colab.research.google.com/drive/1ONgyDXKMFyt9IYUwLpvfxz9VIZHw-qBJ) | Bike sharing UCI: [link](https://archive.ics.uci.edu/ml/datasets/bike+sharing+dataset)
-Classification Performance (Multiclass) | [link](sample_notebooks/classification_performance_multiclass_iris.ipynb) | [link](https://colab.research.google.com/drive/1pnYbVJEHBqvVmHUXzG-kw-Fr6PqhzRg3) | Iris plants sklearn.datasets 
-Probabilistic Classification Performance (Multiclass) | [link](sample_notebooks/probabilistic_classification_performance_multiclass_iris.ipynb) | [link](https://colab.research.google.com/drive/1UkFaBqOzBseB_UqisvNbsh9hX5w3dpYS) | Iris plants sklearn.datasets 
-Classification Performance (Binary) | [link](sample_notebooks/classification_performance_breast_cancer.ipynb) | [link](https://colab.research.google.com/drive/1b2kTLUIVJkKJybYeD3ZjpaREr_9dDTpz) | Breast cancer sklearn.datasets
-Probabilistic Classification Performance (Binary) | [link](sample_notebooks/probabilistic_classification_performance_breast_cancer.ipynb) | [link](https://colab.research.google.com/drive/1sE2H4mFSgtNe34JZMAeC3eLntid6oe1g) | Breast cancer sklearn.datasets
-Data Quality | [link](sample_notebooks/data_quality_bike_sharing_demand.ipynb) | [link](https://colab.research.google.com/drive/1XDxs4k2wNHU9Xbxb9WI2rOgMkZFavyRd) | Bike sharing UCI: [link](https://archive.ics.uci.edu/ml/datasets/bike+sharing+dataset)
+Evidently Metric Presets| [link](sample_notebooks/evidently_metric_presets.ipynb) | [link](https://colab.research.google.com/drive/1wmHWipPd6iEy9Ce8NWBcxs_BSa9hgKgk) 
+Evidently Tests| [link](sample_notebooks/evidently_tests.ipynb) | [link](https://colab.research.google.com/drive/1nQhfXft4VZ3G7agvXgH_LqVHdCh-WaMl) 
+Evidently Test Presets| [link](sample_notebooks/evidently_test_presets.ipynb) | [link](https://colab.research.google.com/drive/1CBAFY1qmHHV_72SC7YBeaD4c6LLpPQan) | 
 
 ### How-to notebooks
 These examples answer “how-to” questions - they help you to adjust evidently as you need
