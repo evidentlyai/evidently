@@ -100,7 +100,7 @@ class SimpleClassificationTestTopK(SimpleClassificationTest, ABC):
             not_in=not_in,
         )
         if k is not None and threshold is not None:
-            raise ValueError("Only one of classification_threshold or k should be given")
+            raise ValueError("Only one of 'threshold' or 'k' should be given")
         self.k = k
         self.threshold = threshold
         self.dummy_metric = ClassificationDummyMetric(k=self.k, threshold=self.threshold)
@@ -246,9 +246,7 @@ class TestRocAuc(SimpleClassificationTest):
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
     ):
-        super().__init__(
-            eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in
-        )
+        super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
         self.roc_curve = ClassificationRocCurve()
 
     def get_value(self, result: DatasetClassificationQuality):
@@ -521,7 +519,7 @@ class ByClassClassificationTest(BaseCheckValueTest, ABC):
     def __init__(
         self,
         label: str,
-        classification_threshold: Optional[float] = None,
+        threshold: Optional[float] = None,
         k: Optional[Union[float, int]] = None,
         eq: Optional[Numeric] = None,
         gt: Optional[Numeric] = None,
@@ -533,13 +531,13 @@ class ByClassClassificationTest(BaseCheckValueTest, ABC):
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
     ):
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
+
+        if k is not None and threshold is not None:
+            raise ValueError("Only one of 'threshold' or 'k' should be given")
+
         self.label = label
-        self.classification_threshold = classification_threshold
         self.k = k
-        if k is not None and classification_threshold is not None:
-            raise ValueError("Only one of classification_threshold or k should be given")
-        self.k = k
-        self.threshold = classification_threshold
+        self.threshold = threshold
         self.metric = ClassificationQualityMetric(k=self.k, threshold=self.threshold)
         self.dummy_metric = ClassificationDummyMetric(k=self.k, threshold=self.threshold)
         self.by_class_metric = ClassificationQualityByClass(k=self.k, threshold=self.threshold)

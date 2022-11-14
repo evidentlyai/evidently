@@ -234,7 +234,7 @@ def ensure_prediction_column_is_string(
     Update dataset by predictions type:
     - if prediction column is None or a string, no dataset changes
     - (binary classification) if predictions is a list and its length equals 2
-        set predicted_labels column by `classification_threshold`
+        set predicted_labels column by `threshold`
     - (multy label classification) if predictions is a list and its length is greater than 2
         set predicted_labels from probability values in columns by prediction column
 
