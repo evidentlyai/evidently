@@ -5,6 +5,7 @@ from typing import Sequence
 from typing import Union
 
 import dataclasses
+import numpy as np
 import pandas as pd
 
 from evidently import ColumnMapping
@@ -129,14 +130,18 @@ class DataDefinition:
 def _process_column(
     column_name: Optional[str],
     data: _InputData,
-    error_if_partially_present: bool = True,
+    if_partially_present: str = "raise",
 ) -> Optional[ColumnDefinition]:
     if column_name is None:
         return None
     presense = _get_column_presence(column_name, data)
     if presense == ColumnPresenceState.Partially:
-        if error_if_partially_present:
+        if if_partially_present == "raise":
             raise ValueError(f"Column ({column_name}) is partially present in data")
+        if if_partially_present == "skip":
+            return None
+        if if_partially_present == "keep":
+            return ColumnDefinition(column_name, _get_column_type(column_name, data))
         return None
     if presense == ColumnPresenceState.Present:
         return ColumnDefinition(column_name, _get_column_type(column_name, data))
@@ -181,7 +186,7 @@ def _prediction_column(
         if all([item == ColumnPresenceState.Present for item in presence]):
             prediction_defs = [ColumnDefinition(column, _get_column_type(column, data)) for column in prediction]
             if any([item.column_type != ColumnType.Numerical for item in prediction_defs]):
-                raise ValueError("Some prediction columns have incorrect types")
+                raise ValueError(f"Some prediction columns have incorrect types {prediction_defs}")
             return PredictionColumns(prediction_probas=prediction_defs)
     raise ValueError("Unexpected type for prediction field in column_mapping")
 
@@ -211,7 +216,7 @@ def create_data_definition(
     ]
     utility_column_names = [column.column_name for column in all_columns if column is not None]
     data_columns = set(data.current.columns) | (set(data.reference.columns) if data.reference is not None else set())
-    col_defs = [_process_column(column_name, data) for column_name in data_columns]
+    col_defs = [_process_column(column_name, data, if_partially_present="skip") for column_name in data_columns]
 
     if mapping.numerical_features is None:
         num = [column for column in col_defs if _filter_by_type(column, ColumnType.Numerical, utility_column_names)]
@@ -294,8 +299,12 @@ def _get_column_type(column_name: str, data: _InputData) -> ColumnType:
     cur_type = None
     if column_name in data.current.columns:
         cur_type = data.current[column_name].dtype
-    if ref_type is not None and cur_type is not None and ref_type != cur_type:
-        raise ValueError(f"Column {column_name} have different types in reference and current")
+    if (
+        ref_type is not None
+        and cur_type is not None
+        and (ref_type != cur_type and not np.can_cast(cur_type, ref_type) and not np.can_cast(ref_type, cur_type))
+    ):
+        raise ValueError(f"Column {column_name} have different types in reference {ref_type} and current {cur_type}")
     if pd.api.types.is_numeric_dtype(cur_type if cur_type is not None else ref_type):
         return ColumnType.Numerical
     if pd.api.types.is_datetime64_dtype(cur_type if cur_type is not None else ref_type):

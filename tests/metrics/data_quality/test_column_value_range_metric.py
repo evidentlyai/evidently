@@ -6,7 +6,6 @@ import pytest
 
 from evidently import ColumnMapping
 from evidently.metrics import ColumnValueRangeMetric
-from evidently.metrics.base_metric import InputData
 from evidently.metrics.data_quality.column_value_range_metric import ColumnValueRangeMetricResult
 from evidently.metrics.data_quality.column_value_range_metric import ValuesInRangeStat
 from evidently.report import Report
@@ -68,10 +67,9 @@ def test_data_quality_values_in_range_metric_success(
     metric: ColumnValueRangeMetric,
     expected_result: ColumnValueRangeMetricResult,
 ) -> None:
-    data_mapping = ColumnMapping()
-    result = metric.calculate(
-        data=InputData(current_data=current_data, reference_data=reference_data, column_mapping=data_mapping)
-    )
+    report = Report(metrics=[metric])
+    report.run(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
+    result = metric.get_result()
     assert result == expected_result
 
 
@@ -127,11 +125,10 @@ def test_data_quality_values_in_range_metric_errors(
     reference_data: pd.DataFrame,
     metric: ColumnValueRangeMetric,
 ) -> None:
-    data_mapping = ColumnMapping()
     with pytest.raises(ValueError):
-        metric.calculate(
-            data=InputData(current_data=current_data, reference_data=reference_data, column_mapping=data_mapping)
-        )
+        report = Report(metrics=[metric])
+        report.run(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
+        metric.get_result()
 
 
 @pytest.mark.parametrize(

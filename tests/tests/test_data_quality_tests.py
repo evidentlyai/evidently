@@ -485,11 +485,19 @@ def test_data_quality_test_number_of_values_not_in_range() -> None:
         }
     )
     suite = TestSuite(tests=[TestNumberOfOutRangeValues(column_name="feature1", lt=1)])
-    suite.run(current_data=test_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset,
+        reference_data=reference_dataset,
+        column_mapping=ColumnMapping(prediction=None),
+    )
     assert not suite
 
     suite = TestSuite(tests=[TestNumberOfOutRangeValues(column_name="feature1", lte=1)])
-    suite.run(current_data=test_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset,
+        reference_data=reference_dataset,
+        column_mapping=ColumnMapping(prediction=None),
+    )
     assert suite
     assert suite.show()
     assert suite.json()
@@ -518,11 +526,19 @@ def test_data_quality_test_share_of_values_not_in_range() -> None:
         }
     )
     suite = TestSuite(tests=[TestShareOfOutRangeValues(column_name="feature1", lt=0.2)])
-    suite.run(current_data=test_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset,
+        reference_data=reference_dataset,
+        column_mapping=ColumnMapping(prediction=None),
+    )
     assert not suite
 
     suite = TestSuite(tests=[TestShareOfOutRangeValues(column_name="feature1", lte=0.5)])
-    suite.run(current_data=test_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset,
+        reference_data=reference_dataset,
+        column_mapping=ColumnMapping(prediction=None),
+    )
     assert suite
     assert suite.show()
     assert suite.json()

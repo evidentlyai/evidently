@@ -7,7 +7,6 @@ import pytest
 
 from evidently import ColumnMapping
 from evidently.metrics import ColumnValueListMetric
-from evidently.metrics.base_metric import InputData
 from evidently.metrics.data_quality.column_value_list_metric import ColumnValueListMetricResult
 from evidently.metrics.data_quality.column_value_list_metric import ValueListStat
 from evidently.report import Report
@@ -147,9 +146,9 @@ def test_data_quality_value_list_metric_success(
     expected_result: ColumnValueListMetricResult,
 ) -> None:
     data_mapping = ColumnMapping()
-    result = metric.calculate(
-        data=InputData(current_data=current_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
-    )
+    report = Report(metrics=[metric])
+    report.run(current_data=current_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
+    result = metric.get_result()
     assert result == expected_result
 
 
@@ -197,9 +196,9 @@ def test_data_quality_value_list_metric_value_errors(
     data_mapping = ColumnMapping()
 
     with pytest.raises(ValueError) as error:
-        metric.calculate(
-            data=InputData(current_data=current_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
-        )
+        report = Report(metrics=[metric])
+        report.run(current_data=current_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
+        metric.get_result()
 
     assert error.value.args[0] == error_message
 

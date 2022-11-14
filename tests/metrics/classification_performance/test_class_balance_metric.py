@@ -4,6 +4,7 @@ import pytest
 from evidently import ColumnMapping
 from evidently.metrics import ClassificationClassBalance
 from evidently.metrics.base_metric import InputData
+from evidently.report import Report
 
 
 @pytest.mark.parametrize(
@@ -41,13 +42,9 @@ from evidently.metrics.base_metric import InputData
 )
 def test_class_balance_metric(reference, current, expected_plot_data):
     metric = ClassificationClassBalance()
-    results = metric.calculate(
-        data=InputData(
-            reference_data=reference,
-            current_data=current,
-            column_mapping=ColumnMapping(),
-        )
-    )
+    report = Report(metrics=[metric])
+    report.run(current_data=current, reference_data=reference, column_mapping=ColumnMapping())
+    results = metric.get_result()
 
     pd.testing.assert_frame_equal(results.plot_data["current"], expected_plot_data["current"])
     if "reference" in expected_plot_data.keys():
