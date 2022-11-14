@@ -4,11 +4,11 @@ This is an explanatory page to describe the functionality of the Evidently Repor
 
 A **Report** is a combination of different metrics that evaluate data or ML model quality. 
 
-A **Report** can be visual and interactive: you can display it inside a Jupyter notebook or export it as an HTML file.
+Уou can display an interactive report inside a Jupyter notebook or export it as an HTML file:
 
 ![Data Drift report example](../.gitbook/assets/reports/report_example_data_drift-min.png)
 
-A **Report** can also be generated as a text summary: as a JSON or as a Python dictionary. 
+You can also generate the report as a text summary: as a JSON or as a Python dictionary. 
 
 ```python
 {'timestamp': '2022-10-26 17:46:47.214403',
@@ -30,7 +30,7 @@ A **Report** can also be generated as a text summary: as a JSON or as a Python d
 ```
 Most reports can be calculated for a single dataset. If you pass two datasets, they will show a side-by-side comparison.
 
-You can generate a **Report** by listing individual **Metrics** to include in it. You can also run one of the **Presets** that cover a specific aspect of the model or data performance. 
+You can generate a report by listing individual **Metrics** to include in it. You can also run one of the **Presets** that cover a specific aspect of the model or data performance. 
 
 # What is a Metric?
 
@@ -38,7 +38,7 @@ A **Metric** is a component of a report that evaluates a specific aspect of the 
 
 A **Metric** can be, literally, a single metric (such as an accuracy value). It can also be a combination of metrics, a plot, or a table. Each **Metric** has a visual render.
 
-Some metrics simplt return the values:  
+Some metrics simply return the values:  
 
 ![RegressionQualityMetric](../.gitbook/assets/reports/metric_example_regression_quality-min.png)
 
