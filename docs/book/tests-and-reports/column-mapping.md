@@ -46,7 +46,7 @@ You can create a `ColumnMapping` object to map your column names and feature typ
 To specify the column names for target, prediction, ID or DateTime: 
 
 ```python
-from evidently.pipeline.column_mapping import ColumnMapping
+from evidently import ColumnMapping
 
 column_mapping = ColumnMapping()
 
