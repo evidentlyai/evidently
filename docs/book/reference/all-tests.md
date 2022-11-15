@@ -2,19 +2,19 @@
 description: A reference page on all the tests available in Evidently.
 ---
 
+We organize the tests into logical groups, e.g. Data Quality, Data Integrity, Regression Performance, etc. You can use the menu on the right to navigate. Note that these groups do not match the presets with the same name, e.g., there are more Data Quality tests below than in the `DataQualityTestPreset`.
+
 # How to read the tables
 
 * **Test**: the name of an individual test that you can include in a Test Suite.  
-* **Description**: plain text explanation of the test, and . We also specify whether it applies to the whole dataset or individual columns.
+* **Description**: plain text explanation of the test, and whether it applies to the whole dataset or individual columns.
 * **Parameters**: required and optional parameters for the test. 
-  * Required parameters are necessary to run the test, such as the column name for a column-level test.
-  * Optional parameters help define a custom test condition or change how the underlying metric is calculated. 
+  * Required parameters are necessary to run the test, e.g. a column name for a column-level test.
+  * Optional parameters help set a custom test condition or modify how a metric is calculated. 
   * *Standard parameters* are a sub-group of the optional parameters that help set basic test conditions (equal, not equal, greater than, etc.). They apply to most of the tests. Here you can see the complete list of the [standard parameteres](../tests-and-reports/run-tests.md#available-parameters). 
 * **Default**: test conditions that apply if you do not set custom parameters. 
   * With reference: the test conditions that apply when you pass a reference dataset and Evidently can derive expectations from it. 
   * No reference: the test conditions that apply if you do not provide the reference. They are based on heuristics.
-
-We organize the tests into logical groups. Note that the groups do not match the presets with the same name, e.g., there are more Data Quality tests below than in the `DataQualityTestPreset`.
 
 {% hint style="info" %} 
 We are doing our best to maintain this page up to date. In case of discrepancies, consult the code on GitHub (API reference coming soon!) or the current version of the "All tests" example notebook in the [Examples](../get-started/examples.md) section. If you notice an error, please send us a pull request to update the documentation! 
@@ -24,7 +24,7 @@ We are doing our best to maintain this page up to date. In case of discrepancies
 
 If you provide the reference dataset, Evidently will automatically derive all relevant statistics (e.g., share of values, etc.) to shape expectations. If you do not provide the reference, you can pass these conditions as a parameter, or run tests with default parameters.
 
-**Note on missing values related tests**. The tests that evaluate the number or share of missing values detect four types of missing values by default: Pandas nulls (None, NAN, etc.), "" (empty string), Numpy "-inf" value, Numpy "inf" value. You can also pass a custom missing values as a parameter if you want to replace the default list. Example:
+**Note on missing values related tests**. The tests that evaluate the number or share of missing values detect four types of missing values by default: Pandas nulls (None, NAN, etc.), "" (empty string), Numpy "-inf" value, Numpy "inf" value. You can also pass a list of custom missing values as a parameter if you want to replace the default list. Example:
 
 ```python
 TestNumberOfMissingValues(missing_values=["", 0, "n/a", -9999, None], replace=True)
