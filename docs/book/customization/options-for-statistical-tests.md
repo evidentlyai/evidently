@@ -196,3 +196,7 @@ example_stat_test = StatTest(
   - only for numerical features
   - returns `p-value`
   - drift detected when `p_value < threshold`
+- `TVD` - Total-Variation-Distance
+  - only for categorical features
+  - returns `p-value`
+  - drift detected when `p_value < threshold`
