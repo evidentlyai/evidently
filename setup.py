@@ -67,6 +67,7 @@ setup_args = dict(
             "types-dataclasses==0.6",
             "black==22.8.0",
             "isort==5.10.1",
+            "seaborn==0.11.2",
         ]
     },
     entry_points={},

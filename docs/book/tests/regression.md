@@ -1,6 +1,6 @@
 ## When to use it?
 
-You can use the RegressionTestPreset to evaluate the quality of a regression model, when you have the ground truth data (actuals).
+You can use the `RegressionTestPreset` to evaluate the quality of a regression model, when you have the ground truth data (actuals).
 
 ### Code example
 

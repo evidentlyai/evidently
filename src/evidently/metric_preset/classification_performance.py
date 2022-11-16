@@ -3,40 +3,32 @@ from evidently.metric_preset.metric_preset import MetricPreset
 from evidently.metrics import ClassificationClassBalance
 from evidently.metrics import ClassificationClassSeparationPlot
 from evidently.metrics import ClassificationConfusionMatrix
-from evidently.metrics import ClassificationPerformanceMetrics
 from evidently.metrics import ClassificationPRCurve
+from evidently.metrics import ClassificationProbDistribution
 from evidently.metrics import ClassificationPRTable
-from evidently.metrics import ClassificationQuality
 from evidently.metrics import ClassificationQualityByClass
 from evidently.metrics import ClassificationQualityByFeatureTable
+from evidently.metrics import ClassificationQualityMetric
 from evidently.metrics import ClassificationRocCurve
-from evidently.metrics import ProbabilityDistribution
 from evidently.metrics.base_metric import InputData
 from evidently.utils.data_operations import DatasetColumns
-from evidently.utils.data_operations import process_columns
-
-
-class ClassificationPerformance(MetricPreset):
-    def generate_metrics(self, data: InputData, columns: DatasetColumns):
-        return [ClassificationPerformanceMetrics()]
 
 
 class ClassificationPreset(MetricPreset):
     def generate_metrics(self, data: InputData, columns: DatasetColumns):
         result = [
-            ClassificationQuality(),
+            ClassificationQualityMetric(),
             ClassificationClassBalance(),
             ClassificationConfusionMatrix(),
             ClassificationQualityByClass(),
         ]
-        dataset_columns = process_columns(data.current_data, data.column_mapping)
-        curr_predictions = get_prediction_data(data.current_data, dataset_columns, data.column_mapping.pos_label)
+        curr_predictions = get_prediction_data(data.current_data, columns, data.column_mapping.pos_label)
 
         if curr_predictions.prediction_probas is not None:
             result.extend(
                 [
                     ClassificationClassSeparationPlot(),
-                    ProbabilityDistribution(),
+                    ClassificationProbDistribution(),
                     ClassificationRocCurve(),
                     ClassificationPRCurve(),
                     ClassificationPRTable(),

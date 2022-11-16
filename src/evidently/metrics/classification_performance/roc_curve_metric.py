@@ -86,7 +86,7 @@ class ClassificationRocCurveRenderer(MetricRenderer):
         if current_roc_curve is None:
             return []
 
-        tab_data = get_roc_auc_tab_data(current_roc_curve, reference_roc_curve)
+        tab_data = get_roc_auc_tab_data(current_roc_curve, reference_roc_curve, color_options=self.color_options)
         if len(tab_data) == 1:
             return [header_text(label="ROC Curve"), tab_data[0][1]]
         tabs = [TabData(name, widget) for name, widget in tab_data]

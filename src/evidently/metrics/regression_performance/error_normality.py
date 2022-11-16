@@ -1,5 +1,4 @@
 import json
-from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Union
@@ -14,7 +13,6 @@ from scipy.stats import probplot
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
-from evidently.options.color_scheme import ColorOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
@@ -57,11 +55,14 @@ class RegressionErrorNormality(Metric[RegressionErrorNormalityResults]):
 
 @default_renderer(wrap_type=RegressionErrorNormality)
 class RegressionErrorNormalityRenderer(MetricRenderer):
+    def render_json(self, obj: RegressionErrorNormality) -> dict:
+        return {}
+
     def render_html(self, obj: RegressionErrorNormality) -> List[BaseWidgetInfo]:
         result = obj.get_result()
         current_error = result.current_error
         reference_error = result.reference_error
-        color_options = ColorOptions()
+        color_options = self.color_options
         cols = 1
         subplot_titles: Union[list, str] = ""
 
@@ -89,8 +90,8 @@ class RegressionErrorNormalityRenderer(MetricRenderer):
             legendgroup="Theoretical Quantiles",
             marker=dict(size=6, color=color_options.secondary_color),
         )
-        fig.append_trace(sample_quantile_trace, 1, 1)
-        fig.append_trace(theoretical_quantile_trace, 1, 1)
+        fig.add_trace(sample_quantile_trace, 1, 1)
+        fig.add_trace(theoretical_quantile_trace, 1, 1)
         fig.update_xaxes(title_text="Theoretical Quantiles", row=1, col=1)
         if reference_error is not None:
             ref_qq_lines = probplot(reference_error, dist="norm", plot=None)
@@ -114,8 +115,8 @@ class RegressionErrorNormalityRenderer(MetricRenderer):
                 showlegend=False,
                 marker=dict(size=6, color=color_options.secondary_color),
             )
-            fig.append_trace(sample_quantile_trace, 1, 2)
-            fig.append_trace(theoretical_quantile_trace, 1, 2)
+            fig.add_trace(sample_quantile_trace, 1, 2)
+            fig.add_trace(theoretical_quantile_trace, 1, 2)
             fig.update_xaxes(title_text="Theoretical Quantiles", row=1, col=2)
         fig.update_layout(yaxis_title="Dataset Quantiles")
         fig = json.loads(fig.to_json())

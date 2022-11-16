@@ -114,10 +114,15 @@ class ColumnDriftMetricRenderer(MetricRenderer):
                 y1=result.plot_shape["y1"],
                 y_name=result.column_name,
                 x_name=result.x_name,
+                color_options=self.color_options,
             )
             figures.append(GraphData.figure("DATA DRIFT", scatter_fig))
 
-        distr_fig = get_distribution_plot_figure(result.current_distribution, result.reference_distribution)
+        distr_fig = get_distribution_plot_figure(
+            current_distribution=result.current_distribution,
+            reference_distribution=result.reference_distribution,
+            color_options=self.color_options,
+        )
         figures.append(GraphData.figure("DATA DISTRIBUTION", distr_fig))
         return [
             counter(
@@ -128,7 +133,7 @@ class ColumnDriftMetricRenderer(MetricRenderer):
                             f"Drift detection method: {result.stattest_name}. "
                             f"Drift score: {drift_score}"
                         ),
-                        f"Drift in column {result.column_name}",
+                        f"Drift in column '{result.column_name}'",
                     )
                 ],
                 title="",

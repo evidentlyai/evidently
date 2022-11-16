@@ -1,4 +1,3 @@
-from typing import Dict
 from typing import List
 from typing import Optional
 
@@ -9,7 +8,6 @@ import pandas as pd
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
-from evidently.options.color_scheme import ColorOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
@@ -61,6 +59,9 @@ class RegressionErrorDistribution(Metric[RegressionErrorDistributionResults]):
 
 @default_renderer(wrap_type=RegressionErrorDistribution)
 class RegressionErrorDistributionRenderer(MetricRenderer):
+    def render_json(self, obj: RegressionErrorDistribution) -> dict:
+        return {}
+
     def render_html(self, obj: RegressionErrorDistribution) -> List[BaseWidgetInfo]:
         result = obj.get_result()
         current_bins = result.current_bins
@@ -69,11 +70,12 @@ class RegressionErrorDistributionRenderer(MetricRenderer):
             reference_bins = result.reference_bins
 
         fig = plot_distr_subplots(
-            current_bins,
-            reference_bins,
+            hist_curr=current_bins,
+            hist_ref=reference_bins,
             xaxis_name="Error (Predicted - Actual)",
             yaxis_name="Percentage",
-            same_color=ColorOptions().get_current_data_color(),
+            same_color=True,
+            color_options=self.color_options,
         )
         return [
             header_text(label="Error Distribution"),

@@ -68,6 +68,9 @@ class RegressionPredictedVsActualPlot(Metric[RegressionPredictedVsActualPlotResu
 
 @default_renderer(wrap_type=RegressionPredictedVsActualPlot)
 class RegressionPredictedVsActualPlotRenderer(MetricRenderer):
+    def render_json(self, obj: RegressionPredictedVsActualPlot) -> dict:
+        return {}
+
     def render_html(self, obj: RegressionPredictedVsActualPlot) -> List[BaseWidgetInfo]:
         result = obj.get_result()
         current_scatter = result.current_scatter
@@ -75,7 +78,12 @@ class RegressionPredictedVsActualPlotRenderer(MetricRenderer):
         if result.reference_scatter is not None:
             reference_scatter = result.reference_scatter
         fig = plot_pred_actual_time(
-            current_scatter, reference_scatter, x_name="x", xaxis_name=result.x_name, yaxis_name="Value"
+            curr=current_scatter,
+            ref=reference_scatter,
+            x_name="x",
+            xaxis_name=result.x_name,
+            yaxis_name="Value",
+            color_options=self.color_options,
         )
         return [
             header_text(label="Predicted vs Actual in Time"),

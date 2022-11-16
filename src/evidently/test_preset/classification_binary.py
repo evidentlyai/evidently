@@ -1,8 +1,8 @@
 from evidently.metrics.base_metric import InputData
 from evidently.test_preset.test_preset import TestPreset
 from evidently.tests import TestAccuracyScore
+from evidently.tests import TestColumnValueDrift
 from evidently.tests import TestF1Score
-from evidently.tests import TestFeatureValueDrift
 from evidently.tests import TestPrecisionScore
 from evidently.tests import TestRecallScore
 from evidently.tests import TestRocAuc
@@ -23,7 +23,7 @@ class BinaryClassificationTestPreset(TestPreset):
             raise ValueError("Target column should be set in mapping and be present in data")
         if self.prediction_type == "labels":
             return [
-                TestFeatureValueDrift(target),
+                TestColumnValueDrift(target),
                 TestPrecisionScore(),
                 TestRecallScore(),
                 TestF1Score(),
@@ -31,11 +31,11 @@ class BinaryClassificationTestPreset(TestPreset):
             ]
         if self.prediction_type == "probas":
             return [
-                TestFeatureValueDrift(target),
+                TestColumnValueDrift(target),
                 TestRocAuc(),
-                TestPrecisionScore(classification_threshold=self.threshold),
-                TestRecallScore(classification_threshold=self.threshold),
-                TestAccuracyScore(classification_threshold=self.threshold),
-                TestF1Score(classification_threshold=self.threshold),
+                TestPrecisionScore(threshold=self.threshold),
+                TestRecallScore(threshold=self.threshold),
+                TestAccuracyScore(threshold=self.threshold),
+                TestF1Score(threshold=self.threshold),
             ]
         raise ValueError(f'Unexpected prediction_type: "{self.prediction_type}"')

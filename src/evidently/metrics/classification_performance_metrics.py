@@ -20,7 +20,6 @@ from evidently.calculations.classification_performance import threshold_probabil
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
-from evidently.options import ColorOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
@@ -285,13 +284,12 @@ class ClassificationPerformanceMetricsRenderer(MetricRenderer):
             title=f"{dataset_name.capitalize()}: Model Quality With Macro-average Metrics",
         )
 
-    @staticmethod
     def _get_class_representation_graph(
+        self,
         dataset_name: str,
         metrics: DatasetClassificationPerformanceMetrics,
         size: WidgetSize,
         columns: DatasetColumns,
-        color_options: ColorOptions,
     ) -> BaseWidgetInfo:
         metrics_frame = pd.DataFrame(metrics.metrics_matrix)
         fig = go.Figure()
@@ -299,7 +297,7 @@ class ClassificationPerformanceMetricsRenderer(MetricRenderer):
             go.Bar(
                 x=columns.target_names if columns.target_names else metrics_frame.columns.tolist()[:-3],
                 y=metrics_frame.iloc[-1:, :-3].values[0],
-                marker_color=color_options.primary_color,
+                marker_color=self.color_options.primary_color,
                 name="Support",
             )
         )
@@ -357,7 +355,6 @@ class ClassificationPerformanceMetricsRenderer(MetricRenderer):
 
     def render_html(self, obj: ClassificationPerformanceMetrics) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
-        color_options = ColorOptions()
         columns = metric_result.columns
         target_name = columns.utility_columns.target
         result = [
@@ -383,7 +380,6 @@ class ClassificationPerformanceMetricsRenderer(MetricRenderer):
                     metrics=metric_result.reference,
                     size=WidgetSize.HALF,
                     columns=columns,
-                    color_options=color_options,
                 )
             )
 
@@ -393,7 +389,6 @@ class ClassificationPerformanceMetricsRenderer(MetricRenderer):
                 metrics=metric_result.current,
                 size=size,
                 columns=columns,
-                color_options=color_options,
             )
         )
 
@@ -570,8 +565,8 @@ class ClassificationPerformanceMetricsTopKRenderer(MetricRenderer):
 
 
 class ClassificationPerformanceMetricsThreshold(ClassificationPerformanceMetricsThresholdBase):
-    def __init__(self, classification_threshold: float):
-        self.threshold = classification_threshold
+    def __init__(self, threshold: float):
+        self.threshold = threshold
 
     def get_threshold(self, dataset: pd.DataFrame, mapping: ColumnMapping) -> float:
         return self.threshold

@@ -10,7 +10,6 @@ from evidently.calculations.classification_performance import ConfusionMatrix
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.classification_performance.base_classification_metric import ThresholdClassificationMetric
 from evidently.model.widget import BaseWidgetInfo
-from evidently.options.color_scheme import ColorOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
@@ -63,8 +62,9 @@ class ClassificationConfusionMatrix(ThresholdClassificationMetric[Classification
         prediction: pd.Series,
         labels: List[Union[str, int]],
     ) -> ConfusionMatrix:
-        matrix = confusion_matrix(target, prediction, labels=labels)
-        return ConfusionMatrix(labels, [row.tolist() for row in matrix])
+        sorted_labels = sorted(labels)
+        matrix = confusion_matrix(target, prediction, labels=sorted_labels)
+        return ConfusionMatrix(sorted_labels, [row.tolist() for row in matrix])
 
 
 @default_renderer(wrap_type=ClassificationConfusionMatrix)

@@ -52,16 +52,10 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        metric: Optional[DataDriftTable] = None,
         options: Optional[DataDriftOptions] = None,
     ):
-        if metric is not None:
-            self.metric = metric
-
-        else:
-            self.metric = DataDriftTable(options=options)
-
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
+        self.metric = DataDriftTable(options=options)
 
     def check(self):
         result = super().check()
@@ -83,7 +77,7 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
         )
 
 
-class TestNumberOfDriftedFeatures(BaseDataDriftMetricsTest):
+class TestNumberOfDriftedColumns(BaseDataDriftMetricsTest):
     name = "Number of Drifted Features"
 
     def get_condition(self) -> TestValueCondition:
@@ -103,8 +97,8 @@ class TestNumberOfDriftedFeatures(BaseDataDriftMetricsTest):
         )
 
 
-class TestShareOfDriftedFeatures(BaseDataDriftMetricsTest):
-    name = "Share of Drifted Features"
+class TestShareOfDriftedColumns(BaseDataDriftMetricsTest):
+    name = "Share of Drifted Columns"
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
@@ -124,8 +118,8 @@ class TestShareOfDriftedFeatures(BaseDataDriftMetricsTest):
         )
 
 
-class TestFeatureValueDrift(Test):
-    name = "Drift per Feature"
+class TestColumnValueDrift(Test):
+    name = "Drift per Column"
     group = DATA_DRIFT_GROUP.id
     metric: DataDriftTable
     column_name: str
@@ -133,16 +127,10 @@ class TestFeatureValueDrift(Test):
     def __init__(
         self,
         column_name: str,
-        metric: Optional[DataDriftTable] = None,
         options: Optional[DataDriftOptions] = None,
     ):
         self.column_name = column_name
-
-        if metric is not None:
-            self.metric = metric
-
-        else:
-            self.metric = DataDriftTable(options=options)
+        self.metric = DataDriftTable(options=options)
 
     def check(self):
         drift_info = self.metric.get_result()
@@ -180,9 +168,9 @@ class TestFeatureValueDrift(Test):
 class TestAllFeaturesValueDrift(BaseGenerator):
     """Create value drift tests for numeric and category features"""
 
-    def generate(self, columns_info: DatasetColumns) -> List[TestFeatureValueDrift]:
+    def generate(self, columns_info: DatasetColumns) -> List[TestColumnValueDrift]:
         return [
-            TestFeatureValueDrift(column_name=name)
+            TestColumnValueDrift(column_name=name)
             for name in columns_info.get_all_features_list(include_datetime_feature=False)
         ]
 
@@ -195,13 +183,13 @@ class TestCustomFeaturesValueDrift(BaseGenerator):
     def __init__(self, features: List[str]):
         self.features = features
 
-    def generate(self, columns_info: DatasetColumns) -> List[TestFeatureValueDrift]:
-        return [TestFeatureValueDrift(column_name=name) for name in self.features]
+    def generate(self, columns_info: DatasetColumns) -> List[TestColumnValueDrift]:
+        return [TestColumnValueDrift(column_name=name) for name in self.features]
 
 
-@default_renderer(wrap_type=TestNumberOfDriftedFeatures)
-class TestNumberOfDriftedFeaturesRenderer(TestRenderer):
-    def render_json(self, obj: TestNumberOfDriftedFeatures) -> dict:
+@default_renderer(wrap_type=TestNumberOfDriftedColumns)
+class TestNumberOfDriftedColumnsRenderer(TestRenderer):
+    def render_json(self, obj: TestNumberOfDriftedColumns) -> dict:
         base = super().render_json(obj)
         base["parameters"]["condition"] = obj.get_condition().as_dict()
         base["parameters"]["features"] = {
@@ -210,7 +198,7 @@ class TestNumberOfDriftedFeaturesRenderer(TestRenderer):
         }
         return base
 
-    def render_html(self, obj: TestNumberOfDriftedFeatures) -> TestHtmlInfo:
+    def render_html(self, obj: TestNumberOfDriftedColumns) -> TestHtmlInfo:
         info = super().render_html(obj)
         df = pd.DataFrame(
             data=[[feature] + list(data) for feature, data in obj.get_result().features.items()],
@@ -221,9 +209,9 @@ class TestNumberOfDriftedFeaturesRenderer(TestRenderer):
         return info
 
 
-@default_renderer(wrap_type=TestShareOfDriftedFeatures)
-class TestShareOfDriftedFeaturesRenderer(TestRenderer):
-    def render_json(self, obj: TestShareOfDriftedFeatures) -> dict:
+@default_renderer(wrap_type=TestShareOfDriftedColumns)
+class TestShareOfDriftedColumnsRenderer(TestRenderer):
+    def render_json(self, obj: TestShareOfDriftedColumns) -> dict:
         base = super().render_json(obj)
         base["parameters"]["condition"] = obj.get_condition().as_dict()
         base["parameters"]["features"] = {
@@ -232,7 +220,7 @@ class TestShareOfDriftedFeaturesRenderer(TestRenderer):
         }
         return base
 
-    def render_html(self, obj: TestShareOfDriftedFeatures) -> TestHtmlInfo:
+    def render_html(self, obj: TestShareOfDriftedColumns) -> TestHtmlInfo:
         info = super().render_html(obj)
         df = pd.DataFrame(
             data=[[feature] + list(data) for feature, data in obj.get_result().features.items()],
@@ -254,9 +242,9 @@ class TestShareOfDriftedFeaturesRenderer(TestRenderer):
         return info
 
 
-@default_renderer(wrap_type=TestFeatureValueDrift)
-class TestFeatureValueDriftRenderer(TestRenderer):
-    def render_json(self, obj: TestFeatureValueDrift) -> dict:
+@default_renderer(wrap_type=TestColumnValueDrift)
+class TestColumnValueDriftRenderer(TestRenderer):
+    def render_json(self, obj: TestColumnValueDrift) -> dict:
         feature_name = obj.column_name
         drift_data = obj.metric.get_result().drift_by_columns[feature_name]
         base = super().render_json(obj)
@@ -270,11 +258,15 @@ class TestFeatureValueDriftRenderer(TestRenderer):
         }
         return base
 
-    def render_html(self, obj: TestFeatureValueDrift) -> TestHtmlInfo:
+    def render_html(self, obj: TestColumnValueDrift) -> TestHtmlInfo:
         result = obj.metric.get_result()
         column_name = obj.column_name
         info = super().render_html(obj)
         column_info = result.drift_by_columns[column_name]
-        fig = get_distribution_plot_figure(column_info.current_distribution, column_info.reference_distribution)
+        fig = get_distribution_plot_figure(
+            current_distribution=column_info.current_distribution,
+            reference_distribution=column_info.reference_distribution,
+            color_options=self.color_options,
+        )
         info.with_details(f"{column_name}", plotly_figure(title="", figure=fig))
         return info

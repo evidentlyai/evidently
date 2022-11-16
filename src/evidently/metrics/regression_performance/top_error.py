@@ -123,6 +123,9 @@ class RegressionTopErrorMetric(Metric[RegressionTopErrorMetricResults]):
 
 @default_renderer(wrap_type=RegressionTopErrorMetric)
 class RegressionTopErrorMetricRenderer(MetricRenderer):
+    def render_json(self, obj: RegressionTopErrorMetric) -> dict:
+        return {}
+
     def render_html(self, obj: RegressionTopErrorMetric) -> List[BaseWidgetInfo]:
         result = obj.get_result()
         curr_mean_err_per_group = result.curr_mean_err_per_group
@@ -144,7 +147,7 @@ class RegressionTopErrorMetricRenderer(MetricRenderer):
         if ref_mean_err_per_group is not None:
             res.append(
                 counter(
-                    title="Current: Mean Error per Group (+/- std)",
+                    title="Reference: Mean Error per Group (+/- std)",
                     counters=[
                         CounterData("Majority(90%)", self._format_value(ref_mean_err_per_group, "majority")),
                         CounterData(
@@ -155,7 +158,7 @@ class RegressionTopErrorMetricRenderer(MetricRenderer):
                 )
             )
         res.append(header_text(label="Predicted vs Actual per Group"))
-        fig = plot_error_bias_colored_scatter(curr_scatter, ref_scatter)
+        fig = plot_error_bias_colored_scatter(curr_scatter, ref_scatter, color_options=self.color_options)
 
         res.append(
             BaseWidgetInfo(

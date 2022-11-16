@@ -45,12 +45,9 @@ class SimpleClassificationTest(BaseCheckValueTest):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        metric: Optional[ClassificationPerformanceMetrics] = None,
     ):
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
-        if metric is None:
-            metric = ClassificationPerformanceMetrics()
-        self.metric = metric
+        self.metric = ClassificationPerformanceMetrics()
 
     def calculate_value_for_test(self) -> Optional[Any]:
         return self.get_value(self.metric.get_result().current)
@@ -73,7 +70,7 @@ class SimpleClassificationTest(BaseCheckValueTest):
 class SimpleClassificationTestTopK(SimpleClassificationTest, ABC):
     def __init__(
         self,
-        classification_threshold: Optional[float] = None,
+        threshold: Optional[float] = None,
         k: Optional[Union[float, int]] = None,
         eq: Optional[Numeric] = None,
         gt: Optional[Numeric] = None,
@@ -94,14 +91,17 @@ class SimpleClassificationTestTopK(SimpleClassificationTest, ABC):
             not_eq=not_eq,
             not_in=not_in,
         )
-        if k is not None and classification_threshold is not None:
-            raise ValueError("Only one of classification_threshold or k should be given")
-        if k is not None:
-            self.metric = ClassificationPerformanceMetricsTopK(k)
-        if classification_threshold is not None:
-            self.metric = ClassificationPerformanceMetricsThreshold(classification_threshold)
+        if k is not None and threshold is not None:
+            raise ValueError("Only one of 'threshold' or 'k' should be given")
+
+        if threshold is not None:
+            self.metric = ClassificationPerformanceMetricsThreshold(threshold=threshold)
+
+        elif k is not None:
+            self.metric = ClassificationPerformanceMetricsTopK(k=k)
+
         self.k = k
-        self.threshold = classification_threshold
+        self.threshold = threshold
 
     def calculate_value_for_test(self) -> Optional[Any]:
         return self.get_value(self.metric.get_result().current)
@@ -273,7 +273,9 @@ class TestRocAucRenderer(TestRenderer):
         if ref_metrics is not None:
             ref_roc_curve = ref_metrics.roc_curve
         if curr_roc_curve is not None:
-            for title, plot in plot_roc_auc(curr_roc_curve, ref_roc_curve):
+            for title, plot in plot_roc_auc(
+                curr_roc_curve=curr_roc_curve, ref_roc_curve=ref_roc_curve, color_options=self.color_options
+            ):
                 info.with_details(title, plot)
         return info
 
@@ -317,8 +319,9 @@ class TestLogLossRenderer(TestRenderer):
         ref_metrics = None if result.reference is None else result.reference.plot_data
 
         if curr_metrics is not None:
-            fig = plot_boxes(curr_metrics, ref_metrics)
+            fig = plot_boxes(curr_for_plots=curr_metrics, ref_for_plots=ref_metrics, color_options=self.color_options)
             info.with_details("Logarithmic Loss", plotly_figure(title="", figure=fig))
+
         return info
 
 
@@ -349,11 +352,18 @@ class TestTPRRenderer(TestRenderer):
         ref_metrics = obj.metric.get_result().reference
         curr_rate_plots_data = curr_metrics.rate_plots_data
         ref_rate_plots_data = None
+
         if ref_metrics is not None:
             ref_rate_plots_data = ref_metrics.rate_plots_data
+
         if curr_rate_plots_data is not None:
-            fig = plot_rates(curr_rate_plots_data, ref_rate_plots_data)
+            fig = plot_rates(
+                curr_rate_plots_data=curr_rate_plots_data,
+                ref_rate_plots_data=ref_rate_plots_data,
+                color_options=self.color_options,
+            )
             info.with_details("TPR", plotly_figure(title="", figure=fig))
+
         return info
 
 
@@ -387,7 +397,11 @@ class TestTNRRenderer(TestRenderer):
         if ref_metrics is not None:
             ref_rate_plots_data = ref_metrics.rate_plots_data
         if curr_rate_plots_data is not None:
-            fig = plot_rates(curr_rate_plots_data, ref_rate_plots_data)
+            fig = plot_rates(
+                curr_rate_plots_data=curr_rate_plots_data,
+                ref_rate_plots_data=ref_rate_plots_data,
+                color_options=self.color_options,
+            )
             info.with_details("TNR", plotly_figure(title="", figure=fig))
         return info
 
@@ -434,7 +448,11 @@ class TestFPRRenderer(TestRenderer):
         if ref_metrics is not None:
             ref_rate_plots_data = ref_metrics.rate_plots_data
         if curr_rate_plots_data is not None:
-            fig = plot_rates(curr_rate_plots_data, ref_rate_plots_data)
+            fig = plot_rates(
+                curr_rate_plots_data=curr_rate_plots_data,
+                ref_rate_plots_data=ref_rate_plots_data,
+                color_options=self.color_options,
+            )
             info.with_details("FPR", plotly_figure(title="", figure=fig))
         return info
 
@@ -481,7 +499,11 @@ class TestFNRRenderer(TestRenderer):
         if ref_metrics is not None:
             ref_rate_plots_data = ref_metrics.rate_plots_data
         if curr_rate_plots_data is not None:
-            fig = plot_rates(curr_rate_plots_data, ref_rate_plots_data)
+            fig = plot_rates(
+                curr_rate_plots_data=curr_rate_plots_data,
+                ref_rate_plots_data=ref_rate_plots_data,
+                color_options=self.color_options,
+            )
             info.with_details("FNR", plotly_figure(title="", figure=fig))
         return info
 
@@ -498,11 +520,8 @@ class ByClassClassificationTest(SimpleClassificationTest, ABC):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        metric: Optional[ClassificationPerformanceMetrics] = None,
     ):
-        super().__init__(
-            eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in, metric=metric
-        )
+        super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
         self.label = label
 
 

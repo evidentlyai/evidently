@@ -1,6 +1,6 @@
 ## When to use it?
 
-You can use the NoTargetPerformanceTestPreset when you generate model predictions in batches and get the true labels or values with a delay. 
+You can use the `NoTargetPerformanceTestPreset` when you generate model predictions in batches and get the true labels or values with a delay. 
 
 This preset helps evaluate the production model quality through proxy metrics. It combines several metrics that check for data quality, data integrity, and data and prediction drift. For example, it will help detect when inputs or predictions are far off the expected range that signals that the model operates in an unfamiliar environment.   
 
@@ -36,10 +36,10 @@ Consult the [user guide](../tests-and-reports/run-tests.md) for the complete ins
 The preset contains the following tests:
 
 ```python
-TestShareOfDriftedFeatures()
+TestShareOfDriftedColumns()
 TestValueDrift(column=prediction)
 TestColumnsType()
-TestColumnShareOfNulls(column=’all’)
+TestColumnShareOfMissingValues(column=’all’)
 TestShareOfOutRangeValues(column=numerical_columns)
 TestShareOfOutListValues(column=categorical_columns)
 TestMeanInNSigmas(column=numerical_columns, n=2)

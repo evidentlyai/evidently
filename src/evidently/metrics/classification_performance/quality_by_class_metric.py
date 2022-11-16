@@ -126,7 +126,7 @@ class ClassificationQualityByClassRenderer(MetricRenderer):
             texttemplate="%{text}",
             coloraxis="coloraxis",
         )
-        fig.append_trace(trace, 1, 1)
+        fig.add_trace(trace, 1, 1)
 
         if reference_metrics is not None:
             ref_metrics_frame = pd.DataFrame(reference_metrics)
@@ -147,7 +147,7 @@ class ClassificationQualityByClassRenderer(MetricRenderer):
                 texttemplate="%{text}",
                 coloraxis="coloraxis",
             )
-            fig.append_trace(trace, 1, 2)
+            fig.add_trace(trace, 1, 2)
         fig.update_layout(coloraxis={"colorscale": "RdBu_r"})
 
         return [header_text(label="Quality Metrics by Class"), plotly_figure(figure=fig, title="")]

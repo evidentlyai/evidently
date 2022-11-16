@@ -38,11 +38,16 @@ class DatasetSummary:
     number_of_categorical_columns: int
     number_of_numeric_columns: int
     number_of_datetime_columns: int
-    number_of_empty_columns: int
     number_of_constant_columns: int
     number_of_almost_constant_columns: int
     number_of_duplicated_columns: int
     number_of_almost_duplicated_columns: int
+    number_of_empty_rows: int
+    number_of_empty_columns: int
+    number_of_duplicated_rows: int
+    columns_type: dict
+    nans_by_columns: dict
+    number_uniques_by_columns: dict
 
 
 @dataclasses.dataclass
@@ -85,6 +90,11 @@ class DatasetSummaryMetric(Metric[DatasetSummaryMetricResult]):
             number_of_almost_duplicated_columns=get_number_of_almost_duplicated_columns(
                 dataset, self.almost_duplicated_threshold
             ),
+            number_of_empty_rows=dataset.isna().all(1).sum(),
+            number_of_duplicated_rows=dataset.duplicated().sum(),
+            columns_type=dict(dataset.dtypes.to_dict()),
+            nans_by_columns=dataset.isna().sum().to_dict(),
+            number_uniques_by_columns=dict(dataset.nunique().to_dict()),
         )
 
     def calculate(self, data: InputData) -> DatasetSummaryMetricResult:
@@ -110,7 +120,14 @@ class DatasetSummaryMetric(Metric[DatasetSummaryMetricResult]):
 @default_renderer(wrap_type=DatasetSummaryMetric)
 class DatasetSummaryMetricRenderer(MetricRenderer):
     def render_json(self, obj: DatasetSummaryMetric) -> dict:
-        return dataclasses.asdict(obj.get_result())
+        result = dataclasses.asdict(obj.get_result())
+        if "reference" in result and result["reference"]:
+            result["reference"].pop("columns_type", None)
+
+        if "current" in result and result["current"]:
+            result["current"].pop("columns_type", None)
+
+        return result
 
     @staticmethod
     def _get_table(metric_result: DatasetSummaryMetricResult) -> BaseWidgetInfo:

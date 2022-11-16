@@ -13,8 +13,7 @@ from plotly.subplots import make_subplots
 from evidently.options.color_scheme import ColorOptions
 
 
-def plot_distr(hist_curr, hist_ref=None, orientation="v", color_options: Optional[ColorOptions] = None) -> go.Figure:
-    color_options = color_options or ColorOptions()
+def plot_distr(*, hist_curr, hist_ref=None, orientation="v", color_options: ColorOptions) -> go.Figure:
     fig = go.Figure()
 
     fig.add_trace(
@@ -58,8 +57,8 @@ def plot_distr_with_log_button(
     curr_data_log: pd.DataFrame,
     ref_data: Optional[pd.DataFrame],
     ref_data_log: Optional[pd.DataFrame],
+    color_options: ColorOptions,
 ):
-    color_options = ColorOptions()
     traces = []
     visible = [True, False]
     traces.append(
@@ -132,15 +131,21 @@ def plot_distr_with_log_button(
 
 
 def plot_distr_subplots(
-    hist_curr, hist_ref=None, xaxis_name: str = "", yaxis_name: str = "", same_color: Optional[str] = None
+    *,
+    hist_curr,
+    hist_ref=None,
+    xaxis_name: str = "",
+    yaxis_name: str = "",
+    same_color: bool = False,
+    color_options: ColorOptions,
 ):
-    color_options = ColorOptions()
     if same_color is None:
         curr_color = color_options.get_current_data_color()
         ref_color = color_options.get_reference_data_color()
+
     else:
-        curr_color = same_color
-        ref_color = same_color
+        curr_color = color_options.get_current_data_color()
+        ref_color = curr_color
 
     cols = 1
     subplot_titles: Union[list, str] = ""
@@ -151,12 +156,12 @@ def plot_distr_subplots(
 
     fig = make_subplots(rows=1, cols=cols, shared_yaxes=True, subplot_titles=subplot_titles)
     trace = go.Bar(x=hist_curr["x"], y=hist_curr["count"], marker_color=curr_color, showlegend=False)
-    fig.append_trace(trace, 1, 1)
+    fig.add_trace(trace, 1, 1)
     fig.update_xaxes(title_text=xaxis_name, row=1, col=1)
 
     if hist_ref is not None:
         trace = go.Bar(x=hist_ref["x"], y=hist_ref["count"], marker_color=ref_color, showlegend=False)
-        fig.append_trace(trace, 1, 2)
+        fig.add_trace(trace, 1, 2)
         fig.update_xaxes(title_text=xaxis_name, row=1, col=2)
     fig.update_layout(yaxis_title=yaxis_name)
     fig = json.loads(fig.to_json())
@@ -169,11 +174,11 @@ def plot_num_feature_in_time(
     feature_name: str,
     datetime_name: str,
     freq: str,
+    color_options: ColorOptions,
 ):
     """
     Accepts current and reference data as pandas dataframes with two columns: datetime_name and feature_name.
     """
-    color_options = ColorOptions()
     fig = go.Figure()
     fig.add_trace(
         go.Scatter(
@@ -198,11 +203,12 @@ def plot_num_feature_in_time(
     return feature_in_time_figure
 
 
-def plot_time_feature_distr(curr_data: pd.DataFrame, ref_data: Optional[pd.DataFrame], feature_name: str):
+def plot_time_feature_distr(
+    curr_data: pd.DataFrame, ref_data: Optional[pd.DataFrame], feature_name: str, color_options: ColorOptions
+):
     """
     Accepts current and reference data as pandas dataframes with two columns: feature_name, "number_of_items"
     """
-    color_options = ColorOptions()
     fig = go.Figure()
     fig.add_trace(
         go.Scatter(
@@ -232,11 +238,11 @@ def plot_cat_feature_in_time(
     feature_name: str,
     datetime_name: str,
     freq: str,
+    color_options: ColorOptions,
 ):
     """
     Accepts current and reference data as pandas dataframes with two columns: datetime_name and feature_name.
     """
-    color_options = ColorOptions()
     title = "current"
     fig = go.Figure()
     values = curr_data[feature_name].astype(str).unique()
@@ -276,12 +282,13 @@ def plot_cat_feature_in_time(
     return feature_in_time_figure
 
 
-def plot_boxes(curr_for_plots: dict, ref_for_plots: Optional[dict], yaxis_title: str, xaxis_title: str):
+def plot_boxes(
+    curr_for_plots: dict, ref_for_plots: Optional[dict], yaxis_title: str, xaxis_title: str, color_options: ColorOptions
+):
     """
     Accepts current and reference data as dicts with box parameters ("mins", "lowers", "uppers", "means", "maxs")
     and name of boxes parameter - "values"
     """
-    color_options = ColorOptions()
     fig = go.Figure()
     trace = go.Box(
         lowerfence=curr_for_plots["mins"],
@@ -325,11 +332,12 @@ def make_hist_for_num_plot(curr: pd.Series, ref: pd.Series = None):
     return result
 
 
-def plot_cat_cat_rel(curr: pd.DataFrame, ref: pd.DataFrame, target_name: str, feature_name: str):
+def plot_cat_cat_rel(
+    curr: pd.DataFrame, ref: pd.DataFrame, target_name: str, feature_name: str, color_options: ColorOptions
+):
     """
     Accepts current and reference data as pandas dataframes with two columns: feature_name and "count_objects".
     """
-    color_options = ColorOptions()
     cols = 1
     subplot_titles: Union[list, str] = ""
     if ref is not None:
@@ -344,7 +352,7 @@ def plot_cat_cat_rel(curr: pd.DataFrame, ref: pd.DataFrame, target_name: str, fe
             name=str(val),
             legendgroup=str(val),
         )
-        fig.append_trace(trace, 1, 1)
+        fig.add_trace(trace, 1, 1)
 
     if ref is not None:
         for i, val in enumerate(ref[target_name].astype(str).unique()):
@@ -356,14 +364,19 @@ def plot_cat_cat_rel(curr: pd.DataFrame, ref: pd.DataFrame, target_name: str, fe
                 name=str(val),
                 legendgroup=str(val),
             )
-            fig.append_trace(trace, 1, 2)
+            fig.add_trace(trace, 1, 2)
     fig.update_layout(yaxis_title="count")
     fig = json.loads(fig.to_json())
     return fig
 
 
-def plot_num_num_rel(curr: Dict[str, list], ref: Optional[Dict[str, list]], target_name: str, column_name: str):
-    color_options = ColorOptions()
+def plot_num_num_rel(
+    curr: Dict[str, list],
+    ref: Optional[Dict[str, list]],
+    target_name: str,
+    column_name: str,
+    color_options: ColorOptions,
+):
     cols = 1
     if ref is not None:
         cols = 2
@@ -375,7 +388,7 @@ def plot_num_num_rel(curr: Dict[str, list], ref: Optional[Dict[str, list]], targ
         marker_color=color_options.get_current_data_color(),
         name="current",
     )
-    fig.append_trace(trace, 1, 1)
+    fig.add_trace(trace, 1, 1)
     fig.update_xaxes(title_text=column_name, row=1, col=1)
     if ref is not None:
         trace = go.Scatter(
@@ -385,7 +398,7 @@ def plot_num_num_rel(curr: Dict[str, list], ref: Optional[Dict[str, list]], targ
             marker_color=color_options.get_reference_data_color(),
             name="reference",
         )
-        fig.append_trace(trace, 1, 2)
+        fig.add_trace(trace, 1, 2)
         fig.update_xaxes(title_text=column_name, row=1, col=2)
     fig.update_layout(yaxis_title=target_name, legend={"itemsizing": "constant"})
     fig.update_traces(marker_size=4)
@@ -468,14 +481,15 @@ def make_hist_df(hist: Tuple[np.array, np.array]) -> pd.DataFrame:
 
 
 def plot_scatter(
-    curr: Dict[str, list],
+    *,
+    curr: Dict[str, Union[list, pd.Series]],
     ref: Optional[Dict[str, list]],
     x: str,
     y: str,
     xaxis_name: str = None,
     yaxis_name: str = None,
+    color_options: ColorOptions,
 ):
-    color_options = ColorOptions()
     cols = 1
     if xaxis_name is None:
         xaxis_name = x
@@ -491,7 +505,7 @@ def plot_scatter(
         marker_color=color_options.get_current_data_color(),
         name="current",
     )
-    fig.append_trace(trace, 1, 1)
+    fig.add_trace(trace, 1, 1)
     fig.update_xaxes(title_text=xaxis_name, row=1, col=1)
     if ref is not None:
         trace = go.Scatter(
@@ -501,7 +515,7 @@ def plot_scatter(
             marker_color=color_options.get_reference_data_color(),
             name="reference",
         )
-        fig.append_trace(trace, 1, 2)
+        fig.add_trace(trace, 1, 2)
         fig.update_xaxes(title_text=xaxis_name, row=1, col=2)
     fig.update_layout(yaxis_title=yaxis_name, legend={"itemsizing": "constant"})
     fig.update_traces(marker_size=4)
@@ -510,13 +524,14 @@ def plot_scatter(
 
 
 def plot_pred_actual_time(
+    *,
     curr: Dict[str, pd.Series],
     ref: Optional[Dict[str, pd.Series]],
     x_name: str = "x",
     xaxis_name: str = "",
     yaxis_name: str = "",
+    color_options: ColorOptions,
 ):
-    color_options = ColorOptions()
     cols = 1
     subplot_titles: Union[list, str] = ""
 
@@ -529,7 +544,7 @@ def plot_pred_actual_time(
         ["Predicted", "Actual"], [color_options.get_current_data_color(), color_options.get_reference_data_color()]
     ):
         trace = go.Scatter(x=curr[x_name], y=curr[name], mode="lines", marker_color=color, name=name, legendgroup=name)
-        fig.append_trace(trace, 1, 1)
+        fig.add_trace(trace, 1, 1)
 
         if ref is not None:
             trace = go.Scatter(
@@ -541,7 +556,7 @@ def plot_pred_actual_time(
                 legendgroup=name,
                 showlegend=False,
             )
-            fig.append_trace(trace, 1, 2)
+            fig.add_trace(trace, 1, 2)
 
     # Add zero trace
     trace = go.Scatter(
@@ -551,7 +566,7 @@ def plot_pred_actual_time(
         marker_color=color_options.zero_line_color,
         showlegend=False,
     )
-    fig.append_trace(trace, 1, 1)
+    fig.add_trace(trace, 1, 1)
     if ref is not None:
         trace = go.Scatter(
             x=ref[x_name],
@@ -560,7 +575,7 @@ def plot_pred_actual_time(
             marker_color=color_options.zero_line_color,
             showlegend=False,
         )
-        fig.append_trace(trace, 1, 2)
+        fig.add_trace(trace, 1, 2)
         fig.update_xaxes(title_text=xaxis_name, row=1, col=2)
 
     fig.update_xaxes(title_text=xaxis_name, row=1, col=1)
@@ -571,14 +586,15 @@ def plot_pred_actual_time(
 
 
 def plot_line_in_time(
+    *,
     curr: Dict[str, pd.Series],
     ref: Optional[Dict[str, pd.Series]],
+    x_name: str,
     y_name: str,
-    x_name: str = "x",
     xaxis_name: str = "",
     yaxis_name: str = "",
+    color_options: ColorOptions,
 ):
-    color_options = ColorOptions()
     cols = 1
     subplot_titles: Union[list, str] = ""
 
@@ -595,7 +611,7 @@ def plot_line_in_time(
         name=y_name,
         legendgroup=y_name,
     )
-    fig.append_trace(trace, 1, 1)
+    fig.add_trace(trace, 1, 1)
     # Add zero trace
     trace = go.Scatter(
         x=curr[x_name],
@@ -604,7 +620,7 @@ def plot_line_in_time(
         marker_color=color_options.zero_line_color,
         showlegend=False,
     )
-    fig.append_trace(trace, 1, 1)
+    fig.add_trace(trace, 1, 1)
 
     if ref is not None:
         trace = go.Scatter(
@@ -616,7 +632,7 @@ def plot_line_in_time(
             legendgroup=y_name,
             showlegend=False,
         )
-        fig.append_trace(trace, 1, 2)
+        fig.add_trace(trace, 1, 2)
         # Add zero trace
         trace = go.Scatter(
             x=ref[x_name],
@@ -625,7 +641,7 @@ def plot_line_in_time(
             marker_color=color_options.zero_line_color,
             showlegend=False,
         )
-        fig.append_trace(trace, 1, 2)
+        fig.add_trace(trace, 1, 2)
         fig.update_xaxes(title_text=xaxis_name, row=1, col=2)
     fig.update_xaxes(title_text=xaxis_name, row=1, col=1)
     fig.update_layout(yaxis_title=yaxis_name)
@@ -635,9 +651,10 @@ def plot_line_in_time(
 
 
 def plot_error_bias_colored_scatter(
-    curr_scatter_data: Dict[str, Dict[str, pd.Series]], ref_scatter_data: Optional[Dict[str, Dict[str, pd.Series]]]
+    curr_scatter_data: Dict[str, Dict[str, pd.Series]],
+    ref_scatter_data: Optional[Dict[str, Dict[str, pd.Series]]],
+    color_options: ColorOptions,
 ):
-    color_options = ColorOptions()
     cols = 1
     subplot_titles: Union[list, str] = ""
 
@@ -660,7 +677,7 @@ def plot_error_bias_colored_scatter(
             marker_color=color
             # marker=dict(color=color_options.underestimation_color, showscale=False),
         )
-        fig.append_trace(trace, 1, 1)
+        fig.add_trace(trace, 1, 1)
     fig.update_xaxes(title_text="Actual value", row=1, col=1)
 
     if ref_scatter_data is not None:
@@ -678,7 +695,7 @@ def plot_error_bias_colored_scatter(
                 marker_color=color
                 # marker=dict(color=color_options.underestimation_color, showscale=False),
             )
-            fig.append_trace(trace, 1, 2)
+            fig.add_trace(trace, 1, 2)
         fig.update_xaxes(title_text="Actual value", row=1, col=2)
 
     fig.update_layout(
@@ -690,11 +707,10 @@ def plot_error_bias_colored_scatter(
     return fig
 
 
-def plot_scatter_for_data_drift(curr_y: list, curr_x: list, y0: float, y1: float, y_name: str, x_name: str):
-    color_options = ColorOptions()
-
+def plot_scatter_for_data_drift(
+    curr_y: list, curr_x: list, y0: float, y1: float, y_name: str, x_name: str, color_options: ColorOptions
+):
     fig = go.Figure()
-
     fig.add_trace(
         go.Scattergl(
             x=curr_x,
@@ -765,23 +781,23 @@ def plot_conf_mtrx(curr_mtrx, ref_mtrx):
     fig = make_subplots(rows=1, cols=cols, subplot_titles=subplot_titles, shared_yaxes=True)
     trace = go.Heatmap(
         z=curr_mtrx.values,
-        x=curr_mtrx.labels,
-        y=curr_mtrx.labels,
+        x=[str(item) for item in curr_mtrx.labels],
+        y=[str(item) for item in curr_mtrx.labels],
         text=np.array(curr_mtrx.values).astype(str),
         texttemplate="%{text}",
         coloraxis="coloraxis",
     )
-    fig.append_trace(trace, 1, 1)
+    fig.add_trace(trace, 1, 1)
 
     if ref_mtrx is not None:
         trace = go.Heatmap(
             z=ref_mtrx.values,
-            x=ref_mtrx.labels,
-            y=ref_mtrx.labels,
+            x=[str(item) for item in ref_mtrx.labels],
+            y=[str(item) for item in ref_mtrx.labels],
             text=np.array(ref_mtrx.values).astype(str),
             texttemplate="%{text}",
             coloraxis="coloraxis",
         )
-        fig.append_trace(trace, 1, 2)
+        fig.add_trace(trace, 1, 2)
     fig.update_layout(coloraxis={"colorscale": "RdBu_r"})
     return fig

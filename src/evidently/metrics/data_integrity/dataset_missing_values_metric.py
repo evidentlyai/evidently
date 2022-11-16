@@ -28,36 +28,36 @@ from evidently.renderers.html_widgets import widget_tabs
 class DatasetMissingValues:
     """Statistics about missed values in a dataset"""
 
-    # set of different missed values in the dataset
-    different_nulls: Dict[Any, int]
-    # number of different missed values in the dataset
-    number_of_different_nulls: int
-    # set of different missed values for each column
-    different_nulls_by_column: Dict[str, Dict[Any, int]]
-    # count of different missed values for each column
-    number_of_different_nulls_by_column: Dict[str, int]
-    # count of missed values in all dataset
-    number_of_missed_values: int
-    # share of missed values in all dataset
-    share_of_missed_values: float
-    # count of missed values for each column
-    number_of_nulls_by_column: Dict[str, int]
-    # share of missed values for each column
-    share_of_nulls_by_column: Dict[str, float]
+    # set of different missing values in the dataset
+    different_missing_values: Dict[Any, int]
+    # number of different missing values in the dataset
+    number_of_different_missing_values: int
+    # set of different missing values for each column
+    different_missing_values_by_column: Dict[str, Dict[Any, int]]
+    # count of different missing values for each column
+    number_of_different_missing_values_by_column: Dict[str, int]
+    # count of missing values in all dataset
+    number_of_missing_values: int
+    # share of missing values in all dataset
+    share_of_missing_values: float
+    # count of missing values for each column
+    number_of_missing_values_by_column: Dict[str, int]
+    # share of missing values for each column
+    share_of_missing_values_by_column: Dict[str, float]
     # count of rows in the dataset
     number_of_rows: int
-    # count of rows with a null-value
-    number_of_rows_with_nulls: int
-    # share of rows with a null-value
-    share_of_rows_with_nulls: float
+    # count of rows with a missing value
+    number_of_rows_with_missing_values: int
+    # share of rows with a missing value
+    share_of_rows_with_missing_values: float
     # count of columns in the dataset
     number_of_columns: int
-    # list of columns with a null value
-    columns_with_nulls: List[str]
-    # count of columns with a null-value
-    number_of_columns_with_nulls: int
-    # share of columns with a null-value
-    share_of_columns_with_nulls: float
+    # list of columns with a missing value
+    columns_with_missing_values: List[str]
+    # count of columns with a missing value
+    number_of_columns_with_missing_values: int
+    # share of columns with a missing value
+    share_of_columns_with_missing_values: float
 
 
 @dataclass
@@ -71,147 +71,149 @@ class DatasetMissingValuesMetric(Metric[DatasetMissingValuesMetricResult]):
 
     Missing value is a null or NaN value.
 
-    Calculate an amount of missed values kinds and count for such values.
+    Calculate an amount of missing values kinds and count for such values.
     NA-types like numpy.NaN, pandas.NaT are counted as one type.
 
-    You can set you own missed values list with `values` parameter.
+    You can set you own missing values list with `missing_values` parameter.
     Value `None` in the list means that Pandas null values will be included in the calculation.
 
     If `replace` parameter is False - add defaults to user's list.
-    If `replace` parameter is True - use values from `values` list only.
+    If `replace` parameter is True - use values from `missing_values` list only.
     """
 
-    # default missed values list
-    DEFAULT_MISSED_VALUES = ["", np.inf, -np.inf, None]
-    values: frozenset
+    # default missing values list
+    DEFAULT_MISSING_VALUES = ["", np.inf, -np.inf, None]
+    missing_values: frozenset
 
-    def __init__(self, values: Optional[list] = None, replace: bool = True) -> None:
-        if values is None:
-            # use default missed values list if we have no user-defined values
-            values = self.DEFAULT_MISSED_VALUES
+    def __init__(self, missing_values: Optional[list] = None, replace: bool = True) -> None:
+        if missing_values is None:
+            # use default missing values list if we have no user-defined values
+            missing_values = self.DEFAULT_MISSING_VALUES
 
         elif not replace:
             # add default values to the user-defined list
-            values = self.DEFAULT_MISSED_VALUES + values
+            missing_values = self.DEFAULT_MISSING_VALUES + missing_values
 
         # use frozenset because metrics parameters should be immutable/hashable for deduplication
-        self.values = frozenset(values)
+        self.missing_values = frozenset(missing_values)
 
-    def _calculate_missed_values_stats(self, dataset: pd.DataFrame) -> DatasetMissingValues:
-        different_nulls = {value: 0 for value in self.values}
-        columns_with_nulls = set()
-        number_of_nulls = 0
-        number_of_nulls_by_column: Dict[str, int] = {}
-        different_nulls_by_column: Dict[str, Dict[Any, int]] = {}
+    def _calculate_missing_values_stats(self, dataset: pd.DataFrame) -> DatasetMissingValues:
+        different_missing_values = {value: 0 for value in self.missing_values}
+        columns_with_missing_values = set()
+        number_of_missing_values = 0
+        number_of_missing_values_by_column: Dict[str, int] = {}
+        different_missing_values_by_column: Dict[str, Dict[Any, int]] = {}
 
         for column_name in dataset.columns:
-            number_of_nulls_by_column[column_name] = 0
-            different_nulls_by_column[column_name] = {}
+            number_of_missing_values_by_column[column_name] = 0
+            different_missing_values_by_column[column_name] = {}
 
-            for value in self.values:
-                different_nulls_by_column[column_name][value] = 0
+            for value in self.missing_values:
+                different_missing_values_by_column[column_name][value] = 0
 
-        number_of_rows_with_nulls = 0
+        number_of_rows_with_missing_values = 0
         number_of_columns = len(dataset.columns)
         number_of_rows = get_rows_count(dataset)
 
         for column_name in dataset.columns:
-            # iterate by each value in custom missed values list and check the value in a column
-            for null_value in self.values:
-                if null_value is None:
+            # iterate by each value in custom missing values list and check the value in a column
+            for missing_value in self.missing_values:
+                if missing_value is None:
                     # check all pandas null-types like numpy.NAN, pandas.NA, pandas.NaT, etc
-                    column_null = dataset[column_name].isnull().sum()
+                    column_missing_value = dataset[column_name].isnull().sum()
 
                 else:
-                    column_null = (dataset[column_name] == null_value).sum()
+                    column_missing_value = (dataset[column_name] == missing_value).sum()
 
-                if column_null > 0:
+                if column_missing_value > 0:
                     # increase overall counter
-                    number_of_nulls += column_null
+                    number_of_missing_values += column_missing_value
                     # increase by-column counter
-                    number_of_nulls_by_column[column_name] += column_null
-                    # increase by-null-value counter for each column
-                    different_nulls_by_column[column_name][null_value] += column_null
-                    # increase by-null-value counter
-                    different_nulls[null_value] += column_null
-                    # add the column to set of columns with a null value
-                    columns_with_nulls.add(column_name)
+                    number_of_missing_values_by_column[column_name] += column_missing_value
+                    # increase by-missing-value counter for each column
+                    different_missing_values_by_column[column_name][missing_value] += column_missing_value
+                    # increase by-missing-value counter
+                    different_missing_values[missing_value] += column_missing_value
+                    # add the column to set of columns with a missing value
+                    columns_with_missing_values.add(column_name)
 
         for _, row in dataset.iterrows():
-            for null_value in self.values:
-                if None in self.values and row.isnull().any():
+            for missing_value in self.missing_values:
+                if None in self.missing_values and row.isnull().any():
                     # check pandas null values
-                    number_of_rows_with_nulls += 1
+                    number_of_rows_with_missing_values += 1
                     break
 
-                elif null_value in row.values:
-                    number_of_rows_with_nulls += 1
+                elif missing_value in row.values:
+                    number_of_rows_with_missing_values += 1
                     break
 
         if number_of_rows == 0:
-            share_of_nulls_by_column = {}
-            share_of_rows_with_nulls = 0.0
-            share_of_missed_values = 0.0
+            share_of_missing_values_by_column = {}
+            share_of_rows_with_missing_values = 0.0
+            share_of_missing_values = 0.0
 
         else:
-            share_of_nulls_by_column = {
-                column_name: value / number_of_rows for column_name, value in number_of_nulls_by_column.items()
+            share_of_missing_values_by_column = {
+                column_name: value / number_of_rows for column_name, value in number_of_missing_values_by_column.items()
             }
-            share_of_missed_values = number_of_nulls / (number_of_columns * number_of_rows)
-            share_of_rows_with_nulls = number_of_rows_with_nulls / number_of_rows
+            share_of_missing_values = number_of_missing_values / (number_of_columns * number_of_rows)
+            share_of_rows_with_missing_values = number_of_rows_with_missing_values / number_of_rows
 
-        number_of_different_nulls_by_column = {}
+        number_of_different_missing_values_by_column = {}
 
-        for column_name, nulls in different_nulls_by_column.items():
-            # count a number of missed values that have a value in the column
-            number_of_different_nulls_by_column[column_name] = len(
-                {keys for keys, values in nulls.items() if values > 0}
+        for column_name, missing_values in different_missing_values_by_column.items():
+            # count a number of missing values that have a value in the column
+            number_of_different_missing_values_by_column[column_name] = len(
+                {keys for keys, values in missing_values.items() if values > 0}
             )
 
-        number_of_columns_with_nulls = len(columns_with_nulls)
-        number_of_different_nulls = len({k for k in different_nulls if different_nulls[k] > 0})
+        number_of_columns_with_missing_values = len(columns_with_missing_values)
+        number_of_different_missing_values = len(
+            {k for k in different_missing_values if different_missing_values[k] > 0}
+        )
 
         if number_of_columns == 0:
-            share_of_columns_with_nulls = 0.0
+            share_of_columns_with_missing_values = 0.0
 
         else:
-            share_of_columns_with_nulls = number_of_columns_with_nulls / number_of_columns
+            share_of_columns_with_missing_values = number_of_columns_with_missing_values / number_of_columns
 
         return DatasetMissingValues(
-            different_nulls=different_nulls,
-            number_of_different_nulls=number_of_different_nulls,
-            different_nulls_by_column=different_nulls_by_column,
-            number_of_different_nulls_by_column=number_of_different_nulls_by_column,
-            number_of_missed_values=number_of_nulls,
-            share_of_missed_values=share_of_missed_values,
-            number_of_nulls_by_column=number_of_nulls_by_column,
-            share_of_nulls_by_column=share_of_nulls_by_column,
+            different_missing_values=different_missing_values,
+            number_of_different_missing_values=number_of_different_missing_values,
+            different_missing_values_by_column=different_missing_values_by_column,
+            number_of_different_missing_values_by_column=number_of_different_missing_values_by_column,
+            number_of_missing_values=number_of_missing_values,
+            share_of_missing_values=share_of_missing_values,
+            number_of_missing_values_by_column=number_of_missing_values_by_column,
+            share_of_missing_values_by_column=share_of_missing_values_by_column,
             number_of_rows=number_of_rows,
-            number_of_rows_with_nulls=number_of_rows_with_nulls,
-            share_of_rows_with_nulls=share_of_rows_with_nulls,
+            number_of_rows_with_missing_values=number_of_rows_with_missing_values,
+            share_of_rows_with_missing_values=share_of_rows_with_missing_values,
             number_of_columns=number_of_columns,
-            columns_with_nulls=sorted(columns_with_nulls),
-            number_of_columns_with_nulls=len(columns_with_nulls),
-            share_of_columns_with_nulls=share_of_columns_with_nulls,
+            columns_with_missing_values=sorted(columns_with_missing_values),
+            number_of_columns_with_missing_values=len(columns_with_missing_values),
+            share_of_columns_with_missing_values=share_of_columns_with_missing_values,
         )
 
     def calculate(self, data: InputData) -> DatasetMissingValuesMetricResult:
-        if not self.values:
-            raise ValueError("Null-values list should not be empty.")
+        if not self.missing_values:
+            raise ValueError("Missing values list should not be empty.")
 
-        current_null_values = self._calculate_missed_values_stats(data.current_data)
+        current_missing_values = self._calculate_missing_values_stats(data.current_data)
 
         if data.reference_data is not None:
-            reference_null_values: Optional[DatasetMissingValues] = self._calculate_missed_values_stats(
+            reference_missing_values: Optional[DatasetMissingValues] = self._calculate_missing_values_stats(
                 data.reference_data
             )
 
         else:
-            reference_null_values = None
+            reference_missing_values = None
 
         return DatasetMissingValuesMetricResult(
-            current=current_null_values,
-            reference=reference_null_values,
+            current=current_missing_values,
+            reference=reference_missing_values,
         )
 
 
@@ -220,9 +222,8 @@ class DatasetMissingValuesMetricRenderer(MetricRenderer):
     def render_json(self, obj: DatasetMissingValuesMetric) -> dict:
         return dataclasses.asdict(obj.get_result().current)
 
-    @staticmethod
-    def _get_table_stat(dataset_name: str, stats: DatasetMissingValues) -> BaseWidgetInfo:
-        matched_stat = [(k, v) for k, v in stats.number_of_nulls_by_column.items()]
+    def _get_table_stat(self, dataset_name: str, stats: DatasetMissingValues) -> BaseWidgetInfo:
+        matched_stat = [(k, v) for k, v in stats.number_of_missing_values_by_column.items()]
         matched_stat = sorted(matched_stat, key=lambda x: x[1], reverse=True)
         matched_stat_headers = ["Value", "Count"]
         table_tab = table_data(
@@ -234,9 +235,10 @@ class DatasetMissingValuesMetricRenderer(MetricRenderer):
             title="",
             primary_hist=HistogramData(
                 name="",
-                x=list(stats.number_of_nulls_by_column.keys()),
-                y=list(stats.number_of_nulls_by_column.values()),
+                x=list(stats.number_of_missing_values_by_column.keys()),
+                y=list(stats.number_of_missing_values_by_column.values()),
             ),
+            color_options=self.color_options,
         )
         return widget_tabs(
             title=f"{dataset_name.capitalize()} dataset",
@@ -251,8 +253,8 @@ class DatasetMissingValuesMetricRenderer(MetricRenderer):
 
     @staticmethod
     def _get_info_string(stats: DatasetMissingValues) -> str:
-        percents = round(stats.share_of_missed_values * 100, 3)
-        return f"{stats.number_of_missed_values} ({percents}%)"
+        percents = round(stats.share_of_missing_values * 100, 3)
+        return f"{stats.number_of_missing_values} ({percents}%)"
 
     def _get_overall_missing_values_info(self, metric_result: DatasetMissingValuesMetricResult) -> BaseWidgetInfo:
         counters = [

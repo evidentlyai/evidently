@@ -1,15 +1,11 @@
 from typing import Dict
 from typing import List
-from typing import Optional
-from typing import Union
 
 import dataclasses
 
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
-from evidently.metrics.base_metric import TResult
 from evidently.model.widget import BaseWidgetInfo
-from evidently.options.color_scheme import ColorOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
@@ -51,11 +47,12 @@ class ClassificationClassBalanceRenderer(MetricRenderer):
             reference_plot_data = metric_result.plot_data["reference"]
 
         fig = plot_distr_subplots(
-            current_plot_data,
-            reference_plot_data,
-            "Class",
-            "Number Of Objects",
-            ColorOptions().get_current_data_color(),
+            hist_curr=current_plot_data,
+            hist_ref=reference_plot_data,
+            xaxis_name="Class",
+            yaxis_name="Number Of Objects",
+            same_color=True,
+            color_options=self.color_options,
         )
         return [
             header_text(label="Class Representation"),
