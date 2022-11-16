@@ -196,3 +196,7 @@ example_stat_test = StatTest(
   - only for numerical features
   - returns `p-value`
   - drift detected when `p_value < threshold`
+- `emperical_mmd` - Emperical-MMD
+  - only for numerical features
+  - returns `p_value`
+  -drift detected when `p_value < threshold`
