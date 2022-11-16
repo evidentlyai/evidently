@@ -16,7 +16,6 @@ from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.model.widget import BaseWidgetInfo
-from evidently.options.color_scheme import ColorOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.utils.data_operations import process_columns
@@ -168,7 +167,6 @@ class TargetByFeaturesTableRenderer(MetricRenderer):
         ]
 
     def _get_regression_fig(self, feature_name: str, main_column: str, curr_data: pd.DataFrame, ref_data: pd.DataFrame):
-        color_options = ColorOptions()
         fig = make_subplots(rows=1, cols=2, subplot_titles=("Current", "Reference"), shared_yaxes=True)
         fig.add_trace(
             go.Scattergl(
@@ -176,7 +174,7 @@ class TargetByFeaturesTableRenderer(MetricRenderer):
                 y=curr_data[main_column],
                 mode="markers",
                 name="current",
-                marker=dict(size=6, color=color_options.primary_color),
+                marker=dict(size=6, color=self.color_options.primary_color),
             ),
             row=1,
             col=1,
@@ -188,7 +186,7 @@ class TargetByFeaturesTableRenderer(MetricRenderer):
                 y=ref_data[main_column],
                 mode="markers",
                 name="reference",
-                marker=dict(size=6, color=color_options.secondary_color),
+                marker=dict(size=6, color=self.color_options.secondary_color),
             ),
             row=1,
             col=2,

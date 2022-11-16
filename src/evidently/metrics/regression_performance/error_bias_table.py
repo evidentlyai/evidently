@@ -24,6 +24,7 @@ from evidently.utils.data_operations import process_columns
 
 @dataclasses.dataclass
 class RegressionErrorBiasTableResults:
+    top_error: float
     current_plot_data: pd.DataFrame
     reference_plot_data: Optional[pd.DataFrame]
     target_name: str
@@ -35,33 +36,59 @@ class RegressionErrorBiasTableResults:
 
 
 class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
+    # by default, we get 5% values for the error bias calculations
+    TOP_ERROR_DEFAULT = 0.05
+    TOP_ERROR_MIN = 0
+    TOP_ERROR_MAX = 0.5
+    top_error: float
     columns: Optional[List[str]]
 
-    def __init__(self, columns: Optional[List[str]] = None):
+    def __init__(self, columns: Optional[List[str]] = None, top_error: Optional[float] = None):
+        if top_error is None:
+            self.top_error = self.TOP_ERROR_DEFAULT
+
+        else:
+            self.top_error = top_error
+
         self.columns = columns
 
     def calculate(self, data: InputData) -> RegressionErrorBiasTableResults:
+        if self.top_error <= self.TOP_ERROR_MIN or self.top_error >= self.TOP_ERROR_MAX:
+            raise ValueError(
+                f"Cannot calculate error bias - "
+                f"top error should be in range ({self.TOP_ERROR_MIN}, {self.TOP_ERROR_MAX})."
+            )
+
         dataset_columns = process_columns(data.current_data, data.column_mapping)
         target_name = dataset_columns.utility_columns.target
         prediction_name = dataset_columns.utility_columns.prediction
         curr_df = data.current_data
         ref_df = data.reference_data
+
         if self.columns is None:
             columns = list(curr_df.columns)
+
         else:
             columns = self.columns
-        if target_name is None or prediction_name is None:
-            raise ValueError("The columns 'target' and 'prediction' columns should be present")
+
+        if target_name is None:
+            raise ValueError("Target column should be present.")
+
+        if prediction_name is None:
+            raise ValueError("Prediction column should be present.")
+
         if not isinstance(prediction_name, str):
             raise ValueError("Expect one column for prediction. List of columns was provided.")
+
         num_feature_names = list(np.intersect1d(dataset_columns.num_feature_names, columns))
         cat_feature_names = list(np.intersect1d(dataset_columns.cat_feature_names, columns))
         columns_ext = np.union1d(columns, [target_name, prediction_name])
         curr_df = self._make_df_for_plot(curr_df[columns_ext], target_name, prediction_name, None)
+
         if ref_df is not None:
             ref_df = self._make_df_for_plot(ref_df[columns_ext], target_name, prediction_name, None)
 
-        err_quantiles = error_with_quantiles(curr_df, prediction_name, target_name)
+        err_quantiles = error_with_quantiles(curr_df, prediction_name, target_name, quantile=self.top_error)
         feature_bias = error_bias_table(curr_df, err_quantiles, num_feature_names, cat_feature_names)
         error_bias = {
             feature: dict(feature_type=bias.feature_type, **bias.as_dict("current_"))
@@ -75,7 +102,7 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
             error_bias = None
 
         if ref_df is not None:
-            ref_err_quantiles = error_with_quantiles(ref_df, prediction_name, target_name)
+            ref_err_quantiles = error_with_quantiles(ref_df, prediction_name, target_name, quantile=self.top_error)
             ref_feature_bias = error_bias_table(ref_df, ref_err_quantiles, num_feature_names, cat_feature_names)
             ref_error_bias = {
                 feature: dict(feature_type=bias.feature_type, **bias.as_dict("ref_"))
@@ -97,6 +124,7 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
         columns = list(np.intersect1d(curr_df.columns, columns))
 
         return RegressionErrorBiasTableResults(
+            top_error=self.top_error,
             current_plot_data=curr_df,
             reference_plot_data=ref_df,
             target_name=target_name,
@@ -138,19 +166,21 @@ class RegressionErrorBiasTableRenderer(MetricRenderer):
             ref_error = reference_data[prediction_name] - reference_data[target_name]
             current_error = current_data[prediction_name] - current_data[target_name]
 
-            ref_quntile_5 = np.quantile(ref_error, 0.05)
-            ref_quntile_95 = np.quantile(ref_error, 0.95)
+            ref_quantile_top = np.quantile(ref_error, obj.top_error)
+            ref_quantile_other = np.quantile(ref_error, 1 - obj.top_error)
 
-            current_quntile_5 = np.quantile(current_error, 0.05)
-            current_quntile_95 = np.quantile(current_error, 0.95)
+            current_quantile_top = np.quantile(current_error, obj.top_error)
+            current_quantile_other = np.quantile(current_error, 1 - obj.top_error)
 
             # create subplots
             reference_data["dataset"] = "Reference"
-            reference_data["Error bias"] = list(map(self._error_bias_string(ref_quntile_5, ref_quntile_95), ref_error))
+            reference_data["Error bias"] = list(
+                map(self._error_bias_string(ref_quantile_top, ref_quantile_other), ref_error)
+            )
 
             current_data["dataset"] = "Current"
             current_data["Error bias"] = list(
-                map(self._error_bias_string(current_quntile_5, current_quntile_95), current_error)
+                map(self._error_bias_string(current_quantile_top, current_quantile_other), current_error)
             )
             merged_data = pd.concat([reference_data, current_data])
 
@@ -354,15 +384,15 @@ class RegressionErrorBiasTableRenderer(MetricRenderer):
         else:
             error = current_data[prediction_name] - current_data[target_name]
 
-            quntile_5 = np.quantile(error, 0.05)
-            quntile_95 = np.quantile(error, 0.95)
+            quantile_top = np.quantile(error, obj.top_error)
+            quantile_other = np.quantile(error, 1 - obj.top_error)
 
             current_data["Error bias"] = list(
                 map(
                     lambda x: "Underestimation"
-                    if x <= quntile_5
+                    if x <= quantile_top
                     else "Majority"
-                    if x < quntile_95
+                    if x < quantile_other
                     else "Overestimation",
                     error,
                 )
@@ -502,15 +532,24 @@ class RegressionErrorBiasTableRenderer(MetricRenderer):
                 },
                 additionalGraphs=additional_graphs_data,
             )
-        return [header_text(label="Error Bias: Mean/Most Common Feature Value per Group"), widget_info]
+        top_error_percents = int(result.top_error * 100)
+
+        return [
+            header_text(
+                label=f"Error Bias: Mean/Most Common Feature Value per Group (Top - {top_error_percents}% Errors)"
+            ),
+            widget_info,
+        ]
 
     @staticmethod
-    def _error_bias_string(quantile_5, quantile_95):
+    def _error_bias_string(quantile_top, quantile_other):
         def __error_bias_string(error):
-            if error <= quantile_5:
+            if error <= quantile_top:
                 return "Underestimation"
-            if error < quantile_95:
+
+            if error < quantile_other:
                 return "Majority"
+
             return "Overestimation"
 
         return __error_bias_string

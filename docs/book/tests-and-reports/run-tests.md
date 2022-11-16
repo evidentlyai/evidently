@@ -36,7 +36,7 @@ If nothing else is specified, the tests will run with the default parameters.
 
 ## How to run test presets
 
-**Example 1**. To apply the DataStabilityTestPreset:
+**Example 1**. To apply the `DataStabilityTestPreset`:
 
 ```python
 data_stability = TestSuite(tests=[
@@ -51,7 +51,7 @@ You get the visual report automatically if you call the object in Jupyter notebo
 data_stability
 ```
 
-**Example 2**. To apply and call NoTargetPerformanceTestPreset:
+**Example 2**. To apply and call `NoTargetPerformanceTestPreset`:
 
 ```python
 no_target_performance = TestSuite(tests=[
@@ -153,7 +153,7 @@ To create a custom data drift test suite with column-level tests:
 
 ```python
 feature_suite = TestSuite(tests=[
-    TestColumnShareOfNulls(column_name='hours-per-week'),
+    TestColumnShareOfMissingValues(column_name='hours-per-week'),
     TestColumnValueDrift(column_name='education'),
     TestMeanInNSigmas(column_name='hours-per-week')
 ])
@@ -220,7 +220,7 @@ feature_level_tests = TestSuite(tests=[
 TestMeanInNSigmas(column_name='hours-per-week', n_sigmas=3),
 TestShareOfOutRangeValues(column_name='hours-per-week', lte=0),
 TestNumberOfOutListValues(column_name='education', lt=0),
-TestColumnShareOfNulls(column_name='education', lt=0.2),
+TestColumnShareOfMissingValues(column_name='education', lt=0.2),
 ])
 
 feature_level_tests.run(reference_data=ref, current_data=curr)
@@ -239,7 +239,7 @@ The following standard parameters are available:
 | not_eq: val              | test_result != val                         | TestFeatureMin(feature_name=”numeric_feature”, ne=0)            |
 | gt: val                  | test_result > val                          | TestFeatureMin(feature_name=”numeric_feature”, gt=5)            |
 | gte: val                 | test_result >= val                         | TestFeatureMin(feature_name=”numeric_feature”, gte=5)           |
-| lt: val                  | test_result <=val                          | TestFeatureMin(feature_name=”numeric_feature”, lt=5)            |
+| lt: val                  | test_result < val                          | TestFeatureMin(feature_name=”numeric_feature”, lt=5)            |
 | lte: val                 | test_result <= val                         | TestFeatureMin(feature_name=”numeric_feature”, lte=5)           |
 | is_in: list              | test_result == one of the values from list | TestFeatureMin(feature_name=”numeric_feature”, is_in=[3,5,7])   |
 | not_in: list             | test_result != any of the values from list | TestFeatureMin(feature_name=”numeric_feature”, not_in=[-1,0,1]) |
@@ -315,7 +315,7 @@ You can also use the `generate_column_tests` function to create multiple tests.
 By default, it generates tests with the default parameters for all the columns:
 
 ```python
-suite = TestSuite(tests=[generate_column_tests(TestColumnShareOfNulls)])
+suite = TestSuite(tests=[generate_column_tests(TestColumnShareOfMissingValues)])
 suite.run(current_data=current_data, reference_data=reference_data)
 suite
 ```
@@ -323,7 +323,7 @@ suite
 You can also pass the parameters:
 
 ```python
-suite = TestSuite(tests=[generate_column_tests(TestColumnShareOfNulls, columns="all", parameters={"lt": 0.5})])
+suite = TestSuite(tests=[generate_column_tests(TestColumnShareOfMissingValues, columns="all", parameters={"lt": 0.5})])
 suite.run(current_data=current_data, reference_data=reference_data)
 suite
 ```
@@ -339,7 +339,7 @@ suite
 Here is how you generate tests only for **categorical columns**:
 
 ```python
-suite = TestSuite(tests=[generate_column_tests(TestColumnShareOfNulls, columns="cat", parameters={"lt": 0.1})])
+suite = TestSuite(tests=[generate_column_tests(TestColumnShareOfMissingValues, columns="cat", parameters={"lt": 0.1})])
 suite.run(current_data=current_data, reference_data=refernce_data)
 suite
 ```

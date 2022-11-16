@@ -11,7 +11,6 @@ from evidently.calculations.data_drift import get_drift_for_columns
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
-from evidently.options import ColorOptions
 from evidently.options import DataDriftOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -96,10 +95,7 @@ class DataDriftTableRenderer(MetricRenderer):
 
         return result
 
-    @staticmethod
-    def _generate_column_params(
-        item_id: str, column_name: str, data: ColumnDataDriftMetrics
-    ) -> Optional[RichTableDataRow]:
+    def _generate_column_params(self, column_name: str, data: ColumnDataDriftMetrics) -> Optional[RichTableDataRow]:
         if data.current_small_distribution is None or data.reference_small_distribution is None:
             return None
 
@@ -120,10 +116,15 @@ class DataDriftTableRenderer(MetricRenderer):
                 y1=data.plot_shape["y1"],
                 y_name=data.column_name,
                 x_name=data.x_name,
+                color_options=self.color_options,
             )
             scatter = plotly_figure(title="", figure=scatter_fig)
             details.with_part("DATA DRIFT", info=scatter)
-        fig = get_distribution_plot_figure(data.current_distribution, data.reference_distribution)
+        fig = get_distribution_plot_figure(
+            current_distribution=data.current_distribution,
+            reference_distribution=data.reference_distribution,
+            color_options=self.color_options,
+        )
         distribution = plotly_figure(title="", figure=fig)
         details.with_part("DATA DISTRIBUTION", info=distribution)
         return RichTableDataRow(
@@ -141,7 +142,7 @@ class DataDriftTableRenderer(MetricRenderer):
 
     def render_html(self, obj: DataDriftTable) -> List[BaseWidgetInfo]:
         results = obj.get_result()
-        color_options = ColorOptions()
+        color_options = self.color_options
         target_column = results.dataset_columns.utility_columns.target
         prediction_column = results.dataset_columns.utility_columns.prediction
 
@@ -171,10 +172,8 @@ class DataDriftTableRenderer(MetricRenderer):
 
         columns = columns + all_columns
 
-        item_id = str(uuid.uuid4())
-
         for column_name in columns:
-            column_params = self._generate_column_params(item_id, column_name, results.drift_by_columns[column_name])
+            column_params = self._generate_column_params(column_name, results.drift_by_columns[column_name])
 
             if column_params is not None:
                 params_data.append(column_params)

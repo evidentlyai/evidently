@@ -227,8 +227,8 @@ Create the `TestSuite` object and list the `tests` to include. Instead of the pr
 
 ```python
 tests = TestSuite(tests=[
-    TestNumberOfColumnsWithNulls(),
-    TestNumberOfRowsWithNulls(),
+    TestNumberOfColumnsWithMissingValues(),
+    TestNumberOfRowsWithMissingValues(),
     TestNumberOfConstantColumns(),
     TestNumberOfDuplicatedRows(),
     TestNumberOfDuplicatedColumns(),

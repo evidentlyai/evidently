@@ -8,11 +8,16 @@ from evidently.calculations.stattests.anderson_darling_stattest import anderson_
 from evidently.calculations.stattests.chisquare_stattest import chi_stat_test
 from evidently.calculations.stattests.cramer_von_mises_stattest import cramer_von_mises
 from evidently.calculations.stattests.energy_distance import energy_dist_test
+from evidently.calculations.stattests.epps_singleton_stattest import epps_singleton_test
 from evidently.calculations.stattests.fisher_exact_stattest import fisher_exact_test
 from evidently.calculations.stattests.g_stattest import g_test
 from evidently.calculations.stattests.hellinger_distance import hellinger_stat_test
 from evidently.calculations.stattests.mann_whitney_urank_stattest import mann_whitney_u_stat_test
+<<<<<<< HEAD
 from evidently.calculations.stattests.tvd_stattest import tvd_test
+=======
+from evidently.calculations.stattests.t_test import t_test
+>>>>>>> upstream/main
 
 
 def test_freq_obs_eq_freq_exp() -> None:
@@ -284,3 +289,15 @@ def test_energy_distance() -> None:
     current = pd.Series([38.7, 41.5, 43.8, 44.5, 45.5, 46.0, 47.7, 58.0])
     assert energy_dist_test.func(reference, current, "num", 0.1) == (approx(0, abs=1e-5), False)
     assert energy_dist_test.func(reference, current + 5, "num", 0.1) == (approx(1.9, abs=1e-1), True)
+
+
+def test_epps_singleton() -> None:
+    reference = pd.Series([1, 2, 3, 4, 5, 6]).repeat([16, 18, 16, 14, 12, 12])
+    current = pd.Series([1, 2, 3, 4, 5, 6]).repeat([16, 16, 16, 16, 16, 8])
+    assert epps_singleton_test.func(reference, current, "num", 0.05) == (approx(0.81, abs=1e-2), False)
+
+
+def test_t_test() -> None:
+    reference = pd.Series([38.7, 41.5, 43.8, 44.5, 45.5, 46.0, 47.7, 58.0])
+    current = pd.Series([39.2, 39.3, 39.7, 41.4, 41.8, 42.9, 43.3, 45.8])
+    assert t_test.func(reference, current, "num", 0.05) == (approx(0.084, abs=1e-3), False)

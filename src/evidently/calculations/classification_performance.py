@@ -207,7 +207,7 @@ def get_prediction_data(
         return PredictionData(
             predictions=predictions,
             prediction_probas=prediction_probas,
-            labels=[0, 1],
+            labels=[1, 0],
         )
 
     # for other cases return just prediction values, probabilities are None by default

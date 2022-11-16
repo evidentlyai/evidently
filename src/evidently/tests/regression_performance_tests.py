@@ -37,15 +37,9 @@ class BaseRegressionPerformanceMetricsTest(BaseCheckValueTest, ABC):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        metric: Optional[RegressionQualityMetric] = None,
     ):
-        if metric is not None:
-            self.metric = metric
-
-        else:
-            self.metric = RegressionQualityMetric()
-
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
+        self.metric = RegressionQualityMetric()
 
 
 class TestValueMAE(BaseRegressionPerformanceMetricsTest):
@@ -87,9 +81,10 @@ class TestValueMAERenderer(TestRenderer):
             val_for_plot=obj.metric.get_result().vals_for_plots["mean_abs_error"],
             hist_for_plot=obj.metric.get_result().hist_for_plot,
             name="MAE",
-            curr_mertic=obj.metric.get_result().mean_abs_error,
+            curr_metric=obj.metric.get_result().mean_abs_error,
             ref_metric=obj.metric.get_result().mean_abs_error_ref,
             is_ref_data=is_ref_data,
+            color_options=self.color_options,
         )
         info.with_details("MAE", plotly_figure(title="", figure=fig))
         return info
@@ -135,9 +130,10 @@ class TestValueMAPERenderer(TestRenderer):
             val_for_plot=val_for_plot,
             hist_for_plot=obj.metric.get_result().hist_for_plot,
             name="MAPE",
-            curr_mertic=obj.metric.get_result().mean_abs_perc_error,
+            curr_metric=obj.metric.get_result().mean_abs_perc_error,
             ref_metric=obj.metric.get_result().mean_abs_perc_error_ref,
             is_ref_data=is_ref_data,
+            color_options=self.color_options,
         )
         info.with_details("MAPE", plotly_figure(title="", figure=fig))
         return info
@@ -181,9 +177,10 @@ class TestValueRMSERenderer(TestRenderer):
             val_for_plot=obj.metric.get_result().vals_for_plots["rmse"],
             hist_for_plot=obj.metric.get_result().hist_for_plot,
             name="RMSE",
-            curr_mertic=obj.metric.get_result().rmse,
+            curr_metric=obj.metric.get_result().rmse,
             ref_metric=obj.metric.get_result().rmse_ref,
             is_ref_data=is_ref_data,
+            color_options=self.color_options,
         )
         info.with_details("RMSE", plotly_figure(title="", figure=fig))
         return info
@@ -220,8 +217,8 @@ class TestValueMeanErrorRenderer(TestRenderer):
         hist_ref = None
         if "reference" in obj.metric.get_result().me_hist_for_plot.keys():
             hist_ref = me_hist_for_plot["reference"]
-        fig = plot_distr(hist_curr, hist_ref)
-        fig = plot_check(fig, obj.get_condition())
+        fig = plot_distr(hist_curr=hist_curr, hist_ref=hist_ref, color_options=self.color_options)
+        fig = plot_check(fig, obj.get_condition(), color_options=self.color_options)
         fig = plot_metric_value(fig, obj.metric.get_result().mean_error, "current mean error")
         info.with_details("", plotly_figure(title="", figure=fig))
         return info
@@ -261,9 +258,11 @@ class TestValueAbsMaxErrorRenderer(TestRenderer):
         me_hist_for_plot = obj.metric.get_result().me_hist_for_plot
         hist_curr = me_hist_for_plot["current"]
         hist_ref = None
+
         if "reference" in obj.metric.get_result().me_hist_for_plot.keys():
             hist_ref = me_hist_for_plot["reference"]
-        fig = plot_distr(hist_curr, hist_ref)
+
+        fig = plot_distr(hist_curr=hist_curr, hist_ref=hist_ref, color_options=self.color_options)
         info.with_details("", plotly_figure(title="", figure=fig))
         return info
 
@@ -305,9 +304,10 @@ class TestValueR2ScoreRenderer(TestRenderer):
             val_for_plot=obj.metric.get_result().vals_for_plots["r2_score"],
             hist_for_plot=obj.metric.get_result().hist_for_plot,
             name="R2_score",
-            curr_mertic=obj.metric.get_result().r2_score,
+            curr_metric=obj.metric.get_result().r2_score,
             ref_metric=obj.metric.get_result().r2_score_ref,
             is_ref_data=is_ref_data,
+            color_options=self.color_options,
         )
         info.with_details("R2 Score", plotly_figure(title="", figure=fig))
         return info

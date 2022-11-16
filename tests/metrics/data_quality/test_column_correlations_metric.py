@@ -113,7 +113,17 @@ def test_column_correlations_metric_value_error(
     "current_data, reference_data, metric, expected_json",
     (
         (
-            pd.DataFrame({"col": [1, 2, 3]}),
+            pd.DataFrame({"col": [1.4, 2.3, 3.4], "test": ["a", "b", "c"], "test2": ["a", "b", "c"]}),
+            None,
+            ColumnCorrelationsMetric(column_name="col"),
+            {
+                "column_name": "col",
+                "current": {},
+                "reference": None,
+            },
+        ),
+        (
+            pd.DataFrame({"col": ["a", "b", "c"], "test": [1.4, 2.3, 3.4], "test2": [1.4, 2.3, 3.4]}),
             None,
             ColumnCorrelationsMetric(column_name="col"),
             {

@@ -33,6 +33,10 @@ Data structure requirements depend on the type of analysis. Here are example req
 | Classification Performance | Optional | Required | Required | Optional | Optional |
 | Regression Performance | Optional | Required | Required | Optional | Optional |
 
+{% hint style="info" %} 
+**We recommend specifying column mapping manually**. Evidently applies different heuristics and rules to map the input data automatically. To avoid errors, it is always best to set column mapping manually. For example, numerical columns with only 3 different values in the reference data might be incorrectly parsed as categorical features.
+{% endhint %}
+
 # Primary mapping options
 
 You can create a `ColumnMapping` object to map your column names and feature types. 
@@ -42,7 +46,7 @@ You can create a `ColumnMapping` object to map your column names and feature typ
 To specify the column names for target, prediction, ID or DateTime: 
 
 ```python
-from evidently.pipeline.column_mapping import ColumnMapping
+from evidently import ColumnMapping
 
 column_mapping = ColumnMapping()
 

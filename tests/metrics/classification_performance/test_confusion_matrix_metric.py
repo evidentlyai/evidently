@@ -2,8 +2,8 @@ import pandas as pd
 import pytest
 
 from evidently import ColumnMapping
+from evidently.metrics import ClassificationConfusionMatrix
 from evidently.metrics.base_metric import InputData
-from evidently.metrics.classification_performance.confusion_matrix_metric import ClassificationConfusionMatrix
 
 
 @pytest.mark.parametrize(

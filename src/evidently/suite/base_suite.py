@@ -17,6 +17,7 @@ from evidently.dashboard.dashboard import save_lib_files
 from evidently.metrics.base_metric import ErrorResult
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
+from evidently.options import OptionsProvider
 from evidently.renderers.base_renderer import DEFAULT_RENDERERS
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import RenderersDefinitions
@@ -84,6 +85,18 @@ class ExecutionError(Exception):
 
 
 class Display:
+    # collection of all possible common options
+    options_provider: OptionsProvider
+
+    def __init__(self, options: Optional[list] = None):
+        if options is None:
+            options = []
+
+        self.options_provider = OptionsProvider()
+
+        for option in options:
+            self.options_provider.add(option)
+
     @abc.abstractmethod
     def _build_dashboard_info(self):
         raise NotImplementedError()

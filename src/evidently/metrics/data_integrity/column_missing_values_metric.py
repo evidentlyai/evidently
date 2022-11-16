@@ -48,45 +48,45 @@ class ColumnMissingValuesMetric(Metric[ColumnMissingValuesMetricResult]):
 
     Missing value is a null or NaN value.
 
-    Calculate an amount of null-like values kinds and count for such values.
+    Calculate an amount of missing values kinds and count for such values.
     NA-types like numpy.NaN, pandas.NaT are counted as one type.
 
-    You can set you own null-line values list with `values` parameter.
+    You can set you own missing values list with `missing_values` parameter.
     Value None in the list means that Pandas null values will be included in the calculation.
 
     If `replace` parameter is False - add defaults to user's list.
-    If `replace` parameter is True - use values from `null_values` list only.
+    If `replace` parameter is True - use values from `missing_values` list only.
     """
 
     # default missing values list
-    DEFAULT_VALUES = ["", np.inf, -np.inf, None]
-    values: frozenset
+    DEFAULT_MISSING_VALUES = ["", np.inf, -np.inf, None]
+    missing_values: frozenset
     column_name: str
 
-    def __init__(self, column_name: str, values: Optional[list] = None, replace: bool = True) -> None:
+    def __init__(self, column_name: str, missing_values: Optional[list] = None, replace: bool = True) -> None:
         self.column_name = column_name
 
-        if values is None:
-            # use default null-values list if we have no user-defined null values
-            values = self.DEFAULT_VALUES
+        if missing_values is None:
+            # use default missing values list if we have no user-defined missed values
+            missing_values = self.DEFAULT_MISSING_VALUES
 
         elif not replace:
-            # add default nulls to user-defined nulls list
-            values = self.DEFAULT_VALUES + values
+            # add default missing values to user-defined list
+            missing_values = self.DEFAULT_MISSING_VALUES + missing_values
 
         # use frozenset because metrics parameters should be immutable/hashable for deduplication
-        self.values = frozenset(values)
+        self.missing_values = frozenset(missing_values)
 
-    def _calculate_null_values_stats(self, column: pd.Series) -> ColumnMissingValues:
-        different_missing_values = {value: 0 for value in self.values}
+    def _calculate_missing_values_stats(self, column: pd.Series) -> ColumnMissingValues:
+        different_missing_values = {value: 0 for value in self.missing_values}
         number_of_missing_values = 0
 
         number_of_rows = len(column)
 
-        # iterate by each value in custom null-values list and check the value in a column
-        for value in self.values:
+        # iterate by each value in custom missing values list and check the value in a column
+        for value in self.missing_values:
             if value is None:
-                # check all pandas null-types like numpy.NAN, pandas.NA, pandas.NaT, etc
+                # check all pandas missing values like numpy.NAN, pandas.NA, pandas.NaT, etc
                 missing_values = column.isnull().sum()
 
             else:
@@ -95,7 +95,7 @@ class ColumnMissingValuesMetric(Metric[ColumnMissingValuesMetricResult]):
             if missing_values > 0:
                 # increase overall counter
                 number_of_missing_values += missing_values
-                # increase by-null-value counter
+                # increase by-missing-value counter
                 different_missing_values[value] += missing_values
 
         share_of_missing_values = number_of_missing_values / number_of_rows
@@ -107,7 +107,7 @@ class ColumnMissingValuesMetric(Metric[ColumnMissingValuesMetricResult]):
         }
 
         number_of_different_missing_values = sum(
-            [1 for null_value in different_missing_values if different_missing_values[null_value] > 0]
+            [1 for value in different_missing_values if different_missing_values[value] > 0]
         )
 
         return ColumnMissingValues(
@@ -119,27 +119,27 @@ class ColumnMissingValuesMetric(Metric[ColumnMissingValuesMetricResult]):
         )
 
     def calculate(self, data: InputData) -> ColumnMissingValuesMetricResult:
-        if not self.values:
+        if not self.missing_values:
             raise ValueError("Missed values list should not be empty.")
 
         if self.column_name not in data.current_data:
             raise ValueError(f"Column {self.column_name} is not in current data.")
 
-        current_null_values = self._calculate_null_values_stats(data.current_data[self.column_name])
+        current_missing_values = self._calculate_missing_values_stats(data.current_data[self.column_name])
 
         if data.reference_data is None:
-            reference_null_values: Optional[ColumnMissingValues] = None
+            reference_missing_values: Optional[ColumnMissingValues] = None
 
         else:
             if self.column_name not in data.reference_data:
                 raise ValueError(f"Column {self.column_name} is not in reference data.")
 
-            reference_null_values = self._calculate_null_values_stats(data.reference_data[self.column_name])
+            reference_missing_values = self._calculate_missing_values_stats(data.reference_data[self.column_name])
 
         return ColumnMissingValuesMetricResult(
             column_name=self.column_name,
-            current=current_null_values,
-            reference=reference_null_values,
+            current=current_missing_values,
+            reference=reference_missing_values,
         )
 
 
@@ -157,7 +157,7 @@ class ColumnMissingValuesMetricRenderer(MetricRenderer):
             value = f"{count_of_missed} ({percent_of_missed}%)"
 
             if missed_value is None:
-                missed_value_str = "Pandas and Numpy null, NA, NaN, etc."
+                missed_value_str = "Pandas and Numpy NA, NaN, etc."
 
             elif not missed_value:
                 missed_value_str = "Empty string"
