@@ -13,11 +13,8 @@ from evidently.calculations.stattests.fisher_exact_stattest import fisher_exact_
 from evidently.calculations.stattests.g_stattest import g_test
 from evidently.calculations.stattests.hellinger_distance import hellinger_stat_test
 from evidently.calculations.stattests.mann_whitney_urank_stattest import mann_whitney_u_stat_test
-<<<<<<< HEAD
 from evidently.calculations.stattests.tvd_stattest import tvd_test
-=======
 from evidently.calculations.stattests.t_test import t_test
->>>>>>> upstream/main
 
 
 def test_freq_obs_eq_freq_exp() -> None:
