@@ -7,7 +7,6 @@ import pytest
 
 from evidently import ColumnMapping
 from evidently.metrics import RegressionErrorBiasTable
-from evidently.metrics.base_metric import InputData
 from evidently.report import Report
 
 
@@ -55,9 +54,9 @@ def test_regression_error_bias_table_value_errors(
     data_mapping = ColumnMapping()
 
     with pytest.raises(ValueError) as error:
-        metric.calculate(
-            data=InputData(current_data=current_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
-        )
+        report = Report(metrics=[metric])
+        report.run(current_data=current_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
+        metric.get_result()
 
     assert error.value.args[0] == error_message
 

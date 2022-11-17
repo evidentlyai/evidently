@@ -7,7 +7,6 @@ import pytest
 
 from evidently import ColumnMapping
 from evidently.metrics import DataQualityStabilityMetric
-from evidently.metrics.base_metric import InputData
 from evidently.metrics.data_quality.stability_metric import DataQualityStabilityMetricResult
 from evidently.report import Report
 
@@ -57,9 +56,9 @@ def test_data_quality_stability_metric_success(
     metric: DataQualityStabilityMetric,
     expected: DataQualityStabilityMetricResult,
 ) -> None:
-    result = metric.calculate(
-        data=InputData(current_data=current, reference_data=reference, column_mapping=ColumnMapping())
-    )
+    report = Report(metrics=[metric])
+    report.run(current_data=current, reference_data=reference, column_mapping=ColumnMapping())
+    result = metric.get_result()
     assert result == expected
 
 
