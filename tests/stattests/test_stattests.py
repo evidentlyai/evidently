@@ -14,6 +14,7 @@ from evidently.calculations.stattests.g_stattest import g_test
 from evidently.calculations.stattests.hellinger_distance import hellinger_stat_test
 from evidently.calculations.stattests.mann_whitney_urank_stattest import mann_whitney_u_stat_test
 from evidently.calculations.stattests.t_test import t_test
+from evidently.calculations.stattests.tvd_stattest import tvd_test
 
 
 def test_freq_obs_eq_freq_exp() -> None:
@@ -234,6 +235,50 @@ def test_mann_whitney() -> None:
     reference = pd.Series([1, 2, 3, 4, 5, 6]).repeat([16, 18, 16, 14, 12, 12])
     current = pd.Series([1, 2, 3, 4, 5, 6]).repeat([16, 16, 16, 16, 16, 8])
     assert mann_whitney_u_stat_test.func(reference, current, "num", 0.05) == (approx(0.481, abs=1e-2), False)
+
+
+@pytest.mark.parametrize(
+    "reference, current, threshold, pvalue, drift_detected",
+    (
+        (
+            pd.Series([1, 2, 3, 4, 5, 6]).repeat([16, 18, 16, 14, 12, 12]),
+            pd.Series([1, 2, 3, 4, 5, 6]).repeat([16, 16, 16, 16, 16, 8]),
+            0.1,
+            approx(0.928, abs=1e-3),
+            False,
+        ),
+        (
+            pd.Series([1, 2, 3, 4, 5, 6]).repeat([16, 18, 16, 14, 12, 12]),
+            pd.Series([1, 2, 3, 4, 5, 6]).repeat([10, 10, 24, 24, 10, 10]),
+            0.1,
+            approx(0.085, abs=1e-3),
+            True,
+        ),
+        (
+            pd.Series([1, 2, 3, 4, 5, 6]).repeat([16, 18, 16, 14, 12, 12]),
+            pd.Series([1, 2, 3, 4, 5, 6]).repeat([0, 0, 0, 0, 0, 88]),
+            0.1,
+            approx(0.0, abs=1e-3),
+            True,
+        ),
+        (
+            pd.Series([1, 2, 3, 4, 5, 6]).repeat([16, 18, 16, 14, 12, 12]),
+            pd.Series([1, 2, 3, 4, 5, 6]).repeat([16, 18, 16, 14, 12, 12]),
+            0.1,
+            approx(1.0, abs=1e-3),
+            False,
+        ),
+        (
+            pd.Series([1, 2, 3, 4, 5, 6]).repeat([16, 18, 16, 14, 12, 12]),
+            pd.Series([1, 2, 3, 4, 5, 6]).repeat([10, 24, 12, 16, 8, 16]),
+            0.5,
+            approx(0.309, abs=1e-3),
+            True,
+        ),
+    ),
+)
+def test_tvd_stattest(reference, current, threshold, pvalue, drift_detected) -> None:
+    assert tvd_test.func(reference, current, "cat", threshold) == (pvalue, drift_detected)
 
 
 def test_energy_distance() -> None:

@@ -22,9 +22,9 @@ def test_dataset_correlation_metric_success() -> None:
     )
     data_mapping = ColumnMapping(task="regression")
     metric = DatasetCorrelationsMetric()
-    result = metric.calculate(
-        data=InputData(current_data=current_dataset, reference_data=None, column_mapping=data_mapping)
-    )
+    report = Report(metrics=[metric])
+    report.run(current_data=current_dataset, reference_data=None, column_mapping=data_mapping)
+    result = metric.get_result()
     assert result is not None
     assert result.current is not None
     assert result.current.stats is not None

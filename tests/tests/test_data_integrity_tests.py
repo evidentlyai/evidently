@@ -391,7 +391,13 @@ def test_data_integrity_test_duplicated_columns_json_render() -> None:
 
 
 def test_data_integrity_test_columns_type() -> None:
-    current_dataset = pd.DataFrame({"numerical_feature": [1, 2, 3], "target": ["1", "1", "1"]})
+    current_dataset = pd.DataFrame(
+        {
+            "numerical_feature": [1, 2, 3],
+            "target": ["1", "1", "1"],
+            "datetime": [datetime.now(), datetime.now(), datetime.now()],
+        }
+    )
     reference_dataset = pd.DataFrame(
         {
             "numerical_feature": [1.0, 2.4, 3.0],

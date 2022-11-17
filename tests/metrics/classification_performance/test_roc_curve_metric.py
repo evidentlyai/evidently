@@ -2,7 +2,7 @@ import pandas as pd
 
 from evidently import ColumnMapping
 from evidently.metrics import ClassificationRocCurve
-from evidently.metrics.base_metric import InputData
+from evidently.report import Report
 
 
 def test_roc_curve_no_exceptions():
@@ -14,11 +14,7 @@ def test_roc_curve_no_exceptions():
             c=[0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.9, 0.8, 0.9],
         ),
     )
-    m2 = ClassificationRocCurve()
-    m2.calculate(
-        data=InputData(
-            reference_data=None,
-            current_data=current,
-            column_mapping=ColumnMapping(prediction=["a", "b", "c"]),
-        )
-    )
+    metric = ClassificationRocCurve()
+    report = Report(metrics=[metric])
+    report.run(current_data=current, reference_data=None, column_mapping=ColumnMapping(prediction=["a", "b", "c"]))
+    metric.get_result()

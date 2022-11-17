@@ -4,7 +4,6 @@ import pytest
 
 from evidently import ColumnMapping
 from evidently.metrics import DatasetMissingValuesMetric
-from evidently.metrics.base_metric import InputData
 from evidently.report import Report
 
 
@@ -57,9 +56,9 @@ def test_dataset_missing_values_metric_different_missing_values() -> None:
     )
     data_mapping = ColumnMapping()
     metric = DatasetMissingValuesMetric()
-    result = metric.calculate(
-        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
-    )
+    report = Report(metrics=[metric])
+    report.run(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+    result = metric.get_result()
     assert result is not None
     # expect na values and an empty string as null-values
     assert result.current.different_missing_values == {None: 5, -np.inf: 1, np.inf: 1, "": 2}
@@ -93,30 +92,30 @@ def test_dataset_missing_values_metric_different_missing_values() -> None:
     assert result.reference is None
 
     metric = DatasetMissingValuesMetric(missing_values=["n/a"], replace=False)
-    result = metric.calculate(
-        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
-    )
+    report = Report(metrics=[metric])
+    report.run(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+    result = metric.get_result()
     assert result is not None
     # expect n/a and other defaults as null-values
     assert result.current.number_of_different_missing_values == 5
     assert result.current.number_of_missing_values == 10
     assert result.reference is None
 
-    # test custom list of missing values, no default, but with Pandas null-like values
+    # test custom list of null values, no default, but with Pandas nulls
     metric = DatasetMissingValuesMetric(missing_values=["", 0, "n/a", -9999, None], replace=True)
-    result = metric.calculate(
-        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
-    )
+    report = Report(metrics=[metric])
+    report.run(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+    result = metric.get_result()
     assert result is not None
     assert result.current.number_of_different_missing_values == 5
     assert result.current.number_of_missing_values == 11
     assert result.reference is None
 
-    # test custom list of null values and ignore pandas null-like values
+    # test custom list of null values and ignore pandas null values
     metric = DatasetMissingValuesMetric(missing_values=["", 0, "n/a", -9999], replace=True)
-    result = metric.calculate(
-        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
-    )
+    report = Report(metrics=[metric])
+    report.run(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+    result = metric.get_result()
     assert result is not None
     assert result.current.number_of_different_missing_values == 4
     assert result.current.number_of_missing_values == 6
@@ -143,6 +142,6 @@ def test_dataset_missing_values_metrics_value_error(
     metric: DatasetMissingValuesMetric,
 ) -> None:
     with pytest.raises(ValueError):
-        metric.calculate(
-            data=InputData(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
-        )
+        report = Report(metrics=[metric])
+        report.run(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
+        metric.get_result()

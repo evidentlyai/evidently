@@ -8,7 +8,6 @@ from pytest import approx
 
 from evidently import ColumnMapping
 from evidently.calculations.data_quality import ColumnCorrelations
-from evidently.metrics.base_metric import InputData
 from evidently.metrics.data_quality.column_correlations_metric import ColumnCorrelationsMetric
 from evidently.metrics.data_quality.column_correlations_metric import ColumnCorrelationsMetricResult
 from evidently.report import Report
@@ -57,9 +56,10 @@ def test_column_correlations_metric_success(
     metric: ColumnCorrelationsMetric,
     expected_result: ColumnCorrelationsMetricResult,
 ) -> None:
-    result = metric.calculate(
-        data=InputData(current_data=current_dataset, reference_data=reference_dataset, column_mapping=column_mapping)
-    )
+
+    report = Report(metrics=[metric])
+    report.run(current_data=current_dataset, reference_data=reference_dataset, column_mapping=column_mapping)
+    result = metric.get_result()
     assert result == expected_result
 
 
@@ -100,11 +100,9 @@ def test_column_correlations_metric_value_error(
     error_message: str,
 ) -> None:
     with pytest.raises(ValueError) as error:
-        metric.calculate(
-            data=InputData(
-                current_data=current_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping()
-            )
-        )
+        report = Report(metrics=[metric])
+        report.run(current_data=current_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
+        metric.get_result()
 
     assert error.value.args[0] == error_message
 

@@ -20,6 +20,7 @@ from evidently.suite.base_suite import Suite
 from evidently.suite.base_suite import find_metric_renderer
 from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.data_operations import process_columns
+from evidently.utils.data_preprocessing import create_data_definition
 from evidently.utils.generators import BaseGenerator
 
 
@@ -50,7 +51,8 @@ class Report(Display):
             raise ValueError("Current dataset should be present")
 
         self._columns_info = process_columns(current_data, column_mapping)
-        data = InputData(reference_data, current_data, column_mapping)
+        data_definition = create_data_definition(reference_data, current_data, column_mapping)
+        data = InputData(reference_data, current_data, column_mapping, data_definition)
 
         # get each item from metrics/presets and add to metrics list
         # do it in one loop because we want to save metrics and presets order
