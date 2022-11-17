@@ -41,7 +41,7 @@ from evidently.report import Report
             ),
             ColumnMapping(
                 target="my_target",
-                prediction=["feature1", "feature2"],
+                prediction="prediction",
                 datetime="datetime",
             ),
         ),
