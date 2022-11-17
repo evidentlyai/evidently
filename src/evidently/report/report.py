@@ -102,6 +102,13 @@ class Report(Display):
             metrics=metrics_dicts,
         )
 
+    def as_list(self) -> list:
+        result = []
+        for metric in self._first_level_metrics:
+            renderer = find_metric_renderer(type(metric), self._inner_suite.context.renderers)
+            result.append({"metric": metric.get_id(), "result": renderer.render_json(metric)})
+        return result
+
     def _build_dashboard_info(self):
         metrics_results = []
         additional_graphs = []

@@ -2,6 +2,7 @@ import abc
 import copy
 import json
 import logging
+from datetime import datetime
 from typing import Iterator
 from typing import Optional
 from typing import Tuple
@@ -156,8 +157,19 @@ class Display:
     def as_dict(self) -> dict:
         raise NotImplementedError()
 
+    @abc.abstractmethod
+    def as_list(self) -> dict:
+        """Return all results as a list for JSON representation"""
+        raise NotImplementedError()
+
     def json(self) -> str:
-        return json.dumps(self.as_dict(), cls=NumpyEncoder)
+        return json.dumps(
+            {
+                "timestamp": str(datetime.now()),
+                "results": self.as_list(),
+            },
+            cls=NumpyEncoder,
+        )
 
     def save_json(self, filename):
         with open(filename, "w", encoding="utf-8") as out_file:

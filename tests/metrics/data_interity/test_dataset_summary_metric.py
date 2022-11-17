@@ -247,7 +247,6 @@ def test_dataset_summary_metric_with_report(
     assert report.show()
     json_result = report.json()
     assert len(json_result) > 0
-    parsed_json_result = json.loads(json_result)
-    assert "metrics" in parsed_json_result
-    assert "DatasetSummaryMetric" in parsed_json_result["metrics"]
-    assert json.loads(json_result)["metrics"]["DatasetSummaryMetric"] == expected_json
+    result = json.loads(json_result)
+    assert result["results"][0]["metric"] == "DatasetSummaryMetric"
+    assert result["results"][0]["result"] == expected_json

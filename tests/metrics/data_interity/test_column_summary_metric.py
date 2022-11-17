@@ -220,7 +220,6 @@ def test_column_summary_metric_with_report(
     assert report.show()
     json_result = report.json()
     assert len(json_result) > 0
-    parsed_json_result = json.loads(json_result)
-    assert "metrics" in parsed_json_result
-    assert "ColumnSummaryMetric" in parsed_json_result["metrics"]
-    assert json.loads(json_result)["metrics"]["ColumnSummaryMetric"] == expected_json
+    result = json.loads(json_result)
+    assert result["results"][0]["metric"] == "ColumnSummaryMetric"
+    assert result["results"][0]["result"] == expected_json

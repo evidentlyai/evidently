@@ -169,8 +169,9 @@ def test_data_drift_metrics_json_output() -> None:
     report = Report(metrics=[DataDriftTable(options=DataDriftOptions(threshold=0.7))])
     report.run(current_data=current_dataset, reference_data=reference_dataset)
     result_json = report.json()
-    result = json.loads(result_json)["metrics"]["DataDriftTable"]
-    assert result == {
+    result = json.loads(result_json)
+    assert result["results"][0]["metric"] == "DataDriftTable"
+    assert result["results"][0]["result"] == {
         "dataset_drift": True,
         "drift_by_columns": {
             "category_feature": {
