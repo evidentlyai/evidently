@@ -57,5 +57,5 @@ def test_classification_prob_distribution_with_report(
     report.show()
     result_json = report.json()
     result = json.loads(result_json)
-    assert result["results"][0]["metric"] == "ClassificationProbDistribution"
-    assert result["results"][0]["result"] == expected_json
+    assert result["metrics"][0]["metric"] == "ClassificationProbDistribution"
+    assert result["metrics"][0]["result"] == expected_json

@@ -121,5 +121,5 @@ def test_regression_error_bias_table_with_report(
     result_json = report.json()
     assert len(result_json) > 0
     result = json.loads(result_json)
-    assert result["results"][0]["metric"] == "RegressionErrorBiasTable"
-    assert result["results"][0]["result"] == expected_json
+    assert result["metrics"][0]["metric"] == "RegressionErrorBiasTable"
+    assert result["metrics"][0]["result"] == expected_json

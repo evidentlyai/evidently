@@ -184,5 +184,5 @@ def test_column_correlations_metric_with_report(
     result_json = report.json()
     assert len(result_json) > 0
     result = json.loads(result_json)
-    assert result["results"][0]["metric"] == "ColumnCorrelationsMetric"
-    assert result["results"][0]["result"] == expected_json
+    assert result["metrics"][0]["metric"] == "ColumnCorrelationsMetric"
+    assert result["metrics"][0]["result"] == expected_json

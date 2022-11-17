@@ -21,8 +21,12 @@ def test_same_type_metric_in_one_json_report() -> None:
     result_json = report.json()
     result = json.loads(result_json)
     assert "timestamp" in result
-    assert "results" in result
-    assert result["results"] == [
+    assert isinstance(result["timestamp"], str)
+    assert "version" in result
+    assert isinstance(result["version"], str)
+    assert "metrics" in result
+    assert isinstance(result["metrics"], list)
+    assert result["metrics"] == [
         {
             "metric": "ColumnQuantileMetric",
             "result": {"column_name": "feature1", "current": 2.0, "quantile": 0.5, "reference": 0.5},

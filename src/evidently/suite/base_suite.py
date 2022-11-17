@@ -10,6 +10,7 @@ from typing import Union
 
 import dataclasses
 
+import evidently
 from evidently.dashboard.dashboard import SaveMode
 from evidently.dashboard.dashboard import SaveModeMap
 from evidently.dashboard.dashboard import TemplateParams
@@ -157,23 +158,24 @@ class Display:
     def as_dict(self) -> dict:
         raise NotImplementedError()
 
-    @abc.abstractmethod
-    def as_list(self) -> dict:
-        """Return all results as a list for JSON representation"""
-        raise NotImplementedError()
+    def _get_json_content(self) -> dict:
+        """Return all data for json representation"""
+        result = {
+            "version": evidently.__version__,
+            "timestamp": str(datetime.now()),
+        }
+        result.update(self.as_dict())
+        return result
 
     def json(self) -> str:
         return json.dumps(
-            {
-                "timestamp": str(datetime.now()),
-                "results": self.as_list(),
-            },
+            self._get_json_content(),
             cls=NumpyEncoder,
         )
 
     def save_json(self, filename):
         with open(filename, "w", encoding="utf-8") as out_file:
-            json.dump(self.as_dict(), out_file, cls=NumpyEncoder)
+            json.dump(self._get_json_content(), out_file, cls=NumpyEncoder)
 
     def _render(self, temple_func, template_params: TemplateParams):
         return temple_func(params=template_params)

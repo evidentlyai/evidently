@@ -125,39 +125,31 @@ def test_export_to_json():
 
     # assert suite
 
-    json_str = suite.json()
+    suite_json = suite.json()
 
-    assert isinstance(json_str, str)
+    assert isinstance(suite_json, str)
 
-    json_result = json.loads(json_str)
+    result = json.loads(suite_json)
 
-    assert "tests" in json_result
-    assert len(json_result["tests"]) == len(tests)
+    assert "timestamp" in result
+    assert isinstance(result["timestamp"], str)
+    assert "version" in result
+    assert isinstance(result["version"], str)
+    assert "tests" in result
+    assert isinstance(result["tests"], list)
+    assert "summary" in result
+    assert isinstance(result["summary"], dict)
 
-    for test_info in json_result["tests"]:
+    assert len(result["tests"]) == len(tests)
+
+    for test_info in result["tests"]:
         assert "description" in test_info, test_info
         assert "name" in test_info, test_info
         assert "status" in test_info, test_info
         assert "group" in test_info, test_info
         assert "parameters" in test_info, test_info
 
-    assert "datetime" in json_result
-    assert isinstance(json_result["datetime"], str)
-    assert "version" in json_result
-
-    assert "columns_info" in json_result
-    assert json_result["columns_info"] == {
-        "cat_feature_names": ["cat_feature_1", "cat_feature_2"],
-        "datetime_feature_names": [],
-        "num_feature_names": ["num_feature_1", "num_feature_2"],
-        "target_type": "cat",
-        "target_names": None,
-        "task": "classification",
-        "utility_columns": {"date": None, "id_column": None, "prediction": "pred_result", "target": "result"},
-    }
-    assert "summary" in json_result
-
-    summary_result = json_result["summary"]
+    summary_result = result["summary"]
     assert "all_passed" in summary_result, summary_result
     assert summary_result["all_passed"] is False
 
