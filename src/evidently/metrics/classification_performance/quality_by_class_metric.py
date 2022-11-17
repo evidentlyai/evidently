@@ -77,7 +77,6 @@ class ClassificationQualityByClass(ThresholdClassificationMetric[ClassificationQ
                 reference_roc_aucs = sklearn.metrics.roc_auc_score(
                     binaraized_target, ref_prediction.prediction_probas, average=None
                 ).tolist()
-
         return ClassificationQualityByClassResult(
             columns=columns,
             current_metrics=metrics_matrix,
