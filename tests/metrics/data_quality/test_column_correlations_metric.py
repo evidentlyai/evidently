@@ -102,7 +102,7 @@ def test_column_correlations_metric_value_error(
     with pytest.raises(ValueError) as error:
         report = Report(metrics=[metric])
         report.run(current_data=current_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
-        result = metric.get_result()
+        metric.get_result()
 
     assert error.value.args[0] == error_message
 

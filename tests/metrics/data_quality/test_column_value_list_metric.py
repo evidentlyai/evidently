@@ -193,8 +193,6 @@ def test_data_quality_value_list_metric_value_errors(
     metric: ColumnValueListMetric,
     error_message: str,
 ) -> None:
-    data_mapping = ColumnMapping()
-
     with pytest.raises(ValueError) as error:
         report = Report(metrics=[metric])
         report.run(current_data=current_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
