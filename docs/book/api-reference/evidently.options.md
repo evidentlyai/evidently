@@ -39,69 +39,37 @@ Collection of colors for data visualization
 
 #### Attributes: 
 
-#####&nbsp;&nbsp;&nbsp;&nbsp; labels _: Sequence[Union[str, int]]_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; color_sequence _: Sequence[str]_ _ = ('#ed0400', '#0a5f38', '#6c3461', '#71aa34', '#d8dcd6', '#6b8ba4')_ 
 
-#####&nbsp;&nbsp;&nbsp;&nbsp; values _: list_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; current_data_color _: Optional[str]_ _ = None_ 
 
-#####&nbsp;&nbsp;&nbsp;&nbsp; exception _: BaseException_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; fill_color _: str_ _ = 'LightGreen'_ 
 
-#####&nbsp;&nbsp;&nbsp;&nbsp; column_name _: str_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; heatmap _: str_ _ = 'RdBu_r'_ 
 
-#####&nbsp;&nbsp;&nbsp;&nbsp; options _: [DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions)_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; majority_color _: str_ _ = '#1acc98'_ 
 
-#####&nbsp;&nbsp;&nbsp;&nbsp; different_missing_values _: Dict[Any, int]_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; non_visible_color _: str_ _ = 'white'_ 
 
-#####&nbsp;&nbsp;&nbsp;&nbsp; number_of_different_missing_values _: int_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; overestimation_color _: str_ _ = '#ee5540'_ 
 
-#####&nbsp;&nbsp;&nbsp;&nbsp; number_of_missing_values _: int_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; primary_color _: str_ _ = '#ed0400'_ 
 
-#####&nbsp;&nbsp;&nbsp;&nbsp; number_of_rows _: int_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; reference_data_color _: Optional[str]_ _ = None_ 
 
-#####&nbsp;&nbsp;&nbsp;&nbsp; share_of_missing_values _: float_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; secondary_color _: str_ _ = '#4d4d4d'_ 
 
-#####&nbsp;&nbsp;&nbsp;&nbsp; column_name _: str_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; underestimation_color _: str_ _ = '#6574f7'_ 
 
-#####&nbsp;&nbsp;&nbsp;&nbsp; color_sequence _: Sequence[str]_ _ = ('#ed0400', '#0a5f38', '#6c3461', '#71aa34', '#d8dcd6', '#6b8ba4')_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; vertical_lines _: str_ _ = 'green'_ 
 
-#####&nbsp;&nbsp;&nbsp;&nbsp; current_data_color _: Optional[str]_ _ = None_ 
-
-#####&nbsp;&nbsp;&nbsp;&nbsp; fill_color _: str_ _ = 'LightGreen'_ 
-
-#####&nbsp;&nbsp;&nbsp;&nbsp; heatmap _: str_ _ = 'RdBu_r'_ 
-
-#####&nbsp;&nbsp;&nbsp;&nbsp; majority_color _: str_ _ = '#1acc98'_ 
-
-#####&nbsp;&nbsp;&nbsp;&nbsp; non_visible_color _: str_ _ = 'white'_ 
-
-#####&nbsp;&nbsp;&nbsp;&nbsp; overestimation_color _: str_ _ = '#ee5540'_ 
-
-#####&nbsp;&nbsp;&nbsp;&nbsp; primary_color _: str_ _ = '#ed0400'_ 
-
-#####&nbsp;&nbsp;&nbsp;&nbsp; reference_data_color _: Optional[str]_ _ = None_ 
-
-#####&nbsp;&nbsp;&nbsp;&nbsp; secondary_color _: str_ _ = '#4d4d4d'_ 
-
-#####&nbsp;&nbsp;&nbsp;&nbsp; underestimation_color _: str_ _ = '#6574f7'_ 
-
-#####&nbsp;&nbsp;&nbsp;&nbsp; vertical_lines _: str_ _ = 'green'_ 
-
-#####&nbsp;&nbsp;&nbsp;&nbsp; zero_line_color _: str_ _ = 'green'_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; zero_line_color _: str_ _ = 'green'_ 
 
 #### Methods: 
 
-#####&nbsp;&nbsp;&nbsp;&nbsp; generate_metrics(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
+##### &nbsp;&nbsp;&nbsp;&nbsp; get_current_data_color()
 
-#####&nbsp;&nbsp;&nbsp;&nbsp; get_target_prediction_data(data: DataFrame, column_mapping: [ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping))
-
-#####&nbsp;&nbsp;&nbsp;&nbsp; calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
-
-#####&nbsp;&nbsp;&nbsp;&nbsp; calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
-
-#####&nbsp;&nbsp;&nbsp;&nbsp; calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
-
-#####&nbsp;&nbsp;&nbsp;&nbsp; get_current_data_color()
-
-#####&nbsp;&nbsp;&nbsp;&nbsp; get_reference_data_color()
+##### &nbsp;&nbsp;&nbsp;&nbsp; get_reference_data_color()
 
 ### _class _ DataDriftOptions(confidence: Optional[Union[float, Dict[str, float]]] = None, threshold: Optional[Union[float, Dict[str, float]]] = None, drift_share: float = 0.5, nbinsx: Union[int, Dict[str, int]] = 10, xbins: Optional[Dict[str, int]] = None, feature_stattest_func: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest), Dict[str, Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]]] = None, all_features_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, cat_features_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, num_features_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, per_feature_stattest: Optional[Dict[str, Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]] = None, cat_target_threshold: Optional[float] = None, num_target_threshold: Optional[float] = None, cat_target_stattest_func: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, num_target_stattest_func: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None)
 Bases: `object`
@@ -150,43 +118,43 @@ Configuration for Data Drift calculations.
 
 #### Attributes: 
 
-#####&nbsp;&nbsp;&nbsp;&nbsp; all_features_stattest _: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]_ _ = None_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; all_features_stattest _: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]_ _ = None_ 
 
-#####&nbsp;&nbsp;&nbsp;&nbsp; cat_features_stattest _: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]_ _ = None_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; cat_features_stattest _: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]_ _ = None_ 
 
-#####&nbsp;&nbsp;&nbsp;&nbsp; cat_target_stattest_func _: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]_ _ = None_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; cat_target_stattest_func _: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]_ _ = None_ 
 
-#####&nbsp;&nbsp;&nbsp;&nbsp; cat_target_threshold _: Optional[float]_ _ = None_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; cat_target_threshold _: Optional[float]_ _ = None_ 
 
-#####&nbsp;&nbsp;&nbsp;&nbsp; confidence _: Optional[Union[float, Dict[str, float]]]_ _ = None_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; confidence _: Optional[Union[float, Dict[str, float]]]_ _ = None_ 
 
-#####&nbsp;&nbsp;&nbsp;&nbsp; drift_share _: float_ _ = 0.5_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; drift_share _: float_ _ = 0.5_ 
 
-#####&nbsp;&nbsp;&nbsp;&nbsp; feature_stattest_func _: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest), Dict[str, Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]]]_ _ = None_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; feature_stattest_func _: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest), Dict[str, Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]]]_ _ = None_ 
 
-#####&nbsp;&nbsp;&nbsp;&nbsp; nbinsx _: Union[int, Dict[str, int]]_ _ = 10_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; nbinsx _: Union[int, Dict[str, int]]_ _ = 10_ 
 
-#####&nbsp;&nbsp;&nbsp;&nbsp; num_features_stattest _: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]_ _ = None_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; num_features_stattest _: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]_ _ = None_ 
 
-#####&nbsp;&nbsp;&nbsp;&nbsp; num_target_stattest_func _: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]_ _ = None_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; num_target_stattest_func _: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]_ _ = None_ 
 
-#####&nbsp;&nbsp;&nbsp;&nbsp; num_target_threshold _: Optional[float]_ _ = None_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; num_target_threshold _: Optional[float]_ _ = None_ 
 
-#####&nbsp;&nbsp;&nbsp;&nbsp; per_feature_stattest _: Optional[Dict[str, Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]]_ _ = None_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; per_feature_stattest _: Optional[Dict[str, Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]]_ _ = None_ 
 
-#####&nbsp;&nbsp;&nbsp;&nbsp; threshold _: Optional[Union[float, Dict[str, float]]]_ _ = None_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; threshold _: Optional[Union[float, Dict[str, float]]]_ _ = None_ 
 
-#####&nbsp;&nbsp;&nbsp;&nbsp; xbins _: Optional[Dict[str, int]]_ _ = None_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; xbins _: Optional[Dict[str, int]]_ _ = None_ 
 
 #### Methods: 
 
-#####&nbsp;&nbsp;&nbsp;&nbsp; as_dict()
+##### &nbsp;&nbsp;&nbsp;&nbsp; as_dict()
 
-#####&nbsp;&nbsp;&nbsp;&nbsp; get_feature_stattest_func(feature_name: str, feature_type: str)
+##### &nbsp;&nbsp;&nbsp;&nbsp; get_feature_stattest_func(feature_name: str, feature_type: str)
 
-#####&nbsp;&nbsp;&nbsp;&nbsp; get_nbinsx(feature_name: str)
+##### &nbsp;&nbsp;&nbsp;&nbsp; get_nbinsx(feature_name: str)
 
-#####&nbsp;&nbsp;&nbsp;&nbsp; get_threshold(feature_name: str)
+##### &nbsp;&nbsp;&nbsp;&nbsp; get_threshold(feature_name: str)
 
 ### _class _ QualityMetricsOptions(conf_interval_n_sigmas: int = 1, classification_threshold: float = 0.5, cut_quantile: Union[NoneType, Tuple[str, float], Dict[str, Tuple[str, float]]] = None)
 Bases: `object`
@@ -194,17 +162,17 @@ Bases: `object`
 
 #### Attributes: 
 
-#####&nbsp;&nbsp;&nbsp;&nbsp; classification_threshold _: float_ _ = 0.5_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; classification_threshold _: float_ _ = 0.5_ 
 
-#####&nbsp;&nbsp;&nbsp;&nbsp; conf_interval_n_sigmas _: int_ _ = 1_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; conf_interval_n_sigmas _: int_ _ = 1_ 
 
-#####&nbsp;&nbsp;&nbsp;&nbsp; cut_quantile _: Union[None, Tuple[str, float], Dict[str, Tuple[str, float]]]_ _ = None_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; cut_quantile _: Union[None, Tuple[str, float], Dict[str, Tuple[str, float]]]_ _ = None_ 
 
 #### Methods: 
 
-#####&nbsp;&nbsp;&nbsp;&nbsp; as_dict()
+##### &nbsp;&nbsp;&nbsp;&nbsp; as_dict()
 
-#####&nbsp;&nbsp;&nbsp;&nbsp; get_cut_quantile(feature_name: str)
+##### &nbsp;&nbsp;&nbsp;&nbsp; get_cut_quantile(feature_name: str)
 ## Module contents
 
 
@@ -216,6 +184,6 @@ Bases: `object`
 
 #### Methods: 
 
-#####&nbsp;&nbsp;&nbsp;&nbsp; add(options)
+##### &nbsp;&nbsp;&nbsp;&nbsp; add(options)
 
-#####&nbsp;&nbsp;&nbsp;&nbsp; get(options_type: Type[TypeParam])
+##### &nbsp;&nbsp;&nbsp;&nbsp; get(options_type: Type[TypeParam])
