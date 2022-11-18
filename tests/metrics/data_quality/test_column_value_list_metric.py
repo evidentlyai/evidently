@@ -263,9 +263,8 @@ def test_data_quality_value_list_metric_with_report(
     report = Report(metrics=[metric])
     report.run(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
     assert report.show()
-    json_result = report.json()
-    assert len(json_result) > 0
-    parsed_json_result = json.loads(json_result)
-    assert "metrics" in parsed_json_result
-    assert "ColumnValueListMetric" in parsed_json_result["metrics"]
-    assert json.loads(json_result)["metrics"]["ColumnValueListMetric"] == expected_json
+    result_json = report.json()
+    assert len(result_json) > 0
+    result = json.loads(result_json)
+    assert result["metrics"][0]["metric"] == "ColumnValueListMetric"
+    assert result["metrics"][0]["result"] == expected_json

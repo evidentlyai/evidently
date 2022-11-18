@@ -33,9 +33,14 @@ class ColumnValuePlot(Metric[ColumnValuePlotResults]):
 
     def calculate(self, data: InputData) -> ColumnValuePlotResults:
         if self.column_name not in data.current_data.columns:
-            raise ValueError(f"Column {self.column_name} should present in the dataset")
+            raise ValueError(f"Column '{self.column_name}' should present in the current dataset")
+
         if data.reference_data is None:
             raise ValueError("Reference data should be present")
+
+        if self.column_name not in data.reference_data.columns:
+            raise ValueError(f"Column '{self.column_name}' should present in the reference dataset")
+
         dataset_columns = process_columns(data.current_data, data.column_mapping)
         if not (
             self.column_name in dataset_columns.num_feature_names
@@ -73,6 +78,10 @@ class ColumnValuePlot(Metric[ColumnValuePlotResults]):
 
 @default_renderer(wrap_type=ColumnValuePlot)
 class ColumnValuePlotRenderer(MetricRenderer):
+    def render_json(self, obj: ColumnValuePlot) -> dict:
+        obj.get_result()
+        return {}
+
     def render_html(self, obj: ColumnValuePlot) -> List[BaseWidgetInfo]:
         result = obj.get_result()
         current_scatter = result.current_scatter

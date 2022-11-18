@@ -107,8 +107,6 @@ class TestSuite(Display):
         total_tests = len(self._inner_suite.context.test_results)
 
         return {
-            "version": evidently.__version__,
-            "datetime": datetime.now().isoformat(),
             "tests": test_results,
             "summary": {
                 "all_passed": bool(self),
@@ -117,7 +115,6 @@ class TestSuite(Display):
                 "failed_tests": counter["FAIL"],
                 "by_status": counter,
             },
-            "columns_info": dataclasses.asdict(self._columns_info),
         }
 
     def _build_dashboard_info(self):

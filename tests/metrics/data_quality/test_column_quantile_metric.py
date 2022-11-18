@@ -135,9 +135,8 @@ def test_column_quantile_metric_with_report(
     report = Report(metrics=[metric])
     report.run(current_data=current, reference_data=reference, column_mapping=column_mapping)
     assert report.show()
-    json_result = report.json()
-    assert len(json_result) > 0
-    parsed_json_result = json.loads(json_result)
-    assert "metrics" in parsed_json_result
-    assert "ColumnQuantileMetric" in parsed_json_result["metrics"]
-    assert json.loads(json_result)["metrics"]["ColumnQuantileMetric"] == expected_json
+    result_json = report.json()
+    assert len(result_json) > 0
+    result = json.loads(result_json)
+    assert result["metrics"][0]["metric"] == "ColumnQuantileMetric"
+    assert result["metrics"][0]["result"] == expected_json
