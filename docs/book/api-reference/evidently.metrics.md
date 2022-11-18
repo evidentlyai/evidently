@@ -1350,15 +1350,15 @@ Bases: `object`
 
 #### Attributes: 
 
-##### labels _: Sequence[Union[str, int]]_ 
+#####&nbsp;&nbsp;&nbsp;&nbsp; labels _: Sequence[Union[str, int]]_ 
 
-##### values _: list_ 
+#####&nbsp;&nbsp;&nbsp;&nbsp; values _: list_ 
 
-##### exception _: BaseException_ 
+#####&nbsp;&nbsp;&nbsp;&nbsp; exception _: BaseException_ 
 
 #### Methods: 
 
-##### generate_metrics(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
+#####&nbsp;&nbsp;&nbsp;&nbsp; generate_metrics(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
 ### _class _ InputData(reference_data: Optional[pandas.core.frame.DataFrame], current_data: pandas.core.frame.DataFrame, column_mapping: [ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping), data_definition: [DataDefinition](evidently.utils.md#evidently.utils.data_preprocessing.DataDefinition))
 Bases: `object`
@@ -1366,13 +1366,13 @@ Bases: `object`
 
 #### Attributes: 
 
-##### column_mapping _: [ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping)_ 
+#####&nbsp;&nbsp;&nbsp;&nbsp; column_mapping _: [ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping)_ 
 
-##### current_data _: DataFrame_ 
+#####&nbsp;&nbsp;&nbsp;&nbsp; current_data _: DataFrame_ 
 
-##### data_definition _: [DataDefinition](evidently.utils.md#evidently.utils.data_preprocessing.DataDefinition)_ 
+#####&nbsp;&nbsp;&nbsp;&nbsp; data_definition _: [DataDefinition](evidently.utils.md#evidently.utils.data_preprocessing.DataDefinition)_ 
 
-##### reference_data _: Optional[DataFrame]_ 
+#####&nbsp;&nbsp;&nbsp;&nbsp; reference_data _: Optional[DataFrame]_ 
 
 #### Methods: 
 
@@ -1382,19 +1382,19 @@ Bases: `Generic`[`TResult`]
 
 #### Attributes: 
 
-##### context _ = None_ 
+#####&nbsp;&nbsp;&nbsp;&nbsp; context _ = None_ 
 
 #### Methods: 
 
-##### _abstract _ calculate(data: InputData)
+#####&nbsp;&nbsp;&nbsp;&nbsp; _abstract _ calculate(data: InputData)
 
-##### get_id()
+#####&nbsp;&nbsp;&nbsp;&nbsp; get_id()
 
-##### get_parameters()
+#####&nbsp;&nbsp;&nbsp;&nbsp; get_parameters()
 
-##### get_result()
+#####&nbsp;&nbsp;&nbsp;&nbsp; get_result()
 
-##### set_context(context)
+#####&nbsp;&nbsp;&nbsp;&nbsp; set_context(context)
 
 ### generate_column_metrics(metric_class: Type[Metric], columns: Optional[Union[str, list]] = None, parameters: Optional[Dict] = None)
 Function for generating metrics for columns

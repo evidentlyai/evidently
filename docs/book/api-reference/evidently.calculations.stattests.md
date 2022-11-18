@@ -30,9 +30,9 @@ Bases: `object`
 
 #### Attributes: 
 
-##### labels _: Sequence[Union[str, int]]_ 
+#####&nbsp;&nbsp;&nbsp;&nbsp; labels _: Sequence[Union[str, int]]_ 
 
-##### values _: list_ 
+#####&nbsp;&nbsp;&nbsp;&nbsp; values _: list_ 
 
 #### Methods: 
 
@@ -42,15 +42,15 @@ Bases: `object`
 
 #### Attributes: 
 
-##### allowed_feature_types _: List[str]_ 
+#####&nbsp;&nbsp;&nbsp;&nbsp; allowed_feature_types _: List[str]_ 
 
-##### default_threshold _: float_ _ = 0.05_ 
+#####&nbsp;&nbsp;&nbsp;&nbsp; default_threshold _: float_ _ = 0.05_ 
 
-##### display_name _: str_ 
+#####&nbsp;&nbsp;&nbsp;&nbsp; display_name _: str_ 
 
-##### func _: Callable[[Series, Series, str, float], Tuple[float, bool]]_ 
+#####&nbsp;&nbsp;&nbsp;&nbsp; func _: Callable[[Series, Series, str, float], Tuple[float, bool]]_ 
 
-##### name _: str_ 
+#####&nbsp;&nbsp;&nbsp;&nbsp; name _: str_ 
 
 #### Methods: 
 
@@ -68,11 +68,11 @@ Bases: `object`
 
 #### Attributes: 
 
-##### actual_threshold _: float_ 
+#####&nbsp;&nbsp;&nbsp;&nbsp; actual_threshold _: float_ 
 
-##### drift_score _: float_ 
+#####&nbsp;&nbsp;&nbsp;&nbsp; drift_score _: float_ 
 
-##### drifted _: bool_ 
+#####&nbsp;&nbsp;&nbsp;&nbsp; drifted _: bool_ 
 
 #### Methods: 
 
