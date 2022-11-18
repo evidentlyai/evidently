@@ -1344,31 +1344,31 @@
 ## Submodules
 
 
-### _class_ ErrorResult(exception: BaseException)
+### _class _ ErrorResult(exception: BaseException)
 Bases: `object`
 
 
-#### exception(_: BaseExceptio_ )
+#### exception _: BaseException_ 
 
-### _class_ InputData(reference_data: Optional[pandas.core.frame.DataFrame], current_data: pandas.core.frame.DataFrame, column_mapping: [ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping), data_definition: [DataDefinition](evidently.utils.md#evidently.utils.data_preprocessing.DataDefinition))
+### _class _ InputData(reference_data: Optional[pandas.core.frame.DataFrame], current_data: pandas.core.frame.DataFrame, column_mapping: [ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping), data_definition: [DataDefinition](evidently.utils.md#evidently.utils.data_preprocessing.DataDefinition))
 Bases: `object`
 
 
-#### column_mapping(_: [ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping_ )
+#### column_mapping _: [ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping)_ 
 
-#### current_data(_: DataFram_ )
+#### current_data _: DataFrame_ 
 
-#### data_definition(_: [DataDefinition](evidently.utils.md#evidently.utils.data_preprocessing.DataDefinition_ )
+#### data_definition _: [DataDefinition](evidently.utils.md#evidently.utils.data_preprocessing.DataDefinition)_ 
 
-#### reference_data(_: Optional[DataFrame_ )
+#### reference_data _: Optional[DataFrame]_ 
 
-### _class_ Metric()
+### _class _ Metric()
 Bases: `Generic`[`TResult`]
 
 
-#### _abstract_ calculate(data: InputData)
+#### _abstract _ calculate(data: InputData)
 
-#### context(_ = Non_ )
+#### context _ = None_ 
 
 #### get_id()
 

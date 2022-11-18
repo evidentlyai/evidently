@@ -3,59 +3,59 @@
 ## Submodules
 
 
-### _class_ BinaryClassificationTestPreset(prediction_type: str, threshold: float = 0.5)
+### _class _ BinaryClassificationTestPreset(prediction_type: str, threshold: float = 0.5)
 Bases: `TestPreset`
 
 
 #### generate_tests(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
-### _class_ BinaryClassificationTopKTestPreset(k: Union[float, int])
+### _class _ BinaryClassificationTopKTestPreset(k: Union[float, int])
 Bases: `TestPreset`
 
 
 #### generate_tests(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
-### _class_ MulticlassClassificationTestPreset(prediction_type: str)
+### _class _ MulticlassClassificationTestPreset(prediction_type: str)
 Bases: `TestPreset`
 
 
 #### generate_tests(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
-### _class_ DataDriftTestPreset()
+### _class _ DataDriftTestPreset()
 Bases: `TestPreset`
 
 
 #### generate_tests(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
-### _class_ DataQualityTestPreset()
+### _class _ DataQualityTestPreset()
 Bases: `TestPreset`
 
 
 #### generate_tests(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
-### _class_ DataStabilityTestPreset()
+### _class _ DataStabilityTestPreset()
 Bases: `TestPreset`
 
 
 #### generate_tests(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
-### _class_ NoTargetPerformanceTestPreset(columns: Optional[List[str]] = None)
+### _class _ NoTargetPerformanceTestPreset(columns: Optional[List[str]] = None)
 Bases: `TestPreset`
 
 
-#### columns(_: List[str_ )
+#### columns _: List[str]_ 
 
 #### generate_tests(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
-### _class_ RegressionTestPreset()
+### _class _ RegressionTestPreset()
 Bases: `TestPreset`
 
 
 #### generate_tests(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
-### _class_ TestPreset()
+### _class _ TestPreset()
 Bases: `object`
 
 
-#### _abstract_ generate_tests(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
+#### _abstract _ generate_tests(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 ## Module contents

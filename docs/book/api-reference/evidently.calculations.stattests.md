@@ -24,41 +24,41 @@ Perform the two-sample Cramér-von Mises test
 
 
 
-### _class_ CramerVonMisesResult(statistic, pvalue)
+### _class _ CramerVonMisesResult(statistic, pvalue)
 Bases: `object`
 
 
-### _class_ StatTest(name: str, display_name: str, func: Callable[[pandas.core.series.Series, pandas.core.series.Series, str, float], Tuple[float, bool]], allowed_feature_types: List[str], default_threshold: float = 0.05)
+### _class _ StatTest(name: str, display_name: str, func: Callable[[pandas.core.series.Series, pandas.core.series.Series, str, float], Tuple[float, bool]], allowed_feature_types: List[str], default_threshold: float = 0.05)
 Bases: `object`
 
 
-#### allowed_feature_types(_: List[str_ )
+#### allowed_feature_types _: List[str]_ 
 
-#### default_threshold(_: floa_ _ = 0.0_ )
+#### default_threshold _: float_ _ = 0.05_ 
 
-#### display_name(_: st_ )
+#### display_name _: str_ 
 
-#### func(_: Callable[[Series, Series, str, float], Tuple[float, bool]_ )
+#### func _: Callable[[Series, Series, str, float], Tuple[float, bool]]_ 
 
-#### name(_: st_ )
+#### name _: str_ 
 
-### _exception_ StatTestInvalidFeatureTypeError(stattest_name: str, feature_type: str)
+### _exception _ StatTestInvalidFeatureTypeError(stattest_name: str, feature_type: str)
 Bases: `ValueError`
 
 
-### _exception_ StatTestNotFoundError(stattest_name: str)
+### _exception _ StatTestNotFoundError(stattest_name: str)
 Bases: `ValueError`
 
 
-### _class_ StatTestResult(drift_score: float, drifted: bool, actual_threshold: float)
+### _class _ StatTestResult(drift_score: float, drifted: bool, actual_threshold: float)
 Bases: `object`
 
 
-#### actual_threshold(_: floa_ )
+#### actual_threshold _: float_ 
 
-#### drift_score(_: floa_ )
+#### drift_score _: float_ 
 
-#### drifted(_: boo_ )
+#### drifted _: bool_ 
 
 ### get_stattest(reference_data: Series, current_data: Series, feature_type: str, stattest_func: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], StatTest]])
 

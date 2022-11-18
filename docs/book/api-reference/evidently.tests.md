@@ -3,13 +3,13 @@
 ## Submodules
 
 
-### _class_ BaseCheckValueTest(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ BaseCheckValueTest(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseConditionsTest`
 
 Base class for all tests with checking a value condition
 
 
-#### _abstract_ calculate_value_for_test()
+#### _abstract _ calculate_value_for_test()
 Method for getting the checking value.
 
 Define it in a child class
@@ -19,7 +19,7 @@ Define it in a child class
 
 #### get_condition()
 
-#### _abstract_ get_description(value: Union[float, int])
+#### _abstract _ get_description(value: Union[float, int])
 Method for getting a description that we can use.
 The description can use the checked value.
 
@@ -28,89 +28,89 @@ Define it in a child class
 
 #### groups()
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ BaseConditionsTest(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ BaseConditionsTest(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `Test`, `ABC`
 
 Base class for all tests with a condition
 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
-### _class_ GroupData(id: str, title: str, description: str, sort_index: int = 0, severity: Optional[str] = None)
+### _class _ GroupData(id: str, title: str, description: str, sort_index: int = 0, severity: Optional[str] = None)
 Bases: `object`
 
 
-#### description(_: st_ )
+#### description _: str_ 
 
-#### id(_: st_ )
+#### id _: str_ 
 
-#### severity(_: Optional[str_ _ = Non_ )
+#### severity _: Optional[str]_ _ = None_ 
 
-#### sort_index(_: in_ _ = _ )
+#### sort_index _: int_ _ = 0_ 
 
-#### title(_: st_ )
+#### title _: str_ 
 
-### _class_ GroupTypeData(id: str, title: str, values: List[evidently.tests.base_test.GroupData] = <factory>)
+### _class _ GroupTypeData(id: str, title: str, values: List[evidently.tests.base_test.GroupData] = <factory>)
 Bases: `object`
 
 
 #### add_value(data: GroupData)
 
-#### id(_: st_ )
+#### id _: str_ 
 
-#### title(_: st_ )
+#### title _: str_ 
 
-#### values(_: List[GroupData_ )
+#### values _: List[GroupData]_ 
 
-### _class_ GroupingTypes()
+### _class _ GroupingTypes()
 Bases: `object`
 
 
-#### ByClass(_ = GroupTypeData(id='by_class', title='By class', values=[]_ )
+#### ByClass _ = GroupTypeData(id='by_class', title='By class', values=[])_ 
 
-#### ByFeature(_ = GroupTypeData(id='by_feature', title='By feature', values=[GroupData(id='no group', title='Dataset-level tests', description='Some tests cannot be grouped by feature', sort_index=0, severity=None)]_ )
+#### ByFeature _ = GroupTypeData(id='by_feature', title='By feature', values=[GroupData(id='no group', title='Dataset-level tests', description='Some tests cannot be grouped by feature', sort_index=0, severity=None)])_ 
 
-#### TestGroup(_ = GroupTypeData(id='test_group', title='By test group', values=[GroupData(id='no group', title='Ungrouped', description='Some tests don’t belong to any group under the selected condition', sort_index=0, severity=None), GroupData(id='classification', title='Classification', description='', sort_index=0, severity=None), GroupData(id='data_drift', title='Data Drift', description='', sort_index=0, severity=None), GroupData(id='data_integrity', title='Data Integrity', description='', sort_index=0, severity=None), GroupData(id='data_quality', title='Data Quality', description='', sort_index=0, severity=None), GroupData(id='regression', title='Regression', description='', sort_index=0, severity=None)]_ )
+#### TestGroup _ = GroupTypeData(id='test_group', title='By test group', values=[GroupData(id='no group', title='Ungrouped', description='Some tests don’t belong to any group under the selected condition', sort_index=0, severity=None), GroupData(id='classification', title='Classification', description='', sort_index=0, severity=None), GroupData(id='data_drift', title='Data Drift', description='', sort_index=0, severity=None), GroupData(id='data_integrity', title='Data Integrity', description='', sort_index=0, severity=None), GroupData(id='data_quality', title='Data Quality', description='', sort_index=0, severity=None), GroupData(id='regression', title='Regression', description='', sort_index=0, severity=None)])_ 
 
-#### TestType(_ = GroupTypeData(id='test_type', title='By test type', values=[]_ )
+#### TestType _ = GroupTypeData(id='test_type', title='By test type', values=[])_ 
 
-### _class_ Test()
+### _class _ Test()
 Bases: `object`
 
 all fields in test class with type that is subclass of Metric would be used as dependencies of test.
 
 
-#### _abstract_ check()
+#### _abstract _ check()
 
-#### context(_ = Non_ )
+#### context _ = None_ 
 
 #### get_result()
 
-#### group(_: st_ )
+#### group _: str_ 
 
-#### name(_: st_ )
+#### name _: str_ 
 
 #### set_context(context)
 
-### _class_ TestResult(name: str, description: str, status: str, groups: Dict[str, str] = <factory>)
+### _class _ TestResult(name: str, description: str, status: str, groups: Dict[str, str] = <factory>)
 Bases: `object`
 
 
-#### ERROR(_ = 'ERROR_ )
+#### ERROR _ = 'ERROR'_ 
 
-#### FAIL(_ = 'FAIL_ )
+#### FAIL _ = 'FAIL'_ 
 
-#### SKIPPED(_ = 'SKIPPED_ )
+#### SKIPPED _ = 'SKIPPED'_ 
 
-#### SUCCESS(_ = 'SUCCESS_ )
+#### SUCCESS _ = 'SUCCESS'_ 
 
-#### WARNING(_ = 'WARNING_ )
+#### WARNING _ = 'WARNING'_ 
 
-#### description(_: st_ )
+#### description _: str_ 
 
-#### groups(_: Dict[str, str_ )
+#### groups _: Dict[str, str]_ 
 
 #### is_passed()
 
@@ -122,13 +122,13 @@ Bases: `object`
 
 #### mark_as_warning(description: Optional[str] = None)
 
-#### name(_: st_ )
+#### name _: str_ 
 
 #### set_status(status: str, description: Optional[str] = None)
 
-#### status(_: st_ )
+#### status _: str_ 
 
-### _class_ TestValueCondition(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestValueCondition(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `object`
 
 Class for processing a value conditions - should it be less, greater than, equals and so on.
@@ -140,11 +140,11 @@ An object of the class stores specified conditions and can be used for checking 
 
 #### check_value(value: Union[float, int])
 
-#### eq(_: Optional[Union[float, int]_ _ = Non_ )
+#### eq _: Optional[Union[float, int]]_ _ = None_ 
 
-#### gt(_: Optional[Union[float, int]_ _ = Non_ )
+#### gt _: Optional[Union[float, int]]_ _ = None_ 
 
-#### gte(_: Optional[Union[float, int]_ _ = Non_ )
+#### gte _: Optional[Union[float, int]]_ _ = None_ 
 
 #### has_condition()
 Checks if we have a condition in the object and returns True in this case.
@@ -152,25 +152,25 @@ Checks if we have a condition in the object and returns True in this case.
 If we have no conditions - returns False.
 
 
-#### is_in(_: Optional[List[Union[float, int, str, bool]]_ _ = Non_ )
+#### is_in _: Optional[List[Union[float, int, str, bool]]]_ _ = None_ 
 
-#### lt(_: Optional[Union[float, int]_ _ = Non_ )
+#### lt _: Optional[Union[float, int]]_ _ = None_ 
 
-#### lte(_: Optional[Union[float, int]_ _ = Non_ )
+#### lte _: Optional[Union[float, int]]_ _ = None_ 
 
-#### not_eq(_: Optional[Union[float, int]_ _ = Non_ )
+#### not_eq _: Optional[Union[float, int]]_ _ = None_ 
 
-#### not_in(_: Optional[List[Union[float, int, str, bool]]_ _ = Non_ )
+#### not_in _: Optional[List[Union[float, int, str, bool]]]_ _ = None_ 
 
 ### generate_column_tests(test_class: Type[Test], columns: Optional[Union[str, list]] = None, parameters: Optional[Dict] = None)
 Function for generating tests for columns
 
 
-### _class_ ByClassClassificationTest(label: str, threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ ByClassClassificationTest(label: str, threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseCheckValueTest`, `ABC`
 
 
-#### by_class_metric(_: [ClassificationQualityByClass](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_class_metric.ClassificationQualityByClass_ )
+#### by_class_metric _: [ClassificationQualityByClass](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_class_metric.ClassificationQualityByClass)_ 
 
 #### calculate_value_for_test()
 Method for getting the checking value.
@@ -178,19 +178,19 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### conf_matrix(_: [ClassificationConfusionMatrix](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrix_ )
+#### conf_matrix _: [ClassificationConfusionMatrix](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrix)_ 
 
-#### dummy_metric(_: [ClassificationDummyMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetric_ )
+#### dummy_metric _: [ClassificationDummyMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetric)_ 
 
 #### get_condition()
 
-#### _abstract_ get_value(result: dict)
+#### _abstract _ get_value(result: dict)
 
-#### group(_: st_ _ = 'classification_ )
+#### group _: str_ _ = 'classification'_ 
 
-#### metric(_: [ClassificationQualityMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetric_ )
+#### metric _: [ClassificationQualityMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetric)_ 
 
-### _class_ SimpleClassificationTest(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ SimpleClassificationTest(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseCheckValueTest`
 
 
@@ -200,19 +200,19 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### dummy_metric(_: [ClassificationDummyMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetric_ )
+#### dummy_metric _: [ClassificationDummyMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetric)_ 
 
 #### get_condition()
 
-#### _abstract_ get_value(result: [DatasetClassificationQuality](evidently.calculations.md#evidently.calculations.classification_performance.DatasetClassificationQuality))
+#### _abstract _ get_value(result: [DatasetClassificationQuality](evidently.calculations.md#evidently.calculations.classification_performance.DatasetClassificationQuality))
 
-#### group(_: st_ _ = 'classification_ )
+#### group _: str_ _ = 'classification'_ 
 
-#### metric(_: [ClassificationQualityMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetric_ )
+#### metric _: [ClassificationQualityMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetric)_ 
 
-#### name(_: st_ )
+#### name _: str_ 
 
-### _class_ SimpleClassificationTestTopK(threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ SimpleClassificationTestTopK(threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `SimpleClassificationTest`, `ABC`
 
 
@@ -222,23 +222,23 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### conf_matrix(_: [ClassificationConfusionMatrix](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrix_ )
+#### conf_matrix _: [ClassificationConfusionMatrix](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrix)_ 
 
-#### dummy_metric(_: [ClassificationDummyMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetric_ )
+#### dummy_metric _: [ClassificationDummyMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetric)_ 
 
 #### get_condition()
 
-#### metric(_: [ClassificationQualityMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetric_ )
+#### metric _: [ClassificationQualityMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetric)_ 
 
-### _class_ TestAccuracyScore(threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestAccuracyScore(threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `SimpleClassificationTestTopK`
 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
-#### conf_matrix(_: [ClassificationConfusionMatrix](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrix_ )
+#### conf_matrix _: [ClassificationConfusionMatrix](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrix)_ 
 
-#### dummy_metric(_: [ClassificationDummyMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetric_ )
+#### dummy_metric _: [ClassificationDummyMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetric)_ 
 
 #### get_description(value: Union[float, int])
 Method for getting a description that we can use.
@@ -249,23 +249,23 @@ Define it in a child class
 
 #### get_value(result: [DatasetClassificationQuality](evidently.calculations.md#evidently.calculations.classification_performance.DatasetClassificationQuality))
 
-#### metric(_: [ClassificationQualityMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetric_ )
+#### metric _: [ClassificationQualityMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetric)_ 
 
-#### name(_: st_ _ = 'Accuracy Score_ )
+#### name _: str_ _ = 'Accuracy Score'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestAccuracyScoreRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestAccuracyScoreRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestAccuracyScore)
 
 #### render_json(obj: TestAccuracyScore)
 
-### _class_ TestF1ByClass(label: str, threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestF1ByClass(label: str, threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `ByClassClassificationTest`
 
 
@@ -278,27 +278,27 @@ Define it in a child class
 
 #### get_value(result: dict)
 
-#### name(_: st_ _ = 'F1 Score by Class_ )
+#### name _: str_ _ = 'F1 Score by Class'_ 
 
-### _class_ TestF1ByClassRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestF1ByClassRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestF1ByClass)
 
 #### render_json(obj: TestF1ByClass)
 
-### _class_ TestF1Score(threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestF1Score(threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `SimpleClassificationTestTopK`
 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
-#### conf_matrix(_: [ClassificationConfusionMatrix](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrix_ )
+#### conf_matrix _: [ClassificationConfusionMatrix](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrix)_ 
 
-#### dummy_metric(_: [ClassificationDummyMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetric_ )
+#### dummy_metric _: [ClassificationDummyMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetric)_ 
 
 #### get_description(value: Union[float, int])
 Method for getting a description that we can use.
@@ -309,31 +309,31 @@ Define it in a child class
 
 #### get_value(result: [DatasetClassificationQuality](evidently.calculations.md#evidently.calculations.classification_performance.DatasetClassificationQuality))
 
-#### metric(_: [ClassificationQualityMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetric_ )
+#### metric _: [ClassificationQualityMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetric)_ 
 
-#### name(_: st_ _ = 'F1 Score_ )
+#### name _: str_ _ = 'F1 Score'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestF1ScoreRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestF1ScoreRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestF1Score)
 
 #### render_json(obj: TestF1Score)
 
-### _class_ TestFNR(threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestFNR(threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `SimpleClassificationTestTopK`
 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
-#### conf_matrix(_: [ClassificationConfusionMatrix](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrix_ )
+#### conf_matrix _: [ClassificationConfusionMatrix](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrix)_ 
 
-#### dummy_metric(_: [ClassificationDummyMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetric_ )
+#### dummy_metric _: [ClassificationDummyMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetric)_ 
 
 #### get_condition()
 
@@ -346,31 +346,31 @@ Define it in a child class
 
 #### get_value(result: [DatasetClassificationQuality](evidently.calculations.md#evidently.calculations.classification_performance.DatasetClassificationQuality))
 
-#### metric(_: [ClassificationQualityMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetric_ )
+#### metric _: [ClassificationQualityMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetric)_ 
 
-#### name(_: st_ _ = 'False Negative Rate_ )
+#### name _: str_ _ = 'False Negative Rate'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestFNRRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestFNRRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestF1Score)
 
 #### render_json(obj: TestFNR)
 
-### _class_ TestFPR(threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestFPR(threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `SimpleClassificationTestTopK`
 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
-#### conf_matrix(_: [ClassificationConfusionMatrix](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrix_ )
+#### conf_matrix _: [ClassificationConfusionMatrix](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrix)_ 
 
-#### dummy_metric(_: [ClassificationDummyMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetric_ )
+#### dummy_metric _: [ClassificationDummyMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetric)_ 
 
 #### get_condition()
 
@@ -383,29 +383,29 @@ Define it in a child class
 
 #### get_value(result: [DatasetClassificationQuality](evidently.calculations.md#evidently.calculations.classification_performance.DatasetClassificationQuality))
 
-#### metric(_: [ClassificationQualityMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetric_ )
+#### metric _: [ClassificationQualityMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetric)_ 
 
-#### name(_: st_ _ = 'False Positive Rate_ )
+#### name _: str_ _ = 'False Positive Rate'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestFPRRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestFPRRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestF1Score)
 
 #### render_json(obj: TestFPR)
 
-### _class_ TestLogLoss(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestLogLoss(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `SimpleClassificationTest`
 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
-#### dummy_metric(_: [ClassificationDummyMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetric_ )
+#### dummy_metric _: [ClassificationDummyMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetric)_ 
 
 #### get_condition()
 
@@ -418,23 +418,23 @@ Define it in a child class
 
 #### get_value(result: [DatasetClassificationQuality](evidently.calculations.md#evidently.calculations.classification_performance.DatasetClassificationQuality))
 
-#### metric(_: [ClassificationQualityMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetric_ )
+#### metric _: [ClassificationQualityMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetric)_ 
 
-#### name(_: st_ _ = 'Logarithmic Loss_ )
+#### name _: str_ _ = 'Logarithmic Loss'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestLogLossRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestLogLossRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestLogLoss)
 
 #### render_json(obj: TestLogLoss)
 
-### _class_ TestPrecisionByClass(label: str, threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestPrecisionByClass(label: str, threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `ByClassClassificationTest`
 
 
@@ -447,27 +447,27 @@ Define it in a child class
 
 #### get_value(result: dict)
 
-#### name(_: st_ _ = 'Precision Score by Class_ )
+#### name _: str_ _ = 'Precision Score by Class'_ 
 
-### _class_ TestPrecisionByClassRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestPrecisionByClassRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestPrecisionByClass)
 
 #### render_json(obj: TestPrecisionByClass)
 
-### _class_ TestPrecisionScore(threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestPrecisionScore(threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `SimpleClassificationTestTopK`
 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
-#### conf_matrix(_: [ClassificationConfusionMatrix](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrix_ )
+#### conf_matrix _: [ClassificationConfusionMatrix](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrix)_ 
 
-#### dummy_metric(_: [ClassificationDummyMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetric_ )
+#### dummy_metric _: [ClassificationDummyMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetric)_ 
 
 #### get_description(value: Union[float, int])
 Method for getting a description that we can use.
@@ -478,23 +478,23 @@ Define it in a child class
 
 #### get_value(result: [DatasetClassificationQuality](evidently.calculations.md#evidently.calculations.classification_performance.DatasetClassificationQuality))
 
-#### metric(_: [ClassificationQualityMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetric_ )
+#### metric _: [ClassificationQualityMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetric)_ 
 
-#### name(_: st_ _ = 'Precision Score_ )
+#### name _: str_ _ = 'Precision Score'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestPrecisionScoreRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestPrecisionScoreRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestPrecisionScore)
 
 #### render_json(obj: TestPrecisionScore)
 
-### _class_ TestRecallByClass(label: str, threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestRecallByClass(label: str, threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `ByClassClassificationTest`
 
 
@@ -507,27 +507,27 @@ Define it in a child class
 
 #### get_value(result: dict)
 
-#### name(_: st_ _ = 'Recall Score by Class_ )
+#### name _: str_ _ = 'Recall Score by Class'_ 
 
-### _class_ TestRecallByClassRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestRecallByClassRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestRecallByClass)
 
 #### render_json(obj: TestRecallByClass)
 
-### _class_ TestRecallScore(threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestRecallScore(threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `SimpleClassificationTestTopK`
 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
-#### conf_matrix(_: [ClassificationConfusionMatrix](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrix_ )
+#### conf_matrix _: [ClassificationConfusionMatrix](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrix)_ 
 
-#### dummy_metric(_: [ClassificationDummyMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetric_ )
+#### dummy_metric _: [ClassificationDummyMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetric)_ 
 
 #### get_description(value: Union[float, int])
 Method for getting a description that we can use.
@@ -538,23 +538,23 @@ Define it in a child class
 
 #### get_value(result: [DatasetClassificationQuality](evidently.calculations.md#evidently.calculations.classification_performance.DatasetClassificationQuality))
 
-#### metric(_: [ClassificationQualityMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetric_ )
+#### metric _: [ClassificationQualityMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetric)_ 
 
-#### name(_: st_ _ = 'Recall Score_ )
+#### name _: str_ _ = 'Recall Score'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestRecallScoreRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestRecallScoreRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestRecallScore)
 
 #### render_json(obj: TestRecallScore)
 
-### _class_ TestRocAuc(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestRocAuc(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `SimpleClassificationTest`
 
 
@@ -567,29 +567,29 @@ Define it in a child class
 
 #### get_value(result: [DatasetClassificationQuality](evidently.calculations.md#evidently.calculations.classification_performance.DatasetClassificationQuality))
 
-#### name(_: st_ _ = 'ROC AUC Score_ )
+#### name _: str_ _ = 'ROC AUC Score'_ 
 
-#### roc_curve(_: [ClassificationRocCurve](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.roc_curve_metric.ClassificationRocCurve_ )
+#### roc_curve _: [ClassificationRocCurve](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.roc_curve_metric.ClassificationRocCurve)_ 
 
-### _class_ TestRocAucRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestRocAucRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestRocAuc)
 
 #### render_json(obj: TestRocAuc)
 
-### _class_ TestTNR(threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestTNR(threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `SimpleClassificationTestTopK`
 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
-#### conf_matrix(_: [ClassificationConfusionMatrix](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrix_ )
+#### conf_matrix _: [ClassificationConfusionMatrix](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrix)_ 
 
-#### dummy_metric(_: [ClassificationDummyMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetric_ )
+#### dummy_metric _: [ClassificationDummyMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetric)_ 
 
 #### get_description(value: Union[float, int])
 Method for getting a description that we can use.
@@ -600,31 +600,31 @@ Define it in a child class
 
 #### get_value(result: [DatasetClassificationQuality](evidently.calculations.md#evidently.calculations.classification_performance.DatasetClassificationQuality))
 
-#### metric(_: [ClassificationQualityMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetric_ )
+#### metric _: [ClassificationQualityMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetric)_ 
 
-#### name(_: st_ _ = 'True Negative Rate_ )
+#### name _: str_ _ = 'True Negative Rate'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestTNRRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestTNRRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestF1Score)
 
 #### render_json(obj: TestTNR)
 
-### _class_ TestTPR(threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestTPR(threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `SimpleClassificationTestTopK`
 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
-#### conf_matrix(_: [ClassificationConfusionMatrix](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrix_ )
+#### conf_matrix _: [ClassificationConfusionMatrix](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrix)_ 
 
-#### dummy_metric(_: [ClassificationDummyMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetric_ )
+#### dummy_metric _: [ClassificationDummyMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetric)_ 
 
 #### get_description(value: Union[float, int])
 Method for getting a description that we can use.
@@ -635,33 +635,33 @@ Define it in a child class
 
 #### get_value(result: [DatasetClassificationQuality](evidently.calculations.md#evidently.calculations.classification_performance.DatasetClassificationQuality))
 
-#### metric(_: [ClassificationQualityMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetric_ )
+#### metric _: [ClassificationQualityMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetric)_ 
 
-#### name(_: st_ _ = 'True Positive Rate_ )
+#### name _: str_ _ = 'True Positive Rate'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestTPRRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestTPRRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestF1Score)
 
 #### render_json(obj: TestTPR)
 
-### _class_ BaseDataDriftMetricsTest(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None, options: Optional[[DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions)] = None)
+### _class _ BaseDataDriftMetricsTest(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None, options: Optional[[DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions)] = None)
 Bases: `BaseCheckValueTest`, `ABC`
 
 
 #### check()
 
-#### group(_: st_ _ = 'data_drift_ )
+#### group _: str_ _ = 'data_drift'_ 
 
-#### metric(_: [DataDriftTable](evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTable_ )
+#### metric _: [DataDriftTable](evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTable)_ 
 
-### _class_ TestAllFeaturesValueDrift()
+### _class _ TestAllFeaturesValueDrift()
 Bases: [`BaseGenerator`](evidently.utils.md#evidently.utils.generators.BaseGenerator)
 
 Create value drift tests for numeric and category features
@@ -669,47 +669,47 @@ Create value drift tests for numeric and category features
 
 #### generate(columns_info: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
-### _class_ TestColumnValueDrift(column_name: str, options: Optional[[DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions)] = None)
+### _class _ TestColumnValueDrift(column_name: str, options: Optional[[DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions)] = None)
 Bases: `Test`
 
 
 #### check()
 
-#### column_name(_: st_ )
+#### column_name _: str_ 
 
-#### group(_: st_ _ = 'data_drift_ )
+#### group _: str_ _ = 'data_drift'_ 
 
-#### metric(_: [DataDriftTable](evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTable_ )
+#### metric _: [DataDriftTable](evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTable)_ 
 
-#### name(_: st_ _ = 'Drift per Column_ )
+#### name _: str_ _ = 'Drift per Column'_ 
 
-### _class_ TestColumnValueDriftRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestColumnValueDriftRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestColumnValueDrift)
 
 #### render_json(obj: TestColumnValueDrift)
 
-### _class_ TestCustomFeaturesValueDrift(features: List[str])
+### _class _ TestCustomFeaturesValueDrift(features: List[str])
 Bases: [`BaseGenerator`](evidently.utils.md#evidently.utils.generators.BaseGenerator)
 
 Create value drift tests for specified features
 
 
-#### features(_: List[str_ )
+#### features _: List[str]_ 
 
 #### generate(columns_info: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
-### _class_ TestDataDriftResult(name: str, description: str, status: str, groups: Dict[str, str] = <factory>, features: Dict[str, Tuple[str, float, float]] = <factory>)
+### _class _ TestDataDriftResult(name: str, description: str, status: str, groups: Dict[str, str] = <factory>, features: Dict[str, Tuple[str, float, float]] = <factory>)
 Bases: `TestResult`
 
 
-#### features(_: Dict[str, Tuple[str, float, float]_ )
+#### features _: Dict[str, Tuple[str, float, float]]_ 
 
-### _class_ TestNumberOfDriftedColumns(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None, options: Optional[[DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions)] = None)
+### _class _ TestNumberOfDriftedColumns(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None, options: Optional[[DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions)] = None)
 Bases: `BaseDataDriftMetricsTest`
 
 
@@ -719,7 +719,7 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
 #### get_condition()
 
@@ -730,23 +730,23 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [DataDriftTable](evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTable_ )
+#### metric _: [DataDriftTable](evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTable)_ 
 
-#### name(_: st_ _ = 'Number of Drifted Features_ )
+#### name _: str_ _ = 'Number of Drifted Features'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestNumberOfDriftedColumnsRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestNumberOfDriftedColumnsRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestNumberOfDriftedColumns)
 
 #### render_json(obj: TestNumberOfDriftedColumns)
 
-### _class_ TestShareOfDriftedColumns(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None, options: Optional[[DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions)] = None)
+### _class _ TestShareOfDriftedColumns(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None, options: Optional[[DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions)] = None)
 Bases: `BaseDataDriftMetricsTest`
 
 
@@ -756,7 +756,7 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
 #### get_condition()
 
@@ -767,82 +767,82 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [DataDriftTable](evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTable_ )
+#### metric _: [DataDriftTable](evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTable)_ 
 
-#### name(_: st_ _ = 'Share of Drifted Columns_ )
+#### name _: str_ _ = 'Share of Drifted Columns'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestShareOfDriftedColumnsRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestShareOfDriftedColumnsRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestShareOfDriftedColumns)
 
 #### render_json(obj: TestShareOfDriftedColumns)
 
-### _class_ BaseIntegrityByColumnsConditionTest(column_name: str, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ BaseIntegrityByColumnsConditionTest(column_name: str, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseCheckValueTest`, `ABC`
 
 
-#### column_name(_: st_ )
+#### column_name _: str_ 
 
-#### data_integrity_metric(_: [ColumnSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric_ )
+#### data_integrity_metric _: [ColumnSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric)_ 
 
-#### group(_: st_ _ = 'data_integrity_ )
+#### group _: str_ _ = 'data_integrity'_ 
 
 #### groups()
 
-### _class_ BaseIntegrityColumnMissingValuesTest(column_name: str, missing_values: Optional[list] = None, replace: bool = True, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ BaseIntegrityColumnMissingValuesTest(column_name: str, missing_values: Optional[list] = None, replace: bool = True, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseCheckValueTest`, `ABC`
 
 
-#### column_name(_: st_ )
+#### column_name _: str_ 
 
-#### group(_: st_ _ = 'data_integrity_ )
+#### group _: str_ _ = 'data_integrity'_ 
 
-#### metric(_: [DatasetMissingValuesMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric_ )
+#### metric _: [DatasetMissingValuesMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric)_ 
 
-### _class_ BaseIntegrityMissingValuesValuesTest(missing_values: Optional[list] = None, replace: bool = True, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ BaseIntegrityMissingValuesValuesTest(missing_values: Optional[list] = None, replace: bool = True, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseCheckValueTest`, `ABC`
 
 
-#### group(_: st_ _ = 'data_integrity_ )
+#### group _: str_ _ = 'data_integrity'_ 
 
-#### metric(_: [DatasetMissingValuesMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric_ )
+#### metric _: [DatasetMissingValuesMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric)_ 
 
-### _class_ BaseIntegrityOneColumnTest(column_name: str)
+### _class _ BaseIntegrityOneColumnTest(column_name: str)
 Bases: `Test`, `ABC`
 
 
-#### column_name(_: st_ )
+#### column_name _: str_ 
 
-#### group(_: st_ _ = 'data_integrity_ )
+#### group _: str_ _ = 'data_integrity'_ 
 
 #### groups()
 
-#### metric(_: [ColumnSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric_ )
+#### metric _: [ColumnSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric)_ 
 
-### _class_ BaseIntegrityValueTest(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ BaseIntegrityValueTest(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseCheckValueTest`, `ABC`
 
 
-#### group(_: st_ _ = 'data_integrity_ )
+#### group _: str_ _ = 'data_integrity'_ 
 
-#### metric(_: [DatasetSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric_ )
+#### metric _: [DatasetSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric)_ 
 
-### _class_ BaseTestMissingValuesRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ BaseTestMissingValuesRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 Common class for tests of missing values.
 Some tests have the same details visualizations.
 
 
-#### MISSING_VALUES_NAMING_MAPPING(_ = {None: 'Pandas nulls (None, NAN, etc.)', '': '"" (empty string)', inf: 'Numpy "inf" value', -inf: 'Numpy "-inf" value'_ )
+#### MISSING_VALUES_NAMING_MAPPING _ = {None: 'Pandas nulls (None, NAN, etc.)', '': '"" (empty string)', inf: 'Numpy "inf" value', -inf: 'Numpy "-inf" value'}_ 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### get_table_with_missing_values_and_percents_by_column(info: [TestHtmlInfo](evidently.renderers.md#evidently.renderers.base_renderer.TestHtmlInfo), metric_result: [DatasetMissingValuesMetricResult](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetricResult), name: str)
 Get a table with missing values number and percents
@@ -850,13 +850,13 @@ Get a table with missing values number and percents
 
 #### get_table_with_number_of_missing_values_by_one_missing_value(info: [TestHtmlInfo](evidently.renderers.md#evidently.renderers.base_renderer.TestHtmlInfo), current_missing_values: dict, reference_missing_values: Optional[dict], name: str)
 
-### _class_ TestAllColumnsShareOfMissingValues()
+### _class _ TestAllColumnsShareOfMissingValues()
 Bases: [`BaseGenerator`](evidently.utils.md#evidently.utils.generators.BaseGenerator)
 
 
 #### generate(columns_info: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
-### _class_ TestColumnAllConstantValues(column_name: str)
+### _class _ TestColumnAllConstantValues(column_name: str)
 Bases: `BaseIntegrityOneColumnTest`
 
 Test that there is only one unique value in a column
@@ -864,19 +864,19 @@ Test that there is only one unique value in a column
 
 #### check()
 
-#### metric(_: [ColumnSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric_ )
+#### metric _: [ColumnSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric)_ 
 
-#### name(_: st_ _ = 'All Constant Values in a Column_ )
+#### name _: str_ _ = 'All Constant Values in a Column'_ 
 
-### _class_ TestColumnAllConstantValuesRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestColumnAllConstantValuesRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestColumnAllConstantValues)
 
-### _class_ TestColumnAllUniqueValues(column_name: str)
+### _class _ TestColumnAllUniqueValues(column_name: str)
 Bases: `BaseIntegrityOneColumnTest`
 
 Test that there is only uniques values in a column
@@ -884,21 +884,21 @@ Test that there is only uniques values in a column
 
 #### check()
 
-#### column_name(_: st_ )
+#### column_name _: str_ 
 
-#### metric(_: [ColumnSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric_ )
+#### metric _: [ColumnSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric)_ 
 
-#### name(_: st_ _ = 'All Unique Values in a Column_ )
+#### name _: str_ _ = 'All Unique Values in a Column'_ 
 
-### _class_ TestColumnAllUniqueValuesRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestColumnAllUniqueValuesRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestColumnAllUniqueValues)
 
-### _class_ TestColumnNumberOfDifferentMissingValues(column_name: str, missing_values: Optional[list] = None, replace: bool = True, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestColumnNumberOfDifferentMissingValues(column_name: str, missing_values: Optional[list] = None, replace: bool = True, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseIntegrityColumnMissingValuesTest`
 
 Check a number of differently encoded missing values in one column.
@@ -910,9 +910,9 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### column_name(_: st_ )
+#### column_name _: str_ 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
 #### get_condition()
 
@@ -923,17 +923,17 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [DatasetMissingValuesMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric_ )
+#### metric _: [DatasetMissingValuesMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric)_ 
 
-#### name(_: st_ _ = 'Different Types of Missing Values in a Column_ )
+#### name _: str_ _ = 'Different Types of Missing Values in a Column'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestColumnNumberOfDifferentMissingValuesRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestColumnNumberOfDifferentMissingValuesRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: `BaseTestMissingValuesRenderer`
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestColumnNumberOfDifferentMissingValues)
 Get a table with a missing value and number of the value in the dataset
@@ -941,7 +941,7 @@ Get a table with a missing value and number of the value in the dataset
 
 #### render_json(obj: TestColumnNumberOfDifferentMissingValues)
 
-### _class_ TestColumnNumberOfMissingValues(column_name: str, missing_values: Optional[list] = None, replace: bool = True, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestColumnNumberOfMissingValues(column_name: str, missing_values: Optional[list] = None, replace: bool = True, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseIntegrityColumnMissingValuesTest`
 
 Check a number of missing values in one column.
@@ -953,9 +953,9 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### column_name(_: st_ )
+#### column_name _: str_ 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
 #### get_condition()
 
@@ -966,21 +966,21 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [DatasetMissingValuesMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric_ )
+#### metric _: [DatasetMissingValuesMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric)_ 
 
-#### name(_: st_ _ = 'The Number of Missing Values in a Column_ )
+#### name _: str_ _ = 'The Number of Missing Values in a Column'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestColumnNumberOfMissingValuesRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestColumnNumberOfMissingValuesRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: `BaseTestMissingValuesRenderer`
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_json(obj: TestColumnNumberOfMissingValues)
 
-### _class_ TestColumnShareOfMissingValues(column_name: str, missing_values: Optional[list] = None, replace: bool = True, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestColumnShareOfMissingValues(column_name: str, missing_values: Optional[list] = None, replace: bool = True, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseIntegrityColumnMissingValuesTest`
 
 Check a share of missing values in one column.
@@ -992,9 +992,9 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### column_name(_: st_ )
+#### column_name _: str_ 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
 #### get_condition()
 
@@ -1005,21 +1005,21 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [DatasetMissingValuesMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric_ )
+#### metric _: [DatasetMissingValuesMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric)_ 
 
-#### name(_: st_ _ = 'The Share of Missing Values in a Column_ )
+#### name _: str_ _ = 'The Share of Missing Values in a Column'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestColumnShareOfMissingValuesRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestColumnShareOfMissingValuesRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: `BaseTestMissingValuesRenderer`
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_json(obj: TestColumnShareOfMissingValues)
 
-### _class_ TestColumnValueRegExp(column_name: str, reg_exp: str, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestColumnValueRegExp(column_name: str, reg_exp: str, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseCheckValueTest`, `ABC`
 
 
@@ -1029,7 +1029,7 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### column_name(_: st_ )
+#### column_name _: str_ 
 
 #### get_condition()
 
@@ -1040,55 +1040,55 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### group(_: st_ _ = 'data_integrity_ )
+#### group _: str_ _ = 'data_integrity'_ 
 
 #### groups()
 
-#### metric(_: [ColumnRegExpMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.ColumnRegExpMetric_ )
+#### metric _: [ColumnRegExpMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.ColumnRegExpMetric)_ 
 
-#### name(_: st_ _ = 'RegExp Match_ )
+#### name _: str_ _ = 'RegExp Match'_ 
 
-### _class_ TestColumnValueRegExpRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestColumnValueRegExpRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestColumnValueRegExp)
 
-### _class_ TestColumnsType(columns_type: Optional[dict] = None)
+### _class _ TestColumnsType(columns_type: Optional[dict] = None)
 Bases: `Test`
 
 This test compares columns type against the specified ones or a reference dataframe
 
 
-#### _class_ Result(name: str, description: str, status: str, groups: Dict[str, str] = <factory>, columns_types: Dict[str, Tuple[str, str]] = <factory>)
+#### _class _ Result name: str, description: str, status: str, groups: Dict[str, str] = <factory>, columns_types: Dict[str, Tuple[str, str]] = <factory>
 Bases: `TestResult`
 
 
-#### columns_types(_: Dict[str, Tuple[str, str]_ )
+#### columns_types _: Dict[str, Tuple[str, str]]_ 
 
 #### check()
 
-#### columns_type(_: Optional[dict_ )
+#### columns_type _: Optional[dict]_ 
 
-#### group(_: st_ _ = 'data_integrity_ )
+#### group _: str_ _ = 'data_integrity'_ 
 
-#### metric(_: [DatasetSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric_ )
+#### metric _: [DatasetSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric)_ 
 
-#### name(_: st_ _ = 'Column Types_ )
+#### name _: str_ _ = 'Column Types'_ 
 
-### _class_ TestColumnsTypeRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestColumnsTypeRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestColumnsType)
 
 #### render_json(obj: TestColumnsType)
 
-### _class_ TestNumberOfColumns(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestNumberOfColumns(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseIntegrityValueTest`
 
 Number of all columns in the data, including utility columns (id/index, datetime, target, predictions)
@@ -1100,7 +1100,7 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
 #### get_condition()
 
@@ -1111,23 +1111,23 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [DatasetSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric_ )
+#### metric _: [DatasetSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric)_ 
 
-#### name(_: st_ _ = 'Number of Columns_ )
+#### name _: str_ _ = 'Number of Columns'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestNumberOfColumnsRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestNumberOfColumnsRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestNumberOfColumns)
 
 #### render_json(obj: TestNumberOfColumns)
 
-### _class_ TestNumberOfColumnsWithMissingValues(missing_values: Optional[list] = None, replace: bool = True, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestNumberOfColumnsWithMissingValues(missing_values: Optional[list] = None, replace: bool = True, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseIntegrityMissingValuesValuesTest`
 
 Check a number of columns with a missing value.
@@ -1139,7 +1139,7 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
 #### get_condition()
 
@@ -1150,23 +1150,23 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [DatasetMissingValuesMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric_ )
+#### metric _: [DatasetMissingValuesMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric)_ 
 
-#### name(_: st_ _ = 'The Number of Columns With Missing Values_ )
+#### name _: str_ _ = 'The Number of Columns With Missing Values'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestNumberOfColumnsWithMissingValuesRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestNumberOfColumnsWithMissingValuesRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: `BaseTestMissingValuesRenderer`
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestNumberOfMissingValues)
 
 #### render_json(obj: TestNumberOfColumnsWithMissingValues)
 
-### _class_ TestNumberOfConstantColumns(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestNumberOfConstantColumns(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseIntegrityValueTest`
 
 Number of columns contained only one unique value
@@ -1178,7 +1178,7 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
 #### get_condition()
 
@@ -1189,23 +1189,23 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [DatasetSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric_ )
+#### metric _: [DatasetSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric)_ 
 
-#### name(_: st_ _ = 'Number of Constant Columns_ )
+#### name _: str_ _ = 'Number of Constant Columns'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestNumberOfConstantColumnsRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestNumberOfConstantColumnsRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestNumberOfConstantColumns)
 
 #### render_json(obj: TestNumberOfConstantColumns)
 
-### _class_ TestNumberOfDifferentMissingValues(missing_values: Optional[list] = None, replace: bool = True, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestNumberOfDifferentMissingValues(missing_values: Optional[list] = None, replace: bool = True, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseIntegrityMissingValuesValuesTest`
 
 Check a number of different encoded missing values.
@@ -1217,7 +1217,7 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
 #### get_condition()
 
@@ -1228,17 +1228,17 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [DatasetMissingValuesMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric_ )
+#### metric _: [DatasetMissingValuesMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric)_ 
 
-#### name(_: st_ _ = 'Different Types of Missing Values_ )
+#### name _: str_ _ = 'Different Types of Missing Values'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestNumberOfDifferentMissingValuesRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestNumberOfDifferentMissingValuesRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: `BaseTestMissingValuesRenderer`
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestNumberOfDifferentMissingValues)
 Get a table with a missing value and number of the value in the dataset
@@ -1246,7 +1246,7 @@ Get a table with a missing value and number of the value in the dataset
 
 #### render_json(obj: TestNumberOfDifferentMissingValues)
 
-### _class_ TestNumberOfDuplicatedColumns(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestNumberOfDuplicatedColumns(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseIntegrityValueTest`
 
 How many columns have duplicates in the dataset
@@ -1258,7 +1258,7 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
 #### get_condition()
 
@@ -1269,21 +1269,21 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [DatasetSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric_ )
+#### metric _: [DatasetSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric)_ 
 
-#### name(_: st_ _ = 'Number of Duplicate Columns_ )
+#### name _: str_ _ = 'Number of Duplicate Columns'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestNumberOfDuplicatedColumnsRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestNumberOfDuplicatedColumnsRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_json(obj: TestNumberOfDuplicatedColumns)
 
-### _class_ TestNumberOfDuplicatedRows(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestNumberOfDuplicatedRows(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseIntegrityValueTest`
 
 How many rows have duplicates in the dataset
@@ -1295,7 +1295,7 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
 #### get_condition()
 
@@ -1306,21 +1306,21 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [DatasetSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric_ )
+#### metric _: [DatasetSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric)_ 
 
-#### name(_: st_ _ = 'Number of Duplicate Rows_ )
+#### name _: str_ _ = 'Number of Duplicate Rows'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestNumberOfDuplicatedRowsRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestNumberOfDuplicatedRowsRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_json(obj: TestNumberOfDuplicatedRows)
 
-### _class_ TestNumberOfEmptyColumns(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestNumberOfEmptyColumns(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseIntegrityValueTest`
 
 Number of columns contained all NAN values
@@ -1332,7 +1332,7 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
 #### get_condition()
 
@@ -1343,21 +1343,21 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [DatasetSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric_ )
+#### metric _: [DatasetSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric)_ 
 
-#### name(_: st_ _ = 'Number of Empty Columns_ )
+#### name _: str_ _ = 'Number of Empty Columns'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestNumberOfEmptyColumnsRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestNumberOfEmptyColumnsRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestNumberOfEmptyColumns)
 
-### _class_ TestNumberOfEmptyRows(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestNumberOfEmptyRows(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseIntegrityValueTest`
 
 Number of rows contained all NAN values
@@ -1369,7 +1369,7 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
 #### get_condition()
 
@@ -1380,13 +1380,13 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [DatasetSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric_ )
+#### metric _: [DatasetSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric)_ 
 
-#### name(_: st_ _ = 'Number of Empty Rows_ )
+#### name _: str_ _ = 'Number of Empty Rows'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestNumberOfMissingValues(missing_values: Optional[list] = None, replace: bool = True, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestNumberOfMissingValues(missing_values: Optional[list] = None, replace: bool = True, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseIntegrityMissingValuesValuesTest`
 
 Check a number of missing values.
@@ -1398,7 +1398,7 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
 #### get_condition()
 
@@ -1409,23 +1409,23 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [DatasetMissingValuesMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric_ )
+#### metric _: [DatasetMissingValuesMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric)_ 
 
-#### name(_: st_ _ = 'The Number of Missing Values_ )
+#### name _: str_ _ = 'The Number of Missing Values'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestNumberOfMissingValuesRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestNumberOfMissingValuesRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: `BaseTestMissingValuesRenderer`
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestNumberOfMissingValues)
 
 #### render_json(obj: TestNumberOfMissingValues)
 
-### _class_ TestNumberOfRows(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestNumberOfRows(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseIntegrityValueTest`
 
 Number of rows in the data
@@ -1437,7 +1437,7 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
 #### get_condition()
 
@@ -1448,21 +1448,21 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [DatasetSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric_ )
+#### metric _: [DatasetSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric)_ 
 
-#### name(_: st_ _ = 'Number of Rows_ )
+#### name _: str_ _ = 'Number of Rows'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestNumberOfRowsRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestNumberOfRowsRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_json(obj: TestNumberOfRows)
 
-### _class_ TestNumberOfRowsWithMissingValues(missing_values: Optional[list] = None, replace: bool = True, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestNumberOfRowsWithMissingValues(missing_values: Optional[list] = None, replace: bool = True, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseIntegrityMissingValuesValuesTest`
 
 Check a number of rows with a missing value.
@@ -1474,7 +1474,7 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
 #### get_condition()
 
@@ -1485,21 +1485,21 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [DatasetMissingValuesMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric_ )
+#### metric _: [DatasetMissingValuesMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric)_ 
 
-#### name(_: st_ _ = 'The Number Of Rows With Missing Values_ )
+#### name _: str_ _ = 'The Number Of Rows With Missing Values'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestNumberOfRowsWithMissingValuesRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestNumberOfRowsWithMissingValuesRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: `BaseTestMissingValuesRenderer`
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_json(obj: TestNumberOfRowsWithMissingValues)
 
-### _class_ TestShareOfColumnsWithMissingValues(missing_values: Optional[list] = None, replace: bool = True, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestShareOfColumnsWithMissingValues(missing_values: Optional[list] = None, replace: bool = True, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseIntegrityMissingValuesValuesTest`
 
 Check a share of columns with a missing value.
@@ -1511,7 +1511,7 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
 #### get_condition()
 
@@ -1522,23 +1522,23 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [DatasetMissingValuesMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric_ )
+#### metric _: [DatasetMissingValuesMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric)_ 
 
-#### name(_: st_ _ = 'The Share of Columns With Missing Values_ )
+#### name _: str_ _ = 'The Share of Columns With Missing Values'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestShareOfColumnsWithMissingValuesRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestShareOfColumnsWithMissingValuesRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: `BaseTestMissingValuesRenderer`
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestNumberOfMissingValues)
 
 #### render_json(obj: TestShareOfColumnsWithMissingValues)
 
-### _class_ TestShareOfMissingValues(missing_values: Optional[list] = None, replace: bool = True, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestShareOfMissingValues(missing_values: Optional[list] = None, replace: bool = True, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseIntegrityMissingValuesValuesTest`
 
 Check a share of missing values.
@@ -1550,7 +1550,7 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
 #### get_condition()
 
@@ -1561,23 +1561,23 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [DatasetMissingValuesMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric_ )
+#### metric _: [DatasetMissingValuesMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric)_ 
 
-#### name(_: st_ _ = 'Share of Missing Values_ )
+#### name _: str_ _ = 'Share of Missing Values'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestShareOfMissingValuesRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestShareOfMissingValuesRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: `BaseTestMissingValuesRenderer`
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestNumberOfMissingValues)
 
 #### render_json(obj: TestShareOfMissingValues)
 
-### _class_ TestShareOfRowsWithMissingValues(missing_values: Optional[list] = None, replace: bool = True, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestShareOfRowsWithMissingValues(missing_values: Optional[list] = None, replace: bool = True, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseIntegrityMissingValuesValuesTest`
 
 Check a share of rows with a missing value.
@@ -1589,7 +1589,7 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
 #### get_condition()
 
@@ -1600,79 +1600,79 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [DatasetMissingValuesMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric_ )
+#### metric _: [DatasetMissingValuesMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric)_ 
 
-#### name(_: st_ _ = 'The Share of Rows With Missing Values_ )
+#### name _: str_ _ = 'The Share of Rows With Missing Values'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestShareOfRowsWithMissingValuesRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestShareOfRowsWithMissingValuesRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: `BaseTestMissingValuesRenderer`
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_json(obj: TestShareOfRowsWithMissingValues)
 
-### _class_ BaseDataQualityCorrelationsMetricsValueTest(method: str = 'pearson', eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ BaseDataQualityCorrelationsMetricsValueTest(method: str = 'pearson', eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseCheckValueTest`, `ABC`
 
 
-#### group(_: st_ _ = 'data_quality_ )
+#### group _: str_ _ = 'data_quality'_ 
 
-#### method(_: st_ )
+#### method _: str_ 
 
-#### metric(_: [DatasetCorrelationsMetric](evidently.metrics.data_quality.md#evidently.metrics.data_quality.dataset_correlations_metric.DatasetCorrelationsMetric_ )
+#### metric _: [DatasetCorrelationsMetric](evidently.metrics.data_quality.md#evidently.metrics.data_quality.dataset_correlations_metric.DatasetCorrelationsMetric)_ 
 
-### _class_ BaseDataQualityMetricsValueTest(column_name: str, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ BaseDataQualityMetricsValueTest(column_name: str, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseCheckValueTest`, `ABC`
 
 
-#### group(_: st_ _ = 'data_quality_ )
+#### group _: str_ _ = 'data_quality'_ 
 
-#### metric(_: [ColumnSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric_ )
+#### metric _: [ColumnSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric)_ 
 
-### _class_ BaseDataQualityValueListMetricsTest(column_name: str, values: Optional[list] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ BaseDataQualityValueListMetricsTest(column_name: str, values: Optional[list] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseCheckValueTest`, `ABC`
 
 
-#### column_name(_: st_ )
+#### column_name _: str_ 
 
-#### group(_: st_ _ = 'data_quality_ )
+#### group _: str_ _ = 'data_quality'_ 
 
 #### groups()
 
-#### metric(_: [ColumnValueListMetric](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_value_list_metric.ColumnValueListMetric_ )
+#### metric _: [ColumnValueListMetric](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_value_list_metric.ColumnValueListMetric)_ 
 
-#### values(_: Optional[list_ )
+#### values _: Optional[list]_ 
 
-### _class_ BaseDataQualityValueRangeMetricsTest(column_name: str, left: Optional[float] = None, right: Optional[float] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ BaseDataQualityValueRangeMetricsTest(column_name: str, left: Optional[float] = None, right: Optional[float] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseCheckValueTest`, `ABC`
 
 
-#### column(_: st_ )
+#### column _: str_ 
 
-#### group(_: st_ _ = 'data_quality_ )
+#### group _: str_ _ = 'data_quality'_ 
 
 #### groups()
 
-#### left(_: Optional[float_ )
+#### left _: Optional[float]_ 
 
-#### metric(_: [ColumnValueRangeMetric](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_value_range_metric.ColumnValueRangeMetric_ )
+#### metric _: [ColumnValueRangeMetric](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_value_range_metric.ColumnValueRangeMetric)_ 
 
-#### right(_: Optional[float_ )
+#### right _: Optional[float]_ 
 
-### _class_ BaseFeatureDataQualityMetricsTest(column_name: str, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ BaseFeatureDataQualityMetricsTest(column_name: str, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseDataQualityMetricsValueTest`, `ABC`
 
 
 #### check()
 
-#### column_name(_: st_ )
+#### column_name _: str_ 
 
 #### groups()
 
-### _class_ TestAllColumnsMostCommonValueShare()
+### _class _ TestAllColumnsMostCommonValueShare()
 Bases: [`BaseGenerator`](evidently.utils.md#evidently.utils.generators.BaseGenerator)
 
 Creates most common value share tests for each column in the dataset
@@ -1680,7 +1680,7 @@ Creates most common value share tests for each column in the dataset
 
 #### generate(columns_info: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
-### _class_ TestCatColumnsOutOfListValues()
+### _class _ TestCatColumnsOutOfListValues()
 Bases: [`BaseGenerator`](evidently.utils.md#evidently.utils.generators.BaseGenerator)
 
 Create share of out of list values tests for category columns
@@ -1688,7 +1688,7 @@ Create share of out of list values tests for category columns
 
 #### generate(columns_info: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
-### _class_ TestColumnValueMax(column_name: str, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestColumnValueMax(column_name: str, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseFeatureDataQualityMetricsTest`
 
 
@@ -1698,9 +1698,9 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### column_name(_: st_ )
+#### column_name _: str_ 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
 #### get_condition()
 
@@ -1711,21 +1711,21 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [ColumnSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric_ )
+#### metric _: [ColumnSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric)_ 
 
-#### name(_: st_ _ = 'Max Value_ )
+#### name _: str_ _ = 'Max Value'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestColumnValueMaxRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestColumnValueMaxRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestColumnValueMax)
 
-### _class_ TestColumnValueMean(column_name: str, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestColumnValueMean(column_name: str, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseFeatureDataQualityMetricsTest`
 
 
@@ -1735,9 +1735,9 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### column_name(_: st_ )
+#### column_name _: str_ 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
 #### get_condition()
 
@@ -1748,21 +1748,21 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [ColumnSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric_ )
+#### metric _: [ColumnSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric)_ 
 
-#### name(_: st_ _ = 'Mean Value_ )
+#### name _: str_ _ = 'Mean Value'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestColumnValueMeanRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestColumnValueMeanRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestColumnValueMean)
 
-### _class_ TestColumnValueMedian(column_name: str, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestColumnValueMedian(column_name: str, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseFeatureDataQualityMetricsTest`
 
 
@@ -1772,9 +1772,9 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### column_name(_: st_ )
+#### column_name _: str_ 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
 #### get_condition()
 
@@ -1785,21 +1785,21 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [ColumnSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric_ )
+#### metric _: [ColumnSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric)_ 
 
-#### name(_: st_ _ = 'Median Value_ )
+#### name _: str_ _ = 'Median Value'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestColumnValueMedianRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestColumnValueMedianRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestColumnValueMedian)
 
-### _class_ TestColumnValueMin(column_name: str, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestColumnValueMin(column_name: str, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseFeatureDataQualityMetricsTest`
 
 
@@ -1809,9 +1809,9 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### column_name(_: st_ )
+#### column_name _: str_ 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
 #### get_condition()
 
@@ -1822,21 +1822,21 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [ColumnSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric_ )
+#### metric _: [ColumnSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric)_ 
 
-#### name(_: st_ _ = 'Min Value_ )
+#### name _: str_ _ = 'Min Value'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestColumnValueMinRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestColumnValueMinRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestColumnValueMin)
 
-### _class_ TestColumnValueStd(column_name: str, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestColumnValueStd(column_name: str, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseFeatureDataQualityMetricsTest`
 
 
@@ -1846,9 +1846,9 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### column_name(_: st_ )
+#### column_name _: str_ 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
 #### get_condition()
 
@@ -1859,45 +1859,45 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [ColumnSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric_ )
+#### metric _: [ColumnSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric)_ 
 
-#### name(_: st_ _ = 'Standard Deviation (SD)_ )
+#### name _: str_ _ = 'Standard Deviation (SD)'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestColumnValueStdRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestColumnValueStdRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestColumnValueStd)
 
-### _class_ TestConflictPrediction()
+### _class _ TestConflictPrediction()
 Bases: `Test`
 
 
 #### check()
 
-#### group(_: st_ _ = 'data_quality_ )
+#### group _: str_ _ = 'data_quality'_ 
 
-#### metric(_: [DataQualityStabilityMetric](evidently.metrics.data_quality.md#evidently.metrics.data_quality.stability_metric.DataQualityStabilityMetric_ )
+#### metric _: [DataQualityStabilityMetric](evidently.metrics.data_quality.md#evidently.metrics.data_quality.stability_metric.DataQualityStabilityMetric)_ 
 
-#### name(_: st_ _ = 'Test number of conflicts in prediction_ )
+#### name _: str_ _ = 'Test number of conflicts in prediction'_ 
 
-### _class_ TestConflictTarget()
+### _class _ TestConflictTarget()
 Bases: `Test`
 
 
 #### check()
 
-#### group(_: st_ _ = 'data_quality_ )
+#### group _: str_ _ = 'data_quality'_ 
 
-#### metric(_: [DataQualityStabilityMetric](evidently.metrics.data_quality.md#evidently.metrics.data_quality.stability_metric.DataQualityStabilityMetric_ )
+#### metric _: [DataQualityStabilityMetric](evidently.metrics.data_quality.md#evidently.metrics.data_quality.stability_metric.DataQualityStabilityMetric)_ 
 
-#### name(_: st_ _ = 'Test number of conflicts in target_ )
+#### name _: str_ _ = 'Test number of conflicts in target'_ 
 
-### _class_ TestCorrelationChanges(corr_diff: float = 0.25, method: str = 'pearson', eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestCorrelationChanges(corr_diff: float = 0.25, method: str = 'pearson', eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseDataQualityCorrelationsMetricsValueTest`
 
 
@@ -1907,7 +1907,7 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### corr_diff(_: floa_ )
+#### corr_diff _: float_ 
 
 #### get_condition()
 
@@ -1918,21 +1918,21 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### group(_: st_ _ = 'data_quality_ )
+#### group _: str_ _ = 'data_quality'_ 
 
-#### metric(_: [DatasetCorrelationsMetric](evidently.metrics.data_quality.md#evidently.metrics.data_quality.dataset_correlations_metric.DatasetCorrelationsMetric_ )
+#### metric _: [DatasetCorrelationsMetric](evidently.metrics.data_quality.md#evidently.metrics.data_quality.dataset_correlations_metric.DatasetCorrelationsMetric)_ 
 
-#### name(_: st_ _ = 'Change in Correlation_ )
+#### name _: str_ _ = 'Change in Correlation'_ 
 
-### _class_ TestCorrelationChangesRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestCorrelationChangesRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestCorrelationChanges)
 
-### _class_ TestHighlyCorrelatedColumns(method: str = 'pearson', eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestHighlyCorrelatedColumns(method: str = 'pearson', eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseDataQualityCorrelationsMetricsValueTest`
 
 
@@ -1942,7 +1942,7 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
 #### get_condition()
 
@@ -1953,51 +1953,51 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### method(_: st_ )
+#### method _: str_ 
 
-#### metric(_: [DatasetCorrelationsMetric](evidently.metrics.data_quality.md#evidently.metrics.data_quality.dataset_correlations_metric.DatasetCorrelationsMetric_ )
+#### metric _: [DatasetCorrelationsMetric](evidently.metrics.data_quality.md#evidently.metrics.data_quality.dataset_correlations_metric.DatasetCorrelationsMetric)_ 
 
-#### name(_: st_ _ = 'Highly Correlated Columns_ )
+#### name _: str_ _ = 'Highly Correlated Columns'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestHighlyCorrelatedColumnsRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestHighlyCorrelatedColumnsRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestHighlyCorrelatedColumns)
 
 #### render_json(obj: TestHighlyCorrelatedColumns)
 
-### _class_ TestMeanInNSigmas(column_name: str, n_sigmas: int = 2)
+### _class _ TestMeanInNSigmas(column_name: str, n_sigmas: int = 2)
 Bases: `Test`
 
 
 #### check()
 
-#### column_name(_: st_ )
+#### column_name _: str_ 
 
-#### group(_: st_ _ = 'data_quality_ )
+#### group _: str_ _ = 'data_quality'_ 
 
-#### metric(_: [ColumnSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric_ )
+#### metric _: [ColumnSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric)_ 
 
-#### n_sigmas(_: in_ )
+#### n_sigmas _: int_ 
 
-#### name(_: st_ _ = 'Mean Value Stability_ )
+#### name _: str_ _ = 'Mean Value Stability'_ 
 
-### _class_ TestMeanInNSigmasRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestMeanInNSigmasRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestMeanInNSigmas)
 
 #### render_json(obj: TestMeanInNSigmas)
 
-### _class_ TestMostCommonValueShare(column_name: str, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestMostCommonValueShare(column_name: str, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseFeatureDataQualityMetricsTest`
 
 
@@ -2007,9 +2007,9 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### column_name(_: st_ )
+#### column_name _: str_ 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
 #### get_condition()
 
@@ -2020,23 +2020,23 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [ColumnSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric_ )
+#### metric _: [ColumnSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric)_ 
 
-#### name(_: st_ _ = 'Share of the Most Common Value_ )
+#### name _: str_ _ = 'Share of the Most Common Value'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestMostCommonValueShareRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestMostCommonValueShareRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestMostCommonValueShare)
 
 #### render_json(obj: TestMostCommonValueShare)
 
-### _class_ TestNumColumnsMeanInNSigmas()
+### _class _ TestNumColumnsMeanInNSigmas()
 Bases: [`BaseGenerator`](evidently.utils.md#evidently.utils.generators.BaseGenerator)
 
 Create tests of mean for all numeric columns
@@ -2044,7 +2044,7 @@ Create tests of mean for all numeric columns
 
 #### generate(columns_info: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
-### _class_ TestNumColumnsOutOfRangeValues()
+### _class _ TestNumColumnsOutOfRangeValues()
 Bases: [`BaseGenerator`](evidently.utils.md#evidently.utils.generators.BaseGenerator)
 
 Creates share of out of range values tests for all numeric columns
@@ -2052,7 +2052,7 @@ Creates share of out of range values tests for all numeric columns
 
 #### generate(columns_info: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
-### _class_ TestNumberOfOutListValues(column_name: str, values: Optional[list] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestNumberOfOutListValues(column_name: str, values: Optional[list] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseDataQualityValueListMetricsTest`
 
 
@@ -2062,9 +2062,9 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### column_name(_: st_ )
+#### column_name _: str_ 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
 #### get_condition()
 
@@ -2075,23 +2075,23 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [ColumnValueListMetric](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_value_list_metric.ColumnValueListMetric_ )
+#### metric _: [ColumnValueListMetric](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_value_list_metric.ColumnValueListMetric)_ 
 
-#### name(_: st_ _ = 'Number Out-of-List Values_ )
+#### name _: str_ _ = 'Number Out-of-List Values'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-#### values(_: Optional[list_ )
+#### values _: Optional[list]_ 
 
-### _class_ TestNumberOfOutListValuesRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestNumberOfOutListValuesRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestNumberOfOutListValues)
 
-### _class_ TestNumberOfOutRangeValues(column_name: str, left: Optional[float] = None, right: Optional[float] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestNumberOfOutRangeValues(column_name: str, left: Optional[float] = None, right: Optional[float] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseDataQualityValueRangeMetricsTest`
 
 
@@ -2101,9 +2101,9 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### column(_: st_ )
+#### column _: str_ 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
 #### get_condition()
 
@@ -2114,25 +2114,25 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### left(_: Optional[float_ )
+#### left _: Optional[float]_ 
 
-#### metric(_: [ColumnValueRangeMetric](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_value_range_metric.ColumnValueRangeMetric_ )
+#### metric _: [ColumnValueRangeMetric](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_value_range_metric.ColumnValueRangeMetric)_ 
 
-#### name(_: st_ _ = 'Number of Out-of-Range Values _ )
+#### name _: str_ _ = 'Number of Out-of-Range Values '_ 
 
-#### right(_: Optional[float_ )
+#### right _: Optional[float]_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestNumberOfOutRangeValuesRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestNumberOfOutRangeValuesRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestNumberOfOutRangeValues)
 
-### _class_ TestNumberOfUniqueValues(column_name: str, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestNumberOfUniqueValues(column_name: str, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseFeatureDataQualityMetricsTest`
 
 
@@ -2142,9 +2142,9 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### column_name(_: st_ )
+#### column_name _: str_ 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
 #### get_condition()
 
@@ -2155,21 +2155,21 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [ColumnSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric_ )
+#### metric _: [ColumnSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric)_ 
 
-#### name(_: st_ _ = 'Number of Unique Values_ )
+#### name _: str_ _ = 'Number of Unique Values'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestNumberOfUniqueValuesRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestNumberOfUniqueValuesRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestNumberOfUniqueValues)
 
-### _class_ TestPredictionFeaturesCorrelations(method: str = 'pearson', eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestPredictionFeaturesCorrelations(method: str = 'pearson', eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseDataQualityCorrelationsMetricsValueTest`
 
 
@@ -2179,7 +2179,7 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
 #### get_condition()
 
@@ -2190,25 +2190,25 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### method(_: st_ )
+#### method _: str_ 
 
-#### metric(_: [DatasetCorrelationsMetric](evidently.metrics.data_quality.md#evidently.metrics.data_quality.dataset_correlations_metric.DatasetCorrelationsMetric_ )
+#### metric _: [DatasetCorrelationsMetric](evidently.metrics.data_quality.md#evidently.metrics.data_quality.dataset_correlations_metric.DatasetCorrelationsMetric)_ 
 
-#### name(_: st_ _ = 'Correlation between Prediction and Features_ )
+#### name _: str_ _ = 'Correlation between Prediction and Features'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestPredictionFeaturesCorrelationsRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestPredictionFeaturesCorrelationsRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestTargetFeaturesCorrelations)
 
 #### render_json(obj: TestPredictionFeaturesCorrelations)
 
-### _class_ TestShareOfOutListValues(column_name: str, values: Optional[list] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestShareOfOutListValues(column_name: str, values: Optional[list] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseDataQualityValueListMetricsTest`
 
 
@@ -2218,9 +2218,9 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### column_name(_: st_ )
+#### column_name _: str_ 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
 #### get_condition()
 
@@ -2231,25 +2231,25 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [ColumnValueListMetric](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_value_list_metric.ColumnValueListMetric_ )
+#### metric _: [ColumnValueListMetric](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_value_list_metric.ColumnValueListMetric)_ 
 
-#### name(_: st_ _ = 'Share of Out-of-List Values_ )
+#### name _: str_ _ = 'Share of Out-of-List Values'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-#### values(_: Optional[list_ )
+#### values _: Optional[list]_ 
 
-### _class_ TestShareOfOutListValuesRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestShareOfOutListValuesRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestShareOfOutListValues)
 
 #### render_json(obj: TestShareOfOutListValues)
 
-### _class_ TestShareOfOutRangeValues(column_name: str, left: Optional[float] = None, right: Optional[float] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestShareOfOutRangeValues(column_name: str, left: Optional[float] = None, right: Optional[float] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseDataQualityValueRangeMetricsTest`
 
 
@@ -2259,9 +2259,9 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### column(_: st_ )
+#### column _: str_ 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
 #### get_condition()
 
@@ -2272,27 +2272,27 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### left(_: Optional[float_ )
+#### left _: Optional[float]_ 
 
-#### metric(_: [ColumnValueRangeMetric](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_value_range_metric.ColumnValueRangeMetric_ )
+#### metric _: [ColumnValueRangeMetric](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_value_range_metric.ColumnValueRangeMetric)_ 
 
-#### name(_: st_ _ = 'Share of Out-of-Range Values_ )
+#### name _: str_ _ = 'Share of Out-of-Range Values'_ 
 
-#### right(_: Optional[float_ )
+#### right _: Optional[float]_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestShareOfOutRangeValuesRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestShareOfOutRangeValuesRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestShareOfOutRangeValues)
 
 #### render_json(obj: TestShareOfOutRangeValues)
 
-### _class_ TestTargetFeaturesCorrelations(method: str = 'pearson', eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestTargetFeaturesCorrelations(method: str = 'pearson', eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseDataQualityCorrelationsMetricsValueTest`
 
 
@@ -2302,7 +2302,7 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
 #### get_condition()
 
@@ -2313,25 +2313,25 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### method(_: st_ )
+#### method _: str_ 
 
-#### metric(_: [DatasetCorrelationsMetric](evidently.metrics.data_quality.md#evidently.metrics.data_quality.dataset_correlations_metric.DatasetCorrelationsMetric_ )
+#### metric _: [DatasetCorrelationsMetric](evidently.metrics.data_quality.md#evidently.metrics.data_quality.dataset_correlations_metric.DatasetCorrelationsMetric)_ 
 
-#### name(_: st_ _ = 'Correlation between Target and Features_ )
+#### name _: str_ _ = 'Correlation between Target and Features'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestTargetFeaturesCorrelationsRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestTargetFeaturesCorrelationsRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestTargetFeaturesCorrelations)
 
 #### render_json(obj: TestTargetFeaturesCorrelations)
 
-### _class_ TestTargetPredictionCorrelation(method: str = 'pearson', eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestTargetPredictionCorrelation(method: str = 'pearson', eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseDataQualityCorrelationsMetricsValueTest`
 
 
@@ -2341,7 +2341,7 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
 #### get_condition()
 
@@ -2352,15 +2352,15 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### method(_: st_ )
+#### method _: str_ 
 
-#### metric(_: [DatasetCorrelationsMetric](evidently.metrics.data_quality.md#evidently.metrics.data_quality.dataset_correlations_metric.DatasetCorrelationsMetric_ )
+#### metric _: [DatasetCorrelationsMetric](evidently.metrics.data_quality.md#evidently.metrics.data_quality.dataset_correlations_metric.DatasetCorrelationsMetric)_ 
 
-#### name(_: st_ _ = 'Correlation between Target and Prediction_ )
+#### name _: str_ _ = 'Correlation between Target and Prediction'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestUniqueValuesShare(column_name: str, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestUniqueValuesShare(column_name: str, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseFeatureDataQualityMetricsTest`
 
 
@@ -2370,9 +2370,9 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### column_name(_: st_ )
+#### column_name _: str_ 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
 #### get_condition()
 
@@ -2383,47 +2383,47 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [ColumnSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric_ )
+#### metric _: [ColumnSummaryMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric)_ 
 
-#### name(_: st_ _ = 'Share of Unique Values_ )
+#### name _: str_ _ = 'Share of Unique Values'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestUniqueValuesShareRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestUniqueValuesShareRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestUniqueValuesShare)
 
-### _class_ TestValueList(column_name: str, values: Optional[list] = None)
+### _class _ TestValueList(column_name: str, values: Optional[list] = None)
 Bases: `Test`
 
 
 #### check()
 
-#### column_name(_: st_ )
+#### column_name _: str_ 
 
-#### group(_: st_ _ = 'data_quality_ )
+#### group _: str_ _ = 'data_quality'_ 
 
-#### metric(_: [ColumnValueListMetric](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_value_list_metric.ColumnValueListMetric_ )
+#### metric _: [ColumnValueListMetric](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_value_list_metric.ColumnValueListMetric)_ 
 
-#### name(_: st_ _ = 'Out-of-List Values_ )
+#### name _: str_ _ = 'Out-of-List Values'_ 
 
-#### values(_: Optional[list_ )
+#### values _: Optional[list]_ 
 
-### _class_ TestValueListRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestValueListRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestValueList)
 
 #### render_json(obj: TestValueList)
 
-### _class_ TestValueQuantile(column_name: str, quantile: float, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestValueQuantile(column_name: str, quantile: float, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseCheckValueTest`
 
 
@@ -2433,7 +2433,7 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### column_name(_: st_ )
+#### column_name _: str_ 
 
 #### get_condition()
 
@@ -2444,61 +2444,61 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### group(_: st_ _ = 'data_quality_ )
+#### group _: str_ _ = 'data_quality'_ 
 
 #### groups()
 
-#### metric(_: [ColumnQuantileMetric](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_quantile_metric.ColumnQuantileMetric_ )
+#### metric _: [ColumnQuantileMetric](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_quantile_metric.ColumnQuantileMetric)_ 
 
-#### name(_: st_ _ = 'Quantile Value_ )
+#### name _: str_ _ = 'Quantile Value'_ 
 
-#### quantile(_: floa_ )
+#### quantile _: float_ 
 
-### _class_ TestValueQuantileRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestValueQuantileRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestValueQuantile)
 
-### _class_ TestValueRange(column_name: str, left: Optional[float] = None, right: Optional[float] = None)
+### _class _ TestValueRange(column_name: str, left: Optional[float] = None, right: Optional[float] = None)
 Bases: `Test`
 
 
 #### check()
 
-#### column(_: st_ )
+#### column _: str_ 
 
-#### group(_: st_ _ = 'data_quality_ )
+#### group _: str_ _ = 'data_quality'_ 
 
-#### left(_: Optional[float_ )
+#### left _: Optional[float]_ 
 
-#### metric(_: [ColumnValueRangeMetric](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_value_range_metric.ColumnValueRangeMetric_ )
+#### metric _: [ColumnValueRangeMetric](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_value_range_metric.ColumnValueRangeMetric)_ 
 
-#### name(_: st_ _ = 'Value Range_ )
+#### name _: str_ _ = 'Value Range'_ 
 
-#### right(_: Optional[float_ )
+#### right _: Optional[float]_ 
 
-### _class_ TestValueRangeRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestValueRangeRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestValueRange)
 
-### _class_ BaseRegressionPerformanceMetricsTest(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ BaseRegressionPerformanceMetricsTest(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseCheckValueTest`, `ABC`
 
 
-#### dummy_metric(_: [RegressionDummyMetric](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_dummy_metric.RegressionDummyMetric_ )
+#### dummy_metric _: [RegressionDummyMetric](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_dummy_metric.RegressionDummyMetric)_ 
 
-#### group(_: st_ _ = 'regression_ )
+#### group _: str_ _ = 'regression'_ 
 
-#### metric(_: [RegressionQualityMetric](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_quality.RegressionQualityMetric_ )
+#### metric _: [RegressionQualityMetric](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_quality.RegressionQualityMetric)_ 
 
-### _class_ TestValueAbsMaxError(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestValueAbsMaxError(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseRegressionPerformanceMetricsTest`
 
 
@@ -2508,9 +2508,9 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
-#### dummy_metric(_: [RegressionDummyMetric](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_dummy_metric.RegressionDummyMetric_ )
+#### dummy_metric _: [RegressionDummyMetric](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_dummy_metric.RegressionDummyMetric)_ 
 
 #### get_condition()
 
@@ -2521,23 +2521,23 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [RegressionQualityMetric](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_quality.RegressionQualityMetric_ )
+#### metric _: [RegressionQualityMetric](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_quality.RegressionQualityMetric)_ 
 
-#### name(_: st_ _ = 'Max Absolute Error_ )
+#### name _: str_ _ = 'Max Absolute Error'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestValueAbsMaxErrorRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestValueAbsMaxErrorRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestValueAbsMaxError)
 
 #### render_json(obj: TestValueAbsMaxError)
 
-### _class_ TestValueMAE(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestValueMAE(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseRegressionPerformanceMetricsTest`
 
 
@@ -2547,9 +2547,9 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
-#### dummy_metric(_: [RegressionDummyMetric](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_dummy_metric.RegressionDummyMetric_ )
+#### dummy_metric _: [RegressionDummyMetric](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_dummy_metric.RegressionDummyMetric)_ 
 
 #### get_condition()
 
@@ -2560,23 +2560,23 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [RegressionQualityMetric](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_quality.RegressionQualityMetric_ )
+#### metric _: [RegressionQualityMetric](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_quality.RegressionQualityMetric)_ 
 
-#### name(_: st_ _ = 'Mean Absolute Error (MAE)_ )
+#### name _: str_ _ = 'Mean Absolute Error (MAE)'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestValueMAERenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestValueMAERenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestValueMAE)
 
 #### render_json(obj: TestValueMAE)
 
-### _class_ TestValueMAPE(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestValueMAPE(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseRegressionPerformanceMetricsTest`
 
 
@@ -2586,9 +2586,9 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
-#### dummy_metric(_: [RegressionDummyMetric](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_dummy_metric.RegressionDummyMetric_ )
+#### dummy_metric _: [RegressionDummyMetric](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_dummy_metric.RegressionDummyMetric)_ 
 
 #### get_condition()
 
@@ -2599,23 +2599,23 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [RegressionQualityMetric](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_quality.RegressionQualityMetric_ )
+#### metric _: [RegressionQualityMetric](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_quality.RegressionQualityMetric)_ 
 
-#### name(_: st_ _ = 'Mean Absolute Percentage Error (MAPE)_ )
+#### name _: str_ _ = 'Mean Absolute Percentage Error (MAPE)'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestValueMAPERenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestValueMAPERenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestValueMAPE)
 
 #### render_json(obj: TestValueMAPE)
 
-### _class_ TestValueMeanError(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestValueMeanError(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseRegressionPerformanceMetricsTest`
 
 
@@ -2625,9 +2625,9 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
-#### dummy_metric(_: [RegressionDummyMetric](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_dummy_metric.RegressionDummyMetric_ )
+#### dummy_metric _: [RegressionDummyMetric](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_dummy_metric.RegressionDummyMetric)_ 
 
 #### get_condition()
 
@@ -2638,23 +2638,23 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [RegressionQualityMetric](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_quality.RegressionQualityMetric_ )
+#### metric _: [RegressionQualityMetric](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_quality.RegressionQualityMetric)_ 
 
-#### name(_: st_ _ = 'Mean Error (ME)_ )
+#### name _: str_ _ = 'Mean Error (ME)'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestValueMeanErrorRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestValueMeanErrorRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestValueMeanError)
 
 #### render_json(obj: TestValueMeanError)
 
-### _class_ TestValueR2Score(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestValueR2Score(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseRegressionPerformanceMetricsTest`
 
 
@@ -2664,9 +2664,9 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
-#### dummy_metric(_: [RegressionDummyMetric](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_dummy_metric.RegressionDummyMetric_ )
+#### dummy_metric _: [RegressionDummyMetric](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_dummy_metric.RegressionDummyMetric)_ 
 
 #### get_condition()
 
@@ -2677,23 +2677,23 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [RegressionQualityMetric](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_quality.RegressionQualityMetric_ )
+#### metric _: [RegressionQualityMetric](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_quality.RegressionQualityMetric)_ 
 
-#### name(_: st_ _ = 'R2 Score_ )
+#### name _: str_ _ = 'R2 Score'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestValueR2ScoreRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestValueR2ScoreRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestValueR2Score)
 
 #### render_json(obj: TestValueAbsMaxError)
 
-### _class_ TestValueRMSE(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### _class _ TestValueRMSE(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseRegressionPerformanceMetricsTest`
 
 
@@ -2703,9 +2703,9 @@ Method for getting the checking value.
 Define it in a child class
 
 
-#### condition(_: TestValueConditio_ )
+#### condition _: TestValueCondition_ 
 
-#### dummy_metric(_: [RegressionDummyMetric](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_dummy_metric.RegressionDummyMetric_ )
+#### dummy_metric _: [RegressionDummyMetric](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_dummy_metric.RegressionDummyMetric)_ 
 
 #### get_condition()
 
@@ -2716,17 +2716,17 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [RegressionQualityMetric](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_quality.RegressionQualityMetric_ )
+#### metric _: [RegressionQualityMetric](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_quality.RegressionQualityMetric)_ 
 
-#### name(_: st_ _ = 'Root Mean Square Error (RMSE)_ )
+#### name _: str_ _ = 'Root Mean Square Error (RMSE)'_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ TestValueRMSERenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class _ TestValueRMSERenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### render_html(obj: TestValueRMSE)
 

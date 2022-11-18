@@ -5,15 +5,15 @@
 Methods for clean null or NaN values in a dataset
 
 
-### _class_ DatasetColumns(utility_columns: DatasetUtilityColumns, target_type: Optional[str], num_feature_names: List[str], cat_feature_names: List[str], datetime_feature_names: List[str], target_names: Optional[List[str]], task: Optional[str])
+### _class _ DatasetColumns(utility_columns: DatasetUtilityColumns, target_type: Optional[str], num_feature_names: List[str], cat_feature_names: List[str], datetime_feature_names: List[str], target_names: Optional[List[str]], task: Optional[str])
 Bases: `object`
 
 
 #### as_dict()
 
-#### cat_feature_names(_: List[str_ )
+#### cat_feature_names _: List[str]_ 
 
-#### datetime_feature_names(_: List[str_ )
+#### datetime_feature_names _: List[str]_ 
 
 #### get_all_columns_list()
 List all columns.
@@ -37,29 +37,29 @@ By default, we sum category nad numeric features.
 If you want to include date time columns - set include_datetime_feature to True.
 
 
-#### num_feature_names(_: List[str_ )
+#### num_feature_names _: List[str]_ 
 
-#### target_names(_: Optional[List[str]_ )
+#### target_names _: Optional[List[str]]_ 
 
-#### target_type(_: Optional[str_ )
+#### target_type _: Optional[str]_ 
 
-#### task(_: Optional[str_ )
+#### task _: Optional[str]_ 
 
-#### utility_columns(_: DatasetUtilityColumn_ )
+#### utility_columns _: DatasetUtilityColumns_ 
 
-### _class_ DatasetUtilityColumns(date: Optional[str], id_column: Optional[str], target: Optional[str], prediction: Union[str, Sequence[str], NoneType])
+### _class _ DatasetUtilityColumns(date: Optional[str], id_column: Optional[str], target: Optional[str], prediction: Union[str, Sequence[str], NoneType])
 Bases: `object`
 
 
 #### as_dict()
 
-#### date(_: Optional[str_ )
+#### date _: Optional[str]_ 
 
-#### id_column(_: Optional[str_ )
+#### id_column _: Optional[str]_ 
 
-#### prediction(_: Optional[Union[str, Sequence[str]]_ )
+#### prediction _: Optional[Union[str, Sequence[str]]]_ 
 
-#### target(_: Optional[str_ )
+#### target _: Optional[str]_ 
 
 ### process_columns(dataset: DataFrame, column_mapping: [ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping))
 
@@ -89,39 +89,39 @@ in all other cases task == ‘classification’.
 
 ### replace_infinity_values_to_nan(dataframe: DataFrame)
 
-### _class_ ColumnDefinition(column_name: str, column_type: ColumnType)
+### _class _ ColumnDefinition(column_name: str, column_type: ColumnType)
 Bases: `object`
 
 
-#### column_name(_: st_ )
+#### column_name _: str_ 
 
-#### column_type(_: ColumnTyp_ )
+#### column_type _: ColumnType_ 
 
-### _class_ ColumnPresenceState(value)
+### _class _ ColumnPresenceState(value)
 Bases: `Enum`
 
 An enumeration.
 
 
-#### Missing(_ = _ )
+#### Missing _ = 2_ 
 
-#### Partially(_ = _ )
+#### Partially _ = 1_ 
 
-#### Present(_ = _ )
+#### Present _ = 0_ 
 
-### _class_ ColumnType(value)
+### _class _ ColumnType(value)
 Bases: `Enum`
 
 An enumeration.
 
 
-#### Categorical(_ = 'cat_ )
+#### Categorical _ = 'cat'_ 
 
-#### Datetime(_ = 'datetime_ )
+#### Datetime _ = 'datetime'_ 
 
-#### Numerical(_ = 'num_ )
+#### Numerical _ = 'num'_ 
 
-### _class_ DataDefinition(columns: List[ColumnDefinition], target: Optional[ColumnDefinition], prediction_columns: Optional[PredictionColumns], id_column: Optional[ColumnDefinition], datetime_column: Optional[ColumnDefinition], task: Optional[str], classification_labels: Optional[Sequence[str]])
+### _class _ DataDefinition(columns: List[ColumnDefinition], target: Optional[ColumnDefinition], prediction_columns: Optional[PredictionColumns], id_column: Optional[ColumnDefinition], datetime_column: Optional[ColumnDefinition], task: Optional[str], classification_labels: Optional[Sequence[str]])
 Bases: `object`
 
 
@@ -139,19 +139,19 @@ Bases: `object`
 
 #### task()
 
-### _class_ PredictionColumns(predicted_values: Optional[ColumnDefinition] = None, prediction_probas: Optional[List[ColumnDefinition]] = None)
+### _class _ PredictionColumns(predicted_values: Optional[ColumnDefinition] = None, prediction_probas: Optional[List[ColumnDefinition]] = None)
 Bases: `object`
 
 
 #### get_columns_list()
 
-#### predicted_values(_: Optional[ColumnDefinition_ _ = Non_ )
+#### predicted_values _: Optional[ColumnDefinition]_ _ = None_ 
 
-#### prediction_probas(_: Optional[List[ColumnDefinition]_ _ = Non_ )
+#### prediction_probas _: Optional[List[ColumnDefinition]]_ _ = None_ 
 
 ### create_data_definition(reference_data: Optional[DataFrame], current_data: DataFrame, mapping: [ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping))
 
-### _class_ BaseGenerator()
+### _class _ BaseGenerator()
 Bases: `Generic`[`TObject`]
 
 Base class for tests and metrics generator creation
@@ -184,7 +184,7 @@ For example:
 Do not forget set correct test type for generate return value
 
 
-#### _abstract_ generate(columns_info: DatasetColumns)
+#### _abstract _ generate(columns_info: DatasetColumns)
 
 ### make_generator_by_columns(base_class: Type, columns: Optional[Union[str, list]] = None, parameters: Optional[Dict] = None)
 Create a test generator for a columns list with a test class.
@@ -205,7 +205,7 @@ If columns is string, and it is not one of the values, ValueError will be raised
 parameters is used for specifying other parameters for each object, it is the same for all generated objects.
 
 
-### _class_ NumpyEncoder(\*, skipkeys=False, ensure_ascii=True, check_circular=True, allow_nan=True, sort_keys=False, indent=None, separators=None, default=None)
+### _class _ NumpyEncoder(\*, skipkeys=False, ensure_ascii=True, check_circular=True, allow_nan=True, sort_keys=False, indent=None, separators=None, default=None)
 Bases: `JSONEncoder`
 
 Numpy and Pandas data types to JSON types encoder
@@ -220,29 +220,29 @@ If we cannot convert the object, leave the default JSONEncoder behaviour - raise
 Additional types, classes, dataclasses, etc.
 
 
-### _class_ ApproxValue(value: Union[float, int], relative: Optional[Union[float, int]] = None, absolute: Optional[Union[float, int]] = None)
+### _class _ ApproxValue(value: Union[float, int], relative: Optional[Union[float, int]] = None, absolute: Optional[Union[float, int]] = None)
 Bases: `object`
 
 Class for approximate scalar value calculations
 
 
-#### DEFAULT_ABSOLUTE(_ = 1e-1_ )
+#### DEFAULT_ABSOLUTE _ = 1e-12_ 
 
-#### DEFAULT_RELATIVE(_ = 1e-0_ )
+#### DEFAULT_RELATIVE _ = 1e-06_ 
 
 #### as_dict()
 
-#### _property_ tolerance(_: Union[float, int_ )
+#### _property _ tolerance _: Union[float, int]_ 
 
-#### value(_: Union[float, int_ )
+#### value _: Union[float, int]_ 
 
-### _class_ Distribution(x: Union[<built-in function array>, list], y: Union[<built-in function array>, list])
+### _class _ Distribution(x: Union[<built-in function array>, list], y: Union[<built-in function array>, list])
 Bases: `object`
 
 
-#### x(_: Union[array, list_ )
+#### x _: Union[array, list]_ 
 
-#### y(_: Union[array, list_ )
+#### y _: Union[array, list]_ 
 
 ### get_distribution_for_category_column(column: Series, normalize: bool = False)
 

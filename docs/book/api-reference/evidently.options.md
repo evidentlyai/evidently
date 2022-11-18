@@ -3,7 +3,7 @@
 ## Submodules
 
 
-### _class_ ColorOptions(primary_color: str = '#ed0400', secondary_color: str = '#4d4d4d', current_data_color: Optional[str] = None, reference_data_color: Optional[str] = None, color_sequence: Sequence[str] = ('#ed0400', '#0a5f38', '#6c3461', '#71aa34', '#d8dcd6', '#6b8ba4'), fill_color: str = 'LightGreen', zero_line_color: str = 'green', non_visible_color: str = 'white', underestimation_color: str = '#6574f7', overestimation_color: str = '#ee5540', majority_color: str = '#1acc98', vertical_lines: str = 'green', heatmap: str = 'RdBu_r')
+### _class _ ColorOptions(primary_color: str = '#ed0400', secondary_color: str = '#4d4d4d', current_data_color: Optional[str] = None, reference_data_color: Optional[str] = None, color_sequence: Sequence[str] = ('#ed0400', '#0a5f38', '#6c3461', '#71aa34', '#d8dcd6', '#6b8ba4'), fill_color: str = 'LightGreen', zero_line_color: str = 'green', non_visible_color: str = 'white', underestimation_color: str = '#6574f7', overestimation_color: str = '#ee5540', majority_color: str = '#1acc98', vertical_lines: str = 'green', heatmap: str = 'RdBu_r')
 Bases: `object`
 
 Collection of colors for data visualization
@@ -37,37 +37,37 @@ Collection of colors for data visualization
 - heatmap_colors - colors for heatmap
 
 
-#### color_sequence(_: Sequence[str_ _ = ('#ed0400', '#0a5f38', '#6c3461', '#71aa34', '#d8dcd6', '#6b8ba4'_ )
+#### color_sequence _: Sequence[str]_ _ = ('#ed0400', '#0a5f38', '#6c3461', '#71aa34', '#d8dcd6', '#6b8ba4')_ 
 
-#### current_data_color(_: Optional[str_ _ = Non_ )
+#### current_data_color _: Optional[str]_ _ = None_ 
 
-#### fill_color(_: st_ _ = 'LightGreen_ )
+#### fill_color _: str_ _ = 'LightGreen'_ 
 
 #### get_current_data_color()
 
 #### get_reference_data_color()
 
-#### heatmap(_: st_ _ = 'RdBu_r_ )
+#### heatmap _: str_ _ = 'RdBu_r'_ 
 
-#### majority_color(_: st_ _ = '#1acc98_ )
+#### majority_color _: str_ _ = '#1acc98'_ 
 
-#### non_visible_color(_: st_ _ = 'white_ )
+#### non_visible_color _: str_ _ = 'white'_ 
 
-#### overestimation_color(_: st_ _ = '#ee5540_ )
+#### overestimation_color _: str_ _ = '#ee5540'_ 
 
-#### primary_color(_: st_ _ = '#ed0400_ )
+#### primary_color _: str_ _ = '#ed0400'_ 
 
-#### reference_data_color(_: Optional[str_ _ = Non_ )
+#### reference_data_color _: Optional[str]_ _ = None_ 
 
-#### secondary_color(_: st_ _ = '#4d4d4d_ )
+#### secondary_color _: str_ _ = '#4d4d4d'_ 
 
-#### underestimation_color(_: st_ _ = '#6574f7_ )
+#### underestimation_color _: str_ _ = '#6574f7'_ 
 
-#### vertical_lines(_: st_ _ = 'green_ )
+#### vertical_lines _: str_ _ = 'green'_ 
 
-#### zero_line_color(_: st_ _ = 'green_ )
+#### zero_line_color _: str_ _ = 'green'_ 
 
-### _class_ DataDriftOptions(confidence: Optional[Union[float, Dict[str, float]]] = None, threshold: Optional[Union[float, Dict[str, float]]] = None, drift_share: float = 0.5, nbinsx: Union[int, Dict[str, int]] = 10, xbins: Optional[Dict[str, int]] = None, feature_stattest_func: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest), Dict[str, Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]]] = None, all_features_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, cat_features_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, num_features_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, per_feature_stattest: Optional[Dict[str, Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]] = None, cat_target_threshold: Optional[float] = None, num_target_threshold: Optional[float] = None, cat_target_stattest_func: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, num_target_stattest_func: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None)
+### _class _ DataDriftOptions(confidence: Optional[Union[float, Dict[str, float]]] = None, threshold: Optional[Union[float, Dict[str, float]]] = None, drift_share: float = 0.5, nbinsx: Union[int, Dict[str, int]] = 10, xbins: Optional[Dict[str, int]] = None, feature_stattest_func: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest), Dict[str, Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]]] = None, all_features_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, cat_features_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, num_features_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, per_feature_stattest: Optional[Dict[str, Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]] = None, cat_target_threshold: Optional[float] = None, num_target_threshold: Optional[float] = None, cat_target_stattest_func: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, num_target_stattest_func: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None)
 Bases: `object`
 
 Configuration for Data Drift calculations.
@@ -112,21 +112,21 @@ Configuration for Data Drift calculations.
 
 
 
-#### all_features_stattest(_: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]_ _ = Non_ )
+#### all_features_stattest _: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]_ _ = None_ 
 
 #### as_dict()
 
-#### cat_features_stattest(_: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]_ _ = Non_ )
+#### cat_features_stattest _: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]_ _ = None_ 
 
-#### cat_target_stattest_func(_: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]_ _ = Non_ )
+#### cat_target_stattest_func _: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]_ _ = None_ 
 
-#### cat_target_threshold(_: Optional[float_ _ = Non_ )
+#### cat_target_threshold _: Optional[float]_ _ = None_ 
 
-#### confidence(_: Optional[Union[float, Dict[str, float]]_ _ = Non_ )
+#### confidence _: Optional[Union[float, Dict[str, float]]]_ _ = None_ 
 
-#### drift_share(_: floa_ _ = 0._ )
+#### drift_share _: float_ _ = 0.5_ 
 
-#### feature_stattest_func(_: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest), Dict[str, Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]]_ _ = Non_ )
+#### feature_stattest_func _: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest), Dict[str, Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]]]_ _ = None_ 
 
 #### get_feature_stattest_func(feature_name: str, feature_type: str)
 
@@ -134,37 +134,37 @@ Configuration for Data Drift calculations.
 
 #### get_threshold(feature_name: str)
 
-#### nbinsx(_: Union[int, Dict[str, int]_ _ = 1_ )
+#### nbinsx _: Union[int, Dict[str, int]]_ _ = 10_ 
 
-#### num_features_stattest(_: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]_ _ = Non_ )
+#### num_features_stattest _: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]_ _ = None_ 
 
-#### num_target_stattest_func(_: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]_ _ = Non_ )
+#### num_target_stattest_func _: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]_ _ = None_ 
 
-#### num_target_threshold(_: Optional[float_ _ = Non_ )
+#### num_target_threshold _: Optional[float]_ _ = None_ 
 
-#### per_feature_stattest(_: Optional[Dict[str, Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]_ _ = Non_ )
+#### per_feature_stattest _: Optional[Dict[str, Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]]_ _ = None_ 
 
-#### threshold(_: Optional[Union[float, Dict[str, float]]_ _ = Non_ )
+#### threshold _: Optional[Union[float, Dict[str, float]]]_ _ = None_ 
 
-#### xbins(_: Optional[Dict[str, int]_ _ = Non_ )
+#### xbins _: Optional[Dict[str, int]]_ _ = None_ 
 
-### _class_ QualityMetricsOptions(conf_interval_n_sigmas: int = 1, classification_threshold: float = 0.5, cut_quantile: Union[NoneType, Tuple[str, float], Dict[str, Tuple[str, float]]] = None)
+### _class _ QualityMetricsOptions(conf_interval_n_sigmas: int = 1, classification_threshold: float = 0.5, cut_quantile: Union[NoneType, Tuple[str, float], Dict[str, Tuple[str, float]]] = None)
 Bases: `object`
 
 
 #### as_dict()
 
-#### classification_threshold(_: floa_ _ = 0._ )
+#### classification_threshold _: float_ _ = 0.5_ 
 
-#### conf_interval_n_sigmas(_: in_ _ = _ )
+#### conf_interval_n_sigmas _: int_ _ = 1_ 
 
-#### cut_quantile(_: Union[None, Tuple[str, float], Dict[str, Tuple[str, float]]_ _ = Non_ )
+#### cut_quantile _: Union[None, Tuple[str, float], Dict[str, Tuple[str, float]]]_ _ = None_ 
 
 #### get_cut_quantile(feature_name: str)
 ## Module contents
 
 
-### _class_ OptionsProvider()
+### _class _ OptionsProvider()
 Bases: `object`
 
 

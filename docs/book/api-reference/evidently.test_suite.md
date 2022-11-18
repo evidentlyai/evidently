@@ -3,7 +3,7 @@
 ## Submodules
 
 
-### _class_ TestSuite(tests: Optional[List[Union[[Test](evidently.tests.md#evidently.tests.base_test.Test), [TestPreset](evidently.test_preset.md#evidently.test_preset.test_preset.TestPreset), [BaseGenerator](evidently.utils.md#evidently.utils.generators.BaseGenerator)]]], options: Optional[list] = None)
+### _class _ TestSuite(tests: Optional[List[Union[[Test](evidently.tests.md#evidently.tests.base_test.Test), [TestPreset](evidently.test_preset.md#evidently.test_preset.test_preset.TestPreset), [BaseGenerator](evidently.utils.md#evidently.utils.generators.BaseGenerator)]]], options: Optional[list] = None)
 Bases: [`Display`](evidently.suite.md#evidently.suite.base_suite.Display)
 
 
