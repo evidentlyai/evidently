@@ -2,12 +2,10 @@
 
 ## Submodules
 
-## evidently.utils.data_operations module
-
 Methods for clean null or NaN values in a dataset
 
 
-### _class_ evidently.utils.data_operations.DatasetColumns(utility_columns: evidently.utils.data_operations.DatasetUtilityColumns, target_type: Optional[str], num_feature_names: List[str], cat_feature_names: List[str], datetime_feature_names: List[str], target_names: Optional[List[str]], task: Optional[str])
+### _class_ DatasetColumns(utility_columns: DatasetUtilityColumns, target_type: Optional[str], num_feature_names: List[str], cat_feature_names: List[str], datetime_feature_names: List[str], target_names: Optional[List[str]], task: Optional[str])
 Bases: `object`
 
 
@@ -49,7 +47,7 @@ If you want to include date time columns - set include_datetime_feature to True.
 
 #### utility_columns(_: DatasetUtilityColumn_ )
 
-### _class_ evidently.utils.data_operations.DatasetUtilityColumns(date: Optional[str], id_column: Optional[str], target: Optional[str], prediction: Union[str, Sequence[str], NoneType])
+### _class_ DatasetUtilityColumns(date: Optional[str], id_column: Optional[str], target: Optional[str], prediction: Union[str, Sequence[str], NoneType])
 Bases: `object`
 
 
@@ -63,13 +61,13 @@ Bases: `object`
 
 #### target(_: Optional[str_ )
 
-### evidently.utils.data_operations.process_columns(dataset: DataFrame, column_mapping: [ColumnMapping](./evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping))
+### process_columns(dataset: DataFrame, column_mapping: [ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping))
 
-### evidently.utils.data_operations.recognize_column_type(dataset: DataFrame, column_name: str, columns: DatasetColumns)
+### recognize_column_type(dataset: DataFrame, column_name: str, columns: DatasetColumns)
 Try to get the column type.
 
 
-### evidently.utils.data_operations.recognize_task(target_name: str, dataset: DataFrame)
+### recognize_task(target_name: str, dataset: DataFrame)
 Try to guess about the target type:
 if the target has a numeric type and number of unique values > 5: task == ‘regression’
 in all other cases task == ‘classification’.
@@ -89,11 +87,71 @@ in all other cases task == ‘classification’.
 
 
 
-### evidently.utils.data_operations.replace_infinity_values_to_nan(dataframe: DataFrame)
-## evidently.utils.generators module
+### replace_infinity_values_to_nan(dataframe: DataFrame)
+
+### _class_ ColumnDefinition(column_name: str, column_type: ColumnType)
+Bases: `object`
 
 
-### _class_ evidently.utils.generators.BaseGenerator()
+#### column_name(_: st_ )
+
+#### column_type(_: ColumnTyp_ )
+
+### _class_ ColumnPresenceState(value)
+Bases: `Enum`
+
+An enumeration.
+
+
+#### Missing(_ = _ )
+
+#### Partially(_ = _ )
+
+#### Present(_ = _ )
+
+### _class_ ColumnType(value)
+Bases: `Enum`
+
+An enumeration.
+
+
+#### Categorical(_ = 'cat_ )
+
+#### Datetime(_ = 'datetime_ )
+
+#### Numerical(_ = 'num_ )
+
+### _class_ DataDefinition(columns: List[ColumnDefinition], target: Optional[ColumnDefinition], prediction_columns: Optional[PredictionColumns], id_column: Optional[ColumnDefinition], datetime_column: Optional[ColumnDefinition], task: Optional[str], classification_labels: Optional[Sequence[str]])
+Bases: `object`
+
+
+#### classification_labels()
+
+#### get_columns(filter_def: str = 'all')
+
+#### get_datetime_column()
+
+#### get_id_column()
+
+#### get_prediction_columns()
+
+#### get_target_column()
+
+#### task()
+
+### _class_ PredictionColumns(predicted_values: Optional[ColumnDefinition] = None, prediction_probas: Optional[List[ColumnDefinition]] = None)
+Bases: `object`
+
+
+#### get_columns_list()
+
+#### predicted_values(_: Optional[ColumnDefinition_ _ = Non_ )
+
+#### prediction_probas(_: Optional[List[ColumnDefinition]_ _ = Non_ )
+
+### create_data_definition(reference_data: Optional[DataFrame], current_data: DataFrame, mapping: [ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping))
+
+### _class_ BaseGenerator()
 Bases: `Generic`[`TObject`]
 
 Base class for tests and metrics generator creation
@@ -113,24 +171,22 @@ For example:
     if you want to create a test generator for 50, 90, 99 quantiles tests
     for all numeric columns with default condition, by reference quantiles
 
-class TestQuantiles(BaseTestGenerator):
-
-    def generate(self, columns_info: DatasetColumns) -> List[TestValueQuantile]:
-
-        return [
-
-            TestValueQuantile(column_name=name, quantile=quantile)
-            for quantile in (0.5, 0.9, 0.99)
-            for name in columns_info.num_feature_names
-
-        ]
+```python
+>>> class TestQuantiles(BaseTestGenerator):
+...    def generate(self, columns_info: DatasetColumns) -> List[TestValueQuantile]:
+...        return [
+...            TestValueQuantile(column_name=name, quantile=quantile)
+...            for quantile in (0.5, 0.9, 0.99)
+...            for name in columns_info.num_feature_names
+...        ]
+```
 
 Do not forget set correct test type for generate return value
 
 
 #### _abstract_ generate(columns_info: DatasetColumns)
 
-### evidently.utils.generators.make_generator_by_columns(base_class: Type, columns: Optional[Union[str, list]] = None, parameters: Optional[Dict] = None)
+### make_generator_by_columns(base_class: Type, columns: Optional[Union[str, list]] = None, parameters: Optional[Dict] = None)
 Create a test generator for a columns list with a test class.
 
 Base class is specified with base_class parameter.
@@ -148,10 +204,8 @@ If columns is string, and it is not one of the values, ValueError will be raised
 
 parameters is used for specifying other parameters for each object, it is the same for all generated objects.
 
-## evidently.utils.numpy_encoder module
 
-
-### _class_ evidently.utils.numpy_encoder.NumpyEncoder(\*, skipkeys=False, ensure_ascii=True, check_circular=True, allow_nan=True, sort_keys=False, indent=None, separators=None, default=None)
+### _class_ NumpyEncoder(\*, skipkeys=False, ensure_ascii=True, check_circular=True, allow_nan=True, sort_keys=False, indent=None, separators=None, default=None)
 Bases: `JSONEncoder`
 
 Numpy and Pandas data types to JSON types encoder
@@ -163,12 +217,10 @@ Convert the object to a Python type
 
 If we cannot convert the object, leave the default JSONEncoder behaviour - raise a TypeError exception.
 
-## evidently.utils.types module
-
 Additional types, classes, dataclasses, etc.
 
 
-### _class_ evidently.utils.types.ApproxValue(value: Union[float, int], relative: Optional[Union[float, int]] = None, absolute: Optional[Union[float, int]] = None)
+### _class_ ApproxValue(value: Union[float, int], relative: Optional[Union[float, int]] = None, absolute: Optional[Union[float, int]] = None)
 Bases: `object`
 
 Class for approximate scalar value calculations
@@ -183,10 +235,8 @@ Class for approximate scalar value calculations
 #### _property_ tolerance(_: Union[float, int_ )
 
 #### value(_: Union[float, int_ )
-## evidently.utils.visualizations module
 
-
-### _class_ evidently.utils.visualizations.Distribution(x: Union[<built-in function array>, list], y: Union[<built-in function array>, list])
+### _class_ Distribution(x: Union[<built-in function array>, list], y: Union[<built-in function array>, list])
 Bases: `object`
 
 
@@ -194,56 +244,56 @@ Bases: `object`
 
 #### y(_: Union[array, list_ )
 
-### evidently.utils.visualizations.get_distribution_for_category_column(column: Series, normalize: bool = False)
+### get_distribution_for_category_column(column: Series, normalize: bool = False)
 
-### evidently.utils.visualizations.get_distribution_for_column(\*, column_type: str, current: Series, reference: Optional[Series] = None)
+### get_distribution_for_column(\*, column_type: str, current: Series, reference: Optional[Series] = None)
 
-### evidently.utils.visualizations.get_distribution_for_numerical_column(column: Series, bins: Optional[Union[list, array]] = None)
+### get_distribution_for_numerical_column(column: Series, bins: Optional[Union[list, array]] = None)
 
-### evidently.utils.visualizations.make_hist_df(hist: Tuple[array, array])
+### make_hist_df(hist: Tuple[array, array])
 
-### evidently.utils.visualizations.make_hist_for_cat_plot(curr: Series, ref: Optional[Series] = None, normalize: bool = False, dropna=False)
+### make_hist_for_cat_plot(curr: Series, ref: Optional[Series] = None, normalize: bool = False, dropna=False)
 
-### evidently.utils.visualizations.make_hist_for_num_plot(curr: Series, ref: Optional[Series] = None)
+### make_hist_for_num_plot(curr: Series, ref: Optional[Series] = None)
 
-### evidently.utils.visualizations.plot_boxes(curr_for_plots: dict, ref_for_plots: Optional[dict], yaxis_title: str, xaxis_title: str, color_options: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions))
+### plot_boxes(curr_for_plots: dict, ref_for_plots: Optional[dict], yaxis_title: str, xaxis_title: str, color_options: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions))
 Accepts current and reference data as dicts with box parameters (“mins”, “lowers”, “uppers”, “means”, “maxs”)
 and name of boxes parameter - “values”
 
 
-### evidently.utils.visualizations.plot_cat_cat_rel(curr: DataFrame, ref: DataFrame, target_name: str, feature_name: str, color_options: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions))
+### plot_cat_cat_rel(curr: DataFrame, ref: DataFrame, target_name: str, feature_name: str, color_options: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions))
 Accepts current and reference data as pandas dataframes with two columns: feature_name and “count_objects”.
 
 
-### evidently.utils.visualizations.plot_cat_feature_in_time(curr_data: DataFrame, ref_data: Optional[DataFrame], feature_name: str, datetime_name: str, freq: str, color_options: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions))
+### plot_cat_feature_in_time(curr_data: DataFrame, ref_data: Optional[DataFrame], feature_name: str, datetime_name: str, freq: str, color_options: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions))
 Accepts current and reference data as pandas dataframes with two columns: datetime_name and feature_name.
 
 
-### evidently.utils.visualizations.plot_conf_mtrx(curr_mtrx, ref_mtrx)
+### plot_conf_mtrx(curr_mtrx, ref_mtrx)
 
-### evidently.utils.visualizations.plot_distr(\*, hist_curr, hist_ref=None, orientation='v', color_options: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions))
+### plot_distr(\*, hist_curr, hist_ref=None, orientation='v', color_options: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions))
 
-### evidently.utils.visualizations.plot_distr_subplots(\*, hist_curr, hist_ref=None, xaxis_name: str = '', yaxis_name: str = '', same_color: bool = False, color_options: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions))
+### plot_distr_subplots(\*, hist_curr, hist_ref=None, xaxis_name: str = '', yaxis_name: str = '', same_color: bool = False, color_options: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions))
 
-### evidently.utils.visualizations.plot_distr_with_log_button(curr_data: DataFrame, curr_data_log: DataFrame, ref_data: Optional[DataFrame], ref_data_log: Optional[DataFrame], color_options: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions))
+### plot_distr_with_log_button(curr_data: DataFrame, curr_data_log: DataFrame, ref_data: Optional[DataFrame], ref_data_log: Optional[DataFrame], color_options: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions))
 
-### evidently.utils.visualizations.plot_error_bias_colored_scatter(curr_scatter_data: Dict[str, Dict[str, Series]], ref_scatter_data: Optional[Dict[str, Dict[str, Series]]], color_options: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions))
+### plot_error_bias_colored_scatter(curr_scatter_data: Dict[str, Dict[str, Series]], ref_scatter_data: Optional[Dict[str, Dict[str, Series]]], color_options: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions))
 
-### evidently.utils.visualizations.plot_line_in_time(\*, curr: Dict[str, Series], ref: Optional[Dict[str, Series]], x_name: str, y_name: str, xaxis_name: str = '', yaxis_name: str = '', color_options: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions))
+### plot_line_in_time(\*, curr: Dict[str, Series], ref: Optional[Dict[str, Series]], x_name: str, y_name: str, xaxis_name: str = '', yaxis_name: str = '', color_options: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions))
 
-### evidently.utils.visualizations.plot_num_feature_in_time(curr_data: DataFrame, ref_data: Optional[DataFrame], feature_name: str, datetime_name: str, freq: str, color_options: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions))
+### plot_num_feature_in_time(curr_data: DataFrame, ref_data: Optional[DataFrame], feature_name: str, datetime_name: str, freq: str, color_options: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions))
 Accepts current and reference data as pandas dataframes with two columns: datetime_name and feature_name.
 
 
-### evidently.utils.visualizations.plot_num_num_rel(curr: Dict[str, list], ref: Optional[Dict[str, list]], target_name: str, column_name: str, color_options: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions))
+### plot_num_num_rel(curr: Dict[str, list], ref: Optional[Dict[str, list]], target_name: str, column_name: str, color_options: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions))
 
-### evidently.utils.visualizations.plot_pred_actual_time(\*, curr: Dict[str, Series], ref: Optional[Dict[str, Series]], x_name: str = 'x', xaxis_name: str = '', yaxis_name: str = '', color_options: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions))
+### plot_pred_actual_time(\*, curr: Dict[str, Series], ref: Optional[Dict[str, Series]], x_name: str = 'x', xaxis_name: str = '', yaxis_name: str = '', color_options: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions))
 
-### evidently.utils.visualizations.plot_scatter(\*, curr: Dict[str, Union[list, Series]], ref: Optional[Dict[str, list]], x: str, y: str, xaxis_name: Optional[str] = None, yaxis_name: Optional[str] = None, color_options: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions))
+### plot_scatter(\*, curr: Dict[str, Union[list, Series]], ref: Optional[Dict[str, list]], x: str, y: str, xaxis_name: Optional[str] = None, yaxis_name: Optional[str] = None, color_options: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions))
 
-### evidently.utils.visualizations.plot_scatter_for_data_drift(curr_y: list, curr_x: list, y0: float, y1: float, y_name: str, x_name: str, color_options: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions))
+### plot_scatter_for_data_drift(curr_y: list, curr_x: list, y0: float, y1: float, y_name: str, x_name: str, color_options: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions))
 
-### evidently.utils.visualizations.plot_time_feature_distr(curr_data: DataFrame, ref_data: Optional[DataFrame], feature_name: str, color_options: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions))
+### plot_time_feature_distr(curr_data: DataFrame, ref_data: Optional[DataFrame], feature_name: str, color_options: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions))
 Accepts current and reference data as pandas dataframes with two columns: feature_name, “number_of_items”
 
 ## Module contents

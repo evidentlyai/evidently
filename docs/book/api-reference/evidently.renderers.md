@@ -2,38 +2,36 @@
 
 ## Submodules
 
-## evidently.renderers.base_renderer module
 
-
-### _class_ evidently.renderers.base_renderer.BaseRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ BaseRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: `object`
 
 Base class for all renderers
 
 
-#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
-### _class_ evidently.renderers.base_renderer.DetailsInfo(title: str, info: evidently.model.widget.BaseWidgetInfo, id: str = <factory>)
+### _class_ DetailsInfo(title: str, info: evidently.model.widget.BaseWidgetInfo, id: str = <factory>)
 Bases: `object`
 
 
 #### id(_: st_ )
 
-#### info(_: [BaseWidgetInfo](./evidently.model.md#evidently.model.widget.BaseWidgetInfo_ )
+#### info(_: BaseWidgetInf_ )
 
 #### title(_: st_ )
 
-### _class_ evidently.renderers.base_renderer.MetricRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ MetricRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: `BaseRenderer`
 
 
-#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj)
 
 #### render_json(obj)
 
-### _class_ evidently.renderers.base_renderer.RenderersDefinitions(typed_renderers: dict = <factory>, default_html_test_renderer: Optional[evidently.renderers.base_renderer.TestRenderer] = None, default_html_metric_renderer: Optional[evidently.renderers.base_renderer.MetricRenderer] = None)
+### _class_ RenderersDefinitions(typed_renderers: dict = <factory>, default_html_test_renderer: Optional[evidently.renderers.base_renderer.TestRenderer] = None, default_html_metric_renderer: Optional[evidently.renderers.base_renderer.MetricRenderer] = None)
 Bases: `object`
 
 
@@ -43,7 +41,7 @@ Bases: `object`
 
 #### typed_renderers(_: dic_ )
 
-### _class_ evidently.renderers.base_renderer.TestHtmlInfo(name: str, description: str, status: str, details: List[evidently.renderers.base_renderer.DetailsInfo], groups: Dict[str, str])
+### _class_ TestHtmlInfo(name: str, description: str, status: str, details: List[DetailsInfo], groups: Dict[str, str])
 Bases: `object`
 
 
@@ -57,13 +55,13 @@ Bases: `object`
 
 #### status(_: st_ )
 
-#### with_details(title: str, info: [BaseWidgetInfo](./evidently.model.md#evidently.model.widget.BaseWidgetInfo))
+#### with_details(title: str, info: BaseWidgetInfo)
 
-### _class_ evidently.renderers.base_renderer.TestRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ TestRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: `BaseRenderer`
 
 
-#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### html_description(obj)
 
@@ -73,11 +71,9 @@ Bases: `BaseRenderer`
 
 #### render_json(obj)
 
-### evidently.renderers.base_renderer.default_renderer(wrap_type)
-## evidently.renderers.html_widgets module
+### default_renderer(wrap_type)
 
-
-### _class_ evidently.renderers.html_widgets.ColumnDefinition(title: str, field_name: str, type: evidently.renderers.html_widgets.ColumnType = <ColumnType.STRING: 'string'>, sort: Optional[evidently.renderers.html_widgets.SortDirection] = None, options: Optional[dict] = None)
+### _class_ ColumnDefinition(title: str, field_name: str, type: evidently.renderers.html_widgets.ColumnType = <ColumnType.STRING: 'string'>, sort: Optional[evidently.renderers.html_widgets.SortDirection] = None, options: Optional[dict] = None)
 Bases: `object`
 
 
@@ -93,7 +89,7 @@ Bases: `object`
 
 #### type(_: ColumnTyp_ _ = 'string_ )
 
-### _class_ evidently.renderers.html_widgets.ColumnType(value)
+### _class_ ColumnType(value)
 Bases: `Enum`
 
 An enumeration.
@@ -107,7 +103,7 @@ An enumeration.
 
 #### STRING(_ = 'string_ )
 
-### _class_ evidently.renderers.html_widgets.CounterData(label: str, value: str)
+### _class_ CounterData(label: str, value: str)
 Bases: `object`
 
 
@@ -153,15 +149,15 @@ create CounterData for string value with given precision.
 
 #### value(_: st_ )
 
-### _class_ evidently.renderers.html_widgets.DetailsPartInfo(title: str, info: Union[[BaseWidgetInfo](./evidently.model.md#evidently.model.widget.BaseWidgetInfo), [PlotlyGraphInfo](./evidently.model.md#evidently.model.widget.PlotlyGraphInfo)])
+### _class_ DetailsPartInfo(title: str, info: Union[BaseWidgetInfo, PlotlyGraphInfo])
 Bases: `object`
 
 
-#### info(_: Union[[BaseWidgetInfo](./evidently.model.md#evidently.model.widget.BaseWidgetInfo), [PlotlyGraphInfo](./evidently.model.md#evidently.model.widget.PlotlyGraphInfo)_ )
+#### info(_: Union[BaseWidgetInfo, PlotlyGraphInfo_ )
 
 #### title(_: st_ )
 
-### _class_ evidently.renderers.html_widgets.GraphData(title: str, data: dict, layout: dict)
+### _class_ GraphData(title: str, data: dict, layout: dict)
 Bases: `object`
 
 
@@ -177,7 +173,7 @@ create GraphData from plotly figure itself
 
 #### title(_: st_ )
 
-### _class_ evidently.renderers.html_widgets.HeatmapData(name: str, matrix: pandas.core.frame.DataFrame)
+### _class_ HeatmapData(name: str, matrix: pandas.core.frame.DataFrame)
 Bases: `object`
 
 
@@ -185,7 +181,7 @@ Bases: `object`
 
 #### name(_: st_ )
 
-### _class_ evidently.renderers.html_widgets.HistogramData(name: str, x: list, y: List[Union[int, float]])
+### _class_ HistogramData(name: str, x: list, y: List[Union[int, float]])
 Bases: `object`
 
 
@@ -195,7 +191,7 @@ Bases: `object`
 
 #### y(_: List[Union[int, float]_ )
 
-### _class_ evidently.renderers.html_widgets.RichTableDataRow(fields: dict, details: Optional[RowDetails] = None)
+### _class_ RichTableDataRow(fields: dict, details: Optional[RowDetails] = None)
 Bases: `object`
 
 
@@ -203,15 +199,15 @@ Bases: `object`
 
 #### fields(_: dic_ )
 
-### _class_ evidently.renderers.html_widgets.RowDetails(parts: Optional[List[DetailsPartInfo]] = None)
+### _class_ RowDetails(parts: Optional[List[DetailsPartInfo]] = None)
 Bases: `object`
 
 
 #### parts(_: List[DetailsPartInfo_ )
 
-#### with_part(title: str, info: Union[[BaseWidgetInfo](./evidently.model.md#evidently.model.widget.BaseWidgetInfo), [PlotlyGraphInfo](./evidently.model.md#evidently.model.widget.PlotlyGraphInfo)])
+#### with_part(title: str, info: Union[BaseWidgetInfo, PlotlyGraphInfo])
 
-### _class_ evidently.renderers.html_widgets.SortDirection(value)
+### _class_ SortDirection(value)
 Bases: `Enum`
 
 An enumeration.
@@ -221,15 +217,15 @@ An enumeration.
 
 #### DESC(_ = 'desc_ )
 
-### _class_ evidently.renderers.html_widgets.TabData(title: str, widget: [evidently.model.widget.BaseWidgetInfo](./evidently.model.md#evidently.model.widget.BaseWidgetInfo))
+### _class_ TabData(title: str, widget: evidently.model.widget.BaseWidgetInfo)
 Bases: `object`
 
 
 #### title(_: st_ )
 
-#### widget(_: [BaseWidgetInfo](./evidently.model.md#evidently.model.widget.BaseWidgetInfo_ )
+#### widget(_: BaseWidgetInf_ )
 
-### _class_ evidently.renderers.html_widgets.WidgetSize(value)
+### _class_ WidgetSize(value)
 Bases: `Enum`
 
 An enumeration.
@@ -239,7 +235,7 @@ An enumeration.
 
 #### HALF(_ = _ )
 
-### evidently.renderers.html_widgets.counter(\*, counters: List[CounterData], title: str = '', size: WidgetSize = WidgetSize.FULL)
+### counter(\*, counters: List[CounterData], title: str = '', size: WidgetSize = WidgetSize.FULL)
 generate widget with given counters
 
 
@@ -260,25 +256,25 @@ generate widget with given counters
 ```
 
 
-### evidently.renderers.html_widgets.get_class_separation_plot_data(current_plot: DataFrame, reference_plot: Optional[DataFrame], target_name: str, color_options: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions))
+### get_class_separation_plot_data(current_plot: DataFrame, reference_plot: Optional[DataFrame], target_name: str, color_options: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions))
 
-### evidently.renderers.html_widgets.get_heatmaps_widget(\*, title: str = '', primary_data: HeatmapData, secondary_data: Optional[HeatmapData] = None, size: WidgetSize = WidgetSize.FULL, color_options: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions))
+### get_heatmaps_widget(\*, title: str = '', primary_data: HeatmapData, secondary_data: Optional[HeatmapData] = None, size: WidgetSize = WidgetSize.FULL, color_options: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions))
 Create a widget with heatmap(s)
 
 
-### evidently.renderers.html_widgets.get_histogram_figure(\*, primary_hist: HistogramData, secondary_hist: Optional[HistogramData] = None, color_options: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions), orientation: str = 'v')
+### get_histogram_figure(\*, primary_hist: HistogramData, secondary_hist: Optional[HistogramData] = None, color_options: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions), orientation: str = 'v')
 
-### evidently.renderers.html_widgets.get_histogram_figure_with_quantile(\*, current: HistogramData, reference: Optional[HistogramData] = None, current_quantile: float, reference_quantile: Optional[float] = None, color_options: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions), orientation: str = 'v')
+### get_histogram_figure_with_quantile(\*, current: HistogramData, reference: Optional[HistogramData] = None, current_quantile: float, reference_quantile: Optional[float] = None, color_options: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions), orientation: str = 'v')
 
-### evidently.renderers.html_widgets.get_histogram_figure_with_range(\*, primary_hist: HistogramData, secondary_hist: Optional[HistogramData] = None, left: Union[float, int], right: Union[float, int], orientation: str = 'v', color_options: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions))
+### get_histogram_figure_with_range(\*, primary_hist: HistogramData, secondary_hist: Optional[HistogramData] = None, left: Union[float, int], right: Union[float, int], orientation: str = 'v', color_options: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions))
 
-### evidently.renderers.html_widgets.get_histogram_for_distribution(\*, current_distribution: [Distribution](./evidently.utils.md#evidently.utils.visualizations.Distribution), reference_distribution: Optional[[Distribution](./evidently.utils.md#evidently.utils.visualizations.Distribution)] = None, title: str = '', xaxis_title: Optional[str] = None, yaxis_title: Optional[str] = None, color_options: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions))
+### get_histogram_for_distribution(\*, current_distribution: [Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution), reference_distribution: Optional[[Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution)] = None, title: str = '', xaxis_title: Optional[str] = None, yaxis_title: Optional[str] = None, color_options: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions))
 
-### evidently.renderers.html_widgets.get_pr_rec_plot_data(current_pr_curve: dict, reference_pr_curve: Optional[dict], color_options: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions))
+### get_pr_rec_plot_data(current_pr_curve: dict, reference_pr_curve: Optional[dict], color_options: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions))
 
-### evidently.renderers.html_widgets.get_roc_auc_tab_data(curr_roc_curve: dict, ref_roc_curve: Optional[dict], color_options: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions))
+### get_roc_auc_tab_data(curr_roc_curve: dict, ref_roc_curve: Optional[dict], color_options: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions))
 
-### evidently.renderers.html_widgets.header_text(\*, label: str, title: str = '', size: WidgetSize = WidgetSize.FULL)
+### header_text(\*, label: str, title: str = '', size: WidgetSize = WidgetSize.FULL)
 generate widget with some text as header
 
 
@@ -292,7 +288,7 @@ generate widget with some text as header
 
 
 
-### evidently.renderers.html_widgets.histogram(\*, title: str, primary_hist: HistogramData, secondary_hist: Optional[HistogramData] = None, color_options: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions), orientation: str = 'v', size: WidgetSize = WidgetSize.FULL, xaxis_title: Optional[str] = None, yaxis_title: Optional[str] = None)
+### histogram(\*, title: str, primary_hist: HistogramData, secondary_hist: Optional[HistogramData] = None, color_options: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions), orientation: str = 'v', size: WidgetSize = WidgetSize.FULL, xaxis_title: Optional[str] = None, yaxis_title: Optional[str] = None)
 generate widget with one or two histogram
 
 
@@ -329,7 +325,7 @@ generate widget with one or two histogram
 ```
 
 
-### evidently.renderers.html_widgets.plotly_data(\*, title: str, data: dict, layout: dict, size: WidgetSize = WidgetSize.FULL)
+### plotly_data(\*, title: str, data: dict, layout: dict, size: WidgetSize = WidgetSize.FULL)
 generate plotly plot with given data and layout (can be generated from plotly).
 
 
@@ -353,7 +349,7 @@ generate plotly plot with given data and layout (can be generated from plotly).
 ```
 
 
-### evidently.renderers.html_widgets.plotly_figure(\*, title: str, figure: Figure, size: WidgetSize = WidgetSize.FULL)
+### plotly_figure(\*, title: str, figure: Figure, size: WidgetSize = WidgetSize.FULL)
 generate plotly plot based on given plotly figure object.
 
 
@@ -374,7 +370,7 @@ generate plotly plot based on given plotly figure object.
 ```
 
 
-### evidently.renderers.html_widgets.plotly_graph(\*, graph_data: GraphData, size: WidgetSize = WidgetSize.FULL)
+### plotly_graph(\*, graph_data: GraphData, size: WidgetSize = WidgetSize.FULL)
 generate plotly plot with given GraphData object.
 
 
@@ -395,7 +391,7 @@ generate plotly plot with given GraphData object.
 ```
 
 
-### evidently.renderers.html_widgets.plotly_graph_tabs(\*, title: str, figures: List[GraphData], size: WidgetSize = WidgetSize.FULL)
+### plotly_graph_tabs(\*, title: str, figures: List[GraphData], size: WidgetSize = WidgetSize.FULL)
 generate Tab widget with multiple graphs
 
 
@@ -420,7 +416,7 @@ generate Tab widget with multiple graphs
 ```
 
 
-### evidently.renderers.html_widgets.rich_table_data(\*, title: str = '', size: WidgetSize = WidgetSize.FULL, rows_per_page: int = 10, columns: List[ColumnDefinition], data: List[RichTableDataRow])
+### rich_table_data(\*, title: str = '', size: WidgetSize = WidgetSize.FULL, rows_per_page: int = 10, columns: List[ColumnDefinition], data: List[RichTableDataRow])
 generate widget with rich table: with additional column types and details for rows
 
 
@@ -459,7 +455,7 @@ generate widget with rich table: with additional column types and details for ro
 ```
 
 
-### evidently.renderers.html_widgets.table_data(\*, column_names: Iterable[str], data: Iterable[Iterable], title: str = '', size: WidgetSize = WidgetSize.FULL)
+### table_data(\*, column_names: Iterable[str], data: Iterable[Iterable], title: str = '', size: WidgetSize = WidgetSize.FULL)
 generate simple table with given columns and data
 
 
@@ -483,7 +479,7 @@ generate simple table with given columns and data
 ```
 
 
-### evidently.renderers.html_widgets.widget_tabs(\*, title: str = '', size: WidgetSize = WidgetSize.FULL, tabs: List[TabData])
+### widget_tabs(\*, title: str = '', size: WidgetSize = WidgetSize.FULL, tabs: List[TabData])
 generate widget with tabs which can contain any other widget.
 
 
@@ -509,17 +505,13 @@ generate widget with tabs which can contain any other widget.
 ```
 
 
-### evidently.renderers.html_widgets.widget_tabs_for_more_than_one(\*, title: str = '', size: WidgetSize = WidgetSize.FULL, tabs: List[TabData])
+### widget_tabs_for_more_than_one(\*, title: str = '', size: WidgetSize = WidgetSize.FULL, tabs: List[TabData])
 Draw tabs widget only if there is more than one tab, otherwise just draw one widget
 
-## evidently.renderers.notebook_utils module
 
+### determine_template(mode: str)
 
-### evidently.renderers.notebook_utils.determine_template(mode: str)
-## evidently.renderers.render_utils module
+### get_distribution_plot_figure(\*, current_distribution: [Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution), reference_distribution: Optional[[Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution)], color_options: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions), orientation: str = 'v')
 
-
-### evidently.renderers.render_utils.get_distribution_plot_figure(\*, current_distribution: [Distribution](./evidently.utils.md#evidently.utils.visualizations.Distribution), reference_distribution: Optional[[Distribution](./evidently.utils.md#evidently.utils.visualizations.Distribution)], color_options: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions), orientation: str = 'v')
-
-### evidently.renderers.render_utils.plot_distr(\*, hist_curr, hist_ref=None, orientation='v', color_options: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions))
+### plot_distr(\*, hist_curr, hist_ref=None, orientation='v', color_options: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions))
 ## Module contents

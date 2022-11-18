@@ -2,10 +2,8 @@
 
 ## Submodules
 
-## evidently.metrics.data_integrity.column_missing_values_metric module
 
-
-### _class_ evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValues(number_of_rows: int, different_missing_values: Dict[Any, int], number_of_different_missing_values: int, number_of_missing_values: int, share_of_missing_values: float)
+### _class_ ColumnMissingValues(number_of_rows: int, different_missing_values: Dict[Any, int], number_of_different_missing_values: int, number_of_missing_values: int, share_of_missing_values: float)
 Bases: `object`
 
 Statistics about missing values in a column
@@ -21,8 +19,8 @@ Statistics about missing values in a column
 
 #### share_of_missing_values(_: floa_ )
 
-### _class_ evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValuesMetric(column_name: str, missing_values: Optional[list] = None, replace: bool = True)
-Bases: [`Metric`](./evidently.metrics.md#evidently.metrics.base_metric.Metric)[`ColumnMissingValuesMetricResult`]
+### _class_ ColumnMissingValuesMetric(column_name: str, missing_values: Optional[list] = None, replace: bool = True)
+Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`ColumnMissingValuesMetricResult`]
 
 Count missing values in a column.
 
@@ -40,23 +38,23 @@ If replace parameter is True - use values from missing_values list only.
 
 #### DEFAULT_MISSING_VALUES(_ = ['', inf, -inf, None_ )
 
-#### calculate(data: [InputData](./evidently.metrics.md#evidently.metrics.base_metric.InputData))
+#### calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
 #### column_name(_: st_ )
 
 #### missing_values(_: frozense_ )
 
-### _class_ evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValuesMetricRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`MetricRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
+### _class_ ColumnMissingValuesMetricRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
 
 
-#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: ColumnMissingValuesMetric)
 
 #### render_json(obj: ColumnMissingValuesMetric)
 
-### _class_ evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValuesMetricResult(column_name: str, current: evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValues, reference: Optional[evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValues] = None)
+### _class_ ColumnMissingValuesMetricResult(column_name: str, current: ColumnMissingValues, reference: Optional[ColumnMissingValues] = None)
 Bases: `object`
 
 
@@ -65,16 +63,14 @@ Bases: `object`
 #### current(_: ColumnMissingValue_ )
 
 #### reference(_: Optional[ColumnMissingValues_ _ = Non_ )
-## evidently.metrics.data_integrity.column_regexp_metric module
 
-
-### _class_ evidently.metrics.data_integrity.column_regexp_metric.ColumnRegExpMetric(column_name: str, reg_exp: str, top: int = 10)
-Bases: [`Metric`](./evidently.metrics.md#evidently.metrics.base_metric.Metric)[`DataIntegrityValueByRegexpMetricResult`]
+### _class_ ColumnRegExpMetric(column_name: str, reg_exp: str, top: int = 10)
+Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`DataIntegrityValueByRegexpMetricResult`]
 
 Count number of values in a column matched or not by a regular expression (regexp)
 
 
-#### calculate(data: [InputData](./evidently.metrics.md#evidently.metrics.base_metric.InputData))
+#### calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
 #### column_name(_: st_ )
 
@@ -82,17 +78,17 @@ Count number of values in a column matched or not by a regular expression (regex
 
 #### top(_: in_ )
 
-### _class_ evidently.metrics.data_integrity.column_regexp_metric.ColumnRegExpMetricRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`MetricRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
+### _class_ ColumnRegExpMetricRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
 
 
-#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: ColumnRegExpMetric)
 
 #### render_json(obj: ColumnRegExpMetric)
 
-### _class_ evidently.metrics.data_integrity.column_regexp_metric.DataIntegrityValueByRegexpMetricResult(column_name: str, reg_exp: str, top: int, current: evidently.metrics.data_integrity.column_regexp_metric.DataIntegrityValueByRegexpStat, reference: Optional[evidently.metrics.data_integrity.column_regexp_metric.DataIntegrityValueByRegexpStat] = None)
+### _class_ DataIntegrityValueByRegexpMetricResult(column_name: str, reg_exp: str, top: int, current: DataIntegrityValueByRegexpStat, reference: Optional[DataIntegrityValueByRegexpStat] = None)
 Bases: `object`
 
 
@@ -106,7 +102,7 @@ Bases: `object`
 
 #### top(_: in_ )
 
-### _class_ evidently.metrics.data_integrity.column_regexp_metric.DataIntegrityValueByRegexpStat(number_of_matched: int, number_of_not_matched: int, number_of_rows: int, table_of_matched: Dict[str, int], table_of_not_matched: Dict[str, int])
+### _class_ DataIntegrityValueByRegexpStat(number_of_matched: int, number_of_not_matched: int, number_of_rows: int, table_of_matched: Dict[str, int], table_of_not_matched: Dict[str, int])
 Bases: `object`
 
 Statistics about matched by a regular expression values in a column for one dataset
@@ -121,10 +117,8 @@ Statistics about matched by a regular expression values in a column for one data
 #### table_of_matched(_: Dict[str, int_ )
 
 #### table_of_not_matched(_: Dict[str, int_ )
-## evidently.metrics.data_integrity.column_summary_metric module
 
-
-### _class_ evidently.metrics.data_integrity.column_summary_metric.CategoricalCharacteristics(number_of_rows: int, count: int, unique: Optional[int], unique_percentage: Optional[float], most_common: Optional[object], most_common_percentage: Optional[float], missing: Optional[int], missing_percentage: Optional[float], new_in_current_values_count: Optional[int] = None, unused_in_current_values_count: Optional[int] = None)
+### _class_ CategoricalCharacteristics(number_of_rows: int, count: int, unique: Optional[int], unique_percentage: Optional[float], most_common: Optional[object], most_common_percentage: Optional[float], missing: Optional[int], missing_percentage: Optional[float], new_in_current_values_count: Optional[int] = None, unused_in_current_values_count: Optional[int] = None)
 Bases: `object`
 
 
@@ -148,7 +142,7 @@ Bases: `object`
 
 #### unused_in_current_values_count(_: Optional[int_ _ = Non_ )
 
-### _class_ evidently.metrics.data_integrity.column_summary_metric.ColumnSummary(column_name: str, column_type: str, reference_characteristics: Union[evidently.metrics.data_integrity.column_summary_metric.NumericCharacteristics, evidently.metrics.data_integrity.column_summary_metric.CategoricalCharacteristics, evidently.metrics.data_integrity.column_summary_metric.DatetimeCharacteristics, NoneType], current_characteristics: Union[evidently.metrics.data_integrity.column_summary_metric.NumericCharacteristics, evidently.metrics.data_integrity.column_summary_metric.CategoricalCharacteristics, evidently.metrics.data_integrity.column_summary_metric.DatetimeCharacteristics], plot_data: evidently.metrics.data_integrity.column_summary_metric.DataQualityPlot)
+### _class_ ColumnSummary(column_name: str, column_type: str, reference_characteristics: Union[NumericCharacteristics, CategoricalCharacteristics, DatetimeCharacteristics, NoneType], current_characteristics: Union[NumericCharacteristics, CategoricalCharacteristics, DatetimeCharacteristics], plot_data: DataQualityPlot)
 Bases: `object`
 
 
@@ -162,25 +156,25 @@ Bases: `object`
 
 #### reference_characteristics(_: Optional[Union[NumericCharacteristics, CategoricalCharacteristics, DatetimeCharacteristics]_ )
 
-### _class_ evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric(column_name: str)
-Bases: [`Metric`](./evidently.metrics.md#evidently.metrics.base_metric.Metric)[`ColumnSummary`]
+### _class_ ColumnSummaryMetric(column_name: str)
+Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`ColumnSummary`]
 
 
-#### calculate(data: [InputData](./evidently.metrics.md#evidently.metrics.base_metric.InputData))
+#### calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
-#### _static_ map_data(stats: [FeatureQualityStats](./evidently.calculations.md#evidently.calculations.data_quality.FeatureQualityStats))
+#### _static_ map_data(stats: [FeatureQualityStats](evidently.calculations.md#evidently.calculations.data_quality.FeatureQualityStats))
 
-### _class_ evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetricRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`MetricRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
+### _class_ ColumnSummaryMetricRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
 
 
-#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: ColumnSummaryMetric)
 
 #### render_json(obj: ColumnSummaryMetric)
 
-### _class_ evidently.metrics.data_integrity.column_summary_metric.DataByTarget(data_for_plots: Dict[str, Dict[str, Union[list, pandas.core.frame.DataFrame]]], target_name: str, target_type: str)
+### _class_ DataByTarget(data_for_plots: Dict[str, Dict[str, Union[list, pandas.core.frame.DataFrame]]], target_name: str, target_type: str)
 Bases: `object`
 
 
@@ -190,7 +184,7 @@ Bases: `object`
 
 #### target_type(_: st_ )
 
-### _class_ evidently.metrics.data_integrity.column_summary_metric.DataInTime(data_for_plots: Dict[str, pandas.core.frame.DataFrame], freq: str, datetime_name: str)
+### _class_ DataInTime(data_for_plots: Dict[str, pandas.core.frame.DataFrame], freq: str, datetime_name: str)
 Bases: `object`
 
 
@@ -200,7 +194,7 @@ Bases: `object`
 
 #### freq(_: st_ )
 
-### _class_ evidently.metrics.data_integrity.column_summary_metric.DataQualityPlot(bins_for_hist: Dict[str, pandas.core.frame.DataFrame], data_in_time: Optional[evidently.metrics.data_integrity.column_summary_metric.DataInTime], data_by_target: Optional[evidently.metrics.data_integrity.column_summary_metric.DataByTarget], counts_of_values: Optional[Dict[str, pandas.core.frame.DataFrame]])
+### _class_ DataQualityPlot(bins_for_hist: Dict[str, pandas.core.frame.DataFrame], data_in_time: Optional[DataInTime], data_by_target: Optional[DataByTarget], counts_of_values: Optional[Dict[str, pandas.core.frame.DataFrame]])
 Bases: `object`
 
 
@@ -212,7 +206,7 @@ Bases: `object`
 
 #### data_in_time(_: Optional[DataInTime_ )
 
-### _class_ evidently.metrics.data_integrity.column_summary_metric.DatetimeCharacteristics(number_of_rows: int, count: int, unique: Optional[int], unique_percentage: Optional[float], most_common: Optional[object], most_common_percentage: Optional[float], missing: Optional[int], missing_percentage: Optional[float], first: Optional[str], last: Optional[str])
+### _class_ DatetimeCharacteristics(number_of_rows: int, count: int, unique: Optional[int], unique_percentage: Optional[float], most_common: Optional[object], most_common_percentage: Optional[float], missing: Optional[int], missing_percentage: Optional[float], first: Optional[str], last: Optional[str])
 Bases: `object`
 
 
@@ -236,7 +230,7 @@ Bases: `object`
 
 #### unique_percentage(_: Optional[float_ )
 
-### _class_ evidently.metrics.data_integrity.column_summary_metric.NumericCharacteristics(number_of_rows: int, count: int, mean: Union[float, int, NoneType], std: Union[float, int, NoneType], min: Union[float, int, NoneType], p25: Union[float, int, NoneType], p50: Union[float, int, NoneType], p75: Union[float, int, NoneType], max: Union[float, int, NoneType], unique: Optional[int], unique_percentage: Optional[float], missing: Optional[int], missing_percentage: Optional[float], infinite_count: Optional[int], infinite_percentage: Optional[float], most_common: Union[float, int, NoneType], most_common_percentage: Optional[float])
+### _class_ NumericCharacteristics(number_of_rows: int, count: int, mean: Union[float, int, NoneType], std: Union[float, int, NoneType], min: Union[float, int, NoneType], p25: Union[float, int, NoneType], p50: Union[float, int, NoneType], p75: Union[float, int, NoneType], max: Union[float, int, NoneType], unique: Optional[int], unique_percentage: Optional[float], missing: Optional[int], missing_percentage: Optional[float], infinite_count: Optional[int], infinite_percentage: Optional[float], most_common: Union[float, int, NoneType], most_common_percentage: Optional[float])
 Bases: `object`
 
 
@@ -273,10 +267,8 @@ Bases: `object`
 #### unique(_: Optional[int_ )
 
 #### unique_percentage(_: Optional[float_ )
-## evidently.metrics.data_integrity.dataset_missing_values_metric module
 
-
-### _class_ evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValues(different_missing_values: Dict[Any, int], number_of_different_missing_values: int, different_missing_values_by_column: Dict[str, Dict[Any, int]], number_of_different_missing_values_by_column: Dict[str, int], number_of_missing_values: int, share_of_missing_values: float, number_of_missing_values_by_column: Dict[str, int], share_of_missing_values_by_column: Dict[str, float], number_of_rows: int, number_of_rows_with_missing_values: int, share_of_rows_with_missing_values: float, number_of_columns: int, columns_with_missing_values: List[str], number_of_columns_with_missing_values: int, share_of_columns_with_missing_values: float)
+### _class_ DatasetMissingValues(different_missing_values: Dict[Any, int], number_of_different_missing_values: int, different_missing_values_by_column: Dict[str, Dict[Any, int]], number_of_different_missing_values_by_column: Dict[str, int], number_of_missing_values: int, share_of_missing_values: float, number_of_missing_values_by_column: Dict[str, int], share_of_missing_values_by_column: Dict[str, float], number_of_rows: int, number_of_rows_with_missing_values: int, share_of_rows_with_missing_values: float, number_of_columns: int, columns_with_missing_values: List[str], number_of_columns_with_missing_values: int, share_of_columns_with_missing_values: float)
 Bases: `object`
 
 Statistics about missed values in a dataset
@@ -312,8 +304,8 @@ Statistics about missed values in a dataset
 
 #### share_of_rows_with_missing_values(_: floa_ )
 
-### _class_ evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric(missing_values: Optional[list] = None, replace: bool = True)
-Bases: [`Metric`](./evidently.metrics.md#evidently.metrics.base_metric.Metric)[`DatasetMissingValuesMetricResult`]
+### _class_ DatasetMissingValuesMetric(missing_values: Optional[list] = None, replace: bool = True)
+Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`DatasetMissingValuesMetricResult`]
 
 Count missing values in a dataset.
 
@@ -331,31 +323,29 @@ If replace parameter is True - use values from missing_values list only.
 
 #### DEFAULT_MISSING_VALUES(_ = ['', inf, -inf, None_ )
 
-#### calculate(data: [InputData](./evidently.metrics.md#evidently.metrics.base_metric.InputData))
+#### calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
 #### missing_values(_: frozense_ )
 
-### _class_ evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetricRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`MetricRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
+### _class_ DatasetMissingValuesMetricRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
 
 
-#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: DatasetMissingValuesMetric)
 
 #### render_json(obj: DatasetMissingValuesMetric)
 
-### _class_ evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetricResult(current: evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValues, reference: Optional[evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValues] = None)
+### _class_ DatasetMissingValuesMetricResult(current: DatasetMissingValues, reference: Optional[DatasetMissingValues] = None)
 Bases: `object`
 
 
 #### current(_: DatasetMissingValue_ )
 
 #### reference(_: Optional[DatasetMissingValues_ _ = Non_ )
-## evidently.metrics.data_integrity.dataset_summary_metric module
 
-
-### _class_ evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary(target: Optional[str], prediction: Optional[Union[str, Sequence[str]]], date_column: Optional[str], id_column: Optional[str], number_of_columns: int, number_of_rows: int, number_of_missing_values: int, number_of_categorical_columns: int, number_of_numeric_columns: int, number_of_datetime_columns: int, number_of_constant_columns: int, number_of_almost_constant_columns: int, number_of_duplicated_columns: int, number_of_almost_duplicated_columns: int, number_of_empty_rows: int, number_of_empty_columns: int, number_of_duplicated_rows: int, columns_type: dict, nans_by_columns: dict, number_uniques_by_columns: dict)
+### _class_ DatasetSummary(target: Optional[str], prediction: Optional[Union[str, Sequence[str]]], date_column: Optional[str], id_column: Optional[str], number_of_columns: int, number_of_rows: int, number_of_missing_values: int, number_of_categorical_columns: int, number_of_numeric_columns: int, number_of_datetime_columns: int, number_of_constant_columns: int, number_of_almost_constant_columns: int, number_of_duplicated_columns: int, number_of_almost_duplicated_columns: int, number_of_empty_rows: int, number_of_empty_columns: int, number_of_duplicated_rows: int, columns_type: dict, nans_by_columns: dict, number_uniques_by_columns: dict)
 Bases: `object`
 
 Columns information in a dataset
@@ -401,8 +391,8 @@ Columns information in a dataset
 
 #### target(_: Optional[str_ )
 
-### _class_ evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric(almost_duplicated_threshold: float = 0.95, almost_constant_threshold: float = 0.95)
-Bases: [`Metric`](./evidently.metrics.md#evidently.metrics.base_metric.Metric)[`DatasetSummaryMetricResult`]
+### _class_ DatasetSummaryMetric(almost_duplicated_threshold: float = 0.95, almost_constant_threshold: float = 0.95)
+Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`DatasetSummaryMetricResult`]
 
 Common dataset(s) columns/features characteristics
 
@@ -411,19 +401,19 @@ Common dataset(s) columns/features characteristics
 
 #### almost_duplicated_threshold(_: floa_ )
 
-#### calculate(data: [InputData](./evidently.metrics.md#evidently.metrics.base_metric.InputData))
+#### calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
-### _class_ evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetricRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`MetricRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
+### _class_ DatasetSummaryMetricRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
 
 
-#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: DatasetSummaryMetric)
 
 #### render_json(obj: DatasetSummaryMetric)
 
-### _class_ evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetricResult(almost_duplicated_threshold: float, current: evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary, reference: Optional[evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary] = None)
+### _class_ DatasetSummaryMetricResult(almost_duplicated_threshold: float, current: DatasetSummary, reference: Optional[DatasetSummary] = None)
 Bases: `object`
 
 

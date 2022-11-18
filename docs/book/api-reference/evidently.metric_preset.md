@@ -2,56 +2,44 @@
 
 ## Submodules
 
-## evidently.metric_preset.classification_performance module
 
-
-### _class_ evidently.metric_preset.classification_performance.ClassificationPreset()
+### _class_ ClassificationPreset()
 Bases: `MetricPreset`
 
 
-#### generate_metrics(data: [InputData](./evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](./evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
-## evidently.metric_preset.data_drift module
+#### generate_metrics(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
-
-### _class_ evidently.metric_preset.data_drift.DataDriftPreset()
+### _class_ DataDriftPreset()
 Bases: `MetricPreset`
 
 
-#### generate_metrics(data: [InputData](./evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](./evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
-## evidently.metric_preset.data_quality module
+#### generate_metrics(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
-
-### _class_ evidently.metric_preset.data_quality.DataQualityPreset(columns: Optional[List[str]] = None)
+### _class_ DataQualityPreset(columns: Optional[List[str]] = None)
 Bases: `MetricPreset`
 
 
 #### columns(_: Optional[List[str]_ )
 
-#### generate_metrics(data: [InputData](./evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](./evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
-## evidently.metric_preset.metric_preset module
+#### generate_metrics(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
-
-### _class_ evidently.metric_preset.metric_preset.MetricPreset()
+### _class_ MetricPreset()
 Bases: `object`
 
 Base class for metric presets
 
 
-#### _abstract_ generate_metrics(data: [InputData](./evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](./evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
-## evidently.metric_preset.regression_performance module
+#### _abstract_ generate_metrics(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
-
-### _class_ evidently.metric_preset.regression_performance.RegressionPreset()
+### _class_ RegressionPreset()
 Bases: `MetricPreset`
 
 
-#### generate_metrics(data: [InputData](./evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](./evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
-## evidently.metric_preset.target_drift module
+#### generate_metrics(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
-
-### _class_ evidently.metric_preset.target_drift.TargetDriftPreset()
+### _class_ TargetDriftPreset()
 Bases: `MetricPreset`
 
 
-#### generate_metrics(data: [InputData](./evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](./evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
+#### generate_metrics(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 ## Module contents

@@ -4,793 +4,751 @@
 
 - [evidently.metrics.classification_performance package](evidently.metrics.classification_performance.md)
 
-    - [Submodules](./evidently.metrics.classification_performance.md#submodules)
+    - [Submodules](evidently.metrics.classification_performance.md#module-evidently.metrics.classification_performance.base_classification_metric)
 
-    - [evidently.metrics.classification_performance.base_classification_metric module](./evidently.metrics.classification_performance.md#module-evidently.metrics.classification_performance.base_classification_metric)
+        - [`ThresholdClassificationMetric`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.base_classification_metric.ThresholdClassificationMetric)
 
-        - [`ThresholdClassificationMetric`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.base_classification_metric.ThresholdClassificationMetric)
+            - [`ThresholdClassificationMetric.get_target_prediction_data()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.base_classification_metric.ThresholdClassificationMetric.get_target_prediction_data)
 
-            - [`ThresholdClassificationMetric.get_target_prediction_data()`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.base_classification_metric.ThresholdClassificationMetric.get_target_prediction_data)
+        - [`ClassificationClassBalance`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.class_balance_metric.ClassificationClassBalance)
 
-    - [evidently.metrics.classification_performance.class_balance_metric module](./evidently.metrics.classification_performance.md#module-evidently.metrics.classification_performance.class_balance_metric)
+            - [`ClassificationClassBalance.calculate()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.class_balance_metric.ClassificationClassBalance.calculate)
 
-        - [`ClassificationClassBalance`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.class_balance_metric.ClassificationClassBalance)
+        - [`ClassificationClassBalanceRenderer`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.class_balance_metric.ClassificationClassBalanceRenderer)
 
-            - [`ClassificationClassBalance.calculate()`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.class_balance_metric.ClassificationClassBalance.calculate)
+            - [`ClassificationClassBalanceRenderer.color_options`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.class_balance_metric.ClassificationClassBalanceRenderer.color_options)
 
-        - [`ClassificationClassBalanceRenderer`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.class_balance_metric.ClassificationClassBalanceRenderer)
+            - [`ClassificationClassBalanceRenderer.render_html()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.class_balance_metric.ClassificationClassBalanceRenderer.render_html)
 
-            - [`ClassificationClassBalanceRenderer.color_options`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.class_balance_metric.ClassificationClassBalanceRenderer.color_options)
+            - [`ClassificationClassBalanceRenderer.render_json()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.class_balance_metric.ClassificationClassBalanceRenderer.render_json)
 
-            - [`ClassificationClassBalanceRenderer.render_html()`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.class_balance_metric.ClassificationClassBalanceRenderer.render_html)
+        - [`ClassificationClassBalanceResult`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.class_balance_metric.ClassificationClassBalanceResult)
 
-            - [`ClassificationClassBalanceRenderer.render_json()`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.class_balance_metric.ClassificationClassBalanceRenderer.render_json)
+            - [`ClassificationClassBalanceResult.plot_data`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.class_balance_metric.ClassificationClassBalanceResult.plot_data)
 
-        - [`ClassificationClassBalanceResult`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.class_balance_metric.ClassificationClassBalanceResult)
+        - [`ClassificationClassSeparationPlot`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.class_separation_metric.ClassificationClassSeparationPlot)
 
-            - [`ClassificationClassBalanceResult.plot_data`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.class_balance_metric.ClassificationClassBalanceResult.plot_data)
+            - [`ClassificationClassSeparationPlot.calculate()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.class_separation_metric.ClassificationClassSeparationPlot.calculate)
 
-    - [evidently.metrics.classification_performance.class_separation_metric module](./evidently.metrics.classification_performance.md#module-evidently.metrics.classification_performance.class_separation_metric)
+        - [`ClassificationClassSeparationPlotRenderer`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.class_separation_metric.ClassificationClassSeparationPlotRenderer)
 
-        - [`ClassificationClassSeparationPlot`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.class_separation_metric.ClassificationClassSeparationPlot)
+            - [`ClassificationClassSeparationPlotRenderer.color_options`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.class_separation_metric.ClassificationClassSeparationPlotRenderer.color_options)
 
-            - [`ClassificationClassSeparationPlot.calculate()`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.class_separation_metric.ClassificationClassSeparationPlot.calculate)
+            - [`ClassificationClassSeparationPlotRenderer.render_html()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.class_separation_metric.ClassificationClassSeparationPlotRenderer.render_html)
 
-        - [`ClassificationClassSeparationPlotRenderer`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.class_separation_metric.ClassificationClassSeparationPlotRenderer)
+            - [`ClassificationClassSeparationPlotRenderer.render_json()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.class_separation_metric.ClassificationClassSeparationPlotRenderer.render_json)
 
-            - [`ClassificationClassSeparationPlotRenderer.color_options`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.class_separation_metric.ClassificationClassSeparationPlotRenderer.color_options)
+        - [`ClassificationClassSeparationPlotResults`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.class_separation_metric.ClassificationClassSeparationPlotResults)
 
-            - [`ClassificationClassSeparationPlotRenderer.render_html()`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.class_separation_metric.ClassificationClassSeparationPlotRenderer.render_html)
+            - [`ClassificationClassSeparationPlotResults.current_plot`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.class_separation_metric.ClassificationClassSeparationPlotResults.current_plot)
 
-            - [`ClassificationClassSeparationPlotRenderer.render_json()`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.class_separation_metric.ClassificationClassSeparationPlotRenderer.render_json)
+            - [`ClassificationClassSeparationPlotResults.reference_plot`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.class_separation_metric.ClassificationClassSeparationPlotResults.reference_plot)
 
-        - [`ClassificationClassSeparationPlotResults`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.class_separation_metric.ClassificationClassSeparationPlotResults)
+            - [`ClassificationClassSeparationPlotResults.target_name`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.class_separation_metric.ClassificationClassSeparationPlotResults.target_name)
 
-            - [`ClassificationClassSeparationPlotResults.current_plot`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.class_separation_metric.ClassificationClassSeparationPlotResults.current_plot)
+        - [`ClassificationDummyMetric`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetric)
 
-            - [`ClassificationClassSeparationPlotResults.reference_plot`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.class_separation_metric.ClassificationClassSeparationPlotResults.reference_plot)
+            - [`ClassificationDummyMetric.calculate()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetric.calculate)
 
-            - [`ClassificationClassSeparationPlotResults.target_name`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.class_separation_metric.ClassificationClassSeparationPlotResults.target_name)
+            - [`ClassificationDummyMetric.correction_for_threshold()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetric.correction_for_threshold)
 
-    - [evidently.metrics.classification_performance.classification_quality_metric module](./evidently.metrics.classification_performance.md#module-evidently.metrics.classification_performance.classification_quality_metric)
+            - [`ClassificationDummyMetric.quality_metric`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetric.quality_metric)
 
-        - [`ClassificationQualityMetric`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetric)
+        - [`ClassificationDummyMetricRenderer`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetricRenderer)
 
-            - [`ClassificationQualityMetric.calculate()`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetric.calculate)
+            - [`ClassificationDummyMetricRenderer.color_options`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetricRenderer.color_options)
 
-            - [`ClassificationQualityMetric.calculate_metrics()`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetric.calculate_metrics)
+            - [`ClassificationDummyMetricRenderer.render_html()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetricRenderer.render_html)
 
-            - [`ClassificationQualityMetric.confusion_matrix_metric`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetric.confusion_matrix_metric)
+            - [`ClassificationDummyMetricRenderer.render_json()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetricRenderer.render_json)
 
-        - [`ClassificationQualityMetricRenderer`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetricRenderer)
+        - [`ClassificationDummyMetricResults`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetricResults)
 
-            - [`ClassificationQualityMetricRenderer.color_options`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetricRenderer.color_options)
+            - [`ClassificationDummyMetricResults.by_reference_dummy`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetricResults.by_reference_dummy)
 
-            - [`ClassificationQualityMetricRenderer.render_html()`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetricRenderer.render_html)
+            - [`ClassificationDummyMetricResults.dummy`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetricResults.dummy)
 
-            - [`ClassificationQualityMetricRenderer.render_json()`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetricRenderer.render_json)
+            - [`ClassificationDummyMetricResults.metrics_matrix`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetricResults.metrics_matrix)
 
-        - [`ClassificationQualityMetricResult`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetricResult)
+            - [`ClassificationDummyMetricResults.model_quality`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetricResults.model_quality)
 
-            - [`ClassificationQualityMetricResult.current`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetricResult.current)
+        - [`ClassificationQualityMetric`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetric)
 
-            - [`ClassificationQualityMetricResult.reference`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetricResult.reference)
+            - [`ClassificationQualityMetric.calculate()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetric.calculate)
 
-            - [`ClassificationQualityMetricResult.target_name`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetricResult.target_name)
+            - [`ClassificationQualityMetric.confusion_matrix_metric`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetric.confusion_matrix_metric)
 
-        - [`DatasetClassificationQuality`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.DatasetClassificationQuality)
+        - [`ClassificationQualityMetricRenderer`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetricRenderer)
 
-            - [`DatasetClassificationQuality.accuracy`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.DatasetClassificationQuality.accuracy)
+            - [`ClassificationQualityMetricRenderer.color_options`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetricRenderer.color_options)
 
-            - [`DatasetClassificationQuality.f1`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.DatasetClassificationQuality.f1)
+            - [`ClassificationQualityMetricRenderer.render_html()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetricRenderer.render_html)
 
-            - [`DatasetClassificationQuality.fnr`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.DatasetClassificationQuality.fnr)
+            - [`ClassificationQualityMetricRenderer.render_json()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetricRenderer.render_json)
 
-            - [`DatasetClassificationQuality.fpr`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.DatasetClassificationQuality.fpr)
+        - [`ClassificationQualityMetricResult`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetricResult)
 
-            - [`DatasetClassificationQuality.log_loss`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.DatasetClassificationQuality.log_loss)
+            - [`ClassificationQualityMetricResult.current`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetricResult.current)
 
-            - [`DatasetClassificationQuality.precision`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.DatasetClassificationQuality.precision)
+            - [`ClassificationQualityMetricResult.reference`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetricResult.reference)
 
-            - [`DatasetClassificationQuality.recall`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.DatasetClassificationQuality.recall)
+            - [`ClassificationQualityMetricResult.target_name`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetricResult.target_name)
 
-            - [`DatasetClassificationQuality.roc_auc`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.DatasetClassificationQuality.roc_auc)
+        - [`ClassificationConfusionMatrix`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrix)
 
-            - [`DatasetClassificationQuality.tnr`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.DatasetClassificationQuality.tnr)
+            - [`ClassificationConfusionMatrix.calculate()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrix.calculate)
 
-            - [`DatasetClassificationQuality.tpr`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.DatasetClassificationQuality.tpr)
+        - [`ClassificationConfusionMatrixRenderer`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrixRenderer)
 
-    - [evidently.metrics.classification_performance.confusion_matrix_metric module](./evidently.metrics.classification_performance.md#module-evidently.metrics.classification_performance.confusion_matrix_metric)
+            - [`ClassificationConfusionMatrixRenderer.color_options`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrixRenderer.color_options)
 
-        - [`ClassificationConfusionMatrix`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrix)
+            - [`ClassificationConfusionMatrixRenderer.render_html()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrixRenderer.render_html)
 
-            - [`ClassificationConfusionMatrix.calculate()`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrix.calculate)
+            - [`ClassificationConfusionMatrixRenderer.render_json()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrixRenderer.render_json)
 
-        - [`ClassificationConfusionMatrixRenderer`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrixRenderer)
+        - [`ClassificationConfusionMatrixResult`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrixResult)
 
-            - [`ClassificationConfusionMatrixRenderer.color_options`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrixRenderer.color_options)
+            - [`ClassificationConfusionMatrixResult.current_matrix`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrixResult.current_matrix)
 
-            - [`ClassificationConfusionMatrixRenderer.render_html()`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrixRenderer.render_html)
+            - [`ClassificationConfusionMatrixResult.reference_matrix`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrixResult.reference_matrix)
 
-            - [`ClassificationConfusionMatrixRenderer.render_json()`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrixRenderer.render_json)
+        - [`ClassificationPRCurve`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.pr_curve_metric.ClassificationPRCurve)
 
-        - [`ClassificationConfusionMatrixResult`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrixResult)
+            - [`ClassificationPRCurve.calculate()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.pr_curve_metric.ClassificationPRCurve.calculate)
 
-            - [`ClassificationConfusionMatrixResult.current_matrix`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrixResult.current_matrix)
+            - [`ClassificationPRCurve.calculate_metrics()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.pr_curve_metric.ClassificationPRCurve.calculate_metrics)
 
-            - [`ClassificationConfusionMatrixResult.reference_matrix`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrixResult.reference_matrix)
+        - [`ClassificationPRCurveRenderer`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.pr_curve_metric.ClassificationPRCurveRenderer)
 
-    - [evidently.metrics.classification_performance.pr_curve_metric module](./evidently.metrics.classification_performance.md#module-evidently.metrics.classification_performance.pr_curve_metric)
+            - [`ClassificationPRCurveRenderer.color_options`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.pr_curve_metric.ClassificationPRCurveRenderer.color_options)
 
-        - [`ClassificationPRCurve`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.pr_curve_metric.ClassificationPRCurve)
+            - [`ClassificationPRCurveRenderer.render_html()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.pr_curve_metric.ClassificationPRCurveRenderer.render_html)
 
-            - [`ClassificationPRCurve.calculate()`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.pr_curve_metric.ClassificationPRCurve.calculate)
+            - [`ClassificationPRCurveRenderer.render_json()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.pr_curve_metric.ClassificationPRCurveRenderer.render_json)
 
-            - [`ClassificationPRCurve.calculate_metrics()`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.pr_curve_metric.ClassificationPRCurve.calculate_metrics)
+        - [`ClassificationPRCurveResults`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.pr_curve_metric.ClassificationPRCurveResults)
 
-        - [`ClassificationPRCurveRenderer`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.pr_curve_metric.ClassificationPRCurveRenderer)
+            - [`ClassificationPRCurveResults.current_pr_curve`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.pr_curve_metric.ClassificationPRCurveResults.current_pr_curve)
 
-            - [`ClassificationPRCurveRenderer.color_options`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.pr_curve_metric.ClassificationPRCurveRenderer.color_options)
+            - [`ClassificationPRCurveResults.reference_pr_curve`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.pr_curve_metric.ClassificationPRCurveResults.reference_pr_curve)
 
-            - [`ClassificationPRCurveRenderer.render_html()`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.pr_curve_metric.ClassificationPRCurveRenderer.render_html)
+        - [`ClassificationPRTable`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.pr_table_metric.ClassificationPRTable)
 
-            - [`ClassificationPRCurveRenderer.render_json()`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.pr_curve_metric.ClassificationPRCurveRenderer.render_json)
+            - [`ClassificationPRTable.calculate()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.pr_table_metric.ClassificationPRTable.calculate)
 
-        - [`ClassificationPRCurveResults`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.pr_curve_metric.ClassificationPRCurveResults)
+            - [`ClassificationPRTable.calculate_metrics()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.pr_table_metric.ClassificationPRTable.calculate_metrics)
 
-            - [`ClassificationPRCurveResults.current_pr_curve`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.pr_curve_metric.ClassificationPRCurveResults.current_pr_curve)
+        - [`ClassificationPRTableRenderer`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.pr_table_metric.ClassificationPRTableRenderer)
 
-            - [`ClassificationPRCurveResults.reference_pr_curve`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.pr_curve_metric.ClassificationPRCurveResults.reference_pr_curve)
+            - [`ClassificationPRTableRenderer.color_options`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.pr_table_metric.ClassificationPRTableRenderer.color_options)
 
-    - [evidently.metrics.classification_performance.pr_table_metric module](./evidently.metrics.classification_performance.md#module-evidently.metrics.classification_performance.pr_table_metric)
+            - [`ClassificationPRTableRenderer.render_html()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.pr_table_metric.ClassificationPRTableRenderer.render_html)
 
-        - [`ClassificationPRTable`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.pr_table_metric.ClassificationPRTable)
+            - [`ClassificationPRTableRenderer.render_json()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.pr_table_metric.ClassificationPRTableRenderer.render_json)
 
-            - [`ClassificationPRTable.calculate()`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.pr_table_metric.ClassificationPRTable.calculate)
+        - [`ClassificationPRTableResults`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.pr_table_metric.ClassificationPRTableResults)
 
-            - [`ClassificationPRTable.calculate_metrics()`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.pr_table_metric.ClassificationPRTable.calculate_metrics)
+            - [`ClassificationPRTableResults.current_pr_table`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.pr_table_metric.ClassificationPRTableResults.current_pr_table)
 
-        - [`ClassificationPRTableRenderer`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.pr_table_metric.ClassificationPRTableRenderer)
+            - [`ClassificationPRTableResults.reference_pr_table`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.pr_table_metric.ClassificationPRTableResults.reference_pr_table)
 
-            - [`ClassificationPRTableRenderer.color_options`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.pr_table_metric.ClassificationPRTableRenderer.color_options)
+        - [`ClassificationProbDistribution`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.probability_distribution_metric.ClassificationProbDistribution)
 
-            - [`ClassificationPRTableRenderer.render_html()`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.pr_table_metric.ClassificationPRTableRenderer.render_html)
+            - [`ClassificationProbDistribution.calculate()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.probability_distribution_metric.ClassificationProbDistribution.calculate)
 
-            - [`ClassificationPRTableRenderer.render_json()`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.pr_table_metric.ClassificationPRTableRenderer.render_json)
+            - [`ClassificationProbDistribution.get_distribution()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.probability_distribution_metric.ClassificationProbDistribution.get_distribution)
 
-        - [`ClassificationPRTableResults`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.pr_table_metric.ClassificationPRTableResults)
+        - [`ClassificationProbDistributionRenderer`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.probability_distribution_metric.ClassificationProbDistributionRenderer)
 
-            - [`ClassificationPRTableResults.current_pr_table`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.pr_table_metric.ClassificationPRTableResults.current_pr_table)
+            - [`ClassificationProbDistributionRenderer.color_options`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.probability_distribution_metric.ClassificationProbDistributionRenderer.color_options)
 
-            - [`ClassificationPRTableResults.reference_pr_table`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.pr_table_metric.ClassificationPRTableResults.reference_pr_table)
+            - [`ClassificationProbDistributionRenderer.render_html()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.probability_distribution_metric.ClassificationProbDistributionRenderer.render_html)
 
-    - [evidently.metrics.classification_performance.probability_distribution_metric module](./evidently.metrics.classification_performance.md#module-evidently.metrics.classification_performance.probability_distribution_metric)
+            - [`ClassificationProbDistributionRenderer.render_json()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.probability_distribution_metric.ClassificationProbDistributionRenderer.render_json)
 
-        - [`ClassificationProbDistribution`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.probability_distribution_metric.ClassificationProbDistribution)
+        - [`ClassificationProbDistributionResults`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.probability_distribution_metric.ClassificationProbDistributionResults)
 
-            - [`ClassificationProbDistribution.calculate()`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.probability_distribution_metric.ClassificationProbDistribution.calculate)
+            - [`ClassificationProbDistributionResults.current_distribution`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.probability_distribution_metric.ClassificationProbDistributionResults.current_distribution)
 
-            - [`ClassificationProbDistribution.get_distribution()`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.probability_distribution_metric.ClassificationProbDistribution.get_distribution)
+            - [`ClassificationProbDistributionResults.reference_distribution`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.probability_distribution_metric.ClassificationProbDistributionResults.reference_distribution)
 
-        - [`ClassificationProbDistributionRenderer`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.probability_distribution_metric.ClassificationProbDistributionRenderer)
+        - [`ClassificationQualityByClass`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_class_metric.ClassificationQualityByClass)
 
-            - [`ClassificationProbDistributionRenderer.color_options`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.probability_distribution_metric.ClassificationProbDistributionRenderer.color_options)
+            - [`ClassificationQualityByClass.calculate()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_class_metric.ClassificationQualityByClass.calculate)
 
-            - [`ClassificationProbDistributionRenderer.render_html()`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.probability_distribution_metric.ClassificationProbDistributionRenderer.render_html)
+        - [`ClassificationQualityByClassRenderer`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_class_metric.ClassificationQualityByClassRenderer)
 
-            - [`ClassificationProbDistributionRenderer.render_json()`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.probability_distribution_metric.ClassificationProbDistributionRenderer.render_json)
+            - [`ClassificationQualityByClassRenderer.color_options`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_class_metric.ClassificationQualityByClassRenderer.color_options)
 
-        - [`ClassificationProbDistributionResults`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.probability_distribution_metric.ClassificationProbDistributionResults)
+            - [`ClassificationQualityByClassRenderer.render_html()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_class_metric.ClassificationQualityByClassRenderer.render_html)
 
-            - [`ClassificationProbDistributionResults.current_distribution`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.probability_distribution_metric.ClassificationProbDistributionResults.current_distribution)
+            - [`ClassificationQualityByClassRenderer.render_json()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_class_metric.ClassificationQualityByClassRenderer.render_json)
 
-            - [`ClassificationProbDistributionResults.reference_distribution`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.probability_distribution_metric.ClassificationProbDistributionResults.reference_distribution)
+        - [`ClassificationQualityByClassResult`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_class_metric.ClassificationQualityByClassResult)
 
-    - [evidently.metrics.classification_performance.quality_by_class_metric module](./evidently.metrics.classification_performance.md#module-evidently.metrics.classification_performance.quality_by_class_metric)
+            - [`ClassificationQualityByClassResult.columns`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_class_metric.ClassificationQualityByClassResult.columns)
 
-        - [`ClassificationQualityByClass`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_class_metric.ClassificationQualityByClass)
+            - [`ClassificationQualityByClassResult.current_metrics`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_class_metric.ClassificationQualityByClassResult.current_metrics)
 
-            - [`ClassificationQualityByClass.calculate()`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_class_metric.ClassificationQualityByClass.calculate)
+            - [`ClassificationQualityByClassResult.current_roc_aucs`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_class_metric.ClassificationQualityByClassResult.current_roc_aucs)
 
-        - [`ClassificationQualityByClassRenderer`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_class_metric.ClassificationQualityByClassRenderer)
+            - [`ClassificationQualityByClassResult.reference_metrics`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_class_metric.ClassificationQualityByClassResult.reference_metrics)
 
-            - [`ClassificationQualityByClassRenderer.color_options`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_class_metric.ClassificationQualityByClassRenderer.color_options)
+            - [`ClassificationQualityByClassResult.reference_roc_aucs`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_class_metric.ClassificationQualityByClassResult.reference_roc_aucs)
 
-            - [`ClassificationQualityByClassRenderer.render_html()`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_class_metric.ClassificationQualityByClassRenderer.render_html)
+        - [`ClassificationQualityByFeatureTable`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_feature_table.ClassificationQualityByFeatureTable)
 
-            - [`ClassificationQualityByClassRenderer.render_json()`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_class_metric.ClassificationQualityByClassRenderer.render_json)
+            - [`ClassificationQualityByFeatureTable.calculate()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_feature_table.ClassificationQualityByFeatureTable.calculate)
 
-        - [`ClassificationQualityByClassResult`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_class_metric.ClassificationQualityByClassResult)
+            - [`ClassificationQualityByFeatureTable.columns`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_feature_table.ClassificationQualityByFeatureTable.columns)
 
-            - [`ClassificationQualityByClassResult.columns`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_class_metric.ClassificationQualityByClassResult.columns)
+        - [`ClassificationQualityByFeatureTableRenderer`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_feature_table.ClassificationQualityByFeatureTableRenderer)
 
-            - [`ClassificationQualityByClassResult.current_metrics`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_class_metric.ClassificationQualityByClassResult.current_metrics)
+            - [`ClassificationQualityByFeatureTableRenderer.color_options`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_feature_table.ClassificationQualityByFeatureTableRenderer.color_options)
 
-            - [`ClassificationQualityByClassResult.current_roc_aucs`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_class_metric.ClassificationQualityByClassResult.current_roc_aucs)
+            - [`ClassificationQualityByFeatureTableRenderer.render_html()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_feature_table.ClassificationQualityByFeatureTableRenderer.render_html)
 
-            - [`ClassificationQualityByClassResult.reference_metrics`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_class_metric.ClassificationQualityByClassResult.reference_metrics)
+            - [`ClassificationQualityByFeatureTableRenderer.render_json()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_feature_table.ClassificationQualityByFeatureTableRenderer.render_json)
 
-            - [`ClassificationQualityByClassResult.reference_roc_aucs`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_class_metric.ClassificationQualityByClassResult.reference_roc_aucs)
+        - [`ClassificationQualityByFeatureTableResults`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_feature_table.ClassificationQualityByFeatureTableResults)
 
-    - [evidently.metrics.classification_performance.quality_by_feature_table module](./evidently.metrics.classification_performance.md#module-evidently.metrics.classification_performance.quality_by_feature_table)
+            - [`ClassificationQualityByFeatureTableResults.columns`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_feature_table.ClassificationQualityByFeatureTableResults.columns)
 
-        - [`ClassificationQualityByFeatureTable`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_feature_table.ClassificationQualityByFeatureTable)
+            - [`ClassificationQualityByFeatureTableResults.curr_predictions`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_feature_table.ClassificationQualityByFeatureTableResults.curr_predictions)
 
-            - [`ClassificationQualityByFeatureTable.calculate()`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_feature_table.ClassificationQualityByFeatureTable.calculate)
+            - [`ClassificationQualityByFeatureTableResults.current_plot_data`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_feature_table.ClassificationQualityByFeatureTableResults.current_plot_data)
 
-            - [`ClassificationQualityByFeatureTable.columns`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_feature_table.ClassificationQualityByFeatureTable.columns)
+            - [`ClassificationQualityByFeatureTableResults.ref_predictions`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_feature_table.ClassificationQualityByFeatureTableResults.ref_predictions)
 
-        - [`ClassificationQualityByFeatureTableRenderer`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_feature_table.ClassificationQualityByFeatureTableRenderer)
+            - [`ClassificationQualityByFeatureTableResults.reference_plot_data`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_feature_table.ClassificationQualityByFeatureTableResults.reference_plot_data)
 
-            - [`ClassificationQualityByFeatureTableRenderer.color_options`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_feature_table.ClassificationQualityByFeatureTableRenderer.color_options)
+            - [`ClassificationQualityByFeatureTableResults.target_name`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_feature_table.ClassificationQualityByFeatureTableResults.target_name)
 
-            - [`ClassificationQualityByFeatureTableRenderer.render_html()`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_feature_table.ClassificationQualityByFeatureTableRenderer.render_html)
+        - [`ClassificationRocCurve`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.roc_curve_metric.ClassificationRocCurve)
 
-            - [`ClassificationQualityByFeatureTableRenderer.render_json()`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_feature_table.ClassificationQualityByFeatureTableRenderer.render_json)
+            - [`ClassificationRocCurve.calculate()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.roc_curve_metric.ClassificationRocCurve.calculate)
 
-        - [`ClassificationQualityByFeatureTableResults`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_feature_table.ClassificationQualityByFeatureTableResults)
+            - [`ClassificationRocCurve.calculate_metrics()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.roc_curve_metric.ClassificationRocCurve.calculate_metrics)
 
-            - [`ClassificationQualityByFeatureTableResults.columns`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_feature_table.ClassificationQualityByFeatureTableResults.columns)
+        - [`ClassificationRocCurveRenderer`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.roc_curve_metric.ClassificationRocCurveRenderer)
 
-            - [`ClassificationQualityByFeatureTableResults.curr_predictions`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_feature_table.ClassificationQualityByFeatureTableResults.curr_predictions)
+            - [`ClassificationRocCurveRenderer.color_options`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.roc_curve_metric.ClassificationRocCurveRenderer.color_options)
 
-            - [`ClassificationQualityByFeatureTableResults.current_plot_data`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_feature_table.ClassificationQualityByFeatureTableResults.current_plot_data)
+            - [`ClassificationRocCurveRenderer.render_html()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.roc_curve_metric.ClassificationRocCurveRenderer.render_html)
 
-            - [`ClassificationQualityByFeatureTableResults.ref_predictions`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_feature_table.ClassificationQualityByFeatureTableResults.ref_predictions)
+            - [`ClassificationRocCurveRenderer.render_json()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.roc_curve_metric.ClassificationRocCurveRenderer.render_json)
 
-            - [`ClassificationQualityByFeatureTableResults.reference_plot_data`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_feature_table.ClassificationQualityByFeatureTableResults.reference_plot_data)
+        - [`ClassificationRocCurveResults`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.roc_curve_metric.ClassificationRocCurveResults)
 
-            - [`ClassificationQualityByFeatureTableResults.target_name`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_feature_table.ClassificationQualityByFeatureTableResults.target_name)
+            - [`ClassificationRocCurveResults.current_roc_curve`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.roc_curve_metric.ClassificationRocCurveResults.current_roc_curve)
 
-    - [evidently.metrics.classification_performance.roc_curve_metric module](./evidently.metrics.classification_performance.md#module-evidently.metrics.classification_performance.roc_curve_metric)
+            - [`ClassificationRocCurveResults.reference_roc_curve`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.roc_curve_metric.ClassificationRocCurveResults.reference_roc_curve)
 
-        - [`ClassificationRocCurve`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.roc_curve_metric.ClassificationRocCurve)
-
-            - [`ClassificationRocCurve.calculate()`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.roc_curve_metric.ClassificationRocCurve.calculate)
-
-            - [`ClassificationRocCurve.calculate_metrics()`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.roc_curve_metric.ClassificationRocCurve.calculate_metrics)
-
-        - [`ClassificationRocCurveRenderer`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.roc_curve_metric.ClassificationRocCurveRenderer)
-
-            - [`ClassificationRocCurveRenderer.color_options`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.roc_curve_metric.ClassificationRocCurveRenderer.color_options)
-
-            - [`ClassificationRocCurveRenderer.render_html()`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.roc_curve_metric.ClassificationRocCurveRenderer.render_html)
-
-            - [`ClassificationRocCurveRenderer.render_json()`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.roc_curve_metric.ClassificationRocCurveRenderer.render_json)
-
-        - [`ClassificationRocCurveResults`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.roc_curve_metric.ClassificationRocCurveResults)
-
-            - [`ClassificationRocCurveResults.current_roc_curve`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.roc_curve_metric.ClassificationRocCurveResults.current_roc_curve)
-
-            - [`ClassificationRocCurveResults.reference_roc_curve`](./evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.roc_curve_metric.ClassificationRocCurveResults.reference_roc_curve)
-
-    - [Module contents](./evidently.metrics.classification_performance.md#module-evidently.metrics.classification_performance)
+    - [Module contents](evidently.metrics.classification_performance.md#module-evidently.metrics.classification_performance)
 
 - [evidently.metrics.data_drift package](evidently.metrics.data_drift.md)
 
-    - [Submodules](./evidently.metrics.data_drift.md#submodules)
+    - [Submodules](evidently.metrics.data_drift.md#module-evidently.metrics.data_drift.column_drift_metric)
 
-    - [evidently.metrics.data_drift.column_drift_metric module](./evidently.metrics.data_drift.md#module-evidently.metrics.data_drift.column_drift_metric)
+        - [`ColumnDriftMetric`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetric)
 
-        - [`ColumnDriftMetric`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetric)
+            - [`ColumnDriftMetric.calculate()`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetric.calculate)
 
-            - [`ColumnDriftMetric.calculate()`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetric.calculate)
+            - [`ColumnDriftMetric.column_name`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetric.column_name)
 
-            - [`ColumnDriftMetric.column_name`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetric.column_name)
+            - [`ColumnDriftMetric.options`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetric.options)
 
-            - [`ColumnDriftMetric.options`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetric.options)
+        - [`ColumnDriftMetricRenderer`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetricRenderer)
 
-        - [`ColumnDriftMetricRenderer`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetricRenderer)
+            - [`ColumnDriftMetricRenderer.color_options`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetricRenderer.color_options)
 
-            - [`ColumnDriftMetricRenderer.color_options`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetricRenderer.color_options)
+            - [`ColumnDriftMetricRenderer.render_html()`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetricRenderer.render_html)
 
-            - [`ColumnDriftMetricRenderer.render_html()`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetricRenderer.render_html)
+            - [`ColumnDriftMetricRenderer.render_json()`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetricRenderer.render_json)
 
-            - [`ColumnDriftMetricRenderer.render_json()`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetricRenderer.render_json)
+        - [`ColumnDriftMetricResults`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetricResults)
 
-        - [`ColumnDriftMetricResults`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetricResults)
+            - [`ColumnDriftMetricResults.column_name`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetricResults.column_name)
 
-            - [`ColumnDriftMetricResults.column_name`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetricResults.column_name)
+            - [`ColumnDriftMetricResults.column_type`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetricResults.column_type)
 
-            - [`ColumnDriftMetricResults.column_type`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetricResults.column_type)
+            - [`ColumnDriftMetricResults.current_distribution`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetricResults.current_distribution)
 
-            - [`ColumnDriftMetricResults.current_distribution`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetricResults.current_distribution)
+            - [`ColumnDriftMetricResults.current_scatter`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetricResults.current_scatter)
 
-            - [`ColumnDriftMetricResults.current_scatter`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetricResults.current_scatter)
+            - [`ColumnDriftMetricResults.drift_detected`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetricResults.drift_detected)
 
-            - [`ColumnDriftMetricResults.drift_detected`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetricResults.drift_detected)
+            - [`ColumnDriftMetricResults.drift_score`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetricResults.drift_score)
 
-            - [`ColumnDriftMetricResults.drift_score`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetricResults.drift_score)
+            - [`ColumnDriftMetricResults.plot_shape`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetricResults.plot_shape)
 
-            - [`ColumnDriftMetricResults.plot_shape`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetricResults.plot_shape)
+            - [`ColumnDriftMetricResults.reference_distribution`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetricResults.reference_distribution)
 
-            - [`ColumnDriftMetricResults.reference_distribution`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetricResults.reference_distribution)
+            - [`ColumnDriftMetricResults.stattest_name`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetricResults.stattest_name)
 
-            - [`ColumnDriftMetricResults.stattest_name`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetricResults.stattest_name)
+            - [`ColumnDriftMetricResults.threshold`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetricResults.threshold)
 
-            - [`ColumnDriftMetricResults.threshold`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetricResults.threshold)
+            - [`ColumnDriftMetricResults.x_name`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetricResults.x_name)
 
-            - [`ColumnDriftMetricResults.x_name`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetricResults.x_name)
+        - [`ColumnValuePlot`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_value_plot.ColumnValuePlot)
 
-    - [evidently.metrics.data_drift.column_value_plot module](./evidently.metrics.data_drift.md#module-evidently.metrics.data_drift.column_value_plot)
+            - [`ColumnValuePlot.calculate()`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_value_plot.ColumnValuePlot.calculate)
 
-        - [`ColumnValuePlot`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_value_plot.ColumnValuePlot)
+            - [`ColumnValuePlot.column_name`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_value_plot.ColumnValuePlot.column_name)
 
-            - [`ColumnValuePlot.calculate()`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_value_plot.ColumnValuePlot.calculate)
+        - [`ColumnValuePlotRenderer`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_value_plot.ColumnValuePlotRenderer)
 
-            - [`ColumnValuePlot.column_name`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_value_plot.ColumnValuePlot.column_name)
+            - [`ColumnValuePlotRenderer.color_options`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_value_plot.ColumnValuePlotRenderer.color_options)
 
-        - [`ColumnValuePlotRenderer`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_value_plot.ColumnValuePlotRenderer)
+            - [`ColumnValuePlotRenderer.render_html()`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_value_plot.ColumnValuePlotRenderer.render_html)
 
-            - [`ColumnValuePlotRenderer.color_options`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_value_plot.ColumnValuePlotRenderer.color_options)
+        - [`ColumnValuePlotResults`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_value_plot.ColumnValuePlotResults)
 
-            - [`ColumnValuePlotRenderer.render_html()`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_value_plot.ColumnValuePlotRenderer.render_html)
+            - [`ColumnValuePlotResults.column_name`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_value_plot.ColumnValuePlotResults.column_name)
 
-        - [`ColumnValuePlotResults`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_value_plot.ColumnValuePlotResults)
+            - [`ColumnValuePlotResults.current_scatter`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_value_plot.ColumnValuePlotResults.current_scatter)
 
-            - [`ColumnValuePlotResults.column_name`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_value_plot.ColumnValuePlotResults.column_name)
+            - [`ColumnValuePlotResults.datetime_column_name`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_value_plot.ColumnValuePlotResults.datetime_column_name)
 
-            - [`ColumnValuePlotResults.current_scatter`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_value_plot.ColumnValuePlotResults.current_scatter)
+            - [`ColumnValuePlotResults.reference_scatter`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_value_plot.ColumnValuePlotResults.reference_scatter)
 
-            - [`ColumnValuePlotResults.datetime_column_name`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_value_plot.ColumnValuePlotResults.datetime_column_name)
+        - [`DataDriftTable`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTable)
 
-            - [`ColumnValuePlotResults.reference_scatter`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_value_plot.ColumnValuePlotResults.reference_scatter)
+            - [`DataDriftTable.calculate()`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTable.calculate)
 
-    - [evidently.metrics.data_drift.data_drift_table module](./evidently.metrics.data_drift.md#module-evidently.metrics.data_drift.data_drift_table)
+            - [`DataDriftTable.columns`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTable.columns)
 
-        - [`DataDriftTable`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTable)
+            - [`DataDriftTable.get_parameters()`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTable.get_parameters)
 
-            - [`DataDriftTable.calculate()`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTable.calculate)
+            - [`DataDriftTable.options`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTable.options)
 
-            - [`DataDriftTable.columns`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTable.columns)
+        - [`DataDriftTableRenderer`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTableRenderer)
 
-            - [`DataDriftTable.get_parameters()`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTable.get_parameters)
+            - [`DataDriftTableRenderer.color_options`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTableRenderer.color_options)
 
-            - [`DataDriftTable.options`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTable.options)
+            - [`DataDriftTableRenderer.render_html()`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTableRenderer.render_html)
 
-        - [`DataDriftTableRenderer`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTableRenderer)
+            - [`DataDriftTableRenderer.render_json()`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTableRenderer.render_json)
 
-            - [`DataDriftTableRenderer.color_options`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTableRenderer.color_options)
+        - [`DataDriftTableResults`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTableResults)
 
-            - [`DataDriftTableRenderer.render_html()`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTableRenderer.render_html)
+            - [`DataDriftTableResults.dataset_columns`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTableResults.dataset_columns)
 
-            - [`DataDriftTableRenderer.render_json()`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTableRenderer.render_json)
+            - [`DataDriftTableResults.dataset_drift`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTableResults.dataset_drift)
 
-        - [`DataDriftTableResults`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTableResults)
+            - [`DataDriftTableResults.drift_by_columns`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTableResults.drift_by_columns)
 
-            - [`DataDriftTableResults.dataset_columns`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTableResults.dataset_columns)
+            - [`DataDriftTableResults.number_of_columns`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTableResults.number_of_columns)
 
-            - [`DataDriftTableResults.dataset_drift`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTableResults.dataset_drift)
+            - [`DataDriftTableResults.number_of_drifted_columns`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTableResults.number_of_drifted_columns)
 
-            - [`DataDriftTableResults.drift_by_columns`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTableResults.drift_by_columns)
+            - [`DataDriftTableResults.share_of_drifted_columns`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTableResults.share_of_drifted_columns)
 
-            - [`DataDriftTableResults.number_of_columns`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTableResults.number_of_columns)
+        - [`DataDriftMetricsRenderer`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DataDriftMetricsRenderer)
 
-            - [`DataDriftTableResults.number_of_drifted_columns`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTableResults.number_of_drifted_columns)
+            - [`DataDriftMetricsRenderer.color_options`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DataDriftMetricsRenderer.color_options)
 
-            - [`DataDriftTableResults.share_of_drifted_columns`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTableResults.share_of_drifted_columns)
+            - [`DataDriftMetricsRenderer.render_html()`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DataDriftMetricsRenderer.render_html)
 
-    - [evidently.metrics.data_drift.dataset_drift_metric module](./evidently.metrics.data_drift.md#module-evidently.metrics.data_drift.dataset_drift_metric)
+            - [`DataDriftMetricsRenderer.render_json()`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DataDriftMetricsRenderer.render_json)
 
-        - [`DataDriftMetricsRenderer`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DataDriftMetricsRenderer)
+        - [`DatasetDriftMetric`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DatasetDriftMetric)
 
-            - [`DataDriftMetricsRenderer.color_options`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DataDriftMetricsRenderer.color_options)
+            - [`DatasetDriftMetric.calculate()`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DatasetDriftMetric.calculate)
 
-            - [`DataDriftMetricsRenderer.render_html()`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DataDriftMetricsRenderer.render_html)
+            - [`DatasetDriftMetric.columns`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DatasetDriftMetric.columns)
 
-            - [`DataDriftMetricsRenderer.render_json()`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DataDriftMetricsRenderer.render_json)
+            - [`DatasetDriftMetric.get_parameters()`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DatasetDriftMetric.get_parameters)
 
-        - [`DatasetDriftMetric`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DatasetDriftMetric)
+            - [`DatasetDriftMetric.options`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DatasetDriftMetric.options)
 
-            - [`DatasetDriftMetric.calculate()`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DatasetDriftMetric.calculate)
+            - [`DatasetDriftMetric.threshold`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DatasetDriftMetric.threshold)
 
-            - [`DatasetDriftMetric.columns`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DatasetDriftMetric.columns)
+        - [`DatasetDriftMetricResults`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DatasetDriftMetricResults)
 
-            - [`DatasetDriftMetric.get_parameters()`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DatasetDriftMetric.get_parameters)
+            - [`DatasetDriftMetricResults.dataset_drift`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DatasetDriftMetricResults.dataset_drift)
 
-            - [`DatasetDriftMetric.options`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DatasetDriftMetric.options)
+            - [`DatasetDriftMetricResults.number_of_columns`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DatasetDriftMetricResults.number_of_columns)
 
-            - [`DatasetDriftMetric.threshold`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DatasetDriftMetric.threshold)
+            - [`DatasetDriftMetricResults.number_of_drifted_columns`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DatasetDriftMetricResults.number_of_drifted_columns)
 
-        - [`DatasetDriftMetricResults`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DatasetDriftMetricResults)
+            - [`DatasetDriftMetricResults.share_of_drifted_columns`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DatasetDriftMetricResults.share_of_drifted_columns)
 
-            - [`DatasetDriftMetricResults.dataset_drift`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DatasetDriftMetricResults.dataset_drift)
+            - [`DatasetDriftMetricResults.threshold`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DatasetDriftMetricResults.threshold)
 
-            - [`DatasetDriftMetricResults.number_of_columns`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DatasetDriftMetricResults.number_of_columns)
+        - [`TargetByFeaturesTable`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.target_by_features_table.TargetByFeaturesTable)
 
-            - [`DatasetDriftMetricResults.number_of_drifted_columns`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DatasetDriftMetricResults.number_of_drifted_columns)
+            - [`TargetByFeaturesTable.calculate()`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.target_by_features_table.TargetByFeaturesTable.calculate)
 
-            - [`DatasetDriftMetricResults.share_of_drifted_columns`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DatasetDriftMetricResults.share_of_drifted_columns)
+            - [`TargetByFeaturesTable.columns`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.target_by_features_table.TargetByFeaturesTable.columns)
 
-            - [`DatasetDriftMetricResults.threshold`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DatasetDriftMetricResults.threshold)
+        - [`TargetByFeaturesTableRenderer`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.target_by_features_table.TargetByFeaturesTableRenderer)
 
-    - [evidently.metrics.data_drift.target_by_features_table module](./evidently.metrics.data_drift.md#module-evidently.metrics.data_drift.target_by_features_table)
+            - [`TargetByFeaturesTableRenderer.color_options`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.target_by_features_table.TargetByFeaturesTableRenderer.color_options)
 
-        - [`TargetByFeaturesTable`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.target_by_features_table.TargetByFeaturesTable)
+            - [`TargetByFeaturesTableRenderer.render_html()`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.target_by_features_table.TargetByFeaturesTableRenderer.render_html)
 
-            - [`TargetByFeaturesTable.calculate()`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.target_by_features_table.TargetByFeaturesTable.calculate)
+            - [`TargetByFeaturesTableRenderer.render_json()`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.target_by_features_table.TargetByFeaturesTableRenderer.render_json)
 
-            - [`TargetByFeaturesTable.columns`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.target_by_features_table.TargetByFeaturesTable.columns)
+        - [`TargetByFeaturesTableResults`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.target_by_features_table.TargetByFeaturesTableResults)
 
-        - [`TargetByFeaturesTableRenderer`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.target_by_features_table.TargetByFeaturesTableRenderer)
+            - [`TargetByFeaturesTableResults.columns`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.target_by_features_table.TargetByFeaturesTableResults.columns)
 
-            - [`TargetByFeaturesTableRenderer.color_options`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.target_by_features_table.TargetByFeaturesTableRenderer.color_options)
+            - [`TargetByFeaturesTableResults.curr_predictions`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.target_by_features_table.TargetByFeaturesTableResults.curr_predictions)
 
-            - [`TargetByFeaturesTableRenderer.render_html()`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.target_by_features_table.TargetByFeaturesTableRenderer.render_html)
+            - [`TargetByFeaturesTableResults.current_plot_data`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.target_by_features_table.TargetByFeaturesTableResults.current_plot_data)
 
-            - [`TargetByFeaturesTableRenderer.render_json()`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.target_by_features_table.TargetByFeaturesTableRenderer.render_json)
+            - [`TargetByFeaturesTableResults.ref_predictions`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.target_by_features_table.TargetByFeaturesTableResults.ref_predictions)
 
-        - [`TargetByFeaturesTableResults`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.target_by_features_table.TargetByFeaturesTableResults)
+            - [`TargetByFeaturesTableResults.reference_plot_data`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.target_by_features_table.TargetByFeaturesTableResults.reference_plot_data)
 
-            - [`TargetByFeaturesTableResults.columns`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.target_by_features_table.TargetByFeaturesTableResults.columns)
+            - [`TargetByFeaturesTableResults.target_name`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.target_by_features_table.TargetByFeaturesTableResults.target_name)
 
-            - [`TargetByFeaturesTableResults.curr_predictions`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.target_by_features_table.TargetByFeaturesTableResults.curr_predictions)
+            - [`TargetByFeaturesTableResults.task`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.target_by_features_table.TargetByFeaturesTableResults.task)
 
-            - [`TargetByFeaturesTableResults.current_plot_data`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.target_by_features_table.TargetByFeaturesTableResults.current_plot_data)
-
-            - [`TargetByFeaturesTableResults.ref_predictions`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.target_by_features_table.TargetByFeaturesTableResults.ref_predictions)
-
-            - [`TargetByFeaturesTableResults.reference_plot_data`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.target_by_features_table.TargetByFeaturesTableResults.reference_plot_data)
-
-            - [`TargetByFeaturesTableResults.target_name`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.target_by_features_table.TargetByFeaturesTableResults.target_name)
-
-            - [`TargetByFeaturesTableResults.task`](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.target_by_features_table.TargetByFeaturesTableResults.task)
-
-    - [Module contents](./evidently.metrics.data_drift.md#module-evidently.metrics.data_drift)
+    - [Module contents](evidently.metrics.data_drift.md#module-evidently.metrics.data_drift)
 
 - [evidently.metrics.data_integrity package](evidently.metrics.data_integrity.md)
 
-    - [Submodules](./evidently.metrics.data_integrity.md#submodules)
+    - [Submodules](evidently.metrics.data_integrity.md#module-evidently.metrics.data_integrity.column_missing_values_metric)
 
-    - [evidently.metrics.data_integrity.column_missing_values_metric module](./evidently.metrics.data_integrity.md#module-evidently.metrics.data_integrity.column_missing_values_metric)
+        - [`ColumnMissingValues`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValues)
 
-        - [`ColumnMissingValues`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValues)
+            - [`ColumnMissingValues.different_missing_values`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValues.different_missing_values)
 
-            - [`ColumnMissingValues.different_missing_values`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValues.different_missing_values)
+            - [`ColumnMissingValues.number_of_different_missing_values`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValues.number_of_different_missing_values)
 
-            - [`ColumnMissingValues.number_of_different_missing_values`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValues.number_of_different_missing_values)
+            - [`ColumnMissingValues.number_of_missing_values`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValues.number_of_missing_values)
 
-            - [`ColumnMissingValues.number_of_missing_values`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValues.number_of_missing_values)
+            - [`ColumnMissingValues.number_of_rows`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValues.number_of_rows)
 
-            - [`ColumnMissingValues.number_of_rows`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValues.number_of_rows)
+            - [`ColumnMissingValues.share_of_missing_values`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValues.share_of_missing_values)
 
-            - [`ColumnMissingValues.share_of_missing_values`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValues.share_of_missing_values)
+        - [`ColumnMissingValuesMetric`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValuesMetric)
 
-        - [`ColumnMissingValuesMetric`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValuesMetric)
+            - [`ColumnMissingValuesMetric.DEFAULT_MISSING_VALUES`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValuesMetric.DEFAULT_MISSING_VALUES)
 
-            - [`ColumnMissingValuesMetric.DEFAULT_MISSING_VALUES`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValuesMetric.DEFAULT_MISSING_VALUES)
+            - [`ColumnMissingValuesMetric.calculate()`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValuesMetric.calculate)
 
-            - [`ColumnMissingValuesMetric.calculate()`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValuesMetric.calculate)
+            - [`ColumnMissingValuesMetric.column_name`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValuesMetric.column_name)
 
-            - [`ColumnMissingValuesMetric.column_name`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValuesMetric.column_name)
+            - [`ColumnMissingValuesMetric.missing_values`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValuesMetric.missing_values)
 
-            - [`ColumnMissingValuesMetric.missing_values`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValuesMetric.missing_values)
+        - [`ColumnMissingValuesMetricRenderer`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValuesMetricRenderer)
 
-        - [`ColumnMissingValuesMetricRenderer`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValuesMetricRenderer)
+            - [`ColumnMissingValuesMetricRenderer.color_options`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValuesMetricRenderer.color_options)
 
-            - [`ColumnMissingValuesMetricRenderer.color_options`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValuesMetricRenderer.color_options)
+            - [`ColumnMissingValuesMetricRenderer.render_html()`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValuesMetricRenderer.render_html)
 
-            - [`ColumnMissingValuesMetricRenderer.render_html()`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValuesMetricRenderer.render_html)
+            - [`ColumnMissingValuesMetricRenderer.render_json()`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValuesMetricRenderer.render_json)
 
-            - [`ColumnMissingValuesMetricRenderer.render_json()`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValuesMetricRenderer.render_json)
+        - [`ColumnMissingValuesMetricResult`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValuesMetricResult)
 
-        - [`ColumnMissingValuesMetricResult`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValuesMetricResult)
+            - [`ColumnMissingValuesMetricResult.column_name`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValuesMetricResult.column_name)
 
-            - [`ColumnMissingValuesMetricResult.column_name`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValuesMetricResult.column_name)
+            - [`ColumnMissingValuesMetricResult.current`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValuesMetricResult.current)
 
-            - [`ColumnMissingValuesMetricResult.current`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValuesMetricResult.current)
+            - [`ColumnMissingValuesMetricResult.reference`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValuesMetricResult.reference)
 
-            - [`ColumnMissingValuesMetricResult.reference`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValuesMetricResult.reference)
+        - [`ColumnRegExpMetric`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.ColumnRegExpMetric)
 
-    - [evidently.metrics.data_integrity.column_regexp_metric module](./evidently.metrics.data_integrity.md#module-evidently.metrics.data_integrity.column_regexp_metric)
+            - [`ColumnRegExpMetric.calculate()`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.ColumnRegExpMetric.calculate)
 
-        - [`ColumnRegExpMetric`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.ColumnRegExpMetric)
+            - [`ColumnRegExpMetric.column_name`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.ColumnRegExpMetric.column_name)
 
-            - [`ColumnRegExpMetric.calculate()`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.ColumnRegExpMetric.calculate)
+            - [`ColumnRegExpMetric.reg_exp`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.ColumnRegExpMetric.reg_exp)
 
-            - [`ColumnRegExpMetric.column_name`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.ColumnRegExpMetric.column_name)
+            - [`ColumnRegExpMetric.top`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.ColumnRegExpMetric.top)
 
-            - [`ColumnRegExpMetric.reg_exp`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.ColumnRegExpMetric.reg_exp)
+        - [`ColumnRegExpMetricRenderer`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.ColumnRegExpMetricRenderer)
 
-            - [`ColumnRegExpMetric.top`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.ColumnRegExpMetric.top)
+            - [`ColumnRegExpMetricRenderer.color_options`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.ColumnRegExpMetricRenderer.color_options)
 
-        - [`ColumnRegExpMetricRenderer`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.ColumnRegExpMetricRenderer)
+            - [`ColumnRegExpMetricRenderer.render_html()`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.ColumnRegExpMetricRenderer.render_html)
 
-            - [`ColumnRegExpMetricRenderer.color_options`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.ColumnRegExpMetricRenderer.color_options)
+            - [`ColumnRegExpMetricRenderer.render_json()`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.ColumnRegExpMetricRenderer.render_json)
 
-            - [`ColumnRegExpMetricRenderer.render_html()`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.ColumnRegExpMetricRenderer.render_html)
+        - [`DataIntegrityValueByRegexpMetricResult`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.DataIntegrityValueByRegexpMetricResult)
 
-            - [`ColumnRegExpMetricRenderer.render_json()`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.ColumnRegExpMetricRenderer.render_json)
+            - [`DataIntegrityValueByRegexpMetricResult.column_name`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.DataIntegrityValueByRegexpMetricResult.column_name)
 
-        - [`DataIntegrityValueByRegexpMetricResult`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.DataIntegrityValueByRegexpMetricResult)
+            - [`DataIntegrityValueByRegexpMetricResult.current`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.DataIntegrityValueByRegexpMetricResult.current)
 
-            - [`DataIntegrityValueByRegexpMetricResult.column_name`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.DataIntegrityValueByRegexpMetricResult.column_name)
+            - [`DataIntegrityValueByRegexpMetricResult.reference`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.DataIntegrityValueByRegexpMetricResult.reference)
 
-            - [`DataIntegrityValueByRegexpMetricResult.current`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.DataIntegrityValueByRegexpMetricResult.current)
+            - [`DataIntegrityValueByRegexpMetricResult.reg_exp`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.DataIntegrityValueByRegexpMetricResult.reg_exp)
 
-            - [`DataIntegrityValueByRegexpMetricResult.reference`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.DataIntegrityValueByRegexpMetricResult.reference)
+            - [`DataIntegrityValueByRegexpMetricResult.top`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.DataIntegrityValueByRegexpMetricResult.top)
 
-            - [`DataIntegrityValueByRegexpMetricResult.reg_exp`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.DataIntegrityValueByRegexpMetricResult.reg_exp)
+        - [`DataIntegrityValueByRegexpStat`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.DataIntegrityValueByRegexpStat)
 
-            - [`DataIntegrityValueByRegexpMetricResult.top`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.DataIntegrityValueByRegexpMetricResult.top)
+            - [`DataIntegrityValueByRegexpStat.number_of_matched`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.DataIntegrityValueByRegexpStat.number_of_matched)
 
-        - [`DataIntegrityValueByRegexpStat`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.DataIntegrityValueByRegexpStat)
+            - [`DataIntegrityValueByRegexpStat.number_of_not_matched`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.DataIntegrityValueByRegexpStat.number_of_not_matched)
 
-            - [`DataIntegrityValueByRegexpStat.number_of_matched`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.DataIntegrityValueByRegexpStat.number_of_matched)
+            - [`DataIntegrityValueByRegexpStat.number_of_rows`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.DataIntegrityValueByRegexpStat.number_of_rows)
 
-            - [`DataIntegrityValueByRegexpStat.number_of_not_matched`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.DataIntegrityValueByRegexpStat.number_of_not_matched)
+            - [`DataIntegrityValueByRegexpStat.table_of_matched`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.DataIntegrityValueByRegexpStat.table_of_matched)
 
-            - [`DataIntegrityValueByRegexpStat.number_of_rows`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.DataIntegrityValueByRegexpStat.number_of_rows)
+            - [`DataIntegrityValueByRegexpStat.table_of_not_matched`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.DataIntegrityValueByRegexpStat.table_of_not_matched)
 
-            - [`DataIntegrityValueByRegexpStat.table_of_matched`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.DataIntegrityValueByRegexpStat.table_of_matched)
+        - [`CategoricalCharacteristics`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.CategoricalCharacteristics)
 
-            - [`DataIntegrityValueByRegexpStat.table_of_not_matched`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.DataIntegrityValueByRegexpStat.table_of_not_matched)
+            - [`CategoricalCharacteristics.count`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.CategoricalCharacteristics.count)
 
-    - [evidently.metrics.data_integrity.column_summary_metric module](./evidently.metrics.data_integrity.md#module-evidently.metrics.data_integrity.column_summary_metric)
+            - [`CategoricalCharacteristics.missing`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.CategoricalCharacteristics.missing)
 
-        - [`CategoricalCharacteristics`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.CategoricalCharacteristics)
+            - [`CategoricalCharacteristics.missing_percentage`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.CategoricalCharacteristics.missing_percentage)
 
-            - [`CategoricalCharacteristics.count`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.CategoricalCharacteristics.count)
+            - [`CategoricalCharacteristics.most_common`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.CategoricalCharacteristics.most_common)
 
-            - [`CategoricalCharacteristics.missing`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.CategoricalCharacteristics.missing)
+            - [`CategoricalCharacteristics.most_common_percentage`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.CategoricalCharacteristics.most_common_percentage)
 
-            - [`CategoricalCharacteristics.missing_percentage`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.CategoricalCharacteristics.missing_percentage)
+            - [`CategoricalCharacteristics.new_in_current_values_count`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.CategoricalCharacteristics.new_in_current_values_count)
 
-            - [`CategoricalCharacteristics.most_common`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.CategoricalCharacteristics.most_common)
+            - [`CategoricalCharacteristics.number_of_rows`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.CategoricalCharacteristics.number_of_rows)
 
-            - [`CategoricalCharacteristics.most_common_percentage`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.CategoricalCharacteristics.most_common_percentage)
+            - [`CategoricalCharacteristics.unique`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.CategoricalCharacteristics.unique)
 
-            - [`CategoricalCharacteristics.new_in_current_values_count`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.CategoricalCharacteristics.new_in_current_values_count)
+            - [`CategoricalCharacteristics.unique_percentage`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.CategoricalCharacteristics.unique_percentage)
 
-            - [`CategoricalCharacteristics.number_of_rows`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.CategoricalCharacteristics.number_of_rows)
+            - [`CategoricalCharacteristics.unused_in_current_values_count`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.CategoricalCharacteristics.unused_in_current_values_count)
 
-            - [`CategoricalCharacteristics.unique`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.CategoricalCharacteristics.unique)
+        - [`ColumnSummary`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummary)
 
-            - [`CategoricalCharacteristics.unique_percentage`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.CategoricalCharacteristics.unique_percentage)
+            - [`ColumnSummary.column_name`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummary.column_name)
 
-            - [`CategoricalCharacteristics.unused_in_current_values_count`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.CategoricalCharacteristics.unused_in_current_values_count)
+            - [`ColumnSummary.column_type`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummary.column_type)
 
-        - [`ColumnSummary`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummary)
+            - [`ColumnSummary.current_characteristics`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummary.current_characteristics)
 
-            - [`ColumnSummary.column_name`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummary.column_name)
+            - [`ColumnSummary.plot_data`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummary.plot_data)
 
-            - [`ColumnSummary.column_type`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummary.column_type)
+            - [`ColumnSummary.reference_characteristics`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummary.reference_characteristics)
 
-            - [`ColumnSummary.current_characteristics`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummary.current_characteristics)
+        - [`ColumnSummaryMetric`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric)
 
-            - [`ColumnSummary.plot_data`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummary.plot_data)
+            - [`ColumnSummaryMetric.calculate()`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric.calculate)
 
-            - [`ColumnSummary.reference_characteristics`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummary.reference_characteristics)
+            - [`ColumnSummaryMetric.map_data()`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric.map_data)
 
-        - [`ColumnSummaryMetric`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric)
+        - [`ColumnSummaryMetricRenderer`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetricRenderer)
 
-            - [`ColumnSummaryMetric.calculate()`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric.calculate)
+            - [`ColumnSummaryMetricRenderer.color_options`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetricRenderer.color_options)
 
-            - [`ColumnSummaryMetric.map_data()`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric.map_data)
+            - [`ColumnSummaryMetricRenderer.render_html()`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetricRenderer.render_html)
 
-        - [`ColumnSummaryMetricRenderer`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetricRenderer)
+            - [`ColumnSummaryMetricRenderer.render_json()`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetricRenderer.render_json)
 
-            - [`ColumnSummaryMetricRenderer.color_options`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetricRenderer.color_options)
+        - [`DataByTarget`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DataByTarget)
 
-            - [`ColumnSummaryMetricRenderer.render_html()`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetricRenderer.render_html)
+            - [`DataByTarget.data_for_plots`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DataByTarget.data_for_plots)
 
-            - [`ColumnSummaryMetricRenderer.render_json()`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetricRenderer.render_json)
+            - [`DataByTarget.target_name`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DataByTarget.target_name)
 
-        - [`DataByTarget`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DataByTarget)
+            - [`DataByTarget.target_type`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DataByTarget.target_type)
 
-            - [`DataByTarget.data_for_plots`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DataByTarget.data_for_plots)
+        - [`DataInTime`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DataInTime)
 
-            - [`DataByTarget.target_name`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DataByTarget.target_name)
+            - [`DataInTime.data_for_plots`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DataInTime.data_for_plots)
 
-            - [`DataByTarget.target_type`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DataByTarget.target_type)
+            - [`DataInTime.datetime_name`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DataInTime.datetime_name)
 
-        - [`DataInTime`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DataInTime)
+            - [`DataInTime.freq`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DataInTime.freq)
 
-            - [`DataInTime.data_for_plots`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DataInTime.data_for_plots)
+        - [`DataQualityPlot`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DataQualityPlot)
 
-            - [`DataInTime.datetime_name`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DataInTime.datetime_name)
+            - [`DataQualityPlot.bins_for_hist`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DataQualityPlot.bins_for_hist)
 
-            - [`DataInTime.freq`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DataInTime.freq)
+            - [`DataQualityPlot.counts_of_values`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DataQualityPlot.counts_of_values)
 
-        - [`DataQualityPlot`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DataQualityPlot)
+            - [`DataQualityPlot.data_by_target`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DataQualityPlot.data_by_target)
 
-            - [`DataQualityPlot.bins_for_hist`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DataQualityPlot.bins_for_hist)
+            - [`DataQualityPlot.data_in_time`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DataQualityPlot.data_in_time)
 
-            - [`DataQualityPlot.counts_of_values`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DataQualityPlot.counts_of_values)
+        - [`DatetimeCharacteristics`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DatetimeCharacteristics)
 
-            - [`DataQualityPlot.data_by_target`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DataQualityPlot.data_by_target)
+            - [`DatetimeCharacteristics.count`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DatetimeCharacteristics.count)
 
-            - [`DataQualityPlot.data_in_time`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DataQualityPlot.data_in_time)
+            - [`DatetimeCharacteristics.first`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DatetimeCharacteristics.first)
 
-        - [`DatetimeCharacteristics`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DatetimeCharacteristics)
+            - [`DatetimeCharacteristics.last`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DatetimeCharacteristics.last)
 
-            - [`DatetimeCharacteristics.count`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DatetimeCharacteristics.count)
+            - [`DatetimeCharacteristics.missing`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DatetimeCharacteristics.missing)
 
-            - [`DatetimeCharacteristics.first`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DatetimeCharacteristics.first)
+            - [`DatetimeCharacteristics.missing_percentage`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DatetimeCharacteristics.missing_percentage)
 
-            - [`DatetimeCharacteristics.last`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DatetimeCharacteristics.last)
+            - [`DatetimeCharacteristics.most_common`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DatetimeCharacteristics.most_common)
 
-            - [`DatetimeCharacteristics.missing`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DatetimeCharacteristics.missing)
+            - [`DatetimeCharacteristics.most_common_percentage`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DatetimeCharacteristics.most_common_percentage)
 
-            - [`DatetimeCharacteristics.missing_percentage`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DatetimeCharacteristics.missing_percentage)
+            - [`DatetimeCharacteristics.number_of_rows`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DatetimeCharacteristics.number_of_rows)
 
-            - [`DatetimeCharacteristics.most_common`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DatetimeCharacteristics.most_common)
+            - [`DatetimeCharacteristics.unique`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DatetimeCharacteristics.unique)
 
-            - [`DatetimeCharacteristics.most_common_percentage`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DatetimeCharacteristics.most_common_percentage)
+            - [`DatetimeCharacteristics.unique_percentage`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DatetimeCharacteristics.unique_percentage)
 
-            - [`DatetimeCharacteristics.number_of_rows`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DatetimeCharacteristics.number_of_rows)
+        - [`NumericCharacteristics`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.NumericCharacteristics)
 
-            - [`DatetimeCharacteristics.unique`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DatetimeCharacteristics.unique)
+            - [`NumericCharacteristics.count`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.NumericCharacteristics.count)
 
-            - [`DatetimeCharacteristics.unique_percentage`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.DatetimeCharacteristics.unique_percentage)
+            - [`NumericCharacteristics.infinite_count`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.NumericCharacteristics.infinite_count)
 
-        - [`NumericCharacteristics`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.NumericCharacteristics)
+            - [`NumericCharacteristics.infinite_percentage`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.NumericCharacteristics.infinite_percentage)
 
-            - [`NumericCharacteristics.count`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.NumericCharacteristics.count)
+            - [`NumericCharacteristics.max`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.NumericCharacteristics.max)
 
-            - [`NumericCharacteristics.infinite_count`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.NumericCharacteristics.infinite_count)
+            - [`NumericCharacteristics.mean`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.NumericCharacteristics.mean)
 
-            - [`NumericCharacteristics.infinite_percentage`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.NumericCharacteristics.infinite_percentage)
+            - [`NumericCharacteristics.min`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.NumericCharacteristics.min)
 
-            - [`NumericCharacteristics.max`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.NumericCharacteristics.max)
+            - [`NumericCharacteristics.missing`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.NumericCharacteristics.missing)
 
-            - [`NumericCharacteristics.mean`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.NumericCharacteristics.mean)
+            - [`NumericCharacteristics.missing_percentage`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.NumericCharacteristics.missing_percentage)
 
-            - [`NumericCharacteristics.min`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.NumericCharacteristics.min)
+            - [`NumericCharacteristics.most_common`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.NumericCharacteristics.most_common)
 
-            - [`NumericCharacteristics.missing`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.NumericCharacteristics.missing)
+            - [`NumericCharacteristics.most_common_percentage`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.NumericCharacteristics.most_common_percentage)
 
-            - [`NumericCharacteristics.missing_percentage`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.NumericCharacteristics.missing_percentage)
+            - [`NumericCharacteristics.number_of_rows`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.NumericCharacteristics.number_of_rows)
 
-            - [`NumericCharacteristics.most_common`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.NumericCharacteristics.most_common)
+            - [`NumericCharacteristics.p25`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.NumericCharacteristics.p25)
 
-            - [`NumericCharacteristics.most_common_percentage`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.NumericCharacteristics.most_common_percentage)
+            - [`NumericCharacteristics.p50`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.NumericCharacteristics.p50)
 
-            - [`NumericCharacteristics.number_of_rows`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.NumericCharacteristics.number_of_rows)
+            - [`NumericCharacteristics.p75`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.NumericCharacteristics.p75)
 
-            - [`NumericCharacteristics.p25`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.NumericCharacteristics.p25)
+            - [`NumericCharacteristics.std`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.NumericCharacteristics.std)
 
-            - [`NumericCharacteristics.p50`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.NumericCharacteristics.p50)
+            - [`NumericCharacteristics.unique`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.NumericCharacteristics.unique)
 
-            - [`NumericCharacteristics.p75`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.NumericCharacteristics.p75)
+            - [`NumericCharacteristics.unique_percentage`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.NumericCharacteristics.unique_percentage)
 
-            - [`NumericCharacteristics.std`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.NumericCharacteristics.std)
+        - [`DatasetMissingValues`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValues)
 
-            - [`NumericCharacteristics.unique`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.NumericCharacteristics.unique)
+            - [`DatasetMissingValues.columns_with_missing_values`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValues.columns_with_missing_values)
 
-            - [`NumericCharacteristics.unique_percentage`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.NumericCharacteristics.unique_percentage)
+            - [`DatasetMissingValues.different_missing_values`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValues.different_missing_values)
 
-    - [evidently.metrics.data_integrity.dataset_missing_values_metric module](./evidently.metrics.data_integrity.md#module-evidently.metrics.data_integrity.dataset_missing_values_metric)
+            - [`DatasetMissingValues.different_missing_values_by_column`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValues.different_missing_values_by_column)
 
-        - [`DatasetMissingValues`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValues)
+            - [`DatasetMissingValues.number_of_columns`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValues.number_of_columns)
 
-            - [`DatasetMissingValues.columns_with_missing_values`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValues.columns_with_missing_values)
+            - [`DatasetMissingValues.number_of_columns_with_missing_values`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValues.number_of_columns_with_missing_values)
 
-            - [`DatasetMissingValues.different_missing_values`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValues.different_missing_values)
+            - [`DatasetMissingValues.number_of_different_missing_values`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValues.number_of_different_missing_values)
 
-            - [`DatasetMissingValues.different_missing_values_by_column`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValues.different_missing_values_by_column)
+            - [`DatasetMissingValues.number_of_different_missing_values_by_column`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValues.number_of_different_missing_values_by_column)
 
-            - [`DatasetMissingValues.number_of_columns`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValues.number_of_columns)
+            - [`DatasetMissingValues.number_of_missing_values`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValues.number_of_missing_values)
 
-            - [`DatasetMissingValues.number_of_columns_with_missing_values`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValues.number_of_columns_with_missing_values)
+            - [`DatasetMissingValues.number_of_missing_values_by_column`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValues.number_of_missing_values_by_column)
 
-            - [`DatasetMissingValues.number_of_different_missing_values`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValues.number_of_different_missing_values)
+            - [`DatasetMissingValues.number_of_rows`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValues.number_of_rows)
 
-            - [`DatasetMissingValues.number_of_different_missing_values_by_column`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValues.number_of_different_missing_values_by_column)
+            - [`DatasetMissingValues.number_of_rows_with_missing_values`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValues.number_of_rows_with_missing_values)
 
-            - [`DatasetMissingValues.number_of_missing_values`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValues.number_of_missing_values)
+            - [`DatasetMissingValues.share_of_columns_with_missing_values`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValues.share_of_columns_with_missing_values)
 
-            - [`DatasetMissingValues.number_of_missing_values_by_column`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValues.number_of_missing_values_by_column)
+            - [`DatasetMissingValues.share_of_missing_values`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValues.share_of_missing_values)
 
-            - [`DatasetMissingValues.number_of_rows`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValues.number_of_rows)
+            - [`DatasetMissingValues.share_of_missing_values_by_column`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValues.share_of_missing_values_by_column)
 
-            - [`DatasetMissingValues.number_of_rows_with_missing_values`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValues.number_of_rows_with_missing_values)
+            - [`DatasetMissingValues.share_of_rows_with_missing_values`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValues.share_of_rows_with_missing_values)
 
-            - [`DatasetMissingValues.share_of_columns_with_missing_values`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValues.share_of_columns_with_missing_values)
+        - [`DatasetMissingValuesMetric`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric)
 
-            - [`DatasetMissingValues.share_of_missing_values`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValues.share_of_missing_values)
+            - [`DatasetMissingValuesMetric.DEFAULT_MISSING_VALUES`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric.DEFAULT_MISSING_VALUES)
 
-            - [`DatasetMissingValues.share_of_missing_values_by_column`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValues.share_of_missing_values_by_column)
+            - [`DatasetMissingValuesMetric.calculate()`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric.calculate)
 
-            - [`DatasetMissingValues.share_of_rows_with_missing_values`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValues.share_of_rows_with_missing_values)
+            - [`DatasetMissingValuesMetric.missing_values`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric.missing_values)
 
-        - [`DatasetMissingValuesMetric`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric)
+        - [`DatasetMissingValuesMetricRenderer`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetricRenderer)
 
-            - [`DatasetMissingValuesMetric.DEFAULT_MISSING_VALUES`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric.DEFAULT_MISSING_VALUES)
+            - [`DatasetMissingValuesMetricRenderer.color_options`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetricRenderer.color_options)
 
-            - [`DatasetMissingValuesMetric.calculate()`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric.calculate)
+            - [`DatasetMissingValuesMetricRenderer.render_html()`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetricRenderer.render_html)
 
-            - [`DatasetMissingValuesMetric.missing_values`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric.missing_values)
+            - [`DatasetMissingValuesMetricRenderer.render_json()`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetricRenderer.render_json)
 
-        - [`DatasetMissingValuesMetricRenderer`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetricRenderer)
+        - [`DatasetMissingValuesMetricResult`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetricResult)
 
-            - [`DatasetMissingValuesMetricRenderer.color_options`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetricRenderer.color_options)
+            - [`DatasetMissingValuesMetricResult.current`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetricResult.current)
 
-            - [`DatasetMissingValuesMetricRenderer.render_html()`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetricRenderer.render_html)
+            - [`DatasetMissingValuesMetricResult.reference`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetricResult.reference)
 
-            - [`DatasetMissingValuesMetricRenderer.render_json()`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetricRenderer.render_json)
+        - [`DatasetSummary`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary)
 
-        - [`DatasetMissingValuesMetricResult`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetricResult)
+            - [`DatasetSummary.columns_type`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary.columns_type)
 
-            - [`DatasetMissingValuesMetricResult.current`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetricResult.current)
+            - [`DatasetSummary.date_column`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary.date_column)
 
-            - [`DatasetMissingValuesMetricResult.reference`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetricResult.reference)
+            - [`DatasetSummary.id_column`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary.id_column)
 
-    - [evidently.metrics.data_integrity.dataset_summary_metric module](./evidently.metrics.data_integrity.md#module-evidently.metrics.data_integrity.dataset_summary_metric)
+            - [`DatasetSummary.nans_by_columns`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary.nans_by_columns)
 
-        - [`DatasetSummary`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary)
+            - [`DatasetSummary.number_of_almost_constant_columns`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary.number_of_almost_constant_columns)
 
-            - [`DatasetSummary.columns_type`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary.columns_type)
+            - [`DatasetSummary.number_of_almost_duplicated_columns`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary.number_of_almost_duplicated_columns)
 
-            - [`DatasetSummary.date_column`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary.date_column)
+            - [`DatasetSummary.number_of_categorical_columns`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary.number_of_categorical_columns)
 
-            - [`DatasetSummary.id_column`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary.id_column)
+            - [`DatasetSummary.number_of_columns`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary.number_of_columns)
 
-            - [`DatasetSummary.nans_by_columns`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary.nans_by_columns)
+            - [`DatasetSummary.number_of_constant_columns`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary.number_of_constant_columns)
 
-            - [`DatasetSummary.number_of_almost_constant_columns`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary.number_of_almost_constant_columns)
+            - [`DatasetSummary.number_of_datetime_columns`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary.number_of_datetime_columns)
 
-            - [`DatasetSummary.number_of_almost_duplicated_columns`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary.number_of_almost_duplicated_columns)
+            - [`DatasetSummary.number_of_duplicated_columns`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary.number_of_duplicated_columns)
 
-            - [`DatasetSummary.number_of_categorical_columns`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary.number_of_categorical_columns)
+            - [`DatasetSummary.number_of_duplicated_rows`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary.number_of_duplicated_rows)
 
-            - [`DatasetSummary.number_of_columns`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary.number_of_columns)
+            - [`DatasetSummary.number_of_empty_columns`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary.number_of_empty_columns)
 
-            - [`DatasetSummary.number_of_constant_columns`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary.number_of_constant_columns)
+            - [`DatasetSummary.number_of_empty_rows`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary.number_of_empty_rows)
 
-            - [`DatasetSummary.number_of_datetime_columns`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary.number_of_datetime_columns)
+            - [`DatasetSummary.number_of_missing_values`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary.number_of_missing_values)
 
-            - [`DatasetSummary.number_of_duplicated_columns`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary.number_of_duplicated_columns)
+            - [`DatasetSummary.number_of_numeric_columns`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary.number_of_numeric_columns)
 
-            - [`DatasetSummary.number_of_duplicated_rows`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary.number_of_duplicated_rows)
+            - [`DatasetSummary.number_of_rows`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary.number_of_rows)
 
-            - [`DatasetSummary.number_of_empty_columns`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary.number_of_empty_columns)
+            - [`DatasetSummary.number_uniques_by_columns`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary.number_uniques_by_columns)
 
-            - [`DatasetSummary.number_of_empty_rows`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary.number_of_empty_rows)
+            - [`DatasetSummary.prediction`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary.prediction)
 
-            - [`DatasetSummary.number_of_missing_values`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary.number_of_missing_values)
+            - [`DatasetSummary.target`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary.target)
 
-            - [`DatasetSummary.number_of_numeric_columns`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary.number_of_numeric_columns)
+        - [`DatasetSummaryMetric`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric)
 
-            - [`DatasetSummary.number_of_rows`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary.number_of_rows)
+            - [`DatasetSummaryMetric.almost_constant_threshold`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric.almost_constant_threshold)
 
-            - [`DatasetSummary.number_uniques_by_columns`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary.number_uniques_by_columns)
+            - [`DatasetSummaryMetric.almost_duplicated_threshold`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric.almost_duplicated_threshold)
 
-            - [`DatasetSummary.prediction`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary.prediction)
+            - [`DatasetSummaryMetric.calculate()`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric.calculate)
 
-            - [`DatasetSummary.target`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary.target)
+        - [`DatasetSummaryMetricRenderer`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetricRenderer)
 
-        - [`DatasetSummaryMetric`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric)
+            - [`DatasetSummaryMetricRenderer.color_options`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetricRenderer.color_options)
 
-            - [`DatasetSummaryMetric.almost_constant_threshold`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric.almost_constant_threshold)
+            - [`DatasetSummaryMetricRenderer.render_html()`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetricRenderer.render_html)
 
-            - [`DatasetSummaryMetric.almost_duplicated_threshold`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric.almost_duplicated_threshold)
+            - [`DatasetSummaryMetricRenderer.render_json()`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetricRenderer.render_json)
 
-            - [`DatasetSummaryMetric.calculate()`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric.calculate)
+        - [`DatasetSummaryMetricResult`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetricResult)
 
-        - [`DatasetSummaryMetricRenderer`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetricRenderer)
+            - [`DatasetSummaryMetricResult.almost_duplicated_threshold`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetricResult.almost_duplicated_threshold)
 
-            - [`DatasetSummaryMetricRenderer.color_options`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetricRenderer.color_options)
+            - [`DatasetSummaryMetricResult.current`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetricResult.current)
 
-            - [`DatasetSummaryMetricRenderer.render_html()`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetricRenderer.render_html)
+            - [`DatasetSummaryMetricResult.reference`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetricResult.reference)
 
-            - [`DatasetSummaryMetricRenderer.render_json()`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetricRenderer.render_json)
-
-        - [`DatasetSummaryMetricResult`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetricResult)
-
-            - [`DatasetSummaryMetricResult.almost_duplicated_threshold`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetricResult.almost_duplicated_threshold)
-
-            - [`DatasetSummaryMetricResult.current`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetricResult.current)
-
-            - [`DatasetSummaryMetricResult.reference`](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetricResult.reference)
-
-    - [Module contents](./evidently.metrics.data_integrity.md#module-evidently.metrics.data_integrity)
+    - [Module contents](evidently.metrics.data_integrity.md#module-evidently.metrics.data_integrity)
 
 - [evidently.metrics.data_quality package](evidently.metrics.data_quality.md)
 
-    - [Submodules](./evidently.metrics.data_quality.md#submodules)
-
-    - [evidently.metrics.data_quality.column_correlations_metric module](./evidently.metrics.data_quality.md#module-evidently.metrics.data_quality.column_correlations_metric)
+    - [Submodules](evidently.metrics.data_quality.md#module-evidently.metrics.data_quality.column_correlations_metric)
 
         - [`ColumnCorrelationsMetric`](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_correlations_metric.ColumnCorrelationsMetric)
 
@@ -814,8 +772,6 @@
 
             - [`ColumnCorrelationsMetricResult.reference`](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_correlations_metric.ColumnCorrelationsMetricResult.reference)
 
-    - [evidently.metrics.data_quality.column_distribution_metric module](evidently.metrics.data_quality.md#module-evidently.metrics.data_quality.column_distribution_metric)
-
         - [`ColumnDistributionMetric`](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_distribution_metric.ColumnDistributionMetric)
 
             - [`ColumnDistributionMetric.calculate()`](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_distribution_metric.ColumnDistributionMetric.calculate)
@@ -837,8 +793,6 @@
             - [`ColumnDistributionMetricResult.current`](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_distribution_metric.ColumnDistributionMetricResult.current)
 
             - [`ColumnDistributionMetricResult.reference`](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_distribution_metric.ColumnDistributionMetricResult.reference)
-
-    - [evidently.metrics.data_quality.column_quantile_metric module](evidently.metrics.data_quality.md#module-evidently.metrics.data_quality.column_quantile_metric)
 
         - [`ColumnQuantileMetric`](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_quantile_metric.ColumnQuantileMetric)
 
@@ -869,8 +823,6 @@
             - [`ColumnQuantileMetricResult.reference`](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_quantile_metric.ColumnQuantileMetricResult.reference)
 
             - [`ColumnQuantileMetricResult.reference_distribution`](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_quantile_metric.ColumnQuantileMetricResult.reference_distribution)
-
-    - [evidently.metrics.data_quality.column_value_list_metric module](evidently.metrics.data_quality.md#module-evidently.metrics.data_quality.column_value_list_metric)
 
         - [`ColumnValueListMetric`](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_value_list_metric.ColumnValueListMetric)
 
@@ -913,8 +865,6 @@
             - [`ValueListStat.values_in_list`](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_value_list_metric.ValueListStat.values_in_list)
 
             - [`ValueListStat.values_not_in_list`](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_value_list_metric.ValueListStat.values_not_in_list)
-
-    - [evidently.metrics.data_quality.column_value_range_metric module](evidently.metrics.data_quality.md#module-evidently.metrics.data_quality.column_value_range_metric)
 
         - [`ColumnValueRangeMetric`](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_value_range_metric.ColumnValueRangeMetric)
 
@@ -962,8 +912,6 @@
 
             - [`ValuesInRangeStat.share_not_in_range`](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_value_range_metric.ValuesInRangeStat.share_not_in_range)
 
-    - [evidently.metrics.data_quality.dataset_correlations_metric module](evidently.metrics.data_quality.md#module-evidently.metrics.data_quality.dataset_correlations_metric)
-
         - [`CorrelationStats`](evidently.metrics.data_quality.md#evidently.metrics.data_quality.dataset_correlations_metric.CorrelationStats)
 
             - [`CorrelationStats.abs_max_correlation`](evidently.metrics.data_quality.md#evidently.metrics.data_quality.dataset_correlations_metric.CorrelationStats.abs_max_correlation)
@@ -1000,8 +948,6 @@
 
             - [`DatasetCorrelationsMetricResult.reference`](evidently.metrics.data_quality.md#evidently.metrics.data_quality.dataset_correlations_metric.DatasetCorrelationsMetricResult.reference)
 
-    - [evidently.metrics.data_quality.stability_metric module](evidently.metrics.data_quality.md#module-evidently.metrics.data_quality.stability_metric)
-
         - [`DataQualityStabilityMetric`](evidently.metrics.data_quality.md#evidently.metrics.data_quality.stability_metric.DataQualityStabilityMetric)
 
             - [`DataQualityStabilityMetric.calculate()`](evidently.metrics.data_quality.md#evidently.metrics.data_quality.stability_metric.DataQualityStabilityMetric.calculate)
@@ -1024,9 +970,7 @@
 
 - [evidently.metrics.regression_performance package](evidently.metrics.regression_performance.md)
 
-    - [Submodules](evidently.metrics.regression_performance.md#submodules)
-
-    - [evidently.metrics.regression_performance.abs_perc_error_in_time module](evidently.metrics.regression_performance.md#module-evidently.metrics.regression_performance.abs_perc_error_in_time)
+    - [Submodules](evidently.metrics.regression_performance.md#module-evidently.metrics.regression_performance.abs_perc_error_in_time)
 
         - [`RegressionAbsPercentageErrorPlot`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.abs_perc_error_in_time.RegressionAbsPercentageErrorPlot)
 
@@ -1047,8 +991,6 @@
             - [`RegressionAbsPercentageErrorPlotResults.reference_scatter`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.abs_perc_error_in_time.RegressionAbsPercentageErrorPlotResults.reference_scatter)
 
             - [`RegressionAbsPercentageErrorPlotResults.x_name`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.abs_perc_error_in_time.RegressionAbsPercentageErrorPlotResults.x_name)
-
-    - [evidently.metrics.regression_performance.error_bias_table module](evidently.metrics.regression_performance.md#module-evidently.metrics.regression_performance.error_bias_table)
 
         - [`RegressionErrorBiasTable`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.error_bias_table.RegressionErrorBiasTable)
 
@@ -1092,8 +1034,6 @@
 
             - [`RegressionErrorBiasTableResults.top_error`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.error_bias_table.RegressionErrorBiasTableResults.top_error)
 
-    - [evidently.metrics.regression_performance.error_distribution module](evidently.metrics.regression_performance.md#module-evidently.metrics.regression_performance.error_distribution)
-
         - [`RegressionErrorDistribution`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.error_distribution.RegressionErrorDistribution)
 
             - [`RegressionErrorDistribution.calculate()`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.error_distribution.RegressionErrorDistribution.calculate)
@@ -1111,8 +1051,6 @@
             - [`RegressionErrorDistributionResults.current_bins`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.error_distribution.RegressionErrorDistributionResults.current_bins)
 
             - [`RegressionErrorDistributionResults.reference_bins`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.error_distribution.RegressionErrorDistributionResults.reference_bins)
-
-    - [evidently.metrics.regression_performance.error_in_time module](evidently.metrics.regression_performance.md#module-evidently.metrics.regression_performance.error_in_time)
 
         - [`RegressionErrorPlot`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.error_in_time.RegressionErrorPlot)
 
@@ -1134,8 +1072,6 @@
 
             - [`RegressionErrorPlotResults.x_name`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.error_in_time.RegressionErrorPlotResults.x_name)
 
-    - [evidently.metrics.regression_performance.error_normality module](evidently.metrics.regression_performance.md#module-evidently.metrics.regression_performance.error_normality)
-
         - [`RegressionErrorNormality`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.error_normality.RegressionErrorNormality)
 
             - [`RegressionErrorNormality.calculate()`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.error_normality.RegressionErrorNormality.calculate)
@@ -1153,8 +1089,6 @@
             - [`RegressionErrorNormalityResults.current_error`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.error_normality.RegressionErrorNormalityResults.current_error)
 
             - [`RegressionErrorNormalityResults.reference_error`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.error_normality.RegressionErrorNormalityResults.reference_error)
-
-    - [evidently.metrics.regression_performance.predicted_and_actual_in_time module](evidently.metrics.regression_performance.md#module-evidently.metrics.regression_performance.predicted_and_actual_in_time)
 
         - [`RegressionPredictedVsActualPlot`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.predicted_and_actual_in_time.RegressionPredictedVsActualPlot)
 
@@ -1176,8 +1110,6 @@
 
             - [`RegressionPredictedVsActualPlotResults.x_name`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.predicted_and_actual_in_time.RegressionPredictedVsActualPlotResults.x_name)
 
-    - [evidently.metrics.regression_performance.predicted_vs_actual module](evidently.metrics.regression_performance.md#module-evidently.metrics.regression_performance.predicted_vs_actual)
-
         - [`RegressionPredictedVsActualScatter`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.predicted_vs_actual.RegressionPredictedVsActualScatter)
 
             - [`RegressionPredictedVsActualScatter.calculate()`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.predicted_vs_actual.RegressionPredictedVsActualScatter.calculate)
@@ -1196,7 +1128,45 @@
 
             - [`RegressionPredictedVsActualScatterResults.reference_scatter`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.predicted_vs_actual.RegressionPredictedVsActualScatterResults.reference_scatter)
 
-    - [evidently.metrics.regression_performance.regression_performance_metrics module](evidently.metrics.regression_performance.md#module-evidently.metrics.regression_performance.regression_performance_metrics)
+        - [`RegressionDummyMetric`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_dummy_metric.RegressionDummyMetric)
+
+            - [`RegressionDummyMetric.calculate()`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_dummy_metric.RegressionDummyMetric.calculate)
+
+            - [`RegressionDummyMetric.quality_metric`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_dummy_metric.RegressionDummyMetric.quality_metric)
+
+        - [`RegressionDummyMetricRenderer`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_dummy_metric.RegressionDummyMetricRenderer)
+
+            - [`RegressionDummyMetricRenderer.color_options`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_dummy_metric.RegressionDummyMetricRenderer.color_options)
+
+            - [`RegressionDummyMetricRenderer.render_html()`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_dummy_metric.RegressionDummyMetricRenderer.render_html)
+
+            - [`RegressionDummyMetricRenderer.render_json()`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_dummy_metric.RegressionDummyMetricRenderer.render_json)
+
+        - [`RegressionDummyMetricResults`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_dummy_metric.RegressionDummyMetricResults)
+
+            - [`RegressionDummyMetricResults.abs_error_max`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_dummy_metric.RegressionDummyMetricResults.abs_error_max)
+
+            - [`RegressionDummyMetricResults.abs_error_max_by_ref`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_dummy_metric.RegressionDummyMetricResults.abs_error_max_by_ref)
+
+            - [`RegressionDummyMetricResults.abs_error_max_default`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_dummy_metric.RegressionDummyMetricResults.abs_error_max_default)
+
+            - [`RegressionDummyMetricResults.mean_abs_error`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_dummy_metric.RegressionDummyMetricResults.mean_abs_error)
+
+            - [`RegressionDummyMetricResults.mean_abs_error_by_ref`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_dummy_metric.RegressionDummyMetricResults.mean_abs_error_by_ref)
+
+            - [`RegressionDummyMetricResults.mean_abs_error_default`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_dummy_metric.RegressionDummyMetricResults.mean_abs_error_default)
+
+            - [`RegressionDummyMetricResults.mean_abs_perc_error`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_dummy_metric.RegressionDummyMetricResults.mean_abs_perc_error)
+
+            - [`RegressionDummyMetricResults.mean_abs_perc_error_by_ref`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_dummy_metric.RegressionDummyMetricResults.mean_abs_perc_error_by_ref)
+
+            - [`RegressionDummyMetricResults.mean_abs_perc_error_default`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_dummy_metric.RegressionDummyMetricResults.mean_abs_perc_error_default)
+
+            - [`RegressionDummyMetricResults.rmse`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_dummy_metric.RegressionDummyMetricResults.rmse)
+
+            - [`RegressionDummyMetricResults.rmse_by_ref`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_dummy_metric.RegressionDummyMetricResults.rmse_by_ref)
+
+            - [`RegressionDummyMetricResults.rmse_default`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_dummy_metric.RegressionDummyMetricResults.rmse_default)
 
         - [`RegressionPerformanceMetrics`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_performance_metrics.RegressionPerformanceMetrics)
 
@@ -1269,8 +1239,6 @@
             - [`RegressionPerformanceMetricsResults.underperformance_ref`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_performance_metrics.RegressionPerformanceMetricsResults.underperformance_ref)
 
             - [`RegressionPerformanceMetricsResults.vals_for_plots`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_performance_metrics.RegressionPerformanceMetricsResults.vals_for_plots)
-
-    - [evidently.metrics.regression_performance.regression_quality module](evidently.metrics.regression_performance.md#module-evidently.metrics.regression_performance.regression_quality)
 
         - [`RegressionQualityMetric`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_quality.RegressionQualityMetric)
 
@@ -1348,8 +1316,6 @@
 
             - [`RegressionQualityMetricResults.vals_for_plots`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_quality.RegressionQualityMetricResults.vals_for_plots)
 
-    - [evidently.metrics.regression_performance.top_error module](evidently.metrics.regression_performance.md#module-evidently.metrics.regression_performance.top_error)
-
         - [`RegressionTopErrorMetric`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.top_error.RegressionTopErrorMetric)
 
             - [`RegressionTopErrorMetric.calculate()`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.top_error.RegressionTopErrorMetric.calculate)
@@ -1377,16 +1343,14 @@
 
 ## Submodules
 
-## evidently.metrics.base_metric module
 
-
-### _class_ evidently.metrics.base_metric.ErrorResult(exception: BaseException)
+### _class_ ErrorResult(exception: BaseException)
 Bases: `object`
 
 
 #### exception(_: BaseExceptio_ )
 
-### _class_ evidently.metrics.base_metric.InputData(reference_data: Optional[pandas.core.frame.DataFrame], current_data: pandas.core.frame.DataFrame, column_mapping: [evidently.pipeline.column_mapping.ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping), data_definition: [evidently.utils.data_preprocessing.DataDefinition](evidently.utils.md#evidently.utils.data_preprocessing.DataDefinition))
+### _class_ InputData(reference_data: Optional[pandas.core.frame.DataFrame], current_data: pandas.core.frame.DataFrame, column_mapping: [ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping), data_definition: [DataDefinition](evidently.utils.md#evidently.utils.data_preprocessing.DataDefinition))
 Bases: `object`
 
 
@@ -1398,7 +1362,7 @@ Bases: `object`
 
 #### reference_data(_: Optional[DataFrame_ )
 
-### _class_ evidently.metrics.base_metric.Metric()
+### _class_ Metric()
 Bases: `Generic`[`TResult`]
 
 
@@ -1414,139 +1378,11 @@ Bases: `Generic`[`TResult`]
 
 #### set_context(context)
 
-### evidently.metrics.base_metric.generate_column_metrics(metric_class: Type[Metric], columns: Optional[Union[str, list]] = None, parameters: Optional[Dict] = None)
+### generate_column_metrics(metric_class: Type[Metric], columns: Optional[Union[str, list]] = None, parameters: Optional[Dict] = None)
 Function for generating metrics for columns
 
-## evidently.metrics.classification_performance_metrics module
 
+### apply_func_to_binned_data(df_for_bins, func, target_column, preds_column, is_ref_data=False)
 
-### _class_ evidently.metrics.classification_performance_metrics.ClassificationPerformanceMetrics()
-Bases: `Metric`[`ClassificationPerformanceResults`]
-
-
-#### calculate(data: InputData)
-
-### _class_ evidently.metrics.classification_performance_metrics.ClassificationPerformanceMetricsRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
-
-
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
-
-#### render_html(obj: ClassificationPerformanceMetrics)
-
-#### render_json(obj: ClassificationPerformanceMetrics)
-
-### _class_ evidently.metrics.classification_performance_metrics.ClassificationPerformanceMetricsThreshold(threshold: float)
-Bases: `ClassificationPerformanceMetricsThresholdBase`
-
-
-#### calculate_metric(dataset: DataFrame, mapping: [ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping))
-
-#### get_parameters()
-
-#### get_threshold(dataset: DataFrame, mapping: [ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping))
-
-### _class_ evidently.metrics.classification_performance_metrics.ClassificationPerformanceMetricsThresholdBase()
-Bases: `Metric`[`ClassificationPerformanceResults`]
-
-
-#### calculate(data: InputData)
-
-#### _abstract_ calculate_metric(dataset: DataFrame, mapping: [ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping))
-
-#### _abstract_ get_threshold(dataset: DataFrame, mapping: [ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping))
-
-### _class_ evidently.metrics.classification_performance_metrics.ClassificationPerformanceMetricsThresholdRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
-
-
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
-
-#### render_html(obj: ClassificationPerformanceMetricsThreshold)
-
-#### render_json(obj: ClassificationPerformanceMetricsThreshold)
-
-### _class_ evidently.metrics.classification_performance_metrics.ClassificationPerformanceMetricsTopK(k: Union[float, int])
-Bases: `ClassificationPerformanceMetricsThresholdBase`
-
-
-#### calculate_metric(dataset: DataFrame, mapping: [ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping))
-
-#### get_parameters()
-
-#### get_threshold(dataset: DataFrame, columns: [ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping))
-
-### _class_ evidently.metrics.classification_performance_metrics.ClassificationPerformanceMetricsTopKRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
-
-
-#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
-
-#### render_html(obj: ClassificationPerformanceMetricsTopK)
-
-#### render_json(obj: ClassificationPerformanceMetricsTopK)
-
-### _class_ evidently.metrics.classification_performance_metrics.ClassificationPerformanceResults(columns: [evidently.utils.data_operations.DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns), current: evidently.metrics.classification_performance_metrics.DatasetClassificationPerformanceMetrics, dummy: evidently.metrics.classification_performance_metrics.DatasetClassificationPerformanceMetrics, reference: Optional[evidently.metrics.classification_performance_metrics.DatasetClassificationPerformanceMetrics] = None)
-Bases: `object`
-
-
-#### columns(_: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns_ )
-
-#### current(_: DatasetClassificationPerformanceMetric_ )
-
-#### dummy(_: DatasetClassificationPerformanceMetric_ )
-
-#### reference(_: Optional[DatasetClassificationPerformanceMetrics_ _ = Non_ )
-
-### _class_ evidently.metrics.classification_performance_metrics.DatasetClassificationPerformanceMetrics(accuracy: float, precision: float, recall: float, f1: float, metrics_matrix: dict, confusion_matrix: [ConfusionMatrix](evidently.calculations.md#evidently.calculations.classification_performance.ConfusionMatrix), confusion_by_classes: Dict[Union[str, int], Dict[str, int]], roc_auc: Optional[float] = None, log_loss: Optional[float] = None, roc_aucs: Optional[list] = None, roc_curve: Optional[dict] = None, pr_curve: Optional[dict] = None, pr_table: Optional[Union[dict, list]] = None, tpr: Optional[float] = None, tnr: Optional[float] = None, fpr: Optional[float] = None, fnr: Optional[float] = None, rate_plots_data: Optional[dict] = None, plot_data: Optional[Dict[str, Dict[str, list]]] = None)
-Bases: `object`
-
-Class for performance metrics values
-
-
-#### accuracy(_: floa_ )
-
-#### confusion_by_classes(_: Dict[Union[str, int], Dict[str, int]_ )
-
-#### confusion_matrix(_: [ConfusionMatrix](evidently.calculations.md#evidently.calculations.classification_performance.ConfusionMatrix_ )
-
-#### f1(_: floa_ )
-
-#### fnr(_: Optional[float_ _ = Non_ )
-
-#### fpr(_: Optional[float_ _ = Non_ )
-
-#### log_loss(_: Optional[float_ _ = Non_ )
-
-#### metrics_matrix(_: dic_ )
-
-#### plot_data(_: Optional[Dict[str, Dict[str, list]]_ _ = Non_ )
-
-#### pr_curve(_: Optional[dict_ _ = Non_ )
-
-#### pr_table(_: Optional[Union[dict, list]_ _ = Non_ )
-
-#### precision(_: floa_ )
-
-#### rate_plots_data(_: Optional[dict_ _ = Non_ )
-
-#### recall(_: floa_ )
-
-#### roc_auc(_: Optional[float_ _ = Non_ )
-
-#### roc_aucs(_: Optional[list_ _ = Non_ )
-
-#### roc_curve(_: Optional[dict_ _ = Non_ )
-
-#### tnr(_: Optional[float_ _ = Non_ )
-
-#### tpr(_: Optional[float_ _ = Non_ )
-
-### evidently.metrics.classification_performance_metrics.classification_performance_metrics(target: Series, prediction: Series, prediction_probas: Optional[DataFrame], pos_label: Optional[Union[str, int]])
-## evidently.metrics.utils module
-
-
-### evidently.metrics.utils.apply_func_to_binned_data(df_for_bins, func, target_column, preds_column, is_ref_data=False)
-
-### evidently.metrics.utils.make_target_bins_for_reg_plots(curr: DataFrame, target_column, preds_column, ref: Optional[DataFrame] = None)
+### make_target_bins_for_reg_plots(curr: DataFrame, target_column, preds_column, ref: Optional[DataFrame] = None)
 ## Module contents

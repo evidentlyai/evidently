@@ -2,10 +2,8 @@
 
 ## Submodules
 
-## evidently.pipeline.column_mapping module
 
-
-### _class_ evidently.pipeline.column_mapping.ColumnMapping(target: Optional[str] = 'target', prediction: Union[str, int, Sequence[str], Sequence[int], NoneType] = 'prediction', datetime: Optional[str] = 'datetime', id: Optional[str] = None, numerical_features: Optional[List[str]] = None, categorical_features: Optional[List[str]] = None, datetime_features: Optional[List[str]] = None, target_names: Optional[List[str]] = None, task: Optional[str] = None, pos_label: Union[str, int, NoneType] = 1)
+### _class_ ColumnMapping(target: Optional[str] = 'target', prediction: Union[str, int, Sequence[str], Sequence[int], NoneType] = 'prediction', datetime: Optional[str] = 'datetime', id: Optional[str] = None, numerical_features: Optional[List[str]] = None, categorical_features: Optional[List[str]] = None, datetime_features: Optional[List[str]] = None, target_names: Optional[List[str]] = None, task: Optional[str] = None, pos_label: Union[str, int, NoneType] = 1)
 Bases: `object`
 
 
@@ -33,17 +31,15 @@ Bases: `object`
 
 #### task(_: Optional[str_ _ = Non_ )
 
-### _class_ evidently.pipeline.column_mapping.TaskType()
+### _class_ TaskType()
 Bases: `object`
 
 
 #### CLASSIFICATION_TASK(_: st_ _ = 'classification_ )
 
 #### REGRESSION_TASK(_: st_ _ = 'regression_ )
-## evidently.pipeline.pipeline module
 
-
-### _class_ evidently.pipeline.pipeline.Pipeline(stages: Sequence[PipelineStage], options: list)
+### _class_ Pipeline(stages: Sequence[PipelineStage], options: list)
 Bases: `object`
 
 
@@ -53,13 +49,11 @@ Bases: `object`
 
 #### get_analyzers()
 
-#### options_provider(_: [OptionsProvider](./evidently.options.md#evidently.options.OptionsProvider_ )
+#### options_provider(_: [OptionsProvider](evidently.options.md#evidently.options.OptionsProvider_ )
 
 #### stages(_: Sequence[PipelineStage_ )
-## evidently.pipeline.stage module
 
-
-### _class_ evidently.pipeline.stage.PipelineStage()
+### _class_ PipelineStage()
 Bases: `object`
 
 
@@ -69,5 +63,5 @@ Bases: `object`
 
 #### _abstract_ calculate(reference_data: DataFrame, current_data: DataFrame, column_mapping: ColumnMapping, analyzers_results: Dict[Type[Analyzer], Any])
 
-#### options_provider(_: [OptionsProvider](./evidently.options.md#evidently.options.OptionsProvider_ )
+#### options_provider(_: [OptionsProvider](evidently.options.md#evidently.options.OptionsProvider_ )
 ## Module contents

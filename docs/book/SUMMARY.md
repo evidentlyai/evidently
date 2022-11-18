@@ -57,26 +57,17 @@
   * [evidently.metrics.data_quality](api-reference/evidently.metrics.data_quality.md)
   * [evidently.metrics](api-reference/evidently.metrics.md)
   * [evidently.metrics.regression_performance](api-reference/evidently.metrics.regression_performance.md)
-  * [evidently.model](api-reference/evidently.model.md)
-  * [evidently.model_monitoring](api-reference/evidently.model_monitoring.md)
-  * [evidently.model_monitoring.monitors](api-reference/evidently.model_monitoring.monitors.md)
-  * [evidently.model_profile](api-reference/evidently.model_profile.md)
-  * [evidently.model_profile.sections](api-reference/evidently.model_profile.sections.md)
-  * [evidently.nbextension](api-reference/evidently.nbextension.md)
   * [evidently.options](api-reference/evidently.options.md)
   * [evidently.pipeline](api-reference/evidently.pipeline.md)
-  * [evidently.profile_sections](api-reference/evidently.profile_sections.md)
   * [evidently.renderers](api-reference/evidently.renderers.md)
   * [evidently.report](api-reference/evidently.report.md)
-  * [evidently.runner](api-reference/evidently.runner.md)
   * [evidently.suite](api-reference/evidently.suite.md)
   * [evidently.tabs](api-reference/evidently.tabs.md)
   * [evidently.test_preset](api-reference/evidently.test_preset.md)
   * [evidently.test_suite](api-reference/evidently.test_suite.md)
   * [evidently.tests](api-reference/evidently.tests.md)
   * [evidently.utils](api-reference/evidently.utils.md)
-  * [evidently.widgets](api-reference/evidently.widgets.md)
-  
+
 ## SUPPORT
 
 * [Contact](support/contact.md)

@@ -4,99 +4,59 @@
 
 - [evidently.calculations.stattests package](evidently.calculations.stattests.md)
 
-    - [Submodules](./evidently.calculations.stattests.md#submodules)
+    - [Submodules](evidently.calculations.stattests.md#module-evidently.calculations.stattests.anderson_darling_stattest)
 
-    - [evidently.calculations.stattests.anderson_darling_stattest module](./evidently.calculations.stattests.md#module-evidently.calculations.stattests.anderson_darling_stattest)
+        - [`CVM_2samp()`](evidently.calculations.stattests.md#evidently.calculations.stattests.cramer_von_mises_stattest.CVM_2samp)
 
-    - [evidently.calculations.stattests.chisquare_stattest module](./evidently.calculations.stattests.md#module-evidently.calculations.stattests.chisquare_stattest)
+        - [`CramerVonMisesResult`](evidently.calculations.stattests.md#evidently.calculations.stattests.cramer_von_mises_stattest.CramerVonMisesResult)
 
-    - [evidently.calculations.stattests.cramer_von_mises_stattest module](./evidently.calculations.stattests.md#module-evidently.calculations.stattests.cramer_von_mises_stattest)
+        - [`StatTest`](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)
 
-        - [`CVM_2samp()`](./evidently.calculations.stattests.md#evidently.calculations.stattests.cramer_von_mises_stattest.CVM_2samp)
+            - [`StatTest.allowed_feature_types`](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest.allowed_feature_types)
 
-        - [`CramerVonMisesResult`](./evidently.calculations.stattests.md#evidently.calculations.stattests.cramer_von_mises_stattest.CramerVonMisesResult)
+            - [`StatTest.default_threshold`](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest.default_threshold)
 
-    - [evidently.calculations.stattests.energy_distance module](./evidently.calculations.stattests.md#module-evidently.calculations.stattests.energy_distance)
+            - [`StatTest.display_name`](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest.display_name)
 
-    - [evidently.calculations.stattests.epps_singleton_stattest module](./evidently.calculations.stattests.md#module-evidently.calculations.stattests.epps_singleton_stattest)
+            - [`StatTest.func`](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest.func)
 
-    - [evidently.calculations.stattests.fisher_exact_stattest module](./evidently.calculations.stattests.md#module-evidently.calculations.stattests.fisher_exact_stattest)
+            - [`StatTest.name`](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest.name)
 
-    - [evidently.calculations.stattests.g_stattest module](./evidently.calculations.stattests.md#module-evidently.calculations.stattests.g_stattest)
+        - [`StatTestInvalidFeatureTypeError`](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTestInvalidFeatureTypeError)
 
-    - [evidently.calculations.stattests.hellinger_distance module](./evidently.calculations.stattests.md#module-evidently.calculations.stattests.hellinger_distance)
+        - [`StatTestNotFoundError`](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTestNotFoundError)
 
-    - [evidently.calculations.stattests.jensenshannon module](./evidently.calculations.stattests.md#module-evidently.calculations.stattests.jensenshannon)
+        - [`StatTestResult`](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTestResult)
 
-    - [evidently.calculations.stattests.kl_div module](./evidently.calculations.stattests.md#module-evidently.calculations.stattests.kl_div)
+            - [`StatTestResult.actual_threshold`](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTestResult.actual_threshold)
 
-    - [evidently.calculations.stattests.ks_stattest module](./evidently.calculations.stattests.md#module-evidently.calculations.stattests.ks_stattest)
+            - [`StatTestResult.drift_score`](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTestResult.drift_score)
 
-    - [evidently.calculations.stattests.mann_whitney_urank_stattest module](./evidently.calculations.stattests.md#module-evidently.calculations.stattests.mann_whitney_urank_stattest)
+            - [`StatTestResult.drifted`](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTestResult.drifted)
 
-    - [evidently.calculations.stattests.psi module](./evidently.calculations.stattests.md#module-evidently.calculations.stattests.psi)
+        - [`get_stattest()`](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.get_stattest)
 
-    - [evidently.calculations.stattests.registry module](./evidently.calculations.stattests.md#module-evidently.calculations.stattests.registry)
+        - [`register_stattest()`](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.register_stattest)
 
-        - [`StatTest`](./evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)
+        - [`generate_fisher2x2_contingency_table()`](evidently.calculations.stattests.md#evidently.calculations.stattests.utils.generate_fisher2x2_contingency_table)
 
-            - [`StatTest.allowed_feature_types`](./evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest.allowed_feature_types)
+        - [`get_binned_data()`](evidently.calculations.stattests.md#evidently.calculations.stattests.utils.get_binned_data)
 
-            - [`StatTest.default_threshold`](./evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest.default_threshold)
+        - [`get_unique_not_nan_values_list_from_series()`](evidently.calculations.stattests.md#evidently.calculations.stattests.utils.get_unique_not_nan_values_list_from_series)
 
-            - [`StatTest.display_name`](./evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest.display_name)
+        - [`permutation_test()`](evidently.calculations.stattests.md#evidently.calculations.stattests.utils.permutation_test)
 
-            - [`StatTest.func`](./evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest.func)
+        - [`proportions_diff_z_stat_ind()`](evidently.calculations.stattests.md#evidently.calculations.stattests.z_stattest.proportions_diff_z_stat_ind)
 
-            - [`StatTest.name`](./evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest.name)
+        - [`proportions_diff_z_test()`](evidently.calculations.stattests.md#evidently.calculations.stattests.z_stattest.proportions_diff_z_test)
 
-        - [`StatTestInvalidFeatureTypeError`](./evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTestInvalidFeatureTypeError)
-
-        - [`StatTestNotFoundError`](./evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTestNotFoundError)
-
-        - [`StatTestResult`](./evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTestResult)
-
-            - [`StatTestResult.actual_threshold`](./evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTestResult.actual_threshold)
-
-            - [`StatTestResult.drift_score`](./evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTestResult.drift_score)
-
-            - [`StatTestResult.drifted`](./evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTestResult.drifted)
-
-        - [`get_stattest()`](./evidently.calculations.stattests.md#evidently.calculations.stattests.registry.get_stattest)
-
-        - [`register_stattest()`](./evidently.calculations.stattests.md#evidently.calculations.stattests.registry.register_stattest)
-
-    - [evidently.calculations.stattests.t_test module](./evidently.calculations.stattests.md#module-evidently.calculations.stattests.t_test)
-
-    - [evidently.calculations.stattests.tvd_stattest module](./evidently.calculations.stattests.md#module-evidently.calculations.stattests.tvd_stattest)
-
-    - [evidently.calculations.stattests.utils module](./evidently.calculations.stattests.md#module-evidently.calculations.stattests.utils)
-
-        - [`generate_fisher2x2_contingency_table()`](./evidently.calculations.stattests.md#evidently.calculations.stattests.utils.generate_fisher2x2_contingency_table)
-
-        - [`get_binned_data()`](./evidently.calculations.stattests.md#evidently.calculations.stattests.utils.get_binned_data)
-
-        - [`get_unique_not_nan_values_list_from_series()`](./evidently.calculations.stattests.md#evidently.calculations.stattests.utils.get_unique_not_nan_values_list_from_series)
-
-        - [`permutation_test()`](./evidently.calculations.stattests.md#evidently.calculations.stattests.utils.permutation_test)
-
-    - [evidently.calculations.stattests.wasserstein_distance_norm module](./evidently.calculations.stattests.md#module-evidently.calculations.stattests.wasserstein_distance_norm)
-
-    - [evidently.calculations.stattests.z_stattest module](./evidently.calculations.stattests.md#module-evidently.calculations.stattests.z_stattest)
-
-        - [`proportions_diff_z_stat_ind()`](./evidently.calculations.stattests.md#evidently.calculations.stattests.z_stattest.proportions_diff_z_stat_ind)
-
-        - [`proportions_diff_z_test()`](./evidently.calculations.stattests.md#evidently.calculations.stattests.z_stattest.proportions_diff_z_test)
-
-    - [Module contents](./evidently.calculations.stattests.md#module-evidently.calculations.stattests)
+    - [Module contents](evidently.calculations.stattests.md#module-evidently.calculations.stattests)
 
 
 ## Submodules
 
-## evidently.calculations.classification_performance module
 
-
-### _class_ evidently.calculations.classification_performance.ConfusionMatrix(labels: Sequence[Union[str, int]], values: list)
+### _class_ ConfusionMatrix(labels: Sequence[Union[str, int]], values: list)
 Bases: `object`
 
 
@@ -104,7 +64,35 @@ Bases: `object`
 
 #### values(_: lis_ )
 
-### _class_ evidently.calculations.classification_performance.PredictionData(predictions: pandas.core.series.Series, prediction_probas: Optional[pandas.core.frame.DataFrame], labels: List[Union[str, int]])
+### _class_ DatasetClassificationQuality(accuracy: float, precision: float, recall: float, f1: float, roc_auc: Optional[float] = None, log_loss: Optional[float] = None, tpr: Optional[float] = None, tnr: Optional[float] = None, fpr: Optional[float] = None, fnr: Optional[float] = None, rate_plots_data: Optional[Dict] = None, plot_data: Optional[Dict] = None)
+Bases: `object`
+
+
+#### accuracy(_: floa_ )
+
+#### f1(_: floa_ )
+
+#### fnr(_: Optional[float_ _ = Non_ )
+
+#### fpr(_: Optional[float_ _ = Non_ )
+
+#### log_loss(_: Optional[float_ _ = Non_ )
+
+#### plot_data(_: Optional[Dict_ _ = Non_ )
+
+#### precision(_: floa_ )
+
+#### rate_plots_data(_: Optional[Dict_ _ = Non_ )
+
+#### recall(_: floa_ )
+
+#### roc_auc(_: Optional[float_ _ = Non_ )
+
+#### tnr(_: Optional[float_ _ = Non_ )
+
+#### tpr(_: Optional[float_ _ = Non_ )
+
+### _class_ PredictionData(predictions: pandas.core.series.Series, prediction_probas: Optional[pandas.core.frame.DataFrame], labels: List[Union[str, int]])
 Bases: `object`
 
 
@@ -114,52 +102,66 @@ Bases: `object`
 
 #### predictions(_: Serie_ )
 
-### evidently.calculations.classification_performance.calculate_confusion_by_classes(confusion_matrix: ndarray, class_names: Sequence[Union[str, int]])
-Calculate metrics
-
-    TP (true positive)
-    TN (true negative)
-    FP (false positive)
-    FN (false negative)
-
+### calculate_confusion_by_classes(confusion_matrix: ndarray, class_names: Sequence[Union[str, int]])
+Calculate metrics:
+- TP (true positive)
+- TN (true negative)
+- FP (false positive)
+- FN (false negative)
 for each class from confusion matrix.
 
-Returns a dict like:
-{
 
-> “class_1_name”: {
+* **Returns**
 
->     “tp”: 1,
->     “tn”: 5,
->     “fp”: 0,
->     “fn”: 3,
+    a dict like:
 
-}
+    ```default
+    {
+        "class_1_name": {
+            "tp": 1,
+            "tn": 5,
+            "fp": 0,
+            "fn": 3,
+        },
+        "class_1_name": {
+            "tp": 1,
+            "tn": 5,
+            "fp": 0,
+            "fn": 3,
+        },
+    }
+    ```
 
 
-### evidently.calculations.classification_performance.calculate_pr_table(binded)
 
-### evidently.calculations.classification_performance.get_prediction_data(data: DataFrame, data_columns: [DatasetColumns](./evidently.utils.md#evidently.utils.data_operations.DatasetColumns), pos_label: Optional[Union[str, int]], threshold: float = 0.5)
+
+### calculate_matrix(target: Series, prediction: Series, labels: List[Union[str, int]])
+
+### calculate_metrics(column_mapping: [ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping), confusion_matrix: ConfusionMatrix, target: Series, prediction: PredictionData)
+
+### calculate_pr_table(binded)
+
+### collect_plot_data(prediction_probas: DataFrame)
+
+### get_prediction_data(data: DataFrame, data_columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns), pos_label: Optional[Union[str, int]], threshold: float = 0.5)
 Get predicted values and optional prediction probabilities from source data.
 Also take into account a threshold value - if a probability is less than the value, do not take it into account.
 
 Return and object with predicted values and an optional prediction probabilities.
 
 
-### evidently.calculations.classification_performance.k_probability_threshold(prediction_probas: DataFrame, k: Union[int, float])
+### k_probability_threshold(prediction_probas: DataFrame, k: Union[int, float])
 
-### evidently.calculations.classification_performance.threshold_probability_labels(prediction_probas: DataFrame, pos_label: Union[str, int], neg_label: Union[str, int], threshold: float)
+### threshold_probability_labels(prediction_probas: DataFrame, pos_label: Union[str, int], neg_label: Union[str, int], threshold: float)
 Get prediction values by probabilities with the threshold apply
 
-## evidently.calculations.data_drift module
-
-Methods and types for data drift calculations
+Methods and types for data drift calculations.
 
 
-### _class_ evidently.calculations.data_drift.ColumnDataDriftMetrics(column_name: str, column_type: str, stattest_name: str, drift_score: float, drift_detected: bool, threshold: float, current_distribution: [Distribution](./evidently.utils.md#evidently.utils.visualizations.Distribution), reference_distribution: [Distribution](./evidently.utils.md#evidently.utils.visualizations.Distribution), current_small_distribution: Optional[list] = None, reference_small_distribution: Optional[list] = None, current_scatter: Optional[Dict[str, list]] = None, x_name: Optional[str] = None, plot_shape: Optional[Dict[str, float]] = None, current_correlations: Optional[Dict[str, float]] = None, reference_correlations: Optional[Dict[str, float]] = None)
+### _class_ ColumnDataDriftMetrics(column_name: str, column_type: str, stattest_name: str, drift_score: float, drift_detected: bool, threshold: float, current_distribution: [Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution), reference_distribution: [Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution), current_small_distribution: Optional[list] = None, reference_small_distribution: Optional[list] = None, current_scatter: Optional[Dict[str, list]] = None, x_name: Optional[str] = None, plot_shape: Optional[Dict[str, float]] = None, current_correlations: Optional[Dict[str, float]] = None, reference_correlations: Optional[Dict[str, float]] = None)
 Bases: `object`
 
-One column drift metrics
+One column drift metrics.
 
 
 #### column_name(_: st_ )
@@ -168,7 +170,7 @@ One column drift metrics
 
 #### current_correlations(_: Optional[Dict[str, float]_ _ = Non_ )
 
-#### current_distribution(_: [Distribution](./evidently.utils.md#evidently.utils.visualizations.Distribution_ )
+#### current_distribution(_: [Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution_ )
 
 #### current_scatter(_: Optional[Dict[str, list]_ _ = Non_ )
 
@@ -182,7 +184,7 @@ One column drift metrics
 
 #### reference_correlations(_: Optional[Dict[str, float]_ _ = Non_ )
 
-#### reference_distribution(_: [Distribution](./evidently.utils.md#evidently.utils.visualizations.Distribution_ )
+#### reference_distribution(_: [Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution_ )
 
 #### reference_small_distribution(_: Optional[list_ _ = Non_ )
 
@@ -192,7 +194,7 @@ One column drift metrics
 
 #### x_name(_: Optional[str_ _ = Non_ )
 
-### _class_ evidently.calculations.data_drift.DatasetDrift(number_of_drifted_columns: int, dataset_drift_score: float, dataset_drift: bool)
+### _class_ DatasetDrift(number_of_drifted_columns: int, dataset_drift_score: float, dataset_drift: bool)
 Bases: `object`
 
 Dataset drift calculation results
@@ -204,11 +206,11 @@ Dataset drift calculation results
 
 #### number_of_drifted_columns(_: in_ )
 
-### _class_ evidently.calculations.data_drift.DatasetDriftMetrics(number_of_columns: int, number_of_drifted_columns: int, share_of_drifted_columns: float, dataset_drift: bool, drift_by_columns: Dict[str, evidently.calculations.data_drift.ColumnDataDriftMetrics], options: [evidently.options.data_drift.DataDriftOptions](./evidently.options.md#evidently.options.data_drift.DataDriftOptions), dataset_columns: [evidently.utils.data_operations.DatasetColumns](./evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
+### _class_ DatasetDriftMetrics(number_of_columns: int, number_of_drifted_columns: int, share_of_drifted_columns: float, dataset_drift: bool, drift_by_columns: Dict[str, ColumnDataDriftMetrics], options: [DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions), dataset_columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 Bases: `object`
 
 
-#### dataset_columns(_: [DatasetColumns](./evidently.utils.md#evidently.utils.data_operations.DatasetColumns_ )
+#### dataset_columns(_: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns_ )
 
 #### dataset_drift(_: boo_ )
 
@@ -218,61 +220,63 @@ Bases: `object`
 
 #### number_of_drifted_columns(_: in_ )
 
-#### options(_: [DataDriftOptions](./evidently.options.md#evidently.options.data_drift.DataDriftOptions_ )
+#### options(_: [DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions_ )
 
 #### share_of_drifted_columns(_: floa_ )
 
-### evidently.calculations.data_drift.ensure_prediction_column_is_string(\*, prediction_column: Optional[Union[str, Sequence]], current_data: DataFrame, reference_data: DataFrame, threshold: float = 0.5)
+### ensure_prediction_column_is_string(\*, prediction_column: Optional[Union[str, Sequence]], current_data: DataFrame, reference_data: DataFrame, threshold: float = 0.5)
 Update dataset by predictions type:
+
 - if prediction column is None or a string, no dataset changes
+
 - (binary classification) if predictions is a list and its length equals 2
 
-> set predicted_labels column by classification_threshold
+    set predicted_labels column by threshold
 
 - (multy label classification) if predictions is a list and its length is greater than 2
 
     set predicted_labels from probability values in columns by prediction column
 
-Returns prediction column name.
+
+* **Returns**
+
+    prediction column name.
 
 
-### evidently.calculations.data_drift.get_dataset_drift(drift_metrics, drift_share=0.5)
 
-### evidently.calculations.data_drift.get_drift_for_columns(\*, current_data: DataFrame, reference_data: DataFrame, dataset_columns: [DatasetColumns](./evidently.utils.md#evidently.utils.data_operations.DatasetColumns), data_drift_options: [DataDriftOptions](./evidently.options.md#evidently.options.data_drift.DataDriftOptions), drift_share_threshold: Optional[float] = None, columns: Optional[List[str]] = None)
+### get_dataset_drift(drift_metrics, drift_share=0.5)
 
-### evidently.calculations.data_drift.get_one_column_drift(\*, current_data: DataFrame, reference_data: DataFrame, column_name: str, options: [DataDriftOptions](./evidently.options.md#evidently.options.data_drift.DataDriftOptions), dataset_columns: [DatasetColumns](./evidently.utils.md#evidently.utils.data_operations.DatasetColumns), column_type: Optional[str] = None)
-## evidently.calculations.data_integration module
+### get_drift_for_columns(\*, current_data: DataFrame, reference_data: DataFrame, dataset_columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns), data_drift_options: [DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions), drift_share_threshold: Optional[float] = None, columns: Optional[List[str]] = None)
 
+### get_one_column_drift(\*, current_data: DataFrame, reference_data: DataFrame, column_name: str, options: [DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions), dataset_columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns), column_type: Optional[str] = None)
 
-### evidently.calculations.data_integration.get_number_of_all_pandas_missed_values(dataset: DataFrame)
+### get_number_of_all_pandas_missed_values(dataset: DataFrame)
 Calculate the number of missed - nulls by pandas - values in a dataset
 
 
-### evidently.calculations.data_integration.get_number_of_almost_constant_columns(dataset: DataFrame, threshold: float)
+### get_number_of_almost_constant_columns(dataset: DataFrame, threshold: float)
 Calculate the number of almost constant columns in a dataset
 
 
-### evidently.calculations.data_integration.get_number_of_almost_duplicated_columns(dataset: DataFrame, threshold: float)
+### get_number_of_almost_duplicated_columns(dataset: DataFrame, threshold: float)
 Calculate the number of almost duplicated columns in a dataset
 
 
-### evidently.calculations.data_integration.get_number_of_constant_columns(dataset: DataFrame)
+### get_number_of_constant_columns(dataset: DataFrame)
 Calculate the number of constant columns in a dataset
 
 
-### evidently.calculations.data_integration.get_number_of_duplicated_columns(dataset: DataFrame)
+### get_number_of_duplicated_columns(dataset: DataFrame)
 Calculate the number of duplicated columns in a dataset
 
 
-### evidently.calculations.data_integration.get_number_of_empty_columns(dataset: DataFrame)
+### get_number_of_empty_columns(dataset: DataFrame)
 Calculate the number of empty columns in a dataset
-
-## evidently.calculations.data_quality module
 
 Methods for overall dataset quality calculations - rows count, a specific values count, etc.
 
 
-### _class_ evidently.calculations.data_quality.ColumnCorrelations(column_name: str, kind: str, values: [evidently.utils.visualizations.Distribution](./evidently.utils.md#evidently.utils.visualizations.Distribution))
+### _class_ ColumnCorrelations(column_name: str, kind: str, values: [Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution))
 Bases: `object`
 
 
@@ -280,9 +284,9 @@ Bases: `object`
 
 #### kind(_: st_ )
 
-#### values(_: [Distribution](./evidently.utils.md#evidently.utils.visualizations.Distribution_ )
+#### values(_: [Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution_ )
 
-### _class_ evidently.calculations.data_quality.DataQualityGetPlotData()
+### _class_ DataQualityGetPlotData()
 Bases: `object`
 
 
@@ -292,13 +296,13 @@ Bases: `object`
 
 #### calculate_main_plot(curr: DataFrame, ref: Optional[DataFrame], feature_name: str, feature_type: str, merge_small_cat: Optional[int] = 5)
 
-### _class_ evidently.calculations.data_quality.DataQualityPlot(bins_for_hist: Dict[str, pandas.core.frame.DataFrame])
+### _class_ DataQualityPlot(bins_for_hist: Dict[str, pandas.core.frame.DataFrame])
 Bases: `object`
 
 
 #### bins_for_hist(_: Dict[str, DataFrame_ )
 
-### _class_ evidently.calculations.data_quality.DataQualityStats(rows_count: int, num_features_stats: Optional[Dict[str, evidently.calculations.data_quality.FeatureQualityStats]] = None, cat_features_stats: Optional[Dict[str, evidently.calculations.data_quality.FeatureQualityStats]] = None, datetime_features_stats: Optional[Dict[str, evidently.calculations.data_quality.FeatureQualityStats]] = None, target_stats: Optional[Dict[str, evidently.calculations.data_quality.FeatureQualityStats]] = None, prediction_stats: Optional[Dict[str, evidently.calculations.data_quality.FeatureQualityStats]] = None)
+### _class_ DataQualityStats(rows_count: int, num_features_stats: Optional[Dict[str, FeatureQualityStats]] = None, cat_features_stats: Optional[Dict[str, FeatureQualityStats]] = None, datetime_features_stats: Optional[Dict[str, FeatureQualityStats]] = None, target_stats: Optional[Dict[str, FeatureQualityStats]] = None, prediction_stats: Optional[Dict[str, FeatureQualityStats]] = None)
 Bases: `object`
 
 
@@ -316,7 +320,7 @@ Bases: `object`
 
 #### target_stats(_: Optional[Dict[str, FeatureQualityStats]_ _ = Non_ )
 
-### _class_ evidently.calculations.data_quality.FeatureQualityStats(feature_type: str, number_of_rows: int = 0, count: int = 0, infinite_count: Optional[int] = None, infinite_percentage: Optional[float] = None, missing_count: Optional[int] = None, missing_percentage: Optional[float] = None, unique_count: Optional[int] = None, unique_percentage: Optional[float] = None, percentile_25: Optional[float] = None, percentile_50: Optional[float] = None, percentile_75: Optional[float] = None, max: Optional[Union[int, float, bool, str]] = None, min: Optional[Union[int, float, bool, str]] = None, mean: Optional[float] = None, most_common_value: Optional[Union[int, float, bool, str]] = None, most_common_value_percentage: Optional[float] = None, std: Optional[float] = None, most_common_not_null_value: Optional[Union[int, float, bool, str]] = None, most_common_not_null_value_percentage: Optional[float] = None, new_in_current_values_count: Optional[int] = None, unused_in_current_values_count: Optional[int] = None)
+### _class_ FeatureQualityStats(feature_type: str, number_of_rows: int = 0, count: int = 0, infinite_count: Optional[int] = None, infinite_percentage: Optional[float] = None, missing_count: Optional[int] = None, missing_percentage: Optional[float] = None, unique_count: Optional[int] = None, unique_percentage: Optional[float] = None, percentile_25: Optional[float] = None, percentile_50: Optional[float] = None, percentile_75: Optional[float] = None, max: Optional[Union[int, float, bool, str]] = None, min: Optional[Union[int, float, bool, str]] = None, mean: Optional[float] = None, most_common_value: Optional[Union[int, float, bool, str]] = None, most_common_value_percentage: Optional[float] = None, std: Optional[float] = None, most_common_not_null_value: Optional[Union[int, float, bool, str]] = None, most_common_not_null_value_percentage: Optional[float] = None, new_in_current_values_count: Optional[int] = None, unused_in_current_values_count: Optional[int] = None)
 Bases: `object`
 
 Class for all features data quality metrics store.
@@ -437,23 +441,23 @@ Checks that the object store stats for a numeric feature
 
 #### unused_in_current_values_count(_: Optional[int_ _ = Non_ )
 
-### evidently.calculations.data_quality.calculate_category_column_correlations(column_name: str, dataset: DataFrame, columns: List[str])
+### calculate_category_column_correlations(column_name: str, dataset: DataFrame, columns: List[str])
 For category columns calculate cramer_v correlation
 
 
-### evidently.calculations.data_quality.calculate_column_distribution(column: Series, column_type: str)
+### calculate_column_distribution(column: Series, column_type: str)
 
-### evidently.calculations.data_quality.calculate_correlations(dataset: DataFrame, columns: [DatasetColumns](./evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
+### calculate_correlations(dataset: DataFrame, columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
-### evidently.calculations.data_quality.calculate_cramer_v_correlation(column_name: str, dataset: DataFrame, columns: List[str])
+### calculate_cramer_v_correlation(column_name: str, dataset: DataFrame, columns: List[str])
 
-### evidently.calculations.data_quality.calculate_data_quality_stats(dataset: DataFrame, columns: [DatasetColumns](./evidently.utils.md#evidently.utils.data_operations.DatasetColumns), task: Optional[str])
+### calculate_data_quality_stats(dataset: DataFrame, columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns), task: Optional[str])
 
-### evidently.calculations.data_quality.calculate_numerical_column_correlations(column_name: str, dataset: DataFrame, columns: List[str])
+### calculate_numerical_column_correlations(column_name: str, dataset: DataFrame, columns: List[str])
 
-### evidently.calculations.data_quality.get_features_stats(feature: Series, feature_type: str)
+### get_features_stats(feature: Series, feature_type: str)
 
-### evidently.calculations.data_quality.get_pairwise_correlation(df, func: Callable[[Series, Series], float])
+### get_pairwise_correlation(df, func: Callable[[Series, Series], float])
 Compute pairwise correlation of columns
 :param df: initial data frame.
 :param func: function for computing pairwise correlation.
@@ -465,17 +469,15 @@ Compute pairwise correlation of columns
 
 
 
-### evidently.calculations.data_quality.get_rows_count(data: Union[DataFrame, Series])
+### get_rows_count(data: Union[DataFrame, Series])
 Count quantity of rows in  a dataset
 
-## evidently.calculations.regression_performance module
 
-
-### _class_ evidently.calculations.regression_performance.ErrorWithQuantiles(error, quantile_top, quantile_other)
+### _class_ ErrorWithQuantiles(error, quantile_top, quantile_other)
 Bases: `object`
 
 
-### _class_ evidently.calculations.regression_performance.FeatureBias(feature_type: str, majority: float, under: float, over: float, range: float)
+### _class_ FeatureBias(feature_type: str, majority: float, under: float, over: float, range: float)
 Bases: `object`
 
 
@@ -491,7 +493,7 @@ Bases: `object`
 
 #### under(_: floa_ )
 
-### _class_ evidently.calculations.regression_performance.RegressionPerformanceMetrics(mean_error: float, mean_abs_error: float, mean_abs_perc_error: float, error_std: float, abs_error_max: float, abs_error_std: float, abs_perc_error_std: float, error_normality: dict, underperformance: dict, error_bias: dict)
+### _class_ RegressionPerformanceMetrics(mean_error: float, mean_abs_error: float, mean_abs_perc_error: float, error_std: float, abs_error_max: float, abs_error_std: float, abs_perc_error_std: float, error_normality: dict, underperformance: dict, error_bias: dict)
 Bases: `object`
 
 
@@ -515,9 +517,9 @@ Bases: `object`
 
 #### underperformance(_: dic_ )
 
-### evidently.calculations.regression_performance.calculate_regression_performance(dataset: DataFrame, columns: [DatasetColumns](./evidently.utils.md#evidently.utils.data_operations.DatasetColumns), error_bias_prefix: str)
+### calculate_regression_performance(dataset: DataFrame, columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns), error_bias_prefix: str)
 
-### evidently.calculations.regression_performance.error_bias_table(dataset, err_quantiles, num_feature_names, cat_feature_names)
+### error_bias_table(dataset, err_quantiles, num_feature_names, cat_feature_names)
 
-### evidently.calculations.regression_performance.error_with_quantiles(dataset, prediction_column, target_column, quantile: float)
+### error_with_quantiles(dataset, prediction_column, target_column, quantile: float)
 ## Module contents

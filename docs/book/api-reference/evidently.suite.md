@@ -2,10 +2,8 @@
 
 ## Submodules
 
-## evidently.suite.base_suite module
 
-
-### _class_ evidently.suite.base_suite.Context(execution_graph: Optional[ExecutionGraph], metrics: list, tests: list, metric_results: dict, test_results: dict, state: State, renderers: [RenderersDefinitions](./evidently.renderers.md#evidently.renderers.base_renderer.RenderersDefinitions))
+### _class_ Context(execution_graph: Optional[ExecutionGraph], metrics: list, tests: list, metric_results: dict, test_results: dict, state: State, renderers: [RenderersDefinitions](evidently.renderers.md#evidently.renderers.base_renderer.RenderersDefinitions))
 Bases: `object`
 
 Pipeline execution context tracks pipeline execution and lifecycle
@@ -17,7 +15,7 @@ Pipeline execution context tracks pipeline execution and lifecycle
 
 #### metrics(_: lis_ )
 
-#### renderers(_: [RenderersDefinitions](./evidently.renderers.md#evidently.renderers.base_renderer.RenderersDefinitions_ )
+#### renderers(_: [RenderersDefinitions](evidently.renderers.md#evidently.renderers.base_renderer.RenderersDefinitions_ )
 
 #### state(_: Stat_ )
 
@@ -25,7 +23,7 @@ Pipeline execution context tracks pipeline execution and lifecycle
 
 #### tests(_: lis_ )
 
-### _class_ evidently.suite.base_suite.Display(options: Optional[list] = None)
+### _class_ Display(options: Optional[list] = None)
 Bases: `object`
 
 
@@ -33,7 +31,7 @@ Bases: `object`
 
 #### json()
 
-#### options_provider(_: [OptionsProvider](./evidently.options.md#evidently.options.OptionsProvider_ )
+#### options_provider(_: [OptionsProvider](evidently.options.md#evidently.options.OptionsProvider_ )
 
 #### save_html(filename: str, mode: Union[str, SaveMode] = SaveMode.SINGLE_FILE)
 
@@ -41,17 +39,17 @@ Bases: `object`
 
 #### show(mode='auto')
 
-### _exception_ evidently.suite.base_suite.ExecutionError()
+### _exception_ ExecutionError()
 Bases: `Exception`
 
 
-### _class_ evidently.suite.base_suite.State(name: str)
+### _class_ State(name: str)
 Bases: `object`
 
 
 #### name(_: st_ )
 
-### _class_ evidently.suite.base_suite.States()
+### _class_ States()
 Bases: `object`
 
 
@@ -63,29 +61,27 @@ Bases: `object`
 
 #### Verified(_ = State(name='Verified'_ )
 
-### _class_ evidently.suite.base_suite.Suite()
+### _class_ Suite()
 Bases: `object`
 
 
-#### add_metric(metric: [Metric](./evidently.metrics.md#evidently.metrics.base_metric.Metric))
+#### add_metric(metric: [Metric](evidently.metrics.md#evidently.metrics.base_metric.Metric))
 
-#### add_test(test: [Test](./evidently.tests.md#evidently.tests.base_test.Test))
+#### add_test(test: [Test](evidently.tests.md#evidently.tests.base_test.Test))
 
 #### context(_: Contex_ )
 
-#### run_calculate(data: [InputData](./evidently.metrics.md#evidently.metrics.base_metric.InputData))
+#### run_calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
 #### run_checks()
 
 #### verify()
 
-### evidently.suite.base_suite.find_metric_renderer(obj, renderers: [RenderersDefinitions](./evidently.renderers.md#evidently.renderers.base_renderer.RenderersDefinitions))
+### find_metric_renderer(obj, renderers: [RenderersDefinitions](evidently.renderers.md#evidently.renderers.base_renderer.RenderersDefinitions))
 
-### evidently.suite.base_suite.find_test_renderer(obj, renderers: [RenderersDefinitions](./evidently.renderers.md#evidently.renderers.base_renderer.RenderersDefinitions))
-## evidently.suite.execution_graph module
+### find_test_renderer(obj, renderers: [RenderersDefinitions](evidently.renderers.md#evidently.renderers.base_renderer.RenderersDefinitions))
 
-
-### _class_ evidently.suite.execution_graph.ExecutionGraph()
+### _class_ ExecutionGraph()
 Bases: `object`
 
 
@@ -93,7 +89,7 @@ Bases: `object`
 
 #### _abstract_ get_test_execution_iterator()
 
-### _class_ evidently.suite.execution_graph.SimpleExecutionGraph(metrics: List[[Metric](./evidently.metrics.md#evidently.metrics.base_metric.Metric)], tests: List[[Test](./evidently.tests.md#evidently.tests.base_test.Test)])
+### _class_ SimpleExecutionGraph(metrics: List[[Metric](evidently.metrics.md#evidently.metrics.base_metric.Metric)], tests: List[[Test](evidently.tests.md#evidently.tests.base_test.Test)])
 Bases: `ExecutionGraph`
 
 Simple execution graph without any work with dependencies at all,
@@ -105,7 +101,7 @@ Simple execution graph without any work with dependencies at all,
 
 #### get_test_execution_iterator()
 
-#### metrics(_: List[[Metric](./evidently.metrics.md#evidently.metrics.base_metric.Metric)_ )
+#### metrics(_: List[[Metric](evidently.metrics.md#evidently.metrics.base_metric.Metric)_ )
 
-#### tests(_: List[[Test](./evidently.tests.md#evidently.tests.base_test.Test)_ )
+#### tests(_: List[[Test](evidently.tests.md#evidently.tests.base_test.Test)_ )
 ## Module contents

@@ -12,14 +12,16 @@ class ClassificationPerformanceMonitorMetricsMonitor:
     """Class for classification performance metrics in monitor.
 
     Metrics list:
+
         - quality: model quality with macro-average metrics in `reference` and `current` datasets
-        Each metric name is marked as a `metric` label
+            Each metric name is marked as a `metric` label
         - class_representation: quantity of items in each class
-        A class name is marked as a `class_name` label
+            A class name is marked as a `class_name` label
         `target` and `prediction` columns are marked as `type`
-       - class_quality: quality metrics for each class
-       - confusion: aggregated confusion metrics
-       - class_confusion: confusion (TP, TN, FP, FN) by class
+        - class_quality: quality metrics for each class
+        - confusion: aggregated confusion metrics
+        - class_confusion: confusion (TP, TN, FP, FN) by class
+
     """
 
     _tag = "classification_performance"
