@@ -5,6 +5,7 @@ from typing import Optional
 import dataclasses
 
 from evidently.calculations.data_drift import get_one_column_drift
+from evidently.calculations.stattests import PossibleStatTestType
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
@@ -41,20 +42,21 @@ class ColumnDriftMetric(Metric[ColumnDriftMetricResults]):
     """Calculate drift metric for a column"""
 
     column_name: str
-    options: DataDriftOptions
+    threshold: Optional[float]
+    stattest: Optional[PossibleStatTestType]
 
     def __init__(
         self,
         column_name: str,
-        options: Optional[DataDriftOptions] = None,
+        threshold: Optional[float] = None,
+        stattest: Optional[PossibleStatTestType] = None,
     ):
         self.column_name = column_name
+        self.threshold = threshold
+        self.stattest = stattest
 
-        if options is None:
-            self.options = DataDriftOptions()
-
-        else:
-            self.options = options
+    def get_parameters(self) -> tuple:
+        return self.column_name, self.threshold, self.stattest
 
     def calculate(self, data: InputData) -> ColumnDriftMetricResults:
         if data.reference_data is None:
@@ -67,12 +69,13 @@ class ColumnDriftMetric(Metric[ColumnDriftMetricResults]):
             raise ValueError(f"Cannot find column '{self.column_name}' in reference dataset")
 
         dataset_columns = process_columns(data.reference_data, data.column_mapping)
+        options = DataDriftOptions(threshold=self.threshold, all_features_stattest=self.stattest)
         drift_result = get_one_column_drift(
             current_data=data.current_data,
             reference_data=data.reference_data,
             column_name=self.column_name,
             dataset_columns=dataset_columns,
-            options=self.options,
+            options=options,
         )
 
         return ColumnDriftMetricResults(

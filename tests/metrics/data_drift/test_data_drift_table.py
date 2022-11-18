@@ -145,7 +145,7 @@ def test_data_drift_metrics_with_options() -> None:
             "prediction": [1, 0, 1],
         }
     )
-    report = Report(metrics=[DataDriftTable(options=DataDriftOptions(threshold=0.7))])
+    report = Report(metrics=[DataDriftTable(all_features_threshold=0.7)])
     report.run(current_data=current_dataset, reference_data=reference_dataset)
     assert report.show()
     assert report.json()
@@ -166,7 +166,7 @@ def test_data_drift_metrics_json_output() -> None:
             "prediction": [1, 0, 1, 1],
         }
     )
-    report = Report(metrics=[DataDriftTable(options=DataDriftOptions(threshold=0.7))])
+    report = Report(metrics=[DataDriftTable(all_features_threshold=0.7)])
     report.run(current_data=current_dataset, reference_data=reference_dataset)
     result_json = report.json()
     result = json.loads(result_json)["metrics"]["DataDriftTable"]
