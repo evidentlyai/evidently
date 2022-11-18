@@ -6,7 +6,7 @@
 
 
 ### _class_ evidently.model_monitoring.monitors.cat_target_drift.CatTargetDriftMonitor()
-Bases: [`ModelMonitor`](evidently.model_monitoring.md#evidently.model_monitoring.monitoring.ModelMonitor)
+Bases: [`ModelMonitor`](api-reference/evidently.model_monitoring.md#evidently.model_monitoring.monitoring.ModelMonitor)
 
 
 #### analyzers()
@@ -15,7 +15,7 @@ Bases: [`ModelMonitor`](evidently.model_monitoring.md#evidently.model_monitoring
 
 #### monitor_id()
 
-#### options_provider(_: [OptionsProvider](evidently.options.md#evidently.options.OptionsProvider_ )
+#### options_provider(_: [OptionsProvider](api-reference/evidently.options.md#evidently.options.OptionsProvider_ )
 
 ### _class_ evidently.model_monitoring.monitors.cat_target_drift.CatTargetDriftMonitorMetrics()
 Bases: `object`
@@ -36,7 +36,7 @@ Metrics list:
 
 
 ### _class_ evidently.model_monitoring.monitors.classification_performance.ClassificationPerformanceMonitor()
-Bases: [`ModelMonitor`](evidently.model_monitoring.md#evidently.model_monitoring.monitoring.ModelMonitor)
+Bases: [`ModelMonitor`](api-reference/evidently.model_monitoring.md#evidently.model_monitoring.monitoring.ModelMonitor)
 
 
 #### analyzers()
@@ -45,7 +45,7 @@ Bases: [`ModelMonitor`](evidently.model_monitoring.md#evidently.model_monitoring
 
 #### monitor_id()
 
-#### options_provider(_: [OptionsProvider](evidently.options.md#evidently.options.OptionsProvider_ )
+#### options_provider(_: [OptionsProvider](api-reference/evidently.options.md#evidently.options.OptionsProvider_ )
 
 ### _class_ evidently.model_monitoring.monitors.classification_performance.ClassificationPerformanceMonitorMetricsMonitor()
 Bases: `object`
@@ -81,7 +81,7 @@ Metrics list:
 
 
 ### _class_ evidently.model_monitoring.monitors.data_drift.DataDriftMonitor()
-Bases: [`ModelMonitor`](evidently.model_monitoring.md#evidently.model_monitoring.monitoring.ModelMonitor)
+Bases: [`ModelMonitor`](api-reference/evidently.model_monitoring.md#evidently.model_monitoring.monitoring.ModelMonitor)
 
 
 #### analyzers()
@@ -90,7 +90,7 @@ Bases: [`ModelMonitor`](evidently.model_monitoring.md#evidently.model_monitoring
 
 #### monitor_id()
 
-#### options_provider(_: [OptionsProvider](evidently.options.md#evidently.options.OptionsProvider_ )
+#### options_provider(_: [OptionsProvider](api-reference/evidently.options.md#evidently.options.OptionsProvider_ )
 
 ### _class_ evidently.model_monitoring.monitors.data_drift.DataDriftMonitorMetrics()
 Bases: `object`
@@ -107,7 +107,7 @@ Bases: `object`
 
 
 ### _class_ evidently.model_monitoring.monitors.data_quality.DataQualityMonitor()
-Bases: [`ModelMonitor`](evidently.model_monitoring.md#evidently.model_monitoring.monitoring.ModelMonitor)
+Bases: [`ModelMonitor`](api-reference/evidently.model_monitoring.md#evidently.model_monitoring.monitoring.ModelMonitor)
 
 
 #### analyzers()
@@ -116,7 +116,7 @@ Bases: [`ModelMonitor`](evidently.model_monitoring.md#evidently.model_monitoring
 
 #### monitor_id()
 
-#### options_provider(_: [OptionsProvider](evidently.options.md#evidently.options.OptionsProvider_ )
+#### options_provider(_: [OptionsProvider](api-reference/evidently.options.md#evidently.options.OptionsProvider_ )
 
 ### _class_ evidently.model_monitoring.monitors.data_quality.DataQualityMonitorMetrics()
 Bases: `object`
@@ -127,7 +127,7 @@ Bases: `object`
 
 
 ### _class_ evidently.model_monitoring.monitors.num_target_drift.NumTargetDriftMonitor()
-Bases: [`ModelMonitor`](evidently.model_monitoring.md#evidently.model_monitoring.monitoring.ModelMonitor)
+Bases: [`ModelMonitor`](api-reference/evidently.model_monitoring.md#evidently.model_monitoring.monitoring.ModelMonitor)
 
 
 #### analyzers()
@@ -136,7 +136,7 @@ Bases: [`ModelMonitor`](evidently.model_monitoring.md#evidently.model_monitoring
 
 #### monitor_id()
 
-#### options_provider(_: [OptionsProvider](evidently.options.md#evidently.options.OptionsProvider_ )
+#### options_provider(_: [OptionsProvider](api-reference/evidently.options.md#evidently.options.OptionsProvider_ )
 
 ### _class_ evidently.model_monitoring.monitors.num_target_drift.NumTargetDriftMonitorMetrics()
 Bases: `object`
@@ -169,7 +169,7 @@ Metrics list:
 
 
 ### _class_ evidently.model_monitoring.monitors.prob_classification_performance.ProbClassificationPerformanceMonitor()
-Bases: [`ModelMonitor`](evidently.model_monitoring.md#evidently.model_monitoring.monitoring.ModelMonitor)
+Bases: [`ModelMonitor`](api-reference/evidently.model_monitoring.md#evidently.model_monitoring.monitoring.ModelMonitor)
 
 
 #### analyzers()
@@ -178,7 +178,7 @@ Bases: [`ModelMonitor`](evidently.model_monitoring.md#evidently.model_monitoring
 
 #### monitor_id()
 
-#### options_provider(_: [OptionsProvider](evidently.options.md#evidently.options.OptionsProvider_ )
+#### options_provider(_: [OptionsProvider](api-reference/evidently.options.md#evidently.options.OptionsProvider_ )
 
 ### _class_ evidently.model_monitoring.monitors.prob_classification_performance.ProbClassificationPerformanceMonitorMetricsMonitor()
 Bases: `object`
@@ -214,7 +214,7 @@ Metrics list:
 
 
 ### _class_ evidently.model_monitoring.monitors.regression_performance.RegressionPerformanceMonitor()
-Bases: [`ModelMonitor`](evidently.model_monitoring.md#evidently.model_monitoring.monitoring.ModelMonitor)
+Bases: [`ModelMonitor`](api-reference/evidently.model_monitoring.md#evidently.model_monitoring.monitoring.ModelMonitor)
 
 
 #### analyzers()
@@ -223,7 +223,7 @@ Bases: [`ModelMonitor`](evidently.model_monitoring.md#evidently.model_monitoring
 
 #### monitor_id()
 
-#### options_provider(_: [OptionsProvider](evidently.options.md#evidently.options.OptionsProvider_ )
+#### options_provider(_: [OptionsProvider](api-reference/evidently.options.md#evidently.options.OptionsProvider_ )
 
 ### _class_ evidently.model_monitoring.monitors.regression_performance.RegressionPerformanceMonitorMetrics()
 Bases: `object`

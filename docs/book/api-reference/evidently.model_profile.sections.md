@@ -6,12 +6,12 @@
 
 
 ### _class_ evidently.model_profile.sections.base_profile_section.ProfileSection()
-Bases: [`PipelineStage`](evidently.pipeline.md#evidently.pipeline.stage.PipelineStage)
+Bases: [`PipelineStage`](api-reference/evidently.pipeline.md#evidently.pipeline.stage.PipelineStage)
 
 
 #### _abstract_ analyzers()
 
-#### _abstract_ calculate(reference_data: DataFrame, current_data: Optional[DataFrame], column_mapping: [ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping), analyzers_results: Dict[Type[Analyzer], Any])
+#### _abstract_ calculate(reference_data: DataFrame, current_data: Optional[DataFrame], column_mapping: [ColumnMapping](api-reference/evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping), analyzers_results: Dict[Type[Analyzer], Any])
 
 #### _abstract_ get_results()
 

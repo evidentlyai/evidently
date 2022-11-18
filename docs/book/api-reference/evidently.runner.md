@@ -11,7 +11,7 @@ Bases: `Runner`
 
 #### run()
 
-### _class_ evidently.runner.dashboard_runner.DashboardRunnerOptions(reference_data_path: str, reference_data_options: evidently.runner.loader.DataOptions, reference_data_sampling: Optional[evidently.runner.loader.SamplingOptions], current_data_path: Optional[str], current_data_options: Optional[evidently.runner.loader.DataOptions], current_data_sampling: Optional[evidently.runner.loader.SamplingOptions], column_mapping: [evidently.pipeline.column_mapping.ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping), options: List[object], output_path: str, dashboard_tabs: Dict[str, Dict[str, object]])
+### _class_ evidently.runner.dashboard_runner.DashboardRunnerOptions(reference_data_path: str, reference_data_options: evidently.runner.loader.DataOptions, reference_data_sampling: Optional[evidently.runner.loader.SamplingOptions], current_data_path: Optional[str], current_data_options: Optional[evidently.runner.loader.DataOptions], current_data_sampling: Optional[evidently.runner.loader.SamplingOptions], column_mapping: [evidently.pipeline.column_mapping.ColumnMapping](api-reference/evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping), options: List[object], output_path: str, dashboard_tabs: Dict[str, Dict[str, object]])
 Bases: `RunnerOptions`
 
 
@@ -63,7 +63,7 @@ Bases: `Runner`
 
 #### run()
 
-### _class_ evidently.runner.profile_runner.ProfileRunnerOptions(reference_data_path: str, reference_data_options: evidently.runner.loader.DataOptions, reference_data_sampling: Optional[evidently.runner.loader.SamplingOptions], current_data_path: Optional[str], current_data_options: Optional[evidently.runner.loader.DataOptions], current_data_sampling: Optional[evidently.runner.loader.SamplingOptions], column_mapping: [evidently.pipeline.column_mapping.ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping), options: List[object], output_path: str, profile_parts: Dict[str, Dict[str, str]], pretty_print: bool)
+### _class_ evidently.runner.profile_runner.ProfileRunnerOptions(reference_data_path: str, reference_data_options: evidently.runner.loader.DataOptions, reference_data_sampling: Optional[evidently.runner.loader.SamplingOptions], current_data_path: Optional[str], current_data_options: Optional[evidently.runner.loader.DataOptions], current_data_sampling: Optional[evidently.runner.loader.SamplingOptions], column_mapping: [evidently.pipeline.column_mapping.ColumnMapping](api-reference/evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping), options: List[object], output_path: str, profile_parts: Dict[str, Dict[str, str]], pretty_print: bool)
 Bases: `RunnerOptions`
 
 
@@ -77,11 +77,11 @@ Bases: `RunnerOptions`
 Bases: `object`
 
 
-### _class_ evidently.runner.runner.RunnerOptions(reference_data_path: str, reference_data_options: evidently.runner.loader.DataOptions, reference_data_sampling: Optional[evidently.runner.loader.SamplingOptions], current_data_path: Optional[str], current_data_options: Optional[evidently.runner.loader.DataOptions], current_data_sampling: Optional[evidently.runner.loader.SamplingOptions], column_mapping: [evidently.pipeline.column_mapping.ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping), options: List[object], output_path: str)
+### _class_ evidently.runner.runner.RunnerOptions(reference_data_path: str, reference_data_options: evidently.runner.loader.DataOptions, reference_data_sampling: Optional[evidently.runner.loader.SamplingOptions], current_data_path: Optional[str], current_data_options: Optional[evidently.runner.loader.DataOptions], current_data_sampling: Optional[evidently.runner.loader.SamplingOptions], column_mapping: [evidently.pipeline.column_mapping.ColumnMapping](api-reference/evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping), options: List[object], output_path: str)
 Bases: `object`
 
 
-#### column_mapping(_: [ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping_ )
+#### column_mapping(_: [ColumnMapping](api-reference/evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping_ )
 
 #### current_data_options(_: Optional[DataOptions_ )
 

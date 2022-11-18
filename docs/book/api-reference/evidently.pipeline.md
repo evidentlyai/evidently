@@ -53,7 +53,7 @@ Bases: `object`
 
 #### get_analyzers()
 
-#### options_provider(_: [OptionsProvider](evidently.options.md#evidently.options.OptionsProvider_ )
+#### options_provider(_: [OptionsProvider](api-reference/evidently.options.md#evidently.options.OptionsProvider_ )
 
 #### stages(_: Sequence[PipelineStage_ )
 ## evidently.pipeline.stage module
@@ -69,5 +69,5 @@ Bases: `object`
 
 #### _abstract_ calculate(reference_data: DataFrame, current_data: DataFrame, column_mapping: ColumnMapping, analyzers_results: Dict[Type[Analyzer], Any])
 
-#### options_provider(_: [OptionsProvider](evidently.options.md#evidently.options.OptionsProvider_ )
+#### options_provider(_: [OptionsProvider](api-reference/evidently.options.md#evidently.options.OptionsProvider_ )
 ## Module contents

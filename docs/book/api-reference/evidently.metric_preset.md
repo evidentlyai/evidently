@@ -9,7 +9,7 @@
 Bases: `MetricPreset`
 
 
-#### generate_metrics(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
+#### generate_metrics(data: [InputData](api-reference/evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](api-reference/evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 ## evidently.metric_preset.data_drift module
 
 
@@ -17,7 +17,7 @@ Bases: `MetricPreset`
 Bases: `MetricPreset`
 
 
-#### generate_metrics(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
+#### generate_metrics(data: [InputData](api-reference/evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](api-reference/evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 ## evidently.metric_preset.data_quality module
 
 
@@ -27,7 +27,7 @@ Bases: `MetricPreset`
 
 #### columns(_: Optional[List[str]_ )
 
-#### generate_metrics(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
+#### generate_metrics(data: [InputData](api-reference/evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](api-reference/evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 ## evidently.metric_preset.metric_preset module
 
 
@@ -37,7 +37,7 @@ Bases: `object`
 Base class for metric presets
 
 
-#### _abstract_ generate_metrics(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
+#### _abstract_ generate_metrics(data: [InputData](api-reference/evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](api-reference/evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 ## evidently.metric_preset.regression_performance module
 
 
@@ -45,7 +45,7 @@ Base class for metric presets
 Bases: `MetricPreset`
 
 
-#### generate_metrics(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
+#### generate_metrics(data: [InputData](api-reference/evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](api-reference/evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 ## evidently.metric_preset.target_drift module
 
 
@@ -53,5 +53,5 @@ Bases: `MetricPreset`
 Bases: `MetricPreset`
 
 
-#### generate_metrics(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
+#### generate_metrics(data: [InputData](api-reference/evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](api-reference/evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 ## Module contents
