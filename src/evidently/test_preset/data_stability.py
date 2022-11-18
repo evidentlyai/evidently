@@ -30,6 +30,6 @@ class DataStabilityTestPreset(TestPreset):
             TestColumnsType(),
             TestAllColumnsShareOfMissingValues(columns=self.columns),
             TestNumColumnsOutOfRangeValues(columns=self.columns),
-            TestCatColumnsOutOfListValues(),
-            TestNumColumnsMeanInNSigmas(),
+            TestCatColumnsOutOfListValues(columns=self.columns),
+            TestNumColumnsMeanInNSigmas(columns=self.columns),
         ]

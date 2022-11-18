@@ -958,8 +958,19 @@ class TestMeanInNSigmasRenderer(TestRenderer):
 class TestNumColumnsMeanInNSigmas(BaseGenerator):
     """Create tests of mean for all numeric columns"""
 
+    columns: Optional[List[str]]
+
+    def __init__(self, columns: Optional[List[str]] = None):
+        self.columns = columns
+
     def generate(self, columns_info: DatasetColumns) -> List[TestMeanInNSigmas]:
-        return [TestMeanInNSigmas(column_name=name, n_sigmas=2) for name in columns_info.num_feature_names]
+        if self.columns is None:
+            columns = columns_info.num_feature_names
+
+        else:
+            columns = [column for column in self.columns if column in columns_info.num_feature_names]
+
+        return [TestMeanInNSigmas(column_name=name, n_sigmas=2) for name in columns]
 
 
 class TestValueRange(Test):
@@ -1139,7 +1150,7 @@ class TestNumColumnsOutOfRangeValues(BaseGenerator):
             columns = columns_info.num_feature_names
 
         else:
-            columns = self.columns
+            columns = [column for column in self.columns if column in columns_info.num_feature_names]
 
         return [TestShareOfOutRangeValues(column_name=name) for name in columns]
 
@@ -1293,8 +1304,19 @@ class TestShareOfOutListValues(BaseDataQualityValueListMetricsTest):
 class TestCatColumnsOutOfListValues(BaseGenerator):
     """Create share of out of list values tests for category columns"""
 
+    columns: Optional[List[str]]
+
+    def __init__(self, columns: Optional[List[str]] = None):
+        self.columns = columns
+
     def generate(self, columns_info: DatasetColumns) -> List[TestShareOfOutListValues]:
-        return [TestShareOfOutListValues(column_name=name) for name in columns_info.cat_feature_names]
+        if self.columns is None:
+            columns = columns_info.cat_feature_names
+
+        else:
+            columns = [column for column in self.columns if column in columns_info.cat_feature_names]
+
+        return [TestShareOfOutListValues(column_name=name) for name in columns]
 
 
 class TestValueQuantile(BaseCheckValueTest):
