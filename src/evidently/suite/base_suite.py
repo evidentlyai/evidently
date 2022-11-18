@@ -11,11 +11,6 @@ from typing import Union
 import dataclasses
 
 import evidently
-from evidently.dashboard.dashboard import SaveMode
-from evidently.dashboard.dashboard import SaveModeMap
-from evidently.dashboard.dashboard import TemplateParams
-from evidently.dashboard.dashboard import save_data_file
-from evidently.dashboard.dashboard import save_lib_files
 from evidently.metrics.base_metric import ErrorResult
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
@@ -31,6 +26,11 @@ from evidently.tests.base_test import GroupingTypes
 from evidently.tests.base_test import Test
 from evidently.tests.base_test import TestResult
 from evidently.utils import NumpyEncoder
+from evidently.utils.dashboard import SaveMode
+from evidently.utils.dashboard import SaveModeMap
+from evidently.utils.dashboard import TemplateParams
+from evidently.utils.dashboard import save_data_file
+from evidently.utils.dashboard import save_lib_files
 
 
 @dataclasses.dataclass
