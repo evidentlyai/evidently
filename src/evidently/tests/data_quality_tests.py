@@ -834,9 +834,9 @@ class TestMostCommonValueShareRenderer(TestRenderer):
 class TestAllColumnsMostCommonValueShare(BaseGenerator):
     """Creates most common value share tests for each column in the dataset"""
 
-    columns: Optional[str]
+    columns: Optional[List[str]]
 
-    def __init__(self, columns: Optional[str] = None):
+    def __init__(self, columns: Optional[List[str]] = None):
         self.columns = columns
 
     def generate(self, columns_info: DatasetColumns) -> List[TestMostCommonValueShare]:
@@ -1129,9 +1129,9 @@ class TestShareOfOutRangeValuesRenderer(TestRenderer):
 class TestNumColumnsOutOfRangeValues(BaseGenerator):
     """Creates share of out of range values tests for all numeric columns"""
 
-    columns: Optional[str]
+    columns: Optional[List[str]]
 
-    def __init__(self, columns: Optional[str] = None):
+    def __init__(self, columns: Optional[List[str]] = None):
         self.columns = columns
 
     def generate(self, columns_info: DatasetColumns) -> List[TestShareOfOutRangeValues]:

@@ -1,4 +1,5 @@
-from typing import Optional, List
+from typing import List
+from typing import Optional
 
 from evidently.metrics.base_metric import InputData
 from evidently.test_preset.test_preset import TestPreset
@@ -16,8 +17,8 @@ class DataStabilityTestPreset(TestPreset):
     columns: Optional[List[str]]
 
     def __init__(
-            self,
-            columns: Optional[List[str]] = None,
+        self,
+        columns: Optional[List[str]] = None,
     ):
         super().__init__()
         self.columns = columns

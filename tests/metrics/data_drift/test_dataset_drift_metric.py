@@ -156,7 +156,7 @@ def test_dataset_drift_metric_with_options() -> None:
         "number_of_columns": 3,
         "number_of_drifted_columns": 2,
         "share_of_drifted_columns": approx(0.67, abs=0.01),
-        "threshold": 0.5,
+        "drift_share": 0.5,
     }
 
 
