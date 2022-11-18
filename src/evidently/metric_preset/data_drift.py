@@ -61,5 +61,15 @@ class DataDriftPreset(MetricPreset):
                 num_features_threshold=self.num_features_threshold,
                 per_feature_threshold=self.per_feature_threshold,
             ),
-            DataDriftTable(columns=self.columns),
+            DataDriftTable(
+                columns=self.columns,
+                all_features_stattest=self.all_features_stattest,
+                cat_features_stattest=self.cat_features_stattest,
+                num_features_stattest=self.num_features_stattest,
+                per_feature_stattest=self.per_feature_stattest,
+                all_features_threshold=self.all_features_threshold,
+                cat_features_threshold=self.cat_features_threshold,
+                num_features_threshold=self.num_features_threshold,
+                per_feature_threshold=self.per_feature_threshold,
+            ),
         ]
