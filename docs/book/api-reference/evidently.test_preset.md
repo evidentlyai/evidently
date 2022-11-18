@@ -9,7 +9,7 @@
 Bases: `TestPreset`
 
 
-#### generate_tests(data: [InputData](api-reference/evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](api-reference/evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
+#### generate_tests(data: [InputData](./evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](./evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 ## evidently.test_preset.classification_binary_topk module
 
 
@@ -17,7 +17,7 @@ Bases: `TestPreset`
 Bases: `TestPreset`
 
 
-#### generate_tests(data: [InputData](api-reference/evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](api-reference/evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
+#### generate_tests(data: [InputData](./evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](./evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 ## evidently.test_preset.classification_multiclass module
 
 
@@ -25,7 +25,7 @@ Bases: `TestPreset`
 Bases: `TestPreset`
 
 
-#### generate_tests(data: [InputData](api-reference/evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](api-reference/evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
+#### generate_tests(data: [InputData](./evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](./evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 ## evidently.test_preset.data_drift module
 
 
@@ -33,7 +33,7 @@ Bases: `TestPreset`
 Bases: `TestPreset`
 
 
-#### generate_tests(data: [InputData](api-reference/evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](api-reference/evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
+#### generate_tests(data: [InputData](./evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](./evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 ## evidently.test_preset.data_quality module
 
 
@@ -41,7 +41,7 @@ Bases: `TestPreset`
 Bases: `TestPreset`
 
 
-#### generate_tests(data: [InputData](api-reference/evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](api-reference/evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
+#### generate_tests(data: [InputData](./evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](./evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 ## evidently.test_preset.data_stability module
 
 
@@ -49,7 +49,7 @@ Bases: `TestPreset`
 Bases: `TestPreset`
 
 
-#### generate_tests(data: [InputData](api-reference/evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](api-reference/evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
+#### generate_tests(data: [InputData](./evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](./evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 ## evidently.test_preset.no_target_performance module
 
 
@@ -59,7 +59,7 @@ Bases: `TestPreset`
 
 #### columns(_: List[str_ )
 
-#### generate_tests(data: [InputData](api-reference/evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](api-reference/evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
+#### generate_tests(data: [InputData](./evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](./evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 ## evidently.test_preset.regression module
 
 
@@ -67,7 +67,7 @@ Bases: `TestPreset`
 Bases: `TestPreset`
 
 
-#### generate_tests(data: [InputData](api-reference/evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](api-reference/evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
+#### generate_tests(data: [InputData](./evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](./evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 ## evidently.test_preset.test_preset module
 
 
@@ -75,5 +75,5 @@ Bases: `TestPreset`
 Bases: `object`
 
 
-#### _abstract_ generate_tests(data: [InputData](api-reference/evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](api-reference/evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
+#### _abstract_ generate_tests(data: [InputData](./evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](./evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 ## Module contents

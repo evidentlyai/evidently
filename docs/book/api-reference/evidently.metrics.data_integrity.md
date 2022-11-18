@@ -22,7 +22,7 @@ Statistics about missing values in a column
 #### share_of_missing_values(_: floa_ )
 
 ### _class_ evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValuesMetric(column_name: str, missing_values: Optional[list] = None, replace: bool = True)
-Bases: [`Metric`](api-reference/evidently.metrics.md#evidently.metrics.base_metric.Metric)[`ColumnMissingValuesMetricResult`]
+Bases: [`Metric`](./evidently.metrics.md#evidently.metrics.base_metric.Metric)[`ColumnMissingValuesMetricResult`]
 
 Count missing values in a column.
 
@@ -40,17 +40,17 @@ If replace parameter is True - use values from missing_values list only.
 
 #### DEFAULT_MISSING_VALUES(_ = ['', inf, -inf, None_ )
 
-#### calculate(data: [InputData](api-reference/evidently.metrics.md#evidently.metrics.base_metric.InputData))
+#### calculate(data: [InputData](./evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
 #### column_name(_: st_ )
 
 #### missing_values(_: frozense_ )
 
-### _class_ evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValuesMetricRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`MetricRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
+### _class_ evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValuesMetricRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`MetricRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: ColumnMissingValuesMetric)
 
@@ -69,12 +69,12 @@ Bases: `object`
 
 
 ### _class_ evidently.metrics.data_integrity.column_regexp_metric.ColumnRegExpMetric(column_name: str, reg_exp: str, top: int = 10)
-Bases: [`Metric`](api-reference/evidently.metrics.md#evidently.metrics.base_metric.Metric)[`DataIntegrityValueByRegexpMetricResult`]
+Bases: [`Metric`](./evidently.metrics.md#evidently.metrics.base_metric.Metric)[`DataIntegrityValueByRegexpMetricResult`]
 
 Count number of values in a column matched or not by a regular expression (regexp)
 
 
-#### calculate(data: [InputData](api-reference/evidently.metrics.md#evidently.metrics.base_metric.InputData))
+#### calculate(data: [InputData](./evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
 #### column_name(_: st_ )
 
@@ -82,11 +82,11 @@ Count number of values in a column matched or not by a regular expression (regex
 
 #### top(_: in_ )
 
-### _class_ evidently.metrics.data_integrity.column_regexp_metric.ColumnRegExpMetricRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`MetricRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
+### _class_ evidently.metrics.data_integrity.column_regexp_metric.ColumnRegExpMetricRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`MetricRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: ColumnRegExpMetric)
 
@@ -163,18 +163,18 @@ Bases: `object`
 #### reference_characteristics(_: Optional[Union[NumericCharacteristics, CategoricalCharacteristics, DatetimeCharacteristics]_ )
 
 ### _class_ evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric(column_name: str)
-Bases: [`Metric`](api-reference/evidently.metrics.md#evidently.metrics.base_metric.Metric)[`ColumnSummary`]
+Bases: [`Metric`](./evidently.metrics.md#evidently.metrics.base_metric.Metric)[`ColumnSummary`]
 
 
-#### calculate(data: [InputData](api-reference/evidently.metrics.md#evidently.metrics.base_metric.InputData))
+#### calculate(data: [InputData](./evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
-#### _static_ map_data(stats: [FeatureQualityStats](api-reference/evidently.calculations.md#evidently.calculations.data_quality.FeatureQualityStats))
+#### _static_ map_data(stats: [FeatureQualityStats](./evidently.calculations.md#evidently.calculations.data_quality.FeatureQualityStats))
 
-### _class_ evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetricRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`MetricRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
+### _class_ evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetricRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`MetricRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: ColumnSummaryMetric)
 
@@ -313,7 +313,7 @@ Statistics about missed values in a dataset
 #### share_of_rows_with_missing_values(_: floa_ )
 
 ### _class_ evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric(missing_values: Optional[list] = None, replace: bool = True)
-Bases: [`Metric`](api-reference/evidently.metrics.md#evidently.metrics.base_metric.Metric)[`DatasetMissingValuesMetricResult`]
+Bases: [`Metric`](./evidently.metrics.md#evidently.metrics.base_metric.Metric)[`DatasetMissingValuesMetricResult`]
 
 Count missing values in a dataset.
 
@@ -331,15 +331,15 @@ If replace parameter is True - use values from missing_values list only.
 
 #### DEFAULT_MISSING_VALUES(_ = ['', inf, -inf, None_ )
 
-#### calculate(data: [InputData](api-reference/evidently.metrics.md#evidently.metrics.base_metric.InputData))
+#### calculate(data: [InputData](./evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
 #### missing_values(_: frozense_ )
 
-### _class_ evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetricRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`MetricRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
+### _class_ evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetricRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`MetricRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: DatasetMissingValuesMetric)
 
@@ -402,7 +402,7 @@ Columns information in a dataset
 #### target(_: Optional[str_ )
 
 ### _class_ evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric(almost_duplicated_threshold: float = 0.95, almost_constant_threshold: float = 0.95)
-Bases: [`Metric`](api-reference/evidently.metrics.md#evidently.metrics.base_metric.Metric)[`DatasetSummaryMetricResult`]
+Bases: [`Metric`](./evidently.metrics.md#evidently.metrics.base_metric.Metric)[`DatasetSummaryMetricResult`]
 
 Common dataset(s) columns/features characteristics
 
@@ -411,13 +411,13 @@ Common dataset(s) columns/features characteristics
 
 #### almost_duplicated_threshold(_: floa_ )
 
-#### calculate(data: [InputData](api-reference/evidently.metrics.md#evidently.metrics.base_metric.InputData))
+#### calculate(data: [InputData](./evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
-### _class_ evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetricRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`MetricRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
+### _class_ evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetricRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`MetricRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: DatasetSummaryMetric)
 

@@ -174,7 +174,7 @@ Function for generating tests for columns
 Bases: `SimpleClassificationTest`, `ABC`
 
 
-#### metric(_: [Metric](api-reference/evidently.metrics.md#evidently.metrics.base_metric.Metric)[[ClassificationPerformanceResults](api-reference/evidently.metrics.md#evidently.metrics.classification_performance_metrics.ClassificationPerformanceResults)_ )
+#### metric(_: [Metric](./evidently.metrics.md#evidently.metrics.base_metric.Metric)[[ClassificationPerformanceResults](./evidently.metrics.md#evidently.metrics.classification_performance_metrics.ClassificationPerformanceResults)_ )
 
 #### name(_: st_ )
 
@@ -190,11 +190,11 @@ Define it in a child class
 
 #### get_condition()
 
-#### _abstract_ get_value(result: [DatasetClassificationPerformanceMetrics](api-reference/evidently.metrics.md#evidently.metrics.classification_performance_metrics.DatasetClassificationPerformanceMetrics))
+#### _abstract_ get_value(result: [DatasetClassificationPerformanceMetrics](./evidently.metrics.md#evidently.metrics.classification_performance_metrics.DatasetClassificationPerformanceMetrics))
 
 #### group(_: st_ _ = 'classification_ )
 
-#### metric(_: [Metric](api-reference/evidently.metrics.md#evidently.metrics.base_metric.Metric)[[ClassificationPerformanceResults](api-reference/evidently.metrics.md#evidently.metrics.classification_performance_metrics.ClassificationPerformanceResults)_ )
+#### metric(_: [Metric](./evidently.metrics.md#evidently.metrics.base_metric.Metric)[[ClassificationPerformanceResults](./evidently.metrics.md#evidently.metrics.classification_performance_metrics.ClassificationPerformanceResults)_ )
 
 #### name(_: st_ )
 
@@ -212,7 +212,7 @@ Define it in a child class
 
 #### get_condition()
 
-#### metric(_: [Metric](api-reference/evidently.metrics.md#evidently.metrics.base_metric.Metric)[[ClassificationPerformanceResults](api-reference/evidently.metrics.md#evidently.metrics.classification_performance_metrics.ClassificationPerformanceResults)_ )
+#### metric(_: [Metric](./evidently.metrics.md#evidently.metrics.base_metric.Metric)[[ClassificationPerformanceResults](./evidently.metrics.md#evidently.metrics.classification_performance_metrics.ClassificationPerformanceResults)_ )
 
 #### name(_: st_ )
 
@@ -231,19 +231,19 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### get_value(result: [DatasetClassificationPerformanceMetrics](api-reference/evidently.metrics.md#evidently.metrics.classification_performance_metrics.DatasetClassificationPerformanceMetrics))
+#### get_value(result: [DatasetClassificationPerformanceMetrics](./evidently.metrics.md#evidently.metrics.classification_performance_metrics.DatasetClassificationPerformanceMetrics))
 
-#### metric(_: [Metric](api-reference/evidently.metrics.md#evidently.metrics.base_metric.Metric)[[ClassificationPerformanceResults](api-reference/evidently.metrics.md#evidently.metrics.classification_performance_metrics.ClassificationPerformanceResults)_ )
+#### metric(_: [Metric](./evidently.metrics.md#evidently.metrics.base_metric.Metric)[[ClassificationPerformanceResults](./evidently.metrics.md#evidently.metrics.classification_performance_metrics.ClassificationPerformanceResults)_ )
 
 #### name(_: st_ _ = 'Accuracy Score_ )
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.classification_performance_tests.TestAccuracyScoreRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.classification_performance_tests.TestAccuracyScoreRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestAccuracyScore)
 
@@ -260,15 +260,15 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### get_value(result: [DatasetClassificationPerformanceMetrics](api-reference/evidently.metrics.md#evidently.metrics.classification_performance_metrics.DatasetClassificationPerformanceMetrics))
+#### get_value(result: [DatasetClassificationPerformanceMetrics](./evidently.metrics.md#evidently.metrics.classification_performance_metrics.DatasetClassificationPerformanceMetrics))
 
 #### name(_: st_ _ = 'F1 Score by Class_ )
 
-### _class_ evidently.tests.classification_performance_tests.TestF1ByClassRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.classification_performance_tests.TestF1ByClassRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestF1ByClass)
 
@@ -287,19 +287,19 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### get_value(result: [DatasetClassificationPerformanceMetrics](api-reference/evidently.metrics.md#evidently.metrics.classification_performance_metrics.DatasetClassificationPerformanceMetrics))
+#### get_value(result: [DatasetClassificationPerformanceMetrics](./evidently.metrics.md#evidently.metrics.classification_performance_metrics.DatasetClassificationPerformanceMetrics))
 
-#### metric(_: [Metric](api-reference/evidently.metrics.md#evidently.metrics.base_metric.Metric)[[ClassificationPerformanceResults](api-reference/evidently.metrics.md#evidently.metrics.classification_performance_metrics.ClassificationPerformanceResults)_ )
+#### metric(_: [Metric](./evidently.metrics.md#evidently.metrics.base_metric.Metric)[[ClassificationPerformanceResults](./evidently.metrics.md#evidently.metrics.classification_performance_metrics.ClassificationPerformanceResults)_ )
 
 #### name(_: st_ _ = 'F1 Score_ )
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.classification_performance_tests.TestF1ScoreRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.classification_performance_tests.TestF1ScoreRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestF1Score)
 
@@ -320,19 +320,19 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### get_value(result: [DatasetClassificationPerformanceMetrics](api-reference/evidently.metrics.md#evidently.metrics.classification_performance_metrics.DatasetClassificationPerformanceMetrics))
+#### get_value(result: [DatasetClassificationPerformanceMetrics](./evidently.metrics.md#evidently.metrics.classification_performance_metrics.DatasetClassificationPerformanceMetrics))
 
-#### metric(_: [Metric](api-reference/evidently.metrics.md#evidently.metrics.base_metric.Metric)[[ClassificationPerformanceResults](api-reference/evidently.metrics.md#evidently.metrics.classification_performance_metrics.ClassificationPerformanceResults)_ )
+#### metric(_: [Metric](./evidently.metrics.md#evidently.metrics.base_metric.Metric)[[ClassificationPerformanceResults](./evidently.metrics.md#evidently.metrics.classification_performance_metrics.ClassificationPerformanceResults)_ )
 
 #### name(_: st_ _ = 'False Negative Rate_ )
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.classification_performance_tests.TestFNRRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.classification_performance_tests.TestFNRRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestF1Score)
 
@@ -353,19 +353,19 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### get_value(result: [DatasetClassificationPerformanceMetrics](api-reference/evidently.metrics.md#evidently.metrics.classification_performance_metrics.DatasetClassificationPerformanceMetrics))
+#### get_value(result: [DatasetClassificationPerformanceMetrics](./evidently.metrics.md#evidently.metrics.classification_performance_metrics.DatasetClassificationPerformanceMetrics))
 
-#### metric(_: [Metric](api-reference/evidently.metrics.md#evidently.metrics.base_metric.Metric)[[ClassificationPerformanceResults](api-reference/evidently.metrics.md#evidently.metrics.classification_performance_metrics.ClassificationPerformanceResults)_ )
+#### metric(_: [Metric](./evidently.metrics.md#evidently.metrics.base_metric.Metric)[[ClassificationPerformanceResults](./evidently.metrics.md#evidently.metrics.classification_performance_metrics.ClassificationPerformanceResults)_ )
 
 #### name(_: st_ _ = 'False Positive Rate_ )
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.classification_performance_tests.TestFPRRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.classification_performance_tests.TestFPRRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestF1Score)
 
@@ -386,19 +386,19 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### get_value(result: [DatasetClassificationPerformanceMetrics](api-reference/evidently.metrics.md#evidently.metrics.classification_performance_metrics.DatasetClassificationPerformanceMetrics))
+#### get_value(result: [DatasetClassificationPerformanceMetrics](./evidently.metrics.md#evidently.metrics.classification_performance_metrics.DatasetClassificationPerformanceMetrics))
 
-#### metric(_: [Metric](api-reference/evidently.metrics.md#evidently.metrics.base_metric.Metric)[[ClassificationPerformanceResults](api-reference/evidently.metrics.md#evidently.metrics.classification_performance_metrics.ClassificationPerformanceResults)_ )
+#### metric(_: [Metric](./evidently.metrics.md#evidently.metrics.base_metric.Metric)[[ClassificationPerformanceResults](./evidently.metrics.md#evidently.metrics.classification_performance_metrics.ClassificationPerformanceResults)_ )
 
 #### name(_: st_ _ = 'Logarithmic Loss_ )
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.classification_performance_tests.TestLogLossRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.classification_performance_tests.TestLogLossRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestLogLoss)
 
@@ -415,15 +415,15 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### get_value(result: [DatasetClassificationPerformanceMetrics](api-reference/evidently.metrics.md#evidently.metrics.classification_performance_metrics.DatasetClassificationPerformanceMetrics))
+#### get_value(result: [DatasetClassificationPerformanceMetrics](./evidently.metrics.md#evidently.metrics.classification_performance_metrics.DatasetClassificationPerformanceMetrics))
 
 #### name(_: st_ _ = 'Precision Score by Class_ )
 
-### _class_ evidently.tests.classification_performance_tests.TestPrecisionByClassRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.classification_performance_tests.TestPrecisionByClassRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestPrecisionByClass)
 
@@ -442,19 +442,19 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### get_value(result: [DatasetClassificationPerformanceMetrics](api-reference/evidently.metrics.md#evidently.metrics.classification_performance_metrics.DatasetClassificationPerformanceMetrics))
+#### get_value(result: [DatasetClassificationPerformanceMetrics](./evidently.metrics.md#evidently.metrics.classification_performance_metrics.DatasetClassificationPerformanceMetrics))
 
-#### metric(_: [Metric](api-reference/evidently.metrics.md#evidently.metrics.base_metric.Metric)[[ClassificationPerformanceResults](api-reference/evidently.metrics.md#evidently.metrics.classification_performance_metrics.ClassificationPerformanceResults)_ )
+#### metric(_: [Metric](./evidently.metrics.md#evidently.metrics.base_metric.Metric)[[ClassificationPerformanceResults](./evidently.metrics.md#evidently.metrics.classification_performance_metrics.ClassificationPerformanceResults)_ )
 
 #### name(_: st_ _ = 'Precision Score_ )
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.classification_performance_tests.TestPrecisionScoreRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.classification_performance_tests.TestPrecisionScoreRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestPrecisionScore)
 
@@ -471,15 +471,15 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### get_value(result: [DatasetClassificationPerformanceMetrics](api-reference/evidently.metrics.md#evidently.metrics.classification_performance_metrics.DatasetClassificationPerformanceMetrics))
+#### get_value(result: [DatasetClassificationPerformanceMetrics](./evidently.metrics.md#evidently.metrics.classification_performance_metrics.DatasetClassificationPerformanceMetrics))
 
 #### name(_: st_ _ = 'Recall Score by Class_ )
 
-### _class_ evidently.tests.classification_performance_tests.TestRecallByClassRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.classification_performance_tests.TestRecallByClassRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestRecallByClass)
 
@@ -498,19 +498,19 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### get_value(result: [DatasetClassificationPerformanceMetrics](api-reference/evidently.metrics.md#evidently.metrics.classification_performance_metrics.DatasetClassificationPerformanceMetrics))
+#### get_value(result: [DatasetClassificationPerformanceMetrics](./evidently.metrics.md#evidently.metrics.classification_performance_metrics.DatasetClassificationPerformanceMetrics))
 
-#### metric(_: [Metric](api-reference/evidently.metrics.md#evidently.metrics.base_metric.Metric)[[ClassificationPerformanceResults](api-reference/evidently.metrics.md#evidently.metrics.classification_performance_metrics.ClassificationPerformanceResults)_ )
+#### metric(_: [Metric](./evidently.metrics.md#evidently.metrics.base_metric.Metric)[[ClassificationPerformanceResults](./evidently.metrics.md#evidently.metrics.classification_performance_metrics.ClassificationPerformanceResults)_ )
 
 #### name(_: st_ _ = 'Recall Score_ )
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.classification_performance_tests.TestRecallScoreRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.classification_performance_tests.TestRecallScoreRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestRecallScore)
 
@@ -529,19 +529,19 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### get_value(result: [DatasetClassificationPerformanceMetrics](api-reference/evidently.metrics.md#evidently.metrics.classification_performance_metrics.DatasetClassificationPerformanceMetrics))
+#### get_value(result: [DatasetClassificationPerformanceMetrics](./evidently.metrics.md#evidently.metrics.classification_performance_metrics.DatasetClassificationPerformanceMetrics))
 
-#### metric(_: [Metric](api-reference/evidently.metrics.md#evidently.metrics.base_metric.Metric)[[ClassificationPerformanceResults](api-reference/evidently.metrics.md#evidently.metrics.classification_performance_metrics.ClassificationPerformanceResults)_ )
+#### metric(_: [Metric](./evidently.metrics.md#evidently.metrics.base_metric.Metric)[[ClassificationPerformanceResults](./evidently.metrics.md#evidently.metrics.classification_performance_metrics.ClassificationPerformanceResults)_ )
 
 #### name(_: st_ _ = 'ROC AUC Score_ )
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.classification_performance_tests.TestRocAucRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.classification_performance_tests.TestRocAucRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestRocAuc)
 
@@ -560,19 +560,19 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### get_value(result: [DatasetClassificationPerformanceMetrics](api-reference/evidently.metrics.md#evidently.metrics.classification_performance_metrics.DatasetClassificationPerformanceMetrics))
+#### get_value(result: [DatasetClassificationPerformanceMetrics](./evidently.metrics.md#evidently.metrics.classification_performance_metrics.DatasetClassificationPerformanceMetrics))
 
-#### metric(_: [Metric](api-reference/evidently.metrics.md#evidently.metrics.base_metric.Metric)[[ClassificationPerformanceResults](api-reference/evidently.metrics.md#evidently.metrics.classification_performance_metrics.ClassificationPerformanceResults)_ )
+#### metric(_: [Metric](./evidently.metrics.md#evidently.metrics.base_metric.Metric)[[ClassificationPerformanceResults](./evidently.metrics.md#evidently.metrics.classification_performance_metrics.ClassificationPerformanceResults)_ )
 
 #### name(_: st_ _ = 'True Negative Rate_ )
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.classification_performance_tests.TestTNRRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.classification_performance_tests.TestTNRRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestF1Score)
 
@@ -591,19 +591,19 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### get_value(result: [DatasetClassificationPerformanceMetrics](api-reference/evidently.metrics.md#evidently.metrics.classification_performance_metrics.DatasetClassificationPerformanceMetrics))
+#### get_value(result: [DatasetClassificationPerformanceMetrics](./evidently.metrics.md#evidently.metrics.classification_performance_metrics.DatasetClassificationPerformanceMetrics))
 
-#### metric(_: [Metric](api-reference/evidently.metrics.md#evidently.metrics.base_metric.Metric)[[ClassificationPerformanceResults](api-reference/evidently.metrics.md#evidently.metrics.classification_performance_metrics.ClassificationPerformanceResults)_ )
+#### metric(_: [Metric](./evidently.metrics.md#evidently.metrics.base_metric.Metric)[[ClassificationPerformanceResults](./evidently.metrics.md#evidently.metrics.classification_performance_metrics.ClassificationPerformanceResults)_ )
 
 #### name(_: st_ _ = 'True Positive Rate_ )
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.classification_performance_tests.TestTPRRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.classification_performance_tests.TestTPRRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestF1Score)
 
@@ -611,7 +611,7 @@ Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers
 ## evidently.tests.data_drift_tests module
 
 
-### _class_ evidently.tests.data_drift_tests.BaseDataDriftMetricsTest(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None, options: Optional[[DataDriftOptions](api-reference/evidently.options.md#evidently.options.data_drift.DataDriftOptions)] = None)
+### _class_ evidently.tests.data_drift_tests.BaseDataDriftMetricsTest(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None, options: Optional[[DataDriftOptions](./evidently.options.md#evidently.options.data_drift.DataDriftOptions)] = None)
 Bases: `BaseCheckValueTest`, `ABC`
 
 
@@ -619,17 +619,17 @@ Bases: `BaseCheckValueTest`, `ABC`
 
 #### group(_: st_ _ = 'data_drift_ )
 
-#### metric(_: [DataDriftTable](api-reference/evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTable_ )
+#### metric(_: [DataDriftTable](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTable_ )
 
 ### _class_ evidently.tests.data_drift_tests.TestAllFeaturesValueDrift()
-Bases: [`BaseGenerator`](api-reference/evidently.utils.md#evidently.utils.generators.BaseGenerator)
+Bases: [`BaseGenerator`](./evidently.utils.md#evidently.utils.generators.BaseGenerator)
 
 Create value drift tests for numeric and category features
 
 
-#### generate(columns_info: [DatasetColumns](api-reference/evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
+#### generate(columns_info: [DatasetColumns](./evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
-### _class_ evidently.tests.data_drift_tests.TestColumnValueDrift(column_name: str, options: Optional[[DataDriftOptions](api-reference/evidently.options.md#evidently.options.data_drift.DataDriftOptions)] = None)
+### _class_ evidently.tests.data_drift_tests.TestColumnValueDrift(column_name: str, options: Optional[[DataDriftOptions](./evidently.options.md#evidently.options.data_drift.DataDriftOptions)] = None)
 Bases: `Test`
 
 
@@ -639,29 +639,29 @@ Bases: `Test`
 
 #### group(_: st_ _ = 'data_drift_ )
 
-#### metric(_: [DataDriftTable](api-reference/evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTable_ )
+#### metric(_: [DataDriftTable](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTable_ )
 
 #### name(_: st_ _ = 'Drift per Column_ )
 
-### _class_ evidently.tests.data_drift_tests.TestColumnValueDriftRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.data_drift_tests.TestColumnValueDriftRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestColumnValueDrift)
 
 #### render_json(obj: TestColumnValueDrift)
 
 ### _class_ evidently.tests.data_drift_tests.TestCustomFeaturesValueDrift(features: List[str])
-Bases: [`BaseGenerator`](api-reference/evidently.utils.md#evidently.utils.generators.BaseGenerator)
+Bases: [`BaseGenerator`](./evidently.utils.md#evidently.utils.generators.BaseGenerator)
 
 Create value drift tests for specified features
 
 
 #### features(_: List[str_ )
 
-#### generate(columns_info: [DatasetColumns](api-reference/evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
+#### generate(columns_info: [DatasetColumns](./evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
 ### _class_ evidently.tests.data_drift_tests.TestDataDriftResult(name: str, description: str, status: str, groups: Dict[str, str] = <factory>, features: Dict[str, Tuple[str, float, float]] = <factory>)
 Bases: `TestResult`
@@ -669,7 +669,7 @@ Bases: `TestResult`
 
 #### features(_: Dict[str, Tuple[str, float, float]_ )
 
-### _class_ evidently.tests.data_drift_tests.TestNumberOfDriftedColumns(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None, options: Optional[[DataDriftOptions](api-reference/evidently.options.md#evidently.options.data_drift.DataDriftOptions)] = None)
+### _class_ evidently.tests.data_drift_tests.TestNumberOfDriftedColumns(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None, options: Optional[[DataDriftOptions](./evidently.options.md#evidently.options.data_drift.DataDriftOptions)] = None)
 Bases: `BaseDataDriftMetricsTest`
 
 
@@ -690,23 +690,23 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [DataDriftTable](api-reference/evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTable_ )
+#### metric(_: [DataDriftTable](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTable_ )
 
 #### name(_: st_ _ = 'Number of Drifted Features_ )
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.data_drift_tests.TestNumberOfDriftedColumnsRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.data_drift_tests.TestNumberOfDriftedColumnsRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestNumberOfDriftedColumns)
 
 #### render_json(obj: TestNumberOfDriftedColumns)
 
-### _class_ evidently.tests.data_drift_tests.TestShareOfDriftedColumns(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None, options: Optional[[DataDriftOptions](api-reference/evidently.options.md#evidently.options.data_drift.DataDriftOptions)] = None)
+### _class_ evidently.tests.data_drift_tests.TestShareOfDriftedColumns(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None, options: Optional[[DataDriftOptions](./evidently.options.md#evidently.options.data_drift.DataDriftOptions)] = None)
 Bases: `BaseDataDriftMetricsTest`
 
 
@@ -727,17 +727,17 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [DataDriftTable](api-reference/evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTable_ )
+#### metric(_: [DataDriftTable](./evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTable_ )
 
 #### name(_: st_ _ = 'Share of Drifted Columns_ )
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.data_drift_tests.TestShareOfDriftedColumnsRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.data_drift_tests.TestShareOfDriftedColumnsRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestShareOfDriftedColumns)
 
@@ -751,7 +751,7 @@ Bases: `BaseCheckValueTest`, `ABC`
 
 #### column_name(_: st_ )
 
-#### data_integrity_metric(_: [ColumnSummaryMetric](api-reference/evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric_ )
+#### data_integrity_metric(_: [ColumnSummaryMetric](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric_ )
 
 #### group(_: st_ _ = 'data_integrity_ )
 
@@ -765,7 +765,7 @@ Bases: `BaseCheckValueTest`, `ABC`
 
 #### group(_: st_ _ = 'data_integrity_ )
 
-#### metric(_: [DatasetMissingValuesMetric](api-reference/evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric_ )
+#### metric(_: [DatasetMissingValuesMetric](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric_ )
 
 ### _class_ evidently.tests.data_integrity_tests.BaseIntegrityMissingValuesValuesTest(missing_values: Optional[list] = None, replace: bool = True, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseCheckValueTest`, `ABC`
@@ -773,7 +773,7 @@ Bases: `BaseCheckValueTest`, `ABC`
 
 #### group(_: st_ _ = 'data_integrity_ )
 
-#### metric(_: [DatasetMissingValuesMetric](api-reference/evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric_ )
+#### metric(_: [DatasetMissingValuesMetric](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric_ )
 
 ### _class_ evidently.tests.data_integrity_tests.BaseIntegrityOneColumnTest(column_name: str)
 Bases: `Test`, `ABC`
@@ -785,7 +785,7 @@ Bases: `Test`, `ABC`
 
 #### groups()
 
-#### metric(_: [ColumnSummaryMetric](api-reference/evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric_ )
+#### metric(_: [ColumnSummaryMetric](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric_ )
 
 ### _class_ evidently.tests.data_integrity_tests.BaseIntegrityValueTest(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseCheckValueTest`, `ABC`
@@ -793,10 +793,10 @@ Bases: `BaseCheckValueTest`, `ABC`
 
 #### group(_: st_ _ = 'data_integrity_ )
 
-#### metric(_: [DatasetSummaryMetric](api-reference/evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric_ )
+#### metric(_: [DatasetSummaryMetric](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric_ )
 
-### _class_ evidently.tests.data_integrity_tests.BaseTestMissingValuesRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.data_integrity_tests.BaseTestMissingValuesRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 Common class for tests of missing values.
 Some tests have the same details visualizations.
@@ -804,19 +804,19 @@ Some tests have the same details visualizations.
 
 #### MISSING_VALUES_NAMING_MAPPING(_ = {None: 'Pandas nulls (None, NAN, etc.)', '': '"" (empty string)', inf: 'Numpy "inf" value', -inf: 'Numpy "-inf" value'_ )
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
-#### get_table_with_missing_values_and_percents_by_column(info: [TestHtmlInfo](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestHtmlInfo), metric_result: [DatasetMissingValuesMetricResult](api-reference/evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetricResult), name: str)
+#### get_table_with_missing_values_and_percents_by_column(info: [TestHtmlInfo](./evidently.renderers.md#evidently.renderers.base_renderer.TestHtmlInfo), metric_result: [DatasetMissingValuesMetricResult](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetricResult), name: str)
 Get a table with missing values number and percents
 
 
-#### get_table_with_number_of_missing_values_by_one_missing_value(info: [TestHtmlInfo](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestHtmlInfo), current_missing_values: dict, reference_missing_values: Optional[dict], name: str)
+#### get_table_with_number_of_missing_values_by_one_missing_value(info: [TestHtmlInfo](./evidently.renderers.md#evidently.renderers.base_renderer.TestHtmlInfo), current_missing_values: dict, reference_missing_values: Optional[dict], name: str)
 
 ### _class_ evidently.tests.data_integrity_tests.TestAllColumnsShareOfMissingValues()
-Bases: [`BaseGenerator`](api-reference/evidently.utils.md#evidently.utils.generators.BaseGenerator)
+Bases: [`BaseGenerator`](./evidently.utils.md#evidently.utils.generators.BaseGenerator)
 
 
-#### generate(columns_info: [DatasetColumns](api-reference/evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
+#### generate(columns_info: [DatasetColumns](./evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
 ### _class_ evidently.tests.data_integrity_tests.TestColumnAllConstantValues(column_name: str)
 Bases: `BaseIntegrityOneColumnTest`
@@ -826,15 +826,15 @@ Test that there is only one unique value in a column
 
 #### check()
 
-#### metric(_: [ColumnSummaryMetric](api-reference/evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric_ )
+#### metric(_: [ColumnSummaryMetric](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric_ )
 
 #### name(_: st_ _ = 'All Constant Values in a Column_ )
 
-### _class_ evidently.tests.data_integrity_tests.TestColumnAllConstantValuesRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.data_integrity_tests.TestColumnAllConstantValuesRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestColumnAllConstantValues)
 
@@ -848,15 +848,15 @@ Test that there is only uniques values in a column
 
 #### column_name(_: st_ )
 
-#### metric(_: [ColumnSummaryMetric](api-reference/evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric_ )
+#### metric(_: [ColumnSummaryMetric](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric_ )
 
 #### name(_: st_ _ = 'All Unique Values in a Column_ )
 
-### _class_ evidently.tests.data_integrity_tests.TestColumnAllUniqueValuesRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.data_integrity_tests.TestColumnAllUniqueValuesRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestColumnAllUniqueValues)
 
@@ -885,17 +885,17 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [DatasetMissingValuesMetric](api-reference/evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric_ )
+#### metric(_: [DatasetMissingValuesMetric](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric_ )
 
 #### name(_: st_ _ = 'Different Types of Missing Values in a Column_ )
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.data_integrity_tests.TestColumnNumberOfDifferentMissingValuesRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ evidently.tests.data_integrity_tests.TestColumnNumberOfDifferentMissingValuesRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: `BaseTestMissingValuesRenderer`
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestColumnNumberOfDifferentMissingValues)
 Get a table with a missing value and number of the value in the dataset
@@ -928,17 +928,17 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [DatasetMissingValuesMetric](api-reference/evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric_ )
+#### metric(_: [DatasetMissingValuesMetric](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric_ )
 
 #### name(_: st_ _ = 'The Number of Missing Values in a Column_ )
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.data_integrity_tests.TestColumnNumberOfMissingValuesRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ evidently.tests.data_integrity_tests.TestColumnNumberOfMissingValuesRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: `BaseTestMissingValuesRenderer`
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_json(obj: TestColumnNumberOfMissingValues)
 
@@ -967,17 +967,17 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [DatasetMissingValuesMetric](api-reference/evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric_ )
+#### metric(_: [DatasetMissingValuesMetric](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric_ )
 
 #### name(_: st_ _ = 'The Share of Missing Values in a Column_ )
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.data_integrity_tests.TestColumnShareOfMissingValuesRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ evidently.tests.data_integrity_tests.TestColumnShareOfMissingValuesRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: `BaseTestMissingValuesRenderer`
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_json(obj: TestColumnShareOfMissingValues)
 
@@ -1006,15 +1006,15 @@ Define it in a child class
 
 #### groups()
 
-#### metric(_: [ColumnRegExpMetric](api-reference/evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.ColumnRegExpMetric_ )
+#### metric(_: [ColumnRegExpMetric](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.ColumnRegExpMetric_ )
 
 #### name(_: st_ _ = 'RegExp Match_ )
 
-### _class_ evidently.tests.data_integrity_tests.TestColumnValueRegExpRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.data_integrity_tests.TestColumnValueRegExpRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestColumnValueRegExp)
 
@@ -1036,15 +1036,15 @@ Bases: `TestResult`
 
 #### group(_: st_ _ = 'data_integrity_ )
 
-#### metric(_: [DatasetSummaryMetric](api-reference/evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric_ )
+#### metric(_: [DatasetSummaryMetric](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric_ )
 
 #### name(_: st_ _ = 'Column Types_ )
 
-### _class_ evidently.tests.data_integrity_tests.TestColumnsTypeRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.data_integrity_tests.TestColumnsTypeRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestColumnsType)
 
@@ -1073,17 +1073,17 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [DatasetSummaryMetric](api-reference/evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric_ )
+#### metric(_: [DatasetSummaryMetric](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric_ )
 
 #### name(_: st_ _ = 'Number of Columns_ )
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.data_integrity_tests.TestNumberOfColumnsRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.data_integrity_tests.TestNumberOfColumnsRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestNumberOfColumns)
 
@@ -1112,17 +1112,17 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [DatasetMissingValuesMetric](api-reference/evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric_ )
+#### metric(_: [DatasetMissingValuesMetric](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric_ )
 
 #### name(_: st_ _ = 'The Number of Columns With Missing Values_ )
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.data_integrity_tests.TestNumberOfColumnsWithMissingValuesRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ evidently.tests.data_integrity_tests.TestNumberOfColumnsWithMissingValuesRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: `BaseTestMissingValuesRenderer`
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestNumberOfMissingValues)
 
@@ -1151,17 +1151,17 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [DatasetSummaryMetric](api-reference/evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric_ )
+#### metric(_: [DatasetSummaryMetric](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric_ )
 
 #### name(_: st_ _ = 'Number of Constant Columns_ )
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.data_integrity_tests.TestNumberOfConstantColumnsRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.data_integrity_tests.TestNumberOfConstantColumnsRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestNumberOfConstantColumns)
 
@@ -1190,17 +1190,17 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [DatasetMissingValuesMetric](api-reference/evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric_ )
+#### metric(_: [DatasetMissingValuesMetric](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric_ )
 
 #### name(_: st_ _ = 'Different Types of Missing Values_ )
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.data_integrity_tests.TestNumberOfDifferentMissingValuesRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ evidently.tests.data_integrity_tests.TestNumberOfDifferentMissingValuesRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: `BaseTestMissingValuesRenderer`
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestNumberOfDifferentMissingValues)
 Get a table with a missing value and number of the value in the dataset
@@ -1231,17 +1231,17 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [DatasetSummaryMetric](api-reference/evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric_ )
+#### metric(_: [DatasetSummaryMetric](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric_ )
 
 #### name(_: st_ _ = 'Number of Duplicate Columns_ )
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.data_integrity_tests.TestNumberOfDuplicatedColumnsRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.data_integrity_tests.TestNumberOfDuplicatedColumnsRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_json(obj: TestNumberOfDuplicatedColumns)
 
@@ -1268,17 +1268,17 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [DatasetSummaryMetric](api-reference/evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric_ )
+#### metric(_: [DatasetSummaryMetric](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric_ )
 
 #### name(_: st_ _ = 'Number of Duplicate Rows_ )
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.data_integrity_tests.TestNumberOfDuplicatedRowsRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.data_integrity_tests.TestNumberOfDuplicatedRowsRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_json(obj: TestNumberOfDuplicatedRows)
 
@@ -1305,17 +1305,17 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [DatasetSummaryMetric](api-reference/evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric_ )
+#### metric(_: [DatasetSummaryMetric](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric_ )
 
 #### name(_: st_ _ = 'Number of Empty Columns_ )
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.data_integrity_tests.TestNumberOfEmptyColumnsRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.data_integrity_tests.TestNumberOfEmptyColumnsRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestNumberOfEmptyColumns)
 
@@ -1342,7 +1342,7 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [DatasetSummaryMetric](api-reference/evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric_ )
+#### metric(_: [DatasetSummaryMetric](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric_ )
 
 #### name(_: st_ _ = 'Number of Empty Rows_ )
 
@@ -1371,17 +1371,17 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [DatasetMissingValuesMetric](api-reference/evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric_ )
+#### metric(_: [DatasetMissingValuesMetric](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric_ )
 
 #### name(_: st_ _ = 'The Number of Missing Values_ )
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.data_integrity_tests.TestNumberOfMissingValuesRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ evidently.tests.data_integrity_tests.TestNumberOfMissingValuesRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: `BaseTestMissingValuesRenderer`
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestNumberOfMissingValues)
 
@@ -1410,17 +1410,17 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [DatasetSummaryMetric](api-reference/evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric_ )
+#### metric(_: [DatasetSummaryMetric](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetric_ )
 
 #### name(_: st_ _ = 'Number of Rows_ )
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.data_integrity_tests.TestNumberOfRowsRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.data_integrity_tests.TestNumberOfRowsRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_json(obj: TestNumberOfRows)
 
@@ -1447,17 +1447,17 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [DatasetMissingValuesMetric](api-reference/evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric_ )
+#### metric(_: [DatasetMissingValuesMetric](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric_ )
 
 #### name(_: st_ _ = 'The Number Of Rows With Missing Values_ )
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.data_integrity_tests.TestNumberOfRowsWithMissingValuesRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ evidently.tests.data_integrity_tests.TestNumberOfRowsWithMissingValuesRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: `BaseTestMissingValuesRenderer`
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_json(obj: TestNumberOfRowsWithMissingValues)
 
@@ -1484,17 +1484,17 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [DatasetMissingValuesMetric](api-reference/evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric_ )
+#### metric(_: [DatasetMissingValuesMetric](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric_ )
 
 #### name(_: st_ _ = 'The Share of Columns With Missing Values_ )
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.data_integrity_tests.TestShareOfColumnsWithMissingValuesRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ evidently.tests.data_integrity_tests.TestShareOfColumnsWithMissingValuesRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: `BaseTestMissingValuesRenderer`
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestNumberOfMissingValues)
 
@@ -1523,17 +1523,17 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [DatasetMissingValuesMetric](api-reference/evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric_ )
+#### metric(_: [DatasetMissingValuesMetric](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric_ )
 
 #### name(_: st_ _ = 'Share of Missing Values_ )
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.data_integrity_tests.TestShareOfMissingValuesRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ evidently.tests.data_integrity_tests.TestShareOfMissingValuesRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: `BaseTestMissingValuesRenderer`
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestNumberOfMissingValues)
 
@@ -1562,17 +1562,17 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [DatasetMissingValuesMetric](api-reference/evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric_ )
+#### metric(_: [DatasetMissingValuesMetric](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetric_ )
 
 #### name(_: st_ _ = 'The Share of Rows With Missing Values_ )
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.data_integrity_tests.TestShareOfRowsWithMissingValuesRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ evidently.tests.data_integrity_tests.TestShareOfRowsWithMissingValuesRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: `BaseTestMissingValuesRenderer`
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_json(obj: TestShareOfRowsWithMissingValues)
 ## evidently.tests.data_quality_tests module
@@ -1586,7 +1586,7 @@ Bases: `BaseCheckValueTest`, `ABC`
 
 #### method(_: st_ )
 
-#### metric(_: [DatasetCorrelationsMetric](api-reference/evidently.metrics.data_quality.md#evidently.metrics.data_quality.dataset_correlations_metric.DatasetCorrelationsMetric_ )
+#### metric(_: [DatasetCorrelationsMetric](./evidently.metrics.data_quality.md#evidently.metrics.data_quality.dataset_correlations_metric.DatasetCorrelationsMetric_ )
 
 ### _class_ evidently.tests.data_quality_tests.BaseDataQualityMetricsValueTest(column_name: str, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseCheckValueTest`, `ABC`
@@ -1594,7 +1594,7 @@ Bases: `BaseCheckValueTest`, `ABC`
 
 #### group(_: st_ _ = 'data_quality_ )
 
-#### metric(_: [ColumnSummaryMetric](api-reference/evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric_ )
+#### metric(_: [ColumnSummaryMetric](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric_ )
 
 ### _class_ evidently.tests.data_quality_tests.BaseDataQualityValueListMetricsTest(column_name: str, values: Optional[list] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseCheckValueTest`, `ABC`
@@ -1606,7 +1606,7 @@ Bases: `BaseCheckValueTest`, `ABC`
 
 #### groups()
 
-#### metric(_: [ColumnValueListMetric](api-reference/evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_value_list_metric.ColumnValueListMetric_ )
+#### metric(_: [ColumnValueListMetric](./evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_value_list_metric.ColumnValueListMetric_ )
 
 #### values(_: Optional[list_ )
 
@@ -1622,7 +1622,7 @@ Bases: `BaseCheckValueTest`, `ABC`
 
 #### left(_: Optional[float_ )
 
-#### metric(_: [ColumnValueRangeMetric](api-reference/evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_value_range_metric.ColumnValueRangeMetric_ )
+#### metric(_: [ColumnValueRangeMetric](./evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_value_range_metric.ColumnValueRangeMetric_ )
 
 #### right(_: Optional[float_ )
 
@@ -1637,20 +1637,20 @@ Bases: `BaseDataQualityMetricsValueTest`, `ABC`
 #### groups()
 
 ### _class_ evidently.tests.data_quality_tests.TestAllColumnsMostCommonValueShare()
-Bases: [`BaseGenerator`](api-reference/evidently.utils.md#evidently.utils.generators.BaseGenerator)
+Bases: [`BaseGenerator`](./evidently.utils.md#evidently.utils.generators.BaseGenerator)
 
 Creates most common value share tests for each column in the dataset
 
 
-#### generate(columns_info: [DatasetColumns](api-reference/evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
+#### generate(columns_info: [DatasetColumns](./evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
 ### _class_ evidently.tests.data_quality_tests.TestCatColumnsOutOfListValues()
-Bases: [`BaseGenerator`](api-reference/evidently.utils.md#evidently.utils.generators.BaseGenerator)
+Bases: [`BaseGenerator`](./evidently.utils.md#evidently.utils.generators.BaseGenerator)
 
 Create share of out of list values tests for category columns
 
 
-#### generate(columns_info: [DatasetColumns](api-reference/evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
+#### generate(columns_info: [DatasetColumns](./evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
 ### _class_ evidently.tests.data_quality_tests.TestColumnValueMax(column_name: str, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseFeatureDataQualityMetricsTest`
@@ -1675,17 +1675,17 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [ColumnSummaryMetric](api-reference/evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric_ )
+#### metric(_: [ColumnSummaryMetric](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric_ )
 
 #### name(_: st_ _ = 'Max Value_ )
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.data_quality_tests.TestColumnValueMaxRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.data_quality_tests.TestColumnValueMaxRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestColumnValueMax)
 
@@ -1712,17 +1712,17 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [ColumnSummaryMetric](api-reference/evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric_ )
+#### metric(_: [ColumnSummaryMetric](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric_ )
 
 #### name(_: st_ _ = 'Mean Value_ )
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.data_quality_tests.TestColumnValueMeanRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.data_quality_tests.TestColumnValueMeanRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestColumnValueMean)
 
@@ -1749,17 +1749,17 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [ColumnSummaryMetric](api-reference/evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric_ )
+#### metric(_: [ColumnSummaryMetric](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric_ )
 
 #### name(_: st_ _ = 'Median Value_ )
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.data_quality_tests.TestColumnValueMedianRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.data_quality_tests.TestColumnValueMedianRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestColumnValueMedian)
 
@@ -1786,17 +1786,17 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [ColumnSummaryMetric](api-reference/evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric_ )
+#### metric(_: [ColumnSummaryMetric](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric_ )
 
 #### name(_: st_ _ = 'Min Value_ )
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.data_quality_tests.TestColumnValueMinRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.data_quality_tests.TestColumnValueMinRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestColumnValueMin)
 
@@ -1823,17 +1823,17 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [ColumnSummaryMetric](api-reference/evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric_ )
+#### metric(_: [ColumnSummaryMetric](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric_ )
 
 #### name(_: st_ _ = 'Standard Deviation (SD)_ )
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.data_quality_tests.TestColumnValueStdRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.data_quality_tests.TestColumnValueStdRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestColumnValueStd)
 
@@ -1845,7 +1845,7 @@ Bases: `Test`
 
 #### group(_: st_ _ = 'data_quality_ )
 
-#### metric(_: [DataQualityStabilityMetric](api-reference/evidently.metrics.data_quality.md#evidently.metrics.data_quality.stability_metric.DataQualityStabilityMetric_ )
+#### metric(_: [DataQualityStabilityMetric](./evidently.metrics.data_quality.md#evidently.metrics.data_quality.stability_metric.DataQualityStabilityMetric_ )
 
 #### name(_: st_ _ = 'Test number of conflicts in prediction_ )
 
@@ -1857,7 +1857,7 @@ Bases: `Test`
 
 #### group(_: st_ _ = 'data_quality_ )
 
-#### metric(_: [DataQualityStabilityMetric](api-reference/evidently.metrics.data_quality.md#evidently.metrics.data_quality.stability_metric.DataQualityStabilityMetric_ )
+#### metric(_: [DataQualityStabilityMetric](./evidently.metrics.data_quality.md#evidently.metrics.data_quality.stability_metric.DataQualityStabilityMetric_ )
 
 #### name(_: st_ _ = 'Test number of conflicts in target_ )
 
@@ -1884,15 +1884,15 @@ Define it in a child class
 
 #### group(_: st_ _ = 'data_quality_ )
 
-#### metric(_: [DatasetCorrelationsMetric](api-reference/evidently.metrics.data_quality.md#evidently.metrics.data_quality.dataset_correlations_metric.DatasetCorrelationsMetric_ )
+#### metric(_: [DatasetCorrelationsMetric](./evidently.metrics.data_quality.md#evidently.metrics.data_quality.dataset_correlations_metric.DatasetCorrelationsMetric_ )
 
 #### name(_: st_ _ = 'Change in Correlation_ )
 
-### _class_ evidently.tests.data_quality_tests.TestCorrelationChangesRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.data_quality_tests.TestCorrelationChangesRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestCorrelationChanges)
 
@@ -1919,17 +1919,17 @@ Define it in a child class
 
 #### method(_: st_ )
 
-#### metric(_: [DatasetCorrelationsMetric](api-reference/evidently.metrics.data_quality.md#evidently.metrics.data_quality.dataset_correlations_metric.DatasetCorrelationsMetric_ )
+#### metric(_: [DatasetCorrelationsMetric](./evidently.metrics.data_quality.md#evidently.metrics.data_quality.dataset_correlations_metric.DatasetCorrelationsMetric_ )
 
 #### name(_: st_ _ = 'Highly Correlated Columns_ )
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.data_quality_tests.TestHighlyCorrelatedColumnsRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.data_quality_tests.TestHighlyCorrelatedColumnsRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestHighlyCorrelatedColumns)
 
@@ -1945,17 +1945,17 @@ Bases: `Test`
 
 #### group(_: st_ _ = 'data_quality_ )
 
-#### metric(_: [ColumnSummaryMetric](api-reference/evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric_ )
+#### metric(_: [ColumnSummaryMetric](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric_ )
 
 #### n_sigmas(_: in_ )
 
 #### name(_: st_ _ = 'Mean Value Stability_ )
 
-### _class_ evidently.tests.data_quality_tests.TestMeanInNSigmasRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.data_quality_tests.TestMeanInNSigmasRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestMeanInNSigmas)
 
@@ -1984,37 +1984,37 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [ColumnSummaryMetric](api-reference/evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric_ )
+#### metric(_: [ColumnSummaryMetric](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric_ )
 
 #### name(_: st_ _ = 'Share of the Most Common Value_ )
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.data_quality_tests.TestMostCommonValueShareRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.data_quality_tests.TestMostCommonValueShareRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestMostCommonValueShare)
 
 #### render_json(obj: TestMostCommonValueShare)
 
 ### _class_ evidently.tests.data_quality_tests.TestNumColumnsMeanInNSigmas()
-Bases: [`BaseGenerator`](api-reference/evidently.utils.md#evidently.utils.generators.BaseGenerator)
+Bases: [`BaseGenerator`](./evidently.utils.md#evidently.utils.generators.BaseGenerator)
 
 Create tests of mean for all numeric columns
 
 
-#### generate(columns_info: [DatasetColumns](api-reference/evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
+#### generate(columns_info: [DatasetColumns](./evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
 ### _class_ evidently.tests.data_quality_tests.TestNumColumnsOutOfRangeValues()
-Bases: [`BaseGenerator`](api-reference/evidently.utils.md#evidently.utils.generators.BaseGenerator)
+Bases: [`BaseGenerator`](./evidently.utils.md#evidently.utils.generators.BaseGenerator)
 
 Creates share of out of range values tests for all numeric columns
 
 
-#### generate(columns_info: [DatasetColumns](api-reference/evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
+#### generate(columns_info: [DatasetColumns](./evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
 ### _class_ evidently.tests.data_quality_tests.TestNumberOfOutListValues(column_name: str, values: Optional[list] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseDataQualityValueListMetricsTest`
@@ -2039,7 +2039,7 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [ColumnValueListMetric](api-reference/evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_value_list_metric.ColumnValueListMetric_ )
+#### metric(_: [ColumnValueListMetric](./evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_value_list_metric.ColumnValueListMetric_ )
 
 #### name(_: st_ _ = 'Number Out-of-List Values_ )
 
@@ -2047,11 +2047,11 @@ Define it in a child class
 
 #### values(_: Optional[list_ )
 
-### _class_ evidently.tests.data_quality_tests.TestNumberOfOutListValuesRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.data_quality_tests.TestNumberOfOutListValuesRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestNumberOfOutListValues)
 
@@ -2080,7 +2080,7 @@ Define it in a child class
 
 #### left(_: Optional[float_ )
 
-#### metric(_: [ColumnValueRangeMetric](api-reference/evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_value_range_metric.ColumnValueRangeMetric_ )
+#### metric(_: [ColumnValueRangeMetric](./evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_value_range_metric.ColumnValueRangeMetric_ )
 
 #### name(_: st_ _ = 'Number of Out-of-Range Values _ )
 
@@ -2088,11 +2088,11 @@ Define it in a child class
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.data_quality_tests.TestNumberOfOutRangeValuesRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.data_quality_tests.TestNumberOfOutRangeValuesRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestNumberOfOutRangeValues)
 
@@ -2119,17 +2119,17 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [ColumnSummaryMetric](api-reference/evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric_ )
+#### metric(_: [ColumnSummaryMetric](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric_ )
 
 #### name(_: st_ _ = 'Number of Unique Values_ )
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.data_quality_tests.TestNumberOfUniqueValuesRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.data_quality_tests.TestNumberOfUniqueValuesRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestNumberOfUniqueValues)
 
@@ -2156,17 +2156,17 @@ Define it in a child class
 
 #### method(_: st_ )
 
-#### metric(_: [DatasetCorrelationsMetric](api-reference/evidently.metrics.data_quality.md#evidently.metrics.data_quality.dataset_correlations_metric.DatasetCorrelationsMetric_ )
+#### metric(_: [DatasetCorrelationsMetric](./evidently.metrics.data_quality.md#evidently.metrics.data_quality.dataset_correlations_metric.DatasetCorrelationsMetric_ )
 
 #### name(_: st_ _ = 'Correlation between Prediction and Features_ )
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.data_quality_tests.TestPredictionFeaturesCorrelationsRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.data_quality_tests.TestPredictionFeaturesCorrelationsRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestTargetFeaturesCorrelations)
 
@@ -2195,7 +2195,7 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [ColumnValueListMetric](api-reference/evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_value_list_metric.ColumnValueListMetric_ )
+#### metric(_: [ColumnValueListMetric](./evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_value_list_metric.ColumnValueListMetric_ )
 
 #### name(_: st_ _ = 'Share of Out-of-List Values_ )
 
@@ -2203,11 +2203,11 @@ Define it in a child class
 
 #### values(_: Optional[list_ )
 
-### _class_ evidently.tests.data_quality_tests.TestShareOfOutListValuesRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.data_quality_tests.TestShareOfOutListValuesRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestShareOfOutListValues)
 
@@ -2238,7 +2238,7 @@ Define it in a child class
 
 #### left(_: Optional[float_ )
 
-#### metric(_: [ColumnValueRangeMetric](api-reference/evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_value_range_metric.ColumnValueRangeMetric_ )
+#### metric(_: [ColumnValueRangeMetric](./evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_value_range_metric.ColumnValueRangeMetric_ )
 
 #### name(_: st_ _ = 'Share of Out-of-Range Values_ )
 
@@ -2246,11 +2246,11 @@ Define it in a child class
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.data_quality_tests.TestShareOfOutRangeValuesRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.data_quality_tests.TestShareOfOutRangeValuesRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestShareOfOutRangeValues)
 
@@ -2279,17 +2279,17 @@ Define it in a child class
 
 #### method(_: st_ )
 
-#### metric(_: [DatasetCorrelationsMetric](api-reference/evidently.metrics.data_quality.md#evidently.metrics.data_quality.dataset_correlations_metric.DatasetCorrelationsMetric_ )
+#### metric(_: [DatasetCorrelationsMetric](./evidently.metrics.data_quality.md#evidently.metrics.data_quality.dataset_correlations_metric.DatasetCorrelationsMetric_ )
 
 #### name(_: st_ _ = 'Correlation between Target and Features_ )
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.data_quality_tests.TestTargetFeaturesCorrelationsRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.data_quality_tests.TestTargetFeaturesCorrelationsRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestTargetFeaturesCorrelations)
 
@@ -2318,7 +2318,7 @@ Define it in a child class
 
 #### method(_: st_ )
 
-#### metric(_: [DatasetCorrelationsMetric](api-reference/evidently.metrics.data_quality.md#evidently.metrics.data_quality.dataset_correlations_metric.DatasetCorrelationsMetric_ )
+#### metric(_: [DatasetCorrelationsMetric](./evidently.metrics.data_quality.md#evidently.metrics.data_quality.dataset_correlations_metric.DatasetCorrelationsMetric_ )
 
 #### name(_: st_ _ = 'Correlation between Target and Prediction_ )
 
@@ -2347,17 +2347,17 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [ColumnSummaryMetric](api-reference/evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric_ )
+#### metric(_: [ColumnSummaryMetric](./evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.ColumnSummaryMetric_ )
 
 #### name(_: st_ _ = 'Share of Unique Values_ )
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.data_quality_tests.TestUniqueValuesShareRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.data_quality_tests.TestUniqueValuesShareRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestUniqueValuesShare)
 
@@ -2371,17 +2371,17 @@ Bases: `Test`
 
 #### group(_: st_ _ = 'data_quality_ )
 
-#### metric(_: [ColumnValueListMetric](api-reference/evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_value_list_metric.ColumnValueListMetric_ )
+#### metric(_: [ColumnValueListMetric](./evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_value_list_metric.ColumnValueListMetric_ )
 
 #### name(_: st_ _ = 'Out-of-List Values_ )
 
 #### values(_: Optional[list_ )
 
-### _class_ evidently.tests.data_quality_tests.TestValueListRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.data_quality_tests.TestValueListRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestValueList)
 
@@ -2412,17 +2412,17 @@ Define it in a child class
 
 #### groups()
 
-#### metric(_: [ColumnQuantileMetric](api-reference/evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_quantile_metric.ColumnQuantileMetric_ )
+#### metric(_: [ColumnQuantileMetric](./evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_quantile_metric.ColumnQuantileMetric_ )
 
 #### name(_: st_ _ = 'Quantile Value_ )
 
 #### quantile(_: floa_ )
 
-### _class_ evidently.tests.data_quality_tests.TestValueQuantileRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.data_quality_tests.TestValueQuantileRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestValueQuantile)
 
@@ -2438,17 +2438,17 @@ Bases: `Test`
 
 #### left(_: Optional[float_ )
 
-#### metric(_: [ColumnValueRangeMetric](api-reference/evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_value_range_metric.ColumnValueRangeMetric_ )
+#### metric(_: [ColumnValueRangeMetric](./evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_value_range_metric.ColumnValueRangeMetric_ )
 
 #### name(_: st_ _ = 'Value Range_ )
 
 #### right(_: Optional[float_ )
 
-### _class_ evidently.tests.data_quality_tests.TestValueRangeRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.data_quality_tests.TestValueRangeRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestValueRange)
 ## evidently.tests.regression_performance_tests module
@@ -2460,7 +2460,7 @@ Bases: `BaseCheckValueTest`, `ABC`
 
 #### group(_: st_ _ = 'regression_ )
 
-#### metric(_: [RegressionQualityMetric](api-reference/evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_quality.RegressionQualityMetric_ )
+#### metric(_: [RegressionQualityMetric](./evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_quality.RegressionQualityMetric_ )
 
 ### _class_ evidently.tests.regression_performance_tests.TestValueAbsMaxError(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseRegressionPerformanceMetricsTest`
@@ -2483,17 +2483,17 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [RegressionQualityMetric](api-reference/evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_quality.RegressionQualityMetric_ )
+#### metric(_: [RegressionQualityMetric](./evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_quality.RegressionQualityMetric_ )
 
 #### name(_: st_ _ = 'Max Absolute Error_ )
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.regression_performance_tests.TestValueAbsMaxErrorRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.regression_performance_tests.TestValueAbsMaxErrorRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestValueAbsMaxError)
 
@@ -2520,17 +2520,17 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [RegressionQualityMetric](api-reference/evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_quality.RegressionQualityMetric_ )
+#### metric(_: [RegressionQualityMetric](./evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_quality.RegressionQualityMetric_ )
 
 #### name(_: st_ _ = 'Mean Absolute Error (MAE)_ )
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.regression_performance_tests.TestValueMAERenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.regression_performance_tests.TestValueMAERenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestValueMAE)
 
@@ -2557,17 +2557,17 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [RegressionQualityMetric](api-reference/evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_quality.RegressionQualityMetric_ )
+#### metric(_: [RegressionQualityMetric](./evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_quality.RegressionQualityMetric_ )
 
 #### name(_: st_ _ = 'Mean Absolute Percentage Error (MAPE)_ )
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.regression_performance_tests.TestValueMAPERenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.regression_performance_tests.TestValueMAPERenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestValueMAPE)
 
@@ -2594,17 +2594,17 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [RegressionQualityMetric](api-reference/evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_quality.RegressionQualityMetric_ )
+#### metric(_: [RegressionQualityMetric](./evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_quality.RegressionQualityMetric_ )
 
 #### name(_: st_ _ = 'Mean Error (ME)_ )
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.regression_performance_tests.TestValueMeanErrorRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.regression_performance_tests.TestValueMeanErrorRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestValueMeanError)
 
@@ -2631,17 +2631,17 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [RegressionQualityMetric](api-reference/evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_quality.RegressionQualityMetric_ )
+#### metric(_: [RegressionQualityMetric](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_quality.RegressionQualityMetric_ )
 
 #### name(_: st_ _ = 'R2 Score_ )
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.regression_performance_tests.TestValueR2ScoreRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.regression_performance_tests.TestValueR2ScoreRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestValueR2Score)
 
@@ -2668,17 +2668,17 @@ The description can use the checked value.
 Define it in a child class
 
 
-#### metric(_: [RegressionQualityMetric](api-reference/evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_quality.RegressionQualityMetric_ )
+#### metric(_: [RegressionQualityMetric](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_quality.RegressionQualityMetric_ )
 
 #### name(_: st_ _ = 'Root Mean Square Error (RMSE)_ )
 
 #### value(_: Union[float, int_ )
 
-### _class_ evidently.tests.regression_performance_tests.TestValueRMSERenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+### _class_ evidently.tests.regression_performance_tests.TestValueRMSERenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: TestValueRMSE)
 
@@ -2692,9 +2692,9 @@ Get approximate value for checking a value is equal to other within some toleran
 
 ### evidently.tests.utils.dataframes_to_table(current: DataFrame, reference: Optional[DataFrame], columns: List[str], table_id: str, sort_by: str = 'curr', na_position: str = 'first', asc: bool = False)
 
-### evidently.tests.utils.plot_boxes(\*, curr_for_plots: dict, ref_for_plots: Optional[dict], color_options: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions))
+### evidently.tests.utils.plot_boxes(\*, curr_for_plots: dict, ref_for_plots: Optional[dict], color_options: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions))
 
-### evidently.tests.utils.plot_check(fig, condition, color_options: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions))
+### evidently.tests.utils.plot_check(fig, condition, color_options: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions))
 
 ### evidently.tests.utils.plot_conf_mtrx(curr_mtrx, ref_mtrx)
 
@@ -2704,13 +2704,13 @@ Get approximate value for checking a value is equal to other within some toleran
 
 ### evidently.tests.utils.plot_metric_value(fig, metric_val: float, metric_name: str)
 
-### evidently.tests.utils.plot_rates(\*, curr_rate_plots_data: dict, ref_rate_plots_data: Optional[dict] = None, color_options: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions))
+### evidently.tests.utils.plot_rates(\*, curr_rate_plots_data: dict, ref_rate_plots_data: Optional[dict] = None, color_options: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions))
 
-### evidently.tests.utils.plot_roc_auc(\*, curr_roc_curve: dict, ref_roc_curve: Optional[dict], color_options: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions))
+### evidently.tests.utils.plot_roc_auc(\*, curr_roc_curve: dict, ref_roc_curve: Optional[dict], color_options: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions))
 
 ### evidently.tests.utils.plot_value_counts_tables(feature_name, values, curr_df, ref_df, id_prfx)
 
 ### evidently.tests.utils.plot_value_counts_tables_ref_curr(feature_name, curr_df, ref_df, id_prfx)
 
-### evidently.tests.utils.regression_perf_plot(\*, val_for_plot: Dict[str, Series], hist_for_plot: Dict[str, Series], name: str, curr_metric: float, ref_metric: Optional[float] = None, is_ref_data: bool = False, color_options: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions))
+### evidently.tests.utils.regression_perf_plot(\*, val_for_plot: Dict[str, Series], hist_for_plot: Dict[str, Series], name: str, curr_metric: float, ref_metric: Optional[float] = None, is_ref_data: bool = False, color_options: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions))
 ## Module contents

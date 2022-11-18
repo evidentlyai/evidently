@@ -63,7 +63,7 @@ Bases: `object`
 
 #### target(_: Optional[str_ )
 
-### evidently.utils.data_operations.process_columns(dataset: DataFrame, column_mapping: [ColumnMapping](api-reference/evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping))
+### evidently.utils.data_operations.process_columns(dataset: DataFrame, column_mapping: [ColumnMapping](./evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping))
 
 ### evidently.utils.data_operations.recognize_column_type(dataset: DataFrame, column_name: str, columns: DatasetColumns)
 Try to get the column type.
@@ -206,44 +206,44 @@ Bases: `object`
 
 ### evidently.utils.visualizations.make_hist_for_num_plot(curr: Series, ref: Optional[Series] = None)
 
-### evidently.utils.visualizations.plot_boxes(curr_for_plots: dict, ref_for_plots: Optional[dict], yaxis_title: str, xaxis_title: str, color_options: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions))
+### evidently.utils.visualizations.plot_boxes(curr_for_plots: dict, ref_for_plots: Optional[dict], yaxis_title: str, xaxis_title: str, color_options: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions))
 Accepts current and reference data as dicts with box parameters (“mins”, “lowers”, “uppers”, “means”, “maxs”)
 and name of boxes parameter - “values”
 
 
-### evidently.utils.visualizations.plot_cat_cat_rel(curr: DataFrame, ref: DataFrame, target_name: str, feature_name: str, color_options: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions))
+### evidently.utils.visualizations.plot_cat_cat_rel(curr: DataFrame, ref: DataFrame, target_name: str, feature_name: str, color_options: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions))
 Accepts current and reference data as pandas dataframes with two columns: feature_name and “count_objects”.
 
 
-### evidently.utils.visualizations.plot_cat_feature_in_time(curr_data: DataFrame, ref_data: Optional[DataFrame], feature_name: str, datetime_name: str, freq: str, color_options: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions))
+### evidently.utils.visualizations.plot_cat_feature_in_time(curr_data: DataFrame, ref_data: Optional[DataFrame], feature_name: str, datetime_name: str, freq: str, color_options: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions))
 Accepts current and reference data as pandas dataframes with two columns: datetime_name and feature_name.
 
 
 ### evidently.utils.visualizations.plot_conf_mtrx(curr_mtrx, ref_mtrx)
 
-### evidently.utils.visualizations.plot_distr(\*, hist_curr, hist_ref=None, orientation='v', color_options: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions))
+### evidently.utils.visualizations.plot_distr(\*, hist_curr, hist_ref=None, orientation='v', color_options: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions))
 
-### evidently.utils.visualizations.plot_distr_subplots(\*, hist_curr, hist_ref=None, xaxis_name: str = '', yaxis_name: str = '', same_color: bool = False, color_options: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions))
+### evidently.utils.visualizations.plot_distr_subplots(\*, hist_curr, hist_ref=None, xaxis_name: str = '', yaxis_name: str = '', same_color: bool = False, color_options: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions))
 
-### evidently.utils.visualizations.plot_distr_with_log_button(curr_data: DataFrame, curr_data_log: DataFrame, ref_data: Optional[DataFrame], ref_data_log: Optional[DataFrame], color_options: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions))
+### evidently.utils.visualizations.plot_distr_with_log_button(curr_data: DataFrame, curr_data_log: DataFrame, ref_data: Optional[DataFrame], ref_data_log: Optional[DataFrame], color_options: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions))
 
-### evidently.utils.visualizations.plot_error_bias_colored_scatter(curr_scatter_data: Dict[str, Dict[str, Series]], ref_scatter_data: Optional[Dict[str, Dict[str, Series]]], color_options: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions))
+### evidently.utils.visualizations.plot_error_bias_colored_scatter(curr_scatter_data: Dict[str, Dict[str, Series]], ref_scatter_data: Optional[Dict[str, Dict[str, Series]]], color_options: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions))
 
-### evidently.utils.visualizations.plot_line_in_time(\*, curr: Dict[str, Series], ref: Optional[Dict[str, Series]], x_name: str, y_name: str, xaxis_name: str = '', yaxis_name: str = '', color_options: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions))
+### evidently.utils.visualizations.plot_line_in_time(\*, curr: Dict[str, Series], ref: Optional[Dict[str, Series]], x_name: str, y_name: str, xaxis_name: str = '', yaxis_name: str = '', color_options: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions))
 
-### evidently.utils.visualizations.plot_num_feature_in_time(curr_data: DataFrame, ref_data: Optional[DataFrame], feature_name: str, datetime_name: str, freq: str, color_options: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions))
+### evidently.utils.visualizations.plot_num_feature_in_time(curr_data: DataFrame, ref_data: Optional[DataFrame], feature_name: str, datetime_name: str, freq: str, color_options: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions))
 Accepts current and reference data as pandas dataframes with two columns: datetime_name and feature_name.
 
 
-### evidently.utils.visualizations.plot_num_num_rel(curr: Dict[str, list], ref: Optional[Dict[str, list]], target_name: str, column_name: str, color_options: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions))
+### evidently.utils.visualizations.plot_num_num_rel(curr: Dict[str, list], ref: Optional[Dict[str, list]], target_name: str, column_name: str, color_options: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions))
 
-### evidently.utils.visualizations.plot_pred_actual_time(\*, curr: Dict[str, Series], ref: Optional[Dict[str, Series]], x_name: str = 'x', xaxis_name: str = '', yaxis_name: str = '', color_options: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions))
+### evidently.utils.visualizations.plot_pred_actual_time(\*, curr: Dict[str, Series], ref: Optional[Dict[str, Series]], x_name: str = 'x', xaxis_name: str = '', yaxis_name: str = '', color_options: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions))
 
-### evidently.utils.visualizations.plot_scatter(\*, curr: Dict[str, Union[list, Series]], ref: Optional[Dict[str, list]], x: str, y: str, xaxis_name: Optional[str] = None, yaxis_name: Optional[str] = None, color_options: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions))
+### evidently.utils.visualizations.plot_scatter(\*, curr: Dict[str, Union[list, Series]], ref: Optional[Dict[str, list]], x: str, y: str, xaxis_name: Optional[str] = None, yaxis_name: Optional[str] = None, color_options: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions))
 
-### evidently.utils.visualizations.plot_scatter_for_data_drift(curr_y: list, curr_x: list, y0: float, y1: float, y_name: str, x_name: str, color_options: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions))
+### evidently.utils.visualizations.plot_scatter_for_data_drift(curr_y: list, curr_x: list, y0: float, y1: float, y_name: str, x_name: str, color_options: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions))
 
-### evidently.utils.visualizations.plot_time_feature_distr(curr_data: DataFrame, ref_data: Optional[DataFrame], feature_name: str, color_options: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions))
+### evidently.utils.visualizations.plot_time_feature_distr(curr_data: DataFrame, ref_data: Optional[DataFrame], feature_name: str, color_options: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions))
 Accepts current and reference data as pandas dataframes with two columns: feature_name, “number_of_items”
 
 ## Module contents

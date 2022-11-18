@@ -47,6 +47,7 @@
 * [All metrics](reference/all-metrics.md)
 * [Data drift algorithm](reference/data-drift-algorithm.md)
 * [Api Reference](api-reference/modules.md)
+  * [evidently package](api-reference/evidently.md)
   
 ## SUPPORT
 

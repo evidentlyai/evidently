@@ -6,16 +6,16 @@
 
 
 ### _class_ evidently.metrics.regression_performance.abs_perc_error_in_time.RegressionAbsPercentageErrorPlot()
-Bases: [`Metric`](api-reference/evidently.metrics.md#evidently.metrics.base_metric.Metric)[`RegressionAbsPercentageErrorPlotResults`]
+Bases: [`Metric`](./evidently.metrics.md#evidently.metrics.base_metric.Metric)[`RegressionAbsPercentageErrorPlotResults`]
 
 
-#### calculate(data: [InputData](api-reference/evidently.metrics.md#evidently.metrics.base_metric.InputData))
+#### calculate(data: [InputData](./evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
-### _class_ evidently.metrics.regression_performance.abs_perc_error_in_time.RegressionAbsPercentageErrorPlotRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`MetricRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
+### _class_ evidently.metrics.regression_performance.abs_perc_error_in_time.RegressionAbsPercentageErrorPlotRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`MetricRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: RegressionAbsPercentageErrorPlot)
 
@@ -34,7 +34,7 @@ Bases: `object`
 
 
 ### _class_ evidently.metrics.regression_performance.error_bias_table.RegressionErrorBiasTable(columns: Optional[List[str]] = None, top_error: Optional[float] = None)
-Bases: [`Metric`](api-reference/evidently.metrics.md#evidently.metrics.base_metric.Metric)[`RegressionErrorBiasTableResults`]
+Bases: [`Metric`](./evidently.metrics.md#evidently.metrics.base_metric.Metric)[`RegressionErrorBiasTableResults`]
 
 
 #### TOP_ERROR_DEFAULT(_ = 0.0_ )
@@ -43,17 +43,17 @@ Bases: [`Metric`](api-reference/evidently.metrics.md#evidently.metrics.base_metr
 
 #### TOP_ERROR_MIN(_ = _ )
 
-#### calculate(data: [InputData](api-reference/evidently.metrics.md#evidently.metrics.base_metric.InputData))
+#### calculate(data: [InputData](./evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
 #### columns(_: Optional[List[str]_ )
 
 #### top_error(_: floa_ )
 
-### _class_ evidently.metrics.regression_performance.error_bias_table.RegressionErrorBiasTableRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`MetricRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
+### _class_ evidently.metrics.regression_performance.error_bias_table.RegressionErrorBiasTableRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`MetricRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: RegressionErrorBiasTable)
 
@@ -84,16 +84,16 @@ Bases: `object`
 
 
 ### _class_ evidently.metrics.regression_performance.error_distribution.RegressionErrorDistribution()
-Bases: [`Metric`](api-reference/evidently.metrics.md#evidently.metrics.base_metric.Metric)[`RegressionErrorDistributionResults`]
+Bases: [`Metric`](./evidently.metrics.md#evidently.metrics.base_metric.Metric)[`RegressionErrorDistributionResults`]
 
 
-#### calculate(data: [InputData](api-reference/evidently.metrics.md#evidently.metrics.base_metric.InputData))
+#### calculate(data: [InputData](./evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
-### _class_ evidently.metrics.regression_performance.error_distribution.RegressionErrorDistributionRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`MetricRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
+### _class_ evidently.metrics.regression_performance.error_distribution.RegressionErrorDistributionRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`MetricRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: RegressionErrorDistribution)
 
@@ -110,16 +110,16 @@ Bases: `object`
 
 
 ### _class_ evidently.metrics.regression_performance.error_in_time.RegressionErrorPlot()
-Bases: [`Metric`](api-reference/evidently.metrics.md#evidently.metrics.base_metric.Metric)[`RegressionErrorPlotResults`]
+Bases: [`Metric`](./evidently.metrics.md#evidently.metrics.base_metric.Metric)[`RegressionErrorPlotResults`]
 
 
-#### calculate(data: [InputData](api-reference/evidently.metrics.md#evidently.metrics.base_metric.InputData))
+#### calculate(data: [InputData](./evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
-### _class_ evidently.metrics.regression_performance.error_in_time.RegressionErrorPlotRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`MetricRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
+### _class_ evidently.metrics.regression_performance.error_in_time.RegressionErrorPlotRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`MetricRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: RegressionErrorPlot)
 
@@ -138,16 +138,16 @@ Bases: `object`
 
 
 ### _class_ evidently.metrics.regression_performance.error_normality.RegressionErrorNormality()
-Bases: [`Metric`](api-reference/evidently.metrics.md#evidently.metrics.base_metric.Metric)[`RegressionErrorNormalityResults`]
+Bases: [`Metric`](./evidently.metrics.md#evidently.metrics.base_metric.Metric)[`RegressionErrorNormalityResults`]
 
 
-#### calculate(data: [InputData](api-reference/evidently.metrics.md#evidently.metrics.base_metric.InputData))
+#### calculate(data: [InputData](./evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
-### _class_ evidently.metrics.regression_performance.error_normality.RegressionErrorNormalityRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`MetricRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
+### _class_ evidently.metrics.regression_performance.error_normality.RegressionErrorNormalityRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`MetricRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: RegressionErrorNormality)
 
@@ -164,16 +164,16 @@ Bases: `object`
 
 
 ### _class_ evidently.metrics.regression_performance.predicted_and_actual_in_time.RegressionPredictedVsActualPlot()
-Bases: [`Metric`](api-reference/evidently.metrics.md#evidently.metrics.base_metric.Metric)[`RegressionPredictedVsActualPlotResults`]
+Bases: [`Metric`](./evidently.metrics.md#evidently.metrics.base_metric.Metric)[`RegressionPredictedVsActualPlotResults`]
 
 
-#### calculate(data: [InputData](api-reference/evidently.metrics.md#evidently.metrics.base_metric.InputData))
+#### calculate(data: [InputData](./evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
-### _class_ evidently.metrics.regression_performance.predicted_and_actual_in_time.RegressionPredictedVsActualPlotRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`MetricRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
+### _class_ evidently.metrics.regression_performance.predicted_and_actual_in_time.RegressionPredictedVsActualPlotRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`MetricRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: RegressionPredictedVsActualPlot)
 
@@ -192,16 +192,16 @@ Bases: `object`
 
 
 ### _class_ evidently.metrics.regression_performance.predicted_vs_actual.RegressionPredictedVsActualScatter()
-Bases: [`Metric`](api-reference/evidently.metrics.md#evidently.metrics.base_metric.Metric)[`RegressionPredictedVsActualScatterResults`]
+Bases: [`Metric`](./evidently.metrics.md#evidently.metrics.base_metric.Metric)[`RegressionPredictedVsActualScatterResults`]
 
 
-#### calculate(data: [InputData](api-reference/evidently.metrics.md#evidently.metrics.base_metric.InputData))
+#### calculate(data: [InputData](./evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
-### _class_ evidently.metrics.regression_performance.predicted_vs_actual.RegressionPredictedVsActualScatterRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`MetricRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
+### _class_ evidently.metrics.regression_performance.predicted_vs_actual.RegressionPredictedVsActualScatterRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`MetricRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: RegressionPredictedVsActualScatter)
 
@@ -218,24 +218,24 @@ Bases: `object`
 
 
 ### _class_ evidently.metrics.regression_performance.regression_performance_metrics.RegressionPerformanceMetrics()
-Bases: [`Metric`](api-reference/evidently.metrics.md#evidently.metrics.base_metric.Metric)[`RegressionPerformanceMetricsResults`]
+Bases: [`Metric`](./evidently.metrics.md#evidently.metrics.base_metric.Metric)[`RegressionPerformanceMetricsResults`]
 
 
-#### calculate(data: [InputData](api-reference/evidently.metrics.md#evidently.metrics.base_metric.InputData))
+#### calculate(data: [InputData](./evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
 #### get_parameters()
 
-### _class_ evidently.metrics.regression_performance.regression_performance_metrics.RegressionPerformanceMetricsRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`MetricRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
+### _class_ evidently.metrics.regression_performance.regression_performance_metrics.RegressionPerformanceMetricsRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`MetricRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: RegressionPerformanceMetrics)
 
 #### render_json(obj: RegressionPerformanceMetrics)
 
-### _class_ evidently.metrics.regression_performance.regression_performance_metrics.RegressionPerformanceMetricsResults(columns: [evidently.utils.data_operations.DatasetColumns](api-reference/evidently.utils.md#evidently.utils.data_operations.DatasetColumns), r2_score: float, rmse: float, rmse_default: float, mean_error: float, me_default_sigma: float, me_hist_for_plot: Dict[str, Union[pandas.core.series.Series, pandas.core.frame.DataFrame]], mean_abs_error: float, mean_abs_error_default: float, mean_abs_perc_error: float, mean_abs_perc_error_default: float, abs_error_max: float, abs_error_max_default: float, error_std: float, abs_error_std: float, abs_perc_error_std: float, error_normality: dict, underperformance: dict, hist_for_plot: Dict[str, pandas.core.series.Series], vals_for_plots: Dict[str, Dict[str, pandas.core.series.Series]], error_bias: Optional[dict] = None, mean_error_ref: Optional[float] = None, mean_abs_error_ref: Optional[float] = None, mean_abs_perc_error_ref: Optional[float] = None, rmse_ref: Optional[float] = None, r2_score_ref: Optional[float] = None, abs_error_max_ref: Optional[float] = None, underperformance_ref: Optional[dict] = None)
+### _class_ evidently.metrics.regression_performance.regression_performance_metrics.RegressionPerformanceMetricsResults(columns: [evidently.utils.data_operations.DatasetColumns](./evidently.utils.md#evidently.utils.data_operations.DatasetColumns), r2_score: float, rmse: float, rmse_default: float, mean_error: float, me_default_sigma: float, me_hist_for_plot: Dict[str, Union[pandas.core.series.Series, pandas.core.frame.DataFrame]], mean_abs_error: float, mean_abs_error_default: float, mean_abs_perc_error: float, mean_abs_perc_error_default: float, abs_error_max: float, abs_error_max_default: float, error_std: float, abs_error_std: float, abs_perc_error_std: float, error_normality: dict, underperformance: dict, hist_for_plot: Dict[str, pandas.core.series.Series], vals_for_plots: Dict[str, Dict[str, pandas.core.series.Series]], error_bias: Optional[dict] = None, mean_error_ref: Optional[float] = None, mean_abs_error_ref: Optional[float] = None, mean_abs_perc_error_ref: Optional[float] = None, rmse_ref: Optional[float] = None, r2_score_ref: Optional[float] = None, abs_error_max_ref: Optional[float] = None, underperformance_ref: Optional[dict] = None)
 Bases: `object`
 
 
@@ -249,7 +249,7 @@ Bases: `object`
 
 #### abs_perc_error_std(_: floa_ )
 
-#### columns(_: [DatasetColumns](api-reference/evidently.utils.md#evidently.utils.data_operations.DatasetColumns_ )
+#### columns(_: [DatasetColumns](./evidently.utils.md#evidently.utils.data_operations.DatasetColumns_ )
 
 #### error_bias(_: Optional[dict_ _ = Non_ )
 
@@ -298,22 +298,22 @@ Bases: `object`
 
 
 ### _class_ evidently.metrics.regression_performance.regression_quality.RegressionQualityMetric()
-Bases: [`Metric`](api-reference/evidently.metrics.md#evidently.metrics.base_metric.Metric)[`RegressionQualityMetricResults`]
+Bases: [`Metric`](./evidently.metrics.md#evidently.metrics.base_metric.Metric)[`RegressionQualityMetricResults`]
 
 
-#### calculate(data: [InputData](api-reference/evidently.metrics.md#evidently.metrics.base_metric.InputData))
+#### calculate(data: [InputData](./evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
-### _class_ evidently.metrics.regression_performance.regression_quality.RegressionQualityMetricRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`MetricRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
+### _class_ evidently.metrics.regression_performance.regression_quality.RegressionQualityMetricRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`MetricRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: RegressionQualityMetric)
 
 #### render_json(obj: RegressionQualityMetric)
 
-### _class_ evidently.metrics.regression_performance.regression_quality.RegressionQualityMetricResults(columns: [evidently.utils.data_operations.DatasetColumns](api-reference/evidently.utils.md#evidently.utils.data_operations.DatasetColumns), r2_score: float, rmse: float, rmse_default: float, mean_error: float, me_default_sigma: float, me_hist_for_plot: Dict[str, pandas.core.series.Series], mean_abs_error: float, mean_abs_error_default: float, mean_abs_perc_error: float, mean_abs_perc_error_default: float, abs_error_max: float, abs_error_max_default: float, error_std: float, abs_error_std: float, abs_perc_error_std: float, error_normality: dict, underperformance: dict, hist_for_plot: Dict[str, pandas.core.series.Series], vals_for_plots: Dict[str, Dict[str, pandas.core.series.Series]], error_bias: Optional[dict] = None, mean_error_ref: Optional[float] = None, mean_abs_error_ref: Optional[float] = None, mean_abs_perc_error_ref: Optional[float] = None, rmse_ref: Optional[float] = None, r2_score_ref: Optional[float] = None, abs_error_max_ref: Optional[float] = None, underperformance_ref: Optional[dict] = None, error_std_ref: Optional[float] = None, abs_error_std_ref: Optional[float] = None, abs_perc_error_std_ref: Optional[float] = None)
+### _class_ evidently.metrics.regression_performance.regression_quality.RegressionQualityMetricResults(columns: [evidently.utils.data_operations.DatasetColumns](./evidently.utils.md#evidently.utils.data_operations.DatasetColumns), r2_score: float, rmse: float, rmse_default: float, mean_error: float, me_default_sigma: float, me_hist_for_plot: Dict[str, pandas.core.series.Series], mean_abs_error: float, mean_abs_error_default: float, mean_abs_perc_error: float, mean_abs_perc_error_default: float, abs_error_max: float, abs_error_max_default: float, error_std: float, abs_error_std: float, abs_perc_error_std: float, error_normality: dict, underperformance: dict, hist_for_plot: Dict[str, pandas.core.series.Series], vals_for_plots: Dict[str, Dict[str, pandas.core.series.Series]], error_bias: Optional[dict] = None, mean_error_ref: Optional[float] = None, mean_abs_error_ref: Optional[float] = None, mean_abs_perc_error_ref: Optional[float] = None, rmse_ref: Optional[float] = None, r2_score_ref: Optional[float] = None, abs_error_max_ref: Optional[float] = None, underperformance_ref: Optional[dict] = None, error_std_ref: Optional[float] = None, abs_error_std_ref: Optional[float] = None, abs_perc_error_std_ref: Optional[float] = None)
 Bases: `object`
 
 
@@ -331,7 +331,7 @@ Bases: `object`
 
 #### abs_perc_error_std_ref(_: Optional[float_ _ = Non_ )
 
-#### columns(_: [DatasetColumns](api-reference/evidently.utils.md#evidently.utils.data_operations.DatasetColumns_ )
+#### columns(_: [DatasetColumns](./evidently.utils.md#evidently.utils.data_operations.DatasetColumns_ )
 
 #### error_bias(_: Optional[dict_ _ = Non_ )
 
@@ -382,16 +382,16 @@ Bases: `object`
 
 
 ### _class_ evidently.metrics.regression_performance.top_error.RegressionTopErrorMetric()
-Bases: [`Metric`](api-reference/evidently.metrics.md#evidently.metrics.base_metric.Metric)[`RegressionTopErrorMetricResults`]
+Bases: [`Metric`](./evidently.metrics.md#evidently.metrics.base_metric.Metric)[`RegressionTopErrorMetricResults`]
 
 
-#### calculate(data: [InputData](api-reference/evidently.metrics.md#evidently.metrics.base_metric.InputData))
+#### calculate(data: [InputData](./evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
-### _class_ evidently.metrics.regression_performance.top_error.RegressionTopErrorMetricRenderer(color_options: Optional[[ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`MetricRenderer`](api-reference/evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
+### _class_ evidently.metrics.regression_performance.top_error.RegressionTopErrorMetricRenderer(color_options: Optional[[ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`MetricRenderer`](./evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
 
 
-#### color_options(_: [ColorOptions](api-reference/evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
+#### color_options(_: [ColorOptions](./evidently.options.md#evidently.options.color_scheme.ColorOptions_ )
 
 #### render_html(obj: RegressionTopErrorMetric)
 

@@ -4,91 +4,91 @@
 
 - [evidently.calculations.stattests package](evidently.calculations.stattests.md)
 
-    - [Submodules](api-reference/evidently.calculations.stattests.md#submodules)
+    - [Submodules](./evidently.calculations.stattests.md#submodules)
 
-    - [evidently.calculations.stattests.anderson_darling_stattest module](api-reference/evidently.calculations.stattests.md#module-evidently.calculations.stattests.anderson_darling_stattest)
+    - [evidently.calculations.stattests.anderson_darling_stattest module](./evidently.calculations.stattests.md#module-evidently.calculations.stattests.anderson_darling_stattest)
 
-    - [evidently.calculations.stattests.chisquare_stattest module](api-reference/evidently.calculations.stattests.md#module-evidently.calculations.stattests.chisquare_stattest)
+    - [evidently.calculations.stattests.chisquare_stattest module](./evidently.calculations.stattests.md#module-evidently.calculations.stattests.chisquare_stattest)
 
-    - [evidently.calculations.stattests.cramer_von_mises_stattest module](api-reference/evidently.calculations.stattests.md#module-evidently.calculations.stattests.cramer_von_mises_stattest)
+    - [evidently.calculations.stattests.cramer_von_mises_stattest module](./evidently.calculations.stattests.md#module-evidently.calculations.stattests.cramer_von_mises_stattest)
 
-        - [`CVM_2samp()`](api-reference/evidently.calculations.stattests.md#evidently.calculations.stattests.cramer_von_mises_stattest.CVM_2samp)
+        - [`CVM_2samp()`](./evidently.calculations.stattests.md#evidently.calculations.stattests.cramer_von_mises_stattest.CVM_2samp)
 
-        - [`CramerVonMisesResult`](api-reference/evidently.calculations.stattests.md#evidently.calculations.stattests.cramer_von_mises_stattest.CramerVonMisesResult)
+        - [`CramerVonMisesResult`](./evidently.calculations.stattests.md#evidently.calculations.stattests.cramer_von_mises_stattest.CramerVonMisesResult)
 
-    - [evidently.calculations.stattests.energy_distance module](api-reference/evidently.calculations.stattests.md#module-evidently.calculations.stattests.energy_distance)
+    - [evidently.calculations.stattests.energy_distance module](./evidently.calculations.stattests.md#module-evidently.calculations.stattests.energy_distance)
 
-    - [evidently.calculations.stattests.epps_singleton_stattest module](api-reference/evidently.calculations.stattests.md#module-evidently.calculations.stattests.epps_singleton_stattest)
+    - [evidently.calculations.stattests.epps_singleton_stattest module](./evidently.calculations.stattests.md#module-evidently.calculations.stattests.epps_singleton_stattest)
 
-    - [evidently.calculations.stattests.fisher_exact_stattest module](api-reference/evidently.calculations.stattests.md#module-evidently.calculations.stattests.fisher_exact_stattest)
+    - [evidently.calculations.stattests.fisher_exact_stattest module](./evidently.calculations.stattests.md#module-evidently.calculations.stattests.fisher_exact_stattest)
 
-    - [evidently.calculations.stattests.g_stattest module](api-reference/evidently.calculations.stattests.md#module-evidently.calculations.stattests.g_stattest)
+    - [evidently.calculations.stattests.g_stattest module](./evidently.calculations.stattests.md#module-evidently.calculations.stattests.g_stattest)
 
-    - [evidently.calculations.stattests.hellinger_distance module](api-reference/evidently.calculations.stattests.md#module-evidently.calculations.stattests.hellinger_distance)
+    - [evidently.calculations.stattests.hellinger_distance module](./evidently.calculations.stattests.md#module-evidently.calculations.stattests.hellinger_distance)
 
-    - [evidently.calculations.stattests.jensenshannon module](api-reference/evidently.calculations.stattests.md#module-evidently.calculations.stattests.jensenshannon)
+    - [evidently.calculations.stattests.jensenshannon module](./evidently.calculations.stattests.md#module-evidently.calculations.stattests.jensenshannon)
 
-    - [evidently.calculations.stattests.kl_div module](api-reference/evidently.calculations.stattests.md#module-evidently.calculations.stattests.kl_div)
+    - [evidently.calculations.stattests.kl_div module](./evidently.calculations.stattests.md#module-evidently.calculations.stattests.kl_div)
 
-    - [evidently.calculations.stattests.ks_stattest module](api-reference/evidently.calculations.stattests.md#module-evidently.calculations.stattests.ks_stattest)
+    - [evidently.calculations.stattests.ks_stattest module](./evidently.calculations.stattests.md#module-evidently.calculations.stattests.ks_stattest)
 
-    - [evidently.calculations.stattests.mann_whitney_urank_stattest module](api-reference/evidently.calculations.stattests.md#module-evidently.calculations.stattests.mann_whitney_urank_stattest)
+    - [evidently.calculations.stattests.mann_whitney_urank_stattest module](./evidently.calculations.stattests.md#module-evidently.calculations.stattests.mann_whitney_urank_stattest)
 
-    - [evidently.calculations.stattests.psi module](api-reference/evidently.calculations.stattests.md#module-evidently.calculations.stattests.psi)
+    - [evidently.calculations.stattests.psi module](./evidently.calculations.stattests.md#module-evidently.calculations.stattests.psi)
 
-    - [evidently.calculations.stattests.registry module](api-reference/evidently.calculations.stattests.md#module-evidently.calculations.stattests.registry)
+    - [evidently.calculations.stattests.registry module](./evidently.calculations.stattests.md#module-evidently.calculations.stattests.registry)
 
-        - [`StatTest`](api-reference/evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)
+        - [`StatTest`](./evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)
 
-            - [`StatTest.allowed_feature_types`](api-reference/evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest.allowed_feature_types)
+            - [`StatTest.allowed_feature_types`](./evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest.allowed_feature_types)
 
-            - [`StatTest.default_threshold`](api-reference/evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest.default_threshold)
+            - [`StatTest.default_threshold`](./evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest.default_threshold)
 
-            - [`StatTest.display_name`](api-reference/evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest.display_name)
+            - [`StatTest.display_name`](./evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest.display_name)
 
-            - [`StatTest.func`](api-reference/evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest.func)
+            - [`StatTest.func`](./evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest.func)
 
-            - [`StatTest.name`](api-reference/evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest.name)
+            - [`StatTest.name`](./evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest.name)
 
-        - [`StatTestInvalidFeatureTypeError`](api-reference/evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTestInvalidFeatureTypeError)
+        - [`StatTestInvalidFeatureTypeError`](./evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTestInvalidFeatureTypeError)
 
-        - [`StatTestNotFoundError`](api-reference/evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTestNotFoundError)
+        - [`StatTestNotFoundError`](./evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTestNotFoundError)
 
-        - [`StatTestResult`](api-reference/evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTestResult)
+        - [`StatTestResult`](./evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTestResult)
 
-            - [`StatTestResult.actual_threshold`](api-reference/evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTestResult.actual_threshold)
+            - [`StatTestResult.actual_threshold`](./evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTestResult.actual_threshold)
 
-            - [`StatTestResult.drift_score`](api-reference/evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTestResult.drift_score)
+            - [`StatTestResult.drift_score`](./evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTestResult.drift_score)
 
-            - [`StatTestResult.drifted`](api-reference/evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTestResult.drifted)
+            - [`StatTestResult.drifted`](./evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTestResult.drifted)
 
-        - [`get_stattest()`](api-reference/evidently.calculations.stattests.md#evidently.calculations.stattests.registry.get_stattest)
+        - [`get_stattest()`](./evidently.calculations.stattests.md#evidently.calculations.stattests.registry.get_stattest)
 
-        - [`register_stattest()`](api-reference/evidently.calculations.stattests.md#evidently.calculations.stattests.registry.register_stattest)
+        - [`register_stattest()`](./evidently.calculations.stattests.md#evidently.calculations.stattests.registry.register_stattest)
 
-    - [evidently.calculations.stattests.t_test module](api-reference/evidently.calculations.stattests.md#module-evidently.calculations.stattests.t_test)
+    - [evidently.calculations.stattests.t_test module](./evidently.calculations.stattests.md#module-evidently.calculations.stattests.t_test)
 
-    - [evidently.calculations.stattests.tvd_stattest module](api-reference/evidently.calculations.stattests.md#module-evidently.calculations.stattests.tvd_stattest)
+    - [evidently.calculations.stattests.tvd_stattest module](./evidently.calculations.stattests.md#module-evidently.calculations.stattests.tvd_stattest)
 
-    - [evidently.calculations.stattests.utils module](api-reference/evidently.calculations.stattests.md#module-evidently.calculations.stattests.utils)
+    - [evidently.calculations.stattests.utils module](./evidently.calculations.stattests.md#module-evidently.calculations.stattests.utils)
 
-        - [`generate_fisher2x2_contingency_table()`](api-reference/evidently.calculations.stattests.md#evidently.calculations.stattests.utils.generate_fisher2x2_contingency_table)
+        - [`generate_fisher2x2_contingency_table()`](./evidently.calculations.stattests.md#evidently.calculations.stattests.utils.generate_fisher2x2_contingency_table)
 
-        - [`get_binned_data()`](api-reference/evidently.calculations.stattests.md#evidently.calculations.stattests.utils.get_binned_data)
+        - [`get_binned_data()`](./evidently.calculations.stattests.md#evidently.calculations.stattests.utils.get_binned_data)
 
-        - [`get_unique_not_nan_values_list_from_series()`](api-reference/evidently.calculations.stattests.md#evidently.calculations.stattests.utils.get_unique_not_nan_values_list_from_series)
+        - [`get_unique_not_nan_values_list_from_series()`](./evidently.calculations.stattests.md#evidently.calculations.stattests.utils.get_unique_not_nan_values_list_from_series)
 
-        - [`permutation_test()`](api-reference/evidently.calculations.stattests.md#evidently.calculations.stattests.utils.permutation_test)
+        - [`permutation_test()`](./evidently.calculations.stattests.md#evidently.calculations.stattests.utils.permutation_test)
 
-    - [evidently.calculations.stattests.wasserstein_distance_norm module](api-reference/evidently.calculations.stattests.md#module-evidently.calculations.stattests.wasserstein_distance_norm)
+    - [evidently.calculations.stattests.wasserstein_distance_norm module](./evidently.calculations.stattests.md#module-evidently.calculations.stattests.wasserstein_distance_norm)
 
-    - [evidently.calculations.stattests.z_stattest module](api-reference/evidently.calculations.stattests.md#module-evidently.calculations.stattests.z_stattest)
+    - [evidently.calculations.stattests.z_stattest module](./evidently.calculations.stattests.md#module-evidently.calculations.stattests.z_stattest)
 
-        - [`proportions_diff_z_stat_ind()`](api-reference/evidently.calculations.stattests.md#evidently.calculations.stattests.z_stattest.proportions_diff_z_stat_ind)
+        - [`proportions_diff_z_stat_ind()`](./evidently.calculations.stattests.md#evidently.calculations.stattests.z_stattest.proportions_diff_z_stat_ind)
 
-        - [`proportions_diff_z_test()`](api-reference/evidently.calculations.stattests.md#evidently.calculations.stattests.z_stattest.proportions_diff_z_test)
+        - [`proportions_diff_z_test()`](./evidently.calculations.stattests.md#evidently.calculations.stattests.z_stattest.proportions_diff_z_test)
 
-    - [Module contents](api-reference/evidently.calculations.stattests.md#module-evidently.calculations.stattests)
+    - [Module contents](./evidently.calculations.stattests.md#module-evidently.calculations.stattests)
 
 
 ## Submodules
@@ -139,7 +139,7 @@ Returns a dict like:
 
 ### evidently.calculations.classification_performance.calculate_pr_table(binded)
 
-### evidently.calculations.classification_performance.get_prediction_data(data: DataFrame, data_columns: [DatasetColumns](api-reference/evidently.utils.md#evidently.utils.data_operations.DatasetColumns), pos_label: Optional[Union[str, int]], threshold: float = 0.5)
+### evidently.calculations.classification_performance.get_prediction_data(data: DataFrame, data_columns: [DatasetColumns](./evidently.utils.md#evidently.utils.data_operations.DatasetColumns), pos_label: Optional[Union[str, int]], threshold: float = 0.5)
 Get predicted values and optional prediction probabilities from source data.
 Also take into account a threshold value - if a probability is less than the value, do not take it into account.
 
@@ -156,7 +156,7 @@ Get prediction values by probabilities with the threshold apply
 Methods and types for data drift calculations
 
 
-### _class_ evidently.calculations.data_drift.ColumnDataDriftMetrics(column_name: str, column_type: str, stattest_name: str, drift_score: float, drift_detected: bool, threshold: float, current_distribution: [Distribution](api-reference/evidently.utils.md#evidently.utils.visualizations.Distribution), reference_distribution: [Distribution](api-reference/evidently.utils.md#evidently.utils.visualizations.Distribution), current_small_distribution: Optional[list] = None, reference_small_distribution: Optional[list] = None, current_scatter: Optional[Dict[str, list]] = None, x_name: Optional[str] = None, plot_shape: Optional[Dict[str, float]] = None, current_correlations: Optional[Dict[str, float]] = None, reference_correlations: Optional[Dict[str, float]] = None)
+### _class_ evidently.calculations.data_drift.ColumnDataDriftMetrics(column_name: str, column_type: str, stattest_name: str, drift_score: float, drift_detected: bool, threshold: float, current_distribution: [Distribution](./evidently.utils.md#evidently.utils.visualizations.Distribution), reference_distribution: [Distribution](./evidently.utils.md#evidently.utils.visualizations.Distribution), current_small_distribution: Optional[list] = None, reference_small_distribution: Optional[list] = None, current_scatter: Optional[Dict[str, list]] = None, x_name: Optional[str] = None, plot_shape: Optional[Dict[str, float]] = None, current_correlations: Optional[Dict[str, float]] = None, reference_correlations: Optional[Dict[str, float]] = None)
 Bases: `object`
 
 One column drift metrics
@@ -168,7 +168,7 @@ One column drift metrics
 
 #### current_correlations(_: Optional[Dict[str, float]_ _ = Non_ )
 
-#### current_distribution(_: [Distribution](api-reference/evidently.utils.md#evidently.utils.visualizations.Distribution_ )
+#### current_distribution(_: [Distribution](./evidently.utils.md#evidently.utils.visualizations.Distribution_ )
 
 #### current_scatter(_: Optional[Dict[str, list]_ _ = Non_ )
 
@@ -182,7 +182,7 @@ One column drift metrics
 
 #### reference_correlations(_: Optional[Dict[str, float]_ _ = Non_ )
 
-#### reference_distribution(_: [Distribution](api-reference/evidently.utils.md#evidently.utils.visualizations.Distribution_ )
+#### reference_distribution(_: [Distribution](./evidently.utils.md#evidently.utils.visualizations.Distribution_ )
 
 #### reference_small_distribution(_: Optional[list_ _ = Non_ )
 
@@ -204,11 +204,11 @@ Dataset drift calculation results
 
 #### number_of_drifted_columns(_: in_ )
 
-### _class_ evidently.calculations.data_drift.DatasetDriftMetrics(number_of_columns: int, number_of_drifted_columns: int, share_of_drifted_columns: float, dataset_drift: bool, drift_by_columns: Dict[str, evidently.calculations.data_drift.ColumnDataDriftMetrics], options: [evidently.options.data_drift.DataDriftOptions](api-reference/evidently.options.md#evidently.options.data_drift.DataDriftOptions), dataset_columns: [evidently.utils.data_operations.DatasetColumns](api-reference/evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
+### _class_ evidently.calculations.data_drift.DatasetDriftMetrics(number_of_columns: int, number_of_drifted_columns: int, share_of_drifted_columns: float, dataset_drift: bool, drift_by_columns: Dict[str, evidently.calculations.data_drift.ColumnDataDriftMetrics], options: [evidently.options.data_drift.DataDriftOptions](./evidently.options.md#evidently.options.data_drift.DataDriftOptions), dataset_columns: [evidently.utils.data_operations.DatasetColumns](./evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 Bases: `object`
 
 
-#### dataset_columns(_: [DatasetColumns](api-reference/evidently.utils.md#evidently.utils.data_operations.DatasetColumns_ )
+#### dataset_columns(_: [DatasetColumns](./evidently.utils.md#evidently.utils.data_operations.DatasetColumns_ )
 
 #### dataset_drift(_: boo_ )
 
@@ -218,7 +218,7 @@ Bases: `object`
 
 #### number_of_drifted_columns(_: in_ )
 
-#### options(_: [DataDriftOptions](api-reference/evidently.options.md#evidently.options.data_drift.DataDriftOptions_ )
+#### options(_: [DataDriftOptions](./evidently.options.md#evidently.options.data_drift.DataDriftOptions_ )
 
 #### share_of_drifted_columns(_: floa_ )
 
@@ -238,9 +238,9 @@ Returns prediction column name.
 
 ### evidently.calculations.data_drift.get_dataset_drift(drift_metrics, drift_share=0.5)
 
-### evidently.calculations.data_drift.get_drift_for_columns(\*, current_data: DataFrame, reference_data: DataFrame, dataset_columns: [DatasetColumns](api-reference/evidently.utils.md#evidently.utils.data_operations.DatasetColumns), data_drift_options: [DataDriftOptions](api-reference/evidently.options.md#evidently.options.data_drift.DataDriftOptions), drift_share_threshold: Optional[float] = None, columns: Optional[List[str]] = None)
+### evidently.calculations.data_drift.get_drift_for_columns(\*, current_data: DataFrame, reference_data: DataFrame, dataset_columns: [DatasetColumns](./evidently.utils.md#evidently.utils.data_operations.DatasetColumns), data_drift_options: [DataDriftOptions](./evidently.options.md#evidently.options.data_drift.DataDriftOptions), drift_share_threshold: Optional[float] = None, columns: Optional[List[str]] = None)
 
-### evidently.calculations.data_drift.get_one_column_drift(\*, current_data: DataFrame, reference_data: DataFrame, column_name: str, options: [DataDriftOptions](api-reference/evidently.options.md#evidently.options.data_drift.DataDriftOptions), dataset_columns: [DatasetColumns](api-reference/evidently.utils.md#evidently.utils.data_operations.DatasetColumns), column_type: Optional[str] = None)
+### evidently.calculations.data_drift.get_one_column_drift(\*, current_data: DataFrame, reference_data: DataFrame, column_name: str, options: [DataDriftOptions](./evidently.options.md#evidently.options.data_drift.DataDriftOptions), dataset_columns: [DatasetColumns](./evidently.utils.md#evidently.utils.data_operations.DatasetColumns), column_type: Optional[str] = None)
 ## evidently.calculations.data_integration module
 
 
@@ -272,7 +272,7 @@ Calculate the number of empty columns in a dataset
 Methods for overall dataset quality calculations - rows count, a specific values count, etc.
 
 
-### _class_ evidently.calculations.data_quality.ColumnCorrelations(column_name: str, kind: str, values: [evidently.utils.visualizations.Distribution](api-reference/evidently.utils.md#evidently.utils.visualizations.Distribution))
+### _class_ evidently.calculations.data_quality.ColumnCorrelations(column_name: str, kind: str, values: [evidently.utils.visualizations.Distribution](./evidently.utils.md#evidently.utils.visualizations.Distribution))
 Bases: `object`
 
 
@@ -280,7 +280,7 @@ Bases: `object`
 
 #### kind(_: st_ )
 
-#### values(_: [Distribution](api-reference/evidently.utils.md#evidently.utils.visualizations.Distribution_ )
+#### values(_: [Distribution](./evidently.utils.md#evidently.utils.visualizations.Distribution_ )
 
 ### _class_ evidently.calculations.data_quality.DataQualityGetPlotData()
 Bases: `object`
@@ -443,11 +443,11 @@ For category columns calculate cramer_v correlation
 
 ### evidently.calculations.data_quality.calculate_column_distribution(column: Series, column_type: str)
 
-### evidently.calculations.data_quality.calculate_correlations(dataset: DataFrame, columns: [DatasetColumns](api-reference/evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
+### evidently.calculations.data_quality.calculate_correlations(dataset: DataFrame, columns: [DatasetColumns](./evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
 ### evidently.calculations.data_quality.calculate_cramer_v_correlation(column_name: str, dataset: DataFrame, columns: List[str])
 
-### evidently.calculations.data_quality.calculate_data_quality_stats(dataset: DataFrame, columns: [DatasetColumns](api-reference/evidently.utils.md#evidently.utils.data_operations.DatasetColumns), task: Optional[str])
+### evidently.calculations.data_quality.calculate_data_quality_stats(dataset: DataFrame, columns: [DatasetColumns](./evidently.utils.md#evidently.utils.data_operations.DatasetColumns), task: Optional[str])
 
 ### evidently.calculations.data_quality.calculate_numerical_column_correlations(column_name: str, dataset: DataFrame, columns: List[str])
 
@@ -515,7 +515,7 @@ Bases: `object`
 
 #### underperformance(_: dic_ )
 
-### evidently.calculations.regression_performance.calculate_regression_performance(dataset: DataFrame, columns: [DatasetColumns](api-reference/evidently.utils.md#evidently.utils.data_operations.DatasetColumns), error_bias_prefix: str)
+### evidently.calculations.regression_performance.calculate_regression_performance(dataset: DataFrame, columns: [DatasetColumns](./evidently.utils.md#evidently.utils.data_operations.DatasetColumns), error_bias_prefix: str)
 
 ### evidently.calculations.regression_performance.error_bias_table(dataset, err_quantiles, num_feature_names, cat_feature_names)
 
