@@ -95,6 +95,16 @@ class ColumnDriftMetric(Metric[ColumnDriftMetricResults]):
 
 @default_renderer(wrap_type=ColumnDriftMetric)
 class ColumnDriftMetricRenderer(MetricRenderer):
+    def render_json(self, obj: ColumnDriftMetric) -> dict:
+        result = dataclasses.asdict(obj.get_result())
+        # remove distribution data with pandas dataframes
+        result.pop("current_distribution", None)
+        result.pop("reference_distribution", None)
+        result.pop("current_scatter", None)
+        result.pop("x_name", None)
+        result.pop("plot_shape", None)
+        return result
+
     def render_html(self, obj: ColumnDriftMetric) -> List[BaseWidgetInfo]:
         result = obj.get_result()
 
@@ -146,13 +156,3 @@ class ColumnDriftMetricRenderer(MetricRenderer):
                 figures=figures,
             ),
         ]
-
-    def render_json(self, obj: ColumnDriftMetric) -> dict:
-        result = dataclasses.asdict(obj.get_result())
-        # remove distribution data with pandas dataframes
-        result.pop("current_distribution", None)
-        result.pop("reference_distribution", None)
-        result.pop("current_scatter", None)
-        result.pop("x_name", None)
-        result.pop("plot_shape", None)
-        return result

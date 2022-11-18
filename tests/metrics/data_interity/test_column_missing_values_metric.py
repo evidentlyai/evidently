@@ -222,8 +222,6 @@ def test_column_missing_values_metric_with_report(
     report.run(current_data=current_data, reference_data=reference_data)
     assert report.show()
     json_result = report.json()
-    assert len(json_result) > 0
-    parsed_json_result = json.loads(json_result)
-    assert "metrics" in parsed_json_result
-    assert "ColumnMissingValuesMetric" in parsed_json_result["metrics"]
-    assert json.loads(json_result)["metrics"]["ColumnMissingValuesMetric"] == expected_json
+    result = json.loads(json_result)
+    assert result["metrics"][0]["metric"] == "ColumnMissingValuesMetric"
+    assert result["metrics"][0]["result"] == expected_json

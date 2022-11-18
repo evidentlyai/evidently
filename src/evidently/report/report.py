@@ -1,5 +1,4 @@
 import uuid
-from datetime import datetime
 from typing import List
 from typing import Optional
 from typing import Union
@@ -93,14 +92,15 @@ class Report(Display):
         self._inner_suite.run_calculate(data)
 
     def as_dict(self) -> dict:
-        metrics_dicts = {}
+        metrics = []
+
         for metric in self._first_level_metrics:
             renderer = find_metric_renderer(type(metric), self._inner_suite.context.renderers)
-            metrics_dicts[metric.get_id()] = renderer.render_json(metric)
-        return dict(
-            timestamp=str(datetime.now()),
-            metrics=metrics_dicts,
-        )
+            metrics.append({"metric": metric.get_id(), "result": renderer.render_json(metric)})
+
+        return {
+            "metrics": metrics,
+        }
 
     def _build_dashboard_info(self):
         metrics_results = []

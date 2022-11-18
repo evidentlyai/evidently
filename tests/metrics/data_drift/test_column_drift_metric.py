@@ -1,3 +1,4 @@
+import json
 from typing import Optional
 
 import numpy as np
@@ -10,19 +11,35 @@ from evidently.report import Report
 
 
 @pytest.mark.parametrize(
-    "current_data, reference_data, data_mapping, metric",
+    "current_data, reference_data, data_mapping, metric, expected_json",
     (
         (
             pd.DataFrame({"col": [1, 2, 3]}),
             pd.DataFrame({"col": [1, 2, 3]}),
             None,
             ColumnDriftMetric(column_name="col"),
+            {
+                "column_name": "col",
+                "column_type": "num",
+                "drift_detected": False,
+                "drift_score": 1.0,
+                "stattest_name": "chi-square p_value",
+                "threshold": 0.05,
+            },
         ),
         (
             pd.DataFrame({"col": [1, 2, 3]}),
             pd.DataFrame({"col": [1, 2, 3]}),
             None,
             ColumnDriftMetric(column_name="col"),
+            {
+                "column_name": "col",
+                "column_type": "num",
+                "drift_detected": False,
+                "drift_score": 1.0,
+                "stattest_name": "chi-square p_value",
+                "threshold": 0.05,
+            },
         ),
     ),
 )
@@ -31,11 +48,15 @@ def test_column_drift_metric_success(
     reference_data: pd.DataFrame,
     data_mapping: Optional[ColumnMapping],
     metric: ColumnDriftMetric,
+    expected_json: dict,
 ) -> None:
     report = Report(metrics=[metric])
     report.run(current_data=current_data, reference_data=reference_data, column_mapping=data_mapping)
-    assert report.json()
     assert report.show()
+    result_json = report.json()
+    result = json.loads(result_json)
+    assert result["metrics"][0]["metric"] == "ColumnDriftMetric"
+    assert result["metrics"][0]["result"] == expected_json
 
 
 @pytest.mark.parametrize(
