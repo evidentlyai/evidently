@@ -56,9 +56,8 @@
 ## Submodules
 
 
-### _class _ ConfusionMatrix(labels: Sequence[Union[str, int]], values: list)
+### _class_ ConfusionMatrix(labels: Sequence[Union[str, int]], values: list)
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -68,9 +67,8 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ DatasetClassificationQuality(accuracy: float, precision: float, recall: float, f1: float, roc_auc: Optional[float] = None, log_loss: Optional[float] = None, tpr: Optional[float] = None, tnr: Optional[float] = None, fpr: Optional[float] = None, fnr: Optional[float] = None, rate_plots_data: Optional[Dict] = None, plot_data: Optional[Dict] = None)
+### _class_ DatasetClassificationQuality(accuracy: float, precision: float, recall: float, f1: float, roc_auc: Optional[float] = None, log_loss: Optional[float] = None, tpr: Optional[float] = None, tnr: Optional[float] = None, fpr: Optional[float] = None, fnr: Optional[float] = None, rate_plots_data: Optional[Dict] = None, plot_data: Optional[Dict] = None)
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -100,9 +98,8 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ PredictionData(predictions: pandas.core.series.Series, prediction_probas: Optional[pandas.core.frame.DataFrame], labels: List[Union[str, int]])
+### _class_ PredictionData(predictions: pandas.core.series.Series, prediction_probas: Optional[pandas.core.frame.DataFrame], labels: List[Union[str, int]])
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -170,11 +167,10 @@ Get prediction values by probabilities with the threshold apply
 Methods and types for data drift calculations.
 
 
-### _class _ ColumnDataDriftMetrics(column_name: str, column_type: str, stattest_name: str, drift_score: float, drift_detected: bool, threshold: float, current_distribution: [Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution), reference_distribution: [Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution), current_small_distribution: Optional[list] = None, reference_small_distribution: Optional[list] = None, current_scatter: Optional[Dict[str, list]] = None, x_name: Optional[str] = None, plot_shape: Optional[Dict[str, float]] = None, current_correlations: Optional[Dict[str, float]] = None, reference_correlations: Optional[Dict[str, float]] = None)
+### _class_ ColumnDataDriftMetrics(column_name: str, column_type: str, stattest_name: str, drift_score: float, drift_detected: bool, threshold: float, current_distribution: [Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution), reference_distribution: [Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution), current_small_distribution: Optional[list] = None, reference_small_distribution: Optional[list] = None, current_scatter: Optional[Dict[str, list]] = None, x_name: Optional[str] = None, plot_shape: Optional[Dict[str, float]] = None, current_correlations: Optional[Dict[str, float]] = None, reference_correlations: Optional[Dict[str, float]] = None)
 Bases: `object`
 
 One column drift metrics.
-
 
 #### Attributes: 
 
@@ -210,11 +206,10 @@ One column drift metrics.
 
 #### Methods: 
 
-### _class _ DatasetDrift(number_of_drifted_columns: int, dataset_drift_score: float, dataset_drift: bool)
+### _class_ DatasetDrift(number_of_drifted_columns: int, dataset_drift_score: float, dataset_drift: bool)
 Bases: `object`
 
 Dataset drift calculation results
-
 
 #### Attributes: 
 
@@ -226,9 +221,8 @@ Dataset drift calculation results
 
 #### Methods: 
 
-### _class _ DatasetDriftMetrics(number_of_columns: int, number_of_drifted_columns: int, share_of_drifted_columns: float, dataset_drift: bool, drift_by_columns: Dict[str, ColumnDataDriftMetrics], options: [DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions), dataset_columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
+### _class_ DatasetDriftMetrics(number_of_columns: int, number_of_drifted_columns: int, share_of_drifted_columns: float, dataset_drift: bool, drift_by_columns: Dict[str, ColumnDataDriftMetrics], options: [DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions), dataset_columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -300,9 +294,8 @@ Calculate the number of empty columns in a dataset
 Methods for overall dataset quality calculations - rows count, a specific values count, etc.
 
 
-### _class _ ColumnCorrelations(column_name: str, kind: str, values: [Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution))
+### _class_ ColumnCorrelations(column_name: str, kind: str, values: [Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution))
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -314,7 +307,7 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ DataQualityGetPlotData()
+### _class_ DataQualityGetPlotData()
 Bases: `object`
 
 
@@ -328,9 +321,8 @@ Bases: `object`
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; calculate_main_plot(curr: DataFrame, ref: Optional[DataFrame], feature_name: str, feature_type: str, merge_small_cat: Optional[int] = 5)
 
-### _class _ DataQualityPlot(bins_for_hist: Dict[str, pandas.core.frame.DataFrame])
+### _class_ DataQualityPlot(bins_for_hist: Dict[str, pandas.core.frame.DataFrame])
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -338,9 +330,8 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ DataQualityStats(rows_count: int, num_features_stats: Optional[Dict[str, FeatureQualityStats]] = None, cat_features_stats: Optional[Dict[str, FeatureQualityStats]] = None, datetime_features_stats: Optional[Dict[str, FeatureQualityStats]] = None, target_stats: Optional[Dict[str, FeatureQualityStats]] = None, prediction_stats: Optional[Dict[str, FeatureQualityStats]] = None)
+### _class_ DataQualityStats(rows_count: int, num_features_stats: Optional[Dict[str, FeatureQualityStats]] = None, cat_features_stats: Optional[Dict[str, FeatureQualityStats]] = None, datetime_features_stats: Optional[Dict[str, FeatureQualityStats]] = None, target_stats: Optional[Dict[str, FeatureQualityStats]] = None, prediction_stats: Optional[Dict[str, FeatureQualityStats]] = None)
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -360,7 +351,7 @@ Bases: `object`
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; get_all_features()
 
-### _class _ FeatureQualityStats(feature_type: str, number_of_rows: int = 0, count: int = 0, infinite_count: Optional[int] = None, infinite_percentage: Optional[float] = None, missing_count: Optional[int] = None, missing_percentage: Optional[float] = None, unique_count: Optional[int] = None, unique_percentage: Optional[float] = None, percentile_25: Optional[float] = None, percentile_50: Optional[float] = None, percentile_75: Optional[float] = None, max: Optional[Union[int, float, bool, str]] = None, min: Optional[Union[int, float, bool, str]] = None, mean: Optional[float] = None, most_common_value: Optional[Union[int, float, bool, str]] = None, most_common_value_percentage: Optional[float] = None, std: Optional[float] = None, most_common_not_null_value: Optional[Union[int, float, bool, str]] = None, most_common_not_null_value_percentage: Optional[float] = None, new_in_current_values_count: Optional[int] = None, unused_in_current_values_count: Optional[int] = None)
+### _class_ FeatureQualityStats(feature_type: str, number_of_rows: int = 0, count: int = 0, infinite_count: Optional[int] = None, infinite_percentage: Optional[float] = None, missing_count: Optional[int] = None, missing_percentage: Optional[float] = None, unique_count: Optional[int] = None, unique_percentage: Optional[float] = None, percentile_25: Optional[float] = None, percentile_50: Optional[float] = None, percentile_75: Optional[float] = None, max: Optional[Union[int, float, bool, str]] = None, min: Optional[Union[int, float, bool, str]] = None, mean: Optional[float] = None, most_common_value: Optional[Union[int, float, bool, str]] = None, most_common_value_percentage: Optional[float] = None, std: Optional[float] = None, most_common_not_null_value: Optional[Union[int, float, bool, str]] = None, most_common_not_null_value_percentage: Optional[float] = None, new_in_current_values_count: Optional[int] = None, unused_in_current_values_count: Optional[int] = None)
 Bases: `object`
 
 Class for all features data quality metrics store.
@@ -414,15 +405,13 @@ Metrics for numeric features only:
 
 Metrics for category features only:
 
-    - new_in_current_values_count - quantity of new values in the current dataset after the reference
+- new_in_current_values_count - quantity of new values in the current dataset after the reference
 
         Defined for reference dataset only.
 
     - new_in_current_values_count - quantity of values in the reference dataset that not presented in the current
 
         Defined for reference dataset only.
-
-
 #### Attributes: 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; count _: int_ _ = 0_ 
@@ -514,7 +503,7 @@ Compute pairwise correlation of columns
 Count quantity of rows in  a dataset
 
 
-### _class _ ErrorWithQuantiles(error, quantile_top, quantile_other)
+### _class_ ErrorWithQuantiles(error, quantile_top, quantile_other)
 Bases: `object`
 
 
@@ -522,9 +511,8 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ FeatureBias(feature_type: str, majority: float, under: float, over: float, range: float)
+### _class_ FeatureBias(feature_type: str, majority: float, under: float, over: float, range: float)
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -542,9 +530,8 @@ Bases: `object`
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; as_dict(prefix)
 
-### _class _ RegressionPerformanceMetrics(mean_error: float, mean_abs_error: float, mean_abs_perc_error: float, error_std: float, abs_error_max: float, abs_error_std: float, abs_perc_error_std: float, error_normality: dict, underperformance: dict, error_bias: dict)
+### _class_ RegressionPerformanceMetrics(mean_error: float, mean_abs_error: float, mean_abs_perc_error: float, error_std: float, abs_error_max: float, abs_error_std: float, abs_perc_error_std: float, error_normality: dict, underperformance: dict, error_bias: dict)
 Bases: `object`
-
 
 #### Attributes: 
 

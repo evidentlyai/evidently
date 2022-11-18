@@ -3,50 +3,22 @@
 ## Submodules
 
 
-### _class _ ColumnCorrelationsMetric(column_name: str)
+### _class_ ColumnCorrelationsMetric(column_name: str)
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`ColumnCorrelationsMetricResult`]
 
 Calculates correlations between the selected column and all the other columns.
 In the current and reference (if presented) datasets
 
-
 #### Attributes: 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; labels _: Sequence[Union[str, int]]_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; values _: list_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; exception _: BaseException_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; column_name _: str_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; options _: [DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions)_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; different_missing_values _: Dict[Any, int]_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; number_of_different_missing_values _: int_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; number_of_missing_values _: int_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; number_of_rows _: int_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; share_of_missing_values _: float_ 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; column_name _: str_ 
 
 #### Methods: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; generate_metrics(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; get_target_prediction_data(data: DataFrame, column_mapping: [ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping))
-
 ##### &nbsp;&nbsp;&nbsp;&nbsp; calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
-
-### _class _ ColumnCorrelationsMetricRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ ColumnCorrelationsMetricRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
-
 
 #### Attributes: 
 
@@ -58,9 +30,8 @@ Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_render
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: ColumnCorrelationsMetric)
 
-### _class _ ColumnCorrelationsMetricResult(column_name: str, current: Dict[str, [ColumnCorrelations](evidently.calculations.md#evidently.calculations.data_quality.ColumnCorrelations)], reference: Optional[Dict[str, [ColumnCorrelations](evidently.calculations.md#evidently.calculations.data_quality.ColumnCorrelations)]] = None)
+### _class_ ColumnCorrelationsMetricResult(column_name: str, current: Dict[str, [ColumnCorrelations](evidently.calculations.md#evidently.calculations.data_quality.ColumnCorrelations)], reference: Optional[Dict[str, [ColumnCorrelations](evidently.calculations.md#evidently.calculations.data_quality.ColumnCorrelations)]] = None)
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -72,11 +43,10 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ ColumnDistributionMetric(column_name: str)
+### _class_ ColumnDistributionMetric(column_name: str)
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`ColumnDistributionMetricResult`]
 
 Calculates distribution for the column
-
 
 #### Attributes: 
 
@@ -86,9 +56,8 @@ Calculates distribution for the column
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
-### _class _ ColumnDistributionMetricRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ ColumnDistributionMetricRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
-
 
 #### Attributes: 
 
@@ -100,9 +69,8 @@ Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_render
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: ColumnDistributionMetric)
 
-### _class _ ColumnDistributionMetricResult(column_name: str, current: Dict[Any, Union[float, int]], reference: Optional[Dict[Any, Union[float, int]]] = None)
+### _class_ ColumnDistributionMetricResult(column_name: str, current: Dict[Any, Union[float, int]], reference: Optional[Dict[Any, Union[float, int]]] = None)
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -114,11 +82,10 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ ColumnQuantileMetric(column_name: str, quantile: float)
+### _class_ ColumnQuantileMetric(column_name: str, quantile: float)
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`ColumnQuantileMetricResult`]
 
 Calculates quantile with specified range
-
 
 #### Attributes: 
 
@@ -130,9 +97,8 @@ Calculates quantile with specified range
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
-### _class _ ColumnQuantileMetricRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ ColumnQuantileMetricRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
-
 
 #### Attributes: 
 
@@ -144,9 +110,8 @@ Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_render
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: ColumnQuantileMetric)
 
-### _class _ ColumnQuantileMetricResult(column_name: str, quantile: float, current: float, current_distribution: [Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution), reference: Optional[float] = None, reference_distribution: Optional[[Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution)] = None)
+### _class_ ColumnQuantileMetricResult(column_name: str, quantile: float, current: float, current_distribution: [Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution), reference: Optional[float] = None, reference_distribution: Optional[[Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution)] = None)
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -164,11 +129,10 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ ColumnValueListMetric(column_name: str, values: Optional[list] = None)
+### _class_ ColumnValueListMetric(column_name: str, values: Optional[list] = None)
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`ColumnValueListMetricResult`]
 
 Calculates count and shares of values in the predefined values list
-
 
 #### Attributes: 
 
@@ -180,9 +144,8 @@ Calculates count and shares of values in the predefined values list
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
-### _class _ ColumnValueListMetricRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ ColumnValueListMetricRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
-
 
 #### Attributes: 
 
@@ -194,9 +157,8 @@ Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_render
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: ColumnValueListMetric)
 
-### _class _ ColumnValueListMetricResult(column_name: str, values: List[Any], current: ValueListStat, reference: Optional[ValueListStat] = None)
+### _class_ ColumnValueListMetricResult(column_name: str, values: List[Any], current: ValueListStat, reference: Optional[ValueListStat] = None)
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -210,9 +172,8 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ ValueListStat(number_in_list: int, number_not_in_list: int, share_in_list: float, share_not_in_list: float, values_in_list: Dict[Any, int], values_not_in_list: Dict[Any, int], rows_count: int)
+### _class_ ValueListStat(number_in_list: int, number_not_in_list: int, share_in_list: float, share_not_in_list: float, values_in_list: Dict[Any, int], values_not_in_list: Dict[Any, int], rows_count: int)
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -232,11 +193,10 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ ColumnValueRangeMetric(column_name: str, left: Optional[Union[float, int]] = None, right: Optional[Union[float, int]] = None)
+### _class_ ColumnValueRangeMetric(column_name: str, left: Optional[Union[float, int]] = None, right: Optional[Union[float, int]] = None)
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`ColumnValueRangeMetricResult`]
 
 Calculates count and shares of values in the predefined values range
-
 
 #### Attributes: 
 
@@ -250,9 +210,8 @@ Calculates count and shares of values in the predefined values range
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
-### _class _ ColumnValueRangeMetricRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ ColumnValueRangeMetricRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
-
 
 #### Attributes: 
 
@@ -264,9 +223,8 @@ Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_render
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: ColumnValueRangeMetric)
 
-### _class _ ColumnValueRangeMetricResult(column_name: str, left: Union[float, int], right: Union[float, int], current: ValuesInRangeStat, current_distribution: [Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution), reference: Optional[ValuesInRangeStat] = None, reference_distribution: Optional[[Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution)] = None)
+### _class_ ColumnValueRangeMetricResult(column_name: str, left: Union[float, int], right: Union[float, int], current: ValuesInRangeStat, current_distribution: [Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution), reference: Optional[ValuesInRangeStat] = None, reference_distribution: Optional[[Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution)] = None)
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -286,9 +244,8 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ ValuesInRangeStat(number_in_range: int, number_not_in_range: int, share_in_range: float, share_not_in_range: float, number_of_values: int)
+### _class_ ValuesInRangeStat(number_in_range: int, number_not_in_range: int, share_in_range: float, share_not_in_range: float, number_of_values: int)
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -304,9 +261,8 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ CorrelationStats(target_prediction_correlation: Optional[float] = None, abs_max_target_features_correlation: Optional[float] = None, abs_max_prediction_features_correlation: Optional[float] = None, abs_max_correlation: Optional[float] = None, abs_max_features_correlation: Optional[float] = None)
+### _class_ CorrelationStats(target_prediction_correlation: Optional[float] = None, abs_max_target_features_correlation: Optional[float] = None, abs_max_prediction_features_correlation: Optional[float] = None, abs_max_correlation: Optional[float] = None, abs_max_features_correlation: Optional[float] = None)
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -322,9 +278,8 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ DataQualityCorrelationMetricsRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ DataQualityCorrelationMetricsRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
-
 
 #### Attributes: 
 
@@ -336,9 +291,8 @@ Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_render
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: DatasetCorrelationsMetric)
 
-### _class _ DatasetCorrelation(correlation: Dict[str, pandas.core.frame.DataFrame], stats: Dict[str, CorrelationStats])
+### _class_ DatasetCorrelation(correlation: Dict[str, pandas.core.frame.DataFrame], stats: Dict[str, CorrelationStats])
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -348,7 +302,7 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ DatasetCorrelationsMetric()
+### _class_ DatasetCorrelationsMetric()
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`DatasetCorrelationsMetricResult`]
 
 Calculate different correlations with target, predictions and features
@@ -360,9 +314,8 @@ Calculate different correlations with target, predictions and features
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
-### _class _ DatasetCorrelationsMetricResult(current: DatasetCorrelation, reference: Optional[DatasetCorrelation])
+### _class_ DatasetCorrelationsMetricResult(current: DatasetCorrelation, reference: Optional[DatasetCorrelation])
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -372,7 +325,7 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ DataQualityStabilityMetric()
+### _class_ DataQualityStabilityMetric()
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`DataQualityStabilityMetricResult`]
 
 Calculates stability by target and prediction
@@ -384,9 +337,8 @@ Calculates stability by target and prediction
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
-### _class _ DataQualityStabilityMetricRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ DataQualityStabilityMetricRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
-
 
 #### Attributes: 
 
@@ -398,9 +350,8 @@ Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_render
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: DataQualityStabilityMetric)
 
-### _class _ DataQualityStabilityMetricResult(number_not_stable_target: Optional[int] = None, number_not_stable_prediction: Optional[int] = None)
+### _class_ DataQualityStabilityMetricResult(number_not_stable_target: Optional[int] = None, number_not_stable_prediction: Optional[int] = None)
 Bases: `object`
-
 
 #### Attributes: 
 

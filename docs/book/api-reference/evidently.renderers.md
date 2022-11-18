@@ -3,107 +3,19 @@
 ## Submodules
 
 
-### _class _ BaseRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ BaseRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: `object`
 
 Base class for all renderers
 
-
 #### Attributes: 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; labels _: Sequence[Union[str, int]]_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; values _: list_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; exception _: BaseException_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; column_name _: str_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; options _: [DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions)_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; different_missing_values _: Dict[Any, int]_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; number_of_different_missing_values _: int_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; number_of_missing_values _: int_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; number_of_rows _: int_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; share_of_missing_values _: float_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; column_name _: str_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; color_sequence _: Sequence[str]_ _ = ('#ed0400', '#0a5f38', '#6c3461', '#71aa34', '#d8dcd6', '#6b8ba4')_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; current_data_color _: Optional[str]_ _ = None_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; fill_color _: str_ _ = 'LightGreen'_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; heatmap _: str_ _ = 'RdBu_r'_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; majority_color _: str_ _ = '#1acc98'_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; non_visible_color _: str_ _ = 'white'_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; overestimation_color _: str_ _ = '#ee5540'_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; primary_color _: str_ _ = '#ed0400'_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; reference_data_color _: Optional[str]_ _ = None_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; secondary_color _: str_ _ = '#4d4d4d'_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; underestimation_color _: str_ _ = '#6574f7'_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; vertical_lines _: str_ _ = 'green'_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; zero_line_color _: str_ _ = 'green'_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; categorical_features _: Optional[List[str]]_ _ = None_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; datetime _: Optional[str]_ _ = 'datetime'_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; datetime_features _: Optional[List[str]]_ _ = None_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; id _: Optional[str]_ _ = None_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; numerical_features _: Optional[List[str]]_ _ = None_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; pos_label _: Optional[Union[str, int]]_ _ = 1_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; prediction _: Optional[Union[str, int, Sequence[str], Sequence[int]]]_ _ = 'prediction'_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; target _: Optional[str]_ _ = 'target'_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; target_names _: Optional[List[str]]_ _ = None_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; task _: Optional[str]_ _ = None_ 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
 #### Methods: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; generate_metrics(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; get_target_prediction_data(data: DataFrame, column_mapping: [ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping))
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; get_current_data_color()
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; get_reference_data_color()
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; is_classification_task()
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; is_regression_task()
-
-### _class _ DetailsInfo(title: str, info: evidently.model.widget.BaseWidgetInfo, id: str = <factory>)
+### _class_ DetailsInfo(title: str, info: evidently.model.widget.BaseWidgetInfo, id: str = <factory>)
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -115,9 +27,8 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ MetricRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ MetricRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: `BaseRenderer`
-
 
 #### Attributes: 
 
@@ -129,9 +40,8 @@ Bases: `BaseRenderer`
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj)
 
-### _class _ RenderersDefinitions(typed_renderers: dict = <factory>, default_html_test_renderer: Optional[evidently.renderers.base_renderer.TestRenderer] = None, default_html_metric_renderer: Optional[evidently.renderers.base_renderer.MetricRenderer] = None)
+### _class_ RenderersDefinitions(typed_renderers: dict = <factory>, default_html_test_renderer: Optional[evidently.renderers.base_renderer.TestRenderer] = None, default_html_metric_renderer: Optional[evidently.renderers.base_renderer.MetricRenderer] = None)
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -143,9 +53,8 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ TestHtmlInfo(name: str, description: str, status: str, details: List[DetailsInfo], groups: Dict[str, str])
+### _class_ TestHtmlInfo(name: str, description: str, status: str, details: List[DetailsInfo], groups: Dict[str, str])
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -163,9 +72,8 @@ Bases: `object`
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; with_details(title: str, info: BaseWidgetInfo)
 
-### _class _ TestRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ TestRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: `BaseRenderer`
-
 
 #### Attributes: 
 
@@ -183,9 +91,8 @@ Bases: `BaseRenderer`
 
 ### default_renderer(wrap_type)
 
-### _class _ ColumnDefinition(title: str, field_name: str, type: evidently.renderers.html_widgets.ColumnType = <ColumnType.STRING: 'string'>, sort: Optional[evidently.renderers.html_widgets.SortDirection] = None, options: Optional[dict] = None)
+### _class_ ColumnDefinition(title: str, field_name: str, type: evidently.renderers.html_widgets.ColumnType = <ColumnType.STRING: 'string'>, sort: Optional[evidently.renderers.html_widgets.SortDirection] = None, options: Optional[dict] = None)
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -203,11 +110,10 @@ Bases: `object`
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; as_dict()
 
-### _class _ ColumnType(value)
+### _class_ ColumnType(value)
 Bases: `Enum`
 
 An enumeration.
-
 
 #### Attributes: 
 
@@ -221,9 +127,8 @@ An enumeration.
 
 #### Methods: 
 
-### _class _ CounterData(label: str, value: str)
+### _class_ CounterData(label: str, value: str)
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -261,9 +166,8 @@ create CounterData for string value with given precision.
 - **value** – string value of counter
 
 
-### _class _ DetailsPartInfo(title: str, info: Union[BaseWidgetInfo, PlotlyGraphInfo])
+### _class_ DetailsPartInfo(title: str, info: Union[BaseWidgetInfo, PlotlyGraphInfo])
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -273,9 +177,8 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ GraphData(title: str, data: dict, layout: dict)
+### _class_ GraphData(title: str, data: dict, layout: dict)
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -292,9 +195,8 @@ create GraphData from plotly figure itself
 :param title: title of graph
 :param figure: plotly figure for getting data from
 
-### _class _ HeatmapData(name: str, matrix: pandas.core.frame.DataFrame)
+### _class_ HeatmapData(name: str, matrix: pandas.core.frame.DataFrame)
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -304,9 +206,8 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ HistogramData(name: str, x: list, y: List[Union[int, float]])
+### _class_ HistogramData(name: str, x: list, y: List[Union[int, float]])
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -318,9 +219,8 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ RichTableDataRow(fields: dict, details: Optional[RowDetails] = None)
+### _class_ RichTableDataRow(fields: dict, details: Optional[RowDetails] = None)
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -330,9 +230,8 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ RowDetails(parts: Optional[List[DetailsPartInfo]] = None)
+### _class_ RowDetails(parts: Optional[List[DetailsPartInfo]] = None)
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -342,11 +241,10 @@ Bases: `object`
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; with_part(title: str, info: Union[BaseWidgetInfo, PlotlyGraphInfo])
 
-### _class _ SortDirection(value)
+### _class_ SortDirection(value)
 Bases: `Enum`
 
 An enumeration.
-
 
 #### Attributes: 
 
@@ -356,9 +254,8 @@ An enumeration.
 
 #### Methods: 
 
-### _class _ TabData(title: str, widget: evidently.model.widget.BaseWidgetInfo)
+### _class_ TabData(title: str, widget: evidently.model.widget.BaseWidgetInfo)
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -368,11 +265,10 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ WidgetSize(value)
+### _class_ WidgetSize(value)
 Bases: `Enum`
 
 An enumeration.
-
 
 #### Attributes: 
 

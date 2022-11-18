@@ -5,9 +5,8 @@
 Methods for clean null or NaN values in a dataset
 
 
-### _class _ DatasetColumns(utility_columns: DatasetUtilityColumns, target_type: Optional[str], num_feature_names: List[str], cat_feature_names: List[str], datetime_feature_names: List[str], target_names: Optional[List[str]], task: Optional[str])
+### _class_ DatasetColumns(utility_columns: DatasetUtilityColumns, target_type: Optional[str], num_feature_names: List[str], cat_feature_names: List[str], datetime_feature_names: List[str], target_names: Optional[List[str]], task: Optional[str])
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -43,9 +42,8 @@ How mane feature do we have. It is useful for pagination in widgets.
 By default, we sum category nad numeric features.
 If you want to include date time columns - set include_datetime_feature to True.
 
-### _class _ DatasetUtilityColumns(date: Optional[str], id_column: Optional[str], target: Optional[str], prediction: Union[str, Sequence[str], NoneType])
+### _class_ DatasetUtilityColumns(date: Optional[str], id_column: Optional[str], target: Optional[str], prediction: Union[str, Sequence[str], NoneType])
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -89,9 +87,8 @@ in all other cases task == ‘classification’.
 
 ### replace_infinity_values_to_nan(dataframe: DataFrame)
 
-### _class _ ColumnDefinition(column_name: str, column_type: ColumnType)
+### _class_ ColumnDefinition(column_name: str, column_type: ColumnType)
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -101,11 +98,10 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ ColumnPresenceState(value)
+### _class_ ColumnPresenceState(value)
 Bases: `Enum`
 
 An enumeration.
-
 
 #### Attributes: 
 
@@ -117,11 +113,10 @@ An enumeration.
 
 #### Methods: 
 
-### _class _ ColumnType(value)
+### _class_ ColumnType(value)
 Bases: `Enum`
 
 An enumeration.
-
 
 #### Attributes: 
 
@@ -133,7 +128,7 @@ An enumeration.
 
 #### Methods: 
 
-### _class _ DataDefinition(columns: List[ColumnDefinition], target: Optional[ColumnDefinition], prediction_columns: Optional[PredictionColumns], id_column: Optional[ColumnDefinition], datetime_column: Optional[ColumnDefinition], task: Optional[str], classification_labels: Optional[Sequence[str]])
+### _class_ DataDefinition(columns: List[ColumnDefinition], target: Optional[ColumnDefinition], prediction_columns: Optional[PredictionColumns], id_column: Optional[ColumnDefinition], datetime_column: Optional[ColumnDefinition], task: Optional[str], classification_labels: Optional[Sequence[str]])
 Bases: `object`
 
 
@@ -155,9 +150,8 @@ Bases: `object`
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; task()
 
-### _class _ PredictionColumns(predicted_values: Optional[ColumnDefinition] = None, prediction_probas: Optional[List[ColumnDefinition]] = None)
+### _class_ PredictionColumns(predicted_values: Optional[ColumnDefinition] = None, prediction_probas: Optional[List[ColumnDefinition]] = None)
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -171,7 +165,7 @@ Bases: `object`
 
 ### create_data_definition(reference_data: Optional[DataFrame], current_data: DataFrame, mapping: [ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping))
 
-### _class _ BaseGenerator()
+### _class_ BaseGenerator()
 Bases: `Generic`[`TObject`]
 
 Base class for tests and metrics generator creation
@@ -203,7 +197,6 @@ For example:
 
 Do not forget set correct test type for generate return value
 
-
 #### Attributes: 
 
 #### Methods: 
@@ -229,7 +222,7 @@ If columns is string, and it is not one of the values, ValueError will be raised
 parameters is used for specifying other parameters for each object, it is the same for all generated objects.
 
 
-### _class _ NumpyEncoder(\*, skipkeys=False, ensure_ascii=True, check_circular=True, allow_nan=True, sort_keys=False, indent=None, separators=None, default=None)
+### _class_ NumpyEncoder(\*, skipkeys=False, ensure_ascii=True, check_circular=True, allow_nan=True, sort_keys=False, indent=None, separators=None, default=None)
 Bases: `JSONEncoder`
 
 Numpy and Pandas data types to JSON types encoder
@@ -246,14 +239,12 @@ If we cannot convert the object, leave the default JSONEncoder behaviour - raise
 Additional types, classes, dataclasses, etc.
 
 
-### _class _ ApproxValue(value: Union[float, int], relative: Optional[Union[float, int]] = None, absolute: Optional[Union[float, int]] = None)
+### _class_ ApproxValue(value: Union[float, int], relative: Optional[Union[float, int]] = None, absolute: Optional[Union[float, int]] = None)
 Bases: `object`
 
 Class for approximate scalar value calculations
 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; _property _ tolerance _: Union[float, int]_ 
-
+##### &nbsp;&nbsp;&nbsp;&nbsp; _property_ tolerance _: Union[float, int]_ 
 #### Attributes: 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; DEFAULT_ABSOLUTE _ = 1e-12_ 
@@ -266,9 +257,8 @@ Class for approximate scalar value calculations
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; as_dict()
 
-### _class _ Distribution(x: Union[<built-in function array>, list], y: Union[<built-in function array>, list])
+### _class_ Distribution(x: Union[<built-in function array>, list], y: Union[<built-in function array>, list])
 Bases: `object`
-
 
 #### Attributes: 
 

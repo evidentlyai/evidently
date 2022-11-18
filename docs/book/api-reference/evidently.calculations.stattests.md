@@ -24,21 +24,16 @@ Perform the two-sample Cramér-von Mises test
 
 
 
-### _class _ CramerVonMisesResult(statistic, pvalue)
+### _class_ CramerVonMisesResult(statistic, pvalue)
 Bases: `object`
 
 
 #### Attributes: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; labels _: Sequence[Union[str, int]]_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; values _: list_ 
-
 #### Methods: 
 
-### _class _ StatTest(name: str, display_name: str, func: Callable[[pandas.core.series.Series, pandas.core.series.Series, str, float], Tuple[float, bool]], allowed_feature_types: List[str], default_threshold: float = 0.05)
+### _class_ StatTest(name: str, display_name: str, func: Callable[[pandas.core.series.Series, pandas.core.series.Series, str, float], Tuple[float, bool]], allowed_feature_types: List[str], default_threshold: float = 0.05)
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -54,17 +49,16 @@ Bases: `object`
 
 #### Methods: 
 
-### _exception _ StatTestInvalidFeatureTypeError(stattest_name: str, feature_type: str)
+### _exception_ StatTestInvalidFeatureTypeError(stattest_name: str, feature_type: str)
 Bases: `ValueError`
 
 
-### _exception _ StatTestNotFoundError(stattest_name: str)
+### _exception_ StatTestNotFoundError(stattest_name: str)
 Bases: `ValueError`
 
 
-### _class _ StatTestResult(drift_score: float, drifted: bool, actual_threshold: float)
+### _class_ StatTestResult(drift_score: float, drifted: bool, actual_threshold: float)
 Bases: `object`
-
 
 #### Attributes: 
 

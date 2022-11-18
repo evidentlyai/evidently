@@ -3,25 +3,17 @@
 ## Submodules
 
 
-### _class _ ThresholdClassificationMetric(threshold: Optional[float], k: Optional[Union[float, int]])
+### _class_ ThresholdClassificationMetric(threshold: Optional[float], k: Optional[Union[float, int]])
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`TResult`], `ABC`
 
 
 #### Attributes: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; labels _: Sequence[Union[str, int]]_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; values _: list_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; exception _: BaseException_ 
-
 #### Methods: 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; generate_metrics(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; get_target_prediction_data(data: DataFrame, column_mapping: [ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping))
 
-### _class _ ClassificationClassBalance()
+### _class_ ClassificationClassBalance()
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`ClassificationClassBalanceResult`]
 
 
@@ -31,9 +23,8 @@ Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`Cl
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
-### _class _ ClassificationClassBalanceRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ ClassificationClassBalanceRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
-
 
 #### Attributes: 
 
@@ -45,9 +36,8 @@ Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_render
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: ClassificationClassBalance)
 
-### _class _ ClassificationClassBalanceResult(plot_data: Dict[str, int])
+### _class_ ClassificationClassBalanceResult(plot_data: Dict[str, int])
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -55,7 +45,7 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ ClassificationClassSeparationPlot()
+### _class_ ClassificationClassSeparationPlot()
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`ClassificationClassSeparationPlotResults`]
 
 
@@ -65,9 +55,8 @@ Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`Cl
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
-### _class _ ClassificationClassSeparationPlotRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ ClassificationClassSeparationPlotRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
-
 
 #### Attributes: 
 
@@ -79,9 +68,8 @@ Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_render
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: ClassificationClassSeparationPlot)
 
-### _class _ ClassificationClassSeparationPlotResults(target_name: str, current_plot: Optional[pandas.core.frame.DataFrame] = None, reference_plot: Optional[pandas.core.frame.DataFrame] = None)
+### _class_ ClassificationClassSeparationPlotResults(target_name: str, current_plot: Optional[pandas.core.frame.DataFrame] = None, reference_plot: Optional[pandas.core.frame.DataFrame] = None)
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -93,9 +81,8 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ ClassificationDummyMetric(threshold: Optional[float] = None, k: Optional[Union[float, int]] = None)
+### _class_ ClassificationDummyMetric(threshold: Optional[float] = None, k: Optional[Union[float, int]] = None)
 Bases: `ThresholdClassificationMetric`[`ClassificationDummyMetricResults`]
-
 
 #### Attributes: 
 
@@ -107,9 +94,8 @@ Bases: `ThresholdClassificationMetric`[`ClassificationDummyMetricResults`]
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; correction_for_threshold(dummy_results: [DatasetClassificationQuality](evidently.calculations.md#evidently.calculations.classification_performance.DatasetClassificationQuality), threshold: float, target: Series, labels: list, probas_shape: tuple)
 
-### _class _ ClassificationDummyMetricRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ ClassificationDummyMetricRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
-
 
 #### Attributes: 
 
@@ -121,9 +107,8 @@ Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_render
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: ClassificationDummyMetric)
 
-### _class _ ClassificationDummyMetricResults(dummy: [DatasetClassificationQuality](evidently.calculations.md#evidently.calculations.classification_performance.DatasetClassificationQuality), by_reference_dummy: Optional[[DatasetClassificationQuality](evidently.calculations.md#evidently.calculations.classification_performance.DatasetClassificationQuality)], model_quality: Optional[[DatasetClassificationQuality](evidently.calculations.md#evidently.calculations.classification_performance.DatasetClassificationQuality)], metrics_matrix: dict)
+### _class_ ClassificationDummyMetricResults(dummy: [DatasetClassificationQuality](evidently.calculations.md#evidently.calculations.classification_performance.DatasetClassificationQuality), by_reference_dummy: Optional[[DatasetClassificationQuality](evidently.calculations.md#evidently.calculations.classification_performance.DatasetClassificationQuality)], model_quality: Optional[[DatasetClassificationQuality](evidently.calculations.md#evidently.calculations.classification_performance.DatasetClassificationQuality)], metrics_matrix: dict)
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -137,9 +122,8 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ ClassificationQualityMetric(threshold: Optional[float] = None, k: Optional[Union[float, int]] = None)
+### _class_ ClassificationQualityMetric(threshold: Optional[float] = None, k: Optional[Union[float, int]] = None)
 Bases: `ThresholdClassificationMetric`[`ClassificationQualityMetricResult`]
-
 
 #### Attributes: 
 
@@ -149,9 +133,8 @@ Bases: `ThresholdClassificationMetric`[`ClassificationQualityMetricResult`]
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
-### _class _ ClassificationQualityMetricRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ ClassificationQualityMetricRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
-
 
 #### Attributes: 
 
@@ -163,9 +146,8 @@ Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_render
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: ClassificationQualityMetric)
 
-### _class _ ClassificationQualityMetricResult(current: [DatasetClassificationQuality](evidently.calculations.md#evidently.calculations.classification_performance.DatasetClassificationQuality), reference: Optional[[DatasetClassificationQuality](evidently.calculations.md#evidently.calculations.classification_performance.DatasetClassificationQuality)], target_name: str)
+### _class_ ClassificationQualityMetricResult(current: [DatasetClassificationQuality](evidently.calculations.md#evidently.calculations.classification_performance.DatasetClassificationQuality), reference: Optional[[DatasetClassificationQuality](evidently.calculations.md#evidently.calculations.classification_performance.DatasetClassificationQuality)], target_name: str)
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -177,7 +159,7 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ ClassificationConfusionMatrix(threshold: Optional[float] = None, k: Optional[Union[float, int]] = None)
+### _class_ ClassificationConfusionMatrix(threshold: Optional[float] = None, k: Optional[Union[float, int]] = None)
 Bases: `ThresholdClassificationMetric`[`ClassificationConfusionMatrixResult`]
 
 
@@ -187,9 +169,8 @@ Bases: `ThresholdClassificationMetric`[`ClassificationConfusionMatrixResult`]
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
-### _class _ ClassificationConfusionMatrixRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ ClassificationConfusionMatrixRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
-
 
 #### Attributes: 
 
@@ -201,9 +182,8 @@ Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_render
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: ClassificationConfusionMatrix)
 
-### _class _ ClassificationConfusionMatrixResult(current_matrix: [ConfusionMatrix](evidently.calculations.md#evidently.calculations.classification_performance.ConfusionMatrix), reference_matrix: Optional[[ConfusionMatrix](evidently.calculations.md#evidently.calculations.classification_performance.ConfusionMatrix)])
+### _class_ ClassificationConfusionMatrixResult(current_matrix: [ConfusionMatrix](evidently.calculations.md#evidently.calculations.classification_performance.ConfusionMatrix), reference_matrix: Optional[[ConfusionMatrix](evidently.calculations.md#evidently.calculations.classification_performance.ConfusionMatrix)])
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -213,7 +193,7 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ ClassificationPRCurve()
+### _class_ ClassificationPRCurve()
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`ClassificationPRCurveResults`]
 
 
@@ -225,9 +205,8 @@ Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`Cl
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; calculate_metrics(target_data: Series, prediction: [PredictionData](evidently.calculations.md#evidently.calculations.classification_performance.PredictionData))
 
-### _class _ ClassificationPRCurveRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ ClassificationPRCurveRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
-
 
 #### Attributes: 
 
@@ -239,9 +218,8 @@ Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_render
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: ClassificationPRCurve)
 
-### _class _ ClassificationPRCurveResults(current_pr_curve: Optional[dict] = None, reference_pr_curve: Optional[dict] = None)
+### _class_ ClassificationPRCurveResults(current_pr_curve: Optional[dict] = None, reference_pr_curve: Optional[dict] = None)
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -251,7 +229,7 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ ClassificationPRTable()
+### _class_ ClassificationPRTable()
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`ClassificationPRTableResults`]
 
 
@@ -263,9 +241,8 @@ Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`Cl
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; calculate_metrics(target_data: Series, prediction: [PredictionData](evidently.calculations.md#evidently.calculations.classification_performance.PredictionData))
 
-### _class _ ClassificationPRTableRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ ClassificationPRTableRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
-
 
 #### Attributes: 
 
@@ -277,9 +254,8 @@ Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_render
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: ClassificationPRTable)
 
-### _class _ ClassificationPRTableResults(current_pr_table: Optional[dict] = None, reference_pr_table: Optional[dict] = None)
+### _class_ ClassificationPRTableResults(current_pr_table: Optional[dict] = None, reference_pr_table: Optional[dict] = None)
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -289,9 +265,8 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ ClassificationProbDistribution()
+### _class_ ClassificationProbDistribution()
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`ClassificationProbDistributionResults`]
-
 
 #### Attributes: 
 
@@ -301,9 +276,8 @@ Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`Cl
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; _static _ get_distribution(dataset: DataFrame, target_name: str, prediction_labels: Iterable)
 
-### _class _ ClassificationProbDistributionRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ ClassificationProbDistributionRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
-
 
 #### Attributes: 
 
@@ -315,9 +289,8 @@ Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_render
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: ClassificationProbDistribution)
 
-### _class _ ClassificationProbDistributionResults(current_distribution: Optional[Dict[str, list]], reference_distribution: Optional[Dict[str, list]])
+### _class_ ClassificationProbDistributionResults(current_distribution: Optional[Dict[str, list]], reference_distribution: Optional[Dict[str, list]])
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -327,7 +300,7 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ ClassificationQualityByClass(threshold: Optional[float] = None, k: Optional[Union[float, int]] = None)
+### _class_ ClassificationQualityByClass(threshold: Optional[float] = None, k: Optional[Union[float, int]] = None)
 Bases: `ThresholdClassificationMetric`[`ClassificationQualityByClassResult`]
 
 
@@ -337,9 +310,8 @@ Bases: `ThresholdClassificationMetric`[`ClassificationQualityByClassResult`]
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
-### _class _ ClassificationQualityByClassRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ ClassificationQualityByClassRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
-
 
 #### Attributes: 
 
@@ -351,9 +323,8 @@ Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_render
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: ClassificationQualityByClass)
 
-### _class _ ClassificationQualityByClassResult(columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns), current_metrics: dict, current_roc_aucs: Optional[list], reference_metrics: Optional[dict], reference_roc_aucs: Optional[dict])
+### _class_ ClassificationQualityByClassResult(columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns), current_metrics: dict, current_roc_aucs: Optional[list], reference_metrics: Optional[dict], reference_roc_aucs: Optional[dict])
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -369,9 +340,8 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ ClassificationQualityByFeatureTable(columns: Optional[List[str]] = None)
+### _class_ ClassificationQualityByFeatureTable(columns: Optional[List[str]] = None)
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`ClassificationQualityByFeatureTableResults`]
-
 
 #### Attributes: 
 
@@ -381,9 +351,8 @@ Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`Cl
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
-### _class _ ClassificationQualityByFeatureTableRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ ClassificationQualityByFeatureTableRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
-
 
 #### Attributes: 
 
@@ -395,9 +364,8 @@ Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_render
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: ClassificationQualityByFeatureTable)
 
-### _class _ ClassificationQualityByFeatureTableResults(current_plot_data: pandas.core.frame.DataFrame, reference_plot_data: Optional[pandas.core.frame.DataFrame], target_name: str, curr_predictions: [PredictionData](evidently.calculations.md#evidently.calculations.classification_performance.PredictionData), ref_predictions: Optional[[PredictionData](evidently.calculations.md#evidently.calculations.classification_performance.PredictionData)], columns: List[str])
+### _class_ ClassificationQualityByFeatureTableResults(current_plot_data: pandas.core.frame.DataFrame, reference_plot_data: Optional[pandas.core.frame.DataFrame], target_name: str, curr_predictions: [PredictionData](evidently.calculations.md#evidently.calculations.classification_performance.PredictionData), ref_predictions: Optional[[PredictionData](evidently.calculations.md#evidently.calculations.classification_performance.PredictionData)], columns: List[str])
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -415,7 +383,7 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ ClassificationRocCurve()
+### _class_ ClassificationRocCurve()
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`ClassificationRocCurveResults`]
 
 
@@ -427,9 +395,8 @@ Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`Cl
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; calculate_metrics(target_data: Series, prediction: [PredictionData](evidently.calculations.md#evidently.calculations.classification_performance.PredictionData))
 
-### _class _ ClassificationRocCurveRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ ClassificationRocCurveRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
-
 
 #### Attributes: 
 
@@ -441,9 +408,8 @@ Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_render
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: ClassificationRocCurve)
 
-### _class _ ClassificationRocCurveResults(current_roc_curve: Optional[dict] = None, reference_roc_curve: Optional[dict] = None)
+### _class_ ClassificationRocCurveResults(current_roc_curve: Optional[dict] = None, reference_roc_curve: Optional[dict] = None)
 Bases: `object`
-
 
 #### Attributes: 
 

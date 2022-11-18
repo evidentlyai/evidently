@@ -3,49 +3,18 @@
 ## Submodules
 
 
-### _class _ RegressionAbsPercentageErrorPlot()
+### _class_ RegressionAbsPercentageErrorPlot()
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`RegressionAbsPercentageErrorPlotResults`]
 
 
 #### Attributes: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; labels _: Sequence[Union[str, int]]_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; values _: list_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; exception _: BaseException_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; column_name _: str_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; options _: [DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions)_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; different_missing_values _: Dict[Any, int]_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; number_of_different_missing_values _: int_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; number_of_missing_values _: int_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; number_of_rows _: int_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; share_of_missing_values _: float_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; column_name _: str_ 
-
 #### Methods: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; generate_metrics(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; get_target_prediction_data(data: DataFrame, column_mapping: [ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping))
-
 ##### &nbsp;&nbsp;&nbsp;&nbsp; calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
-
-### _class _ RegressionAbsPercentageErrorPlotRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ RegressionAbsPercentageErrorPlotRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
-
 
 #### Attributes: 
 
@@ -57,9 +26,8 @@ Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_render
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: RegressionAbsPercentageErrorPlot)
 
-### _class _ RegressionAbsPercentageErrorPlotResults(current_scatter: Dict[str, pandas.core.series.Series], reference_scatter: Optional[Dict[str, pandas.core.series.Series]], x_name: str)
+### _class_ RegressionAbsPercentageErrorPlotResults(current_scatter: Dict[str, pandas.core.series.Series], reference_scatter: Optional[Dict[str, pandas.core.series.Series]], x_name: str)
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -71,9 +39,8 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ RegressionErrorBiasTable(columns: Optional[List[str]] = None, top_error: Optional[float] = None)
+### _class_ RegressionErrorBiasTable(columns: Optional[List[str]] = None, top_error: Optional[float] = None)
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`RegressionErrorBiasTableResults`]
-
 
 #### Attributes: 
 
@@ -91,9 +58,8 @@ Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`Re
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
-### _class _ RegressionErrorBiasTableRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ RegressionErrorBiasTableRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
-
 
 #### Attributes: 
 
@@ -105,9 +71,8 @@ Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_render
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: RegressionErrorBiasTable)
 
-### _class _ RegressionErrorBiasTableResults(top_error: float, current_plot_data: pandas.core.frame.DataFrame, reference_plot_data: Optional[pandas.core.frame.DataFrame], target_name: str, prediction_name: str, num_feature_names: List[str], cat_feature_names: List[str], error_bias: Optional[dict] = None, columns: Optional[List[str]] = None)
+### _class_ RegressionErrorBiasTableResults(top_error: float, current_plot_data: pandas.core.frame.DataFrame, reference_plot_data: Optional[pandas.core.frame.DataFrame], target_name: str, prediction_name: str, num_feature_names: List[str], cat_feature_names: List[str], error_bias: Optional[dict] = None, columns: Optional[List[str]] = None)
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -131,7 +96,7 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ RegressionErrorDistribution()
+### _class_ RegressionErrorDistribution()
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`RegressionErrorDistributionResults`]
 
 
@@ -141,9 +106,8 @@ Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`Re
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
-### _class _ RegressionErrorDistributionRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ RegressionErrorDistributionRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
-
 
 #### Attributes: 
 
@@ -155,9 +119,8 @@ Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_render
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: RegressionErrorDistribution)
 
-### _class _ RegressionErrorDistributionResults(current_bins: pandas.core.frame.DataFrame, reference_bins: Optional[pandas.core.frame.DataFrame])
+### _class_ RegressionErrorDistributionResults(current_bins: pandas.core.frame.DataFrame, reference_bins: Optional[pandas.core.frame.DataFrame])
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -167,7 +130,7 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ RegressionErrorPlot()
+### _class_ RegressionErrorPlot()
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`RegressionErrorPlotResults`]
 
 
@@ -177,9 +140,8 @@ Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`Re
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
-### _class _ RegressionErrorPlotRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ RegressionErrorPlotRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
-
 
 #### Attributes: 
 
@@ -191,9 +153,8 @@ Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_render
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: RegressionErrorPlot)
 
-### _class _ RegressionErrorPlotResults(current_scatter: Dict[str, pandas.core.series.Series], reference_scatter: Optional[Dict[str, pandas.core.series.Series]], x_name: str)
+### _class_ RegressionErrorPlotResults(current_scatter: Dict[str, pandas.core.series.Series], reference_scatter: Optional[Dict[str, pandas.core.series.Series]], x_name: str)
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -205,7 +166,7 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ RegressionErrorNormality()
+### _class_ RegressionErrorNormality()
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`RegressionErrorNormalityResults`]
 
 
@@ -215,9 +176,8 @@ Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`Re
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
-### _class _ RegressionErrorNormalityRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ RegressionErrorNormalityRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
-
 
 #### Attributes: 
 
@@ -229,9 +189,8 @@ Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_render
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: RegressionErrorNormality)
 
-### _class _ RegressionErrorNormalityResults(current_error: pandas.core.series.Series, reference_error: Optional[pandas.core.series.Series])
+### _class_ RegressionErrorNormalityResults(current_error: pandas.core.series.Series, reference_error: Optional[pandas.core.series.Series])
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -241,7 +200,7 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ RegressionPredictedVsActualPlot()
+### _class_ RegressionPredictedVsActualPlot()
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`RegressionPredictedVsActualPlotResults`]
 
 
@@ -251,9 +210,8 @@ Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`Re
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
-### _class _ RegressionPredictedVsActualPlotRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ RegressionPredictedVsActualPlotRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
-
 
 #### Attributes: 
 
@@ -265,9 +223,8 @@ Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_render
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: RegressionPredictedVsActualPlot)
 
-### _class _ RegressionPredictedVsActualPlotResults(current_scatter: Dict[str, pandas.core.series.Series], reference_scatter: Optional[Dict[str, pandas.core.series.Series]], x_name: str)
+### _class_ RegressionPredictedVsActualPlotResults(current_scatter: Dict[str, pandas.core.series.Series], reference_scatter: Optional[Dict[str, pandas.core.series.Series]], x_name: str)
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -279,7 +236,7 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ RegressionPredictedVsActualScatter()
+### _class_ RegressionPredictedVsActualScatter()
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`RegressionPredictedVsActualScatterResults`]
 
 
@@ -289,9 +246,8 @@ Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`Re
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
-### _class _ RegressionPredictedVsActualScatterRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ RegressionPredictedVsActualScatterRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
-
 
 #### Attributes: 
 
@@ -303,9 +259,8 @@ Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_render
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: RegressionPredictedVsActualScatter)
 
-### _class _ RegressionPredictedVsActualScatterResults(current_scatter: Dict[str, pandas.core.series.Series], reference_scatter: Optional[Dict[str, pandas.core.series.Series]])
+### _class_ RegressionPredictedVsActualScatterResults(current_scatter: Dict[str, pandas.core.series.Series], reference_scatter: Optional[Dict[str, pandas.core.series.Series]])
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -315,9 +270,8 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ RegressionDummyMetric()
+### _class_ RegressionDummyMetric()
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`RegressionDummyMetricResults`]
-
 
 #### Attributes: 
 
@@ -327,9 +281,8 @@ Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`Re
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
-### _class _ RegressionDummyMetricRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ RegressionDummyMetricRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
-
 
 #### Attributes: 
 
@@ -341,9 +294,8 @@ Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_render
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: RegressionDummyMetric)
 
-### _class _ RegressionDummyMetricResults(rmse_default: float, mean_abs_error_default: float, mean_abs_perc_error_default: float, abs_error_max_default: float, mean_abs_error_by_ref: Optional[float] = None, mean_abs_error: Optional[float] = None, mean_abs_perc_error_by_ref: Optional[float] = None, mean_abs_perc_error: Optional[float] = None, rmse_by_ref: Optional[float] = None, rmse: Optional[float] = None, abs_error_max_by_ref: Optional[float] = None, abs_error_max: Optional[float] = None)
+### _class_ RegressionDummyMetricResults(rmse_default: float, mean_abs_error_default: float, mean_abs_perc_error_default: float, abs_error_max_default: float, mean_abs_error_by_ref: Optional[float] = None, mean_abs_error: Optional[float] = None, mean_abs_perc_error_by_ref: Optional[float] = None, mean_abs_perc_error: Optional[float] = None, rmse_by_ref: Optional[float] = None, rmse: Optional[float] = None, abs_error_max_by_ref: Optional[float] = None, abs_error_max: Optional[float] = None)
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -373,7 +325,7 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ RegressionPerformanceMetrics()
+### _class_ RegressionPerformanceMetrics()
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`RegressionPerformanceMetricsResults`]
 
 
@@ -385,9 +337,8 @@ Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`Re
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; get_parameters()
 
-### _class _ RegressionPerformanceMetricsRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ RegressionPerformanceMetricsRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
-
 
 #### Attributes: 
 
@@ -399,9 +350,8 @@ Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_render
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: RegressionPerformanceMetrics)
 
-### _class _ RegressionPerformanceMetricsResults(columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns), r2_score: float, rmse: float, rmse_default: float, mean_error: float, me_default_sigma: float, me_hist_for_plot: Dict[str, Union[pandas.core.series.Series, pandas.core.frame.DataFrame]], mean_abs_error: float, mean_abs_error_default: float, mean_abs_perc_error: float, mean_abs_perc_error_default: float, abs_error_max: float, abs_error_max_default: float, error_std: float, abs_error_std: float, abs_perc_error_std: float, error_normality: dict, underperformance: dict, hist_for_plot: Dict[str, pandas.core.series.Series], vals_for_plots: Dict[str, Dict[str, pandas.core.series.Series]], error_bias: Optional[dict] = None, mean_error_ref: Optional[float] = None, mean_abs_error_ref: Optional[float] = None, mean_abs_perc_error_ref: Optional[float] = None, rmse_ref: Optional[float] = None, r2_score_ref: Optional[float] = None, abs_error_max_ref: Optional[float] = None, underperformance_ref: Optional[dict] = None)
+### _class_ RegressionPerformanceMetricsResults(columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns), r2_score: float, rmse: float, rmse_default: float, mean_error: float, me_default_sigma: float, me_hist_for_plot: Dict[str, Union[pandas.core.series.Series, pandas.core.frame.DataFrame]], mean_abs_error: float, mean_abs_error_default: float, mean_abs_perc_error: float, mean_abs_perc_error_default: float, abs_error_max: float, abs_error_max_default: float, error_std: float, abs_error_std: float, abs_perc_error_std: float, error_normality: dict, underperformance: dict, hist_for_plot: Dict[str, pandas.core.series.Series], vals_for_plots: Dict[str, Dict[str, pandas.core.series.Series]], error_bias: Optional[dict] = None, mean_error_ref: Optional[float] = None, mean_abs_error_ref: Optional[float] = None, mean_abs_perc_error_ref: Optional[float] = None, rmse_ref: Optional[float] = None, r2_score_ref: Optional[float] = None, abs_error_max_ref: Optional[float] = None, underperformance_ref: Optional[dict] = None)
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -463,7 +413,7 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ RegressionQualityMetric()
+### _class_ RegressionQualityMetric()
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`RegressionQualityMetricResults`]
 
 
@@ -473,9 +423,8 @@ Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`Re
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
-### _class _ RegressionQualityMetricRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ RegressionQualityMetricRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
-
 
 #### Attributes: 
 
@@ -487,9 +436,8 @@ Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_render
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: RegressionQualityMetric)
 
-### _class _ RegressionQualityMetricResults(columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns), r2_score: float, rmse: float, rmse_default: float, mean_error: float, me_default_sigma: float, me_hist_for_plot: Dict[str, pandas.core.series.Series], mean_abs_error: float, mean_abs_error_default: float, mean_abs_perc_error: float, mean_abs_perc_error_default: float, abs_error_max: float, abs_error_max_default: float, error_std: float, abs_error_std: float, abs_perc_error_std: float, error_normality: dict, underperformance: dict, hist_for_plot: Dict[str, pandas.core.series.Series], vals_for_plots: Dict[str, Dict[str, pandas.core.series.Series]], error_bias: Optional[dict] = None, mean_error_ref: Optional[float] = None, mean_abs_error_ref: Optional[float] = None, mean_abs_perc_error_ref: Optional[float] = None, rmse_ref: Optional[float] = None, r2_score_ref: Optional[float] = None, abs_error_max_ref: Optional[float] = None, underperformance_ref: Optional[dict] = None, error_std_ref: Optional[float] = None, abs_error_std_ref: Optional[float] = None, abs_perc_error_std_ref: Optional[float] = None)
+### _class_ RegressionQualityMetricResults(columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns), r2_score: float, rmse: float, rmse_default: float, mean_error: float, me_default_sigma: float, me_hist_for_plot: Dict[str, pandas.core.series.Series], mean_abs_error: float, mean_abs_error_default: float, mean_abs_perc_error: float, mean_abs_perc_error_default: float, abs_error_max: float, abs_error_max_default: float, error_std: float, abs_error_std: float, abs_perc_error_std: float, error_normality: dict, underperformance: dict, hist_for_plot: Dict[str, pandas.core.series.Series], vals_for_plots: Dict[str, Dict[str, pandas.core.series.Series]], error_bias: Optional[dict] = None, mean_error_ref: Optional[float] = None, mean_abs_error_ref: Optional[float] = None, mean_abs_perc_error_ref: Optional[float] = None, rmse_ref: Optional[float] = None, r2_score_ref: Optional[float] = None, abs_error_max_ref: Optional[float] = None, underperformance_ref: Optional[dict] = None, error_std_ref: Optional[float] = None, abs_error_std_ref: Optional[float] = None, abs_perc_error_std_ref: Optional[float] = None)
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -557,7 +505,7 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ RegressionTopErrorMetric()
+### _class_ RegressionTopErrorMetric()
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`RegressionTopErrorMetricResults`]
 
 
@@ -567,9 +515,8 @@ Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`Re
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
-### _class _ RegressionTopErrorMetricRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ RegressionTopErrorMetricRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
-
 
 #### Attributes: 
 
@@ -581,9 +528,8 @@ Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_render
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: RegressionTopErrorMetric)
 
-### _class _ RegressionTopErrorMetricResults(curr_mean_err_per_group: Dict[str, Dict[str, float]], curr_scatter: Dict[str, Dict[str, pandas.core.series.Series]], ref_mean_err_per_group: Optional[Dict[str, Dict[str, float]]], ref_scatter: Optional[Dict[str, Dict[str, pandas.core.series.Series]]])
+### _class_ RegressionTopErrorMetricResults(curr_mean_err_per_group: Dict[str, Dict[str, float]], curr_scatter: Dict[str, Dict[str, pandas.core.series.Series]], ref_mean_err_per_group: Optional[Dict[str, Dict[str, float]]], ref_scatter: Optional[Dict[str, Dict[str, pandas.core.series.Series]]])
 Bases: `object`
-
 
 #### Attributes: 
 

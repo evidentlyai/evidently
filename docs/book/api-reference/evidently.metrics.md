@@ -1344,25 +1344,17 @@
 ## Submodules
 
 
-### _class _ ErrorResult(exception: BaseException)
+### _class_ ErrorResult(exception: BaseException)
 Bases: `object`
 
-
 #### Attributes: 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; labels _: Sequence[Union[str, int]]_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; values _: list_ 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; exception _: BaseException_ 
 
 #### Methods: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; generate_metrics(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
-
-### _class _ InputData(reference_data: Optional[pandas.core.frame.DataFrame], current_data: pandas.core.frame.DataFrame, column_mapping: [ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping), data_definition: [DataDefinition](evidently.utils.md#evidently.utils.data_preprocessing.DataDefinition))
+### _class_ InputData(reference_data: Optional[pandas.core.frame.DataFrame], current_data: pandas.core.frame.DataFrame, column_mapping: [ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping), data_definition: [DataDefinition](evidently.utils.md#evidently.utils.data_preprocessing.DataDefinition))
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -1376,9 +1368,8 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ Metric()
+### _class_ Metric()
 Bases: `Generic`[`TResult`]
-
 
 #### Attributes: 
 

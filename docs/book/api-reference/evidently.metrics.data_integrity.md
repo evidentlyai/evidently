@@ -3,23 +3,12 @@
 ## Submodules
 
 
-### _class _ ColumnMissingValues(number_of_rows: int, different_missing_values: Dict[Any, int], number_of_different_missing_values: int, number_of_missing_values: int, share_of_missing_values: float)
+### _class_ ColumnMissingValues(number_of_rows: int, different_missing_values: Dict[Any, int], number_of_different_missing_values: int, number_of_missing_values: int, share_of_missing_values: float)
 Bases: `object`
 
 Statistics about missing values in a column
 
-
 #### Attributes: 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; labels _: Sequence[Union[str, int]]_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; values _: list_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; exception _: BaseException_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; column_name _: str_ 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; options _: [DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions)_ 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; different_missing_values _: Dict[Any, int]_ 
 
@@ -33,13 +22,7 @@ Statistics about missing values in a column
 
 #### Methods: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; generate_metrics(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; get_target_prediction_data(data: DataFrame, column_mapping: [ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping))
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
-
-### _class _ ColumnMissingValuesMetric(column_name: str, missing_values: Optional[list] = None, replace: bool = True)
+### _class_ ColumnMissingValuesMetric(column_name: str, missing_values: Optional[list] = None, replace: bool = True)
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`ColumnMissingValuesMetricResult`]
 
 Count missing values in a column.
@@ -55,7 +38,6 @@ Value None in the list means that Pandas null values will be included in the cal
 If replace parameter is False - add defaults to user’s list.
 If replace parameter is True - use values from missing_values list only.
 
-
 #### Attributes: 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; DEFAULT_MISSING_VALUES _ = ['', inf, -inf, None]_ 
@@ -68,9 +50,8 @@ If replace parameter is True - use values from missing_values list only.
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
-### _class _ ColumnMissingValuesMetricRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ ColumnMissingValuesMetricRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
-
 
 #### Attributes: 
 
@@ -82,9 +63,8 @@ Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_render
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: ColumnMissingValuesMetric)
 
-### _class _ ColumnMissingValuesMetricResult(column_name: str, current: ColumnMissingValues, reference: Optional[ColumnMissingValues] = None)
+### _class_ ColumnMissingValuesMetricResult(column_name: str, current: ColumnMissingValues, reference: Optional[ColumnMissingValues] = None)
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -96,11 +76,10 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ ColumnRegExpMetric(column_name: str, reg_exp: str, top: int = 10)
+### _class_ ColumnRegExpMetric(column_name: str, reg_exp: str, top: int = 10)
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`DataIntegrityValueByRegexpMetricResult`]
 
 Count number of values in a column matched or not by a regular expression (regexp)
-
 
 #### Attributes: 
 
@@ -114,9 +93,8 @@ Count number of values in a column matched or not by a regular expression (regex
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
-### _class _ ColumnRegExpMetricRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ ColumnRegExpMetricRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
-
 
 #### Attributes: 
 
@@ -128,9 +106,8 @@ Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_render
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: ColumnRegExpMetric)
 
-### _class _ DataIntegrityValueByRegexpMetricResult(column_name: str, reg_exp: str, top: int, current: DataIntegrityValueByRegexpStat, reference: Optional[DataIntegrityValueByRegexpStat] = None)
+### _class_ DataIntegrityValueByRegexpMetricResult(column_name: str, reg_exp: str, top: int, current: DataIntegrityValueByRegexpStat, reference: Optional[DataIntegrityValueByRegexpStat] = None)
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -146,11 +123,10 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ DataIntegrityValueByRegexpStat(number_of_matched: int, number_of_not_matched: int, number_of_rows: int, table_of_matched: Dict[str, int], table_of_not_matched: Dict[str, int])
+### _class_ DataIntegrityValueByRegexpStat(number_of_matched: int, number_of_not_matched: int, number_of_rows: int, table_of_matched: Dict[str, int], table_of_not_matched: Dict[str, int])
 Bases: `object`
 
 Statistics about matched by a regular expression values in a column for one dataset
-
 
 #### Attributes: 
 
@@ -166,9 +142,8 @@ Statistics about matched by a regular expression values in a column for one data
 
 #### Methods: 
 
-### _class _ CategoricalCharacteristics(number_of_rows: int, count: int, unique: Optional[int], unique_percentage: Optional[float], most_common: Optional[object], most_common_percentage: Optional[float], missing: Optional[int], missing_percentage: Optional[float], new_in_current_values_count: Optional[int] = None, unused_in_current_values_count: Optional[int] = None)
+### _class_ CategoricalCharacteristics(number_of_rows: int, count: int, unique: Optional[int], unique_percentage: Optional[float], most_common: Optional[object], most_common_percentage: Optional[float], missing: Optional[int], missing_percentage: Optional[float], new_in_current_values_count: Optional[int] = None, unused_in_current_values_count: Optional[int] = None)
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -194,9 +169,8 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ ColumnSummary(column_name: str, column_type: str, reference_characteristics: Union[NumericCharacteristics, CategoricalCharacteristics, DatetimeCharacteristics, NoneType], current_characteristics: Union[NumericCharacteristics, CategoricalCharacteristics, DatetimeCharacteristics], plot_data: DataQualityPlot)
+### _class_ ColumnSummary(column_name: str, column_type: str, reference_characteristics: Union[NumericCharacteristics, CategoricalCharacteristics, DatetimeCharacteristics, NoneType], current_characteristics: Union[NumericCharacteristics, CategoricalCharacteristics, DatetimeCharacteristics], plot_data: DataQualityPlot)
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -212,9 +186,8 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ ColumnSummaryMetric(column_name: str)
+### _class_ ColumnSummaryMetric(column_name: str)
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`ColumnSummary`]
-
 
 #### Attributes: 
 
@@ -224,9 +197,8 @@ Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`Co
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; _static _ map_data(stats: [FeatureQualityStats](evidently.calculations.md#evidently.calculations.data_quality.FeatureQualityStats))
 
-### _class _ ColumnSummaryMetricRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ ColumnSummaryMetricRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
-
 
 #### Attributes: 
 
@@ -238,9 +210,8 @@ Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_render
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: ColumnSummaryMetric)
 
-### _class _ DataByTarget(data_for_plots: Dict[str, Dict[str, Union[list, pandas.core.frame.DataFrame]]], target_name: str, target_type: str)
+### _class_ DataByTarget(data_for_plots: Dict[str, Dict[str, Union[list, pandas.core.frame.DataFrame]]], target_name: str, target_type: str)
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -252,9 +223,8 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ DataInTime(data_for_plots: Dict[str, pandas.core.frame.DataFrame], freq: str, datetime_name: str)
+### _class_ DataInTime(data_for_plots: Dict[str, pandas.core.frame.DataFrame], freq: str, datetime_name: str)
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -266,9 +236,8 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ DataQualityPlot(bins_for_hist: Dict[str, pandas.core.frame.DataFrame], data_in_time: Optional[DataInTime], data_by_target: Optional[DataByTarget], counts_of_values: Optional[Dict[str, pandas.core.frame.DataFrame]])
+### _class_ DataQualityPlot(bins_for_hist: Dict[str, pandas.core.frame.DataFrame], data_in_time: Optional[DataInTime], data_by_target: Optional[DataByTarget], counts_of_values: Optional[Dict[str, pandas.core.frame.DataFrame]])
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -282,9 +251,8 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ DatetimeCharacteristics(number_of_rows: int, count: int, unique: Optional[int], unique_percentage: Optional[float], most_common: Optional[object], most_common_percentage: Optional[float], missing: Optional[int], missing_percentage: Optional[float], first: Optional[str], last: Optional[str])
+### _class_ DatetimeCharacteristics(number_of_rows: int, count: int, unique: Optional[int], unique_percentage: Optional[float], most_common: Optional[object], most_common_percentage: Optional[float], missing: Optional[int], missing_percentage: Optional[float], first: Optional[str], last: Optional[str])
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -310,9 +278,8 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ NumericCharacteristics(number_of_rows: int, count: int, mean: Union[float, int, NoneType], std: Union[float, int, NoneType], min: Union[float, int, NoneType], p25: Union[float, int, NoneType], p50: Union[float, int, NoneType], p75: Union[float, int, NoneType], max: Union[float, int, NoneType], unique: Optional[int], unique_percentage: Optional[float], missing: Optional[int], missing_percentage: Optional[float], infinite_count: Optional[int], infinite_percentage: Optional[float], most_common: Union[float, int, NoneType], most_common_percentage: Optional[float])
+### _class_ NumericCharacteristics(number_of_rows: int, count: int, mean: Union[float, int, NoneType], std: Union[float, int, NoneType], min: Union[float, int, NoneType], p25: Union[float, int, NoneType], p50: Union[float, int, NoneType], p75: Union[float, int, NoneType], max: Union[float, int, NoneType], unique: Optional[int], unique_percentage: Optional[float], missing: Optional[int], missing_percentage: Optional[float], infinite_count: Optional[int], infinite_percentage: Optional[float], most_common: Union[float, int, NoneType], most_common_percentage: Optional[float])
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -352,11 +319,10 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ DatasetMissingValues(different_missing_values: Dict[Any, int], number_of_different_missing_values: int, different_missing_values_by_column: Dict[str, Dict[Any, int]], number_of_different_missing_values_by_column: Dict[str, int], number_of_missing_values: int, share_of_missing_values: float, number_of_missing_values_by_column: Dict[str, int], share_of_missing_values_by_column: Dict[str, float], number_of_rows: int, number_of_rows_with_missing_values: int, share_of_rows_with_missing_values: float, number_of_columns: int, columns_with_missing_values: List[str], number_of_columns_with_missing_values: int, share_of_columns_with_missing_values: float)
+### _class_ DatasetMissingValues(different_missing_values: Dict[Any, int], number_of_different_missing_values: int, different_missing_values_by_column: Dict[str, Dict[Any, int]], number_of_different_missing_values_by_column: Dict[str, int], number_of_missing_values: int, share_of_missing_values: float, number_of_missing_values_by_column: Dict[str, int], share_of_missing_values_by_column: Dict[str, float], number_of_rows: int, number_of_rows_with_missing_values: int, share_of_rows_with_missing_values: float, number_of_columns: int, columns_with_missing_values: List[str], number_of_columns_with_missing_values: int, share_of_columns_with_missing_values: float)
 Bases: `object`
 
 Statistics about missed values in a dataset
-
 
 #### Attributes: 
 
@@ -392,7 +358,7 @@ Statistics about missed values in a dataset
 
 #### Methods: 
 
-### _class _ DatasetMissingValuesMetric(missing_values: Optional[list] = None, replace: bool = True)
+### _class_ DatasetMissingValuesMetric(missing_values: Optional[list] = None, replace: bool = True)
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`DatasetMissingValuesMetricResult`]
 
 Count missing values in a dataset.
@@ -408,7 +374,6 @@ Value None in the list means that Pandas null values will be included in the cal
 If replace parameter is False - add defaults to user’s list.
 If replace parameter is True - use values from missing_values list only.
 
-
 #### Attributes: 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; DEFAULT_MISSING_VALUES _ = ['', inf, -inf, None]_ 
@@ -419,9 +384,8 @@ If replace parameter is True - use values from missing_values list only.
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
-### _class _ DatasetMissingValuesMetricRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ DatasetMissingValuesMetricRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
-
 
 #### Attributes: 
 
@@ -433,9 +397,8 @@ Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_render
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: DatasetMissingValuesMetric)
 
-### _class _ DatasetMissingValuesMetricResult(current: DatasetMissingValues, reference: Optional[DatasetMissingValues] = None)
+### _class_ DatasetMissingValuesMetricResult(current: DatasetMissingValues, reference: Optional[DatasetMissingValues] = None)
 Bases: `object`
-
 
 #### Attributes: 
 
@@ -445,11 +408,10 @@ Bases: `object`
 
 #### Methods: 
 
-### _class _ DatasetSummary(target: Optional[str], prediction: Optional[Union[str, Sequence[str]]], date_column: Optional[str], id_column: Optional[str], number_of_columns: int, number_of_rows: int, number_of_missing_values: int, number_of_categorical_columns: int, number_of_numeric_columns: int, number_of_datetime_columns: int, number_of_constant_columns: int, number_of_almost_constant_columns: int, number_of_duplicated_columns: int, number_of_almost_duplicated_columns: int, number_of_empty_rows: int, number_of_empty_columns: int, number_of_duplicated_rows: int, columns_type: dict, nans_by_columns: dict, number_uniques_by_columns: dict)
+### _class_ DatasetSummary(target: Optional[str], prediction: Optional[Union[str, Sequence[str]]], date_column: Optional[str], id_column: Optional[str], number_of_columns: int, number_of_rows: int, number_of_missing_values: int, number_of_categorical_columns: int, number_of_numeric_columns: int, number_of_datetime_columns: int, number_of_constant_columns: int, number_of_almost_constant_columns: int, number_of_duplicated_columns: int, number_of_almost_duplicated_columns: int, number_of_empty_rows: int, number_of_empty_columns: int, number_of_duplicated_rows: int, columns_type: dict, nans_by_columns: dict, number_uniques_by_columns: dict)
 Bases: `object`
 
 Columns information in a dataset
-
 
 #### Attributes: 
 
@@ -495,11 +457,10 @@ Columns information in a dataset
 
 #### Methods: 
 
-### _class _ DatasetSummaryMetric(almost_duplicated_threshold: float = 0.95, almost_constant_threshold: float = 0.95)
+### _class_ DatasetSummaryMetric(almost_duplicated_threshold: float = 0.95, almost_constant_threshold: float = 0.95)
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`DatasetSummaryMetricResult`]
 
 Common dataset(s) columns/features characteristics
-
 
 #### Attributes: 
 
@@ -511,9 +472,8 @@ Common dataset(s) columns/features characteristics
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
-### _class _ DatasetSummaryMetricRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### _class_ DatasetSummaryMetricRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
-
 
 #### Attributes: 
 
@@ -525,9 +485,8 @@ Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_render
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: DatasetSummaryMetric)
 
-### _class _ DatasetSummaryMetricResult(almost_duplicated_threshold: float, current: DatasetSummary, reference: Optional[DatasetSummary] = None)
+### _class_ DatasetSummaryMetricResult(almost_duplicated_threshold: float, current: DatasetSummary, reference: Optional[DatasetSummary] = None)
 Bases: `object`
-
 
 #### Attributes: 
 
