@@ -1,4 +1,3 @@
-from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Sequence
@@ -17,37 +16,25 @@ from evidently.utils.data_operations import DatasetColumns
 
 class TargetDriftPreset(MetricPreset):
     columns: Optional[List[str]]
-    all_features_stattest: Optional[PossibleStatTestType]
-    cat_features_stattest: Optional[PossibleStatTestType]
-    num_features_stattest: Optional[PossibleStatTestType]
-    per_feature_stattest: Optional[Dict[str, PossibleStatTestType]]
-    all_features_threshold: Optional[float]
-    cat_features_threshold: Optional[float]
-    num_features_threshold: Optional[float]
-    per_feature_threshold: Optional[float]
+    target_stattest: Optional[PossibleStatTestType]
+    prediction_stattest: Optional[PossibleStatTestType]
+    target_threshold: Optional[float]
+    prediction_threshold: Optional[float]
 
     def __init__(
         self,
         columns: Optional[List[str]] = None,
-        all_features_stattest: Optional[PossibleStatTestType] = None,
-        cat_features_stattest: Optional[PossibleStatTestType] = None,
-        num_features_stattest: Optional[PossibleStatTestType] = None,
-        per_feature_stattest: Optional[Dict[str, PossibleStatTestType]] = None,
-        all_features_threshold: Optional[float] = None,
-        cat_features_threshold: Optional[float] = None,
-        num_features_threshold: Optional[float] = None,
-        per_feature_threshold: Optional[float] = None,
+        target_stattest: Optional[PossibleStatTestType] = None,
+        prediction_stattest: Optional[PossibleStatTestType] = None,
+        target_threshold: Optional[float] = None,
+        prediction_threshold: Optional[float] = None,
     ):
         super().__init__()
         self.columns = columns
-        self.all_features_stattest = all_features_stattest
-        self.cat_features_stattest = cat_features_stattest
-        self.num_features_stattest = num_features_stattest
-        self.per_feature_stattest = per_feature_stattest
-        self.all_features_threshold = all_features_threshold
-        self.cat_features_threshold = cat_features_threshold
-        self.num_features_threshold = num_features_threshold
-        self.per_feature_threshold = per_feature_threshold
+        self.target_stattest = target_stattest
+        self.prediction_stattest = prediction_stattest
+        self.target_threshold = target_threshold
+        self.prediction_threshold = prediction_threshold
 
     def generate_metrics(self, data: InputData, columns: DatasetColumns) -> Sequence[Metric]:
         target = columns.utility_columns.target
@@ -58,7 +45,13 @@ class TargetDriftPreset(MetricPreset):
 
         if target is not None:
             columns_by_target.append(target)
-            result.append(ColumnDriftMetric(column_name=target))
+            result.append(
+                ColumnDriftMetric(
+                    column_name=target,
+                    threshold=self.target_threshold,
+                    stattest=self.target_stattest,
+                )
+            )
 
             if data.column_mapping.is_regression_task():
                 result.append(ColumnValuePlot(column_name=target))
@@ -82,7 +75,13 @@ class TargetDriftPreset(MetricPreset):
 
             if isinstance(prediction, str):
                 columns_by_target.append(prediction)
-                result.append(ColumnDriftMetric(column_name=prediction))
+                result.append(
+                    ColumnDriftMetric(
+                        column_name=prediction,
+                        threshold=self.target_threshold,
+                        stattest=self.target_stattest,
+                    )
+                )
 
                 if prob_columns is not None:
                     for prob_column in prob_columns:
