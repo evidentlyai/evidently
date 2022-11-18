@@ -5,24 +5,24 @@
 Methods for clean null or NaN values in a dataset
 
 
-### _class_ DatasetColumns(utility_columns: DatasetUtilityColumns, target_type: Optional[str], num_feature_names: List[str], cat_feature_names: List[str], datetime_feature_names: List[str], target_names: Optional[List[str]], task: Optional[str])
+### class DatasetColumns(utility_columns: DatasetUtilityColumns, target_type: Optional[str], num_feature_names: List[str], cat_feature_names: List[str], datetime_feature_names: List[str], target_names: Optional[List[str]], task: Optional[str])
 Bases: `object`
 
 #### Attributes: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; cat_feature_names _: List[str]_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; cat_feature_names : List[str] 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; datetime_feature_names _: List[str]_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; datetime_feature_names : List[str] 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; num_feature_names _: List[str]_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; num_feature_names : List[str] 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; target_names _: Optional[List[str]]_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; target_names : Optional[List[str]] 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; target_type _: Optional[str]_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; target_type : Optional[str] 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; task _: Optional[str]_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; task : Optional[str] 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; utility_columns _: DatasetUtilityColumns_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; utility_columns : DatasetUtilityColumns 
 
 #### Methods: 
 
@@ -42,18 +42,18 @@ How mane feature do we have. It is useful for pagination in widgets.
 By default, we sum category nad numeric features.
 If you want to include date time columns - set include_datetime_feature to True.
 
-### _class_ DatasetUtilityColumns(date: Optional[str], id_column: Optional[str], target: Optional[str], prediction: Union[str, Sequence[str], NoneType])
+### class DatasetUtilityColumns(date: Optional[str], id_column: Optional[str], target: Optional[str], prediction: Union[str, Sequence[str], NoneType])
 Bases: `object`
 
 #### Attributes: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; date _: Optional[str]_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; date : Optional[str] 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; id_column _: Optional[str]_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; id_column : Optional[str] 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; prediction _: Optional[Union[str, Sequence[str]]]_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; prediction : Optional[Union[str, Sequence[str]]] 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; target _: Optional[str]_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; target : Optional[str] 
 
 #### Methods: 
 
@@ -87,52 +87,44 @@ in all other cases task == ‘classification’.
 
 ### replace_infinity_values_to_nan(dataframe: DataFrame)
 
-### _class_ ColumnDefinition(column_name: str, column_type: ColumnType)
+### class ColumnDefinition(column_name: str, column_type: ColumnType)
 Bases: `object`
 
 #### Attributes: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; column_name _: str_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; column_name : str 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; column_type _: ColumnType_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; column_type : ColumnType 
 
-#### Methods: 
-
-### _class_ ColumnPresenceState(value)
+### class ColumnPresenceState(value)
 Bases: `Enum`
 
 An enumeration.
 
 #### Attributes: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; Missing _ = 2_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; Missing  = 2 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; Partially _ = 1_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; Partially  = 1 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; Present _ = 0_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; Present  = 0 
 
-#### Methods: 
-
-### _class_ ColumnType(value)
+### class ColumnType(value)
 Bases: `Enum`
 
 An enumeration.
 
 #### Attributes: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; Categorical _ = 'cat'_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; Categorical  = 'cat' 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; Datetime _ = 'datetime'_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; Datetime  = 'datetime' 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; Numerical _ = 'num'_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; Numerical  = 'num' 
 
-#### Methods: 
-
-### _class_ DataDefinition(columns: List[ColumnDefinition], target: Optional[ColumnDefinition], prediction_columns: Optional[PredictionColumns], id_column: Optional[ColumnDefinition], datetime_column: Optional[ColumnDefinition], task: Optional[str], classification_labels: Optional[Sequence[str]])
+### class DataDefinition(columns: List[ColumnDefinition], target: Optional[ColumnDefinition], prediction_columns: Optional[PredictionColumns], id_column: Optional[ColumnDefinition], datetime_column: Optional[ColumnDefinition], task: Optional[str], classification_labels: Optional[Sequence[str]])
 Bases: `object`
 
-
-#### Attributes: 
 
 #### Methods: 
 
@@ -150,14 +142,14 @@ Bases: `object`
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; task()
 
-### _class_ PredictionColumns(predicted_values: Optional[ColumnDefinition] = None, prediction_probas: Optional[List[ColumnDefinition]] = None)
+### class PredictionColumns(predicted_values: Optional[ColumnDefinition] = None, prediction_probas: Optional[List[ColumnDefinition]] = None)
 Bases: `object`
 
 #### Attributes: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; predicted_values _: Optional[ColumnDefinition]_ _ = None_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; predicted_values : Optional[ColumnDefinition]  = None 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; prediction_probas _: Optional[List[ColumnDefinition]]_ _ = None_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; prediction_probas : Optional[List[ColumnDefinition]]  = None 
 
 #### Methods: 
 
@@ -165,7 +157,7 @@ Bases: `object`
 
 ### create_data_definition(reference_data: Optional[DataFrame], current_data: DataFrame, mapping: [ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping))
 
-### _class_ BaseGenerator()
+### class BaseGenerator()
 Bases: `Generic`[`TObject`]
 
 Base class for tests and metrics generator creation
@@ -197,11 +189,9 @@ For example:
 
 Do not forget set correct test type for generate return value
 
-#### Attributes: 
-
 #### Methods: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; _abstract _ generate(columns_info: DatasetColumns)
+##### &nbsp;&nbsp;&nbsp;&nbsp; abstract  generate(columns_info: DatasetColumns)
 
 ### make_generator_by_columns(base_class: Type, columns: Optional[Union[str, list]] = None, parameters: Optional[Dict] = None)
 Create a test generator for a columns list with a test class.
@@ -222,13 +212,11 @@ If columns is string, and it is not one of the values, ValueError will be raised
 parameters is used for specifying other parameters for each object, it is the same for all generated objects.
 
 
-### _class_ NumpyEncoder(\*, skipkeys=False, ensure_ascii=True, check_circular=True, allow_nan=True, sort_keys=False, indent=None, separators=None, default=None)
+### class NumpyEncoder(\*, skipkeys=False, ensure_ascii=True, check_circular=True, allow_nan=True, sort_keys=False, indent=None, separators=None, default=None)
 Bases: `JSONEncoder`
 
 Numpy and Pandas data types to JSON types encoder
 
-
-#### Attributes: 
 
 #### Methods: 
 
@@ -239,34 +227,32 @@ If we cannot convert the object, leave the default JSONEncoder behaviour - raise
 Additional types, classes, dataclasses, etc.
 
 
-### _class_ ApproxValue(value: Union[float, int], relative: Optional[Union[float, int]] = None, absolute: Optional[Union[float, int]] = None)
+### class ApproxValue(value: Union[float, int], relative: Optional[Union[float, int]] = None, absolute: Optional[Union[float, int]] = None)
 Bases: `object`
 
 Class for approximate scalar value calculations
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; _property_ tolerance _: Union[float, int]_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; property tolerance : Union[float, int] 
 #### Attributes: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; DEFAULT_ABSOLUTE _ = 1e-12_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; DEFAULT_ABSOLUTE  = 1e-12 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; DEFAULT_RELATIVE _ = 1e-06_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; DEFAULT_RELATIVE  = 1e-06 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; value _: Union[float, int]_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; value : Union[float, int] 
 
 #### Methods: 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; as_dict()
 
-### _class_ Distribution(x: Union[<built-in function array>, list], y: Union[<built-in function array>, list])
+### class Distribution(x: Union[<built-in function array>, list], y: Union[<built-in function array>, list])
 Bases: `object`
 
 #### Attributes: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; x _: Union[array, list]_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; x : Union[array, list] 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; y _: Union[array, list]_ 
-
-#### Methods: 
+##### &nbsp;&nbsp;&nbsp;&nbsp; y : Union[array, list] 
 
 ### get_distribution_for_category_column(column: Series, normalize: bool = False)
 

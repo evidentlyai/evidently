@@ -3,63 +3,53 @@
 ## Submodules
 
 
-### _class_ ClassificationPreset()
+### class ClassificationPreset()
 Bases: `MetricPreset`
 
-
-#### Attributes: 
 
 #### Methods: 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; generate_metrics(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
-### _class_ DataDriftPreset()
+### class DataDriftPreset()
 Bases: `MetricPreset`
 
-
-#### Attributes: 
 
 #### Methods: 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; generate_metrics(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
-### _class_ DataQualityPreset(columns: Optional[List[str]] = None)
+### class DataQualityPreset(columns: Optional[List[str]] = None)
 Bases: `MetricPreset`
 
 #### Attributes: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; columns _: Optional[List[str]]_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; columns : Optional[List[str]] 
 
 #### Methods: 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; generate_metrics(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
-### _class_ MetricPreset()
+### class MetricPreset()
 Bases: `object`
 
 Base class for metric presets
 
-#### Attributes: 
-
 #### Methods: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; _abstract _ generate_metrics(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
+##### &nbsp;&nbsp;&nbsp;&nbsp; abstract  generate_metrics(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
-### _class_ RegressionPreset()
+### class RegressionPreset()
 Bases: `MetricPreset`
 
-
-#### Attributes: 
 
 #### Methods: 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; generate_metrics(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
-### _class_ TargetDriftPreset()
+### class TargetDriftPreset()
 Bases: `MetricPreset`
 
-
-#### Attributes: 
 
 #### Methods: 
 

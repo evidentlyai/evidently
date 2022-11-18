@@ -3,36 +3,32 @@
 ## Submodules
 
 
-### _class_ BaseRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### class BaseRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: `object`
 
 Base class for all renderers
 
 #### Attributes: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; color_options : [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions) 
 
-#### Methods: 
-
-### _class_ DetailsInfo(title: str, info: evidently.model.widget.BaseWidgetInfo, id: str = <factory>)
+### class DetailsInfo(title: str, info: evidently.model.widget.BaseWidgetInfo, id: str = <factory>)
 Bases: `object`
 
 #### Attributes: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; id _: str_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; id : str 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; info _: BaseWidgetInfo_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; info : BaseWidgetInfo 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; title _: str_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; title : str 
 
-#### Methods: 
-
-### _class_ MetricRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### class MetricRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: `BaseRenderer`
 
 #### Attributes: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; color_options : [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions) 
 
 #### Methods: 
 
@@ -40,44 +36,42 @@ Bases: `BaseRenderer`
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj)
 
-### _class_ RenderersDefinitions(typed_renderers: dict = <factory>, default_html_test_renderer: Optional[evidently.renderers.base_renderer.TestRenderer] = None, default_html_metric_renderer: Optional[evidently.renderers.base_renderer.MetricRenderer] = None)
+### class RenderersDefinitions(typed_renderers: dict = <factory>, default_html_test_renderer: Optional[evidently.renderers.base_renderer.TestRenderer] = None, default_html_metric_renderer: Optional[evidently.renderers.base_renderer.MetricRenderer] = None)
 Bases: `object`
 
 #### Attributes: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; default_html_metric_renderer _: Optional[MetricRenderer]_ _ = None_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; default_html_metric_renderer : Optional[MetricRenderer]  = None 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; default_html_test_renderer _: Optional[TestRenderer]_ _ = None_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; default_html_test_renderer : Optional[TestRenderer]  = None 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; typed_renderers _: dict_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; typed_renderers : dict 
 
-#### Methods: 
-
-### _class_ TestHtmlInfo(name: str, description: str, status: str, details: List[DetailsInfo], groups: Dict[str, str])
+### class TestHtmlInfo(name: str, description: str, status: str, details: List[DetailsInfo], groups: Dict[str, str])
 Bases: `object`
 
 #### Attributes: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; description _: str_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; description : str 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; details _: List[DetailsInfo]_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; details : List[DetailsInfo] 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; groups _: Dict[str, str]_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; groups : Dict[str, str] 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; name _: str_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; name : str 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; status _: str_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; status : str 
 
 #### Methods: 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; with_details(title: str, info: BaseWidgetInfo)
 
-### _class_ TestRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### class TestRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: `BaseRenderer`
 
 #### Attributes: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; color_options : [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions) 
 
 #### Methods: 
 
@@ -91,54 +85,52 @@ Bases: `BaseRenderer`
 
 ### default_renderer(wrap_type)
 
-### _class_ ColumnDefinition(title: str, field_name: str, type: evidently.renderers.html_widgets.ColumnType = <ColumnType.STRING: 'string'>, sort: Optional[evidently.renderers.html_widgets.SortDirection] = None, options: Optional[dict] = None)
+### class ColumnDefinition(title: str, field_name: str, type: evidently.renderers.html_widgets.ColumnType = <ColumnType.STRING: 'string'>, sort: Optional[evidently.renderers.html_widgets.SortDirection] = None, options: Optional[dict] = None)
 Bases: `object`
 
 #### Attributes: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; field_name _: str_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; field_name : str 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; options _: Optional[dict]_ _ = None_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; options : Optional[dict]  = None 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; sort _: Optional[SortDirection]_ _ = None_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; sort : Optional[SortDirection]  = None 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; title _: str_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; title : str 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; type _: ColumnType_ _ = 'string'_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; type : ColumnType  = 'string' 
 
 #### Methods: 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; as_dict()
 
-### _class_ ColumnType(value)
+### class ColumnType(value)
 Bases: `Enum`
 
 An enumeration.
 
 #### Attributes: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; HISTOGRAM _ = 'histogram'_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; HISTOGRAM  = 'histogram' 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; LINE _ = 'line'_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; LINE  = 'line' 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; SCATTER _ = 'scatter'_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; SCATTER  = 'scatter' 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; STRING _ = 'string'_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; STRING  = 'string' 
 
-#### Methods: 
-
-### _class_ CounterData(label: str, value: str)
+### class CounterData(label: str, value: str)
 Bases: `object`
 
 #### Attributes: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; label _: str_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; label : str 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; value _: str_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; value : str 
 
 #### Methods: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; _static _ float(label: str, value: float, precision: int)
+##### &nbsp;&nbsp;&nbsp;&nbsp; static  float(label: str, value: float, precision: int)
 create CounterData for float value with given precision.
 
 * **Parameters**
@@ -148,7 +140,7 @@ create CounterData for float value with given precision.
 - **precision** – decimal precision
 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; _static _ int(label: str, value: int)
+##### &nbsp;&nbsp;&nbsp;&nbsp; static  int(label: str, value: int)
 create CounterData for int value.
 
 * **Parameters**
@@ -157,7 +149,7 @@ create CounterData for int value.
 - **value** – int value
 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; _static _ string(label: str, value: str)
+##### &nbsp;&nbsp;&nbsp;&nbsp; static  string(label: str, value: str)
 create CounterData for string value with given precision.
 
 * **Parameters**
@@ -166,117 +158,103 @@ create CounterData for string value with given precision.
 - **value** – string value of counter
 
 
-### _class_ DetailsPartInfo(title: str, info: Union[BaseWidgetInfo, PlotlyGraphInfo])
+### class DetailsPartInfo(title: str, info: Union[BaseWidgetInfo, PlotlyGraphInfo])
 Bases: `object`
 
 #### Attributes: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; info _: Union[BaseWidgetInfo, PlotlyGraphInfo]_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; info : Union[BaseWidgetInfo, PlotlyGraphInfo] 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; title _: str_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; title : str 
 
-#### Methods: 
-
-### _class_ GraphData(title: str, data: dict, layout: dict)
+### class GraphData(title: str, data: dict, layout: dict)
 Bases: `object`
 
 #### Attributes: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; data _: dict_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; data : dict 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; layout _: dict_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; layout : dict 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; title _: str_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; title : str 
 
 #### Methods: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; _static _ figure(title: str, figure: Figure)
+##### &nbsp;&nbsp;&nbsp;&nbsp; static  figure(title: str, figure: Figure)
 create GraphData from plotly figure itself
 :param title: title of graph
 :param figure: plotly figure for getting data from
 
-### _class_ HeatmapData(name: str, matrix: pandas.core.frame.DataFrame)
+### class HeatmapData(name: str, matrix: pandas.core.frame.DataFrame)
 Bases: `object`
 
 #### Attributes: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; matrix _: DataFrame_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; matrix : DataFrame 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; name _: str_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; name : str 
 
-#### Methods: 
-
-### _class_ HistogramData(name: str, x: list, y: List[Union[int, float]])
+### class HistogramData(name: str, x: list, y: List[Union[int, float]])
 Bases: `object`
 
 #### Attributes: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; name _: str_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; name : str 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; x _: list_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; x : list 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; y _: List[Union[int, float]]_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; y : List[Union[int, float]] 
 
-#### Methods: 
-
-### _class_ RichTableDataRow(fields: dict, details: Optional[RowDetails] = None)
+### class RichTableDataRow(fields: dict, details: Optional[RowDetails] = None)
 Bases: `object`
 
 #### Attributes: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; details _: Optional[RowDetails]_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; details : Optional[RowDetails] 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; fields _: dict_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; fields : dict 
 
-#### Methods: 
-
-### _class_ RowDetails(parts: Optional[List[DetailsPartInfo]] = None)
+### class RowDetails(parts: Optional[List[DetailsPartInfo]] = None)
 Bases: `object`
 
 #### Attributes: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; parts _: List[DetailsPartInfo]_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; parts : List[DetailsPartInfo] 
 
 #### Methods: 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; with_part(title: str, info: Union[BaseWidgetInfo, PlotlyGraphInfo])
 
-### _class_ SortDirection(value)
+### class SortDirection(value)
 Bases: `Enum`
 
 An enumeration.
 
 #### Attributes: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; ASC _ = 'asc'_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; ASC  = 'asc' 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; DESC _ = 'desc'_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; DESC  = 'desc' 
 
-#### Methods: 
-
-### _class_ TabData(title: str, widget: evidently.model.widget.BaseWidgetInfo)
+### class TabData(title: str, widget: evidently.model.widget.BaseWidgetInfo)
 Bases: `object`
 
 #### Attributes: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; title _: str_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; title : str 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; widget _: BaseWidgetInfo_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; widget : BaseWidgetInfo 
 
-#### Methods: 
-
-### _class_ WidgetSize(value)
+### class WidgetSize(value)
 Bases: `Enum`
 
 An enumeration.
 
 #### Attributes: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; FULL _ = 2_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; FULL  = 2 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; HALF _ = 1_ 
-
-#### Methods: 
+##### &nbsp;&nbsp;&nbsp;&nbsp; HALF  = 1 
 
 ### counter(\*, counters: List[CounterData], title: str = '', size: WidgetSize = WidgetSize.FULL)
 generate widget with given counters

@@ -1344,40 +1344,36 @@
 ## Submodules
 
 
-### _class_ ErrorResult(exception: BaseException)
+### class ErrorResult(exception: BaseException)
 Bases: `object`
 
 #### Attributes: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; exception _: BaseException_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; exception : BaseException 
 
-#### Methods: 
-
-### _class_ InputData(reference_data: Optional[pandas.core.frame.DataFrame], current_data: pandas.core.frame.DataFrame, column_mapping: [ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping), data_definition: [DataDefinition](evidently.utils.md#evidently.utils.data_preprocessing.DataDefinition))
+### class InputData(reference_data: Optional[pandas.core.frame.DataFrame], current_data: pandas.core.frame.DataFrame, column_mapping: [ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping), data_definition: [DataDefinition](evidently.utils.md#evidently.utils.data_preprocessing.DataDefinition))
 Bases: `object`
 
 #### Attributes: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; column_mapping _: [ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping)_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; column_mapping : [ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping) 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; current_data _: DataFrame_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; current_data : DataFrame 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; data_definition _: [DataDefinition](evidently.utils.md#evidently.utils.data_preprocessing.DataDefinition)_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; data_definition : [DataDefinition](evidently.utils.md#evidently.utils.data_preprocessing.DataDefinition) 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; reference_data _: Optional[DataFrame]_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; reference_data : Optional[DataFrame] 
 
-#### Methods: 
-
-### _class_ Metric()
+### class Metric()
 Bases: `Generic`[`TResult`]
 
 #### Attributes: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; context _ = None_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; context  = None 
 
 #### Methods: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; _abstract _ calculate(data: InputData)
+##### &nbsp;&nbsp;&nbsp;&nbsp; abstract  calculate(data: InputData)
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; get_id()
 

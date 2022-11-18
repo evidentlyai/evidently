@@ -3,39 +3,37 @@
 ## Submodules
 
 
-### _class_ Context(execution_graph: Optional[ExecutionGraph], metrics: list, tests: list, metric_results: dict, test_results: dict, state: State, renderers: [RenderersDefinitions](evidently.renderers.md#evidently.renderers.base_renderer.RenderersDefinitions))
+### class Context(execution_graph: Optional[ExecutionGraph], metrics: list, tests: list, metric_results: dict, test_results: dict, state: State, renderers: [RenderersDefinitions](evidently.renderers.md#evidently.renderers.base_renderer.RenderersDefinitions))
 Bases: `object`
 
 Pipeline execution context tracks pipeline execution and lifecycle
 
 #### Attributes: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; execution_graph _: Optional[ExecutionGraph]_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; execution_graph : Optional[ExecutionGraph] 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; metric_results _: dict_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; metric_results : dict 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; metrics _: list_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; metrics : list 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; renderers _: [RenderersDefinitions](evidently.renderers.md#evidently.renderers.base_renderer.RenderersDefinitions)_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; renderers : [RenderersDefinitions](evidently.renderers.md#evidently.renderers.base_renderer.RenderersDefinitions) 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; state _: State_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; state : State 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; test_results _: dict_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; test_results : dict 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; tests _: list_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; tests : list 
 
-#### Methods: 
-
-### _class_ Display(options: Optional[list] = None)
+### class Display(options: Optional[list] = None)
 Bases: `object`
 
 #### Attributes: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; options_provider _: [OptionsProvider](evidently.options.md#evidently.options.OptionsProvider)_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; options_provider : [OptionsProvider](evidently.options.md#evidently.options.OptionsProvider) 
 
 #### Methods: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; _abstract _ as_dict()
+##### &nbsp;&nbsp;&nbsp;&nbsp; abstract  as_dict()
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; json()
 
@@ -45,40 +43,36 @@ Bases: `object`
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; show(mode='auto')
 
-### _exception_ ExecutionError()
+### exception ExecutionError()
 Bases: `Exception`
 
 
-### _class_ State(name: str)
+### class State(name: str)
 Bases: `object`
 
 #### Attributes: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; name _: str_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; name : str 
 
-#### Methods: 
-
-### _class_ States()
+### class States()
 Bases: `object`
 
 #### Attributes: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; Calculated _ = State(name='Calculated')_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; Calculated  = State(name='Calculated') 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; Init _ = State(name='Init')_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; Init  = State(name='Init') 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; Tested _ = State(name='Tested')_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; Tested  = State(name='Tested') 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; Verified _ = State(name='Verified')_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; Verified  = State(name='Verified') 
 
-#### Methods: 
-
-### _class_ Suite()
+### class Suite()
 Bases: `object`
 
 #### Attributes: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; context _: Context_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; context : Context 
 
 #### Methods: 
 
@@ -96,18 +90,16 @@ Bases: `object`
 
 ### find_test_renderer(obj, renderers: [RenderersDefinitions](evidently.renderers.md#evidently.renderers.base_renderer.RenderersDefinitions))
 
-### _class_ ExecutionGraph()
+### class ExecutionGraph()
 Bases: `object`
-
-#### Attributes: 
 
 #### Methods: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; _abstract _ get_metric_execution_iterator()
+##### &nbsp;&nbsp;&nbsp;&nbsp; abstract  get_metric_execution_iterator()
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; _abstract _ get_test_execution_iterator()
+##### &nbsp;&nbsp;&nbsp;&nbsp; abstract  get_test_execution_iterator()
 
-### _class_ SimpleExecutionGraph(metrics: List[[Metric](evidently.metrics.md#evidently.metrics.base_metric.Metric)], tests: List[[Test](evidently.tests.md#evidently.tests.base_test.Test)])
+### class SimpleExecutionGraph(metrics: List[[Metric](evidently.metrics.md#evidently.metrics.base_metric.Metric)], tests: List[[Test](evidently.tests.md#evidently.tests.base_test.Test)])
 Bases: `ExecutionGraph`
 
 Simple execution graph without any work with dependencies at all,
@@ -115,9 +107,9 @@ Simple execution graph without any work with dependencies at all,
 assumes that metrics already in order for execution
 #### Attributes: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; metrics _: List[[Metric](evidently.metrics.md#evidently.metrics.base_metric.Metric)]_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; metrics : List[[Metric](evidently.metrics.md#evidently.metrics.base_metric.Metric)] 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; tests _: List[[Test](evidently.tests.md#evidently.tests.base_test.Test)]_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; tests : List[[Test](evidently.tests.md#evidently.tests.base_test.Test)] 
 
 #### Methods: 
 

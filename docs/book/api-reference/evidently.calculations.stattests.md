@@ -24,51 +24,43 @@ Perform the two-sample Cramér-von Mises test
 
 
 
-### _class_ CramerVonMisesResult(statistic, pvalue)
+### class CramerVonMisesResult(statistic, pvalue)
 Bases: `object`
 
 
-#### Attributes: 
-
-#### Methods: 
-
-### _class_ StatTest(name: str, display_name: str, func: Callable[[pandas.core.series.Series, pandas.core.series.Series, str, float], Tuple[float, bool]], allowed_feature_types: List[str], default_threshold: float = 0.05)
+### class StatTest(name: str, display_name: str, func: Callable[[pandas.core.series.Series, pandas.core.series.Series, str, float], Tuple[float, bool]], allowed_feature_types: List[str], default_threshold: float = 0.05)
 Bases: `object`
 
 #### Attributes: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; allowed_feature_types _: List[str]_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; allowed_feature_types : List[str] 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; default_threshold _: float_ _ = 0.05_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; default_threshold : float  = 0.05 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; display_name _: str_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; display_name : str 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; func _: Callable[[Series, Series, str, float], Tuple[float, bool]]_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; func : Callable[[Series, Series, str, float], Tuple[float, bool]] 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; name _: str_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; name : str 
 
-#### Methods: 
-
-### _exception_ StatTestInvalidFeatureTypeError(stattest_name: str, feature_type: str)
+### exception StatTestInvalidFeatureTypeError(stattest_name: str, feature_type: str)
 Bases: `ValueError`
 
 
-### _exception_ StatTestNotFoundError(stattest_name: str)
+### exception StatTestNotFoundError(stattest_name: str)
 Bases: `ValueError`
 
 
-### _class_ StatTestResult(drift_score: float, drifted: bool, actual_threshold: float)
+### class StatTestResult(drift_score: float, drifted: bool, actual_threshold: float)
 Bases: `object`
 
 #### Attributes: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; actual_threshold _: float_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; actual_threshold : float 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; drift_score _: float_ 
+##### &nbsp;&nbsp;&nbsp;&nbsp; drift_score : float 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; drifted _: bool_ 
-
-#### Methods: 
+##### &nbsp;&nbsp;&nbsp;&nbsp; drifted : bool 
 
 ### get_stattest(reference_data: Series, current_data: Series, feature_type: str, stattest_func: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], StatTest]])
 
