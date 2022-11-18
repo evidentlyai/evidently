@@ -9,67 +9,177 @@ Bases: `object`
 Base class for all renderers
 
 
-#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
+#### Attributes: 
+
+##### labels _: Sequence[Union[str, int]]_ 
+
+##### values _: list_ 
+
+##### exception _: BaseException_ 
+
+##### column_name _: str_ 
+
+##### options _: [DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions)_ 
+
+##### different_missing_values _: Dict[Any, int]_ 
+
+##### number_of_different_missing_values _: int_ 
+
+##### number_of_missing_values _: int_ 
+
+##### number_of_rows _: int_ 
+
+##### share_of_missing_values _: float_ 
+
+##### column_name _: str_ 
+
+##### color_sequence _: Sequence[str]_ _ = ('#ed0400', '#0a5f38', '#6c3461', '#71aa34', '#d8dcd6', '#6b8ba4')_ 
+
+##### current_data_color _: Optional[str]_ _ = None_ 
+
+##### fill_color _: str_ _ = 'LightGreen'_ 
+
+##### heatmap _: str_ _ = 'RdBu_r'_ 
+
+##### majority_color _: str_ _ = '#1acc98'_ 
+
+##### non_visible_color _: str_ _ = 'white'_ 
+
+##### overestimation_color _: str_ _ = '#ee5540'_ 
+
+##### primary_color _: str_ _ = '#ed0400'_ 
+
+##### reference_data_color _: Optional[str]_ _ = None_ 
+
+##### secondary_color _: str_ _ = '#4d4d4d'_ 
+
+##### underestimation_color _: str_ _ = '#6574f7'_ 
+
+##### vertical_lines _: str_ _ = 'green'_ 
+
+##### zero_line_color _: str_ _ = 'green'_ 
+
+##### categorical_features _: Optional[List[str]]_ _ = None_ 
+
+##### datetime _: Optional[str]_ _ = 'datetime'_ 
+
+##### datetime_features _: Optional[List[str]]_ _ = None_ 
+
+##### id _: Optional[str]_ _ = None_ 
+
+##### numerical_features _: Optional[List[str]]_ _ = None_ 
+
+##### pos_label _: Optional[Union[str, int]]_ _ = 1_ 
+
+##### prediction _: Optional[Union[str, int, Sequence[str], Sequence[int]]]_ _ = 'prediction'_ 
+
+##### target _: Optional[str]_ _ = 'target'_ 
+
+##### target_names _: Optional[List[str]]_ _ = None_ 
+
+##### task _: Optional[str]_ _ = None_ 
+
+##### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
+
+#### Methods: 
+
+##### generate_metrics(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
+
+##### get_target_prediction_data(data: DataFrame, column_mapping: [ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping))
+
+##### calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
+
+##### calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
+
+##### calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
+
+##### get_current_data_color()
+
+##### get_reference_data_color()
+
+##### is_classification_task()
+
+##### is_regression_task()
 
 ### _class _ DetailsInfo(title: str, info: evidently.model.widget.BaseWidgetInfo, id: str = <factory>)
 Bases: `object`
 
 
-#### id _: str_ 
+#### Attributes: 
 
-#### info _: BaseWidgetInfo_ 
+##### id _: str_ 
 
-#### title _: str_ 
+##### info _: BaseWidgetInfo_ 
+
+##### title _: str_ 
+
+#### Methods: 
 
 ### _class _ MetricRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: `BaseRenderer`
 
 
-#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
+#### Attributes: 
 
-#### render_html(obj)
+##### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
-#### render_json(obj)
+#### Methods: 
+
+##### render_html(obj)
+
+##### render_json(obj)
 
 ### _class _ RenderersDefinitions(typed_renderers: dict = <factory>, default_html_test_renderer: Optional[evidently.renderers.base_renderer.TestRenderer] = None, default_html_metric_renderer: Optional[evidently.renderers.base_renderer.MetricRenderer] = None)
 Bases: `object`
 
 
-#### default_html_metric_renderer _: Optional[MetricRenderer]_ _ = None_ 
+#### Attributes: 
 
-#### default_html_test_renderer _: Optional[TestRenderer]_ _ = None_ 
+##### default_html_metric_renderer _: Optional[MetricRenderer]_ _ = None_ 
 
-#### typed_renderers _: dict_ 
+##### default_html_test_renderer _: Optional[TestRenderer]_ _ = None_ 
+
+##### typed_renderers _: dict_ 
+
+#### Methods: 
 
 ### _class _ TestHtmlInfo(name: str, description: str, status: str, details: List[DetailsInfo], groups: Dict[str, str])
 Bases: `object`
 
 
-#### description _: str_ 
+#### Attributes: 
 
-#### details _: List[DetailsInfo]_ 
+##### description _: str_ 
 
-#### groups _: Dict[str, str]_ 
+##### details _: List[DetailsInfo]_ 
 
-#### name _: str_ 
+##### groups _: Dict[str, str]_ 
 
-#### status _: str_ 
+##### name _: str_ 
 
-#### with_details(title: str, info: BaseWidgetInfo)
+##### status _: str_ 
+
+#### Methods: 
+
+##### with_details(title: str, info: BaseWidgetInfo)
 
 ### _class _ TestRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: `BaseRenderer`
 
 
-#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
+#### Attributes: 
 
-#### html_description(obj)
+##### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
-#### json_description(obj)
+#### Methods: 
 
-#### render_html(obj)
+##### html_description(obj)
 
-#### render_json(obj)
+##### json_description(obj)
+
+##### render_html(obj)
+
+##### render_json(obj)
 
 ### default_renderer(wrap_type)
 
@@ -77,17 +187,21 @@ Bases: `BaseRenderer`
 Bases: `object`
 
 
-#### as_dict()
+#### Attributes: 
 
-#### field_name _: str_ 
+##### field_name _: str_ 
 
-#### options _: Optional[dict]_ _ = None_ 
+##### options _: Optional[dict]_ _ = None_ 
 
-#### sort _: Optional[SortDirection]_ _ = None_ 
+##### sort _: Optional[SortDirection]_ _ = None_ 
 
-#### title _: str_ 
+##### title _: str_ 
 
-#### type _: ColumnType_ _ = 'string'_ 
+##### type _: ColumnType_ _ = 'string'_ 
+
+#### Methods: 
+
+##### as_dict()
 
 ### _class _ ColumnType(value)
 Bases: `Enum`
@@ -95,117 +209,138 @@ Bases: `Enum`
 An enumeration.
 
 
-#### HISTOGRAM _ = 'histogram'_ 
+#### Attributes: 
 
-#### LINE _ = 'line'_ 
+##### HISTOGRAM _ = 'histogram'_ 
 
-#### SCATTER _ = 'scatter'_ 
+##### LINE _ = 'line'_ 
 
-#### STRING _ = 'string'_ 
+##### SCATTER _ = 'scatter'_ 
+
+##### STRING _ = 'string'_ 
+
+#### Methods: 
 
 ### _class _ CounterData(label: str, value: str)
 Bases: `object`
 
 
-#### _static _ float(label: str, value: float, precision: int)
+#### Attributes: 
+
+##### label _: str_ 
+
+##### value _: str_ 
+
+#### Methods: 
+
+##### _static _ float(label: str, value: float, precision: int)
 create CounterData for float value with given precision.
 
-
 * **Parameters**
 
-    - **label** – counter label
-
-    - **value** – float value of counter
-
-    - **precision** – decimal precision
+- **label** – counter label
+- **value** – float value of counter
+- **precision** – decimal precision
 
 
-
-#### _static _ int(label: str, value: int)
+##### _static _ int(label: str, value: int)
 create CounterData for int value.
 
-
 * **Parameters**
 
-    - **label** – counter label
-
-    - **value** – int value
-
+- **label** – counter label
+- **value** – int value
 
 
-#### label _: str_ 
-
-#### _static _ string(label: str, value: str)
+##### _static _ string(label: str, value: str)
 create CounterData for string value with given precision.
 
-
 * **Parameters**
 
-    - **label** – counter label
+- **label** – counter label
+- **value** – string value of counter
 
-    - **value** – string value of counter
-
-
-
-#### value _: str_ 
 
 ### _class _ DetailsPartInfo(title: str, info: Union[BaseWidgetInfo, PlotlyGraphInfo])
 Bases: `object`
 
 
-#### info _: Union[BaseWidgetInfo, PlotlyGraphInfo]_ 
+#### Attributes: 
 
-#### title _: str_ 
+##### info _: Union[BaseWidgetInfo, PlotlyGraphInfo]_ 
+
+##### title _: str_ 
+
+#### Methods: 
 
 ### _class _ GraphData(title: str, data: dict, layout: dict)
 Bases: `object`
 
 
-#### data _: dict_ 
+#### Attributes: 
 
-#### _static _ figure(title: str, figure: Figure)
+##### data _: dict_ 
+
+##### layout _: dict_ 
+
+##### title _: str_ 
+
+#### Methods: 
+
+##### _static _ figure(title: str, figure: Figure)
 create GraphData from plotly figure itself
 :param title: title of graph
 :param figure: plotly figure for getting data from
-
-
-#### layout _: dict_ 
-
-#### title _: str_ 
 
 ### _class _ HeatmapData(name: str, matrix: pandas.core.frame.DataFrame)
 Bases: `object`
 
 
-#### matrix _: DataFrame_ 
+#### Attributes: 
 
-#### name _: str_ 
+##### matrix _: DataFrame_ 
+
+##### name _: str_ 
+
+#### Methods: 
 
 ### _class _ HistogramData(name: str, x: list, y: List[Union[int, float]])
 Bases: `object`
 
 
-#### name _: str_ 
+#### Attributes: 
 
-#### x _: list_ 
+##### name _: str_ 
 
-#### y _: List[Union[int, float]]_ 
+##### x _: list_ 
+
+##### y _: List[Union[int, float]]_ 
+
+#### Methods: 
 
 ### _class _ RichTableDataRow(fields: dict, details: Optional[RowDetails] = None)
 Bases: `object`
 
 
-#### details _: Optional[RowDetails]_ 
+#### Attributes: 
 
-#### fields _: dict_ 
+##### details _: Optional[RowDetails]_ 
+
+##### fields _: dict_ 
+
+#### Methods: 
 
 ### _class _ RowDetails(parts: Optional[List[DetailsPartInfo]] = None)
 Bases: `object`
 
 
-#### parts _: List[DetailsPartInfo]_ 
+#### Attributes: 
 
-#### with_part(title: str, info: Union[BaseWidgetInfo, PlotlyGraphInfo])
+##### parts _: List[DetailsPartInfo]_ 
+
+#### Methods: 
+
+##### with_part(title: str, info: Union[BaseWidgetInfo, PlotlyGraphInfo])
 
 ### _class _ SortDirection(value)
 Bases: `Enum`
@@ -213,17 +348,25 @@ Bases: `Enum`
 An enumeration.
 
 
-#### ASC _ = 'asc'_ 
+#### Attributes: 
 
-#### DESC _ = 'desc'_ 
+##### ASC _ = 'asc'_ 
+
+##### DESC _ = 'desc'_ 
+
+#### Methods: 
 
 ### _class _ TabData(title: str, widget: evidently.model.widget.BaseWidgetInfo)
 Bases: `object`
 
 
-#### title _: str_ 
+#### Attributes: 
 
-#### widget _: BaseWidgetInfo_ 
+##### title _: str_ 
+
+##### widget _: BaseWidgetInfo_ 
+
+#### Methods: 
 
 ### _class _ WidgetSize(value)
 Bases: `Enum`
@@ -231,9 +374,13 @@ Bases: `Enum`
 An enumeration.
 
 
-#### FULL _ = 2_ 
+#### Attributes: 
 
-#### HALF _ = 1_ 
+##### FULL _ = 2_ 
+
+##### HALF _ = 1_ 
+
+#### Methods: 
 
 ### counter(\*, counters: List[CounterData], title: str = '', size: WidgetSize = WidgetSize.FULL)
 generate widget with given counters

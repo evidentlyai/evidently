@@ -60,47 +60,59 @@
 Bases: `object`
 
 
-#### labels _: Sequence[Union[str, int]]_ 
+#### Attributes: 
 
-#### values _: list_ 
+##### labels _: Sequence[Union[str, int]]_ 
+
+##### values _: list_ 
+
+#### Methods: 
 
 ### _class _ DatasetClassificationQuality(accuracy: float, precision: float, recall: float, f1: float, roc_auc: Optional[float] = None, log_loss: Optional[float] = None, tpr: Optional[float] = None, tnr: Optional[float] = None, fpr: Optional[float] = None, fnr: Optional[float] = None, rate_plots_data: Optional[Dict] = None, plot_data: Optional[Dict] = None)
 Bases: `object`
 
 
-#### accuracy _: float_ 
+#### Attributes: 
 
-#### f1 _: float_ 
+##### accuracy _: float_ 
 
-#### fnr _: Optional[float]_ _ = None_ 
+##### f1 _: float_ 
 
-#### fpr _: Optional[float]_ _ = None_ 
+##### fnr _: Optional[float]_ _ = None_ 
 
-#### log_loss _: Optional[float]_ _ = None_ 
+##### fpr _: Optional[float]_ _ = None_ 
 
-#### plot_data _: Optional[Dict]_ _ = None_ 
+##### log_loss _: Optional[float]_ _ = None_ 
 
-#### precision _: float_ 
+##### plot_data _: Optional[Dict]_ _ = None_ 
 
-#### rate_plots_data _: Optional[Dict]_ _ = None_ 
+##### precision _: float_ 
 
-#### recall _: float_ 
+##### rate_plots_data _: Optional[Dict]_ _ = None_ 
 
-#### roc_auc _: Optional[float]_ _ = None_ 
+##### recall _: float_ 
 
-#### tnr _: Optional[float]_ _ = None_ 
+##### roc_auc _: Optional[float]_ _ = None_ 
 
-#### tpr _: Optional[float]_ _ = None_ 
+##### tnr _: Optional[float]_ _ = None_ 
+
+##### tpr _: Optional[float]_ _ = None_ 
+
+#### Methods: 
 
 ### _class _ PredictionData(predictions: pandas.core.series.Series, prediction_probas: Optional[pandas.core.frame.DataFrame], labels: List[Union[str, int]])
 Bases: `object`
 
 
-#### labels _: List[Union[str, int]]_ 
+#### Attributes: 
 
-#### prediction_probas _: Optional[DataFrame]_ 
+##### labels _: List[Union[str, int]]_ 
 
-#### predictions _: Series_ 
+##### prediction_probas _: Optional[DataFrame]_ 
+
+##### predictions _: Series_ 
+
+#### Methods: 
 
 ### calculate_confusion_by_classes(confusion_matrix: ndarray, class_names: Sequence[Union[str, int]])
 Calculate metrics:
@@ -164,35 +176,39 @@ Bases: `object`
 One column drift metrics.
 
 
-#### column_name _: str_ 
+#### Attributes: 
 
-#### column_type _: str_ 
+##### column_name _: str_ 
 
-#### current_correlations _: Optional[Dict[str, float]]_ _ = None_ 
+##### column_type _: str_ 
 
-#### current_distribution _: [Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution)_ 
+##### current_correlations _: Optional[Dict[str, float]]_ _ = None_ 
 
-#### current_scatter _: Optional[Dict[str, list]]_ _ = None_ 
+##### current_distribution _: [Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution)_ 
 
-#### current_small_distribution _: Optional[list]_ _ = None_ 
+##### current_scatter _: Optional[Dict[str, list]]_ _ = None_ 
 
-#### drift_detected _: bool_ 
+##### current_small_distribution _: Optional[list]_ _ = None_ 
 
-#### drift_score _: float_ 
+##### drift_detected _: bool_ 
 
-#### plot_shape _: Optional[Dict[str, float]]_ _ = None_ 
+##### drift_score _: float_ 
 
-#### reference_correlations _: Optional[Dict[str, float]]_ _ = None_ 
+##### plot_shape _: Optional[Dict[str, float]]_ _ = None_ 
 
-#### reference_distribution _: [Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution)_ 
+##### reference_correlations _: Optional[Dict[str, float]]_ _ = None_ 
 
-#### reference_small_distribution _: Optional[list]_ _ = None_ 
+##### reference_distribution _: [Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution)_ 
 
-#### stattest_name _: str_ 
+##### reference_small_distribution _: Optional[list]_ _ = None_ 
 
-#### threshold _: float_ 
+##### stattest_name _: str_ 
 
-#### x_name _: Optional[str]_ _ = None_ 
+##### threshold _: float_ 
+
+##### x_name _: Optional[str]_ _ = None_ 
+
+#### Methods: 
 
 ### _class _ DatasetDrift(number_of_drifted_columns: int, dataset_drift_score: float, dataset_drift: bool)
 Bases: `object`
@@ -200,29 +216,37 @@ Bases: `object`
 Dataset drift calculation results
 
 
-#### dataset_drift _: bool_ 
+#### Attributes: 
 
-#### dataset_drift_score _: float_ 
+##### dataset_drift _: bool_ 
 
-#### number_of_drifted_columns _: int_ 
+##### dataset_drift_score _: float_ 
+
+##### number_of_drifted_columns _: int_ 
+
+#### Methods: 
 
 ### _class _ DatasetDriftMetrics(number_of_columns: int, number_of_drifted_columns: int, share_of_drifted_columns: float, dataset_drift: bool, drift_by_columns: Dict[str, ColumnDataDriftMetrics], options: [DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions), dataset_columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 Bases: `object`
 
 
-#### dataset_columns _: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns)_ 
+#### Attributes: 
 
-#### dataset_drift _: bool_ 
+##### dataset_columns _: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns)_ 
 
-#### drift_by_columns _: Dict[str, ColumnDataDriftMetrics]_ 
+##### dataset_drift _: bool_ 
 
-#### number_of_columns _: int_ 
+##### drift_by_columns _: Dict[str, ColumnDataDriftMetrics]_ 
 
-#### number_of_drifted_columns _: int_ 
+##### number_of_columns _: int_ 
 
-#### options _: [DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions)_ 
+##### number_of_drifted_columns _: int_ 
 
-#### share_of_drifted_columns _: float_ 
+##### options _: [DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions)_ 
+
+##### share_of_drifted_columns _: float_ 
+
+#### Methods: 
 
 ### ensure_prediction_column_is_string(\*, prediction_column: Optional[Union[str, Sequence]], current_data: DataFrame, reference_data: DataFrame, threshold: float = 0.5)
 Update dataset by predictions type:
@@ -280,45 +304,61 @@ Methods for overall dataset quality calculations - rows count, a specific values
 Bases: `object`
 
 
-#### column_name _: str_ 
+#### Attributes: 
 
-#### kind _: str_ 
+##### column_name _: str_ 
 
-#### values _: [Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution)_ 
+##### kind _: str_ 
+
+##### values _: [Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution)_ 
+
+#### Methods: 
 
 ### _class _ DataQualityGetPlotData()
 Bases: `object`
 
 
-#### calculate_data_by_target(curr: DataFrame, ref: Optional[DataFrame], feature_name: str, feature_type: str, target_name: str, target_type: str, merge_small_cat: Optional[int] = 5)
+#### Attributes: 
 
-#### calculate_data_in_time(curr: DataFrame, ref: Optional[DataFrame], feature_name: str, feature_type: str, datetime_name: str, merge_small_cat: Optional[int] = 5)
+#### Methods: 
 
-#### calculate_main_plot(curr: DataFrame, ref: Optional[DataFrame], feature_name: str, feature_type: str, merge_small_cat: Optional[int] = 5)
+##### calculate_data_by_target(curr: DataFrame, ref: Optional[DataFrame], feature_name: str, feature_type: str, target_name: str, target_type: str, merge_small_cat: Optional[int] = 5)
+
+##### calculate_data_in_time(curr: DataFrame, ref: Optional[DataFrame], feature_name: str, feature_type: str, datetime_name: str, merge_small_cat: Optional[int] = 5)
+
+##### calculate_main_plot(curr: DataFrame, ref: Optional[DataFrame], feature_name: str, feature_type: str, merge_small_cat: Optional[int] = 5)
 
 ### _class _ DataQualityPlot(bins_for_hist: Dict[str, pandas.core.frame.DataFrame])
 Bases: `object`
 
 
-#### bins_for_hist _: Dict[str, DataFrame]_ 
+#### Attributes: 
+
+##### bins_for_hist _: Dict[str, DataFrame]_ 
+
+#### Methods: 
 
 ### _class _ DataQualityStats(rows_count: int, num_features_stats: Optional[Dict[str, FeatureQualityStats]] = None, cat_features_stats: Optional[Dict[str, FeatureQualityStats]] = None, datetime_features_stats: Optional[Dict[str, FeatureQualityStats]] = None, target_stats: Optional[Dict[str, FeatureQualityStats]] = None, prediction_stats: Optional[Dict[str, FeatureQualityStats]] = None)
 Bases: `object`
 
 
-#### cat_features_stats _: Optional[Dict[str, FeatureQualityStats]]_ _ = None_ 
+#### Attributes: 
 
-#### datetime_features_stats _: Optional[Dict[str, FeatureQualityStats]]_ _ = None_ 
+##### cat_features_stats _: Optional[Dict[str, FeatureQualityStats]]_ _ = None_ 
 
-#### get_all_features()
+##### datetime_features_stats _: Optional[Dict[str, FeatureQualityStats]]_ _ = None_ 
 
-#### num_features_stats _: Optional[Dict[str, FeatureQualityStats]]_ _ = None_ 
+##### num_features_stats _: Optional[Dict[str, FeatureQualityStats]]_ _ = None_ 
 
-#### prediction_stats _: Optional[Dict[str, FeatureQualityStats]]_ _ = None_ 
+##### prediction_stats _: Optional[Dict[str, FeatureQualityStats]]_ _ = None_ 
 
-#### rows_count _: int_ 
+##### rows_count _: int_ 
 
-#### target_stats _: Optional[Dict[str, FeatureQualityStats]]_ _ = None_ 
+##### target_stats _: Optional[Dict[str, FeatureQualityStats]]_ _ = None_ 
+
+#### Methods: 
+
+##### get_all_features()
 
 ### _class _ FeatureQualityStats(feature_type: str, number_of_rows: int = 0, count: int = 0, infinite_count: Optional[int] = None, infinite_percentage: Optional[float] = None, missing_count: Optional[int] = None, missing_percentage: Optional[float] = None, unique_count: Optional[int] = None, unique_percentage: Optional[float] = None, percentile_25: Optional[float] = None, percentile_50: Optional[float] = None, percentile_75: Optional[float] = None, max: Optional[Union[int, float, bool, str]] = None, min: Optional[Union[int, float, bool, str]] = None, mean: Optional[float] = None, most_common_value: Optional[Union[int, float, bool, str]] = None, most_common_value_percentage: Optional[float] = None, std: Optional[float] = None, most_common_not_null_value: Optional[Union[int, float, bool, str]] = None, most_common_not_null_value_percentage: Optional[float] = None, new_in_current_values_count: Optional[int] = None, unused_in_current_values_count: Optional[int] = None)
 Bases: `object`
@@ -383,63 +423,64 @@ Metrics for category features only:
         Defined for reference dataset only.
 
 
-#### as_dict()
+#### Attributes: 
 
-#### count _: int_ _ = 0_ 
+##### count _: int_ _ = 0_ 
 
-#### feature_type _: str_ 
+##### feature_type _: str_ 
 
-#### infinite_count _: Optional[int]_ _ = None_ 
+##### infinite_count _: Optional[int]_ _ = None_ 
 
-#### infinite_percentage _: Optional[float]_ _ = None_ 
+##### infinite_percentage _: Optional[float]_ _ = None_ 
 
-#### is_category()
+##### max _: Optional[Union[int, float, bool, str]]_ _ = None_ 
+
+##### mean _: Optional[float]_ _ = None_ 
+
+##### min _: Optional[Union[int, float, bool, str]]_ _ = None_ 
+
+##### missing_count _: Optional[int]_ _ = None_ 
+
+##### missing_percentage _: Optional[float]_ _ = None_ 
+
+##### most_common_not_null_value _: Optional[Union[int, float, bool, str]]_ _ = None_ 
+
+##### most_common_not_null_value_percentage _: Optional[float]_ _ = None_ 
+
+##### most_common_value _: Optional[Union[int, float, bool, str]]_ _ = None_ 
+
+##### most_common_value_percentage _: Optional[float]_ _ = None_ 
+
+##### new_in_current_values_count _: Optional[int]_ _ = None_ 
+
+##### number_of_rows _: int_ _ = 0_ 
+
+##### percentile_25 _: Optional[float]_ _ = None_ 
+
+##### percentile_50 _: Optional[float]_ _ = None_ 
+
+##### percentile_75 _: Optional[float]_ _ = None_ 
+
+##### std _: Optional[float]_ _ = None_ 
+
+##### unique_count _: Optional[int]_ _ = None_ 
+
+##### unique_percentage _: Optional[float]_ _ = None_ 
+
+##### unused_in_current_values_count _: Optional[int]_ _ = None_ 
+
+#### Methods: 
+
+##### as_dict()
+
+##### is_category()
 Checks that the object store stats for a category feature
 
-
-#### is_datetime()
+##### is_datetime()
 Checks that the object store stats for a datetime feature
 
-
-#### is_numeric()
+##### is_numeric()
 Checks that the object store stats for a numeric feature
-
-
-#### max _: Optional[Union[int, float, bool, str]]_ _ = None_ 
-
-#### mean _: Optional[float]_ _ = None_ 
-
-#### min _: Optional[Union[int, float, bool, str]]_ _ = None_ 
-
-#### missing_count _: Optional[int]_ _ = None_ 
-
-#### missing_percentage _: Optional[float]_ _ = None_ 
-
-#### most_common_not_null_value _: Optional[Union[int, float, bool, str]]_ _ = None_ 
-
-#### most_common_not_null_value_percentage _: Optional[float]_ _ = None_ 
-
-#### most_common_value _: Optional[Union[int, float, bool, str]]_ _ = None_ 
-
-#### most_common_value_percentage _: Optional[float]_ _ = None_ 
-
-#### new_in_current_values_count _: Optional[int]_ _ = None_ 
-
-#### number_of_rows _: int_ _ = 0_ 
-
-#### percentile_25 _: Optional[float]_ _ = None_ 
-
-#### percentile_50 _: Optional[float]_ _ = None_ 
-
-#### percentile_75 _: Optional[float]_ _ = None_ 
-
-#### std _: Optional[float]_ _ = None_ 
-
-#### unique_count _: Optional[int]_ _ = None_ 
-
-#### unique_percentage _: Optional[float]_ _ = None_ 
-
-#### unused_in_current_values_count _: Optional[int]_ _ = None_ 
 
 ### calculate_category_column_correlations(column_name: str, dataset: DataFrame, columns: List[str])
 For category columns calculate cramer_v correlation
@@ -477,45 +518,57 @@ Count quantity of rows in  a dataset
 Bases: `object`
 
 
+#### Attributes: 
+
+#### Methods: 
+
 ### _class _ FeatureBias(feature_type: str, majority: float, under: float, over: float, range: float)
 Bases: `object`
 
 
-#### as_dict(prefix)
+#### Attributes: 
 
-#### feature_type _: str_ 
+##### feature_type _: str_ 
 
-#### majority _: float_ 
+##### majority _: float_ 
 
-#### over _: float_ 
+##### over _: float_ 
 
-#### range _: float_ 
+##### range _: float_ 
 
-#### under _: float_ 
+##### under _: float_ 
+
+#### Methods: 
+
+##### as_dict(prefix)
 
 ### _class _ RegressionPerformanceMetrics(mean_error: float, mean_abs_error: float, mean_abs_perc_error: float, error_std: float, abs_error_max: float, abs_error_std: float, abs_perc_error_std: float, error_normality: dict, underperformance: dict, error_bias: dict)
 Bases: `object`
 
 
-#### abs_error_max _: float_ 
+#### Attributes: 
 
-#### abs_error_std _: float_ 
+##### abs_error_max _: float_ 
 
-#### abs_perc_error_std _: float_ 
+##### abs_error_std _: float_ 
 
-#### error_bias _: dict_ 
+##### abs_perc_error_std _: float_ 
 
-#### error_normality _: dict_ 
+##### error_bias _: dict_ 
 
-#### error_std _: float_ 
+##### error_normality _: dict_ 
 
-#### mean_abs_error _: float_ 
+##### error_std _: float_ 
 
-#### mean_abs_perc_error _: float_ 
+##### mean_abs_error _: float_ 
 
-#### mean_error _: float_ 
+##### mean_abs_perc_error _: float_ 
 
-#### underperformance _: dict_ 
+##### mean_error _: float_ 
+
+##### underperformance _: dict_ 
+
+#### Methods: 
 
 ### calculate_regression_performance(dataset: DataFrame, columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns), error_bias_prefix: str)
 

@@ -1348,35 +1348,53 @@
 Bases: `object`
 
 
-#### exception _: BaseException_ 
+#### Attributes: 
+
+##### labels _: Sequence[Union[str, int]]_ 
+
+##### values _: list_ 
+
+##### exception _: BaseException_ 
+
+#### Methods: 
+
+##### generate_metrics(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
 ### _class _ InputData(reference_data: Optional[pandas.core.frame.DataFrame], current_data: pandas.core.frame.DataFrame, column_mapping: [ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping), data_definition: [DataDefinition](evidently.utils.md#evidently.utils.data_preprocessing.DataDefinition))
 Bases: `object`
 
 
-#### column_mapping _: [ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping)_ 
+#### Attributes: 
 
-#### current_data _: DataFrame_ 
+##### column_mapping _: [ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping)_ 
 
-#### data_definition _: [DataDefinition](evidently.utils.md#evidently.utils.data_preprocessing.DataDefinition)_ 
+##### current_data _: DataFrame_ 
 
-#### reference_data _: Optional[DataFrame]_ 
+##### data_definition _: [DataDefinition](evidently.utils.md#evidently.utils.data_preprocessing.DataDefinition)_ 
+
+##### reference_data _: Optional[DataFrame]_ 
+
+#### Methods: 
 
 ### _class _ Metric()
 Bases: `Generic`[`TResult`]
 
 
-#### _abstract _ calculate(data: InputData)
+#### Attributes: 
 
-#### context _ = None_ 
+##### context _ = None_ 
 
-#### get_id()
+#### Methods: 
 
-#### get_parameters()
+##### _abstract _ calculate(data: InputData)
 
-#### get_result()
+##### get_id()
 
-#### set_context(context)
+##### get_parameters()
+
+##### get_result()
+
+##### set_context(context)
 
 ### generate_column_metrics(metric_class: Type[Metric], columns: Optional[Union[str, list]] = None, parameters: Optional[Dict] = None)
 Function for generating metrics for columns

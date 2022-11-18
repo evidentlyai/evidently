@@ -28,19 +28,31 @@ Perform the two-sample Cramér-von Mises test
 Bases: `object`
 
 
+#### Attributes: 
+
+##### labels _: Sequence[Union[str, int]]_ 
+
+##### values _: list_ 
+
+#### Methods: 
+
 ### _class _ StatTest(name: str, display_name: str, func: Callable[[pandas.core.series.Series, pandas.core.series.Series, str, float], Tuple[float, bool]], allowed_feature_types: List[str], default_threshold: float = 0.05)
 Bases: `object`
 
 
-#### allowed_feature_types _: List[str]_ 
+#### Attributes: 
 
-#### default_threshold _: float_ _ = 0.05_ 
+##### allowed_feature_types _: List[str]_ 
 
-#### display_name _: str_ 
+##### default_threshold _: float_ _ = 0.05_ 
 
-#### func _: Callable[[Series, Series, str, float], Tuple[float, bool]]_ 
+##### display_name _: str_ 
 
-#### name _: str_ 
+##### func _: Callable[[Series, Series, str, float], Tuple[float, bool]]_ 
+
+##### name _: str_ 
+
+#### Methods: 
 
 ### _exception _ StatTestInvalidFeatureTypeError(stattest_name: str, feature_type: str)
 Bases: `ValueError`
@@ -54,11 +66,15 @@ Bases: `ValueError`
 Bases: `object`
 
 
-#### actual_threshold _: float_ 
+#### Attributes: 
 
-#### drift_score _: float_ 
+##### actual_threshold _: float_ 
 
-#### drifted _: bool_ 
+##### drift_score _: float_ 
+
+##### drifted _: bool_ 
+
+#### Methods: 
 
 ### get_stattest(reference_data: Series, current_data: Series, feature_type: str, stattest_func: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], StatTest]])
 

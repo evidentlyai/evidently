@@ -7,21 +7,37 @@
 Bases: `MetricPreset`
 
 
-#### generate_metrics(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
+#### Attributes: 
+
+##### labels _: Sequence[Union[str, int]]_ 
+
+##### values _: list_ 
+
+#### Methods: 
+
+##### generate_metrics(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
 ### _class _ DataDriftPreset()
 Bases: `MetricPreset`
 
 
-#### generate_metrics(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
+#### Attributes: 
+
+#### Methods: 
+
+##### generate_metrics(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
 ### _class _ DataQualityPreset(columns: Optional[List[str]] = None)
 Bases: `MetricPreset`
 
 
-#### columns _: Optional[List[str]]_ 
+#### Attributes: 
 
-#### generate_metrics(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
+##### columns _: Optional[List[str]]_ 
+
+#### Methods: 
+
+##### generate_metrics(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
 ### _class _ MetricPreset()
 Bases: `object`
@@ -29,17 +45,29 @@ Bases: `object`
 Base class for metric presets
 
 
-#### _abstract _ generate_metrics(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
+#### Attributes: 
+
+#### Methods: 
+
+##### _abstract _ generate_metrics(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
 ### _class _ RegressionPreset()
 Bases: `MetricPreset`
 
 
-#### generate_metrics(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
+#### Attributes: 
+
+#### Methods: 
+
+##### generate_metrics(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
 ### _class _ TargetDriftPreset()
 Bases: `MetricPreset`
 
 
-#### generate_metrics(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
+#### Attributes: 
+
+#### Methods: 
+
+##### generate_metrics(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 ## Module contents

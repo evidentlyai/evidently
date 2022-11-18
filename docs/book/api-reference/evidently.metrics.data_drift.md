@@ -9,185 +9,255 @@ Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`Co
 Calculate drift metric for a column
 
 
-#### calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
+#### Attributes: 
 
-#### column_name _: str_ 
+##### labels _: Sequence[Union[str, int]]_ 
 
-#### options _: [DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions)_ 
+##### values _: list_ 
+
+##### exception _: BaseException_ 
+
+##### column_name _: str_ 
+
+##### options _: [DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions)_ 
+
+#### Methods: 
+
+##### generate_metrics(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
+
+##### get_target_prediction_data(data: DataFrame, column_mapping: [ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping))
+
+##### calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
 ### _class _ ColumnDriftMetricRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
 
 
-#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
+#### Attributes: 
 
-#### render_html(obj: ColumnDriftMetric)
+##### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
-#### render_json(obj: ColumnDriftMetric)
+#### Methods: 
+
+##### render_html(obj: ColumnDriftMetric)
+
+##### render_json(obj: ColumnDriftMetric)
 
 ### _class _ ColumnDriftMetricResults(column_name: str, column_type: str, stattest_name: str, threshold: Optional[float], drift_score: Union[float, int], drift_detected: bool, current_distribution: [Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution), reference_distribution: [Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution), current_scatter: Optional[Dict[str, list]], x_name: Optional[str], plot_shape: Optional[Dict[str, float]])
 Bases: `object`
 
 
-#### column_name _: str_ 
+#### Attributes: 
 
-#### column_type _: str_ 
+##### column_name _: str_ 
 
-#### current_distribution _: [Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution)_ 
+##### column_type _: str_ 
 
-#### current_scatter _: Optional[Dict[str, list]]_ 
+##### current_distribution _: [Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution)_ 
 
-#### drift_detected _: bool_ 
+##### current_scatter _: Optional[Dict[str, list]]_ 
 
-#### drift_score _: Union[float, int]_ 
+##### drift_detected _: bool_ 
 
-#### plot_shape _: Optional[Dict[str, float]]_ 
+##### drift_score _: Union[float, int]_ 
 
-#### reference_distribution _: [Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution)_ 
+##### plot_shape _: Optional[Dict[str, float]]_ 
 
-#### stattest_name _: str_ 
+##### reference_distribution _: [Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution)_ 
 
-#### threshold _: Optional[float]_ 
+##### stattest_name _: str_ 
 
-#### x_name _: Optional[str]_ 
+##### threshold _: Optional[float]_ 
+
+##### x_name _: Optional[str]_ 
+
+#### Methods: 
 
 ### _class _ ColumnValuePlot(column_name: str)
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`ColumnValuePlotResults`]
 
 
-#### calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
+#### Attributes: 
 
-#### column_name _: str_ 
+##### column_name _: str_ 
+
+#### Methods: 
+
+##### calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
 ### _class _ ColumnValuePlotRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
 
 
-#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
+#### Attributes: 
 
-#### render_html(obj: ColumnValuePlot)
+##### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
+
+#### Methods: 
+
+##### render_html(obj: ColumnValuePlot)
 
 ### _class _ ColumnValuePlotResults(column_name: str, datetime_column_name: Optional[str], current_scatter: pandas.core.frame.DataFrame, reference_scatter: pandas.core.frame.DataFrame)
 Bases: `object`
 
 
-#### column_name _: str_ 
+#### Attributes: 
 
-#### current_scatter _: DataFrame_ 
+##### column_name _: str_ 
 
-#### datetime_column_name _: Optional[str]_ 
+##### current_scatter _: DataFrame_ 
 
-#### reference_scatter _: DataFrame_ 
+##### datetime_column_name _: Optional[str]_ 
+
+##### reference_scatter _: DataFrame_ 
+
+#### Methods: 
 
 ### _class _ DataDriftTable(columns: Optional[List[str]] = None, options: Optional[[DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions)] = None)
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`DataDriftTableResults`]
 
 
-#### calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
+#### Attributes: 
 
-#### columns _: Optional[List[str]]_ 
+##### columns _: Optional[List[str]]_ 
 
-#### get_parameters()
+##### options _: [DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions)_ 
 
-#### options _: [DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions)_ 
+#### Methods: 
+
+##### calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
+
+##### get_parameters()
 
 ### _class _ DataDriftTableRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
 
 
-#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
+#### Attributes: 
 
-#### render_html(obj: DataDriftTable)
+##### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
-#### render_json(obj: DataDriftTable)
+#### Methods: 
+
+##### render_html(obj: DataDriftTable)
+
+##### render_json(obj: DataDriftTable)
 
 ### _class _ DataDriftTableResults(number_of_columns: int, number_of_drifted_columns: int, share_of_drifted_columns: float, dataset_drift: bool, drift_by_columns: Dict[str, [ColumnDataDriftMetrics](evidently.calculations.md#evidently.calculations.data_drift.ColumnDataDriftMetrics)], dataset_columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 Bases: `object`
 
 
-#### dataset_columns _: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns)_ 
+#### Attributes: 
 
-#### dataset_drift _: bool_ 
+##### dataset_columns _: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns)_ 
 
-#### drift_by_columns _: Dict[str, [ColumnDataDriftMetrics](evidently.calculations.md#evidently.calculations.data_drift.ColumnDataDriftMetrics)]_ 
+##### dataset_drift _: bool_ 
 
-#### number_of_columns _: int_ 
+##### drift_by_columns _: Dict[str, [ColumnDataDriftMetrics](evidently.calculations.md#evidently.calculations.data_drift.ColumnDataDriftMetrics)]_ 
 
-#### number_of_drifted_columns _: int_ 
+##### number_of_columns _: int_ 
 
-#### share_of_drifted_columns _: float_ 
+##### number_of_drifted_columns _: int_ 
+
+##### share_of_drifted_columns _: float_ 
+
+#### Methods: 
 
 ### _class _ DataDriftMetricsRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
 
 
-#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
+#### Attributes: 
 
-#### render_html(obj: DatasetDriftMetric)
+##### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
-#### render_json(obj: DatasetDriftMetric)
+#### Methods: 
+
+##### render_html(obj: DatasetDriftMetric)
+
+##### render_json(obj: DatasetDriftMetric)
 
 ### _class _ DatasetDriftMetric(columns: Optional[List[str]] = None, threshold: float = 0.5, options: Optional[[DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions)] = None)
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`DatasetDriftMetricResults`]
 
 
-#### calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
+#### Attributes: 
 
-#### columns _: Optional[List[str]]_ 
+##### columns _: Optional[List[str]]_ 
 
-#### get_parameters()
+##### options _: [DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions)_ 
 
-#### options _: [DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions)_ 
+##### threshold _: float_ 
 
-#### threshold _: float_ 
+#### Methods: 
+
+##### calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
+
+##### get_parameters()
 
 ### _class _ DatasetDriftMetricResults(threshold: float, number_of_columns: int, number_of_drifted_columns: int, share_of_drifted_columns: float, dataset_drift: bool)
 Bases: `object`
 
 
-#### dataset_drift _: bool_ 
+#### Attributes: 
 
-#### number_of_columns _: int_ 
+##### dataset_drift _: bool_ 
 
-#### number_of_drifted_columns _: int_ 
+##### number_of_columns _: int_ 
 
-#### share_of_drifted_columns _: float_ 
+##### number_of_drifted_columns _: int_ 
 
-#### threshold _: float_ 
+##### share_of_drifted_columns _: float_ 
+
+##### threshold _: float_ 
+
+#### Methods: 
 
 ### _class _ TargetByFeaturesTable(columns: Optional[List[str]] = None)
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`TargetByFeaturesTableResults`]
 
 
-#### calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
+#### Attributes: 
 
-#### columns _: Optional[List[str]]_ 
+##### columns _: Optional[List[str]]_ 
+
+#### Methods: 
+
+##### calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
 
 ### _class _ TargetByFeaturesTableRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
 
 
-#### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
+#### Attributes: 
 
-#### render_html(obj: TargetByFeaturesTable)
+##### color_options _: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)_ 
 
-#### render_json(obj: TargetByFeaturesTable)
+#### Methods: 
+
+##### render_html(obj: TargetByFeaturesTable)
+
+##### render_json(obj: TargetByFeaturesTable)
 
 ### _class _ TargetByFeaturesTableResults(current_plot_data: pandas.core.frame.DataFrame, reference_plot_data: pandas.core.frame.DataFrame, target_name: Optional[str], curr_predictions: Optional[[PredictionData](evidently.calculations.md#evidently.calculations.classification_performance.PredictionData)], ref_predictions: Optional[[PredictionData](evidently.calculations.md#evidently.calculations.classification_performance.PredictionData)], columns: List[str], task: str)
 Bases: `object`
 
 
-#### columns _: List[str]_ 
+#### Attributes: 
 
-#### curr_predictions _: Optional[[PredictionData](evidently.calculations.md#evidently.calculations.classification_performance.PredictionData)]_ 
+##### columns _: List[str]_ 
 
-#### current_plot_data _: DataFrame_ 
+##### curr_predictions _: Optional[[PredictionData](evidently.calculations.md#evidently.calculations.classification_performance.PredictionData)]_ 
 
-#### ref_predictions _: Optional[[PredictionData](evidently.calculations.md#evidently.calculations.classification_performance.PredictionData)]_ 
+##### current_plot_data _: DataFrame_ 
 
-#### reference_plot_data _: DataFrame_ 
+##### ref_predictions _: Optional[[PredictionData](evidently.calculations.md#evidently.calculations.classification_performance.PredictionData)]_ 
 
-#### target_name _: Optional[str]_ 
+##### reference_plot_data _: DataFrame_ 
 
-#### task _: str_ 
+##### target_name _: Optional[str]_ 
+
+##### task _: str_ 
+
+#### Methods: 
 ## Module contents
