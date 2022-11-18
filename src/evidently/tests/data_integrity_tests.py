@@ -668,8 +668,19 @@ class TestColumnShareOfMissingValues(BaseIntegrityColumnMissingValuesTest):
 
 
 class TestAllColumnsShareOfMissingValues(BaseGenerator):
+    columns: Optional[str]
+
+    def __init__(self, columns: Optional[str] = None):
+        self.columns = columns
+
     def generate(self, columns_info: DatasetColumns) -> List[TestColumnShareOfMissingValues]:
-        return [TestColumnShareOfMissingValues(column_name=name) for name in columns_info.get_all_columns_list()]
+        if self.columns is None:
+            columns = columns_info.get_all_columns_list()
+
+        else:
+            columns = self.columns
+
+        return [TestColumnShareOfMissingValues(column_name=name) for name in columns]
 
 
 @default_renderer(wrap_type=TestColumnShareOfMissingValues)

@@ -834,8 +834,19 @@ class TestMostCommonValueShareRenderer(TestRenderer):
 class TestAllColumnsMostCommonValueShare(BaseGenerator):
     """Creates most common value share tests for each column in the dataset"""
 
+    columns: Optional[str]
+
+    def __init__(self, columns: Optional[str] = None):
+        self.columns = columns
+
     def generate(self, columns_info: DatasetColumns) -> List[TestMostCommonValueShare]:
-        return [TestMostCommonValueShare(column_name=name) for name in columns_info.get_all_columns_list()]
+        if self.columns is None:
+            columns = columns_info.get_all_columns_list()
+
+        else:
+            columns = self.columns
+
+        return [TestMostCommonValueShare(column_name=name) for name in columns]
 
 
 class TestMeanInNSigmas(Test):
@@ -1118,8 +1129,19 @@ class TestShareOfOutRangeValuesRenderer(TestRenderer):
 class TestNumColumnsOutOfRangeValues(BaseGenerator):
     """Creates share of out of range values tests for all numeric columns"""
 
+    columns: Optional[str]
+
+    def __init__(self, columns: Optional[str] = None):
+        self.columns = columns
+
     def generate(self, columns_info: DatasetColumns) -> List[TestShareOfOutRangeValues]:
-        return [TestShareOfOutRangeValues(column_name=name) for name in columns_info.num_feature_names]
+        if self.columns is None:
+            columns = columns_info.num_feature_names
+
+        else:
+            columns = self.columns
+
+        return [TestShareOfOutRangeValues(column_name=name) for name in columns]
 
 
 class TestValueList(Test):

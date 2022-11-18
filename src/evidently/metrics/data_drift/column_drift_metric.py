@@ -56,7 +56,7 @@ class ColumnDriftMetric(Metric[ColumnDriftMetricResults]):
         self.stattest = stattest
 
     def get_parameters(self) -> tuple:
-        return self.column_name, self.threshold, self.stattest
+        return self.column_name, self.threshold
 
     def calculate(self, data: InputData) -> ColumnDriftMetricResults:
         if data.reference_data is None:
