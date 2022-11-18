@@ -46,8 +46,8 @@
 * [All tests](reference/all-tests.md)
 * [All metrics](reference/all-metrics.md)
 * [Data drift algorithm](reference/data-drift-algorithm.md)
-* [Api Reference](api-reference/evidently.md)
-
+* [Api Reference](api-reference/modules.md)
+  
 ## SUPPORT
 
 * [Contact](support/contact.md)
