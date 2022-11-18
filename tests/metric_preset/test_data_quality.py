@@ -20,7 +20,7 @@ from evidently.report import Report
             ColumnMapping(),
         ),
         (pd.DataFrame(), pd.DataFrame(), DataQualityPreset(), ColumnMapping()),
-(
+        (
             pd.DataFrame(
                 {
                     "my_target": [1, 2, 3],
@@ -69,7 +69,7 @@ def test_data_quality_preset(
     current_data: pd.DataFrame,
     reference_data: Optional[pd.DataFrame],
     metric: DataQualityPreset,
-    column_mapping: ColumnMapping
+    column_mapping: ColumnMapping,
 ) -> None:
     report = Report(metrics=[metric])
     report.run(current_data=current_data, reference_data=reference_data, column_mapping=column_mapping)
