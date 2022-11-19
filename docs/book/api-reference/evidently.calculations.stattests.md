@@ -17,7 +17,10 @@ Cramer-Von-mises test of two samples.
 Name: “cramer_von_mises”
 
 Import:
+
+```python
 >>> from evidently.calculations.stattests import cramer_von_mises
+```
 
 Properties:
 - only for numerical features

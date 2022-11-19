@@ -3,7 +3,8 @@
 Name: "cramer_von_mises"
 
 Import:
->>> from evidently.calculations.stattests import cramer_von_mises
+
+    >>> from evidently.calculations.stattests import cramer_von_mises
 
 Properties:
 - only for numerical features
