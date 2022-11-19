@@ -2,6 +2,8 @@
 
 ## Submodules
 
+## report module
+
 
 ### class Report(metrics: List[Union[[Metric](evidently.metrics.md#evidently.metrics.base_metric.Metric), [MetricPreset](evidently.metric_preset.md#evidently.metric_preset.metric_preset.MetricPreset), [BaseGenerator](evidently.utils.md#evidently.utils.generators.BaseGenerator)]], options: Optional[List] = None)
 Bases: [`Display`](evidently.suite.md#evidently.suite.base_suite.Display)

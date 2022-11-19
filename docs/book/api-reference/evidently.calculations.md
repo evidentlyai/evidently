@@ -4,9 +4,37 @@
 
 - [evidently.calculations.stattests package](evidently.calculations.stattests.md)
 
-    - [Submodules](evidently.calculations.stattests.md#module-evidently.calculations.stattests.anderson_darling_stattest)
+    - [Submodules](evidently.calculations.stattests.md#submodules)
+
+    - [anderson_darling_stattest module](evidently.calculations.stattests.md#module-evidently.calculations.stattests.anderson_darling_stattest)
+
+    - [chisquare_stattest module](evidently.calculations.stattests.md#module-evidently.calculations.stattests.chisquare_stattest)
+
+    - [cramer_von_mises_stattest module](evidently.calculations.stattests.md#module-evidently.calculations.stattests.cramer_von_mises_stattest)
 
         - [`CramerVonMisesResult`](evidently.calculations.stattests.md#evidently.calculations.stattests.cramer_von_mises_stattest.CramerVonMisesResult)
+
+    - [energy_distance module](evidently.calculations.stattests.md#module-evidently.calculations.stattests.energy_distance)
+
+    - [epps_singleton_stattest module](evidently.calculations.stattests.md#module-evidently.calculations.stattests.epps_singleton_stattest)
+
+    - [fisher_exact_stattest module](evidently.calculations.stattests.md#module-evidently.calculations.stattests.fisher_exact_stattest)
+
+    - [g_stattest module](evidently.calculations.stattests.md#module-evidently.calculations.stattests.g_stattest)
+
+    - [hellinger_distance module](evidently.calculations.stattests.md#module-evidently.calculations.stattests.hellinger_distance)
+
+    - [jensenshannon module](evidently.calculations.stattests.md#module-evidently.calculations.stattests.jensenshannon)
+
+    - [kl_div module](evidently.calculations.stattests.md#module-evidently.calculations.stattests.kl_div)
+
+    - [ks_stattest module](evidently.calculations.stattests.md#module-evidently.calculations.stattests.ks_stattest)
+
+    - [mann_whitney_urank_stattest module](evidently.calculations.stattests.md#module-evidently.calculations.stattests.mann_whitney_urank_stattest)
+
+    - [psi module](evidently.calculations.stattests.md#module-evidently.calculations.stattests.psi)
+
+    - [registry module](evidently.calculations.stattests.md#module-evidently.calculations.stattests.registry)
 
         - [`StatTest`](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)
 
@@ -36,6 +64,12 @@
 
         - [`register_stattest()`](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.register_stattest)
 
+    - [t_test module](evidently.calculations.stattests.md#module-evidently.calculations.stattests.t_test)
+
+    - [tvd_stattest module](evidently.calculations.stattests.md#module-evidently.calculations.stattests.tvd_stattest)
+
+    - [utils module](evidently.calculations.stattests.md#module-evidently.calculations.stattests.utils)
+
         - [`generate_fisher2x2_contingency_table()`](evidently.calculations.stattests.md#evidently.calculations.stattests.utils.generate_fisher2x2_contingency_table)
 
         - [`get_binned_data()`](evidently.calculations.stattests.md#evidently.calculations.stattests.utils.get_binned_data)
@@ -43,6 +77,10 @@
         - [`get_unique_not_nan_values_list_from_series()`](evidently.calculations.stattests.md#evidently.calculations.stattests.utils.get_unique_not_nan_values_list_from_series)
 
         - [`permutation_test()`](evidently.calculations.stattests.md#evidently.calculations.stattests.utils.permutation_test)
+
+    - [wasserstein_distance_norm module](evidently.calculations.stattests.md#module-evidently.calculations.stattests.wasserstein_distance_norm)
+
+    - [z_stattest module](evidently.calculations.stattests.md#module-evidently.calculations.stattests.z_stattest)
 
         - [`proportions_diff_z_stat_ind()`](evidently.calculations.stattests.md#evidently.calculations.stattests.z_stattest.proportions_diff_z_stat_ind)
 
@@ -52,6 +90,8 @@
 
 
 ## Submodules
+
+## classification_performance module
 
 
 ### class ConfusionMatrix(labels: Sequence[Union[str, int]], values: list)
@@ -156,6 +196,8 @@ Return and object with predicted values and an optional prediction probabilities
 ### threshold_probability_labels(prediction_probas: DataFrame, pos_label: Union[str, int], neg_label: Union[str, int], threshold: float)
 Get prediction values by probabilities with the threshold apply
 
+## data_drift module
+
 Methods and types for data drift calculations.
 
 
@@ -253,6 +295,8 @@ Update dataset by predictions type:
 ### get_drift_for_columns(\*, current_data: DataFrame, reference_data: DataFrame, dataset_columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns), data_drift_options: [DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions), drift_share_threshold: Optional[float] = None, columns: Optional[List[str]] = None)
 
 ### get_one_column_drift(\*, current_data: DataFrame, reference_data: DataFrame, column_name: str, options: [DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions), dataset_columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns), column_type: Optional[str] = None)
+## data_integration module
+
 
 ### get_number_of_all_pandas_missed_values(dataset: DataFrame)
 Calculate the number of missed - nulls by pandas - values in a dataset
@@ -276,6 +320,8 @@ Calculate the number of duplicated columns in a dataset
 
 ### get_number_of_empty_columns(dataset: DataFrame)
 Calculate the number of empty columns in a dataset
+
+## data_quality module
 
 Methods for overall dataset quality calculations - rows count, a specific values count, etc.
 
@@ -481,6 +527,8 @@ Compute pairwise correlation of columns
 
 ### get_rows_count(data: Union[DataFrame, Series])
 Count quantity of rows in  a dataset
+
+## regression_performance module
 
 
 ### class ErrorWithQuantiles(error, quantile_top, quantile_other)

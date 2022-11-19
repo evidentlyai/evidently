@@ -2,9 +2,15 @@
 
 ## Submodules
 
+## anderson_darling_stattest module
+
 Run the  Anderson-Darling test of two samples.
 
+## chisquare_stattest module
+
 Compute the Chisquare test between two arrays
+
+## cramer_von_mises_stattest module
 
 Cramer-Von-mises test of two samples.
 
@@ -37,6 +43,28 @@ Using by name:
 
 ### class CramerVonMisesResult(statistic, pvalue)
 Bases: `object`
+
+## energy_distance module
+
+## epps_singleton_stattest module
+
+## fisher_exact_stattest module
+
+## g_stattest module
+
+## hellinger_distance module
+
+## jensenshannon module
+
+## kl_div module
+
+## ks_stattest module
+
+## mann_whitney_urank_stattest module
+
+## psi module
+
+## registry module
 
 
 ### class StatTest(name: str, display_name: str, func: Callable[[pandas.core.series.Series, pandas.core.series.Series, str, float], Tuple[float, bool]], allowed_feature_types: List[str], default_threshold: float = 0.05)
@@ -76,6 +104,12 @@ Bases: `object`
 ### get_stattest(reference_data: Series, current_data: Series, feature_type: str, stattest_func: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], StatTest]])
 
 ### register_stattest(stat_test: StatTest)
+## t_test module
+
+## tvd_stattest module
+
+## utils module
+
 
 ### generate_fisher2x2_contingency_table(reference_data: Series, current_data: Series)
 Generate 2x2 contingency matrix for fisher exact test
@@ -145,6 +179,10 @@ Perform a two-sided permutation test
 
     p_value
 
+
+## wasserstein_distance_norm module
+
+## z_stattest module
 
 
 ### proportions_diff_z_stat_ind(ref: DataFrame, curr: DataFrame)

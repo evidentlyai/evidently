@@ -2,6 +2,8 @@
 
 ## Submodules
 
+## column_mapping module
+
 
 ### class ColumnMapping(target: Optional[str] = 'target', prediction: Union[str, int, Sequence[str], Sequence[int], NoneType] = 'prediction', datetime: Optional[str] = 'datetime', id: Optional[str] = None, numerical_features: Optional[List[str]] = None, categorical_features: Optional[List[str]] = None, datetime_features: Optional[List[str]] = None, target_names: Optional[List[str]] = None, task: Optional[str] = None, pos_label: Union[str, int, NoneType] = 1)
 Bases: `object`
@@ -42,6 +44,8 @@ Bases: `object`
 ##### &nbsp;&nbsp;&nbsp;&nbsp; CLASSIFICATION_TASK : str  = 'classification' 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; REGRESSION_TASK : str  = 'regression' 
+## pipeline module
+
 
 ### class Pipeline(stages: Sequence[PipelineStage], options: list)
 Bases: `object`
@@ -59,6 +63,8 @@ Bases: `object`
 ##### &nbsp;&nbsp;&nbsp;&nbsp; execute(reference_data: DataFrame, current_data: Optional[DataFrame] = None, column_mapping: Optional[ColumnMapping] = None)
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; get_analyzers()
+## stage module
+
 
 ### class PipelineStage()
 Bases: `object`

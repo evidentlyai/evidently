@@ -2,6 +2,8 @@
 
 ## Submodules
 
+## data_operations module
+
 Methods for clean null or NaN values in a dataset
 
 
@@ -86,6 +88,8 @@ in all other cases task == ‘classification’.
 
 
 ### replace_infinity_values_to_nan(dataframe: DataFrame)
+## data_preprocessing module
+
 
 ### class ColumnDefinition(column_name: str, column_type: ColumnType)
 Bases: `object`
@@ -156,6 +160,8 @@ Bases: `object`
 ##### &nbsp;&nbsp;&nbsp;&nbsp; get_columns_list()
 
 ### create_data_definition(reference_data: Optional[DataFrame], current_data: DataFrame, mapping: [ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping))
+## generators module
+
 
 ### class BaseGenerator()
 Bases: `Generic`[`TObject`]
@@ -211,6 +217,8 @@ If columns is string, and it is not one of the values, ValueError will be raised
 
 parameters is used for specifying other parameters for each object, it is the same for all generated objects.
 
+## numpy_encoder module
+
 
 ### class NumpyEncoder(\*, skipkeys=False, ensure_ascii=True, check_circular=True, allow_nan=True, sort_keys=False, indent=None, separators=None, default=None)
 Bases: `JSONEncoder`
@@ -224,6 +232,8 @@ Numpy and Pandas data types to JSON types encoder
 JSON converter calls the method when it cannot convert an object to a Python type
 Convert the object to a Python type
 If we cannot convert the object, leave the default JSONEncoder behaviour - raise a TypeError exception.
+## types module
+
 Additional types, classes, dataclasses, etc.
 
 
@@ -244,6 +254,8 @@ Class for approximate scalar value calculations
 #### Methods: 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; as_dict()
+## visualizations module
+
 
 ### class Distribution(x: Union[<built-in function array>, list], y: Union[<built-in function array>, list])
 Bases: `object`

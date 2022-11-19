@@ -2,6 +2,8 @@
 
 ## Submodules
 
+## base_renderer module
+
 
 ### class BaseRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: `object`
@@ -84,6 +86,8 @@ Bases: `BaseRenderer`
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj)
 
 ### default_renderer(wrap_type)
+## html_widgets module
+
 
 ### class ColumnDefinition(title: str, field_name: str, type: evidently.renderers.html_widgets.ColumnType = <ColumnType.STRING: 'string'>, sort: Optional[evidently.renderers.html_widgets.SortDirection] = None, options: Optional[dict] = None)
 Bases: `object`
@@ -529,8 +533,12 @@ generate widget with tabs which can contain any other widget.
 ### widget_tabs_for_more_than_one(\*, title: str = '', size: WidgetSize = WidgetSize.FULL, tabs: List[TabData])
 Draw tabs widget only if there is more than one tab, otherwise just draw one widget
 
+## notebook_utils module
+
 
 ### determine_template(mode: str)
+## render_utils module
+
 
 ### get_distribution_plot_figure(\*, current_distribution: [Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution), reference_distribution: Optional[[Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution)], color_options: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions), orientation: str = 'v')
 

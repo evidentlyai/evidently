@@ -2,6 +2,8 @@
 
 ## Submodules
 
+## abs_perc_error_in_time module
+
 
 ### class RegressionAbsPercentageErrorPlot()
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`RegressionAbsPercentageErrorPlotResults`]
@@ -34,6 +36,8 @@ Bases: `object`
 ##### &nbsp;&nbsp;&nbsp;&nbsp; reference_scatter : Optional[Dict[str, Series]] 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; x_name : str 
+## error_bias_table module
+
 
 ### class RegressionErrorBiasTable(columns: Optional[List[str]] = None, top_error: Optional[float] = None)
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`RegressionErrorBiasTableResults`]
@@ -89,6 +93,8 @@ Bases: `object`
 ##### &nbsp;&nbsp;&nbsp;&nbsp; target_name : str 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; top_error : float 
+## error_distribution module
+
 
 ### class RegressionErrorDistribution()
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`RegressionErrorDistributionResults`]
@@ -119,6 +125,8 @@ Bases: `object`
 ##### &nbsp;&nbsp;&nbsp;&nbsp; current_bins : DataFrame 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; reference_bins : Optional[DataFrame] 
+## error_in_time module
+
 
 ### class RegressionErrorPlot()
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`RegressionErrorPlotResults`]
@@ -151,6 +159,8 @@ Bases: `object`
 ##### &nbsp;&nbsp;&nbsp;&nbsp; reference_scatter : Optional[Dict[str, Series]] 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; x_name : str 
+## error_normality module
+
 
 ### class RegressionErrorNormality()
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`RegressionErrorNormalityResults`]
@@ -181,6 +191,8 @@ Bases: `object`
 ##### &nbsp;&nbsp;&nbsp;&nbsp; current_error : Series 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; reference_error : Optional[Series] 
+## predicted_and_actual_in_time module
+
 
 ### class RegressionPredictedVsActualPlot()
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`RegressionPredictedVsActualPlotResults`]
@@ -213,6 +225,8 @@ Bases: `object`
 ##### &nbsp;&nbsp;&nbsp;&nbsp; reference_scatter : Optional[Dict[str, Series]] 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; x_name : str 
+## predicted_vs_actual module
+
 
 ### class RegressionPredictedVsActualScatter()
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`RegressionPredictedVsActualScatterResults`]
@@ -243,6 +257,8 @@ Bases: `object`
 ##### &nbsp;&nbsp;&nbsp;&nbsp; current_scatter : Dict[str, Series] 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; reference_scatter : Optional[Dict[str, Series]] 
+## regression_dummy_metric module
+
 
 ### class RegressionDummyMetric()
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`RegressionDummyMetricResults`]
@@ -296,6 +312,8 @@ Bases: `object`
 ##### &nbsp;&nbsp;&nbsp;&nbsp; rmse_by_ref : Optional[float]  = None 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; rmse_default : float 
+## regression_performance_metrics module
+
 
 ### class RegressionPerformanceMetrics()
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`RegressionPerformanceMetricsResults`]
@@ -380,6 +398,8 @@ Bases: `object`
 ##### &nbsp;&nbsp;&nbsp;&nbsp; underperformance_ref : Optional[dict]  = None 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; vals_for_plots : Dict[str, Dict[str, Series]] 
+## regression_quality module
+
 
 ### class RegressionQualityMetric()
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`RegressionQualityMetricResults`]
@@ -468,6 +488,8 @@ Bases: `object`
 ##### &nbsp;&nbsp;&nbsp;&nbsp; underperformance_ref : Optional[dict]  = None 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; vals_for_plots : Dict[str, Dict[str, Series]] 
+## top_error module
+
 
 ### class RegressionTopErrorMetric()
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`RegressionTopErrorMetricResults`]

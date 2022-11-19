@@ -2,6 +2,8 @@
 
 ## Submodules
 
+## color_scheme module
+
 
 ### class ColorOptions(primary_color: str = '#ed0400', secondary_color: str = '#4d4d4d', current_data_color: Optional[str] = None, reference_data_color: Optional[str] = None, color_sequence: Sequence[str] = ('#ed0400', '#0a5f38', '#6c3461', '#71aa34', '#d8dcd6', '#6b8ba4'), fill_color: str = 'LightGreen', zero_line_color: str = 'green', non_visible_color: str = 'white', underestimation_color: str = '#6574f7', overestimation_color: str = '#ee5540', majority_color: str = '#1acc98', vertical_lines: str = 'green', heatmap: str = 'RdBu_r')
 Bases: `object`
@@ -69,6 +71,8 @@ Collection of colors for data visualization
 ##### &nbsp;&nbsp;&nbsp;&nbsp; get_current_data_color()
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; get_reference_data_color()
+## data_drift module
+
 
 ### class DataDriftOptions(confidence: Optional[Union[float, Dict[str, float]]] = None, threshold: Optional[Union[float, Dict[str, float]]] = None, drift_share: float = 0.5, nbinsx: Union[int, Dict[str, int]] = 10, xbins: Optional[Dict[str, int]] = None, feature_stattest_func: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest), Dict[str, Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]]] = None, all_features_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, cat_features_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, num_features_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, per_feature_stattest: Optional[Dict[str, Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]] = None, cat_target_threshold: Optional[float] = None, num_target_threshold: Optional[float] = None, cat_target_stattest_func: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, num_target_stattest_func: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None)
 Bases: `object`
@@ -153,6 +157,8 @@ Configuration for Data Drift calculations.
 ##### &nbsp;&nbsp;&nbsp;&nbsp; get_nbinsx(feature_name: str)
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; get_threshold(feature_name: str)
+## quality_metrics module
+
 
 ### class QualityMetricsOptions(conf_interval_n_sigmas: int = 1, classification_threshold: float = 0.5, cut_quantile: Union[NoneType, Tuple[str, float], Dict[str, Tuple[str, float]]] = None)
 Bases: `object`

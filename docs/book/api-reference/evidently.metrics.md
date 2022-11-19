@@ -4,11 +4,15 @@
 
 - [evidently.metrics.classification_performance package](evidently.metrics.classification_performance.md)
 
-    - [Submodules](evidently.metrics.classification_performance.md#module-evidently.metrics.classification_performance.base_classification_metric)
+    - [Submodules](evidently.metrics.classification_performance.md#submodules)
+
+    - [base_classification_metric module](evidently.metrics.classification_performance.md#module-evidently.metrics.classification_performance.base_classification_metric)
 
         - [`ThresholdClassificationMetric`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.base_classification_metric.ThresholdClassificationMetric)
 
             - [`ThresholdClassificationMetric.get_target_prediction_data()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.base_classification_metric.ThresholdClassificationMetric.get_target_prediction_data)
+
+    - [class_balance_metric module](evidently.metrics.classification_performance.md#module-evidently.metrics.classification_performance.class_balance_metric)
 
         - [`ClassificationClassBalance`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.class_balance_metric.ClassificationClassBalance)
 
@@ -25,6 +29,8 @@
         - [`ClassificationClassBalanceResult`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.class_balance_metric.ClassificationClassBalanceResult)
 
             - [`ClassificationClassBalanceResult.plot_data`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.class_balance_metric.ClassificationClassBalanceResult.plot_data)
+
+    - [class_separation_metric module](evidently.metrics.classification_performance.md#module-evidently.metrics.classification_performance.class_separation_metric)
 
         - [`ClassificationClassSeparationPlot`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.class_separation_metric.ClassificationClassSeparationPlot)
 
@@ -45,6 +51,8 @@
             - [`ClassificationClassSeparationPlotResults.reference_plot`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.class_separation_metric.ClassificationClassSeparationPlotResults.reference_plot)
 
             - [`ClassificationClassSeparationPlotResults.target_name`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.class_separation_metric.ClassificationClassSeparationPlotResults.target_name)
+
+    - [classification_dummy_metric module](evidently.metrics.classification_performance.md#module-evidently.metrics.classification_performance.classification_dummy_metric)
 
         - [`ClassificationDummyMetric`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetric)
 
@@ -72,6 +80,8 @@
 
             - [`ClassificationDummyMetricResults.model_quality`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetricResults.model_quality)
 
+    - [classification_quality_metric module](evidently.metrics.classification_performance.md#module-evidently.metrics.classification_performance.classification_quality_metric)
+
         - [`ClassificationQualityMetric`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetric)
 
             - [`ClassificationQualityMetric.calculate()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetric.calculate)
@@ -94,6 +104,8 @@
 
             - [`ClassificationQualityMetricResult.target_name`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetricResult.target_name)
 
+    - [confusion_matrix_metric module](evidently.metrics.classification_performance.md#module-evidently.metrics.classification_performance.confusion_matrix_metric)
+
         - [`ClassificationConfusionMatrix`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrix)
 
             - [`ClassificationConfusionMatrix.calculate()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrix.calculate)
@@ -111,6 +123,8 @@
             - [`ClassificationConfusionMatrixResult.current_matrix`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrixResult.current_matrix)
 
             - [`ClassificationConfusionMatrixResult.reference_matrix`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrixResult.reference_matrix)
+
+    - [pr_curve_metric module](evidently.metrics.classification_performance.md#module-evidently.metrics.classification_performance.pr_curve_metric)
 
         - [`ClassificationPRCurve`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.pr_curve_metric.ClassificationPRCurve)
 
@@ -132,6 +146,8 @@
 
             - [`ClassificationPRCurveResults.reference_pr_curve`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.pr_curve_metric.ClassificationPRCurveResults.reference_pr_curve)
 
+    - [pr_table_metric module](evidently.metrics.classification_performance.md#module-evidently.metrics.classification_performance.pr_table_metric)
+
         - [`ClassificationPRTable`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.pr_table_metric.ClassificationPRTable)
 
             - [`ClassificationPRTable.calculate()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.pr_table_metric.ClassificationPRTable.calculate)
@@ -152,6 +168,8 @@
 
             - [`ClassificationPRTableResults.reference_pr_table`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.pr_table_metric.ClassificationPRTableResults.reference_pr_table)
 
+    - [probability_distribution_metric module](evidently.metrics.classification_performance.md#module-evidently.metrics.classification_performance.probability_distribution_metric)
+
         - [`ClassificationProbDistribution`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.probability_distribution_metric.ClassificationProbDistribution)
 
             - [`ClassificationProbDistribution.calculate()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.probability_distribution_metric.ClassificationProbDistribution.calculate)
@@ -171,6 +189,8 @@
             - [`ClassificationProbDistributionResults.current_distribution`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.probability_distribution_metric.ClassificationProbDistributionResults.current_distribution)
 
             - [`ClassificationProbDistributionResults.reference_distribution`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.probability_distribution_metric.ClassificationProbDistributionResults.reference_distribution)
+
+    - [quality_by_class_metric module](evidently.metrics.classification_performance.md#module-evidently.metrics.classification_performance.quality_by_class_metric)
 
         - [`ClassificationQualityByClass`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_class_metric.ClassificationQualityByClass)
 
@@ -195,6 +215,8 @@
             - [`ClassificationQualityByClassResult.reference_metrics`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_class_metric.ClassificationQualityByClassResult.reference_metrics)
 
             - [`ClassificationQualityByClassResult.reference_roc_aucs`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_class_metric.ClassificationQualityByClassResult.reference_roc_aucs)
+
+    - [quality_by_feature_table module](evidently.metrics.classification_performance.md#module-evidently.metrics.classification_performance.quality_by_feature_table)
 
         - [`ClassificationQualityByFeatureTable`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_feature_table.ClassificationQualityByFeatureTable)
 
@@ -224,6 +246,8 @@
 
             - [`ClassificationQualityByFeatureTableResults.target_name`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_feature_table.ClassificationQualityByFeatureTableResults.target_name)
 
+    - [roc_curve_metric module](evidently.metrics.classification_performance.md#module-evidently.metrics.classification_performance.roc_curve_metric)
+
         - [`ClassificationRocCurve`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.roc_curve_metric.ClassificationRocCurve)
 
             - [`ClassificationRocCurve.calculate()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.roc_curve_metric.ClassificationRocCurve.calculate)
@@ -248,7 +272,9 @@
 
 - [evidently.metrics.data_drift package](evidently.metrics.data_drift.md)
 
-    - [Submodules](evidently.metrics.data_drift.md#module-evidently.metrics.data_drift.column_drift_metric)
+    - [Submodules](evidently.metrics.data_drift.md#submodules)
+
+    - [column_drift_metric module](evidently.metrics.data_drift.md#module-evidently.metrics.data_drift.column_drift_metric)
 
         - [`ColumnDriftMetric`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetric)
 
@@ -290,6 +316,8 @@
 
             - [`ColumnDriftMetricResults.x_name`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetricResults.x_name)
 
+    - [column_value_plot module](evidently.metrics.data_drift.md#module-evidently.metrics.data_drift.column_value_plot)
+
         - [`ColumnValuePlot`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_value_plot.ColumnValuePlot)
 
             - [`ColumnValuePlot.calculate()`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_value_plot.ColumnValuePlot.calculate)
@@ -311,6 +339,8 @@
             - [`ColumnValuePlotResults.datetime_column_name`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_value_plot.ColumnValuePlotResults.datetime_column_name)
 
             - [`ColumnValuePlotResults.reference_scatter`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_value_plot.ColumnValuePlotResults.reference_scatter)
+
+    - [data_drift_table module](evidently.metrics.data_drift.md#module-evidently.metrics.data_drift.data_drift_table)
 
         - [`DataDriftTable`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTable)
 
@@ -344,6 +374,8 @@
 
             - [`DataDriftTableResults.share_of_drifted_columns`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTableResults.share_of_drifted_columns)
 
+    - [dataset_drift_metric module](evidently.metrics.data_drift.md#module-evidently.metrics.data_drift.dataset_drift_metric)
+
         - [`DataDriftMetricsRenderer`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DataDriftMetricsRenderer)
 
             - [`DataDriftMetricsRenderer.color_options`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DataDriftMetricsRenderer.color_options)
@@ -375,6 +407,8 @@
             - [`DatasetDriftMetricResults.share_of_drifted_columns`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DatasetDriftMetricResults.share_of_drifted_columns)
 
             - [`DatasetDriftMetricResults.threshold`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DatasetDriftMetricResults.threshold)
+
+    - [target_by_features_table module](evidently.metrics.data_drift.md#module-evidently.metrics.data_drift.target_by_features_table)
 
         - [`TargetByFeaturesTable`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.target_by_features_table.TargetByFeaturesTable)
 
@@ -410,7 +444,9 @@
 
 - [evidently.metrics.data_integrity package](evidently.metrics.data_integrity.md)
 
-    - [Submodules](evidently.metrics.data_integrity.md#module-evidently.metrics.data_integrity.column_missing_values_metric)
+    - [Submodules](evidently.metrics.data_integrity.md#submodules)
+
+    - [column_missing_values_metric module](evidently.metrics.data_integrity.md#module-evidently.metrics.data_integrity.column_missing_values_metric)
 
         - [`ColumnMissingValues`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValues)
 
@@ -449,6 +485,8 @@
             - [`ColumnMissingValuesMetricResult.current`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValuesMetricResult.current)
 
             - [`ColumnMissingValuesMetricResult.reference`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_missing_values_metric.ColumnMissingValuesMetricResult.reference)
+
+    - [column_regexp_metric module](evidently.metrics.data_integrity.md#module-evidently.metrics.data_integrity.column_regexp_metric)
 
         - [`ColumnRegExpMetric`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.ColumnRegExpMetric)
 
@@ -491,6 +529,8 @@
             - [`DataIntegrityValueByRegexpStat.table_of_matched`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.DataIntegrityValueByRegexpStat.table_of_matched)
 
             - [`DataIntegrityValueByRegexpStat.table_of_not_matched`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.DataIntegrityValueByRegexpStat.table_of_not_matched)
+
+    - [column_summary_metric module](evidently.metrics.data_integrity.md#module-evidently.metrics.data_integrity.column_summary_metric)
 
         - [`CategoricalCharacteristics`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.CategoricalCharacteristics)
 
@@ -624,6 +664,8 @@
 
             - [`NumericCharacteristics.unique_percentage`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_summary_metric.NumericCharacteristics.unique_percentage)
 
+    - [dataset_missing_values_metric module](evidently.metrics.data_integrity.md#module-evidently.metrics.data_integrity.dataset_missing_values_metric)
+
         - [`DatasetMissingValues`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValues)
 
             - [`DatasetMissingValues.columns_with_missing_values`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValues.columns_with_missing_values)
@@ -677,6 +719,8 @@
             - [`DatasetMissingValuesMetricResult.current`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetricResult.current)
 
             - [`DatasetMissingValuesMetricResult.reference`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_missing_values_metric.DatasetMissingValuesMetricResult.reference)
+
+    - [dataset_summary_metric module](evidently.metrics.data_integrity.md#module-evidently.metrics.data_integrity.dataset_summary_metric)
 
         - [`DatasetSummary`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummary)
 
@@ -748,7 +792,9 @@
 
 - [evidently.metrics.data_quality package](evidently.metrics.data_quality.md)
 
-    - [Submodules](evidently.metrics.data_quality.md#module-evidently.metrics.data_quality.column_correlations_metric)
+    - [Submodules](evidently.metrics.data_quality.md#submodules)
+
+    - [column_correlations_metric module](evidently.metrics.data_quality.md#module-evidently.metrics.data_quality.column_correlations_metric)
 
         - [`ColumnCorrelationsMetric`](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_correlations_metric.ColumnCorrelationsMetric)
 
@@ -772,6 +818,8 @@
 
             - [`ColumnCorrelationsMetricResult.reference`](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_correlations_metric.ColumnCorrelationsMetricResult.reference)
 
+    - [column_distribution_metric module](evidently.metrics.data_quality.md#module-evidently.metrics.data_quality.column_distribution_metric)
+
         - [`ColumnDistributionMetric`](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_distribution_metric.ColumnDistributionMetric)
 
             - [`ColumnDistributionMetric.calculate()`](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_distribution_metric.ColumnDistributionMetric.calculate)
@@ -793,6 +841,8 @@
             - [`ColumnDistributionMetricResult.current`](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_distribution_metric.ColumnDistributionMetricResult.current)
 
             - [`ColumnDistributionMetricResult.reference`](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_distribution_metric.ColumnDistributionMetricResult.reference)
+
+    - [column_quantile_metric module](evidently.metrics.data_quality.md#module-evidently.metrics.data_quality.column_quantile_metric)
 
         - [`ColumnQuantileMetric`](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_quantile_metric.ColumnQuantileMetric)
 
@@ -823,6 +873,8 @@
             - [`ColumnQuantileMetricResult.reference`](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_quantile_metric.ColumnQuantileMetricResult.reference)
 
             - [`ColumnQuantileMetricResult.reference_distribution`](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_quantile_metric.ColumnQuantileMetricResult.reference_distribution)
+
+    - [column_value_list_metric module](evidently.metrics.data_quality.md#module-evidently.metrics.data_quality.column_value_list_metric)
 
         - [`ColumnValueListMetric`](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_value_list_metric.ColumnValueListMetric)
 
@@ -865,6 +917,8 @@
             - [`ValueListStat.values_in_list`](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_value_list_metric.ValueListStat.values_in_list)
 
             - [`ValueListStat.values_not_in_list`](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_value_list_metric.ValueListStat.values_not_in_list)
+
+    - [column_value_range_metric module](evidently.metrics.data_quality.md#module-evidently.metrics.data_quality.column_value_range_metric)
 
         - [`ColumnValueRangeMetric`](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_value_range_metric.ColumnValueRangeMetric)
 
@@ -912,6 +966,8 @@
 
             - [`ValuesInRangeStat.share_not_in_range`](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_value_range_metric.ValuesInRangeStat.share_not_in_range)
 
+    - [dataset_correlations_metric module](evidently.metrics.data_quality.md#module-evidently.metrics.data_quality.dataset_correlations_metric)
+
         - [`CorrelationStats`](evidently.metrics.data_quality.md#evidently.metrics.data_quality.dataset_correlations_metric.CorrelationStats)
 
             - [`CorrelationStats.abs_max_correlation`](evidently.metrics.data_quality.md#evidently.metrics.data_quality.dataset_correlations_metric.CorrelationStats.abs_max_correlation)
@@ -948,6 +1004,8 @@
 
             - [`DatasetCorrelationsMetricResult.reference`](evidently.metrics.data_quality.md#evidently.metrics.data_quality.dataset_correlations_metric.DatasetCorrelationsMetricResult.reference)
 
+    - [stability_metric module](evidently.metrics.data_quality.md#module-evidently.metrics.data_quality.stability_metric)
+
         - [`DataQualityStabilityMetric`](evidently.metrics.data_quality.md#evidently.metrics.data_quality.stability_metric.DataQualityStabilityMetric)
 
             - [`DataQualityStabilityMetric.calculate()`](evidently.metrics.data_quality.md#evidently.metrics.data_quality.stability_metric.DataQualityStabilityMetric.calculate)
@@ -970,7 +1028,9 @@
 
 - [evidently.metrics.regression_performance package](evidently.metrics.regression_performance.md)
 
-    - [Submodules](evidently.metrics.regression_performance.md#module-evidently.metrics.regression_performance.abs_perc_error_in_time)
+    - [Submodules](evidently.metrics.regression_performance.md#submodules)
+
+    - [abs_perc_error_in_time module](evidently.metrics.regression_performance.md#module-evidently.metrics.regression_performance.abs_perc_error_in_time)
 
         - [`RegressionAbsPercentageErrorPlot`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.abs_perc_error_in_time.RegressionAbsPercentageErrorPlot)
 
@@ -991,6 +1051,8 @@
             - [`RegressionAbsPercentageErrorPlotResults.reference_scatter`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.abs_perc_error_in_time.RegressionAbsPercentageErrorPlotResults.reference_scatter)
 
             - [`RegressionAbsPercentageErrorPlotResults.x_name`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.abs_perc_error_in_time.RegressionAbsPercentageErrorPlotResults.x_name)
+
+    - [error_bias_table module](evidently.metrics.regression_performance.md#module-evidently.metrics.regression_performance.error_bias_table)
 
         - [`RegressionErrorBiasTable`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.error_bias_table.RegressionErrorBiasTable)
 
@@ -1034,6 +1096,8 @@
 
             - [`RegressionErrorBiasTableResults.top_error`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.error_bias_table.RegressionErrorBiasTableResults.top_error)
 
+    - [error_distribution module](evidently.metrics.regression_performance.md#module-evidently.metrics.regression_performance.error_distribution)
+
         - [`RegressionErrorDistribution`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.error_distribution.RegressionErrorDistribution)
 
             - [`RegressionErrorDistribution.calculate()`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.error_distribution.RegressionErrorDistribution.calculate)
@@ -1051,6 +1115,8 @@
             - [`RegressionErrorDistributionResults.current_bins`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.error_distribution.RegressionErrorDistributionResults.current_bins)
 
             - [`RegressionErrorDistributionResults.reference_bins`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.error_distribution.RegressionErrorDistributionResults.reference_bins)
+
+    - [error_in_time module](evidently.metrics.regression_performance.md#module-evidently.metrics.regression_performance.error_in_time)
 
         - [`RegressionErrorPlot`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.error_in_time.RegressionErrorPlot)
 
@@ -1072,6 +1138,8 @@
 
             - [`RegressionErrorPlotResults.x_name`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.error_in_time.RegressionErrorPlotResults.x_name)
 
+    - [error_normality module](evidently.metrics.regression_performance.md#module-evidently.metrics.regression_performance.error_normality)
+
         - [`RegressionErrorNormality`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.error_normality.RegressionErrorNormality)
 
             - [`RegressionErrorNormality.calculate()`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.error_normality.RegressionErrorNormality.calculate)
@@ -1089,6 +1157,8 @@
             - [`RegressionErrorNormalityResults.current_error`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.error_normality.RegressionErrorNormalityResults.current_error)
 
             - [`RegressionErrorNormalityResults.reference_error`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.error_normality.RegressionErrorNormalityResults.reference_error)
+
+    - [predicted_and_actual_in_time module](evidently.metrics.regression_performance.md#module-evidently.metrics.regression_performance.predicted_and_actual_in_time)
 
         - [`RegressionPredictedVsActualPlot`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.predicted_and_actual_in_time.RegressionPredictedVsActualPlot)
 
@@ -1110,6 +1180,8 @@
 
             - [`RegressionPredictedVsActualPlotResults.x_name`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.predicted_and_actual_in_time.RegressionPredictedVsActualPlotResults.x_name)
 
+    - [predicted_vs_actual module](evidently.metrics.regression_performance.md#module-evidently.metrics.regression_performance.predicted_vs_actual)
+
         - [`RegressionPredictedVsActualScatter`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.predicted_vs_actual.RegressionPredictedVsActualScatter)
 
             - [`RegressionPredictedVsActualScatter.calculate()`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.predicted_vs_actual.RegressionPredictedVsActualScatter.calculate)
@@ -1127,6 +1199,8 @@
             - [`RegressionPredictedVsActualScatterResults.current_scatter`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.predicted_vs_actual.RegressionPredictedVsActualScatterResults.current_scatter)
 
             - [`RegressionPredictedVsActualScatterResults.reference_scatter`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.predicted_vs_actual.RegressionPredictedVsActualScatterResults.reference_scatter)
+
+    - [regression_dummy_metric module](evidently.metrics.regression_performance.md#module-evidently.metrics.regression_performance.regression_dummy_metric)
 
         - [`RegressionDummyMetric`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_dummy_metric.RegressionDummyMetric)
 
@@ -1167,6 +1241,8 @@
             - [`RegressionDummyMetricResults.rmse_by_ref`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_dummy_metric.RegressionDummyMetricResults.rmse_by_ref)
 
             - [`RegressionDummyMetricResults.rmse_default`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_dummy_metric.RegressionDummyMetricResults.rmse_default)
+
+    - [regression_performance_metrics module](evidently.metrics.regression_performance.md#module-evidently.metrics.regression_performance.regression_performance_metrics)
 
         - [`RegressionPerformanceMetrics`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_performance_metrics.RegressionPerformanceMetrics)
 
@@ -1239,6 +1315,8 @@
             - [`RegressionPerformanceMetricsResults.underperformance_ref`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_performance_metrics.RegressionPerformanceMetricsResults.underperformance_ref)
 
             - [`RegressionPerformanceMetricsResults.vals_for_plots`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_performance_metrics.RegressionPerformanceMetricsResults.vals_for_plots)
+
+    - [regression_quality module](evidently.metrics.regression_performance.md#module-evidently.metrics.regression_performance.regression_quality)
 
         - [`RegressionQualityMetric`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_quality.RegressionQualityMetric)
 
@@ -1316,6 +1394,8 @@
 
             - [`RegressionQualityMetricResults.vals_for_plots`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.regression_quality.RegressionQualityMetricResults.vals_for_plots)
 
+    - [top_error module](evidently.metrics.regression_performance.md#module-evidently.metrics.regression_performance.top_error)
+
         - [`RegressionTopErrorMetric`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.top_error.RegressionTopErrorMetric)
 
             - [`RegressionTopErrorMetric.calculate()`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.top_error.RegressionTopErrorMetric.calculate)
@@ -1342,6 +1422,8 @@
 
 
 ## Submodules
+
+## base_metric module
 
 
 ### class ErrorResult(exception: BaseException)
@@ -1385,6 +1467,8 @@ Bases: `Generic`[`TResult`]
 
 ### generate_column_metrics(metric_class: Type[Metric], columns: Optional[Union[str, list]] = None, parameters: Optional[Dict] = None)
 Function for generating metrics for columns
+
+## utils module
 
 
 ### apply_func_to_binned_data(df_for_bins, func, target_column, preds_column, is_ref_data=False)
