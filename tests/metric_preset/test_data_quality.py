@@ -11,14 +11,31 @@ from evidently.report import Report
 
 
 @pytest.mark.parametrize(
-    "current_data, reference_data, column_mapping",
+    "current_data, reference_data, metric, column_mapping",
     (
         (
             pd.DataFrame(),
             None,
+            DataQualityPreset(),
             ColumnMapping(),
         ),
-        (pd.DataFrame(), pd.DataFrame(), ColumnMapping()),
+        (pd.DataFrame(), pd.DataFrame(), DataQualityPreset(), ColumnMapping()),
+        (
+            pd.DataFrame(
+                {
+                    "my_target": [1, 2, 3],
+                    "prediction": [1, 2, 3],
+                    "feature1": [1, 2, 3],
+                    "feature2": ["a", "b", "c"],
+                    "datetime": pd.date_range("2020-01-01", periods=3),
+                }
+            ),
+            None,
+            DataQualityPreset(columns=["feature1", "feature2"]),
+            ColumnMapping(
+                target="my_target",
+            ),
+        ),
         (
             pd.DataFrame(
                 {
@@ -39,6 +56,7 @@ from evidently.report import Report
                     "datetime": pd.date_range("2020-01-01", periods=6),
                 }
             ),
+            DataQualityPreset(),
             ColumnMapping(
                 target="my_target",
                 prediction="prediction",
@@ -48,9 +66,12 @@ from evidently.report import Report
     ),
 )
 def test_data_quality_preset(
-    current_data: pd.DataFrame, reference_data: Optional[pd.DataFrame], column_mapping: ColumnMapping
+    current_data: pd.DataFrame,
+    reference_data: Optional[pd.DataFrame],
+    metric: DataQualityPreset,
+    column_mapping: ColumnMapping,
 ) -> None:
-    report = Report(metrics=[DataQualityPreset()])
+    report = Report(metrics=[metric])
     report.run(current_data=current_data, reference_data=reference_data, column_mapping=column_mapping)
     assert report.show()
     json_result = report.json()

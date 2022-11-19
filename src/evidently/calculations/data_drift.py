@@ -92,7 +92,7 @@ def get_one_column_drift(
     else:
         stattest = options.get_feature_stattest_func(column_name, column_type)
 
-    threshold = options.get_threshold(column_name)
+    threshold = options.get_threshold(column_name, column_type)
     current_column = current_data[column_name]
     reference_column = reference_data[column_name]
 

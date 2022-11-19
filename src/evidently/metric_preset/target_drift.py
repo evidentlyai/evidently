@@ -3,6 +3,7 @@ from typing import Optional
 from typing import Sequence
 
 from evidently.calculations.data_drift import ensure_prediction_column_is_string
+from evidently.calculations.stattests import PossibleStatTestType
 from evidently.metric_preset.metric_preset import MetricPreset
 from evidently.metrics import ColumnCorrelationsMetric
 from evidently.metrics import ColumnDriftMetric
@@ -14,6 +15,27 @@ from evidently.utils.data_operations import DatasetColumns
 
 
 class TargetDriftPreset(MetricPreset):
+    columns: Optional[List[str]]
+    target_stattest: Optional[PossibleStatTestType]
+    prediction_stattest: Optional[PossibleStatTestType]
+    target_threshold: Optional[float]
+    prediction_threshold: Optional[float]
+
+    def __init__(
+        self,
+        columns: Optional[List[str]] = None,
+        target_stattest: Optional[PossibleStatTestType] = None,
+        prediction_stattest: Optional[PossibleStatTestType] = None,
+        target_threshold: Optional[float] = None,
+        prediction_threshold: Optional[float] = None,
+    ):
+        super().__init__()
+        self.columns = columns
+        self.target_stattest = target_stattest
+        self.prediction_stattest = prediction_stattest
+        self.target_threshold = target_threshold
+        self.prediction_threshold = prediction_threshold
+
     def generate_metrics(self, data: InputData, columns: DatasetColumns) -> Sequence[Metric]:
         target = columns.utility_columns.target
         prediction = columns.utility_columns.prediction
@@ -23,7 +45,13 @@ class TargetDriftPreset(MetricPreset):
 
         if target is not None:
             columns_by_target.append(target)
-            result.append(ColumnDriftMetric(column_name=target))
+            result.append(
+                ColumnDriftMetric(
+                    column_name=target,
+                    threshold=self.target_threshold,
+                    stattest=self.target_stattest,
+                )
+            )
 
             if data.column_mapping.is_regression_task():
                 result.append(ColumnValuePlot(column_name=target))
@@ -47,7 +75,13 @@ class TargetDriftPreset(MetricPreset):
 
             if isinstance(prediction, str):
                 columns_by_target.append(prediction)
-                result.append(ColumnDriftMetric(column_name=prediction))
+                result.append(
+                    ColumnDriftMetric(
+                        column_name=prediction,
+                        threshold=self.target_threshold,
+                        stattest=self.target_stattest,
+                    )
+                )
 
                 if prob_columns is not None:
                     for prob_column in prob_columns:

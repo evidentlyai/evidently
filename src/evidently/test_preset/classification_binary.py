@@ -1,3 +1,7 @@
+from typing import List
+from typing import Optional
+
+from evidently.calculations.stattests import PossibleStatTestType
 from evidently.metrics.base_metric import InputData
 from evidently.test_preset.test_preset import TestPreset
 from evidently.tests import TestAccuracyScore
@@ -10,12 +14,28 @@ from evidently.utils.data_operations import DatasetColumns
 
 
 class BinaryClassificationTestPreset(TestPreset):
-    def __init__(self, prediction_type: str, threshold: float = 0.5):
+    prediction_type: str
+    columns: Optional[List[str]]
+    stattest: Optional[PossibleStatTestType]
+    threshold_probas: float
+    threshold_stattest: Optional[float]
+
+    def __init__(
+        self,
+        prediction_type: str,
+        columns: Optional[List[str]] = None,
+        stattest: Optional[PossibleStatTestType] = None,
+        threshold_probas: float = 0.5,
+        threshold_stattest: Optional[float] = None,
+    ):
         super().__init__()
         if prediction_type not in ["probas", "labels"]:
             raise ValueError("`prediction_type` argument should by one of 'probas' or 'labels'")
         self.prediction_type = prediction_type
-        self.threshold = threshold
+        self.columns = columns
+        self.stattest = stattest
+        self.threshold_probas = threshold_probas
+        self.threshold_stattest = threshold_stattest
 
     def generate_tests(self, data: InputData, columns: DatasetColumns):
         target = columns.utility_columns.target
@@ -23,7 +43,7 @@ class BinaryClassificationTestPreset(TestPreset):
             raise ValueError("Target column should be set in mapping and be present in data")
         if self.prediction_type == "labels":
             return [
-                TestColumnValueDrift(target),
+                TestColumnValueDrift(column_name=target, stattest=self.stattest, threshold=self.threshold_stattest),
                 TestPrecisionScore(),
                 TestRecallScore(),
                 TestF1Score(),
@@ -31,11 +51,11 @@ class BinaryClassificationTestPreset(TestPreset):
             ]
         if self.prediction_type == "probas":
             return [
-                TestColumnValueDrift(target),
+                TestColumnValueDrift(column_name=target, stattest=self.stattest, threshold=self.threshold_stattest),
                 TestRocAuc(),
-                TestPrecisionScore(threshold=self.threshold),
-                TestRecallScore(threshold=self.threshold),
-                TestAccuracyScore(threshold=self.threshold),
-                TestF1Score(threshold=self.threshold),
+                TestPrecisionScore(threshold=self.threshold_probas),
+                TestRecallScore(threshold=self.threshold_probas),
+                TestAccuracyScore(threshold=self.threshold_probas),
+                TestF1Score(threshold=self.threshold_probas),
             ]
         raise ValueError(f'Unexpected prediction_type: "{self.prediction_type}"')

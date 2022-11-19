@@ -834,8 +834,19 @@ class TestMostCommonValueShareRenderer(TestRenderer):
 class TestAllColumnsMostCommonValueShare(BaseGenerator):
     """Creates most common value share tests for each column in the dataset"""
 
+    columns: Optional[List[str]]
+
+    def __init__(self, columns: Optional[List[str]] = None):
+        self.columns = columns
+
     def generate(self, columns_info: DatasetColumns) -> List[TestMostCommonValueShare]:
-        return [TestMostCommonValueShare(column_name=name) for name in columns_info.get_all_columns_list()]
+        if self.columns is None:
+            columns = columns_info.get_all_columns_list()
+
+        else:
+            columns = self.columns
+
+        return [TestMostCommonValueShare(column_name=name) for name in columns]
 
 
 class TestMeanInNSigmas(Test):
@@ -947,8 +958,19 @@ class TestMeanInNSigmasRenderer(TestRenderer):
 class TestNumColumnsMeanInNSigmas(BaseGenerator):
     """Create tests of mean for all numeric columns"""
 
+    columns: Optional[List[str]]
+
+    def __init__(self, columns: Optional[List[str]] = None):
+        self.columns = columns
+
     def generate(self, columns_info: DatasetColumns) -> List[TestMeanInNSigmas]:
-        return [TestMeanInNSigmas(column_name=name, n_sigmas=2) for name in columns_info.num_feature_names]
+        if self.columns is None:
+            columns = columns_info.num_feature_names
+
+        else:
+            columns = [column for column in self.columns if column in columns_info.num_feature_names]
+
+        return [TestMeanInNSigmas(column_name=name, n_sigmas=2) for name in columns]
 
 
 class TestValueRange(Test):
@@ -1118,8 +1140,19 @@ class TestShareOfOutRangeValuesRenderer(TestRenderer):
 class TestNumColumnsOutOfRangeValues(BaseGenerator):
     """Creates share of out of range values tests for all numeric columns"""
 
+    columns: Optional[List[str]]
+
+    def __init__(self, columns: Optional[List[str]] = None):
+        self.columns = columns
+
     def generate(self, columns_info: DatasetColumns) -> List[TestShareOfOutRangeValues]:
-        return [TestShareOfOutRangeValues(column_name=name) for name in columns_info.num_feature_names]
+        if self.columns is None:
+            columns = columns_info.num_feature_names
+
+        else:
+            columns = [column for column in self.columns if column in columns_info.num_feature_names]
+
+        return [TestShareOfOutRangeValues(column_name=name) for name in columns]
 
 
 class TestValueList(Test):
@@ -1271,8 +1304,19 @@ class TestShareOfOutListValues(BaseDataQualityValueListMetricsTest):
 class TestCatColumnsOutOfListValues(BaseGenerator):
     """Create share of out of list values tests for category columns"""
 
+    columns: Optional[List[str]]
+
+    def __init__(self, columns: Optional[List[str]] = None):
+        self.columns = columns
+
     def generate(self, columns_info: DatasetColumns) -> List[TestShareOfOutListValues]:
-        return [TestShareOfOutListValues(column_name=name) for name in columns_info.cat_feature_names]
+        if self.columns is None:
+            columns = columns_info.cat_feature_names
+
+        else:
+            columns = [column for column in self.columns if column in columns_info.cat_feature_names]
+
+        return [TestShareOfOutListValues(column_name=name) for name in columns]
 
 
 class TestValueQuantile(BaseCheckValueTest):

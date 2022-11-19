@@ -1,3 +1,6 @@
+from typing import List
+from typing import Optional
+
 from evidently.calculations.classification_performance import get_prediction_data
 from evidently.metric_preset.metric_preset import MetricPreset
 from evidently.metrics import ClassificationClassBalance
@@ -15,12 +18,27 @@ from evidently.utils.data_operations import DatasetColumns
 
 
 class ClassificationPreset(MetricPreset):
+    columns: Optional[List[str]]
+    threshold: Optional[float]
+    k: Optional[int]
+
+    def __init__(
+        self,
+        columns: Optional[List[str]] = None,
+        threshold: Optional[float] = None,
+        k: Optional[int] = None,
+    ):
+        super().__init__()
+        self.columns = columns
+        self.threshold = threshold
+        self.k = k
+
     def generate_metrics(self, data: InputData, columns: DatasetColumns):
         result = [
-            ClassificationQualityMetric(),
+            ClassificationQualityMetric(threshold=self.threshold, k=self.k),
             ClassificationClassBalance(),
-            ClassificationConfusionMatrix(),
-            ClassificationQualityByClass(),
+            ClassificationConfusionMatrix(threshold=self.threshold, k=self.k),
+            ClassificationQualityByClass(threshold=self.threshold, k=self.k),
         ]
         curr_predictions = get_prediction_data(data.current_data, columns, data.column_mapping.pos_label)
 
@@ -35,5 +53,5 @@ class ClassificationPreset(MetricPreset):
                 ]
             )
 
-        result.append(ClassificationQualityByFeatureTable())
+        result.append(ClassificationQualityByFeatureTable(columns=self.columns))
         return result

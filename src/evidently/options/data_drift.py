@@ -54,6 +54,11 @@ class DataDriftOptions:
     num_features_stattest: Optional[PossibleStatTestType] = None
     per_feature_stattest: Optional[Dict[str, PossibleStatTestType]] = None
 
+    all_features_threshold: Optional[float] = None
+    cat_features_threshold: Optional[float] = None
+    num_features_threshold: Optional[float] = None
+    per_feature_threshold: Optional[Dict[str, float]] = None
+
     cat_target_threshold: Optional[float] = None
     num_target_threshold: Optional[float] = None
 
@@ -68,24 +73,49 @@ class DataDriftOptions:
             "xbins": self.xbins,
         }
 
-    def get_threshold(self, feature_name: str) -> Optional[float]:
-        if self.confidence is not None and self.threshold is not None:
-            raise ValueError("Only DataDriftOptions.confidence or DataDriftOptions.threshold can be set")
-        if self.confidence is not None:
-            warnings.warn("DataDriftOptions.confidence is deprecated, use DataDriftOptions.threshold instead.")
-            if isinstance(self.confidence, float):
-                return 1.0 - self.confidence
-            if isinstance(self.confidence, dict):
-                override = self.confidence.get(feature_name)
-                return None if override is None else 1.0 - override
-            raise ValueError(f"DataDriftOptions.confidence is incorrect type {type(self.confidence)}")
+    def _calculate_threshold(self, feature_name: str, feature_type: str) -> Optional[float]:
         if self.threshold is not None:
             if isinstance(self.threshold, float):
                 return self.threshold
+
             if isinstance(self.threshold, dict):
                 return self.threshold.get(feature_name)
+
             raise ValueError(f"DataDriftOptions.threshold is incorrect type {type(self.threshold)}")
+
+        if self.all_features_threshold is not None:
+            return self.all_features_threshold
+
+        if self.cat_features_threshold is not None and feature_type == "cat":
+            return self.cat_features_threshold
+
+        if self.num_features_threshold is not None and feature_type == "num":
+            return self.num_features_threshold
+
+        if self.per_feature_threshold is not None:
+            return self.per_feature_threshold.get(feature_name)
+
         return None
+
+    def get_threshold(self, feature_name: str, feature_type: str) -> Optional[float]:
+        threshold = self._calculate_threshold(feature_name, feature_type)
+
+        if self.confidence is not None and threshold is not None:
+            raise ValueError("Only DataDriftOptions.confidence or DataDriftOptions.threshold can be set")
+
+        if self.confidence is not None:
+            warnings.warn("DataDriftOptions.confidence is deprecated, use DataDriftOptions.threshold instead.")
+
+            if isinstance(self.confidence, float):
+                return 1.0 - self.confidence
+
+            if isinstance(self.confidence, dict):
+                override = self.confidence.get(feature_name)
+                return None if override is None else 1.0 - override
+
+            raise ValueError(f"DataDriftOptions.confidence is incorrect type {type(self.confidence)}")
+
+        return threshold
 
     def get_nbinsx(self, feature_name: str) -> int:
         if isinstance(self.nbinsx, int):

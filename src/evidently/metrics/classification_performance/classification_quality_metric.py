@@ -32,10 +32,8 @@ class ClassificationQualityMetric(ThresholdClassificationMetric[ClassificationQu
         self,
         threshold: Optional[float] = None,
         k: Optional[Union[float, int]] = None,
-        # average: str = "macro",
     ):
         super().__init__(threshold, k)
-        # self.average = average
         self.confusion_matrix_metric = ClassificationConfusionMatrix(threshold, k)
 
     def calculate(self, data: InputData) -> ClassificationQualityMetricResult:

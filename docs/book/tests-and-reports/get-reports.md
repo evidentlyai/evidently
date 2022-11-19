@@ -177,11 +177,9 @@ data_integrity_column_report
 **Example 2**. Some custom parameters might be set through the Options object. Here is an example of choosing the custom DataDrift test. 
 
 ```python
-stat_test_option = DataDriftOptions(all_features_stattest='psi')
-
 data_drift_column_report = Report(metrics=[
     ColumnDriftMetric('age'),
-    ColumnDriftMetric('age', options=stat_test_option),
+    ColumnDriftMetric('age', stattest='psi'),
 ])
 data_drift_column_report.run(reference_data=adult_ref, current_data=adult_cur)
 

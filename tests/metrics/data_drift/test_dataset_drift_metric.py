@@ -6,7 +6,6 @@ import pytest
 from pytest import approx
 
 from evidently.metrics.data_drift.dataset_drift_metric import DatasetDriftMetric
-from evidently.options import DataDriftOptions
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.report import Report
 
@@ -146,7 +145,7 @@ def test_dataset_drift_metric_with_options() -> None:
             "prediction": [1, 0, 1],
         }
     )
-    report = Report(metrics=[DatasetDriftMetric(options=DataDriftOptions(threshold=0.7))])
+    report = Report(metrics=[DatasetDriftMetric(all_features_threshold=0.7)])
     report.run(current_data=current_dataset, reference_data=reference_dataset)
     assert report.show()
     result_json = report.json()
@@ -157,7 +156,7 @@ def test_dataset_drift_metric_with_options() -> None:
         "number_of_columns": 3,
         "number_of_drifted_columns": 2,
         "share_of_drifted_columns": approx(0.67, abs=0.01),
-        "threshold": 0.5,
+        "drift_share": 0.5,
     }
 
 
@@ -176,7 +175,7 @@ def test_dataset_drift_metric_json_output() -> None:
             "prediction": [1, 0, 1, 0],
         }
     )
-    report = Report(metrics=[DatasetDriftMetric(options=DataDriftOptions(threshold=0.7))])
+    report = Report(metrics=[DatasetDriftMetric(all_features_threshold=0.7)])
     report.run(current_data=current_dataset, reference_data=reference_dataset)
     result_json = report.json()
     result = json.loads(result_json)
@@ -186,5 +185,5 @@ def test_dataset_drift_metric_json_output() -> None:
         "number_of_columns": 3,
         "number_of_drifted_columns": 2,
         "share_of_drifted_columns": approx(0.67, abs=0.01),
-        "threshold": 0.5,
+        "drift_share": 0.5,
     }

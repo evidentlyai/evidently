@@ -1,4 +1,3 @@
-import uuid
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -8,6 +7,7 @@ from dataclasses import dataclass
 
 from evidently.calculations.data_drift import ColumnDataDriftMetrics
 from evidently.calculations.data_drift import get_drift_for_columns
+from evidently.calculations.stattests import PossibleStatTestType
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
@@ -41,16 +41,32 @@ class DataDriftTable(Metric[DataDriftTableResults]):
     columns: Optional[List[str]]
     options: DataDriftOptions
 
-    def __init__(self, columns: Optional[List[str]] = None, options: Optional[DataDriftOptions] = None):
+    def __init__(
+        self,
+        columns: Optional[List[str]] = None,
+        all_features_stattest: Optional[PossibleStatTestType] = None,
+        cat_features_stattest: Optional[PossibleStatTestType] = None,
+        num_features_stattest: Optional[PossibleStatTestType] = None,
+        per_feature_stattest: Optional[Dict[str, PossibleStatTestType]] = None,
+        all_features_threshold: Optional[float] = None,
+        cat_features_threshold: Optional[float] = None,
+        num_features_threshold: Optional[float] = None,
+        per_feature_threshold: Optional[Dict[str, float]] = None,
+    ):
         self.columns = columns
-        if options is None:
-            self.options = DataDriftOptions()
-
-        else:
-            self.options = options
+        self.options = DataDriftOptions(
+            all_features_stattest=all_features_stattest,
+            cat_features_stattest=cat_features_stattest,
+            num_features_stattest=num_features_stattest,
+            per_feature_stattest=per_feature_stattest,
+            all_features_threshold=all_features_threshold,
+            cat_features_threshold=cat_features_threshold,
+            num_features_threshold=num_features_threshold,
+            per_feature_threshold=per_feature_threshold,
+        )
 
     def get_parameters(self) -> tuple:
-        return tuple((self.options,))
+        return self.columns, self.options
 
     def calculate(self, data: InputData) -> DataDriftTableResults:
         if data.reference_data is None:
