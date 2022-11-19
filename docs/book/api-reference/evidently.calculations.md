@@ -6,8 +6,6 @@
 
     - [Submodules](evidently.calculations.stattests.md#module-evidently.calculations.stattests.anderson_darling_stattest)
 
-        - [`CVM_2samp()`](evidently.calculations.stattests.md#evidently.calculations.stattests.cramer_von_mises_stattest.CVM_2samp)
-
         - [`CramerVonMisesResult`](evidently.calculations.stattests.md#evidently.calculations.stattests.cramer_von_mises_stattest.CramerVonMisesResult)
 
         - [`StatTest`](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)

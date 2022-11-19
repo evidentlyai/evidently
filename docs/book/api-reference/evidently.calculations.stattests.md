@@ -2,26 +2,37 @@
 
 ## Submodules
 
+Run the  Anderson-Darling test of two samples.
 
-### CVM_2samp(x: ndarray, y: ndarray, method: str = 'auto')
-Perform the two-sample Cramér-von Mises test
-:param x: array_like
-:param y: array_like
-:param method: {‘auto’, ‘asymptotic’, ‘exact’}, optional
+Compute the Chisquare test between two arrays
 
+Cramer-Von-mises test of two samples.
 
-* **Returns**
+Name: “cramer_von_mises”
 
-    object with attributes
-    statistic : Cramér-von Mises statistic.
-    pvalue : float
+Import:
+>>> from evidently.calculations.stattests import cramer_von_mises
 
+Properties:
+- only for numerical features
+- returns p-value
 
+### Example
 
-* **Return type**
+Using by object:
 
-    res
+```python
+>>> from evidently.options import DataDriftOptions
+>>> from evidently.calculations.stattests import cramer_von_mises
+>>> options = DataDriftOptions(feature_stattest_func=cramer_von_mises)
+```
 
+Using by name:
+
+```python
+>>> from evidently.options import DataDriftOptions
+>>> options = DataDriftOptions(feature_stattest_func="cramer_von_mises")
+```
 
 
 ### class CramerVonMisesResult(statistic, pvalue)
