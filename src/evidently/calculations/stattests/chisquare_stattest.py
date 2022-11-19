@@ -1,3 +1,27 @@
+"""Chisquare test of two samples.
+
+Name: "chisquare"
+
+Import:
+
+    >>> from evidently.calculations.stattests import chi_stat_test
+
+Properties:
+- only for categorical features
+- returns p-value
+
+Example:
+    Using by object:
+
+    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.calculations.stattests import chi_stat_test
+    >>> options = DataDriftOptions(feature_stattest_func=chi_stat_test)
+
+    Using by name:
+
+    >>> from evidently.options import DataDriftOptions
+    >>> options = DataDriftOptions(feature_stattest_func="chisquare")
+"""
 """Compute the Chisquare test between two arrays"""
 from typing import Tuple
 
@@ -23,7 +47,7 @@ def _chi_stat_test(
 
 
 chi_stat_test = StatTest(
-    name="chisquare", display_name="chi-square p_value", func=_chi_stat_test, allowed_feature_types=["cat"]
+    name="chisquare", display_name="chi-square p-value", func=_chi_stat_test, allowed_feature_types=["cat"]
 )
 
 register_stattest(chi_stat_test)

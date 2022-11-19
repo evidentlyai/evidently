@@ -4,11 +4,69 @@
 
 ## anderson_darling_stattest module
 
-Run the  Anderson-Darling test of two samples.
+Anderson-Darling test of two samples.
+
+Name: “anderson”
+
+Import:
+
+```python
+>>> from evidently.calculations.stattests import anderson_darling_test
+```
+
+Properties:
+- only for numerical features
+- returns p-value
+
+### Example
+
+Using by object:
+
+```python
+>>> from evidently.options import DataDriftOptions
+>>> from evidently.calculations.stattests import anderson_darling_test
+>>> options = DataDriftOptions(feature_stattest_func=anderson_darling_test)
+```
+
+Using by name:
+
+```python
+>>> from evidently.options import DataDriftOptions
+>>> options = DataDriftOptions(feature_stattest_func="anderson")
+```
 
 ## chisquare_stattest module
 
-Compute the Chisquare test between two arrays
+Chisquare test of two samples.
+
+Name: “chisquare”
+
+Import:
+
+```python
+>>> from evidently.calculations.stattests import chi_stat_test
+```
+
+Properties:
+- only for categorical features
+- returns p-value
+
+### Example
+
+Using by object:
+
+```python
+>>> from evidently.options import DataDriftOptions
+>>> from evidently.calculations.stattests import chi_stat_test
+>>> options = DataDriftOptions(feature_stattest_func=chi_stat_test)
+```
+
+Using by name:
+
+```python
+>>> from evidently.options import DataDriftOptions
+>>> options = DataDriftOptions(feature_stattest_func="chisquare")
+```
 
 ## cramer_von_mises_stattest module
 
@@ -49,7 +107,70 @@ Bases: `object`
 
 ## energy_distance module
 
+Energy-distance test of two samples.
+
+Name: “ed”
+
+Import:
+
+```python
+>>> from evidently.calculations.stattests import energy_dist_test
+```
+
+Properties:
+- only for numerical features
+- returns p-value
+
+### Example
+
+Using by object:
+
+```python
+>>> from evidently.options import DataDriftOptions
+>>> from evidently.calculations.stattests import energy_dist_test
+>>> options = DataDriftOptions(feature_stattest_func=energy_dist_test)
+```
+
+Using by name:
+
+```python
+>>> from evidently.options import DataDriftOptions
+>>> options = DataDriftOptions(feature_stattest_func="ed")
+```
+
 ## epps_singleton_stattest module
+
+Epps-Singleton test of two samples.
+
+Name: “es”
+
+Import:
+
+```python
+>>> from evidently.calculations.stattests import epps_singleton_test
+```
+
+Properties:
+- only for numerical features
+- returns p-value
+- default threshold 0.05
+
+### Example
+
+Using by object:
+
+```python
+>>> from evidently.options import DataDriftOptions
+>>> from evidently.calculations.stattests import epps_singleton_test
+>>> options = DataDriftOptions(feature_stattest_func=epps_singleton_test)
+```
+
+Using by name:
+
+```python
+>>> from evidently.options import DataDriftOptions
+>>> options = DataDriftOptions(feature_stattest_func="es")
+```
 
 ## fisher_exact_stattest module
 
