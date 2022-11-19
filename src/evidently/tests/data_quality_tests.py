@@ -11,6 +11,8 @@ from evidently.metrics import ColumnQuantileMetric
 from evidently.metrics import ColumnSummaryMetric
 from evidently.metrics import ColumnValueListMetric
 from evidently.metrics import ColumnValueRangeMetric
+from evidently.metrics import ConflictPredictionMetric
+from evidently.metrics import ConflictTargetMetric
 from evidently.metrics import DataQualityStabilityMetric
 from evidently.metrics import DatasetCorrelationsMetric
 from evidently.metrics.data_integrity.column_summary_metric import NumericCharacteristics
@@ -63,10 +65,10 @@ class BaseDataQualityMetricsValueTest(BaseCheckValueTest, ABC):
 class TestConflictTarget(Test):
     group = DATA_QUALITY_GROUP.id
     name = "Test number of conflicts in target"
-    metric: DataQualityStabilityMetric
+    metric: ConflictTargetMetric
 
     def __init__(self):
-        self.metric = DataQualityStabilityMetric()
+        self.metric = ConflictTargetMetric()
 
     def check(self):
         metric_result = self.metric.get_result()
@@ -89,10 +91,10 @@ class TestConflictTarget(Test):
 class TestConflictPrediction(Test):
     group = DATA_QUALITY_GROUP.id
     name = "Test number of conflicts in prediction"
-    metric: DataQualityStabilityMetric
+    metric: ConflictPredictionMetric
 
     def __init__(self):
-        self.metric = DataQualityStabilityMetric()
+        self.metric = ConflictPredictionMetric()
 
     def check(self):
         metric_result = self.metric.get_result()

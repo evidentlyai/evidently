@@ -26,6 +26,8 @@ from .data_quality.column_distribution_metric import ColumnDistributionMetric
 from .data_quality.column_quantile_metric import ColumnQuantileMetric
 from .data_quality.column_value_list_metric import ColumnValueListMetric
 from .data_quality.column_value_range_metric import ColumnValueRangeMetric
+from .data_quality.conflict_prediction_metric import ConflictPredictionMetric
+from .data_quality.conflict_target_metric import ConflictTargetMetric
 from .data_quality.dataset_correlations_metric import DatasetCorrelationsMetric
 from .data_quality.stability_metric import DataQualityStabilityMetric
 from .regression_performance.abs_perc_error_in_time import RegressionAbsPercentageErrorPlot
