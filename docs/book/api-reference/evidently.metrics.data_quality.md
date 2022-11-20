@@ -2,7 +2,7 @@
 
 ## Submodules
 
-## column_correlations_metric module
+## <a name="module-evidently.metrics.data_quality.column_correlations_metric"></a>column_correlations_metric module
 
 
 ### class ColumnCorrelationsMetric(column_name: str)
@@ -42,7 +42,7 @@ Bases: `object`
 ##### &nbsp;&nbsp;&nbsp;&nbsp; current : Dict[str, [ColumnCorrelations](evidently.calculations.md#evidently.calculations.data_quality.ColumnCorrelations)] 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; reference : Optional[Dict[str, [ColumnCorrelations](evidently.calculations.md#evidently.calculations.data_quality.ColumnCorrelations)]]  = None 
-## column_distribution_metric module
+## <a name="module-evidently.metrics.data_quality.column_distribution_metric"></a>column_distribution_metric module
 
 
 ### class ColumnDistributionMetric(column_name: str)
@@ -81,7 +81,7 @@ Bases: `object`
 ##### &nbsp;&nbsp;&nbsp;&nbsp; current : Dict[Any, Union[float, int]] 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; reference : Optional[Dict[Any, Union[float, int]]]  = None 
-## column_quantile_metric module
+## <a name="module-evidently.metrics.data_quality.column_quantile_metric"></a>column_quantile_metric module
 
 
 ### class ColumnQuantileMetric(column_name: str, quantile: float)
@@ -128,7 +128,7 @@ Bases: `object`
 ##### &nbsp;&nbsp;&nbsp;&nbsp; reference : Optional[float]  = None 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; reference_distribution : Optional[[Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution)]  = None 
-## column_value_list_metric module
+## <a name="module-evidently.metrics.data_quality.column_value_list_metric"></a>column_value_list_metric module
 
 
 ### class ColumnValueListMetric(column_name: str, values: Optional[list] = None)
@@ -190,7 +190,7 @@ Bases: `object`
 ##### &nbsp;&nbsp;&nbsp;&nbsp; values_in_list : Dict[Any, int] 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; values_not_in_list : Dict[Any, int] 
-## column_value_range_metric module
+## <a name="module-evidently.metrics.data_quality.column_value_range_metric"></a>column_value_range_metric module
 
 
 ### class ColumnValueRangeMetric(column_name: str, left: Optional[Union[float, int]] = None, right: Optional[Union[float, int]] = None)
@@ -256,7 +256,7 @@ Bases: `object`
 ##### &nbsp;&nbsp;&nbsp;&nbsp; share_in_range : float 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; share_not_in_range : float 
-## dataset_correlations_metric module
+## <a name="module-evidently.metrics.data_quality.dataset_correlations_metric"></a>dataset_correlations_metric module
 
 
 ### class CorrelationStats(target_prediction_correlation: Optional[float] = None, abs_max_target_features_correlation: Optional[float] = None, abs_max_prediction_features_correlation: Optional[float] = None, abs_max_correlation: Optional[float] = None, abs_max_features_correlation: Optional[float] = None)
@@ -314,7 +314,7 @@ Bases: `object`
 ##### &nbsp;&nbsp;&nbsp;&nbsp; current : DatasetCorrelation 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; reference : Optional[DatasetCorrelation] 
-## stability_metric module
+## <a name="module-evidently.metrics.data_quality.stability_metric"></a>stability_metric module
 
 
 ### class DataQualityStabilityMetric()

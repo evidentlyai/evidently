@@ -2,7 +2,7 @@
 
 ## Submodules
 
-## base_classification_metric module
+## <a name="module-evidently.metrics.classification_performance.base_classification_metric"></a>base_classification_metric module
 
 
 ### class ThresholdClassificationMetric(threshold: Optional[float], k: Optional[Union[float, int]])
@@ -12,7 +12,7 @@ Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`TR
 #### Methods: 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; get_target_prediction_data(data: DataFrame, column_mapping: [ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping))
-## class_balance_metric module
+## <a name="module-evidently.metrics.classification_performance.class_balance_metric"></a>class_balance_metric module
 
 
 ### class ClassificationClassBalance()
@@ -42,7 +42,7 @@ Bases: `object`
 #### Attributes: 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; plot_data : Dict[str, int] 
-## class_separation_metric module
+## <a name="module-evidently.metrics.classification_performance.class_separation_metric"></a>class_separation_metric module
 
 
 ### class ClassificationClassSeparationPlot()
@@ -76,7 +76,7 @@ Bases: `object`
 ##### &nbsp;&nbsp;&nbsp;&nbsp; reference_plot : Optional[DataFrame]  = None 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; target_name : str 
-## classification_dummy_metric module
+## <a name="module-evidently.metrics.classification_performance.classification_dummy_metric"></a>classification_dummy_metric module
 
 
 ### class ClassificationDummyMetric(threshold: Optional[float] = None, k: Optional[Union[float, int]] = None)
@@ -117,7 +117,7 @@ Bases: `object`
 ##### &nbsp;&nbsp;&nbsp;&nbsp; metrics_matrix : dict 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; model_quality : Optional[[DatasetClassificationQuality](evidently.calculations.md#evidently.calculations.classification_performance.DatasetClassificationQuality)] 
-## classification_quality_metric module
+## <a name="module-evidently.metrics.classification_performance.classification_quality_metric"></a>classification_quality_metric module
 
 
 ### class ClassificationQualityMetric(threshold: Optional[float] = None, k: Optional[Union[float, int]] = None)
@@ -154,7 +154,7 @@ Bases: `object`
 ##### &nbsp;&nbsp;&nbsp;&nbsp; reference : Optional[[DatasetClassificationQuality](evidently.calculations.md#evidently.calculations.classification_performance.DatasetClassificationQuality)] 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; target_name : str 
-## confusion_matrix_metric module
+## <a name="module-evidently.metrics.classification_performance.confusion_matrix_metric"></a>confusion_matrix_metric module
 
 
 ### class ClassificationConfusionMatrix(threshold: Optional[float] = None, k: Optional[Union[float, int]] = None)
@@ -186,7 +186,7 @@ Bases: `object`
 ##### &nbsp;&nbsp;&nbsp;&nbsp; current_matrix : [ConfusionMatrix](evidently.calculations.md#evidently.calculations.classification_performance.ConfusionMatrix) 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; reference_matrix : Optional[[ConfusionMatrix](evidently.calculations.md#evidently.calculations.classification_performance.ConfusionMatrix)] 
-## pr_curve_metric module
+## <a name="module-evidently.metrics.classification_performance.pr_curve_metric"></a>pr_curve_metric module
 
 
 ### class ClassificationPRCurve()
@@ -220,7 +220,7 @@ Bases: `object`
 ##### &nbsp;&nbsp;&nbsp;&nbsp; current_pr_curve : Optional[dict]  = None 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; reference_pr_curve : Optional[dict]  = None 
-## pr_table_metric module
+## <a name="module-evidently.metrics.classification_performance.pr_table_metric"></a>pr_table_metric module
 
 
 ### class ClassificationPRTable()
@@ -254,7 +254,7 @@ Bases: `object`
 ##### &nbsp;&nbsp;&nbsp;&nbsp; current_pr_table : Optional[dict]  = None 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; reference_pr_table : Optional[dict]  = None 
-## probability_distribution_metric module
+## <a name="module-evidently.metrics.classification_performance.probability_distribution_metric"></a>probability_distribution_metric module
 
 
 ### class ClassificationProbDistribution()
@@ -287,7 +287,7 @@ Bases: `object`
 ##### &nbsp;&nbsp;&nbsp;&nbsp; current_distribution : Optional[Dict[str, list]] 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; reference_distribution : Optional[Dict[str, list]] 
-## quality_by_class_metric module
+## <a name="module-evidently.metrics.classification_performance.quality_by_class_metric"></a>quality_by_class_metric module
 
 
 ### class ClassificationQualityByClass(threshold: Optional[float] = None, k: Optional[Union[float, int]] = None)
@@ -325,7 +325,7 @@ Bases: `object`
 ##### &nbsp;&nbsp;&nbsp;&nbsp; reference_metrics : Optional[dict] 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; reference_roc_aucs : Optional[dict] 
-## quality_by_feature_table module
+## <a name="module-evidently.metrics.classification_performance.quality_by_feature_table"></a>quality_by_feature_table module
 
 
 ### class ClassificationQualityByFeatureTable(columns: Optional[List[str]] = None)
@@ -368,7 +368,7 @@ Bases: `object`
 ##### &nbsp;&nbsp;&nbsp;&nbsp; reference_plot_data : Optional[DataFrame] 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; target_name : str 
-## roc_curve_metric module
+## <a name="module-evidently.metrics.classification_performance.roc_curve_metric"></a>roc_curve_metric module
 
 
 ### class ClassificationRocCurve()

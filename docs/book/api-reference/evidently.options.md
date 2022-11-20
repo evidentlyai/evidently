@@ -2,7 +2,7 @@
 
 ## Submodules
 
-## color_scheme module
+## <a name="module-evidently.options.color_scheme"></a>color_scheme module
 
 
 ### class ColorOptions(primary_color: str = '#ed0400', secondary_color: str = '#4d4d4d', current_data_color: Optional[str] = None, reference_data_color: Optional[str] = None, color_sequence: Sequence[str] = ('#ed0400', '#0a5f38', '#6c3461', '#71aa34', '#d8dcd6', '#6b8ba4'), fill_color: str = 'LightGreen', zero_line_color: str = 'green', non_visible_color: str = 'white', underestimation_color: str = '#6574f7', overestimation_color: str = '#ee5540', majority_color: str = '#1acc98', vertical_lines: str = 'green', heatmap: str = 'RdBu_r')
@@ -71,7 +71,7 @@ Collection of colors for data visualization
 ##### &nbsp;&nbsp;&nbsp;&nbsp; get_current_data_color()
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; get_reference_data_color()
-## data_drift module
+## <a name="module-evidently.options.data_drift"></a>data_drift module
 
 
 ### class DataDriftOptions(confidence: Optional[Union[float, Dict[str, float]]] = None, threshold: Optional[Union[float, Dict[str, float]]] = None, drift_share: float = 0.5, nbinsx: Union[int, Dict[str, int]] = 10, xbins: Optional[Dict[str, int]] = None, feature_stattest_func: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest), Dict[str, Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]]] = None, all_features_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, cat_features_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, num_features_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, per_feature_stattest: Optional[Dict[str, Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]] = None, cat_target_threshold: Optional[float] = None, num_target_threshold: Optional[float] = None, cat_target_stattest_func: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, num_target_stattest_func: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None)
@@ -82,40 +82,40 @@ Configuration for Data Drift calculations.
 
 * **Parameters**
 
-    - **confidence** – Defines the confidence level for statistical tests.
+    - `confidence` – Defines the confidence level for statistical tests.
     Applies to all features (if passed as float) or certain features (if passed as dictionary).
     (Deprecated) Use threshold to define confidence level for statistical
     tests as more universal solution.
 
-    - **threshold** – Defines thresholds for statistical tests.
+    - `threshold` – Defines thresholds for statistical tests.
     Applies to all features (if passed as float) or certain features (if passed as dictionary).
 
-    - **drift_share** – Sets the share of drifting features as a condition for Dataset Drift in the Data Drift report.
+    - `drift_share` – Sets the share of drifting features as a condition for Dataset Drift in the Data Drift report.
 
-    - **nbinsx** – Defines the number of bins in a histogram.
+    - `nbinsx` – Defines the number of bins in a histogram.
     Applies to all features (if passed as int) or certain features (if passed as dictionary).
 
-    - **xbins** – Defines the boundaries for the size of a specific bin in a histogram.
+    - `xbins` – Defines the boundaries for the size of a specific bin in a histogram.
 
-    - **feature_stattest_func** – Defines a custom statistical test for drift detection in the Data Drift report.
+    - `feature_stattest_func` – Defines a custom statistical test for drift detection in the Data Drift report.
     Applies to all features (if passed as a function) or individual features (if a dict).
     (Deprecated) Use all_features_stattest or per_feature_stattest.
 
-    - **all_features_stattest** – Defines a custom statistical test for drift detection in the Data Drift report
+    - `all_features_stattest` – Defines a custom statistical test for drift detection in the Data Drift report
     for all features.
 
-    - **cat_features_stattest** – Defines a custom statistical test for drift detection in the Data Drift report
+    - `cat_features_stattest` – Defines a custom statistical test for drift detection in the Data Drift report
     for categorical features only.
 
-    - **num_features_stattest** – Defines a custom statistical test for drift detection in the Data Drift report
+    - `num_features_stattest` – Defines a custom statistical test for drift detection in the Data Drift report
     for numerical features only.
 
-    - **per_feature_stattest** – Defines a custom statistical test for drift detection in the Data Drift report
+    - `per_feature_stattest` – Defines a custom statistical test for drift detection in the Data Drift report
     per feature.
 
-    - **cat_target_stattest_func** – Defines a custom statistical test to detect target drift in category target.
+    - `cat_target_stattest_func` – Defines a custom statistical test to detect target drift in category target.
 
-    - **num_target_stattest_func** – Defines a custom statistical test to detect target drift in numeric target.
+    - `num_target_stattest_func` – Defines a custom statistical test to detect target drift in numeric target.
 
 
 #### Attributes: 
@@ -157,7 +157,7 @@ Configuration for Data Drift calculations.
 ##### &nbsp;&nbsp;&nbsp;&nbsp; get_nbinsx(feature_name: str)
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; get_threshold(feature_name: str)
-## quality_metrics module
+## <a name="module-evidently.options.quality_metrics"></a>quality_metrics module
 
 
 ### class QualityMetricsOptions(conf_interval_n_sigmas: int = 1, classification_threshold: float = 0.5, cut_quantile: Union[NoneType, Tuple[str, float], Dict[str, Tuple[str, float]]] = None)

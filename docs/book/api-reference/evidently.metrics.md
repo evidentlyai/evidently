@@ -1423,7 +1423,7 @@
 
 ## Submodules
 
-## base_metric module
+## <a name="module-evidently.metrics.base_metric"></a>base_metric module
 
 
 ### class ErrorResult(exception: BaseException)
@@ -1468,7 +1468,7 @@ Bases: `Generic`[`TResult`]
 ### generate_column_metrics(metric_class: Type[Metric], columns: Optional[Union[str, list]] = None, parameters: Optional[Dict] = None)
 Function for generating metrics for columns
 
-## utils module
+## <a name="module-evidently.metrics.utils"></a>utils module
 
 
 ### apply_func_to_binned_data(df_for_bins, func, target_column, preds_column, is_ref_data=False)

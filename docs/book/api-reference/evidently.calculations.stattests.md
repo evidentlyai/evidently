@@ -2,7 +2,7 @@
 
 ## Submodules
 
-## anderson_darling_stattest module
+## <a name="module-evidently.calculations.stattests.anderson_darling_stattest"></a>anderson_darling_stattest module
 
 Anderson-Darling test of two samples.
 
@@ -35,7 +35,7 @@ Using by name:
 >>> options = DataDriftOptions(feature_stattest_func="anderson")
 ```
 
-## chisquare_stattest module
+## <a name="module-evidently.calculations.stattests.chisquare_stattest"></a>chisquare_stattest module
 
 Chisquare test of two samples.
 
@@ -68,7 +68,7 @@ Using by name:
 >>> options = DataDriftOptions(feature_stattest_func="chisquare")
 ```
 
-## cramer_von_mises_stattest module
+## <a name="module-evidently.calculations.stattests.cramer_von_mises_stattest"></a>cramer_von_mises_stattest module
 
 Cramer-Von-mises test of two samples.
 
@@ -105,7 +105,7 @@ Using by name:
 ### class CramerVonMisesResult(statistic, pvalue)
 Bases: `object`
 
-## energy_distance module
+## <a name="module-evidently.calculations.stattests.energy_distance"></a>energy_distance module
 
 Energy-distance test of two samples.
 
@@ -138,7 +138,7 @@ Using by name:
 >>> options = DataDriftOptions(feature_stattest_func="ed")
 ```
 
-## epps_singleton_stattest module
+## <a name="module-evidently.calculations.stattests.epps_singleton_stattest"></a>epps_singleton_stattest module
 
 Epps-Singleton test of two samples.
 
@@ -172,23 +172,23 @@ Using by name:
 >>> options = DataDriftOptions(feature_stattest_func="es")
 ```
 
-## fisher_exact_stattest module
+## <a name="module-evidently.calculations.stattests.fisher_exact_stattest"></a>fisher_exact_stattest module
 
-## g_stattest module
+## <a name="module-evidently.calculations.stattests.g_stattest"></a>g_stattest module
 
-## hellinger_distance module
+## <a name="module-evidently.calculations.stattests.hellinger_distance"></a>hellinger_distance module
 
-## jensenshannon module
+## <a name="module-evidently.calculations.stattests.jensenshannon"></a>jensenshannon module
 
-## kl_div module
+## <a name="module-evidently.calculations.stattests.kl_div"></a>kl_div module
 
-## ks_stattest module
+## <a name="module-evidently.calculations.stattests.ks_stattest"></a>ks_stattest module
 
-## mann_whitney_urank_stattest module
+## <a name="module-evidently.calculations.stattests.mann_whitney_urank_stattest"></a>mann_whitney_urank_stattest module
 
-## psi module
+## <a name="module-evidently.calculations.stattests.psi"></a>psi module
 
-## registry module
+## <a name="module-evidently.calculations.stattests.registry"></a>registry module
 
 
 ### class StatTest(name: str, display_name: str, func: Callable[[pandas.core.series.Series, pandas.core.series.Series, str, float], Tuple[float, bool]], allowed_feature_types: List[str], default_threshold: float = 0.05)
@@ -228,11 +228,11 @@ Bases: `object`
 ### get_stattest(reference_data: Series, current_data: Series, feature_type: str, stattest_func: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], StatTest]])
 
 ### register_stattest(stat_test: StatTest)
-## t_test module
+## <a name="module-evidently.calculations.stattests.t_test"></a>t_test module
 
-## tvd_stattest module
+## <a name="module-evidently.calculations.stattests.tvd_stattest"></a>tvd_stattest module
 
-## utils module
+## <a name="module-evidently.calculations.stattests.utils"></a>utils module
 
 
 ### generate_fisher2x2_contingency_table(reference_data: Series, current_data: Series)
@@ -243,7 +243,7 @@ Generate 2x2 contingency matrix for fisher exact test
 
 * **Raises**
 
-    **ValueError** – if reference_data and current_data are not of equal length
+    `ValueError` – if reference_data and current_data are not of equal length
 
 
 
@@ -304,9 +304,9 @@ Perform a two-sided permutation test
     p_value
 
 
-## wasserstein_distance_norm module
+## <a name="module-evidently.calculations.stattests.wasserstein_distance_norm"></a>wasserstein_distance_norm module
 
-## z_stattest module
+## <a name="module-evidently.calculations.stattests.z_stattest"></a>z_stattest module
 
 
 ### proportions_diff_z_stat_ind(ref: DataFrame, curr: DataFrame)

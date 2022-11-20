@@ -2,7 +2,7 @@
 
 ## Submodules
 
-## base_test module
+## <a name="module-evidently.tests.base_test"></a>base_test module
 
 
 ### class BaseCheckValueTest(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
@@ -179,7 +179,7 @@ If we have no conditions - returns False.
 ### generate_column_tests(test_class: Type[Test], columns: Optional[Union[str, list]] = None, parameters: Optional[Dict] = None)
 Function for generating tests for columns
 
-## classification_performance_tests module
+## <a name="module-evidently.tests.classification_performance_tests"></a>classification_performance_tests module
 
 
 ### class ByClassClassificationTest(label: str, threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
@@ -721,7 +721,7 @@ Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_html(obj: TestF1Score)
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: TestTPR)
-## data_drift_tests module
+## <a name="module-evidently.tests.data_drift_tests"></a>data_drift_tests module
 
 
 ### class BaseDataDriftMetricsTest(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None, options: Optional[[DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions)] = None)
@@ -874,7 +874,7 @@ Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_html(obj: TestShareOfDriftedColumns)
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: TestShareOfDriftedColumns)
-## data_integrity_tests module
+## <a name="module-evidently.tests.data_integrity_tests"></a>data_integrity_tests module
 
 
 ### class BaseIntegrityByColumnsConditionTest(column_name: str, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
@@ -1767,7 +1767,7 @@ Bases: `BaseTestMissingValuesRenderer`
 #### Methods: 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: TestShareOfRowsWithMissingValues)
-## data_quality_tests module
+## <a name="module-evidently.tests.data_quality_tests"></a>data_quality_tests module
 
 
 ### class BaseDataQualityCorrelationsMetricsValueTest(method: str = 'pearson', eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
@@ -2719,7 +2719,7 @@ Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer
 #### Methods: 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_html(obj: TestValueRange)
-## regression_performance_tests module
+## <a name="module-evidently.tests.regression_performance_tests"></a>regression_performance_tests module
 
 
 ### class BaseRegressionPerformanceMetricsTest(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
@@ -2978,7 +2978,7 @@ Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_html(obj: TestValueRMSE)
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: TestValueRMSE)
-## utils module
+## <a name="module-evidently.tests.utils"></a>utils module
 
 
 ### approx(value, relative=None, absolute=None)

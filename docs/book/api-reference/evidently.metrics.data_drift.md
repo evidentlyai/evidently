@@ -2,7 +2,7 @@
 
 ## Submodules
 
-## column_drift_metric module
+## <a name="module-evidently.metrics.data_drift.column_drift_metric"></a>column_drift_metric module
 
 
 ### class ColumnDriftMetric(column_name: str, options: Optional[[DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions)] = None)
@@ -59,7 +59,7 @@ Bases: `object`
 ##### &nbsp;&nbsp;&nbsp;&nbsp; threshold : Optional[float] 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; x_name : Optional[str] 
-## column_value_plot module
+## <a name="module-evidently.metrics.data_drift.column_value_plot"></a>column_value_plot module
 
 
 ### class ColumnValuePlot(column_name: str)
@@ -96,7 +96,7 @@ Bases: `object`
 ##### &nbsp;&nbsp;&nbsp;&nbsp; datetime_column_name : Optional[str] 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; reference_scatter : DataFrame 
-## data_drift_table module
+## <a name="module-evidently.metrics.data_drift.data_drift_table"></a>data_drift_table module
 
 
 ### class DataDriftTable(columns: Optional[List[str]] = None, options: Optional[[DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions)] = None)
@@ -143,7 +143,7 @@ Bases: `object`
 ##### &nbsp;&nbsp;&nbsp;&nbsp; number_of_drifted_columns : int 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; share_of_drifted_columns : float 
-## dataset_drift_metric module
+## <a name="module-evidently.metrics.data_drift.dataset_drift_metric"></a>dataset_drift_metric module
 
 
 ### class DataDriftMetricsRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
@@ -190,7 +190,7 @@ Bases: `object`
 ##### &nbsp;&nbsp;&nbsp;&nbsp; share_of_drifted_columns : float 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; threshold : float 
-## target_by_features_table module
+## <a name="module-evidently.metrics.data_drift.target_by_features_table"></a>target_by_features_table module
 
 
 ### class TargetByFeaturesTable(columns: Optional[List[str]] = None)

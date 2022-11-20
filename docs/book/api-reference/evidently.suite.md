@@ -2,7 +2,7 @@
 
 ## Submodules
 
-## base_suite module
+## <a name="module-evidently.suite.base_suite"></a>base_suite module
 
 
 ### class Context(execution_graph: Optional[ExecutionGraph], metrics: list, tests: list, metric_results: dict, test_results: dict, state: State, renderers: [RenderersDefinitions](evidently.renderers.md#evidently.renderers.base_renderer.RenderersDefinitions))
@@ -91,7 +91,7 @@ Bases: `object`
 ### find_metric_renderer(obj, renderers: [RenderersDefinitions](evidently.renderers.md#evidently.renderers.base_renderer.RenderersDefinitions))
 
 ### find_test_renderer(obj, renderers: [RenderersDefinitions](evidently.renderers.md#evidently.renderers.base_renderer.RenderersDefinitions))
-## execution_graph module
+## <a name="module-evidently.suite.execution_graph"></a>execution_graph module
 
 
 ### class ExecutionGraph()

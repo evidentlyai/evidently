@@ -91,7 +91,7 @@
 
 ## Submodules
 
-## classification_performance module
+## <a name="module-evidently.calculations.classification_performance"></a>classification_performance module
 
 
 ### class ConfusionMatrix(labels: Sequence[Union[str, int]], values: list)
@@ -196,7 +196,7 @@ Return and object with predicted values and an optional prediction probabilities
 ### threshold_probability_labels(prediction_probas: DataFrame, pos_label: Union[str, int], neg_label: Union[str, int], threshold: float)
 Get prediction values by probabilities with the threshold apply
 
-## data_drift module
+## <a name="module-evidently.calculations.data_drift"></a>data_drift module
 
 Methods and types for data drift calculations.
 
@@ -295,7 +295,7 @@ Update dataset by predictions type:
 ### get_drift_for_columns(\*, current_data: DataFrame, reference_data: DataFrame, dataset_columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns), data_drift_options: [DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions), drift_share_threshold: Optional[float] = None, columns: Optional[List[str]] = None)
 
 ### get_one_column_drift(\*, current_data: DataFrame, reference_data: DataFrame, column_name: str, options: [DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions), dataset_columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns), column_type: Optional[str] = None)
-## data_integration module
+## <a name="module-evidently.calculations.data_integration"></a>data_integration module
 
 
 ### get_number_of_all_pandas_missed_values(dataset: DataFrame)
@@ -321,7 +321,7 @@ Calculate the number of duplicated columns in a dataset
 ### get_number_of_empty_columns(dataset: DataFrame)
 Calculate the number of empty columns in a dataset
 
-## data_quality module
+## <a name="module-evidently.calculations.data_quality"></a>data_quality module
 
 Methods for overall dataset quality calculations - rows count, a specific values count, etc.
 
@@ -528,7 +528,7 @@ Compute pairwise correlation of columns
 ### get_rows_count(data: Union[DataFrame, Series])
 Count quantity of rows in  a dataset
 
-## regression_performance module
+## <a name="module-evidently.calculations.regression_performance"></a>regression_performance module
 
 
 ### class ErrorWithQuantiles(error, quantile_top, quantile_other)

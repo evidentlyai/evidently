@@ -2,7 +2,7 @@
 
 ## Submodules
 
-## base_renderer module
+## <a name="module-evidently.renderers.base_renderer"></a>base_renderer module
 
 
 ### class BaseRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
@@ -86,7 +86,7 @@ Bases: `BaseRenderer`
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj)
 
 ### default_renderer(wrap_type)
-## html_widgets module
+## <a name="module-evidently.renderers.html_widgets"></a>html_widgets module
 
 
 ### class ColumnDefinition(title: str, field_name: str, type: evidently.renderers.html_widgets.ColumnType = <ColumnType.STRING: 'string'>, sort: Optional[evidently.renderers.html_widgets.SortDirection] = None, options: Optional[dict] = None)
@@ -139,9 +139,9 @@ create CounterData for float value with given precision.
 
 * **Parameters**
 
-- **label** – counter label
-- **value** – float value of counter
-- **precision** – decimal precision
+- `label` – counter label
+- `value` – float value of counter
+- `precision` – decimal precision
 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; static  int(label: str, value: int)
@@ -149,8 +149,8 @@ create CounterData for int value.
 
 * **Parameters**
 
-- **label** – counter label
-- **value** – int value
+- `label` – counter label
+- `value` – int value
 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; static  string(label: str, value: str)
@@ -158,8 +158,8 @@ create CounterData for string value with given precision.
 
 * **Parameters**
 
-- **label** – counter label
-- **value** – string value of counter
+- `label` – counter label
+- `value` – string value of counter
 
 
 ### class DetailsPartInfo(title: str, info: Union[BaseWidgetInfo, PlotlyGraphInfo])
@@ -266,11 +266,11 @@ generate widget with given counters
 
 * **Parameters**
 
-    - **title** – widget title
+    - `title` – widget title
 
-    - **counters** – list of counters in widget
+    - `counters` – list of counters in widget
 
-    - **size** – widget size
+    - `size` – widget size
 
 
 ### Example
@@ -305,11 +305,11 @@ generate widget with some text as header
 
 * **Parameters**
 
-    - **label** – text to display
+    - `label` – text to display
 
-    - **title** – widget title
+    - `title` – widget title
 
-    - **size** – widget size
+    - `size` – widget size
 
 
 
@@ -319,21 +319,21 @@ generate widget with one or two histogram
 
 * **Parameters**
 
-    - **title** – widget title
+    - `title` – widget title
 
-    - **primary_hist** – first histogram to show in widget
+    - `primary_hist` – first histogram to show in widget
 
-    - **secondary_hist** – optional second histogram to show in widget
+    - `secondary_hist` – optional second histogram to show in widget
 
-    - **orientation** – bars orientation in histograms
+    - `orientation` – bars orientation in histograms
 
-    - **color_options** – color options to use for widgets
+    - `color_options` – color options to use for widgets
 
-    - **size** – widget size
+    - `size` – widget size
 
-    - **xaxis_title** – title for x-axis
+    - `xaxis_title` – title for x-axis
 
-    - **yaxis_title** – title for y-axis
+    - `yaxis_title` – title for y-axis
 
 
 ### Example
@@ -356,13 +356,13 @@ generate plotly plot with given data and layout (can be generated from plotly).
 
 * **Parameters**
 
-    - **title** – widget title
+    - `title` – widget title
 
-    - **data** – plotly figure data
+    - `data` – plotly figure data
 
-    - **layout** – plotly figure layout
+    - `layout` – plotly figure layout
 
-    - **size** – widget size
+    - `size` – widget size
 
 
 ### Example
@@ -380,11 +380,11 @@ generate plotly plot based on given plotly figure object.
 
 * **Parameters**
 
-    - **title** – title of widget
+    - `title` – title of widget
 
-    - **figure** – plotly figure which should be rendered as widget
+    - `figure` – plotly figure which should be rendered as widget
 
-    - **size** – size of widget, default to WidgetSize.FULL
+    - `size` – size of widget, default to WidgetSize.FULL
 
 
 ### Example
@@ -401,9 +401,9 @@ generate plotly plot with given GraphData object.
 
 * **Parameters**
 
-    - **graph_data** – plot data for widget
+    - `graph_data` – plot data for widget
 
-    - **size** – size of widget to render
+    - `size` – size of widget to render
 
 
 ### Example
@@ -422,11 +422,11 @@ generate Tab widget with multiple graphs
 
 * **Parameters**
 
-    - **title** – widget title
+    - `title` – widget title
 
-    - **figures** – list of graphs with tab titles
+    - `figures` – list of graphs with tab titles
 
-    - **size** – widget size
+    - `size` – widget size
 
 
 ### Example
@@ -447,15 +447,15 @@ generate widget with rich table: with additional column types and details for ro
 
 * **Parameters**
 
-    - **title** – widget title
+    - `title` – widget title
 
-    - **size** – widget size
+    - `size` – widget size
 
-    - **rows_per_page** – maximum number per page to show
+    - `rows_per_page` – maximum number per page to show
 
-    - **columns** – list of columns in table
+    - `columns` – list of columns in table
 
-    - **data** – list of dicts with data (key-value pairs, keys is according to ColumnDefinition.field_name)
+    - `data` – list of dicts with data (key-value pairs, keys is according to ColumnDefinition.field_name)
 
 
 ### Example
@@ -486,13 +486,13 @@ generate simple table with given columns and data
 
 * **Parameters**
 
-    - **column_names** – list of column names in display order
+    - `column_names` – list of column names in display order
 
-    - **data** – list of data rows (lists of object to show in table in order of columns), object will be converted to str
+    - `data` – list of data rows (lists of object to show in table in order of columns), object will be converted to str
 
-    - **title** – widget title
+    - `title` – widget title
 
-    - **size** – widget size
+    - `size` – widget size
 
 
 ### Example
@@ -510,11 +510,11 @@ generate widget with tabs which can contain any other widget.
 
 * **Parameters**
 
-    - **title** – widget title
+    - `title` – widget title
 
-    - **size** – widget size
+    - `size` – widget size
 
-    - **tabs** – list of TabData with widgets to include
+    - `tabs` – list of TabData with widgets to include
 
 
 ### Example
@@ -533,11 +533,11 @@ generate widget with tabs which can contain any other widget.
 ### widget_tabs_for_more_than_one(\*, title: str = '', size: WidgetSize = WidgetSize.FULL, tabs: List[TabData])
 Draw tabs widget only if there is more than one tab, otherwise just draw one widget
 
-## notebook_utils module
+## <a name="module-evidently.renderers.notebook_utils"></a>notebook_utils module
 
 
 ### determine_template(mode: str)
-## render_utils module
+## <a name="module-evidently.renderers.render_utils"></a>render_utils module
 
 
 ### get_distribution_plot_figure(\*, current_distribution: [Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution), reference_distribution: Optional[[Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution)], color_options: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions), orientation: str = 'v')

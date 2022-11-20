@@ -2,7 +2,7 @@
 
 ## Submodules
 
-## column_missing_values_metric module
+## <a name="module-evidently.metrics.data_integrity.column_missing_values_metric"></a>column_missing_values_metric module
 
 
 ### class ColumnMissingValues(number_of_rows: int, different_missing_values: Dict[Any, int], number_of_different_missing_values: int, number_of_missing_values: int, share_of_missing_values: float)
@@ -73,7 +73,7 @@ Bases: `object`
 ##### &nbsp;&nbsp;&nbsp;&nbsp; current : ColumnMissingValues 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; reference : Optional[ColumnMissingValues]  = None 
-## column_regexp_metric module
+## <a name="module-evidently.metrics.data_integrity.column_regexp_metric"></a>column_regexp_metric module
 
 
 ### class ColumnRegExpMetric(column_name: str, reg_exp: str, top: int = 10)
@@ -137,7 +137,7 @@ Statistics about matched by a regular expression values in a column for one data
 ##### &nbsp;&nbsp;&nbsp;&nbsp; table_of_matched : Dict[str, int] 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; table_of_not_matched : Dict[str, int] 
-## column_summary_metric module
+## <a name="module-evidently.metrics.data_integrity.column_summary_metric"></a>column_summary_metric module
 
 
 ### class CategoricalCharacteristics(number_of_rows: int, count: int, unique: Optional[int], unique_percentage: Optional[float], most_common: Optional[object], most_common_percentage: Optional[float], missing: Optional[int], missing_percentage: Optional[float], new_in_current_values_count: Optional[int] = None, unused_in_current_values_count: Optional[int] = None)
@@ -300,7 +300,7 @@ Bases: `object`
 ##### &nbsp;&nbsp;&nbsp;&nbsp; unique : Optional[int] 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; unique_percentage : Optional[float] 
-## dataset_missing_values_metric module
+## <a name="module-evidently.metrics.data_integrity.dataset_missing_values_metric"></a>dataset_missing_values_metric module
 
 
 ### class DatasetMissingValues(different_missing_values: Dict[Any, int], number_of_different_missing_values: int, different_missing_values_by_column: Dict[str, Dict[Any, int]], number_of_different_missing_values_by_column: Dict[str, int], number_of_missing_values: int, share_of_missing_values: float, number_of_missing_values_by_column: Dict[str, int], share_of_missing_values_by_column: Dict[str, float], number_of_rows: int, number_of_rows_with_missing_values: int, share_of_rows_with_missing_values: float, number_of_columns: int, columns_with_missing_values: List[str], number_of_columns_with_missing_values: int, share_of_columns_with_missing_values: float)
@@ -387,7 +387,7 @@ Bases: `object`
 ##### &nbsp;&nbsp;&nbsp;&nbsp; current : DatasetMissingValues 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; reference : Optional[DatasetMissingValues]  = None 
-## dataset_summary_metric module
+## <a name="module-evidently.metrics.data_integrity.dataset_summary_metric"></a>dataset_summary_metric module
 
 
 ### class DatasetSummary(target: Optional[str], prediction: Optional[Union[str, Sequence[str]]], date_column: Optional[str], id_column: Optional[str], number_of_columns: int, number_of_rows: int, number_of_missing_values: int, number_of_categorical_columns: int, number_of_numeric_columns: int, number_of_datetime_columns: int, number_of_constant_columns: int, number_of_almost_constant_columns: int, number_of_duplicated_columns: int, number_of_almost_duplicated_columns: int, number_of_empty_rows: int, number_of_empty_columns: int, number_of_duplicated_rows: int, columns_type: dict, nans_by_columns: dict, number_uniques_by_columns: dict)
