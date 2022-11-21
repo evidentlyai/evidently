@@ -1,5 +1,8 @@
 # evidently.calculations.stattests package
 
+Available statistical tests.
+For detailed information about statistical tests see module documentation.
+
 ## Submodules
 
 ## <a name="module-evidently.calculations.stattests.anderson_darling_stattest"></a>anderson_darling_stattest module
@@ -25,14 +28,14 @@ Using by object:
 ```python
 >>> from evidently.options import DataDriftOptions
 >>> from evidently.calculations.stattests import anderson_darling_test
->>> options = DataDriftOptions(feature_stattest_func=anderson_darling_test)
+>>> options = DataDriftOptions(all_features_stattest=anderson_darling_test)
 ```
 
 Using by name:
 
 ```python
 >>> from evidently.options import DataDriftOptions
->>> options = DataDriftOptions(feature_stattest_func="anderson")
+>>> options = DataDriftOptions(all_features_stattest="anderson")
 ```
 
 ## <a name="module-evidently.calculations.stattests.chisquare_stattest"></a>chisquare_stattest module
@@ -58,14 +61,14 @@ Using by object:
 ```python
 >>> from evidently.options import DataDriftOptions
 >>> from evidently.calculations.stattests import chi_stat_test
->>> options = DataDriftOptions(feature_stattest_func=chi_stat_test)
+>>> options = DataDriftOptions(all_features_stattest=chi_stat_test)
 ```
 
 Using by name:
 
 ```python
 >>> from evidently.options import DataDriftOptions
->>> options = DataDriftOptions(feature_stattest_func="chisquare")
+>>> options = DataDriftOptions(all_features_stattest="chisquare")
 ```
 
 ## <a name="module-evidently.calculations.stattests.cramer_von_mises_stattest"></a>cramer_von_mises_stattest module
@@ -91,14 +94,14 @@ Using by object:
 ```python
 >>> from evidently.options import DataDriftOptions
 >>> from evidently.calculations.stattests import cramer_von_mises
->>> options = DataDriftOptions(feature_stattest_func=cramer_von_mises)
+>>> options = DataDriftOptions(all_features_stattest=cramer_von_mises)
 ```
 
 Using by name:
 
 ```python
 >>> from evidently.options import DataDriftOptions
->>> options = DataDriftOptions(feature_stattest_func="cramer_von_mises")
+>>> options = DataDriftOptions(all_features_stattest="cramer_von_mises")
 ```
 
 
@@ -128,14 +131,14 @@ Using by object:
 ```python
 >>> from evidently.options import DataDriftOptions
 >>> from evidently.calculations.stattests import energy_dist_test
->>> options = DataDriftOptions(feature_stattest_func=energy_dist_test)
+>>> options = DataDriftOptions(all_features_stattest=energy_dist_test)
 ```
 
 Using by name:
 
 ```python
 >>> from evidently.options import DataDriftOptions
->>> options = DataDriftOptions(feature_stattest_func="ed")
+>>> options = DataDriftOptions(all_features_stattest="ed")
 ```
 
 ## <a name="module-evidently.calculations.stattests.epps_singleton_stattest"></a>epps_singleton_stattest module
@@ -162,31 +165,279 @@ Using by object:
 ```python
 >>> from evidently.options import DataDriftOptions
 >>> from evidently.calculations.stattests import epps_singleton_test
->>> options = DataDriftOptions(feature_stattest_func=epps_singleton_test)
+>>> options = DataDriftOptions(all_features_stattest=epps_singleton_test)
 ```
 
 Using by name:
 
 ```python
 >>> from evidently.options import DataDriftOptions
->>> options = DataDriftOptions(feature_stattest_func="es")
+>>> options = DataDriftOptions(all_features_stattest="es")
 ```
 
 ## <a name="module-evidently.calculations.stattests.fisher_exact_stattest"></a>fisher_exact_stattest module
 
+Fisher’s exact test of two samples.
+
+Name: “fisher_exact”
+
+Import:
+
+```python
+>>> from evidently.calculations.stattests import fisher_exact_test
+```
+
+Properties:
+- only for categorical features
+- returns p-value
+
+### Example
+
+Using by object:
+
+```python
+>>> from evidently.options import DataDriftOptions
+>>> from evidently.calculations.stattests import fisher_exact_test
+>>> options = DataDriftOptions(all_features_stattest=fisher_exact_test)
+```
+
+Using by name:
+
+```python
+>>> from evidently.options import DataDriftOptions
+>>> options = DataDriftOptions(all_features_stattest="fisher_exact")
+```
+
 ## <a name="module-evidently.calculations.stattests.g_stattest"></a>g_stattest module
+
+G-test of two samples.
+
+Name: “g_test”
+
+Import:
+
+```python
+>>> from evidently.calculations.stattests import g_test
+```
+
+Properties:
+- only for categorical features
+- returns p-value
+
+### Example
+
+Using by object:
+
+```python
+>>> from evidently.options import DataDriftOptions
+>>> from evidently.calculations.stattests import g_test
+>>> options = DataDriftOptions(all_features_stattest=g_test)
+```
+
+Using by name:
+
+```python
+>>> from evidently.options import DataDriftOptions
+>>> options = DataDriftOptions(all_features_stattest="g_test")
+```
 
 ## <a name="module-evidently.calculations.stattests.hellinger_distance"></a>hellinger_distance module
 
+Hellinger distance of two samples.
+
+Name: “hellinger”
+
+Import:
+
+```python
+>>> from evidently.calculations.stattests import hellinger_stat_test
+```
+
+Properties:
+- only for categorical and numerical features
+- returns distance
+
+### Example
+
+Using by object:
+
+```python
+>>> from evidently.options import DataDriftOptions
+>>> from evidently.calculations.stattests import hellinger_stat_test
+>>> options = DataDriftOptions(all_features_stattest=hellinger_stat_test)
+```
+
+Using by name:
+
+```python
+>>> from evidently.options import DataDriftOptions
+>>> options = DataDriftOptions(all_features_stattest="hellinger")
+```
+
 ## <a name="module-evidently.calculations.stattests.jensenshannon"></a>jensenshannon module
+
+Jensen-Shannon distance of two samples.
+
+Name: “jensenshannon”
+
+Import:
+
+```python
+>>> from evidently.calculations.stattests import jensenshannon_stat_test
+```
+
+Properties:
+- only for categorical and numerical features
+- returns distance
+
+### Example
+
+Using by object:
+
+```python
+>>> from evidently.options import DataDriftOptions
+>>> from evidently.calculations.stattests import jensenshannon_stat_test
+>>> options = DataDriftOptions(all_features_stattest=jensenshannon_stat_test)
+```
+
+Using by name:
+
+```python
+>>> from evidently.options import DataDriftOptions
+>>> options = DataDriftOptions(all_features_stattest="jensenshannon")
+```
 
 ## <a name="module-evidently.calculations.stattests.kl_div"></a>kl_div module
 
+Kullback-Leibler divergence of two samples.
+
+Name: “kl_div”
+
+Import:
+
+```python
+>>> from evidently.calculations.stattests import kl_div_stat_test
+```
+
+Properties:
+- only for categorical and numerical features
+- returns divergence
+
+### Example
+
+Using by object:
+
+```python
+>>> from evidently.options import DataDriftOptions
+>>> from evidently.calculations.stattests import kl_div_stat_test
+>>> options = DataDriftOptions(all_features_stattest=kl_div_stat_test)
+```
+
+Using by name:
+
+```python
+>>> from evidently.options import DataDriftOptions
+>>> options = DataDriftOptions(all_features_stattest="kl_div")
+```
+
 ## <a name="module-evidently.calculations.stattests.ks_stattest"></a>ks_stattest module
+
+Kolmogorov-Smirnov test of two samples.
+
+Name: “ks”
+
+Import:
+
+```python
+>>> from evidently.calculations.stattests import ks_stat_test
+```
+
+Properties:
+- only for numerical features
+- returns p-value
+
+### Example
+
+Using by object:
+
+```python
+>>> from evidently.options import DataDriftOptions
+>>> from evidently.calculations.stattests import ks_stat_test
+>>> options = DataDriftOptions(all_features_stattest=ks_stat_test)
+```
+
+Using by name:
+
+```python
+>>> from evidently.options import DataDriftOptions
+>>> options = DataDriftOptions(all_features_stattest="ks")
+```
 
 ## <a name="module-evidently.calculations.stattests.mann_whitney_urank_stattest"></a>mann_whitney_urank_stattest module
 
+Mann-Whitney U-rank test of two samples.
+
+Name: “mannw”
+
+Import:
+
+```python
+>>> from evidently.calculations.stattests import mann_whitney_u_stat_test
+```
+
+Properties:
+- only for numerical features
+- returns p-value
+
+### Example
+
+Using by object:
+
+```python
+>>> from evidently.options import DataDriftOptions
+>>> from evidently.calculations.stattests import mann_whitney_u_stat_test
+>>> options = DataDriftOptions(all_features_stattest=mann_whitney_u_stat_test)
+```
+
+Using by name:
+
+```python
+>>> from evidently.options import DataDriftOptions
+>>> options = DataDriftOptions(all_features_stattest="mannw")
+```
+
 ## <a name="module-evidently.calculations.stattests.psi"></a>psi module
+
+PSI of two samples.
+
+Name: “psi”
+
+Import:
+
+```python
+>>> from evidently.calculations.stattests import psi_stat_test
+```
+
+Properties:
+- only for categorical and numerical features
+- returns PSI value
+
+### Example
+
+Using by object:
+
+```python
+>>> from evidently.options import DataDriftOptions
+>>> from evidently.calculations.stattests import psi_stat_test
+>>> options = DataDriftOptions(all_features_stattest=psi_stat_test)
+```
+
+Using by name:
+
+```python
+>>> from evidently.options import DataDriftOptions
+>>> options = DataDriftOptions(all_features_stattest="psi")
+```
 
 ## <a name="module-evidently.calculations.stattests.registry"></a>registry module
 
@@ -230,7 +481,69 @@ Bases: `object`
 ### register_stattest(stat_test: StatTest)
 ## <a name="module-evidently.calculations.stattests.t_test"></a>t_test module
 
+T test of two samples.
+
+Name: “t_test”
+
+Import:
+
+```python
+>>> from evidently.calculations.stattests import t_test
+```
+
+Properties:
+- only for numerical features
+- returns p-value
+
+### Example
+
+Using by object:
+
+```python
+>>> from evidently.options import DataDriftOptions
+>>> from evidently.calculations.stattests import t_test
+>>> options = DataDriftOptions(all_features_stattest=t_test)
+```
+
+Using by name:
+
+```python
+>>> from evidently.options import DataDriftOptions
+>>> options = DataDriftOptions(all_features_stattest="t_test")
+```
+
 ## <a name="module-evidently.calculations.stattests.tvd_stattest"></a>tvd_stattest module
+
+Total variation distance of two samples.
+
+Name: “TVD”
+
+Import:
+
+```python
+>>> from evidently.calculations.stattests import tvd_test
+```
+
+Properties:
+- only for numerical features
+- returns distance
+
+### Example
+
+Using by object:
+
+```python
+>>> from evidently.options import DataDriftOptions
+>>> from evidently.calculations.stattests import tvd_test
+>>> options = DataDriftOptions(all_features_stattest=tvd_test)
+```
+
+Using by name:
+
+```python
+>>> from evidently.options import DataDriftOptions
+>>> options = DataDriftOptions(all_features_stattest="TVD")
+```
 
 ## <a name="module-evidently.calculations.stattests.utils"></a>utils module
 
@@ -306,10 +619,71 @@ Perform a two-sided permutation test
 
 ## <a name="module-evidently.calculations.stattests.wasserstein_distance_norm"></a>wasserstein_distance_norm module
 
+Wasserstein distance of two samples.
+
+Name: “wasserstein”
+
+Import:
+
+```python
+>>> from evidently.calculations.stattests import wasserstein_stat_test
+```
+
+Properties:
+- only for numerical features
+- returns p-value
+
+### Example
+
+Using by object:
+
+```python
+>>> from evidently.options import DataDriftOptions
+>>> from evidently.calculations.stattests import wasserstein_stat_test
+>>> options = DataDriftOptions(all_features_stattest=wasserstein_stat_test)
+```
+
+Using by name:
+
+```python
+>>> from evidently.options import DataDriftOptions
+>>> options = DataDriftOptions(all_features_stattest="wasserstein")
+```
+
 ## <a name="module-evidently.calculations.stattests.z_stattest"></a>z_stattest module
+
+Mann-Whitney U-rank test of two samples.
+
+Name: “mannw”
+
+Import:
+
+```python
+>>> from evidently.calculations.stattests import mann_whitney_u_stat_test
+```
+
+Properties:
+- only for numerical features
+- returns p-value
+
+### Example
+
+Using by object:
+
+```python
+>>> from evidently.options import DataDriftOptions
+>>> from evidently.calculations.stattests import mann_whitney_u_stat_test
+>>> options = DataDriftOptions(all_features_stattest=mann_whitney_u_stat_test)
+```
+
+Using by name:
+
+```python
+>>> from evidently.options import DataDriftOptions
+>>> options = DataDriftOptions(all_features_stattest="mannw")
+```
 
 
 ### proportions_diff_z_stat_ind(ref: DataFrame, curr: DataFrame)
 
 ### proportions_diff_z_test(z_stat, alternative='two-sided')
-## Module contents

@@ -16,12 +16,12 @@ Example:
 
     >>> from evidently.options import DataDriftOptions
     >>> from evidently.calculations.stattests import epps_singleton_test
-    >>> options = DataDriftOptions(feature_stattest_func=epps_singleton_test)
+    >>> options = DataDriftOptions(all_features_stattest=epps_singleton_test)
 
     Using by name:
 
     >>> from evidently.options import DataDriftOptions
-    >>> options = DataDriftOptions(feature_stattest_func="es")
+    >>> options = DataDriftOptions(all_features_stattest="es")
 """
 from typing import Tuple
 

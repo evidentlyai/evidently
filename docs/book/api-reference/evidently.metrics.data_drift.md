@@ -234,5 +234,4 @@ Bases: `object`
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; target_name : Optional[str] 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; task : str 
-## Module contents
+##### &nbsp;&nbsp;&nbsp;&nbsp; task : str

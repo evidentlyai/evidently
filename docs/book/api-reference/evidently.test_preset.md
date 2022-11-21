@@ -94,4 +94,3 @@ Bases: `object`
 #### Methods: 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; abstract  generate_tests(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
-## Module contents

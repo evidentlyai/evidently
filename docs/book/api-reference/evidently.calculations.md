@@ -86,8 +86,6 @@
 
         - [`proportions_diff_z_test()`](evidently.calculations.stattests.md#evidently.calculations.stattests.z_stattest.proportions_diff_z_test)
 
-    - [Module contents](evidently.calculations.stattests.md#module-evidently.calculations.stattests)
-
 
 ## Submodules
 
@@ -584,4 +582,3 @@ Bases: `object`
 ### error_bias_table(dataset, err_quantiles, num_feature_names, cat_feature_names)
 
 ### error_with_quantiles(dataset, prediction_column, target_column, quantile: float)
-## Module contents

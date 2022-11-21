@@ -474,5 +474,4 @@ Bases: `object`
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; current : DatasetSummary 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; reference : Optional[DatasetSummary]  = None 
-## Module contents
+##### &nbsp;&nbsp;&nbsp;&nbsp; reference : Optional[DatasetSummary]  = None

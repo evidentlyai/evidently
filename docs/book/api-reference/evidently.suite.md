@@ -120,4 +120,3 @@ assumes that metrics already in order for execution
 ##### &nbsp;&nbsp;&nbsp;&nbsp; get_metric_execution_iterator()
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; get_test_execution_iterator()
-## Module contents

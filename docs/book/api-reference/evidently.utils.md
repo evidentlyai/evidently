@@ -317,5 +317,3 @@ Accepts current and reference data as pandas dataframes with two columns: dateti
 
 ### plot_time_feature_distr(curr_data: DataFrame, ref_data: Optional[DataFrame], feature_name: str, color_options: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions))
 Accepts current and reference data as pandas dataframes with two columns: feature_name, “number_of_items”
-
-## Module contents

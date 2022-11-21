@@ -1,5 +1,15 @@
 # evidently.options package
 
+
+### class OptionsProvider()
+Bases: `object`
+
+
+#### Methods: 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; add(options)
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; get(options_type: Type[TypeParam])
 ## Submodules
 
 ## <a name="module-evidently.options.color_scheme"></a>color_scheme module
@@ -176,15 +186,3 @@ Bases: `object`
 ##### &nbsp;&nbsp;&nbsp;&nbsp; as_dict()
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; get_cut_quantile(feature_name: str)
-## Module contents
-
-
-### class OptionsProvider()
-Bases: `object`
-
-
-#### Methods: 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; add(options)
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; get(options_type: Type[TypeParam])

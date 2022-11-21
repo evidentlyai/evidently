@@ -66,4 +66,3 @@ Bases: `MetricPreset`
 #### Methods: 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; generate_metrics(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
-## Module contents

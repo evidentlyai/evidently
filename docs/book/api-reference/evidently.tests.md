@@ -1,5 +1,9 @@
 # evidently.tests package
 
+Available tests for TestSuite reports.
+Tests grouped into modules.
+For detailed information see module documentation.
+
 ## Submodules
 
 ## <a name="module-evidently.tests.base_test"></a>base_test module
@@ -3008,4 +3012,3 @@ Get approximate value for checking a value is equal to other within some toleran
 ### plot_value_counts_tables_ref_curr(feature_name, curr_df, ref_df, id_prfx)
 
 ### regression_perf_plot(\*, val_for_plot: Dict[str, Series], hist_for_plot: Dict[str, Series], name: str, curr_metric: float, ref_metric: Optional[float] = None, is_ref_data: bool = False, color_options: [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions))
-## Module contents

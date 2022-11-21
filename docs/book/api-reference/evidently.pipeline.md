@@ -80,4 +80,3 @@ Bases: `object`
 ##### &nbsp;&nbsp;&nbsp;&nbsp; analyzers()
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; abstract  calculate(reference_data: DataFrame, current_data: DataFrame, column_mapping: ColumnMapping, analyzers_results: Dict[Type[Analyzer], Any])
-## Module contents

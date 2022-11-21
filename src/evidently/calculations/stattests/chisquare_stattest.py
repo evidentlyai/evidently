@@ -15,14 +15,13 @@ Example:
 
     >>> from evidently.options import DataDriftOptions
     >>> from evidently.calculations.stattests import chi_stat_test
-    >>> options = DataDriftOptions(feature_stattest_func=chi_stat_test)
+    >>> options = DataDriftOptions(all_features_stattest=chi_stat_test)
 
     Using by name:
 
     >>> from evidently.options import DataDriftOptions
-    >>> options = DataDriftOptions(feature_stattest_func="chisquare")
+    >>> options = DataDriftOptions(all_features_stattest="chisquare")
 """
-"""Compute the Chisquare test between two arrays"""
 from typing import Tuple
 
 import pandas as pd

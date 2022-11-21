@@ -347,5 +347,4 @@ Bases: `object`
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; number_not_stable_prediction : Optional[int]  = None 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; number_not_stable_target : Optional[int]  = None 
-## Module contents
+##### &nbsp;&nbsp;&nbsp;&nbsp; number_not_stable_target : Optional[int]  = None

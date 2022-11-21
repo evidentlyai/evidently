@@ -1,5 +1,9 @@
 # evidently.metrics package
 
+Available metrics for Reports and Tests.
+All metrics is grouped into modules.
+For specific group see module documentation.
+
 ## Subpackages
 
 - [evidently.metrics.classification_performance package](evidently.metrics.classification_performance.md)
@@ -268,8 +272,6 @@
 
             - [`ClassificationRocCurveResults.reference_roc_curve`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.roc_curve_metric.ClassificationRocCurveResults.reference_roc_curve)
 
-    - [Module contents](evidently.metrics.classification_performance.md#module-evidently.metrics.classification_performance)
-
 - [evidently.metrics.data_drift package](evidently.metrics.data_drift.md)
 
     - [Submodules](evidently.metrics.data_drift.md#submodules)
@@ -439,8 +441,6 @@
             - [`TargetByFeaturesTableResults.target_name`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.target_by_features_table.TargetByFeaturesTableResults.target_name)
 
             - [`TargetByFeaturesTableResults.task`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.target_by_features_table.TargetByFeaturesTableResults.task)
-
-    - [Module contents](evidently.metrics.data_drift.md#module-evidently.metrics.data_drift)
 
 - [evidently.metrics.data_integrity package](evidently.metrics.data_integrity.md)
 
@@ -788,8 +788,6 @@
 
             - [`DatasetSummaryMetricResult.reference`](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.dataset_summary_metric.DatasetSummaryMetricResult.reference)
 
-    - [Module contents](evidently.metrics.data_integrity.md#module-evidently.metrics.data_integrity)
-
 - [evidently.metrics.data_quality package](evidently.metrics.data_quality.md)
 
     - [Submodules](evidently.metrics.data_quality.md#submodules)
@@ -1023,8 +1021,6 @@
             - [`DataQualityStabilityMetricResult.number_not_stable_prediction`](evidently.metrics.data_quality.md#evidently.metrics.data_quality.stability_metric.DataQualityStabilityMetricResult.number_not_stable_prediction)
 
             - [`DataQualityStabilityMetricResult.number_not_stable_target`](evidently.metrics.data_quality.md#evidently.metrics.data_quality.stability_metric.DataQualityStabilityMetricResult.number_not_stable_target)
-
-    - [Module contents](evidently.metrics.data_quality.md#module-evidently.metrics.data_quality)
 
 - [evidently.metrics.regression_performance package](evidently.metrics.regression_performance.md)
 
@@ -1418,8 +1414,6 @@
 
             - [`RegressionTopErrorMetricResults.ref_scatter`](evidently.metrics.regression_performance.md#evidently.metrics.regression_performance.top_error.RegressionTopErrorMetricResults.ref_scatter)
 
-    - [Module contents](evidently.metrics.regression_performance.md#module-evidently.metrics.regression_performance)
-
 
 ## Submodules
 
@@ -1474,4 +1468,3 @@ Function for generating metrics for columns
 ### apply_func_to_binned_data(df_for_bins, func, target_column, preds_column, is_ref_data=False)
 
 ### make_target_bins_for_reg_plots(curr: DataFrame, target_column, preds_column, ref: Optional[DataFrame] = None)
-## Module contents

@@ -1,3 +1,27 @@
+"""Total variation distance of two samples.
+
+Name: "TVD"
+
+Import:
+
+    >>> from evidently.calculations.stattests import tvd_test
+
+Properties:
+- only for numerical features
+- returns distance
+
+Example:
+    Using by object:
+
+    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.calculations.stattests import tvd_test
+    >>> options = DataDriftOptions(all_features_stattest=tvd_test)
+
+    Using by name:
+
+    >>> from evidently.options import DataDriftOptions
+    >>> options = DataDriftOptions(all_features_stattest="TVD")
+"""
 from typing import Tuple
 
 import numpy as np

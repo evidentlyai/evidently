@@ -523,5 +523,4 @@ Bases: `object`
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; ref_mean_err_per_group : Optional[Dict[str, Dict[str, float]]] 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; ref_scatter : Optional[Dict[str, Dict[str, Series]]] 
-## Module contents
+##### &nbsp;&nbsp;&nbsp;&nbsp; ref_scatter : Optional[Dict[str, Dict[str, Series]]]

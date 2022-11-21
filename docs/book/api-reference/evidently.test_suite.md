@@ -14,4 +14,3 @@ Bases: [`Display`](evidently.suite.md#evidently.suite.base_suite.Display)
 ##### &nbsp;&nbsp;&nbsp;&nbsp; as_dict()
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; run(\*, reference_data: Optional[DataFrame], current_data: DataFrame, column_mapping: Optional[[ColumnMapping](evidently.pipeline.md#evidently.pipeline.column_mapping.ColumnMapping)] = None)
-## Module contents

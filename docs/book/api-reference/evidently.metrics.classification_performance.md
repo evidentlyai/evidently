@@ -401,5 +401,4 @@ Bases: `object`
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; current_roc_curve : Optional[dict]  = None 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; reference_roc_curve : Optional[dict]  = None 
-## Module contents
+##### &nbsp;&nbsp;&nbsp;&nbsp; reference_roc_curve : Optional[dict]  = None

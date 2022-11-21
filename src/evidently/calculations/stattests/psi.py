@@ -1,3 +1,27 @@
+"""PSI of two samples.
+
+Name: "psi"
+
+Import:
+
+    >>> from evidently.calculations.stattests import psi_stat_test
+
+Properties:
+- only for categorical and numerical features
+- returns PSI value
+
+Example:
+    Using by object:
+
+    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.calculations.stattests import psi_stat_test
+    >>> options = DataDriftOptions(all_features_stattest=psi_stat_test)
+
+    Using by name:
+
+    >>> from evidently.options import DataDriftOptions
+    >>> options = DataDriftOptions(all_features_stattest="psi")
+"""
 from typing import Tuple
 
 import numpy as np

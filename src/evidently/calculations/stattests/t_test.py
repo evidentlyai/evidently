@@ -1,6 +1,27 @@
-#!/usr/bin/env python
-# coding: utf-8
+"""T test of two samples.
 
+Name: "t_test"
+
+Import:
+
+    >>> from evidently.calculations.stattests import t_test
+
+Properties:
+- only for numerical features
+- returns p-value
+
+Example:
+    Using by object:
+
+    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.calculations.stattests import t_test
+    >>> options = DataDriftOptions(all_features_stattest=t_test)
+
+    Using by name:
+
+    >>> from evidently.options import DataDriftOptions
+    >>> options = DataDriftOptions(all_features_stattest="t_test")
+"""
 from typing import Tuple
 
 import pandas as pd

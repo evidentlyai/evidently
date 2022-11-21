@@ -15,12 +15,12 @@ Example:
 
     >>> from evidently.options import DataDriftOptions
     >>> from evidently.calculations.stattests import cramer_von_mises
-    >>> options = DataDriftOptions(feature_stattest_func=cramer_von_mises)
+    >>> options = DataDriftOptions(all_features_stattest=cramer_von_mises)
 
     Using by name:
 
     >>> from evidently.options import DataDriftOptions
-    >>> options = DataDriftOptions(feature_stattest_func="cramer_von_mises")
+    >>> options = DataDriftOptions(all_features_stattest="cramer_von_mises")
 """
 from itertools import combinations
 from typing import Generator
