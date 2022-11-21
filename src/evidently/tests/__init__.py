@@ -23,7 +23,7 @@ from .data_integrity_tests import TestColumnNumberOfDifferentMissingValues
 from .data_integrity_tests import TestColumnNumberOfMissingValues
 from .data_integrity_tests import TestColumnShareOfMissingValues
 from .data_integrity_tests import TestColumnsType
-from .data_integrity_tests import TestColumnValueRegExp
+from .data_integrity_tests import TestColumnRegExp
 from .data_integrity_tests import TestNumberOfColumns
 from .data_integrity_tests import TestNumberOfColumnsWithMissingValues
 from .data_integrity_tests import TestNumberOfConstantColumns

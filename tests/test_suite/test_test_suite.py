@@ -14,7 +14,7 @@ from evidently.tests import TestColumnValueMax
 from evidently.tests import TestColumnValueMean
 from evidently.tests import TestColumnValueMedian
 from evidently.tests import TestColumnValueMin
-from evidently.tests import TestColumnValueRegExp
+from evidently.tests import TestColumnRegExp
 from evidently.tests import TestColumnValueStd
 from evidently.tests import TestConflictPrediction
 from evidently.tests import TestConflictTarget
@@ -97,7 +97,7 @@ def test_export_to_json():
         TestNumberOfDuplicatedColumns(),
         TestColumnsType({"num_feature_1": int, "cat_feature_2": str}),
         TestColumnShareOfMissingValues(column_name="num_feature_1", gt=5),
-        TestColumnValueRegExp(column_name="cat_feature_2", reg_exp=r"[n|y|n//a]"),
+        TestColumnRegExp(column_name="cat_feature_2", reg_exp=r"[n|y|n//a]"),
         TestConflictTarget(),
         TestConflictPrediction(),
         TestColumnAllConstantValues(column_name="num_feature_1"),
