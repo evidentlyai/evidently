@@ -15,7 +15,7 @@ from evidently.report import Report
 test_stattest = StatTest(
     name="test_stattest",
     display_name="test stattest",
-    func=psi_stat_test,
+    func=psi_stat_test.func,
     allowed_feature_types=["num"],
     default_threshold=0.05,
 )
@@ -46,8 +46,8 @@ test_stattest = StatTest(
             {
                 "column_name": "col",
                 "column_type": "num",
-                "drift_detected": False,
-                "drift_score": 1.0,
+                "drift_detected": True,
+                "drift_score": 0.0,
                 "stattest_name": "chi-square p_value",
                 "stattest_threshold": 0.05,
             },
@@ -74,8 +74,8 @@ test_stattest = StatTest(
             {
                 "column_name": "col",
                 "column_type": "num",
-                "drift_detected": False,
-                "drift_score": 0.5,
+                "drift_detected": True,
+                "drift_score": approx(2.93, abs=0.01),
                 "stattest_name": "test stattest",
                 "stattest_threshold": 0.1,
             },

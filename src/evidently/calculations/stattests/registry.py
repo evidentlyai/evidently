@@ -32,7 +32,8 @@ class StatTest:
         self, reference_data: pd.Series, current_data: pd.Series, feature_type: str, threshold: Optional[float]
     ) -> StatTestResult:
         actual_threshold = self.default_threshold if threshold is None else threshold
-        drift_score, drifted = self.func(reference_data, current_data, feature_type, actual_threshold)
+        p = self.func(reference_data, current_data, feature_type, actual_threshold)
+        drift_score, drifted = p
         return StatTestResult(drift_score=drift_score, drifted=drifted, actual_threshold=actual_threshold)
 
     def __hash__(self):
