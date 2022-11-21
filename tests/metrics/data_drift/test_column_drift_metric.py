@@ -6,9 +6,23 @@ import pandas as pd
 import pytest
 from pytest import approx
 
+from evidently.calculations.stattests import StatTest
 from evidently.metrics import ColumnDriftMetric
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.report import Report
+
+
+def test_stattest(*_, **__):
+    return 0.5, False
+
+
+test_stattest = StatTest(
+    name="test_stattest",
+    display_name="test stattest",
+    func=test_stattest,
+    allowed_feature_types=["num"],
+    default_threshold=0.05,
+)
 
 
 @pytest.mark.parametrize(
@@ -53,6 +67,20 @@ from evidently.report import Report
                 "drift_detected": True,
                 "drift_score": approx(2.93, abs=0.01),
                 "stattest_name": "PSI",
+                "stattest_threshold": 0.1,
+            },
+        ),
+        (
+            pd.DataFrame({"col": [1, 2, 3]}),
+            pd.DataFrame({"col": [3, 2, 2]}),
+            None,
+            ColumnDriftMetric(column_name="col", stattest=test_stattest, stattest_threshold=0.1),
+            {
+                "column_name": "col",
+                "column_type": "num",
+                "drift_detected": False,
+                "drift_score": 0.5,
+                "stattest_name": "test stattest",
                 "stattest_threshold": 0.1,
             },
         ),
