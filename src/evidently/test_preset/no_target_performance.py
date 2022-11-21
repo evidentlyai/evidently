@@ -91,10 +91,12 @@ class NoTargetPerformanceTestPreset(TestPreset):
         preset_tests.append(TestNumColumnsMeanInNSigmas(columns=self.columns))
 
         if self.columns:
-            preset_tests.append(TestCustomFeaturesValueDrift(
-                features=self.columns,
-                stattest=self.stattest,
-                stattest_threshold=self.stattest_threshold,
-            ))
+            preset_tests.append(
+                TestCustomFeaturesValueDrift(
+                    features=self.columns,
+                    stattest=self.stattest,
+                    stattest_threshold=self.stattest_threshold,
+                )
+            )
 
         return preset_tests
