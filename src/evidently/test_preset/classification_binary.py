@@ -62,10 +62,10 @@ class BinaryClassificationTestPreset(TestPreset):
                     column_name=target, stattest=self.stattest, stattest_threshold=self.stattest_threshold
                 ),
                 TestRocAuc(),
-                TestPrecisionScore(threshold=self.probas_threshold),
-                TestRecallScore(threshold=self.probas_threshold),
-                TestAccuracyScore(threshold=self.probas_threshold),
-                TestF1Score(threshold=self.probas_threshold),
+                TestPrecisionScore(probas_threshold=self.probas_threshold),
+                TestRecallScore(probas_threshold=self.probas_threshold),
+                TestAccuracyScore(probas_threshold=self.probas_threshold),
+                TestF1Score(probas_threshold=self.probas_threshold),
             ]
 
         raise ValueError(f'Unexpected prediction_type: "{self.prediction_type}"')
