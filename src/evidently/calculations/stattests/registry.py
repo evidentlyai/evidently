@@ -37,7 +37,7 @@ class StatTest:
 
     def __hash__(self):
         # hash by name, so stattests with same name would be the same.
-        return self.name.__hash__
+        return hash(self.name)
 
 
 PossibleStatTestType = Union[str, StatTestFuncType, StatTest]
