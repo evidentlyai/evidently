@@ -59,11 +59,15 @@ class SimpleClassificationTest(BaseCheckValueTest):
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
             return self.condition
+
         ref_metrics = self.metric.get_result().reference
+
         if ref_metrics is not None:
             return TestValueCondition(eq=approx(self.get_value(ref_metrics), relative=0.2))
+
         if self.get_value(self.dummy_metric.get_result().dummy) is None:
             raise ValueError("Neither required test parameters nor reference data has been provided.")
+
         return TestValueCondition(gt=self.get_value(self.dummy_metric.get_result().dummy))
 
     @abc.abstractmethod

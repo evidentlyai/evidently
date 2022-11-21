@@ -7,19 +7,15 @@ import pytest
 from pytest import approx
 
 from evidently.calculations.stattests import StatTest
+from evidently.calculations.stattests import psi_stat_test
 from evidently.metrics import ColumnDriftMetric
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.report import Report
 
-
-def test_stattest(*_, **__):
-    return 0.5, False
-
-
 test_stattest = StatTest(
     name="test_stattest",
     display_name="test stattest",
-    func=test_stattest,
+    func=psi_stat_test,
     allowed_feature_types=["num"],
     default_threshold=0.05,
 )
@@ -43,7 +39,7 @@ test_stattest = StatTest(
             },
         ),
         (
-            pd.DataFrame({"col": [1, 2, 3]}),
+            pd.DataFrame({"col": [5, 8, 3]}),
             pd.DataFrame({"col": [1, 2, 3]}),
             None,
             ColumnDriftMetric(column_name="col"),

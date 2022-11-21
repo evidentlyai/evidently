@@ -21,6 +21,7 @@ class BinaryClassificationTopKTestPreset(TestPreset):
     def __init__(
         self,
         k: Union[float, int],
+        probas_threshold: Optional[float] = None,
         stattest: Optional[PossibleStatTestType] = None,
         stattest_threshold: Optional[float] = None,
     ):
@@ -28,16 +29,17 @@ class BinaryClassificationTopKTestPreset(TestPreset):
         self.k = k
         self.stattest = stattest
         self.stattest_threshold = stattest_threshold
+        self.probas_threshold = probas_threshold
 
     def generate_tests(self, data: InputData, columns: DatasetColumns):
         target = columns.utility_columns.target
         if target is None:
             raise ValueError("Target column should be set in mapping and be present in data")
         return [
-            TestAccuracyScore(k=self.k),
-            TestPrecisionScore(k=self.k),
-            TestRecallScore(k=self.k),
-            TestF1Score(k=self.k),
+            TestAccuracyScore(probas_threshold=self.probas_threshold, k=self.k),
+            TestPrecisionScore(probas_threshold=self.probas_threshold, k=self.k),
+            TestRecallScore(probas_threshold=self.probas_threshold, k=self.k),
+            TestF1Score(probas_threshold=self.probas_threshold, k=self.k),
             TestColumnValueDrift(
                 column_name=target, stattest=self.stattest, stattest_threshold=self.stattest_threshold
             ),

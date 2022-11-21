@@ -50,10 +50,10 @@ class BinaryClassificationTestPreset(TestPreset):
                 TestColumnValueDrift(
                     column_name=target, stattest=self.stattest, stattest_threshold=self.stattest_threshold
                 ),
-                TestPrecisionScore(),
-                TestRecallScore(),
-                TestF1Score(),
-                TestAccuracyScore(),
+                TestPrecisionScore(probas_threshold=self.probas_threshold),
+                TestRecallScore(probas_threshold=self.probas_threshold),
+                TestF1Score(probas_threshold=self.probas_threshold),
+                TestAccuracyScore(probas_threshold=self.probas_threshold),
             ]
 
         if self.prediction_type == "probas":
