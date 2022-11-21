@@ -4,7 +4,7 @@ from evidently.calculations.stattests import PossibleStatTestType
 from evidently.metrics.base_metric import InputData
 from evidently.test_preset.test_preset import TestPreset
 from evidently.tests import TestAllFeaturesValueDrift
-from evidently.tests import TestColumnValueDrift
+from evidently.tests import TestColumnDrift
 from evidently.tests import TestShareOfDriftedColumns
 from evidently.utils.data_operations import DatasetColumns
 
@@ -33,7 +33,7 @@ class DataDriftTestPreset(TestPreset):
 
         if columns.utility_columns.target is not None:
             preset_tests.append(
-                TestColumnValueDrift(
+                TestColumnDrift(
                     column_name=columns.utility_columns.target,
                     threshold=self.target_threshold,
                     stattest=self.target_stattest,
@@ -42,7 +42,7 @@ class DataDriftTestPreset(TestPreset):
 
         if columns.utility_columns.prediction is not None and isinstance(columns.utility_columns.prediction, str):
             preset_tests.append(
-                TestColumnValueDrift(
+                TestColumnDrift(
                     column_name=columns.utility_columns.prediction,
                     threshold=self.prediction_threshold,
                     stattest=self.prediction_stattest,

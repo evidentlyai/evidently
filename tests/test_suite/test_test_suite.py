@@ -9,7 +9,7 @@ from evidently.tests import TestColumnAllConstantValues
 from evidently.tests import TestColumnAllUniqueValues
 from evidently.tests import TestColumnShareOfMissingValues
 from evidently.tests import TestColumnsType
-from evidently.tests import TestColumnValueDrift
+from evidently.tests import TestColumnDrift
 from evidently.tests import TestColumnValueMax
 from evidently.tests import TestColumnValueMean
 from evidently.tests import TestColumnValueMedian
@@ -84,7 +84,7 @@ def test_export_to_json():
     tests = [
         TestNumberOfDriftedColumns(),
         TestShareOfDriftedColumns(),
-        TestColumnValueDrift(column_name="num_feature_1"),
+        TestColumnDrift(column_name="num_feature_1"),
         TestNumberOfColumns(),
         TestNumberOfRows(),
         TestNumberOfMissingValues(),

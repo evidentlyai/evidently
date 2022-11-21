@@ -12,7 +12,7 @@ from .classification_performance_tests import TestRocAuc
 from .classification_performance_tests import TestTNR
 from .classification_performance_tests import TestTPR
 from .data_drift_tests import TestAllFeaturesValueDrift
-from .data_drift_tests import TestColumnValueDrift
+from .data_drift_tests import TestColumnDrift
 from .data_drift_tests import TestCustomFeaturesValueDrift
 from .data_drift_tests import TestNumberOfDriftedColumns
 from .data_drift_tests import TestShareOfDriftedColumns

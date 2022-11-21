@@ -135,7 +135,7 @@ class TestShareOfDriftedColumns(BaseDataDriftMetricsTest):
         )
 
 
-class TestColumnValueDrift(Test):
+class TestColumnDrift(Test):
     name = "Drift per Column"
     group = DATA_DRIFT_GROUP.id
     metric: ColumnDriftMetric
@@ -181,9 +181,9 @@ class TestColumnValueDrift(Test):
 class TestAllFeaturesValueDrift(BaseGenerator):
     """Create value drift tests for numeric and category features"""
 
-    def generate(self, columns_info: DatasetColumns) -> List[TestColumnValueDrift]:
+    def generate(self, columns_info: DatasetColumns) -> List[TestColumnDrift]:
         return [
-            TestColumnValueDrift(column_name=name)
+            TestColumnDrift(column_name=name)
             for name in columns_info.get_all_features_list(include_datetime_feature=False)
         ]
 
@@ -196,8 +196,8 @@ class TestCustomFeaturesValueDrift(BaseGenerator):
     def __init__(self, features: List[str]):
         self.features = features
 
-    def generate(self, columns_info: DatasetColumns) -> List[TestColumnValueDrift]:
-        return [TestColumnValueDrift(column_name=name) for name in self.features]
+    def generate(self, columns_info: DatasetColumns) -> List[TestColumnDrift]:
+        return [TestColumnDrift(column_name=name) for name in self.features]
 
 
 @default_renderer(wrap_type=TestNumberOfDriftedColumns)
@@ -255,9 +255,9 @@ class TestShareOfDriftedColumnsRenderer(TestRenderer):
         return info
 
 
-@default_renderer(wrap_type=TestColumnValueDrift)
-class TestColumnValueDriftRenderer(TestRenderer):
-    def render_json(self, obj: TestColumnValueDrift) -> dict:
+@default_renderer(wrap_type=TestColumnDrift)
+class TestColumnDriftRenderer(TestRenderer):
+    def render_json(self, obj: TestColumnDrift) -> dict:
         feature_name = obj.column_name
         drift_data = obj.metric.get_result()
         base = super().render_json(obj)
@@ -271,7 +271,7 @@ class TestColumnValueDriftRenderer(TestRenderer):
         }
         return base
 
-    def render_html(self, obj: TestColumnValueDrift) -> TestHtmlInfo:
+    def render_html(self, obj: TestColumnDrift) -> TestHtmlInfo:
         result = obj.metric.get_result()
         column_name = obj.column_name
         info = super().render_html(obj)
