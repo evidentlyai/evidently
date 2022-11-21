@@ -144,11 +144,13 @@ class TestColumnValueDrift(Test):
     def __init__(
         self,
         column_name: str,
-        threshold: Optional[float] = None,
         stattest: Optional[PossibleStatTestType] = None,
+        stattest_threshold: Optional[float] = None,
     ):
         self.column_name = column_name
-        self.metric = ColumnDriftMetric(column_name=column_name, threshold=threshold, stattest=stattest)
+        self.metric = ColumnDriftMetric(
+            column_name=column_name, stattest=stattest, stattest_threshold=stattest_threshold
+        )
 
     def check(self):
         drift_info = self.metric.get_result()

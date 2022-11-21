@@ -48,8 +48,8 @@ class TargetDriftPreset(MetricPreset):
             result.append(
                 ColumnDriftMetric(
                     column_name=target,
-                    threshold=self.target_threshold,
                     stattest=self.target_stattest,
+                    stattest_threshold=self.target_threshold,
                 )
             )
 
@@ -78,8 +78,8 @@ class TargetDriftPreset(MetricPreset):
                 result.append(
                     ColumnDriftMetric(
                         column_name=prediction,
-                        threshold=self.target_threshold,
                         stattest=self.target_stattest,
+                        stattest_threshold=self.target_threshold,
                     )
                 )
 

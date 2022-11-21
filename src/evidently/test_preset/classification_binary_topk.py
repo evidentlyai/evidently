@@ -16,15 +16,18 @@ from evidently.utils.data_operations import DatasetColumns
 
 class BinaryClassificationTopKTestPreset(TestPreset):
     stattest: Optional[PossibleStatTestType]
-    threshold: Optional[float]
+    stattest_threshold: Optional[float]
 
     def __init__(
-        self, k: Union[float, int], stattest: Optional[PossibleStatTestType] = None, threshold: Optional[float] = None
+        self,
+        k: Union[float, int],
+        stattest: Optional[PossibleStatTestType] = None,
+        stattest_threshold: Optional[float] = None,
     ):
         super().__init__()
         self.k = k
-        self.threshold = threshold
         self.stattest = stattest
+        self.stattest_threshold = stattest_threshold
 
     def generate_tests(self, data: InputData, columns: DatasetColumns):
         target = columns.utility_columns.target
@@ -35,7 +38,9 @@ class BinaryClassificationTopKTestPreset(TestPreset):
             TestPrecisionScore(k=self.k),
             TestRecallScore(k=self.k),
             TestF1Score(k=self.k),
-            TestColumnValueDrift(column_name=target, stattest=self.stattest, threshold=self.threshold),
+            TestColumnValueDrift(
+                column_name=target, stattest=self.stattest, stattest_threshold=self.stattest_threshold
+            ),
             TestRocAuc(),
             TestLogLoss(),
         ]

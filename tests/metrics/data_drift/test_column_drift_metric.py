@@ -4,6 +4,7 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 import pytest
+from pytest import approx
 
 from evidently.metrics import ColumnDriftMetric
 from evidently.pipeline.column_mapping import ColumnMapping
@@ -41,6 +42,20 @@ from evidently.report import Report
                 "threshold": 0.05,
             },
         ),
+        (
+            pd.DataFrame({"col": [1, 2, 3]}),
+            pd.DataFrame({"col": [3, 2, 2]}),
+            None,
+            ColumnDriftMetric(column_name="col", stattest="psi", stattest_threshold=0.1),
+            {
+                "column_name": "col",
+                "column_type": "num",
+                "drift_detected": True,
+                "drift_score": approx(2.93, abs=0.01),
+                "stattest_name": "PSI",
+                "threshold": 0.1,
+            },
+        ),
     ),
 )
 def test_column_drift_metric_success(
@@ -60,7 +75,7 @@ def test_column_drift_metric_success(
 
 
 @pytest.mark.parametrize(
-    "current_data, reference_data, data_mapping, metric",
+    "current_data, reference_data, data_mapping, metric, expected_error",
     (
         # no reference dataset
         (
@@ -68,6 +83,7 @@ def test_column_drift_metric_success(
             None,
             None,
             ColumnDriftMetric(column_name="col"),
+            "Reference dataset should be present",
         ),
         # no column in reference dataset
         (
@@ -75,6 +91,7 @@ def test_column_drift_metric_success(
             pd.DataFrame({"col": [1, 2, 3]}),
             None,
             ColumnDriftMetric(column_name="col"),
+            "Cannot find column 'col' in current dataset",
         ),
         # no column in current dataset
         (
@@ -82,13 +99,23 @@ def test_column_drift_metric_success(
             pd.DataFrame({"feature": [1, 2, 3]}),
             None,
             ColumnDriftMetric(column_name="col"),
+            "Cannot find column 'col' in reference dataset",
         ),
-        # no not-nan values in the column
+        # no meaningful values in the column in current
         (
             pd.DataFrame({"col": [None, np.inf, -np.inf]}),
             pd.DataFrame({"col": [1, 2, 3]}),
             None,
             ColumnDriftMetric(column_name="col"),
+            "An empty column 'col' was provided for drift calculation in the current dataset.",
+        ),
+        # no meaningful values in the column in reference
+        (
+            pd.DataFrame({"col": [1, 2, 3]}),
+            pd.DataFrame({"col": [None, np.inf, -np.inf]}),
+            None,
+            ColumnDriftMetric(column_name="col"),
+            "An empty column 'col' was provided for drift calculation in the reference dataset.",
         ),
     ),
 )
@@ -97,9 +124,10 @@ def test_column_drift_metric_errors(
     reference_data: pd.DataFrame,
     data_mapping: Optional[ColumnMapping],
     metric: ColumnDriftMetric,
+    expected_error: str,
 ) -> None:
     report = Report(metrics=[metric])
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match=expected_error):
         report.run(current_data=current_data, reference_data=reference_data, column_mapping=data_mapping)
         report.json()

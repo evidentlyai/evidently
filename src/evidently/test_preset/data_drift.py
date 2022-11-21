@@ -35,7 +35,7 @@ class DataDriftTestPreset(TestPreset):
             preset_tests.append(
                 TestColumnValueDrift(
                     column_name=columns.utility_columns.target,
-                    threshold=self.target_threshold,
+                    stattest_threshold=self.target_threshold,
                     stattest=self.target_stattest,
                 )
             )
@@ -44,7 +44,7 @@ class DataDriftTestPreset(TestPreset):
             preset_tests.append(
                 TestColumnValueDrift(
                     column_name=columns.utility_columns.prediction,
-                    threshold=self.prediction_threshold,
+                    stattest_threshold=self.prediction_threshold,
                     stattest=self.prediction_stattest,
                 )
             )

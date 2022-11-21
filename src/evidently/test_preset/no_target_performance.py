@@ -67,7 +67,7 @@ class NoTargetPerformanceTestPreset(TestPreset):
                 TestColumnValueDrift(
                     column_name=columns.utility_columns.prediction,
                     stattest=self.prediction_stattest,
-                    threshold=self.prediction_threshold,
+                    stattest_threshold=self.prediction_threshold,
                 )
             )
 

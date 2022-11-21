@@ -17,45 +17,55 @@ class BinaryClassificationTestPreset(TestPreset):
     prediction_type: str
     columns: Optional[List[str]]
     stattest: Optional[PossibleStatTestType]
-    threshold_probas: float
-    threshold_stattest: Optional[float]
+    stattest_threshold: Optional[float]
+    probas_threshold: float
 
     def __init__(
         self,
         prediction_type: str,
         columns: Optional[List[str]] = None,
         stattest: Optional[PossibleStatTestType] = None,
-        threshold_probas: float = 0.5,
-        threshold_stattest: Optional[float] = None,
+        stattest_threshold: Optional[float] = None,
+        probas_threshold: float = 0.5,
     ):
         super().__init__()
+
         if prediction_type not in ["probas", "labels"]:
             raise ValueError("`prediction_type` argument should by one of 'probas' or 'labels'")
+
         self.prediction_type = prediction_type
         self.columns = columns
         self.stattest = stattest
-        self.threshold_probas = threshold_probas
-        self.threshold_stattest = threshold_stattest
+        self.stattest_threshold = stattest_threshold
+        self.probas_threshold = probas_threshold
 
     def generate_tests(self, data: InputData, columns: DatasetColumns):
         target = columns.utility_columns.target
+
         if target is None:
             raise ValueError("Target column should be set in mapping and be present in data")
+
         if self.prediction_type == "labels":
             return [
-                TestColumnValueDrift(column_name=target, stattest=self.stattest, threshold=self.threshold_stattest),
+                TestColumnValueDrift(
+                    column_name=target, stattest=self.stattest, stattest_threshold=self.stattest_threshold
+                ),
                 TestPrecisionScore(),
                 TestRecallScore(),
                 TestF1Score(),
                 TestAccuracyScore(),
             ]
+
         if self.prediction_type == "probas":
             return [
-                TestColumnValueDrift(column_name=target, stattest=self.stattest, threshold=self.threshold_stattest),
+                TestColumnValueDrift(
+                    column_name=target, stattest=self.stattest, stattest_threshold=self.stattest_threshold
+                ),
                 TestRocAuc(),
-                TestPrecisionScore(threshold=self.threshold_probas),
-                TestRecallScore(threshold=self.threshold_probas),
-                TestAccuracyScore(threshold=self.threshold_probas),
-                TestF1Score(threshold=self.threshold_probas),
+                TestPrecisionScore(threshold=self.probas_threshold),
+                TestRecallScore(threshold=self.probas_threshold),
+                TestAccuracyScore(threshold=self.probas_threshold),
+                TestF1Score(threshold=self.probas_threshold),
             ]
+
         raise ValueError(f'Unexpected prediction_type: "{self.prediction_type}"')
