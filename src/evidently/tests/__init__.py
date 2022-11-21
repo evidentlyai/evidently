@@ -63,7 +63,7 @@ from .data_quality_tests import TestTargetFeaturesCorrelations
 from .data_quality_tests import TestTargetPredictionCorrelation
 from .data_quality_tests import TestUniqueValuesShare
 from .data_quality_tests import TestValueList
-from .data_quality_tests import TestValueQuantile
+from .data_quality_tests import TestColumnQuantile
 from .data_quality_tests import TestValueRange
 from .regression_performance_tests import TestValueAbsMaxError
 from .regression_performance_tests import TestValueMAE

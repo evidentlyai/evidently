@@ -25,7 +25,7 @@ from evidently.tests import TestTargetFeaturesCorrelations
 from evidently.tests import TestTargetPredictionCorrelation
 from evidently.tests import TestUniqueValuesShare
 from evidently.tests import TestValueList
-from evidently.tests import TestValueQuantile
+from evidently.tests import TestColumnQuantile
 from evidently.tests import TestValueRange
 from evidently.tests.base_test import TestResult
 from evidently.tests.utils import approx
@@ -710,11 +710,11 @@ def test_data_quality_test_value_quantile() -> None:
         }
     )
 
-    suite = TestSuite(tests=[TestValueQuantile(column_name="feature1", quantile=0.7, lt=1)])
+    suite = TestSuite(tests=[TestColumnQuantile(column_name="feature1", quantile=0.7, lt=1)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
 
-    suite = TestSuite(tests=[TestValueQuantile(column_name="feature1", quantile=0.2, lt=0.7)])
+    suite = TestSuite(tests=[TestColumnQuantile(column_name="feature1", quantile=0.2, lt=0.7)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
     assert suite.show()

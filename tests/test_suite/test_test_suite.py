@@ -39,7 +39,7 @@ from evidently.tests import TestShareOfOutListValues
 from evidently.tests import TestShareOfOutRangeValues
 from evidently.tests import TestUniqueValuesShare
 from evidently.tests import TestValueList
-from evidently.tests import TestValueQuantile
+from evidently.tests import TestColumnQuantile
 from evidently.tests import TestValueRange
 from evidently.tests.base_test import Test
 
@@ -117,7 +117,7 @@ def test_export_to_json():
         TestValueList(column_name="num_feature_1"),
         TestNumberOfOutListValues(column_name="num_feature_1"),
         TestShareOfOutListValues(column_name="num_feature_1"),
-        TestValueQuantile(column_name="num_feature_1", quantile=0.1, lt=2),
+        TestColumnQuantile(column_name="num_feature_1", quantile=0.1, lt=2),
         ErrorTest(),
     ]
     suite = TestSuite(tests=tests)
