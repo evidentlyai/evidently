@@ -7,14 +7,15 @@ from evidently import ColumnMapping
 from evidently.test_suite import TestSuite
 from evidently.tests import TestColumnAllConstantValues
 from evidently.tests import TestColumnAllUniqueValues
+from evidently.tests import TestColumnDrift
+from evidently.tests import TestColumnQuantile
+from evidently.tests import TestColumnRegExp
 from evidently.tests import TestColumnShareOfMissingValues
 from evidently.tests import TestColumnsType
-from evidently.tests import TestColumnValueDrift
 from evidently.tests import TestColumnValueMax
 from evidently.tests import TestColumnValueMean
 from evidently.tests import TestColumnValueMedian
 from evidently.tests import TestColumnValueMin
-from evidently.tests import TestColumnValueRegExp
 from evidently.tests import TestColumnValueStd
 from evidently.tests import TestConflictPrediction
 from evidently.tests import TestConflictTarget
@@ -39,7 +40,6 @@ from evidently.tests import TestShareOfOutListValues
 from evidently.tests import TestShareOfOutRangeValues
 from evidently.tests import TestUniqueValuesShare
 from evidently.tests import TestValueList
-from evidently.tests import TestValueQuantile
 from evidently.tests import TestValueRange
 from evidently.tests.base_test import Test
 
@@ -84,7 +84,7 @@ def test_export_to_json():
     tests = [
         TestNumberOfDriftedColumns(),
         TestShareOfDriftedColumns(),
-        TestColumnValueDrift(column_name="num_feature_1"),
+        TestColumnDrift(column_name="num_feature_1"),
         TestNumberOfColumns(),
         TestNumberOfRows(),
         TestNumberOfMissingValues(),
@@ -97,7 +97,7 @@ def test_export_to_json():
         TestNumberOfDuplicatedColumns(),
         TestColumnsType({"num_feature_1": int, "cat_feature_2": str}),
         TestColumnShareOfMissingValues(column_name="num_feature_1", gt=5),
-        TestColumnValueRegExp(column_name="cat_feature_2", reg_exp=r"[n|y|n//a]"),
+        TestColumnRegExp(column_name="cat_feature_2", reg_exp=r"[n|y|n//a]"),
         TestConflictTarget(),
         TestConflictPrediction(),
         TestColumnAllConstantValues(column_name="num_feature_1"),
@@ -117,7 +117,7 @@ def test_export_to_json():
         TestValueList(column_name="num_feature_1"),
         TestNumberOfOutListValues(column_name="num_feature_1"),
         TestShareOfOutListValues(column_name="num_feature_1"),
-        TestValueQuantile(column_name="num_feature_1", quantile=0.1, lt=2),
+        TestColumnQuantile(column_name="num_feature_1", quantile=0.1, lt=2),
         ErrorTest(),
     ]
     suite = TestSuite(tests=tests)

@@ -13,7 +13,6 @@ from evidently.metrics import ColumnValueListMetric
 from evidently.metrics import ColumnValueRangeMetric
 from evidently.metrics import ConflictPredictionMetric
 from evidently.metrics import ConflictTargetMetric
-from evidently.metrics import DataQualityStabilityMetric
 from evidently.metrics import DatasetCorrelationsMetric
 from evidently.metrics.data_integrity.column_summary_metric import NumericCharacteristics
 from evidently.renderers.base_renderer import TestHtmlInfo
@@ -1321,7 +1320,7 @@ class TestCatColumnsOutOfListValues(BaseGenerator):
         return [TestShareOfOutListValues(column_name=name) for name in columns]
 
 
-class TestValueQuantile(BaseCheckValueTest):
+class TestColumnQuantile(BaseCheckValueTest):
     group = DATA_QUALITY_GROUP.id
     name = "Quantile Value"
     metric: ColumnQuantileMetric
@@ -1370,9 +1369,9 @@ class TestValueQuantile(BaseCheckValueTest):
         )
 
 
-@default_renderer(wrap_type=TestValueQuantile)
-class TestValueQuantileRenderer(TestRenderer):
-    def render_html(self, obj: TestValueQuantile) -> TestHtmlInfo:
+@default_renderer(wrap_type=TestColumnQuantile)
+class TestColumnQuantileRenderer(TestRenderer):
+    def render_html(self, obj: TestColumnQuantile) -> TestHtmlInfo:
         info = super().render_html(obj)
         metric_result = obj.metric.get_result()
         column_name = metric_result.column_name
