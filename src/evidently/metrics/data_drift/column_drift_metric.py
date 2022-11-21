@@ -69,7 +69,7 @@ class ColumnDriftMetric(Metric[ColumnDriftMetricResults]):
             raise ValueError(f"Cannot find column '{self.column_name}' in reference dataset")
 
         dataset_columns = process_columns(data.reference_data, data.column_mapping)
-        options = DataDriftOptions(threshold=self.stattest_threshold, all_features_stattest=self.stattest)
+        options = DataDriftOptions(all_features_stattest=self.stattest, threshold=self.stattest_threshold)
         drift_result = get_one_column_drift(
             current_data=data.current_data,
             reference_data=data.reference_data,

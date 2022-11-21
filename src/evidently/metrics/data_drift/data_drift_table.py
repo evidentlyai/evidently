@@ -44,25 +44,25 @@ class DataDriftTable(Metric[DataDriftTableResults]):
     def __init__(
         self,
         columns: Optional[List[str]] = None,
-        all_features_stattest: Optional[PossibleStatTestType] = None,
-        cat_features_stattest: Optional[PossibleStatTestType] = None,
-        num_features_stattest: Optional[PossibleStatTestType] = None,
-        per_feature_stattest: Optional[Dict[str, PossibleStatTestType]] = None,
-        all_features_threshold: Optional[float] = None,
-        cat_features_threshold: Optional[float] = None,
-        num_features_threshold: Optional[float] = None,
-        per_feature_threshold: Optional[Dict[str, float]] = None,
+        stattest: Optional[PossibleStatTestType] = None,
+        cat_stattest: Optional[PossibleStatTestType] = None,
+        num_stattest: Optional[PossibleStatTestType] = None,
+        per_column_stattest: Optional[Dict[str, PossibleStatTestType]] = None,
+        stattest_threshold: Optional[float] = None,
+        cat_stattest_threshold: Optional[float] = None,
+        num_stattest_threshold: Optional[float] = None,
+        per_column_stattest_threshold: Optional[Dict[str, float]] = None,
     ):
         self.columns = columns
         self.options = DataDriftOptions(
-            all_features_stattest=all_features_stattest,
-            cat_features_stattest=cat_features_stattest,
-            num_features_stattest=num_features_stattest,
-            per_feature_stattest=per_feature_stattest,
-            all_features_threshold=all_features_threshold,
-            cat_features_threshold=cat_features_threshold,
-            num_features_threshold=num_features_threshold,
-            per_feature_threshold=per_feature_threshold,
+            all_features_stattest=stattest,
+            cat_features_stattest=cat_stattest,
+            num_features_stattest=num_stattest,
+            per_feature_stattest=per_column_stattest,
+            all_features_threshold=stattest_threshold,
+            cat_features_threshold=cat_stattest_threshold,
+            num_features_threshold=num_stattest_threshold,
+            per_feature_threshold=per_column_stattest_threshold,
         )
 
     def get_parameters(self) -> tuple:
