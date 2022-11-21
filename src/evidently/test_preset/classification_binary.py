@@ -5,7 +5,7 @@ from evidently.calculations.stattests import PossibleStatTestType
 from evidently.metrics.base_metric import InputData
 from evidently.test_preset.test_preset import TestPreset
 from evidently.tests import TestAccuracyScore
-from evidently.tests import TestColumnValueDrift
+from evidently.tests import TestColumnDrift
 from evidently.tests import TestF1Score
 from evidently.tests import TestPrecisionScore
 from evidently.tests import TestRecallScore
@@ -47,7 +47,7 @@ class BinaryClassificationTestPreset(TestPreset):
 
         if self.prediction_type == "labels":
             return [
-                TestColumnValueDrift(
+                TestColumnDrift(
                     column_name=target, stattest=self.stattest, stattest_threshold=self.stattest_threshold
                 ),
                 TestPrecisionScore(probas_threshold=self.probas_threshold),
@@ -58,7 +58,7 @@ class BinaryClassificationTestPreset(TestPreset):
 
         if self.prediction_type == "probas":
             return [
-                TestColumnValueDrift(
+                TestColumnDrift(
                     column_name=target, stattest=self.stattest, stattest_threshold=self.stattest_threshold
                 ),
                 TestRocAuc(),

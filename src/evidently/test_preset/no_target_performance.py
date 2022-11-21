@@ -7,8 +7,8 @@ from evidently.metrics.base_metric import InputData
 from evidently.test_preset.test_preset import TestPreset
 from evidently.tests import TestAllColumnsShareOfMissingValues
 from evidently.tests import TestCatColumnsOutOfListValues
+from evidently.tests import TestColumnDrift
 from evidently.tests import TestColumnsType
-from evidently.tests import TestColumnValueDrift
 from evidently.tests import TestCustomFeaturesValueDrift
 from evidently.tests import TestNumColumnsMeanInNSigmas
 from evidently.tests import TestNumColumnsOutOfRangeValues
@@ -64,7 +64,7 @@ class NoTargetPerformanceTestPreset(TestPreset):
 
         if columns.utility_columns.prediction is not None and isinstance(columns.utility_columns.prediction, str):
             preset_tests.append(
-                TestColumnValueDrift(
+                TestColumnDrift(
                     column_name=columns.utility_columns.prediction,
                     stattest=self.prediction_stattest,
                     stattest_threshold=self.prediction_stattest_threshold,

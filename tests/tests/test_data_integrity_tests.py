@@ -11,9 +11,9 @@ from evidently.tests import TestColumnAllConstantValues
 from evidently.tests import TestColumnAllUniqueValues
 from evidently.tests import TestColumnNumberOfDifferentMissingValues
 from evidently.tests import TestColumnNumberOfMissingValues
+from evidently.tests import TestColumnRegExp
 from evidently.tests import TestColumnShareOfMissingValues
 from evidently.tests import TestColumnsType
-from evidently.tests import TestColumnValueRegExp
 from evidently.tests import TestNumberOfColumns
 from evidently.tests import TestNumberOfColumnsWithMissingValues
 from evidently.tests import TestNumberOfConstantColumns
@@ -533,13 +533,13 @@ def test_data_integrity_test_all_unique_values() -> None:
 
 def test_data_integrity_test_column_values_match_regexp() -> None:
     test_dataset = pd.DataFrame({"feature1": ["a", "aa", "baa"], "feature2": ["b", "bb", "baa"], "target": [1, 2, 3]})
-    suite = TestSuite(tests=[TestColumnValueRegExp(column_name="feature1", reg_exp=r"a.*", eq=1)])
+    suite = TestSuite(tests=[TestColumnRegExp(column_name="feature1", reg_exp=r"a.*", eq=1)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
     assert suite.show()
     assert suite.json()
 
-    suite = TestSuite(tests=[TestColumnValueRegExp(column_name="feature2", reg_exp=r"b.*")])
+    suite = TestSuite(tests=[TestColumnRegExp(column_name="feature2", reg_exp=r"b.*")])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
     assert suite.show()

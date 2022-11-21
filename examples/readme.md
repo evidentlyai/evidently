@@ -128,7 +128,7 @@ Here is how you build a custom Test Suite from individual tests:
 ```python
 feature_suite = TestSuite(tests=[
     TestColumnShareOfMissingValues(column_name='hours-per-week'),
-    TestColumnValueDrift(column_name='education'),
+    TestColumnDrift(column_name='education'),
     TestMeanInNSigmas(column_name='hours-per-week')
 ])
 ```

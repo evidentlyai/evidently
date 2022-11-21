@@ -12,7 +12,7 @@ from .classification_performance_tests import TestRocAuc
 from .classification_performance_tests import TestTNR
 from .classification_performance_tests import TestTPR
 from .data_drift_tests import TestAllFeaturesValueDrift
-from .data_drift_tests import TestColumnValueDrift
+from .data_drift_tests import TestColumnDrift
 from .data_drift_tests import TestCustomFeaturesValueDrift
 from .data_drift_tests import TestNumberOfDriftedColumns
 from .data_drift_tests import TestShareOfDriftedColumns
@@ -21,9 +21,9 @@ from .data_integrity_tests import TestColumnAllConstantValues
 from .data_integrity_tests import TestColumnAllUniqueValues
 from .data_integrity_tests import TestColumnNumberOfDifferentMissingValues
 from .data_integrity_tests import TestColumnNumberOfMissingValues
+from .data_integrity_tests import TestColumnRegExp
 from .data_integrity_tests import TestColumnShareOfMissingValues
 from .data_integrity_tests import TestColumnsType
-from .data_integrity_tests import TestColumnValueRegExp
 from .data_integrity_tests import TestNumberOfColumns
 from .data_integrity_tests import TestNumberOfColumnsWithMissingValues
 from .data_integrity_tests import TestNumberOfConstantColumns
@@ -40,6 +40,7 @@ from .data_integrity_tests import TestShareOfMissingValues
 from .data_integrity_tests import TestShareOfRowsWithMissingValues
 from .data_quality_tests import TestAllColumnsMostCommonValueShare
 from .data_quality_tests import TestCatColumnsOutOfListValues
+from .data_quality_tests import TestColumnQuantile
 from .data_quality_tests import TestColumnValueMax
 from .data_quality_tests import TestColumnValueMean
 from .data_quality_tests import TestColumnValueMedian
@@ -63,7 +64,6 @@ from .data_quality_tests import TestTargetFeaturesCorrelations
 from .data_quality_tests import TestTargetPredictionCorrelation
 from .data_quality_tests import TestUniqueValuesShare
 from .data_quality_tests import TestValueList
-from .data_quality_tests import TestValueQuantile
 from .data_quality_tests import TestValueRange
 from .regression_performance_tests import TestValueAbsMaxError
 from .regression_performance_tests import TestValueMAE

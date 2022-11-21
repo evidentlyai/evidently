@@ -34,7 +34,7 @@ TestAccuracyScore(),
 TestF1Score(),
 TestPrecisionByClass(label=labels), 
 TestRecallByClass(label=labels),
-TestColumnValueDrift(column=target)
+TestColumnDrift(column=target)
 ```
 
 If prediction type is `probas`, also: `TestLogLoss()`, `TestRocAuc()`.
@@ -61,7 +61,7 @@ TestAccuracyScore(k=self.k),
 TestPrecisionScore(k=self.k),
 TestRecallScore(k=self.k),
 TestF1Score(k=self.k),
-TestColumnValueDrift(column_name=target),
+TestColumnDrift(column_name=target),
 TestRocAuc(),
 TestLogLoss(),     
 ```
@@ -86,7 +86,7 @@ binary_classification_performance
 The preset contains the following tests:
 
 ```python
-TestColumnValueDrift(column=target),
+TestColumnDrift(column=target),
 TestPrecisionScore(),
 TestRecallScore(),
 TestF1Score(),

@@ -1105,7 +1105,7 @@ class TestColumnsTypeRenderer(TestRenderer):
         return info
 
 
-class TestColumnValueRegExp(BaseCheckValueTest, ABC):
+class TestColumnRegExp(BaseCheckValueTest, ABC):
     group = DATA_INTEGRITY_GROUP.id
     name = "RegExp Match"
     metric: ColumnRegExpMetric
@@ -1158,9 +1158,9 @@ class TestColumnValueRegExp(BaseCheckValueTest, ABC):
         )
 
 
-@default_renderer(wrap_type=TestColumnValueRegExp)
-class TestColumnValueRegExpRenderer(TestRenderer):
-    def render_html(self, obj: TestColumnValueRegExp) -> TestHtmlInfo:
+@default_renderer(wrap_type=TestColumnRegExp)
+class TestColumnRegExpRenderer(TestRenderer):
+    def render_html(self, obj: TestColumnRegExp) -> TestHtmlInfo:
         info = super().render_html(obj)
         column_name = obj.column_name
         metric_result = obj.metric.get_result()
