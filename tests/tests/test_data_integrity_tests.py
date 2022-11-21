@@ -11,9 +11,9 @@ from evidently.tests import TestColumnAllConstantValues
 from evidently.tests import TestColumnAllUniqueValues
 from evidently.tests import TestColumnNumberOfDifferentMissingValues
 from evidently.tests import TestColumnNumberOfMissingValues
+from evidently.tests import TestColumnRegExp
 from evidently.tests import TestColumnShareOfMissingValues
 from evidently.tests import TestColumnsType
-from evidently.tests import TestColumnRegExp
 from evidently.tests import TestNumberOfColumns
 from evidently.tests import TestNumberOfColumnsWithMissingValues
 from evidently.tests import TestNumberOfConstantColumns

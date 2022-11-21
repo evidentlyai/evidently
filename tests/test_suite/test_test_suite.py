@@ -7,14 +7,15 @@ from evidently import ColumnMapping
 from evidently.test_suite import TestSuite
 from evidently.tests import TestColumnAllConstantValues
 from evidently.tests import TestColumnAllUniqueValues
+from evidently.tests import TestColumnDrift
+from evidently.tests import TestColumnQuantile
+from evidently.tests import TestColumnRegExp
 from evidently.tests import TestColumnShareOfMissingValues
 from evidently.tests import TestColumnsType
-from evidently.tests import TestColumnDrift
 from evidently.tests import TestColumnValueMax
 from evidently.tests import TestColumnValueMean
 from evidently.tests import TestColumnValueMedian
 from evidently.tests import TestColumnValueMin
-from evidently.tests import TestColumnRegExp
 from evidently.tests import TestColumnValueStd
 from evidently.tests import TestConflictPrediction
 from evidently.tests import TestConflictTarget
@@ -39,7 +40,6 @@ from evidently.tests import TestShareOfOutListValues
 from evidently.tests import TestShareOfOutRangeValues
 from evidently.tests import TestUniqueValuesShare
 from evidently.tests import TestValueList
-from evidently.tests import TestColumnQuantile
 from evidently.tests import TestValueRange
 from evidently.tests.base_test import Test
 

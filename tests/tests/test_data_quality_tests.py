@@ -6,6 +6,7 @@ from pytest import approx as pytest_approx
 
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.test_suite import TestSuite
+from evidently.tests import TestColumnQuantile
 from evidently.tests import TestColumnValueMax
 from evidently.tests import TestColumnValueMean
 from evidently.tests import TestColumnValueMedian
@@ -25,7 +26,6 @@ from evidently.tests import TestTargetFeaturesCorrelations
 from evidently.tests import TestTargetPredictionCorrelation
 from evidently.tests import TestUniqueValuesShare
 from evidently.tests import TestValueList
-from evidently.tests import TestColumnQuantile
 from evidently.tests import TestValueRange
 from evidently.tests.base_test import TestResult
 from evidently.tests.utils import approx
