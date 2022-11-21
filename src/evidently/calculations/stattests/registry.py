@@ -35,6 +35,10 @@ class StatTest:
         drift_score, drifted = self.func(reference_data, current_data, feature_type, actual_threshold)
         return StatTestResult(drift_score=drift_score, drifted=drifted, actual_threshold=actual_threshold)
 
+    def __hash__(self):
+        # hash by name, so stattests with same name would be the same.
+        return self.name.__hash__
+
 
 PossibleStatTestType = Union[str, StatTestFuncType, StatTest]
 
