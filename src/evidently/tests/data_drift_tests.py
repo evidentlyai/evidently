@@ -157,7 +157,7 @@ class TestColumnValueDrift(Test):
 
         p_value = np.round(drift_info.drift_score, 3)
         stattest_name = drift_info.stattest_name
-        threshold = drift_info.threshold
+        threshold = drift_info.stattest_threshold
         description = (
             f"The drift score for the feature **{self.column_name}** is {p_value:.3g}. "
             f"The drift detection method is {stattest_name}. "
@@ -265,9 +265,9 @@ class TestColumnValueDriftRenderer(TestRenderer):
         base = super().render_json(obj)
         base["parameters"]["features"] = {
             feature_name: {
-                "stattest": drift_data.stattest_name,
+                "stattest_name": drift_data.stattest_name,
                 "score": np.round(drift_data.drift_score, 3),
-                "threshold": drift_data.threshold,
+                "stattest_threshold": drift_data.stattest_threshold,
                 "data_drift": drift_data.drift_detected,
             }
         }

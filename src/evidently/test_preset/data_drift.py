@@ -12,21 +12,21 @@ from evidently.utils.data_operations import DatasetColumns
 class DataDriftTestPreset(TestPreset):
     target_stattest: Optional[PossibleStatTestType]
     prediction_stattest: Optional[PossibleStatTestType]
-    target_threshold: Optional[float]
-    prediction_threshold: Optional[float]
+    target_stattest_threshold: Optional[float]
+    prediction_stattest_threshold: Optional[float]
 
     def __init__(
         self,
         target_stattest: Optional[PossibleStatTestType] = None,
         prediction_stattest: Optional[PossibleStatTestType] = None,
-        target_threshold: Optional[float] = None,
-        prediction_threshold: Optional[float] = None,
+        target_stattest_threshold: Optional[float] = None,
+        prediction_stattest_threshold: Optional[float] = None,
     ):
         super().__init__()
         self.target_stattest = target_stattest
         self.prediction_stattest = prediction_stattest
-        self.target_threshold = target_threshold
-        self.prediction_threshold = prediction_threshold
+        self.target_stattest_threshold = target_stattest_threshold
+        self.prediction_stattest_threshold = prediction_stattest_threshold
 
     def generate_tests(self, data: InputData, columns: DatasetColumns):
         preset_tests: list = [TestShareOfDriftedColumns()]
@@ -35,7 +35,7 @@ class DataDriftTestPreset(TestPreset):
             preset_tests.append(
                 TestColumnValueDrift(
                     column_name=columns.utility_columns.target,
-                    stattest_threshold=self.target_threshold,
+                    stattest_threshold=self.target_stattest_threshold,
                     stattest=self.target_stattest,
                 )
             )
@@ -44,7 +44,7 @@ class DataDriftTestPreset(TestPreset):
             preset_tests.append(
                 TestColumnValueDrift(
                     column_name=columns.utility_columns.prediction,
-                    stattest_threshold=self.prediction_threshold,
+                    stattest_threshold=self.prediction_stattest_threshold,
                     stattest=self.prediction_stattest,
                 )
             )

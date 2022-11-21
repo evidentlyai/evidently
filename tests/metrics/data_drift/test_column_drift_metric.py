@@ -25,7 +25,7 @@ from evidently.report import Report
                 "drift_detected": False,
                 "drift_score": 1.0,
                 "stattest_name": "chi-square p_value",
-                "threshold": 0.05,
+                "stattest_threshold": 0.05,
             },
         ),
         (
@@ -39,7 +39,7 @@ from evidently.report import Report
                 "drift_detected": False,
                 "drift_score": 1.0,
                 "stattest_name": "chi-square p_value",
-                "threshold": 0.05,
+                "stattest_threshold": 0.05,
             },
         ),
         (
@@ -53,7 +53,7 @@ from evidently.report import Report
                 "drift_detected": True,
                 "drift_score": approx(2.93, abs=0.01),
                 "stattest_name": "PSI",
-                "threshold": 0.1,
+                "stattest_threshold": 0.1,
             },
         ),
     ),

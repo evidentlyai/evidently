@@ -197,7 +197,12 @@ def test_data_drift_test_feature_value_drift_json_render() -> None:
         "name": "Drift per Column",
         "parameters": {
             "features": {
-                "feature_1": {"data_drift": False, "score": 0.064, "stattest": "chi-square p_value", "threshold": 0.05}
+                "feature_1": {
+                    "data_drift": False,
+                    "score": 0.064,
+                    "stattest_name": "chi-square p_value",
+                    "stattest_threshold": 0.05,
+                }
             }
         },
         "status": "SUCCESS",

@@ -28,7 +28,7 @@ class ColumnDriftMetricResults:
     column_name: str
     column_type: str
     stattest_name: str
-    threshold: Optional[float]
+    stattest_threshold: float
     drift_score: Numeric
     drift_detected: bool
     current_distribution: Distribution
@@ -82,7 +82,7 @@ class ColumnDriftMetric(Metric[ColumnDriftMetricResults]):
             column_name=drift_result.column_name,
             column_type=drift_result.column_type,
             stattest_name=drift_result.stattest_name,
-            threshold=drift_result.threshold,
+            stattest_threshold=drift_result.threshold,
             drift_score=drift_result.drift_score,
             drift_detected=drift_result.drift_detected,
             current_distribution=drift_result.current_distribution,

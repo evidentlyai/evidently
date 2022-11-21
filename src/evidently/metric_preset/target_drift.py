@@ -18,23 +18,23 @@ class TargetDriftPreset(MetricPreset):
     columns: Optional[List[str]]
     target_stattest: Optional[PossibleStatTestType]
     prediction_stattest: Optional[PossibleStatTestType]
-    target_threshold: Optional[float]
-    prediction_threshold: Optional[float]
+    target_stattest_threshold: Optional[float]
+    prediction_stattest_threshold: Optional[float]
 
     def __init__(
         self,
         columns: Optional[List[str]] = None,
         target_stattest: Optional[PossibleStatTestType] = None,
         prediction_stattest: Optional[PossibleStatTestType] = None,
-        target_threshold: Optional[float] = None,
-        prediction_threshold: Optional[float] = None,
+        target_stattest_threshold: Optional[float] = None,
+        prediction_stattest_threshold: Optional[float] = None,
     ):
         super().__init__()
         self.columns = columns
         self.target_stattest = target_stattest
         self.prediction_stattest = prediction_stattest
-        self.target_threshold = target_threshold
-        self.prediction_threshold = prediction_threshold
+        self.target_stattest_threshold = target_stattest_threshold
+        self.prediction_stattest_threshold = prediction_stattest_threshold
 
     def generate_metrics(self, data: InputData, columns: DatasetColumns) -> Sequence[Metric]:
         target = columns.utility_columns.target
@@ -49,7 +49,7 @@ class TargetDriftPreset(MetricPreset):
                 ColumnDriftMetric(
                     column_name=target,
                     stattest=self.target_stattest,
-                    stattest_threshold=self.target_threshold,
+                    stattest_threshold=self.target_stattest_threshold,
                 )
             )
 
@@ -79,7 +79,7 @@ class TargetDriftPreset(MetricPreset):
                     ColumnDriftMetric(
                         column_name=prediction,
                         stattest=self.target_stattest,
-                        stattest_threshold=self.target_threshold,
+                        stattest_threshold=self.target_stattest_threshold,
                     )
                 )
 

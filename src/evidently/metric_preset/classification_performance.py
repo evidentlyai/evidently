@@ -19,26 +19,26 @@ from evidently.utils.data_operations import DatasetColumns
 
 class ClassificationPreset(MetricPreset):
     columns: Optional[List[str]]
-    threshold: Optional[float]
+    probas_threshold: Optional[float]
     k: Optional[int]
 
     def __init__(
         self,
         columns: Optional[List[str]] = None,
-        threshold: Optional[float] = None,
+        probas_threshold: Optional[float] = None,
         k: Optional[int] = None,
     ):
         super().__init__()
         self.columns = columns
-        self.threshold = threshold
+        self.probas_threshold = probas_threshold
         self.k = k
 
     def generate_metrics(self, data: InputData, columns: DatasetColumns):
         result = [
-            ClassificationQualityMetric(threshold=self.threshold, k=self.k),
+            ClassificationQualityMetric(probas_threshold=self.probas_threshold, k=self.k),
             ClassificationClassBalance(),
-            ClassificationConfusionMatrix(threshold=self.threshold, k=self.k),
-            ClassificationQualityByClass(threshold=self.threshold, k=self.k),
+            ClassificationConfusionMatrix(probas_threshold=self.probas_threshold, k=self.k),
+            ClassificationQualityByClass(probas_threshold=self.probas_threshold, k=self.k),
         ]
         curr_predictions = get_prediction_data(data.current_data, columns, data.column_mapping.pos_label)
 

@@ -28,7 +28,7 @@ class NoTargetPerformanceTestPreset(TestPreset):
     num_stattest_threshold: Optional[float] = None
     per_column_stattest_threshold: Optional[Dict[str, float]] = None
     prediction_stattest: Optional[PossibleStatTestType]
-    prediction_threshold: Optional[float]
+    prediction_stattest_threshold: Optional[float]
 
     def __init__(
         self,
@@ -43,7 +43,7 @@ class NoTargetPerformanceTestPreset(TestPreset):
         num_stattest_threshold: Optional[float] = None,
         per_column_stattest_threshold: Optional[Dict[str, float]] = None,
         prediction_stattest: Optional[PossibleStatTestType] = None,
-        prediction_threshold: Optional[float] = None,
+        prediction_stattest_threshold: Optional[float] = None,
     ):
         super().__init__()
         self.columns = columns
@@ -57,7 +57,7 @@ class NoTargetPerformanceTestPreset(TestPreset):
         self.num_features_threshold = num_stattest_threshold
         self.per_feature_threshold = per_column_stattest_threshold
         self.prediction_stattest = prediction_stattest
-        self.prediction_threshold = prediction_threshold
+        self.prediction_stattest_threshold = prediction_stattest_threshold
 
     def generate_tests(self, data: InputData, columns: DatasetColumns):
         preset_tests: List = []
@@ -67,7 +67,7 @@ class NoTargetPerformanceTestPreset(TestPreset):
                 TestColumnValueDrift(
                     column_name=columns.utility_columns.prediction,
                     stattest=self.prediction_stattest,
-                    stattest_threshold=self.prediction_threshold,
+                    stattest_threshold=self.prediction_stattest_threshold,
                 )
             )
 

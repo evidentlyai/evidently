@@ -39,11 +39,11 @@ class ClassificationDummyMetric(ThresholdClassificationMetric[ClassificationDumm
 
     def __init__(
         self,
-        threshold: Optional[float] = None,
+        probas_threshold: Optional[float] = None,
         k: Optional[Union[float, int]] = None,
     ):
-        super().__init__(threshold, k)
-        self.threshold = threshold
+        super().__init__(probas_threshold, k)
+        self.probas_threshold = probas_threshold
         self.k = k
         self.quality_metric = ClassificationQualityMetric()
 
@@ -66,9 +66,11 @@ class ClassificationDummyMetric(ThresholdClassificationMetric[ClassificationDumm
         dummy_preds = np.random.choice(labels_ratio.index, data.current_data.shape[0], p=labels_ratio)
         dummy_preds = pd.Series(dummy_preds)
         prediction: Optional[PredictionData] = None
+
         if prediction_name is not None:
             target, prediction = self.get_target_prediction_data(data.current_data, data.column_mapping)
             labels = prediction.labels
+
         else:
             target = data.current_data[target_name]
             labels = list(target.unique())
@@ -90,24 +92,27 @@ class ClassificationDummyMetric(ThresholdClassificationMetric[ClassificationDumm
             dummy_preds,
             output_dict=True,
         )
+        threshold = 0.5
 
         if prediction is not None and prediction.prediction_probas is not None and len(labels) == 2:
-            if self.threshold is not None or self.k is not None:
-                if self.threshold is not None:
-                    threshold = self.threshold
+            if self.probas_threshold is not None or self.k is not None:
+                if self.probas_threshold is not None:
+                    threshold = self.probas_threshold
                 if self.k is not None:
                     threshold = k_probability_threshold(prediction.prediction_probas, self.k)
-            else:
-                threshold = 0.5
+
             current_dummy = self.correction_for_threshold(
                 current_dummy, threshold, target, labels, prediction.prediction_probas.shape
             )
+
             # metrix matrix
             # neg label data
             if threshold == 1.0:
                 coeff_recall = 1.0
+
             else:
                 coeff_recall = min(1.0, 0.5 / (1 - threshold))
+
             coeff_precision = min(1.0, (1 - threshold) / 0.5)
             neg_label_precision = precision_score(target, dummy_preds, pos_label=labels[1]) * coeff_precision
             neg_label_recall = recall_score(target, dummy_preds, pos_label=labels[1]) * coeff_recall
@@ -132,6 +137,7 @@ class ClassificationDummyMetric(ThresholdClassificationMetric[ClassificationDumm
 
         # dummy by reference
         by_reference_dummy: Optional[DatasetClassificationQuality] = None
+
         if data.reference_data is not None:
             labels_ratio = data.reference_data[target_name].value_counts(normalize=True)
             np.random.seed(1)
