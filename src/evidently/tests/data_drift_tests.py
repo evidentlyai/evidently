@@ -194,12 +194,25 @@ class TestCustomFeaturesValueDrift(BaseGenerator):
     """Create value drift tests for specified features"""
 
     features: List[str]
+    stattest: Optional[PossibleStatTestType]
+    stattest_threshold: Optional[float]
 
-    def __init__(self, features: List[str]):
+    def __init__(
+            self,
+            features: List[str],
+            stattest: Optional[PossibleStatTestType] = None,
+            stattest_threshold: Optional[float] = None,
+    ):
         self.features = features
+        self.stattest = stattest
+        self.stattest_threshold = stattest_threshold
 
     def generate(self, columns_info: DatasetColumns) -> List[TestColumnValueDrift]:
-        return [TestColumnValueDrift(column_name=name) for name in self.features]
+        return [TestColumnValueDrift(
+            column_name=name,
+            stattest=self.stattest,
+            stattest_threshold=self.stattest_threshold,
+        ) for name in self.features]
 
 
 @default_renderer(wrap_type=TestNumberOfDriftedColumns)
