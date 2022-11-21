@@ -47,9 +47,7 @@ class BinaryClassificationTestPreset(TestPreset):
 
         if self.prediction_type == "labels":
             return [
-                TestColumnDrift(
-                    column_name=target, stattest=self.stattest, stattest_threshold=self.stattest_threshold
-                ),
+                TestColumnDrift(column_name=target, stattest=self.stattest, stattest_threshold=self.stattest_threshold),
                 TestPrecisionScore(probas_threshold=self.probas_threshold),
                 TestRecallScore(probas_threshold=self.probas_threshold),
                 TestF1Score(probas_threshold=self.probas_threshold),
@@ -58,9 +56,7 @@ class BinaryClassificationTestPreset(TestPreset):
 
         if self.prediction_type == "probas":
             return [
-                TestColumnDrift(
-                    column_name=target, stattest=self.stattest, stattest_threshold=self.stattest_threshold
-                ),
+                TestColumnDrift(column_name=target, stattest=self.stattest, stattest_threshold=self.stattest_threshold),
                 TestRocAuc(),
                 TestPrecisionScore(probas_threshold=self.probas_threshold),
                 TestRecallScore(probas_threshold=self.probas_threshold),

@@ -50,9 +50,7 @@ class MulticlassClassificationTestPreset(TestPreset):
             *[TestPrecisionByClass(str(label)) for label in labels],
             *[TestRecallByClass(str(label)) for label in labels],
             TestNumberOfRows(),
-            TestColumnDrift(
-                column_name=target, stattest=self.stattest, stattest_threshold=self.stattest_threshold
-            ),
+            TestColumnDrift(column_name=target, stattest=self.stattest, stattest_threshold=self.stattest_threshold),
         ]
 
         if self.prediction_type == "labels":
