@@ -45,7 +45,7 @@ pandas_df = pd.DataFrame({'text': [el[1] for el in sample],
                          'label': [el[0] for el in sample]})
 ```
 Note that resulting Pandas DataFrame schema is arbitrary, just make sure to specify text and target columns with
-[column_mapping]((../../../../book/test-and-reports/column-mapping.md)) later
+[column_mapping]((../../../../book/tests-and-reports/column-mapping.md)) later
 
 ## PySpark DataFrames
 PySpark supports conversion to Pandas DataFrame with `toPandas()` method.
