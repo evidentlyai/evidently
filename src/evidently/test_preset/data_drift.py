@@ -99,6 +99,17 @@ class DataDriftTestPreset(TestPreset):
                 )
             )
 
-        preset_tests.append(TestAllFeaturesValueDrift())
+        preset_tests.append(
+            TestAllFeaturesValueDrift(
+                self.stattest,
+                self.cat_stattest,
+                self.num_stattest,
+                self.per_column_stattest,
+                self.stattest_threshold,
+                self.cat_stattest_threshold,
+                self.num_stattest_threshold,
+                self.per_column_stattest_threshold,
+            )
+        )
 
         return preset_tests
