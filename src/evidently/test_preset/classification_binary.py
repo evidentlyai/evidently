@@ -18,7 +18,7 @@ class BinaryClassificationTestPreset(TestPreset):
     columns: Optional[List[str]]
     stattest: Optional[PossibleStatTestType]
     stattest_threshold: Optional[float]
-    probas_threshold: float
+    probas_threshold: Optional[float]
 
     def __init__(
         self,
@@ -26,7 +26,7 @@ class BinaryClassificationTestPreset(TestPreset):
         columns: Optional[List[str]] = None,
         stattest: Optional[PossibleStatTestType] = None,
         stattest_threshold: Optional[float] = None,
-        probas_threshold: float = 0.5,
+        probas_threshold: Optional[float] = None,
     ):
         super().__init__()
 
