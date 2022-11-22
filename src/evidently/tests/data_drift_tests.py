@@ -250,28 +250,64 @@ class TestCustomFeaturesValueDrift(BaseGenerator):
     """Create value drift tests for specified features"""
 
     features: List[str]
-    stattest: Optional[PossibleStatTestType]
-    stattest_threshold: Optional[float]
+    stattest: Optional[PossibleStatTestType] = None
+    cat_stattest: Optional[PossibleStatTestType] = None
+    num_stattest: Optional[PossibleStatTestType] = None
+    per_column_stattest: Optional[Dict[str, PossibleStatTestType]] = None
+    stattest_threshold: Optional[float] = None
+    cat_stattest_threshold: Optional[float] = None
+    num_stattest_threshold: Optional[float] = None
+    per_column_stattest_threshold: Optional[Dict[str, float]] = None
 
     def __init__(
         self,
         features: List[str],
         stattest: Optional[PossibleStatTestType] = None,
+        cat_stattest: Optional[PossibleStatTestType] = None,
+        num_stattest: Optional[PossibleStatTestType] = None,
+        per_column_stattest: Optional[Dict[str, PossibleStatTestType]] = None,
         stattest_threshold: Optional[float] = None,
+        cat_stattest_threshold: Optional[float] = None,
+        num_stattest_threshold: Optional[float] = None,
+        per_column_stattest_threshold: Optional[Dict[str, float]] = None,
     ):
         self.features = features
         self.stattest = stattest
+        self.cat_stattest = cat_stattest
+        self.num_stattest = num_stattest
+        self.per_column_stattest = per_column_stattest
         self.stattest_threshold = stattest_threshold
+        self.cat_stattest_threshold = cat_stattest_threshold
+        self.num_features_threshold = num_stattest_threshold
+        self.per_feature_threshold = per_column_stattest_threshold
 
     def generate(self, columns_info: DatasetColumns) -> List[TestColumnDrift]:
-        return [
-            TestColumnDrift(
-                column_name=name,
-                stattest=self.stattest,
-                stattest_threshold=self.stattest_threshold,
+        result = []
+        for name in self.features:
+            stattest, threshold = resolve_stattest_threshold(
+                name,
+                "cat"
+                if name in columns_info.cat_feature_names
+                else "num"
+                if columns_info.num_feature_names
+                else "datetime",
+                self.stattest,
+                self.cat_stattest,
+                self.num_stattest,
+                self.per_column_stattest,
+                self.stattest_threshold,
+                self.cat_stattest_threshold,
+                self.num_stattest_threshold,
+                self.per_column_stattest_threshold,
             )
-            for name in self.features
-        ]
+            result.append(
+                TestColumnDrift(
+                    column_name=name,
+                    stattest=stattest,
+                    stattest_threshold=threshold,
+                )
+            )
+        return result
 
 
 @default_renderer(wrap_type=TestNumberOfDriftedColumns)

@@ -1,7 +1,9 @@
+from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Sequence
 
+from evidently import TaskType
 from evidently.calculations.data_drift import ensure_prediction_column_is_string
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.metric_preset.metric_preset import MetricPreset
@@ -11,30 +13,43 @@ from evidently.metrics import ColumnValuePlot
 from evidently.metrics import TargetByFeaturesTable
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
+from evidently.utils.data_drift_utils import resolve_stattest_threshold
 from evidently.utils.data_operations import DatasetColumns
 
 
 class TargetDriftPreset(MetricPreset):
     columns: Optional[List[str]]
-    target_stattest: Optional[PossibleStatTestType]
-    prediction_stattest: Optional[PossibleStatTestType]
-    target_stattest_threshold: Optional[float]
-    prediction_stattest_threshold: Optional[float]
+    stattest: Optional[PossibleStatTestType]
+    cat_stattest: Optional[PossibleStatTestType]
+    num_stattest: Optional[PossibleStatTestType]
+    per_column_stattest: Optional[Dict[str, PossibleStatTestType]]
+    stattest_threshold: Optional[float]
+    cat_stattest_threshold: Optional[float]
+    num_stattest_threshold: Optional[float]
+    per_column_stattest_threshold: Optional[Dict[str, float]]
 
     def __init__(
         self,
         columns: Optional[List[str]] = None,
-        target_stattest: Optional[PossibleStatTestType] = None,
-        prediction_stattest: Optional[PossibleStatTestType] = None,
-        target_stattest_threshold: Optional[float] = None,
-        prediction_stattest_threshold: Optional[float] = None,
+        stattest: Optional[PossibleStatTestType] = None,
+        cat_stattest: Optional[PossibleStatTestType] = None,
+        num_stattest: Optional[PossibleStatTestType] = None,
+        per_column_stattest: Optional[Dict[str, PossibleStatTestType]] = None,
+        stattest_threshold: Optional[float] = None,
+        cat_stattest_threshold: Optional[float] = None,
+        num_stattest_threshold: Optional[float] = None,
+        per_column_stattest_threshold: Optional[Dict[str, float]] = None,
     ):
         super().__init__()
         self.columns = columns
-        self.target_stattest = target_stattest
-        self.prediction_stattest = prediction_stattest
-        self.target_stattest_threshold = target_stattest_threshold
-        self.prediction_stattest_threshold = prediction_stattest_threshold
+        self.stattest = stattest
+        self.cat_stattest = cat_stattest
+        self.num_stattest = num_stattest
+        self.per_column_stattest = per_column_stattest
+        self.stattest_threshold = stattest_threshold
+        self.cat_stattest_threshold = cat_stattest_threshold
+        self.num_stattest_threshold = num_stattest_threshold
+        self.per_column_stattest_threshold = per_column_stattest_threshold
 
     def generate_metrics(self, data: InputData, columns: DatasetColumns) -> Sequence[Metric]:
         target = columns.utility_columns.target
@@ -45,11 +60,24 @@ class TargetDriftPreset(MetricPreset):
 
         if target is not None:
             columns_by_target.append(target)
+
+            stattest, threshold = resolve_stattest_threshold(
+                target,
+                "cat" if columns.task == TaskType.CLASSIFICATION_TASK else "num",
+                self.stattest,
+                self.cat_stattest,
+                self.num_stattest,
+                self.per_column_stattest,
+                self.stattest_threshold,
+                self.cat_stattest_threshold,
+                self.num_stattest_threshold,
+                self.per_column_stattest_threshold,
+            )
             result.append(
                 ColumnDriftMetric(
                     column_name=target,
-                    stattest=self.target_stattest,
-                    stattest_threshold=self.target_stattest_threshold,
+                    stattest=stattest,
+                    stattest_threshold=threshold,
                 )
             )
 
@@ -75,17 +103,47 @@ class TargetDriftPreset(MetricPreset):
 
             if isinstance(prediction, str):
                 columns_by_target.append(prediction)
+                stattest, threshold = resolve_stattest_threshold(
+                    prediction,
+                    "cat" if columns.task == TaskType.CLASSIFICATION_TASK else "num",
+                    self.stattest,
+                    self.cat_stattest,
+                    self.num_stattest,
+                    self.per_column_stattest,
+                    self.stattest_threshold,
+                    self.cat_stattest_threshold,
+                    self.num_stattest_threshold,
+                    self.per_column_stattest_threshold,
+                )
                 result.append(
                     ColumnDriftMetric(
                         column_name=prediction,
-                        stattest=self.target_stattest,
-                        stattest_threshold=self.target_stattest_threshold,
+                        stattest=stattest,
+                        stattest_threshold=threshold,
                     )
                 )
 
                 if prob_columns is not None:
                     for prob_column in prob_columns:
-                        result.append(ColumnDriftMetric(column_name=prob_column))
+                        stattest, threshold = resolve_stattest_threshold(
+                            prob_column,
+                            "num",
+                            self.stattest,
+                            self.cat_stattest,
+                            self.num_stattest,
+                            self.per_column_stattest,
+                            self.stattest_threshold,
+                            self.cat_stattest_threshold,
+                            self.num_stattest_threshold,
+                            self.per_column_stattest_threshold,
+                        )
+                        result.append(
+                            ColumnDriftMetric(
+                                column_name=prob_column,
+                                stattest=stattest,
+                                stattest_threshold=threshold,
+                            )
+                        )
 
                 result.append(ColumnCorrelationsMetric(column_name=prediction))
 

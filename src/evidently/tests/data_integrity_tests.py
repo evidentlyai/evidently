@@ -1087,7 +1087,6 @@ class TestColumnsTypeRenderer(TestRenderer):
 
         info.details = [
             DetailsInfo(
-                id="drift_table",
                 title="",
                 info=BaseWidgetInfo(
                     title="",
