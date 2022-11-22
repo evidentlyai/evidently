@@ -134,14 +134,15 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
 
         # define target type and prediction type. TODO move it to process_columns func
         if columns.utility_columns.target is not None:
-            if data.column_mapping.task == "regression" or is_numeric_dtype(data.current_data[target_name]):
+            reg_condition = data.column_mapping.task == "regression" or (
+                is_numeric_dtype(data.current_data[target_name])
+                and columns.task != "classification"
+                and data.current_data[target_name].nunique() > 5
+            )
+            if reg_condition:
                 target_type = "num"
-            elif data.column_mapping.task == "classification" or is_string_dtype(data.current_data[target_name]):
-                target_type = "cat"
-            elif data.current_data[columns.utility_columns.target].nunique() <= 5:
-                target_type = "cat"
             else:
-                target_type = "num"
+                target_type = "cat"
             if target_name == self.column_name:
                 column_type = target_type
 
@@ -150,10 +151,26 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
                 isinstance(columns.utility_columns.prediction, str)
                 and columns.utility_columns.prediction == self.column_name
             ):
-                if is_string_dtype(data.current_data[columns.utility_columns.prediction]):
+                if (
+                    is_string_dtype(data.current_data[columns.utility_columns.prediction])
+                    or (
+                        is_numeric_dtype(data.current_data[columns.utility_columns.prediction])
+                        and columns.task != "classification"
+                        and data.current_data[columns.utility_columns.prediction].nunique() < 5
+                    )
+                    or (
+                        is_numeric_dtype(data.current_data[columns.utility_columns.prediction])
+                        and columns.task == "classification"
+                        and (
+                            data.current_data[columns.utility_columns.prediction].max() > 1
+                            or data.current_data[columns.utility_columns.prediction].min() < 0
+                        )
+                    )
+                ):
                     column_type = "cat"
-                if is_numeric_dtype(data.current_data[columns.utility_columns.prediction]):
+                else:
                     column_type = "num"
+
             if (
                 isinstance(columns.utility_columns.prediction, list)
                 and self.column_name in columns.utility_columns.prediction
