@@ -249,17 +249,20 @@ def recognize_column_type(
     columns: DatasetColumns,
 ) -> str:
     """Try to get the column type."""
+    column = dataset[column_name]
+    reg_condition = columns.task == "regression" or (
+        pd.api.types.is_numeric_dtype(column) and columns.task != "classification" and column.nunique() > 5
+    )
     if column_name == columns.utility_columns.target:
-        if columns.task == "regression":
+        if reg_condition:
             return "num"
 
         else:
             return "cat"
 
     if column_name == columns.utility_columns.prediction:
-        column = dataset[column_name]
 
-        if columns.task == "regression" or (pd.api.types.is_numeric_dtype(column.dtype) and column.nunique() > 5):
+        if reg_condition:
             return "num"
 
         else:
