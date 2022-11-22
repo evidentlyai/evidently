@@ -14,6 +14,18 @@ from evidently.utils.data_operations import DatasetColumns
 
 
 class DataStabilityTestPreset(TestPreset):
+    """
+    Data Stability tests.
+
+    Contains tests:
+    - `TestNumberOfRows`
+    - `TestNumberOfColumns`
+    - `TestColumnsType`
+    - `TestAllColumnsShareOfMissingValues`
+    - `TestNumColumnsOutOfRangeValues`
+    - `TestCatColumnsOutOfListValues`
+    - `TestNumColumnsMeanInNSigmas`
+    """
     columns: Optional[List[str]]
 
     def __init__(

@@ -61,7 +61,6 @@
   * [evidently.renderers](api-reference/evidently.renderers.md)
   * [evidently.report](api-reference/evidently.report.md)
   * [evidently.suite](api-reference/evidently.suite.md)
-  * [evidently.tabs](api-reference/evidently.tabs.md)
   * [evidently.test_preset](api-reference/evidently.test_preset.md)
   * [evidently.test_suite](api-reference/evidently.test_suite.md)
   * [evidently.tests](api-reference/evidently.tests.md)

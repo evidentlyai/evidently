@@ -13,6 +13,17 @@ from evidently.utils.data_operations import DatasetColumns
 
 
 class DataQualityTestPreset(TestPreset):
+    """
+    Data Quality tests.
+
+    Contains tests:
+    - `TestAllColumnsShareOfMissingValues`
+    - `TestAllColumnsMostCommonValueShare`
+    - `TestNumberOfConstantColumns`
+    - `TestNumberOfDuplicatedColumns`
+    - `TestNumberOfDuplicatedRows`
+    - `TestHighlyCorrelatedColumns`
+    """
     columns: Optional[List[str]]
 
     def __init__(

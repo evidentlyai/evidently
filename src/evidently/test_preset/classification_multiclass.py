@@ -15,6 +15,22 @@ from evidently.utils.data_operations import DatasetColumns
 
 
 class MulticlassClassificationTestPreset(TestPreset):
+    """
+    Multiclass Classification tests.
+
+    Args:
+        prediction_type: type of prediction data ('probas' or 'labels')
+
+    Contains tests:
+    - `TestAccuracyScore`
+    - `TestF1Score`
+    - `TestPrecisionByClass` for each class in data
+    - `TestRecallByClass` for each class in data
+    - `TestNumberOfRows`
+    - `TestColumnValueDrift`
+    - `TestRocAuc`
+    - `TestLogLoss`
+    """
     stattest: Optional[PossibleStatTestType]
     stattest_threshold: Optional[float]
 
