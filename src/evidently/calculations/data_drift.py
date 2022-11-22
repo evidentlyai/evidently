@@ -83,13 +83,15 @@ def get_one_column_drift(
     if column_type not in ("cat", "num"):
         raise ValueError(f"Cannot calculate drift metric for column '{column_name}' with type {column_type}")
 
+    stattest = None
+
     if column_name == dataset_columns.utility_columns.target and column_type == "num":
         stattest = options.num_target_stattest_func
 
     elif column_name == dataset_columns.utility_columns.target and column_type == "cat":
         stattest = options.cat_target_stattest_func
 
-    else:
+    if not stattest:
         stattest = options.get_feature_stattest_func(column_name, column_type)
 
     threshold = options.get_threshold(column_name, column_type)

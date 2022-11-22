@@ -26,6 +26,7 @@ from evidently.tests.base_test import GroupingTypes
 from evidently.tests.base_test import Test
 from evidently.tests.base_test import TestResult
 from evidently.tests.base_test import TestValueCondition
+from evidently.utils.data_drift_utils import resolve_stattest_threshold
 from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.generators import BaseGenerator
 from evidently.utils.types import Numeric
@@ -53,25 +54,25 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
         lte: Optional[Numeric] = None,
         not_eq: Optional[Numeric] = None,
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
-        all_features_stattest: Optional[PossibleStatTestType] = None,
-        cat_features_stattest: Optional[PossibleStatTestType] = None,
-        num_features_stattest: Optional[PossibleStatTestType] = None,
-        per_feature_stattest: Optional[Dict[str, PossibleStatTestType]] = None,
-        all_features_threshold: Optional[float] = None,
-        cat_features_threshold: Optional[float] = None,
-        num_features_threshold: Optional[float] = None,
-        per_feature_threshold: Optional[Dict[str, float]] = None,
+        stattest: Optional[PossibleStatTestType] = None,
+        cat_stattest: Optional[PossibleStatTestType] = None,
+        num_stattest: Optional[PossibleStatTestType] = None,
+        per_column_stattest: Optional[Dict[str, PossibleStatTestType]] = None,
+        stattest_threshold: Optional[float] = None,
+        cat_stattest_threshold: Optional[float] = None,
+        num_stattest_threshold: Optional[float] = None,
+        per_column_stattest_threshold: Optional[Dict[str, float]] = None,
     ):
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
         self.metric = DataDriftTable(
-            all_features_stattest=all_features_stattest,
-            cat_features_stattest=cat_features_stattest,
-            num_features_stattest=num_features_stattest,
-            per_feature_stattest=per_feature_stattest,
-            all_features_threshold=all_features_threshold,
-            cat_features_threshold=cat_features_threshold,
-            num_features_threshold=num_features_threshold,
-            per_feature_threshold=per_feature_threshold,
+            stattest=stattest,
+            cat_stattest=cat_stattest,
+            num_stattest=num_stattest,
+            per_column_stattest=per_column_stattest,
+            stattest_threshold=stattest_threshold,
+            cat_stattest_threshold=cat_stattest_threshold,
+            num_stattest_threshold=num_stattest_threshold,
+            per_column_stattest_threshold=per_column_stattest_threshold,
         )
 
     def check(self):
@@ -144,18 +145,20 @@ class TestColumnDrift(Test):
     def __init__(
         self,
         column_name: str,
-        threshold: Optional[float] = None,
         stattest: Optional[PossibleStatTestType] = None,
+        stattest_threshold: Optional[float] = None,
     ):
         self.column_name = column_name
-        self.metric = ColumnDriftMetric(column_name=column_name, threshold=threshold, stattest=stattest)
+        self.metric = ColumnDriftMetric(
+            column_name=column_name, stattest=stattest, stattest_threshold=stattest_threshold
+        )
 
     def check(self):
         drift_info = self.metric.get_result()
 
         p_value = np.round(drift_info.drift_score, 3)
         stattest_name = drift_info.stattest_name
-        threshold = drift_info.threshold
+        threshold = drift_info.stattest_threshold
         description = (
             f"The drift score for the feature **{self.column_name}** is {p_value:.3g}. "
             f"The drift detection method is {stattest_name}. "
@@ -181,23 +184,130 @@ class TestColumnDrift(Test):
 class TestAllFeaturesValueDrift(BaseGenerator):
     """Create value drift tests for numeric and category features"""
 
+    stattest: Optional[PossibleStatTestType]
+    cat_stattest: Optional[PossibleStatTestType]
+    num_stattest: Optional[PossibleStatTestType]
+    per_column_stattest: Optional[Dict[str, PossibleStatTestType]]
+    stattest_threshold: Optional[float]
+    cat_stattest_threshold: Optional[float]
+    num_stattest_threshold: Optional[float]
+    per_column_stattest_threshold: Optional[Dict[str, float]]
+
+    def __init__(
+        self,
+        stattest: Optional[PossibleStatTestType] = None,
+        cat_stattest: Optional[PossibleStatTestType] = None,
+        num_stattest: Optional[PossibleStatTestType] = None,
+        per_column_stattest: Optional[Dict[str, PossibleStatTestType]] = None,
+        stattest_threshold: Optional[float] = None,
+        cat_stattest_threshold: Optional[float] = None,
+        num_stattest_threshold: Optional[float] = None,
+        per_column_stattest_threshold: Optional[Dict[str, float]] = None,
+    ):
+        self.stattest = stattest
+        self.cat_stattest = cat_stattest
+        self.num_stattest = num_stattest
+        self.per_column_stattest = per_column_stattest
+        self.stattest_threshold = stattest_threshold
+        self.cat_stattest_threshold = cat_stattest_threshold
+        self.num_stattest_threshold = num_stattest_threshold
+        self.per_column_stattest_threshold = per_column_stattest_threshold
+
     def generate(self, columns_info: DatasetColumns) -> List[TestColumnDrift]:
-        return [
-            TestColumnDrift(column_name=name)
-            for name in columns_info.get_all_features_list(include_datetime_feature=False)
-        ]
+        results = []
+        for name in columns_info.cat_feature_names:
+            stattest, threshold = resolve_stattest_threshold(
+                name,
+                "cat",
+                self.stattest,
+                self.cat_stattest,
+                self.num_stattest,
+                self.per_column_stattest,
+                self.stattest_threshold,
+                self.cat_stattest_threshold,
+                self.num_stattest_threshold,
+                self.per_column_stattest_threshold,
+            )
+            results.append(TestColumnDrift(column_name=name, stattest=stattest, stattest_threshold=threshold))
+        for name in columns_info.num_feature_names:
+            stattest, threshold = resolve_stattest_threshold(
+                name,
+                "num",
+                self.stattest,
+                self.cat_stattest,
+                self.num_stattest,
+                self.per_column_stattest,
+                self.stattest_threshold,
+                self.cat_stattest_threshold,
+                self.num_stattest_threshold,
+                self.per_column_stattest_threshold,
+            )
+            results.append(TestColumnDrift(column_name=name, stattest=stattest, stattest_threshold=threshold))
+        return results
 
 
 class TestCustomFeaturesValueDrift(BaseGenerator):
     """Create value drift tests for specified features"""
 
     features: List[str]
+    stattest: Optional[PossibleStatTestType] = None
+    cat_stattest: Optional[PossibleStatTestType] = None
+    num_stattest: Optional[PossibleStatTestType] = None
+    per_column_stattest: Optional[Dict[str, PossibleStatTestType]] = None
+    stattest_threshold: Optional[float] = None
+    cat_stattest_threshold: Optional[float] = None
+    num_stattest_threshold: Optional[float] = None
+    per_column_stattest_threshold: Optional[Dict[str, float]] = None
 
-    def __init__(self, features: List[str]):
+    def __init__(
+        self,
+        features: List[str],
+        stattest: Optional[PossibleStatTestType] = None,
+        cat_stattest: Optional[PossibleStatTestType] = None,
+        num_stattest: Optional[PossibleStatTestType] = None,
+        per_column_stattest: Optional[Dict[str, PossibleStatTestType]] = None,
+        stattest_threshold: Optional[float] = None,
+        cat_stattest_threshold: Optional[float] = None,
+        num_stattest_threshold: Optional[float] = None,
+        per_column_stattest_threshold: Optional[Dict[str, float]] = None,
+    ):
         self.features = features
+        self.stattest = stattest
+        self.cat_stattest = cat_stattest
+        self.num_stattest = num_stattest
+        self.per_column_stattest = per_column_stattest
+        self.stattest_threshold = stattest_threshold
+        self.cat_stattest_threshold = cat_stattest_threshold
+        self.num_features_threshold = num_stattest_threshold
+        self.per_feature_threshold = per_column_stattest_threshold
 
     def generate(self, columns_info: DatasetColumns) -> List[TestColumnDrift]:
-        return [TestColumnDrift(column_name=name) for name in self.features]
+        result = []
+        for name in self.features:
+            stattest, threshold = resolve_stattest_threshold(
+                name,
+                "cat"
+                if name in columns_info.cat_feature_names
+                else "num"
+                if columns_info.num_feature_names
+                else "datetime",
+                self.stattest,
+                self.cat_stattest,
+                self.num_stattest,
+                self.per_column_stattest,
+                self.stattest_threshold,
+                self.cat_stattest_threshold,
+                self.num_stattest_threshold,
+                self.per_column_stattest_threshold,
+            )
+            result.append(
+                TestColumnDrift(
+                    column_name=name,
+                    stattest=stattest,
+                    stattest_threshold=threshold,
+                )
+            )
+        return result
 
 
 @default_renderer(wrap_type=TestNumberOfDriftedColumns)
@@ -263,9 +373,9 @@ class TestColumnDriftRenderer(TestRenderer):
         base = super().render_json(obj)
         base["parameters"]["features"] = {
             feature_name: {
-                "stattest": drift_data.stattest_name,
+                "stattest_name": drift_data.stattest_name,
                 "score": np.round(drift_data.drift_score, 3),
-                "threshold": drift_data.threshold,
+                "stattest_threshold": drift_data.stattest_threshold,
                 "data_drift": drift_data.drift_detected,
             }
         }

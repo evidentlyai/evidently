@@ -28,7 +28,7 @@ class ColumnDriftMetricResults:
     column_name: str
     column_type: str
     stattest_name: str
-    threshold: Optional[float]
+    stattest_threshold: float
     drift_score: Numeric
     drift_detected: bool
     current_distribution: Distribution
@@ -42,21 +42,21 @@ class ColumnDriftMetric(Metric[ColumnDriftMetricResults]):
     """Calculate drift metric for a column"""
 
     column_name: str
-    threshold: Optional[float]
     stattest: Optional[PossibleStatTestType]
+    stattest_threshold: Optional[float]
 
     def __init__(
         self,
         column_name: str,
-        threshold: Optional[float] = None,
         stattest: Optional[PossibleStatTestType] = None,
+        stattest_threshold: Optional[float] = None,
     ):
         self.column_name = column_name
-        self.threshold = threshold
         self.stattest = stattest
+        self.stattest_threshold = stattest_threshold
 
     def get_parameters(self) -> tuple:
-        return self.column_name, self.threshold, self.stattest
+        return self.column_name, self.stattest_threshold, self.stattest
 
     def calculate(self, data: InputData) -> ColumnDriftMetricResults:
         if data.reference_data is None:
@@ -69,7 +69,7 @@ class ColumnDriftMetric(Metric[ColumnDriftMetricResults]):
             raise ValueError(f"Cannot find column '{self.column_name}' in reference dataset")
 
         dataset_columns = process_columns(data.reference_data, data.column_mapping)
-        options = DataDriftOptions(threshold=self.threshold, all_features_stattest=self.stattest)
+        options = DataDriftOptions(all_features_stattest=self.stattest, threshold=self.stattest_threshold)
         drift_result = get_one_column_drift(
             current_data=data.current_data,
             reference_data=data.reference_data,
@@ -82,7 +82,7 @@ class ColumnDriftMetric(Metric[ColumnDriftMetricResults]):
             column_name=drift_result.column_name,
             column_type=drift_result.column_type,
             stattest_name=drift_result.stattest_name,
-            threshold=drift_result.threshold,
+            stattest_threshold=drift_result.threshold,
             drift_score=drift_result.drift_score,
             drift_detected=drift_result.drift_detected,
             current_distribution=drift_result.current_distribution,

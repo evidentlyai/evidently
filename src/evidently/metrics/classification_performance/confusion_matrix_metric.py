@@ -3,8 +3,6 @@ from typing import Optional
 from typing import Union
 
 import dataclasses
-import pandas as pd
-from sklearn.metrics import confusion_matrix
 
 from evidently.calculations.classification_performance import ConfusionMatrix
 from evidently.calculations.classification_performance import calculate_matrix
@@ -27,12 +25,15 @@ class ClassificationConfusionMatrixResult:
 
 
 class ClassificationConfusionMatrix(ThresholdClassificationMetric[ClassificationConfusionMatrixResult]):
+    probas_threshold: Optional[float]
+    k: Optional[Union[float, int]]
+
     def __init__(
         self,
-        threshold: Optional[float] = None,
+        probas_threshold: Optional[float] = None,
         k: Optional[Union[float, int]] = None,
     ):
-        super().__init__(threshold, k)
+        super().__init__(probas_threshold=probas_threshold, k=k)
 
     def calculate(self, data: InputData) -> ClassificationConfusionMatrixResult:
         current_target_data, current_pred = self.get_target_prediction_data(data.current_data, data.column_mapping)

@@ -7,6 +7,7 @@ from dataclasses import dataclass
 
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.calculations.stattests import StatTest
+from evidently.utils.data_drift_utils import resolve_stattest_threshold
 
 DEFAULT_NBINSX = 10
 
@@ -83,19 +84,19 @@ class DataDriftOptions:
 
             raise ValueError(f"DataDriftOptions.threshold is incorrect type {type(self.threshold)}")
 
-        if self.all_features_threshold is not None:
-            return self.all_features_threshold
-
-        if self.cat_features_threshold is not None and feature_type == "cat":
-            return self.cat_features_threshold
-
-        if self.num_features_threshold is not None and feature_type == "num":
-            return self.num_features_threshold
-
-        if self.per_feature_threshold is not None:
-            return self.per_feature_threshold.get(feature_name)
-
-        return None
+        _, threshold = resolve_stattest_threshold(
+            feature_name,
+            feature_type,
+            self.all_features_stattest,
+            self.cat_features_stattest,
+            self.num_features_stattest,
+            self.per_feature_stattest,
+            self.all_features_threshold,
+            self.cat_features_threshold,
+            self.num_features_threshold,
+            self.per_feature_threshold,
+        )
+        return threshold
 
     def get_threshold(self, feature_name: str, feature_type: str) -> Optional[float]:
         threshold = self._calculate_threshold(feature_name, feature_type)
@@ -149,17 +150,19 @@ class DataDriftOptions:
             if isinstance(self.feature_stattest_func, dict):
                 return self.feature_stattest_func.get(feature_name)
             return None
-        func = None if self.all_features_stattest is None else self.all_features_stattest
-        if feature_type == "cat":
-            type_func = self.cat_features_stattest
-        elif feature_type == "num":
-            type_func = self.num_features_stattest
-        else:
-            raise ValueError(f"Unexpected feature type {feature_type}.")
-        func = func if type_func is None else type_func
-        if self.per_feature_stattest is None:
-            return func
-        return self.per_feature_stattest.get(feature_name, func)
+        stattest, _ = resolve_stattest_threshold(
+            feature_name,
+            feature_type,
+            self.all_features_stattest,
+            self.cat_features_stattest,
+            self.num_features_stattest,
+            self.per_feature_stattest,
+            self.all_features_threshold,
+            self.cat_features_threshold,
+            self.num_features_threshold,
+            self.per_feature_threshold,
+        )
+        return stattest
 
     def __hash__(self) -> int:
         """Calculate hash for data drift options - for using in metrics deduplication via dicts."""

@@ -16,26 +16,31 @@ from evidently.utils.data_operations import DatasetColumns
 
 class BinaryClassificationTopKTestPreset(TestPreset):
     stattest: Optional[PossibleStatTestType]
-    threshold: Optional[float]
+    stattest_threshold: Optional[float]
 
     def __init__(
-        self, k: Union[float, int], stattest: Optional[PossibleStatTestType] = None, threshold: Optional[float] = None
+        self,
+        k: Union[float, int],
+        probas_threshold: Optional[float] = None,
+        stattest: Optional[PossibleStatTestType] = None,
+        stattest_threshold: Optional[float] = None,
     ):
         super().__init__()
         self.k = k
-        self.threshold = threshold
         self.stattest = stattest
+        self.stattest_threshold = stattest_threshold
+        self.probas_threshold = probas_threshold
 
     def generate_tests(self, data: InputData, columns: DatasetColumns):
         target = columns.utility_columns.target
         if target is None:
             raise ValueError("Target column should be set in mapping and be present in data")
         return [
-            TestAccuracyScore(k=self.k),
-            TestPrecisionScore(k=self.k),
-            TestRecallScore(k=self.k),
-            TestF1Score(k=self.k),
-            TestColumnDrift(column_name=target, stattest=self.stattest, threshold=self.threshold),
+            TestAccuracyScore(probas_threshold=self.probas_threshold, k=self.k),
+            TestPrecisionScore(probas_threshold=self.probas_threshold, k=self.k),
+            TestRecallScore(probas_threshold=self.probas_threshold, k=self.k),
+            TestF1Score(probas_threshold=self.probas_threshold, k=self.k),
+            TestColumnDrift(column_name=target, stattest=self.stattest, stattest_threshold=self.stattest_threshold),
             TestRocAuc(),
             TestLogLoss(),
         ]

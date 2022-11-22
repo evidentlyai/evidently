@@ -1,54 +1,115 @@
+from typing import Dict
 from typing import Optional
 
+from evidently import TaskType
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.metrics.base_metric import InputData
 from evidently.test_preset.test_preset import TestPreset
 from evidently.tests import TestAllFeaturesValueDrift
 from evidently.tests import TestColumnDrift
 from evidently.tests import TestShareOfDriftedColumns
+from evidently.utils.data_drift_utils import resolve_stattest_threshold
 from evidently.utils.data_operations import DatasetColumns
 
 
 class DataDriftTestPreset(TestPreset):
-    target_stattest: Optional[PossibleStatTestType]
-    prediction_stattest: Optional[PossibleStatTestType]
-    target_threshold: Optional[float]
-    prediction_threshold: Optional[float]
+    stattest: Optional[PossibleStatTestType]
+    cat_stattest: Optional[PossibleStatTestType]
+    num_stattest: Optional[PossibleStatTestType]
+    per_column_stattest: Optional[Dict[str, PossibleStatTestType]]
+    stattest_threshold: Optional[float]
+    cat_stattest_threshold: Optional[float]
+    num_stattest_threshold: Optional[float]
+    per_column_stattest_threshold: Optional[Dict[str, float]]
 
     def __init__(
         self,
-        target_stattest: Optional[PossibleStatTestType] = None,
-        prediction_stattest: Optional[PossibleStatTestType] = None,
-        target_threshold: Optional[float] = None,
-        prediction_threshold: Optional[float] = None,
+        stattest: Optional[PossibleStatTestType] = None,
+        cat_stattest: Optional[PossibleStatTestType] = None,
+        num_stattest: Optional[PossibleStatTestType] = None,
+        per_column_stattest: Optional[Dict[str, PossibleStatTestType]] = None,
+        stattest_threshold: Optional[float] = None,
+        cat_stattest_threshold: Optional[float] = None,
+        num_stattest_threshold: Optional[float] = None,
+        per_column_stattest_threshold: Optional[Dict[str, float]] = None,
     ):
         super().__init__()
-        self.target_stattest = target_stattest
-        self.prediction_stattest = prediction_stattest
-        self.target_threshold = target_threshold
-        self.prediction_threshold = prediction_threshold
+        self.stattest = stattest
+        self.cat_stattest = cat_stattest
+        self.num_stattest = num_stattest
+        self.per_column_stattest = per_column_stattest
+        self.stattest_threshold = stattest_threshold
+        self.cat_stattest_threshold = cat_stattest_threshold
+        self.num_stattest_threshold = num_stattest_threshold
+        self.per_column_stattest_threshold = per_column_stattest_threshold
 
     def generate_tests(self, data: InputData, columns: DatasetColumns):
-        preset_tests: list = [TestShareOfDriftedColumns()]
+        preset_tests: list = [
+            TestShareOfDriftedColumns(
+                stattest=self.stattest,
+                cat_stattest=self.cat_stattest,
+                num_stattest=self.num_stattest,
+                per_column_stattest=self.per_column_stattest,
+                stattest_threshold=self.stattest_threshold,
+                cat_stattest_threshold=self.cat_stattest_threshold,
+                num_stattest_threshold=self.num_stattest_threshold,
+                per_column_stattest_threshold=self.per_column_stattest_threshold,
+            ),
+        ]
 
         if columns.utility_columns.target is not None:
+            stattest, threshold = resolve_stattest_threshold(
+                columns.utility_columns.target,
+                "cat" if columns.task == TaskType.CLASSIFICATION_TASK else "num",
+                self.stattest,
+                self.cat_stattest,
+                self.num_stattest,
+                self.per_column_stattest,
+                self.stattest_threshold,
+                self.cat_stattest_threshold,
+                self.num_stattest_threshold,
+                self.per_column_stattest_threshold,
+            )
             preset_tests.append(
                 TestColumnDrift(
                     column_name=columns.utility_columns.target,
-                    threshold=self.target_threshold,
-                    stattest=self.target_stattest,
+                    stattest_threshold=threshold,
+                    stattest=stattest,
                 )
             )
 
         if columns.utility_columns.prediction is not None and isinstance(columns.utility_columns.prediction, str):
+            stattest, threshold = resolve_stattest_threshold(
+                columns.utility_columns.prediction,
+                "cat" if columns.task == TaskType.CLASSIFICATION_TASK else "num",
+                self.stattest,
+                self.cat_stattest,
+                self.num_stattest,
+                self.per_column_stattest,
+                self.stattest_threshold,
+                self.cat_stattest_threshold,
+                self.num_stattest_threshold,
+                self.per_column_stattest_threshold,
+            )
             preset_tests.append(
                 TestColumnDrift(
                     column_name=columns.utility_columns.prediction,
-                    threshold=self.prediction_threshold,
-                    stattest=self.prediction_stattest,
+                    stattest_threshold=threshold,
+                    stattest=stattest,
                 )
             )
 
-        preset_tests.append(TestAllFeaturesValueDrift())
+        preset_tests.append(
+            TestAllFeaturesValueDrift(
+                self.stattest,
+                self.cat_stattest,
+                self.num_stattest,
+                self.per_column_stattest,
+                self.stattest_threshold,
+                self.cat_stattest_threshold,
+                self.num_stattest_threshold,
+                self.per_column_stattest_threshold,
+            )
+        )
 
         return preset_tests

@@ -16,17 +16,22 @@ from evidently.utils.data_operations import DatasetColumns
 
 class MulticlassClassificationTestPreset(TestPreset):
     stattest: Optional[PossibleStatTestType]
-    threshold: Optional[float]
+    stattest_threshold: Optional[float]
 
     def __init__(
-        self, prediction_type: str, stattest: Optional[PossibleStatTestType] = None, threshold: Optional[float] = None
+        self,
+        prediction_type: str,
+        stattest: Optional[PossibleStatTestType] = None,
+        stattest_threshold: Optional[float] = None,
     ):
         super().__init__()
+
         if prediction_type not in ["probas", "labels"]:
             raise ValueError("`prediction_type` argument should by one of 'probas' or 'labels'")
+
         self.prediction_type = prediction_type
         self.stattest = stattest
-        self.threshold = threshold
+        self.stattest_threshold = stattest_threshold
 
     def generate_tests(self, data: InputData, columns: DatasetColumns):
         target = columns.utility_columns.target
@@ -45,7 +50,7 @@ class MulticlassClassificationTestPreset(TestPreset):
             *[TestPrecisionByClass(str(label)) for label in labels],
             *[TestRecallByClass(str(label)) for label in labels],
             TestNumberOfRows(),
-            TestColumnDrift(column_name=target, stattest=self.stattest, threshold=self.threshold),
+            TestColumnDrift(column_name=target, stattest=self.stattest, stattest_threshold=self.stattest_threshold),
         ]
 
         if self.prediction_type == "labels":

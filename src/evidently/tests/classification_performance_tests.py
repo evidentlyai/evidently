@@ -59,11 +59,15 @@ class SimpleClassificationTest(BaseCheckValueTest):
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
             return self.condition
+
         ref_metrics = self.metric.get_result().reference
+
         if ref_metrics is not None:
             return TestValueCondition(eq=approx(self.get_value(ref_metrics), relative=0.2))
+
         if self.get_value(self.dummy_metric.get_result().dummy) is None:
             raise ValueError("Neither required test parameters nor reference data has been provided.")
+
         return TestValueCondition(gt=self.get_value(self.dummy_metric.get_result().dummy))
 
     @abc.abstractmethod
@@ -75,10 +79,12 @@ class SimpleClassificationTestTopK(SimpleClassificationTest, ABC):
     metric: ClassificationQualityMetric
     dummy_metric: ClassificationDummyMetric
     conf_matrix: ClassificationConfusionMatrix
+    probas_threshold: Optional[float]
+    k: Optional[Union[float, int]]
 
     def __init__(
         self,
-        threshold: Optional[float] = None,
+        probas_threshold: Optional[float] = None,
         k: Optional[Union[float, int]] = None,
         eq: Optional[Numeric] = None,
         gt: Optional[Numeric] = None,
@@ -99,13 +105,13 @@ class SimpleClassificationTestTopK(SimpleClassificationTest, ABC):
             not_eq=not_eq,
             not_in=not_in,
         )
-        if k is not None and threshold is not None:
-            raise ValueError("Only one of 'threshold' or 'k' should be given")
+        if k is not None and probas_threshold is not None:
+            raise ValueError("Only one of 'probas_threshold' or 'k' should be given")
         self.k = k
-        self.threshold = threshold
-        self.dummy_metric = ClassificationDummyMetric(k=self.k, threshold=self.threshold)
-        self.metric = ClassificationQualityMetric(k=self.k, threshold=self.threshold)
-        self.conf_matrix = ClassificationConfusionMatrix(k=self.k, threshold=self.threshold)
+        self.probas_threshold = probas_threshold
+        self.dummy_metric = ClassificationDummyMetric(probas_threshold=self.probas_threshold, k=self.k)
+        self.metric = ClassificationQualityMetric(probas_threshold=self.probas_threshold, k=self.k)
+        self.conf_matrix = ClassificationConfusionMatrix(probas_threshold=self.probas_threshold, k=self.k)
 
     def calculate_value_for_test(self) -> Optional[Any]:
         return self.get_value(self.metric.get_result().current)
@@ -113,13 +119,18 @@ class SimpleClassificationTestTopK(SimpleClassificationTest, ABC):
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
             return self.condition
+
         result = self.metric.get_result()
         ref_metrics = result.reference
+
         if ref_metrics is not None:
             return TestValueCondition(eq=approx(self.get_value(ref_metrics), relative=0.2))
+
         dummy_result = self.dummy_metric.get_result().dummy
+
         if self.get_value(dummy_result) is None:
             raise ValueError("Neither required test parameters nor reference data has been provided.")
+
         return TestValueCondition(gt=self.get_value(dummy_result))
 
 
@@ -255,6 +266,7 @@ class TestRocAuc(SimpleClassificationTest):
     def get_description(self, value: Numeric) -> str:
         if value is None:
             return "Not enough data to calculate ROC AUC. Consider providing probabilities instead of labels."
+
         else:
             return f"The ROC AUC Score is {value:.3g}. The test threshold is {self.get_condition()}"
 
@@ -271,12 +283,15 @@ class TestRocAucRenderer(TestRenderer):
         info = super().render_html(obj)
         curr_roc_curve = obj.roc_curve.get_result().current_roc_curve
         ref_roc_curve = obj.roc_curve.get_result().reference_roc_curve
+
         if curr_roc_curve is None:
             return info
 
         tab_data = get_roc_auc_tab_data(curr_roc_curve, ref_roc_curve, color_options=self.color_options)
+
         if len(tab_data) == 1:
             return info.with_details("ROC Curve", tab_data[0][1])
+
         tabs = [TabData(name, widget) for name, widget in tab_data]
         return info.with_details("", widget_tabs(title="", tabs=tabs))
 
@@ -287,11 +302,15 @@ class TestLogLoss(SimpleClassificationTest):
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
             return self.condition
+
         ref_metrics = self.metric.get_result().reference
+
         if ref_metrics is not None:
             return TestValueCondition(eq=approx(self.get_value(ref_metrics), relative=0.2))
+
         if self.get_value(self.dummy_metric.get_result().dummy) is None:
             raise ValueError("Neither required test parameters nor reference data has been provided.")
+
         return TestValueCondition(lt=self.get_value(self.dummy_metric.get_result().dummy))
 
     def get_value(self, result: DatasetClassificationQuality):
@@ -300,6 +319,7 @@ class TestLogLoss(SimpleClassificationTest):
     def get_description(self, value: Numeric) -> str:
         if value is None:
             return "Not enough data to calculate Logarithmic Loss. Consider providing probabilities instead of labels."
+
         else:
             return f"The Logarithmic Loss is {value:.3g}. The test threshold is {self.get_condition()}"
 
@@ -395,8 +415,10 @@ class TestTNRRenderer(TestRenderer):
         ref_metrics = obj.metric.get_result().reference
         curr_rate_plots_data = curr_metrics.rate_plots_data
         ref_rate_plots_data = None
+
         if ref_metrics is not None:
             ref_rate_plots_data = ref_metrics.rate_plots_data
+
         if curr_rate_plots_data is not None:
             fig = plot_rates(
                 curr_rate_plots_data=curr_rate_plots_data,
@@ -404,6 +426,7 @@ class TestTNRRenderer(TestRenderer):
                 color_options=self.color_options,
             )
             info.with_details("TNR", plotly_figure(title="", figure=fig))
+
         return info
 
 
@@ -413,13 +436,17 @@ class TestFPR(SimpleClassificationTestTopK):
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
             return self.condition
+
         result = self.metric.get_result()
         ref_metrics = result.reference
         dummy_metrics = self.dummy_metric.get_result().dummy
+
         if ref_metrics is not None:
             return TestValueCondition(eq=approx(self.get_value(ref_metrics), relative=0.2))
+
         if self.get_value(dummy_metrics) is None:
             raise ValueError("Neither required test parameters nor reference data has been provided.")
+
         return TestValueCondition(lt=self.get_value(dummy_metrics))
 
     def get_value(self, result: DatasetClassificationQuality):
@@ -446,8 +473,10 @@ class TestFPRRenderer(TestRenderer):
         ref_metrics = obj.metric.get_result().reference
         curr_rate_plots_data = curr_metrics.rate_plots_data
         ref_rate_plots_data = None
+
         if ref_metrics is not None:
             ref_rate_plots_data = ref_metrics.rate_plots_data
+
         if curr_rate_plots_data is not None:
             fig = plot_rates(
                 curr_rate_plots_data=curr_rate_plots_data,
@@ -455,6 +484,7 @@ class TestFPRRenderer(TestRenderer):
                 color_options=self.color_options,
             )
             info.with_details("FPR", plotly_figure(title="", figure=fig))
+
         return info
 
 
@@ -464,13 +494,17 @@ class TestFNR(SimpleClassificationTestTopK):
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
             return self.condition
+
         result = self.metric.get_result()
         ref_metrics = result.reference
         dummy_metrics = self.dummy_metric.get_result().dummy
+
         if ref_metrics is not None:
             return TestValueCondition(eq=approx(self.get_value(ref_metrics), relative=0.2))
+
         if self.get_value(dummy_metrics) is None:
             raise ValueError("Neither required test parameters nor reference data has been provided.")
+
         return TestValueCondition(lt=self.get_value(dummy_metrics))
 
     def get_value(self, result: DatasetClassificationQuality):
@@ -497,8 +531,10 @@ class TestFNRRenderer(TestRenderer):
         ref_metrics = obj.metric.get_result().reference
         curr_rate_plots_data = curr_metrics.rate_plots_data
         ref_rate_plots_data = None
+
         if ref_metrics is not None:
             ref_rate_plots_data = ref_metrics.rate_plots_data
+
         if curr_rate_plots_data is not None:
             fig = plot_rates(
                 curr_rate_plots_data=curr_rate_plots_data,
@@ -506,6 +542,7 @@ class TestFNRRenderer(TestRenderer):
                 color_options=self.color_options,
             )
             info.with_details("FNR", plotly_figure(title="", figure=fig))
+
         return info
 
 
@@ -519,7 +556,7 @@ class ByClassClassificationTest(BaseCheckValueTest, ABC):
     def __init__(
         self,
         label: str,
-        threshold: Optional[float] = None,
+        probas_threshold: Optional[float] = None,
         k: Optional[Union[float, int]] = None,
         eq: Optional[Numeric] = None,
         gt: Optional[Numeric] = None,
@@ -532,16 +569,16 @@ class ByClassClassificationTest(BaseCheckValueTest, ABC):
     ):
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
 
-        if k is not None and threshold is not None:
-            raise ValueError("Only one of 'threshold' or 'k' should be given")
+        if k is not None and probas_threshold is not None:
+            raise ValueError("Only one of 'probas_threshold' or 'k' should be given")
 
         self.label = label
+        self.probas_threshold = probas_threshold
         self.k = k
-        self.threshold = threshold
-        self.metric = ClassificationQualityMetric(k=self.k, threshold=self.threshold)
-        self.dummy_metric = ClassificationDummyMetric(k=self.k, threshold=self.threshold)
-        self.by_class_metric = ClassificationQualityByClass(k=self.k, threshold=self.threshold)
-        self.conf_matrix = ClassificationConfusionMatrix(k=self.k, threshold=self.threshold)
+        self.metric = ClassificationQualityMetric(probas_threshold=self.probas_threshold, k=self.k)
+        self.dummy_metric = ClassificationDummyMetric(probas_threshold=self.probas_threshold, k=self.k)
+        self.by_class_metric = ClassificationQualityByClass(probas_threshold=self.probas_threshold, k=self.k)
+        self.conf_matrix = ClassificationConfusionMatrix(probas_threshold=self.probas_threshold, k=self.k)
 
     def calculate_value_for_test(self) -> Optional[Any]:
         return self.get_value(self.by_class_metric.get_result().current_metrics[self.label])
@@ -549,13 +586,18 @@ class ByClassClassificationTest(BaseCheckValueTest, ABC):
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
             return self.condition
+
         result = self.by_class_metric.get_result()
         ref_metrics = result.reference_metrics
+
         if ref_metrics is not None:
             return TestValueCondition(eq=approx(self.get_value(ref_metrics[self.label]), relative=0.2))
+
         dummy_result = self.dummy_metric.get_result().metrics_matrix[self.label]
+
         if self.get_value(dummy_result) is None:
             raise ValueError("Neither required test parameters nor reference data has been provided.")
+
         return TestValueCondition(gt=self.get_value(dummy_result))
 
     @abc.abstractmethod
