@@ -5,7 +5,7 @@
 ## <a name="module-evidently.metrics.data_drift.column_drift_metric"></a>column_drift_metric module
 
 
-### class ColumnDriftMetric(column_name: str, options: Optional[[DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions)] = None)
+### class ColumnDriftMetric(column_name: str, stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, stattest_threshold: Optional[float] = None)
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`ColumnDriftMetricResults`]
 
 Calculate drift metric for a column
@@ -14,11 +14,15 @@ Calculate drift metric for a column
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; column_name : str 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; options : [DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions) 
+##### &nbsp;&nbsp;&nbsp;&nbsp; stattest : Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; stattest_threshold : Optional[float] 
 
 #### Methods: 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; calculate(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData))
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; get_parameters()
 
 ### class ColumnDriftMetricRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.MetricRenderer)
@@ -33,7 +37,7 @@ Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_render
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: ColumnDriftMetric)
 
-### class ColumnDriftMetricResults(column_name: str, column_type: str, stattest_name: str, threshold: Optional[float], drift_score: Union[float, int], drift_detected: bool, current_distribution: [Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution), reference_distribution: [Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution), current_scatter: Optional[Dict[str, list]], x_name: Optional[str], plot_shape: Optional[Dict[str, float]])
+### class ColumnDriftMetricResults(column_name: str, column_type: str, stattest_name: str, stattest_threshold: float, drift_score: Union[float, int], drift_detected: bool, current_distribution: [Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution), reference_distribution: [Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution), current_scatter: Optional[Dict[str, list]], x_name: Optional[str], plot_shape: Optional[Dict[str, float]])
 Bases: `object`
 
 #### Attributes: 
@@ -56,7 +60,7 @@ Bases: `object`
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; stattest_name : str 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; threshold : Optional[float] 
+##### &nbsp;&nbsp;&nbsp;&nbsp; stattest_threshold : float 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; x_name : Optional[str] 
 ## <a name="module-evidently.metrics.data_drift.column_value_plot"></a>column_value_plot module
@@ -84,6 +88,8 @@ Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_render
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_html(obj: ColumnValuePlot)
 
+##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: ColumnValuePlot)
+
 ### class ColumnValuePlotResults(column_name: str, datetime_column_name: Optional[str], current_scatter: pandas.core.frame.DataFrame, reference_scatter: pandas.core.frame.DataFrame)
 Bases: `object`
 
@@ -99,7 +105,7 @@ Bases: `object`
 ## <a name="module-evidently.metrics.data_drift.data_drift_table"></a>data_drift_table module
 
 
-### class DataDriftTable(columns: Optional[List[str]] = None, options: Optional[[DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions)] = None)
+### class DataDriftTable(columns: Optional[List[str]] = None, stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, cat_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, num_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, per_column_stattest: Optional[Dict[str, Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]] = None, stattest_threshold: Optional[float] = None, cat_stattest_threshold: Optional[float] = None, num_stattest_threshold: Optional[float] = None, per_column_stattest_threshold: Optional[Dict[str, float]] = None)
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`DataDriftTableResults`]
 
 #### Attributes: 
@@ -159,16 +165,16 @@ Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_render
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: DatasetDriftMetric)
 
-### class DatasetDriftMetric(columns: Optional[List[str]] = None, threshold: float = 0.5, options: Optional[[DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions)] = None)
+### class DatasetDriftMetric(columns: Optional[List[str]] = None, drift_share: float = 0.5, stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, cat_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, num_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, per_column_stattest: Optional[Dict[str, Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]] = None, stattest_threshold: Optional[float] = None, cat_stattest_threshold: Optional[float] = None, num_stattest_threshold: Optional[float] = None, per_column_stattest_threshold: Optional[Dict[str, float]] = None)
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`DatasetDriftMetricResults`]
 
 #### Attributes: 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; columns : Optional[List[str]] 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; options : [DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions) 
+##### &nbsp;&nbsp;&nbsp;&nbsp; drift_share : float 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; threshold : float 
+##### &nbsp;&nbsp;&nbsp;&nbsp; options : [DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions) 
 
 #### Methods: 
 
@@ -176,20 +182,20 @@ Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`Da
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; get_parameters()
 
-### class DatasetDriftMetricResults(threshold: float, number_of_columns: int, number_of_drifted_columns: int, share_of_drifted_columns: float, dataset_drift: bool)
+### class DatasetDriftMetricResults(drift_share: float, number_of_columns: int, number_of_drifted_columns: int, share_of_drifted_columns: float, dataset_drift: bool)
 Bases: `object`
 
 #### Attributes: 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; dataset_drift : bool 
 
+##### &nbsp;&nbsp;&nbsp;&nbsp; drift_share : float 
+
 ##### &nbsp;&nbsp;&nbsp;&nbsp; number_of_columns : int 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; number_of_drifted_columns : int 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; share_of_drifted_columns : float 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; threshold : float 
 ## <a name="module-evidently.metrics.data_drift.target_by_features_table"></a>target_by_features_table module
 
 

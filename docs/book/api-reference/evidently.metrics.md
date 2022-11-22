@@ -16,6 +16,10 @@ For specific group see module documentation.
 
             - [`ThresholdClassificationMetric.get_target_prediction_data()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.base_classification_metric.ThresholdClassificationMetric.get_target_prediction_data)
 
+            - [`ThresholdClassificationMetric.k`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.base_classification_metric.ThresholdClassificationMetric.k)
+
+            - [`ThresholdClassificationMetric.probas_threshold`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.base_classification_metric.ThresholdClassificationMetric.probas_threshold)
+
     - [class_balance_metric module](evidently.metrics.classification_performance.md#module-evidently.metrics.classification_performance.class_balance_metric)
 
         - [`ClassificationClassBalance`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.class_balance_metric.ClassificationClassBalance)
@@ -114,6 +118,10 @@ For specific group see module documentation.
 
             - [`ClassificationConfusionMatrix.calculate()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrix.calculate)
 
+            - [`ClassificationConfusionMatrix.k`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrix.k)
+
+            - [`ClassificationConfusionMatrix.probas_threshold`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrix.probas_threshold)
+
         - [`ClassificationConfusionMatrixRenderer`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrixRenderer)
 
             - [`ClassificationConfusionMatrixRenderer.color_options`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.confusion_matrix_metric.ClassificationConfusionMatrixRenderer.color_options)
@@ -200,6 +208,10 @@ For specific group see module documentation.
 
             - [`ClassificationQualityByClass.calculate()`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_class_metric.ClassificationQualityByClass.calculate)
 
+            - [`ClassificationQualityByClass.k`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_class_metric.ClassificationQualityByClass.k)
+
+            - [`ClassificationQualityByClass.probas_threshold`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_class_metric.ClassificationQualityByClass.probas_threshold)
+
         - [`ClassificationQualityByClassRenderer`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_class_metric.ClassificationQualityByClassRenderer)
 
             - [`ClassificationQualityByClassRenderer.color_options`](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.quality_by_class_metric.ClassificationQualityByClassRenderer.color_options)
@@ -284,7 +296,11 @@ For specific group see module documentation.
 
             - [`ColumnDriftMetric.column_name`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetric.column_name)
 
-            - [`ColumnDriftMetric.options`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetric.options)
+            - [`ColumnDriftMetric.get_parameters()`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetric.get_parameters)
+
+            - [`ColumnDriftMetric.stattest`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetric.stattest)
+
+            - [`ColumnDriftMetric.stattest_threshold`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetric.stattest_threshold)
 
         - [`ColumnDriftMetricRenderer`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetricRenderer)
 
@@ -314,7 +330,7 @@ For specific group see module documentation.
 
             - [`ColumnDriftMetricResults.stattest_name`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetricResults.stattest_name)
 
-            - [`ColumnDriftMetricResults.threshold`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetricResults.threshold)
+            - [`ColumnDriftMetricResults.stattest_threshold`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetricResults.stattest_threshold)
 
             - [`ColumnDriftMetricResults.x_name`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetricResults.x_name)
 
@@ -331,6 +347,8 @@ For specific group see module documentation.
             - [`ColumnValuePlotRenderer.color_options`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_value_plot.ColumnValuePlotRenderer.color_options)
 
             - [`ColumnValuePlotRenderer.render_html()`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_value_plot.ColumnValuePlotRenderer.render_html)
+
+            - [`ColumnValuePlotRenderer.render_json()`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_value_plot.ColumnValuePlotRenderer.render_json)
 
         - [`ColumnValuePlotResults`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_value_plot.ColumnValuePlotResults)
 
@@ -392,23 +410,23 @@ For specific group see module documentation.
 
             - [`DatasetDriftMetric.columns`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DatasetDriftMetric.columns)
 
+            - [`DatasetDriftMetric.drift_share`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DatasetDriftMetric.drift_share)
+
             - [`DatasetDriftMetric.get_parameters()`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DatasetDriftMetric.get_parameters)
 
             - [`DatasetDriftMetric.options`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DatasetDriftMetric.options)
 
-            - [`DatasetDriftMetric.threshold`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DatasetDriftMetric.threshold)
-
         - [`DatasetDriftMetricResults`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DatasetDriftMetricResults)
 
             - [`DatasetDriftMetricResults.dataset_drift`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DatasetDriftMetricResults.dataset_drift)
+
+            - [`DatasetDriftMetricResults.drift_share`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DatasetDriftMetricResults.drift_share)
 
             - [`DatasetDriftMetricResults.number_of_columns`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DatasetDriftMetricResults.number_of_columns)
 
             - [`DatasetDriftMetricResults.number_of_drifted_columns`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DatasetDriftMetricResults.number_of_drifted_columns)
 
             - [`DatasetDriftMetricResults.share_of_drifted_columns`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DatasetDriftMetricResults.share_of_drifted_columns)
-
-            - [`DatasetDriftMetricResults.threshold`](evidently.metrics.data_drift.md#evidently.metrics.data_drift.dataset_drift_metric.DatasetDriftMetricResults.threshold)
 
     - [target_by_features_table module](evidently.metrics.data_drift.md#module-evidently.metrics.data_drift.target_by_features_table)
 

@@ -5,9 +5,14 @@
 ## <a name="module-evidently.metrics.classification_performance.base_classification_metric"></a>base_classification_metric module
 
 
-### class ThresholdClassificationMetric(threshold: Optional[float], k: Optional[Union[float, int]])
+### class ThresholdClassificationMetric(probas_threshold: Optional[float], k: Optional[Union[float, int]])
 Bases: [`Metric`](evidently.metrics.md#evidently.metrics.base_metric.Metric)[`TResult`], `ABC`
 
+#### Attributes: 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; k : Optional[Union[float, int]] 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; probas_threshold : Optional[float] 
 
 #### Methods: 
 
@@ -79,7 +84,7 @@ Bases: `object`
 ## <a name="module-evidently.metrics.classification_performance.classification_dummy_metric"></a>classification_dummy_metric module
 
 
-### class ClassificationDummyMetric(threshold: Optional[float] = None, k: Optional[Union[float, int]] = None)
+### class ClassificationDummyMetric(probas_threshold: Optional[float] = None, k: Optional[Union[float, int]] = None)
 Bases: `ThresholdClassificationMetric`[`ClassificationDummyMetricResults`]
 
 #### Attributes: 
@@ -120,7 +125,7 @@ Bases: `object`
 ## <a name="module-evidently.metrics.classification_performance.classification_quality_metric"></a>classification_quality_metric module
 
 
-### class ClassificationQualityMetric(threshold: Optional[float] = None, k: Optional[Union[float, int]] = None)
+### class ClassificationQualityMetric(probas_threshold: Optional[float] = None, k: Optional[Union[float, int]] = None)
 Bases: `ThresholdClassificationMetric`[`ClassificationQualityMetricResult`]
 
 #### Attributes: 
@@ -157,9 +162,14 @@ Bases: `object`
 ## <a name="module-evidently.metrics.classification_performance.confusion_matrix_metric"></a>confusion_matrix_metric module
 
 
-### class ClassificationConfusionMatrix(threshold: Optional[float] = None, k: Optional[Union[float, int]] = None)
+### class ClassificationConfusionMatrix(probas_threshold: Optional[float] = None, k: Optional[Union[float, int]] = None)
 Bases: `ThresholdClassificationMetric`[`ClassificationConfusionMatrixResult`]
 
+#### Attributes: 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; k : Optional[Union[float, int]] 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; probas_threshold : Optional[float] 
 
 #### Methods: 
 
@@ -290,9 +300,14 @@ Bases: `object`
 ## <a name="module-evidently.metrics.classification_performance.quality_by_class_metric"></a>quality_by_class_metric module
 
 
-### class ClassificationQualityByClass(threshold: Optional[float] = None, k: Optional[Union[float, int]] = None)
+### class ClassificationQualityByClass(probas_threshold: Optional[float] = None, k: Optional[Union[float, int]] = None)
 Bases: `ThresholdClassificationMetric`[`ClassificationQualityByClassResult`]
 
+#### Attributes: 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; k : Optional[Union[float, int]] 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; probas_threshold : Optional[float] 
 
 #### Methods: 
 

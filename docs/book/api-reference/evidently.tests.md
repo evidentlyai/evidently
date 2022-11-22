@@ -186,7 +186,7 @@ Function for generating tests for columns
 ## <a name="module-evidently.tests.classification_performance_tests"></a>classification_performance_tests module
 
 
-### class ByClassClassificationTest(label: str, threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### class ByClassClassificationTest(label: str, probas_threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseCheckValueTest`, `ABC`
 
 #### Attributes: 
@@ -234,7 +234,7 @@ Define it in a child class
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; abstract  get_value(result: [DatasetClassificationQuality](evidently.calculations.md#evidently.calculations.classification_performance.DatasetClassificationQuality))
 
-### class SimpleClassificationTestTopK(threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### class SimpleClassificationTestTopK(probas_threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `SimpleClassificationTest`, `ABC`
 
 #### Attributes: 
@@ -243,7 +243,11 @@ Bases: `SimpleClassificationTest`, `ABC`
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; dummy_metric : [ClassificationDummyMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetric) 
 
+##### &nbsp;&nbsp;&nbsp;&nbsp; k : Optional[Union[float, int]] 
+
 ##### &nbsp;&nbsp;&nbsp;&nbsp; metric : [ClassificationQualityMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetric) 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; probas_threshold : Optional[float] 
 
 #### Methods: 
 
@@ -253,7 +257,7 @@ Define it in a child class
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; get_condition()
 
-### class TestAccuracyScore(threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### class TestAccuracyScore(probas_threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `SimpleClassificationTestTopK`
 
 #### Attributes: 
@@ -264,9 +268,13 @@ Bases: `SimpleClassificationTestTopK`
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; dummy_metric : [ClassificationDummyMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetric) 
 
+##### &nbsp;&nbsp;&nbsp;&nbsp; k : Optional[Union[float, int]] 
+
 ##### &nbsp;&nbsp;&nbsp;&nbsp; metric : [ClassificationQualityMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetric) 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; name : str  = 'Accuracy Score' 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; probas_threshold : Optional[float] 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; value : Union[float, int] 
 
@@ -292,7 +300,7 @@ Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: TestAccuracyScore)
 
-### class TestF1ByClass(label: str, threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### class TestF1ByClass(label: str, probas_threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `ByClassClassificationTest`
 
 #### Attributes: 
@@ -321,7 +329,7 @@ Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: TestF1ByClass)
 
-### class TestF1Score(threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### class TestF1Score(probas_threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `SimpleClassificationTestTopK`
 
 #### Attributes: 
@@ -332,9 +340,13 @@ Bases: `SimpleClassificationTestTopK`
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; dummy_metric : [ClassificationDummyMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetric) 
 
+##### &nbsp;&nbsp;&nbsp;&nbsp; k : Optional[Union[float, int]] 
+
 ##### &nbsp;&nbsp;&nbsp;&nbsp; metric : [ClassificationQualityMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetric) 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; name : str  = 'F1 Score' 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; probas_threshold : Optional[float] 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; value : Union[float, int] 
 
@@ -360,7 +372,7 @@ Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: TestF1Score)
 
-### class TestFNR(threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### class TestFNR(probas_threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `SimpleClassificationTestTopK`
 
 #### Attributes: 
@@ -371,9 +383,13 @@ Bases: `SimpleClassificationTestTopK`
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; dummy_metric : [ClassificationDummyMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetric) 
 
+##### &nbsp;&nbsp;&nbsp;&nbsp; k : Optional[Union[float, int]] 
+
 ##### &nbsp;&nbsp;&nbsp;&nbsp; metric : [ClassificationQualityMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetric) 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; name : str  = 'False Negative Rate' 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; probas_threshold : Optional[float] 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; value : Union[float, int] 
 
@@ -401,7 +417,7 @@ Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: TestFNR)
 
-### class TestFPR(threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### class TestFPR(probas_threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `SimpleClassificationTestTopK`
 
 #### Attributes: 
@@ -412,9 +428,13 @@ Bases: `SimpleClassificationTestTopK`
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; dummy_metric : [ClassificationDummyMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetric) 
 
+##### &nbsp;&nbsp;&nbsp;&nbsp; k : Optional[Union[float, int]] 
+
 ##### &nbsp;&nbsp;&nbsp;&nbsp; metric : [ClassificationQualityMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetric) 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; name : str  = 'False Positive Rate' 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; probas_threshold : Optional[float] 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; value : Union[float, int] 
 
@@ -481,7 +501,7 @@ Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: TestLogLoss)
 
-### class TestPrecisionByClass(label: str, threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### class TestPrecisionByClass(label: str, probas_threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `ByClassClassificationTest`
 
 #### Attributes: 
@@ -510,7 +530,7 @@ Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: TestPrecisionByClass)
 
-### class TestPrecisionScore(threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### class TestPrecisionScore(probas_threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `SimpleClassificationTestTopK`
 
 #### Attributes: 
@@ -521,9 +541,13 @@ Bases: `SimpleClassificationTestTopK`
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; dummy_metric : [ClassificationDummyMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetric) 
 
+##### &nbsp;&nbsp;&nbsp;&nbsp; k : Optional[Union[float, int]] 
+
 ##### &nbsp;&nbsp;&nbsp;&nbsp; metric : [ClassificationQualityMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetric) 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; name : str  = 'Precision Score' 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; probas_threshold : Optional[float] 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; value : Union[float, int] 
 
@@ -549,7 +573,7 @@ Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: TestPrecisionScore)
 
-### class TestRecallByClass(label: str, threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### class TestRecallByClass(label: str, probas_threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `ByClassClassificationTest`
 
 #### Attributes: 
@@ -578,7 +602,7 @@ Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: TestRecallByClass)
 
-### class TestRecallScore(threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### class TestRecallScore(probas_threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `SimpleClassificationTestTopK`
 
 #### Attributes: 
@@ -589,9 +613,13 @@ Bases: `SimpleClassificationTestTopK`
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; dummy_metric : [ClassificationDummyMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetric) 
 
+##### &nbsp;&nbsp;&nbsp;&nbsp; k : Optional[Union[float, int]] 
+
 ##### &nbsp;&nbsp;&nbsp;&nbsp; metric : [ClassificationQualityMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetric) 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; name : str  = 'Recall Score' 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; probas_threshold : Optional[float] 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; value : Union[float, int] 
 
@@ -648,7 +676,7 @@ Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: TestRocAuc)
 
-### class TestTNR(threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### class TestTNR(probas_threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `SimpleClassificationTestTopK`
 
 #### Attributes: 
@@ -659,9 +687,13 @@ Bases: `SimpleClassificationTestTopK`
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; dummy_metric : [ClassificationDummyMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetric) 
 
+##### &nbsp;&nbsp;&nbsp;&nbsp; k : Optional[Union[float, int]] 
+
 ##### &nbsp;&nbsp;&nbsp;&nbsp; metric : [ClassificationQualityMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetric) 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; name : str  = 'True Negative Rate' 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; probas_threshold : Optional[float] 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; value : Union[float, int] 
 
@@ -687,7 +719,7 @@ Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: TestTNR)
 
-### class TestTPR(threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+### class TestTPR(probas_threshold: Optional[float] = None, k: Optional[Union[float, int]] = None, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `SimpleClassificationTestTopK`
 
 #### Attributes: 
@@ -698,9 +730,13 @@ Bases: `SimpleClassificationTestTopK`
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; dummy_metric : [ClassificationDummyMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_dummy_metric.ClassificationDummyMetric) 
 
+##### &nbsp;&nbsp;&nbsp;&nbsp; k : Optional[Union[float, int]] 
+
 ##### &nbsp;&nbsp;&nbsp;&nbsp; metric : [ClassificationQualityMetric](evidently.metrics.classification_performance.md#evidently.metrics.classification_performance.classification_quality_metric.ClassificationQualityMetric) 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; name : str  = 'True Positive Rate' 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; probas_threshold : Optional[float] 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; value : Union[float, int] 
 
@@ -728,7 +764,7 @@ Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer
 ## <a name="module-evidently.tests.data_drift_tests"></a>data_drift_tests module
 
 
-### class BaseDataDriftMetricsTest(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None, options: Optional[[DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions)] = None)
+### class BaseDataDriftMetricsTest(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None, stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, cat_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, num_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, per_column_stattest: Optional[Dict[str, Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]] = None, stattest_threshold: Optional[float] = None, cat_stattest_threshold: Optional[float] = None, num_stattest_threshold: Optional[float] = None, per_column_stattest_threshold: Optional[Dict[str, float]] = None)
 Bases: `BaseCheckValueTest`, `ABC`
 
 #### Attributes: 
@@ -741,17 +777,34 @@ Bases: `BaseCheckValueTest`, `ABC`
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; check()
 
-### class TestAllFeaturesValueDrift()
+### class TestAllFeaturesValueDrift(stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, cat_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, num_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, per_column_stattest: Optional[Dict[str, Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]] = None, stattest_threshold: Optional[float] = None, cat_stattest_threshold: Optional[float] = None, num_stattest_threshold: Optional[float] = None, per_column_stattest_threshold: Optional[Dict[str, float]] = None)
 Bases: [`BaseGenerator`](evidently.utils.md#evidently.utils.generators.BaseGenerator)
 
 Create value drift tests for numeric and category features
 
+#### Attributes: 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; cat_stattest : Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; cat_stattest_threshold : Optional[float] 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; num_stattest : Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; num_stattest_threshold : Optional[float] 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; per_column_stattest : Optional[Dict[str, Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]] 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; per_column_stattest_threshold : Optional[Dict[str, float]] 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; stattest : Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; stattest_threshold : Optional[float] 
 
 #### Methods: 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; generate(columns_info: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
-### class TestColumnValueDrift(column_name: str, options: Optional[[DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions)] = None)
+### class TestColumnDrift(column_name: str, stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, stattest_threshold: Optional[float] = None)
 Bases: `Test`
 
 #### Attributes: 
@@ -760,7 +813,7 @@ Bases: `Test`
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; group : str  = 'data_drift' 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; metric : [DataDriftTable](evidently.metrics.data_drift.md#evidently.metrics.data_drift.data_drift_table.DataDriftTable) 
+##### &nbsp;&nbsp;&nbsp;&nbsp; metric : [ColumnDriftMetric](evidently.metrics.data_drift.md#evidently.metrics.data_drift.column_drift_metric.ColumnDriftMetric) 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; name : str  = 'Drift per Column' 
 
@@ -768,7 +821,7 @@ Bases: `Test`
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; check()
 
-### class TestColumnValueDriftRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+### class TestColumnDriftRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
 Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
 
 #### Attributes: 
@@ -777,18 +830,34 @@ Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer
 
 #### Methods: 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; render_html(obj: TestColumnValueDrift)
+##### &nbsp;&nbsp;&nbsp;&nbsp; render_html(obj: TestColumnDrift)
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: TestColumnValueDrift)
+##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: TestColumnDrift)
 
-### class TestCustomFeaturesValueDrift(features: List[str])
+### class TestCustomFeaturesValueDrift(features: List[str], stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, cat_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, num_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, per_column_stattest: Optional[Dict[str, Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]] = None, stattest_threshold: Optional[float] = None, cat_stattest_threshold: Optional[float] = None, num_stattest_threshold: Optional[float] = None, per_column_stattest_threshold: Optional[Dict[str, float]] = None)
 Bases: [`BaseGenerator`](evidently.utils.md#evidently.utils.generators.BaseGenerator)
 
 Create value drift tests for specified features
 
 #### Attributes: 
 
+##### &nbsp;&nbsp;&nbsp;&nbsp; cat_stattest : Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]  = None 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; cat_stattest_threshold : Optional[float]  = None 
+
 ##### &nbsp;&nbsp;&nbsp;&nbsp; features : List[str] 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; num_stattest : Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]  = None 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; num_stattest_threshold : Optional[float]  = None 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; per_column_stattest : Optional[Dict[str, Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]]  = None 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; per_column_stattest_threshold : Optional[Dict[str, float]]  = None 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; stattest : Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]  = None 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; stattest_threshold : Optional[float]  = None 
 
 #### Methods: 
 
@@ -801,7 +870,7 @@ Bases: `TestResult`
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; features : Dict[str, Tuple[str, float, float]] 
 
-### class TestNumberOfDriftedColumns(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None, options: Optional[[DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions)] = None)
+### class TestNumberOfDriftedColumns(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None, stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, cat_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, num_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, per_column_stattest: Optional[Dict[str, Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]] = None, stattest_threshold: Optional[float] = None, cat_stattest_threshold: Optional[float] = None, num_stattest_threshold: Optional[float] = None, per_column_stattest_threshold: Optional[Dict[str, float]] = None)
 Bases: `BaseDataDriftMetricsTest`
 
 #### Attributes: 
@@ -840,7 +909,7 @@ Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: TestNumberOfDriftedColumns)
 
-### class TestShareOfDriftedColumns(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None, options: Optional[[DataDriftOptions](evidently.options.md#evidently.options.data_drift.DataDriftOptions)] = None)
+### class TestShareOfDriftedColumns(eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None, stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, cat_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, num_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, per_column_stattest: Optional[Dict[str, Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]] = None, stattest_threshold: Optional[float] = None, cat_stattest_threshold: Optional[float] = None, num_stattest_threshold: Optional[float] = None, per_column_stattest_threshold: Optional[Dict[str, float]] = None)
 Bases: `BaseDataDriftMetricsTest`
 
 #### Attributes: 
@@ -959,9 +1028,12 @@ Get a table with missing values number and percents
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; get_table_with_number_of_missing_values_by_one_missing_value(info: [TestHtmlInfo](evidently.renderers.md#evidently.renderers.base_renderer.TestHtmlInfo), current_missing_values: dict, reference_missing_values: Optional[dict], name: str)
 
-### class TestAllColumnsShareOfMissingValues()
+### class TestAllColumnsShareOfMissingValues(columns: Optional[List[str]] = None)
 Bases: [`BaseGenerator`](evidently.utils.md#evidently.utils.generators.BaseGenerator)
 
+#### Attributes: 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; columns : Optional[List[str]] 
 
 #### Methods: 
 
@@ -1106,6 +1178,45 @@ Bases: `BaseTestMissingValuesRenderer`
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: TestColumnNumberOfMissingValues)
 
+### class TestColumnRegExp(column_name: str, reg_exp: str, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+Bases: `BaseCheckValueTest`, `ABC`
+
+#### Attributes: 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; column_name : str 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; group : str  = 'data_integrity' 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; metric : [ColumnRegExpMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.ColumnRegExpMetric) 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; name : str  = 'RegExp Match' 
+
+#### Methods: 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; calculate_value_for_test()
+Method for getting the checking value.
+Define it in a child class
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; get_condition()
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; get_description(value: Union[float, int])
+Method for getting a description that we can use.
+The description can use the checked value.
+Define it in a child class
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; groups()
+
+### class TestColumnRegExpRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+
+#### Attributes: 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; color_options : [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions) 
+
+#### Methods: 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; render_html(obj: TestColumnRegExp)
+
 ### class TestColumnShareOfMissingValues(column_name: str, missing_values: Optional[list] = None, replace: bool = True, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseIntegrityColumnMissingValuesTest`
 
@@ -1146,45 +1257,6 @@ Bases: `BaseTestMissingValuesRenderer`
 #### Methods: 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: TestColumnShareOfMissingValues)
-
-### class TestColumnValueRegExp(column_name: str, reg_exp: str, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
-Bases: `BaseCheckValueTest`, `ABC`
-
-#### Attributes: 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; column_name : str 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; group : str  = 'data_integrity' 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; metric : [ColumnRegExpMetric](evidently.metrics.data_integrity.md#evidently.metrics.data_integrity.column_regexp_metric.ColumnRegExpMetric) 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; name : str  = 'RegExp Match' 
-
-#### Methods: 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; calculate_value_for_test()
-Method for getting the checking value.
-Define it in a child class
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; get_condition()
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; get_description(value: Union[float, int])
-Method for getting a description that we can use.
-The description can use the checked value.
-Define it in a child class
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; groups()
-
-### class TestColumnValueRegExpRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
-
-#### Attributes: 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; color_options : [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions) 
-
-#### Methods: 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; render_html(obj: TestColumnValueRegExp)
 
 ### class TestColumnsType(columns_type: Optional[dict] = None)
 Bases: `Test`
@@ -1843,25 +1915,72 @@ Bases: `BaseDataQualityMetricsValueTest`, `ABC`
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; groups()
 
-### class TestAllColumnsMostCommonValueShare()
+### class TestAllColumnsMostCommonValueShare(columns: Optional[List[str]] = None)
 Bases: [`BaseGenerator`](evidently.utils.md#evidently.utils.generators.BaseGenerator)
 
 Creates most common value share tests for each column in the dataset
 
+#### Attributes: 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; columns : Optional[List[str]] 
 
 #### Methods: 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; generate(columns_info: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
-### class TestCatColumnsOutOfListValues()
+### class TestCatColumnsOutOfListValues(columns: Optional[List[str]] = None)
 Bases: [`BaseGenerator`](evidently.utils.md#evidently.utils.generators.BaseGenerator)
 
 Create share of out of list values tests for category columns
 
+#### Attributes: 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; columns : Optional[List[str]] 
 
 #### Methods: 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; generate(columns_info: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
+
+### class TestColumnQuantile(column_name: str, quantile: float, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
+Bases: `BaseCheckValueTest`
+
+#### Attributes: 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; column_name : str 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; group : str  = 'data_quality' 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; metric : [ColumnQuantileMetric](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_quantile_metric.ColumnQuantileMetric) 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; name : str  = 'Quantile Value' 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; quantile : float 
+
+#### Methods: 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; calculate_value_for_test()
+Method for getting the checking value.
+Define it in a child class
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; get_condition()
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; get_description(value: Union[float, int])
+Method for getting a description that we can use.
+The description can use the checked value.
+Define it in a child class
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; groups()
+
+### class TestColumnQuantileRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
+Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
+
+#### Attributes: 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; color_options : [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions) 
+
+#### Methods: 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; render_html(obj: TestColumnQuantile)
 
 ### class TestColumnValueMax(column_name: str, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
 Bases: `BaseFeatureDataQualityMetricsTest`
@@ -2065,7 +2184,7 @@ Bases: `Test`
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; group : str  = 'data_quality' 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; metric : [DataQualityStabilityMetric](evidently.metrics.data_quality.md#evidently.metrics.data_quality.stability_metric.DataQualityStabilityMetric) 
+##### &nbsp;&nbsp;&nbsp;&nbsp; metric : ConflictPredictionMetric 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; name : str  = 'Test number of conflicts in prediction' 
 
@@ -2080,7 +2199,7 @@ Bases: `Test`
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; group : str  = 'data_quality' 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; metric : [DataQualityStabilityMetric](evidently.metrics.data_quality.md#evidently.metrics.data_quality.stability_metric.DataQualityStabilityMetric) 
+##### &nbsp;&nbsp;&nbsp;&nbsp; metric : ConflictTargetMetric 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; name : str  = 'Test number of conflicts in target' 
 
@@ -2239,21 +2358,27 @@ Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: TestMostCommonValueShare)
 
-### class TestNumColumnsMeanInNSigmas()
+### class TestNumColumnsMeanInNSigmas(columns: Optional[List[str]] = None)
 Bases: [`BaseGenerator`](evidently.utils.md#evidently.utils.generators.BaseGenerator)
 
 Create tests of mean for all numeric columns
 
+#### Attributes: 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; columns : Optional[List[str]] 
 
 #### Methods: 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; generate(columns_info: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
-### class TestNumColumnsOutOfRangeValues()
+### class TestNumColumnsOutOfRangeValues(columns: Optional[List[str]] = None)
 Bases: [`BaseGenerator`](evidently.utils.md#evidently.utils.generators.BaseGenerator)
 
 Creates share of out of range values tests for all numeric columns
 
+#### Attributes: 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; columns : Optional[List[str]] 
 
 #### Methods: 
 
@@ -2650,47 +2775,6 @@ Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_html(obj: TestValueList)
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: TestValueList)
-
-### class TestValueQuantile(column_name: str, quantile: float, eq: Optional[Union[float, int]] = None, gt: Optional[Union[float, int]] = None, gte: Optional[Union[float, int]] = None, is_in: Optional[List[Union[float, int, str, bool]]] = None, lt: Optional[Union[float, int]] = None, lte: Optional[Union[float, int]] = None, not_eq: Optional[Union[float, int]] = None, not_in: Optional[List[Union[float, int, str, bool]]] = None)
-Bases: `BaseCheckValueTest`
-
-#### Attributes: 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; column_name : str 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; group : str  = 'data_quality' 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; metric : [ColumnQuantileMetric](evidently.metrics.data_quality.md#evidently.metrics.data_quality.column_quantile_metric.ColumnQuantileMetric) 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; name : str  = 'Quantile Value' 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; quantile : float 
-
-#### Methods: 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; calculate_value_for_test()
-Method for getting the checking value.
-Define it in a child class
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; get_condition()
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; get_description(value: Union[float, int])
-Method for getting a description that we can use.
-The description can use the checked value.
-Define it in a child class
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; groups()
-
-### class TestValueQuantileRenderer(color_options: Optional[[ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions)] = None)
-Bases: [`TestRenderer`](evidently.renderers.md#evidently.renderers.base_renderer.TestRenderer)
-
-#### Attributes: 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; color_options : [ColorOptions](evidently.options.md#evidently.options.color_scheme.ColorOptions) 
-
-#### Methods: 
-
-##### &nbsp;&nbsp;&nbsp;&nbsp; render_html(obj: TestValueQuantile)
 
 ### class TestValueRange(column_name: str, left: Optional[float] = None, right: Optional[float] = None)
 Bases: `Test`

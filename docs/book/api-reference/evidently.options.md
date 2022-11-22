@@ -84,7 +84,7 @@ Collection of colors for data visualization
 ## <a name="module-evidently.options.data_drift"></a>data_drift module
 
 
-### class DataDriftOptions(confidence: Optional[Union[float, Dict[str, float]]] = None, threshold: Optional[Union[float, Dict[str, float]]] = None, drift_share: float = 0.5, nbinsx: Union[int, Dict[str, int]] = 10, xbins: Optional[Dict[str, int]] = None, feature_stattest_func: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest), Dict[str, Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]]] = None, all_features_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, cat_features_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, num_features_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, per_feature_stattest: Optional[Dict[str, Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]] = None, cat_target_threshold: Optional[float] = None, num_target_threshold: Optional[float] = None, cat_target_stattest_func: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, num_target_stattest_func: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None)
+### class DataDriftOptions(confidence: Optional[Union[float, Dict[str, float]]] = None, threshold: Optional[Union[float, Dict[str, float]]] = None, drift_share: float = 0.5, nbinsx: Union[int, Dict[str, int]] = 10, xbins: Optional[Dict[str, int]] = None, feature_stattest_func: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest), Dict[str, Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]]] = None, all_features_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, cat_features_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, num_features_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, per_feature_stattest: Optional[Dict[str, Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]] = None, all_features_threshold: Optional[float] = None, cat_features_threshold: Optional[float] = None, num_features_threshold: Optional[float] = None, per_feature_threshold: Optional[Dict[str, float]] = None, cat_target_threshold: Optional[float] = None, num_target_threshold: Optional[float] = None, cat_target_stattest_func: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, num_target_stattest_func: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None)
 Bases: `object`
 
 Configuration for Data Drift calculations.
@@ -132,7 +132,11 @@ Configuration for Data Drift calculations.
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; all_features_stattest : Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]  = None 
 
+##### &nbsp;&nbsp;&nbsp;&nbsp; all_features_threshold : Optional[float]  = None 
+
 ##### &nbsp;&nbsp;&nbsp;&nbsp; cat_features_stattest : Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]  = None 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; cat_features_threshold : Optional[float]  = None 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; cat_target_stattest_func : Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]  = None 
 
@@ -148,11 +152,15 @@ Configuration for Data Drift calculations.
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; num_features_stattest : Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]  = None 
 
+##### &nbsp;&nbsp;&nbsp;&nbsp; num_features_threshold : Optional[float]  = None 
+
 ##### &nbsp;&nbsp;&nbsp;&nbsp; num_target_stattest_func : Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]  = None 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; num_target_threshold : Optional[float]  = None 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; per_feature_stattest : Optional[Dict[str, Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]]  = None 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; per_feature_threshold : Optional[Dict[str, float]]  = None 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; threshold : Optional[Union[float, Dict[str, float]]]  = None 
 
@@ -166,7 +174,7 @@ Configuration for Data Drift calculations.
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; get_nbinsx(feature_name: str)
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; get_threshold(feature_name: str)
+##### &nbsp;&nbsp;&nbsp;&nbsp; get_threshold(feature_name: str, feature_type: str)
 ## <a name="module-evidently.options.quality_metrics"></a>quality_metrics module
 
 

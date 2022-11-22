@@ -187,7 +187,7 @@ For example:
 >>> class TestQuantiles(BaseTestGenerator):
 ...    def generate(self, columns_info: DatasetColumns) -> List[TestValueQuantile]:
 ...        return [
-...            TestValueQuantile(column_name=name, quantile=quantile)
+...            TestColumnQuantile(column_name=name, quantile=quantile)
 ...            for quantile in (0.5, 0.9, 0.99)
 ...            for name in columns_info.num_feature_names
 ...        ]
