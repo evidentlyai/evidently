@@ -26,6 +26,7 @@ from evidently.tests.base_test import GroupingTypes
 from evidently.tests.base_test import Test
 from evidently.tests.base_test import TestResult
 from evidently.tests.base_test import TestValueCondition
+from evidently.utils.data_drift_utils import resolve_stattest_threshold
 from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.generators import BaseGenerator
 from evidently.utils.types import Numeric
@@ -183,11 +184,66 @@ class TestColumnDrift(Test):
 class TestAllFeaturesValueDrift(BaseGenerator):
     """Create value drift tests for numeric and category features"""
 
+    stattest: Optional[PossibleStatTestType]
+    cat_stattest: Optional[PossibleStatTestType]
+    num_stattest: Optional[PossibleStatTestType]
+    per_column_stattest: Optional[Dict[str, PossibleStatTestType]]
+    stattest_threshold: Optional[float]
+    cat_stattest_threshold: Optional[float]
+    num_stattest_threshold: Optional[float]
+    per_column_stattest_threshold: Optional[Dict[str, float]]
+
+    def __init__(
+        self,
+        stattest: Optional[PossibleStatTestType] = None,
+        cat_stattest: Optional[PossibleStatTestType] = None,
+        num_stattest: Optional[PossibleStatTestType] = None,
+        per_column_stattest: Optional[Dict[str, PossibleStatTestType]] = None,
+        stattest_threshold: Optional[float] = None,
+        cat_stattest_threshold: Optional[float] = None,
+        num_stattest_threshold: Optional[float] = None,
+        per_column_stattest_threshold: Optional[Dict[str, float]] = None,
+    ):
+        self.stattest = stattest
+        self.cat_stattest = cat_stattest
+        self.num_stattest = num_stattest
+        self.per_column_stattest = per_column_stattest
+        self.stattest_threshold = stattest_threshold
+        self.cat_stattest_threshold = cat_stattest_threshold
+        self.num_stattest_threshold = num_stattest_threshold
+        self.per_column_stattest_threshold = per_column_stattest_threshold
+
     def generate(self, columns_info: DatasetColumns) -> List[TestColumnDrift]:
-        return [
-            TestColumnDrift(column_name=name)
-            for name in columns_info.get_all_features_list(include_datetime_feature=False)
-        ]
+        results = []
+        for name in columns_info.cat_feature_names:
+            stattest, threshold = resolve_stattest_threshold(
+                name,
+                "cat",
+                self.stattest,
+                self.cat_stattest,
+                self.num_stattest,
+                self.per_column_stattest,
+                self.stattest_threshold,
+                self.cat_stattest_threshold,
+                self.num_stattest_threshold,
+                self.per_column_stattest_threshold,
+            )
+            results.append(TestColumnDrift(column_name=name, stattest=stattest, stattest_threshold=threshold))
+        for name in columns_info.num_feature_names:
+            stattest, threshold = resolve_stattest_threshold(
+                name,
+                "num",
+                self.stattest,
+                self.cat_stattest,
+                self.num_stattest,
+                self.per_column_stattest,
+                self.stattest_threshold,
+                self.cat_stattest_threshold,
+                self.num_stattest_threshold,
+                self.per_column_stattest_threshold,
+            )
+            results.append(TestColumnDrift(column_name=name, stattest=stattest, stattest_threshold=threshold))
+        return results
 
 
 class TestCustomFeaturesValueDrift(BaseGenerator):
