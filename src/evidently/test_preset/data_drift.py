@@ -21,6 +21,7 @@ class DataDriftTestPreset(TestPreset):
     - `TestColumnValueDrift`
     - `TestAllFeaturesValueDrift`
     """
+
     stattest: Optional[PossibleStatTestType]
     cat_stattest: Optional[PossibleStatTestType]
     num_stattest: Optional[PossibleStatTestType]

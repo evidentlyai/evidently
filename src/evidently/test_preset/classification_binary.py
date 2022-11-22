@@ -27,6 +27,7 @@ class BinaryClassificationTestPreset(TestPreset):
     - `TestF1Score` - use threshold if prediction_type is 'probas'
     - `TestAccuracyScore` - use threshold if prediction_type is 'probas'
     """
+
     def __init__(
         self,
         prediction_type: str,

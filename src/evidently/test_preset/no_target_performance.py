@@ -35,6 +35,7 @@ class NoTargetPerformanceTestPreset(TestPreset):
     - `TestNumColumnsMeanInNSigmas`
     - `TestCustomFeaturesValueDrift`
     """
+
     columns: Optional[List[str]]
     drift_share: float
     stattest: Optional[PossibleStatTestType] = None

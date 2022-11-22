@@ -26,6 +26,7 @@ class DataStabilityTestPreset(TestPreset):
     - `TestCatColumnsOutOfListValues`
     - `TestNumColumnsMeanInNSigmas`
     """
+
     columns: Optional[List[str]]
 
     def __init__(

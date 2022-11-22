@@ -17,6 +17,7 @@ class RegressionTestPreset(TestPreset):
     - `TestValueRMSE`
     - `TestValueMAPE`
     """
+
     def generate_tests(self, data: InputData, columns: DatasetColumns):
         return [
             TestValueMeanError(),

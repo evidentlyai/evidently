@@ -28,6 +28,7 @@ class BinaryClassificationTopKTestPreset(TestPreset):
     - `TestF1Score` - use threshold if prediction_type is 'probas'
     - `TestAccuracyScore` - use threshold if prediction_type is 'probas'
     """
+
     stattest: Optional[PossibleStatTestType]
     stattest_threshold: Optional[float]
 

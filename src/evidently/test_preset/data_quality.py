@@ -24,6 +24,7 @@ class DataQualityTestPreset(TestPreset):
     - `TestNumberOfDuplicatedRows`
     - `TestHighlyCorrelatedColumns`
     """
+
     columns: Optional[List[str]]
 
     def __init__(

@@ -18,7 +18,7 @@ from evidently.utils.data_operations import DatasetColumns
 
 
 class TargetDriftPreset(MetricPreset):
-    """ Metric preset for Target Drift analysis.
+    """Metric preset for Target Drift analysis.
 
     Contains metrics:
     - ColumnDriftMetric - for target and prediction if present in datasets.
@@ -26,6 +26,7 @@ class TargetDriftPreset(MetricPreset):
     - ColumnCorrelationsMetric - for target and prediction if present in datasets.
     - TargetByFeaturesTable
     """
+
     columns: Optional[List[str]]
     stattest: Optional[PossibleStatTestType]
     cat_stattest: Optional[PossibleStatTestType]

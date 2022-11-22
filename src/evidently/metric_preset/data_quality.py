@@ -12,7 +12,7 @@ from evidently.utils.data_operations import DatasetColumns
 
 
 class DataQualityPreset(MetricPreset):
-    """ Metric preset for Data Quality analysis.
+    """Metric preset for Data Quality analysis.
 
     Contains metrics:
     - DatasetSummaryMetric
@@ -23,6 +23,7 @@ class DataQualityPreset(MetricPreset):
     Args:
         columns: list of columns for analysis.
     """
+
     columns: Optional[List[str]]
 
     def __init__(self, columns: Optional[List[str]] = None):

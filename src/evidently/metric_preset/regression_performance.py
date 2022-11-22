@@ -16,7 +16,7 @@ from evidently.utils.data_operations import DatasetColumns
 
 
 class RegressionPreset(MetricPreset):
-    """ Metric preset for Regression performance analysis.
+    """Metric preset for Regression performance analysis.
 
     Contains metrics:
     - RegressionQualityMetric
@@ -29,6 +29,7 @@ class RegressionPreset(MetricPreset):
     - RegressionTopErrorMetric
     - RegressionErrorBiasTable
     """
+
     columns: Optional[List[str]]
 
     def __init__(self, columns: Optional[List[str]] = None):

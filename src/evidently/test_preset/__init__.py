@@ -8,7 +8,6 @@ from .data_stability import DataStabilityTestPreset
 from .no_target_performance import NoTargetPerformanceTestPreset
 from .regression import RegressionTestPreset
 
-
 __all__ = [
     BinaryClassificationTestPreset.__name__,
     BinaryClassificationTopKTestPreset.__name__,

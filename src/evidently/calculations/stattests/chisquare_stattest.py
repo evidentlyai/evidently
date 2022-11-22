@@ -46,7 +46,7 @@ def _chi_stat_test(
 
 
 chi_stat_test = StatTest(
-    name="chisquare", display_name="chi-square p-value", func=_chi_stat_test, allowed_feature_types=["cat"]
+    name="chisquare", display_name="chi-square p_value", func=_chi_stat_test, allowed_feature_types=["cat"]
 )
 
 register_stattest(chi_stat_test)

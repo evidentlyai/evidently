@@ -27,6 +27,7 @@ class ClassificationPreset(MetricPreset):
     - ClassificationConfusionMatrix
     - ClassificationQualityByClass
     """
+
     columns: Optional[List[str]]
     probas_threshold: Optional[float]
     k: Optional[int]
@@ -41,6 +42,7 @@ class ClassificationPreset(MetricPreset):
         self.columns = columns
         self.probas_threshold = probas_threshold
         self.k = k
+
     def generate_metrics(self, data: InputData, columns: DatasetColumns):
         result = [
             ClassificationQualityMetric(probas_threshold=self.probas_threshold, k=self.k),

@@ -31,6 +31,7 @@ class MulticlassClassificationTestPreset(TestPreset):
     - `TestRocAuc`
     - `TestLogLoss`
     """
+
     stattest: Optional[PossibleStatTestType]
     stattest_threshold: Optional[float]
 
