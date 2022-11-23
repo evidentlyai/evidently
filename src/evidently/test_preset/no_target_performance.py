@@ -19,6 +19,23 @@ from evidently.utils.data_operations import DatasetColumns
 
 
 class NoTargetPerformanceTestPreset(TestPreset):
+    """
+    No Target Performance tests.
+
+    Args:
+        columns: list of columns include to tests
+
+    Contains tests:
+    - `TestColumnValueDrift`
+    - `TestShareOfDriftedColumns`
+    - `TestColumnsType`
+    - `TestAllColumnsShareOfMissingValues`
+    - `TestNumColumnsOutOfRangeValues`
+    - `TestCatColumnsOutOfListValues`
+    - `TestNumColumnsMeanInNSigmas`
+    - `TestCustomFeaturesValueDrift`
+    """
+
     columns: Optional[List[str]]
     drift_share: float
     stattest: Optional[PossibleStatTestType] = None

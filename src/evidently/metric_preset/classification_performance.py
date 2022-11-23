@@ -18,6 +18,16 @@ from evidently.utils.data_operations import DatasetColumns
 
 
 class ClassificationPreset(MetricPreset):
+    """
+    Metrics preset for classification performance.
+
+    Contains metrics:
+    - ClassificationQualityMetric
+    - ClassificationClassBalance
+    - ClassificationConfusionMatrix
+    - ClassificationQualityByClass
+    """
+
     columns: Optional[List[str]]
     probas_threshold: Optional[float]
     k: Optional[int]

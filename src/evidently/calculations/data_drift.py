@@ -1,4 +1,4 @@
-"""Methods and types for data drift calculations"""
+"""Methods and types for data drift calculations."""
 
 from typing import Dict
 from typing import List
@@ -20,7 +20,7 @@ from evidently.utils.visualizations import get_distribution_for_column
 
 @dataclass
 class ColumnDataDriftMetrics:
-    """One column drift metrics"""
+    """One column drift metrics."""
 
     column_name: str
     column_type: str
@@ -232,15 +232,17 @@ def ensure_prediction_column_is_string(
     reference_data: pd.DataFrame,
     threshold: float = 0.5,
 ) -> Optional[str]:
-    """
-    Update dataset by predictions type:
+    """Update dataset by predictions type:
+
     - if prediction column is None or a string, no dataset changes
     - (binary classification) if predictions is a list and its length equals 2
         set predicted_labels column by `threshold`
     - (multy label classification) if predictions is a list and its length is greater than 2
         set predicted_labels from probability values in columns by prediction column
 
-    Returns prediction column name.
+
+    Returns:
+         prediction column name.
     """
     result_prediction_column = None
 

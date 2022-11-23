@@ -1,5 +1,27 @@
-#!/usr/bin/env python
-# coding: utf-8
+"""G-test of two samples.
+
+Name: "g_test"
+
+Import:
+
+    >>> from evidently.calculations.stattests import g_test
+
+Properties:
+- only for categorical features
+- returns p-value
+
+Example:
+    Using by object:
+
+    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.calculations.stattests import g_test
+    >>> options = DataDriftOptions(all_features_stattest=g_test)
+
+    Using by name:
+
+    >>> from evidently.options import DataDriftOptions
+    >>> options = DataDriftOptions(all_features_stattest="g_test")
+"""
 from typing import Tuple
 
 import pandas as pd

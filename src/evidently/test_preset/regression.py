@@ -8,6 +8,16 @@ from evidently.utils.data_operations import DatasetColumns
 
 
 class RegressionTestPreset(TestPreset):
+    """
+    Regression performance tests.
+
+    Contains tests:
+    - `TestValueMeanError`
+    - `TestValueMAE`
+    - `TestValueRMSE`
+    - `TestValueMAPE`
+    """
+
     def generate_tests(self, data: InputData, columns: DatasetColumns):
         return [
             TestValueMeanError(),

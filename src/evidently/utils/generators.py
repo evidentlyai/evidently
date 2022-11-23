@@ -26,14 +26,13 @@ class BaseGenerator(Generic[TObject]):
     For example:
         if you want to create a test generator for 50, 90, 99 quantiles tests
         for all numeric columns with default condition, by reference quantiles
-
-    class TestQuantiles(BaseTestGenerator):
-        def generate(self, columns_info: DatasetColumns) -> List[TestColumnQuantile]:
-            return [
-                TestColumnQuantile(column_name=name, quantile=quantile)
-                for quantile in (0.5, 0.9, 0.99)
-                for name in columns_info.num_feature_names
-            ]
+    >>> class TestQuantiles(BaseTestGenerator):
+    ...    def generate(self, columns_info: DatasetColumns) -> List[TestValueQuantile]:
+    ...        return [
+    ...            TestColumnQuantile(column_name=name, quantile=quantile)
+    ...            for quantile in (0.5, 0.9, 0.99)
+    ...            for name in columns_info.num_feature_names
+    ...        ]
 
     Do not forget set correct test type for `generate` return value
     """

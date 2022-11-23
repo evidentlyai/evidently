@@ -13,6 +13,15 @@ from evidently.utils.data_operations import DatasetColumns
 
 
 class DataDriftTestPreset(TestPreset):
+    """
+    Data Drift tests.
+
+    Contains tests:
+    - `TestShareOfDriftedColumns`
+    - `TestColumnValueDrift`
+    - `TestAllFeaturesValueDrift`
+    """
+
     stattest: Optional[PossibleStatTestType]
     cat_stattest: Optional[PossibleStatTestType]
     num_stattest: Optional[PossibleStatTestType]

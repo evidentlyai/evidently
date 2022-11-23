@@ -16,11 +16,11 @@ DEFAULT_NBINSX = 10
 class DataDriftOptions:
     """Configuration for Data Drift calculations.
 
-    Attributes:
+    Args:
         confidence: Defines the confidence level for statistical tests.
                     Applies to all features (if passed as float) or certain features (if passed as dictionary).
                     (Deprecated) Use `threshold` to define confidence level for statistical
-                     tests as more universal solution.
+                    tests as more universal solution.
         threshold: Defines thresholds for statistical tests.
                    Applies to all features (if passed as float) or certain features (if passed as dictionary).
         drift_share: Sets the share of drifting features as a condition for Dataset Drift in the Data Drift report.

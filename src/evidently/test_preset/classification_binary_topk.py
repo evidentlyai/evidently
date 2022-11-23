@@ -15,6 +15,20 @@ from evidently.utils.data_operations import DatasetColumns
 
 
 class BinaryClassificationTopKTestPreset(TestPreset):
+    """
+    Binary Classification Tests for Top K threshold.
+    Args:
+        threshold: probabilities threshold for prediction with probas
+        prediction_type: type of prediction ('probas' or 'labels')
+
+    Contains:
+    - `TestColumnValueDrift` for target
+    - `TestPrecisionScore` - use threshold if prediction_type is 'probas'
+    - `TestRecallScore` - use threshold if prediction_type is 'probas'
+    - `TestF1Score` - use threshold if prediction_type is 'probas'
+    - `TestAccuracyScore` - use threshold if prediction_type is 'probas'
+    """
+
     stattest: Optional[PossibleStatTestType]
     stattest_threshold: Optional[float]
 

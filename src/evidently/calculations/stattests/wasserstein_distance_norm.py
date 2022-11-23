@@ -1,3 +1,27 @@
+"""Wasserstein distance of two samples.
+
+Name: "wasserstein"
+
+Import:
+
+    >>> from evidently.calculations.stattests import wasserstein_stat_test
+
+Properties:
+- only for numerical features
+- returns p-value
+
+Example:
+    Using by object:
+
+    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.calculations.stattests import wasserstein_stat_test
+    >>> options = DataDriftOptions(all_features_stattest=wasserstein_stat_test)
+
+    Using by name:
+
+    >>> from evidently.options import DataDriftOptions
+    >>> options = DataDriftOptions(all_features_stattest="wasserstein")
+"""
 from typing import Tuple
 
 import numpy as np

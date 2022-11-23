@@ -1,6 +1,27 @@
-#!/usr/bin/env python
-# coding: utf-8
-import typing
+"""Hellinger distance of two samples.
+
+Name: "hellinger"
+
+Import:
+
+    >>> from evidently.calculations.stattests import hellinger_stat_test
+
+Properties:
+- only for categorical and numerical features
+- returns distance
+
+Example:
+    Using by object:
+
+    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.calculations.stattests import hellinger_stat_test
+    >>> options = DataDriftOptions(all_features_stattest=hellinger_stat_test)
+
+    Using by name:
+
+    >>> from evidently.options import DataDriftOptions
+    >>> options = DataDriftOptions(all_features_stattest="hellinger")
+"""
 from collections import defaultdict
 from math import sqrt
 from typing import DefaultDict

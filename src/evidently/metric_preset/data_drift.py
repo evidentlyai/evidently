@@ -11,6 +11,13 @@ from evidently.utils.data_operations import DatasetColumns
 
 
 class DataDriftPreset(MetricPreset):
+    """Metric Preset for Data Drift analysis.
+
+    Contains metrics:
+    - DatasetDriftMetric
+    - DataDriftTable
+    """
+
     columns: Optional[List[str]]
     drift_share: float
     stattest: Optional[PossibleStatTestType]

@@ -1,3 +1,27 @@
+"""Jensen-Shannon distance of two samples.
+
+Name: "jensenshannon"
+
+Import:
+
+    >>> from evidently.calculations.stattests import jensenshannon_stat_test
+
+Properties:
+- only for categorical and numerical features
+- returns distance
+
+Example:
+    Using by object:
+
+    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.calculations.stattests import jensenshannon_stat_test
+    >>> options = DataDriftOptions(all_features_stattest=jensenshannon_stat_test)
+
+    Using by name:
+
+    >>> from evidently.options import DataDriftOptions
+    >>> options = DataDriftOptions(all_features_stattest="jensenshannon")
+"""
 from typing import Tuple
 
 import pandas as pd

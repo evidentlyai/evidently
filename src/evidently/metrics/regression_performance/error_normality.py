@@ -72,7 +72,7 @@ class RegressionErrorNormalityRenderer(MetricRenderer):
 
         fig = make_subplots(rows=1, cols=cols, shared_yaxes=False, subplot_titles=subplot_titles)
         curr_qq_lines = probplot(current_error, dist="norm", plot=None)
-        сurr_theoretical_q_x = np.linspace(curr_qq_lines[0][0][0], curr_qq_lines[0][0][-1], 100)
+        curr_theoretical_q_x = np.linspace(curr_qq_lines[0][0][0], curr_qq_lines[0][0][-1], 100)
         sample_quantile_trace = go.Scatter(
             x=curr_qq_lines[0][0],
             y=curr_qq_lines[0][1],
@@ -83,8 +83,8 @@ class RegressionErrorNormalityRenderer(MetricRenderer):
         )
 
         theoretical_quantile_trace = go.Scatter(
-            x=сurr_theoretical_q_x,
-            y=curr_qq_lines[1][0] * сurr_theoretical_q_x + curr_qq_lines[1][1],
+            x=curr_theoretical_q_x,
+            y=curr_qq_lines[1][0] * curr_theoretical_q_x + curr_qq_lines[1][1],
             mode="lines",
             name="Theoretical Quantiles",
             legendgroup="Theoretical Quantiles",

@@ -1,3 +1,9 @@
+"""
+Available metrics for Reports and Tests.
+All metrics is grouped into modules.
+For specific group see module documentation.
+"""
+
 from .classification_performance.class_balance_metric import ClassificationClassBalance
 from .classification_performance.class_separation_metric import ClassificationClassSeparationPlot
 from .classification_performance.classification_dummy_metric import ClassificationDummyMetric

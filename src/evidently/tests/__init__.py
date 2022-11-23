@@ -1,3 +1,8 @@
+"""Available tests for TestSuite reports.
+Tests grouped into modules.
+For detailed information see module documentation.
+"""
+
 from .classification_performance_tests import TestAccuracyScore
 from .classification_performance_tests import TestF1ByClass
 from .classification_performance_tests import TestF1Score
