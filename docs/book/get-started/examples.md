@@ -6,7 +6,7 @@ description: Sample notebooks and tutorials
 
 ## Sample notebooks
 
-Here you can find simple examples on toy datasets to quickly explore what Evidently can do right out of the box. 
+Simple examples on toy datasets to quickly explore what Evidently can do right out of the box. 
 
 Title| Jupyter notebook | Colab notebook | Contents
 --- | --- | --- | --- 
