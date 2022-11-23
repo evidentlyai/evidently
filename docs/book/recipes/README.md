@@ -4,7 +4,7 @@ description: How-to guides.
 
 These example notebooks and how-to guides show how to solve specific tasks.    
 
-Topic | Question| Guide or example | Description
+Topic | Question| Guide or example | Comment
 | --- | --- | --- | --- 
 Input data | How to load data from different sources to pandas.Dataframes? | <ul><li>[Guide](load-data-to-pandas.md)</li><ul> | From Tensorflow Datasets, Pytorch Datapipes, PySpark DataFrames, file system.
 Customization | How to assign a particular statistical test for drift detection?|<ul><li>[Guide](../customization/options-for-statistical-tests.md)</li><li> [Jupyter notebook](https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/how_to_specify_stattest_for_a_testsuite.ipynb)| Using different statistical tests implemented in the library.
