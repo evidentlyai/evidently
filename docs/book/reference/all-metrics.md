@@ -8,7 +8,7 @@ description: List of all the metrics and metric presets available in Evidently.
 
 This is a reference page that helps quickly see all the metrics and presets available in the library, and their parameters. You can use the menu on the right to navigate the sections. 
 
-We organize the metrics into several tables by logical groups. Note that the groups do not match the presets with the same name, e.g., there are more Data Quality metrics below than in the `DataQualityPreset`. You can use this reference to discover additional metrics to include in your custom report.
+We organize the metrics into several tables by logical groups. Note that the groups do not match the presets with the same name, e.g., there are more Data Quality metrics below than in the `DataQualityPreset`. You can use this reference page to discover additional metrics to include in your custom report.
 
 # How to read the tables
 
