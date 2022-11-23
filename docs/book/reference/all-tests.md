@@ -17,7 +17,7 @@ We organize the tests into logical groups, e.g. Data Quality, Data Integrity, Re
   * No reference: the test conditions that apply if you do not provide the reference. They are based on heuristics.
 
 {% hint style="info" %} 
-We are doing our best to maintain this page up to date. In case of discrepancies, consult the code on GitHub (API reference coming soon!) or the current version of the "All tests" example notebook in the [Examples](../get-started/examples.md) section. If you notice an error, please send us a pull request to update the documentation! 
+We are doing our best to maintain this page up to date. In case of discrepancies, consult the [API reference](https://docs.evidentlyai.com/reference/api-reference) or the current version of the "All tests" example notebook in the [Examples](../get-started/examples.md) section. If you notice an error, please send us a pull request to update the documentation! 
 {% endhint %}
 
 # Data integrity
@@ -60,6 +60,8 @@ If you provide the reference dataset, Evidently will automatically derive all re
 
 | Test  | Description | Parameters | Default | 
 |---|---|---|---|
+| TestConflictTarget()| Dataset-level. <br><br> Tests the number of conflicts in the target. | n/a | Expects no conflicts in the target (with or without reference). |
+| TestConflictPrediction()| Dataset-level. <br><br> Tests the number of conflicts in the target. | n/a | Expects no conflicts in the target (with or without reference). |
 | TestTargetPredictionCorrelation()  | Dataset-level. <br><br> Tests if the strength of correlation between the target and prediction is within the expected range. |  **Optional:**<br>method: str=’pearson’<br>available: pearson,<br>spearman, kendall, cramer_v | Expects +/- 0.25 in correlation strength, or > 0. <br><br>**With reference**: the test fails if there is a 0.25+ change in the correlation strength between target and prediction.<br>**No reference**: the test fails if the correlation between target and prediction <=0 |
 | TestHighlyCorrelatedColumns()| Dataset-level. <br><br> Tests if any of the columns are highly correlated. <br>Example use: to detect and drop highly correlated features. <br> |  **Optional:**<br>method: str=’pearson’<br>available: pearson,<br>spearman, kendall, cramer_v| Expects +/- 10% in max correlation strength, or < 0.9.<br><br>**With reference**: the test fails if there is a 10%+ change in the correlation strength for the most correlated feature pair.<br> **No reference**: the test fails if there is at least one pair of features with the correlation >= 0.9 |
 | TestTargetFeaturesCorrelations| Dataset-level. <br><br> Tests if any of the features is highly correlated with the target. <br>Example use: to detect target leak. |  **Optional:**<br>method: str=’pearson’<br>available: pearson,<br>spearman, kendall, cramer_v | Expects +/- 10% in max correlation strength, or < 0.9.<br><br>**With reference**: the test fails if there is a 10%+ change in the correlation strength for the feature most correlated with the target.<br>**No reference**: the test fails if at least one feature is correlated with the target >= 0.9 |
