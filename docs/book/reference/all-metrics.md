@@ -83,7 +83,7 @@ The metrics work both for probabilistic and non-probabilistic classification. Al
 | Metric name | Description | Parameters |
 |---|---|---|
 | `ClassificationDummyMetric()` | Calculates the quality of the dummy model built on the same data. This can serve as a baseline. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
-| `ClassificationQualityMetric()` | Calculates various classification performance metrics, incl. precision, accuracy, recall, F1-score, TPR, TNR, FPR, and FNR. For probabilistic classification, also: ROC AUC score, LogLoss. | **Required:**:<br>n/a<br><br>**Optional:**<br>threshold (default for classification = None; default for probabilistic classification = 0.5)<br><br>k (default = None) |
+| `ClassificationQualityMetric()` | Calculates various classification performance metrics, incl. precision, accuracy, recall, F1-score, TPR, TNR, FPR, and FNR. For probabilistic classification, also: ROC AUC score, LogLoss. | **Required:**:<br>n/a<br><br>**Optional:**<ul><li>`probas_threshold` (default for classification = None; default for probabilistic classification = 0.5)</li><li>`k` (default = None)</li></ul> |
 | `ClassificationClassBalance()` | Calculates the number of objects for each label. Plots the histogram. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
 | `ClassificationConfusionMatrix()` | Calculates the TPR, TNR, FPR, FNR, and plots the confusion matrix.  | **Required:**<br>n/a<br><br>**Optional:**<br>threshold (default for classification = None; default for probabilistic classification = 0.5)<br><br>k (default = None) |
 | `ClassificationQualityByClass()` | Calculates the classification quality metrics for each class. Plots the matrix. | **Required:**:<br>n/a<br><br>**Optional:**<br>threshold (default for classification = None; default for probabilistic classification = 0.5)<br><br>k (default = None) |
@@ -92,7 +92,7 @@ The metrics work both for probabilistic and non-probabilistic classification. Al
 | `ClassificationRocCurve()` | Plots ROC Curve. Applicable for probabilistic classification only. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
 | `ClassificationPRCurve()` | Plots Precision-Recall Curve. Applicable for probabilistic classification only. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
 | `ClassificationPRTable()` | Calculates the Precision-Recall table that shows model quality at a different decision threshold.  | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
-| `ClassificationQualityByFeatureTable()` | Plots the relationship between feature values and model quality. | **Required:**<br>n/a<br><br>**Optional:**<br>columns (default = all numerical and categorical)<br><br>threshold (default for classification = None; default for probabilistic classification = 0.5)<br><br>k (default = None) |
+| `ClassificationQualityByFeatureTable()` | Plots the relationship between feature values and model quality. | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`columns`(default = all categorical and numerical columns)</li><li>`probas_threshold`(default for classification = None; default for probabilistic classification = 0.5)</li><li>`k` (default = None)</li></ul> |
 
 # Regression
 
