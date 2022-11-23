@@ -37,7 +37,7 @@
   * [Data drift parameters](customization/options-for-statistical-tests.md)
   * [Add a custom drift method](customization/add-custom-drift-method.md)
   * [Options for color schema](customization/options-for-color-schema.md)
-* [How to guides](recipes/README.md)
+* [How-to guides](recipes/README.md)
 
 ## Reference
 * [All tests](reference/all-tests.md)
