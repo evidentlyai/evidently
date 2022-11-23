@@ -1,3 +1,5 @@
+# Add a custom drift method
+
 ---
 description: How to implement a new drift detection method. 
 ---
