@@ -60,7 +60,7 @@ TestShareOfDriftedColumns(lt=0.5)
 | `per_column_stattest`<br>`per_column_stattest_threshold` | Sets the drift method and/or threshold for the listed columns (accepts a dictionary).  |
 
 {% hint style="info" %}
-**How to check available parameters.** You can verify which parameters are available for a given test, metric, or preset in the [All tests](../reference/all-tests.md) or [All tests](../reference/all-metrics.md) table or consult the [API reference]([../reference/api-reference](https://docs.evidentlyai.com/reference/api-reference))
+**How to check available parameters.** You can verify which parameters are available for a specific test, metric, or preset in the [All tests](../reference/all-tests.md) or [All metrics](../reference/all-metrics.md) tables or consult the [API reference]([../reference/api-reference](https://docs.evidentlyai.com/reference/api-reference))
 {% endhint %}
 
 ## Available StatTest Functions:
