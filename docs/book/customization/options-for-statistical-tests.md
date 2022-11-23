@@ -1,130 +1,55 @@
 ---
-description: You can modify the statistical tests used to calculate Data and Target Drift.
+description: How to set custom data drift detection conditions and thresholds. 
 ---
 
-# Options for Statistical Tests
+**Pre-requisites**:
+* You know how to generate reports or test suites with default parameters.
+* You know how to pass custom parameters for reports or test suites.
 
-## Available Options
+# Default 
 
-- (deprecated)`feature_stattest_func` (default: `None`): define the Statistical Test for features in the DataDrift Dashboard or Profile:
-  - `None` - use default Statistical Tests for all features (based on internal logic)
-  - You can define a Statistical Test to be used for all the features in the dataset:
-    - `str` - the name of StatTest to use across all features (see the available names below)
-    - `Callable[[pd.Series, pd.Series, str, float], Tuple[float, bool]]` - custom StatTest function added (see the requirements for the custom StatTest function below)
-    - `StatTest` - an instance of `StatTest`
-  - You can define a Statistical Test to be used for individual features by passing a `dict` object where the key is a feature name and the value is one from the previous options (`str`, `Callable` or `StatTest`)
-  - **Deprecated:** Use `all_features_stattest` or `per_feature_statttest` options.
-- `all_features_stattest`(default: `None`): defines a custom statistical test for all features in DataDrift Dashboard or Profile.
-- `cat_features_stattest` (default: `None`): defines a custom statistical test for categorical features in DataDrift Dashboard or Profile.
-- `num_features_stattest` (default: `None`): defines a custom statistical test for numerical features in DataDrift Dashboard or Profile.
-- `per_feature_stattest` (default: `None`): defines a custom statistical test per feature in DataDrift Dashboard or Profile as `dict` object where key is feature name and values is statistical test. 
-- `cat_target_stattest_func` (default: `None`): defines a custom statistical test to detect target drift in the Categorical Target Drift report. It follows the same logic as the `feature_stattest_func`, but without the `dict` option. 
-- `num_target_stattest_func` (default: `None`): defines a custom statistical test to detect target drift in the Numerical Target Drift report. It follows the same logic as the `feature_stattest_func`, but without the `dict` option. 
+All presets, tests, and metrics that include data or prediction drift evaluation use the default [Data Drift algorithm](../reference/data-drift-algorithm.md). It automatically selects an appropriate statistical test based on feature type and volume. 
 
-### Example:
-Change the StatTest for all the features in the Data Drift report:
-```python
-from evidently.options.data_drift import DataDriftOptions
+You can override the defaults by passing a custom parameter to the chosen test, metric, or preset. You can define the drift method, the threshold, or both. 
 
-options = DataDriftOptions(
-  feature_stattest_func="ks",
-) 
-```
+# Examples
 
-Change the StatTest for a single feature to a Custom (user-defined) function:
-```python
-from evidently.options.data_drift import DataDriftOptions
-
-
-def my_stat_test(reference_data, current_data, feature_type, threshold):
-  return 0.0, False
-
-
-options = DataDriftOptions(
-  feature_stattest_func={"feature_1": my_stat_test },
-)
-```
-
-Change the StatTest for a single feature to Custom function (using a StatTest object):
+To set a custom drift method and threshold on the **column level**:
 
 ```python
-from evidently.calculations.stattests import StatTest
-from evidently.options.data_drift import DataDriftOptions
-
-
-def _my_stat_test(reference_data, current_data, feature_type, threshold):
-  return 0.0, False
-
-
-my_stat_test = StatTest(
-  name="my_stat_test",
-  display_name="My Stat Test",
-  func=_my_stat_test,
-  allowed_feature_types=["cat"],
-)
-
-options = DataDriftOptions(
-  feature_stattest_func={"feature_1": my_stat_test},
-)
+TestColumnDrift(column_name=”feature1”, stattest=wasserstein, stattest_threshold=0.2) 
 ```
 
+If you have a preset, test or metric that checks for drift in **multiple columns** at the same time, you can set a custom drift method for all columns, all numerical/categorical columns, or for each column individually.
 
-## Custom StatTest function requirements:
-
-The StatTest function should match `(reference_data: pd.Series, current_data: pd.Series, threshold: float) -> Tuple[float, bool]` signature:
-- `reference_data: pd.Series` - reference data series
-- `current_data: pd.Series` - current data series to compare
-- `feature_type: str` - feature type
-- `threshold: float` - Stat Test threshold for drift detection
-
-Returns:
-- `score: float` - Stat Test score (actual value)
-- `drift_detected: bool` - indicates is drift detected with given threshold
-
-### Example:
+Here is how you set the drift detection method for all numerical columns:
 
 ```python
-from typing import Tuple
-
-import numpy as np
-import pandas as pd
-from scipy.stats import anderson_ksamp
-
-
-def anderson_stat_test(reference_data: pd.Series, current_data: pd.Series, _feature_type: str, threshold: float) -> Tuple[float, bool]:
-  p_value = anderson_ksamp(np.array([reference_data, current_data]))[2]
-  return p_value, p_value < threshold
+DataDriftPreset(cat_stattest=ks, cat_statest_threshold=0.05)
 ```
 
-
-## StatTest meta information (StatTest class):
-
-To use the StatTest function, we recommended writing a specific instance of the StatTest class for that function:
-
-To create the instance of the `StatTest` class, you need:
-- `name: str` - a short name used to reference the Stat Test from the options (the StatTest should be registered globally) 
-- `display_name: str` - a long name displayed in the Dashboard and Profile 
-- `func: Callable` - a StatTest function
-- `allowed_feature_types: List[str]` - the list of allowed feature types to which this function can be applied (available values: `cat`, `num`)
-
-
-### Example:
+To set a custom condition for the **dataset drift** (share of drifting features) in relevant metrics or presets:
 
 ```python
-from evidently.calculations.stattests import StatTest
-
-
-def example_stat_test(reference_data, current_data, feature_type, threshold):
-  return 0.1, False
-
-
-example_stat_test = StatTest(
-  name="example_test",
-  display_name="Example Stat Test (score)",
-  func=example_stat_test,
-  allowed_feature_types=["cat"],
-)
+DatasetDriftMetric(drift_share=0.7)
 ```
+
+Note that if you want to set a custom condition for the **dataset drift** when you run a **test**, you should do that using standard test parameters like `lt` and `gt`. 
+
+```python
+TestShareOfDriftedColumns(lt=0.5)
+```
+
+# Available drift parameters
+
+| Parameter | Description |
+|---|---|
+| stattest | Defines the drift detection method for a given column (if a single column is tested), or all columns in the dataset (if multiple columns are tested).  |
+| stattest_threshold | Sets the drift threshold in a given column or all columns.<br>The threshold meaning varies based on the drift detection method, e.g., it can be the value of a distance metric or a p-value of a statistical test. |
+| drift_share | Defines the share of drifting columns as a condition for Dataset Drift metric or inside a preset.  |
+| cat_stattest <br>cat_stattest_threshold | Sets the drift method and/or threshold for all categorical columns in the dataset. |
+| num_stattest<br>num_stattest_threshold | Sets the drift method and/or threshold for all numerical columns in the dataset. |
+| per_column_stattest<br>per_column_stattest_threshold | Sets the drift method and/or threshold for the listed columns (accepts a dictionary).  |
 
 
 ## Available StatTest Functions:
