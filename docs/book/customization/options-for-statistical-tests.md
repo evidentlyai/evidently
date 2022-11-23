@@ -44,12 +44,12 @@ TestShareOfDriftedColumns(lt=0.5)
 
 | Parameter | Description |
 |---|---|
-| stattest | Defines the drift detection method for a given column (if a single column is tested), or all columns in the dataset (if multiple columns are tested).  |
-| stattest_threshold | Sets the drift threshold in a given column or all columns.<br>The threshold meaning varies based on the drift detection method, e.g., it can be the value of a distance metric or a p-value of a statistical test. |
-| drift_share | Defines the share of drifting columns as a condition for Dataset Drift metric or inside a preset.  |
-| cat_stattest <br>cat_stattest_threshold | Sets the drift method and/or threshold for all categorical columns in the dataset. |
-| num_stattest<br>num_stattest_threshold | Sets the drift method and/or threshold for all numerical columns in the dataset. |
-| per_column_stattest<br>per_column_stattest_threshold | Sets the drift method and/or threshold for the listed columns (accepts a dictionary).  |
+| `stattest` | Defines the drift detection method for a given column (if a single column is tested), or all columns in the dataset (if multiple columns are tested).  |
+| `stattest_threshold` | Sets the drift threshold in a given column or all columns.<br>The threshold meaning varies based on the drift detection method, e.g., it can be the value of a distance metric or a p-value of a statistical test. |
+| `drift_share` | Defines the share of drifting columns as a condition for Dataset Drift metric or inside a preset.  |
+| `cat_stattest` <br>`cat_stattest_threshold` | Sets the drift method and/or threshold for all categorical columns in the dataset. |
+| `num_stattest` <br>`num_stattest_threshold` | Sets the drift method and/or threshold for all numerical columns in the dataset. |
+| `per_column_stattest`<br>`per_column_stattest_threshold` | Sets the drift method and/or threshold for the listed columns (accepts a dictionary).  |
 
 
 ## Available StatTest Functions:
