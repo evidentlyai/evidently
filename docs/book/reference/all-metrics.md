@@ -55,8 +55,8 @@ DatasetMissingValuesMetric(missing_values=["", 0, "n/a", -9999, None], replace=T
 
 | Metric name | Description | Parameters |
 |---|---|---|
-| `ConflictPredictionMetric()` | Dataset-level.<br><br>Calculates the number of conflicts in the predictions.| **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
-| `ConflictTargetMetric()` | Dataset-level.<br><br>Calculates the number of conflicts in the target.| **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
+| `ConflictPredictionMetric()` | Dataset-level.<br><br>Calculates the number of instances where the model returns a different output for an identical input. Can be a signal of low-quality model or data errors.| **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
+| `ConflictTargetMetric()` | Dataset-level.<br><br>Calculates the number of instances where there is a different target value or label for an identical input. Can be a signal of a labeling or data error.| **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
 | `DatasetCorrelationsMetric()` | Dataset-level.<br><br>Calculates the correlations between the columns in the dataset. Visualizes the heatmap. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
 | `ColumnDistributionMetric(column_name="education")` | Column-level.<br><br>Plots the distribution histogram and returns bin positions and values for the given column.  | **Required:**<br>column_name<br><br>**Optional:**<br>n/a |
 | `ColumnQuantileMetric(column_name="education-num", quantile=0.75)`<br> <br>  | Column-level.<br><br>Calculates the defined quantile value and plots the distribution for the given column.  | **Required:**<br>column_name<br>quantile<br><br>**Optional:**<br>n/a |
