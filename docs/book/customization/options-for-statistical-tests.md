@@ -2,6 +2,8 @@
 description: How to set custom data drift detection conditions and thresholds. 
 ---
 
+# Data drift parameters
+
 **Pre-requisites**:
 * You know how to generate reports or test suites with default parameters.
 * You know how to pass custom parameters for reports or test suites.
