@@ -62,19 +62,19 @@ DatasetMissingValuesMetric(missing_values=["", 0, "n/a", -9999, None], replace=T
 | `ColumnQuantileMetric(column_name="education-num", quantile=0.75)`<br> <br>  | Column-level.<br><br>Calculates the defined quantile value and plots the distribution for the given column.  | **Required:**<ul><li>`column_name`</li><li>`quantile`</li></ul>**Optional:**<br>n/a |
 | `ColumnCorrelationsMetric(column_name="education")` | Column-level.<br><br>Calculates the correlations between the defined column and all the other columns in the dataset. | **Required:**<br>`column_name`<br><br>**Optional:**<br>n/a |
 | `ColumnValueListMetric(column_name="relationship", values=["Husband", "Unmarried"])` | Column-level.<br><br>Calculates the number of values in the list / out of the list / not found in a given column. The value list should be specified. | **Required:**<ul><li>`column_name`</li><li>Values</li></ul>**Optional:**<br>n/a |
-| `ColumnValueRangeMetric(column_name="age", left=10, right=20)` | Column-level.<br><br>Calculates the number and share of values in the specified range / out of range in a given column. Plots the distributions. | **Required:**<br>`column_name` <br>left <br>right |
+| `ColumnValueRangeMetric(column_name="age", left=10, right=20)` | Column-level.<br><br>Calculates the number and share of values in the specified range / out of range in a given column. Plots the distributions. | **Required:**<ul><li>`column_name` </li><li>`left`</li><li>`right`</li></ul> |
 
 # Data Drift
 
 By default, all data drift tests use the Evidently [drift detection logic](data-drift-algorithm.md) that selects a different statistical test or metric based on feature type and volume. You always need a reference dataset.
 
-To modify the logic or select a different test, you should pass a [DataDriftOptions](../customization/options-for-statistical-tests.md) object. 
+To modify the logic or select a different test, you should set [data drift parameters](../customization/options-for-statistical-tests.md). 
 
 | Metric name | Description | Parameters |
 |---|---|---|
-| `DatasetDriftMetric()`<br>  | Dataset-level.<br><br>Calculates the number and share of drifted features. Returns true/false for the dataset drift at a given threshold (defined by the share of drifting features). | **Required:**<br>n/a<br><br>**Optional:**<br>threshold (default for dataset drift = 0.5)<br><br>columns (default = all)<br><br>DataDriftOptions (default =  Evidently [data drift algorithm](data-drift-algorithm.md)) |
-| `DataDriftTable()` | Dataset-level.<br><br>Calculates data drift for all columns in the dataset. Visualizes distributions.  | **Required:**<br>n/a<br><br>**Optional:** <br>columns (default = all)<br><br>DataDriftOptions (default =  [data drift algorithm](data-drift-algorithm.md))  |
-| ColumnDriftMetric('age') | Column-level. <br><br>Calculates data drift for the defined column. Visualizes distributions.  | **Required:**<br>column_name<br><br>**Optional:**<br>DataDriftOptions (default =  [data drift algorithm](data-drift-algorithm.md)) |
+| `DatasetDriftMetric()`<br>  | Dataset-level.<br><br>Calculates the number and share of drifted features. Returns true/false for the dataset drift at a given threshold (defined by the share of drifting features). | **Required:**<br>n/a<br><br>**Optional:**<ul><li>`drift_share` (default for dataset drift = 0.5)</li><li>`columns`(default = all)</li></ul><br><br>[How to set data drift parameters](../customization/options-for-statistical-tests.md).  |
+| `DataDriftTable()` | Dataset-level.<br><br>Calculates data drift for all columns in the dataset. Visualizes distributions.  | **Required:**<br>n/a<br><br>**Optional:** <ul><li>`сolumns`</li><li>`stattest`</li><li>`cat_stattest`</li><li>`num_stattest`</li><li>`per_column_stattest`</li><li>`stattest_threshold`</li><li>`cat_stattest_threshold`</li><li>`num_stattest_threshold`</li><li>`per_column_stattest_threshold`</li></ul><br><br> [How to set data drift parameters](../customization/options-for-statistical-tests.md)|
+| ColumnDriftMetric('age') | Column-level. <br><br>Calculates data drift for the defined column. Visualizes distributions.  | **Required:**<ul><li>`column_name`</li></ul><br><br>**Optional:**<ul><li>`stattest`</li><li>`stattest_threshold`</li> </li></ul><br><br> [How to set data drift parameters](../customization/options-for-statistical-tests.md)||
 
 # Classification
 
