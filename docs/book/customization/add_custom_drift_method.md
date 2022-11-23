@@ -1,6 +1,7 @@
 ---
 description: How to implement a new drift detection method. 
 ---
+# Add a custom drift method
 
 **Pre-requisites**:
 * You know how to set custom drift methods and which methods are available in the library.
