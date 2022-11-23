@@ -35,6 +35,8 @@ DatasetMissingValuesMetric(missing_values=["", 0, "n/a", -9999, None], replace=T
 
 | Metric | Description | Parameters |
 |---|---|---|
+| ConflictPredictionMetric() | Dataset-level.<br><br>Calculates the number of conflicts in the predictions.| **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
+| ConflictTargetMetric() | Dataset-level.<br><br>Calculates the number of conflicts in the target.| **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
 | DatasetCorrelationsMetric() | Dataset-level.<br><br>Calculates the correlations between the columns in the dataset. Visualizes the heatmap. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
 | ColumnDistributionMetric(column_name="education") | Column-level.<br><br>Plots the distribution histogram and returns bin positions and values for the given column.  | **Required:**<br>column_name<br><br>**Optional:**<br>n/a |
 | ColumnQuantileMetric(column_name="education-num", quantile=0.75)<br> <br>  | Column-level.<br><br>Calculates the defined quantile value and plots the distribution for the given column.  | **Required:**<br>column_name<br>quantile<br><br>**Optional:**<br>n/a |
@@ -60,6 +62,7 @@ The metrics work both for probabilistic and non-probabilistic classification. Al
 
 | Metric | Description | Parameters |
 |---|---|---|
+| ClassificationDummyMetric () | Calculates the quality of the dummy model built on the same data. This can serve as a baseline. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
 | ClassificationQualityMetric() | Calculates various classification performance metrics, incl. precision, accuracy, recall, F1-score, TPR, TNR, FPR, and FNR. For probabilistic classification, also: ROC AUC score, LogLoss. | **Required:**:<br>n/a<br><br>**Optional:**<br>threshold (default for classification = None; default for probabilistic classification = 0.5)<br><br>k (default = None) |
 | ClassificationClassBalance() | Calculates the number of objects for each label. Plots the histogram. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
 | ClassificationConfusionMatrix() | Calculates the TPR, TNR, FPR, FNR, and plots the confusion matrix.  | **Required:**<br>n/a<br><br>**Optional:**<br>threshold (default for classification = None; default for probabilistic classification = 0.5)<br><br>k (default = None) |
@@ -77,6 +80,7 @@ All metrics are dataset-level.
 
 | Metric | Description | Parameters |
 |---|---|---|
+| RegressionDummyMetric () | Calculates the quality of the dummy model built on the same data. This can serve as a baseline. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
 | RegressionQualityMetric() | Calculates various regression performance metrics, incl. Mean Error, MAE, MAPE, etc.  | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
 | RegressionPredictedVsActualScatter() | Visualizes predicted vs actual values in a scatter plot. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
 | RegressionPredictedVsActualPlot() | Visualizes predicted vs. actual values in a line plot. | **Required:**<br>n/a<br><br>**Optional:**<br>n/a |
