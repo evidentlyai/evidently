@@ -1,20 +1,29 @@
 ---
-description: A reference page on all the tests available in Evidently.
+description: List of all tests and test presets available in Evidently.
 ---
 
-We organize the tests into logical groups, e.g. Data Quality, Data Integrity, Regression Performance, etc. You can use the menu on the right to navigate. Note that these groups do not match the presets with the same name, e.g., there are more Data Quality tests below than in the `DataQualityTestPreset`.
+<details>
+
+<summary>How to use this page</summary>
+ 
+This is a reference page that helps quickly see all the tests and test presets available in the library, and their parameters. 
+
+We organize the tests into logical groups, e.g. Data Quality, Data Integrity, Regression, etc. You can use the menu on the right to navigate the sections.
+ 
+Note that these groups do not match the presets with the same name, e.g., there are more Data Quality tests below than in the `DataQualityTestPreset`. You can use this reference page to discover additional tests to include in your custom test suite.
 
 # How to read the tables
 
-* **Test**: the name of an individual test that you can include in a Test Suite.  
-* **Description**: plain text explanation of the test, and whether it applies to the whole dataset or individual columns.
-* **Parameters**: required and optional parameters for the test. 
-  * Required parameters are necessary to run the test, e.g. a column name for a column-level test.
-  * Optional parameters help set a custom test condition or modify how a metric is calculated. 
-  * *Standard parameters* are a sub-group of the optional parameters that help set basic test conditions (equal, not equal, greater than, etc.). They apply to most of the tests. Here you can see the complete list of the [standard parameteres](../tests-and-reports/run-tests.md#available-parameters). 
-* **Default**: test conditions that apply if you do not set custom parameters. 
+* **Name**: the name of an individual test or preset.  
+* **Description**: plain text explanation of the test, or the contents of the preset. For tests, we specify whether it applies to the whole dataset or individual columns.
+* **Parameters**: required and optional parameters for the test or test preset. 
+  * Required parameters are necessary to for calculations, e.g. a column name for a column-level test.
+  * Optional parameters help modify how the underlying metric is calculated. 
+  * *Standard parameters* help set the test conditions. Here you can see the complete list (equal, not equal, greater than, etc.) of the [standard parameteres](../tests-and-reports/run-tests.md#available-parameters). They are optional.
+* **Default**: test conditions that apply if you do not set a custom сondition. 
   * With reference: the test conditions that apply when you pass a reference dataset and Evidently can derive expectations from it. 
   * No reference: the test conditions that apply if you do not provide the reference. They are based on heuristics.
+</details>
 
 {% hint style="info" %} 
 We are doing our best to maintain this page up to date. In case of discrepancies, consult the [API reference](https://docs.evidentlyai.com/reference/api-reference) or the current version of the "All tests" example notebook in the [Examples](../get-started/examples.md) section. If you notice an error, please send us a pull request to update the documentation! 
