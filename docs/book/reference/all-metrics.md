@@ -66,7 +66,7 @@ DatasetMissingValuesMetric(missing_values=["", 0, "n/a", -9999, None], replace=T
 
 # Data Drift
 
-By default, all data drift tests use the Evidently [drift detection logic](data-drift-algorithm.md) that selects a different statistical test or metric based on feature type and volume. You always need a reference dataset.
+**Defaults for Data Drift**. By default, all data drift tests use the Evidently [drift detection logic](data-drift-algorithm.md) that selects a different statistical test or metric based on feature type and volume. You always need a reference dataset.
 
 To modify the logic or select a different test, you should set [data drift parameters](../customization/options-for-statistical-tests.md). 
 
