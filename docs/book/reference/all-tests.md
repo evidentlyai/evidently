@@ -18,8 +18,8 @@ Note that these groups do not match the presets with the same name, e.g., there 
 * **Description**: plain text explanation of the test, or the contents of the preset. For tests, we specify whether it applies to the whole dataset or individual columns.
 * **Parameters**: required and optional parameters for the test or test preset. 
   * Required parameters are necessary to for calculations, e.g. a column name for a column-level test.
-  * Optional parameters help modify how the underlying metric is calculated. 
-  * *Test condition parameters* help set the individual test conditions. Here you can see the complete list (equal, not equal, greater than, etc.) of the [test condition parameteres](../tests-and-reports/run-tests.md#available-parameters). They are optional.
+  * Optional parameters modify how the underlying metric is calculated, e.g. which statistical test or correlation method is used.
+  * *Test condition parameters* help set the conditions (e.g. equal, not equal, greater than, etc.) that define the expectations from the test output. If the condition is violated, the test returns a fail. Here you can see the complete list of the [standard condition parameteres](../tests-and-reports/run-tests.md#available-parameters). They apply to most of the tests, and are optional.
 * **Default tests condition**: test conditions that apply if you do not set a custom сondition. 
   * With reference: the test conditions that apply when you pass a reference dataset and Evidently can derive expectations from it. 
   * No reference: the test conditions that apply if you do not provide the reference. They are based on heuristics.
