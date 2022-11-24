@@ -38,7 +38,7 @@ We are doing our best to maintain this page up to date. In case of discrepancies
 
 # Data Integrity
 
-**Note on Missing values related metrics**. The metrics that calculate the number or share of missing values detect four types of the values by default: Pandas nulls (None, NAN, etc.), "" (empty string), Numpy "-inf" value, Numpy "inf" value. You can also pass a custom missing values as a parameter and specify if you want to replace the default list. Example:
+**Defaults for Missing Values**. The metrics that calculate the number or share of missing values detect four types of the values by default: Pandas nulls (None, NAN, etc.), "" (empty string), Numpy "-inf" value, Numpy "inf" value. You can also pass a custom missing values as a parameter and specify if you want to replace the default list. Example:
 
 ```python
 DatasetMissingValuesMetric(missing_values=["", 0, "n/a", -9999, None], replace=True)
