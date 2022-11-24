@@ -19,7 +19,7 @@ Note that these groups do not match the presets with the same name, e.g., there 
 * **Parameters**: required and optional parameters for the test or test preset. 
   * Required parameters are necessary to for calculations, e.g. a column name for a column-level test.
   * Optional parameters help modify how the underlying metric is calculated. 
-  * *Standard parameters* help set the individual test conditions. Here you can see the complete list (equal, not equal, greater than, etc.) of the [standard parameteres](../tests-and-reports/run-tests.md#available-parameters). They are optional.
+  * *Test condition parameters* help set the individual test conditions. Here you can see the complete list (equal, not equal, greater than, etc.) of the [test condition parameteres](../tests-and-reports/run-tests.md#available-parameters). They are optional.
 * **Default**: test conditions that apply if you do not set a custom сondition. 
   * With reference: the test conditions that apply when you pass a reference dataset and Evidently can derive expectations from it. 
   * No reference: the test conditions that apply if you do not provide the reference. They are based on heuristics.
