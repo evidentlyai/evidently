@@ -190,10 +190,7 @@ See how to integrate Evidently in your prediction pipelines and use it with othe
 | Log Evidently metrics in MLflow UI   | [Evidently + MLflow](examples/integrations/mlflow_logging/)              |
 
 # :phone: User Newsletter 
-
 To get updates on new features, integrations and code tutorials, sign up for the [Evidently User Newsletter](https://www.evidentlyai.com/user-newsletter). 
 
-# :white_check_mark: Stay updated
-- If you want to receive updates, sign up for our [newsletter](https://evidentlyai.com/sign-up). 
-- You can also find more tutorials and explanations in our [Blog](https://evidentlyai.com/blog). 
-- If you want to chat and connect, join our [Discord community](https://discord.gg/xZjKRaNp8b)!
+# :white_check_mark: Discord Community
+If you want to chat and connect, join our [Discord community](https://discord.gg/xZjKRaNp8b)!
