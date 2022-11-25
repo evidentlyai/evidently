@@ -1,4 +1,5 @@
 from typing import Dict
+from typing import List
 from typing import Optional
 
 from evidently import TaskType
@@ -22,6 +23,7 @@ class DataDriftTestPreset(TestPreset):
     - `TestAllFeaturesValueDrift`
     """
 
+    columns: Optional[List[str]]
     stattest: Optional[PossibleStatTestType]
     cat_stattest: Optional[PossibleStatTestType]
     num_stattest: Optional[PossibleStatTestType]
@@ -33,6 +35,7 @@ class DataDriftTestPreset(TestPreset):
 
     def __init__(
         self,
+        columns: Optional[List[str]] = None,
         stattest: Optional[PossibleStatTestType] = None,
         cat_stattest: Optional[PossibleStatTestType] = None,
         num_stattest: Optional[PossibleStatTestType] = None,
@@ -43,6 +46,7 @@ class DataDriftTestPreset(TestPreset):
         per_column_stattest_threshold: Optional[Dict[str, float]] = None,
     ):
         super().__init__()
+        self.columns = columns
         self.stattest = stattest
         self.cat_stattest = cat_stattest
         self.num_stattest = num_stattest
@@ -55,6 +59,7 @@ class DataDriftTestPreset(TestPreset):
     def generate_tests(self, data: InputData, columns: DatasetColumns):
         preset_tests: list = [
             TestShareOfDriftedColumns(
+                columns=self.columns,
                 stattest=self.stattest,
                 cat_stattest=self.cat_stattest,
                 num_stattest=self.num_stattest,
@@ -110,6 +115,7 @@ class DataDriftTestPreset(TestPreset):
 
         preset_tests.append(
             TestAllFeaturesValueDrift(
+                self.columns,
                 self.stattest,
                 self.cat_stattest,
                 self.num_stattest,
