@@ -36,13 +36,7 @@ DatasetDriftMetric(drift_share=0.7)
 
 Note that this works slightly differently for the **individual tests**. The reason is that tests expect you to define a condition to the **test output**. You should use standard test parameters like `lt` and `gt` to set the condition. 
 
-For, example, the column drift tests might output a p-value or a distance metric. To set the condition for column drift test that uses Wasserstein distance metric:
-
-```python
-TestColumnDrift(column_name=”feature1”, stattest=wasserstein, lt=0.2) 
-```
-
-Similarly, if you want to set a custom condition for the **dataset drift** when you run a **test**, you should set a condition for the share of drifted features using standard parameters:
+To set a custom condition for the **dataset drift** when you run a relevant **test**, you should set a condition for the share of drifted features using standard parameters:
 
 ```python
 TestShareOfDriftedColumns(lt=0.5)
