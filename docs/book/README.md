@@ -99,3 +99,6 @@ In this scenario, Evidently is deployed as a monitoring service. You can use con
 
 Evidently is in active development, and we are happy to receive and incorporate feedback. If you have any questions, ideas or want to hang out and chat about doing ML in production, [join our Discord community](https://discord.com/invite/xZjKRaNp8b)!
 
+# User newsletter
+
+To get updates on new features, integrations and code tutorials, sign up for the [Evidently User Newsletter](https://www.evidentlyai.com/user-newsletter). 
