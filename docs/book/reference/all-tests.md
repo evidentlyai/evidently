@@ -33,6 +33,19 @@ We are doing our best to maintain this page up to date. In case of discrepancies
 
 # Test Presets
 
+Default conditions for each test in the preset match the test's defaults. You can see them in the following sections on this page.
+
+| Preset name | Description | Parameters |
+|---|---|---|
+| `NoTargetPerformanceTestPreset` | `TestShareOfDriftedColumns()`<br>`TestColumnDrift(column_name=prediction)`<br>`TestColumnDrift(column_name=column_name)`  for `all` or `сolumns` if provided <br>`TestColumnsType()`<br>`TestColumnShareOfMissingValuest(column_name=column_name)` for `all` or `сolumns` if provided <br>`TestShareOfOutRangeValues(column_name=column_name)` for all `numerical_columns` or among `columns` if provided<br>`TestShareOfOutListValues(column_name=column_name)` for all `categorical_columns` or among `columns` if provided<br>`TestMeanInNSigmas(column_name=column_name, n=2)` for all `numerical_columns` or among `columns` if provided | Optional:<br>columns<br>stattest<br>cat_stattest <br>num_stattest<br>per_column_stattest<br>stattest_threshold<br>cat_stattest_threshold <br>num_stattest_threshold<br>per_column_stattest_threshold<br>drift_share<br>How to set data drift parameters. |
+| `DataStabilityTestPreset` | `TestNumberOfRows()`<br>`TestNumberOfColumns()`<br>`TestColumnsType()`<br>`TestColumnShareOfMissingValues()`<br>`TestShareOfOutRangeValues(column_name=column_name)` for all `numerical_columns` or among `columns` if provided<br>`TestShareOfOutListValues(column_name=column_name)` for all `categorical_columns` or among `columns` if provided<br>`TestMeanInNSigmas(column_name=column_name, n=2)` for all `numerical_columns` or among `columns` if provided | Optional:<br>columns |
+| `DataQualityTestPreset` | TestColumnShareOfMissingValues(columns=columns) or `all` if not listed <br>TestMostCommonValueShare(columns=columns)  or `all` if not listed <br>TestNumberOfConstantColumns()<br>TestNumberOfDuplicatedColumns()<br>TestNumberOfDuplicatedRows()<br>TestHighlyCorrelatedColumns() | Optional:<br>columns |
+| `DataDriftTestPreset` | `TestShareOfDriftedColumns()`<br>`TestColumnDrift(column_name=column_name)` for `all` or `сolumns` if provided  | Optional:<br>columns<br>stattest<br>cat_stattest <br>num_stattest<br>per_column_stattest<br>stattest_threshold<br>cat_stattest_threshold <br>num_stattest_threshold<br>per_column_stattest_threshold<br>How to set data drift parameters. |
+| `RegressionTestPreset` | TestValueMeanError()<br>TestValueMAE()<br>TestValueRMSE()<br>TestValueMAPE() | n/a |
+| MulticlassClassificationTestPreset | TestAccuracyScore()<br>TestF1Score()<br>TestPrecisionByClass()<br>TestRecallByClass()<br>TestColumnDrift(column_name=target)<br>TestNumberOfRows()<br>If probabilistic classification, also: TestLogLoss()<br>TestRocAuc() | Optional:<br>stattest<br>stattest_threshold  |
+| `BinaryClassificationTopKTestPreset` | TestAccuracyScore(k=k)<br>TestPrecisionScore(k=k)<br>TestRecallScore(k=k)<br>TestF1Score(k=k)<br>TestColumnDrift(column_name=target)<br>TestRocAuc()<br>TestLogLoss() | Required:<br>k<br>Optional:<br>stattest <br>stattest_threshold <br>probas_threshold  |
+| `BinaryClassificationTestPreset` | TestColumnDrift(column_name=target)<br>TestPrecisionScore()<br>TestRecallScore()<br>TestF1Score()<br>TestAccuracyScore()<br>If probabilistic classification, also:<br>TestRocAuc() | Optional:<br>stattest<br>stattest_threshold<br>probas_threshold |
+
 # Data Integrity
 
 **Defaults for Data Integrity**. If there is no reference data or defined conditions, data integrity will be checked against a set of heuristics. 
@@ -45,7 +58,7 @@ If you pass the reference data, Evidently will automatically derive all relevant
 TestNumberOfMissingValues(missing_values=["", 0, "n/a", -9999, None], replace=True)
 ```
 
-| Name  | Description | Parameters | Default test condition | 
+| Test name  | Description | Parameters | Default test condition | 
 |---|---|---|---|
 | `TestNumberOfRows()` | Dataset-level. <br><br> Tests the number of rows against the reference or a defined condition.|  **Required**:<br> N/A <br><br> **Optional**:<br> N/A <br><br>**Test conditions**: <ul><li>*standard parameters*</li></ul>| Expects +/-10% or >30.<br><br>**With reference**: the test fails if the number of rows differs by over 10% from the reference. <br><br>**No reference**: the test fails if the number of rows is <= 30.|
 | `TestNumberOfColumns()` | Dataset-level. <br><br> Tests the number of columns against the reference or a defined condition. | **Required**:<br> N/A <br><br> **Optional**:<br> N/A <br><br>**Test conditions**: <ul><li>*standard parameters*</li></ul>| Expects the same or non-zero.<br><br>**With reference**: the test fails if the number of columns differs from the reference. <br><br>**No reference**: the test fails if the number of columns is 0.|
@@ -75,7 +88,7 @@ TestNumberOfMissingValues(missing_values=["", 0, "n/a", -9999, None], replace=Tr
 
 If you pass the reference data, Evidently will automatically derive all relevant statistics (e.g., min value, max value, value range, value list, etc.) and apply default test conditions. You can also pass custom test conditions.  
 
-| Test  | Description | Parameters | Default test conditions | 
+| Test name  | Description | Parameters | Default test conditions | 
 |---|---|---|---|
 | `TestConflictTarget()`| Dataset-level. <br><br> Tests if there are conflicts in the target (instances where a different label is assigned for an identical input). | N/A | Expects no conflicts in the target (with or without reference). |
 | `TestConflictPrediction()`| Dataset-level. <br><br> Tests if there are conflicts in the prediction (instances where a different prediction is made for an identical input). | N/A | Expects no conflicts in the target (with or without reference). |
@@ -107,7 +120,7 @@ If you pass the reference data, Evidently will automatically derive all relevant
 
 To modify the logic or select a different test, you should set [data drift parameters](../customization/options-for-statistical-tests.md). 
 
-| Test  | Description | Parameters | Default test conditions | 
+| Test name | Description | Parameters | Default test conditions | 
 |---|---|---|---|
 | `TestNumberOfDriftedColumns()` | Dataset-level. <br><br> Compares the distribution of each column in the current dataset to the reference and tests the number of drifting features against a defined condition.| **Required**:<br>N/A<br><br>**Optional:**<ul><li>`сolumns`</li><li>`stattest`(default=automated selection)</li><li>`cat_stattest`</li><li>`num_stattest`</li><li>`per_column_stattest`</li><li>`stattest_threshold`(default=test default)</li><li>`cat_stattest_threshold`</li><li>`num_stattest_threshold`</li><li>`per_column_stattest_threshold`</li></ul>**Test conditions**:<ul><li>*standard parameters*</li></ul> | Expects =< ⅓ features to drift.<br><br>**With reference:** If > 1/3 of features drifted, the test fails.<br><br>**No reference:** N/A |
 | `TestShareOfDriftedColumns()` | Dataset-level. <br><br> Compares the distribution of each column in the current dataset to the reference and tests the share of drifting features against a defined condition.| **Required**:<br>N/A<br><br>**Optional:**<ul><li>`сolumns`</li><li>`stattest`(default=automated selection)</li><li>`cat_stattest`</li><li>`num_stattest`</li><li>`per_column_stattest`</li><li>`stattest_threshold`(default=test default)</li><li>`cat_stattest_threshold`</li><li>`num_stattest_threshold`</li><li>`per_column_stattest_threshold`</li></ul>**Test conditions**:<ul><li>*standard parameters*</li></ul> | Expects =< ⅓ features to drift.<br><br>**With reference:** If > 1/3 of features drifted, the test fails.<br><br>**No reference:** N/A  |
@@ -119,7 +132,7 @@ To modify the logic or select a different test, you should set [data drift param
 
 You can also pass the reference dataset and run the test with default conditions, or define custom test conditions.
 
-| Test  | Description | Parameters | Default test conditions |  
+| Test name  | Description | Parameters | Default test conditions |  
 |---|---|---|---|
 | `TestValueMAE()`<br> | Dataset-level. <br><br> Computes the Mean Absolute Error (MAE) and compares it to the reference or against a defined condition.  | **Required**:<br>N/A<br><br> **Optional:**<br>N/A<br><br>**Test conditions**: <ul><li>*standard parameters*</li></ul>  | Expects +/-10% or better than a dummy model.<br><br>**With reference**: if MAE is higher or lower by over 10%, the test fails. <br><br>**No reference**: the test fails if the MAE value is higher than the MAE of the dummy model that predicts the optimal constant (median of the target value). |
 | `TestValueRMSE()` | Dataset-level. Computes the Root Mean Square Error (RMSE) and compares it to the reference or against a defined condition. |**Required**:<br>N/A<br><br> **Optional**:<br>N/A<br><br> **Test conditions** <ul><li>*standard parameters*</li></ul>| Expects +/-10% or better than a dummy model.<br><br>**With reference**: if RMSE is higher or lower by over 10%, the test fails.<br><br>**No reference**: the test fails if the RMSE value is higher than the RMSE of the dummy model that predicts the optimal constant (mean of the target value). |
@@ -136,7 +149,7 @@ You can apply the tests for non-probabilistic, probabilistic classification, and
 
 You can also pass the reference dataset and run the test with default conditions, or define custom test conditions.
 
-| Test  | Description | Parameters | Default test conditions | 
+| Test name | Description | Parameters | Default test conditions | 
 |---|---|---|---|
 | `TestAccuracyScore()`| Dataset-level. <br><br>Computes the Accuracy and compares it to the reference or against a defined condition. | **Required**:<br>N/A<br><br> **Optional**:<ul><li>`threshold_probas`(default for classification = None; default for probabilistic classification = 0.5)</li><li>`k`</li></ul> **Test conditions**:<ul><li>*standard parameters*</li></ul> | Expects +/-20% or better than a dummy model.<br><br>**With reference**: if the Accuracy is over 20% higher or lower, the test fails.<br><br>**No reference**: if the Accuracy is lower than the Accuracy of the dummy model, the test fails.|
 | `TestPrecisionScore()`| Dataset-level. <br><br> Computes the Precision and compares it to the reference or against a defined condition. | **Required**:<br>N/A<br><br> **Optional**:<ul><li>`threshold_probas`(default for classification = None; default for probabilistic classification = 0.5)</li><li>`k`</li></ul> **Test conditions**: <ul><li>*standard parameters*</li></ul>| Expects +/-20% or better than a dummy model.<br><br>**With reference**: if the Precision is over 20% higher or lower, the test fails.<br><br>**No reference**: if the Precision is lower than the Precision of the dummy mode, the test fails.|
