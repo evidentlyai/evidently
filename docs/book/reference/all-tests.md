@@ -23,17 +23,23 @@ Note that these groups do not match the presets with the same name, e.g., there 
 * **Default tests condition**: test conditions that apply if you do not set a custom сondition. 
   * With reference: the test conditions that apply when you pass a reference dataset and Evidently can derive expectations from it. 
   * No reference: the test conditions that apply if you do not provide the reference. They are based on heuristics.
+ 
+**Test visualizations**. Each test also includes a default render. If you want to see the visualization, navigate to the [example notebooks](../get-started/examples.md) and run the notebook with all metrics or with all tests and test presets.
 </details>
 
 {% hint style="info" %} 
 We are doing our best to maintain this page up to date. In case of discrepancies, consult the [API reference](https://docs.evidentlyai.com/reference/api-reference) or the current version of the "All tests" example notebook in the [Examples](../get-started/examples.md) section. If you notice an error, please send us a pull request to update the documentation! 
 {% endhint %}
 
-# Data integrity
+# Test Presets
 
-If you provide the reference dataset, Evidently will automatically derive all relevant statistics (e.g., share of values, etc.) to shape expectations. If you do not provide the reference, you can pass these conditions as a parameter, or run tests with default parameters.
+# Data Integrity
 
-**Note on missing values related tests**. The tests that evaluate the number or share of missing values detect four types of missing values by default: Pandas nulls (None, NAN, etc.), "" (empty string), Numpy "-inf" value, Numpy "inf" value. You can also pass a list of custom missing values as a parameter if you want to replace the default list. Example:
+**Defaults for Data Integirity**. If there is no reference data or defined conditions, data integrity will be checked against a set of heuristics. 
+
+If you pass the reference data, Evidently will automatically derive all relevant statistics (e.g., number of columns, rows, share of missing values etc.) and apply default test conditions. You can also pass custom test conditions.  
+
+**Defaults for Missing Values**. The metrics that calculate the number or share of missing values detect four types of the values by default: Pandas nulls (None, NAN, etc.), "" (empty string), Numpy "-inf" value, Numpy "inf" value. You can also pass a custom missing values as a parameter and specify if you want to replace the default list. Example:
 
 ```python
 TestNumberOfMissingValues(missing_values=["", 0, "n/a", -9999, None], replace=True)
@@ -63,11 +69,13 @@ TestNumberOfMissingValues(missing_values=["", 0, "n/a", -9999, None], replace=Tr
 | `TestColumnAllUniqueValues(column_name='name')` | Column-level. <br><br> Tests if all the values in a given column are unique.| **Required**: <br>column_name | Expects all unique (e.g., IDs).<br><br>The test fails if at least one value in a given column is not unique.|
 | `TestColumnRegExp(column_name='name, reg_exp='^[0..9]')` | Column-level. <br><br> Tests if the values in the column match a defined regular expression.<br>You need to specify the regular expression to run this test. |**Required**: <br>column_name <br>reg_exp | **With reference**: the test fails if the share of values that match a regular expression is over 10% higher or lower than in the reference.<br>**No reference**: the test fails if at least one of the values does not match a regular expression. |
 
-# Data quality
+# Data Quality
 
-If you provide the reference dataset, Evidently will automatically derive all relevant statistics (e.g., min value, max value, value range, value list, etc.) to shape expectations. If you do not provide the reference, you can pass these conditions as a parameter, or run tests with default parameters.  
+**Defaults for data quality**. If there is no reference data or defined conditions, data quality will be checked against a set of heuristics. 
 
-| Test  | Description | Parameters | Default | 
+If you pass the reference data, Evidently will automatically derive all relevant statistics (e.g., min value, max value, value range, value list, etc.) and apply default test conditions. You can also pass custom test conditions.  
+
+| Test  | Description | Parameters | Default test conditions | 
 |---|---|---|---|
 | TestConflictTarget()| Dataset-level. <br><br> Tests the number of conflicts in the target. | n/a | Expects no conflicts in the target (with or without reference). |
 | TestConflictPrediction()| Dataset-level. <br><br> Tests the number of conflicts in the target. | n/a | Expects no conflicts in the target (with or without reference). |
@@ -93,11 +101,11 @@ If you provide the reference dataset, Evidently will automatically derive all re
 | TestShareOfOutListValues(column_name='cat_column')    | Column-level. <br><br> Tests the share of values in a given column that are out of list.  |  **Required**: <br>column_name <br><br>**Optional**:<br> values: List[str]<br><br>*standard parameters* | Expects all values to be in the list. <br><br>**With reference**: the test fails if the column contains values out of the list (as seen in reference). <br>**No reference**: N/A |
 | TestColumnQuantile(column_name='num_column', quantile=0.25) | Column-level. <br><br> Tests that a defined quantile value is within the expected range. |  **Required**: <br>column_name <br> quantile <br><br>**Optional**:<br> *standard parameters* | Expects +/-10%.<br><br>**With reference**: the test fails if the quantile value is over 10% higher or lower. <br>**No reference**: N/A |
 
-# Data drift
+# Data Drift
 
-By default, all data drift tests use the Evidently [drift detection logic](data-drift-algorithm.md) that selects a different statistical test or metric based on feature type and volume. You always need a reference dataset.
+**Defaults for Data Drift**. By default, all data drift tests use the Evidently [drift detection logic](data-drift-algorithm.md) that selects a different statistical test or metric based on feature type and volume. You always need a reference dataset.
 
-To modify the logic or select a different test, you should pass a DataDrift [Options](../customization/options-for-statistical-tests.md) object. 
+To modify the logic or select a different test, you should set [data drift parameters](../customization/options-for-statistical-tests.md). 
 
 | Test  | Description | Parameters | Default test conditions | 
 |---|---|---|---|
@@ -107,9 +115,11 @@ To modify the logic or select a different test, you should pass a DataDrift [Opt
 
 # Regression
 
-If there is no reference data or defined condition, Evidently will compare the model performance to a dummy model that predicts the optimal constant (varies by the metric).  
+**Defaults for Regression tests**: if there is no reference data or defined conditions, Evidently will compare the model performance to a dummy model that predicts the optimal constant (varies by the metric). 
 
-| Test  | Description | Parameters | Default | 
+You can also pass the reference dataset and run the test with default conditions, or define custom test conditions.
+
+| Test  | Description | Parameters | Default test conditions |  
 |---|---|---|---|
 | `TestValueMAE()`<br> | Dataset-level. <br><br> Computes the Mean Absolute Error (MAE) and compares it to the reference or against a defined condition.  | **Required**:<br>N/A<br><br> **Optional:**<br>N/A<br><br>**Test conditions**: <ul><li>*standard parameters*</li></ul>  | Expects +/-10% or better than a dummy model.<br><br>**With reference**: if MAE is higher or lower by over 10%, the test fails. <br><br>**No reference**: the test fails if the MAE value is higher than the MAE of the dummy model that predicts the optimal constant (median of the target value). |
 | `TestValueRMSE()` | Dataset-level. Computes the Root Mean Square Error (RMSE) and compares it to the reference or against a defined condition. |**Required**:<br>N/A<br><br> **Optional**:<br>N/A<br><br> **Test conditions** <ul><li>*standard parameters*</li></ul>| Expects +/-10% or better than a dummy model.<br><br>**With reference**: if RMSE is higher or lower by over 10%, the test fails.<br><br>**No reference**: the test fails if the RMSE value is higher than the RMSE of the dummy model that predicts the optimal constant (mean of the target value). |
@@ -122,9 +132,11 @@ If there is no reference data or defined condition, Evidently will compare the m
 
 You can apply the tests for non-probabilistic, probabilistic classification, and ranking. The underlying metrics will be calculated slightly differently depending on the provided inputs: only labels, probabilities, decision threshold, and/or K (to compute, e.g., precision@K). 
 
-If there is no reference data or condition, Evidently will compare the model performance to a dummy model. It is based on a set of heuristics to verify that the quality is better than random.
+**Defaults for Classification tests**. If there is no reference data or defined conditions, Evidently will compare the model performance to a dummy model. It is based on a set of heuristics to verify that the quality is better than random.
 
-| Test  | Description | Parameters | Default | 
+You can also pass the reference dataset and run the test with default conditions, or define custom test conditions.
+
+| Test  | Description | Parameters | Default test conditions | 
 |---|---|---|---|
 | `TestAccuracyScore()`| Dataset-level. <br><br>Computes the Accuracy and compares it to the reference or against a defined condition. | **Required**:<br>N/A<br><br> **Optional**:<ul><li>`threshold_probas`(default for classification = None; default for probabilistic classification = 0.5)</li><li>`k`</li></ul> **Test conditions**:<ul><li>*standard parameters*</li></ul> | Expects +/-20% or better than a dummy model.<br><br>**With reference**: if the Accuracy is over 20% higher or lower, the test fails.<br><br>**No reference**: if the Accuracy is lower than the Accuracy of the dummy model, the test fails.|
 | `TestPrecisionScore()`| Dataset-level. <br><br> Computes the Precision and compares it to the reference or against a defined condition. | **Required**:<br>N/A<br><br> **Optional**:<ul><li>`threshold_probas`(default for classification = None; default for probabilistic classification = 0.5)</li><li>`k`</li></ul> **Test conditions**: <ul><li>*standard parameters*</li></ul>| Expects +/-20% or better than a dummy model.<br><br>**With reference**: if the Precision is over 20% higher or lower, the test fails.<br><br>**No reference**: if the Precision is lower than the Precision of the dummy mode, the test fails.|
