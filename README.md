@@ -189,9 +189,9 @@ See how to integrate Evidently in your prediction pipelines and use it with othe
 | Batch ML monitoring with Airflow     | [Evidently + Airflow](examples/integrations/airflow_drift_detection/)    |
 | Log Evidently metrics in MLflow UI   | [Evidently + MLflow](examples/integrations/mlflow_logging/)              |
 
-# :phone: Community Call 
+# :phone: User Newsletter 
 
-We host monthly community call for users and contributors. [Sign up](https://evidentlyai.com/community-call-sign-up) to join the next one. 
+To get updates on new features, integrations and code tutorials, sign up for the [Evidently User Newsletter](https://www.evidentlyai.com/user-newsletter). 
 
 # :white_check_mark: Stay updated
 - If you want to receive updates, sign up for our [newsletter](https://evidentlyai.com/sign-up). 
