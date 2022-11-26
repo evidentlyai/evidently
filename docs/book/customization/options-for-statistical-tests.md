@@ -2,15 +2,13 @@
 description: How to set custom data drift detection conditions and thresholds. 
 ---
 
-# Data drift parameters
-
 **Pre-requisites**:
 * You know how to generate reports or test suites with default parameters.
 * You know how to pass custom parameters for reports or test suites.
 
 # Default 
 
-All presets, tests, and metrics that include data or prediction drift evaluation use the default [Data Drift algorithm](../reference/data-drift-algorithm.md). It automatically selects an appropriate statistical test based on feature type and volume. 
+All presets, tests, and metrics that include data or prediction drift evaluation use the default [Data Drift algorithm](../reference/data-drift-algorithm.md). It automatically selects an appropriate statistical test based on the feature type and volume. 
 
 You can override the defaults by passing a custom parameter to the chosen test, metric, or preset. You can define the drift method, the threshold, or both. 
 
@@ -19,7 +17,7 @@ You can override the defaults by passing a custom parameter to the chosen test, 
 To set a custom drift method and threshold on the **column level**:
 
 ```python
-TestColumnDrift(column_name=”feature1”, stattest=wasserstein, stattest_threshold=0.2) 
+ColumnDriftMetric(column_name=”feature1”, stattest=wasserstein, stattest_threshold=0.2) 
 ```
 
 If you have a preset, test or metric that checks for drift in **multiple columns** at the same time, you can set a custom drift method for all columns, all numerical/categorical columns, or for each column individually.
@@ -30,13 +28,15 @@ Here is how you set the drift detection method for all numerical columns:
 DataDriftPreset(cat_stattest=ks, cat_statest_threshold=0.05)
 ```
 
-To set a custom condition for the **dataset drift** (share of drifting features) in relevant metrics or presets:
+To set a custom condition for the **dataset drift** (share of drifting features) in the relevant metrics or presets:
 
 ```python
 DatasetDriftMetric(drift_share=0.7)
 ```
 
-Note that if you want to set a custom condition for the **dataset drift** when you run a **test**, you should do that using standard test parameters like `lt` and `gt`. 
+Note that this works slightly differently for the **individual tests**. The reason is that tests expect you to define a condition to the **test output**. You should use standard test parameters like `lt` and `gt` to set the condition. 
+
+To set a custom condition for the **dataset drift** when you run a relevant **test**, you should set a condition for the share of drifted features using standard parameters:
 
 ```python
 TestShareOfDriftedColumns(lt=0.5)
@@ -54,7 +54,7 @@ TestShareOfDriftedColumns(lt=0.5)
 | `per_column_stattest`<br>`per_column_stattest_threshold` | Sets the drift method and/or threshold for the listed columns (accepts a dictionary).  |
 
 {% hint style="info" %}
-**How to check available parameters.** You can verify which parameters are available for a given test, metric, or preset in the [All tests](../reference/all-tests.md) or [All tests](../reference/all-metrics.md) table or consult the [API reference](../reference/api-reference)
+**How to check available parameters.** You can verify which parameters are available for a specific test, metric, or preset in the [All tests](../reference/all-tests.md) or [All metrics](../reference/all-metrics.md) tables or consult the [API reference]([../reference/api-reference](https://docs.evidentlyai.com/reference/api-reference))
 {% endhint %}
 
 ## Available StatTest Functions:

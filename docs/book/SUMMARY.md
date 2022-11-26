@@ -38,6 +38,7 @@
   * [Add a custom drift method](customization/add-custom-drift-method.md)
   * [Options for color schema](customization/options-for-color-schema.md)
 * [How-to guides](recipes/README.md)
+  * [Load data to pandas](recipes/load-data-to-pandas.md)
 
 ## Reference
 * [All tests](reference/all-tests.md)
