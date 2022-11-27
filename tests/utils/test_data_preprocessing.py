@@ -148,9 +148,11 @@ def test_get_column_type(reference, current, column_name, expected):
         ),
         (
             None,
-            pd.DataFrame(dict(
-                a=list(range(NUMBER_UNIQUE_AS_CATEGORICAL + 1)),
-                target=[1] * (NUMBER_UNIQUE_AS_CATEGORICAL + 1)),
+            pd.DataFrame(
+                dict(
+                    a=list(range(NUMBER_UNIQUE_AS_CATEGORICAL + 1)),
+                    target=[1] * (NUMBER_UNIQUE_AS_CATEGORICAL + 1),
+                ),
             ),
             ColumnMapping(),
             ColumnDefinition(column_name="target", column_type=ColumnType.Categorical),
@@ -190,7 +192,7 @@ def test_get_column_type(reference, current, column_name, expected):
                 predicted_values=None,
                 prediction_probas=[
                     ColumnDefinition(column_name="prediction", column_type=ColumnType.Numerical),
-                ]
+                ],
             ),
             [
                 ColumnDefinition(column_name="target", column_type=ColumnType.Categorical),
