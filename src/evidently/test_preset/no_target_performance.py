@@ -37,7 +37,7 @@ class NoTargetPerformanceTestPreset(TestPreset):
     """
 
     columns: Optional[List[str]]
-    drift_share: float
+    drift_share: Optional[float]
     stattest: Optional[PossibleStatTestType] = None
     cat_stattest: Optional[PossibleStatTestType] = None
     num_stattest: Optional[PossibleStatTestType] = None
@@ -50,7 +50,7 @@ class NoTargetPerformanceTestPreset(TestPreset):
     def __init__(
         self,
         columns: Optional[List[str]] = None,
-        drift_share: float = 0.5,
+        drift_share: Optional[float] = None,
         stattest: Optional[PossibleStatTestType] = None,
         cat_stattest: Optional[PossibleStatTestType] = None,
         num_stattest: Optional[PossibleStatTestType] = None,
@@ -91,14 +91,15 @@ class NoTargetPerformanceTestPreset(TestPreset):
             preset_tests.append(
                 TestColumnDrift(
                     column_name=columns.utility_columns.prediction,
-                    stattest=self.stattest,
-                    stattest_threshold=self.stattest_threshold,
+                    stattest=stattest,
+                    stattest_threshold=threshold,
                 )
             )
-
+        default_drift_share = len(self.columns) // 3 if self.columns is not None else data.current_data.shape[1] // 3
         preset_tests.append(
             TestShareOfDriftedColumns(
-                lt=data.current_data.shape[1] // 3,
+                columns=self.columns,
+                lt=default_drift_share if self.drift_share is None else self.drift_share,
                 stattest=self.stattest,
                 cat_stattest=self.cat_stattest,
                 num_stattest=self.num_stattest,
