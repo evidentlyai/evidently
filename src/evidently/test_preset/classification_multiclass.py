@@ -68,6 +68,6 @@ class MulticlassClassificationTestPreset(TestPreset):
 
         prediction_columns = data.data_definition.get_prediction_columns()
         if prediction_columns is None or prediction_columns.prediction_probas is None:
-            return tests + [TestRocAuc(), TestLogLoss()]
-        else:
             return tests
+        else:
+            return tests + [TestRocAuc(), TestLogLoss()]

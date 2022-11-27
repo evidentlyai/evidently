@@ -4,6 +4,7 @@ import pandas as pd
 import pytest
 
 from evidently.pipeline.column_mapping import ColumnMapping
+from evidently.utils.data_preprocessing import NUMBER_UNIQUE_AS_CATEGORICAL
 from evidently.utils.data_preprocessing import ColumnDefinition
 from evidently.utils.data_preprocessing import ColumnPresenceState
 from evidently.utils.data_preprocessing import ColumnType
@@ -119,7 +120,7 @@ def test_get_column_type(reference, current, column_name, expected):
     [
         (
             None,
-            pd.DataFrame(dict(a=[1], b=["a"], c=[datetime(2000, 1, 1)])),
+            pd.DataFrame(dict(a=[0.1], b=["a"], c=[datetime(2000, 1, 1)])),
             ColumnMapping(),
             None,
             None,
@@ -132,8 +133,8 @@ def test_get_column_type(reference, current, column_name, expected):
             ],
         ),
         (
-            pd.DataFrame(dict(a=[1], b=["a"], c=[datetime(2000, 1, 1)])),
-            pd.DataFrame(dict(a=[1], b=["a"], c=[datetime(2000, 1, 1)])),
+            pd.DataFrame(dict(a=[0.1], b=["a"], c=[datetime(2000, 1, 1)])),
+            pd.DataFrame(dict(a=[0.1], b=["a"], c=[datetime(2000, 1, 1)])),
             ColumnMapping(),
             None,
             None,
@@ -147,14 +148,17 @@ def test_get_column_type(reference, current, column_name, expected):
         ),
         (
             None,
-            pd.DataFrame(dict(a=[1], target=[1])),
+            pd.DataFrame(dict(
+                a=list(range(NUMBER_UNIQUE_AS_CATEGORICAL + 1)),
+                target=[1] * (NUMBER_UNIQUE_AS_CATEGORICAL + 1)),
+            ),
             ColumnMapping(),
-            ColumnDefinition(column_name="target", column_type=ColumnType.Numerical),
+            ColumnDefinition(column_name="target", column_type=ColumnType.Categorical),
             None,
             None,
             None,
             [
-                ColumnDefinition(column_name="target", column_type=ColumnType.Numerical),
+                ColumnDefinition(column_name="target", column_type=ColumnType.Categorical),
                 ColumnDefinition(column_name="a", column_type=ColumnType.Numerical),
             ],
         ),
@@ -166,32 +170,31 @@ def test_get_column_type(reference, current, column_name, expected):
             ColumnDefinition(column_name="id", column_type=ColumnType.Categorical),
             ColumnDefinition(column_name="datetime", column_type=ColumnType.Datetime),
             PredictionColumns(
-                predicted_values=ColumnDefinition(column_name="prediction", column_type=ColumnType.Numerical)
+                predicted_values=ColumnDefinition(column_name="prediction", column_type=ColumnType.Categorical)
             ),
             [
                 ColumnDefinition(column_name="id", column_type=ColumnType.Categorical),
                 ColumnDefinition(column_name="datetime", column_type=ColumnType.Datetime),
-                ColumnDefinition(column_name="prediction", column_type=ColumnType.Numerical),
-                ColumnDefinition(column_name="a", column_type=ColumnType.Numerical),
+                ColumnDefinition(column_name="prediction", column_type=ColumnType.Categorical),
+                ColumnDefinition(column_name="a", column_type=ColumnType.Categorical),
             ],
         ),
         (
             None,
-            pd.DataFrame(dict(a=[1], c1=[0.1], c2=[0.2])),
-            ColumnMapping(prediction=["c1", "c2"]),
-            None,
+            pd.DataFrame(dict(target=[1, 0], prediction=[0.9, 0.1])),
+            ColumnMapping(),
+            ColumnDefinition(column_name="target", column_type=ColumnType.Categorical),
             None,
             None,
             PredictionColumns(
+                predicted_values=None,
                 prediction_probas=[
-                    ColumnDefinition(column_name="c1", column_type=ColumnType.Numerical),
-                    ColumnDefinition(column_name="c2", column_type=ColumnType.Numerical),
+                    ColumnDefinition(column_name="prediction", column_type=ColumnType.Numerical),
                 ]
             ),
             [
-                ColumnDefinition(column_name="c1", column_type=ColumnType.Numerical),
-                ColumnDefinition(column_name="c2", column_type=ColumnType.Numerical),
-                ColumnDefinition(column_name="a", column_type=ColumnType.Numerical),
+                ColumnDefinition(column_name="target", column_type=ColumnType.Categorical),
+                ColumnDefinition(column_name="prediction", column_type=ColumnType.Numerical),
             ],
         ),
     ],

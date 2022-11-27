@@ -150,6 +150,7 @@ def _process_column(
 
 def _prediction_column(
     prediction: Optional[Union[str, int, Sequence[int], Sequence[str]]],
+    target_type: Optional[ColumnType],
     target_names: Optional[List[str]],
     task: Optional[str],
     data: _InputData,
@@ -175,6 +176,9 @@ def _prediction_column(
             if prediction_type == ColumnType.Numerical:
                 return PredictionColumns(predicted_values=ColumnDefinition(prediction, prediction_type))
         if task is None:
+            if prediction_type == ColumnType.Numerical and target_type == ColumnType.Categorical:
+                # probably this is binary with single column of probabilities
+                return PredictionColumns(prediction_probas=[ColumnDefinition(prediction, prediction_type)])
             return PredictionColumns(predicted_values=ColumnDefinition(prediction, prediction_type))
     if isinstance(prediction, list):
         if target_names is not None:
@@ -205,7 +209,13 @@ def create_data_definition(
     target_column = _process_column(mapping.target, data)
     datetime_column = _process_column(mapping.datetime, data)
 
-    prediction_columns = _prediction_column(mapping.prediction, mapping.target_names, mapping.task, data)
+    prediction_columns = _prediction_column(
+        mapping.prediction,
+        target_column.column_type if target_column is not None else None,
+        mapping.target_names,
+        mapping.task,
+        data,
+    )
 
     prediction_cols = prediction_columns.get_columns_list() if prediction_columns is not None else []
     all_columns = [
@@ -292,19 +302,31 @@ def _get_column_presence(column_name: str, data: _InputData) -> ColumnPresenceSt
     return ColumnPresenceState.Partially
 
 
+NUMBER_UNIQUE_AS_CATEGORICAL = 5
+
+
 def _get_column_type(column_name: str, data: _InputData) -> ColumnType:
     ref_type = None
+    ref_unique = None
     if data.reference is not None and column_name in data.reference.columns:
         ref_type = data.reference[column_name].dtype
+        ref_unique = data.reference[column_name].nunique()
     cur_type = None
+    cur_unique = None
     if column_name in data.current.columns:
         cur_type = data.current[column_name].dtype
+        cur_unique = data.current[column_name].nunique()
     if (
         ref_type is not None
         and cur_type is not None
         and (ref_type != cur_type and not np.can_cast(cur_type, ref_type) and not np.can_cast(ref_type, cur_type))
     ):
         raise ValueError(f"Column {column_name} have different types in reference {ref_type} and current {cur_type}")
+    if pd.api.types.is_integer_dtype(cur_type if cur_type is not None else ref_type):
+        nunique = ref_unique or cur_unique
+        if nunique is not None and nunique <= NUMBER_UNIQUE_AS_CATEGORICAL:
+            return ColumnType.Categorical
+        return ColumnType.Numerical
     if pd.api.types.is_numeric_dtype(cur_type if cur_type is not None else ref_type):
         return ColumnType.Numerical
     if pd.api.types.is_datetime64_dtype(cur_type if cur_type is not None else ref_type):
