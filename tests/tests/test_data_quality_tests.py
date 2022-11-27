@@ -820,8 +820,8 @@ def test_data_quality_test_target_features_correlation_json_render() -> None:
     test_dataset = pd.DataFrame(
         {
             "feature1": [0, 1, 2, 3],
-            "target": [0, 0, 0, 1],
-            "prediction": [0, 0, 0, 1],
+            "target": [0.0, 0.0, 0.0, 1.0],
+            "prediction": [0.0, 0.0, 0.0, 1.0],
         }
     )
     column_mapping = ColumnMapping(task="regression")

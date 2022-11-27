@@ -100,15 +100,18 @@ def test_column_presence(reference, current, column_name, expected):
 @pytest.mark.parametrize(
     "reference,current,column_name,expected",
     [
-        (None, pd.DataFrame(dict(a=[1], b=[2])), "a", ColumnType.Numerical),
-        (None, pd.DataFrame(dict(a=[1], b=["a"])), "b", ColumnType.Categorical),
-        (None, pd.DataFrame(dict(a=[1], b=["a"], c=[datetime(2000, 1, 1)])), "c", ColumnType.Datetime),
-        (pd.DataFrame(), pd.DataFrame(dict(a=[1], b=[2])), "a", ColumnType.Numerical),
-        (pd.DataFrame(), pd.DataFrame(dict(a=[1], b=["a"])), "b", ColumnType.Categorical),
-        (pd.DataFrame(), pd.DataFrame(dict(a=[1], b=["a"], c=[datetime(2000, 1, 1)])), "c", ColumnType.Datetime),
-        (pd.DataFrame(dict(a=[1], b=[2])), pd.DataFrame(), "a", ColumnType.Numerical),
-        (pd.DataFrame(dict(a=[1], b=["a"])), pd.DataFrame(), "b", ColumnType.Categorical),
-        (pd.DataFrame(dict(a=[1], b=["a"], c=[datetime(2000, 1, 1)])), pd.DataFrame(), "c", ColumnType.Datetime),
+        (None, pd.DataFrame(dict(a=[1.0], b=[2])), "a", ColumnType.Numerical),
+        (None, pd.DataFrame(dict(a=[1.0], b=[2])), "b", ColumnType.Categorical),
+        (None, pd.DataFrame(dict(a=[1.0], b=["a"])), "b", ColumnType.Categorical),
+        (None, pd.DataFrame(dict(a=[1.0], b=["a"], c=[datetime(2000, 1, 1)])), "c", ColumnType.Datetime),
+        (pd.DataFrame(), pd.DataFrame(dict(a=[1.0], b=[2])), "a", ColumnType.Numerical),
+        (pd.DataFrame(), pd.DataFrame(dict(a=[1.0], b=[2])), "b", ColumnType.Categorical),
+        (pd.DataFrame(), pd.DataFrame(dict(a=[1.0], b=["a"])), "b", ColumnType.Categorical),
+        (pd.DataFrame(), pd.DataFrame(dict(a=[1.0], b=["a"], c=[datetime(2000, 1, 1)])), "c", ColumnType.Datetime),
+        (pd.DataFrame(dict(a=[1.0], b=[2])), pd.DataFrame(), "a", ColumnType.Numerical),
+        (pd.DataFrame(dict(a=[1.0], b=[2])), pd.DataFrame(), "b", ColumnType.Categorical),
+        (pd.DataFrame(dict(a=[1.0], b=["a"])), pd.DataFrame(), "b", ColumnType.Categorical),
+        (pd.DataFrame(dict(a=[1.0], b=["a"], c=[datetime(2000, 1, 1)])), pd.DataFrame(), "c", ColumnType.Datetime),
     ],
 )
 def test_get_column_type(reference, current, column_name, expected):

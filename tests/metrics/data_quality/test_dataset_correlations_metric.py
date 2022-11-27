@@ -15,8 +15,8 @@ def test_dataset_correlation_metric_success() -> None:
             "numerical_feature_1": [0, 2, 2, 2, 0],
             "numerical_feature_2": [0, 2, 2, 2, 0],
             "category_feature": [1, 2, 4, 2, 1],
-            "target": [0, 2, 2, 2, 0],
-            "prediction": [0, 2, 2, 2, 0],
+            "target": [0.0, 2.0, 2.0, 2.0, 0.0],
+            "prediction": [0.0, 2.0, 2.0, 2.0, 0.0],
         }
     )
     data_mapping = ColumnMapping(task="regression")
