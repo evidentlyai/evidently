@@ -1,4 +1,4 @@
-"""Methods and types for data drift calculations"""
+"""Methods and types for data drift calculations."""
 
 from typing import Dict
 from typing import List
@@ -20,7 +20,7 @@ from evidently.utils.visualizations import get_distribution_for_column
 
 @dataclass
 class ColumnDataDriftMetrics:
-    """One column drift metrics"""
+    """One column drift metrics."""
 
     column_name: str
     column_type: str
@@ -83,16 +83,18 @@ def get_one_column_drift(
     if column_type not in ("cat", "num"):
         raise ValueError(f"Cannot calculate drift metric for column '{column_name}' with type {column_type}")
 
+    stattest = None
+
     if column_name == dataset_columns.utility_columns.target and column_type == "num":
         stattest = options.num_target_stattest_func
 
     elif column_name == dataset_columns.utility_columns.target and column_type == "cat":
         stattest = options.cat_target_stattest_func
 
-    else:
+    if not stattest:
         stattest = options.get_feature_stattest_func(column_name, column_type)
 
-    threshold = options.get_threshold(column_name)
+    threshold = options.get_threshold(column_name, column_type)
     current_column = current_data[column_name]
     reference_column = reference_data[column_name]
 
@@ -230,15 +232,17 @@ def ensure_prediction_column_is_string(
     reference_data: pd.DataFrame,
     threshold: float = 0.5,
 ) -> Optional[str]:
-    """
-    Update dataset by predictions type:
+    """Update dataset by predictions type:
+
     - if prediction column is None or a string, no dataset changes
     - (binary classification) if predictions is a list and its length equals 2
-        set predicted_labels column by `classification_threshold`
+        set predicted_labels column by `threshold`
     - (multy label classification) if predictions is a list and its length is greater than 2
         set predicted_labels from probability values in columns by prediction column
 
-    Returns prediction column name.
+
+    Returns:
+         prediction column name.
     """
     result_prediction_column = None
 

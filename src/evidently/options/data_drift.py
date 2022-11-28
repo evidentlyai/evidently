@@ -7,6 +7,7 @@ from dataclasses import dataclass
 
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.calculations.stattests import StatTest
+from evidently.utils.data_drift_utils import resolve_stattest_threshold
 
 DEFAULT_NBINSX = 10
 
@@ -15,11 +16,11 @@ DEFAULT_NBINSX = 10
 class DataDriftOptions:
     """Configuration for Data Drift calculations.
 
-    Attributes:
+    Args:
         confidence: Defines the confidence level for statistical tests.
                     Applies to all features (if passed as float) or certain features (if passed as dictionary).
                     (Deprecated) Use `threshold` to define confidence level for statistical
-                     tests as more universal solution.
+                    tests as more universal solution.
         threshold: Defines thresholds for statistical tests.
                    Applies to all features (if passed as float) or certain features (if passed as dictionary).
         drift_share: Sets the share of drifting features as a condition for Dataset Drift in the Data Drift report.
@@ -54,6 +55,11 @@ class DataDriftOptions:
     num_features_stattest: Optional[PossibleStatTestType] = None
     per_feature_stattest: Optional[Dict[str, PossibleStatTestType]] = None
 
+    all_features_threshold: Optional[float] = None
+    cat_features_threshold: Optional[float] = None
+    num_features_threshold: Optional[float] = None
+    per_feature_threshold: Optional[Dict[str, float]] = None
+
     cat_target_threshold: Optional[float] = None
     num_target_threshold: Optional[float] = None
 
@@ -68,24 +74,49 @@ class DataDriftOptions:
             "xbins": self.xbins,
         }
 
-    def get_threshold(self, feature_name: str) -> Optional[float]:
-        if self.confidence is not None and self.threshold is not None:
-            raise ValueError("Only DataDriftOptions.confidence or DataDriftOptions.threshold can be set")
-        if self.confidence is not None:
-            warnings.warn("DataDriftOptions.confidence is deprecated, use DataDriftOptions.threshold instead.")
-            if isinstance(self.confidence, float):
-                return 1.0 - self.confidence
-            if isinstance(self.confidence, dict):
-                override = self.confidence.get(feature_name)
-                return None if override is None else 1.0 - override
-            raise ValueError(f"DataDriftOptions.confidence is incorrect type {type(self.confidence)}")
+    def _calculate_threshold(self, feature_name: str, feature_type: str) -> Optional[float]:
         if self.threshold is not None:
             if isinstance(self.threshold, float):
                 return self.threshold
+
             if isinstance(self.threshold, dict):
                 return self.threshold.get(feature_name)
+
             raise ValueError(f"DataDriftOptions.threshold is incorrect type {type(self.threshold)}")
-        return None
+
+        _, threshold = resolve_stattest_threshold(
+            feature_name,
+            feature_type,
+            self.all_features_stattest,
+            self.cat_features_stattest,
+            self.num_features_stattest,
+            self.per_feature_stattest,
+            self.all_features_threshold,
+            self.cat_features_threshold,
+            self.num_features_threshold,
+            self.per_feature_threshold,
+        )
+        return threshold
+
+    def get_threshold(self, feature_name: str, feature_type: str) -> Optional[float]:
+        threshold = self._calculate_threshold(feature_name, feature_type)
+
+        if self.confidence is not None and threshold is not None:
+            raise ValueError("Only DataDriftOptions.confidence or DataDriftOptions.threshold can be set")
+
+        if self.confidence is not None:
+            warnings.warn("DataDriftOptions.confidence is deprecated, use DataDriftOptions.threshold instead.")
+
+            if isinstance(self.confidence, float):
+                return 1.0 - self.confidence
+
+            if isinstance(self.confidence, dict):
+                override = self.confidence.get(feature_name)
+                return None if override is None else 1.0 - override
+
+            raise ValueError(f"DataDriftOptions.confidence is incorrect type {type(self.confidence)}")
+
+        return threshold
 
     def get_nbinsx(self, feature_name: str) -> int:
         if isinstance(self.nbinsx, int):
@@ -119,17 +150,19 @@ class DataDriftOptions:
             if isinstance(self.feature_stattest_func, dict):
                 return self.feature_stattest_func.get(feature_name)
             return None
-        func = None if self.all_features_stattest is None else self.all_features_stattest
-        if feature_type == "cat":
-            type_func = self.cat_features_stattest
-        elif feature_type == "num":
-            type_func = self.num_features_stattest
-        else:
-            raise ValueError(f"Unexpected feature type {feature_type}.")
-        func = func if type_func is None else type_func
-        if self.per_feature_stattest is None:
-            return func
-        return self.per_feature_stattest.get(feature_name, func)
+        stattest, _ = resolve_stattest_threshold(
+            feature_name,
+            feature_type,
+            self.all_features_stattest,
+            self.cat_features_stattest,
+            self.num_features_stattest,
+            self.per_feature_stattest,
+            self.all_features_threshold,
+            self.cat_features_threshold,
+            self.num_features_threshold,
+            self.per_feature_threshold,
+        )
+        return stattest
 
     def __hash__(self) -> int:
         """Calculate hash for data drift options - for using in metrics deduplication via dicts."""

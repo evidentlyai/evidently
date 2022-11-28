@@ -10,6 +10,7 @@ import pandas as pd
 from dataclasses import dataclass
 
 from evidently.pipeline.column_mapping import ColumnMapping
+from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.generators import BaseGenerator
 from evidently.utils.generators import make_generator_by_columns
 
@@ -28,6 +29,7 @@ class InputData:
     reference_data: Optional[pd.DataFrame]
     current_data: pd.DataFrame
     column_mapping: ColumnMapping
+    data_definition: DataDefinition
 
 
 class Metric(Generic[TResult]):

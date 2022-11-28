@@ -154,7 +154,7 @@ To create a custom data drift test suite with column-level tests:
 ```python
 feature_suite = TestSuite(tests=[
     TestColumnShareOfMissingValues(column_name='hours-per-week'),
-    TestColumnValueDrift(column_name='education'),
+    TestColumnDrift(column_name='education'),
     TestMeanInNSigmas(column_name='hours-per-week')
 ])
 ```
@@ -290,7 +290,7 @@ You can pass a list of parameters or a list of columns.
 
 ```python
 suite = TestSuite(tests=[
-   TestValueQuantile(column_name="education-num", quantile=quantile) for quantile in [0.5, 0.9, 0.99]
+   TestColumnQuantile(column_name="education-num", quantile=quantile) for quantile in [0.5, 0.9, 0.99]
 ])
 
 suite.run(current_data=current_data, reference_data=reference_data)

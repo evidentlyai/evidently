@@ -32,10 +32,16 @@ def _cleanup_data(data: pd.DataFrame, dataset_columns: DatasetColumns) -> pd.Dat
 
 
 class ThresholdClassificationMetric(Metric[TResult], ABC):
-    def __init__(self, threshold: Optional[float], k: Optional[Union[float, int]]):
-        if threshold is not None and k is not None:
-            raise ValueError(f"{self.__class__.__name__}: should provide only threshold or top_k argument, not both.")
-        self.threshold = threshold
+    probas_threshold: Optional[float]
+    k: Optional[Union[float, int]]
+
+    def __init__(self, probas_threshold: Optional[float], k: Optional[Union[float, int]]):
+        if probas_threshold is not None and k is not None:
+            raise ValueError(
+                f"{self.__class__.__name__}: should provide only stattest_threshold or top_k argument, not both."
+            )
+
+        self.probas_threshold = probas_threshold
         self.k = k
 
     def get_target_prediction_data(
@@ -46,14 +52,19 @@ class ThresholdClassificationMetric(Metric[TResult], ABC):
         dataset_columns = process_columns(data, column_mapping)
         data = _cleanup_data(data, dataset_columns)
         prediction = get_prediction_data(data, dataset_columns, column_mapping.pos_label)
-        if self.threshold is None and self.k is None:
+
+        if self.probas_threshold is None and self.k is None:
             return data[dataset_columns.utility_columns.target], prediction
+
         if len(prediction.labels) > 2 or prediction.prediction_probas is None:
             raise ValueError("Top K / Threshold parameter can be used only with binary classification with probas")
+
         pos_label, neg_label = prediction.prediction_probas.columns
-        threshold = self.threshold
+        threshold = self.probas_threshold
+
         if self.k is not None:
             threshold = k_probability_threshold(prediction.prediction_probas, self.k)
+
         prediction_labels = prediction.prediction_probas[pos_label].apply(
             lambda x: pos_label if x >= threshold else neg_label
         )

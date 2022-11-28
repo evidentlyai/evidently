@@ -3,9 +3,9 @@ import json
 import numpy as np
 import pandas as pd
 import pytest
+from pytest import approx
 
 from evidently.metrics.data_drift.dataset_drift_metric import DatasetDriftMetric
-from evidently.options import DataDriftOptions
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.report import Report
 
@@ -145,10 +145,19 @@ def test_dataset_drift_metric_with_options() -> None:
             "prediction": [1, 0, 1],
         }
     )
-    report = Report(metrics=[DatasetDriftMetric(options=DataDriftOptions(threshold=0.7))])
+    report = Report(metrics=[DatasetDriftMetric(stattest_threshold=0.7)])
     report.run(current_data=current_dataset, reference_data=reference_dataset)
     assert report.show()
-    assert report.json()
+    result_json = report.json()
+    result = json.loads(result_json)
+    assert result["metrics"][0]["metric"] == "DatasetDriftMetric"
+    assert result["metrics"][0]["result"] == {
+        "dataset_drift": True,
+        "number_of_columns": 3,
+        "number_of_drifted_columns": 2,
+        "share_of_drifted_columns": approx(0.67, abs=0.01),
+        "drift_share": 0.5,
+    }
 
 
 def test_dataset_drift_metric_json_output() -> None:
@@ -166,14 +175,15 @@ def test_dataset_drift_metric_json_output() -> None:
             "prediction": [1, 0, 1, 0],
         }
     )
-    report = Report(metrics=[DatasetDriftMetric(options=DataDriftOptions(threshold=0.7))])
+    report = Report(metrics=[DatasetDriftMetric(stattest_threshold=0.7)])
     report.run(current_data=current_dataset, reference_data=reference_dataset)
     result_json = report.json()
-    result = json.loads(result_json)["metrics"]["DatasetDriftMetric"]
-    assert result == {
+    result = json.loads(result_json)
+    assert result["metrics"][0]["metric"] == "DatasetDriftMetric"
+    assert result["metrics"][0]["result"] == {
         "dataset_drift": True,
         "number_of_columns": 3,
         "number_of_drifted_columns": 2,
-        "share_of_drifted_columns": 0.6666666666666666,
-        "threshold": 0.5,
+        "share_of_drifted_columns": approx(0.67, abs=0.01),
+        "drift_share": 0.5,
     }

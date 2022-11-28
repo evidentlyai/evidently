@@ -7,7 +7,6 @@ import pytest
 
 from evidently import ColumnMapping
 from evidently.metrics import DataQualityStabilityMetric
-from evidently.metrics.base_metric import InputData
 from evidently.metrics.data_quality.stability_metric import DataQualityStabilityMetricResult
 from evidently.report import Report
 
@@ -57,9 +56,9 @@ def test_data_quality_stability_metric_success(
     metric: DataQualityStabilityMetric,
     expected: DataQualityStabilityMetricResult,
 ) -> None:
-    result = metric.calculate(
-        data=InputData(current_data=current, reference_data=reference, column_mapping=ColumnMapping())
-    )
+    report = Report(metrics=[metric])
+    report.run(current_data=current, reference_data=reference, column_mapping=ColumnMapping())
+    result = metric.get_result()
     assert result == expected
 
 
@@ -120,9 +119,8 @@ def test_data_quality_stability_metric_with_report(
     report = Report(metrics=[metric])
     report.run(current_data=current_data, reference_data=reference_data, column_mapping=column_mapping)
     assert report.show()
-    json_result = report.json()
-    assert len(json_result) > 0
-    parsed_json_result = json.loads(json_result)
-    assert "metrics" in parsed_json_result
-    assert "DataQualityStabilityMetric" in parsed_json_result["metrics"]
-    assert json.loads(json_result)["metrics"]["DataQualityStabilityMetric"] == expected_json
+    result_json = report.json()
+    assert len(result_json) > 0
+    result = json.loads(result_json)
+    assert result["metrics"][0]["metric"] == "DataQualityStabilityMetric"
+    assert result["metrics"][0]["result"] == expected_json

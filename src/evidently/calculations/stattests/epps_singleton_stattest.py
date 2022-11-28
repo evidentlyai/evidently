@@ -1,3 +1,28 @@
+"""Epps-Singleton test of two samples.
+
+Name: "es"
+
+Import:
+
+    >>> from evidently.calculations.stattests import epps_singleton_test
+
+Properties:
+- only for numerical features
+- returns p-value
+- default threshold 0.05
+
+Example:
+    Using by object:
+
+    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.calculations.stattests import epps_singleton_test
+    >>> options = DataDriftOptions(all_features_stattest=epps_singleton_test)
+
+    Using by name:
+
+    >>> from evidently.options import DataDriftOptions
+    >>> options = DataDriftOptions(all_features_stattest="es")
+"""
 from typing import Tuple
 
 import numpy as np

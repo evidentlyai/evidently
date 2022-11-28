@@ -1,3 +1,27 @@
+"""Energy-distance test of two samples.
+
+Name: "ed"
+
+Import:
+
+    >>> from evidently.calculations.stattests import energy_dist_test
+
+Properties:
+- only for numerical features
+- returns p-value
+
+Example:
+    Using by object:
+
+    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.calculations.stattests import energy_dist_test
+    >>> options = DataDriftOptions(all_features_stattest=energy_dist_test)
+
+    Using by name:
+
+    >>> from evidently.options import DataDriftOptions
+    >>> options = DataDriftOptions(all_features_stattest="ed")
+"""
 from typing import Tuple
 
 import pandas as pd

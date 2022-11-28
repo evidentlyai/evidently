@@ -1,5 +1,12 @@
+"""
+Available metrics for Reports and Tests.
+All metrics is grouped into modules.
+For specific group see module documentation.
+"""
+
 from .classification_performance.class_balance_metric import ClassificationClassBalance
 from .classification_performance.class_separation_metric import ClassificationClassSeparationPlot
+from .classification_performance.classification_dummy_metric import ClassificationDummyMetric
 from .classification_performance.classification_quality_metric import ClassificationQualityMetric
 from .classification_performance.confusion_matrix_metric import ClassificationConfusionMatrix
 from .classification_performance.pr_curve_metric import ClassificationPRCurve
@@ -8,9 +15,6 @@ from .classification_performance.probability_distribution_metric import Classifi
 from .classification_performance.quality_by_class_metric import ClassificationQualityByClass
 from .classification_performance.quality_by_feature_table import ClassificationQualityByFeatureTable
 from .classification_performance.roc_curve_metric import ClassificationRocCurve
-from .classification_performance_metrics import ClassificationPerformanceMetrics
-from .classification_performance_metrics import ClassificationPerformanceMetricsThreshold
-from .classification_performance_metrics import ClassificationPerformanceMetricsTopK
 from .data_drift.column_drift_metric import ColumnDriftMetric
 from .data_drift.column_value_plot import ColumnValuePlot
 from .data_drift.data_drift_table import DataDriftTable
@@ -26,6 +30,8 @@ from .data_quality.column_distribution_metric import ColumnDistributionMetric
 from .data_quality.column_quantile_metric import ColumnQuantileMetric
 from .data_quality.column_value_list_metric import ColumnValueListMetric
 from .data_quality.column_value_range_metric import ColumnValueRangeMetric
+from .data_quality.conflict_prediction_metric import ConflictPredictionMetric
+from .data_quality.conflict_target_metric import ConflictTargetMetric
 from .data_quality.dataset_correlations_metric import DatasetCorrelationsMetric
 from .data_quality.stability_metric import DataQualityStabilityMetric
 from .regression_performance.abs_perc_error_in_time import RegressionAbsPercentageErrorPlot
@@ -35,6 +41,7 @@ from .regression_performance.error_in_time import RegressionErrorPlot
 from .regression_performance.error_normality import RegressionErrorNormality
 from .regression_performance.predicted_and_actual_in_time import RegressionPredictedVsActualPlot
 from .regression_performance.predicted_vs_actual import RegressionPredictedVsActualScatter
+from .regression_performance.regression_dummy_metric import RegressionDummyMetric
 from .regression_performance.regression_performance_metrics import RegressionPerformanceMetrics
 from .regression_performance.regression_quality import RegressionQualityMetric
 from .regression_performance.top_error import RegressionTopErrorMetric

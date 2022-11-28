@@ -6,7 +6,6 @@ import pytest
 
 from evidently import ColumnMapping
 from evidently.metrics import ColumnValueRangeMetric
-from evidently.metrics.base_metric import InputData
 from evidently.metrics.data_quality.column_value_range_metric import ColumnValueRangeMetricResult
 from evidently.metrics.data_quality.column_value_range_metric import ValuesInRangeStat
 from evidently.report import Report
@@ -68,10 +67,9 @@ def test_data_quality_values_in_range_metric_success(
     metric: ColumnValueRangeMetric,
     expected_result: ColumnValueRangeMetricResult,
 ) -> None:
-    data_mapping = ColumnMapping()
-    result = metric.calculate(
-        data=InputData(current_data=current_data, reference_data=reference_data, column_mapping=data_mapping)
-    )
+    report = Report(metrics=[metric])
+    report.run(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
+    result = metric.get_result()
     assert result == expected_result
 
 
@@ -127,11 +125,10 @@ def test_data_quality_values_in_range_metric_errors(
     reference_data: pd.DataFrame,
     metric: ColumnValueRangeMetric,
 ) -> None:
-    data_mapping = ColumnMapping()
     with pytest.raises(ValueError):
-        metric.calculate(
-            data=InputData(current_data=current_data, reference_data=reference_data, column_mapping=data_mapping)
-        )
+        report = Report(metrics=[metric])
+        report.run(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
+        metric.get_result()
 
 
 @pytest.mark.parametrize(
@@ -193,9 +190,8 @@ def test_data_quality_values_in_range_metric_with_report(
     report = Report(metrics=[metric])
     report.run(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
     assert report.show()
-    json_result = report.json()
-    assert len(json_result) > 0
-    parsed_json_result = json.loads(json_result)
-    assert "metrics" in parsed_json_result
-    assert "ColumnValueRangeMetric" in parsed_json_result["metrics"]
-    assert json.loads(json_result)["metrics"]["ColumnValueRangeMetric"] == expected_json
+    result_json = report.json()
+    assert len(result_json) > 0
+    result = json.loads(result_json)
+    assert result["metrics"][0]["metric"] == "ColumnValueRangeMetric"
+    assert result["metrics"][0]["result"] == expected_json

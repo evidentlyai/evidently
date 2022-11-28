@@ -5,7 +5,6 @@ import pandas as pd
 import pytest
 
 from evidently import ColumnMapping
-from evidently.metrics.base_metric import InputData
 from evidently.metrics.data_integrity.column_missing_values_metric import ColumnMissingValues
 from evidently.metrics.data_integrity.column_missing_values_metric import ColumnMissingValuesMetric
 from evidently.metrics.data_integrity.column_missing_values_metric import ColumnMissingValuesMetricResult
@@ -75,9 +74,9 @@ def test_column_missing_values_metric_success(
     metric: ColumnMissingValuesMetric,
     expected_result: ColumnMissingValuesMetricResult,
 ) -> None:
-    result = metric.calculate(
-        data=InputData(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
-    )
+    report = Report(metrics=[metric])
+    report.run(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
+    result = metric.get_result()
     assert result == expected_result
 
 
@@ -136,9 +135,9 @@ def test_column_missing_values_metric_value_error(
     metric: ColumnMissingValuesMetric,
 ) -> None:
     with pytest.raises(ValueError):
-        metric.calculate(
-            data=InputData(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
-        )
+        report = Report(metrics=[metric])
+        report.run(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
+        metric.get_result()
 
 
 @pytest.mark.parametrize(
@@ -223,8 +222,6 @@ def test_column_missing_values_metric_with_report(
     report.run(current_data=current_data, reference_data=reference_data)
     assert report.show()
     json_result = report.json()
-    assert len(json_result) > 0
-    parsed_json_result = json.loads(json_result)
-    assert "metrics" in parsed_json_result
-    assert "ColumnMissingValuesMetric" in parsed_json_result["metrics"]
-    assert json.loads(json_result)["metrics"]["ColumnMissingValuesMetric"] == expected_json
+    result = json.loads(json_result)
+    assert result["metrics"][0]["metric"] == "ColumnMissingValuesMetric"
+    assert result["metrics"][0]["result"] == expected_json

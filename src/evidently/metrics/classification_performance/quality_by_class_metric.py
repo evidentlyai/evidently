@@ -34,10 +34,10 @@ class ClassificationQualityByClassResult:
 class ClassificationQualityByClass(ThresholdClassificationMetric[ClassificationQualityByClassResult]):
     def __init__(
         self,
-        threshold: Optional[float] = None,
+        probas_threshold: Optional[float] = None,
         k: Optional[Union[float, int]] = None,
     ):
-        super().__init__(threshold, k)
+        super().__init__(probas_threshold, k)
 
     def calculate(self, data: InputData) -> ClassificationQualityByClassResult:
         columns = process_columns(data.current_data, data.column_mapping)
@@ -77,7 +77,6 @@ class ClassificationQualityByClass(ThresholdClassificationMetric[ClassificationQ
                 reference_roc_aucs = sklearn.metrics.roc_auc_score(
                     binaraized_target, ref_prediction.prediction_probas, average=None
                 ).tolist()
-
         return ClassificationQualityByClassResult(
             columns=columns,
             current_metrics=metrics_matrix,

@@ -1,3 +1,27 @@
+"""Fisher's exact test of two samples.
+
+Name: "fisher_exact"
+
+Import:
+
+    >>> from evidently.calculations.stattests import fisher_exact_test
+
+Properties:
+- only for categorical features
+- returns p-value
+
+Example:
+    Using by object:
+
+    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.calculations.stattests import fisher_exact_test
+    >>> options = DataDriftOptions(all_features_stattest=fisher_exact_test)
+
+    Using by name:
+
+    >>> from evidently.options import DataDriftOptions
+    >>> options = DataDriftOptions(all_features_stattest="fisher_exact")
+"""
 from typing import Tuple
 
 import numpy as np

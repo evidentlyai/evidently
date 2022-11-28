@@ -13,7 +13,9 @@ from pandas.core.dtypes.common import is_float_dtype
 from pandas.core.dtypes.common import is_integer_dtype
 from pandas.core.dtypes.common import is_object_dtype
 from pandas.core.dtypes.common import is_string_dtype
+from sklearn import metrics
 
+from evidently import ColumnMapping
 from evidently.utils.data_operations import DatasetColumns
 
 
@@ -27,23 +29,30 @@ def calculate_confusion_by_classes(
     confusion_matrix: np.ndarray,
     class_names: Sequence[Union[str, int]],
 ) -> Dict[Union[str, int], Dict[str, int]]:
-    """Calculate metrics
-        TP (true positive)
-        TN (true negative)
-        FP (false positive)
-        FN (false negative)
+    """Calculate metrics:
+    - TP (true positive)
+    - TN (true negative)
+    - FP (false positive)
+    - FN (false negative)
     for each class from confusion matrix.
 
-    Returns a dict like:
-    {
-        "class_1_name": {
-            "tp": 1,
-            "tn": 5,
-            "fp": 0,
-            "fn": 3,
-        },
-        ...
-    }
+    Returns:
+        a dict like::
+
+            {
+                "class_1_name": {
+                    "tp": 1,
+                    "tn": 5,
+                    "fp": 0,
+                    "fn": 3,
+                },
+                "class_1_name": {
+                    "tp": 1,
+                    "tn": 5,
+                    "fp": 0,
+                    "fn": 3,
+                },
+            }
     """
     true_positive = np.diag(confusion_matrix)
     false_positive = confusion_matrix.sum(axis=0) - np.diag(confusion_matrix)
@@ -255,3 +264,136 @@ def calculate_pr_table(binded):
         recall = round(100.0 * tp / target_class_size, 1)
         result.append([top, int(count), prob, int(tp), int(fp), precision, recall])
     return result
+
+
+def calculate_matrix(
+    target: pd.Series,
+    prediction: pd.Series,
+    labels: List[Union[str, int]],
+) -> ConfusionMatrix:
+    sorted_labels = sorted(labels)
+    matrix = metrics.confusion_matrix(target, prediction, labels=sorted_labels)
+    return ConfusionMatrix(sorted_labels, [row.tolist() for row in matrix])
+
+
+def collect_plot_data(prediction_probas: pd.DataFrame):
+    res = {}
+    mins = []
+    lowers = []
+    means = []
+    uppers = []
+    maxs = []
+    for col in prediction_probas.columns:
+        mins.append(np.percentile(prediction_probas[col], 0))
+        lowers.append(np.percentile(prediction_probas[col], 25))
+        means.append(np.percentile(prediction_probas[col], 50))
+        uppers.append(np.percentile(prediction_probas[col], 75))
+        maxs.append(np.percentile(prediction_probas[col], 100))
+    res["mins"] = mins
+    res["lowers"] = lowers
+    res["means"] = means
+    res["uppers"] = uppers
+    res["maxs"] = maxs
+    return res
+
+
+@dataclasses.dataclass
+class DatasetClassificationQuality:
+    accuracy: float
+    precision: float
+    recall: float
+    f1: float
+    roc_auc: Optional[float] = None
+    log_loss: Optional[float] = None
+    tpr: Optional[float] = None
+    tnr: Optional[float] = None
+    fpr: Optional[float] = None
+    fnr: Optional[float] = None
+    rate_plots_data: Optional[Dict] = None
+    plot_data: Optional[Dict] = None
+
+
+def calculate_metrics(
+    column_mapping: ColumnMapping,
+    confusion_matrix: ConfusionMatrix,
+    target: pd.Series,
+    prediction: PredictionData,
+) -> DatasetClassificationQuality:
+    if column_mapping.pos_label is not None:
+        pos_label = column_mapping.pos_label
+    else:
+        pos_label = 1
+    tpr = None
+    tnr = None
+    fpr = None
+    fnr = None
+    roc_auc = None
+    log_loss = None
+    rate_plots_data = None
+    plot_data = None
+    if len(prediction.labels) == 2:
+        confusion_by_classes = calculate_confusion_by_classes(
+            np.array(confusion_matrix.values),
+            confusion_matrix.labels,
+        )
+        conf_by_pos_label = confusion_by_classes[pos_label]
+        precision = metrics.precision_score(target, prediction.predictions, pos_label=pos_label)
+        recall = metrics.recall_score(target, prediction.predictions, pos_label=pos_label)
+        f1 = metrics.f1_score(target, prediction.predictions, pos_label=pos_label)
+        tpr = conf_by_pos_label["tp"] / (conf_by_pos_label["tp"] + conf_by_pos_label["fn"])
+        tnr = conf_by_pos_label["tn"] / (conf_by_pos_label["tn"] + conf_by_pos_label["fp"])
+        fpr = conf_by_pos_label["fp"] / (conf_by_pos_label["fp"] + conf_by_pos_label["tn"])
+        fnr = conf_by_pos_label["fn"] / (conf_by_pos_label["fn"] + conf_by_pos_label["tp"])
+    else:
+        precision = metrics.precision_score(target, prediction.predictions, average="macro")
+        recall = metrics.recall_score(target, prediction.predictions, average="macro")
+        f1 = metrics.f1_score(target, prediction.predictions, average="macro")
+    if prediction.prediction_probas is not None:
+        binaraized_target = (
+            target.astype(str).values.reshape(-1, 1) == list(prediction.prediction_probas.columns.astype(str))
+        ).astype(int)
+        prediction_probas_array = prediction.prediction_probas.to_numpy()
+        roc_auc = metrics.roc_auc_score(binaraized_target, prediction_probas_array, average="macro")
+        log_loss = metrics.log_loss(binaraized_target, prediction_probas_array)
+        plot_data = collect_plot_data(prediction.prediction_probas)
+    if len(prediction.labels) == 2 and prediction.prediction_probas is not None:
+        fprs, tprs, thrs = metrics.roc_curve(target == pos_label, prediction.prediction_probas[pos_label])
+        roc_curve = {"fpr": fprs.tolist(), "tpr": tprs.tolist(), "thrs": thrs.tolist()}
+        rate_plots_data = {
+            "thrs": roc_curve["thrs"],
+            "tpr": roc_curve["tpr"],
+            "fpr": roc_curve["fpr"],
+        }
+        df = pd.DataFrame(
+            {"true": (target == pos_label).astype(int).values, "preds": prediction.prediction_probas[pos_label].values}
+        )
+        tnrs = []
+        fnrs = []
+        for tr in rate_plots_data["thrs"]:
+            if tr < 1:
+                tn = df[(df.true == 0) & (df.preds < tr)].shape[0]
+                fn = df[(df.true == 1) & (df.preds < tr)].shape[0]
+                tp = df[(df.true == 1) & (df.preds >= tr)].shape[0]
+                fp = df[(df.true == 0) & (df.preds >= tr)].shape[0]
+                tnrs.append(tn / (tn + fp))
+                fnrs.append(fn / (fn + tp))
+            else:
+                fnrs.append(1)
+                tnrs.append(1)
+        rate_plots_data["fnr"] = fnrs
+        rate_plots_data["tnr"] = tnrs
+
+    return DatasetClassificationQuality(
+        accuracy=metrics.accuracy_score(target, prediction.predictions),
+        precision=precision,
+        recall=recall,
+        f1=f1,
+        tpr=tpr,
+        tnr=tnr,
+        fpr=fpr,
+        fnr=fnr,
+        roc_auc=roc_auc,
+        log_loss=log_loss,
+        rate_plots_data=rate_plots_data,
+        plot_data=plot_data,
+    )

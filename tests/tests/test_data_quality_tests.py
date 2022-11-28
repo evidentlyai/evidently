@@ -6,6 +6,7 @@ from pytest import approx as pytest_approx
 
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.test_suite import TestSuite
+from evidently.tests import TestColumnQuantile
 from evidently.tests import TestColumnValueMax
 from evidently.tests import TestColumnValueMean
 from evidently.tests import TestColumnValueMedian
@@ -25,7 +26,6 @@ from evidently.tests import TestTargetFeaturesCorrelations
 from evidently.tests import TestTargetPredictionCorrelation
 from evidently.tests import TestUniqueValuesShare
 from evidently.tests import TestValueList
-from evidently.tests import TestValueQuantile
 from evidently.tests import TestValueRange
 from evidently.tests.base_test import TestResult
 from evidently.tests.utils import approx
@@ -485,11 +485,19 @@ def test_data_quality_test_number_of_values_not_in_range() -> None:
         }
     )
     suite = TestSuite(tests=[TestNumberOfOutRangeValues(column_name="feature1", lt=1)])
-    suite.run(current_data=test_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset,
+        reference_data=reference_dataset,
+        column_mapping=ColumnMapping(prediction=None),
+    )
     assert not suite
 
     suite = TestSuite(tests=[TestNumberOfOutRangeValues(column_name="feature1", lte=1)])
-    suite.run(current_data=test_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset,
+        reference_data=reference_dataset,
+        column_mapping=ColumnMapping(prediction=None),
+    )
     assert suite
     assert suite.show()
     assert suite.json()
@@ -518,11 +526,19 @@ def test_data_quality_test_share_of_values_not_in_range() -> None:
         }
     )
     suite = TestSuite(tests=[TestShareOfOutRangeValues(column_name="feature1", lt=0.2)])
-    suite.run(current_data=test_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset,
+        reference_data=reference_dataset,
+        column_mapping=ColumnMapping(prediction=None),
+    )
     assert not suite
 
     suite = TestSuite(tests=[TestShareOfOutRangeValues(column_name="feature1", lte=0.5)])
-    suite.run(current_data=test_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
+    suite.run(
+        current_data=test_dataset,
+        reference_data=reference_dataset,
+        column_mapping=ColumnMapping(prediction=None),
+    )
     assert suite
     assert suite.show()
     assert suite.json()
@@ -694,11 +710,11 @@ def test_data_quality_test_value_quantile() -> None:
         }
     )
 
-    suite = TestSuite(tests=[TestValueQuantile(column_name="feature1", quantile=0.7, lt=1)])
+    suite = TestSuite(tests=[TestColumnQuantile(column_name="feature1", quantile=0.7, lt=1)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert not suite
 
-    suite = TestSuite(tests=[TestValueQuantile(column_name="feature1", quantile=0.2, lt=0.7)])
+    suite = TestSuite(tests=[TestColumnQuantile(column_name="feature1", quantile=0.2, lt=0.7)])
     suite.run(current_data=test_dataset, reference_data=None, column_mapping=ColumnMapping())
     assert suite
     assert suite.show()

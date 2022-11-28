@@ -1,3 +1,4 @@
+from typing import Dict
 from typing import List
 from typing import Optional
 
@@ -5,6 +6,7 @@ import dataclasses
 from dataclasses import dataclass
 
 from evidently.calculations.data_drift import get_drift_for_columns
+from evidently.calculations.stattests import PossibleStatTestType
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
@@ -18,7 +20,7 @@ from evidently.utils.data_operations import process_columns
 
 @dataclass
 class DatasetDriftMetricResults:
-    threshold: float
+    drift_share: float
     number_of_columns: int
     number_of_drifted_columns: int
     share_of_drifted_columns: float
@@ -27,23 +29,37 @@ class DatasetDriftMetricResults:
 
 class DatasetDriftMetric(Metric[DatasetDriftMetricResults]):
     columns: Optional[List[str]]
-    threshold: float
     options: DataDriftOptions
+    drift_share: float
 
     def __init__(
-        self, columns: Optional[List[str]] = None, threshold: float = 0.5, options: Optional[DataDriftOptions] = None
+        self,
+        columns: Optional[List[str]] = None,
+        drift_share: float = 0.5,
+        stattest: Optional[PossibleStatTestType] = None,
+        cat_stattest: Optional[PossibleStatTestType] = None,
+        num_stattest: Optional[PossibleStatTestType] = None,
+        per_column_stattest: Optional[Dict[str, PossibleStatTestType]] = None,
+        stattest_threshold: Optional[float] = None,
+        cat_stattest_threshold: Optional[float] = None,
+        num_stattest_threshold: Optional[float] = None,
+        per_column_stattest_threshold: Optional[Dict[str, float]] = None,
     ):
         self.columns = columns
-        self.threshold = threshold
-
-        if options is None:
-            self.options = DataDriftOptions()
-
-        else:
-            self.options = options
+        self.options = DataDriftOptions(
+            all_features_stattest=stattest,
+            cat_features_stattest=cat_stattest,
+            num_features_stattest=num_stattest,
+            per_feature_stattest=per_column_stattest,
+            all_features_threshold=stattest_threshold,
+            cat_features_threshold=cat_stattest_threshold,
+            num_features_threshold=num_stattest_threshold,
+            per_feature_threshold=per_column_stattest_threshold,
+        )
+        self.drift_share = drift_share
 
     def get_parameters(self) -> tuple:
-        return self.threshold, self.columns, self.options
+        return self.drift_share, self.columns, self.options
 
     def calculate(self, data: InputData) -> DatasetDriftMetricResults:
         if data.reference_data is None:
@@ -54,12 +70,12 @@ class DatasetDriftMetric(Metric[DatasetDriftMetricResults]):
             current_data=data.current_data,
             reference_data=data.reference_data,
             data_drift_options=self.options,
-            drift_share_threshold=self.threshold,
+            drift_share_threshold=self.drift_share,
             dataset_columns=dataset_columns,
             columns=self.columns,
         )
         return DatasetDriftMetricResults(
-            threshold=self.threshold,
+            drift_share=self.drift_share,
             number_of_columns=result.number_of_columns,
             number_of_drifted_columns=result.number_of_drifted_columns,
             share_of_drifted_columns=result.share_of_drifted_columns,
@@ -92,7 +108,8 @@ class DataDriftMetricsRenderer(MetricRenderer):
             counter(
                 counters=[
                     CounterData(
-                        f"Dataset Drift is {drift_detected}. Dataset drift detection threshold is {result.threshold}",
+                        f"Dataset Drift is {drift_detected}. "
+                        f"Dataset drift detection threshold is {result.drift_share}",
                         "Dataset Drift",
                     )
                 ],

@@ -1,3 +1,27 @@
+"""Kullback-Leibler divergence of two samples.
+
+Name: "kl_div"
+
+Import:
+
+    >>> from evidently.calculations.stattests import kl_div_stat_test
+
+Properties:
+- only for categorical and numerical features
+- returns divergence
+
+Example:
+    Using by object:
+
+    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.calculations.stattests import kl_div_stat_test
+    >>> options = DataDriftOptions(all_features_stattest=kl_div_stat_test)
+
+    Using by name:
+
+    >>> from evidently.options import DataDriftOptions
+    >>> options = DataDriftOptions(all_features_stattest="kl_div")
+"""
 from typing import Tuple
 
 import pandas as pd

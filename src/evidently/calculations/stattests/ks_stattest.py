@@ -1,5 +1,27 @@
-#!/usr/bin/env python
-# coding: utf-8
+"""Kolmogorov-Smirnov test of two samples.
+
+Name: "ks"
+
+Import:
+
+    >>> from evidently.calculations.stattests import ks_stat_test
+
+Properties:
+- only for numerical features
+- returns p-value
+
+Example:
+    Using by object:
+
+    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.calculations.stattests import ks_stat_test
+    >>> options = DataDriftOptions(all_features_stattest=ks_stat_test)
+
+    Using by name:
+
+    >>> from evidently.options import DataDriftOptions
+    >>> options = DataDriftOptions(all_features_stattest="ks")
+"""
 from typing import Tuple
 
 import pandas as pd

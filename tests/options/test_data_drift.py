@@ -16,7 +16,7 @@ from evidently.options import DataDriftOptions
 def test_confidence_threshold_valid(confidence, expected):
     options = DataDriftOptions(confidence=confidence)
     for feature, expected_threshold in expected.items():
-        assert approx(options.get_threshold(feature), expected_threshold)
+        assert approx(options.get_threshold(feature, "num"), expected_threshold)
 
 
 @pytest.mark.parametrize(
@@ -31,12 +31,12 @@ def test_confidence_threshold_valid(confidence, expected):
 def test_threshold_valid(threshold, expected):
     options = DataDriftOptions(threshold=threshold)
     for feature, expected_threshold in expected.items():
-        assert approx(options.get_threshold(feature), expected_threshold)
+        assert approx(options.get_threshold(feature, "num"), expected_threshold)
 
 
 def test_threshold_default():
     options = DataDriftOptions()
-    assert options.get_threshold("feature") is None
+    assert options.get_threshold("feature", "num") is None
 
 
 def test_threshold_invalid():
@@ -44,7 +44,7 @@ def test_threshold_invalid():
     # noinspection PyTypeChecker
     options = DataDriftOptions(confidence="")
     with pytest.raises(ValueError):
-        options.get_threshold("feature1")
+        options.get_threshold("feature1", "num")
 
 
 def _default_stattest():

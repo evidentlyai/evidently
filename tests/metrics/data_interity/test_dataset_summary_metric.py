@@ -6,7 +6,6 @@ import pytest
 
 from evidently import ColumnMapping
 from evidently.metrics import DatasetSummaryMetric
-from evidently.metrics.base_metric import InputData
 from evidently.metrics.data_integrity.dataset_summary_metric import DatasetSummary
 from evidently.metrics.data_integrity.dataset_summary_metric import DatasetSummaryMetricResult
 from evidently.report import Report
@@ -109,9 +108,9 @@ def test_dataset_summary_metric_success(
     metric: DatasetSummaryMetric,
     expected_result: DatasetSummaryMetricResult,
 ) -> None:
-    result = metric.calculate(
-        data=InputData(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
-    )
+    report = Report(metrics=[metric])
+    report.run(current_data=current_data, reference_data=reference_data, column_mapping=column_mapping)
+    result = metric.get_result()
     assert result == expected_result
 
 
@@ -144,9 +143,9 @@ def test_dataset_summary_metric_value_error(
     metric: DatasetSummaryMetric,
 ) -> None:
     with pytest.raises(ValueError):
-        metric.calculate(
-            data=InputData(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
-        )
+        report = Report(metrics=[metric])
+        report.run(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
+        metric.get_result()
 
 
 @pytest.mark.parametrize(
@@ -248,7 +247,6 @@ def test_dataset_summary_metric_with_report(
     assert report.show()
     json_result = report.json()
     assert len(json_result) > 0
-    parsed_json_result = json.loads(json_result)
-    assert "metrics" in parsed_json_result
-    assert "DatasetSummaryMetric" in parsed_json_result["metrics"]
-    assert json.loads(json_result)["metrics"]["DatasetSummaryMetric"] == expected_json
+    result = json.loads(json_result)
+    assert result["metrics"][0]["metric"] == "DatasetSummaryMetric"
+    assert result["metrics"][0]["result"] == expected_json

@@ -668,8 +668,19 @@ class TestColumnShareOfMissingValues(BaseIntegrityColumnMissingValuesTest):
 
 
 class TestAllColumnsShareOfMissingValues(BaseGenerator):
+    columns: Optional[List[str]]
+
+    def __init__(self, columns: Optional[List[str]] = None):
+        self.columns = columns
+
     def generate(self, columns_info: DatasetColumns) -> List[TestColumnShareOfMissingValues]:
-        return [TestColumnShareOfMissingValues(column_name=name) for name in columns_info.get_all_columns_list()]
+        if self.columns is None:
+            columns = columns_info.get_all_columns_list()
+
+        else:
+            columns = self.columns
+
+        return [TestColumnShareOfMissingValues(column_name=name) for name in columns]
 
 
 @default_renderer(wrap_type=TestColumnShareOfMissingValues)
@@ -1076,7 +1087,6 @@ class TestColumnsTypeRenderer(TestRenderer):
 
         info.details = [
             DetailsInfo(
-                id="drift_table",
                 title="",
                 info=BaseWidgetInfo(
                     title="",
@@ -1094,7 +1104,7 @@ class TestColumnsTypeRenderer(TestRenderer):
         return info
 
 
-class TestColumnValueRegExp(BaseCheckValueTest, ABC):
+class TestColumnRegExp(BaseCheckValueTest, ABC):
     group = DATA_INTEGRITY_GROUP.id
     name = "RegExp Match"
     metric: ColumnRegExpMetric
@@ -1147,9 +1157,9 @@ class TestColumnValueRegExp(BaseCheckValueTest, ABC):
         )
 
 
-@default_renderer(wrap_type=TestColumnValueRegExp)
-class TestColumnValueRegExpRenderer(TestRenderer):
-    def render_html(self, obj: TestColumnValueRegExp) -> TestHtmlInfo:
+@default_renderer(wrap_type=TestColumnRegExp)
+class TestColumnRegExpRenderer(TestRenderer):
+    def render_html(self, obj: TestColumnRegExp) -> TestHtmlInfo:
         info = super().render_html(obj)
         column_name = obj.column_name
         metric_result = obj.metric.get_result()

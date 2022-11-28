@@ -6,7 +6,6 @@ import pytest
 
 from evidently import ColumnMapping
 from evidently.metrics import DatasetCorrelationsMetric
-from evidently.metrics.base_metric import InputData
 from evidently.report import Report
 
 
@@ -22,9 +21,9 @@ def test_dataset_correlation_metric_success() -> None:
     )
     data_mapping = ColumnMapping(task="regression")
     metric = DatasetCorrelationsMetric()
-    result = metric.calculate(
-        data=InputData(current_data=current_dataset, reference_data=None, column_mapping=data_mapping)
-    )
+    report = Report(metrics=[metric])
+    report.run(current_data=current_dataset, reference_data=None, column_mapping=data_mapping)
+    result = metric.get_result()
     assert result is not None
     assert result.current is not None
     assert result.current.stats is not None
@@ -173,9 +172,8 @@ def test_dataset_correlations_metric_with_report(
     report = Report(metrics=[metric])
     report.run(current_data=current_data, reference_data=reference_data, column_mapping=column_mapping)
     assert report.show()
-    json_result = report.json()
-    assert len(json_result) > 0
-    parsed_json_result = json.loads(json_result)
-    assert "metrics" in parsed_json_result
-    assert "DatasetCorrelationsMetric" in parsed_json_result["metrics"]
-    assert json.loads(json_result)["metrics"]["DatasetCorrelationsMetric"] == expected_json
+    result_json = report.json()
+    assert len(result_json) > 0
+    result = json.loads(result_json)
+    assert result["metrics"][0]["metric"] == "DatasetCorrelationsMetric"
+    assert result["metrics"][0]["result"] == expected_json

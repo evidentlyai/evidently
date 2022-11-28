@@ -7,7 +7,6 @@ import pytest
 
 from evidently import ColumnMapping
 from evidently.metrics import RegressionErrorBiasTable
-from evidently.metrics.base_metric import InputData
 from evidently.report import Report
 
 
@@ -55,9 +54,9 @@ def test_regression_error_bias_table_value_errors(
     data_mapping = ColumnMapping()
 
     with pytest.raises(ValueError) as error:
-        metric.calculate(
-            data=InputData(current_data=current_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
-        )
+        report = Report(metrics=[metric])
+        report.run(current_data=current_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
+        metric.get_result()
 
     assert error.value.args[0] == error_message
 
@@ -119,9 +118,8 @@ def test_regression_error_bias_table_with_report(
     report = Report(metrics=[metric])
     report.run(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
     assert report.show()
-    json_result = report.json()
-    assert len(json_result) > 0
-    parsed_json_result = json.loads(json_result)
-    assert "metrics" in parsed_json_result
-    assert "RegressionErrorBiasTable" in parsed_json_result["metrics"]
-    assert json.loads(json_result)["metrics"]["RegressionErrorBiasTable"] == expected_json
+    result_json = report.json()
+    assert len(result_json) > 0
+    result = json.loads(result_json)
+    assert result["metrics"][0]["metric"] == "RegressionErrorBiasTable"
+    assert result["metrics"][0]["result"] == expected_json

@@ -1,10 +1,33 @@
+"""Cramer-Von-mises test of two samples.
+
+Name: "cramer_von_mises"
+
+Import:
+
+    >>> from evidently.calculations.stattests import cramer_von_mises
+
+Properties:
+- only for numerical features
+- returns p-value
+
+Example:
+    Using by object:
+
+    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.calculations.stattests import cramer_von_mises
+    >>> options = DataDriftOptions(all_features_stattest=cramer_von_mises)
+
+    Using by name:
+
+    >>> from evidently.options import DataDriftOptions
+    >>> options = DataDriftOptions(all_features_stattest="cramer_von_mises")
+"""
 from itertools import combinations
 from typing import Generator
 from typing import Tuple
 
 import numpy as np
 import pandas as pd
-from scipy.special import gamma
 from scipy.special import gammaln
 from scipy.special import kv
 from scipy.stats import rankdata
@@ -91,7 +114,7 @@ def _cdf_cvm_inf(x: float) -> float:
     return tot
 
 
-def CVM_2samp(x: np.ndarray, y: np.ndarray, method: str = "auto") -> CramerVonMisesResult:
+def _cvm_2samp(x: np.ndarray, y: np.ndarray, method: str = "auto") -> CramerVonMisesResult:
     """Perform the two-sample Cramér-von Mises test
     Args:
         x : array_like
@@ -169,13 +192,13 @@ def _cramer_von_mises(
         p_value: p-value
         test_result: whether the drift is detected
     """
-    res = CVM_2samp(reference_data, current_data)
+    res = _cvm_2samp(reference_data, current_data)
     return res.pvalue, res.pvalue <= threshold
 
 
 cramer_von_mises = StatTest(
     name="cramer_von_mises",
-    display_name="cramer_von_mises",
+    display_name="Cramer-Von-mises",
     func=_cramer_von_mises,
     allowed_feature_types=["num"],
     default_threshold=0.1,

@@ -1,5 +1,27 @@
-#!/usr/bin/env python
-# coding: utf-8
+"""Mann-Whitney U-rank test of two samples.
+
+Name: "mannw"
+
+Import:
+
+    >>> from evidently.calculations.stattests import mann_whitney_u_stat_test
+
+Properties:
+- only for numerical features
+- returns p-value
+
+Example:
+    Using by object:
+
+    >>> from evidently.options import DataDriftOptions
+    >>> from evidently.calculations.stattests import mann_whitney_u_stat_test
+    >>> options = DataDriftOptions(all_features_stattest=mann_whitney_u_stat_test)
+
+    Using by name:
+
+    >>> from evidently.options import DataDriftOptions
+    >>> options = DataDriftOptions(all_features_stattest="mannw")
+"""
 from typing import Tuple
 
 import numpy as np

@@ -7,7 +7,6 @@ import pytest
 
 from evidently import ColumnMapping
 from evidently.metrics import ColumnQuantileMetric
-from evidently.metrics.base_metric import InputData
 from evidently.report import Report
 
 
@@ -15,9 +14,9 @@ def test_data_quality_quantile_metric_success() -> None:
     test_dataset = pd.DataFrame({"numerical_feature": [0, 2, 2, 2, 0]})
     data_mapping = ColumnMapping()
     metric = ColumnQuantileMetric(column_name="numerical_feature", quantile=0.5)
-    result = metric.calculate(
-        data=InputData(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
-    )
+    report = Report(metrics=[metric])
+    report.run(current_data=test_dataset, reference_data=None, column_mapping=data_mapping)
+    result = metric.get_result()
     assert result is not None
     assert result.quantile == 0.5
     assert result.current == 2
@@ -67,9 +66,9 @@ def test_data_quality_quantile_metric_value_errors(
     data_mapping = ColumnMapping()
 
     with pytest.raises(ValueError) as error:
-        metric.calculate(
-            data=InputData(current_data=current_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
-        )
+        report = Report(metrics=[metric])
+        report.run(current_data=current_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
+        metric.get_result()
 
     assert error.value.args[0] == error_message
 
@@ -136,9 +135,8 @@ def test_column_quantile_metric_with_report(
     report = Report(metrics=[metric])
     report.run(current_data=current, reference_data=reference, column_mapping=column_mapping)
     assert report.show()
-    json_result = report.json()
-    assert len(json_result) > 0
-    parsed_json_result = json.loads(json_result)
-    assert "metrics" in parsed_json_result
-    assert "ColumnQuantileMetric" in parsed_json_result["metrics"]
-    assert json.loads(json_result)["metrics"]["ColumnQuantileMetric"] == expected_json
+    result_json = report.json()
+    assert len(result_json) > 0
+    result = json.loads(result_json)
+    assert result["metrics"][0]["metric"] == "ColumnQuantileMetric"
+    assert result["metrics"][0]["result"] == expected_json

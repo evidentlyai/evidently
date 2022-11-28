@@ -7,7 +7,6 @@ import pytest
 
 from evidently import ColumnMapping
 from evidently.metrics import ColumnValueListMetric
-from evidently.metrics.base_metric import InputData
 from evidently.metrics.data_quality.column_value_list_metric import ColumnValueListMetricResult
 from evidently.metrics.data_quality.column_value_list_metric import ValueListStat
 from evidently.report import Report
@@ -147,9 +146,9 @@ def test_data_quality_value_list_metric_success(
     expected_result: ColumnValueListMetricResult,
 ) -> None:
     data_mapping = ColumnMapping()
-    result = metric.calculate(
-        data=InputData(current_data=current_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
-    )
+    report = Report(metrics=[metric])
+    report.run(current_data=current_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
+    result = metric.get_result()
     assert result == expected_result
 
 
@@ -194,12 +193,10 @@ def test_data_quality_value_list_metric_value_errors(
     metric: ColumnValueListMetric,
     error_message: str,
 ) -> None:
-    data_mapping = ColumnMapping()
-
     with pytest.raises(ValueError) as error:
-        metric.calculate(
-            data=InputData(current_data=current_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
-        )
+        report = Report(metrics=[metric])
+        report.run(current_data=current_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
+        metric.get_result()
 
     assert error.value.args[0] == error_message
 
@@ -266,9 +263,8 @@ def test_data_quality_value_list_metric_with_report(
     report = Report(metrics=[metric])
     report.run(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
     assert report.show()
-    json_result = report.json()
-    assert len(json_result) > 0
-    parsed_json_result = json.loads(json_result)
-    assert "metrics" in parsed_json_result
-    assert "ColumnValueListMetric" in parsed_json_result["metrics"]
-    assert json.loads(json_result)["metrics"]["ColumnValueListMetric"] == expected_json
+    result_json = report.json()
+    assert len(result_json) > 0
+    result = json.loads(result_json)
+    assert result["metrics"][0]["metric"] == "ColumnValueListMetric"
+    assert result["metrics"][0]["result"] == expected_json

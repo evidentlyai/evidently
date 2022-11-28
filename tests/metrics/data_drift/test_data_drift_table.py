@@ -3,6 +3,7 @@ import json
 import numpy as np
 import pandas as pd
 import pytest
+from pytest import approx
 
 from evidently.metrics.data_drift.data_drift_table import DataDriftTable
 from evidently.options import DataDriftOptions
@@ -145,10 +146,44 @@ def test_data_drift_metrics_with_options() -> None:
             "prediction": [1, 0, 1],
         }
     )
-    report = Report(metrics=[DataDriftTable(options=DataDriftOptions(threshold=0.7))])
+    report = Report(metrics=[DataDriftTable(stattest_threshold=0.7)])
     report.run(current_data=current_dataset, reference_data=reference_dataset)
     assert report.show()
-    assert report.json()
+    result_json = report.json()
+    result = json.loads(result_json)
+    assert result["metrics"][0]["metric"] == "DataDriftTable"
+    assert result["metrics"][0]["result"] == {
+        "dataset_drift": False,
+        "drift_by_columns": {
+            "category_feature": {
+                "column_name": "category_feature",
+                "column_type": "cat",
+                "drift_detected": False,
+                "drift_score": 1.0,
+                "stattest_name": "Z-test p_value",
+                "threshold": 0.7,
+            },
+            "prediction": {
+                "column_name": "prediction",
+                "column_type": "cat",
+                "drift_detected": False,
+                "drift_score": 1.0,
+                "stattest_name": "Z-test p_value",
+                "threshold": 0.7,
+            },
+            "target": {
+                "column_name": "target",
+                "column_type": "cat",
+                "drift_detected": True,
+                "drift_score": 0.0,
+                "stattest_name": "chi-square p_value",
+                "threshold": 0.7,
+            },
+        },
+        "number_of_columns": 3,
+        "number_of_drifted_columns": 1,
+        "share_of_drifted_columns": 0.3333333333333333,
+    }
 
 
 def test_data_drift_metrics_json_output() -> None:
@@ -166,18 +201,19 @@ def test_data_drift_metrics_json_output() -> None:
             "prediction": [1, 0, 1, 1],
         }
     )
-    report = Report(metrics=[DataDriftTable(options=DataDriftOptions(threshold=0.7))])
+    report = Report(metrics=[DataDriftTable(stattest_threshold=0.7)])
     report.run(current_data=current_dataset, reference_data=reference_dataset)
     result_json = report.json()
-    result = json.loads(result_json)["metrics"]["DataDriftTable"]
-    assert result == {
+    result = json.loads(result_json)
+    assert result["metrics"][0]["metric"] == "DataDriftTable"
+    assert result["metrics"][0]["result"] == {
         "dataset_drift": True,
         "drift_by_columns": {
             "category_feature": {
                 "column_name": "category_feature",
                 "column_type": "cat",
                 "drift_detected": True,
-                "drift_score": 0.6592430036926307,
+                "drift_score": approx(0.66, abs=0.01),
                 "stattest_name": "Z-test p_value",
                 "threshold": 0.7,
             },
@@ -185,7 +221,7 @@ def test_data_drift_metrics_json_output() -> None:
                 "column_name": "prediction",
                 "column_type": "cat",
                 "drift_detected": False,
-                "drift_score": 0.8091498346314978,
+                "drift_score": approx(0.8, abs=0.01),
                 "stattest_name": "Z-test p_value",
                 "threshold": 0.7,
             },
@@ -200,5 +236,5 @@ def test_data_drift_metrics_json_output() -> None:
         },
         "number_of_columns": 3,
         "number_of_drifted_columns": 2,
-        "share_of_drifted_columns": 0.6666666666666666,
+        "share_of_drifted_columns": approx(0.67, abs=0.01),
     }

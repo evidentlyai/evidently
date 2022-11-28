@@ -5,7 +5,6 @@ import pandas as pd
 import pytest
 
 from evidently import ColumnMapping
-from evidently.metrics.base_metric import InputData
 from evidently.metrics.data_quality.column_distribution_metric import ColumnDistributionMetric
 from evidently.metrics.data_quality.column_distribution_metric import ColumnDistributionMetricResult
 from evidently.report import Report
@@ -33,9 +32,9 @@ def test_column_distribution_metric_success(
     expected_result: ColumnDistributionMetricResult,
 ) -> None:
     data_mapping = ColumnMapping()
-    result = metric.calculate(
-        data=InputData(current_data=current_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
-    )
+    report = Report(metrics=[metric])
+    report.run(current_data=current_dataset, reference_data=reference_dataset, column_mapping=data_mapping)
+    result = metric.get_result()
     assert result == expected_result
 
 
@@ -63,11 +62,9 @@ def test_column_distribution_metric_value_error(
     error_message: str,
 ) -> None:
     with pytest.raises(ValueError) as error:
-        metric.calculate(
-            data=InputData(
-                current_data=current_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping()
-            )
-        )
+        report = Report(metrics=[metric])
+        report.run(current_data=current_dataset, reference_data=reference_dataset, column_mapping=ColumnMapping())
+        metric.get_result()
 
     assert error.value.args[0] == error_message
 
@@ -100,9 +97,8 @@ def test_column_distribution_metric_with_report(
     report = Report(metrics=[metric])
     report.run(current_data=current_data, reference_data=reference_data, column_mapping=ColumnMapping())
     assert report.show()
-    json_result = report.json()
-    assert len(json_result) > 0
-    parsed_json_result = json.loads(json_result)
-    assert "metrics" in parsed_json_result
-    assert "ColumnDistributionMetric" in parsed_json_result["metrics"]
-    assert json.loads(json_result)["metrics"]["ColumnDistributionMetric"] == expected_json
+    result_json = report.json()
+    assert len(result_json) > 0
+    result = json.loads(result_json)
+    assert result["metrics"][0]["metric"] == "ColumnDistributionMetric"
+    assert result["metrics"][0]["result"] == expected_json
