@@ -60,11 +60,10 @@ class DataDriftTestPreset(TestPreset):
         self.per_column_stattest_threshold = per_column_stattest_threshold
 
     def generate_tests(self, data: InputData, columns: DatasetColumns):
-        default_drift_share = len(self.columns) // 3 if self.columns is not None else data.current_data.shape[1] // 3
         preset_tests: list = [
             TestShareOfDriftedColumns(
                 columns=self.columns,
-                lt=default_drift_share if self.drift_share is None else self.drift_share,
+                lt=0.3 if self.drift_share is None else self.drift_share,
                 stattest=self.stattest,
                 cat_stattest=self.cat_stattest,
                 num_stattest=self.num_stattest,
