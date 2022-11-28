@@ -119,11 +119,30 @@ def test_cramer_von_mises() -> None:
     assert cramer_von_mises.func(reference, current, "num", 0.001) == (approx(0.0643, abs=1e-3), False)
 
 
-def test_emperical_mmd() -> None:
+@pytest.mark.parametrize(
+    "reference, current, threshold, expected_pvalue, drift_detected",
+    (
+        (pd.Series([1, 1, 1, 1, 1] * 5, dtype="float"), pd.Series([0, 0, 0, 0, 0] * 5, dtype="float"), 0.1, 0, True),
+        (
+            pd.Series([1, 0, 1, 0, 1] * 5, dtype="float"),
+            pd.Series([1, 0, 1, 0, 1] * 5, dtype="float"),
+            0.1,
+            0.96,
+            False,
+        ),
+        (pd.Series([1, 1, 1, 1, 1] * 5, dtype="float"), pd.Series([0, 0, 0, 0, 0] * 5, dtype="float"), 0.1, 0, True),
+        (pd.Series([1, 1, 1, 1, 1] * 5, dtype="float"), pd.Series([1, 1, 1, 1, 1] * 5, dtype="float"), 0.1, 1, False),
+        (pd.Series([1.1, 0.2, 2.1, 0, 1]), pd.Series([1, 0, 2, 0, 1]), 0.1, 0.96, False),
+        (pd.Series(np.random.normal(0, 0.5, 100)), pd.Series(np.random.normal(0, 0.1, 100)), 0.1, 0, True),
+        (pd.Series(np.random.normal(0, 0.5, 100)), pd.Series(np.random.normal(0, 0.9, 100)), 0.1, 0, True),
+    ),
+)
+def test_emperical_mmd(reference, current, threshold, expected_pvalue, drift_detected) -> None:
     np.random.seed(0)
-    reference = pd.Series(np.random.normal(0, 0.5, 1000))
-    current = pd.Series(np.random.normal(2, 1, 1000))
-    assert emperical_mmd.func(reference, current, "num", 0.1) == (approx(0, abs=1e-3), True)
+    assert emperical_mmd.func(reference, current, "num", threshold) == (
+        approx(expected_pvalue, abs=1e-3),
+        drift_detected,
+    )
 
 
 def test_hellinger_distance() -> None:

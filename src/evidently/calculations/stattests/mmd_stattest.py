@@ -1,65 +1,113 @@
-from typing import List
+from typing import Optional
 from typing import Tuple
 
 import numpy as np
 import pandas as pd
-from sklearn import metrics
 
 from evidently.calculations.stattests.registry import StatTest
 from evidently.calculations.stattests.registry import register_stattest
 
 
-def _permutation_test(x: pd.Series, y: pd.Series, iterations: int = 100) -> np.ndarray:
-    """Permutation test.
+def squared_paired_dist(x: np.ndarray, y: np.ndarray) -> np.ndarray:
+    """Calculates the squared euclidean pairwise distance
     Args:
-        x: array_like
-        y: array_like
-        iterations: int
-        threshold: level of significance
+        x:reference data
+        y:current data
     Returns:
-        mmds: list of mmd values
+        dist: squared euclidean pairwise distance between x and y
     """
-    x = x.values
-    y = y.values
-    len_x = x.shape[0]
-    len_y = y.shape[0]
-    xy = np.hstack([x, y])
-    hold_mmds = []
-    for _ in range(iterations):
-        x_samp = np.random.choice(xy, len_x)
-        y_samp = np.random.choice(xy, len_y)
-        mmd_res = _emperical_mmd_rbf(x=pd.Series(x_samp), y=pd.Series(y_samp))
-        hold_mmds.append(mmd_res)
-    return np.array(hold_mmds)
+    dotx = x**2
+    doty = y**2
+    dist = doty.T - 2 * np.dot(x, y.T) + dotx
+    return dist
 
 
-def _emperical_mmd_rbf(x: pd.Series, y: pd.Series) -> float:
-    """Maximum Mean Discrepancy (MMD) test
+def sigma_median(dist: np.ndarray) -> float:
+    """Calculate the median sigma
     Args:
-        x: pandas series
-        y: pandas series
+        dist: pairwise distance result
     Returns:
-        mmd_distance: float
+        sigma: the median sigma
     """
-    m = x.shape[0]
-    n = y.shape[0]
-    x = x.values.reshape(-1, 1)
-    y = y.values.reshape(-1, 1)
-    sigma = np.median(metrics.pairwise_distances(x.reshape(-1, 1), y.reshape(-1, 1), metric="euclidean")) ** 2
-    gamma = 1 / sigma
-    Kxx = metrics.pairwise.rbf_kernel(x, x, gamma)
-    Kyy = metrics.pairwise.rbf_kernel(y, y, gamma)
-    Kxy = metrics.pairwise.rbf_kernel(x, y, gamma)
+    sigma = (0.5 * np.percentile(dist.flatten(), 50, interpolation="nearest")) ** 0.5
+    if sigma == 0:
+        return (0.5 * 1) ** 0.5
+    return sigma
 
-    t1 = 1 / (m * (m - 1))
-    t2 = 1 / (n * (n - 1))
-    t3 = 1 / (m * n)
-    A = np.sum(Kxx - np.diag(np.diagonal(Kxx)))
-    B = np.sum(Kyy - np.diag(np.diagonal(Kyy)))
-    C = np.sum(Kxy)
-    mmd_res = (t1 * A) + (t2 * B) - (2 * t3 * C)
 
-    return mmd_res
+def rbf(x: np.ndarray, y: np.ndarray, pass_sigma: Optional[float]) -> Tuple[np.ndarray, float]:
+    """compute the RBF kernel
+    Args:
+        x:reference data
+        y:current data
+        pass_sigma: override median sigma calculation (i.e provide custom sigma value)
+    Returns:
+        kernel: the computed kernel between reference and current
+    """
+    dist = squared_paired_dist(x, y)
+    sigma = sigma_median(dist)
+    if pass_sigma:
+        sigma = pass_sigma
+    gamma = 1.0 / (2.0 * sigma**2)
+    return np.exp(-gamma * dist), sigma
+
+
+def kernel_matrix(x: np.ndarray, y: np.ndarray) -> np.ndarray:
+    """Compute the kernel matrices(i.e. xx, xy and yy)
+    Args:
+        x: reference data
+        y: current data
+    Returns:
+        kernel_matrix: the concatenated kernel matrix
+    """
+    kxx, kxxsigma = rbf(x, x, pass_sigma=None)
+    kxy, tmp = rbf(x, y, pass_sigma=kxxsigma)
+    kyy, tmp = rbf(y, y, pass_sigma=kxxsigma)
+    kernel_matrix = np.concatenate((np.concatenate((kxx, kxy), axis=1), np.concatenate((kxy.T, kyy), axis=1)), axis=0)
+    return kernel_matrix
+
+
+def mmd_2samp(kernel_matrix: np.ndarray, no_y_values: int, permute: bool = False) -> float:
+    """Perform the mmd test without permutation
+    Args:
+        kernel_matrix: the concatenated similarity matrix(i.e. xx,xy and yy)
+        no_y_values: number of values in y
+        permute: whether to shuffle the kernel matrix or not
+    Returns:
+        mmd: mmd distance without permutation
+    """
+    no_x_values = kernel_matrix.shape[0] - no_y_values
+    if permute:
+        index = np.random.permutation(kernel_matrix.shape[0])
+        kernel_matrix = kernel_matrix[index][:, index]
+
+    Kxx = kernel_matrix[:-no_y_values, :-no_y_values]
+    Kyy = kernel_matrix[-no_y_values:, -no_y_values:]
+    Kxy = kernel_matrix[-no_y_values:, :-no_y_values]
+    A = 1 / (no_x_values * (no_x_values - 1))
+    B = 1 / (no_y_values * (no_y_values - 1))
+    mmd = A * Kxx.sum() + B * Kyy.sum() - 2.0 * Kxy.mean()
+    return mmd
+
+
+def mmd_pval(x: np.ndarray, y: np.ndarray) -> Tuple[float, float]:
+    """Run the mmd test with permutations
+    Args:
+        x:reference data as numpy array
+        y:current data as numpy array
+    Returns:
+        p_value:p_value
+        mmd:mmd distance between x and y
+    """
+    kernel_mat = kernel_matrix(x, y)
+    kernel_mat = kernel_mat - np.diag(np.diagonal(kernel_mat))
+
+    mmd = mmd_2samp(kernel_mat, y.shape[0], permute=False)
+    mmd_permuted = np.array([mmd_2samp(kernel_mat, y.shape[0], permute=True) for _ in range(100)])
+
+    p_val = (mmd <= mmd_permuted).mean()
+
+    return p_val, mmd
 
 
 def _mmd_stattest(
@@ -78,9 +126,11 @@ def _mmd_stattest(
         p_value: p-value
         test_result: whether the drift is detected
     """
-    mmd_res = _emperical_mmd_rbf(x=reference_data, y=current_data)
-    get_mmds = _permutation_test(x=reference_data, y=current_data, iterations=100)
-    p_value = np.mean(mmd_res <= get_mmds)
+    reference_data = reference_data.values.reshape(-1, 1)
+    current_data = current_data.values.reshape(-1, 1)
+
+    p_value, mmd = mmd_pval(reference_data, current_data)
+
     return p_value, p_value < threshold
 
 
