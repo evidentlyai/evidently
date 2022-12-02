@@ -2,7 +2,7 @@
 description: Run model evaluation or data drift analysis as Metaflow Flow and save the Evidently metrics in S3, visualizing it with the optional Metaflow UI.
 ---
 
-*This is a community-contributed integration. Author: Marcello Victorino (https://github.com/marcellovictorino).*
+*This is a community-contributed integration. Author: [Marcello Victorino](https://github.com/marcellovictorino).*
 
 Metaflow is an open-source [framework to helps scientists and engineers build and manage real-life data science projects](https://github.com/Netflix/metaflow).
 
