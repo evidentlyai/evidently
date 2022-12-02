@@ -31,3 +31,11 @@ Below are a few specific examples of how to integrate Evidently in the predictio
 {% endcontent-ref %}
 
 ![](<../.gitbook/assets/mlflow\_3 (1) (1).png>)
+
+### 4. Data and ML model checks with Metaflow
+
+{% content-ref url="evidently-and-metaflow.md" %}
+[evidently-and-metaflow.md](evidently-and-metaflow.md)
+{% endcontent-ref %}
+
+![Metaflow UI: card html](<../.gitbook/assets/metaflow_card_html.png>)
