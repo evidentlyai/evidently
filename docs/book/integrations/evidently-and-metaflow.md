@@ -4,9 +4,9 @@ description: Run model evaluation or data drift analysis as Metaflow Flow and sa
 
 *This is a community-contributed integration. Author: [Marcello Victorino](https://github.com/marcellovictorino).*
 
-Metaflow is an open-source [framework to helps scientists and engineers build and manage real-life data science projects](https://github.com/Netflix/metaflow).
+Metaflow is an open-source framework to helps scientists and engineers [build and manage real-life data science projects](https://github.com/Netflix/metaflow).
 
-You can use this integration to generate Evidently HTML reports, executed via a Metaflow Flow and visualize it as a [Card](https://docs.metaflow.org/api/cards) - using the [metaflow-card-html](https://pypi.org/project/metaflow-card-html/) plugin.
+You can use this integration to generate Evidently HTML reports and test suites, executed via a Metaflow Flow and visualize it as a [Card](https://docs.metaflow.org/api/cards) - using the [metaflow-card-html](https://pypi.org/project/metaflow-card-html/) plugin.
 
 # **Overview**
 
@@ -24,7 +24,7 @@ With Metaflow, you can organize your Batch process into multiple Flows, such as:
 2. **ServingFlow**: from the latest successful TrainingFlow, retrieves the best model and use it to make predictions on the new data
 3. **MonitoringFlow**: triggered by the `ServingFlow`, retrieves the data used in each last successful Flow and calculates the desired metrics, such as data quality and data drift, where `reference` is the data used in the `TrainingFlow` and `current` comes from the `ServingFlow`
 
-**Note**: Evidently calculates a rich set of metrics and statistical tests. You can choose any of the pre-built [reports and test suites](../reports/) to define the metrics you’d want to get.
+**Note**: Evidently calculates a rich set of metrics and statistical tests. You can choose any of the pre-built [reports and test suites](../reports/) to define the type of analysis you’d want to get.
 
 Within every Flow, it is possible to store artifacts that can be visualised with the `card` feature. This way, you can save the HTML content of the Evidently reports to be visualized with the `metaflow-card-html` plugin.
 
