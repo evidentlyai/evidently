@@ -8,10 +8,9 @@ try:
     from airflow.operators.python_operator import PythonOperator
     from sklearn import datasets
 
-    from evidently.dashboard import Dashboard
-    from evidently.dashboard.tabs import DataDriftTab
-    from evidently.model_profile import Profile
-    from evidently.model_profile.sections import DataDriftProfileSection
+    from evidently.report import Report
+    from evidently.metric_preset import DataDriftPreset
+    from evidently.pipeline.column_mapping import ColumnMapping
 
 except Exception as e:
     print("Error  {} ".format(e))
@@ -21,30 +20,47 @@ file_path = "boston_data_drift_by_airflow.html"
 
 
 def load_data_execute(**context):
-    print("load_data_execute   ")
+    data = datasets.load_boston()
+    data_frame = pd.DataFrame(data.data, columns=data.feature_names)
 
-    boston = datasets.load_boston()
-    boston_frame = pd.DataFrame(boston.data, columns=boston.feature_names)
+    data_columns = ColumnMapping()
+    data_columns.numerical_features = [
+        "CRIM",
+        "ZN",
+        "INDUS",
+        "NOX",
+        "RM",
+        "AGE",
+        "DIS",
+        "TAX",
+        "PTRATIO",
+        "B",
+        "LSTAT",
+    ]
 
-    context["ti"].xcom_push(key="boston_frame", value=boston_frame)
+    data_columns.categorical_features = ["CHAS", "RAD"]
+
+    context["ti"].xcom_push(key="data_frame", value=data_frame)
+    context["ti"].xcom_push(key="data_columns", value=data_columns)
 
 
 def drift_analysis_execute(**context):
-    data = context.get("ti").xcom_pull(key="boston_frame")
+    data = context.get("ti").xcom_pull(key="data_frame")
+    data_columns = context.get("ti").xcom_pull(key="data_columns")
 
-    boston_data_drift_dashboard = Dashboard(tabs=[DataDriftTab()])
-    boston_data_drift_dashboard.calculate(data[:200], data[200:])
+    boston_data_drift_report = Report(metrics=[DataDriftPreset()])
+    boston_data_drift_report.run(reference_data=data[:200], current_data=data[200:], column_mapping=data_columns)
 
     try:
         os.mkdir(dir_path)
     except OSError:
         print("Creation of the directory {} failed".format(dir_path))
 
-    boston_data_drift_dashboard.save(os.path.join(dir_path, file_path))
+    boston_data_drift_report.save_html(os.path.join(dir_path, file_path))
 
 
 with DAG(
-    dag_id="evidently_drift_dashboard",
+    dag_id="evidently_drift_report",
     schedule_interval="@daily",
     default_args={
         "owner": "airflow",
