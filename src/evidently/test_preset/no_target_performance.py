@@ -10,7 +10,6 @@ from evidently.tests import TestAllColumnsShareOfMissingValues
 from evidently.tests import TestCatColumnsOutOfListValues
 from evidently.tests import TestColumnDrift
 from evidently.tests import TestColumnsType
-from evidently.tests import TestCustomFeaturesValueDrift
 from evidently.tests import TestNumColumnsMeanInNSigmas
 from evidently.tests import TestNumColumnsOutOfRangeValues
 from evidently.tests import TestShareOfDriftedColumns
@@ -114,20 +113,5 @@ class NoTargetPerformanceTestPreset(TestPreset):
         preset_tests.append(TestNumColumnsOutOfRangeValues(columns=self.columns))
         preset_tests.append(TestCatColumnsOutOfListValues(columns=self.columns))
         preset_tests.append(TestNumColumnsMeanInNSigmas(columns=self.columns))
-
-        if self.columns:
-            preset_tests.append(
-                TestCustomFeaturesValueDrift(
-                    features=self.columns,
-                    stattest=self.stattest,
-                    cat_stattest=self.cat_stattest,
-                    num_stattest=self.num_stattest,
-                    per_column_stattest=self.per_column_stattest,
-                    stattest_threshold=self.stattest_threshold,
-                    cat_stattest_threshold=self.cat_stattest_threshold,
-                    num_stattest_threshold=self.num_features_threshold,
-                    per_column_stattest_threshold=self.per_feature_threshold,
-                )
-            )
 
         return preset_tests
