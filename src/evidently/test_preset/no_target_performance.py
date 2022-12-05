@@ -96,7 +96,6 @@ class NoTargetPerformanceTestPreset(TestPreset):
             )
         preset_tests.append(
             TestShareOfDriftedColumns(
-                columns=self.columns,
                 lt=0.3 if self.drift_share is None else self.drift_share,
                 stattest=self.stattest,
                 cat_stattest=self.cat_stattest,
