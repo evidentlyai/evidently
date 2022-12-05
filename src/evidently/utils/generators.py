@@ -46,6 +46,7 @@ def make_generator_by_columns(
     base_class: Type,
     columns: Optional[Union[str, list]] = None,
     parameters: Optional[Dict] = None,
+    skip_id_column: bool = False,
 ) -> BaseGenerator:
     """Create a test generator for a columns list with a test class.
 
@@ -79,7 +80,7 @@ def make_generator_by_columns(
                 columns_for_generation = columns
 
             elif columns == "all" or columns is None:
-                columns_for_generation = columns_info.get_all_columns_list()
+                columns_for_generation = columns_info.get_all_columns_list(skip_id_column=skip_id_column)
 
             elif columns == "cat":
                 columns_for_generation = columns_info.cat_feature_names
