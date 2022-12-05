@@ -66,7 +66,7 @@ class DataDriftTable(Metric[DataDriftTableResults]):
         )
 
     def get_parameters(self) -> tuple:
-        return self.columns, self.options
+        return None if self.columns is None else tuple(self.columns), self.options
 
     def calculate(self, data: InputData) -> DataDriftTableResults:
         if data.reference_data is None:

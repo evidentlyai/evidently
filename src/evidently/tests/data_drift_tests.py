@@ -46,6 +46,7 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
 
     def __init__(
         self,
+        columns: Optional[List[str]] = None,
         eq: Optional[Numeric] = None,
         gt: Optional[Numeric] = None,
         gte: Optional[Numeric] = None,
@@ -65,6 +66,7 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
     ):
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
         self.metric = DataDriftTable(
+            columns=columns,
             stattest=stattest,
             cat_stattest=cat_stattest,
             num_stattest=num_stattest,
@@ -184,6 +186,7 @@ class TestColumnDrift(Test):
 class TestAllFeaturesValueDrift(BaseGenerator):
     """Create value drift tests for numeric and category features"""
 
+    columns: Optional[List[str]]
     stattest: Optional[PossibleStatTestType]
     cat_stattest: Optional[PossibleStatTestType]
     num_stattest: Optional[PossibleStatTestType]
@@ -195,6 +198,7 @@ class TestAllFeaturesValueDrift(BaseGenerator):
 
     def __init__(
         self,
+        columns: Optional[List[str]] = None,
         stattest: Optional[PossibleStatTestType] = None,
         cat_stattest: Optional[PossibleStatTestType] = None,
         num_stattest: Optional[PossibleStatTestType] = None,
@@ -204,6 +208,7 @@ class TestAllFeaturesValueDrift(BaseGenerator):
         num_stattest_threshold: Optional[float] = None,
         per_column_stattest_threshold: Optional[Dict[str, float]] = None,
     ):
+        self.columns = columns
         self.stattest = stattest
         self.cat_stattest = cat_stattest
         self.num_stattest = num_stattest
@@ -216,6 +221,8 @@ class TestAllFeaturesValueDrift(BaseGenerator):
     def generate(self, columns_info: DatasetColumns) -> List[TestColumnDrift]:
         results = []
         for name in columns_info.cat_feature_names:
+            if self.columns and name not in self.columns:
+                continue
             stattest, threshold = resolve_stattest_threshold(
                 name,
                 "cat",
@@ -230,6 +237,8 @@ class TestAllFeaturesValueDrift(BaseGenerator):
             )
             results.append(TestColumnDrift(column_name=name, stattest=stattest, stattest_threshold=threshold))
         for name in columns_info.num_feature_names:
+            if self.columns and name not in self.columns:
+                continue
             stattest, threshold = resolve_stattest_threshold(
                 name,
                 "num",

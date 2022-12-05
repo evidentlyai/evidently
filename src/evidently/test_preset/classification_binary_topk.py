@@ -18,15 +18,15 @@ class BinaryClassificationTopKTestPreset(TestPreset):
     """
     Binary Classification Tests for Top K threshold.
     Args:
-        threshold: probabilities threshold for prediction with probas
-        prediction_type: type of prediction ('probas' or 'labels')
+        stattest: stattest for `TestColumnDrift`
+        stattest_threshold: threshold for stattest
 
     Contains:
-    - `TestColumnValueDrift` for target
-    - `TestPrecisionScore` - use threshold if prediction_type is 'probas'
-    - `TestRecallScore` - use threshold if prediction_type is 'probas'
-    - `TestF1Score` - use threshold if prediction_type is 'probas'
-    - `TestAccuracyScore` - use threshold if prediction_type is 'probas'
+    - `TestColumnDrift` for target
+    - `TestPrecisionScore`
+    - `TestRecallScore`
+    - `TestF1Score`
+    - `TestAccuracyScore`
     """
 
     stattest: Optional[PossibleStatTestType]
@@ -35,7 +35,6 @@ class BinaryClassificationTopKTestPreset(TestPreset):
     def __init__(
         self,
         k: Union[float, int],
-        probas_threshold: Optional[float] = None,
         stattest: Optional[PossibleStatTestType] = None,
         stattest_threshold: Optional[float] = None,
     ):
@@ -43,17 +42,16 @@ class BinaryClassificationTopKTestPreset(TestPreset):
         self.k = k
         self.stattest = stattest
         self.stattest_threshold = stattest_threshold
-        self.probas_threshold = probas_threshold
 
     def generate_tests(self, data: InputData, columns: DatasetColumns):
         target = columns.utility_columns.target
         if target is None:
             raise ValueError("Target column should be set in mapping and be present in data")
         return [
-            TestAccuracyScore(probas_threshold=self.probas_threshold, k=self.k),
-            TestPrecisionScore(probas_threshold=self.probas_threshold, k=self.k),
-            TestRecallScore(probas_threshold=self.probas_threshold, k=self.k),
-            TestF1Score(probas_threshold=self.probas_threshold, k=self.k),
+            TestAccuracyScore(k=self.k),
+            TestPrecisionScore(k=self.k),
+            TestRecallScore(k=self.k),
+            TestF1Score(k=self.k),
             TestColumnDrift(column_name=target, stattest=self.stattest, stattest_threshold=self.stattest_threshold),
             TestRocAuc(),
             TestLogLoss(),

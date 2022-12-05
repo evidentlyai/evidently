@@ -23,7 +23,7 @@ def test_no_target_performance_preset():
     )
     data_quality_suite = TestSuite(
         tests=[
-            MulticlassClassificationTestPreset(prediction_type="labels", stattest="psi"),
+            MulticlassClassificationTestPreset(stattest="psi"),
         ]
     )
 

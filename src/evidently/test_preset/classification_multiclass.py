@@ -19,7 +19,8 @@ class MulticlassClassificationTestPreset(TestPreset):
     Multiclass Classification tests.
 
     Args:
-        prediction_type: type of prediction data ('probas' or 'labels')
+        stattest: statistical test for target drift test.
+        stattest_threshold: threshold for statistical test for target drift test.
 
     Contains tests:
     - `TestAccuracyScore`
@@ -37,16 +38,11 @@ class MulticlassClassificationTestPreset(TestPreset):
 
     def __init__(
         self,
-        prediction_type: str,
         stattest: Optional[PossibleStatTestType] = None,
         stattest_threshold: Optional[float] = None,
     ):
         super().__init__()
 
-        if prediction_type not in ["probas", "labels"]:
-            raise ValueError("`prediction_type` argument should by one of 'probas' or 'labels'")
-
-        self.prediction_type = prediction_type
         self.stattest = stattest
         self.stattest_threshold = stattest_threshold
 
@@ -70,10 +66,8 @@ class MulticlassClassificationTestPreset(TestPreset):
             TestColumnDrift(column_name=target, stattest=self.stattest, stattest_threshold=self.stattest_threshold),
         ]
 
-        if self.prediction_type == "labels":
+        prediction_columns = data.data_definition.get_prediction_columns()
+        if prediction_columns is None or prediction_columns.prediction_probas is None:
             return tests
-
-        if self.prediction_type == "probas":
+        else:
             return tests + [TestRocAuc(), TestLogLoss()]
-
-        raise ValueError(f'Unexpected prediction_type: "{self.prediction_type}"')
