@@ -49,9 +49,7 @@ Default conditions for each test in the preset match the test's defaults. You ca
 
 # Data Integrity
 
-**Defaults for Data Integrity**. If there is no reference data or defined conditions, data integrity will be checked against a set of heuristics. 
-
-If you pass the reference data, Evidently will automatically derive all relevant statistics (e.g., number of columns, rows, share of missing values etc.) and apply default test conditions. You can also pass custom test conditions.  
+**Defaults for Data Integrity**. If there is no reference data or defined conditions, data integrity will be checked against a set of heuristics. If you pass the reference data, Evidently will automatically derive all relevant statistics (e.g., number of columns, rows, share of missing values etc.) and apply default test conditions. You can also pass custom test conditions.  
 
 **Defaults for Missing Values**. The metrics that calculate the number or share of missing values detect four types of the values by default: Pandas nulls (None, NAN, etc.), "" (empty string), Numpy "-inf" value, Numpy "inf" value. You can also pass a custom missing values as a parameter and specify if you want to replace the default list. Example:
 
@@ -85,9 +83,7 @@ TestNumberOfMissingValues(missing_values=["", 0, "n/a", -9999, None], replace=Tr
 
 # Data Quality
 
-**Defaults for data quality**. If there is no reference data or defined conditions, data quality will be checked against a set of heuristics. 
-
-If you pass the reference data, Evidently will automatically derive all relevant statistics (e.g., min value, max value, value range, value list, etc.) and apply default test conditions. You can also pass custom test conditions.  
+**Defaults for data quality**. If there is no reference data or defined conditions, data quality will be checked against a set of heuristics. If you pass the reference data, Evidently will automatically derive all relevant statistics (e.g., min value, max value, value range, value list, etc.) and apply default test conditions. You can also pass custom test conditions.  
 
 | Test name  | Description | Parameters | Default test conditions | 
 |---|---|---|---|
@@ -129,9 +125,7 @@ To modify the logic or select a different test, you should set [data drift param
 
 # Regression
 
-**Defaults for Regression tests**: if there is no reference data or defined conditions, Evidently will compare the model performance to a dummy model that predicts the optimal constant (varies by the metric). 
-
-You can also pass the reference dataset and run the test with default conditions, or define custom test conditions.
+**Defaults for Regression tests**: if there is no reference data or defined conditions, Evidently will compare the model performance to a dummy model that predicts the optimal constant (varies by the metric). You can also pass the reference dataset and run the test with default conditions, or define custom test conditions.
 
 | Test name  | Description | Parameters | Default test conditions |  
 |---|---|---|---|
@@ -146,9 +140,7 @@ You can also pass the reference dataset and run the test with default conditions
 
 You can apply the tests for non-probabilistic, probabilistic classification, and ranking. The underlying metrics will be calculated slightly differently depending on the provided inputs: only labels, probabilities, decision threshold, and/or K (to compute, e.g., precision@K). 
 
-**Defaults for Classification tests**. If there is no reference data or defined conditions, Evidently will compare the model performance to a dummy model. It is based on a set of heuristics to verify that the quality is better than random.
-
-You can also pass the reference dataset and run the test with default conditions, or define custom test conditions.
+**Defaults for Classification tests**. If there is no reference data or defined conditions, Evidently will compare the model performance to a dummy model. It is based on a set of heuristics to verify that the quality is better than random. You can also pass the reference dataset and run the test with default conditions, or define custom test conditions.
 
 | Test name | Description | Parameters | Default test conditions | 
 |---|---|---|---|
