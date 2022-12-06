@@ -17,7 +17,7 @@ You can use the menu on the right to navigate the sections. We organize individu
 
 * **Name**: the name of the test or test preset.  
 * **Description**: plain text explanation of the test, or the content of the preset. For tests, we specify whether it applies to the whole dataset or individual columns.
-* **Parameters**: available configurations 
+* **Parameters**: available configurations. 
   * Required parameters are necessary to for calculations, e.g. a column name for a column-level test.
   * Optional parameters modify how the underlying metric is calculated, e.g. which statistical test or correlation method is used.
   * *Test condition parameters* help set the conditions (e.g. equal, not equal, greater than, etc.) that define the expectations from the test output. If the condition is violated, the test returns a fail. Here you can see the complete list of the [standard condition parameteres](../tests-and-reports/run-tests.md#available-parameters). They apply to most of the tests, and are optional.
