@@ -9,7 +9,7 @@ description: List of all tests and test presets available in Evidently.
 This is a reference page. You can return here:
 * To discover **available tests** and choose which to include in a custom test suite.
 * To understand which **parameters** you can change for a specific test or preset.
-* To verify which tests are included in a **preset**.
+* To verify which tests are included in a **test preset**.
 
 You can use the menu on the right to navigate the sections. We organize individual tests into groups, e.g. Data Quality, Data Integrity, Regression, etc. Note that these groups do **not** match the presets with similar names. For example, there are more Data Quality tests than in the `DataQualityTestPreset`. 
 
