@@ -6,21 +6,22 @@ description: List of all tests and test presets available in Evidently.
 
 <summary>How to use this page</summary>
  
-This is a reference page that helps quickly see all the tests and test presets available in the library, and their parameters. 
+This is a reference page. You can return here:
+* To discover **available tests** and choose which to include in a custom test suite.
+* To understand which **parameters** you can change for a specific test or preset.
+* To verify which tests are included in a **preset**.
 
-We organize the tests into logical groups, e.g. Data Quality, Data Integrity, Regression, etc. You can use the menu on the right to navigate the sections.
- 
-Note that these groups do not match the presets with the same name, e.g., there are more Data Quality tests below than in the `DataQualityTestPreset`. You can use this reference page to discover additional tests to include in your custom test suite.
+You can use the menu on the right to navigate the sections. We organize individual tests into groups, e.g. Data Quality, Data Integrity, Regression, etc. Note that these groups do **not** match the presets with similar names. For example, there are more Data Quality tests than in the `DataQualityTestPreset`. 
 
 # How to read the tables
 
-* **Name**: the name of an individual test or preset.  
-* **Description**: plain text explanation of the test, or the contents of the preset. For tests, we specify whether it applies to the whole dataset or individual columns.
-* **Parameters**: required and optional parameters for the test or test preset. 
+* **Name**: the name of the test or test preset.  
+* **Description**: plain text explanation of the test, or the content of the preset. For tests, we specify whether it applies to the whole dataset or individual columns.
+* **Parameters**: available configurations 
   * Required parameters are necessary to for calculations, e.g. a column name for a column-level test.
   * Optional parameters modify how the underlying metric is calculated, e.g. which statistical test or correlation method is used.
   * *Test condition parameters* help set the conditions (e.g. equal, not equal, greater than, etc.) that define the expectations from the test output. If the condition is violated, the test returns a fail. Here you can see the complete list of the [standard condition parameteres](../tests-and-reports/run-tests.md#available-parameters). They apply to most of the tests, and are optional.
-* **Default tests condition**: test conditions that apply if you do not set a custom сondition. 
+* **Default tests condition**: they apply if you do not set a custom сondition. 
   * With reference: the test conditions that apply when you pass a reference dataset and Evidently can derive expectations from it. 
   * No reference: the test conditions that apply if you do not provide the reference. They are based on heuristics.
  
@@ -28,7 +29,7 @@ Note that these groups do not match the presets with the same name, e.g., there 
 </details>
 
 {% hint style="info" %} 
-We are doing our best to maintain this page up to date. In case of discrepancies, consult the [API reference](https://docs.evidentlyai.com/reference/api-reference) or the current version of the "All tests" example notebook in the [Examples](../get-started/examples.md) section. If you notice an error, please send us a pull request to update the documentation! 
+We are doing our best to maintain this page up to date. In case of discrepancies, consult the [API reference](https://docs.evidentlyai.com/reference/api-reference) or the "All tests" notebook in the [Examples](../get-started/examples.md) section. If you notice an error, please send us a pull request to update the documentation! 
 {% endhint %}
 
 # Test Presets
