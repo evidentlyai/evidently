@@ -22,7 +22,7 @@ Below are a few specific examples of how to integrate Evidently in the predictio
 [evidently-and-airflow.md](evidently-and-airflow.md)
 {% endcontent-ref %}
 
-![](<../.gitbook/assets/image (12) (1).png>)
+![](<../.gitbook/assets/integrations/airflow_dag_readme.png>)
 
 ### 3. Log Evidently metrics in MLflow UI
 
