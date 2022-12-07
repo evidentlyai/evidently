@@ -112,7 +112,7 @@ housing_data.rename(columns={'MedHouseVal': 'target'}, inplace=True)
 housing_data['prediction'] = housing_data['target'].values + np.random.normal(0, 5, housing_data.shape[0])
 ```
 
-Split the dataset by taking 5000 objects for **reference** and **current** datasets. This way, you get two samples to compare.  
+Split the dataset by taking 5000 objects for **reference** and **current** datasets.   
 
 ```python
 reference = housing_data.sample(n=5000, replace=False)
@@ -159,11 +159,11 @@ If you click on individual features, it will show additional plots to explore.
 **How does it work?** The data drift report compares the distributions of each feature in the two datasets. It [automatically picks](../reference/data-drift-algorithm.md) an appropriate statistical test or metric based on the feature type and volume. It then returns p-values or distances and visually plots the distributions. You can also [adjust the drift detection method or thresholds](../customization/options-for-statistical-tests.md), or pass your own.
 
 {% hint style="info" %}
-**Large reports might take time to load.** The example dataset is small, so the report should appear quickly. If you use a larger dataset, the report might take time to show. The size limitation depends on your infrastructure. In this case, we suggest applying sampling to your dataset before passing it to Evidently. You can do it with pandas.
+**Large reports might take time to load.** The example dataset is small, so the report appears quickly. If you use a larger dataset, the report might take time to show. The size limitation depends on your infrastructure. In this case, we suggest applying sampling to your dataset before passing it to Evidently.
 {% endhint %}
 
 {% hint style="info" %}
-**Visualizations might work differently in other notebook environments**. For example, in the Jupyter lab, you won't be able to display the HTML directly in the cell. In this case, try exporting the file as HTML. In other notebooks like Databricks, Kaggle and Deepnote, you should add an argument to display the report inline: iris_data_drift_report.show(mode='inline'). Consult [this section](../tests-and-reports/supported-environments.md) for help.
+**Visualizations might work differently in other notebook environments**. For example, in the Jupyter lab, you won't be able to display the HTML in the cell. In this case, export the file as HTML. In other notebooks like Databricks, Kaggle and Deepnote, you should add an argument to display the report inline: iris_data_drift_report.show(mode='inline'). Consult [this section](../tests-and-reports/supported-environments.md) for help.
 {% endhint %}
 
 ## 5. Customize the report
@@ -188,7 +188,9 @@ You will see a combined report that includes multiple metrics:
 
 ![Part of the custom report, ColumnSummaryMetric.](../.gitbook/assets/tutorial/get-started-column-summary_metric-min.png)
 
-If you want to generate multiple column-level metrics, for example, to calculate the 0.25 quantile value for all the columns in the list, you can use the metric generator function. Here is how you can do for two defined columns:
+If you want to generate multiple column-level metrics (for example, to calculate the same quantile value for all the columns in the list), you can use the metric generator function. 
+
+Here is how you can do for two defined columns:
 
 ```
 report = Report(metrics=[
@@ -199,7 +201,7 @@ report.run(reference_data=reference, current_data=current)
 report
 ```
 
-You can easily combine individual metrics, presets and functions to generate multiple column metrics in a single list:
+You can easily combine individual metrics, presets and metric generators in a single list:
 
 ```
 report = Report(metrics=[
@@ -213,7 +215,7 @@ report
 ```
 
 {% hint style="info" %}
-**Available metrics and presets**. You can refer to the All Metrics [reference table](../reference/all-metrics.md) to browse available metrics and presets or use one of the example notebooks with presets or metrics in the [Examples](../examples/readme.md) section.
+**Available metrics and presets**. You can refer to the All Metrics [reference table](../reference/all-metrics.md) to browse available metrics and presets or use one of the example notebooks in the [Examples](../examples/readme.md) section.
 {% endhint %}
 
 ## 6. Define the report output format
@@ -320,17 +322,17 @@ You can extract necessary information from the JSON or Python dictionary output 
 
 ## 8. What else is there?
 
-**Go through the steps in more detail**
+* **Go through the steps in more detail**
 
 If you want to walk through all the described steps in more detail, refer to the [User Guide](../tests-and-reports/readme.md). A good next step is to explore how to pass custom test parameters to define your own [test conditions](../tests-and-reports/run-tests.md#how-to-set-the-parameters).  
 
-**Explore available presets**
+* **Explore available presets**
 
 Both **tests** and **reports** have multiple presets available. Some, like Data Quality, require only input data. You can use them even without the reference dataset. When you have the true labels, you can run presets like **Regression Performance** and **Classification Performance** to evaluate the model quality and errors. 
 
 To understand the contents of each preset, you can explore the [Reports](../reports) and [Test Suites](../tests). If you want to see the pre-rendered examples of the reports, browse Colab notebooks in the [Examples](../get-started/examples.md) section. 
 
-**Explore available integrations**
+* **Explore available integrations**
 
 If you want to explore more examples of how to integrate Evidently with other tools like MLflow and Airflow, refer to the [Integrations](../integrations). 
  
