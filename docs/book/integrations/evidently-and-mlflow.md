@@ -4,7 +4,10 @@ description: Log Evidently metrics in the MLflow UI.
 
 # Evidently and MLflow
 
-**TL;DR:** You can use Evidently to calculate metrics, and MLflow Tracking to log and view the results. Here is a [sample Jupyter notebook](../../../examples/integrations/mlflow\_logging/mlflow\_integration.ipynb).
+**TL;DR:** You can use Evidently to calculate metrics, and MLflow Tracking to log and view the results. 
+
+Jupyter notebook:
+{% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/integrations/mlflow_logging/mlflow_integration.ipynb" %}
 
 ### **Overview**
 
@@ -14,11 +17,9 @@ In this case, you use **Evidently to calculate the metrics** and **MLflow to log
 
 ### **How it works**
 
-Evidently calculates a rich set of metrics and statistical tests. You can choose any of the pre-built [reports](../reports/) to define the metrics you’d want to get.
+Evidently calculates a rich set of metrics and statistical tests. You can choose any of the [pre-built reports](../reports/) or combine [individual metrics](../reference/all-metrics.md) to define what you want to measure. For example, you can evaluate prediction drift and feature drift together.
 
-You can then generate **a JSON profile** that will contain the defined metrics output. You can combine several profile sections (e.g., Data and Prediction Drift together).
-
-You might not always need all metrics from the profile. You should explicitly define which parts of the output to send to **MLflow Tracking**.
+You can then generate the calculation output **in a JSON format**. You should explicitly define which parts of the output to send to **MLflow Tracking**.
 
 ## Tutorial 1: Evaluating Data Drift with **MLFlow and Evidently**
 
@@ -36,8 +37,6 @@ Evidently is available as a PyPI package:
 $ pip install evidently
 ```
 
-For more details, refer to the Evidently [installation guide](../get-started/install-evidently.md).
-
 To install MLflow, run:
 
 ```
@@ -54,7 +53,7 @@ For more details, refer to MLflow [documentation](https://mlflow.org/docs/latest
 
 ### Step 2. Load the data
 
-Load the data from UCI repository ([link](https://archive.ics.uci.edu/ml/datasets/bike+sharing+dataset)) and save it locally.
+Load the data from UCI repository ([link](https://archive.ics.uci.edu/ml/datasets/bike+sharing+dataset) and save it locally.
 
 For demonstration purposes, we treat this data as the input data for a live model. To use with production models, you should make your prediction logs available.
 
@@ -67,25 +66,27 @@ This is how it looks:
 We specify the categorical and numerical features so that Evidently performs the correct statistical test for each of them.
 
 ```
-data_columns = {}
-data_columns['numerical_features'] = ['weather', 'temp', 'atemp', 'humidity', 'windspeed']
-data_columns['categorical_features'] = ['holiday', 'workingday']
+data_columns = ColumnMapping()
+data_columns.numerical_features = ['weathersit', 'temp', 'atemp', 'hum', 'windspeed']
+data_columns.categorical_features = ['holiday', 'workingday']
 ```
 
 ### Step 4. Define what to log
 
-We specify which metrics we want to see. In this case, we want to get the p-value of the statistical test performed to evaluate the drift for each feature.
+We specify which metrics we want to see. In this case, we want to get the drift score for each feature.
 
 ```
 def eval_drift(reference, production, column_mapping):
-    data_drift_profile = Profile(sections=[DataDriftProfileSection])
-    data_drift_profile.calculate(reference, production, column_mapping=column_mapping)
-    report = data_drift_profile.json()
-    json_report = json.loads(report)
+
+    data_drift_report = Report(metrics=[DataDriftPreset()])
+    data_drift_report.run(reference_data=reference, current_data=production, column_mapping=column_mapping)
+    report = data_drift_report.as_dict()
 
     drifts = []
-    for feature in column_mapping['numerical_features'] + column_mapping['categorical_features']:
-        drifts.append((feature, json_report['data_drift']['data']['metrics'][feature]['p_value'])) 
+
+    for feature in column_mapping.numerical_features + column_mapping.categorical_features:
+        drifts.append((feature, report["metrics"][1]["result"]["drift_by_columns"][feature]["drift_score"]))
+
     return drifts
 ```
 
