@@ -37,6 +37,7 @@
 * [Customization](customization/README.md)
   * [Data drift parameters](customization/options-for-statistical-tests.md)
   * [Add a custom drift method](customization/add-custom-drift-method.md)
+  * [Add a custom metric or test](customization/add-custom-metric-or-test.md)
   * [Options for color schema](customization/options-for-color-schema.md)
 * [How-to guides](recipes/README.md)
   * [Load data to pandas](recipes/load-data-to-pandas.md)

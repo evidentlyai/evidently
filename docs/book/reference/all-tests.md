@@ -6,21 +6,22 @@ description: List of all tests and test presets available in Evidently.
 
 <summary>How to use this page</summary>
  
-This is a reference page that helps quickly see all the tests and test presets available in the library, and their parameters. 
+This is a reference page. You can return here:
+* To discover **available tests** and choose which to include in a custom test suite.
+* To understand which **parameters** you can change for a specific test or preset.
+* To verify which tests are included in a **test preset**.
 
-We organize the tests into logical groups, e.g. Data Quality, Data Integrity, Regression, etc. You can use the menu on the right to navigate the sections.
- 
-Note that these groups do not match the presets with the same name, e.g., there are more Data Quality tests below than in the `DataQualityTestPreset`. You can use this reference page to discover additional tests to include in your custom test suite.
+You can use the menu on the right to navigate the sections. We organize individual tests into groups, e.g. Data Quality, Data Integrity, Regression, etc. Note that these groups do **not** match the presets with similar names. For example, there are more Data Quality tests than in the `DataQualityTestPreset`. 
 
 # How to read the tables
 
-* **Name**: the name of an individual test or preset.  
-* **Description**: plain text explanation of the test, or the contents of the preset. For tests, we specify whether it applies to the whole dataset or individual columns.
-* **Parameters**: required and optional parameters for the test or test preset. 
+* **Name**: the name of the test or test preset.  
+* **Description**: plain text explanation of the test, or the content of the preset. For tests, we specify whether it applies to the whole dataset or individual columns.
+* **Parameters**: available configurations. 
   * Required parameters are necessary to for calculations, e.g. a column name for a column-level test.
   * Optional parameters modify how the underlying metric is calculated, e.g. which statistical test or correlation method is used.
   * *Test condition parameters* help set the conditions (e.g. equal, not equal, greater than, etc.) that define the expectations from the test output. If the condition is violated, the test returns a fail. Here you can see the complete list of the [standard condition parameteres](../tests-and-reports/run-tests.md#available-parameters). They apply to most of the tests, and are optional.
-* **Default tests condition**: test conditions that apply if you do not set a custom сondition. 
+* **Default tests condition**: they apply if you do not set a custom сondition. 
   * With reference: the test conditions that apply when you pass a reference dataset and Evidently can derive expectations from it. 
   * No reference: the test conditions that apply if you do not provide the reference. They are based on heuristics.
  
@@ -28,7 +29,7 @@ Note that these groups do not match the presets with the same name, e.g., there 
 </details>
 
 {% hint style="info" %} 
-We are doing our best to maintain this page up to date. In case of discrepancies, consult the [API reference](https://docs.evidentlyai.com/reference/api-reference) or the current version of the "All tests" example notebook in the [Examples](../get-started/examples.md) section. If you notice an error, please send us a pull request to update the documentation! 
+We are doing our best to maintain this page up to date. In case of discrepancies, consult the [API reference](https://docs.evidentlyai.com/reference/api-reference) or the "All tests" notebook in the [Examples](../get-started/examples.md) section. If you notice an error, please send us a pull request to update the documentation! 
 {% endhint %}
 
 # Test Presets
@@ -37,10 +38,10 @@ Default conditions for each test in the preset match the test's defaults. You ca
 
 | Preset name and Description | Parameters |
 |---|---|
-| **`NoTargetPerformanceTestPreset`**<br><ul><li> `TestShareOfDriftedColumns()`</li><li>`TestColumnDrift(column_name=prediction)`</li><li>`TestColumnDrift(column_name=column_name)` for `сolumns` if provided </li><li>`TestColumnsType()`</li><li>`TestColumnShareOfMissingValues(column_name=column_name)` for `all` or `сolumns` if provided </li><li>`TestShareOfOutRangeValues(column_name=column_name)` for all `numerical_columns` or among `columns` if provided</li><li>`TestShareOfOutListValues(column_name=column_name)` for all `categorical_columns` or among `columns` if provided</li><li>`TestMeanInNSigmas(column_name=column_name, n=2)` for all `numerical_columns` or among `columns` if provided </li></ul>| **Optional**:<ul><li>`columns`</li><li>`stattest`</li><li>`cat_stattest`</li><li>`num_stattest`</li><li>`per_column_stattest`</li><li>`stattest_threshold`</li><li>`cat_stattest_threshold`</li><li>`num_stattest_threshold`</li><li>`per_column_stattest_threshold`</li><li>`drift_share`</li></ul>. [How to set data drift parameters](../customization/options-for-statistical-tests.md).|
+| **`NoTargetPerformanceTestPreset`**<br><ul><li> `TestShareOfDriftedColumns()`</li><li>`TestColumnDrift(column_name=prediction)`</li><li>`TestColumnShareOfMissingValues(column_name=column_name)` for `all` or `сolumns` if provided </li><li>`TestShareOfOutRangeValues(column_name=column_name)` for all `numerical_columns` or among `columns` if provided</li><li>`TestShareOfOutListValues(column_name=column_name)` for all `categorical_columns` or among `columns` if provided</li><li>`TestMeanInNSigmas(column_name=column_name, n=2)` for all `numerical_columns` or among `columns` if provided </li></ul>| **Optional**:<ul><li>`columns`</li><li>`stattest`</li><li>`cat_stattest`</li><li>`num_stattest`</li><li>`per_column_stattest`</li><li>`stattest_threshold`</li><li>`cat_stattest_threshold`</li><li>`num_stattest_threshold`</li><li>`per_column_stattest_threshold`</li><li>`drift_share`</li></ul>. [How to set data drift parameters](../customization/options-for-statistical-tests.md).|
 | **`DataStabilityTestPreset`**<br><ul><li>`TestNumberOfRows()`</li><li>`TestNumberOfColumns()`</li><li>`TestColumnsType()`</li><li>`TestColumnShareOfMissingValues()`</li><li>`TestShareOfOutRangeValues(column_name=column_name)` for all `numerical_columns` or among `columns` if provided</li><li>`TestShareOfOutListValues(column_name=column_name)` for all `categorical_columns` or among `columns` if provided</li><li>`TestMeanInNSigmas(column_name=column_name, n=2)` for all `numerical_columns` or among `columns` if provided </li></ul>| **Optional**:<ul><li>`columns`</li></ul> |
 | **`DataQualityTestPreset`**<br>  <ul><li>`TestColumnShareOfMissingValues(column_name=column_name)` for `all` or `columns` </li><li>`TestMostCommonValueShare(column_name=column_name)` for `all` or `columns`</li><li>`TestNumberOfConstantColumns()`</li><li>`TestNumberOfDuplicatedColumns()`</li><li>`TestNumberOfDuplicatedRows()`</li><li>`TestHighlyCorrelatedColumns()`</li></ul>| **Optional:**<ul><li>`columns`</li></ul> |
-| **`DataDriftTestPreset` **<br> <ul><li>`TestShareOfDriftedColumns()`</li><li>`TestColumnDrift(column_name=column_name)` for `all` or `сolumns` if provided </li></ul> | **Optional**:<ul><li>`columns`</li><li>`stattest`</li><li>`cat_stattest`</li><li>`num_stattest`</li><li>`per_column_stattest`</li><li>`stattest_threshold`</li><li>`cat_stattest_threshold`</li><li>`num_stattest_threshold`</li><li>`per_column_stattest_threshold`</li></ul>[How to set data drift parameters](../customization/options-for-statistical-tests.md). |
+| **`DataDriftTestPreset`**<br> <ul><li>`TestShareOfDriftedColumns()`</li><li>`TestColumnDrift(column_name=column_name)` for `all` or `сolumns` if provided </li></ul> | **Optional**:<ul><li>`columns`</li><li>`stattest`</li><li>`cat_stattest`</li><li>`num_stattest`</li><li>`per_column_stattest`</li><li>`stattest_threshold`</li><li>`cat_stattest_threshold`</li><li>`num_stattest_threshold`</li><li>`per_column_stattest_threshold`</li></ul>[How to set data drift parameters](../customization/options-for-statistical-tests.md). |
 | **`RegressionTestPreset`**<br> <ul><li>`TestValueMeanError()`</li><li>`TestValueMAE()`</li><li>`TestValueRMSE()`</li><li>`TestValueMAPE()`</li></ul> | N/A |
 | **`MulticlassClassificationTestPreset`**<br> <ul><li>`TestAccuracyScore()`</li><li>`TestF1Score()`</li><li>`TestPrecisionByClass()`</li><li>`TestRecallByClass()`</li><li>`TestColumnDrift(column_name=target)`</li><li>`TestNumberOfRows()`</li></ul>If probabilistic classification, also: <ul><li>`TestLogLoss()`</li><li>`TestRocAuc()`</li></ul>| **Optional**:<ul><li>`stattest`</li><li>`stattest_threshold`</li></ul> [How to set data drift parameters](../customization/options-for-statistical-tests.md).  |
 | **`BinaryClassificationTopKTestPreset`**<br> <ul><li>`TestAccuracyScore(k=k)`</li><li>`TestPrecisionScore(k=k)`</li><li>`TestRecallScore(k=k)`</li><li>`TestF1Score(k=k)`</li><li>`TestColumnDrift(column_name=target)`</li><li>`TestRocAuc()`</li><li>`TestLogLoss()`</li></ul> |**Required**:<ul><li>`k`</li></ul>**Optional**:<ul><li>`stattest`</li><li>`stattest_threshold`</li><li>`probas_threshold`</li></ul> [How to set data drift parameters](../customization/options-for-statistical-tests.md). |
@@ -48,9 +49,7 @@ Default conditions for each test in the preset match the test's defaults. You ca
 
 # Data Integrity
 
-**Defaults for Data Integrity**. If there is no reference data or defined conditions, data integrity will be checked against a set of heuristics. 
-
-If you pass the reference data, Evidently will automatically derive all relevant statistics (e.g., number of columns, rows, share of missing values etc.) and apply default test conditions. You can also pass custom test conditions.  
+**Defaults for Data Integrity**. If there is no reference data or defined conditions, data integrity will be checked against a set of heuristics. If you pass the reference data, Evidently will automatically derive all relevant statistics (e.g., number of columns, rows, share of missing values etc.) and apply default test conditions. You can also pass custom test conditions.  
 
 **Defaults for Missing Values**. The metrics that calculate the number or share of missing values detect four types of the values by default: Pandas nulls (None, NAN, etc.), "" (empty string), Numpy "-inf" value, Numpy "inf" value. You can also pass a custom missing values as a parameter and specify if you want to replace the default list. Example:
 
@@ -84,9 +83,7 @@ TestNumberOfMissingValues(missing_values=["", 0, "n/a", -9999, None], replace=Tr
 
 # Data Quality
 
-**Defaults for data quality**. If there is no reference data or defined conditions, data quality will be checked against a set of heuristics. 
-
-If you pass the reference data, Evidently will automatically derive all relevant statistics (e.g., min value, max value, value range, value list, etc.) and apply default test conditions. You can also pass custom test conditions.  
+**Defaults for data quality**. If there is no reference data or defined conditions, data quality will be checked against a set of heuristics. If you pass the reference data, Evidently will automatically derive all relevant statistics (e.g., min value, max value, value range, value list, etc.) and apply default test conditions. You can also pass custom test conditions.  
 
 | Test name  | Description | Parameters | Default test conditions | 
 |---|---|---|---|
@@ -128,9 +125,7 @@ To modify the logic or select a different test, you should set [data drift param
 
 # Regression
 
-**Defaults for Regression tests**: if there is no reference data or defined conditions, Evidently will compare the model performance to a dummy model that predicts the optimal constant (varies by the metric). 
-
-You can also pass the reference dataset and run the test with default conditions, or define custom test conditions.
+**Defaults for Regression tests**: if there is no reference data or defined conditions, Evidently will compare the model performance to a dummy model that predicts the optimal constant (varies by the metric). You can also pass the reference dataset and run the test with default conditions, or define custom test conditions.
 
 | Test name  | Description | Parameters | Default test conditions |  
 |---|---|---|---|
@@ -145,9 +140,7 @@ You can also pass the reference dataset and run the test with default conditions
 
 You can apply the tests for non-probabilistic, probabilistic classification, and ranking. The underlying metrics will be calculated slightly differently depending on the provided inputs: only labels, probabilities, decision threshold, and/or K (to compute, e.g., precision@K). 
 
-**Defaults for Classification tests**. If there is no reference data or defined conditions, Evidently will compare the model performance to a dummy model. It is based on a set of heuristics to verify that the quality is better than random.
-
-You can also pass the reference dataset and run the test with default conditions, or define custom test conditions.
+**Defaults for Classification tests**. If there is no reference data or defined conditions, Evidently will compare the model performance to a dummy model. It is based on a set of heuristics to verify that the quality is better than random. You can also pass the reference dataset and run the test with default conditions, or define custom test conditions.
 
 | Test name | Description | Parameters | Default test conditions | 
 |---|---|---|---|

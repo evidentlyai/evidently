@@ -1,16 +1,14 @@
 # Numerical Target Drift
 
-**TL;DR:** The report explores the changes in the numerical target function (prediction).
+**TL;DR:** The report explores the changes in the target function (prediction).
 
 * Performs a suitable **statistical test** to compare target (prediction) **distribution**
-* Calculates the **correlations** between the feature and the target (prediction)
+* For numerical targets, calculates the **correlations** between the feature and the target (prediction)
 * **Plots the relations** between each individual feature and the target (prediction)
 
 ## Summary
 
-The **Target Drift** report helps detect and explore changes in the target function and/or model predictions.
-
-The **Numerical Target Drift** report is suitable for problem statements with the numerical target function: regression, probabilistic classification, ranking, etc.
+The **Target Drift** report helps detect and explore changes in the target function and/or model predictions. 
 
 ## Requirements
 
