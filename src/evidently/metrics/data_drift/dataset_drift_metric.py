@@ -59,7 +59,7 @@ class DatasetDriftMetric(Metric[DatasetDriftMetricResults]):
         self.drift_share = drift_share
 
     def get_parameters(self) -> tuple:
-        return self.drift_share, self.columns, self.options
+        return self.drift_share, None if self.columns is None else tuple(self.columns), self.options
 
     def calculate(self, data: InputData) -> DatasetDriftMetricResults:
         if data.reference_data is None:
