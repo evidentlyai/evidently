@@ -7,7 +7,7 @@
   |
   <a href="https://discord.gg/xZjKRaNp8b">Discord Community</a>
   |
-  <a href="https://evidentlyai.com/sign-up">Newsletter</a>
+  <a href="https://www.evidentlyai.com/user-newsletter">User Newsletter</a>
   | 
   <a href="https://evidentlyai.com/blog">Blog</a>
   | 
