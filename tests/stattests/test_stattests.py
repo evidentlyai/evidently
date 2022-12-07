@@ -13,6 +13,7 @@ from evidently.calculations.stattests.fisher_exact_stattest import fisher_exact_
 from evidently.calculations.stattests.g_stattest import g_test
 from evidently.calculations.stattests.hellinger_distance import hellinger_stat_test
 from evidently.calculations.stattests.mann_whitney_urank_stattest import mann_whitney_u_stat_test
+from evidently.calculations.stattests.mmd_stattest import emperical_mmd
 from evidently.calculations.stattests.t_test import t_test
 from evidently.calculations.stattests.tvd_stattest import tvd_test
 
@@ -116,6 +117,32 @@ def test_cramer_von_mises() -> None:
     reference = pd.Series([38.7, 41.5, 43.8, 44.5, 45.5, 46.0, 47.7, 58.0])
     current = pd.Series([39.2, 39.3, 39.7, 41.4, 41.8, 42.9, 43.3, 45.8])
     assert cramer_von_mises.func(reference, current, "num", 0.001) == (approx(0.0643, abs=1e-3), False)
+
+
+@pytest.mark.parametrize(
+    "reference, current, threshold, expected_pvalue, drift_detected",
+    (
+        (pd.Series([1, 1, 1, 1, 1] * 5, dtype="float"), pd.Series([0, 0, 0, 0, 0] * 5, dtype="float"), 0.1, 0, True),
+        (
+            pd.Series([1, 0, 1, 0, 1] * 5, dtype="float"),
+            pd.Series([1, 0, 1, 0, 1] * 5, dtype="float"),
+            0.1,
+            0.96,
+            False,
+        ),
+        (pd.Series([1, 1, 1, 1, 1] * 5, dtype="float"), pd.Series([0, 0, 0, 0, 0] * 5, dtype="float"), 0.1, 0, True),
+        (pd.Series([1, 1, 1, 1, 1] * 5, dtype="float"), pd.Series([1, 1, 1, 1, 1] * 5, dtype="float"), 0.1, 1, False),
+        (pd.Series([1.1, 0.2, 2.1, 0, 1]), pd.Series([1, 0, 2, 0, 1]), 0.1, 0.96, False),
+        (pd.Series(np.random.normal(0, 0.5, 100)), pd.Series(np.random.normal(0, 0.1, 100)), 0.1, 0, True),
+        (pd.Series(np.random.normal(0, 0.5, 100)), pd.Series(np.random.normal(0, 0.9, 100)), 0.1, 0, True),
+    ),
+)
+def test_emperical_mmd(reference, current, threshold, expected_pvalue, drift_detected) -> None:
+    np.random.seed(0)
+    assert emperical_mmd.func(reference, current, "num", threshold) == (
+        approx(expected_pvalue, abs=1e-3),
+        drift_detected,
+    )
 
 
 def test_hellinger_distance() -> None:
