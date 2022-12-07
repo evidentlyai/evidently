@@ -74,14 +74,14 @@ class DatasetColumns:
 
         return result
 
-    def get_all_columns_list(self) -> List[str]:
+    def get_all_columns_list(self, skip_id_column: bool = False) -> List[str]:
         """List all columns."""
         result: List[str] = self.cat_feature_names + self.num_feature_names
         result.extend(
             [
                 name
                 for name in (
-                    self.utility_columns.id_column,
+                    self.utility_columns.id_column if not skip_id_column else None,
                     self.utility_columns.date,
                     self.utility_columns.target,
                     self.utility_columns.prediction,

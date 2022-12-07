@@ -39,6 +39,7 @@ from evidently.report import Report
         (
             pd.DataFrame(
                 {
+                    "myid": "some_id",
                     "my_target": [1, 2, 3],
                     "prediction": [1, 2, 3],
                     "feature1": [1, 2, 3],
@@ -48,6 +49,7 @@ from evidently.report import Report
             ),
             pd.DataFrame(
                 {
+                    "myid": "some_id",
                     "my_target": [1, np.NaN, 3, 3, 2, 1],
                     "prediction": [1, 2, 3, 3, 2, 1],
                     "feature1": [1, 2, 3, np.NaN, 2, np.NaN],
@@ -59,6 +61,7 @@ from evidently.report import Report
             DataQualityPreset(),
             ColumnMapping(
                 target="my_target",
+                id="myid",
                 prediction="prediction",
                 datetime="datetime",
             ),
