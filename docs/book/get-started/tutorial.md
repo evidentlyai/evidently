@@ -186,7 +186,7 @@ report
 ```
 You will see a combined report that includes multiple metrics:
 
-![Part of the custom report, ColumnSummaryMetric.](../.gitbook/assets/tutorial/get_started_add_new.png)
+![Part of the custom report, ColumnSummaryMetric.](../.gitbook/assets/tutorial/get-started-column-summary_metric-min.png)
 
 If you want to generate multiple column-level metrics, for example, to calculate the 0.25 quantile value for all the columns in the list, you can use the metric generator function. Here is how you can do for two defined columns.
 
@@ -268,7 +268,7 @@ tests
 
 You will get a summary with the test results:
 
-![Part of the custom Test Suite.](../.gitbook/assets/tutorial/get_started_add_new.png)
+![Part of the custom Test Suite.](../.gitbook/assets/tutorial/get-started-test-output-min.png)
 
 **How does it work?** Evidently automatically generates the test conditions based on the provided reference dataset. They are based on heuristics, e.g. the individual test fail if the columns types do not match, the number of columns with missing values is higher than in reference, or if the share of drifting features is over 50%. You can also pass custom conditions to set your own constraints.
 
@@ -289,7 +289,7 @@ You can group the outputs by test status, feature, test group, and type. By clic
 
 If some of the tests fail, you can use supporting visuals to explore the details:
 
-![Failed tests](../.gitbook/assets/tutorial/get_started_add_new.png)
+![Failed tests](../.gitbook/assets/tutorial/test-notargetperformance-min.png)
 
 Just like with Reports, you can also combine individual tests and presets in a single Test Suite and use column generator to generate multiple column-level tests:
 
