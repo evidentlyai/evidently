@@ -12,15 +12,15 @@ from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import HistogramData
+from evidently.renderers.html_widgets import WidgetSize
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import histogram
+from evidently.renderers.html_widgets import plotly_figure
+from evidently.renderers.render_utils import get_distribution_plot_figure
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_operations import recognize_column_type
 from evidently.utils.visualizations import Distribution
 from evidently.utils.visualizations import get_distribution_for_column
-from evidently.renderers.render_utils import get_distribution_plot_figure
-from evidently.renderers.html_widgets import WidgetSize
-from evidently.renderers.html_widgets import plotly_figure
 
 
 @dataclasses.dataclass
@@ -48,7 +48,7 @@ class ColumnDistributionMetric(Metric[ColumnDistributionMetricResult]):
         if data.reference_data is not None:
             if self.column_name not in data.reference_data:
                 raise ValueError(f"Column '{self.column_name}' was not found in reference data.")
-        
+
         columns = process_columns(data.current_data, data.column_mapping)
         column_type = recognize_column_type(dataset=data.current_data, column_name=self.column_name, columns=columns)
         current_column = data.current_data[self.column_name]
@@ -86,7 +86,6 @@ class ColumnDistributionMetricRenderer(MetricRenderer):
 
         result = [
             header_text(label=f"Distribution for column '{metric_result.column_name}'."),
-            plotly_figure(title=f"", figure=distr_fig, size=WidgetSize.FULL)
-            
+            plotly_figure(title="", figure=distr_fig, size=WidgetSize.FULL),
         ]
         return result
