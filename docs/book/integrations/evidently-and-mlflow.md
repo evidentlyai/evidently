@@ -54,7 +54,7 @@ For more details, refer to MLflow [documentation](https://mlflow.org/docs/latest
 
 ## Step 2. Load the data
 
-Load the data from UCI repository ([link](https://archive.ics.uci.edu/ml/datasets/bike+sharing+dataset) and save it locally.
+Load the [data from UCI repository](https://archive.ics.uci.edu/ml/datasets/bike+sharing+dataset) and save it locally.
 
 For demonstration purposes, we treat this data as the input data for a live model. To use with production models, you should make your prediction logs available.
 
