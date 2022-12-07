@@ -143,7 +143,7 @@ for date in experiment_batches:
 
 You can then use the MLflow UI to see the results of the runs. You can use the menu to select which metrics calculated by Evidently you'd want to see. In this example, you can choose drift for which features to display:
 
-![](<../.gitbook/assets/integrations/mlflow_dataset_drift-min.png>)
+![](<../.gitbook/assets/integrations/mlflow_feature_drift_selection-min.png>)
 
 # Tutorial 2: Evaluating Historical Data Drift with Evidently, Plotly and **MLflow**
 
