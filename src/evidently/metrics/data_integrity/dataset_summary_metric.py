@@ -133,6 +133,7 @@ class DatasetSummaryMetricRenderer(MetricRenderer):
     def _get_table(metric_result: DatasetSummaryMetricResult) -> BaseWidgetInfo:
         column_names = ["Metric", "Current"]
         rows = (
+            ["id column", metric_result.current.id_column],
             ["target column", metric_result.current.target],
             ["prediction column", metric_result.current.prediction],
             ["date column", metric_result.current.date_column],
@@ -150,20 +151,21 @@ class DatasetSummaryMetricRenderer(MetricRenderer):
         )
         if metric_result.reference is not None:
             column_names.append("Reference")
-            rows[0].append(metric_result.reference.target)
-            rows[1].append(metric_result.reference.prediction)
-            rows[2].append(metric_result.reference.date_column)
-            rows[3].append(metric_result.reference.number_of_columns)
-            rows[4].append(metric_result.reference.number_of_rows)
-            rows[5].append(metric_result.reference.number_of_missing_values)
-            rows[6].append(metric_result.reference.number_of_categorical_columns)
-            rows[7].append(metric_result.reference.number_of_numeric_columns)
-            rows[8].append(metric_result.reference.number_of_datetime_columns)
-            rows[9].append(metric_result.reference.number_of_empty_columns)
-            rows[10].append(metric_result.reference.number_of_constant_columns)
-            rows[11].append(metric_result.reference.number_of_almost_constant_columns)
-            rows[12].append(metric_result.reference.number_of_duplicated_columns)
-            rows[13].append(metric_result.reference.number_of_almost_duplicated_columns)
+            rows[0].append(metric_result.reference.id_column)
+            rows[1].append(metric_result.reference.target)
+            rows[2].append(metric_result.reference.prediction)
+            rows[3].append(metric_result.reference.date_column)
+            rows[4].append(metric_result.reference.number_of_columns)
+            rows[5].append(metric_result.reference.number_of_rows)
+            rows[6].append(metric_result.reference.number_of_missing_values)
+            rows[7].append(metric_result.reference.number_of_categorical_columns)
+            rows[8].append(metric_result.reference.number_of_numeric_columns)
+            rows[9].append(metric_result.reference.number_of_datetime_columns)
+            rows[10].append(metric_result.reference.number_of_empty_columns)
+            rows[11].append(metric_result.reference.number_of_constant_columns)
+            rows[12].append(metric_result.reference.number_of_almost_constant_columns)
+            rows[13].append(metric_result.reference.number_of_duplicated_columns)
+            rows[14].append(metric_result.reference.number_of_almost_duplicated_columns)
 
         return table_data(title="", column_names=column_names, data=rows)
 
