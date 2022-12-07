@@ -22,7 +22,7 @@ ColumnDriftMetric(column_name=”feature1”, stattest=wasserstein, stattest_thr
 
 If you have a preset, test or metric that checks for drift in **multiple columns** at the same time, you can set a custom drift method for all columns, all numerical/categorical columns, or for each column individually.
 
-Here is how you set the drift detection method for all numerical columns:
+Here is how you set the drift detection method for all categorical columns:
 
 ```python
 DataDriftPreset(cat_stattest=ks, cat_statest_threshold=0.05)
