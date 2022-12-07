@@ -291,14 +291,4 @@ class RegressionPerformanceMetricsRenderer(MetricRenderer):
                 ),
             )
 
-        result.append(
-            self._get_underperformance_tails(dataset_name="current", underperformance=metric_result.underperformance)
-        )
-
-        if metric_result.underperformance_ref:
-            result.append(
-                self._get_underperformance_tails(
-                    dataset_name="reference", underperformance=metric_result.underperformance_ref
-                )
-            )
         return result
