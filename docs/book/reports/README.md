@@ -20,12 +20,8 @@ Metric presets are ready-made reports that group relevant metrics. Explore what 
 [data-quality.md](data-quality.md)
 {% endcontent-ref %}
 
-{% content-ref url="num-target-drift.md" %}
-[num-target-drift.md](num-target-drift.md)
-{% endcontent-ref %}
-
-{% content-ref url="cat-target-drift.md" %}
-[cat-target-drift.md](cat-target-drift.md)
+{% content-ref url="target-drift.md" %}
+[target-drift.md](target-drift.md)
 {% endcontent-ref %}
 
 {% content-ref url="classification-performance.md" %}
