@@ -12,18 +12,22 @@ from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import HistogramData
+from evidently.renderers.html_widgets import WidgetSize
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import histogram
+from evidently.renderers.html_widgets import plotly_figure
+from evidently.renderers.render_utils import get_distribution_plot_figure
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_operations import recognize_column_type
-from evidently.utils.types import ColumnDistribution
+from evidently.utils.visualizations import Distribution
+from evidently.utils.visualizations import get_distribution_for_column
 
 
 @dataclasses.dataclass
 class ColumnDistributionMetricResult:
     column_name: str
-    current: ColumnDistribution
-    reference: Optional[ColumnDistribution] = None
+    current: Distribution
+    reference: Optional[Distribution] = None
 
 
 class ColumnDistributionMetric(Metric[ColumnDistributionMetricResult]):
@@ -37,14 +41,6 @@ class ColumnDistributionMetric(Metric[ColumnDistributionMetricResult]):
     ) -> None:
         self.column_name = column_name
 
-    @staticmethod
-    def _calculate_distribution(
-        column_name: str, dataset: pd.DataFrame, column_mapping: ColumnMapping
-    ) -> ColumnDistribution:
-        columns = process_columns(dataset, column_mapping)
-        column_type = recognize_column_type(dataset=dataset, column_name=column_name, columns=columns)
-        return calculate_column_distribution(dataset[column_name], column_type)
-
     def calculate(self, data: InputData) -> ColumnDistributionMetricResult:
         if self.column_name not in data.current_data:
             raise ValueError(f"Column '{self.column_name}' was not found in current data.")
@@ -53,15 +49,17 @@ class ColumnDistributionMetric(Metric[ColumnDistributionMetricResult]):
             if self.column_name not in data.reference_data:
                 raise ValueError(f"Column '{self.column_name}' was not found in reference data.")
 
-        current = self._calculate_distribution(self.column_name, data.current_data, data.column_mapping)
-
+        columns = process_columns(data.current_data, data.column_mapping)
+        column_type = recognize_column_type(dataset=data.current_data, column_name=self.column_name, columns=columns)
+        current_column = data.current_data[self.column_name]
+        reference_column = None
         if data.reference_data is not None:
-            reference: Optional[ColumnDistribution] = self._calculate_distribution(
-                self.column_name, data.reference_data, data.column_mapping
-            )
-
-        else:
-            reference = None
+            reference_column = data.reference_data[self.column_name]
+        current, reference = get_distribution_for_column(
+            column_type=column_type,
+            current=current_column,
+            reference=reference_column,
+        )
 
         return ColumnDistributionMetricResult(
             column_name=self.column_name,
@@ -74,37 +72,20 @@ class ColumnDistributionMetric(Metric[ColumnDistributionMetricResult]):
 class ColumnDistributionMetricRenderer(MetricRenderer):
     def render_json(self, obj: ColumnDistributionMetric) -> dict:
         result = dataclasses.asdict(obj.get_result())
-        result.pop("current_distribution", None)
-        result.pop("reference_distribution", None)
+        result.pop("current", None)
+        result.pop("reference", None)
         return result
 
     def render_html(self, obj: ColumnDistributionMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
-        current_histogram = HistogramData(
-            name="current",
-            x=list(metric_result.current.keys()),
-            y=list(metric_result.current.values()),
+        distr_fig = get_distribution_plot_figure(
+            current_distribution=metric_result.current,
+            reference_distribution=metric_result.reference,
+            color_options=self.color_options,
         )
-
-        if metric_result.reference is not None:
-            reference_histogram: Optional[HistogramData] = HistogramData(
-                name="reference",
-                x=list(metric_result.reference.keys()),
-                y=list(metric_result.reference.values()),
-            )
-
-        else:
-            reference_histogram = None
 
         result = [
             header_text(label=f"Distribution for column '{metric_result.column_name}'."),
-            histogram(
-                title="",
-                primary_hist=current_histogram,
-                secondary_hist=reference_histogram,
-                color_options=self.color_options,
-                xaxis_title=metric_result.column_name,
-                yaxis_title="Count",
-            ),
+            plotly_figure(title="", figure=distr_fig, size=WidgetSize.FULL),
         ]
         return result
