@@ -9,13 +9,13 @@ description: Log Evidently metrics in the MLflow UI.
 Jupyter notebook:
 {% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/integrations/mlflow_logging/mlflow_integration.ipynb" %}
 
-### **Overview**
+# **Overview**
 
 Many machine learning teams use [MLflow](https://www.mlflow.org) for experiment management, deployment, and as a model registry. If you are already familiar with MLflow, you can integrate it with Evidently to **track the performance of your models**.
 
 In this case, you use **Evidently to calculate the metrics** and **MLflow to log the results**. You can then access the metrics in the MLflow interface.
 
-### **How it works**
+# **How it works**
 
 Evidently calculates a rich set of metrics and statistical tests. You can choose any of the [pre-built reports](../reports/) or combine [individual metrics](../reference/all-metrics.md) to define what you want to measure. For example, you can evaluate prediction drift and feature drift together.
 
@@ -29,7 +29,7 @@ Here is a Jupyter notebook with the example:
 
 {% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/integrations/mlflow_logging/mlflow_integration.ipynb" %}
 
-### **Step 1. Install MLflow and Evidently**
+## **Step 1. Install MLflow and Evidently**
 
 Evidently is available as a PyPI package:
 
@@ -51,7 +51,7 @@ $pip install mlflow[extras]
 
 For more details, refer to MLflow [documentation](https://mlflow.org/docs/latest/tutorials-and-examples/tutorial.html#id5).
 
-### Step 2. Load the data
+## Step 2. Load the data
 
 Load the data from UCI repository ([link](https://archive.ics.uci.edu/ml/datasets/bike+sharing+dataset) and save it locally.
 
@@ -61,7 +61,7 @@ This is how it looks:
 
 ![](<../.gitbook/assets/Screenshot 2021-07-19 at 18.56.18 (1).png>)
 
-### **Step 3. Define column mapping**
+## **Step 3. Define column mapping**
 
 We specify the categorical and numerical features so that Evidently performs the correct statistical test for each of them.
 
@@ -71,7 +71,7 @@ data_columns.numerical_features = ['weathersit', 'temp', 'atemp', 'hum', 'windsp
 data_columns.categorical_features = ['holiday', 'workingday']
 ```
 
-### Step 4. Define what to log
+## Step 4. Define what to log
 
 We specify which metrics we want to see. In this case, we want to get the drift score for each feature.
 
@@ -90,7 +90,7 @@ def eval_drift(reference, production, column_mapping):
     return drifts
 ```
 
-### Step 5. Define the comparison windows
+## Step 5. Define the comparison windows
 
 We specify the period that is considered **reference**: we will use it as the base for the comparison. Then, we choose the periods that we treat as experiments that emulate production model runs.
 
@@ -107,7 +107,7 @@ experiment_batches = [
 ]
 ```
 
-### Step 6. Run and log experiments in MLflow
+## Step 6. Run and log experiments in MLflow
 
 We initiate the experiments and log the metrics calculated with Evidently on each run.
 
@@ -136,7 +136,7 @@ for date in experiment_batches:
         print(run.info)
 ```
 
-### Step 7. View the results in MLflow web UI
+## Step 7. View the results in MLflow web UI
 
 You can then use the MLflow UI to see the results of the runs.
 
@@ -146,6 +146,6 @@ With a large number of metrics, you can use the expanded view.
 
 ![](<../.gitbook/assets/mlflow\_3 (2).png>)
 
-## Tutorial 2: Evaluating Historical Data Drift with Evidently, Plotly and **MLflow**
+# Tutorial 2: Evaluating Historical Data Drift with Evidently, Plotly and **MLflow**
 
 See a tutorial [here](https://evidentlyai.com/blog/tutorial-3-historical-data-drift).
