@@ -19,11 +19,11 @@ In this case, you use **Evidently to calculate the metrics** and **MLflow to log
 
 Evidently calculates a rich set of metrics and statistical tests. You can choose any of the [pre-built reports](../reports/) or combine [individual metrics](../reference/all-metrics.md) to define what you want to measure. For example, you can evaluate prediction drift and feature drift together.
 
-You can then generate the calculation output **in a JSON format**. You should explicitly define which parts of the output to send to **MLflow Tracking**.
+You can then generate the calculation output **in a Python dictionary format**. You should explicitly define which parts of the output to send to **MLflow Tracking**.
 
 ## Tutorial 1: Evaluating Data Drift with **MLFlow and Evidently**
 
-In this tutorial, you will use Evidently to check input features for [Data Drift](../reports/data-drift.md) and log and visualize the results with MLflow.
+In this tutorial, you will use Evidently to check input features for [Data Drift](../reports/data-drift.md) and log and visualize the results with MLflow. 
 
 Here is a Jupyter notebook with the example:
 {% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/integrations/mlflow_logging/mlflow_integration.ipynb" %}
@@ -60,7 +60,7 @@ For demonstration purposes, we treat this data as the input data for a live mode
 
 This is how it looks:
 
-![](<../.gitbook/assets/Screenshot 2021-07-19 at 18.56.18 (1).png>)
+![](<../.gitbook/assets/integrations/mlflow_dataset_drift-min.png>)
 
 ## **Step 3. Define column mapping**
 
@@ -90,6 +90,8 @@ def eval_drift(reference, production, column_mapping):
 
     return drifts
 ```
+
+You can adapt what you want to calculate by selecting a different Preset or Metric from those available in Evidently.
 
 ## Step 5. Define the comparison windows
 
@@ -139,16 +141,14 @@ for date in experiment_batches:
 
 ## Step 7. View the results in MLflow web UI
 
-You can then use the MLflow UI to see the results of the runs.
+You can then use the MLflow UI to see the results of the runs. You can use the menu to select which metrics calculated by Evidently you'd want to see. In this example, you can choose drift for which features to display:
 
-![](<../.gitbook/assets/mlflow\_1 (1).png>)
-
-With a large number of metrics, you can use the expanded view.
-
-![](<../.gitbook/assets/mlflow\_3 (2).png>)
+![](<../.gitbook/assets/integrations/mlflow_dataset_drift-min.png>)
 
 # Tutorial 2: Evaluating Historical Data Drift with Evidently, Plotly and **MLflow**
 
-This is an additional tutorial that demonstrates how you can evaluate historical drift in your data. It also shows how to log experiments with MLflow in a similar fashion.
+This is an additional tutorial that demonstrates how you can evaluate historical drift in your data. It also shows how to log experiments with MLflow in a similar fashion. In this example, instead of logging drift scores for individual features, it logs the "Dataset drift" metric:
+
+![](<../.gitbook/assets/integrations/mlflow_dataset_drift-min.png>)
 
 Refer to the [blog with the tutorial](https://evidentlyai.com/blog/tutorial-3-historical-data-drift) and [example notebook](https://github.com/evidentlyai/evidently/blob/main/examples/integrations/mlflow_logging/historical_drift_visualization.ipynb).
