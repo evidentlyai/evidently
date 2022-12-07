@@ -10,8 +10,6 @@
 
 The **Target Drift** report helps detect and explore changes in the target function and/or model predictions. 
 
-The contents of the report depends on the type of the target (Numerical or Categorical).
-
 ## Requirements
 
 To run this report, you need to have input features, and **target and/or prediction** columns available.
