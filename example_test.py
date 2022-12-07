@@ -7,6 +7,7 @@ excludes = [
     "mlflow_integration.py",
     "ibm_hr_attrition_model_validation.py",
     "bicycle_demand_monitoring_setup.py",
+    "how_to_run_drift_report_for_text_encoders.py",
 ]
 
 
