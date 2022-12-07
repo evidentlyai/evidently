@@ -60,7 +60,7 @@ For demonstration purposes, we treat this data as the input data for a live mode
 
 This is how it looks:
 
-![](<../.gitbook/assets/integrations/mlflow_dataset_drift-min.png>)
+![](<../.gitbook/assets/integrations/mlflow_dataset_preview-min.png>)
 
 ## **Step 3. Define column mapping**
 
