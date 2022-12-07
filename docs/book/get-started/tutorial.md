@@ -1,10 +1,10 @@
 # Get Started Tutorial
 
-In this tutorial, you will use the Evidently open-source Python library to evaluate **data stability** and **data drift**. You will run batch checks on a toy dataset and generate visual reports.
+In this tutorial, you will use the Evidently open-source Python library to evaluate **data stability** and **data drift**. You will run batch checks on a toy dataset and generate visual reports and test suites.
 
-We suggest going through this tutorial once to understand the basic functionality. You can then explore advanced features such as custom metrics and real-time monitoring.
+The goal of the tutorial is to introduce the basic functionality. We recommend going through it once before exploring more advanced workflows like adjusting test parameters, adding custom metrics or integrating the tool in the prediction pipelines.
 
-To complete the tutorial, you need basic knowledge of Python and familiarity with notebook environments. You should be able to complete it in **under 10 minutes**.
+To complete the tutorial, you need basic knowledge of Python and familiarity with notebook environments. You should be able to complete it in **about 15 minutes**.
 
 You can reproduce the steps in Jupyter notebooks or Colab or open and run a sample notebook from the links below.  
 
@@ -14,12 +14,16 @@ Colab:
 Jupyter notebook:
 {% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/sample_notebooks/getting_started_tutorial.ipynb" %}
 
-In the tutorial, you will go through the following steps:
+Video version:
+{% embed url="https://youtu.be/2d5AgPKbthE" %}
+
+You will go through the following steps:
 * Install Evidently
-* Prepare the data
-* Run data stability tests 
-* Generate data and prediction drift report 
-* Create a custom test suite
+* Prepare the input data
+* Generate a pre-built data drift report
+* Customize the report 
+* Run and customize data stability tests 
+
 
 ## 1. Install Evidently
 
@@ -54,6 +58,7 @@ To install `evidently`, run the following command in the notebook cell:
 ```
 !pip install evidently
 ```
+
 ### Windows
 
 Unfortunately, building visual HTML reports inside a **Jupyter notebook** is **not yet possible** for Windows. You can still install Evidently and get the output as JSON or a separate HTML file.
@@ -75,15 +80,17 @@ import pandas as pd
 import numpy as np
 
 from sklearn.datasets import fetch_california_housing
- 
+
 from evidently import ColumnMapping
+
 from evidently.report import Report
-from evidently.metric_preset import DataDriftPreset
-from evidently.metric_preset import TargetDriftPreset
+from evidently.metrics.base_metric import generate_column_metrics
+from evidently.metric_preset import DataDriftPreset, TargetDriftPreset
+from evidently.metrics import *
 
 from evidently.test_suite import TestSuite
-from evidently.test_preset import DataQualityTestPreset
-from evidently.test_preset import DataStabilityTestPreset
+from evidently.tests.base_test import generate_column_tests
+from evidently.test_preset import DataStabilityTestPreset,NoTargetPerformanceTestPreset
 from evidently.tests import *
 ```
 
@@ -105,7 +112,7 @@ housing_data.rename(columns={'MedHouseVal': 'target'}, inplace=True)
 housing_data['prediction'] = housing_data['target'].values + np.random.normal(0, 5, housing_data.shape[0])
 ```
 
-Split the dataset by taking 5000 objects for **reference** and **current** datasets. This way, you get two samples to compare.  
+Split the dataset by taking 5000 objects for **reference** and **current** datasets.   
 
 ```python
 reference = housing_data.sample(n=5000, replace=False)
@@ -114,82 +121,32 @@ current = housing_data.sample(n=5000, replace=False)
 
 The first **reference** dataset is the baseline. This is often the data used in model training or earlier production data. The second dataset is the **current** production data. Evidently will compare the current data to the reference. 
  
-You can prepare two datasets with an identical schema like in this example or take a single dataset and explicitly identify rows for reference and current data.
+If you work with your own data, you can prepare two datasets with an identical schema like in this example or take a single dataset and explicitly identify rows for reference and current data.
 
 {% hint style="info" %}
 **Column mapping.** In this example, we directly proceed to analysis. In other cases, you might need to create a **ColumnMapping** object to help Evidently process the input data correctly. For example, you can point to the encoded categorical features or specify the name of the target column. Consult the [Column Mapping section](../tests-and-reports/column-mapping.md) section for help.
 {% endhint %}
 
-## 4. Run the Data Stability tests
+## 4. Get the Data Drift report
 
-Imagine you received a new batch of data. Before generating the predictions, you want to check if the latest data looks similar to before. 
+Evidently **reports** help explore and debug data and model quality. They calculate various metrics and generate a dashboard with rich visuals. 
 
-You will use Evidently **test suites** functionality.
+To start, you can use **metric presets**. These are pre-built reports that group relevant metrics to evaluate a specific aspect of the model performance. 
 
-Test suites help compare the two datasets in a structured way. A **test suite** contains several individual tests. Each **test** compares a specific metric against a defined condition and returns a pass/fail result. You can apply tests to the whole dataset or individual columns. 
+Let’s generate the pre-built report for **Data Drift**. It will compare the distributions of the input model features and highlight which features have drifted. When you do not have ground truth labels or actuals, evaluating input data drift can help understand if an ML model still operates in a familiar environment.
 
-You can create a custom test suite or use one of the **presets** that work out of the box.
-
-Let’s start by running the **DataStability** test preset. It will run several checks for data quality and integrity and help detect issues like feature values out of the expected range. 
-
-You need to create a `TestSuite` object and specify the preset to include. You will also point to the reference and current datasets created at the previous step.
+To get the report, create a corresponding Report object, and list the preset you want to include. You will also point to the reference and current datasets created in the previous step: 
 
 ```python
-data_stability = TestSuite(tests=[
-    DataStabilityTestPreset(),
+report = Report(metrics=[
+    DataDriftPreset(), 
 ])
-data_stability.run(reference_data=reference, current_data=current)
+
+report.run(reference_data=reference, current_data=current)
+report
 ```
 
-Each test has default in-built configurations, and you can run them as is. To see the visual report, call the object in the notebook:
-
-```python
-data_stability
-```
-
-It will display the HTML report with the outcomes of the tests.
-
-![The output of the Data Stability Test Preset](../.gitbook/assets/tutorial/get_started_1_tests_html_report-min.png)
-
-You can group the outputs by test status, feature, test group, and type. By clicking on “details,” you can also explore the visuals related to a specific test. 
-
-![Details on Mean Value Stability test](../.gitbook/assets/tutorial/get_started_2_mean_value_stability-min.png)
-
-**How does it work?** The data stability test suite compares two batches of data you expect to be similar. It automatically derives descriptive statistics from the reference dataset and compares them with the current data. For example, it expects the number of columns and their type to match precisely and no more than 10% of values to be out of range. 
- 
-You can also save the test results as a separate HTML file. You might need that for documentation or to share with the team.
-
-To save the HTML, run:
-
-```python
-data_stability.save_html("file.html")
-```
-
-Go to the specified directory and open the file. If you get a security alert, press "trust HTML."
-
-{% hint style="info" %}
-**Visualizations might work differently in other notebook environments**. For example, in the Jupyter lab, you won't be able to display the HTML directly in the cell. In this case, try exporting the file as HTML. In other notebooks like Kaggle and Deepnote, you might need to add an argument to display the report inline: iris_data_drift_report.show(mode='inline'). Consult [this section](../tests-and-reports/supported-environments.md) for help.
-{% endhint %}
-
-## 5. Get the Data and Target drift report
-
-An alternative (or an addition!) to the test suite is a **report**. 
-
-Evidently **reports** help to explore and debug data and model quality. Unlike tests, reports do not require defining explicit pass or fail conditions. Instead, they calculate various metrics and generate a dashboard with rich visuals. 
-
-To start, you can again use presets that combine relevant metrics in a single report.
-
-Let’s generate the pre-built report for Data Drift and combine it with Target Drift. The first report compares the input feature distributions, while the second compares the model outputs. You can use both to explore if an ML model still operates in a familiar environment.
-
-To get the report, create a corresponding object and list the two presets. In the toy dataset, the target is numerical, so you will use the Numerical Target Drift report in addition to Data Drift.
-
-```python
-drift_report = Report(metrics=[DataDriftPreset(), TargetDriftPreset()])
- 
-drift_report.run(reference_data=reference, current_data=current)
-drift_report
-```
-It will display the HTML combined report. 
+It will display the HTML report directly in the notebook. 
 
 First, you can see the Data Drift summary.
 
@@ -199,31 +156,102 @@ If you click on individual features, it will show additional plots to explore.
 
 ![Data Drift report details](../.gitbook/assets/tutorial/get_started_4_data_drift_expand-min.png)
 
-**How does it work?** The data drift report compares the distributions of each feature in the two datasets. It [automatically picks](../reference/data-drift-algorithm.md) an appropriate statistical test or metric based on the feature type and volume. It then returns p-values or distances and visually plots the distributions. 
+**How does it work?** The data drift report compares the distributions of each feature in the two datasets. It [automatically picks](../reference/data-drift-algorithm.md) an appropriate statistical test or metric based on the feature type and volume. It then returns p-values or distances and visually plots the distributions. You can also [adjust the drift detection method or thresholds](../customization/options-for-statistical-tests.md), or pass your own.
 
-Since you combined the two reports in a single output, you can scroll to the Target Drift section. The toy dataset contains both **prediction** and **target** columns, so Evidently generated the reports for both.
+{% hint style="info" %}
+**Large reports might take time to load.** The example dataset is small, so the report appears quickly. If you use a larger dataset, the report might take time to show. The size limitation depends on your infrastructure. In this case, we suggest applying sampling to your dataset before passing it to Evidently.
+{% endhint %}
 
-![Data Drift report details](../.gitbook/assets/tutorial/get_started_5_prediction_drift-min.png)
+{% hint style="info" %}
+**Visualizations might work differently in other notebook environments**. For example, in the Jupyter lab, you won't be able to display the HTML in the cell. In this case, export the file as HTML. In other notebooks like Databricks, Kaggle and Deepnote, you should add an argument to display the report inline: iris_data_drift_report.show(mode='inline'). Consult [this section](../tests-and-reports/supported-environments.md) for help.
+{% endhint %}
 
-**How does it work?** There are two use cases for the Target Drift report. When you only have the model predictions, you can evaluate the prediction drift. It will show if there is a statistically significant change: for example if the model assigns a particular category more frequently. If you have the true labels, you can evaluate target drift. It will show if the concept behind the model has evolved: for example, if a specific label does appear more frequently. The report picks the optimal statistical test and visualizes the relationship between features and target.
+## 5. Customize the report
 
-To save the report as HTML, run:
+Evidently reports are very configurable. You can define which metrics to include and how to calculate them. 
+
+To create a custom report, you need to list individual **metrics**. Evidently has dozens of metrics that help evaluate anything from descriptive feature statistics to model quality. You can calculate metrics on the column level (e.g., mean value of a specific column) or dataset-level (e.g., share of drifted features in the whole dataset).  
+
+In this example, you can list several metrics that evaluate individual statistics for the defined column. 
 
 ```python
-drift_report.save_html("file.html")
+report = Report(metrics=[
+    ColumnSummaryMetric(column_name='AveRooms'),
+    ColumnQuantileMetric(column_name='AveRooms', quantile=0.25),
+    ColumnDriftMetric(column_name='AveRooms')
+])
+
+report.run(reference_data=reference, current_data=current)
+report
+```
+You will see a combined report that includes multiple metrics:
+
+![Part of the custom report, ColumnSummaryMetric.](../.gitbook/assets/tutorial/get-started-column-summary_metric-min.png)
+
+If you want to generate multiple column-level metrics (for example, to calculate the same quantile value for all the columns in the list), you can use the metric generator function. 
+
+Here is how you can do for two defined columns:
+
+```
+report = Report(metrics=[
+    generate_column_metrics(ColumnQuantileMetric, parameters={'quantile':0.25}, columns=['AveRooms', 'AveBedrms']),
+])
+
+report.run(reference_data=reference, current_data=current)
+report
+```
+
+You can easily combine individual metrics, presets and metric generators in a single list:
+
+```
+report = Report(metrics=[
+    ColumnSummaryMetric(column_name='AveRooms'),
+    generate_column_metrics(ColumnQuantileMetric, parameters={'quantile':0.25}, columns='num'),
+    DataDriftPreset()
+])
+
+report.run(reference_data=reference, current_data=current)
+report
 ```
 
 {% hint style="info" %}
-**Large reports might take time to load.** The example dataset is small, so the report should appear quickly. If you use a larger dataset, the report might take time to show. The size limitation depends on your infrastructure. In this case, we suggest applying sampling to your dataset before passing it to Evidently. You can do it with pandas.
+**Available metrics and presets**. You can refer to the All Metrics [reference table](../reference/all-metrics.md) to browse available metrics and presets or use one of the example notebooks in the [Examples](../examples/readme.md) section.
 {% endhint %}
 
-## 6. Run a custom test suite
+## 6. Define the report output format
 
-Pre-built reports and test suites are handy and allow for an easy start. But once you start using the tool, you might want to see a different composition of tests or metrics. 
+You can render the visualizations directly in the notebook as shown above. There are also alternative options. 
 
-Here is how you can do this for **tests**. 
+If you only want to log the metric output, you can export the results as a Python dictionary.
 
-Create the `TestSuite` object and list the `tests` to include. Instead of the preset, you can add individual tests one by one.
+```python
+report.as_dict()
+```
+You can also get the output as JSON. 
+
+```python
+report.json()
+```
+
+You can also save HTML or JSON externally. 
+
+```python
+report.save_html("file.html")
+```
+
+## 7. Run data stability tests
+
+Reports are useful when you want to debug data or model quality or share results with the team. However, it is less convenient if you want to run your checks automatically and only react to meaningful issues.
+
+To integrate Evidently checks in the prediction pipeline, you can use the **test suites** functionality. 
+
+Test suites help compare the two datasets in a structured way. A **test suite** contains several individual tests. Each **test** compares a specific metric against a defined condition and returns an explicit pass/fail result. You can apply tests to the whole dataset or individual columns. 
+
+Just like with reports, you can create a custom test suite or use one of the **presets** that work out of the box. Let's create a custom one!
+
+Imagine you received a new batch of data. Before generating the predictions, you want to check if the quality is good enough to run your model. You can combine several tests to check missing values, duplicate columns, and so on. 
+
+You need to create a `TestSuite` object and specify the preset to include.
 
 ```python
 tests = TestSuite(tests=[
@@ -233,63 +261,84 @@ tests = TestSuite(tests=[
     TestNumberOfDuplicatedRows(),
     TestNumberOfDuplicatedColumns(),
     TestColumnsType(),
-    TestNumberOfDriftedColumns(), 
+    TestNumberOfDriftedColumns(),
 ])
-```
 
-Run the tests as usual by pointing to the reference and current data.
-
-```python
 tests.run(reference_data=reference, current_data=current)
-```
-
-Call the object to see the HTML with the test results for this custom test suite.
-
-```python
 tests
 ```
 
-It works the same for custom Reports which you can create from individual Metrics (coming soon).
+You will get a summary with the test results:
 
+![Part of the custom Test Suite.](../.gitbook/assets/tutorial/get-started-test-output-min.png)
+
+**How does it work?** Evidently automatically generates the test conditions based on the provided reference dataset. They are based on heuristics, e.g., the individual test fails if the column types do not match the reference, the number of columns with missing values is higher than in reference, or if the share of drifting features is over 50%. You can also pass custom conditions to set your own constraints.
+
+You can also use **Test Presets**. For example, No Target Performance preset combines multiple checks related to data stability, drift and data quality to help evaluate the model without ground truth labels available. 
+
+```python
+suite = TestSuite(tests=[
+    NoTargetPerformanceTestPreset(),
+])
+
+suite.run(reference_data=reference, current_data=current)
+suite
+```
+
+You can group the outputs by test status, feature, test group, and type. By clicking on “details,” you can also explore the visuals related to a specific test. 
+
+![Details on Mean Value Stability test](../.gitbook/assets/tutorial/get_started_2_mean_value_stability-min.png)
+
+If some of the tests fail, you can use supporting visuals to explore the details:
+
+![Failed tests](../.gitbook/assets/tutorial/test-notargetperformance-min.png)
+
+Just like with Reports, you can also combine individual tests and presets in a single Test Suite and use column test generator to generate multiple column-level tests:
+
+```python
+suite = TestSuite(tests=[
+    TestColumnDrift('Population'),
+    TestShareOfOutRangeValues('Population'),
+    generate_column_tests(TestMeanInNSigmas, columns='num'),
+    
+])
+
+suite.run(reference_data=reference, current_data=current)
+suite
+```
 {% hint style="info" %}
-**Customize it!** To explore the list of available individual tests, consult [All tests](../reference/all-tests.md) reference table. To see how to set custom test conditions, head to [User Guide](../tests-and-reports/run-tests.md).
+**Available tests and presets**. You can refer to the All tests [reference table](../reference/all-tests.md) to browse available tests and presets or use one of the example notebooks in the [Examples](../examples/readme.md) section.
 {% endhint %}
 
-## 7. Get the output as JSON
+Just like with reports, you can export the output in other formats.
 
-Interactive HTML output is helpful when you want to debug issues or share results with the team. However, it is not that convenient if you want to run your checks automatically.
-
-To integrate Evidently checks in the prediction pipeline, you can get the output as JSON. 
-
-To do it, run:
+To integrate Evidently checks in the prediction pipeline, you can get the output as JSON or a Python dictionary: 
 
 ```python
-tests.json()
+suite.as_dict()
 ```
 
-You can extract necessary information from the JSON output and design a conditional workflow around it. For example, if some tests fail, you can trigger an alert, retrain the model or generate the report. 
-
-Reports are also available as JSON. In this case, they include the metrics summary and simple histograms you can log and use elsewhere. 
-
-```python
-drift_report.json()
-```
+You can extract necessary information from the JSON or Python dictionary output and design a conditional workflow around it. For example, if some tests fail, you can trigger an alert, retrain the model or generate the report. 
 
 ## 8. What else is there?
 
-Both **tests** and **reports** have multiple presets available. Some require only input data, like Data Quality report and Data Quality test suite. You can use them even without the reference dataset. 
+* **Go through the steps in more detail**
 
-When you have the true labels, you can run presets like **Regression Performance** and **Classification Performance** to evaluate the model quality and errors. 
+If you want to walk through all the described steps in more detail, refer to the [User Guide](../tests-and-reports/readme.md). A good next step is to explore how to pass custom test parameters to define your own [test conditions](../tests-and-reports/run-tests.md#how-to-set-the-parameters).  
 
-To understand the contents of each preset, you can explore the [Reports](../reports) and [Test Suites](../tests). If you want to see the code, head straight to the [Examples](../get-started/examples.md) section. 
+* **Explore available presets**
 
-If you need help with specific steps, consult the [User Guide](../tests-and-reports). 
+Both **tests** and **reports** have multiple presets available. Some, like Data Quality, require only input data. You can use them even without the reference dataset. When you have the true labels, you can run presets like **Regression Performance** and **Classification Performance** to evaluate the model quality and errors. 
+
+To understand the contents of each preset, you can explore the [Reports](../reports) and [Test Suites](../tests). If you want to see the pre-rendered examples of the reports, browse Colab notebooks in the [Examples](../get-started/examples.md) section. 
+
+* **Explore available integrations**
 
 If you want to explore more examples of how to integrate Evidently with other tools like MLflow and Airflow, refer to the [Integrations](../integrations). 
  
 If you have a real-time ML service and want to collect data and model metrics on top of the live data stream, you can explore the [integration with Grafana and Prometheus](../integrations/evidently-and-grafana.md). 
 
-Evidently is in active development, so expect things to change and evolve. You can subscribe to the [newsletter](https://evidentlyai.com/sign-up) or follow our [releases on GitHub](https://github.com/evidentlyai/evidently/releases) to stay updated about the latest functionality. 
+Evidently is in active development, so expect things to change and evolve. You can subscribe to the [user newsletter]([https://evidentlyai.com/sign-up](https://www.evidentlyai.com/user-newsletter)) or follow our [releases on GitHub](https://github.com/evidentlyai/evidently/releases) to stay updated about the latest functionality. 
 
 ## Join our Community!
 

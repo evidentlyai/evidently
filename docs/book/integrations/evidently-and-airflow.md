@@ -2,8 +2,6 @@
 description: Run model evaluation or data drift analysis as a part of Airflow DAG.
 ---
 
-# Evidently and Airflow
-
 Apache Airflow is an open-source [workflow management tool](https://airflow.apache.org).
 
 You can generate Evidently Reports and Test Suites as a step in the Airflow DAG.
@@ -26,7 +24,7 @@ You can generate an Evidently HTML report (e.g., a data drift report) every time
 
 {% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/integrations/airflow_drift_detection/dags/evidently_drift_report.py" %}
 
-### 2. Generate visual performance reports on defined conditions 
+## 2. Generate visual performance reports on defined conditions 
 
 You might not need to generate visual reports every time.
 
@@ -38,7 +36,7 @@ In this example, you perform drift checks without generating the visual report. 
 
 {% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/integrations/airflow_drift_detection/dags/evidently_conditional_drift_report_generation.py" %}
 
-### 3. Run test suites to perform multiple checks 
+## 3. Run test suites to perform multiple checks 
 
 ![](<../.gitbook/assets/integrations/airflow_dag_test_suite-min.png>)
 
