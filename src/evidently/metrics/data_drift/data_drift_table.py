@@ -176,7 +176,7 @@ class DataDriftTableRenderer(MetricRenderer):
         if target_column in all_columns:
             columns.append(target_column)
             all_columns.remove(target_column)
-        if prediction_column in all_columns:
+        if isinstance(prediction_column, str) and prediction_column in all_columns:
             columns.append(prediction_column)
             all_columns.remove(prediction_column)
 
