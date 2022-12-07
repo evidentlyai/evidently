@@ -38,4 +38,4 @@ Below are a few specific examples of how to integrate Evidently in the predictio
 [evidently-and-metaflow.md](evidently-and-metaflow.md)
 {% endcontent-ref %}
 
-![Metaflow UI: card html](<../.gitbook/assets/integrations/metaflow_card_html.png>)
+![Metaflow UI: card html](<../.gitbook/assets/integrations/metaflow_card_html-min.png>)
