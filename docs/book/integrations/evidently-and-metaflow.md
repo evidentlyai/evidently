@@ -141,4 +141,4 @@ The respective card can be visualized in multiple ways, such as via the optional
 $ python <path_to_the_metaflow_script>.py card view <step_name>
 ```
 Here is an example of the Card in the Metaflow UI:
-![Metaflow UI: card html](<../.gitbook/assets/metaflow_card_html.png>)
+![Metaflow UI: card html](<../.gitbook/assets/integrations/metaflow_card_html-min.png>)
