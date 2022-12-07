@@ -148,4 +148,4 @@ With a large number of metrics, you can use the expanded view.
 
 # Tutorial 2: Evaluating Historical Data Drift with Evidently, Plotly and **MLflow**
 
-See a tutorial [here](https://evidentlyai.com/blog/tutorial-3-historical-data-drift).
+See a tutorial [in this blog](https://evidentlyai.com/blog/tutorial-3-historical-data-drift).
