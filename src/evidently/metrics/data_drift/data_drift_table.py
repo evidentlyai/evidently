@@ -173,18 +173,12 @@ class DataDriftTableRenderer(MetricRenderer):
         )
         # move target and prediction to the top of the table
         columns = []
-
-        if target_column:
+        if target_column in all_columns:
             columns.append(target_column)
-
-            if target_column in all_columns:
-                all_columns.remove(target_column)
-
-        if prediction_column and isinstance(prediction_column, str):
+            all_columns.remove(target_column)
+        if isinstance(prediction_column, str) and prediction_column in all_columns:
             columns.append(prediction_column)
-
-            if prediction_column in all_columns:
-                all_columns.remove(prediction_column)
+            all_columns.remove(prediction_column)
 
         columns = columns + all_columns
 
