@@ -20,7 +20,7 @@ from evidently.utils.visualizations import Distribution
             ColumnDistributionMetric(column_name="category_feature"),
             ColumnDistributionMetricResult(
                 column_name="category_feature",
-                current=Distribution(x=pd.Series(['n', 'd', 'p']), y=pd.Series([3, 2, 1])),
+                current=Distribution(x=pd.Series(["n", "d", "p"]), y=pd.Series([3, 2, 1])),
                 reference=None,
             ),
         ),
