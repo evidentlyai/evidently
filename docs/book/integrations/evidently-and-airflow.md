@@ -16,6 +16,8 @@ Follow the readme to install and modify the example. You can execute different E
 
 It contains several specific DAGs that match common batch monitoring needs.
 
+![](<../.gitbook/assets/integrations/airflow_evidently_dags-min.png>)
+
 ## 1. Generate model performance reports as a batch job
 
 You can generate an Evidently HTML report (e.g., a data drift report) every time new data arrives. You can then store it at a defined destination. To perform drift analysis, you must also provide a reference dataset to compare the new data against it.
@@ -37,6 +39,8 @@ In this example, you perform drift checks without generating the visual report. 
 {% embed url="https://github.com/evidentlyai/evidently/blob/main/examples/integrations/airflow_drift_detection/dags/evidently_conditional_drift_report_generation.py" %}
 
 ### 3. Run test suites to perform multiple checks 
+
+![](<../.gitbook/assets/integrations/airflow_dag_test_suite-min.png>)
 
 To perform multiple checks with explicit pass/fail results, you can use Test Suites. In this example, you create a Test Suite that is made from individual tests related to data quality and drift. If all tests pass, you simply log the results. If some tests fail, you generate a summary report for debugging. 
 
