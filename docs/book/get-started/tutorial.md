@@ -156,7 +156,11 @@ If you click on individual features, it will show additional plots to explore.
 
 ![Data Drift report details](../.gitbook/assets/tutorial/get_started_4_data_drift_expand-min.png)
 
-**How does it work?** The data drift report compares the distributions of each feature in the two datasets. It [automatically picks](../reference/data-drift-algorithm.md) an appropriate statistical test or metric based on the feature type and volume. It then returns p-values or distances and visually plots the distributions. You can also [adjust the drift detection method or thresholds](../customization/options-for-statistical-tests.md), or pass your own.
+<details>
+<summary>**How does it work?**</summary>
+ 
+The data drift report compares the distributions of each feature in the two datasets. It [automatically picks](../reference/data-drift-algorithm.md) an appropriate statistical test or metric based on the feature type and volume. It then returns p-values or distances and visually plots the distributions. You can also [adjust the drift detection method or thresholds](../customization/options-for-statistical-tests.md), or pass your own.
+</details>
 
 {% hint style="info" %}
 **Large reports might take time to load.** The example dataset is small, so the report appears quickly. If you use a larger dataset, the report might take time to show. The size limitation depends on your infrastructure. In this case, we suggest applying sampling to your dataset before passing it to Evidently.
