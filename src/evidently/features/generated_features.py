@@ -9,8 +9,11 @@ class GeneratedFeature:
     """
     Class for computation of additional features.
     """
+
     @abc.abstractmethod
-    def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
+    def generate_feature(
+        self, data: pd.DataFrame, data_definition: DataDefinition
+    ) -> pd.DataFrame:
         """
         generate DataFrame with new features from source data.
 
