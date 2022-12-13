@@ -118,7 +118,7 @@ data_drift_dataset_report.run(reference_data=ref, current_data=cur)
 data_drift_dataset_report
 ```
 
-## Column-level tests
+## Column-level metrics
 
 Some of the metrics are calculated on the column level. For example, to calculate drift in a specific feature or model predictions.
 
