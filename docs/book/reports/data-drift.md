@@ -85,7 +85,7 @@ For numerical features, you can also explore the values mapped in a plot.
 * The dark green line is the **mean**, as seen in the reference dataset.
 * The green area covers **one standard deviation** from the mean.
 
-![](<../.gitbook/assets/reports/metric_data_drift_table_expand_2-min.png>)
+![](<../.gitbook/assets/reports/metric_data_drift_table_expand_2-min.png)
 
 ## Metrics output
 
