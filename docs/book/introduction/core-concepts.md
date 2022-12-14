@@ -172,6 +172,6 @@ You can then build a conditional workflow based on the result of the tests: for 
 
 **Reports** and **Test Suites** are complementary interfaces. 
 
-Reports are best for debugging, exploratory analysis and ad hoc analytics. They focus on interactive visualizations and do not require setting any expectations upfront. You can use them, for example, when you just put a models in production and want to closely monitor the performance.  
+Reports are best for debugging, exploratory and ad hoc analytics. They focus on interactive visualizations and do not require setting any expectations upfront. You can use them, for example, when you just put a model in production and want to closely monitor the performance.  
 
 Test Suites are best for automation. Use them when you can set up expectations upfront (or derive them from the reference dataset). Tests force you to think through what you expect from your data and models, and you can run them at scale, only reacting to the failure alerts. If tests fail, you can use Reports for additional debugging. 
