@@ -18,6 +18,8 @@ To run performance checks as part of the pipeline, use the Test Suite. To explor
 
 # Classification Performance Report 
 
+If you want to visually explore the model performance, create a new Report object and use the `ClassificationPreset`.
+
 ## Code example
 
 ```python
@@ -34,9 +36,9 @@ classification_performance_report
 
 This report evaluates the quality of a classification model.
 
-* Can be generated for a **single dataset**, or compare the performance **against reference** (e.g. past performance or alternative model).
+* Can be generated for a **single dataset**, or compare it **against the reference** (e.g. past performance or alternative model).
 * Works for **binary** and **multi-class**, **probabilistic** and non-probabilistic classification.
-* Displays a variety of plots related to the model **performance**.
+* Displays a variety of metrics and plots related to the model **performance**.
 * Helps **explore regions** where the model makes different types of **errors**.
 
 ## Data Requirements
