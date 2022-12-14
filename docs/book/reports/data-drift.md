@@ -18,7 +18,7 @@ To run data drift checks as part of the pipeline, use the Test Suite. To explore
 
 # Data Drift Report
 
-If you want to get a visual report, you can create a Report and use the `DataDriftPreset`. 
+If you want to get a visual report, you can create a new Report object and use the `DataDriftPreset`. 
 
 ## Code example
 
