@@ -24,7 +24,7 @@ If you want to get a visual report, you can create a new Report object and use t
 
 ```python
 data_drift_report = Report(metrics=[
-    DataDriftPreset,
+    DataDriftPreset(),
 ])
 
 data_drift_report.run(reference_data=ref, current_data=cur)
