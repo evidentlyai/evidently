@@ -6,7 +6,7 @@ For Reports, you can use the `DataDriftPreset`. For Test Suites, you can use the
 
 You can evaluate data drift: 
 
-**1. To monitor the model performance without ground truth.** When you do not have true labels or actuals, you can monitor Input Feature Drift to check if the model is operating in a familiar environment. You can often monitor input drift only for a subset of features, for example, the most important features. You can also apply it to all features but only declare meaningful dataset drift if , e.g.,  only 50% of features drifted. You can typically combine it with the [Prediction Drift monitoring.](prediction-drift.md). 
+**1. To monitor the model performance without ground truth.** When you do not have true labels or actuals, you can monitor Input Feature Drift to check if the model is operating in a familiar environment. You can often monitor input drift only for a subset of features, for example, the most important features. You can also apply it to all features but only declare meaningful dataset drift if , e.g.,  only 50% of features drifted. You can typically combine it with the [Prediction Drift monitoring](prediction-drift.md). 
 
 **2. When you are debugging the model decay.** If you observe a drop in the model quality, you can evaluate Data Drift to explore the change in the feature patterns, e.g., to understand the change in the environment or discover the appearance of a new segment. 
 
@@ -43,6 +43,8 @@ You will need **two** datasets. The **reference** dataset serves as a benchmark.
 The dataset should include the features you want to evaluate for drift. The schema of both datasets should be identical.
 
 Evidently can evaluate drift both for numerical and categorical features. You can explicitly specify the type of the column in column mapping. If it is not specified, Evidently will define the column type automatically.
+
+If your dataset contains target or prediction column, they will also be analyzed for drift. 
 
 ## How it looks
 
@@ -155,6 +157,13 @@ data_drift_test_suite.run(reference_data=ref, current_data=curr)
 data_drift_test_suite
 ```
 
+## How it works
+
+You can use the `DataDriftTestPreset` to test features for drift when you receive a new batch of input data or generate a new set of predictions.
+
+The test preset works similarly to the metric preset. It will perfom two types of tests: test the share of drifted columns to detect dataset drift, and test drift in individual columns (all or from a defined list).  
+
+Head here to the [All tests](../reference/all-tests.md) table to see the description of individual tests and default parameters. 
 
 # Examples
 
