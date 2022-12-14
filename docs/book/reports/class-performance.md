@@ -251,6 +251,8 @@ You can get the report output as a JSON or a Python dictionary:
 
 # Classification Performance Test Suite
 
+![](<../.gitbook/assets/tests/test_preset_binarytopKclass-min.png.png>)
+
 If you want to run classification performance checks as part of a pipeline, you can create a Test Suite and use one of the classification presets. 
 
 There are several presets for different classification tasks. They apply to Multiclass Classification, Binary Classification, and Binary Classification at topK accordingly: 
