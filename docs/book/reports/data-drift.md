@@ -6,15 +6,28 @@ For Reports, you can use the `DataDriftPreset`. For Test Suites, you can use the
 
 You can evaluate data drift: 
 
-**1. To monitor the model performance without ground truth.** When you do not have true labels or actuals, you can monitor Input Feature Drift to check if the model is operating in a familiar environment. You can often monitor input drift only for a subset of features, for example, most important features. You can also apply it to all features but only declare meaningful dataset drift if e.g. only 50% of features drifted. You can typically combine it with the [Prediction Drift monitoring.](prediction-drift.md)
+**1. To monitor the model performance without ground truth.** When you do not have true labels or actuals, you can monitor Input Feature Drift to check if the model is operating in a familiar environment. You can often monitor input drift only for a subset of features, for example, the most important features. You can also apply it to all features but only declare meaningful dataset drift if , e.g.,  only 50% of features drifted. You can typically combine it with the [Prediction Drift monitoring.](prediction-drift.md). 
 
-**2. When you are debugging the model decay.** If you observe a drop in the model quality, you can evaluate Data Drift to explore the change in the feature patterns, e.g. to understand the change in the environment or discover the appearance of a new segment. 
+**2. When you are debugging the model decay.** If you observe a drop in the model quality, you can evaluate Data Drift to explore the change in the feature patterns, e.g., to understand the change in the environment or discover the appearance of a new segment. 
 
 **3. To understand model drift in an offline environment.** You can explore the historical data drift to understand past changes in the input data and define optimal drift detection approach and retraining strategy. Read more in a [blog](https://evidentlyai.com/blog/tutorial-3-historical-data-drift) about it.
 
 **4. Before model retraining.** Before feeding fresh data into the model, you might want to verify whether it even makes sense. If there is no data drift drift, the environment is stable, and retraining might not be necessary.
 
+To run data drift checks as part of the pipeline, use the Test Suite. To explore and debug, use the Report.  
+
 # Report: Data Drift Preset 
+
+## Code example
+
+```python
+data_drift_report = Report(metrics=[
+    DataDriftPreset,
+])
+
+data_drift_report.run(reference_data=ref, current_data=cur)
+data_drift_report
+```
 
 ## How it works
 
@@ -128,6 +141,19 @@ You can get the report output as a JSON or a Python dictionary:
 * You can add a [custom drift detection method](../customization/add-custom-metric-or-test.md).
 * You can use a [different color schema for the report](../customization/options-for-color-schema.md). 
 * You can create a different report or test suite from scratch taking this one as an inspiration. 
+
+# Test Suite: Data Drift Preset 
+
+## Code example
+
+```python
+data_drift_test_suite = TestSuite(tests=[
+   DataDriftTestPreset(),
+])
+ 
+data_drift_test_suite.run(reference_data=ref, current_data=curr)
+data_drift_test_suite
+```
 
 
 # Examples
