@@ -1,6 +1,6 @@
-# Probabilistic Classification Performance
+# TL;DR
 
-**TL;DR:** The report analyzes the performance of a probabilistic classification model.
+You can use the pre-built reports and test suites to analyze the performance of a classification model. The presets work for binary and multi-class classification, probabilistic and non-probabilistuc classification. 
 
 * Works for a **single model** or helps compare the **two**
 * Works for **binary** and **multi-class** classification
