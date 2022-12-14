@@ -17,7 +17,7 @@ To run drift checks as part of the pipeline, use the Test Suite. To explore and 
 
 # Target (Prediction) Drift Report  
 
-If you want to visually explore the prediction or target drift, you can create a Report and use the `TargetDriftPreset`.
+If you want to visually explore the prediction or target drift, you can create a new Report object and use the `TargetDriftPreset`.
 
 ## Code example
 
