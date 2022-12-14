@@ -141,7 +141,8 @@ You can get the report output as a JSON or a Python dictionary:
 * You can [specify the drift detection methods and thresholds](../customization/options-for-statistical-tests.md). 
 * You can add a [custom drift detection method](../customization/add-custom-metric-or-test.md).
 * You can use a [different color schema for the report](../customization/options-for-color-schema.md). 
-* You can create a different report or test suite from scratch taking this one as an inspiration. 
+* You can create a different report from scratch taking this one as an inspiration. 
+* You can apply the report only to selected columns. 
 
 # Test Suite: Data Drift Test Preset 
 
@@ -166,7 +167,14 @@ The test preset works similarly to the metric preset. It will perform two types 
 * test the share of drifted columns to detect dataset drift;
 * test distribution drift in the individual columns (all or from a defined list).  
 
-Head here to the [All tests](../reference/all-tests.md) table to see the description of individual tests and default parameters. 
+Head here to the [All tests](../reference/all-tests.md) table to see the description of individual tests and parameters. 
+
+## Test Suite customization
+
+* You can [specify the drift detection methods and thresholds](../customization/options-for-statistical-tests.md). 
+* You can add a [custom drift detection method](../customization/add-custom-metric-or-test.md).
+* You can apply the preset only to selected columns.
+* You can create a different report test suite from scratch taking this one as an inspiration. 
 
 # Examples
 
