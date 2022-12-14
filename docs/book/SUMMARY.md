@@ -1,10 +1,10 @@
 # Table of contents
 
 * [What is Evidently?](README.md)
-* [Installation](get-started/install-evidently.md)
+  * [Core Concepts](introduction/core-concepts.md)
 * [Get Started Tutorial](get-started/tutorial.md)
-* [Reports](reports/README.md)
-  * [Reports Overview](reports/overview.md)
+* [Presets](reports/README.md)
+  * [All Presets](reports/all-presets.md)
   * [Data Drift](reports/data-drift.md)
   * [Data Quality](reports/data-quality.md)
   * [Numerical Target Drift](reports/num-target-drift.md)
@@ -12,6 +12,7 @@
   * [Regression Performance](reports/reg-performance.md)
   * [Classification Performance](reports/classification-performance.md)
   * [Probabilistic Classification Performance](reports/probabilistic-classification-performance.md)
+  * [NoTargetPerformance](tests/no-target-performance.md)
 * [Test Suites](tests/README.md)
   * [Test Suites Overview](tests/overview.md)
   * [NoTargetPerformance](tests/no-target-performance.md)
@@ -28,6 +29,7 @@
   * [Evidently and Metaflow](integrations/evidently-and-metaflow.md)
 
 ## User Guide
+* [Installation](get-started/install-evidently.md)
 * [Tests and reports](tests-and-reports/README.md)
   * [Input data](tests-and-reports/input-data.md)
   * [Column mapping](tests-and-reports/column-mapping.md)
