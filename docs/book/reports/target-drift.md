@@ -23,7 +23,7 @@ If you want to visually explore the prediction or target drift, you can create a
 
 ```python
 num_target_drift_report = Report(metrics=[
-    TargetDriftPreset,
+    TargetDriftPreset(),
 ])
 
 num_target_drift_report.run(reference_data=ref, current_data=cur)
