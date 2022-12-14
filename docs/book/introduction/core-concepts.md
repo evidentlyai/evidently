@@ -4,9 +4,9 @@ This is an explanatory page to describe the key features and concepts at Evident
 
 Evidently helps evaluate, test and monitor ML models in production. 
 
-A **metric** is a core component of Evidently. When you combine multiple **metrics**, you get a **report**. Reports are best for visual analysis and debugging of your models and data.
+A **metric** is a core component of Evidently. You can combine multiple **metrics** in a **report**. Reports are best for visual analysis and debugging of your models and data.
 
-A **test** is a metric with a condition. Each test returns a pass or fail result. When you combine multiple **tests**, you get a **test suite**. Test suites are best for automated model checks as part of an ML pipeline.
+A **test** is a metric with a condition. Each test returns a pass or fail result. You can combine multiple **tests** in a **test suite**. Test suites are best for automated model checks as part of an ML pipeline.
 
 For both tests and metrics, Evidently has **presets**. These are pre-built combinations of metrics or checks that fit a specific use case. 
 
