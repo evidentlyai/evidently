@@ -5,7 +5,7 @@ For Test Suites, you can use a `TestColumnDrift` test and apply it to the predic
 
 # Use case 
 
-You can use this preset: 
+You can analyze target or prediction drift: 
 
 **1. To evaluate the model performance without ground truth.** When you do not have true labels or actuals, you can monitor Prediction Drift to react to meaningful changes. For example, to detect when there is a distribution shift in predicted values, probabilities, or classes. You can often combine it with the [Data Drift analysis.](data-drift.md)
 
