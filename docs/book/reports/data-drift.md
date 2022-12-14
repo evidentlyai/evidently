@@ -1,4 +1,4 @@
-**TL;DR:** You can detect changes in the input feature distributions.
+**TL;DR:** You can detect and analyze changes in the input feature distributions.
 
 For Reports, you can use the `DataDriftPreset`. For Test Suites, you can use the `DataDriftTestPreset`.  
 
