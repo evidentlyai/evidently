@@ -274,11 +274,11 @@ binary_topK_classification_performance
 
 ## How it works
 
-You can use the test presets to evaluate the quality of a classification model, when you have the ground truth labels. 
+You can use the test presets to evaluate the quality of a classification model when you have the ground truth labels. 
 
 For Evidently to generate the test conditions automatically, you should pass the reference dataset (e.g., performance during model validation or a previous period). You can also set the performance expectations manually by passing a custom test condition. 
 
-If you neither pass the reference dataset and nor set custom test conditions, Evidently will compare the model performance to a dummy model.
+If you neither pass the reference dataset nor set custom test conditions, Evidently will compare the model performance to a dummy model.
 
 Head here to the [All tests](../reference/all-tests.md) table to see the description of individual tests and default parameters. 
 
