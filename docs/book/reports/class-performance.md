@@ -1,53 +1,64 @@
-# TL;DR
+**TL;DR:** You can use the pre-built reports and test suites to analyze the performance of a classification model. The presets work for binary and multi-class classification, probabilistic and non-probabilistuc classification. 
 
-You can use the pre-built reports and test suites to analyze the performance of a classification model. The presets work for binary and multi-class classification, probabilistic and non-probabilistuc classification. 
+For Reports, you can use the `ClassificationPreset`. For Test Suites, you can use the `MulticlassClassificationTestPreset`, `BinaryClassificationTopKTestPreset`, `BinaryClassificationTestPreset`.
 
-* Works for a **single model** or helps compare the **two**
-* Works for **binary** and **multi-class** classification
+# Use Case
+
+These presets help evaluate the quality of classification models. You can us them:
+
+**1. To monitor the performance of a production classification model.** You can run the test suite as a regular job (e.g. weekly or every time you get the labels) to analyze the model performance.
+
+**2. To trigger or decide on the model retraining.** You can use the test suite to check if the model performance is below the threshold to initiate a model update.
+
+**3. To debug or improve model performance.** If you detect a quality drop, you can use the viusal report to explore the model errors and underperforming segments. By manipulating the input data frame, you can explore how the model performs on different data segments (e.g. users from a specific region). You can also combine it with the [Data Drift](data-drift.md) report.
+
+**4. To analyze the results of the model test.** You can explore the results of an online or offline test and contrast it to the performance in training. Though this is not the primary use case, you can use this report to compare the model performance in an A/B test, or during a shadow model deployment.
+
+To run performance checks as part of the pipeline, use the Test Suite. To explore and debug, use the Report.
+
+# Classification Performance Report 
+
+## Code example
+
+```python
+classification_performance_report = Report(metrics=[
+    ClassificationPreset,
+])
+
+classification_performance_report.run(reference_data=bcancer_ref, current_data=bcancer_cur)
+
+classification_performance_report
+```
+
+## How it works
+
+This report evaluates the quality of a classification model.
+
+* Can be generated for a **single dataset**, or contrast **against reference** (e.g. past performance or alternative model).
+* Works for **binary** and **multi-class**, **probabilistic** and non-probabilistic classification
 * Displays a variety of plots related to the model **performance**
 * Helps **explore regions** where the model makes different types of **errors**
 
-## Summary
+## Data Requirements
 
-**Probabilistic Classification Performance** report evaluates the quality of a probabilistic classification model. It works both for binary and multi-class classification.
+To run this report, you need to have **both target and prediction** columns available. Input features are optional. Pass them if you want to explore the relations between features and target.
 
-If you have a non-probabilistic classification model, refer to a [separate report](classification-performance.md).
-
-This report can be generated for a single model, or as a comparison. You can contrast your current production model performance against the past or an alternative model.
-
-## Requirements
-
-To run this report, you need to have input features, and **both target and prediction** columns available.
-
-**In the column mapping, you need to specify the names of your Prediction columns**. The tool expects a separate column for each class, even for binary classification.
-
-**NOTE: Column order in Binary Classification.** For binary classification, class order matters. The tool expects that the target (so-called positive) class is the **first** in the `column_mapping['prediction']` list.
-
-The column names can be **numerical labels** like "0", "1", "2" or **class names** like "virginica", "setoza", "versicolor". Each column should contain the predicted probability \[0;1] for the corresponding class.
-
-You can find an example below:
-
-```
-column_mapping['prediction'] = [‘class_name1’, ‘class_name2’, ‘class_name3’]
-```
-
-The **Target column** should contain the true labels that match the **Prediction column** names. The tool performs the matching and evaluates the model quality by looking for the names from the "prediction" list inside the Target column.
+Refer to the [column mapping section](../test-and-reports/column-mapping.md) to see how to pass model predictions and labels in different cases. 
 
 The tool does not yet work for multi-label classification. It expects a single true label.
 
-To generate a comparative report, you will need **two** datasets. The **reference** dataset serves as a benchmark. We analyze the change by comparing the **current** production data to the **reference** data.
-
+To generate a comparative report, you will need **two** datasets. 
 ![](<../.gitbook/assets/two\_datasets\_classification (1) (1).png>)
 
-You can also run this report for a **single** `DataFrame` , with no comparison performed. In this case, pass it as `reference_data`.
+You can also run this report for a **single** dataset, with no comparison performed.
 
 ## How it looks
 
-The report includes 10 components. All plots are interactive.
+The report includes multiple components. The composition might vary based on problem type (there are more plots in the case of probabilistic classification). All plots are interactive.
 
 ### **1. Model Quality Summary Metrics**
 
-We calculate a few standard model quality metrics: Accuracy, Precision, Recall, F1-score, ROC AUC, and LogLoss.
+Evidently calculates a few standard model quality metrics: Accuracy, Precision, Recall, F1-score, ROC AUC, and LogLoss.
 
 **To support the model performance analysis, we also generate interactive visualizations. They help analyze where the model makes mistakes and come up with improvement ideas.**
 
@@ -113,43 +124,19 @@ In this table, we show a number of plots for each feature. To expand the plots, 
 
 ![](<../.gitbook/assets/prob\_class\_perf\_classification\_quality\_by\_feature (1).png>)
 
-In the tab “ALL”, we plot the distribution of classes against the values of the feature. This is the “Target Behavior by Feature” plot from the [Categorical Target Drift ](categorical-target-drift.md)report.
-
-If you compare the two datasets, it visually shows the changes in the feature distribution and in the relationship between the values of the feature and the target.
+In the tab “ALL”, you can see the distribution of classes against the values of the feature. If you compare the two datasets, it visually shows the changes in the feature distribution and in the relationship between the values of the feature and the target.
 
 ![](<../.gitbook/assets/prob\_class\_perf\_classification\_quality\_by\_feature\_example\_all (1).png>)
 
-Then, for each class, we plot the predicted probabilities alongside the values of the feature.
+For each class, you can seee the predicted probabilities alongside the values of the feature.
 
 ![](<../.gitbook/assets/prob\_class\_perf\_classification\_quality\_by\_feature\_example\_class (1).png>)
 
 It visualizes the regions where the model makes errors of each type and reveals the low-performance segments. You can compare the distributions and see **if the errors are sensitive to the values of a given feature**.
 
-## Report customization
+## Metrics output
 
-You can set [options-for-quality-metrics.md](../customization/options-for-quality-metrics.md "mention") to set a custom classification threshold or сut the data above the given quantile from the histogram plots in the "Classification Quality by Feature" table.
-
-You can select which components of the reports to display or choose to show the short version of the report: [select-widgets-to-display.md](../customization/select-widgets-to-display.md "mention").
-
-If you want to create a new plot or metric, you can [add-a-custom-widget-or-tab.md](../customization/add-a-custom-widget-or-tab.md "mention").
-
-## When to use the report
-
-Here are our suggestions on when to use it—you can also combine it with the [Data Drift](data-drift.md) and [Categorical Target Drift](categorical-target-drift.md) reports to get a comprehensive picture.
-
-**1. To analyze the results of the model test.** You can explore the results of an online or offline test and contrast it to the performance in training. Though this is not the primary use case, you can use this report to compare the model performance in an A/B test, or during a shadow model deployment.
-
-**2. To generate regular reports on the performance of a production model.** You can run this report as a regular job (e.g. weekly or at every batch model run) to analyze its performance and share it with other stakeholders.
-
-**3. To analyze the model performance on the slices of data.** By manipulating the input data frame, you can explore how the model performs on different data segments (e.g. users from a specific region).
-
-**4. To trigger or decide on the model retraining.** You can use this report to check if your performance is below the threshold to initiate a model update and evaluate if retraining is likely to improve performance.
-
-**5. To debug or improve model performance.** You can use the Classification Quality table to identify underperforming segments and decide on the ways to address them.
-
-## JSON Profile
-
-If you choose to generate a JSON profile, it will contain the following information:
+You can get the report output as a JSON or a Python dictionary:
 
 ```yaml
 {
@@ -256,12 +243,17 @@ If you choose to generate a JSON profile, it will contain the following informat
 }
 ```
 
+## Report customization
 
-## When to use it?
+* You can pass relevant parameters to change the way some of the metrics are calculated, such as decision threshold or K to evaluate precision@K. See the available parameters [here](../reference/all-metrics.md)
+* You can use a [different color schema for the report](../customization/options-for-color-schema.md). 
+* If you want to exclude some of the metrics, you can create a custom report by combining the chosen metrics. See the complete list [here](../reference/all-metrics.md)
 
-You can use one of the classification test presets to evaluate the quality of a classification model, when you have the ground truth labels.
+# Classification Performance Test Suite
 
-There are several presets for different classification tasks: 
+If you want to run classification performance checks as part of a pipeline, you can create a Test Suite and use one of the classification presets. 
+
+There are several presets for different classification tasks. They apply to Multiclass Classification, Binary Classification, and Binary Classification at topK accordingly: 
 
 ```python
 MulticlassClassificationTestPreset
@@ -269,106 +261,34 @@ BinaryClassificationTopKTestPreset
 BinaryClassificationTestPreset
 ```
 
-## Multiclass Classification
-
-You can set prediction type as `probas` or `labels`.
-
-### Code example
-
-```python
-classification_performance = TestSuite(tests=[
-   MulticlassClassificationTestPreset(prediction_type='labels')
-])
-
-classification_performance.run(reference_data=iris_ref, current_data=iris_cur)
-classification_performance
-```
-
-### Preset contents
-
-The preset contains the following tests:
-
-```python
-TestAccuracyScore(),
-TestF1Score(),
-TestPrecisionByClass(label=labels), 
-TestRecallByClass(label=labels),
-TestColumnDrift(column=target)
-```
-
-If prediction type is `probas`, also: `TestLogLoss()`, `TestRocAuc()`.
-
-## Binary Classification Top K
-
-### Code example
+## Code example
 
 ```python
 binary_topK_classification_performance = TestSuite(tests=[
     BinaryClassificationTopKTestPreset(k=10),
 ])
 
-binary_topK_classification_performance.run(reference_data=bcancer_ref, current_data=bcancer_cur)
+binary_topK_classification_performance.run(reference_data=ref, current_data=cur)
 binary_topK_classification_performance
 ```
 
-### Preset contents
+## How it works
 
-The preset contains the following tests:
+You can use the test presets to evaluate the quality of a classification model, when you have the ground truth labels. 
 
-```python
-TestAccuracyScore(k=self.k),
-TestPrecisionScore(k=self.k),
-TestRecallScore(k=self.k),
-TestF1Score(k=self.k),
-TestColumnDrift(column_name=target),
-TestRocAuc(),
-TestLogLoss(),     
-```
+For Evidently to generate the test conditions automatically, you should pass the reference dataset (e.g., performance during model validation or a previous period). You can also set the performance expectations manually by passing a custom test condition. 
 
-## Binary Classification
-
-You can set prediction type as `probas` or `labels`.
-
-### Code example
-
-```python
-binary_classification_performance = TestSuite(tests=[
-    BinaryClassificationTestPreset(prediction_type='probas'),
-])
-
-binary_classification_performance.run(reference_data=bcancer_ref, current_data=bcancer_cur)
-binary_classification_performance
-```
-
-### Preset contents
-
-The preset contains the following tests:
-
-```python
-TestColumnDrift(column=target),
-TestPrecisionScore(),
-TestRecallScore(),
-TestF1Score(),
-TestAccuracyScore()        
-```
-
-If prediction type is `probas`, also: `TestRocAuc()`.
-
-## More information
-
-Consult the [user guide](../tests-and-reports/run-tests.md) for the complete instructions on how to run tests. 
-
-Unless specified otherwise, the default settings are applied. 
+If you neither pass the reference dataset and nor set custom test conditions, Evidently will compare the model performance to a dummy model.
 
 Head here to the [All tests](../reference/all-tests.md) table to see the description of individual tests and default parameters. 
 
-{% hint style="info" %} 
-We are doing our best to maintain this page up to date. In case of discrepancies, consult the code on GitHub (API reference coming soon!) or the current version of the "All tests" example notebook in the [Examples](../get-started/examples.md) section. If you notice an error, please send us a pull request to update the documentation! 
-{% endhint %}
+## Test Suite customization
+
+* You can set custom test conditions.
+* You can pass relevant parameters to change the way some of the metrics are calculated, such as decision threshold or K to evaluate precision@K. See the available parameters [here](../reference/all-tests.md)
+* If you want to exclude some of the tests or add additional tests, you can create a custom test suite by combining the chosen tests. See the complete list [here](../reference/all-tests.md)
 
 ## Examples
 
-* Browse our [examples](../get-started/examples.md) for sample Jupyter notebooks.
-* See a tutorial "[What is your model hiding](https://evidentlyai.com/blog/tutorial-2-model-evaluation-hr-attrition)" where we analyze the performance of two models with identical ROC AUC to choose between the two.
-
-You can also read the [release blog](https://evidentlyai.com/blog/evidently-018-classification-model-performance).
+* Browse the [examples](../get-started/examples.md) for sample Jupyter notebooks and Colabs.
+* See a blog post and a tutorial "[What is your model hiding](https://evidentlyai.com/blog/tutorial-2-model-evaluation-hr-attrition)" where we analyze the performance of two models with identical ROC AUC to choose between the two.
