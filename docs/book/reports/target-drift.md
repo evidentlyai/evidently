@@ -81,9 +81,9 @@ For categorical targets:
 ![](../.gitbook/assets/cat\_target\_drift\_behavior\_by\_feature\_example.png)
 
 
-## JSON output
+## Metrics output
 
-If you choose to generate a JSON profile, it will contain the following information:
+You can get the report output as a JSON or a Python dictionary:
 
 ```yaml
 {
