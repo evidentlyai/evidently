@@ -13,6 +13,8 @@ You can analyze target or prediction drift:
 
 **3. Before model retraining.** Before feeding fresh data into the model, you might want to verify whether it even makes sense. If there is no target drift, the concept is stable, and retraining might not be necessary.
 
+To run drift checks as part of the pipeline, use the Test Suite. To explore and debug, use the Report.  
+
 # Report: Target Drift Preset  
 
 ## How it works
