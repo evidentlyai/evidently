@@ -10,7 +10,9 @@ A **test** is a metric with a condition. Each test returns a pass or fail result
 
 For both tests and metrics, Evidently has **presets**. These are pre-built combinations of metrics or checks that fit a specific use case. 
 
-# What is a Metric?
+# Reports and Metrics
+
+## What is a Metric?
 
 A **Metric** is a component that evaluates a specific aspect of the data or model quality. 
 
@@ -32,7 +34,7 @@ The JSON “version” of a metric returns any new calculated values and, option
 
 Evidently contains 30+ **Metrics** related to data quality, integrity, drift and model performance. You can also implement a custom one.
 
-# What is a Report?
+## What is a Report?
 
 A **Report** is a combination of different metrics that evaluate data or ML model quality. 
 
@@ -64,7 +66,7 @@ Most reports can be calculated for a single dataset. If you pass two datasets, t
 
 You can generate a report by listing individual **Metrics** to include in it. You can also run one of the **Presets** that cover a specific aspect of the model or data performance. 
 
-# What is a Metric Preset?
+## What is a Metric Preset?
 
 A **metric preset** is a pre-built report that combines metrics for a particular use case.
 
@@ -78,17 +80,19 @@ You can explore all metrics and presets here:
 [All metrics](all-metrics.md)
 {% endcontent-ref %}
 
-# When to use Reports
+## When to use Reports
 
 You can use Reports at different stages of the ML lifecycle: from exploratory data analysis and pre-deployment model evaluation to production monitoring and debugging.  
 
-**Debugging and exploration**. Reports are best for visual analysis of the data or model performance. For example, during model quality evaluation on the training set, when debugging the model quality decay, or comparing two models.
+**Debugging and exploration**. Reports are best for visual analysis of the data or model performance. For example, during model quality evaluation on the training set, when debugging the model quality decay, or comparing two models. 
 
 **Metric logging**. You can also add a model or data evaluation step in the ML pipeline, get outputs as JSON, and log it to a database. For example, you can later visualize it using other BI tools.
 
 **Reporting and documentation**. You can also use Evidently reports to share results with the team and stakeholders or log them as documentation. For example, you can record the results of the model performance after training.
 
-# What is a Test?
+# Tests and Test Suites
+
+## What is a Test?
 
 Tests help perform structured data and ML model performance checks. They explicitly define the expectations from your data and model.
 
@@ -114,7 +118,11 @@ If the test execution fails, it will return an error.
 
 Evidently contains 50+ individual tests that cover different aspects of model and data quality. 
 
-# What is a Test Suite?
+You can set test conditions on your own or pass the reference dataset to auto-generate test conditions. You can also run most of the tests using defaults even if you do not pass a reference dataset: the tests will use heuristics and dummy models.
+
+Test output is available as an interactive HTML report, JSON, or Python dictionary.
+
+## What is a Test Suite?
 
 In most cases, you’d want to run more than one test. 
 
@@ -128,7 +136,7 @@ If you include a lot of tests, you can navigate the output by groups:
 
 You can create your test suite from individual tests or use one of the existing **presets**. 
 
-# What is a Test Preset?
+## What is a Test Preset?
 
 A **test preset** is a pre-built test suite that combines checks for a particular use case. 
 
@@ -142,9 +150,11 @@ You can explore all tests and presets here:
 [All tests](all-tests.md)
 {% endcontent-ref %}
 
-# When to use tests
+## When to use tests
 
-For **test-based monitoring** of production ML models: tests are best suited for integration in ML prediction pipelines. You can use them to perform batch checks for your data or models. 
+For **test-based monitoring** of production ML models: tests are best suited for integration in ML prediction pipelines. You can easily integrate Evidently Tests with workflow management tools like Airflow.
+
+You can use them to perform batch checks for your data or models. 
 
 For example, you can run the tests when you:
 * get a new batch of the input data 
@@ -158,26 +168,10 @@ You can then build a conditional workflow based on the result of the tests: for 
 
 **During model development**: you can also use tests during model development and validation. For example, you can run tests to evaluate the data quality of the new feature set or to compare test performance to training.
 
-# How to use tests
-
-As an input, you can provide two datasets you want to compare: **reference** and **current** data. You can use training or earlier production data as the reference and new data as current. You can also run most tests with a single (current) dataset.
-
-You can execute the tests as a Python script or in Jupyter notebook or Colab. You can also easily integrate Evidently Tests with workflow management tools like Airflow.
-
-Test output is available as an interactive HTML report, JSON, or Python dictionary.
-
-To start, you can run tests with the default Evidently parameters. They use heuristics and dummy models or learn the expectations from the reference dataset. You can also set custom parameters. 
-
-Head here for a complete user guide with the code snippets:
- 
-{% content-ref url="../tests-and-reports/run-tests.md" %}
-[Run tests](run-tests.md)
-{% endcontent-ref %}
-
 # Test Suites or Reports?
 
-**Reports** and **[Test Suites](../tests/overview.md)** are complementary interfaces. 
+**Reports** and **Test Suites** are complementary interfaces. 
 
-Test Suites are best for automation and integration in the prediction pipelines. They require defining test conditions (expectations for your data and model performance) upfront or providing a reference dataset to learn from.
+Reports are best for debugging, exploratory analysis and ad hoc analytics. They focus on interactive visualizations and do not require setting any expectations upfront. You can use them, for example, when you just put a models in production and want to closely monitor the performance.  
 
-Reports are best for visual exploration and ad hoc evaluation, debugging, and reporting. 
+Test Suites are best for automation. Use them when you can set up expectations upfront (or derive them from the reference dataset). Tests force you to think through what you expect from your data and models, and you can run them at scale, only reacting to the failure alerts. If tests fail, you can use Reports for additional debugging. 
