@@ -274,7 +274,9 @@ binary_topK_classification_performance
 
 ## How it works
 
-You can use the test presets to evaluate the quality of a classification model when you have the ground truth labels. 
+You can use the test presets to evaluate the quality of a classification model when you have the ground truth labels.
+
+Each preset calculates the relevant quality metrics for the model type and compares them against the expectation. It also calculates the target drift to show the change in the distribution of classes and/or probabilities, as it might indicate emerging concept drift.  
 
 For Evidently to generate the test conditions automatically, you should pass the reference dataset (e.g., performance during model validation or a previous period). You can also set the performance expectations manually by passing a custom test condition. 
 
