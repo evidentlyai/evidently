@@ -54,7 +54,7 @@ The default report includes 4 components. All plots are interactive.
 
 The report returns **the share of drifting features** and an aggregate **Dataset Drift** result. For example:
 
-![](../.gitbook/assets/reports\_data\_drift\_summary.png)
+![](../.gitbook/assets/reports/metric_dataset_drift-min.png)
 
 Dataset Drift sets a rule on top of the results of the statistical tests for individual features. By default, Dataset Drift is detected if at least 50% of features drift.
 
@@ -70,23 +70,22 @@ To build up a better intuition for which tests are better in different kinds of 
 
 The table shows the drifting features first. You can also choose to sort the rows by the feature name or type.
 
-![](../.gitbook/assets/reports\_data\_drift\_table.png)
+![](../.gitbook/assets/reports/metric_data_drift_table-min.png)
+
+### 4. Data Distribution by Feature
+
+By clicking on each feature, you can explore the distributions.
+
+![](<../.gitbook/assets/reports/metric_data_drift_table_expand_1-min.png)
 
 ### 3. Data Drift by Feature
 
-By clicking on each feature, you can explore the values mapped in a plot.
+For numerical features, you can also explore the values mapped in a plot.
 
 * The dark green line is the **mean**, as seen in the reference dataset.
 * The green area covers **one standard deviation** from the mean.
 
-![](<../.gitbook/assets/reports\_data\_drift\_drift\_by\_feature (2).png>)
-
-### 4. Data Distribution by Feature
-
-You can also zoom on distributions to understand what has changed.
-
-![](<../.gitbook/assets/reports\_data\_drift\_distr\_by\_feature (2).png>)
-
+![](<../.gitbook/assets/reports/metric_data_drift_table_expand_2-min.png>)
 
 ## Metrics output
 
@@ -145,6 +144,8 @@ You can get the report output as a JSON or a Python dictionary:
 * You can create a different report or test suite from scratch taking this one as an inspiration. 
 
 # Test Suite: Data Drift Test Preset 
+
+![](../.gitbook/assets/tests/test_preset_data_drift-min.png)
 
 ## Code example
 
