@@ -1,6 +1,36 @@
-This is an explanatory page to describe the functionality of the Evidently Tests Suites and Tests. For code instructions, head to the [user guide](../tests-and-reports/run-tests.md).
+This is an explanatory page to describe the key features and concepts at Evidently. For code instructions, head to the [user guide](../tests-and-reports/readme.md).
 
-This is an explanatory page to describe the functionality of the Evidently Reports and Metrics. For code instructions, head to the [user guide](../tests-and-reports/get-reports.md).
+# TL;DR
+
+Evidently helps evaluate, test and monitor ML models in production. 
+
+A **metric** is a core component of Evidently. When you combine multiple **metrics**, you get a **report**. Reports are best for visual analysis and debugging of your models and data.
+
+A **test** is a metric with a condition. Each test returns a pass or fail result. When you combine multiple **tests**, you get a **test suite**. Test suites are best for automated model checks as part of an ML pipeline.
+
+For both tests and metrics, Evidently has **presets**. These are pre-built combinations of metrics or checks that fit a specific use case. 
+
+# What is a Metric?
+
+A **Metric** is a component that evaluates a specific aspect of the data or model quality. 
+
+A **Metric** can be, literally, a single metric (for example, `DatasetMissingValuesMetric()` returns the share of missing features). It can also be a combination of metrics (for example, `DatasetSummaryMetric()` calculates various descriptive statistics for the dataset). There are various metrics that apply on the dataset level, or on the level of inividual column. Each **Metric** has a visual render. 
+
+Some visualizations simply return the values:  
+
+![RegressionQualityMetric](../.gitbook/assets/reports/metric_example_regression_quality-min.png)
+
+Others have rich visualizations or plots. Here is an example of a model-related metric:
+
+![RegressionErrorDistribution](../.gitbook/assets/reports/metric_example_error_distribution-min.png)
+
+Here is an example of a data-related metric applied to a single column: 
+
+![ColumnValueRangeMetric](../.gitbook/assets/reports/metric_example_value_range-min.png)
+
+The JSON “version” of a metric returns any new calculated values and, optionally, some other useful information such as histogram bins. 
+
+Evidently contains 30+ **Metrics** related to data quality, integrity, drift and model performance. You can also implement a custom one.
 
 # What is a Report?
 
@@ -34,31 +64,9 @@ Most reports can be calculated for a single dataset. If you pass two datasets, t
 
 You can generate a report by listing individual **Metrics** to include in it. You can also run one of the **Presets** that cover a specific aspect of the model or data performance. 
 
-# What is a Metric?
-
-A **Metric** is a component of a report that evaluates a specific aspect of the data or model quality. 
-
-A **Metric** can be, literally, a single metric (such as an accuracy value). It can also be a combination of metrics, a plot, or a table. Each **Metric** has a visual render.
-
-Some metrics simply return the values:  
-
-![RegressionQualityMetric](../.gitbook/assets/reports/metric_example_regression_quality-min.png)
-
-Others have rich visualizations or plots. Here is an example of a model-related metric:
-
-![RegressionErrorDistribution](../.gitbook/assets/reports/metric_example_error_distribution-min.png)
-
-Here is an example of a data-related metric applied to a single column: 
-
-![ColumnValueRangeMetric](../.gitbook/assets/reports/metric_example_value_range-min.png)
-
-The JSON “version” of a metric returns any new calculated values and, optionally, some other useful information such as histogram bins. 
-
-Evidently contains 30+ **Metrics** related to data quality, integrity, drift and model performance. You can also implement a custom one.
-
 # What is a Metric Preset?
 
-A metric **Preset** is a pre-built report that combines metrics for a particular use case.
+A **metric preset** is a pre-built report that combines metrics for a particular use case.
 
 You can think of it as a template. For example, there is a preset to check for Data Drift (`DataDriftPreset`), Data Quality (`DataQualityPreset`), or Regression Performance (`RegressionPreset`). 
 
@@ -80,24 +88,7 @@ You can use Reports at different stages of the ML lifecycle: from exploratory da
 
 **Reporting and documentation**. You can also use Evidently reports to share results with the team and stakeholders or log them as documentation. For example, you can record the results of the model performance after training.
 
-# Test Suites or Reports?
-
-**Reports** and **[Test Suites](../tests/overview.md)** are complementary interfaces. 
-
-Test Suites are best for automation and integration in the prediction pipelines. They require defining test conditions (expectations for your data and model performance) upfront or providing a reference dataset to learn from.
-
-Reports are best for visual exploration and ad hoc evaluation, debugging, and reporting. 
-
-# How to get Reports?
-
-Head here for a complete user guide with the code snippets:
- 
-{% content-ref url="../tests-and-reports/get-reports.md" %}
-[Get reports](get-reports.md)
-{% endcontent-ref %}
-
-
-# What is a test?
+# What is a Test?
 
 Tests help perform structured data and ML model performance checks. They explicitly define the expectations from your data and model.
 
@@ -123,11 +114,6 @@ If the test execution fails, it will return an error.
 
 Evidently contains 50+ individual tests that cover different aspects of model and data quality. 
 
-{% content-ref url="../reference/all-tests.md" %}
-[All tests](all-tests.md)
-{% endcontent-ref %}
-
-
 # What is a Test Suite?
 
 In most cases, you’d want to run more than one test. 
@@ -142,13 +128,19 @@ If you include a lot of tests, you can navigate the output by groups:
 
 You can create your test suite from individual tests or use one of the existing **presets**. 
 
-# What is a Preset?
+# What is a Test Preset?
 
-A **preset** is a pre-built test suite that combines checks for a particular use case. 
+A **test preset** is a pre-built test suite that combines checks for a particular use case. 
 
 You can think of it as a template to start with. For example, there is a preset to check for Data Quality (`DataQualityTestPreset`), Data Stability (`DataStabilityTestPreset`), or Regression model performance (`RegressionTestPreset`).
 
 ![Regression performance test suite example](../.gitbook/assets/tests/test_preset_example-min.png)
+
+You can explore all tests and presets here:
+
+{% content-ref url="../reference/all-tests.md" %}
+[All tests](all-tests.md)
+{% endcontent-ref %}
 
 # When to use tests
 
@@ -181,3 +173,11 @@ Head here for a complete user guide with the code snippets:
 {% content-ref url="../tests-and-reports/run-tests.md" %}
 [Run tests](run-tests.md)
 {% endcontent-ref %}
+
+# Test Suites or Reports?
+
+**Reports** and **[Test Suites](../tests/overview.md)** are complementary interfaces. 
+
+Test Suites are best for automation and integration in the prediction pipelines. They require defining test conditions (expectations for your data and model performance) upfront or providing a reference dataset to learn from.
+
+Reports are best for visual exploration and ad hoc evaluation, debugging, and reporting. 
