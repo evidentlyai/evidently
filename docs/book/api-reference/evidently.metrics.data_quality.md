@@ -71,16 +71,16 @@ Bases: [`MetricRenderer`](evidently.renderers.md#evidently.renderers.base_render
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; render_json(obj: ColumnDistributionMetric)
 
-### class ColumnDistributionMetricResult(column_name: str, current: Dict[Any, Union[float, int]], reference: Optional[Dict[Any, Union[float, int]]] = None)
+### class ColumnDistributionMetricResult(column_name: str, current: [Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution), reference: Optional[[Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution)] = None)
 Bases: `object`
 
 #### Attributes: 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; column_name : str 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; current : Dict[Any, Union[float, int]] 
+##### &nbsp;&nbsp;&nbsp;&nbsp; current : [Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution) 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; reference : Optional[Dict[Any, Union[float, int]]]  = None 
+##### &nbsp;&nbsp;&nbsp;&nbsp; reference : Optional[[Distribution](evidently.utils.md#evidently.utils.visualizations.Distribution)]  = None 
 ## <a name="module-evidently.metrics.data_quality.column_quantile_metric"></a>column_quantile_metric module
 
 
