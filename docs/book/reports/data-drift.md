@@ -162,7 +162,9 @@ data_drift_test_suite
 
 You can use the `DataDriftTestPreset` to test features for drift when you receive a new batch of input data or generate a new set of predictions.
 
-The test preset works similarly to the metric preset. It will perform two types of tests: test the share of drifted columns to detect dataset drift, and test distribution drift in the individual columns (all or from a defined list).  
+The test preset works similarly to the metric preset. It will perform two types of tests: 
+* test the share of drifted columns to detect dataset drift;
+* test distribution drift in the individual columns (all or from a defined list).  
 
 Head here to the [All tests](../reference/all-tests.md) table to see the description of individual tests and default parameters. 
 
