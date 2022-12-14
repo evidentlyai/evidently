@@ -16,7 +16,9 @@ You can evaluate data drift:
 
 To run data drift checks as part of the pipeline, use the Test Suite. To explore and debug, use the Report.  
 
-# Report: Data Drift Preset 
+# Data Drift Report
+
+If you want to get a visual report, you can create a Report and use the `DataDriftPreset`. 
 
 ## Code example
 
@@ -144,7 +146,9 @@ You can get the report output as a JSON or a Python dictionary:
 * You can create a different report from scratch taking this one as an inspiration. 
 * You can apply the report only to selected columns. 
 
-# Test Suite: Data Drift Test Preset 
+# Data Drift Test Suite
+
+If you want to run data drift checks as part of the pipeline, you can create a Test Suite and use the `DataDriftTestPreset`.
 
 ![](../.gitbook/assets/tests/test_preset_data_drift-min.png)
 
