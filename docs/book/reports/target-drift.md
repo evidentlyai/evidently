@@ -1,7 +1,7 @@
 **TL;DR:** You can detect and explore changes in the target function (prediction) and detect distribution drift.
 
 For Reports, you can use the pre-built `TargetDriftPreset`.
-For Test Suites, you can use a `TestColumnDrift` test and apply it to the prediction or target column.
+For Test Suites, you can use a `TestColumnDrift` test and apply it to the prediction or target column. Sice it is a single test, there is no need for a preset.
 
 # Use case 
 
@@ -15,7 +15,20 @@ You can analyze target or prediction drift:
 
 To run drift checks as part of the pipeline, use the Test Suite. To explore and debug, use the Report.  
 
-# Report: Target Drift Preset  
+# Target (Prediction) Drift Report  
+
+If you want to visually explore the prediction or target drift, you can create a Report and use the `TargetDriftPreset`.
+
+## Code example
+
+```python
+num_target_drift_report = Report(metrics=[
+    TargetDriftPreset,
+])
+
+num_target_drift_report.run(reference_data=ref, current_data=cur)
+num_target_drift_report
+```
 
 ## How it works
 
