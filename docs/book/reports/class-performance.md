@@ -251,7 +251,7 @@ You can get the report output as a JSON or a Python dictionary:
 
 # Classification Performance Test Suite
 
-![](<../.gitbook/assets/tests/test_preset_binarytopKclass-min.png.png>)
+![](<../.gitbook/assets/tests/test_preset_binarytopKclass-min.png>)
 
 If you want to run classification performance checks as part of a pipeline, you can create a Test Suite and use one of the classification presets. 
 
