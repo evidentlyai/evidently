@@ -24,7 +24,7 @@ If you want to visually explore the model performance, create a new Report objec
 
 ```python
 classification_performance_report = Report(metrics=[
-    ClassificationPreset,
+    ClassificationPreset(),
 ])
 
 classification_performance_report.run(reference_data=bcancer_ref, current_data=bcancer_cur)
