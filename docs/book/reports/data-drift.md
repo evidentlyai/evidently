@@ -6,7 +6,7 @@ For Reports, you can use the `DataDriftPreset`. For Test Suites, you can use the
 
 You can evaluate data drift in different scenarios.
 
-**1. To monitor the model performance without ground truth.** When you do not have true labels or actuals, you can monitor the input feature drift to check if the model is operating in a familiar environment. You can often monitor input drift only for a subset of features, for example, the most important features. You can also apply it to all features but only declare meaningful dataset drift if , e.g., only 50% of features drifted. You can typically combine it with the [Prediction Drift monitoring](prediction-drift.md). If the drift is detected, you can trigger labeling and retraining, or decide to pause and switch to a different decision method.  
+**1. To monitor the model performance without ground truth.** When you do not have true labels or actuals, you can monitor the input feature drift to check if the model is operating in a familiar environment. You can typically combine it with the [Prediction Drift monitoring](prediction-drift.md). If the drift is detected, you can trigger labeling and retraining, or decide to pause and switch to a different decision method.  
 
 **2. When you are debugging the model decay.** If you observe a drop in the model quality, you can evaluate Data Drift to explore the change in the feature patterns, e.g., to understand the change in the environment or discover the appearance of a new segment. 
 
