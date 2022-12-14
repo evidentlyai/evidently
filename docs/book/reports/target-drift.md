@@ -74,11 +74,12 @@ For numerical targets:
 
 ![](../.gitbook/assets/num\_targ\_drift\_behavior\_by\_feature\_example\_tax.png)
 
+We recommend paying attention to the behavior of the **most important features** since significant changes might confuse the model and cause higher errors. For example, in a Boston house pricing dataset, we can see a new segment with values of TAX above 600 but the low value of the target (house price).
+
 For categorical targets:
 
 ![](../.gitbook/assets/cat\_target\_drift\_behavior\_by\_feature\_example.png)
 
-We recommend paying attention to the behavior of the **most important features** since significant changes might confuse the model and cause higher errors. For example, in a Boston house pricing dataset, we can see a new segment with values of TAX above 600 but the low value of the target (house price).
 
 ## JSON output
 
