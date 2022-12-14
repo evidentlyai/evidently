@@ -10,9 +10,9 @@ You can evaluate data drift:
 
 **2. When you are debugging the model decay.** If you observe a drop in the model quality, you can evaluate Data Drift to explore the change in the feature patterns, e.g., to understand the change in the environment or discover the appearance of a new segment. 
 
-**3. To understand model drift in an offline environment.** You can explore the historical data drift to understand past changes in the input data and define optimal drift detection approach and retraining strategy. Read more in a [blog](https://evidentlyai.com/blog/tutorial-3-historical-data-drift) about it.
+**3. To understand model drift in an offline environment.** You can explore the historical data drift to understand past changes in the input data and define the optimal drift detection approach and retraining strategy. Read more in a [blog](https://evidentlyai.com/blog/tutorial-3-historical-data-drift) about it.
 
-**4. Before model retraining.** Before feeding fresh data into the model, you might want to verify whether it even makes sense. If there is no data drift drift, the environment is stable, and retraining might not be necessary.
+**4. Before model retraining.** Before feeding fresh data into the model, you might want to verify whether it even makes sense. If there is no data  drift, the environment is stable, and retraining might not be necessary.
 
 To run data drift checks as part of the pipeline, use the Test Suite. To explore and debug, use the Report.  
 
@@ -38,7 +38,7 @@ The **Data Drift** report helps detect and explore changes in the input data.
 
 ## Data Requirements
 
-You will need **two** datasets. The **reference** dataset serves as a benchmark. Evidently analyzes the change by comparing the **current** production data to the **reference** data.
+You will need **two** datasets. The **reference** dataset serves as a benchmark. Evidently analyzes the change by comparing the **current** production data to the **reference** data to detect distribution drift.
 
 The dataset should include the features you want to evaluate for drift. The schema of both datasets should be identical.
 
@@ -161,7 +161,7 @@ data_drift_test_suite
 
 You can use the `DataDriftTestPreset` to test features for drift when you receive a new batch of input data or generate a new set of predictions.
 
-The test preset works similarly to the metric preset. It will perfom two types of tests: test the share of drifted columns to detect dataset drift, and test drift in individual columns (all or from a defined list).  
+The test preset works similarly to the metric preset. It will perform two types of tests: test the share of drifted columns to detect dataset drift, and test distribution drift in the individual columns (all or from a defined list).  
 
 Head here to the [All tests](../reference/all-tests.md) table to see the description of individual tests and default parameters. 
 
