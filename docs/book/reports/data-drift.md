@@ -72,13 +72,13 @@ The table shows the drifting features first. You can also choose to sort the row
 
 ![](../.gitbook/assets/reports/metric_data_drift_table-min.png)
 
-### 4. Data Distribution by Feature
+### 3. Data Distribution by Feature
 
 By clicking on each feature, you can explore the distributions.
 
 ![](<../.gitbook/assets/reports/metric_data_drift_table_expand_1-min.png)
 
-### 3. Data Drift by Feature
+### 4. Data Drift by Feature
 
 For numerical features, you can also explore the values mapped in a plot.
 
