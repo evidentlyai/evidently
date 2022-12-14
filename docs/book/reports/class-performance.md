@@ -286,7 +286,7 @@ Head here to the [All tests](../reference/all-tests.md) table to see the composi
 ## Test Suite customization
 
 * You can set custom test conditions.
-* You can pass relevant parameters to change how some of the metrics are calculated, such as decision threshold or K to evaluate precision@K. See the available parameters [here](../reference/all-tests.md).
+* You can pass relevant parameters to change how some of the metrics are calculated, such as classification decision threshold or K to evaluate precision@K. See the available parameters [here](../reference/all-tests.md).
 * If you want to exclude some tests or add additional ones, you can create a custom test suite by combining the chosen tests. See the complete list [here](../reference/all-tests.md).
 
 ## Examples
