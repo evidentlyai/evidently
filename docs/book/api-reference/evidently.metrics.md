@@ -1477,7 +1477,7 @@ Bases: `Generic`[`TResult`]
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; set_context(context)
 
-### generate_column_metrics(metric_class: Type[Metric], columns: Optional[Union[str, list]] = None, parameters: Optional[Dict] = None)
+### generate_column_metrics(metric_class: Type[Metric], columns: Optional[Union[str, list]] = None, parameters: Optional[Dict] = None, skip_id_column: bool = False)
 Function for generating metrics for columns
 
 ## <a name="module-evidently.metrics.utils"></a>utils module
