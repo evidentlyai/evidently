@@ -4,15 +4,15 @@ For Reports, you can use the `ClassificationPreset`. For Test Suites, you can us
 
 # Use Case
 
-These presets help evaluate the quality of classification models. You can us them:
+These presets help evaluate the quality of classification models. You can use them:
 
-**1. To monitor the performance of a production classification model.** You can run the test suite as a regular job (e.g. weekly or every time you get the labels) to analyze the model performance.
+**1. To monitor the performance of a production classification model.** You can run the test suite as a regular job (e.g., weekly or every time you get the labels) to analyze the model performance.
 
 **2. To trigger or decide on the model retraining.** You can use the test suite to check if the model performance is below the threshold to initiate a model update.
 
-**3. To debug or improve model performance.** If you detect a quality drop, you can use the viusal report to explore the model errors and underperforming segments. By manipulating the input data frame, you can explore how the model performs on different data segments (e.g. users from a specific region). You can also combine it with the [Data Drift](data-drift.md) report.
+**3. To debug or improve model performance.** If you detect a quality drop, you can use the visual report to explore the model errors and underperforming segments. By manipulating the input data frame, you can explore how the model performs on different data segments (e.g., users from a specific region). You can also combine it with the [Data Drift](data-drift.md) report.
 
-**4. To analyze the results of the model test.** You can explore the results of an online or offline test and contrast it to the performance in training. Though this is not the primary use case, you can use this report to compare the model performance in an A/B test, or during a shadow model deployment.
+**4. To analyze the results of the model test.** You can explore the results of an online or offline test and contrast it to the performance in training. Though this is not the primary use case, you can use this report to compare the model performance in an A/B test or during a shadow model deployment.
 
 To run performance checks as part of the pipeline, use the Test Suite. To explore and debug, use the Report.
 
@@ -34,7 +34,7 @@ classification_performance_report
 
 This report evaluates the quality of a classification model.
 
-* Can be generated for a **single dataset**, or contrast **against reference** (e.g. past performance or alternative model).
+* Can be generated for a **single dataset**, or compare the performance **against reference** (e.g. past performance or alternative model).
 * Works for **binary** and **multi-class**, **probabilistic** and non-probabilistic classification
 * Displays a variety of plots related to the model **performance**
 * Helps **explore regions** where the model makes different types of **errors**
@@ -285,8 +285,8 @@ Head here to the [All tests](../reference/all-tests.md) table to see the descrip
 ## Test Suite customization
 
 * You can set custom test conditions.
-* You can pass relevant parameters to change the way some of the metrics are calculated, such as decision threshold or K to evaluate precision@K. See the available parameters [here](../reference/all-tests.md)
-* If you want to exclude some of the tests or add additional tests, you can create a custom test suite by combining the chosen tests. See the complete list [here](../reference/all-tests.md)
+* You can pass relevant parameters to change how some of the metrics are calculated, such as decision threshold or K to evaluate precision@K. See the available parameters [here](../reference/all-tests.md)
+* If you want to exclude some tests or add additional ones, you can create a custom test suite by combining the chosen tests. See the complete list [here](../reference/all-tests.md)
 
 ## Examples
 
