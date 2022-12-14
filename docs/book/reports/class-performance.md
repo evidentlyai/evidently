@@ -253,9 +253,7 @@ You can get the report output as a JSON or a Python dictionary:
 
 ![](<../.gitbook/assets/tests/test_preset_binarytopKclass-min.png>)
 
-If you want to run classification performance checks as part of a pipeline, you can create a Test Suite and use one of the classification presets. 
-
-There are several presets for different classification tasks. They apply to Multiclass Classification, Binary Classification, and Binary Classification at topK accordingly: 
+If you want to run classification performance checks as part of a pipeline, you can create a Test Suite and use one of the classification presets. There are several presets for different classification tasks. They apply to Multiclass Classification, Binary Classification, and Binary Classification at topK accordingly: 
 
 ```python
 MulticlassClassificationTestPreset
@@ -283,13 +281,13 @@ You can use the test presets to evaluate the quality of a classification model w
 * For Evidently to **generate the test conditions automatically**, you should pass the reference dataset (e.g., performance during model validation or a previous period). You can also set the performance expectations manually by passing a custom test condition. 
 * If you neither pass the reference dataset nor set custom test conditions, Evidently will compare the model performance to a **dummy model**.
 
-Head here to the [All tests](../reference/all-tests.md) table to see the description of individual tests and default parameters. 
+Head here to the [All tests](../reference/all-tests.md) table to see the composition of each preset and default parameters. 
 
 ## Test Suite customization
 
 * You can set custom test conditions.
-* You can pass relevant parameters to change how some of the metrics are calculated, such as decision threshold or K to evaluate precision@K. See the available parameters [here](../reference/all-tests.md)
-* If you want to exclude some tests or add additional ones, you can create a custom test suite by combining the chosen tests. See the complete list [here](../reference/all-tests.md)
+* You can pass relevant parameters to change how some of the metrics are calculated, such as decision threshold or K to evaluate precision@K. See the available parameters [here](../reference/all-tests.md).
+* If you want to exclude some tests or add additional ones, you can create a custom test suite by combining the chosen tests. See the complete list [here](../reference/all-tests.md).
 
 ## Examples
 
