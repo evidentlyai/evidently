@@ -6,7 +6,7 @@ For Reports, you can use the `ClassificationPreset`. For Test Suites, you can us
 
 These presets help evaluate the quality of classification models. You can use them:
 
-**1. To monitor the performance of a production classification model.** You can run the test suite as a regular job (e.g., weekly or every time you get the labels) to analyze the model performance.
+**1. To monitor the performance of a classification model in production.** You can run the test suite as a regular job (e.g., weekly or every time you get the labels) to contrast the model performance against expected.
 
 **2. To trigger or decide on the model retraining.** You can use the test suite to check if the model performance is below the threshold to initiate a model update.
 
@@ -35,9 +35,9 @@ classification_performance_report
 This report evaluates the quality of a classification model.
 
 * Can be generated for a **single dataset**, or compare the performance **against reference** (e.g. past performance or alternative model).
-* Works for **binary** and **multi-class**, **probabilistic** and non-probabilistic classification
-* Displays a variety of plots related to the model **performance**
-* Helps **explore regions** where the model makes different types of **errors**
+* Works for **binary** and **multi-class**, **probabilistic** and non-probabilistic classification.
+* Displays a variety of plots related to the model **performance**.
+* Helps **explore regions** where the model makes different types of **errors**.
 
 ## Data Requirements
 
