@@ -144,7 +144,7 @@ You can get the report output as a JSON or a Python dictionary:
 * You can use a [different color schema for the report](../customization/options-for-color-schema.md). 
 * You can create a different report or test suite from scratch taking this one as an inspiration. 
 
-# Test Suite: Data Drift Preset 
+# Test Suite: Data Drift Test Preset 
 
 ## Code example
 
