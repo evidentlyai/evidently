@@ -270,6 +270,8 @@ You can get the report output as a JSON or a Python dictionary:
 
 # Regression Performance Test Suite
 
+![](../.gitbook/assets/tests/test_preset_regression-min.png)
+
 If you want to run regression performance checks as part of a pipeline, you can create a Test Suite and include the `RegressionTestPreset`.
 
 ## Code example
