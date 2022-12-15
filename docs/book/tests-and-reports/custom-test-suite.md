@@ -1,5 +1,3 @@
-# Custom test suite
-
 You can create a custom test suite from individual tests.
 
 You need to create a `TestSuite` object and specify which tests to include. 
