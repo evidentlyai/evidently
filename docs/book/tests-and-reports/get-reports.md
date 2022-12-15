@@ -2,11 +2,11 @@
 description: How to generate reports in Evidently.
 ---   
 
-TL;DR: You can start with ready-made Metric Presets. You can also create custom Reports from individual Metrics. 
+TL;DR: You can start with ready-made Metric Presets that work out of the box. 
 
 # Installation and prep
 
-After [installation](../get-started/install-evidently.md), import the Report component and the required Metrics and Metric Presets:
+After [installation](../installation/install-evidently.md), import the Report component and the required Metric Presets:
 
 ```python
 from evidently.report import Report
@@ -16,7 +16,7 @@ from evidently.metric_preset import DataDriftPreset, TargetDriftPreset
 You need to prepare two datasets for comparison: **reference** and **current**. You can also generate some of the reports with a single current dataset. 
 
 {% hint style="info" %} 
-Refer to the [input data](input-data.md) and [column mapping](column-mapping.md) for more details on data preparation and requirements.
+Refer to the [input data](../input-data/data-requirements.md) and [column mapping](../input-data/column-mapping.md) for more details on data preparation.
 {% endhint %}
 
 # Metric presets 
