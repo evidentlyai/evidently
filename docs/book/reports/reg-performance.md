@@ -6,7 +6,7 @@ For Reports, use `RegressionPreset`. For Test Suites, use `RegressionTestPreset`
 
 These presets help evaluate and test the quality of classification models. You can use them in different scenarios.
 
-**1. To monitor the performance of a regression model in production.** You can run the test suite as a regular job (e.g., weekly or every time you get the labels) to contrast the model performance against expectation. You can generate visual reports for documentation and sharing with stakeholders.
+**1. To monitor the performance of a regression model in production.** You can run the test suite as a regular job (e.g., weekly or every time you get the labels) to contrast the model performance against the expectation. You can generate visual reports for documentation and sharing with stakeholders.
 
 **2. To trigger or decide on the model retraining.** You can use the test suite to check if the model performance is below the threshold to initiate a model update. 
 
