@@ -12,13 +12,15 @@ This page links to the description of each preset. If you want to see the code a
 
 # Metric Presets
 
-|---|---|---|
+|         |                                                        |   |
+| ------- | ------------------------------------------------------ | - |
 | **Data Quality**<br><br>Evaluates the dataset statistics and feature behavior overview. <br><br> Requirements: model inputs. | **Data Drift**<br><br>Explores the distribution shift between two datasets. <br><br>Requirements: model inputs, a reference dataset. | **Target Drift**<br><br>Explores the distribution shift in the model predictions. <br><br>Requirements: model predictions and/or target values; a reference dataset. |
 | **Classification**<br><br>Evaluates the classification model quality and errors. <br><br>Requirements: model predictions and true labels. | **Regression** <br><br>Evaluates the regression model quality and errors. <br><br>Requirements: model predictions and actuals. |  |
 
 # Test Presets
 
-|---|---|---|
+|         |                                                        |   |
+| ------- | ------------------------------------------------------ | - |
 | Classification<br><br>Evaluates the classification model quality and errors. Requirements: model predictions and true labels. | Regression <br><br>Evaluates the regression model quality and errors. Requirements: model predictions and actuals. |  |
 |  |  |  |
 | **NoTargetPerformance**<br><br>Tests the model performance when you do not have ground truth or actuals. Includes several checks for data quality, integrity, and drift. <br><br> Requirements: model inputs, predictions, a reference dataset. | **Data Quality**<br><br>Tests if the batch is similar to the previous one. Tests data schema, column types, value ranges. <br><br> Requirements: model inputs, a reference dataset. | **Data Stability**<br><br>Explores the distribution shift in the model predictions. <br><br>Requirements: model predictions and/or target values; a reference dataset. |
