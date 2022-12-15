@@ -1,6 +1,4 @@
-# Supported Data Formats
-At the moment Evidently works with datasets in **Pandas DataFrame** **format** **only**.
-These datasets should fit into memory to be processed correctly.
+At the moment Evidently works with datasets in **Pandas DataFrame** **format** **only**. These datasets should fit into memory to be processed correctly.
 
 In this tutorial you will see how to load and sample data from other data sources to Pandas DataFrame for further analysis with Evidently.
 
