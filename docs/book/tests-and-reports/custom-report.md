@@ -1,6 +1,6 @@
 **TL;DR:** You can create a custom report from 35+ individual metrics available in the library.  
 
-# Choose metrics
+# 1. Choose metrics
 
 To design a custom report, you should first define which metrics you want to include. 
 
@@ -60,7 +60,7 @@ my_report = Report(metrics=[
 ])
 ```
 
-# Metric parameters
+# 2. Customize metric parameters
 
 Some metrics include default parameters. For example, probabilistic classification quality metrics have a default 0.5 decision threshold. You can override the defaults by setting custom parameters. 
 
