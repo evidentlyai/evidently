@@ -26,7 +26,7 @@ You need two datasets for comparison: **reference** and **current**. The referen
 Refer to the [input data](../input-data/data-requirements.md) and [column mapping](../input-data/column-mapping.md) for more details on data preparation and requirements.
 {% endhint %}
 
-# Test presets 
+# Using test presets 
 
 Evidently has `test_presets` that group relevant tests together. You can use them as templates to test a specific aspect of the data or model performance.
 
@@ -114,7 +114,7 @@ To get the dictionary:
 data_stability.as_dict()
 ```
 
-# Test preset parameters
+# Preset parameters
 
 You can customize some of the presets using parameters. For example, you can pass a chosen data drift detection method:
 
