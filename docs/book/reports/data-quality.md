@@ -45,9 +45,9 @@ The Data Quality report provides detailed feature statistics and a feature behav
 
 ## Data Requirements 
 
-You need to pass only the input features. Target and prediction are optional. If you want to perform a side-by-side comparison, pass two datasets with identical schema. You can also pass a single dataset. 
-
-Feature types (numerical, categorical, datetime) will be parsed based on pandas column type. If you want to specify a different feature mapping strategy, you can explicitly set the feature type using `column_mapping`.
+* **Input features**. You need to pass only the input features. Target and prediction are optional. 
+* **One or two datasets**. If you want to perform a side-by-side comparison, pass two datasets with identical schema. You can also pass a single dataset. 
+* **Column mapping**. Feature types (numerical, categorical, datetime) will be parsed based on pandas column type. If you want to specify a different feature mapping strategy, you can explicitly set the feature type using `column_mapping`.
 
 You might also need to specify additional column mapping:
 * If you have a **datetime** column and want to learn how features change with time, specify the datetime column in the `column_mapping`.
