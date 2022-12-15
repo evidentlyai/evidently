@@ -10,7 +10,7 @@ This test suite is designed for a specific scenario:
 
 # NoTargetPerformance Test Suite
 
-If run the test suite, create a new Test Suite object and include `NoTargetPerformanceTestPreset`.
+To perform the check, create a new Test Suite object and include `NoTargetPerformanceTestPreset`.
 
 ![](../.gitbook/assets/tests/test_preset_notargetperformance-min.png)
 
