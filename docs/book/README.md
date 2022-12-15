@@ -10,8 +10,8 @@ Understand the basic functionality in under 10 minutes:
 {% endcontent-ref %}
 
 See the code examples:
-{% content-ref url="get-started/examples.md" %}
-[Example](get-started/examples.md). 
+{% content-ref url="examples/examples.md" %}
+[Example](examples/examples.md). 
 {% endcontent-ref %}
 
 # How it works 
