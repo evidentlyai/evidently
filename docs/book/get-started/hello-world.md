@@ -75,4 +75,4 @@ data_drift_report
 
 # Want to see more?
 
-You can explore a more detailed [Getting Started] tutorial to understand how Evidently works.
+You can explore a more detailed [Getting Started tutorial](tutorial.md) to understand how Evidently works.
