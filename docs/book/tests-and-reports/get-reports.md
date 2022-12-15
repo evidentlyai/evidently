@@ -1,8 +1,8 @@
 ---
-description: How to generate reports in Evidently.
+description: How to use metric presets in Evidently.
 ---   
 
-**TL;DR:** You can start with pre-built Reports (metric presets). They work out of the box without additional configuration. 
+**TL;DR:** Pre-built reports work out of the box without additional configuration. 
 
 # Installation and prep
 
@@ -23,7 +23,7 @@ Refer to the [input data](../input-data/data-requirements.md) and [column mappin
 
 Evidently has ready-made `metric_presets` that group relevant metrics together in a single Report. You can use them as templates to evaluate a specific aspect of the data or model performance.
 
-You need to create a `report` object and specify the preset to generate. You should also point to the current dataset and reference dataset (if available).
+You need to create a `Report` object and specify the preset to generate. You should also point to the current dataset and reference dataset (if available).
 
 If nothing else is specified, the reports will run with the default parameters.
 
