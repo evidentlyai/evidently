@@ -16,12 +16,12 @@ Metric presets are **pre-built reports** that help with visual exploration, debu
 
 |         |                                                        |   |
 | ------- | ------------------------------------------------------ | - |
-| [**Data Quality**](data-quality.md)<br><br>Evaluates the dataset statistics and feature behavior. <br><br> **Requirements**: model inputs. | [**Data Drift**](data-drift.md)<br><br>Explores the distribution shift in the model features. <br><br>**Requirements**: model inputs, a reference dataset. | [**Target Drift**](target-drift.md)<br><br>Explores the distribution shift in the model predictions. <br><br>**Requirements:** model predictions and/or target values; a reference dataset. |
+| [**Data Quality**](data-quality.md)<br><br>Shows the dataset statistics and feature behavior. <br><br> **Requirements**: model inputs. | [**Data Drift**](data-drift.md)<br><br>Explores the distribution shift in the model features. <br><br>**Requirements**: model inputs, a reference dataset. | [**Target Drift**](target-drift.md)<br><br>Explores the distribution shift in the model predictions. <br><br>**Requirements:** model predictions and/or target, a reference dataset. |
 | [**Classification**](class-performance.md)<br><br>Evaluates the classification model quality and errors. <br><br>**Requirements**: model predictions and true labels. | [**Regression**](reg-performance.md)<br><br>Evaluates the regression model quality and errors. <br><br>**Requirements**: model predictions and actuals. |  |
 
 # Test Presets
 
-Test presets are **pre-built test suites** that help run structured batch data and model checks as part of the pipeline.
+Test presets are **pre-built test suites** that perform structured data and model checks as part of the pipeline.
 
 |         |                                                        |   |
 | ------- | ------------------------------------------------------ | - |
