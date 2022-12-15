@@ -1,8 +1,8 @@
 ---
-description: How run the Tests in Evidently.
+description: How to generate test presets in Evidently.
 ---
 
-**TL;DR**: You can start with ready-made Test presets. You can also create custom Test Suites from 50+ individual Tests. All Tests have in-built defaults but can be customized.
+**TL;DR**: Pre-built test presets work out of the box without additional configuration.
 
 # Installation and prep
 
