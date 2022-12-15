@@ -1,9 +1,8 @@
-
-# Custom report
-
 You can create a custom report from individual metrics.
 
 You need to create a `Report` object and list which `metrics` to include.    
+
+# Metrics choice
 
 ## Dataset-level metrics
 
