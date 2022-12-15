@@ -1,4 +1,4 @@
-**TL;DR:** You can combine different types of checks to test data quality, stability and drift when you have a model with delayed feedback.
+**TL;DR:** You can combine different checks to test data quality, stability, and drift when you have a model with delayed feedback.
 
 For Test Suite, use the `NoTargetPerformanceTestPreset`.
 
@@ -54,8 +54,8 @@ The preset combines several checks that go well together.
 * You can [specify the drift detection methods and thresholds](../customization/options-for-statistical-tests.md). 
 * You can add a [custom drift detection method](../customization/add-custom-metric-or-test.md).
 * You can apply data quality and stability checks only to selected columns. 
-* You can add extra tests to this preset, e.g., to perform column-level drift checks for most important features. 
-* You can create a different test suite from scratch taking this one as an inspiration. 
+* You can add extra tests to this preset, e.g., to perform column-level drift checks for the most important features. 
+* You can create a different test suite from scratch, taking this one as an inspiration. 
 
 Head here to the [All tests](../reference/all-tests.md) table to see the description of individual tests and default parameters. 
 
