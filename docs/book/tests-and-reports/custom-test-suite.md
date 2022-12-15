@@ -1,15 +1,18 @@
-You can create a custom test suite from individual tests.
+**TL;DR:** You can create a custom Test Suite from 50+ individual Tests. You can use auto-generated test conditions or pass your own.
 
- You can also create custom Test Suites from 50+ individual Tests. All Tests have in-built defaults but can be customized.
+# 1. Choose tests
 
+To design the test suite, first define which tests to include. You can use Test Presets as a starting point to explore available types of analysis. Note that there are additional tests that are not included in the presets that you can choose from. 
 
-You need to create a `TestSuite` object and specify which tests to include. 
+{% hint style="info" %} 
+**Reference**: The complete list of tests is available in the [All tests](../reference/all-tests.md) table. To see interactive examples, refer to the [Example notebooks](../examples/examples.md).
+{% endhint %}
 
 ## Dataset-level tests
 
 You can apply some of the tests on the dataset level. For example, to evaluate data drift for the whole dataset. 
 
-To create a custom data drift test suite with dataset-level tests:
+Create a `TestSuite` object and specify which tests to include:
 
 ```python
 data_drift_suite = TestSuite(tests=[
@@ -31,7 +34,7 @@ data_drift_suite
 
 ## Column-level tests
 
-You can apply some tests to the individual columns. For example, to check if a specific feature or model prediction stays within the range. (Note that you can still apply column-level tests to all the individual columns in the dataset).
+You can apply some tests to the individual columns. For example, to check if a specific feature or model prediction stays within the range. 
 
 To create a custom data drift test suite with column-level tests:
 
@@ -55,67 +58,65 @@ feature_suite
 Here is an example:
 
 ```python
-my_data_quality_report = TestSuite(tests=[
+my_data_quality_tests = TestSuite(tests=[
     DataQualityTestPreset(),
     TestColumnAllConstantValues(column_name='education'),
     TestNumberOfDriftedColumns()
 ])
 
-my_data_quality_report.run(reference_data=ref,current_data=curr)
-my_data_quality_report
+my_data_quality_tests.run(reference_data=ref,current_data=curr)
+my_data_quality_tests
 ```
 
-## Available tests
+# 2. Set test parameters
 
-Evidently library has dozens of individual tests. Here are some examples of individual tests: 
+Some tests have required and optional parameters. You can use them to define how the underlying metric is calculated.  
 
-```python
-TestShareOfOutRangeValues()
-TestMostCommonValueShare()
-TestNumberOfConstantColumns()
-TestNumberOfDuplicatedColumns()
-TestHighlyCorrelatedColumns()
-```
-
-{% hint style="info" %} 
-**Reference**: The complete list of tests is available in the [All tests](../reference/all-tests.md) table.
-{% endhint %}
-
-# Custom test parameters
-
-**Defaults**. Each test compares the value of a specific metric in the current dataset against the reference. If you do not specify the condition explicitly, Evidently will use a default. 
-
-For example, the `TestShareOfOutRangeValues` test will fail if over 10% of values are out of range. The normal range for each feature will be automatically derived from the reference.
-
-{% hint style="info" %} 
-**Reference**: The defaults are described in the same [All tests](../reference/all-tests.md) table.
-{% endhint %}
-
-## How to set the parameters
-
-You can override the default and set the parameters for specific tests.
-
-For example, you can set the upper or lower boundaries of a specific value by defining `gt` (greater than) and `lt` (less than).
-
-Here is an example:
+For example, if you want to test a quantile value, you need to pass the quantile as a parameter (required):
 
 ```python
-feature_level_tests = TestSuite(tests=[
-TestMeanInNSigmas(column_name='hours-per-week', n_sigmas=3),
-TestShareOfOutRangeValues(column_name='hours-per-week', lte=0),
-TestNumberOfOutListValues(column_name='education', lt=0),
-TestColumnShareOfMissingValues(column_name='education', lt=0.2),
+column_tests_suite = TestSuite(tests=[
+    TestColumnQuantile(column_name='mean perimeter', quantile=0.25),
 ])
-
-feature_level_tests.run(reference_data=ref, current_data=curr)
-
-Feature_level_test
 ```
-## Available parameters
 
-### Standard parameters 
+Or, you set a different statistical method when evaluating data drift (optional): 
 
-The following standard parameters are available: 
+```python
+dataset_suite = TestSuite(tests=[
+    TestShareOfDriftedColumns(stattest=psi),
+])
+```
+
+{% hint style="info" %} 
+**Reference**: test parameters and defaults are described in the [All tests](../reference/all-tests.md) table.
+{% endhint %}
+
+# 3. Set test conditions
+
+For tests, you have both parameters and **conditions**. Parameters define how the underlying metrics are calculated (e.g., you can change the decision threshold for the classification model, which will affect the precision and recall values). Conditions define when the test will return pass or fail (e.g., you can set your expectation on the acceptable precision and recall values). 
+
+There are several ways how you can define the conditions for each test in a test suite.  
+
+## Auto-generated conditions
+
+If you do not define a test condition manually, Evidently will use the defaults for each test.
+
+**Based on reference dataset**. If you pass the reference, Evidently will auto-generate test conditions based on provided reference and set of heuristics. 
+
+*Example*: `TestShareOfOutRangeValues` test fails if over 10% of values are out of range. Evidently will automatically derive the value range for each feature.
+
+**Based on heuristics**. Some tests can work even without a reference dataset or a custom condition. In this case, Evidently will use heuristics and dummy models.
+
+*Example*: `TestAccuracyScore()` fails if the model quality is worse than the quality of a dummy model.
+
+{% hint style="info" %} 
+**Reference**: Default test conditions are described in the same [All tests](../reference/all-tests.md) table.
+{% endhint %}
+
+## Custom conditions
+
+You can also set a custom condition for each test. You can use standard parameters: 
 
 | Condition parameter name | Explanation                                | Usage Example                                                   |
 |--------------------------|--------------------------------------------|-----------------------------------------------------------------|
@@ -128,14 +129,34 @@ The following standard parameters are available:
 | is_in: list              | test_result == one of the values from list | TestFeatureMin(feature_name=”numeric_feature”, is_in=[3,5,7])   |
 | not_in: list             | test_result != any of the values from list | TestFeatureMin(feature_name=”numeric_feature”, not_in=[-1,0,1]) |
 
-### Approx
+For example, you can set the upper or lower boundaries of a specific value by defining `gt` (greater than) and `lt` (less than):
+
+```python
+feature_level_tests = TestSuite(tests=[
+TestMeanInNSigmas(column_name='hours-per-week', n_sigmas=3),
+TestShareOfOutRangeValues(column_name='hours-per-week', lte=0),
+TestNumberOfOutListValues(column_name='education', lt=0),
+TestColumnShareOfMissingValues(column_name='education', lt=0.2),
+])
+
+Here is how you can specify the custom condition and parameters for the classification model quality test:
+
+```python
+model_tests = TestSuite(tests=[
+    TestPrecisionScore(probas_threshold=0.8, gt=0.99),
+    TestRecallScore(probas_threshold=0.8, gt=0.99)
+])
+```
+
+## Custom conditions with Approx
 
 If you want to set an upper and/or lower limit to the value, you can use **approx** instead of calculating the value itself. You can set the relative or absolute range. 
 
 ```python
 approx(value, relative=None, absolute=None)
 ```
-To apply approx, you need to first import this component:
+
+To apply `approx`, you need to first import this component:
 
 ```python
 from evidently.tests.utils import approx
@@ -151,102 +172,3 @@ Here is how you can set the boundary as 5 +/-10%:
 ```python
 eq=approx(5, relative=0.1)
 ```
-
-### Additional parameters
-
-Some tests require additional parameters or might have optional parameters.
-
-For example, if you want to test a quantile value, you need to pass the quantile as a parameter (required). Or, you can pass the K parameter to evaluate classification precision@K instead of using the default decision threshold of 0.5 (optional). 
-
-{% hint style="info" %} 
-**Reference**: the additional parameters that apply to specific tests and defaults are described in the same [All tests](../reference/all-tests.md) table.
-{% endhint %}
-
-
-
-
-# Tests generation 
-
-There are several features that simplify generating multiple column-level tests. 
-
-## List comprehension
-
-You can pass a list of parameters or a list of columns. 
-
-**Example 1**. Pass the list of multiple quantile values to test for the same column. 
-
-```python
-suite = TestSuite(tests=[
-   TestColumnQuantile(column_name="education-num", quantile=quantile) for quantile in [0.5, 0.9, 0.99]
-])
-
-suite.run(current_data=current_data, reference_data=reference_data)
-suite
-```
-
-**Example 2**. Apply the same test with a defined custom parameter for all columns in the list: 
-
-```python
-suite = TestSuite(tests=[
-   TestColumnValueMin(column_name=column_name, gt=0) for column_name in ["age", "fnlwgt", "education-num"]
-])
- 
-suite.run(current_data=current_data, reference_data=reference_data)
-suite
-```
-
-## Column test generator
-
-You can also use the `generate_column_tests` function to create multiple tests.
-
-By default, it generates tests with the default parameters for all the columns:
-
-```python
-suite = TestSuite(tests=[generate_column_tests(TestColumnShareOfMissingValues)])
-suite.run(current_data=current_data, reference_data=reference_data)
-suite
-```
-
-You can also pass the parameters:
-
-```python
-suite = TestSuite(tests=[generate_column_tests(TestColumnShareOfMissingValues, columns="all", parameters={"lt": 0.5})])
-suite.run(current_data=current_data, reference_data=reference_data)
-suite
-```
-
-You can generate tests for different subsets of columns. Here is how you generate tests only for **numerical columns**:
-
-```python
-suite = TestSuite(tests=[generate_column_tests(TestColumnValueMin, columns="num")])
-suite.run(current_data=current_data, reference_data=reference_data)
-suite
-```
-
-Here is how you generate tests only for **categorical columns**:
-
-```python
-suite = TestSuite(tests=[generate_column_tests(TestColumnShareOfMissingValues, columns="cat", parameters={"lt": 0.1})])
-suite.run(current_data=current_data, reference_data=refernce_data)
-suite
-```
- 
-You can also generate tests with defined parameters, for a custom defined column list:
- 
-```python
-suite = TestSuite(tests=[generate_column_tests(TestColumnValueMin, columns=["age", "fnlwgt", "education-num"],
-                                              parameters={"gt": 0})])
-suite.run(current_data=current_data, reference_data=reference_data)
-suite
-```
- 
-### Column parameter
-
-You can use the parameter `columns` to define a list of columns to which you apply the tests. If it is a list, just use it as a list of the columns. If `columns` is a string, it can take the following values:
-* `"all"` - apply tests for all columns, including target/prediction columns.
-* `"num"` - for numerical features, as provided by column mapping or defined automatically
-* `"cat"` - for categorical features, as provided by column mapping or defined automatically
-* `"features"` - for all features, excluding the target/prediction columns.
-* `"none"` -  the same as "all."
-
-
