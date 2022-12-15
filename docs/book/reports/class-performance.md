@@ -1,4 +1,4 @@
-**TL;DR:** You can use the pre-built reports and test suites to analyze the performance of a classification model. The presets work for binary and multi-class classification, probabilistic and non-probabilistuc classification. 
+**TL;DR:** You can use the pre-built reports and test suites to analyze the performance of a classification model. The presets work for binary and multi-class classification, probabilistic and non-probabilistic classification. 
 
 For Reports, you can use the `ClassificationPreset`. For Test Suites, you can use the `MulticlassClassificationTestPreset`, `BinaryClassificationTopKTestPreset`, `BinaryClassificationTestPreset`.
 
@@ -6,7 +6,7 @@ For Reports, you can use the `ClassificationPreset`. For Test Suites, you can us
 
 These presets help evaluate and test the quality of classification models. You can use them:
 
-**1. To monitor the performance of a classification model in production.** You can run the test suite as a regular job (e.g., weekly or every time you get the labels) to contrast the model performance against expectation. You can generate visual reports for documentation and sharing with stakeholders.
+**1. To monitor the performance of a classification model in production.** You can run the test suite as a regular job (e.g., weekly or every time you get the labels) to contrast the model performance against the expectation. You can generate visual reports for documentation and sharing with stakeholders.
 
 **2. To trigger or decide on the model retraining.** You can use the test suite to check if the model performance is below the threshold to initiate a model update.
 
