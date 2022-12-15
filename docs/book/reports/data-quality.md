@@ -52,8 +52,7 @@ The Data Quality report provides detailed feature statistics and a feature behav
 You might also need to specify additional column mapping:
 * If you have a **datetime** column and want to learn how features change with time, specify the datetime column in the `column_mapping`.
 * If you have a **target** column and want to see features distribution by target, specify the target column in the `column_mapping`. 
-
-The report contains the section that plots interactions between the features and the target. It will look slightly different for classification and regression tasks. By default, if the target has a numeric type and has >5 unique values, Evidently will treat it as a regression problem. Everything else is treated as a classification problem. If you want to explicitly define your task as `regression` or `classification`, you should set the `task` parameter in the `column_mapping` object. 
+* Specify the **task** if you want to explore interactions between the features and the target. This section looks slightly different for classification and regression tasks. By default, if the target has a numeric type and has >5 unique values, Evidently will treat it as a regression problem. Everything else is treated as a classification problem. If you want to explicitly define your task as `regression` or `classification`, you should set the `task` parameter in the `column_mapping` object. 
 
 {% hint style="info" %}
 You can read more to understand [column mapping](../tests-and-reports/column-mapping.md) and [data requirements](../tests-and-reports/input-data.md) for Evidently reports in the corresponding sections of documentation.  
