@@ -56,21 +56,23 @@ Split the toy data into two batches and compare them:
 data_stability= TestSuite(tests=[
     DataStabilityTestPreset(),
 ])
-data_stability.run(current_data=iris_frame.iloc[:50], reference_data=iris_frame.iloc[50:], column_mapping=None)
+data_stability.run(current_data=iris_frame.iloc[:60], reference_data=iris_frame.iloc[60:], column_mapping=None)
 data_stability 
 ``` 
 
 # Get a report
 
-Get a visual report to exlpore the data drift:
+Get a visual report to explore the feature distribution drift in detail:
 
 ```python
 data_drift_report = Report(metrics=[
     DataDriftPreset(),
 ])
 
-data_drift_report.run(current_data=iris_frame.iloc[:50], reference_data=iris_frame.iloc[50:], column_mapping=None)
+data_drift_report.run(current_data=iris_frame.iloc[:60], reference_data=iris_frame.iloc[60:], column_mapping=None)
 data_drift_report
 ``` 
 
+# Want to see more?
 
+You can explore a more detailed [Getting Started] tutorial to understand how Evidently works.
