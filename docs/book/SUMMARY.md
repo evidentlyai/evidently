@@ -30,6 +30,7 @@
   * [Create a custom report](tests-and-reports/custom-reports.md)
   * [Pre-built test suites](tests-and-reports/run-tests.md)
   * [Create a custom test suite](tests-and-reports/custom-test-suites.md)
+  * [Generate multiple test or metrics](tests-and-reports/test-metric-generator.md)
 * [Customization](customization/README.md)
   * [Data drift parameters](customization/options-for-statistical-tests.md)
   * [Add a custom drift method](customization/add-custom-drift-method.md)
