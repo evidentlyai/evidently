@@ -1,4 +1,4 @@
-This is an explanatory page to describe the key features and concepts at Evidently. For code instructions, head to the [user guide](../tests-and-reports/readme.md).
+This is an explanatory page to describe the key features and concepts at Evidently. For code instructions, head to the [user guide](../tests-and-reports/README.md).
 
 # TL;DR
 
