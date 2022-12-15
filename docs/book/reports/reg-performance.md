@@ -10,9 +10,9 @@ These presets help evaluate and test the quality of classification models. You c
 
 **2. To trigger or decide on the model retraining.** You can use the test suite to check if the model performance is below the threshold to initiate a model update. 
 
-**3. To debug or improve model performance.** If you detect a quality drop, you can use the visual report to explore the model errors. You can use the Error Bias table to identify the groups that significantly contribute to the total error, or where the model under- or over-estimates the target function. By manipulating the input data frame, you can explore how the model performs on different data segments (e.g., users from a specific region). You can also combine it with the [Data Drift](data-drift.md) report.
+**3. To debug or improve model performance.** If you detect a quality drop, you can use the visual report to explore the model errors. You can use the Error Bias table to identify the groups with high error where the model under- or over-estimates the target function. By manipulating the input data frame, you can explore the performance on different data segments (e.g., users from a specific region). You can also combine it with the [Data Drift](data-drift.md) report.
 
-**4. To analyze the results of the model test.** You can explore the results of an online or offline test and contrast it to the performance in training. Though this is not the primary use case, you can use this report to compare the model performance in an A/B test or during a shadow model deployment.
+**4. To analyze the results of the model test.** You can explore the results of an online or offline test and contrast it to the performance in training. You can use this report to compare the model performance in an A/B test or during a shadow model deployment.
 
 # Regression Performance Report
 
