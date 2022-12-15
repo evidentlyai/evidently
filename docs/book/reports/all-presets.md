@@ -2,7 +2,7 @@
 description: An overview of the types of analysis you can do with Evidently. 
 ---
 
-Evidently has several pre-built reports and test suites. We call them `presets`. Each preset evaluates or tests a particular aspect of the data or model quality. 
+Evidently has several pre-built reports and test suites. We call them **Presets**. Each preset evaluates or tests a particular aspect of the data or model quality. 
 
 This page links to the description of each preset. If you want to see the code and interactive examples instead in Jupyter notebook or Colab, head here instead:
 
@@ -12,12 +12,16 @@ This page links to the description of each preset. If you want to see the code a
 
 # Metric Presets
 
+Metric presets are pre-built reports that help with visual exploration, debugging and documentation of the data and model performance.
+
 |         |                                                        |   |
 | ------- | ------------------------------------------------------ | - |
 | [**Data Quality**](data-quality.md)<br><br>Evaluates the dataset statistics and feature behavior. <br><br> Requirements: model inputs. | [**Data Drift**](data-drift.md)<br><br>Explores the distribution shift between two datasets. <br><br>Requirements: model inputs, a reference dataset. | [**Target Drift**](target-drift.md)<br><br>Explores the distribution shift in the model predictions. <br><br>Requirements: model predictions and/or target values; a reference dataset. |
 | [**Classification**](class-performance.md)<br><br>Evaluates the classification model quality and errors. <br><br>Requirements: model predictions and true labels. | [**Regression**](reg-performance.md)<br><br>Evaluates the regression model quality and errors. <br><br>Requirements: model predictions and actuals. |  |
 
 # Test Presets
+
+Test presets are pre-built test suites that help run structured batch data and model checks as part of the pipeline.
 
 |         |                                                        |   |
 | ------- | ------------------------------------------------------ | - |
@@ -28,3 +32,4 @@ This page links to the description of each preset. If you want to see the code a
 
 # Individual Metrics and Tests
 
+You can also create custom test suites and reports from individual metrics and tests. You can explore 100+ [available tests](../reference/all-tests.md) and [metrics](../reference/all-metrics.md).
