@@ -35,7 +35,7 @@
   * [Add a custom drift method](customization/add-custom-drift-method.md)
   * [Add a custom metric or test](customization/add-custom-metric-or-test.md)
   * [Options for color schema](customization/options-for-color-schema.md)
-* [How-to guides](recipes/README.md)
+* [How-to guides](how-to-guides/README.md)
 
 ## Reference
 * [All tests](reference/all-tests.md)
