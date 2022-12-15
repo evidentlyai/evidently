@@ -9,13 +9,15 @@ Understand the basic functionality in 15 minutes:
 [Get started tutorial](get-started/tutorial.md). 
 {% endcontent-ref %}
 
-Explore code examples:
+Code examples:
 {% content-ref url="examples/examples.md" %}
 [Example](examples/examples.md). 
 {% endcontent-ref %}
 
-1-min "hello world":
-
+"Hello world" (1 min):
+{% content-ref url="get-started/tutorial.md" %}
+[Get started tutorial](get-started/hello-world.md). 
+{% endcontent-ref %}
 
 # How it works 
 
