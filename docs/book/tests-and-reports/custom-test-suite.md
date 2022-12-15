@@ -76,9 +76,9 @@ my_data_quality_tests
 
 # 2. Set test parameters
 
-Some tests have required and optional parameters. You can use them to define how the underlying metric is calculated.  
+To change how the underlying metrics are calculated, you can pass relevant parameters for each test. If you do not set a parameter, Evidently will usually apply a default. Some test parameters are required. 
 
-For example, if you want to test a quantile value, you need to pass the quantile as a parameter (required):
+For example, if you want to test a quantile value, you need to pass the quantile (required parameter):
 
 ```python
 column_tests_suite = TestSuite(tests=[
@@ -86,7 +86,7 @@ column_tests_suite = TestSuite(tests=[
 ])
 ```
 
-Or, you set a different statistical method when evaluating data drift (optional): 
+You can also set a different method when evaluating data drift to override the default choice (optional parameter): 
 
 ```python
 dataset_suite = TestSuite(tests=[
@@ -94,13 +94,24 @@ dataset_suite = TestSuite(tests=[
 ])
 ```
 
+Or define a custom decision threshold for classification quality metrics instead of default 0.5 (optional parameter): 
+
+```python
+model_tests = TestSuite(tests=[
+    TestPrecisionScore(probas_threshold=0.8),
+    TestRecallScore(probas_threshold=0.8)
+])
+```
+
 {% hint style="info" %} 
-**Reference**: test parameters and defaults are described in the [All tests](../reference/all-tests.md) table.
+**Reference**: available test parameters and defaults are described in the [All tests](../reference/all-tests.md) table.
 {% endhint %}
 
 # 3. Set test conditions
 
-For tests, you have both parameters and **conditions**. Parameters define how the underlying metrics are calculated (e.g., you can change the decision threshold for the classification model, which will affect the precision and recall values). Conditions define when the test will return pass or fail (e.g., you can set your expectation on the acceptable precision and recall values). 
+To define when the test should return "pass" or "fail", you need to set a condition.
+
+For example, you can set your expectation on the acceptable precision and recall values, or share of drifting features. If the condition is violated, the test fails. 
 
 There are several ways how you can define the conditions for each test in a test suite.  
 
@@ -118,7 +129,7 @@ If you do not define a test condition manually, Evidently will use the defaults 
 
 ## Custom conditions
 
-You can also set a custom condition for each test. You can use standard parameters: 
+You can also set a custom condition for each test to encode your expectations. You can use the standard parameters: 
 
 | Condition parameter name | Explanation                                | Usage Example                                                   |
 |--------------------------|--------------------------------------------|-----------------------------------------------------------------|
