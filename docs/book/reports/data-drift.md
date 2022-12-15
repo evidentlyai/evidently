@@ -6,7 +6,7 @@ For Reports, you can use the `DataDriftPreset`. For Test Suites, you can use the
 
 You can evaluate data drift in different scenarios.
 
-**1. To monitor the model performance without ground truth.** When you do not have true labels or actuals, you can monitor the input feature drift to check if the model is operating in a familiar environment. You can typically combine it with the [Prediction Drift monitoring](prediction-drift.md). If the drift is detected, you can trigger labeling and retraining, or decide to pause and switch to a different decision method.  
+**1. To monitor the model performance without ground truth.** When you do not have true labels or actuals, you can monitor the feature drift to check if the model operates in a familiar environment. You can combine it with the [Prediction Drift](prediction-drift.md). If you detect drift, you can trigger labeling and retraining, or decide to pause and switch to a different decision method. Read more in a [blog](https://www.evidentlyai.com/blog/ml-monitoring-data-drift-how-to-handle).  
 
 **2. When you are debugging the model quality decay.** If you observe a drop in the model quality, you can evaluate Data Drift to explore the change in the feature patterns, e.g., to understand the change in the environment or discover the appearance of a new segment. 
 
@@ -14,7 +14,7 @@ You can evaluate data drift in different scenarios.
 
 **4. To decide on the model retraining.** Before feeding fresh data into the model, you might want to verify whether it even makes sense. If there is no data drift, the environment is stable, and retraining might not be necessary.
 
-To run data drift checks as part of the pipeline, use the Test Suite. To explore and debug, use the Report.  
+To run drift checks as part of the pipeline, use the Test Suite. To explore and debug, use the Report.  
 
 # Data Drift Report
 
@@ -40,11 +40,9 @@ The **Data Drift** report helps detect and explore changes in the input data.
 
 ## Data Requirements
 
-You will need **two** datasets. The **reference** dataset serves as a benchmark. Evidently analyzes the change by comparing the **current** production data to the **reference** data to detect distribution drift.
+* You will need **two** datasets. The **reference** dataset serves as a benchmark. Evidently analyzes the change by comparing the **current** production data to the **reference** data to detect distribution drift. The dataset should include the features you want to evaluate for drift. The schema of both datasets should be identical.
 
-The dataset should include the features you want to evaluate for drift. The schema of both datasets should be identical.
-
-Evidently can evaluate drift both for numerical and categorical features. You can explicitly specify the type of the column in column mapping. If it is not specified, Evidently will define the column type automatically.
+* **Column mapping**. Evidently can evaluate drift both for numerical and categorical features. You can explicitly specify the type of the column in column mapping. If it is not specified, Evidently will define the column type automatically.
 
 If your dataset contains target or prediction column, they will also be analyzed for drift. 
 
@@ -54,7 +52,7 @@ The default report includes 4 components. All plots are interactive.
 
 ### 1. Data Drift Summary
 
-The report returns **the share of drifting features** and an aggregate **Dataset Drift** result. For example:
+The report returns **the share of drifting features** and an aggregate **Dataset Drift** result.
 
 ![](../.gitbook/assets/reports/metric_dataset_drift-min.png)
 
@@ -63,7 +61,7 @@ Dataset Drift sets a rule on top of the results of the statistical tests for ind
 Evidently uses the default [data drift detection algorithm](../reference/data-drift-algorithm.md) to select the drift detection method based on feature type and the number of observations in the reference dataset.
 
 {% hint style="info" %}
-You can modify the drift detection logic by selecting a different method already available in the library, including PSI, K–L divergence, Jensen-Shannon distance, Wasserstein distance, setting a different threshold and condition for the dataset drift. See more details about [setting data drift options](../customization/options-for-statistical-tests.md). You can also implement a [custom drift detection method](../customization/add-custom-metric-or-test.md). 
+You can modify the drift detection logic by selecting a different method, including PSI, K–L divergence, Jensen-Shannon distance, Wasserstein distance, setting a different threshold and condition for the dataset drift. See more details about [setting data drift options](../customization/options-for-statistical-tests.md). You can also implement a [custom drift detection method](../customization/add-custom-metric-or-test.md). 
 {% endhint %}
 
 To build up a better intuition for which tests are better in different kinds of use cases, visit our blog to read [our in-depth guide](https://evidentlyai.com/blog/data-drift-detection-large-datasets) to the tradeoffs when choosing the statistical test for data drift.
@@ -168,8 +166,8 @@ data_drift_test_suite
 You can use the `DataDriftTestPreset` to test features for drift when you receive a new batch of input data or generate a new set of predictions.
 
 The test preset works similarly to the metric preset. It will perform two types of tests: 
-* test the share of drifted columns to detect dataset drift;
-* test distribution drift in the individual columns (all or from a defined list).  
+* test the **share of drifted columns** to detect dataset drift;
+* test distribution **drift in the individual columns** (all or from a defined list).  
 
 Head here to the [All tests](../reference/all-tests.md) table to see the description of individual tests and parameters. 
 
