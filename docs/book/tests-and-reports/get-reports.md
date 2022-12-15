@@ -98,9 +98,15 @@ To get the dictionary:
 drift_report.as_dict()
 ```
 
-# Preset customization 
+# Preset parameters 
 
-You can customi
+You can customize some of the presets using parameters. For example, you can calculate the quality metrics for a binary probabilistic classification model with a custom decision threshold:
+
+```python
+dataset_report = Report(metrics=[
+    ClassificationQualityMetric(probas_threshold=0.5),
+])
+```
 
 {% hint style="info" %} 
 Refer to the [All metrics](../reference/all-metrics.md) table to see available parameters that you can pass for each preset.
