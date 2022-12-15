@@ -6,13 +6,13 @@ For Reports, you can use the `ClassificationPreset`. For Test Suites, you can us
 
 These presets help evaluate and test the quality of classification models. You can use them:
 
-**1. To monitor the performance of a classification model in production.** You can run the test suite as a regular job (e.g., weekly or every time you get the labels) to contrast the model performance against the expectation. You can generate visual reports for documentation and sharing with stakeholders.
+**1. To monitor the performance of a classification model in production.** You can run the test suite as a regular job (e.g., weekly or when you get the labels) to contrast the model performance against the expectation. You can generate visual reports for documentation and sharing with stakeholders.
 
 **2. To trigger or decide on the model retraining.** You can use the test suite to check if the model performance is below the threshold to initiate a model update.
 
 **3. To debug or improve model performance.** If you detect a quality drop, you can use the visual report to explore the model errors and underperforming segments. By manipulating the input data frame, you can explore how the model performs on different data segments (e.g., users from a specific region). You can also combine it with the [Data Drift](data-drift.md) report.
 
-**4. To analyze the results of the model test.** You can explore the results of an online or offline test and contrast it to the performance in training. Though this is not the primary use case, you can use this report to compare the model performance in an A/B test or during a shadow model deployment.
+**4. To analyze the results of the model test.** You can explore the results of an online or offline test and contrast it to the performance in training. You can also use this report to compare the model performance in an A/B test or during a shadow model deployment.
 
 To run performance checks as part of the pipeline, use the Test Suite. To explore and debug, use the Report.
 
@@ -50,6 +50,7 @@ Refer to the [column mapping section](../tests-and-reports/column-mapping.md) to
 The tool does not yet work for multi-label classification. It expects a single true label.
 
 To generate a comparative report, you will need **two** datasets. 
+
 ![](<../.gitbook/assets/two\_datasets\_classification (1) (1).png>)
 
 You can also run this report for a **single** dataset, with no comparison performed.
