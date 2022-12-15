@@ -84,7 +84,7 @@ You can use the parameter `columns` to define a list of columns to which you app
 
 It works the same way for metrics.
 
-**Example**: 
+**Example**: generate multiple metrics for all the columns in the list with the same parameter.
 
 ```python
 metric_generator_report = Report(
