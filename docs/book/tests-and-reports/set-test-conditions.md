@@ -1,4 +1,84 @@
+# Custom test suite
 
+You can create a custom test suite from individual tests.
+
+You need to create a `TestSuite` object and specify which tests to include. 
+
+## Dataset-level tests
+
+You can apply some of the tests on the dataset level. For example, to evaluate data drift for the whole dataset. 
+
+To create a custom data drift test suite with dataset-level tests:
+
+```python
+data_drift_suite = TestSuite(tests=[
+    TestShareOfDriftedColumns(),
+    TestNumberOfDriftedColumns(),
+])
+```
+
+To run the tests and get the visual report:
+
+```python
+data_drift_suite.run(
+    reference_data=ref,
+    current_data=curr,
+    column_mapping=ColumnMapping(),
+)
+data_drift_suite
+```
+
+## Column-level tests
+
+You can apply some tests to the individual columns. For example, to check if a specific feature or model prediction stays within the range. (Note that you can still apply column-level tests to all the individual columns in the dataset).
+
+To create a custom data drift test suite with column-level tests:
+
+```python
+feature_suite = TestSuite(tests=[
+    TestColumnShareOfMissingValues(column_name='hours-per-week'),
+    TestColumnDrift(column_name='education'),
+    TestMeanInNSigmas(column_name='hours-per-week')
+])
+```
+
+To run the tests and get the visual report:
+
+```python
+feature_suite.run(reference_data=ref, current_data=curr)
+feature_suite
+```
+
+**Combining tests**. When you define the contents of the TestSuite, you can include presets and individual tests in the same list. You can also combine feature-level and dataset-level tests. 
+
+Here is an example:
+
+```python
+my_data_quality_report = TestSuite(tests=[
+    DataQualityTestPreset(),
+    TestColumnAllConstantValues(column_name='education'),
+    TestNumberOfDriftedColumns()
+])
+
+my_data_quality_report.run(reference_data=ref,current_data=curr)
+my_data_quality_report
+```
+
+## Available tests
+
+Evidently library has dozens of individual tests. Here are some examples of individual tests: 
+
+```python
+TestShareOfOutRangeValues()
+TestMostCommonValueShare()
+TestNumberOfConstantColumns()
+TestNumberOfDuplicatedColumns()
+TestHighlyCorrelatedColumns()
+```
+
+{% hint style="info" %} 
+**Reference**: The complete list of tests is available in the [All tests](../reference/all-tests.md) table.
+{% endhint %}
 
 # Custom test parameters
 
@@ -80,3 +160,92 @@ For example, if you want to test a quantile value, you need to pass the quantile
 {% hint style="info" %} 
 **Reference**: the additional parameters that apply to specific tests and defaults are described in the same [All tests](../reference/all-tests.md) table.
 {% endhint %}
+
+
+
+
+# Tests generation 
+
+There are several features that simplify generating multiple column-level tests. 
+
+## List comprehension
+
+You can pass a list of parameters or a list of columns. 
+
+**Example 1**. Pass the list of multiple quantile values to test for the same column. 
+
+```python
+suite = TestSuite(tests=[
+   TestColumnQuantile(column_name="education-num", quantile=quantile) for quantile in [0.5, 0.9, 0.99]
+])
+
+suite.run(current_data=current_data, reference_data=reference_data)
+suite
+```
+
+**Example 2**. Apply the same test with a defined custom parameter for all columns in the list: 
+
+```python
+suite = TestSuite(tests=[
+   TestColumnValueMin(column_name=column_name, gt=0) for column_name in ["age", "fnlwgt", "education-num"]
+])
+ 
+suite.run(current_data=current_data, reference_data=reference_data)
+suite
+```
+
+## Column test generator
+
+You can also use the `generate_column_tests` function to create multiple tests.
+
+By default, it generates tests with the default parameters for all the columns:
+
+```python
+suite = TestSuite(tests=[generate_column_tests(TestColumnShareOfMissingValues)])
+suite.run(current_data=current_data, reference_data=reference_data)
+suite
+```
+
+You can also pass the parameters:
+
+```python
+suite = TestSuite(tests=[generate_column_tests(TestColumnShareOfMissingValues, columns="all", parameters={"lt": 0.5})])
+suite.run(current_data=current_data, reference_data=reference_data)
+suite
+```
+
+You can generate tests for different subsets of columns. Here is how you generate tests only for **numerical columns**:
+
+```python
+suite = TestSuite(tests=[generate_column_tests(TestColumnValueMin, columns="num")])
+suite.run(current_data=current_data, reference_data=reference_data)
+suite
+```
+
+Here is how you generate tests only for **categorical columns**:
+
+```python
+suite = TestSuite(tests=[generate_column_tests(TestColumnShareOfMissingValues, columns="cat", parameters={"lt": 0.1})])
+suite.run(current_data=current_data, reference_data=refernce_data)
+suite
+```
+ 
+You can also generate tests with defined parameters, for a custom defined column list:
+ 
+```python
+suite = TestSuite(tests=[generate_column_tests(TestColumnValueMin, columns=["age", "fnlwgt", "education-num"],
+                                              parameters={"gt": 0})])
+suite.run(current_data=current_data, reference_data=reference_data)
+suite
+```
+ 
+### Column parameter
+
+You can use the parameter `columns` to define a list of columns to which you apply the tests. If it is a list, just use it as a list of the columns. If `columns` is a string, it can take the following values:
+* `"all"` - apply tests for all columns, including target/prediction columns.
+* `"num"` - for numerical features, as provided by column mapping or defined automatically
+* `"cat"` - for categorical features, as provided by column mapping or defined automatically
+* `"features"` - for all features, excluding the target/prediction columns.
+* `"none"` -  the same as "all."
+
+
