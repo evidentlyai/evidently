@@ -53,7 +53,9 @@ feature_suite.run(reference_data=ref, current_data=curr)
 feature_suite
 ```
 
-**Combining tests**. When you define the contents of the TestSuite, you can include presets and individual tests in the same list. You can also combine feature-level and dataset-level tests. 
+## Combining tests
+
+When you define the contents of the TestSuite, you can include presets and individual tests in the same list. You can also combine feature-level and dataset-level tests. 
 
 Here is an example:
 
