@@ -6,7 +6,7 @@ It helps evaluate, test, and monitor the performance of ML models from validatio
 
 Check it out (1 min):
 {% content-ref url="get-started/hello-world.md" %}
-[Get started tutorial](get-started/hello-world.md). 
+["Hello world" example](get-started/hello-world.md). 
 {% endcontent-ref %}
 
 Understand the basic functionality (15 minutes):
