@@ -6,7 +6,7 @@ For Test Suite, use the `NoTargetPerformanceTestPreset`.
 
 This test suite is designed for a specific scenario:
 
-**To monitor the model performance without ground truth.** You can use it to perform batch checks for a model that has delayed feedback (true labels or actuals come only later).This preset helps evaluate the production model quality through proxy metrics. It combines several metrics that check for data quality, data integrity, and data and prediction drift. 
+**To monitor the model performance without ground truth.** You can use it to perform batch checks for a model that has delayed feedback (when true labels or actuals come days, weeks or months after the prediction is made). This preset helps evaluate the production model quality through proxy metrics. It combines several metrics that check for data quality, data integrity, and data and prediction drift. 
 
 # NoTargetPerformance Test Suite
 
