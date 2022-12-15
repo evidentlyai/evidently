@@ -1,4 +1,4 @@
-from typing import List, Tuple, Optional, Union
+from typing import List, Tuple
 import dataclasses
 import numpy as np
 import pandas as pd
@@ -130,11 +130,17 @@ class TextDomainClassifierDriftMetric(Metric[TextDomainClassifierDriftResult]):
         is_content_drift = self.is_drift_detected(roc_auc_classifier_value=domain_classifier_roc_auc,
                                                   roc_auc_random_percentile=random_classifier_95_percentile)
 
-        # get examples more characteristic of current or reference dataset
-        typical_examples_cur, typical_examples_ref = self.get_typical_examples(X_test, y_test, y_pred_proba)
+        typical_examples_cur = None
+        typical_examples_ref = None
+        typical_words_cur = None
+        typical_words_ref = None
 
-        # get words more characteristic of current or reference dataset
-        typical_words_cur, typical_words_ref = self.get_typical_words(classifier_pipeline)
+        if is_content_drift:
+            # get examples more characteristic of current or reference dataset
+            typical_examples_cur, typical_examples_ref = self.get_typical_examples(X_test, y_test, y_pred_proba)
+
+            # get words more characteristic of current or reference dataset
+            typical_words_cur, typical_words_ref = self.get_typical_words(classifier_pipeline)
 
         return TextDomainClassifierDriftResult(text_column_name=self.text_column_name,
                                                domain_classifier_roc_auc=domain_classifier_roc_auc,
@@ -195,23 +201,24 @@ class TextDomainClassifierDriftMetricRenderer(MetricRenderer):
 
         result.append(counter(counters=counters, title="", ))
 
-        current_table_words = self._get_table_stat("current", metric_result, content_type='words')
-        reference_table_words = self._get_table_stat("reference", metric_result, content_type='words')
+        if metric_result.content_drift:
+            current_table_words = self._get_table_stat("current", metric_result, content_type='words')
+            reference_table_words = self._get_table_stat("reference", metric_result, content_type='words')
 
-        current_table_examples = self._get_table_stat("current", metric_result, content_type='examples')
-        reference_table_examples = self._get_table_stat("reference", metric_result, content_type='examples')
+            current_table_examples = self._get_table_stat("current", metric_result, content_type='examples')
+            reference_table_examples = self._get_table_stat("reference", metric_result, content_type='examples')
 
-        tables_tabs = [
-            TabData(title="Current dataset", widget=current_table_words),
-            TabData(title="Reference dataset", widget=reference_table_words),
-        ]
-        tables = widget_tabs(tabs=tables_tabs)
-        result.append(tables)
+            tables_tabs = [
+                TabData(title="Current dataset", widget=current_table_words),
+                TabData(title="Reference dataset", widget=reference_table_words),
+            ]
+            tables = widget_tabs(tabs=tables_tabs)
+            result.append(tables)
 
-        tables_tabs = [
-            TabData(title="Current dataset", widget=current_table_examples),
-            TabData(title="Reference dataset", widget=reference_table_examples),
-        ]
-        tables = widget_tabs(tabs=tables_tabs)
-        result.append(tables)
+            tables_tabs = [
+                TabData(title="Current dataset", widget=current_table_examples),
+                TabData(title="Reference dataset", widget=reference_table_examples),
+            ]
+            tables = widget_tabs(tabs=tables_tabs)
+            result.append(tables)
         return result
