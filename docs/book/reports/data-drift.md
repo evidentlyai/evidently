@@ -42,11 +42,9 @@ The **Data Drift** report helps detect and explore changes in the input data.
 
 * You will need **two** datasets. The **reference** dataset serves as a benchmark. Evidently analyzes the change by comparing the **current** production data to the **reference** data to detect distribution drift. 
 
-* **Schema**. The dataset should include the features you want to evaluate for drift. The schema of both datasets should be identical.
+* **Input features**. The dataset should include the features you want to evaluate for drift. The schema of both datasets should be identical. If your dataset contains target or prediction column, they will also be analyzed for drift. 
 
 * **Column mapping**. Evidently can evaluate drift both for numerical and categorical features. You can explicitly specify the type of the column in column mapping. If it is not specified, Evidently will define the column type automatically.
-
-If your dataset contains target or prediction column, they will also be analyzed for drift. 
 
 ## How it looks
 
