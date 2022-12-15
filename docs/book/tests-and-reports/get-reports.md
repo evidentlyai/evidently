@@ -19,7 +19,7 @@ You need to prepare two datasets for comparison: **reference** and **current**. 
 Refer to the [input data](../input-data/data-requirements.md) and [column mapping](../input-data/column-mapping.md) for more details on data preparation.
 {% endhint %}
 
-# Metric presets 
+# Using metric presets 
 
 Evidently has ready-made `metric_presets` that group relevant metrics together in a single Report. You can use them as templates to evaluate a specific aspect of the data or model performance.
 
