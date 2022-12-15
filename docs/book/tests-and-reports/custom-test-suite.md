@@ -68,6 +68,10 @@ my_data_quality_tests.run(reference_data=ref,current_data=curr)
 my_data_quality_tests
 ```
 
+{% hint style="info" %} 
+**Note**: If you want to generate multiple column-level tests, you can use test [generator helper function](test-metric-generator.md).
+{% endhint %}
+
 # 2. Set test parameters
 
 Some tests have required and optional parameters. You can use them to define how the underlying metric is calculated.  
