@@ -27,8 +27,6 @@ You need to create a `report` object and specify the preset to generate. You sho
 
 If nothing else is specified, the reports will run with the default parameters.
 
-## How to run metric presets
-
 **Example**. To generate the report for Data Drift together with Target Drift:
 
 ```python
@@ -40,7 +38,7 @@ drift_report
  
 It will display the HTML combined report. 
 
-## Available presets
+# Available presets
 
 Here is a list of metric presets you can try:
 
@@ -52,11 +50,15 @@ RegressionPreset
 ClassificationPreset
 ```
 
-## Output formats 
+{% hint style="info" %} 
+Refer to the [presets overview](../presets/all-presets.md) or [example notebooks](../examples/examples.md) to explore the composition of each preset.
+{% endhint %}
+
+# Output formats 
 
 You can get the test results in different formats. 
 
-**HTML**. You can get an interactive visual report. It is best for exploration and debugging. You can also document еру results and share them with the team. 
+**HTML**. You can get an interactive visual report. It is best for exploration and debugging. You can also document the results and share them with the team. 
 
 To see in Jupyter notebook or Colab, call the object: 
 
@@ -69,6 +71,10 @@ To export HTML as a separate file:
 ```python
 drift_report.save_html(“file.html”)
 ```
+
+{% hint style="info" %} 
+Reports contain interactive visualizations inside the HTML, so large reports might take time to load. In this case, downsample your data. 
+{% endhint %}
 
 **JSON**. You can get the results of the calculation as a JSON. It is best for test automation and integration in your prediction pipelines. 
 
