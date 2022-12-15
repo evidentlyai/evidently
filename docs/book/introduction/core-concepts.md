@@ -10,29 +10,29 @@ A **test** is a metric with a condition. Each test returns a pass or fail result
 
 For both tests and metrics, Evidently has **presets**. These are pre-built combinations of metrics or checks that fit a specific use case. 
 
-# Reports and Metrics
+# Metrics and Reports
 
 ## What is a Metric?
 
 A **Metric** is a component that evaluates a specific aspect of the data or model quality. 
 
-A **Metric** can be, literally, a single metric (for example, `DatasetMissingValuesMetric()` returns the share of missing features). It can also be a combination of metrics (for example, `DatasetSummaryMetric()` calculates various descriptive statistics for the dataset). There are various metrics that apply on the dataset level, or on the level of inividual column. Each **Metric** has a visual render. 
+A **Metric** can be, literally, a single metric (for example, `DatasetMissingValuesMetric()` returns the share of missing features). It can also be a combination of metrics (for example, `DatasetSummaryMetric()` calculates various descriptive statistics for the dataset). Metrics exist on the dataset level and on the column level. 
 
-Some visualizations simply return the values:  
+Each **Metric** has a visual render. Some visualizations simply return the values:  
 
 ![RegressionQualityMetric](../.gitbook/assets/reports/metric_example_regression_quality-min.png)
 
-Others have rich visualizations or plots. Here is an example of a model-related metric:
+Others have rich visualizations. Here is an example of a dataset-level metric that evaluates the error of a regression model:
 
 ![RegressionErrorDistribution](../.gitbook/assets/reports/metric_example_error_distribution-min.png)
 
-Here is an example of a data-related metric applied to a single column: 
+Here is an example of a column-level metric that evaluates the value range of certain feature: 
 
 ![ColumnValueRangeMetric](../.gitbook/assets/reports/metric_example_value_range-min.png)
 
-The JSON “version” of a metric returns any new calculated values and, optionally, some other useful information such as histogram bins. 
+Metric output is available as an interactive HTML report, JSON, or Python dictionary. The JSON “version” of a metric returns any new calculated values and, optionally, some other useful information such as histogram bins. 
 
-Evidently contains 30+ **Metrics** related to data quality, integrity, drift and model performance. You can also implement a custom one.
+Evidently contains 35+ **Metrics** related to data quality, integrity, drift and model performance. You can also implement a custom one.
 
 ## What is a Report?
 
@@ -82,7 +82,7 @@ You can explore all metrics and presets here:
 
 ## When to use Reports
 
-You can use Reports at different stages of the ML lifecycle: from exploratory data analysis and pre-deployment model evaluation to production monitoring and debugging.  
+You can use Reports at different stages of the ML lifecycle: from exploratory data analysis and model validation to production monitoring and debugging.  
 
 **Debugging and exploration**. Reports are best for visual analysis of the data or model performance. For example, during model quality evaluation on the training set, when debugging the model quality decay, or comparing two models. 
 
@@ -96,17 +96,17 @@ You can use Reports at different stages of the ML lifecycle: from exploratory da
 
 Tests help perform structured data and ML model performance checks. They explicitly define the expectations from your data and model.
 
-A **test** is a single check. It calculates a given metric and compares it with the defined condition or threshold. 
+A **test** is a metric with a condition. It calculates a value and compares it against the defined threshold. 
 
-If the condition is satisfied, it returns **success**. 
+If the condition is satisfied, the test returns a **success**. 
 
-If you choose a visual report, you will see the current value of the metric and the test condition. On expand, you will get a supporting visualization. 
+If you choose to get a visual output with the test results, you will see the current value of the metric and the test condition. On expand, you will get a supporting visualization. 
 
-Here is an example of a data-related test:
+Here is an example of a column-level test that evaluates the mean value stability:
 
 ![Mean value stability test](../.gitbook/assets/tests/test_example_success_data-min.png)
 
-Here is an example of a model-related test:
+Here is an example of a dataset-level test that evaluates model error:
 
 ![Root mean square error test](../.gitbook/assets/tests/test_example_success_model-min.png)
 
@@ -116,7 +116,7 @@ If the condition is not satisfied, the test returns a **fail**:
 
 If the test execution fails, it will return an error. 
 
-Evidently contains 50+ individual tests that cover different aspects of model and data quality. 
+Evidently contains 70+ individual tests that cover different aspects of model and data quality. 
 
 You can set test conditions on your own or pass the reference dataset to auto-generate test conditions. You can also run most of the tests using defaults even if you do not pass a reference dataset: the tests will use heuristics and dummy models.
 
@@ -150,7 +150,7 @@ You can explore all tests and presets here:
 [All tests](all-tests.md)
 {% endcontent-ref %}
 
-## When to use tests
+## When to use Test Suites
 
 For **test-based monitoring** of production ML models: tests are best suited for integration in ML prediction pipelines. You can easily integrate Evidently Tests with workflow management tools like Airflow.
 
