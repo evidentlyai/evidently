@@ -1,8 +1,6 @@
-# Tests generation 
+There are several features that simplify generating multiple column-level tests or metrics. 
 
-There are several features that simplify generating multiple column-level tests. 
-
-## List comprehension
+# List comprehension
 
 You can pass a list of parameters or a list of columns. 
 
@@ -28,7 +26,7 @@ suite.run(current_data=current_data, reference_data=reference_data)
 suite
 ```
 
-## Column test generator
+# Column test generator
 
 You can also use the `generate_column_tests` function to create multiple tests.
 
