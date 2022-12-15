@@ -2,7 +2,7 @@
 
 For Reports, you can use the `DataDriftPreset`. For Test Suites, you can use the `DataDriftTestPreset`.  
 
-# Use Cases
+# Use Case
 
 You can evaluate data drift in different scenarios.
 
