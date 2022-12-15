@@ -85,7 +85,7 @@ Shows the model quality metrics for the individual classes. In the case of multi
 
 ### **5. Class Separation Quality**
 
-A scatter plot of the predicted probabilities that shows correct and incorrect predictions for each class.
+A scatter plot of the predicted probabilities shows correct and incorrect predictions for each class.
 
 It serves as a representation of both model accuracy and the quality of its calibration. It also helps visually **choose the best probability threshold for each class.**
 
