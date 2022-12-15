@@ -1,5 +1,8 @@
 You can create a custom test suite from individual tests.
 
+ You can also create custom Test Suites from 50+ individual Tests. All Tests have in-built defaults but can be customized.
+
+
 You need to create a `TestSuite` object and specify which tests to include. 
 
 ## Dataset-level tests
