@@ -18,7 +18,7 @@ To run performance checks as part of the pipeline, use the Test Suite. To explor
 
 # Classification Performance Report 
 
-If you want to visually explore the model performance, create a new Report object and use the `ClassificationPreset`.
+If you want to visually explore the model performance, create a new Report object and include the `ClassificationPreset`.
 
 ## Code example
 
@@ -62,7 +62,7 @@ The report includes multiple components. The composition might vary based on pro
 
 Evidently calculates a few standard model quality metrics: Accuracy, Precision, Recall, F1-score, ROC AUC, and LogLoss.
 
-**To support the model performance analysis, we also generate interactive visualizations. They help analyze where the model makes mistakes and come up with improvement ideas.**
+**To support the model performance analysis, Evidently also generates interactive visualizations. They help analyze where the model makes mistakes and come up with improvement ideas.**
 
 ### 2. Class Representation
 
