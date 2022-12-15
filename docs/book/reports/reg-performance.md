@@ -34,7 +34,7 @@ reg_performance_report
 
 The **Regression Performance** report evaluates the quality of a regression model.
 
-It can also compare it to the past performance of the same model, or the performance of an alternative model.
+It can also compare the performance against the past, or the performance of an alternative model.
 
 * Works for a **single model** or helps compare the **two**
 * Displays a variety of plots related to the **performance** and **errors**
