@@ -57,6 +57,8 @@ The report first shows the **comparison of target (prediction) distributions** i
 
 Evidently uses the default [data drift detection algorithm](../reference/data-drift-algorithm.md) to select the drift detection method based on target type and the number of observations in the reference dataset.
 
+![](<../.gitbook/assets/num\_targ\_drift (1).png>)
+
 {% hint style="info" %}
 You can modify the drift detection logic by selecting a different method already available in the library, including PSI, K–L divergence, Jensen-Shannon distance, Wasserstein distance, and/or by setting a different threshold. See more details about [setting data drift options](../customization/options-for-statistical-tests.md). You can also implement a [custom drift detection method](../customization/add-custom-metric-or-test.md).
 {% endhint %}
@@ -64,8 +66,6 @@ You can modify the drift detection logic by selecting a different method already
 ### 2. Target (Prediction) Correlations
 
 For numerical targets, the report calculates the [Pearson correlation](https://en.wikipedia.org/wiki/Pearson\_correlation\_coefficient) between the target (prediction) and each individual feature in the two datasets to detect a **change in the relationship.**
-
-![](<../.gitbook/assets/num\_targ\_drift (1).png>)
 
 The report shows the **correlations between individual features and the target (prediction)** in the current and reference dataset. It helps detects shifts in the relationship.
 
