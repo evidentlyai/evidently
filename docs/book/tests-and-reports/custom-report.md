@@ -60,7 +60,7 @@ my_report = Report(metrics=[
 ])
 ```
 
-# 2. Customize metric parameters
+# 2. Set metric parameters
 
 Some metrics include default parameters. For example, probabilistic classification quality metrics have a default 0.5 decision threshold. You can override the defaults by setting custom parameters. 
 
