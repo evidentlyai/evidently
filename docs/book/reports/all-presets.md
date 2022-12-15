@@ -14,8 +14,8 @@ This page links to the description of each preset. If you want to see the code a
 
 |         |                                                        |   |
 | ------- | ------------------------------------------------------ | - |
-| **Data Quality**<br><br>Evaluates the dataset statistics and feature behavior. <br><br> Requirements: model inputs. | **Data Drift**<br><br>Explores the distribution shift between two datasets. <br><br>Requirements: model inputs, a reference dataset. | **Target Drift**<br><br>Explores the distribution shift in the model predictions. <br><br>Requirements: model predictions and/or target values; a reference dataset. |
-| **Classification**<br><br>Evaluates the classification model quality and errors. <br><br>Requirements: model predictions and true labels. | **Regression** <br><br>Evaluates the regression model quality and errors. <br><br>Requirements: model predictions and actuals. |  |
+| [**Data Quality**](data-quality.md)<br><br>Evaluates the dataset statistics and feature behavior. <br><br> Requirements: model inputs. | [**Data Drift**](data-drift.md)<br><br>Explores the distribution shift between two datasets. <br><br>Requirements: model inputs, a reference dataset. | [**Target Drift**](target-drift.md)<br><br>Explores the distribution shift in the model predictions. <br><br>Requirements: model predictions and/or target values; a reference dataset. |
+| [**Classification**](class-performance.md))<br><br>Evaluates the classification model quality and errors. <br><br>Requirements: model predictions and true labels. | [**Regression**](reg-performance.md)) <br><br>Evaluates the regression model quality and errors. <br><br>Requirements: model predictions and actuals. |  |
 
 # Test Presets
 
