@@ -2,7 +2,7 @@
 description: How to generate reports in Evidently.
 ---   
 
-**TL;DR:** You can start with pre-built Reports (metric presets). They work out of the box. 
+**TL;DR:** You can start with pre-built Reports (metric presets). They work out of the box without additional configuration. 
 
 # Installation and prep
 
@@ -51,7 +51,7 @@ ClassificationPreset
 ```
 
 {% hint style="info" %} 
-Refer to the [presets overview](../presets/all-presets.md) or [example notebooks](../examples/examples.md) to explore the composition of each preset.
+Refer to the [presets overview](../presets/all-presets.md) to understand when to use each preset. Refer to the [example notebooks](../examples/examples.md) to see interactive examples.
 {% endhint %}
 
 # Output formats 
@@ -97,3 +97,11 @@ To get the dictionary:
 ```python
 drift_report.as_dict()
 ```
+
+# Preset customization 
+
+You can customi
+
+{% hint style="info" %} 
+Refer to the [All metrics](../reference/all-metrics.md) table to see available parameters that you can pass for each preset.
+{% endhint %}
