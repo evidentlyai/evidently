@@ -6,7 +6,7 @@ description: How to generate test presets in Evidently.
 
 # Installation and prep
 
-After [installation](../get-started/install-evidently.md), import the TestSuite component and the required tests or test suites:
+After [installation](../installation/install-evidently.md), import the TestSuite component and the required tests or test suites:
 
 ```python
 from evidently.test_suite import TestSuite
@@ -23,7 +23,7 @@ from evidently.test_preset import BinaryClassificationTestPreset
 You need two datasets for comparison: **reference** and **current**. The reference dataset is optional. 
 
 {% hint style="info" %} 
-Refer to the [input data](input-data.md) and [column mapping](column-mapping.md) for more details on data preparation and requirements.
+Refer to the [input data](../input-data/data-requirements.md) and [column mapping](../input-data/column-mapping.md) for more details on data preparation and requirements.
 {% endhint %}
 
 # Test presets 
@@ -32,9 +32,7 @@ Evidently has `test_presets` that group relevant tests together. You can use the
 
 You need to create a `TestSuite` object and specify the presets to include. You should also point to the current and reference dataset (if available).
 
-If nothing else is specified, the tests will run with the default parameters.
-
-## How to run test presets
+If nothing else is specified, the tests will run with the default parameters. The test conditions are generated automatically based on the provided reference dataset or heuristics.
 
 **Example 1**. To apply the `DataStabilityTestPreset`:
 
@@ -45,7 +43,7 @@ DataStabilityTestPreset(),
 data_stability.run(reference_data=ref, current_data=curr)
 ```
 
-You get the visual report automatically if you call the object in Jupyter notebook or Colab:
+To get the visual report, call the object in Jupyter notebook or Colab:
 
 ```python
 data_stability
@@ -60,9 +58,10 @@ NoTargetPerformanceTestPreset(columns=['education-num', 'hours-per-week']),
 no_target_performance.run(reference_data=ref,current_data=curr)
 no_target_performance
 ```
+
 You can use the `columns` argument as shown above. In this case, some of the per-feature tests only apply to the features from the list. This way, you decrease the overall number of tests. 
 
-## Available presets 
+# Available presets 
 
 Here are other test presets you can try:
 
@@ -77,10 +76,10 @@ BinaryClassificationTopKTestPreset
 BinaryClassificationTestPreset
 ```
 {% hint style="info" %} 
-Refer to the [Test Suites](../tests/README.md) section to see the contents of each preset, and to the [All tests](../reference/all-tests.md) table to see the individual tests and their default parameters.
+Refer to the [Presets overview](../presets/README.md) to understand the use case for each preset, and to the [All tests](../reference/all-tests.md) table to see the individual tests and their default parameters. To see the interactive examples, refer to the [example notebooks](../examples/examples.md).
 {% endhint %}
 
-## Output formats 
+# Output formats 
 
 You can get the test results in different formats. 
 
@@ -114,3 +113,19 @@ To get the dictionary:
 ```python
 data_stability.as_dict()
 ```
+
+# Test preset parameters
+
+You can customize some of the presets using parameters. For example, you can pass a chosen data drift detection method:
+
+```python
+no_target_performance = TestSuite(tests=[
+NoTargetPerformanceTestPreset(cat_stattest=ks, cat_statest_threshold=0.05),
+])
+no_target_performance.run(reference_data=ref,current_data=curr)
+no_target_performance
+```
+
+{% hint style="info" %} Refer to the [All tests table](../reference/all-tests.md) to see available parameters that you can pass for each preset. {% endhint %}
+
+If you want to change the composition of the test suite or set custom test conditions, you should create a custom test suite.
