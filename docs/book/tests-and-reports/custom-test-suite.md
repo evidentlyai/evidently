@@ -106,13 +106,9 @@ There are several ways how you can define the conditions for each test in a test
 
 If you do not define a test condition manually, Evidently will use the defaults for each test.
 
-**Based on reference dataset**. If you pass the reference, Evidently will auto-generate test conditions based on provided reference and set of heuristics. 
+* **Based on reference dataset**. If you pass the reference, Evidently will auto-generate test conditions based on provided reference and set of heuristics. For example,`TestShareOfOutRangeValues` test fails if over 10% of values are out of range. Evidently will automatically derive the value range for each feature.
 
-*Example*: `TestShareOfOutRangeValues` test fails if over 10% of values are out of range. Evidently will automatically derive the value range for each feature.
-
-**Based on heuristics**. Some tests can work even without a reference dataset or a custom condition. In this case, Evidently will use heuristics and dummy models.
-
-*Example*: `TestAccuracyScore()` fails if the model quality is worse than the quality of a dummy model.
+* **Based on heuristics**. Some tests can work even without a reference dataset or a custom condition. In this case, Evidently will use heuristics and dummy models. For example, `TestAccuracyScore()` fails if the model quality is worse than the quality of a dummy model.
 
 {% hint style="info" %} 
 **Reference**: Default test conditions are described in the same [All tests](../reference/all-tests.md) table.
