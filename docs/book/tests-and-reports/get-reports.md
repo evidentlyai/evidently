@@ -107,7 +107,8 @@ dataset_report = Report(metrics=[
     ClassificationQualityMetric(probas_threshold=0.5),
 ])
 ```
-
 {% hint style="info" %} 
 Refer to the [All metrics](../reference/all-metrics.md) table to see available parameters that you can pass for each preset.
 {% endhint %}
+
+If you want to change the composition of the report or pass additional parameters, you can create a custom report.
