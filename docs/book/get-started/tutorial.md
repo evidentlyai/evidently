@@ -336,7 +336,7 @@ If you want to walk through all the described steps in more detail, refer to the
 
 Both **tests** and **reports** have multiple presets available. Some, like Data Quality, require only input data. You can use them even without the reference dataset. When you have the true labels, you can run presets like **Regression Performance** and **Classification Performance** to evaluate the model quality and errors. 
 
-To understand the contents of each preset, you can explore the [Reports](../reports) and [Test Suites](../tests). If you want to see the pre-rendered examples of the reports, browse Colab notebooks in the [Examples](../get-started/examples.md) section. 
+To understand the contents of each preset, head to the [Preset overview](../presets). If you want to see the pre-rendered examples of the reports, browse Colab notebooks in the [Examples](../examples/examples.md) section. 
 
 * **Explore available integrations**
 
