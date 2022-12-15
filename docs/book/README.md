@@ -4,19 +4,19 @@ It helps evaluate, test, and monitor the performance of ML models from validatio
 
 # Quick Start 
 
-Understand the basic functionality in 15 minutes:
+Check it out (1 min):
+{% content-ref url="get-started/hello-world.md" %}
+[Get started tutorial](get-started/hello-world.md). 
+{% endcontent-ref %}
+
+Understand the basic functionality (15 minutes):
 {% content-ref url="get-started/tutorial.md" %}
 [Get started tutorial](get-started/tutorial.md). 
 {% endcontent-ref %}
 
-Code examples:
+Explore code examples:
 {% content-ref url="examples/examples.md" %}
 [Example](examples/examples.md). 
-{% endcontent-ref %}
-
-"Hello world" (1 min):
-{% content-ref url="get-started/tutorial.md" %}
-[Get started tutorial](get-started/hello-world.md). 
 {% endcontent-ref %}
 
 # How it works 
