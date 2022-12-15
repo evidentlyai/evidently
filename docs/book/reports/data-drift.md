@@ -180,6 +180,8 @@ Head here to the [All tests](../reference/all-tests.md) table to see the descrip
 * You can apply the preset only to selected columns.
 * You can create a different report test suite from scratch taking this one as an inspiration. 
 
+If you want to compare descriptive statistics between the two datasets, you can also use the [Data Stability test preset](data-quality.md).
+
 # Examples
 
 * Browse the [examples](../get-started/examples.md) for sample Jupyter notebooks and Colabs.
