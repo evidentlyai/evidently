@@ -1,6 +1,8 @@
-Get to know Evidently in a couple of minutes.
+---
+description: Get to know Evidently in a couple of minutes.
+---
 
-You can launch this hello-world example in Jupyter notebook or in Colab. 
+You can launch this hello-world example in Jupyter notebook or Colab. 
 
 # Installation 
 
