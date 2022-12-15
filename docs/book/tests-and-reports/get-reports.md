@@ -2,7 +2,7 @@
 description: How to generate reports in Evidently.
 ---   
 
-TL;DR: You can start with ready-made Metric Presets that work out of the box. 
+**TL;DR:** You can start with pre-built Reports (metric presets). They work out of the box. 
 
 # Installation and prep
 
