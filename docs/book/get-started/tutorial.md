@@ -330,7 +330,7 @@ You can extract necessary information from the JSON or Python dictionary output 
 
 * **Go through the steps in more detail**
 
-If you want to walk through all the described steps in more detail, refer to the [User Guide](../tests-and-reports/readme.md). A good next step is to explore how to pass custom test parameters to define your own [test conditions](../tests-and-reports/run-tests.md#how-to-set-the-parameters).  
+If you want to walk through all the described steps in more detail, refer to the [User Guide](../tests-and-reports/README.md). A good next step is to explore how to pass custom test parameters to define your own [test conditions](../tests-and-reports/custom-test-suites.md).  
 
 * **Explore available presets**
 
