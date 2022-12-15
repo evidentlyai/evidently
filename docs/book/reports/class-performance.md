@@ -4,7 +4,7 @@ For Reports, you can use the `ClassificationPreset`. For Test Suites, you can us
 
 # Use Case
 
-These presets help evaluate the quality of classification models. You can use them:
+These presets help evaluate and test the quality of classification models. You can use them:
 
 **1. To monitor the performance of a classification model in production.** You can run the test suite as a regular job (e.g., weekly or every time you get the labels) to contrast the model performance against expectation. You can generate visual reports for documentation and sharing with stakeholders.
 
@@ -247,6 +247,7 @@ You can get the report output as a JSON or a Python dictionary:
 
 ## Report customization
 
+* You can perform the analysis of relations between features and target only for selected columns.
 * You can pass relevant parameters to change the way some of the metrics are calculated, such as decision threshold or K to evaluate precision@K. See the available parameters [here](../reference/all-metrics.md)
 * You can use a [different color schema for the report](../customization/options-for-color-schema.md). 
 * If you want to exclude some of the metrics, you can create a custom report by combining the chosen metrics. See the complete list [here](../reference/all-metrics.md)
