@@ -2,7 +2,9 @@
 
 * [What is Evidently?](README.md)
   * [Core Concepts](introduction/core-concepts.md)
-* [Get Started Tutorial](get-started/tutorial.md)
+* [Get Started](get-started/README.md)
+  * [Get Started Tutorial](get-started/tutorial.md)
+  * [Hello World - 1 min](get-started/tutorial.md)
 * [Presets](presets/README.md)
   * [All Presets](presets/all-presets.md)
   * [Data Drift](presets/data-drift.md)
