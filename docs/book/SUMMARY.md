@@ -21,9 +21,11 @@
 
 ## User Guide
 * [Installation](get-started/install-evidently.md)
+* [Input data](input-data/README.md)
+  * [Data requirements](input-data/data-requirements.md)
+  * [Column mapping](input-data/column-mapping.md)
+  * [Load data to pandas](input-data/load-data-to-pandas.md)
 * [Tests and reports](tests-and-reports/README.md)
-  * [Input data](tests-and-reports/input-data.md)
-  * [Column mapping](tests-and-reports/column-mapping.md)
   * [Get reports](tests-and-reports/get-reports.md)
   * [Run tests](tests-and-reports/run-tests.md)
   * [Set test conditions](tests-and-reports/set-test-conditions.md)
@@ -33,7 +35,6 @@
   * [Add a custom metric or test](customization/add-custom-metric-or-test.md)
   * [Options for color schema](customization/options-for-color-schema.md)
 * [How-to guides](recipes/README.md)
-  * [Load data to pandas](recipes/load-data-to-pandas.md)
 
 ## Reference
 * [All tests](reference/all-tests.md)
