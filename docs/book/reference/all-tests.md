@@ -29,7 +29,7 @@ You can use the menu on the right to navigate the sections. We organize individu
 </details>
 
 {% hint style="info" %} 
-We are doing our best to maintain this page up to date. In case of discrepancies, consult the [API reference](https://docs.evidentlyai.com/reference/api-reference) or the "All tests" notebook in the [Examples](../get-started/examples.md) section. If you notice an error, please send us a pull request to update the documentation! 
+We are doing our best to maintain this page up to date. In case of discrepancies, consult the [API reference](https://docs.evidentlyai.com/reference/api-reference) or the "All tests" notebook in the [Examples](../examples/examples.md) section. If you notice an error, please send us a pull request to update the documentation! 
 {% endhint %}
 
 # Test Presets
