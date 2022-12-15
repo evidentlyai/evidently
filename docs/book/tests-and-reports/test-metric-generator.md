@@ -80,4 +80,22 @@ You can use the parameter `columns` to define a list of columns to which you app
 * `"features"` - for all features, excluding the target/prediction columns.
 * `"none"` -  the same as "all."
 
+# Column metric generator
 
+It works the same way for metrics.
+
+**Example**: 
+
+```python
+metric_generator_report = Report(
+    metrics=[
+        generate_column_metrics(
+            ColumnValueRangeMetric,
+            columns=['mean radius', 'mean texture', 'mean perimeter'],
+            parameters={"left": 5, "right": 25}
+        )
+    ]
+)
+metric_generator_report.run(current_data=bcancer_ref, reference_data=bcancer_cur)
+metric_generator_report
+```
