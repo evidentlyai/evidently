@@ -47,11 +47,11 @@ The Data Quality report provides detailed feature statistics and a feature behav
 
 You need to pass only the input features. Target and prediction are optional. If you want to perform a side-by-side comparison, pass two datasets with identical schema. You can also pass a single dataset. 
 
-You might need to specify additional column mapping:
-* If you have a **datetime** column and want to learn how features change with time, specify the datetime column in the `column_mapping` parameter.
-* If you have a **target** column and want to see features distribution by target, specify the target column in the `column_mapping` parameter. 
-
 Feature types (numerical, categorical, datetime) will be parsed based on pandas column type. If you want to specify a different feature mapping strategy, you can explicitly set the feature type using `column_mapping`.
+
+You might also need to specify additional column mapping:
+* If you have a **datetime** column and want to learn how features change with time, specify the datetime column in the `column_mapping`.
+* If you have a **target** column and want to see features distribution by target, specify the target column in the `column_mapping`. 
 
 The report contains the section that plots interactions between the features and the target. It will look slightly different for classification and regression tasks. By default, if the target has a numeric type and has >5 unique values, Evidently will treat it as a regression problem. Everything else is treated as a classification problem. If you want to explicitly define your task as `regression` or `classification`, you should set the `task` parameter in the `column_mapping` object. 
 
@@ -142,9 +142,9 @@ If your dataset includes the target, the target will be also shown in the matrix
 
 ![](../.gitbook/assets/reports_data_quality_correlation_heatmaps.png)
 
-## JSON Profile
+## Metrics outputs
 
-If you choose to generate a JSON profile, it will contain the following information:
+You can get the report output as a JSON or a Python dictionary:
 
 ```yaml
 {
@@ -245,92 +245,64 @@ If you choose to generate a JSON profile, it will contain the following informat
 }
 ```
 
-## When to use it?
+## Report customization
+* You can use a [different color schema for the report](../customization/options-for-color-schema.md). 
+* You can create a different report from scratch taking this one as an inspiration by combining chosen metrics. 
+* You can apply the report only to selected columns, for example, the most important features.  
 
-You can use the `DataStabilityTestPreset` when you receive a new batch of input data and want to compare it to the previous one. 
+# Data Quality Test Suite
 
-It will help compare the key descriptive statistics and the overall data shape between two batches you expect to be similar. For example, you can detect the appearance of new categorical values, new values, or a significant difference in the number of rows. 
+If you want to run data quality checks as part of the pipeline, you can create a new Test Suite and include the `DataQualityTestPreset`.
 
-### Code example
+![](../.gitbook/assets/tests/test_preset_data_quality-min.png)
 
-```python
-data_stability = TestSuite(tests=[
-   DataStabilityTestPreset(),
-])
- 
-data_stability.run(reference_data=ref, current_data=curr)
-data_stability
-```
-
-Consult the [user guide](../tests-and-reports/run-tests.md) for the complete instructions on how to run tests. 
-
-### Preset contents
-
-The preset contains the following tests:
-
+## Code example
 
 ```python
-TestNumberOfRows(),
-TestNumberOfColumns(),
-TestColumnsType(),
-TestColumnShareOfMissingValues(column=’all’),
-TestShareOfOutRangeValues(column=numerical_columns)
-TestShareOfOutListValues(column=categorical_columns)
-TestMeanInNSigmas(column=numerical_columns, n=2)
-```
-
-Unless specified otherwise, the default settings are applied. 
-
-Head here to the [All tests](../reference/all-tests.md) table to see the description of individual tests and default parameters. 
-
-{% hint style="info" %} 
-We are doing our best to maintain this page up to date. In case of discrepancies, consult the code on GitHub (API reference coming soon!) or the current version of the "All tests" example notebook in the [Examples](../get-started/examples.md) section. If you notice an error, please send us a pull request to update the documentation! 
-{% endhint %}
-
-
-## When to use it?
-
-You can use the `DataQualityTestPreset` when you want to evaluate the data quality, even without a reference dataset.
-
-It will help assess whether a data batch is e.g. suitable for training or retraining. It can detect issues like missing data, duplicates, or constant and almost constant features.  
-
-### Code example
-
-```python
-data_quality = TestSuite(tests=[
+data_quality_test_suite = TestSuite(tests=[
    DataQualityTestPreset(),
 ])
  
-data_quality.run(reference_data=ref,current_data=curr)
-data_quality
+data_quality_test_suite.run(reference_data=ref, current_data=curr)
+data_quality_test_suite
 ```
 
-Consult the [user guide](../tests-and-reports/run-tests.md) for the complete instructions on how to run tests. 
+## How it works
 
-### Preset contents
+You can use the `DataQualityTestPreset` when you want to evaluate the quality of a new data batch, even **without a reference dataset**. It will help assess whether a data batch is e.g. **suitable for training or retraining**. 
 
-The preset contains the following tests:
+* It calculates various descriptive statistics for the dataset. 
+* It helps detect issues like **missing data**, **duplicates**, or **almost constant** features.   
+* Evidently will **generate the test conditions automatically** based on the set of heuristics or provided reference dataset. You can also pass custom conditions. 
 
+Head here to the [All tests](../reference/all-tests.md) table to see the composition of the preset and default parameters for each test. 
 
-```python
-TestColumnShareOfMissingValues(column="all"),
-TestMostCommonValueShare(column="all")
-TestNumberOfConstantColumns(),
-TestNumberOfDuplicatedColumns(),
-TestNumberOfDuplicatedRows(),
-TestHighlyCorrelatedColumns(),
+## Test Suite customization
 
-```
+* You can pass custom test conditions.
+* You can apply the tests only to chosen columns.
+* If you want to exclude or add some tests, you can create a custom test suite. See the complete [test list](../reference/all-tests.md).
 
-Unless specified otherwise, the default settings are applied. 
+# Data Stability Test Suite
 
-Head here to the [All tests](../reference/all-tests.md) table to see the description of individual tests and default parameters. 
+If you want to run data stability checks as part of the pipeline, you can create a new Test Suite and include the `DataStabilityTestPreset`.
 
-{% hint style="info" %} 
-We are doing our best to maintain this page up to date. In case of discrepancies, consult the code on GitHub (API reference coming soon!) or the current version of the "All tests" example notebook in the [Examples](../get-started/examples.md) section. If you notice an error, please send us a pull request to update the documentation! 
-{% endhint %}
+![](../.gitbook/assets/tests/test_preset_data_stability-min.png)
 
+## How it works
 
-## Data Quality Report Examples
+You can use the `DataStabilityTestPreset` when you receive a new batch of input data that you **expect to be similar to the previous batch** and want to compare them.
 
-* Browse our [example](../get-started/examples.md) notebooks to see sample Reports.
+* It calculates various dataset and feature statistics. 
+* It helps detect issues like **new categorical values**, **values out of range**, or change in the **data volume**.   
+* Evidently will **generate the test conditions automatically** based on the provided reference dataset. You can also pass custom conditions. 
+
+## Test Suite customization
+
+* You can pass custom test conditions.
+* You can apply the tests only to chosen columns.
+* If you want to exclude or add some tests, you can create a custom test suite. See the complete [test list](../reference/all-tests.md).
+
+## Examples
+
+* Browse our [example](../get-started/examples.md) notebooks to see sample Reports and Test Suites.
