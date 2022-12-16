@@ -2,7 +2,7 @@
 description: How to use column mapping in Evidently.
 ---
 
-**TL;DR:** Evidently expects a certain dataset structure and input column names. You can specify any differences by creating a ColumnMapping object. It works the same way for test suites and reports. 
+**TL;DR:** Evidently expects a certain dataset structure and input column names. You can specify any differences by creating a `ColumnMapping` object. It works the same way for Test Suites and Reports. 
 
 # Default mapping strategy
 
