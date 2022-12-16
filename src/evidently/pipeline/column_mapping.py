@@ -23,6 +23,7 @@ class ColumnMapping:
     target_names: Optional[List[str]] = None
     task: Optional[str] = None
     pos_label: Optional[Union[str, int]] = 1
+    text_features: Optional[List[str]] = None
 
     def is_classification_task(self):
         return self.task == TaskType.CLASSIFICATION_TASK
