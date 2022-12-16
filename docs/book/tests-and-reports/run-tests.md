@@ -26,7 +26,7 @@ You need two datasets for comparison: **reference** and **current**. The referen
 Refer to the [input data](../input-data/data-requirements.md) and [column mapping](../input-data/column-mapping.md) for more details on data preparation.
 {% endhint %}
 
-# Using Test Presets 
+# Using test presets 
 
 Evidently has **Test Presets** that group relevant Tests together. You can use them as templates to check a specific aspect of the data or model performance.
 
