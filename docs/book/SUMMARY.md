@@ -13,7 +13,7 @@
   * [Regression Performance](presets/reg-performance.md)
   * [Classification Performance](presets/class-performance.md)
   * [NoTargetPerformance](presets/no-target-performance.md)
-* [Examples](get-started/examples.md)
+* [Examples](examples/examples.md)
 * [Integrations](integrations/README.md)
   * [Notebook environments](integrations/notebook-environments.md)
   * [Evidently and Airflow](integrations/evidently-and-airflow.md)
