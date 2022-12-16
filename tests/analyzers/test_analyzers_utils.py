@@ -22,6 +22,7 @@ from evidently.utils.data_operations import process_columns
                     "prediction": None,
                     "target": None,
                 },
+                "text_feature_names": []
             },
         ),
         (
@@ -38,6 +39,7 @@ from evidently.utils.data_operations import process_columns
                     "prediction": None,
                     "target": "target",
                 },
+                "text_feature_names": []
             },
         ),
         (
@@ -54,11 +56,18 @@ from evidently.utils.data_operations import process_columns
                     "prediction": "prediction",
                     "target": None,
                 },
+                "text_feature_names": []
             },
         ),
         (
-            pandas.DataFrame({"my_target": [], "predictions_1": [], "predictions_2": []}),
-            ColumnMapping(target="my_target", prediction=["predictions_1", "predictions_2"], id="test_id"),
+            pandas.DataFrame(
+                {"my_target": [], "predictions_1": [], "predictions_2": []}
+            ),
+            ColumnMapping(
+                target="my_target",
+                prediction=["predictions_1", "predictions_2"],
+                id="test_id",
+            ),
             {
                 "cat_feature_names": [],
                 "num_feature_names": [],
@@ -70,6 +79,7 @@ from evidently.utils.data_operations import process_columns
                     "prediction": ["predictions_1", "predictions_2"],
                     "target": "my_target",
                 },
+                "text_feature_names": []
             },
         ),
         (
@@ -92,6 +102,7 @@ from evidently.utils.data_operations import process_columns
                     "prediction": None,
                     "target": "target",
                 },
+                "text_feature_names": []
             },
         ),
     ),

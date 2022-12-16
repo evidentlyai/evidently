@@ -26,7 +26,9 @@ class DatasetUtilityColumns:
     target: Optional[str]
     prediction: Optional[Union[str, Sequence[str]]]
 
-    def as_dict(self) -> Dict[str, Union[Optional[str], Optional[Union[str, Sequence[str]]]]]:
+    def as_dict(
+        self,
+    ) -> Dict[str, Union[Optional[str], Optional[Union[str, Sequence[str]]]]]:
         return {
             "date": self.date,
             "id": self.id_column,
@@ -44,6 +46,7 @@ class DatasetColumns:
     datetime_feature_names: List[str]
     target_names: Optional[List[str]]
     task: Optional[str]
+    text_feature_names: Optional[List[str]]
 
     def as_dict(self) -> Dict[str, Union[str, Optional[List[str]], Dict]]:
         return {
@@ -52,9 +55,12 @@ class DatasetColumns:
             "num_feature_names": self.num_feature_names,
             "datetime_feature_names": self.datetime_feature_names,
             "target_names": self.target_names,
+            "text_feature_names": self.text_feature_names
         }
 
-    def get_all_features_list(self, cat_before_num: bool = True, include_datetime_feature: bool = False) -> List[str]:
+    def get_all_features_list(
+        self, cat_before_num: bool = True, include_datetime_feature: bool = False
+    ) -> List[str]:
         """List all features names.
 
         By default, returns cat features than num features and du not return other.
@@ -104,14 +110,20 @@ class DatasetColumns:
         else:
             len_time_columns = 0
 
-        return len(self.num_feature_names) + len(self.cat_feature_names) + len_time_columns
+        return (
+            len(self.num_feature_names) + len(self.cat_feature_names) + len_time_columns
+        )
 
 
-def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping) -> DatasetColumns:
+def process_columns(
+    dataset: pd.DataFrame, column_mapping: ColumnMapping
+) -> DatasetColumns:
     if column_mapping is None:
         # data mapping should not be empty in this step
         raise ValueError("column_mapping should be present")
-    date_column = column_mapping.datetime if column_mapping.datetime in dataset else None
+    date_column = (
+        column_mapping.datetime if column_mapping.datetime in dataset else None
+    )
     # index column name
     id_column = column_mapping.id
 
@@ -126,6 +138,7 @@ def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping) -> Dat
     datetime_feature_names = column_mapping.datetime_features
     target_names = column_mapping.target_names
     utility_columns = [date_column, id_column, target_column]
+    text_feature_names = column_mapping.text_features
 
     prediction_column: Optional[str] = None
     if isinstance(column_mapping.prediction, str):
@@ -144,35 +157,55 @@ def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping) -> Dat
 
     utility_columns_set = set(utility_columns)
     cat_feature_names_set = set(cat_feature_names or [])
+    text_feature_names_set = set(text_feature_names or [])
 
     if num_feature_names is None:
         # try to guess about numeric features in the dataset
-        # ignore prediction, target, index and explicitly specified category columns
+        # ignore prediction, target, index and explicitly specified category columns and columns with text
         num_feature_names = sorted(
-            list(set(dataset.select_dtypes([np.number]).columns) - utility_columns_set - cat_feature_names_set)
+            list(
+                set(dataset.select_dtypes([np.number]).columns)
+                - utility_columns_set
+                - cat_feature_names_set
+                - text_feature_names_set
+            )
         )
 
     else:
         empty_cols = dataset[num_feature_names].isnull().mean()
         empty_cols = empty_cols[empty_cols == 1.0].index
         num_feature_names = sorted(
-            list(set(dataset[num_feature_names].select_dtypes([np.number]).columns).union(set(empty_cols)))
+            list(
+                set(
+                    dataset[num_feature_names].select_dtypes([np.number]).columns
+                ).union(set(empty_cols))
+            )
         )
 
     if datetime_feature_names is None:
-        datetime_feature_names = sorted(list(set(dataset.select_dtypes(["datetime"]).columns) - utility_columns_set))
+        datetime_feature_names = sorted(
+            list(set(dataset.select_dtypes(["datetime"]).columns) - utility_columns_set)
+        )
     else:
         empty_cols = dataset[datetime_feature_names].isnull().mean()
         empty_cols = empty_cols[empty_cols == 1.0].index
         datetime_feature_names = sorted(
-            list(set(dataset[datetime_feature_names].select_dtypes(["datetime"]).columns).union(set(empty_cols)))
+            list(
+                set(
+                    dataset[datetime_feature_names].select_dtypes(["datetime"]).columns
+                ).union(set(empty_cols))
+            )
         )
 
     cat_feature_names = column_mapping.categorical_features
 
     if cat_feature_names is None:
         cat_feature_names = sorted(
-            list(set(dataset.select_dtypes(exclude=[np.number, "datetime"]).columns) - utility_columns_set)
+            list(
+                set(dataset.select_dtypes(exclude=[np.number, "datetime"]).columns)
+                - utility_columns_set
+                - text_feature_names_set
+            )
         )
 
     else:
@@ -186,10 +219,13 @@ def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping) -> Dat
         datetime_feature_names=datetime_feature_names or [],
         target_names=target_names,
         task=task,
+        text_feature_names=text_feature_names or []
     )
 
 
-def _get_target_type(dataset: pd.DataFrame, column_mapping: ColumnMapping, task: Optional[str]) -> Optional[str]:
+def _get_target_type(
+    dataset: pd.DataFrame, column_mapping: ColumnMapping, task: Optional[str]
+) -> Optional[str]:
     """
     Args:
         dataset: input dataset
@@ -234,7 +270,10 @@ def recognize_task(target_name: str, dataset: pd.DataFrame) -> str:
     Returns:
         Task parameter.
     """
-    if pd.api.types.is_numeric_dtype(dataset[target_name]) and dataset[target_name].nunique() >= 5:
+    if (
+        pd.api.types.is_numeric_dtype(dataset[target_name])
+        and dataset[target_name].nunique() >= 5
+    ):
         task = "regression"
 
     else:
@@ -251,7 +290,9 @@ def recognize_column_type(
     """Try to get the column type."""
     column = dataset[column_name]
     reg_condition = columns.task == "regression" or (
-        pd.api.types.is_numeric_dtype(column) and columns.task != "classification" and column.nunique() > 5
+        pd.api.types.is_numeric_dtype(column)
+        and columns.task != "classification"
+        and column.nunique() > 5
     )
     if column_name == columns.utility_columns.target:
         if reg_condition:
@@ -271,7 +312,10 @@ def recognize_column_type(
     if column_name in columns.num_feature_names:
         return "num"
 
-    if isinstance(columns.utility_columns.prediction, list) and column_name in columns.utility_columns.prediction:
+    if (
+        isinstance(columns.utility_columns.prediction, list)
+        and column_name in columns.utility_columns.prediction
+    ):
         return "num"
 
     if column_name in columns.cat_feature_names:
