@@ -1,19 +1,19 @@
 ---
-description: How to use metric presets in Evidently.
+description: How to use Metric Presets in Evidently.
 ---   
 
-**TL;DR:** Pre-built reports work out of the box without additional configuration. 
+**TL;DR:** Evidently has pre-built Reports that work out of the box. To use them, simply pass your data and choose the Preset. 
 
 # Installation and prep
 
-After [installation](../installation/install-evidently.md), import the Report component and the required Metric Presets:
+After [installation](../installation/install-evidently.md), import the `Report` component and the required `metric_presets`:
 
 ```python
 from evidently.report import Report
 from evidently.metric_preset import DataDriftPreset, TargetDriftPreset
 ```
 
-You need to prepare two datasets for comparison: **reference** and **current**. You can also generate some of the reports with a single current dataset. 
+You need to prepare two datasets for comparison: **reference** and **current**. You can also generate some of the Reports with a single dataset. 
 
 {% hint style="info" %} 
 Refer to the [input data](../input-data/data-requirements.md) and [column mapping](../input-data/column-mapping.md) for more details on data preparation.
@@ -21,13 +21,11 @@ Refer to the [input data](../input-data/data-requirements.md) and [column mappin
 
 # Using metric presets 
 
-Evidently has ready-made `metric_presets` that group relevant metrics together in a single Report. You can use them as templates to evaluate a specific aspect of the data or model performance.
+Evidently has ready-made `metric_presets` that group relevant `metrics` in a single Report. You can use them as templates to evaluate a specific aspect of the data or model performance.
 
-You need to create a `Report` object and specify the preset to generate. You should also point to the current dataset and reference dataset (if available).
+To use the Preset, create a `Report` object and specify the chosen `preset` in a list of `metrics`. You should also point to the current dataset and reference dataset (if available). If nothing else is specified, the Report will run with the default parameters.
 
-If nothing else is specified, the reports will run with the default parameters.
-
-**Example**. To generate the report for Data Drift together with Target Drift:
+**Example**. To generate the Report that includes two Presets for Data and Target Drift:
 
 ```python
 drift_report = Report(metrics=[DataDriftPreset(), TargetDriftPreset()])
@@ -56,7 +54,7 @@ Refer to the [presets overview](../presets/all-presets.md) to understand when to
 
 # Output formats 
 
-You can get the test results in different formats. 
+You can get the Report results in different formats. 
 
 **HTML**. You can get an interactive visual report. It is best for exploration and debugging. You can also document the results and share them with the team. 
 
@@ -76,7 +74,7 @@ drift_report.save_html(“file.html”)
 Reports contain interactive visualizations inside the HTML, so large reports might take time to load. In this case, downsample your data. 
 {% endhint %}
 
-**JSON**. You can get the results of the calculation as a JSON. It is best for test automation and integration in your prediction pipelines. 
+**JSON**. You can get the results of the calculation as a JSON. It is best for automation and integration in your prediction pipelines. 
 
 To get the JSON:
 
@@ -100,7 +98,7 @@ drift_report.as_dict()
 
 # Preset parameters 
 
-You can customize some of the presets using parameters. For example, you can calculate the quality metrics for a binary probabilistic classification model with a custom decision threshold:
+You can customize some of the Presets using parameters. For example, you can calculate the quality metrics for a binary probabilistic classification model with a custom decision threshold:
 
 ```python
 dataset_report = Report(metrics=[
@@ -111,4 +109,4 @@ dataset_report = Report(metrics=[
 Refer to the [All metrics](../reference/all-metrics.md) table to see available parameters that you can pass for each preset.
 {% endhint %}
 
-If you want to change the composition of the report or pass additional parameters, you can create a custom report.
+If you want to change the composition of the Report or pass additional parameters, you can [create a custom report](custom-report.md).
