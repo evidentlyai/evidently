@@ -346,7 +346,7 @@ If you are running predictions in batches, explore integrations with [MLflow](..
  
 If you have a real-time ML service and want to collect data and model metrics on top of the live data stream, you can explore the [integration with Grafana and Prometheus](../integrations/evidently-and-grafana.md). 
 
-Evidently is in active development, so expect things to change and evolve. You can subscribe to the [user newsletter]([https://evidentlyai.com/sign-up](https://www.evidentlyai.com/user-newsletter)) or follow our [releases on GitHub](https://github.com/evidentlyai/evidently/releases) to stay updated about the latest functionality. 
+Evidently is in active development, so expect things to change and evolve. You can subscribe to the [user newsletter](https://www.evidentlyai.com/user-newsletter) or follow our [releases on GitHub](https://github.com/evidentlyai/evidently/releases) to stay updated about the latest functionality. 
 
 ## Join our Community!
 
