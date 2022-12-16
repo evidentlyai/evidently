@@ -22,7 +22,7 @@
   * [Evidently and Grafana](integrations/evidently-and-grafana.md)
 
 ## User Guide
-* [Installation](get-started/install-evidently.md)
+* [Installation](installation/install-evidently.md)
 * [Input data](input-data/README.md)
   * [Data requirements](input-data/data-requirements.md)
   * [Column mapping](input-data/column-mapping.md)
