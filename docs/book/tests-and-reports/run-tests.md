@@ -127,6 +127,8 @@ no_target_performance.run(reference_data=ref,current_data=curr)
 no_target_performance
 ```
 
-{% hint style="info" %} Refer to the [All tests](../reference/all-tests.md) table to see available parameters that you can pass for each preset. {% endhint %}
+{% hint style="info" %} 
+Refer to the [All tests](../reference/all-tests.md) table to see available parameters that you can pass for each preset. 
+{% endhint %}
 
 If you want to change the composition of the Test Suite or set custom test conditions, you should create a [custom Test Suite](custom-test-suite.md).
