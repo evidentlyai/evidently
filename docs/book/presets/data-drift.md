@@ -1,16 +1,17 @@
 **TL;DR:** You can detect and analyze changes in the input feature distributions.
 
-For Reports, you can use the `DataDriftPreset`. For Test Suites, you can use the `DataDriftTestPreset`.  
+* For visual analysis using Reports, use the `DataDriftPreset`. 
+* For pipeline checks using Test Suites, use the `DataDriftTestPreset`.  
 
 # Use Case
 
 You can evaluate data drift in different scenarios.
 
-1. **To monitor the model performance without ground truth.** When you do not have true labels or actuals, you can monitor the feature drift to check if the model operates in a familiar environment. You can combine it with the [Prediction Drift](prediction-drift.md). If you detect drift, you can trigger labeling and retraining, or decide to pause and switch to a different decision method. Read more in a [blog](https://www.evidentlyai.com/blog/ml-monitoring-data-drift-how-to-handle).  
+1. **To monitor the model performance without ground truth.** When you do not have true labels or actuals, you can monitor the feature drift to check if the model operates in a familiar environment. You can combine it with the [Prediction Drift](prediction-drift.md). If you detect drift, you can trigger labeling and retraining, or decide to pause and switch to a different decision method. 
 
 2. **When you are debugging the model quality decay.** If you observe a drop in the model quality, you can evaluate Data Drift to explore the change in the feature patterns, e.g., to understand the change in the environment or discover the appearance of a new segment. 
 
-3. **To understand model drift in an offline environment.** You can explore the historical data drift to understand past changes in the input data and define the optimal drift detection approach and retraining strategy. Read more in a [blog](https://evidentlyai.com/blog/tutorial-3-historical-data-drift) about it.
+3. **To understand model drift in an offline environment.** You can explore the historical data drift to understand past changes in the input data and define the optimal drift detection approach and retraining strategy. 
 
 4. **To decide on the model retraining.** Before feeding fresh data into the model, you might want to verify whether it even makes sense. If there is no data drift, the environment is stable, and retraining might not be necessary.
 
@@ -184,4 +185,5 @@ If you want to compare descriptive statistics between the two datasets, you can 
 
 * Browse the [examples](../get-started/examples.md) for sample Jupyter notebooks and Colabs.
 
-You can also explore [more blog posts](https://www.evidentlyai.com/tags/data-drift) about drift detection. 
+You can also explore [blog posts](https://www.evidentlyai.com/tags/data-drift) about drift detection, including [How to handle drift](https://www.evidentlyai.com/blog/ml-monitoring-data-drift-how-to-handle) or [how to analyze historical drift patterns](https://evidentlyai.com/blog/tutorial-3-historical-data-drift).
+
