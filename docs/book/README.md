@@ -4,7 +4,7 @@ It helps evaluate, test, and monitor the performance of ML models from validatio
 
 # Quick Start 
 
-Check it out (1 min):
+Quickly check it out (1 min):
 {% content-ref url="get-started/hello-world.md" %}
 ["Hello world" example](get-started/hello-world.md). 
 {% endcontent-ref %}
