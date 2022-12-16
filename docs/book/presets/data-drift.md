@@ -65,7 +65,7 @@ Evidently uses the default [data drift detection algorithm](../reference/data-dr
 You can modify the drift detection logic by selecting a different method, including PSI, K–L divergence, Jensen-Shannon distance, Wasserstein distance, setting a different threshold and condition for the dataset drift. See more details about [setting data drift options](../customization/options-for-statistical-tests.md). You can also implement a [custom drift detection method](../customization/add-custom-metric-or-test.md). 
 {% endhint %}
 
-To build up a better intuition for which tests are better in different kinds of use cases, visit our blog to read [our in-depth guide](https://evidentlyai.com/blog/data-drift-detection-large-datasets) to the tradeoffs when choosing the statistical test for data drift.
+To build up a better intuition for which tests are better in different kinds of use cases, visit our blog to read [an in-depth guide](https://evidentlyai.com/blog/data-drift-detection-large-datasets) to the tradeoffs when choosing the statistical test for data drift.
 
 ### 2. Data Drift Table
 
@@ -91,6 +91,10 @@ For numerical features, you can also explore the values mapped in a plot.
 ## Metrics output
 
 You can get the report output as a JSON or a Python dictionary:
+
+<details>
+<summary>See JSON example</summary>
+ 
 
 ```yaml
 {
@@ -135,7 +139,8 @@ You can get the report output as a JSON or a Python dictionary:
   },
   "timestamp": "timestamp"
 }
-```
+``` 
+</details>
 
 ## Report customization
 
@@ -177,7 +182,7 @@ Head here to the [All tests](../reference/all-tests.md) table to see the descrip
 * You can [specify the drift detection methods and thresholds](../customization/options-for-statistical-tests.md). 
 * You can add a [custom drift detection method](../customization/add-custom-metric-or-test.md).
 * You can apply the preset only to selected columns.
-* You can create a different report test suite from scratch taking this one as an inspiration. 
+* You can create a different test suite from scratch taking this one as an inspiration. 
 
 If you want to compare descriptive statistics between the two datasets, you can also use the [Data Stability test preset](data-quality.md).
 
