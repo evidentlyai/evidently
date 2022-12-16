@@ -2,7 +2,7 @@
 description: How to use Test Presets in Evidently.
 ---
 
-**TL;DR**: Evidently has pre-built test suites that work out of the box. To use them, simply pass your data and choose the Preset.
+**TL;DR**: Evidently has pre-built Test Suites that work out of the box. To use them, simply pass your data and choose the Preset.
 
 # Installation and prep
 
