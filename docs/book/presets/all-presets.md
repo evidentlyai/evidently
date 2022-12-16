@@ -6,8 +6,8 @@ Evidently has several pre-built reports and test suites. We call them **Presets*
 
 This page links to the **description** of each preset. To see the code and interactive examples in Jupyter notebook or Colab, head here instead:
 
-{% content-ref url="../get-started/examples.md" %}
-[Examples](../get-started/examples.md). 
+{% content-ref url="../examples/examples.md" %}
+[Examples](../examples/examples.md). 
 {% endcontent-ref %}
 
 # Metric Presets
