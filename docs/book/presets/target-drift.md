@@ -100,6 +100,9 @@ For categorical targets:
 
 You can get the report output as a JSON or a Python dictionary:
 
+<details>
+<summary>See JSON example</summary>
+ 
 ```yaml
 {
  "num_target_drift": {
@@ -132,6 +135,7 @@ You can get the report output as a JSON or a Python dictionary:
   "timestamp": "timestamp"
 }
 ```
+</details>
 
 ## Report customization
 
