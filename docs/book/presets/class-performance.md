@@ -1,6 +1,7 @@
-**TL;DR:** You can use the pre-built reports and test suites to analyze the performance of a classification model. The presets work for binary and multi-class classification, probabilistic and non-probabilistic classification. 
+**TL;DR:** You can use the pre-built Reports and Test suites to analyze the performance of a classification model. The Presets work for binary and multi-class classification, probabilistic and non-probabilistic classification. 
 
-For Reports, you can use the `ClassificationPreset`. For Test Suites, you can use the `MulticlassClassificationTestPreset`, `BinaryClassificationTopKTestPreset`, `BinaryClassificationTestPreset`.
+* For visual analysis using Reports, use the `ClassificationPreset`. 
+* For pipeline checks using Test Suites, use the `MulticlassClassificationTestPreset`, `BinaryClassificationTopKTestPreset` or `BinaryClassificationTestPreset`.
 
 # Use Case
 
@@ -141,6 +142,9 @@ It visualizes the regions where the model makes errors of each type and reveals 
 
 You can get the report output as a JSON or a Python dictionary:
 
+<details>
+<summary>See JSON example</summary>
+ 
 ```yaml
 {
   "probabilistic_classification_performance": {
@@ -245,7 +249,8 @@ You can get the report output as a JSON or a Python dictionary:
   "timestamp": "timestamp"
 }
 ```
-
+</details>
+    
 ## Report customization
 
 * You can perform the analysis of relations between features and target only for selected columns.
