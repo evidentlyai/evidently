@@ -20,7 +20,7 @@ You can use the menu on the right to navigate the sections. We organize individu
 * **Parameters**: available configurations. 
   * Required parameters are necessary for calculations, e.g. a column name for a column-level test.
   * Optional parameters modify how the underlying metric is calculated, e.g. which statistical test or correlation method is used.
-  * *Test condition parameters* help set the conditions (e.g. equal, not equal, greater than, etc.) that define the expectations from the test output. If the condition is violated, the test returns a fail. Here you can see the complete list of the [standard condition parameteres](../tests-and-reports/custom-test-suite.md#available-parameters). They apply to most of the tests, and are optional.
+  * *Test condition parameters* help set the conditions (e.g. equal, not equal, greater than, etc.) that define the expectations from the test output. If the condition is violated, the test returns a fail. Here you can see the complete list of the [standard condition parameteres](../tests-and-reports/custom-test-suite.md#custom-conditions). They apply to most of the tests, and are optional.
 * **Default tests condition**: they apply if you do not set a custom сondition. 
   * With reference: the test conditions that apply when you pass a reference dataset and Evidently can derive expectations from it. 
   * No reference: the test conditions that apply if you do not provide the reference. They are based on heuristics.
