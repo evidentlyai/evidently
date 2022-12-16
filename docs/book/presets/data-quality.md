@@ -1,6 +1,7 @@
 **TL;DR:** You can explore and track various dataset and feature statistics.
 
-For Reports, you can use the `DataQualityPreset`. For Test Suites, you can use the `DataQualityTestPreset`or `DataStabilityTestPreset`.  
+* For visual analysis using Reports, use the `DataQualityPreset`.
+* For pipeline checks using Test Suites, use the `DataQualityTestPreset`or `DataStabilityTestPreset`.  
 
 # Use Cases
 
@@ -145,6 +146,9 @@ If your dataset includes the target, the target will be also shown in the matrix
 
 You can get the report output as a JSON or a Python dictionary:
 
+<details>
+<summary>See JSON example</summary>
+ 
 ```yaml
 {
   'data_quality': {
@@ -243,7 +247,8 @@ You can get the report output as a JSON or a Python dictionary:
   'timestamp': 'timestamp'
 }
 ```
-
+</details>
+    
 ## Report customization
 * You can use a [different color schema for the report](../customization/options-for-color-schema.md). 
 * You can create a different report from scratch taking this one as an inspiration by combining chosen metrics. 
