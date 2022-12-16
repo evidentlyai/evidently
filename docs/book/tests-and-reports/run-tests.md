@@ -1,12 +1,12 @@
 ---
-description: How to generate test presets in Evidently.
+description: How to use Test Presets in Evidently.
 ---
 
-**TL;DR**: Pre-built test presets work out of the box without additional configuration.
+**TL;DR**: Evidently has pre-built test suites that work out of the box. To use them, simply pass your data and choose the Preset.
 
 # Installation and prep
 
-After [installation](../installation/install-evidently.md), import the TestSuite component and the required tests or test suites:
+After [installation](../installation/install-evidently.md), import the `TestSuite` component and the required `tests` or `presets`:
 
 ```python
 from evidently.test_suite import TestSuite
@@ -23,16 +23,16 @@ from evidently.test_preset import BinaryClassificationTestPreset
 You need two datasets for comparison: **reference** and **current**. The reference dataset is optional. 
 
 {% hint style="info" %} 
-Refer to the [input data](../input-data/data-requirements.md) and [column mapping](../input-data/column-mapping.md) for more details on data preparation and requirements.
+Refer to the [input data](../input-data/data-requirements.md) and [column mapping](../input-data/column-mapping.md) for more details on data preparation.
 {% endhint %}
 
-# Using test presets 
+# Using Test Presets 
 
-Evidently has `test_presets` that group relevant tests together. You can use them as templates to test a specific aspect of the data or model performance.
+Evidently has **Test Presets** that group relevant Tests together. You can use them as templates to check a specific aspect of the data or model performance.
 
-You need to create a `TestSuite` object and specify the presets to include. You should also point to the current and reference dataset (if available).
+To apply the Preset, create a `TestSuite` object and specify the `presets` to include in the list of `tests`. You must also point to the current and reference dataset (if available).
 
-If nothing else is specified, the tests will run with the default parameters. The test conditions are generated automatically based on the provided reference dataset or heuristics.
+The tests will run with the default parameters if nothing else is specified. Evidently will automatically generate test conditions based on the provided reference dataset or heuristics.
 
 **Example 1**. To apply the `DataStabilityTestPreset`:
 
@@ -75,13 +75,14 @@ MulticlassClassificationTestPreset
 BinaryClassificationTopKTestPreset
 BinaryClassificationTestPreset
 ```
+
 {% hint style="info" %} 
-Refer to the [Presets overview](../presets/README.md) to understand the use case for each preset, and to the [All tests](../reference/all-tests.md) table to see the individual tests and their default parameters. To see the interactive examples, refer to the [example notebooks](../examples/examples.md).
+Refer to the [Presets overview](../presets/README.md) to understand the use case for each preset and to the [All tests](../reference/all-tests.md) table to see the individual tests and their default parameters. To see the interactive examples, refer to the [example notebooks](../examples/examples.md).
 {% endhint %}
 
 # Output formats 
 
-You can get the test results in different formats. 
+You can get the Test Suite output in different formats. 
 
 **HTML**. You can get the Test Suite output as an interactive visual report. It is best for exploration and debugging. You can also document test results and share them with the team. 
 
@@ -94,7 +95,7 @@ To export HTML as a separate file:
 ```python
 data_stability.save_html(“file.html”)
 ```
-**JSON**. You can get the test output as a JSON. It is best for test automation and integration in your prediction pipelines. 
+**JSON**. You can get the Test Suite output as a JSON. It is best for test automation and integration in your prediction pipelines. 
 
 To get the JSON:
 
@@ -107,7 +108,7 @@ To export JSON as a separate file:
 data_stability.save_json(“file.json”)
 ```
 
-**Python dictionary**. You can get the test output in the Python dictionary format. Using a Python object might be more convenient if you want to apply multiple transformations to the output.
+**Python dictionary**. You can get the Test Suite output in the Python dictionary format. Using a Python object might be more convenient if you want to apply multiple transformations to the output.
 
 To get the dictionary:
 ```python
@@ -116,7 +117,7 @@ data_stability.as_dict()
 
 # Preset parameters
 
-You can customize some of the presets using parameters. For example, you can pass a chosen data drift detection method:
+You can customize some of the Presets using parameters. For example, you can pass a different data drift detection method:
 
 ```python
 no_target_performance = TestSuite(tests=[
@@ -128,4 +129,4 @@ no_target_performance
 
 {% hint style="info" %} Refer to the [All tests table](../reference/all-tests.md) to see available parameters that you can pass for each preset. {% endhint %}
 
-If you want to change the composition of the test suite or set custom test conditions, you should create a custom test suite.
+If you want to change the composition of the Test Suite or set custom test conditions, you should create a [custom Test Suite](custom-test-suite.md).
