@@ -21,7 +21,7 @@ Refer to the [input data](../input-data/data-requirements.md) and [column mappin
 
 # Using metric presets 
 
-Evidently has ready-made `metric_presets` that group relevant `metrics` in a single Report. You can use them as templates to evaluate a specific aspect of the data or model performance.
+Evidently has ready-made Metric Presets that group relevant Metrics in a single Report. You can use them as templates to evaluate a specific aspect of the data or model performance.
 
 To use the Preset, create a `Report` object and specify the chosen `preset` in a list of `metrics`. You should also point to the current dataset and reference dataset (if available). If nothing else is specified, the Report will run with the default parameters.
 
