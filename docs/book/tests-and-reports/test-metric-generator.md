@@ -6,9 +6,9 @@ To simplify it, you can:
 
 # List comprehension 
 
-You can pass a list of parameters or a list of columns. It works the same for Reports and Test Suites.
+You can pass a list of parameters/conditions or columns. It works the same for Tests and Metrics.
 
-**Example 1**. Pass the list of multiple quantile values to Test for the same column. 
+**Example 1**. Pass the list of quantile values to run multiple Tests for the same column. 
 
 ```python
 suite = TestSuite(tests=[
@@ -19,7 +19,7 @@ suite.run(current_data=current_data, reference_data=reference_data)
 suite
 ```
 
-**Example 2**. Apply the same Test with a defined custom parameter for all columns in the list: 
+**Example 2**. Apply the same Test with a defined custom condition for all columns in the list: 
 
 ```python
 suite = TestSuite(tests=[
@@ -34,7 +34,7 @@ suite
 
 You can also use the `generate_column_tests` function to create multiple Tests.
 
-By default, it generates Tests with the default parameters for all the columns:
+**Example 1.** Generate the same Test for all the columns in the dataset. It will use defaults if you do not specify the test condition.
 
 ```python
 suite = TestSuite(tests=[generate_column_tests(TestColumnShareOfMissingValues)])
@@ -42,7 +42,7 @@ suite.run(current_data=current_data, reference_data=reference_data)
 suite
 ```
 
-You can also pass the parameters:
+You can also pass a custom Test condition:
 
 ```python
 suite = TestSuite(tests=[generate_column_tests(TestColumnShareOfMissingValues, columns="all", parameters={"lt": 0.5})])
@@ -50,7 +50,7 @@ suite.run(current_data=current_data, reference_data=reference_data)
 suite
 ```
 
-You can generate Tests for different subsets of columns. Here is how you generate tests only for **numerical columns**:
+**Example 2.**  You can generate Tests for different subsets of columns. Here is how you generate tests only for **numerical columns**:
 
 ```python
 suite = TestSuite(tests=[generate_column_tests(TestColumnValueMin, columns="num")])
@@ -66,7 +66,7 @@ suite.run(current_data=current_data, reference_data=refernce_data)
 suite
 ```
  
-You can also generate Tests with defined parameters, for a custom defined column list:
+You can also generate Tests with a certain condition for a **defined column list**:
  
 ```python
 suite = TestSuite(tests=[generate_column_tests(TestColumnValueMin, columns=["age", "fnlwgt", "education-num"],
@@ -78,7 +78,7 @@ suite
 ## Column parameter
 
 You can use the parameter `columns` to define a list of columns to which you apply the tests. If it is a list, just use it as a list of the columns. If `columns` is a string, it can take the following values:
-* `"all"` - apply tests for all columns, including target/prediction columns.
+* `"all"` - apply tests/metrics for all columns, including target/prediction columns.
 * `"num"` - for numerical features, as provided by column mapping or defined automatically
 * `"cat"` - for categorical features, as provided by column mapping or defined automatically
 * `"features"` - for all features, excluding the target/prediction columns.
@@ -88,7 +88,7 @@ You can use the parameter `columns` to define a list of columns to which you app
 
 It works the same way for metrics. In this case, you should use `generate_column_metrics` function.
 
-**Example**: generate multiple metrics for all the columns in the list with the same parameter.
+**Example 1**: To generate multiple metrics for all the columns in the list with a custom parameter.
 
 ```python
 metric_generator_report = Report(
