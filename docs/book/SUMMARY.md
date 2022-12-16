@@ -4,7 +4,7 @@
   * [Core Concepts](introduction/core-concepts.md)
 * [Get Started](get-started/README.md)
   * [Get Started Tutorial](get-started/tutorial.md)
-  * [Hello World Example](get-started/hello-world.md)
+  * [Basic Example](get-started/hello-world.md)
 * [Presets](presets/README.md)
   * [All Presets](presets/all-presets.md)
   * [Data Drift](presets/data-drift.md)
