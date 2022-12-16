@@ -10,10 +10,10 @@ After [installation](../installation/install-evidently.md), import the `Report` 
 
 ```python
 from evidently.report import Report
-from evidently.metric_preset import DataDriftPreset, TargetDriftPreset
+from evidently.metric_preset import DataDriftPreset, TargetDriftPreset, DataQualityPreset
 ```
 
-You need to prepare two datasets for comparison: **reference** and **current**. You can also generate some of the Reports with a single dataset. 
+You need two datasets for comparison: **reference** and **current**. You can also generate some of the Reports with a single dataset. 
 
 {% hint style="info" %} 
 Refer to the [input data](../input-data/data-requirements.md) and [column mapping](../input-data/column-mapping.md) for more details on data preparation.
@@ -21,11 +21,11 @@ Refer to the [input data](../input-data/data-requirements.md) and [column mappin
 
 # Using metric presets 
 
-Evidently has ready-made Metric Presets that group relevant Metrics in a single Report. You can use them as templates to evaluate a specific aspect of the data or model performance.
+Evidently has ready-made **Metric Presets** that group relevant Metrics in a single Report. You can use them as templates to evaluate a specific aspect of the data or model performance.
 
-To use the Preset, create a `Report` object and specify the chosen `preset` in a list of `metrics`. You should also point to the current dataset and reference dataset (if available). If nothing else is specified, the Report will run with the default parameters.
+To use the Preset, create a `Report` object and specify the chosen `preset` in a list of `metrics`. You should also point to the current and reference dataset (if available). The Report will run with the default parameters if nothing else is specified.
 
-**Example**. To generate the Report that includes two Presets for Data and Target Drift:
+**Example 1**. To generate the Report that includes two Presets for Data and Target Drift:
 
 ```python
 drift_report = Report(metrics=[DataDriftPreset(), TargetDriftPreset()])
@@ -36,9 +36,20 @@ drift_report
  
 It will display the HTML combined report. 
 
+**Example 2**. To generate the Report for a single dataset:
+
+```python
+data_quality_report = Report(metrics=[
+    DataQualityPreset()
+])
+
+data_quality_report.run(current_data=current, reference_data = None, column_mapping=None)
+data_quality_report
+```
+
 # Available presets
 
-Here is a list of metric presets you can try:
+Here is a list of Metric Presets you can try:
 
 ```python
 DataQualityPreset
@@ -49,7 +60,7 @@ ClassificationPreset
 ```
 
 {% hint style="info" %} 
-Refer to the [presets overview](../presets/all-presets.md) to understand when to use each preset. Refer to the [example notebooks](../examples/examples.md) to see interactive examples.
+Refer to the [Presets overview](../presets/all-presets.md) to understand when to use each Preset. Refer to the [example notebooks](../examples/examples.md) to see interactive examples.
 {% endhint %}
 
 # Output formats 
