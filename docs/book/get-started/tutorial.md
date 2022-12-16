@@ -148,7 +148,7 @@ report
 It will display the HTML report directly in the notebook. 
 
 {% hint style="info" %}
-**Visualizations might work differently in other notebook environments**. If you use Databricks, Kaggle and Deepnote notebooks, you should add an argument to display the report inline: report.show(mode='inline'). Consult [this section](../integrations/supported-environments.md) for help.
+**Visualizations might work differently in other notebook environments**. If you use Databricks, Kaggle and Deepnote notebooks, you should add an argument to display the report inline: report.show(mode='inline'). Consult [this section](../integrations/notebook-environments.md) for help.
 {% endhint %}
 
 First, you can see the Data Drift summary.
