@@ -342,7 +342,7 @@ To understand the contents of each Preset, head to the [Preset overview](../pres
 
 To explore how to integrate Evidently with other tools, refer to the [Integrations](../integrations). 
 
-If you are running predictions in batches, explore integrations with [MLflow](../integrations/evidently-and-mlfow.md) and [Airflow](../integrations/evidently-and-airflow.md).
+If you are running predictions in batches, explore integrations with [MLflow](../integrations/evidently-and-mlflow.md) and [Airflow](../integrations/evidently-and-airflow.md).
  
 If you have a real-time ML service and want to collect data and model metrics on top of the live data stream, you can explore the [integration with Grafana and Prometheus](../integrations/evidently-and-grafana.md). 
 
