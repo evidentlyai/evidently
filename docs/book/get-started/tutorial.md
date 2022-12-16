@@ -216,7 +216,7 @@ report
 ```
 
 {% hint style="info" %}
-**Available metrics and presets**. You can refer to the All Metrics [reference table](../reference/all-metrics.md) to browse available Metrics and Presets or use one of the example notebooks in the [Examples](../examples/readme.md) section.
+**Available metrics and presets**. You can refer to the All Metrics [reference table](../reference/all-metrics.md) to browse available Metrics and Presets or use one of the example notebooks in the [Examples](../examples/examples.md) section.
 {% endhint %}
 
 ## 6. Define the report output format
@@ -313,7 +313,7 @@ suite.run(reference_data=reference, current_data=current)
 suite
 ```
 {% hint style="info" %}
-**Available tests and presets**. You can refer to the All tests [reference table](../reference/all-tests.md) to browse available Tests and Presets. To see interactive examples, use one of the notebooks in the [Examples](../examples/examples.md) section.
+**Available tests and presets**. You can refer to the All tests [reference table](../reference/all-tests.md) to browse available Tests and Presets. To see interactive examples, refer to the notebooks in the [examples](../examples/examples.md) section.
 {% endhint %}
 
 You can also export the output in other formats.
