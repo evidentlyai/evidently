@@ -50,8 +50,11 @@ class Report(Display):
             raise ValueError("Current dataset should be present")
 
         self._columns_info = process_columns(current_data, column_mapping)
+
+        self._inner_suite.verify()
+
         data_definition = create_data_definition(reference_data, current_data, column_mapping)
-        data = InputData(reference_data, current_data, column_mapping, data_definition)
+        data = InputData(reference_data, current_data, None, None, column_mapping, data_definition)
 
         # get each item from metrics/presets and add to metrics list
         # do it in one loop because we want to save metrics and presets order
@@ -87,8 +90,8 @@ class Report(Display):
 
             else:
                 raise ValueError("Incorrect item instead of a metric or metric preset was passed to Report")
-
-        self._inner_suite.verify()
+        curr_add, ref_add = self._inner_suite.create_additional_features(current_data, reference_data, data_definition)
+        data = InputData(reference_data, current_data, ref_add, curr_add, column_mapping, data_definition)
         self._inner_suite.run_calculate(data)
 
     def as_dict(self) -> dict:

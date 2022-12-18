@@ -10,6 +10,8 @@ from typing import Union
 
 import dataclasses
 
+import pandas as pd
+
 import evidently
 from evidently.metrics.base_metric import ErrorResult
 from evidently.metrics.base_metric import InputData
@@ -31,6 +33,7 @@ from evidently.utils.dashboard import SaveModeMap
 from evidently.utils.dashboard import TemplateParams
 from evidently.utils.dashboard import save_data_file
 from evidently.utils.dashboard import save_lib_files
+from evidently.utils.data_preprocessing import DataDefinition
 
 
 @dataclasses.dataclass
@@ -40,6 +43,7 @@ class State:
 
 class States:
     Init = State("Init")
+    AdditionalFeatures = State("AdditionalFeatures")
     Verified = State("Verified")
     Calculated = State("Calculated")
     Tested = State("Tested")
@@ -225,6 +229,36 @@ class Suite:
     def verify(self):
         self.context.execution_graph = SimpleExecutionGraph(self.context.metrics, self.context.tests)
         self.context.state = States.Verified
+
+    def create_additional_features(
+        self,
+        current_data: pd.DataFrame,
+        reference_data: Optional[pd.DataFrame],
+        data_definition: DataDefinition,
+    ) -> Tuple[pd.DataFrame, pd.DataFrame]:
+        curr_additional_data = None
+        ref_additional_data = None
+        if self.context.execution_graph is not None:
+            execution_graph: ExecutionGraph = self.context.execution_graph
+            for metric, calculation in execution_graph.get_metric_execution_iterator():
+                for feature in metric.get_generated_features():
+                    feature_data = feature.generate_feature(current_data, data_definition)
+                    feature_data.columns = [f"{feature.__class__.__name__}.{old}" for old in feature_data.columns]
+                    if curr_additional_data is None:
+                        curr_additional_data = feature_data
+                    else:
+                        curr_additional_data = curr_additional_data.join(feature_data)
+                    if reference_data is None:
+                        continue
+                    ref_feature_data = feature.generate_feature(reference_data, data_definition)
+                    ref_feature_data.columns = [f"{feature.__class__.__name__}.{old}"
+                                                for old in ref_feature_data.columns]
+
+                    if ref_additional_data is None:
+                        ref_additional_data = ref_feature_data
+                    else:
+                        ref_additional_data = ref_additional_data.join(ref_feature_data)
+        return curr_additional_data, ref_additional_data
 
     def run_calculate(self, data: InputData):
         if self.context.state in [States.Init]:
