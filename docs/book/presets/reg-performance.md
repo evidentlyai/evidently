@@ -1,6 +1,7 @@
 **TL;DR:** You can monitor and analyze the performance of a regression model. 
 
-For Reports, use `RegressionPreset`. For Test Suites, use `RegressionTestPreset`.
+* For visual analysis using Reports, use `RegressionPreset`. 
+* For pipeline checks using Test Suites, use `RegressionTestPreset`.
 
 # Use case
 
@@ -158,6 +159,11 @@ For each feature, Evidently also show the Predicted vs Actual scatterplot. It he
 
 You can get the report output as a JSON or a Python dictionary:
 
+
+<details>
+<summary>See JSON example</summary>
+ 
+
 ```yaml
 {
   "regression_performance": {
@@ -261,6 +267,7 @@ You can get the report output as a JSON or a Python dictionary:
 }
 ```
 
+</details>
 
 ## Report customization
 

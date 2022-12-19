@@ -6,9 +6,11 @@ description: List of all the metrics and metric presets available in Evidently.
 
 <summary>How to use this page</summary>
 
-This is a reference page that helps quickly see all the metrics and presets available in the library, and their parameters. You can use the menu on the right to navigate the sections. 
-
-We organize the metrics into several tables by logical groups. Note that the groups do not match the presets with the same name, e.g., there are more Data Quality metrics below than in the `DataQualityPreset`. You can use this reference page to discover additional metrics to include in your custom report.
+This is a reference page. It shows all the metrics and metric presets available in the library, and their parameters. 
+  
+You can use the menu on the right to navigate the sections. We organize the metrics by logical groups. Note that these groups do **not** match the presets with a similar name. For example, there are more Data Quality metrics below than in the `DataQualityPreset`. 
+  
+You can use this reference page to discover additional metrics to include in your custom report.
 
 # How to read the tables
 
@@ -21,7 +23,7 @@ We organize the metrics into several tables by logical groups. Note that the gro
 </details>
 
 {% hint style="info" %} 
-We are doing our best to maintain this page up to date. In case of discrepancies, consult the [API reference](https://docs.evidentlyai.com/reference/api-reference) or the current version of the "All metrics" example notebook in the [Examples](../get-started/examples.md) section. If you notice an error, please send us a pull request to update the documentation! 
+We are doing our best to maintain this page up to date. In case of discrepancies, consult the [API reference](https://docs.evidentlyai.com/reference/api-reference) or the current version of the "All metrics" example notebook in the [Examples](../examples/examples.md) section. If you notice an error, please send us a pull request to update the documentation! 
 {% endhint %}
 
 # Metric Presets

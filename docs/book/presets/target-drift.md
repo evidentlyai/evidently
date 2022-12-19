@@ -1,7 +1,7 @@
 **TL;DR:** You can detect and explore changes in the target function (prediction) and detect distribution drift.
 
-For Reports, you can use the pre-built `TargetDriftPreset`.
-For Test Suites, you can use a `TestColumnDrift` test and apply it to the prediction or target column. Since it is a single test, there is no need for a preset.
+* For visual analysis using Reports, use `TargetDriftPreset`.
+* For pipeline checks using Test Suites, use a `TestColumnDrift` test and apply it to the prediction or target column. Since it is a single test, there is no need for a Preset.
 
 # Use case 
 
@@ -100,6 +100,9 @@ For categorical targets:
 
 You can get the report output as a JSON or a Python dictionary:
 
+<details>
+<summary>See JSON example</summary>
+ 
 ```yaml
 {
  "num_target_drift": {
@@ -132,6 +135,7 @@ You can get the report output as a JSON or a Python dictionary:
   "timestamp": "timestamp"
 }
 ```
+</details>
 
 ## Report customization
 

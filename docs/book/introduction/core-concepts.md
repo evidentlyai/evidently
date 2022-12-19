@@ -1,14 +1,14 @@
-This is an explanatory page to describe the key features and concepts at Evidently. For code instructions, head to the [user guide](../tests-and-reports/readme.md).
+This is an explanatory page to describe the key features and concepts at Evidently. 
 
 # TL;DR
 
 Evidently helps evaluate, test and monitor ML models in production. 
 
-A **metric** is a core component of Evidently. You can combine multiple **metrics** in a **report**. Reports are best for visual analysis and debugging of your models and data.
+A **Metric** is a core component of Evidently. You can combine multiple **Metrics** in a **Report**. Reports are best for visual analysis and debugging of your models and data.
 
-A **test** is a metric with a condition. Each test returns a pass or fail result. You can combine multiple **tests** in a **test suite**. Test suites are best for automated model checks as part of an ML pipeline.
+A **Test** is a metric with a condition. Each test returns a pass or fail result. You can combine multiple **Tests** in a **Test Suite**. Test Suites are best for automated model checks as part of an ML pipeline.
 
-For both tests and metrics, Evidently has **presets**. These are pre-built combinations of metrics or checks that fit a specific use case. 
+For both Tests and Metrics, Evidently has **Presets**. These are pre-built combinations of metrics or checks that fit a specific use case. 
 
 # Metrics and Reports
 
@@ -22,27 +22,27 @@ Each **Metric** has a visual render. Some visualizations simply return the value
 
 ![RegressionQualityMetric](../.gitbook/assets/reports/metric_example_regression_quality-min.png)
 
-Others have rich visualizations. Here is an example of a dataset-level metric that evaluates the error of a regression model:
+Others have rich visualizations. Here is an example of a dataset-level Metric that evaluates the error of a regression model:
 
 ![RegressionErrorDistribution](../.gitbook/assets/reports/metric_example_error_distribution-min.png)
 
-Here is an example of a column-level metric that evaluates the value range of certain feature: 
+Here is an example of a column-level Metric that evaluates the value range of certain feature: 
 
 ![ColumnValueRangeMetric](../.gitbook/assets/reports/metric_example_value_range-min.png)
 
-Metric output is available as an interactive HTML report, JSON, or Python dictionary. The JSON “version” of a metric returns any new calculated values and, optionally, some other useful information such as histogram bins. 
+Metric output is available as an interactive HTML report, JSON, or Python dictionary. The JSON “version” returns any new calculated values and, optionally, some other useful information such as histogram bins. 
 
 Evidently contains 35+ **Metrics** related to data quality, integrity, drift and model performance. You can also implement a custom one.
 
 ## What is a Report?
 
-A **Report** is a combination of different metrics that evaluate data or ML model quality. 
+A **Report** is a combination of different Metrics that evaluate data or ML model quality. 
 
 Уou can display an interactive report inside a Jupyter notebook or export it as an HTML file:
 
 ![Data Drift report example](../.gitbook/assets/reports/report_example_data_drift-min.png)
 
-You can also generate the report as a text summary: as a JSON or as a Python dictionary. 
+You can also generate the Report as a text summary: as a JSON or as a Python dictionary. 
 
 ```python
 {'timestamp': '2022-10-26 17:46:47.214403',
@@ -62,19 +62,19 @@ You can also generate the report as a text summary: as a JSON or as a Python dic
      'drift_detected': True,
      'threshold': 0.1}}}}}
 ```
-Most reports can be calculated for a single dataset. If you pass two datasets, they will show a side-by-side comparison.
+Most Reports can be calculated for a single dataset. If you pass two datasets, they will show a side-by-side comparison.
 
-You can generate a report by listing individual **Metrics** to include in it. You can also run one of the **Presets** that cover a specific aspect of the model or data performance. 
+You can generate a Report by listing individual **Metrics** to include in it. You can also run one of the **Presets** that cover a specific aspect of the model or data performance. 
 
 ## What is a Metric Preset?
 
-A **metric preset** is a pre-built report that combines metrics for a particular use case.
+A **Metric Preset** is a pre-built Report that combines Metrics for a particular use case.
 
-You can think of it as a template. For example, there is a preset to check for Data Drift (`DataDriftPreset`), Data Quality (`DataQualityPreset`), or Regression Performance (`RegressionPreset`). 
+You can think of it as a template. For example, there is a Preset to check for Data Drift (`DataDriftPreset`), Data Quality (`DataQualityPreset`), or Regression Performance (`RegressionPreset`). 
 
 ![ColumnValueRangeMetric](../.gitbook/assets/reports/evidently_reports_min.png)
 
-You can explore all metrics and presets here:
+You can explore all Metrics and Presets here:
 
 {% content-ref url="../reference/all-metrics.md" %}
 [All metrics](all-metrics.md)
@@ -96,25 +96,25 @@ You can use Reports at different stages of the ML lifecycle: from exploratory da
 
 Tests help perform structured data and ML model performance checks. They explicitly define the expectations from your data and model.
 
-A **test** is a metric with a condition. It calculates a value and compares it against the defined threshold. 
+A **Test** is a metric with a condition. It calculates a value and compares it against the defined threshold. 
 
 If the condition is satisfied, the test returns a **success**. 
 
 If you choose to get a visual output with the test results, you will see the current value of the metric and the test condition. On expand, you will get a supporting visualization. 
 
-Here is an example of a column-level test that evaluates the mean value stability:
+Here is an example of a column-level Test that evaluates the mean value stability:
 
 ![Mean value stability test](../.gitbook/assets/tests/test_example_success_data-min.png)
 
-Here is an example of a dataset-level test that evaluates model error:
+Here is an example of a dataset-level Test that evaluates model error:
 
 ![Root mean square error test](../.gitbook/assets/tests/test_example_success_model-min.png)
 
-If the condition is not satisfied, the test returns a **fail**:
+If the condition is not satisfied, the Test returns a **fail**:
 
 ![Data drift per feature test](../.gitbook/assets/tests/test_example_fail-min.png)
 
-If the test execution fails, it will return an error. 
+If the Test execution fails, it will return an error. 
 
 Evidently contains 70+ individual tests that cover different aspects of model and data quality. 
 
@@ -124,27 +124,27 @@ Test output is available as an interactive HTML report, JSON, or Python dictiona
 
 ## What is a Test Suite?
 
-In most cases, you’d want to run more than one test. 
+In most cases, you’d want to run more than one check. 
 
-You can list multiple tests and execute them together in a **test suite**. You will see a summary of the results:
+You can list multiple Tests and execute them together in a **Test Suite**. You will see a summary of the results:
 
 ![Custom test suite example](../.gitbook/assets/tests/test_suite_example-min.png)
 
-If you include a lot of tests, you can navigate the output by groups: 
+If you include a lot of Tests, you can navigate the output by groups: 
 
 ![No target performance test suite example](../.gitbook/assets/tests/test_suite_navigation-min.png)
 
-You can create your test suite from individual tests or use one of the existing **presets**. 
+You can create your Test Suite from individual Tests or use one of the existing **Presets**. 
 
 ## What is a Test Preset?
 
-A **test preset** is a pre-built test suite that combines checks for a particular use case. 
+A **Test Preset** is a pre-built Test Suite that combines checks for a particular use case. 
 
-You can think of it as a template to start with. For example, there is a preset to check for Data Quality (`DataQualityTestPreset`), Data Stability (`DataStabilityTestPreset`), or Regression model performance (`RegressionTestPreset`).
+You can think of it as a template to start with. For example, there is a Preset to check for Data Quality (`DataQualityTestPreset`), Data Stability (`DataStabilityTestPreset`), or Regression model performance (`RegressionTestPreset`).
 
 ![Regression performance test suite example](../.gitbook/assets/tests/test_preset_example-min.png)
 
-You can explore all tests and presets here:
+You can explore all Tests and Presets here:
 
 {% content-ref url="../reference/all-tests.md" %}
 [All tests](all-tests.md)
@@ -172,8 +172,8 @@ You can then build a conditional workflow based on the result of the tests: for 
 
 **Reports** and **Test Suites** are complementary interfaces. 
 
-Reports are best for debugging, exploratory and ad hoc analytics. They focus on interactive visualizations and do not require setting any expectations upfront. You can use them, for example, when you just put a model in production and want to closely monitor the performance.  
+**Reports** are best for debugging, exploratory and ad hoc analytics. They focus on interactive visualizations and do not require setting any expectations upfront. You can use them, for example, when you just put a model in production and want to closely monitor the performance. It is best to use Reports on smaller datasets or sample your data first.  
 
-Test Suites are best for automation. Use them when you can set up expectations upfront (or derive them from the reference dataset). Tests force you to think through what you expect from your data and models, and you can run them at scale, only reacting to the failure alerts. 
+**Test Suites** are best for automation. Use them when you can set up expectations upfront (or derive them from the reference dataset). Tests force you to think through what you expect from your data and models, and you can run them at scale, only reacting to the failure alerts. You can use Test Suites on larger datasets since they do not include heavy visuals.
 
-You can use both reports and test suites. For example, run tests for automated model checks and if tests fail, use Reports for visual debugging. 
+You can also use both Reports and Test Suites. For example, run tests for automated model checks and if tests fail, use Reports for visual debugging. 
