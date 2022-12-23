@@ -31,6 +31,9 @@ from evidently.utils.visualizations import plot_num_feature_in_time
 from evidently.utils.visualizations import plot_num_num_rel
 from evidently.utils.visualizations import plot_time_feature_distr
 
+from evidently.features.text_length_feature import TextLength
+from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
+
 
 @dataclasses.dataclass
 class NumericCharacteristics:
@@ -107,7 +110,7 @@ class DataQualityPlot:
 
 
 @dataclasses.dataclass
-class ColumnSummary:
+class ColumnSummaryOneCol:
     column_name: str
     column_type: str
     reference_characteristics: Optional[ColumnCharacteristics]
@@ -115,13 +118,25 @@ class ColumnSummary:
     plot_data: DataQualityPlot
 
 
+@dataclasses.dataclass
+class ColumnSummary:
+    column_name: str
+    column_type: str
+    reference_characteristics: Optional[ColumnCharacteristics]
+    current_characteristics: Optional[ColumnCharacteristics]
+    plot_data: Optional[DataQualityPlot]
+    text_gen_col_summaries: Optional[List[ColumnSummaryOneCol]]
+
+
 class ColumnSummaryMetric(Metric[ColumnSummary]):
     def __init__(self, column_name: str):
         self.column_name = column_name
+        self.text_length_feature = TextLength(self.column_name)
+        self.non_letter_ch_feature = NonLetterCharacterPercentage(self.column_name)
 
     @staticmethod
     def acceptable_types() -> List[ColumnType]:
-        return [ColumnType.Numerical, ColumnType.Categorical]
+        return [ColumnType.Numerical, ColumnType.Categorical, ColumnType.Text]
 
     def calculate(self, data: InputData) -> ColumnSummary:
         columns = process_columns(data.current_data, data.column_mapping)
@@ -189,93 +204,49 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
             columns.utility_columns.date is not None and columns.utility_columns.date == self.column_name
         ):
             column_type = "datetime"
+        elif self.column_name in columns.text_feature_names:
+            column_type = 'text'
         if column_type is None:
             raise ValueError(f"column {self.column_name} not in num, cat or datetime features lists")
 
-        reference_data = None
-        ref_characteristics = None
-        if data.reference_data is not None:
-            reference_data = data.reference_data
-            ref_characteristics = self.map_data(get_features_stats(data.reference_data[self.column_name], column_type))
-        curr_characteristics = self.map_data(get_features_stats(data.current_data[self.column_name], column_type))
+        if column_type == 'text':
+            res_summaries = []
+            # generate auto-generated columns
+            curr_characteristics, ref_characteristics, reference_data = \
+                self._get_ref_cur_characteristics(data, column_type='num',
+                                                  column_name=self.text_length_feature.feature_name())
+            plot_data = self._get_plot_data(data, reference_data, column_type='num', columns=columns,
+                                            target_name=target_name, target_type=target_type,
+                                            column_name=self.text_length_feature.feature_name())
 
-        if data.reference_data is not None and column_type == "cat":
-            current_values_set = set(data.current_data[self.column_name].unique())
-            reference_values_set = set(data.reference_data[self.column_name].unique())
-            unique_in_current = current_values_set - reference_values_set
-            new_in_current_values_count: int = len(unique_in_current)
-            unique_in_reference = reference_values_set - current_values_set
-            unused_in_current_values_count: int = len(unique_in_reference)
-            if any(pd.isnull(list(unique_in_current))) and any(pd.isnull(list(unique_in_reference))):
-                new_in_current_values_count -= 1
-                unused_in_current_values_count -= 1
-            if not isinstance(curr_characteristics, CategoricalCharacteristics):
-                raise ValueError(f"{self.column_name} should be categorical")
-            curr_characteristics.new_in_current_values_count = new_in_current_values_count
-            curr_characteristics.unused_in_current_values_count = unused_in_current_values_count
+            res_summaries.append(ColumnSummaryOneCol(column_name=self.text_length_feature.feature_name().name,
+                                                     column_type='num',
+                                                     reference_characteristics=ref_characteristics,
+                                                     current_characteristics=curr_characteristics,
+                                                     plot_data=plot_data))
 
-        # plot data
-        gpd = DataQualityGetPlotData()
-        bins_for_hist = gpd.calculate_main_plot(data.current_data, reference_data, self.column_name, column_type)
-        data_in_time = None
-        if (
-            columns.utility_columns.date is not None
-            and columns.utility_columns.date != self.column_name
-            and column_type != "datetime"
-        ):
-            data_in_time = gpd.calculate_data_in_time(
-                data.current_data,
-                reference_data,
-                self.column_name,
-                column_type,
-                columns.utility_columns.date,
-            )
-            data_in_time = DataInTime(
-                data_for_plots={
-                    "current": data_in_time["current"],
-                    "reference": data_in_time["reference"],
-                },
-                freq=data_in_time["freq"],
-                datetime_name=data_in_time["datetime_name"],
+            curr_characteristics, ref_characteristics, reference_data = \
+                self._get_ref_cur_characteristics(data, column_type='num',
+                                                  column_name=self.non_letter_ch_feature.feature_name())
+            plot_data = self._get_plot_data(data, reference_data, column_type='num', columns=columns,
+                                            target_name=target_name, target_type=target_type,
+                                            column_name=self.non_letter_ch_feature.feature_name())
+
+            res_summaries.append(ColumnSummaryOneCol(column_name=self.non_letter_ch_feature.feature_name().name,
+                                                     column_type='num',
+                                                     reference_characteristics=ref_characteristics,
+                                                     current_characteristics=curr_characteristics,
+                                                     plot_data=plot_data))
+            return ColumnSummary(
+                column_name=self.column_name,
+                column_type=column_type,
+                text_gen_col_summaries=res_summaries
             )
 
-        if (
-            target_name is not None
-            and target_type is not None
-            and columns.utility_columns.target != self.column_name
-            and column_type != "datetime"
-        ):
+        curr_characteristics, ref_characteristics, reference_data = self._get_ref_cur_characteristics(data, column_type,
+                                                                                                      self.column_name)
 
-            data_for_plots = gpd.calculate_data_by_target(
-                data.current_data,
-                reference_data,
-                self.column_name,
-                column_type,
-                target_name,
-                target_type,
-            )
-            data_by_target = DataByTarget(
-                data_for_plots=data_for_plots,
-                target_name=target_name,
-                target_type=target_type,
-            )
-        counts_of_values = None
-        if column_type in ["cat", "num"]:
-            counts_of_values = {}
-            current_counts = data.current_data[self.column_name].value_counts(dropna=False).reset_index()
-            current_counts.columns = ["x", "count"]
-            counts_of_values["current"] = current_counts.head(10)
-            if reference_data is not None:
-                reference_counts = data.reference_data[self.column_name].value_counts(dropna=False).reset_index()
-                reference_counts.columns = ["x", "count"]
-                counts_of_values["reference"] = reference_counts.head(10)
-
-        plot_data = DataQualityPlot(
-            bins_for_hist=bins_for_hist,
-            data_in_time=data_in_time,
-            data_by_target=data_by_target,
-            counts_of_values=counts_of_values,
-        )
+        plot_data = self._get_plot_data(data, reference_data, column_type, columns, target_name, target_type, self.column_name)
 
         return ColumnSummary(
             column_name=self.column_name,
@@ -337,6 +308,106 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
             )
         raise ValueError(f"unknown feature type {stats.feature_type}")
 
+    @staticmethod
+    def col_summary_to_col_summary_one_col(col_summary: ColumnSummary) -> ColumnSummaryOneCol:
+        return ColumnSummaryOneCol(
+            column_name=col_summary.column_name,
+            column_type=col_summary.column_type,
+            reference_characteristics=col_summary.reference_characteristics,
+            current_characteristics=col_summary.current_characteristics,
+            plot_data=col_summary.plot_data,
+        )
+
+    def _get_ref_cur_characteristics(self, data, column_type, column_name):
+        reference_data = None
+        ref_characteristics = None
+        if data.reference_data is not None:
+            reference_data = data.reference_data
+            ref_characteristics = self.map_data(get_features_stats(data.get_reference_column(column_name), column_type))
+        curr_characteristics = self.map_data(get_features_stats(data.get_current_column(column_name), column_type))
+
+        if data.reference_data is not None and column_type == "cat":
+            current_values_set = set(data.get_current_column(column_name).unique())
+            reference_values_set = set(data.get_reference_column(column_name).unique())
+            unique_in_current = current_values_set - reference_values_set
+            new_in_current_values_count: int = len(unique_in_current)
+            unique_in_reference = reference_values_set - current_values_set
+            unused_in_current_values_count: int = len(unique_in_reference)
+            if any(pd.isnull(list(unique_in_current))) and any(pd.isnull(list(unique_in_reference))):
+                new_in_current_values_count -= 1
+                unused_in_current_values_count -= 1
+            if not isinstance(curr_characteristics, CategoricalCharacteristics):
+                raise ValueError(f"{self.column_name} should be categorical")
+            curr_characteristics.new_in_current_values_count = new_in_current_values_count
+            curr_characteristics.unused_in_current_values_count = unused_in_current_values_count
+
+        return curr_characteristics, ref_characteristics, reference_data
+
+    def _get_plot_data(self, data, reference_data, column_type, columns, target_name, target_type, column_name):
+        # plot data
+        gpd = DataQualityGetPlotData()
+        bins_for_hist = gpd.calculate_main_plot(data.current_data, reference_data, column_name, column_type)
+        data_in_time = None
+        if (
+                columns.utility_columns.date is not None
+                and columns.utility_columns.date != column_name
+                and column_type != "datetime"
+        ):
+            data_in_time = gpd.calculate_data_in_time(
+                data.current_data,
+                reference_data,
+                column_name,
+                column_type,
+                columns.utility_columns.date,
+            )
+            data_in_time = DataInTime(
+                data_for_plots={
+                    "current": data_in_time["current"],
+                    "reference": data_in_time["reference"],
+                },
+                freq=data_in_time["freq"],
+                datetime_name=data_in_time["datetime_name"],
+            )
+
+        if (
+                target_name is not None
+                and target_type is not None
+                and columns.utility_columns.target != column_name
+                and column_type != "datetime"
+        ):
+            data_for_plots = gpd.calculate_data_by_target(
+                data.current_data,
+                reference_data,
+                column_name,
+                column_type,
+                target_name,
+                target_type,
+            )
+            data_by_target = DataByTarget(
+                data_for_plots=data_for_plots,
+                target_name=target_name,
+                target_type=target_type,
+            )
+        counts_of_values = None
+        if column_type in ["cat", "num"]:
+            counts_of_values = {}
+            current_counts = data.get_current_column(column_name).value_counts(dropna=False).reset_index()
+            current_counts.columns = ["x", "count"]
+            counts_of_values["current"] = current_counts.head(10)
+            if reference_data is not None:
+                reference_counts = data.get_reference_column(column_name).value_counts(dropna=False).reset_index()
+                reference_counts.columns = ["x", "count"]
+                counts_of_values["reference"] = reference_counts.head(10)
+
+        plot_data = DataQualityPlot(
+            bins_for_hist=bins_for_hist,
+            data_in_time=data_in_time,
+            data_by_target=data_by_target,
+            counts_of_values=counts_of_values,
+        )
+
+        return plot_data
+
 
 @default_renderer(wrap_type=ColumnSummaryMetric)
 class ColumnSummaryMetricRenderer(MetricRenderer):
@@ -349,6 +420,19 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
         metric_result = obj.get_result()
         column_type = metric_result.column_type
         column_name = metric_result.column_name
+
+        if column_type == 'text':
+            widgets = []
+            for el in metric_result.text_gen_col_summaries:
+                metric_result_col = el
+                column_type_col = el.column_type
+                column_name_col = el.column_name
+                widgets.extend(self._get_widgets_for_one_col(metric_result_col, column_type_col, column_name_col))
+            return widgets
+
+        return self._get_widgets_for_one_col(metric_result, column_type, column_name)
+
+    def _get_widgets_for_one_col(self, metric_result, column_type, column_name):
         # main plot
         bins_for_hist = metric_result.plot_data.bins_for_hist
         hist_curr = bins_for_hist["current"]
