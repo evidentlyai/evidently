@@ -20,6 +20,7 @@ from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.utils.data_operations import process_columns
+from evidently.utils.data_preprocessing import ColumnType
 from evidently.utils.types import Numeric
 from evidently.utils.visualizations import plot_boxes
 from evidently.utils.visualizations import plot_cat_cat_rel
@@ -117,6 +118,10 @@ class ColumnSummary:
 class ColumnSummaryMetric(Metric[ColumnSummary]):
     def __init__(self, column_name: str):
         self.column_name = column_name
+
+    @staticmethod
+    def acceptable_types() -> List[ColumnType]:
+        return [ColumnType.Numerical, ColumnType.Categorical]
 
     def calculate(self, data: InputData) -> ColumnSummary:
         columns = process_columns(data.current_data, data.column_mapping)

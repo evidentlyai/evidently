@@ -9,7 +9,6 @@ from typing import Tuple
 from typing import Union
 
 import dataclasses
-
 import pandas as pd
 
 import evidently
@@ -241,7 +240,7 @@ class Suite:
         if self.context.execution_graph is not None:
             execution_graph: ExecutionGraph = self.context.execution_graph
             for metric, calculation in execution_graph.get_metric_execution_iterator():
-                for feature in metric.get_generated_features():
+                for feature in metric.required_features(data_definition):
                     feature_data = feature.generate_feature(current_data, data_definition)
                     feature_data.columns = [f"{feature.__class__.__name__}.{old}" for old in feature_data.columns]
                     if curr_additional_data is None:
@@ -251,8 +250,9 @@ class Suite:
                     if reference_data is None:
                         continue
                     ref_feature_data = feature.generate_feature(reference_data, data_definition)
-                    ref_feature_data.columns = [f"{feature.__class__.__name__}.{old}"
-                                                for old in ref_feature_data.columns]
+                    ref_feature_data.columns = [
+                        f"{feature.__class__.__name__}.{old}" for old in ref_feature_data.columns
+                    ]
 
                     if ref_additional_data is None:
                         ref_additional_data = ref_feature_data

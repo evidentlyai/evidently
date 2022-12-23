@@ -105,13 +105,13 @@ def test_process_columns(
                 "num_feature_names": ["missed_all"],
                 "datetime_feature_names": [],
                 "target_names": None,
-                'text_feature_names': [],
+                "text_feature_names": [],
                 "utility_columns": {
                     "date": None,
                     "id": None,
                     "prediction": None,
                     "target": None,
-                }
+                },
             },
         ),
         (
@@ -122,7 +122,7 @@ def test_process_columns(
                 "num_feature_names": [],
                 "datetime_feature_names": [],
                 "target_names": None,
-                'text_feature_names': [],
+                "text_feature_names": [],
                 "utility_columns": {
                     "date": None,
                     "id": None,
@@ -139,7 +139,7 @@ def test_process_columns(
                 "num_feature_names": [],
                 "datetime_feature_names": [],
                 "target_names": None,
-                'text_feature_names': [],
+                "text_feature_names": [],
                 "utility_columns": {
                     "date": None,
                     "id": None,
@@ -156,7 +156,7 @@ def test_process_columns(
                 "num_feature_names": [],
                 "datetime_feature_names": [],
                 "target_names": None,
-                'text_feature_names': [],
+                "text_feature_names": [],
                 "utility_columns": {
                     "date": None,
                     "id": "test_id",
@@ -179,13 +179,13 @@ def test_process_columns(
                 "num_feature_names": ["num_1"],
                 "datetime_feature_names": [],
                 "target_names": None,
-                'text_feature_names': [],
+                "text_feature_names": [],
                 "utility_columns": {
                     "date": "my_date",
                     "id": None,
                     "prediction": None,
                     "target": "target",
-                }
+                },
             },
         ),
     ),

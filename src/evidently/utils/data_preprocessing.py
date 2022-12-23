@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Sequence
@@ -22,6 +23,7 @@ class ColumnType(Enum):
     Categorical = "cat"
     Numerical = "num"
     Datetime = "datetime"
+    Text = "text"
 
 
 @dataclasses.dataclass
@@ -42,9 +44,7 @@ class PredictionColumns:
         return [col for col in result if col is not None]
 
 
-def _check_filter(
-    column: ColumnDefinition, utility_columns: List[str], filter_def: str
-) -> bool:
+def _check_filter(column: ColumnDefinition, utility_columns: List[str], filter_def: str) -> bool:
     if filter_def == "all":
         return True
     if filter_def == "categorical_columns":
@@ -56,26 +56,17 @@ def _check_filter(
     if filter_def == "all_features":
         return column.column_name not in utility_columns
     if filter_def == "categorical_features":
-        return (
-            column.column_type == ColumnType.Categorical
-            and column.column_name not in utility_columns
-        )
+        return column.column_type == ColumnType.Categorical and column.column_name not in utility_columns
     if filter_def == "numerical_features":
-        return (
-            column.column_type == ColumnType.Numerical
-            and column.column_name not in utility_columns
-        )
+        return column.column_type == ColumnType.Numerical and column.column_name not in utility_columns
     if filter_def == "datetime_features":
-        return (
-            column.column_type == ColumnType.Datetime
-            and column.column_name not in utility_columns
-        )
+        return column.column_type == ColumnType.Datetime and column.column_name not in utility_columns
     raise ValueError(f"Unknown filter: {filter_def}")
 
 
 @dataclasses.dataclass
 class DataDefinition:
-    _columns: List[ColumnDefinition]
+    _columns: Dict[str, ColumnDefinition]
     _target: Optional[ColumnDefinition]
     _prediction_columns: Optional[PredictionColumns]
     _id_column: Optional[ColumnDefinition]
@@ -94,13 +85,16 @@ class DataDefinition:
         task: Optional[str],
         classification_labels: Optional[Sequence[str]],
     ):
-        self._columns = columns
+        self._columns = {column.column_name: column for column in columns}
         self._id_column = id_column
         self._datetime_column = datetime_column
         self._task = task
         self._target = target
         self._prediction_columns = prediction_columns
         self._classification_labels = classification_labels
+
+    def get_column(self, column_name: str) -> ColumnDefinition:
+        return self._columns[column_name]
 
     def get_columns(self, filter_def: str = "all") -> List[ColumnDefinition]:
         if self._prediction_columns is not None:
@@ -117,11 +111,7 @@ class DataDefinition:
             ]
             if col is not None
         ]
-        return [
-            column
-            for column in self._columns
-            if _check_filter(column, utility_columns, filter_def)
-        ]
+        return [column for column in self._columns.values() if _check_filter(column, utility_columns, filter_def)]
 
     def get_target_column(self) -> Optional[ColumnDefinition]:
         return self._target
@@ -146,21 +136,22 @@ def _process_column(
     column_name: Optional[str],
     data: _InputData,
     if_partially_present: str = "raise",
+    predefined_type: Optional[ColumnType] = None,
 ) -> Optional[ColumnDefinition]:
     if column_name is None:
         return None
-    presense = _get_column_presence(column_name, data)
-    if presense == ColumnPresenceState.Partially:
+    presence = _get_column_presence(column_name, data)
+    if presence == ColumnPresenceState.Missing:
+        return None
+    if presence == ColumnPresenceState.Partially:
         if if_partially_present == "raise":
             raise ValueError(f"Column ({column_name}) is partially present in data")
         if if_partially_present == "skip":
             return None
         if if_partially_present == "keep":
-            return ColumnDefinition(column_name, _get_column_type(column_name, data))
-        return None
-    if presense == ColumnPresenceState.Present:
-        return ColumnDefinition(column_name, _get_column_type(column_name, data))
-    return None
+            pass
+    column_type = predefined_type if predefined_type is not None else _get_column_type(column_name, data)
+    return ColumnDefinition(column_name, column_type)
 
 
 def _prediction_column(
@@ -177,75 +168,41 @@ def _prediction_column(
         if prediction_present == ColumnPresenceState.Missing:
             return None
         if prediction_present == ColumnPresenceState.Partially:
-            raise ValueError(
-                f"Prediction column ({prediction}) is partially present in data"
-            )
+            raise ValueError(f"Prediction column ({prediction}) is partially present in data")
         prediction_type = _get_column_type(prediction, data)
         if task == TaskType.CLASSIFICATION_TASK:
             if prediction_type == ColumnType.Categorical:
-                return PredictionColumns(
-                    predicted_values=ColumnDefinition(prediction, prediction_type)
-                )
+                return PredictionColumns(predicted_values=ColumnDefinition(prediction, prediction_type))
             if prediction_type == ColumnType.Numerical:
-                return PredictionColumns(
-                    prediction_probas=[ColumnDefinition(prediction, prediction_type)]
-                )
-            raise ValueError(
-                f"Unexpected type for prediction column ({prediction}) (it is {prediction_type})"
-            )
+                return PredictionColumns(prediction_probas=[ColumnDefinition(prediction, prediction_type)])
+            raise ValueError(f"Unexpected type for prediction column ({prediction}) (it is {prediction_type})")
         if task == TaskType.REGRESSION_TASK:
             if prediction_type == ColumnType.Categorical:
-                raise ValueError(
-                    "Prediction type is categorical but task is regression"
-                )
+                raise ValueError("Prediction type is categorical but task is regression")
             if prediction_type == ColumnType.Numerical:
-                return PredictionColumns(
-                    predicted_values=ColumnDefinition(prediction, prediction_type)
-                )
+                return PredictionColumns(predicted_values=ColumnDefinition(prediction, prediction_type))
         if task is None:
-            if (
-                prediction_type == ColumnType.Numerical
-                and target_type == ColumnType.Categorical
-            ):
+            if prediction_type == ColumnType.Numerical and target_type == ColumnType.Categorical:
                 # probably this is binary with single column of probabilities
-                return PredictionColumns(
-                    prediction_probas=[ColumnDefinition(prediction, prediction_type)]
-                )
-            return PredictionColumns(
-                predicted_values=ColumnDefinition(prediction, prediction_type)
-            )
+                return PredictionColumns(prediction_probas=[ColumnDefinition(prediction, prediction_type)])
+            return PredictionColumns(predicted_values=ColumnDefinition(prediction, prediction_type))
     if isinstance(prediction, list):
         if target_names is not None:
             if prediction != target_names:
-                raise ValueError(
-                    "List of prediction columns should be equal to target_names if both set"
-                )
+                raise ValueError("List of prediction columns should be equal to target_names if both set")
         presence = [_get_column_presence(column, data) for column in prediction]
         if all([item == ColumnPresenceState.Missing for item in presence]):
             return None
         if all([item == ColumnPresenceState.Present for item in presence]):
-            prediction_defs = [
-                ColumnDefinition(column, _get_column_type(column, data))
-                for column in prediction
-            ]
-            if any(
-                [item.column_type != ColumnType.Numerical for item in prediction_defs]
-            ):
-                raise ValueError(
-                    f"Some prediction columns have incorrect types {prediction_defs}"
-                )
+            prediction_defs = [ColumnDefinition(column, _get_column_type(column, data)) for column in prediction]
+            if any([item.column_type != ColumnType.Numerical for item in prediction_defs]):
+                raise ValueError(f"Some prediction columns have incorrect types {prediction_defs}")
             return PredictionColumns(prediction_probas=prediction_defs)
     raise ValueError("Unexpected type for prediction field in column_mapping")
 
 
-def _filter_by_type(
-    column: Optional[ColumnDefinition], column_type: ColumnType, exclude: List[str]
-) -> bool:
-    return (
-        column is not None
-        and column.column_type == column_type
-        and column.column_name not in exclude
-    )
+def _filter_by_type(column: Optional[ColumnDefinition], column_type: ColumnType, exclude: List[str]) -> bool:
+    return column is not None and column.column_type == column_type and column.column_name not in exclude
 
 
 def create_data_definition(
@@ -266,77 +223,62 @@ def create_data_definition(
         data,
     )
 
-    prediction_cols = (
-        prediction_columns.get_columns_list() if prediction_columns is not None else []
-    )
+    prediction_cols = prediction_columns.get_columns_list() if prediction_columns is not None else []
 
-    text_cols = (mapping.text_features if mapping.text_features is not None else [])
     all_columns = [
         id_column,
         datetime_column,
         target_column,
         *prediction_cols,
-        *text_cols
     ]
-    utility_column_names = [
-        column.column_name for column in all_columns if column is not None
-    ]
-    data_columns = set(data.current.columns) | (
-        set(data.reference.columns) if data.reference is not None else set()
-    )
-    col_defs = [
-        _process_column(column_name, data, if_partially_present="skip")
-        for column_name in data_columns
-    ]
+    utility_column_names = [column.column_name for column in all_columns if column is not None]
+    data_columns = set(data.current.columns) | (set(data.reference.columns) if data.reference is not None else set())
+    col_defs = [_process_column(column_name, data, if_partially_present="skip") for column_name in data_columns]
 
     if mapping.numerical_features is None:
-        num = [
-            column
-            for column in col_defs
-            if _filter_by_type(column, ColumnType.Numerical, utility_column_names)
-        ]
+        num = [column for column in col_defs if _filter_by_type(column, ColumnType.Numerical, utility_column_names)]
         all_columns.extend(num)
     else:
         all_columns.extend(
             [
-                _process_column(column_name, data)
+                _process_column(column_name, data, predefined_type=ColumnType.Numerical)
                 for column_name in mapping.numerical_features
                 if column_name not in utility_column_names
             ]
         )
 
     if mapping.categorical_features is None:
-        cat = [
-            column
-            for column in col_defs
-            if _filter_by_type(column, ColumnType.Categorical, utility_column_names)
-        ]
+        cat = [column for column in col_defs if _filter_by_type(column, ColumnType.Categorical, utility_column_names)]
         all_columns.extend(cat)
     else:
         all_columns.extend(
             [
-                _process_column(column_name, data)
+                _process_column(column_name, data, predefined_type=ColumnType.Categorical)
                 for column_name in mapping.categorical_features
                 if column_name not in utility_column_names
             ]
         )
 
     if mapping.datetime_features is None:
-        dt = [
-            column
-            for column in col_defs
-            if _filter_by_type(column, ColumnType.Datetime, utility_column_names)
-        ]
+        dt = [column for column in col_defs if _filter_by_type(column, ColumnType.Datetime, utility_column_names)]
         all_columns.extend(dt)
     else:
         all_columns.extend(
             [
-                _process_column(column_name, data)
+                _process_column(column_name, data, predefined_type=ColumnType.Datetime)
                 for column_name in mapping.datetime_features
                 if column_name not in utility_column_names
             ]
         )
 
+    if mapping.text_features is not None:
+        all_columns.extend(
+            [
+                _process_column(column_name, data, predefined_type=ColumnType.Text)
+                for column_name in mapping.text_features
+                if column_name not in utility_column_names
+            ]
+        )
     task = mapping.task
     if task is None:
         if target_column is None:
@@ -392,15 +334,9 @@ def _get_column_type(column_name: str, data: _InputData) -> ColumnType:
     if (
         ref_type is not None
         and cur_type is not None
-        and (
-            ref_type != cur_type
-            and not np.can_cast(cur_type, ref_type)
-            and not np.can_cast(ref_type, cur_type)
-        )
+        and (ref_type != cur_type and not np.can_cast(cur_type, ref_type) and not np.can_cast(ref_type, cur_type))
     ):
-        raise ValueError(
-            f"Column {column_name} have different types in reference {ref_type} and current {cur_type}"
-        )
+        raise ValueError(f"Column {column_name} have different types in reference {ref_type} and current {cur_type}")
     if pd.api.types.is_integer_dtype(cur_type if cur_type is not None else ref_type):
         nunique = ref_unique or cur_unique
         if nunique is not None and nunique <= NUMBER_UNIQUE_AS_CATEGORICAL:

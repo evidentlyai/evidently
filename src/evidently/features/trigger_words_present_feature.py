@@ -2,11 +2,10 @@ import re
 
 import nltk
 import pandas as pd
+from nltk.stem.wordnet import WordNetLemmatizer
 
 from evidently.features.generated_features import GeneratedFeature
 from evidently.utils.data_preprocessing import DataDefinition
-
-from nltk.stem.wordnet import WordNetLemmatizer
 
 nltk.download("words")
 nltk.download("wordnet")
@@ -21,9 +20,7 @@ class TriggerWordsPresent(GeneratedFeature):
         self.words_list = words_list
         self.lemmatisize = lemmatisize
 
-    def generate_feature(
-        self, data: pd.DataFrame, data_definition: DataDefinition
-    ) -> pd.DataFrame:
+    def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
         def listed_words_present(s, words_list=(), lemmatisize=True):
             words = re.sub("[^A-Za-z0-9 ]+", "", s).split()
             for word_ in words:

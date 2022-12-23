@@ -114,7 +114,7 @@ class Metric(Generic[TResult]):
                 attributes.append(value)
         return tuple(attributes)
 
-    def get_generated_features(self):
+    def required_features(self, data_definition: DataDefinition):
         required_features = []
         for field, value in sorted(self.__dict__.items(), key=lambda x: x[0]):
             if field in ["context"]:
