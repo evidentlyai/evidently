@@ -1,3 +1,6 @@
+from typing import Dict
+from typing import Optional
+
 import pandas as pd
 import pytest
 
@@ -47,7 +50,7 @@ class SimpleMetricWithFeatures(Metric[int]):
 
     def __init__(self, column_name: str):
         self.column_name = column_name
-        self.feature = LengthFeature(self.column_name)
+        self.feature = None
 
     def calculate(self, data: InputData) -> int:
         if data.data_definition.get_column(self.column_name).column_type == ColumnType.Categorical:
@@ -56,9 +59,25 @@ class SimpleMetricWithFeatures(Metric[int]):
 
     def required_features(self, data_definition: DataDefinition):
         column_type = data_definition.get_column(self.column_name).column_type
+        self.feature = LengthFeature(self.column_name)
         if column_type == ColumnType.Categorical:
             return [self.feature]
         return []
+
+
+class MetricWithAllTextFeatures(Metric[Dict[str, int]]):
+    features: Dict[str, 'LengthFeature']
+
+    def calculate(self, data: InputData):
+        return {k: data.get_current_column(v.feature_name()).sum() for k, v in self.features.items()}
+
+    def required_features(self, data_definition: DataDefinition):
+        self.features = {column.column_name: LengthFeature(column.column_name)
+                         for column in data_definition.get_columns("text_features")}
+        return list(self.features.values())
+
+    def get_parameters(self) -> tuple:
+        return ()
 
 
 class SimpleGeneratedFeature(GeneratedFeature):
@@ -73,8 +92,9 @@ class SimpleGeneratedFeature(GeneratedFeature):
 
 
 class LengthFeature(GeneratedFeature):
-    def __init__(self, column_name: str):
+    def __init__(self, column_name: str, max_length: Optional[int] = None):
         self.column_name = column_name
+        self.max_length = max_length
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
         return pd.DataFrame(dict([(self.column_name, data[self.column_name].apply(len))]))
@@ -90,10 +110,16 @@ class LengthFeature(GeneratedFeature):
         (SimpleMetric(additional_feature(SimpleGeneratedFeature("col1"), "col1")), 12),
         (SimpleMetricWithFeatures("col1"), 6),
         (SimpleMetricWithFeatures("col2"), 9),
+        (MetricWithAllTextFeatures(), {"col3": 9, "col4": 12})
     ],
 )
 def test_additional_features(metric, result):
-    test_data = pd.DataFrame(dict(col1=[1.0, 2.0, 3.0], col2=["11", "111", "1111"]))
+    test_data = pd.DataFrame(dict(
+        col1=[1.0, 2.0, 3.0],
+        col2=["11", "111", "1111"],
+        col3=["11", "111", "1111"],
+        col4=["111", "1111", "11111"],
+    ))
     report = Report(metrics=[metric])
 
     report.run(
@@ -102,6 +128,7 @@ def test_additional_features(metric, result):
         column_mapping=ColumnMapping(
             numerical_features=["col1"],
             categorical_features=["col2"],
+            text_features=["col3", "col4"],
         ),
     )
     assert metric.get_result() == result
