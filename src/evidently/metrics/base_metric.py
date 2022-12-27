@@ -77,6 +77,8 @@ class InputData:
             _column = ColumnName(column, DatasetType.MAIN, None)
         else:
             _column = column
+        if self.reference_additional_features is None and _column.dataset == DatasetType.ADDITIONAL:
+            return None
         return self._get_by_column_name(self.reference_data, self.reference_additional_features, _column)
 
 
