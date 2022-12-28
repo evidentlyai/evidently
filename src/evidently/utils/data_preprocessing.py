@@ -53,8 +53,12 @@ def _check_filter(column: ColumnDefinition, utility_columns: List[str], filter_d
         return column.column_type == ColumnType.Numerical
     if filter_def == "datetime_columns":
         return column.column_type == ColumnType.Datetime
+    if filter_def == "text_columns":
+        return column.column_type == ColumnType.Text
     if filter_def == "all_features":
         return column.column_name not in utility_columns
+    if filter_def == "text_features":
+        return column.column_type == ColumnType.Text and column.column_name not in utility_columns
     if filter_def == "categorical_features":
         return column.column_type == ColumnType.Categorical and column.column_name not in utility_columns
     if filter_def == "numerical_features":
