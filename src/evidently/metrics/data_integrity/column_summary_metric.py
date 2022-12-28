@@ -20,7 +20,7 @@ from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.utils.data_operations import process_columns
-from evidently.utils.data_preprocessing import ColumnType
+from evidently.utils.data_preprocessing import ColumnType, DataDefinition
 from evidently.utils.types import Numeric
 from evidently.utils.visualizations import plot_boxes
 from evidently.utils.visualizations import plot_cat_cat_rel
@@ -33,6 +33,7 @@ from evidently.utils.visualizations import plot_time_feature_distr
 
 from evidently.features.text_length_feature import TextLength
 from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
+from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
 
 
 @dataclasses.dataclass
@@ -126,13 +127,12 @@ class ColumnSummary:
     current_characteristics: Optional[ColumnCharacteristics]
     plot_data: Optional[DataQualityPlot]
     text_gen_col_summaries: Optional[List[ColumnSummaryOneCol]]
+    freq_plot_data: Optional[Dict[str, pd.DataFrame]]
 
 
 class ColumnSummaryMetric(Metric[ColumnSummary]):
     def __init__(self, column_name: str):
         self.column_name = column_name
-        self.text_length_feature = TextLength(self.column_name)
-        self.non_letter_ch_feature = NonLetterCharacterPercentage(self.column_name)
 
     @staticmethod
     def acceptable_types() -> List[ColumnType]:
@@ -212,35 +212,30 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
         if column_type == 'text':
             res_summaries = []
             # generate auto-generated columns
-            curr_characteristics, ref_characteristics, reference_data = \
-                self._get_ref_cur_characteristics(data, column_type='num',
-                                                  column_name=self.text_length_feature.feature_name())
-            plot_data = self._get_plot_data(data, reference_data, column_type='num', columns=columns,
-                                            target_name=target_name, target_type=target_type,
-                                            column_name=self.text_length_feature.feature_name())
+            for gen_feature in self.generated_text_features:
+                curr_characteristics, ref_characteristics, reference_data = \
+                    self._get_ref_cur_characteristics(data, column_type='num',
+                                                      column_name=gen_feature.feature_name())
+                plot_data = self._get_plot_data(data, reference_data, column_type='num', columns=columns,
+                                                target_name=target_name, target_type=target_type,
+                                                column_name=gen_feature.feature_name())
 
-            res_summaries.append(ColumnSummaryOneCol(column_name=self.text_length_feature.feature_name().name,
-                                                     column_type='num',
-                                                     reference_characteristics=ref_characteristics,
-                                                     current_characteristics=curr_characteristics,
-                                                     plot_data=plot_data))
+                res_summaries.append(ColumnSummaryOneCol(column_name=gen_feature.feature_name().name,
+                                                         column_type='num',
+                                                         reference_characteristics=ref_characteristics,
+                                                         current_characteristics=curr_characteristics,
+                                                         plot_data=plot_data))
 
-            curr_characteristics, ref_characteristics, reference_data = \
-                self._get_ref_cur_characteristics(data, column_type='num',
-                                                  column_name=self.non_letter_ch_feature.feature_name())
-            plot_data = self._get_plot_data(data, reference_data, column_type='num', columns=columns,
-                                            target_name=target_name, target_type=target_type,
-                                            column_name=self.non_letter_ch_feature.feature_name())
+            freq_plot_data = self._calc_top_words_frequencies(data, k=10)
 
-            res_summaries.append(ColumnSummaryOneCol(column_name=self.non_letter_ch_feature.feature_name().name,
-                                                     column_type='num',
-                                                     reference_characteristics=ref_characteristics,
-                                                     current_characteristics=curr_characteristics,
-                                                     plot_data=plot_data))
             return ColumnSummary(
                 column_name=self.column_name,
                 column_type=column_type,
-                text_gen_col_summaries=res_summaries
+                text_gen_col_summaries=res_summaries,
+                reference_characteristics=None,
+                current_characteristics=None,
+                plot_data=None,
+                freq_plot_data=freq_plot_data
             )
 
         curr_characteristics, ref_characteristics, reference_data = self._get_ref_cur_characteristics(data, column_type,
@@ -254,7 +249,19 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
             reference_characteristics=ref_characteristics,
             current_characteristics=curr_characteristics,
             plot_data=plot_data,
+            text_gen_col_summaries=None,
+            freq_plot_data=None
         )
+
+    def required_features(self, data_definition: DataDefinition):
+        column_type = data_definition.get_column(self.column_name).column_type
+        self.generated_text_features = []
+        self.generated_text_features.append(TextLength(self.column_name))
+        self.generated_text_features.append(NonLetterCharacterPercentage(self.column_name))
+        self.generated_text_features.append(OOVWordsPercentage(self.column_name))
+        if column_type == ColumnType.Text:
+            return self.generated_text_features
+        return []
 
     @staticmethod
     def map_data(stats: FeatureQualityStats) -> ColumnCharacteristics:
@@ -346,7 +353,7 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
     def _get_plot_data(self, data, reference_data, column_type, columns, target_name, target_type, column_name):
         # plot data
         gpd = DataQualityGetPlotData()
-        bins_for_hist = gpd.calculate_main_plot(data.current_data, reference_data, column_name, column_type)
+        bins_for_hist = gpd.calculate_main_plot(data, column_name, column_type)
         data_in_time = None
         if (
                 columns.utility_columns.date is not None
@@ -354,8 +361,7 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
                 and column_type != "datetime"
         ):
             data_in_time = gpd.calculate_data_in_time(
-                data.current_data,
-                reference_data,
+                data,
                 column_name,
                 column_type,
                 columns.utility_columns.date,
@@ -376,8 +382,7 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
                 and column_type != "datetime"
         ):
             data_for_plots = gpd.calculate_data_by_target(
-                data.current_data,
-                reference_data,
+                data,
                 column_name,
                 column_type,
                 target_name,
@@ -408,11 +413,37 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
 
         return plot_data
 
+    def _calc_top_words_frequencies(self, data: InputData, k=10):
+        from evidently.features.text_utils import get_frequencies
+        result = {}
+        freqs_cur = data.get_current_column(self.column_name).apply(lambda x: get_frequencies(x, lemmatize=True)).sum()
+        total_freqs_cur = sum(freqs_cur.values())
+        top_words = [word[0] for word in freqs_cur.most_common(k)]
+
+        if data.reference_data is not None:
+            freqs_ref = data.get_reference_column(self.column_name).apply(
+                lambda x: get_frequencies(x, lemmatize=True)).sum()
+            total_freqs_ref = sum(freqs_ref.values())
+            top_ref_words = [word[0] for word in freqs_ref.most_common(k)]
+            top_words = set(top_words)
+            top_words.update(set(top_ref_words))
+            top_words = list(top_words)
+        result['current'] = pd.DataFrame({'x': top_words,
+                                          'count': [freqs_cur[word] / total_freqs_cur for word in top_words]})
+        if data.reference_data is not None:
+            result['reference'] = pd.DataFrame({'x': top_words,
+                                                'count': [freqs_ref[word] / total_freqs_ref for word in top_words]})
+        return result
+
 
 @default_renderer(wrap_type=ColumnSummaryMetric)
 class ColumnSummaryMetricRenderer(MetricRenderer):
     def render_json(self, obj: ColumnSummaryMetric) -> dict:
         result = dataclasses.asdict(obj.get_result())
+        if result["column_type"] == 'text':
+            for i in range(len(result['text_gen_col_summaries'])):
+                result['text_gen_col_summaries'][i].pop("plot_data", None)
+            return result
         result.pop("plot_data", None)
         return result
 
@@ -422,7 +453,7 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
         column_name = metric_result.column_name
 
         if column_type == 'text':
-            widgets = []
+            widgets = [self._get_word_freq_widget(bins_for_hist=metric_result.freq_plot_data)]
             for el in metric_result.text_gen_col_summaries:
                 metric_result_col = el
                 column_type_col = el.column_type
@@ -431,6 +462,26 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
             return widgets
 
         return self._get_widgets_for_one_col(metric_result, column_type, column_name)
+
+    def _get_word_freq_widget(self, bins_for_hist):
+        hist_curr = bins_for_hist["current"]
+        hist_ref = None
+        metrics_values_headers = [""]
+        if "reference" in bins_for_hist.keys():
+            hist_ref = bins_for_hist["reference"]
+            metrics_values_headers = ["current", "reference"]
+        fig = plot_distr(hist_curr=hist_curr, hist_ref=hist_ref, color_options=self.color_options)
+        fig.update_layout(legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1))
+        fig = json.loads(fig.to_json())
+        w1 = BaseWidgetInfo(
+            type="big_graph",
+            title="Most frequent words",
+            size=5,
+            params={
+                "metricsValuesHeaders": metrics_values_headers,
+                "graph": {"data": fig["data"], "layout": fig["layout"]},
+            })
+        return w1
 
     def _get_widgets_for_one_col(self, metric_result, column_type, column_name):
         # main plot

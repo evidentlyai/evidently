@@ -6,6 +6,8 @@ from nltk.stem.wordnet import WordNetLemmatizer
 
 from evidently.features.generated_features import GeneratedFeature
 from evidently.utils.data_preprocessing import DataDefinition
+from evidently.metrics.base_metric import ColumnName
+from evidently.metrics.base_metric import additional_feature
 
 nltk.download("words")
 nltk.download("wordnet")
@@ -47,3 +49,6 @@ class TriggerWordsPresent(GeneratedFeature):
                 ]
             )
         )
+
+    def feature_name(self) -> ColumnName:
+        return additional_feature(self, self.column_name)

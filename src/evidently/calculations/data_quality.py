@@ -17,6 +17,7 @@ from evidently.utils.types import ColumnDistribution
 from evidently.utils.visualizations import Distribution
 from evidently.utils.visualizations import make_hist_for_cat_plot
 from evidently.utils.visualizations import make_hist_for_num_plot
+from evidently.metrics.base_metric import InputData
 
 MAX_CATEGORIES = 5
 
@@ -270,14 +271,26 @@ class DataQualityGetPlotData:
         self.curr: Optional[pd.Series] = None
         self.ref: Optional[pd.Series] = None
 
+    def _get_curr_ref(self, data: InputData, feature_name_col_name):
+        if isinstance(feature_name_col_name, str):
+            return data.current_data.copy(), data.reference_data.copy(), feature_name_col_name
+        feature_name = feature_name_col_name.name
+        curr = data.current_data.copy()
+        curr[feature_name] = data.get_current_column(feature_name_col_name)
+        ref = data.reference_data.copy()
+        if ref is not None:
+            ref[feature_name] = data.get_reference_column(feature_name_col_name)
+        return curr, ref, feature_name
+
     def calculate_main_plot(
         self,
-        curr: pd.DataFrame,
-        ref: Optional[pd.DataFrame],
-        feature_name: str,
+        data: InputData,
+        feature_name_col_name,
         feature_type: str,
         merge_small_cat: Optional[int] = MAX_CATEGORIES,
     ):
+        curr, ref, feature_name = self._get_curr_ref(data, feature_name_col_name)
+
         if feature_type == "cat" and merge_small_cat is not None:
             if ref is not None:
                 ref = ref.copy()
@@ -325,13 +338,13 @@ class DataQualityGetPlotData:
 
     def calculate_data_in_time(
         self,
-        curr: pd.DataFrame,
-        ref: Optional[pd.DataFrame],
-        feature_name: str,
+        data: InputData,
+        feature_name_col_name,
         feature_type: str,
         datetime_name: str,
         merge_small_cat: Optional[int] = MAX_CATEGORIES,
     ):
+        curr, ref, feature_name = self._get_curr_ref(data, feature_name_col_name)
         result = None
         if feature_type == "cat" and merge_small_cat is not None:
             if ref is not None:
@@ -393,14 +406,14 @@ class DataQualityGetPlotData:
 
     def calculate_data_by_target(
         self,
-        curr: pd.DataFrame,
-        ref: Optional[pd.DataFrame],
-        feature_name: str,
+        data: InputData,
+        feature_name_col_name,
         feature_type: str,
         target_name: str,
         target_type: str,
         merge_small_cat: Optional[int] = MAX_CATEGORIES,
     ):
+        curr, ref, feature_name = self._get_curr_ref(data, feature_name_col_name)
         result = None
         if feature_type == "cat" and target_type == "num":
             if ref is not None:
