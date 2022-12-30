@@ -30,6 +30,7 @@ from evidently.utils.visualizations import plot_distr_with_log_button
 from evidently.utils.visualizations import plot_num_feature_in_time
 from evidently.utils.visualizations import plot_num_num_rel
 from evidently.utils.visualizations import plot_time_feature_distr
+from evidently.renderers import html_widgets
 
 from evidently.features.text_length_feature import TextLength
 from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
@@ -128,11 +129,13 @@ class ColumnSummary:
     plot_data: Optional[DataQualityPlot]
     text_gen_col_summaries: Optional[List[ColumnSummaryOneCol]]
     freq_plot_data: Optional[Dict[str, pd.DataFrame]]
+    show_words_frequencies: Optional[bool]
 
 
 class ColumnSummaryMetric(Metric[ColumnSummary]):
-    def __init__(self, column_name: str):
+    def __init__(self, column_name: str, show_words_frequencies=True):
         self.column_name = column_name
+        self.show_words_frequencies=show_words_frequencies
 
     @staticmethod
     def acceptable_types() -> List[ColumnType]:
@@ -225,8 +228,9 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
                                                          reference_characteristics=ref_characteristics,
                                                          current_characteristics=curr_characteristics,
                                                          plot_data=plot_data))
-
-            freq_plot_data = self._calc_top_words_frequencies(data, k=10)
+            if self.show_words_frequencies:
+                freq_plot_data = self._calc_top_words_frequencies(data, k=10)
+            else: freq_plot_data = None
 
             return ColumnSummary(
                 column_name=self.column_name,
@@ -235,7 +239,8 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
                 reference_characteristics=None,
                 current_characteristics=None,
                 plot_data=None,
-                freq_plot_data=freq_plot_data
+                freq_plot_data=freq_plot_data,
+                show_words_frequencies=self.show_words_frequencies
             )
 
         curr_characteristics, ref_characteristics, reference_data = self._get_ref_cur_characteristics(data, column_type,
@@ -250,7 +255,8 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
             current_characteristics=curr_characteristics,
             plot_data=plot_data,
             text_gen_col_summaries=None,
-            freq_plot_data=None
+            freq_plot_data=None,
+            show_words_frequencies=False
         )
 
     def required_features(self, data_definition: DataDefinition):
@@ -374,7 +380,7 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
                 freq=data_in_time["freq"],
                 datetime_name=data_in_time["datetime_name"],
             )
-
+        data_by_target = None
         if (
                 target_name is not None
                 and target_type is not None
@@ -430,6 +436,7 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
             top_words = list(top_words)
         result['current'] = pd.DataFrame({'x': top_words,
                                           'count': [freqs_cur[word] / total_freqs_cur for word in top_words]})
+        result['current'].sort_values('count', ascending=False, inplace=True)
         if data.reference_data is not None:
             result['reference'] = pd.DataFrame({'x': top_words,
                                                 'count': [freqs_ref[word] / total_freqs_ref for word in top_words]})
@@ -451,9 +458,12 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
         metric_result = obj.get_result()
         column_type = metric_result.column_type
         column_name = metric_result.column_name
+        show_words_frequencies = metric_result.show_words_frequencies
 
         if column_type == 'text':
-            widgets = [self._get_word_freq_widget(bins_for_hist=metric_result.freq_plot_data)]
+            widgets = []
+            if show_words_frequencies:
+                widgets = [self._get_word_freq_widget(bins_for_hist=metric_result.freq_plot_data)]
             for el in metric_result.text_gen_col_summaries:
                 metric_result_col = el
                 column_type_col = el.column_type
@@ -466,21 +476,11 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
     def _get_word_freq_widget(self, bins_for_hist):
         hist_curr = bins_for_hist["current"]
         hist_ref = None
-        metrics_values_headers = [""]
         if "reference" in bins_for_hist.keys():
             hist_ref = bins_for_hist["reference"]
-            metrics_values_headers = ["current", "reference"]
         fig = plot_distr(hist_curr=hist_curr, hist_ref=hist_ref, color_options=self.color_options)
         fig.update_layout(legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1))
-        fig = json.loads(fig.to_json())
-        w1 = BaseWidgetInfo(
-            type="big_graph",
-            title="Most frequent words",
-            size=5,
-            params={
-                "metricsValuesHeaders": metrics_values_headers,
-                "graph": {"data": fig["data"], "layout": fig["layout"]},
-            })
+        w1 = html_widgets.plotly_figure(title="Most frequent words", figure=fig)
         return w1
 
     def _get_widgets_for_one_col(self, metric_result, column_type, column_name):

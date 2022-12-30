@@ -272,12 +272,15 @@ class DataQualityGetPlotData:
         self.ref: Optional[pd.Series] = None
 
     def _get_curr_ref(self, data: InputData, feature_name_col_name):
+        if not data.reference_data:
+            ref = None
+        else:
+            ref = data.reference_data.copy()
         if isinstance(feature_name_col_name, str):
-            return data.current_data.copy(), data.reference_data.copy(), feature_name_col_name
+            return data.current_data.copy(), ref, feature_name_col_name
         feature_name = feature_name_col_name.name
         curr = data.current_data.copy()
         curr[feature_name] = data.get_current_column(feature_name_col_name)
-        ref = data.reference_data.copy()
         if ref is not None:
             ref[feature_name] = data.get_reference_column(feature_name_col_name)
         return curr, ref, feature_name

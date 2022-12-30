@@ -27,8 +27,10 @@ class OOVWordsPercentage(GeneratedFeature):
 
     def generate_feature(self, data: pd.DataFrame, data_definition: DataDefinition) -> pd.DataFrame:
         def oov_share(s, ignore_words=()):
+            if len(s) == 0: return None
             oov_num = 0
             words_ = re.sub("[^A-Za-z0-9 ]+", "", s).split()  # leave only letters, digits and spaces, split by spaces
+            if len(words_) == 0: return None
             for word in words_:
                 if word.lower() not in ignore_words and lem.lemmatize(word.lower()) not in eng_words:
                     oov_num += 1

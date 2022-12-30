@@ -16,6 +16,7 @@ class NonLetterCharacterPercentage(GeneratedFeature):
 
         # counts share of characters that are not letters or spaces
         def non_letter_share(s):
+            if len(s) == 0: return None
             non_letters_num = 0
             for ch in s:
                 if not ch.isalpha() and ch != " ":

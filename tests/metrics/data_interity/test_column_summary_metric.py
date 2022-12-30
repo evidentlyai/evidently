@@ -5,8 +5,8 @@ import pytest
 
 from evidently import ColumnMapping
 from evidently.metrics import ColumnSummaryMetric
-from evidently.metrics.data_integrity.column_summary_metric import CategoricalCharacteristics
-from evidently.metrics.data_integrity.column_summary_metric import ColumnSummary
+from evidently.metrics.data_integrity.column_summary_metric import CategoricalCharacteristics, NumericCharacteristics
+from evidently.metrics.data_integrity.column_summary_metric import ColumnSummary, ColumnSummaryOneCol
 from evidently.metrics.data_integrity.column_summary_metric import DataQualityPlot
 from evidently.report import Report
 
@@ -41,6 +41,9 @@ from evidently.report import Report
                     data_by_target=None,
                     counts_of_values={"current": pd.DataFrame(dict(x=["ff", 3, 1], count=[1, 1, 1]))},
                 ),
+                text_gen_col_summaries=None,
+                freq_plot_data=None,
+                show_words_frequencies=False
             ),
         ),
     ),
@@ -223,3 +226,22 @@ def test_column_summary_metric_with_report(
     result = json.loads(json_result)
     assert result["metrics"][0]["metric"] == "ColumnSummaryMetric"
     assert result["metrics"][0]["result"] == expected_json
+
+
+column_mapping = ColumnMapping()
+column_mapping.text_features = ['text_field']
+column_mapping.prediction = 'prediction'
+current_data = pd.DataFrame({"text_field": ["foo", "bar", "hello, world!", 'apple'],
+                             "prediction": ["a", "b", "c", "a"]})
+
+
+def test_column_summary_metric_text():
+    metric = ColumnSummaryMetric(column_name="text_field", show_words_frequencies=False)
+    report = Report(metrics=[metric])
+    report.run(current_data=current_data, reference_data=None, column_mapping=column_mapping)
+    result = metric.get_result()
+    assert result.__dict__['column_name'] == 'text_field'
+    assert result.__dict__['column_type'] == 'text'
+    assert result.__dict__['reference_characteristics'] == None
+    assert result.__dict__['current_characteristics'] == None
+    assert len(result.__dict__['text_gen_col_summaries']) == 3
