@@ -6,6 +6,8 @@ from nltk.corpus import words
 from nltk.stem.wordnet import WordNetLemmatizer
 
 from evidently.features.generated_features import GeneratedFeature
+from evidently.metrics.base_metric import ColumnName
+from evidently.metrics.base_metric import additional_feature
 from evidently.utils.data_preprocessing import DataDefinition
 from evidently.metrics.base_metric import ColumnName
 from evidently.metrics.base_metric import additional_feature

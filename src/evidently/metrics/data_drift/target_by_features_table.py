@@ -1,6 +1,8 @@
 import json
+from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Union
 
 import dataclasses
 import numpy as np
@@ -12,6 +14,9 @@ from plotly.subplots import make_subplots
 
 from evidently.calculations.classification_performance import PredictionData
 from evidently.calculations.classification_performance import get_prediction_data
+from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
+from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
+from evidently.features.text_length_feature import TextLength
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.model.widget import AdditionalGraphInfo
@@ -19,6 +24,7 @@ from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.utils.data_operations import process_columns
+from evidently.utils.data_preprocessing import DataDefinition
 
 
 @dataclasses.dataclass
@@ -34,9 +40,39 @@ class TargetByFeaturesTableResults:
 
 class TargetByFeaturesTable(Metric[TargetByFeaturesTableResults]):
     columns: Optional[List[str]]
+    text_features_gen: Optional[
+        Dict[str, Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]]]
+    ]
 
     def __init__(self, columns: Optional[List[str]] = None):
         self.columns = columns
+        self.text_features_gen = None
+
+    def required_features(self, data_definition: DataDefinition):
+        if len(data_definition.get_columns("text_features")) > 0:
+            text_cols = [col.column_name for col in data_definition.get_columns("text_features")]
+            text_features_gen = {}
+            text_features_gen_result = []
+            for col in text_cols:
+                col_dict = {}
+                col_dict[f"{col}: Text Length"] = TextLength(col)
+                col_dict[f"{col}: Non Letter Character %"] = NonLetterCharacterPercentage(col)
+                col_dict[f"{col}: OOV %"] = OOVWordsPercentage(col)
+
+                text_features_gen_result += [
+                    col_dict[f"{col}: Text Length"],
+                    col_dict[f"{col}: Non Letter Character %"],
+                    col_dict[f"{col}: OOV %"],
+                ]
+                text_features_gen[col] = col_dict
+            self.text_features_gen = text_features_gen
+
+            return text_features_gen_result
+        else:
+            return []
+
+    def get_parameters(self) -> tuple:
+        return ()
 
     def calculate(self, data: InputData) -> TargetByFeaturesTableResults:
         dataset_columns = process_columns(data.current_data, data.column_mapping)
@@ -55,10 +91,21 @@ class TargetByFeaturesTable(Metric[TargetByFeaturesTableResults]):
             ref_predictions = get_prediction_data(data.reference_data, dataset_columns, data.column_mapping.pos_label)
 
         if self.columns is None:
-            columns = dataset_columns.num_feature_names + dataset_columns.cat_feature_names
+            columns = (
+                dataset_columns.num_feature_names
+                + dataset_columns.cat_feature_names
+                + dataset_columns.text_feature_names
+            )
         else:
             columns = list(
-                np.intersect1d(self.columns, dataset_columns.num_feature_names + dataset_columns.cat_feature_names)
+                np.intersect1d(
+                    self.columns,
+                    (
+                        dataset_columns.num_feature_names
+                        + dataset_columns.cat_feature_names
+                        + dataset_columns.text_feature_names
+                    ),
+                )
             )
         if data.column_mapping.task is not None:
             task = data.column_mapping.task
@@ -70,6 +117,31 @@ class TargetByFeaturesTable(Metric[TargetByFeaturesTableResults]):
                     task = "regression"
             else:
                 raise ValueError("Task parameter of column_mapping should be specified")
+        # process text columns
+        if (
+            self.text_features_gen is not None
+            and len(np.intersect1d(list(self.text_features_gen.keys()), columns)) >= 1
+        ):
+            for col in np.intersect1d(list(self.text_features_gen.keys()), columns):
+                columns += list(self.text_features_gen[col].keys())
+                columns.remove(col)
+                curr_text_df = pd.concat(
+                    [data.get_current_column(x.feature_name()) for x in list(self.text_features_gen[col].values())],
+                    axis=1,
+                )
+                curr_text_df.columns = list(self.text_features_gen[col].keys())
+                curr_df = pd.concat([curr_df.reset_index(drop=True), curr_text_df.reset_index(drop=True)], axis=1)
+
+                if ref_df is not None:
+                    ref_text_df = pd.concat(
+                        [
+                            data.get_reference_column(x.feature_name())
+                            for x in list(self.text_features_gen[col].values())
+                        ],
+                        axis=1,
+                    )
+                    ref_text_df.columns = list(self.text_features_gen[col].keys())
+                    ref_df = pd.concat([ref_df.reset_index(drop=True), ref_text_df.reset_index(drop=True)], axis=1)
 
         return TargetByFeaturesTableResults(
             current_plot_data=curr_df,
