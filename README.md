@@ -81,7 +81,7 @@ Unfortunately, building reports inside a Jupyter notebook is not yet possible fo
 
 # :arrow_forward: Getting started
 > **Note**
-> This is a simple Hello World example. You can find a complete [Getting Started Tutorial](https://docs.evidentlyai.com/tutorial) in the docs.
+> This is a simple Hello World example. You can find a complete [Getting Started Tutorial](https://docs.evidentlyai.com/get-started/tutorial) in the docs.
 
 ## Jupyter Notebook
 To start, prepare your data as two pandas `DataFrames`. The first should include your reference data, the second - current production data. The structure of both datasets should be identical. To run some of the evaluations (e.g. Data Drift), you need input features only. In other cases (e.g. Target Drift, Classification Performance), you need Target and/or Prediction. 
@@ -166,7 +166,7 @@ data_drift_report.json()
 We welcome contributions! Read the [Guide](CONTRIBUTING.md) to learn more. 
 
 # :books: Documentation
-For more information, refer to a complete <a href="https://docs.evidentlyai.com">Documentation</a>. You can start with this [Tutorial](https://docs.evidentlyai.com/tutorial) for a quick introduction.
+For more information, refer to a complete <a href="https://docs.evidentlyai.com">Documentation</a>. You can start with this [Tutorial](https://docs.evidentlyai.com/get-started/tutorial) for a quick introduction.
 
 # :card_index_dividers: Examples
 Here you can find simple examples on toy datasets to quickly explore what Evidently can do right out of the box.
