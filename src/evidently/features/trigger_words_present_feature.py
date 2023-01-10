@@ -7,15 +7,14 @@ from nltk.stem.wordnet import WordNetLemmatizer
 from evidently.features.generated_features import GeneratedFeature
 from evidently.utils.data_preprocessing import DataDefinition
 
-nltk.download("words")
-nltk.download("wordnet")
-nltk.download("omw-1.4")
-
-lem = WordNetLemmatizer()
-
 
 class TriggerWordsPresent(GeneratedFeature):
     def __init__(self, column_name: str, words_list=(), lemmatisize=True):
+        nltk.download("words")
+        nltk.download("wordnet")
+        nltk.download("omw-1.4")
+
+        self.lem = WordNetLemmatizer()
         self.column_name = column_name
         self.words_list = words_list
         self.lemmatisize = lemmatisize
@@ -26,7 +25,7 @@ class TriggerWordsPresent(GeneratedFeature):
             for word_ in words:
                 word = word_.lower()
                 if lemmatisize:
-                    word = lem.lemmatize(word)
+                    word = self.lem.lemmatize(word)
                 if word in words_list:
                     return 1
             return 0

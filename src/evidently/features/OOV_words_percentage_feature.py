@@ -10,16 +10,15 @@ from evidently.metrics.base_metric import ColumnName
 from evidently.metrics.base_metric import additional_feature
 from evidently.utils.data_preprocessing import DataDefinition
 
-nltk.download("words")
-nltk.download("wordnet")
-nltk.download("omw-1.4")
-
-lem = WordNetLemmatizer()
-eng_words = set(words.words())
-
 
 class OOVWordsPercentage(GeneratedFeature):
     def __init__(self, column_name: str, ignore_words=()):
+        nltk.download("words")
+        nltk.download("wordnet")
+        nltk.download("omw-1.4")
+
+        self.lem = WordNetLemmatizer()
+        self.eng_words = set(words.words())
         self.column_name = column_name
         self.ignore_words = ignore_words
 
@@ -28,7 +27,7 @@ class OOVWordsPercentage(GeneratedFeature):
             oov_num = 0
             words_ = re.sub("[^A-Za-z0-9 ]+", "", s).split()  # leave only letters, digits and spaces, split by spaces
             for word in words_:
-                if word.lower() not in ignore_words and lem.lemmatize(word.lower()) not in eng_words:
+                if word.lower() not in ignore_words and self.lem.lemmatize(word.lower()) not in self.eng_words:
                     oov_num += 1
             return 100 * oov_num / len(words_)
 
