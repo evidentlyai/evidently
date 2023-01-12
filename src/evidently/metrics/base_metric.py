@@ -1,4 +1,6 @@
 import abc
+import logging
+import uuid
 from enum import Enum
 from typing import Dict
 from typing import Generic
@@ -105,7 +107,7 @@ class Metric(Generic[TResult]):
             raise ValueError(f"No result found for metric {self} of type {type(self).__name__}")
         return result
 
-    def get_parameters(self) -> tuple:
+    def get_parameters(self) -> Optional[tuple]:
         attributes = []
         for field, value in sorted(self.__dict__.items(), key=lambda x: x[0]):
             if field in ["context"]:
@@ -114,7 +116,13 @@ class Metric(Generic[TResult]):
                 attributes.append(tuple(value))
             else:
                 attributes.append(value)
-        return tuple(attributes)
+        params = tuple(attributes)
+        try:
+            hash(params)
+        except TypeError:
+            logging.warning(f"unhashable params for {type(self)}. Fallback to unique.")
+            return None
+        return params
 
     def required_features(self, data_definition: DataDefinition):
         required_features = []

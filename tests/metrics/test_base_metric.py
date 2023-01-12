@@ -76,9 +76,6 @@ class MetricWithAllTextFeatures(Metric[Dict[str, int]]):
                          for column in data_definition.get_columns("text_features")}
         return list(self.features.values())
 
-    def get_parameters(self) -> tuple:
-        return ()
-
 
 class SimpleGeneratedFeature(GeneratedFeature):
     def __init__(self, column_name: str):
