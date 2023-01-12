@@ -37,6 +37,7 @@ class DatasetSummary:
     number_of_missing_values: int
     number_of_categorical_columns: int
     number_of_numeric_columns: int
+    number_of_text_columns: int
     number_of_datetime_columns: int
     number_of_constant_columns: int
     number_of_almost_constant_columns: int
@@ -80,6 +81,7 @@ class DatasetSummaryMetric(Metric[DatasetSummaryMetricResult]):
             number_of_missing_values=get_number_of_all_pandas_missed_values(dataset),
             number_of_categorical_columns=len(columns.cat_feature_names),
             number_of_numeric_columns=len(columns.num_feature_names),
+            number_of_text_columns=len(columns.text_feature_names),
             number_of_datetime_columns=len(columns.datetime_feature_names),
             number_of_empty_columns=get_number_of_empty_columns(dataset),
             number_of_constant_columns=get_number_of_constant_columns(dataset),
@@ -142,6 +144,7 @@ class DatasetSummaryMetricRenderer(MetricRenderer):
             ["missing values", metric_result.current.number_of_missing_values],
             ["categorical columns", metric_result.current.number_of_categorical_columns],
             ["numeric columns", metric_result.current.number_of_numeric_columns],
+            ["text columns", metric_result.current.number_of_text_columns],
             ["datetime columns", metric_result.current.number_of_datetime_columns],
             ["empty columns", metric_result.current.number_of_empty_columns],
             ["constant columns", metric_result.current.number_of_constant_columns],
@@ -160,12 +163,13 @@ class DatasetSummaryMetricRenderer(MetricRenderer):
             rows[6].append(metric_result.reference.number_of_missing_values)
             rows[7].append(metric_result.reference.number_of_categorical_columns)
             rows[8].append(metric_result.reference.number_of_numeric_columns)
-            rows[9].append(metric_result.reference.number_of_datetime_columns)
-            rows[10].append(metric_result.reference.number_of_empty_columns)
-            rows[11].append(metric_result.reference.number_of_constant_columns)
-            rows[12].append(metric_result.reference.number_of_almost_constant_columns)
-            rows[13].append(metric_result.reference.number_of_duplicated_columns)
-            rows[14].append(metric_result.reference.number_of_almost_duplicated_columns)
+            rows[9].append(metric_result.reference.number_of_text_columns)
+            rows[10].append(metric_result.reference.number_of_datetime_columns)
+            rows[11].append(metric_result.reference.number_of_empty_columns)
+            rows[12].append(metric_result.reference.number_of_constant_columns)
+            rows[13].append(metric_result.reference.number_of_almost_constant_columns)
+            rows[14].append(metric_result.reference.number_of_duplicated_columns)
+            rows[15].append(metric_result.reference.number_of_almost_duplicated_columns)
 
         return table_data(title="", column_names=column_names, data=rows)
 
