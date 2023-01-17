@@ -159,7 +159,7 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
         return []
 
     def get_parameters(self) -> tuple:
-        return ()
+        return (self.column_name, )
 
     @staticmethod
     def acceptable_types() -> List[ColumnType]:

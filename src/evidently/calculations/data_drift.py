@@ -16,6 +16,7 @@ from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.data_operations import recognize_column_type
 from evidently.utils.visualizations import Distribution
 from evidently.utils.visualizations import get_distribution_for_column
+from evidently.utils.data_drift_utils import get_text_data_for_plots
 
 
 @dataclass
@@ -29,8 +30,8 @@ class ColumnDataDriftMetrics:
     drift_detected: bool
     threshold: float
     # distributions for the column
-    current_distribution: Distribution
-    reference_distribution: Distribution
+    current_distribution: Optional[Distribution]
+    reference_distribution: Optional[Distribution]
     current_small_distribution: Optional[list] = None
     reference_small_distribution: Optional[list] = None
     # data for scatter plot for numeric features only
@@ -40,6 +41,10 @@ class ColumnDataDriftMetrics:
     # correlations for numeric features only
     current_correlations: Optional[Dict[str, float]] = None
     reference_correlations: Optional[Dict[str, float]] = None
+    typical_examples_cur: Optional[List[str]] = None
+    typical_examples_ref: Optional[List[str]] = None
+    typical_words_cur: Optional[List[str]] = None
+    typical_words_ref: Optional[List[str]] = None
 
 
 @dataclass
@@ -80,7 +85,7 @@ def get_one_column_drift(
     if column_type is None:
         column_type = recognize_column_type(dataset=reference_data, column_name=column_name, columns=dataset_columns)
 
-    if column_type not in ("cat", "num"):
+    if column_type not in ("cat", "num", "text"):
         raise ValueError(f"Cannot calculate drift metric for column '{column_name}' with type {column_type}")
 
     stattest = None
@@ -112,6 +117,8 @@ def get_one_column_drift(
     if current_column.empty:
         raise ValueError(f"An empty column '{column_name}' was provided for drift calculation in the current dataset.")
 
+    current_distribution = None
+    reference_distribution = None
     current_small_distribution = None
     reference_small_distribution = None
     current_correlations = None
@@ -119,6 +126,10 @@ def get_one_column_drift(
     current_scatter = None
     x_name = None
     plot_shape = None
+    typical_examples_cur = None
+    typical_examples_ref = None
+    typical_words_cur = None
+    typical_words_ref = None
 
     if column_type == "num":
         if not pd.api.types.is_numeric_dtype(reference_column):
@@ -189,14 +200,19 @@ def get_one_column_drift(
         current_small_distribution = list(
             reversed(list(map(list, zip(*sorted(current_counts.items(), key=lambda x: str(x[0]))))))
         )
-
-    current_distribution, reference_distribution = get_distribution_for_column(
-        column_type=column_type,
-        current=current_column,
-        reference=reference_column,
-    )
-    if reference_distribution is None:
-        raise ValueError(f"Cannot calculate reference distribution for column '{column_name}'.")
+    if column_type != "text":
+        current_distribution, reference_distribution = get_distribution_for_column(
+            column_type=column_type,
+            current=current_column,
+            reference=reference_column,
+        )
+        if reference_distribution is None:
+            raise ValueError(f"Cannot calculate reference distribution for column '{column_name}'.")
+    
+    elif column_type == "text" and drift_result.drifted:
+        typical_examples_cur, typical_examples_ref, typical_words_cur, typical_words_ref = get_text_data_for_plots(
+            reference_column, current_column
+        )
 
     return ColumnDataDriftMetrics(
         column_name=column_name,
@@ -214,6 +230,10 @@ def get_one_column_drift(
         current_scatter=current_scatter,
         x_name=x_name,
         plot_shape=plot_shape,
+        typical_examples_cur=typical_examples_cur,
+        typical_examples_ref=typical_examples_ref,
+        typical_words_cur=typical_words_cur,
+        typical_words_ref=typical_words_ref,
     )
 
 
@@ -291,6 +311,9 @@ def _get_all_columns_for_drift(dataset_columns: DatasetColumns) -> List[str]:
 
     if dataset_columns.cat_feature_names:
         result += dataset_columns.cat_feature_names
+    
+    if dataset_columns.text_feature_names:
+        result += dataset_columns.text_feature_names
 
     return result
 

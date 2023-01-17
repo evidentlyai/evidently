@@ -296,6 +296,9 @@ def recognize_column_type(
     if column_name in columns.datetime_feature_names:
         return "datetime"
 
+    if column_name in columns.text_feature_names:
+        return "text"
+
     if column_name == columns.utility_columns.id_column:
         return "id"
 

@@ -54,7 +54,9 @@ def register_stattest(stat_test: StatTest):
 
 def _get_default_stattest(reference_data: pd.Series, current_data: pd.Series, feature_type: str) -> StatTest:
     n_values = pd.concat([reference_data, current_data]).nunique()
-    if reference_data.shape[0] <= 1000:
+    if feature_type == "text":
+        return stattests.text_content_drift_stat_test
+    elif reference_data.shape[0] <= 1000:
         if feature_type == "num":
             if n_values <= 5:
                 return stattests.chi_stat_test if n_values > 2 else stattests.z_stat_test
