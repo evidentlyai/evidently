@@ -47,7 +47,7 @@ class DatasetCorrelationsMetricResult:
     current: DatasetCorrelation
     reference: Optional[DatasetCorrelation]
 
-
+import logging
 class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
     """Calculate different correlations with target, predictions and features"""
 
@@ -129,6 +129,7 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
 
         if pd.isnull(abs_max_features_correlation):
             abs_max_features_correlation = None
+        logging.warning(abs_max_features_correlation)
 
         return CorrelationStats(
             target_prediction_correlation=target_prediction_correlation,
@@ -139,16 +140,28 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
         )
 
     def _get_correlations(self, dataset: pd.DataFrame, columns: DatasetColumns, add_text_columns: Optional[list]) -> DatasetCorrelation:
-        correlations = calculate_correlations(dataset, columns)
+        # correlations = calculate_correlations(dataset, columns)
+        correlations_with_text = None
+        if add_text_columns is not None:
+            correlations = calculate_correlations(dataset, columns, sum(add_text_columns, []))
+            # correlations_with_text=correlations
+            for name, correlation in correlations.items():
+                if name != "cramer_v":
+                    for col_idx in add_text_columns:
+                        correlation.loc[col_idx, col_idx] = 0
+                    correlations[name] = correlation
+            correlations_with_text=correlations
+        else:
+            correlations = calculate_correlations(dataset, columns)
 
         stats = {
             name: self._get_correlations_stats(correlation, columns)
             for name, correlation in correlations.items()
         }
 
-        correlations_with_text = None
-        if add_text_columns is not None:
-            correlations_with_text = calculate_correlations(dataset, columns, add_text_columns)
+        # correlations_with_text = None
+        # if add_text_columns is not None:
+        #     correlations_with_text = calculate_correlations(dataset, columns, add_text_columns)
 
         return DatasetCorrelation(
             correlation=correlations,
@@ -169,7 +182,7 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
                     axis=1,
                 )
                 curr_text_df.columns = list(self.text_features_gen[col].keys())
-                text_columns += list(curr_text_df.columns)
+                text_columns.append(list(curr_text_df.columns))
                 curr_df = pd.concat([curr_df.copy().reset_index(drop=True), curr_text_df.reset_index(drop=True)], axis=1)
 
                 if ref_df is not None:

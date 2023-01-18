@@ -163,7 +163,7 @@ class TestTargetPredictionCorrelation(BaseDataQualityCorrelationsMetricsValueTes
             f"The test threshold is {self.get_condition()}."
         )
 
-
+import logging
 class TestHighlyCorrelatedColumns(BaseDataQualityCorrelationsMetricsValueTest):
     name = "Highly Correlated Columns"
 
@@ -182,6 +182,8 @@ class TestHighlyCorrelatedColumns(BaseDataQualityCorrelationsMetricsValueTest):
         return TestValueCondition(lt=0.9)
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
+
+        logging.warning(f'test cur {self.metric.get_result().current.stats[self.method].abs_max_features_correlation}')
         return self.metric.get_result().current.stats[self.method].abs_max_features_correlation
 
     def get_description(self, value: Numeric) -> str:
