@@ -1,8 +1,8 @@
 import abc
 import logging
-import uuid
 from enum import Enum
 from typing import Dict
+from typing import List
 from typing import Generic
 from typing import Optional
 from typing import Type
@@ -124,7 +124,7 @@ class Metric(Generic[TResult]):
             return None
         return params
 
-    def required_features(self, data_definition: DataDefinition):
+    def required_features(self, data_definition: DataDefinition) -> List[GeneratedFeature]:
         required_features = []
         for field, value in sorted(self.__dict__.items(), key=lambda x: x[0]):
             if field in ["context"]:
