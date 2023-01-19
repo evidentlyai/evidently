@@ -88,10 +88,10 @@ class TestSuite(Display):
 
         for test_generator in self._test_generators:
             self._add_tests_from_generator(test_generator)
+        self._inner_suite.verify()
         curr_add, ref_add = self._inner_suite.create_additional_features(current_data, reference_data, data_definition)
         data = InputData(reference_data, current_data, ref_add, curr_add, column_mapping, data_definition)
 
-        self._inner_suite.verify()
         self._inner_suite.run_calculate(data)
         self._inner_suite.run_checks()
 
