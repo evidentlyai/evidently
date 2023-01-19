@@ -58,10 +58,12 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
         stattest: Optional[PossibleStatTestType] = None,
         cat_stattest: Optional[PossibleStatTestType] = None,
         num_stattest: Optional[PossibleStatTestType] = None,
+        text_stattest: Optional[PossibleStatTestType] = None,
         per_column_stattest: Optional[Dict[str, PossibleStatTestType]] = None,
         stattest_threshold: Optional[float] = None,
         cat_stattest_threshold: Optional[float] = None,
         num_stattest_threshold: Optional[float] = None,
+        text_stattest_threshold: Optional[float] = None,
         per_column_stattest_threshold: Optional[Dict[str, float]] = None,
     ):
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
@@ -70,10 +72,12 @@ class BaseDataDriftMetricsTest(BaseCheckValueTest, ABC):
             stattest=stattest,
             cat_stattest=cat_stattest,
             num_stattest=num_stattest,
+            text_stattest=text_stattest,
             per_column_stattest=per_column_stattest,
             stattest_threshold=stattest_threshold,
             cat_stattest_threshold=cat_stattest_threshold,
             num_stattest_threshold=num_stattest_threshold,
+            text_stattest_threshold=text_stattest_threshold,
             per_column_stattest_threshold=per_column_stattest_threshold,
         )
 
@@ -190,10 +194,12 @@ class TestAllFeaturesValueDrift(BaseGenerator):
     stattest: Optional[PossibleStatTestType]
     cat_stattest: Optional[PossibleStatTestType]
     num_stattest: Optional[PossibleStatTestType]
+    text_stattest: Optional[PossibleStatTestType]
     per_column_stattest: Optional[Dict[str, PossibleStatTestType]]
     stattest_threshold: Optional[float]
     cat_stattest_threshold: Optional[float]
     num_stattest_threshold: Optional[float]
+    text_stattest_threshold: Optional[float]
     per_column_stattest_threshold: Optional[Dict[str, float]]
 
     def __init__(
@@ -202,20 +208,24 @@ class TestAllFeaturesValueDrift(BaseGenerator):
         stattest: Optional[PossibleStatTestType] = None,
         cat_stattest: Optional[PossibleStatTestType] = None,
         num_stattest: Optional[PossibleStatTestType] = None,
+        text_stattest: Optional[PossibleStatTestType] = None,
         per_column_stattest: Optional[Dict[str, PossibleStatTestType]] = None,
         stattest_threshold: Optional[float] = None,
         cat_stattest_threshold: Optional[float] = None,
         num_stattest_threshold: Optional[float] = None,
+        text_stattest_threshold: Optional[float] = None,
         per_column_stattest_threshold: Optional[Dict[str, float]] = None,
     ):
         self.columns = columns
         self.stattest = stattest
         self.cat_stattest = cat_stattest
         self.num_stattest = num_stattest
+        self.text_stattest = text_stattest
         self.per_column_stattest = per_column_stattest
         self.stattest_threshold = stattest_threshold
         self.cat_stattest_threshold = cat_stattest_threshold
         self.num_stattest_threshold = num_stattest_threshold
+        self.text_stattest_threshold = text_stattest_threshold
         self.per_column_stattest_threshold = per_column_stattest_threshold
 
     def generate(self, columns_info: DatasetColumns) -> List[TestColumnDrift]:
@@ -229,10 +239,12 @@ class TestAllFeaturesValueDrift(BaseGenerator):
                 self.stattest,
                 self.cat_stattest,
                 self.num_stattest,
+                self.text_stattest,
                 self.per_column_stattest,
                 self.stattest_threshold,
                 self.cat_stattest_threshold,
                 self.num_stattest_threshold,
+                self.text_stattest_threshold,
                 self.per_column_stattest_threshold,
             )
             results.append(TestColumnDrift(column_name=name, stattest=stattest, stattest_threshold=threshold))
@@ -245,10 +257,30 @@ class TestAllFeaturesValueDrift(BaseGenerator):
                 self.stattest,
                 self.cat_stattest,
                 self.num_stattest,
+                self.text_stattest,
                 self.per_column_stattest,
                 self.stattest_threshold,
                 self.cat_stattest_threshold,
                 self.num_stattest_threshold,
+                self.text_stattest_threshold,
+                self.per_column_stattest_threshold,
+            )
+            results.append(TestColumnDrift(column_name=name, stattest=stattest, stattest_threshold=threshold))
+        for name in columns_info.text_feature_names:
+            if self.columns and name not in self.columns:
+                continue
+            stattest, threshold = resolve_stattest_threshold(
+                name,
+                "text",
+                self.stattest,
+                self.cat_stattest,
+                self.num_stattest,
+                self.text_stattest,
+                self.per_column_stattest,
+                self.stattest_threshold,
+                self.cat_stattest_threshold,
+                self.num_stattest_threshold,
+                self.text_stattest_threshold,
                 self.per_column_stattest_threshold,
             )
             results.append(TestColumnDrift(column_name=name, stattest=stattest, stattest_threshold=threshold))
@@ -262,10 +294,12 @@ class TestCustomFeaturesValueDrift(BaseGenerator):
     stattest: Optional[PossibleStatTestType] = None
     cat_stattest: Optional[PossibleStatTestType] = None
     num_stattest: Optional[PossibleStatTestType] = None
+    text_stattest: Optional[PossibleStatTestType] = None
     per_column_stattest: Optional[Dict[str, PossibleStatTestType]] = None
     stattest_threshold: Optional[float] = None
     cat_stattest_threshold: Optional[float] = None
     num_stattest_threshold: Optional[float] = None
+    text_stattest_threshold: Optional[float] = None
     per_column_stattest_threshold: Optional[Dict[str, float]] = None
 
     def __init__(
@@ -274,20 +308,24 @@ class TestCustomFeaturesValueDrift(BaseGenerator):
         stattest: Optional[PossibleStatTestType] = None,
         cat_stattest: Optional[PossibleStatTestType] = None,
         num_stattest: Optional[PossibleStatTestType] = None,
+        text_stattest: Optional[PossibleStatTestType] = None,
         per_column_stattest: Optional[Dict[str, PossibleStatTestType]] = None,
         stattest_threshold: Optional[float] = None,
         cat_stattest_threshold: Optional[float] = None,
         num_stattest_threshold: Optional[float] = None,
+        text_stattest_threshold: Optional[float] = None,
         per_column_stattest_threshold: Optional[Dict[str, float]] = None,
     ):
         self.features = features
         self.stattest = stattest
         self.cat_stattest = cat_stattest
         self.num_stattest = num_stattest
+        self.text_stattest = text_stattest
         self.per_column_stattest = per_column_stattest
         self.stattest_threshold = stattest_threshold
         self.cat_stattest_threshold = cat_stattest_threshold
         self.num_features_threshold = num_stattest_threshold
+        self.text_features_threshold = text_stattest_threshold
         self.per_feature_threshold = per_column_stattest_threshold
 
     def generate(self, columns_info: DatasetColumns) -> List[TestColumnDrift]:
@@ -299,14 +337,18 @@ class TestCustomFeaturesValueDrift(BaseGenerator):
                 if name in columns_info.cat_feature_names
                 else "num"
                 if columns_info.num_feature_names
+                else "text"
+                if columns_info.text_feature_names
                 else "datetime",
                 self.stattest,
                 self.cat_stattest,
                 self.num_stattest,
+                self.text_stattest,
                 self.per_column_stattest,
                 self.stattest_threshold,
                 self.cat_stattest_threshold,
                 self.num_stattest_threshold,
+                self.text_stattest_threshold,
                 self.per_column_stattest_threshold,
             )
             result.append(
