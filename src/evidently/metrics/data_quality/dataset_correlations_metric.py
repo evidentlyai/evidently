@@ -24,6 +24,7 @@ from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
 from evidently.features.text_length_feature import TextLength
 from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.data_operations import DatasetColumns
+import copy
 
 
 @dataclasses.dataclass
@@ -39,7 +40,7 @@ class CorrelationStats:
 class DatasetCorrelation:
     correlation: Dict[str, pd.DataFrame]
     stats: Dict[str, CorrelationStats]
-    correlations_with_text: Optional[Dict[str, pd.DataFrame]]
+    correlations_calculate: Optional[Dict[str, pd.DataFrame]]
 
 
 @dataclasses.dataclass
@@ -47,7 +48,7 @@ class DatasetCorrelationsMetricResult:
     current: DatasetCorrelation
     reference: Optional[DatasetCorrelation]
 
-import logging
+
 class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
     """Calculate different correlations with target, predictions and features"""
 
@@ -129,7 +130,6 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
 
         if pd.isnull(abs_max_features_correlation):
             abs_max_features_correlation = None
-        logging.warning(abs_max_features_correlation)
 
         return CorrelationStats(
             target_prediction_correlation=target_prediction_correlation,
@@ -139,34 +139,33 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
             abs_max_features_correlation=abs_max_features_correlation,
         )
 
-    def _get_correlations(self, dataset: pd.DataFrame, columns: DatasetColumns, add_text_columns: Optional[list]) -> DatasetCorrelation:
-        # correlations = calculate_correlations(dataset, columns)
-        correlations_with_text = None
+    def _get_correlations(
+        self,
+        dataset: pd.DataFrame,
+        columns: DatasetColumns,
+        add_text_columns: Optional[list]
+    ) -> DatasetCorrelation:
         if add_text_columns is not None:
-            correlations = calculate_correlations(dataset, columns, sum(add_text_columns, []))
-            # correlations_with_text=correlations
-            for name, correlation in correlations.items():
+            correlations_calculate = calculate_correlations(dataset, columns, sum(add_text_columns, []))
+            correlations=copy.deepcopy(correlations_calculate)
+            for name, correlation in correlations_calculate.items():
                 if name != "cramer_v":
                     for col_idx in add_text_columns:
                         correlation.loc[col_idx, col_idx] = 0
-                    correlations[name] = correlation
-            correlations_with_text=correlations
+                    correlations_calculate[name] = correlation
         else:
-            correlations = calculate_correlations(dataset, columns)
+            correlations_calculate = calculate_correlations(dataset, columns)
+            correlations=copy.deepcopy(correlations_calculate)
 
         stats = {
             name: self._get_correlations_stats(correlation, columns)
-            for name, correlation in correlations.items()
+            for name, correlation in correlations_calculate.items()
         }
-
-        # correlations_with_text = None
-        # if add_text_columns is not None:
-        #     correlations_with_text = calculate_correlations(dataset, columns, add_text_columns)
 
         return DatasetCorrelation(
             correlation=correlations,
             stats=stats,
-            correlations_with_text=correlations_with_text,
+            correlations_calculate=correlations_calculate,
         )
 
     def calculate(self, data: InputData) -> DatasetCorrelationsMetricResult:
@@ -221,26 +220,18 @@ class DataQualityCorrelationMetricsRenderer(MetricRenderer):
 
         if result["reference"]:
             result["reference"].pop("correlation", None)
-            result["reference"].pop("correlations_with_text", None)
+            result["reference"].pop("correlations_calculate", None)
 
         return result
 
     def _get_heatmaps(self, metric_result: DatasetCorrelationsMetricResult) -> BaseWidgetInfo:
         tabs = []
-
-        if metric_result.current.correlations_with_text is not None:
-            curr_corr_result = metric_result.current.correlations_with_text
-        else:
-            curr_corr_result = metric_result.current.correlation
-
+        curr_corr_result = metric_result.current.correlation
         for correlation_method in curr_corr_result:
             current_correlation = curr_corr_result[correlation_method]
 
             if metric_result.reference is not None:
-                if metric_result.reference.correlations_with_text is not None:
-                    ref_corr_result = metric_result.reference.correlations_with_text
-                else:
-                    ref_corr_result = metric_result.reference.correlation
+                ref_corr_result = metric_result.reference.correlation
                 reference_heatmap_data: Optional[HeatmapData] = HeatmapData(
                     name="Reference", matrix=ref_corr_result[correlation_method]
                 )

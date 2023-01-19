@@ -186,9 +186,9 @@ class ColumnDriftMetricRenderer(MetricRenderer):
             )
 
             tabs = [
-                TabData(title="carrent: characteristic words", widget=current_table_words),
+                TabData(title="current: characteristic words", widget=current_table_words),
                 TabData(title="reference: characteristic words", widget=reference_table_words),
-                TabData(title="carrent: characteristic examples", widget=current_table_examples),
+                TabData(title="current: characteristic examples", widget=current_table_examples),
                 TabData(title="reference: characteristic examples", widget=reference_table_examples),
             ]
 

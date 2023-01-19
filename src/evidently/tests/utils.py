@@ -327,6 +327,8 @@ def plot_correlations(current_correlations, reference_correlations):
         )
         fig.add_trace(trace, 1, 2)
     fig.update_layout(coloraxis={"colorscale": "RdBu_r"})
+    fig.update_yaxes(type='category')
+    fig.update_xaxes(tickangle=-45)
     return fig
 
 

@@ -433,13 +433,37 @@ class TestColumnDriftRenderer(TestRenderer):
         return base
 
     def render_html(self, obj: TestColumnDrift) -> TestHtmlInfo:
+        info = super().render_html(obj)
         result = obj.metric.get_result()
         column_name = obj.column_name
-        info = super().render_html(obj)
-        fig = get_distribution_plot_figure(
-            current_distribution=result.current_distribution,
-            reference_distribution=result.reference_distribution,
-            color_options=self.color_options,
-        )
-        info.with_details(f"{column_name}", plotly_figure(title="", figure=fig))
+        if result.column_type == "text":
+            info.details = [
+                DetailsInfo(
+                    id=f"{column_name} dritf curr",
+                    title="current: characteristic words",
+                    info=BaseWidgetInfo(
+                        title="",
+                        type="table",
+                        params={"header": ["", ""], "data": [[el, ""] for el in result.typical_words_cur]},
+                        size=2,
+                    ),
+                ),
+                DetailsInfo(
+                    id=f"{column_name} dritf ref",
+                    title="reference: characteristic words",
+                    info=BaseWidgetInfo(
+                        title="",
+                        type="table",
+                        params={"header": ["", ""], "data": [[el, ""] for el in result.typical_words_ref]},
+                        size=2,
+                    ),
+                ),
+            ]
+        else:
+            fig = get_distribution_plot_figure(
+                current_distribution=result.current_distribution,
+                reference_distribution=result.reference_distribution,
+                color_options=self.color_options,
+            )
+            info.with_details(f"{column_name}", plotly_figure(title="", figure=fig))
         return info

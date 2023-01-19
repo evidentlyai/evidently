@@ -175,7 +175,6 @@ def get_typical_words(pipeline, words_num=25) -> Tuple[List[str], List[str]]:
 
     # build inverted index for vocabulary
     inverted_vocabulary = {value: key for key, value in pipeline["vectorization"].vocabulary_.items()}
-
     words_typical_current = weights_df[weights_df["weight"] > 0]
     words_typical_current.sort_values("weight", ascending=False, inplace=True)
     words_typical_current = words_typical_current.head(words_num)
