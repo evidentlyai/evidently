@@ -246,7 +246,7 @@ class Suite:
                     if params is not None:
                         if params in features:
                             continue
-                        features[params] = feature
+                        features[(type(feature), params)] = feature
                     feature_data = feature.generate_feature(current_data, data_definition)
                     feature_data.columns = [f"{feature.__class__.__name__}.{old}" for old in feature_data.columns]
                     if curr_additional_data is None:
