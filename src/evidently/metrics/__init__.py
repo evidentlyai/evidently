@@ -45,3 +45,4 @@ from .regression_performance.regression_dummy_metric import RegressionDummyMetri
 from .regression_performance.regression_performance_metrics import RegressionPerformanceMetrics
 from .regression_performance.regression_quality import RegressionQualityMetric
 from .regression_performance.top_error import RegressionTopErrorMetric
+from .data_quality.text_characteristics_distribution import TextCharacteristicsDistribution

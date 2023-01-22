@@ -138,7 +138,7 @@ class ColumnSummary:
     current_characteristics: ColumnCharacteristics
     plot_data: DataQualityPlot
 
-import logging
+
 class ColumnSummaryMetric(Metric[ColumnSummary]):
     column_name: str
     generated_text_features: Optional[

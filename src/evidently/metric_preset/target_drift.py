@@ -43,10 +43,12 @@ class TargetDriftPreset(MetricPreset):
         stattest: Optional[PossibleStatTestType] = None,
         cat_stattest: Optional[PossibleStatTestType] = None,
         num_stattest: Optional[PossibleStatTestType] = None,
+        text_stattest: Optional[PossibleStatTestType] = None,
         per_column_stattest: Optional[Dict[str, PossibleStatTestType]] = None,
         stattest_threshold: Optional[float] = None,
         cat_stattest_threshold: Optional[float] = None,
         num_stattest_threshold: Optional[float] = None,
+        text_stattest_threshold: Optional[float] = None,
         per_column_stattest_threshold: Optional[Dict[str, float]] = None,
     ):
         super().__init__()
@@ -54,10 +56,12 @@ class TargetDriftPreset(MetricPreset):
         self.stattest = stattest
         self.cat_stattest = cat_stattest
         self.num_stattest = num_stattest
+        self.text_stattest = text_stattest
         self.per_column_stattest = per_column_stattest
         self.stattest_threshold = stattest_threshold
         self.cat_stattest_threshold = cat_stattest_threshold
         self.num_stattest_threshold = num_stattest_threshold
+        self.text_stattest_threshold = text_stattest_threshold
         self.per_column_stattest_threshold = per_column_stattest_threshold
 
     def generate_metrics(self, data: InputData, columns: DatasetColumns) -> Sequence[Metric]:
@@ -76,10 +80,12 @@ class TargetDriftPreset(MetricPreset):
                 self.stattest,
                 self.cat_stattest,
                 self.num_stattest,
+                self.text_stattest,
                 self.per_column_stattest,
                 self.stattest_threshold,
                 self.cat_stattest_threshold,
                 self.num_stattest_threshold,
+                self.text_stattest_threshold,
                 self.per_column_stattest_threshold,
             )
             result.append(
@@ -118,10 +124,12 @@ class TargetDriftPreset(MetricPreset):
                     self.stattest,
                     self.cat_stattest,
                     self.num_stattest,
+                    self.text_stattest,
                     self.per_column_stattest,
                     self.stattest_threshold,
                     self.cat_stattest_threshold,
                     self.num_stattest_threshold,
+                    self.text_stattest_threshold,
                     self.per_column_stattest_threshold,
                 )
                 result.append(
@@ -140,10 +148,12 @@ class TargetDriftPreset(MetricPreset):
                             self.stattest,
                             self.cat_stattest,
                             self.num_stattest,
+                            self.text_stattest,
                             self.per_column_stattest,
                             self.stattest_threshold,
                             self.cat_stattest_threshold,
                             self.num_stattest_threshold,
+                            self.text_stattest_threshold,
                             self.per_column_stattest_threshold,
                         )
                         result.append(
