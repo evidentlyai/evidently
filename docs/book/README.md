@@ -29,7 +29,7 @@ You need to provide the data, choose what to evaluate, and the output format. Ev
 
 You can integrate Evidently into various ML stacks as a monitoring or evaluation component.
 
-Evidently currently works with tabular data. 
+Evidently currently works with tabular and text data. 
 
 # 1. [Tests](tests/README.md): batch model checks 
 
