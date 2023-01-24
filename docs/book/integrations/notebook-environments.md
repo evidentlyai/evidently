@@ -42,9 +42,11 @@ For most hosted environments, you would need to run the following command in the
 !pip install evidently
 ```
 
-**Visual reports in the notebook cell**: Nbextension is not available on Windows and in hosted notebook environments. Evidently will use a different visualization method in this case.  
+## Visual reports in the notebook cell
 
-To get the visual reports in the notebook, you should explicitly add an argument to display the report `inline`:
+Nbextension is not available on Windows and in hosted notebook environments. Evidently will use a different visualization method in this case.  
+
+To get the visual reports in the notebook cell, you should explicitly add an argument to display the report `inline`:
 
 ```python
 report.show(mode='inline')
@@ -61,7 +63,9 @@ report.run(reference_data=reference, current_data=current)
 report.show(mode='inline')
 ```
 
-**Generating standalon HTML**: If the report does not appear, consider generating a standalone HTML file and opening it in a browser. 
+## Standalone HTML
+
+If the report does not appear in the cell, consider generating a standalone HTML file and opening it in a browser. 
 
 ```python
 report = Report(metrics=[
