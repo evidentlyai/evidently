@@ -4,7 +4,7 @@ description: An overview of the evaluations you can do with Evidently.
 
 Evidently has several pre-built reports and test suites. We call them **Presets**. Each preset evaluates or tests a particular aspect of the data or model quality. 
 
-This page links to the **description** of each preset. To see the code and interactive examples in Jupyter notebook or Colab, head here instead:
+This page links to the **description** of each preset. To see the code and interactive examples, head to example notebooks instead:
 
 {% content-ref url="../examples/examples.md" %}
 [Examples](../examples/examples.md). 
