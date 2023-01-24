@@ -46,7 +46,7 @@ To install `evidently`, run the following command in the notebook cell:
 
 There is no need to enable nbextension for this case. `Evidently` uses an alternative way to display visuals in the hosted notebooks. Consult [this section](../integrations/notebook-environments.md) for help.
 
-### Windows
+## Windows
 
 Evidently is available as a PyPI package.
 
