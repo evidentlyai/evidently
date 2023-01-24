@@ -8,7 +8,6 @@ import pandas as pd
 from dataclasses import dataclass
 
 from evidently.calculations.data_drift import ColumnDataDriftMetrics
-from evidently.calculations.data_drift import get_drift_for_columns
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
@@ -27,7 +26,6 @@ from evidently.renderers.render_utils import get_distribution_plot_figure
 from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.data_operations import process_columns
 from evidently.utils.visualizations import plot_scatter_for_data_drift
-from evidently.renderers.html_widgets import table_data
 from evidently.calculations.data_drift import get_one_column_drift
 from evidently.calculations.data_drift import get_dataset_drift
 from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
@@ -39,7 +37,7 @@ from evidently.pipeline.column_mapping import ColumnMapping
 
 
 @dataclass
-class TextCharacteristicsDriftMetricResults:
+class TextDescriptorsDriftMetricResults:
     number_of_columns: int
     number_of_drifted_columns: int
     share_of_drifted_columns: float
@@ -47,8 +45,8 @@ class TextCharacteristicsDriftMetricResults:
     drift_by_columns: Dict[str, ColumnDataDriftMetrics]
     dataset_columns: DatasetColumns
 
-import logging
-class TextCharacteristicsDriftMetric(Metric[TextCharacteristicsDriftMetricResults]):
+
+class TextDescriptorsDriftMetric(Metric[TextDescriptorsDriftMetricResults]):
     column_name: str
     options: DataDriftOptions
     generated_text_features: Optional[
@@ -81,7 +79,7 @@ class TextCharacteristicsDriftMetric(Metric[TextCharacteristicsDriftMetricResult
     def get_parameters(self) -> tuple:
         return self.column_name, self.options
 
-    def calculate(self, data: InputData) -> TextCharacteristicsDriftMetricResults:
+    def calculate(self, data: InputData) -> TextDescriptorsDriftMetricResults:
         if data.reference_data is None:
             raise ValueError("Reference dataset should be present")
         curr_text_df = pd.concat(
@@ -109,7 +107,7 @@ class TextCharacteristicsDriftMetric(Metric[TextCharacteristicsDriftMetricResult
         )
         dataset_drift = get_dataset_drift(drift_by_columns, 0)
 
-        return TextCharacteristicsDriftMetricResults(
+        return TextDescriptorsDriftMetricResults(
             number_of_columns=curr_text_df.shape[1],
             number_of_drifted_columns=dataset_drift.number_of_drifted_columns,
             share_of_drifted_columns=dataset_drift.dataset_drift_score,
@@ -119,9 +117,9 @@ class TextCharacteristicsDriftMetric(Metric[TextCharacteristicsDriftMetricResult
         )
 
 
-@default_renderer(wrap_type=TextCharacteristicsDriftMetric)
+@default_renderer(wrap_type=TextDescriptorsDriftMetric)
 class DataDriftTableRenderer(MetricRenderer):
-    def render_json(self, obj: TextCharacteristicsDriftMetric) -> dict:
+    def render_json(self, obj: TextDescriptorsDriftMetric) -> dict:
         result = dataclasses.asdict(obj.get_result())
 
         # remove pandas dataset values and other useless for JSON fields
@@ -140,7 +138,7 @@ class DataDriftTableRenderer(MetricRenderer):
 
         return result
 
-    def _generate_column_params(self, column_name: str, data: ColumnDataDriftMetrics) -> Optional[RichTableDataRow]:
+    def _generate_column_params(self, column_name: str, data: TextDescriptorsDriftMetric) -> Optional[RichTableDataRow]:
         details = RowDetails()
         if data.current_small_distribution is None or data.reference_small_distribution is None:
             return None
@@ -187,7 +185,7 @@ class DataDriftTableRenderer(MetricRenderer):
         else:
             return None
 
-    def render_html(self, obj: TextCharacteristicsDriftMetric) -> List[BaseWidgetInfo]:
+    def render_html(self, obj: TextDescriptorsDriftMetric) -> List[BaseWidgetInfo]:
         results = obj.get_result()
         color_options = self.color_options
 

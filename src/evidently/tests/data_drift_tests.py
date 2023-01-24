@@ -324,8 +324,8 @@ class TestCustomFeaturesValueDrift(BaseGenerator):
         self.per_column_stattest = per_column_stattest
         self.stattest_threshold = stattest_threshold
         self.cat_stattest_threshold = cat_stattest_threshold
-        self.num_features_threshold = num_stattest_threshold
-        self.text_features_threshold = text_stattest_threshold
+        self.num_stattest_threshold = num_stattest_threshold
+        self.text_stattest_threshold = text_stattest_threshold
         self.per_feature_threshold = per_column_stattest_threshold
 
     def generate(self, columns_info: DatasetColumns) -> List[TestColumnDrift]:

@@ -30,13 +30,13 @@ from evidently.pipeline.column_mapping import ColumnMapping
 
 
 @dataclasses.dataclass
-class TextCharacteristicsCorrelationMetricResult:
+class TextDescriptorsCorrelationMetricResult:
     column_name: str
     current: Dict[str, ColumnCorrelations]
     reference: Optional[Dict[str, ColumnCorrelations]] = None
 
 
-class TextCharacteristicsCorrelationMetric(Metric[TextCharacteristicsCorrelationMetricResult]):
+class TextDescriptorsCorrelationMetric(Metric[TextDescriptorsCorrelationMetricResult]):
     """Calculates correlations between each auto-generated text feature for column_name and other dataset columns"""
 
     column_name: str
@@ -61,7 +61,7 @@ class TextCharacteristicsCorrelationMetric(Metric[TextCharacteristicsCorrelation
     def get_parameters(self) -> tuple:
         return self.column_name
 
-    def calculate(self, data: InputData) -> TextCharacteristicsCorrelationMetricResult:
+    def calculate(self, data: InputData) -> TextDescriptorsCorrelationMetricResult:
         if self.column_name not in data.current_data:
             raise ValueError(f"Column '{self.column_name}' was not found in current data.")
 
@@ -102,16 +102,16 @@ class TextCharacteristicsCorrelationMetric(Metric[TextCharacteristicsCorrelation
             if ref_df is not None:
                 ref_result[col] = calculate_numerical_column_correlations(col, ref_df, correlation_columns)
 
-        return TextCharacteristicsCorrelationMetricResult(
+        return TextDescriptorsCorrelationMetricResult(
             column_name=self.column_name,
             current=curr_result,
             reference=ref_result,
         )
 
-import logging
-@default_renderer(wrap_type=TextCharacteristicsCorrelationMetric)
-class TextCharacteristicsCorrelationMetricRenderer(MetricRenderer):
-    def render_json(self, obj: TextCharacteristicsCorrelationMetric) -> dict:
+
+@default_renderer(wrap_type=TextDescriptorsCorrelationMetric)
+class TextDescriptorsCorrelationMetricRenderer(MetricRenderer):
+    def render_json(self, obj: TextDescriptorsCorrelationMetric) -> dict:
         result = dataclasses.asdict(obj.get_result())
         return result
 
@@ -145,7 +145,7 @@ class TextCharacteristicsCorrelationMetricRenderer(MetricRenderer):
         else:
             return None
 
-    def render_html(self, obj: TextCharacteristicsCorrelationMetric) -> List[BaseWidgetInfo]:
+    def render_html(self, obj: TextDescriptorsCorrelationMetric) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         result = [header_text(label=f"Correlations for column '{metric_result.column_name}'.")]
         for col in list(metric_result.current.keys()):

@@ -93,7 +93,7 @@ def _calculate_threshold(
     if num_stattest_threshold is not None and feature_type == "num":
         return num_stattest_threshold
 
-    if num_stattest_threshold is not None and feature_type == "text":
+    if text_stattest_threshold is not None and feature_type == "text":
         return text_stattest_threshold
 
     if stattest_threshold is not None:

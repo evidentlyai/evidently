@@ -31,10 +31,12 @@ class TargetDriftPreset(MetricPreset):
     stattest: Optional[PossibleStatTestType]
     cat_stattest: Optional[PossibleStatTestType]
     num_stattest: Optional[PossibleStatTestType]
+    text_stattest: Optional[PossibleStatTestType]
     per_column_stattest: Optional[Dict[str, PossibleStatTestType]]
     stattest_threshold: Optional[float]
     cat_stattest_threshold: Optional[float]
     num_stattest_threshold: Optional[float]
+    text_stattest_threshold: Optional[float]
     per_column_stattest_threshold: Optional[Dict[str, float]]
 
     def __init__(

@@ -26,12 +26,12 @@ from evidently.utils.data_preprocessing import ColumnType
 
 
 @dataclasses.dataclass
-class TextCharacteristicsDistributionResult:
+class TextDescriptorsDistributionResult:
     column_name: str
     current: Dict[str, Distribution]
     reference: Optional[Dict[str, Distribution]] = None
 
-class TextCharacteristicsDistribution(Metric[TextCharacteristicsDistributionResult]):
+class TextDescriptorsDistribution(Metric[TextDescriptorsDistributionResult]):
     """Calculates distribution for the column"""
 
     column_name: str
@@ -59,7 +59,7 @@ class TextCharacteristicsDistribution(Metric[TextCharacteristicsDistributionResu
     def get_parameters(self) -> tuple:
         return (self.column_name)
 
-    def calculate(self, data: InputData) -> TextCharacteristicsDistributionResult:
+    def calculate(self, data: InputData) -> TextDescriptorsDistributionResult:
         current_results = {}
         reference_results = None
         if data.reference_data is not None:
@@ -89,22 +89,22 @@ class TextCharacteristicsDistribution(Metric[TextCharacteristicsDistributionResu
             if data.reference_data is not None:
                 reference_results[key] = reference
 
-        return TextCharacteristicsDistributionResult(
+        return TextDescriptorsDistributionResult(
             column_name=self.column_name,
             current=current_results,
             reference=reference_results,
         )
 
 
-@default_renderer(wrap_type=TextCharacteristicsDistribution)
-class TextCharacteristicsDistributionRenderer(MetricRenderer):
-    def render_json(self, obj: TextCharacteristicsDistribution) -> dict:
+@default_renderer(wrap_type=TextDescriptorsDistribution)
+class TextDescriptorsDistributionRenderer(MetricRenderer):
+    def render_json(self, obj: TextDescriptorsDistribution) -> dict:
         result = dataclasses.asdict(obj.get_result())
         result.pop("current", None)
         result.pop("reference", None)
         return result
 
-    def render_html(self, obj: TextCharacteristicsDistribution) -> List[BaseWidgetInfo]:
+    def render_html(self, obj: TextDescriptorsDistribution) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
         result = [
             header_text(label=f"Distribution for column '{metric_result.column_name}'.")
