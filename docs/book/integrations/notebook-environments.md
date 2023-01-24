@@ -4,11 +4,11 @@ description: Using Evidently in Colab and other notebook environments.
 
 You can use Evidently Python library to generate visual HTML reports, JSON, and Python dictionary output directly in the notebook environment. You can also save the HTML reports externally and open them in the browser.
 
-Be default, Evidently is tested to work in **Jupyter notebook** and **Google Colab**.
+Be default, Evidently is tested to work in **Jupyter notebook** on MAC OS and Linux and **Google Colab**.
 
-Generating visual reports might work differently in other notebook environments. Evidently has alternative visualization options implemented, but the performance is not guaranteed. 
+Generating visual reports might work differently in other notebook environments. 
 
-# Jupyter notebooks on MAC OS and Linux
+# Jupyter notebooks 
 
 You can generate the visual reports in **Jupyter notebooks** on MAC OS and Linux. 
 
@@ -18,7 +18,7 @@ If you want to display the dashboards in Jupyter notebook, make sure you that in
 
 You should then follow the steps described in the User Guide to [generate reports](../tests-and-reports/get-reports.md) and [run test suites](../tests-and-reports/run-tests.md).
 
-# Google Colab notebooks
+# Google Colab 
 
 You can also generate visual reports in **Google Collaboratory**.
 
@@ -32,9 +32,9 @@ Then follow the steps described in the User Guide.
 
 # Other notebook environments 
 
-You can also use Evidently in other notebook environments, including **Jupyter notebooks on Windows**, **Jupyter lab** and other hosted notebooks such as **Kaggle Kernel**, **Databricks** or **Deepnote** notebooks. Consult the [installation instructions](../installation/install-evidently.md).
+You can also use Evidently in other notebook environments, including **Jupyter notebooks on Windows**, **Jupyter lab** and hosted notebooks such as **Kaggle Kernel**, **Databricks** or **Deepnote** notebooks. Consult the [installation instructions](../installation/install-evidently.md).
 
-Note that Evidently is **not currently being tested** in these environments, and the performance is not guaranteed. 
+**Note**: Evidently has an alternative visualization method to support generating visual reports in different notebook environments. However, it is not possible to thoroughly test in all different environments, and the performance is **not guaranteed**. 
 
 For most hosted environments, you would need to run the following command in the notebook cell:
 
@@ -50,7 +50,7 @@ To get the visual reports in the notebook, you should explicitly add an argument
 report.show(mode='inline')
 ```
 
-Here is a complete example of how you can call the report in e.g. Databricks environment:
+Here is a complete example of how you can call the report:
 
 ```python
 report = Report(metrics=[
