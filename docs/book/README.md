@@ -81,7 +81,7 @@ Reports are best for exploratory analysis, debugging, and documentation.
 * [User guide: how to run reports](tests-and-reports/get-reports.md) 
 * [Reference: available metrics and metric presets](reference/all-metrics.md) 
 
-# 3. Monitors: real-time ML monitoring.
+# 3. Monitors: real-time ML monitoring
 
 *Note: this functionality is in early development and subject to an API change*. 
 
