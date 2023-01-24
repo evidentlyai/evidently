@@ -120,35 +120,37 @@ class DataDriftTableRenderer(MetricRenderer):
         details = RowDetails()
         if (
             data.column_type == "text"
-            and data.typical_examples_cur is not None
-            and data.typical_examples_ref is not None
-            and data.typical_words_cur is not None
-            and data.typical_words_ref is not None
         ):
-            current_table_words = table_data(
-                title="",
-                column_names=["", ""],
-                data=[[el, ""] for el in data.typical_words_cur],
-            )
-            details.with_part("carrent: characteristic words", info=current_table_words)
-            reference_table_words = table_data(
-                title="",
-                column_names=["", ""],
-                data=[[el, ""] for el in data.typical_words_ref],
-            )
-            details.with_part("reference: characteristic words", info=reference_table_words)
-            current_table_examples = table_data(
-                title="",
-                column_names=["", ""],
-                data=[[el, ""] for el in data.typical_examples_cur],
-            )
-            details.with_part("carrent: characteristic examples", info=current_table_examples)
-            reference_table_examples = table_data(
-                title="",
-                column_names=["", ""],
-                data=[[el, ""] for el in data.typical_examples_ref],
-            )
-            details.with_part("reference: characteristic examples", info=reference_table_examples)
+            if (
+                data.typical_examples_cur is not None
+                and data.typical_examples_ref is not None
+                and data.typical_words_cur is not None
+                and data.typical_words_ref is not None
+            ):
+                current_table_words = table_data(
+                    title="",
+                    column_names=["", ""],
+                    data=[[el, ""] for el in data.typical_words_cur],
+                )
+                details.with_part("carrent: characteristic words", info=current_table_words)
+                reference_table_words = table_data(
+                    title="",
+                    column_names=["", ""],
+                    data=[[el, ""] for el in data.typical_words_ref],
+                )
+                details.with_part("reference: characteristic words", info=reference_table_words)
+                current_table_examples = table_data(
+                    title="",
+                    column_names=["", ""],
+                    data=[[el, ""] for el in data.typical_examples_cur],
+                )
+                details.with_part("carrent: characteristic examples", info=current_table_examples)
+                reference_table_examples = table_data(
+                    title="",
+                    column_names=["", ""],
+                    data=[[el, ""] for el in data.typical_examples_ref],
+                )
+                details.with_part("reference: characteristic examples", info=reference_table_examples)
 
             data_drift = "Detected" if data.drift_detected else "Not Detected"
 

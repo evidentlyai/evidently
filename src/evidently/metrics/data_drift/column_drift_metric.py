@@ -191,8 +191,7 @@ class ColumnDriftMetricRenderer(MetricRenderer):
                 TabData(title="current: characteristic examples", widget=current_table_examples),
                 TabData(title="reference: characteristic examples", widget=reference_table_examples),
             ]
-
-        return [
+        result = [
             counter(
                 counters=[
                     CounterData(
@@ -205,9 +204,14 @@ class ColumnDriftMetricRenderer(MetricRenderer):
                     )
                 ],
                 title="",
-            ),
-            widget_tabs(
-                title="",
-                tabs=tabs,
-            ),
+            )
         ]
+        if len(tabs) > 0:
+            result.append(
+                widget_tabs(
+                    title="",
+                    tabs=tabs,
+                )
+            )
+
+        return result
