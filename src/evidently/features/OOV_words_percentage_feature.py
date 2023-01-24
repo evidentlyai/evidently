@@ -1,6 +1,5 @@
 import re
 
-import nltk
 import pandas as pd
 from nltk.corpus import words
 from nltk.stem.wordnet import WordNetLemmatizer
@@ -13,10 +12,6 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 class OOVWordsPercentage(GeneratedFeature):
     def __init__(self, column_name: str, ignore_words=()):
-        nltk.download("words")
-        nltk.download("wordnet")
-        nltk.download("omw-1.4")
-
         self.lem = WordNetLemmatizer()
         self.eng_words = set(words.words())
         self.column_name = column_name

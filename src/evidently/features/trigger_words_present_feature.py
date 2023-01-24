@@ -1,6 +1,5 @@
 import re
 
-import nltk
 import pandas as pd
 from nltk.stem.wordnet import WordNetLemmatizer
 
@@ -10,10 +9,6 @@ from evidently.utils.data_preprocessing import DataDefinition
 
 class TriggerWordsPresent(GeneratedFeature):
     def __init__(self, column_name: str, words_list=(), lemmatisize=True):
-        nltk.download("words")
-        nltk.download("wordnet")
-        nltk.download("omw-1.4")
-
         self.lem = WordNetLemmatizer()
         self.column_name = column_name
         self.words_list = words_list
