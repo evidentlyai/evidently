@@ -69,6 +69,17 @@ column_mapping.categorical_features = ['season', 'holiday'] #list of categorical
 **Why map them:** the column types affect some of the tests, metrics and visualizations. For example, the [drift algorithm](../reference/data-drift-algorithm.md) selects a statistical test based on the column type and ignores DateTime features. Some of the data quality visualizations are different for specific feature types. Some of the tests (e.g. on value ranges) only considers numeral columns, etc.
 {% endhint %}
 
+## Text data 
+
+To specify that columns contain raw text data: 
+
+```python
+column_mapping.text_features = ['email_subject', 'email_body']
+```
+
+**Why map them:** if you want to apply text-specific drift detection methods or call other metrics relevant to text data, you should specify them explicitly. Text columns are also excluded from certain tests and metrics similar to ID column.
+{% endhint %}
+
 # Additional mapping options
 
 There are additional mapping options that apply to specific test suites and reports.
