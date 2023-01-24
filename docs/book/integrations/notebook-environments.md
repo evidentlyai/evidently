@@ -76,7 +76,7 @@ report.run(reference_data=reference, current_data=current)
 report.save_html("file.html")
 ```
 
-You can also specify a defined path.
+You can also specify the path where to save the file.
 
 ## Troubleshooting 
 
