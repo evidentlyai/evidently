@@ -842,7 +842,7 @@ class TestAllColumnsMostCommonValueShare(BaseGenerator):
 
     def generate(self, columns_info: DatasetColumns) -> List[TestMostCommonValueShare]:
         if self.columns is None:
-            columns = columns_info.get_all_columns_list()
+            columns = columns_info.get_all_columns_list(skip_text_columns=True)
 
         else:
             columns = self.columns

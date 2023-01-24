@@ -68,19 +68,23 @@ class DatasetColumns:
         If you want to add date time columns - set `include_datetime_feature` to True.
         """
         if cat_before_num:
-            result = self.cat_feature_names + self.num_feature_names
+            result = self.cat_feature_names + self.num_feature_names + self.text_feature_names
 
         else:
-            result = self.num_feature_names + self.cat_feature_names
+            result = self.num_feature_names + self.cat_feature_names + self.text_feature_names
 
         if include_datetime_feature and self.datetime_feature_names:
             result += self.datetime_feature_names
 
         return result
 
-    def get_all_columns_list(self, skip_id_column: bool = False) -> List[str]:
+    def get_all_columns_list(self, skip_id_column: bool = False, skip_text_columns: bool=False) -> List[str]:
         """List all columns."""
         result: List[str] = self.cat_feature_names + self.num_feature_names
+        
+        if not skip_text_columns:
+            result.extend(self.text_feature_names)
+
         result.extend(
             [
                 name
@@ -108,7 +112,7 @@ class DatasetColumns:
         else:
             len_time_columns = 0
 
-        return len(self.num_feature_names) + len(self.cat_feature_names) + len_time_columns
+        return len(self.num_feature_names) + len(self.cat_feature_names) + len(self.text_feature_names) + len_time_columns
 
 
 def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping) -> DatasetColumns:
