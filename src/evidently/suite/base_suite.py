@@ -244,9 +244,10 @@ class Suite:
                 for feature in metric.required_features(data_definition):
                     params = feature.get_parameters()
                     if params is not None:
-                        if params in features:
+                        _id = (type(feature), params)
+                        if _id in features:
                             continue
-                        features[(type(feature), params)] = feature
+                        features[_id] = feature
                     feature_data = feature.generate_feature(current_data, data_definition)
                     feature_data.columns = [f"{feature.__class__.__name__}.{old}" for old in feature_data.columns]
                     if curr_additional_data is None:

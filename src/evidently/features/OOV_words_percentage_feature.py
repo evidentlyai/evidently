@@ -1,4 +1,5 @@
 import re
+from typing import Optional
 
 import pandas as pd
 from nltk.corpus import words
@@ -41,3 +42,6 @@ class OOVWordsPercentage(GeneratedFeature):
 
     def feature_name(self) -> ColumnName:
         return additional_feature(self, self.column_name)
+
+    def get_parameters(self) -> Optional[tuple]:
+        return self.column_name, self.ignore_words
