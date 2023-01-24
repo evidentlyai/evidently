@@ -57,7 +57,3 @@ $ pip install evidently
 ```
 
 **Note**: Nbextension does not work on Windows. If you want to generate visual reports in Jupyter notebook on Windows, you will need to use a different visulization method when calling the report. Consult [this section](../integrations/notebook-environments.md) for help. This is a new functionality with limited testing. If you face issues, you can get the output as a separate HTML file and view it in a browser.
-
-The tool helps build interactive reports in a Jupyter notebook or as a separate HTML file, and generate JSON profiles.&#x20;
-
-Unfortunately, building reports inside a **Jupyter notebook** is **not yet possible** for Windows. The reason is Windows requires administrator privileges to create symlink. In later versions, we will address this issue.
