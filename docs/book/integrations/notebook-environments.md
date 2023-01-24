@@ -2,17 +2,17 @@
 description: Using Evidently in Colab and other notebook environments.
 ---
 
-## Jupyter notebooks
+# Jupyter notebooks
 
 You can generate the dashboards in **Jupyter notebooks**. 
 
 {% hint style="info" %}
-If you want to display the dashboards in Jupyter notebook, make sure you [installed](../get-started/install-evidently.md) the Jupyter **nbextension**.
+If you want to display the dashboards in Jupyter notebook, make sure you [installed](../installation/install-evidently.md) the Jupyter **nbextension**.
 {% endhint %}
 
-## Colab, Kaggle, Deepnote
+# Hosted notebooks
 
-You can also use **Google Colab**, **Kaggle Kernel**, or **Deepnote**.  
+You can also use **Google Colab**, **Kaggle Kernel**, **Databricks** or **Deepnote** notebooks.  
 
 To install `evidently` in these environments, run the following command in the notebook cell:
 
@@ -20,7 +20,7 @@ To install `evidently` in these environments, run the following command in the n
 !pip install evidently
 ```
 
-You should then follow the steps described in the User Guide to [get reports](get-reports.md) and [run tests](run-tests.md).
+You should then follow the steps described in the User Guide to [../tests-and-reports/get-reports.md](generate reports) and [../tests-and-reports/run-tests.md](run test suites).
 
 **Troubleshooting**: 
 
