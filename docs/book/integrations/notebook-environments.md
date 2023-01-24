@@ -20,7 +20,7 @@ To install `evidently` in these environments, run the following command in the n
 !pip install evidently
 ```
 
-You should then follow the steps described in the User Guide to [../tests-and-reports/get-reports.md](generate reports) and [../tests-and-reports/run-tests.md](run test suites).
+You should then follow the steps described in the User Guide to [generate reports](../tests-and-reports/get-reports.md) and [run test suites](../tests-and-reports/run-tests.md).
 
 **Troubleshooting**: 
 
