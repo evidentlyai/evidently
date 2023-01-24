@@ -4,7 +4,7 @@ description: Using Evidently in Colab and other notebook environments.
 
 You can use Evidently Python library to generate visual HTML reports, JSON, and Python dictionary output directly in the notebook environment. You can also save the HTML reports externally and open them in the browser.
 
-Be default, Evidently is tested to work in **Jupyter notebook** on MAC OS and Linux and **Google Colab**.
+By default, Evidently is tested to work in **Jupyter notebook** on MAC OS and Linux and **Google Colab**.
 
 Generating visual reports might work differently in other notebook environments. 
 
@@ -13,7 +13,7 @@ Generating visual reports might work differently in other notebook environments.
 You can generate the visual reports in **Jupyter notebooks** on MAC OS and Linux. 
 
 {% hint style="info" %}
-If you want to display the dashboards in Jupyter notebook, make sure you that in addition to installing Evidently you [installed](../installation/install-evidently.md) the Jupyter **nbextension**. It will be used for visualizations.
+If you want to display the dashboards in Jupyter notebook, make sure that in addition to installing Evidently you [installed](../installation/install-evidently.md) the Jupyter **nbextension**. It will be used for visualizations.
 {% endhint %}
 
 You should then follow the steps described in the User Guide to [generate reports](../tests-and-reports/get-reports.md) and [run test suites](../tests-and-reports/run-tests.md).
@@ -32,9 +32,7 @@ Then follow the steps described in the User Guide.
 
 # Other notebook environments 
 
-You can also use Evidently in other notebook environments, including **Jupyter notebooks on Windows**, **Jupyter lab** and hosted notebooks such as **Kaggle Kernel**, **Databricks** or **Deepnote** notebooks. Consult the [installation instructions](../installation/install-evidently.md).
-
-**Note**: Evidently has an alternative visualization method to support generating visual reports in different notebook environments. However, it is not possible to thoroughly test in all different environments, and the performance is **not guaranteed**. 
+You can also use Evidently in other notebook environments, including **Jupyter notebooks on Windows**, **Jupyter lab** and hosted notebooks such as **Kaggle Kernel**, **Databricks** or **Deepnote** notebooks. Consult the [installation instructions for details](../installation/install-evidently.md).
 
 For most hosted environments, you would need to run the following command in the notebook cell:
 
@@ -42,17 +40,19 @@ For most hosted environments, you would need to run the following command in the
 !pip install evidently
 ```
 
+**Note**: Nbextension is not available on Windows and in hosted notebook environments. Evidently will use a different visualization method in this case.  However, it is not possible to thoroughly test in all different environments, and the ability to generate visual reports is **not guaranteed**. 
+
 ## Visual reports in the notebook cell
 
-Nbextension is not available on Windows and in hosted notebook environments. Evidently will use a different visualization method in this case.  
-
-To get the visual reports in the notebook cell, you should explicitly add an argument to display the report `inline`:
+To get the visual reports in different notebook environments, you should explicitly add an argument to display the report or test suite `inline` when calling it:
 
 ```python
 report.show(mode='inline')
 ```
 
-Here is a complete example of how you can call the report:
+You can also use this method if you cannot install nbextension. 
+
+Here is a complete example of how you can call the report after installation, imports, and data preparation:
 
 ```python
 report = Report(metrics=[
@@ -75,6 +75,8 @@ report = Report(metrics=[
 report.run(reference_data=reference, current_data=current)
 report.save_html("file.html")
 ```
+
+You can also specify a defined path.
 
 ## Troubleshooting 
 
