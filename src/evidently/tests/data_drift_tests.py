@@ -437,28 +437,31 @@ class TestColumnDriftRenderer(TestRenderer):
         result = obj.metric.get_result()
         column_name = obj.column_name
         if result.column_type == "text":
-            info.details = [
-                DetailsInfo(
-                    id=f"{column_name} dritf curr",
-                    title="current: characteristic words",
-                    info=BaseWidgetInfo(
-                        title="",
-                        type="table",
-                        params={"header": ["", ""], "data": [[el, ""] for el in result.typical_words_cur]},
-                        size=2,
+            if result.typical_words_cur is not None and result.typical_words_ref is not None:
+                info.details = [
+                    DetailsInfo(
+                        id=f"{column_name} dritf curr",
+                        title="current: characteristic words",
+                        info=BaseWidgetInfo(
+                            title="",
+                            type="table",
+                            params={"header": ["", ""], "data": [[el, ""] for el in result.typical_words_cur]},
+                            size=2,
+                        ),
                     ),
-                ),
-                DetailsInfo(
-                    id=f"{column_name} dritf ref",
-                    title="reference: characteristic words",
-                    info=BaseWidgetInfo(
-                        title="",
-                        type="table",
-                        params={"header": ["", ""], "data": [[el, ""] for el in result.typical_words_ref]},
-                        size=2,
+                    DetailsInfo(
+                        id=f"{column_name} dritf ref",
+                        title="reference: characteristic words",
+                        info=BaseWidgetInfo(
+                            title="",
+                            type="table",
+                            params={"header": ["", ""], "data": [[el, ""] for el in result.typical_words_ref]},
+                            size=2,
+                        ),
                     ),
-                ),
-            ]
+                ]
+            else:
+                return info
         else:
             fig = get_distribution_plot_figure(
                 current_distribution=result.current_distribution,
