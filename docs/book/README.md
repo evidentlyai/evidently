@@ -4,14 +4,19 @@ It helps evaluate, test, and monitor the performance of ML models from validatio
 
 # Quick Start 
 
-Understand the basic functionality in under 10 minutes:
+Quickly check it out (1 min):
+{% content-ref url="get-started/hello-world.md" %}
+["Hello world" example](get-started/hello-world.md). 
+{% endcontent-ref %}
+
+Understand the basic functionality (15 minutes):
 {% content-ref url="get-started/tutorial.md" %}
 [Get started tutorial](get-started/tutorial.md). 
 {% endcontent-ref %}
 
-See the code examples:
-{% content-ref url="get-started/examples.md" %}
-[Example](get-started/examples.md). 
+Explore code examples:
+{% content-ref url="examples/examples.md" %}
+[Example](examples/examples.md). 
 {% endcontent-ref %}
 
 # How it works 
@@ -43,7 +48,7 @@ Tests are best for automated batch checks.
 **Primary use case: test-based ML monitoring**. You can run tests as a step in the ML pipeline. For example, when you receive a new batch of data, new labels, or generate predictions. You can build a conditional workflow based on the test results, e.g., to trigger an alert, retrain, or get a visual report to debug.  
 
 **Read more**:
-* [Overview: what is a test and a test suite](tests/overview.md) 
+* [Overview: what is a test and a test suite](introduction/core-concepts.md) 
 * [User guide: how to generate tests](tests-and-reports/run-tests.md) 
 * [Reference: available tests and presets](reference/all-tests.md) 
 
@@ -72,7 +77,7 @@ Reports are best for exploratory analysis, debugging, and documentation.
 * **Reporting and documentation**. You can generate visual HTML reports to document your model performance.   
 
 **Read more**:
-* [Overview: what is a report and a metric](reports/README.md) 
+* [Overview: what is a report and a metric](introduction/core-concepts.md) 
 * [User guide: how to run reports](tests-and-reports/get-reports.md) 
 * [Reference: available metrics and metric presets](reference/all-metrics.md) 
 

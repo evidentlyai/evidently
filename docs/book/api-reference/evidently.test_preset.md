@@ -3,38 +3,39 @@
 Predefined Test Presets for Test Suite
 
 
-### class BinaryClassificationTestPreset(prediction_type: str, columns: Optional[List[str]] = None, stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, stattest_threshold: Optional[float] = None, probas_threshold: Optional[float] = None)
+### class BinaryClassificationTestPreset(stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, stattest_threshold: Optional[float] = None, probas_threshold: Optional[float] = None)
 Bases: `TestPreset`
 
 Binary Classification Tests.
-:param threshold: probabilities threshold for prediction with probas
-:param prediction_type: type of prediction (‘probas’ or ‘labels’)
+:param stattest: statistical test for target drift test.
+:param stattest_threshold: threshold for statistical test for target drift test.
+:param probas_threshold: threshold for label calculation for prediction.
 
 Contains:
 - TestColumnValueDrift for target
-- TestPrecisionScore - use threshold if prediction_type is ‘probas’
-- TestRecallScore - use threshold if prediction_type is ‘probas’
-- TestF1Score - use threshold if prediction_type is ‘probas’
-- TestAccuracyScore - use threshold if prediction_type is ‘probas’
+- TestPrecisionScore
+- TestRecallScore
+- TestF1Score
+- TestAccuracyScore
 
 
 #### Methods: 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; generate_tests(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
-### class BinaryClassificationTopKTestPreset(k: Union[float, int], probas_threshold: Optional[float] = None, stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, stattest_threshold: Optional[float] = None)
+### class BinaryClassificationTopKTestPreset(k: Union[float, int], stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, stattest_threshold: Optional[float] = None)
 Bases: `TestPreset`
 
 Binary Classification Tests for Top K threshold.
-:param threshold: probabilities threshold for prediction with probas
-:param prediction_type: type of prediction (‘probas’ or ‘labels’)
+:param stattest: stattest for TestColumnDrift
+:param stattest_threshold: threshold for stattest
 
 Contains:
-- TestColumnValueDrift for target
-- TestPrecisionScore - use threshold if prediction_type is ‘probas’
-- TestRecallScore - use threshold if prediction_type is ‘probas’
-- TestF1Score - use threshold if prediction_type is ‘probas’
-- TestAccuracyScore - use threshold if prediction_type is ‘probas’
+- TestColumnDrift for target
+- TestPrecisionScore
+- TestRecallScore
+- TestF1Score
+- TestAccuracyScore
 
 #### Attributes: 
 
@@ -46,7 +47,7 @@ Contains:
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; generate_tests(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
-### class DataDriftTestPreset(stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, cat_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, num_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, per_column_stattest: Optional[Dict[str, Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]] = None, stattest_threshold: Optional[float] = None, cat_stattest_threshold: Optional[float] = None, num_stattest_threshold: Optional[float] = None, per_column_stattest_threshold: Optional[Dict[str, float]] = None)
+### class DataDriftTestPreset(columns: Optional[List[str]] = None, drift_share: Optional[float] = None, stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, cat_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, num_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, per_column_stattest: Optional[Dict[str, Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]] = None, stattest_threshold: Optional[float] = None, cat_stattest_threshold: Optional[float] = None, num_stattest_threshold: Optional[float] = None, per_column_stattest_threshold: Optional[Dict[str, float]] = None)
 Bases: `TestPreset`
 
 Data Drift tests.
@@ -61,6 +62,10 @@ Contains tests:
 ##### &nbsp;&nbsp;&nbsp;&nbsp; cat_stattest : Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; cat_stattest_threshold : Optional[float] 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; columns : Optional[List[str]] 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; drift_share : Optional[float] 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; num_stattest : Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] 
 
@@ -121,7 +126,7 @@ Contains tests:
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; generate_tests(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
-### class MulticlassClassificationTestPreset(prediction_type: str, stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, stattest_threshold: Optional[float] = None)
+### class MulticlassClassificationTestPreset(stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, stattest_threshold: Optional[float] = None)
 Bases: `TestPreset`
 
 Multiclass Classification tests.
@@ -129,7 +134,9 @@ Multiclass Classification tests.
 
 * **Parameters**
 
-    `prediction_type` – type of prediction data (‘probas’ or ‘labels’)
+    - `stattest` – statistical test for target drift test.
+
+    - `stattest_threshold` – threshold for statistical test for target drift test.
 
 
 Contains tests:
@@ -152,7 +159,7 @@ Contains tests:
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; generate_tests(data: [InputData](evidently.metrics.md#evidently.metrics.base_metric.InputData), columns: [DatasetColumns](evidently.utils.md#evidently.utils.data_operations.DatasetColumns))
 
-### class NoTargetPerformanceTestPreset(columns: Optional[List[str]] = None, drift_share: float = 0.5, stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, cat_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, num_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, per_column_stattest: Optional[Dict[str, Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]] = None, stattest_threshold: Optional[float] = None, cat_stattest_threshold: Optional[float] = None, num_stattest_threshold: Optional[float] = None, per_column_stattest_threshold: Optional[Dict[str, float]] = None)
+### class NoTargetPerformanceTestPreset(columns: Optional[List[str]] = None, drift_share: Optional[float] = None, stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, cat_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, num_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, per_column_stattest: Optional[Dict[str, Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]] = None, stattest_threshold: Optional[float] = None, cat_stattest_threshold: Optional[float] = None, num_stattest_threshold: Optional[float] = None, per_column_stattest_threshold: Optional[Dict[str, float]] = None)
 Bases: `TestPreset`
 
 No Target Performance tests.
@@ -181,7 +188,7 @@ Contains tests:
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; columns : Optional[List[str]] 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; drift_share : float 
+##### &nbsp;&nbsp;&nbsp;&nbsp; drift_share : Optional[float] 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; num_stattest : Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]  = None 
 
@@ -219,19 +226,20 @@ Contains tests:
 ## <a name="module-evidently.test_preset.classification_binary"></a>classification_binary module
 
 
-### class BinaryClassificationTestPreset(prediction_type: str, columns: Optional[List[str]] = None, stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, stattest_threshold: Optional[float] = None, probas_threshold: Optional[float] = None)
+### class BinaryClassificationTestPreset(stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, stattest_threshold: Optional[float] = None, probas_threshold: Optional[float] = None)
 Bases: `TestPreset`
 
 Binary Classification Tests.
-:param threshold: probabilities threshold for prediction with probas
-:param prediction_type: type of prediction (‘probas’ or ‘labels’)
+:param stattest: statistical test for target drift test.
+:param stattest_threshold: threshold for statistical test for target drift test.
+:param probas_threshold: threshold for label calculation for prediction.
 
 Contains:
 - TestColumnValueDrift for target
-- TestPrecisionScore - use threshold if prediction_type is ‘probas’
-- TestRecallScore - use threshold if prediction_type is ‘probas’
-- TestF1Score - use threshold if prediction_type is ‘probas’
-- TestAccuracyScore - use threshold if prediction_type is ‘probas’
+- TestPrecisionScore
+- TestRecallScore
+- TestF1Score
+- TestAccuracyScore
 
 
 #### Methods: 
@@ -240,19 +248,19 @@ Contains:
 ## <a name="module-evidently.test_preset.classification_binary_topk"></a>classification_binary_topk module
 
 
-### class BinaryClassificationTopKTestPreset(k: Union[float, int], probas_threshold: Optional[float] = None, stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, stattest_threshold: Optional[float] = None)
+### class BinaryClassificationTopKTestPreset(k: Union[float, int], stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, stattest_threshold: Optional[float] = None)
 Bases: `TestPreset`
 
 Binary Classification Tests for Top K threshold.
-:param threshold: probabilities threshold for prediction with probas
-:param prediction_type: type of prediction (‘probas’ or ‘labels’)
+:param stattest: stattest for TestColumnDrift
+:param stattest_threshold: threshold for stattest
 
 Contains:
-- TestColumnValueDrift for target
-- TestPrecisionScore - use threshold if prediction_type is ‘probas’
-- TestRecallScore - use threshold if prediction_type is ‘probas’
-- TestF1Score - use threshold if prediction_type is ‘probas’
-- TestAccuracyScore - use threshold if prediction_type is ‘probas’
+- TestColumnDrift for target
+- TestPrecisionScore
+- TestRecallScore
+- TestF1Score
+- TestAccuracyScore
 
 #### Attributes: 
 
@@ -266,7 +274,7 @@ Contains:
 ## <a name="module-evidently.test_preset.classification_multiclass"></a>classification_multiclass module
 
 
-### class MulticlassClassificationTestPreset(prediction_type: str, stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, stattest_threshold: Optional[float] = None)
+### class MulticlassClassificationTestPreset(stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, stattest_threshold: Optional[float] = None)
 Bases: `TestPreset`
 
 Multiclass Classification tests.
@@ -274,7 +282,9 @@ Multiclass Classification tests.
 
 * **Parameters**
 
-    `prediction_type` – type of prediction data (‘probas’ or ‘labels’)
+    - `stattest` – statistical test for target drift test.
+
+    - `stattest_threshold` – threshold for statistical test for target drift test.
 
 
 Contains tests:
@@ -299,7 +309,7 @@ Contains tests:
 ## <a name="module-evidently.test_preset.data_drift"></a>data_drift module
 
 
-### class DataDriftTestPreset(stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, cat_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, num_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, per_column_stattest: Optional[Dict[str, Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]] = None, stattest_threshold: Optional[float] = None, cat_stattest_threshold: Optional[float] = None, num_stattest_threshold: Optional[float] = None, per_column_stattest_threshold: Optional[Dict[str, float]] = None)
+### class DataDriftTestPreset(columns: Optional[List[str]] = None, drift_share: Optional[float] = None, stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, cat_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, num_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, per_column_stattest: Optional[Dict[str, Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]] = None, stattest_threshold: Optional[float] = None, cat_stattest_threshold: Optional[float] = None, num_stattest_threshold: Optional[float] = None, per_column_stattest_threshold: Optional[Dict[str, float]] = None)
 Bases: `TestPreset`
 
 Data Drift tests.
@@ -314,6 +324,10 @@ Contains tests:
 ##### &nbsp;&nbsp;&nbsp;&nbsp; cat_stattest : Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; cat_stattest_threshold : Optional[float] 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; columns : Optional[List[str]] 
+
+##### &nbsp;&nbsp;&nbsp;&nbsp; drift_share : Optional[float] 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; num_stattest : Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] 
 
@@ -380,7 +394,7 @@ Contains tests:
 ## <a name="module-evidently.test_preset.no_target_performance"></a>no_target_performance module
 
 
-### class NoTargetPerformanceTestPreset(columns: Optional[List[str]] = None, drift_share: float = 0.5, stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, cat_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, num_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, per_column_stattest: Optional[Dict[str, Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]] = None, stattest_threshold: Optional[float] = None, cat_stattest_threshold: Optional[float] = None, num_stattest_threshold: Optional[float] = None, per_column_stattest_threshold: Optional[Dict[str, float]] = None)
+### class NoTargetPerformanceTestPreset(columns: Optional[List[str]] = None, drift_share: Optional[float] = None, stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, cat_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, num_stattest: Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]] = None, per_column_stattest: Optional[Dict[str, Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]] = None, stattest_threshold: Optional[float] = None, cat_stattest_threshold: Optional[float] = None, num_stattest_threshold: Optional[float] = None, per_column_stattest_threshold: Optional[Dict[str, float]] = None)
 Bases: `TestPreset`
 
 No Target Performance tests.
@@ -409,7 +423,7 @@ Contains tests:
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; columns : Optional[List[str]] 
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; drift_share : float 
+##### &nbsp;&nbsp;&nbsp;&nbsp; drift_share : Optional[float] 
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; num_stattest : Optional[Union[str, Callable[[Series, Series, str, float], Tuple[float, bool]], [StatTest](evidently.calculations.stattests.md#evidently.calculations.stattests.registry.StatTest)]]  = None 
 

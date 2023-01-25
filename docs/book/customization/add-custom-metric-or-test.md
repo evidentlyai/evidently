@@ -9,4 +9,4 @@ This example Colab notebook shows how to implement a simple metric and test and 
 
 We plan to simplify this functionality in the future.
 
-If you want to suggest adding specific metrics and tests that are currently not covered, you can also (open a GitHub issue)[ https://github.com/evidentlyai/evidently/issues] with the feature request.
+If you want to suggest adding specific metrics and tests that are currently not covered, you can also [open a GitHub issue](https://github.com/evidentlyai/evidently/issues) with the feature request.

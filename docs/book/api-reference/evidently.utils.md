@@ -30,7 +30,7 @@ Bases: `object`
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; as_dict()
 
-##### &nbsp;&nbsp;&nbsp;&nbsp; get_all_columns_list()
+##### &nbsp;&nbsp;&nbsp;&nbsp; get_all_columns_list(skip_id_column: bool = False)
 List all columns.
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; get_all_features_list(cat_before_num: bool = True, include_datetime_feature: bool = False)
@@ -199,7 +199,7 @@ Do not forget set correct test type for generate return value
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp; abstract  generate(columns_info: DatasetColumns)
 
-### make_generator_by_columns(base_class: Type, columns: Optional[Union[str, list]] = None, parameters: Optional[Dict] = None)
+### make_generator_by_columns(base_class: Type, columns: Optional[Union[str, list]] = None, parameters: Optional[Dict] = None, skip_id_column: bool = False)
 Create a test generator for a columns list with a test class.
 
 Base class is specified with base_class parameter.

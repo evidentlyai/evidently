@@ -1,5 +1,5 @@
 # keep in sync with setup.py install_require block (but there should be set as lower bound).
-dataclasses==0.6
+dataclasses==0.6;python_version<'3.7'
 plotly==5.10.0
 statsmodels==0.12.2
 scikit-learn==0.24.0
