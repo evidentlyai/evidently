@@ -27,7 +27,9 @@ no_target_performance
 
 ## Data requirements
 
-You need to provide **two** datasets with identical schema. They should include input features and predictions. The **reference** dataset serves as a benchmark (e.g., previous data batch). Evidently analyzes the change by comparing the **current** production data to the **reference** data.
+* You need to provide **two** datasets with identical schema. The **reference** dataset serves as a benchmark (e.g., previous data batch). Evidently analyzes the change by comparing the **current** production data to the **reference** data.
+* They should include **input features and predictions**.
+* **Column mapping**. You can explicitly specify the types input columns and target using [column mapping](../input-data/column-mapping.md). If it is not specified, Evidently will try to guess the types automatically. It is recommended to use column mapping to avoid errors. If you have text features, you must always specify this in column mapping. 
 
 ## How it works
 
@@ -61,4 +63,4 @@ Head here to the [All tests](../reference/all-tests.md) table to see the descrip
 
 ## Examples
 
-* Browse the [example](../get-started/examples.md) notebooks to see sample Test Suite.
+* Browse the [example](../examples/examples.md) notebooks to see a sample Test Suite.
