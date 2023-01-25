@@ -1,4 +1,4 @@
-In some tests and metrics, Evidently uses the default Data Drift Detection algorithm. It helps detect the distribution drift in the individual features, prediction, or target. 
+In some tests and metrics, Evidently uses the default Data Drift Detection algorithm. It helps detect the distribution drift in the individual features, prediction, or target. This page describes how the **default** algorithm works.
 
 ## How it works
 
