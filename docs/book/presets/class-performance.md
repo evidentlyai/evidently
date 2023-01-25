@@ -300,5 +300,5 @@ Head here to the [All tests](../reference/all-tests.md) table to see the composi
 
 ## Examples
 
-* Browse the [examples](../get-started/examples.md) for sample Jupyter notebooks and Colabs.
+* Browse the [examples](../examples/examples.md) for sample Jupyter notebooks and Colabs.
 * See a blog post and a tutorial "[What is your model hiding](https://evidentlyai.com/blog/tutorial-2-model-evaluation-hr-attrition)" where we analyze the performance of two models with identical ROC AUC to choose between the two.
