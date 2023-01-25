@@ -1,4 +1,4 @@
-**TL;DR:** You can detect and analyze changes in the input feature distributions.
+**TL;DR:** You can detect and analyze changes in the input feature distributions. Evidently has pre-built Data Drift Reports amd Test Suites that work out of the box.
 
 * For visual analysis using Reports, use the `DataDriftPreset`. 
 * For pipeline checks using Test Suites, use the `DataDriftTestPreset`.  
