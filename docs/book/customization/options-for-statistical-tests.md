@@ -134,3 +134,6 @@ TestShareOfDriftedColumns(lt=0.5)
   - only for categorical features
   - returns `p-value`
   - drift detected when `p_value < threshold`
+- `text_content_drift` - Text content drift (domain classifier)
+  - only for text features
+  - returns `roc_auc`
