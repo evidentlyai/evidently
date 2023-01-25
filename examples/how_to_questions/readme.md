@@ -8,6 +8,7 @@ How to use column tests and column metrics generator?  | [link](how_to_apply_tes
 How to specify a drift detection method is tests? | [link](how_to_specify_stattest_for_a_testsuite.ipynb)
 How to specify different types of missing values in tests? | [link](how_to_run_tests_with_different_missing_values.ipynb)
 How to run DataDrift report for text encoders? | [link](how_to_run_drift_report_for_text_encoders.ipynb)
+How to run calculations over raw text data? | [link](how_to_run_calculations_over_text_data.ipynb)
 
 To quickly explore what Evidently can do right out of the box, refer to the [sample notebooks](../sample_notebooks/).
 
