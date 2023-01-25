@@ -6,7 +6,7 @@
 
 You can evaluate and explore text data: 
 
-**1. To monitor input data for NLP models.** When you do not have true labels or actuals, you can monitor changes in the input data (data drift) and descriptive text characteristics. You can run batch checks, for example, comparing the latest batch of text data to the previous or to the training data. You can often combine it with evaluating [Predction Drift](target-drift.md)
+**1. To monitor input data for NLP models.** When you do not have true labels or actuals, you can monitor changes in the input data (data drift) and descriptive text characteristics. You can run batch checks, for example, comparing the latest batch of text data to the previous or to the training data. You can often combine it with evaluating [Prediction Drift](target-drift.md)
 
 **2. When you are debugging the model decay.** If you observe a drop in the model performance, you can this report to understand changes in the input data patterns.
 
@@ -72,11 +72,11 @@ Evidently generates several features that describe different text properties, an
 
 #### Non-letter characters
 
-![](<../.gitbook/assets/reports/metric_text_descriptors_distribution_text_nlc-min.png>)
+![](<../.gitbook/assets/reports/metric_text_descriptors_distribution_nlc-min.png>)
 
 #### Out-of-vocabulary words
 
-![](<../.gitbook/assets/reports/metric_text_descriptors_distribution_text_oov-min.png>)
+![](<../.gitbook/assets/reports/metric_text_descriptors_distribution_oov-min.png>)
 
 ### 3. Text Descriptors Correlations
 
@@ -88,11 +88,11 @@ If the dataset contains numerical features, the report will show the **correlati
 
 #### Non-letter characters
 
-![](<../.gitbook/assets/reports/metric_text_descriptors_correlation_text_nlc-min.png>)
+![](<../.gitbook/assets/reports/metric_text_descriptors_correlation_nlc-min.png>)
 
 #### Out-of-vocabulary words
 
-![](<../.gitbook/assets/reports/metric_text_descriptors_correlation_text_oov-min.png>)
+![](<../.gitbook/assets/reports/metric_text_descriptors_correlation_oov-min.png>)
 
 
 ### 4. Text Column Drift
@@ -106,8 +106,6 @@ If you pass two datasets, the report performs drift detection using the default 
 If you pass two datasets, the report also performs drift detection for text descriptors, to show statistical shifts in patterns between test characteristics.
 
 ![](<../.gitbook/assets/reports/metric_text_descriptors_drift_text-min.png>)
-
-
 
 ## Metrics output
 
