@@ -36,7 +36,7 @@ data_drift_report
 
 The **Data Drift** report helps detect and explore changes in the input data.
 
-* Applies as suitable **drift detection method** for numerical and categorical features.
+* Applies as suitable **drift detection method** for numerical, categorical or text features.
 * Plots **feature values and distributions** for the two datasets.
 
 ## Data Requirements
@@ -45,7 +45,7 @@ The **Data Drift** report helps detect and explore changes in the input data.
 
 * **Input features**. The dataset should include the features you want to evaluate for drift. The schema of both datasets should be identical. If your dataset contains target or prediction column, they will also be analyzed for drift. 
 
-* **Column mapping**. Evidently can evaluate drift both for numerical and categorical features. You can explicitly specify the type of the column in column mapping. If it is not specified, Evidently will define the column type automatically.
+* **Column mapping**. Evidently can evaluate drift both for numerical, categorical and text features. You can explicitly specify the type of each column using [column mapping object](../input-data/column-mapping.md). If it is not specified, Evidently will try to identify the numerical and categorical features automatically. It is recommended to use column mapping to avoid errors. If you have text data, you must always specify it. 
 
 ## How it looks
 
@@ -62,7 +62,7 @@ Dataset Drift sets a rule on top of the results of the statistical tests for ind
 Evidently uses the default [data drift detection algorithm](../reference/data-drift-algorithm.md) to select the drift detection method based on feature type and the number of observations in the reference dataset.
 
 {% hint style="info" %}
-You can modify the drift detection logic by selecting a different method, including PSI, K–L divergence, Jensen-Shannon distance, Wasserstein distance, setting a different threshold and condition for the dataset drift. See more details about [setting data drift options](../customization/options-for-statistical-tests.md). You can also implement a [custom drift detection method](../customization/add-custom-metric-or-test.md). 
+You can modify the drift detection logic by selecting a different method, including PSI, K–L divergence, Jensen-Shannon distance, Wasserstein distance, setting a different threshold and condition for the dataset drift. See more details about [setting data drift parameters](../customization/options-for-statistical-tests.md). You can also implement a [custom drift detection method](../customization/add-custom-metric-or-test.md). 
 {% endhint %}
 
 To build up a better intuition for which tests are better in different kinds of use cases, visit our blog to read [an in-depth guide](https://evidentlyai.com/blog/data-drift-detection-large-datasets) to the tradeoffs when choosing the statistical test for data drift.
@@ -75,7 +75,7 @@ The table shows the drifting features first. You can also choose to sort the row
 
 ### 3. Data Distribution by Feature
 
-By clicking on each feature, you can explore the distributions.
+By clicking on each feature, you can explore the distributions or top characteristic words (for text features).
 
 ![](../.gitbook/assets/reports/metric_data_drift_table_expand_1-min.png)
 
