@@ -188,7 +188,7 @@ If you want to compare descriptive statistics between the two datasets, you can 
 
 # Examples
 
-* Browse the [examples](../get-started/examples.md) for sample Jupyter notebooks and Colabs.
+* Browse the [examples](../examples/examples.md) for sample Jupyter notebooks and Colabs.
 
 You can also explore [blog posts](https://www.evidentlyai.com/tags/data-drift) about drift detection, including [How to handle drift](https://www.evidentlyai.com/blog/ml-monitoring-data-drift-how-to-handle) or [how to analyze historical drift patterns](https://evidentlyai.com/blog/tutorial-3-historical-data-drift).
 
