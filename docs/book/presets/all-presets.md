@@ -8,7 +8,7 @@ This page links to the **description** of each preset. To see the code and inter
 
 # Metric Presets
 
-Metric presets are **pre-built reports** that help with visual exploration, debugging and documentation of the data and model performance.
+Metric presets are **pre-built reports** that help with visual exploration, debugging and documentation of the data and model performance. You can also use them to calculate and log metrics as JSON or Python dictionary.
 
 |         |                                                        |   |
 | ------- | ------------------------------------------------------ | - |
