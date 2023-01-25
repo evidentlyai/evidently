@@ -92,7 +92,7 @@ The table shows relevant statistical summaries for each feature based on its typ
 
 ##### Example for a text feature:
 
-![](../.gitbook/assets/reports_data_quality_overview_text.png)
+![](../.gitbook/assets/reports/metric_column_summary_text.png)
 
 #### 2.2. Feature in time
 
