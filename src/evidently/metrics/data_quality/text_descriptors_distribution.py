@@ -31,21 +31,20 @@ class TextDescriptorsDistributionResult:
     current: Dict[str, Distribution]
     reference: Optional[Dict[str, Distribution]] = None
 
+
 class TextDescriptorsDistribution(Metric[TextDescriptorsDistributionResult]):
     """Calculates distribution for the column"""
 
     column_name: str
-    generated_text_features: Optional[
-        Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]]
-    ]
+    generated_text_features: Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]]
 
     def __init__(
         self,
         column_name: str
     ) -> None:
         self.column_name = column_name
-        self.text_features_gen = None
-    
+        self.generated_text_features = {}
+
     def required_features(self, data_definition: DataDefinition):
         column_type = data_definition.get_column(self.column_name).column_type
         if column_type == ColumnType.Text:
@@ -57,11 +56,11 @@ class TextDescriptorsDistribution(Metric[TextDescriptorsDistributionResult]):
         return []
 
     def get_parameters(self) -> tuple:
-        return (self.column_name)
+        return self.column_name,
 
     def calculate(self, data: InputData) -> TextDescriptorsDistributionResult:
         current_results = {}
-        reference_results = None
+        reference_results: Optional[Dict[str, Distribution]] = None
         if data.reference_data is not None:
             reference_results = {}
         if self.column_name not in data.current_data:
@@ -86,7 +85,7 @@ class TextDescriptorsDistribution(Metric[TextDescriptorsDistributionResult]):
                 reference=reference_column,
             )
             current_results[key] = current
-            if data.reference_data is not None:
+            if reference_results is not None and reference is not None:
                 reference_results[key] = reference
 
         return TextDescriptorsDistributionResult(
@@ -110,9 +109,12 @@ class TextDescriptorsDistributionRenderer(MetricRenderer):
             header_text(label=f"Distribution for column '{metric_result.column_name}'.")
         ]
         for col in list(metric_result.current.keys()):
+            reference = None
+            if metric_result.reference is not None:
+                reference = metric_result.reference[col]
             distr_fig = get_distribution_plot_figure(
                 current_distribution=metric_result.current[col],
-                reference_distribution=metric_result.reference[col],
+                reference_distribution=reference,
                 color_options=self.color_options,
             )
             result.append(plotly_figure(title=col, figure=distr_fig, size=WidgetSize.FULL))

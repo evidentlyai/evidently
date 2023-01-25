@@ -43,10 +43,10 @@ class DatasetColumns:
     target_type: Optional[str]
     num_feature_names: List[str]
     cat_feature_names: List[str]
+    text_feature_names: List[str]
     datetime_feature_names: List[str]
     target_names: Optional[List[str]]
     task: Optional[str]
-    text_feature_names: Optional[List[str]]
 
     def as_dict(self) -> Dict[str, Union[str, Optional[List[str]], Dict]]:
         return {
@@ -78,10 +78,10 @@ class DatasetColumns:
 
         return result
 
-    def get_all_columns_list(self, skip_id_column: bool = False, skip_text_columns: bool=False) -> List[str]:
+    def get_all_columns_list(self, skip_id_column: bool = False, skip_text_columns: bool = False) -> List[str]:
         """List all columns."""
         result: List[str] = self.cat_feature_names + self.num_feature_names
-        
+
         if not skip_text_columns:
             result.extend(self.text_feature_names)
 

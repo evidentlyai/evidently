@@ -132,7 +132,7 @@ class DataDriftTableRenderer(MetricRenderer):
                     column_names=["", ""],
                     data=[[el, ""] for el in data.typical_words_cur],
                 )
-                details.with_part("carrent: characteristic words", info=current_table_words)
+                details.with_part("current: characteristic words", info=current_table_words)
                 reference_table_words = table_data(
                     title="",
                     column_names=["", ""],
@@ -144,7 +144,7 @@ class DataDriftTableRenderer(MetricRenderer):
                     column_names=["", ""],
                     data=[[el, ""] for el in data.typical_examples_cur],
                 )
-                details.with_part("carrent: characteristic examples", info=current_table_examples)
+                details.with_part("current: characteristic examples", info=current_table_examples)
                 reference_table_examples = table_data(
                     title="",
                     column_names=["", ""],
@@ -174,7 +174,12 @@ class DataDriftTableRenderer(MetricRenderer):
             )
 
         else:
-            if data.current_small_distribution is None or data.reference_small_distribution is None:
+            if (
+                data.current_small_distribution is None
+                or data.reference_small_distribution is None
+                or data.current_distribution is None
+                or data.reference_distribution is None
+            ):
                 return None
 
             current_small_hist = data.current_small_distribution

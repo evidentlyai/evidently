@@ -13,19 +13,14 @@ from evidently.options import DataDriftOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
-from evidently.renderers.html_widgets import GraphData
 from evidently.renderers.html_widgets import counter
-from evidently.renderers.html_widgets import plotly_graph_tabs
 from evidently.renderers.render_utils import get_distribution_plot_figure
 from evidently.utils.data_operations import process_columns
 from evidently.utils.types import Numeric
 from evidently.utils.visualizations import Distribution
 from evidently.utils.visualizations import plot_scatter_for_data_drift
 from evidently.renderers.html_widgets import table_data
-from evidently.renderers.html_widgets import CounterData
 from evidently.renderers.html_widgets import TabData
-from evidently.renderers.html_widgets import counter
-from evidently.renderers.html_widgets import table_data
 from evidently.renderers.html_widgets import widget_tabs, plotly_figure
 
 
@@ -37,8 +32,8 @@ class ColumnDriftMetricResults:
     stattest_threshold: float
     drift_score: Numeric
     drift_detected: bool
-    current_distribution: Distribution
-    reference_distribution: Distribution
+    current_distribution: Optional[Distribution]
+    reference_distribution: Optional[Distribution]
     current_scatter: Optional[Dict[str, list]]
     x_name: Optional[str]
     plot_shape: Optional[Dict[str, float]]
@@ -191,7 +186,7 @@ class ColumnDriftMetricRenderer(MetricRenderer):
                 TabData(title="current: characteristic examples", widget=current_table_examples),
                 TabData(title="reference: characteristic examples", widget=reference_table_examples),
             ]
-        result = [
+        render_result = [
             counter(
                 counters=[
                     CounterData(
@@ -207,11 +202,11 @@ class ColumnDriftMetricRenderer(MetricRenderer):
             )
         ]
         if len(tabs) > 0:
-            result.append(
+            render_result.append(
                 widget_tabs(
                     title="",
                     tabs=tabs,
                 )
             )
 
-        return result
+        return render_result

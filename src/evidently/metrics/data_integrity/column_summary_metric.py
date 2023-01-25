@@ -142,12 +142,13 @@ class ColumnSummary:
 class ColumnSummaryMetric(Metric[ColumnSummary]):
     column_name: str
     generated_text_features: Optional[
-        Dict[str, Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]]]
+        Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]]
     ]
+
     def __init__(self, column_name: str):
         self.column_name = column_name
         self.generated_text_features = None
-    
+
     def required_features(self, data_definition: DataDefinition):
         column_type = data_definition.get_column(self.column_name).column_type
         if column_type == ColumnType.Text:
@@ -236,12 +237,23 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
         if column_type is None:
             raise ValueError(f"column {self.column_name} not in num, cat, text or datetime features lists")
 
+        curr_characteristics: ColumnCharacteristics
         reference_data = None
-        ref_characteristics = None
+        ref_characteristics: Optional[ColumnCharacteristics] = None
         if column_type == "text" and self.generated_text_features is not None:
             if data.reference_data is not None:
-                ref_characteristics = self.get_text_stats("reference", data, data.reference_data[self.column_name])
-            curr_characteristics = self.get_text_stats("current", data, data.current_data[self.column_name])
+                ref_characteristics = self.get_text_stats(
+                    "reference",
+                    data,
+                    data.reference_data[self.column_name],
+                    self.generated_text_features
+                )
+            curr_characteristics = self.get_text_stats(
+                "current",
+                data,
+                data.current_data[self.column_name],
+                self.generated_text_features
+            )
         else:
             if data.reference_data is not None:
                 reference_data = data.reference_data
@@ -388,17 +400,22 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
             )
         raise ValueError(f"unknown feature type {stats.feature_type}")
 
-    def get_text_stats(self, dataset: str, data: InputData, text_feature: pd.Series) -> TextCharacteristics:
+    def get_text_stats(
+        self, dataset: str,
+        data: InputData,
+        text_feature: pd.Series,
+        generated_text_features: dict
+    ) -> TextCharacteristics:
         number_of_rows = len(text_feature)
         missing = text_feature.isna().sum()
         if dataset == 'current':
-            text_length = data.get_current_column(self.generated_text_features["text_length"].feature_name())
-            oov = data.get_current_column(self.generated_text_features["oov"].feature_name())
-            non_letter_char = data.get_current_column(self.generated_text_features["non_letter_char"].feature_name())
+            text_length = data.get_current_column(generated_text_features["text_length"].feature_name())
+            oov = data.get_current_column(generated_text_features["oov"].feature_name())
+            non_letter_char = data.get_current_column(generated_text_features["non_letter_char"].feature_name())
         else:
-            text_length = data.get_reference_column(self.generated_text_features["text_length"].feature_name())
-            oov = data.get_reference_column(self.generated_text_features["oov"].feature_name())
-            non_letter_char = data.get_reference_column(self.generated_text_features["non_letter_char"].feature_name())
+            text_length = data.get_reference_column(generated_text_features["text_length"].feature_name())
+            oov = data.get_reference_column(generated_text_features["oov"].feature_name())
+            non_letter_char = data.get_reference_column(generated_text_features["non_letter_char"].feature_name())
 
         return TextCharacteristics(
             number_of_rows=number_of_rows,
@@ -491,7 +508,8 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
             )
             parts.append({"title": column_name + " in time", "id": column_name + "_in_time"})
 
-        if (metric_result.plot_data.data_by_target is not None
+        if (
+            metric_result.plot_data.data_by_target is not None
             and metric_result.plot_data.data_by_target.data_for_plots is not None
         ):
             ref_data_by_target = None
@@ -542,7 +560,7 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
                 )
             )
             parts.append({"title": column_name + " by target", "id": column_name + "_by_target"})
-        if column_type  == "text":
+        if column_type == "text":
             wi = BaseWidgetInfo(
                 type="rich_data",
                 title="",

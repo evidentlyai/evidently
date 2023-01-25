@@ -6,9 +6,7 @@ from typing import Union
 import dataclasses
 import pandas as pd
 
-from evidently import ColumnMapping
 from evidently.calculations.data_quality import ColumnCorrelations
-from evidently.calculations.data_quality import calculate_category_column_correlations
 from evidently.calculations.data_quality import calculate_numerical_column_correlations
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
@@ -20,34 +18,30 @@ from evidently.renderers.html_widgets import get_histogram_for_distribution
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import widget_tabs
 from evidently.utils.data_operations import process_columns
-from evidently.utils.data_operations import recognize_column_type
 from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
 from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
 from evidently.features.text_length_feature import TextLength
 from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.data_preprocessing import ColumnType as ColumnType_data
-from evidently.pipeline.column_mapping import ColumnMapping
 
 
 @dataclasses.dataclass
 class TextDescriptorsCorrelationMetricResult:
     column_name: str
-    current: Dict[str, ColumnCorrelations]
-    reference: Optional[Dict[str, ColumnCorrelations]] = None
+    current: Dict[str, Dict[str, ColumnCorrelations]]
+    reference: Optional[Dict[str, Dict[str, ColumnCorrelations]]] = None
 
 
 class TextDescriptorsCorrelationMetric(Metric[TextDescriptorsCorrelationMetricResult]):
     """Calculates correlations between each auto-generated text feature for column_name and other dataset columns"""
 
     column_name: str
-    generated_text_features: Optional[
-        Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]]
-    ]
+    generated_text_features: Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]]
 
     def __init__(self, column_name: str) -> None:
         self.column_name = column_name
-        self.generated_text_features = None
-    
+        self.generated_text_features = {}
+
     def required_features(self, data_definition: DataDefinition):
         column_type = data_definition.get_column(self.column_name).column_type
         if column_type == ColumnType_data.Text:
@@ -59,7 +53,7 @@ class TextDescriptorsCorrelationMetric(Metric[TextDescriptorsCorrelationMetricRe
         return []
 
     def get_parameters(self) -> tuple:
-        return self.column_name
+        return self.column_name,
 
     def calculate(self, data: InputData) -> TextDescriptorsCorrelationMetricResult:
         if self.column_name not in data.current_data:
@@ -68,7 +62,7 @@ class TextDescriptorsCorrelationMetric(Metric[TextDescriptorsCorrelationMetricRe
         if data.reference_data is not None:
             if self.column_name not in data.reference_data:
                 raise ValueError(f"Column '{self.column_name}' was not found in reference data.")
-        
+
         columns = process_columns(data.current_data, data.column_mapping)
         correlation_columns = columns.num_feature_names
 
@@ -99,7 +93,7 @@ class TextDescriptorsCorrelationMetric(Metric[TextDescriptorsCorrelationMetricRe
 
         for col in list(self.generated_text_features.keys()):
             curr_result[col] = calculate_numerical_column_correlations(col, curr_df, correlation_columns)
-            if ref_df is not None:
+            if ref_df is not None and ref_result is not None:
                 ref_result[col] = calculate_numerical_column_correlations(col, ref_df, correlation_columns)
 
         return TextDescriptorsCorrelationMetricResult(
@@ -115,7 +109,7 @@ class TextDescriptorsCorrelationMetricRenderer(MetricRenderer):
         result = dataclasses.asdict(obj.get_result())
         return result
 
-    def _get_plots_correlations(self, curr_metric_result: Dict, ref_metric_result: Dict) -> Optional[BaseWidgetInfo]:
+    def _get_plots_correlations(self, curr_metric_result: Dict, ref_metric_result: Optional[Dict]) -> Optional[BaseWidgetInfo]:
         tabs = []
 
         for correlation_name, current_correlation in curr_metric_result.items():
@@ -149,7 +143,10 @@ class TextDescriptorsCorrelationMetricRenderer(MetricRenderer):
         metric_result = obj.get_result()
         result = [header_text(label=f"Correlations for column '{metric_result.column_name}'.")]
         for col in list(metric_result.current.keys()):
-            correlation_plots = self._get_plots_correlations(metric_result.current[col], metric_result.reference[col])
+            reference = None
+            if metric_result.reference is not None:
+                reference = metric_result.reference[col]
+            correlation_plots = self._get_plots_correlations(metric_result.current[col], reference)
             if correlation_plots:
                 result.append(header_text(label=f"{col}"))
                 result.append(correlation_plots)

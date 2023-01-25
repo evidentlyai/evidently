@@ -49,9 +49,7 @@ class TextDescriptorsDriftMetricResults:
 class TextDescriptorsDriftMetric(Metric[TextDescriptorsDriftMetricResults]):
     column_name: str
     options: DataDriftOptions
-    generated_text_features: Optional[
-        Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]]
-    ]
+    generated_text_features: Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]]
 
     def __init__(
         self,
@@ -64,7 +62,7 @@ class TextDescriptorsDriftMetric(Metric[TextDescriptorsDriftMetricResults]):
             all_features_stattest=stattest,
             all_features_threshold=stattest_threshold
         )
-        self.generated_text_features = None
+        self.generated_text_features = {}
 
     def required_features(self, data_definition: DataDefinition):
         column_type = data_definition.get_column(self.column_name).column_type
@@ -99,12 +97,12 @@ class TextDescriptorsDriftMetric(Metric[TextDescriptorsDriftMetricResults]):
         drift_by_columns = {}
         for col in curr_text_df.columns:
             drift_by_columns[col] = get_one_column_drift(
-            current_data=curr_text_df,
-            reference_data=ref_text_df,
-            column_name=col,
-            options=self.options,
-            dataset_columns=text_dataset_columns,
-        )
+                current_data=curr_text_df,
+                reference_data=ref_text_df,
+                column_name=col,
+                options=self.options,
+                dataset_columns=text_dataset_columns,
+            )
         dataset_drift = get_dataset_drift(drift_by_columns, 0)
 
         return TextDescriptorsDriftMetricResults(
@@ -138,9 +136,13 @@ class DataDriftTableRenderer(MetricRenderer):
 
         return result
 
-    def _generate_column_params(self, column_name: str, data: TextDescriptorsDriftMetric) -> Optional[RichTableDataRow]:
+    def _generate_column_params(self, column_name: str, data: ColumnDataDriftMetrics) -> Optional[RichTableDataRow]:
         details = RowDetails()
-        if data.current_small_distribution is None or data.reference_small_distribution is None:
+        if (
+            data.current_small_distribution is None
+            or data.reference_small_distribution is None
+            or data.current_distribution is None
+        ):
             return None
 
         current_small_hist = data.current_small_distribution

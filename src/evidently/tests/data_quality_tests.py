@@ -482,10 +482,13 @@ class TestColumnValueMinRenderer(TestRenderer):
     def render_html(self, obj: TestColumnValueMin) -> TestHtmlInfo:
         column_name = obj.column_name
         info = super().render_html(obj)
-        curr_distr = obj.metric.get_result().plot_data.bins_for_hist["current"]
+        bins_for_hist = obj.metric.get_result().plot_data.bins_for_hist
+        if bins_for_hist is None:
+            raise ValueError(f"{column_name} should be numerical or bool")
+        curr_distr = bins_for_hist["current"]
         ref_distr = None
-        if "reference" in obj.metric.get_result().plot_data.bins_for_hist.keys():
-            ref_distr = obj.metric.get_result().plot_data.bins_for_hist["reference"]
+        if "reference" in bins_for_hist.keys():
+            ref_distr = bins_for_hist["reference"]
         fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
         fig = plot_check(fig, obj.get_condition(), color_options=self.color_options)
         current_characteristics = obj.metric.get_result().current_characteristics
@@ -531,10 +534,13 @@ class TestColumnValueMaxRenderer(TestRenderer):
     def render_html(self, obj: TestColumnValueMax) -> TestHtmlInfo:
         column_name = obj.column_name
         info = super().render_html(obj)
-        curr_distr = obj.metric.get_result().plot_data.bins_for_hist["current"]
+        bins_for_hist = obj.metric.get_result().plot_data.bins_for_hist
+        if bins_for_hist is None:
+            raise ValueError(f"{column_name} should be numerical or bool")
+        curr_distr = bins_for_hist["current"]
         ref_distr = None
-        if "reference" in obj.metric.get_result().plot_data.bins_for_hist.keys():
-            ref_distr = obj.metric.get_result().plot_data.bins_for_hist["reference"]
+        if "reference" in bins_for_hist.keys():
+            ref_distr = bins_for_hist["reference"]
         fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
         fig = plot_check(fig, obj.get_condition(), color_options=self.color_options)
         current_characteristics = obj.metric.get_result().current_characteristics
@@ -576,10 +582,13 @@ class TestColumnValueMeanRenderer(TestRenderer):
     def render_html(self, obj: TestColumnValueMean) -> TestHtmlInfo:
         column_name = obj.column_name
         info = super().render_html(obj)
-        curr_distr = obj.metric.get_result().plot_data.bins_for_hist["current"]
+        bins_for_hist = obj.metric.get_result().plot_data.bins_for_hist
+        if bins_for_hist is None:
+            raise ValueError(f"{column_name} should be numerical or bool")
+        curr_distr = bins_for_hist["current"]
         ref_distr = None
-        if "reference" in obj.metric.get_result().plot_data.bins_for_hist.keys():
-            ref_distr = obj.metric.get_result().plot_data.bins_for_hist["reference"]
+        if "reference" in bins_for_hist.keys():
+            ref_distr = bins_for_hist["reference"]
         fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
         fig = plot_check(fig, obj.get_condition(), color_options=self.color_options)
         current_characteristics = obj.metric.get_result().current_characteristics
@@ -621,12 +630,13 @@ class TestColumnValueMedianRenderer(TestRenderer):
     def render_html(self, obj: TestColumnValueMedian) -> TestHtmlInfo:
         column_name = obj.column_name
         info = super().render_html(obj)
-        curr_distr = obj.metric.get_result().plot_data.bins_for_hist["current"]
+        bins_for_hist = obj.metric.get_result().plot_data.bins_for_hist
+        if bins_for_hist is None:
+            raise ValueError(f"{column_name} should be numerical or bool")
+        curr_distr = bins_for_hist["current"]
         ref_distr = None
-
-        if "reference" in obj.metric.get_result().plot_data.bins_for_hist.keys():
-            ref_distr = obj.metric.get_result().plot_data.bins_for_hist["reference"]
-
+        if "reference" in bins_for_hist.keys():
+            ref_distr = bins_for_hist["reference"]
         fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
         fig = plot_check(fig, obj.get_condition(), color_options=self.color_options)
         current_characteristics = obj.metric.get_result().current_characteristics
@@ -671,10 +681,13 @@ class TestColumnValueStdRenderer(TestRenderer):
     def render_html(self, obj: TestColumnValueStd) -> TestHtmlInfo:
         column_name = obj.column_name
         info = super().render_html(obj)
-        curr_distr = obj.metric.get_result().plot_data.bins_for_hist["current"]
+        bins_for_hist = obj.metric.get_result().plot_data.bins_for_hist
+        if bins_for_hist is None:
+            raise ValueError(f"{column_name} should be numerical or bool")
+        curr_distr = bins_for_hist["current"]
         ref_distr = None
-        if "reference" in obj.metric.get_result().plot_data.bins_for_hist.keys():
-            ref_distr = obj.metric.get_result().plot_data.bins_for_hist["reference"]
+        if "reference" in bins_for_hist.keys():
+            ref_distr = bins_for_hist["reference"]
         fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
         info.with_details(f"Std Value {column_name}", plotly_figure(title="", figure=fig))
         return info
