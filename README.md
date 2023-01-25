@@ -108,7 +108,7 @@ To run the **Data Stability** test suite and display the reports in the notebook
 data_stability= TestSuite(tests=[
     DataStabilityTestPreset(),
 ])
-data_stability.run(current_data=iris_frame.iloc[:90], reference_data=iris_frame.iloc[90:], column_mapping=None)
+data_stability.run(current_data=iris_frame.iloc[:60], reference_data=iris_frame.iloc[60:], column_mapping=None)
 data_stability 
 ```
 
@@ -146,7 +146,7 @@ data_drift_report = Report(metrics=[
     DataDriftPreset(),
 ])
 
-data_drift_report.run(current_data=iris_frame.iloc[:90], reference_data=iris_frame.iloc[90:], column_mapping=None)
+data_drift_report.run(current_data=iris_frame.iloc[:60], reference_data=iris_frame.iloc[60:], column_mapping=None)
 data_drift_report
 
 ```
