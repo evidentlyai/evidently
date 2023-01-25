@@ -105,7 +105,7 @@ If you pass two datasets, the report performs drift detection using the default 
 
 If you pass two datasets, the report also performs drift detection for text descriptors to show statistical shifts in patterns between test characteristics.
 
-![](<../.gitbook/assets/reports/metric_text_descriptors_drift_text-min.png>)
+![](<../.gitbook/assets/reports/metric_text_descriptors_drift-min.png>)
 
 ## Metrics output
 
