@@ -6,7 +6,7 @@ Evidently compares the distributions of the values in a given column (or columns
 
 There is a default logic to choosing the appropriate drift test for each column. It is based on:
 
-* column type: categorical or numerical
+* column type: categorical, numerical or text data
 * the number of observations in the reference dataset
 * the number of unique values in the column (n\_unique)
 
@@ -26,14 +26,23 @@ For **larger data with \> 1000 observations** in the reference dataset:
 All metrics use a threshold = 0.1 by default.  
 
 {% hint style="info" %}
-**You can always modify this drift detection logic**. You can select any of the statistical tests available in the library (including PSI, K-L divergence, Jensen-Shannon distance, Wasserstein distance, etc.), specify custom thresholds, or pass a custom test. To do that, use the [DataDriftOptions](../customization/options-for-statistical-tests.md) object.
+**You can always modify this drift detection logic**. You can select any of the statistical tests available in the library (including PSI, K-L divergence, Jensen-Shannon distance, Wasserstein distance, etc.), specify custom thresholds, or pass a custom test. You can read more about using [data drift parameters and available drift detection methods](../customization/options-for-statistical-tests.md).
 {% endhint %}
+
+For **text data**:
+
+* Text content drift using a **domain classifier**. Evidently trains a binary classification model to discriminate between data from reference and current distributions. 
+
+<details>
+<summary>Text content drift detection method</summary>
+The drift score, in this case, is the ROC-AUC score of the domain classifier computed on a validation dataset. To ensure the result is statistically meaningful, we repeat the calculation 1000 times with randomly assigned target class probabilities. This produces a distribution with a mean of 0,5. We then take the 95th percentile (default) of this distribution and compare it to the ROC-AUC score of the classifier. If the classifier score is higher, we consider the data drift to be detected. You can also set a different percentile as a parameter.
+</details>
 
 ## Dataset-level drift
 
 The method above calculates drift for each column individually.   
 
-To detect dataset-level drift, you can set a rule on top of the individual feature results. For example, you can declare dataset drift if at least 50% of all features drifted or if ⅓ of the most important features drifted. Some of the Evidently tests and presets include such defaults. You can always modify them and set custom parameters.
+To detect dataset-level drift, you can set a rule on top of the individual feature results. For example, you can declare dataset drift if at least 50% of all features (columns) drifted or if ⅓ of the most important features drifted. Some of the Evidently tests and presets include such defaults. You can always modify them and set custom parameters.
 
 ## Nulls in the input data 
 
