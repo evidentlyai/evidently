@@ -46,7 +46,7 @@ This report evaluates the quality of a classification model.
 
 To run this report, you need to have **both target and prediction** columns available. Input features are optional. Pass them if you want to explore the relations between features and target.
 
-Refer to the [column mapping section](../tests-and-reports/column-mapping.md) to see how to pass model predictions and labels in different cases. 
+Refer to the [column mapping section](../input-data/column-mapping.md) to see how to pass model predictions and labels in different cases. 
 
 The tool does not yet work for multi-label classification. It expects a single true label.
 
