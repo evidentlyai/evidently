@@ -13,6 +13,7 @@ from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import ColorOptions
 from evidently.pipeline.column_mapping import ColumnMapping
+from evidently.renderers.base_renderer import TestRenderer
 from evidently.suite.base_suite import Display
 from evidently.suite.base_suite import Suite
 from evidently.suite.base_suite import find_test_renderer
@@ -101,7 +102,15 @@ class TestSuite(Display):
 
         for test in self._inner_suite.context.test_results:
             renderer = find_test_renderer(type(test), self._inner_suite.context.renderers)
-            test_results.append(renderer.render_json(test))
+            try:
+                test_data = renderer.render_json(test)
+                test_results.append(test_data)
+            except BaseException as e:
+                test_data = TestRenderer.render_json(renderer, test)
+                test_data["status"] = TestResult.ERROR
+                test_data["description"] = f"Test failed with exception: {e}"
+                test_results.append(test_data)
+
 
         total_tests = len(self._inner_suite.context.test_results)
 
