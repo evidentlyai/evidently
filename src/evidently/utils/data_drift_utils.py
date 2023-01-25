@@ -129,26 +129,26 @@ def roc_auc_random_classifier_percentile(y_test: np.array, p_value=0.05, iter_nu
 
 def calculate_text_drift_score(reference_data: pd.Series, current_data: pd.Series, p_value=0.05) -> Tuple[float, bool]:
     domain_data = pd.concat(
-            [
-                pd.DataFrame({"text": reference_data, "target": 0}),
-                pd.DataFrame({"text": current_data, "target": 1}),
-            ]
-        )
+        [
+            pd.DataFrame({"text": reference_data, "target": 0}),
+            pd.DataFrame({"text": current_data, "target": 1}),
+        ]
+    )
 
     X_train, X_test, y_train, y_test = train_test_split(
-            domain_data["text"],
-            domain_data["target"],
-            test_size=0.5,
-            random_state=42,
-            shuffle=True,
-        )
+        domain_data["text"],
+        domain_data["target"],
+        test_size=0.5,
+        random_state=42,
+        shuffle=True,
+    )
 
     domain_classifier_roc_auc, _, _ = roc_auc_domain_classifier(
-            X_train,
-            X_test,
-            y_train,
-            y_test,
-        )
+        X_train,
+        X_test,
+        y_train,
+        y_test,
+    )
 
     random_classifier_95_percentile = roc_auc_random_classifier_percentile(y_test, p_value=p_value)
     return domain_classifier_roc_auc, domain_classifier_roc_auc > random_classifier_95_percentile
@@ -190,26 +190,26 @@ def get_typical_words(pipeline, words_num=25) -> Tuple[List[str], List[str]]:
 
 def get_text_data_for_plots(reference_data: pd.Series, current_data: pd.Series):
     domain_data = pd.concat(
-            [
-                pd.DataFrame({"text": reference_data, "target": 0}),
-                pd.DataFrame({"text": current_data, "target": 1}),
-            ]
-        )
+        [
+            pd.DataFrame({"text": reference_data, "target": 0}),
+            pd.DataFrame({"text": current_data, "target": 1}),
+        ]
+    )
 
     X_train, X_test, y_train, y_test = train_test_split(
-            domain_data["text"],
-            domain_data["target"],
-            test_size=0.5,
-            random_state=42,
-            shuffle=True,
-        )
+        domain_data["text"],
+        domain_data["target"],
+        test_size=0.5,
+        random_state=42,
+        shuffle=True,
+    )
 
     _, y_pred_proba, classifier_pipeline = roc_auc_domain_classifier(
-            X_train,
-            X_test,
-            y_train,
-            y_test,
-        )
+        X_train,
+        X_test,
+        y_train,
+        y_test,
+    )
     # get examples more characteristic of current or reference dataset
     typical_examples_cur, typical_examples_ref = get_typical_examples(X_test, y_test, y_pred_proba)
 
@@ -217,5 +217,3 @@ def get_text_data_for_plots(reference_data: pd.Series, current_data: pd.Series):
     typical_words_cur, typical_words_ref = get_typical_words(classifier_pipeline)
 
     return typical_examples_cur, typical_examples_ref, typical_words_cur, typical_words_ref
-
-

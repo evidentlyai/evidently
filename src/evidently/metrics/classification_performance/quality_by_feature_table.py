@@ -53,7 +53,7 @@ class ClassificationQualityByFeatureTable(Metric[ClassificationQualityByFeatureT
             text_features_gen = {}
             text_features_gen_result = []
             for col in text_cols:
-                col_dict = {}
+                col_dict: Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]] = {}
                 col_dict[f"{col}: Text Length"] = TextLength(col)
                 col_dict[f"{col}: Non Letter Character %"] = NonLetterCharacterPercentage(col)
                 col_dict[f"{col}: OOV %"] = OOVWordsPercentage(col)

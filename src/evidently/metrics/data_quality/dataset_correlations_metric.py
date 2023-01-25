@@ -1,6 +1,7 @@
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Union
 
 import dataclasses
 import numpy as np
@@ -51,6 +52,9 @@ class DatasetCorrelationsMetricResult:
 
 class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
     """Calculate different correlations with target, predictions and features"""
+    text_features_gen: Optional[
+        Dict[str, Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]]]
+    ]
 
     def __init__(self):
         self.text_features_gen = None
@@ -61,7 +65,7 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
             text_features_gen = {}
             text_features_gen_result = []
             for col in text_cols:
-                col_dict = {}
+                col_dict: Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]] = {}
                 col_dict[f"{col}: Text Length"] = TextLength(col)
                 col_dict[f"{col}: Non Letter Character %"] = NonLetterCharacterPercentage(col)
                 col_dict[f"{col}: OOV %"] = OOVWordsPercentage(col)
@@ -86,7 +90,7 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
         correlation_matrix = correlation.copy()
         target_name = columns.utility_columns.target
         prediction_name = columns.utility_columns.prediction
-        columns = [i for i in correlation_matrix.columns if i not in [target_name, prediction_name]]
+        columns_corr = [i for i in correlation_matrix.columns if i not in [target_name, prediction_name]]
         # fill diagonal with 1 values for getting abs max values
         np.fill_diagonal(correlation_matrix.values, 0)
 
@@ -104,7 +108,7 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
             target_prediction_correlation = None
 
         if target_name in correlation_matrix:
-            abs_max_target_features_correlation = correlation_matrix.loc[target_name, columns].abs().max()
+            abs_max_target_features_correlation = correlation_matrix.loc[target_name, columns_corr].abs().max()
 
             if pd.isnull(abs_max_target_features_correlation):
                 abs_max_target_features_correlation = None
@@ -113,7 +117,7 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
             abs_max_target_features_correlation = None
 
         if isinstance(prediction_name, str) and prediction_name in correlation_matrix:
-            abs_max_prediction_features_correlation = correlation_matrix.loc[prediction_name, columns].abs().max()
+            abs_max_prediction_features_correlation = correlation_matrix.loc[prediction_name, columns_corr].abs().max()
 
             if pd.isnull(abs_max_prediction_features_correlation):
                 abs_max_prediction_features_correlation = None
@@ -126,7 +130,7 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
         if pd.isnull(abs_max_correlation):
             abs_max_correlation = None
 
-        abs_max_features_correlation = correlation_matrix.loc[columns, columns].abs().max().max()
+        abs_max_features_correlation = correlation_matrix.loc[columns_corr, columns_corr].abs().max().max()
 
         if pd.isnull(abs_max_features_correlation):
             abs_max_features_correlation = None
@@ -147,7 +151,7 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
     ) -> DatasetCorrelation:
         if add_text_columns is not None:
             correlations_calculate = calculate_correlations(dataset, columns, sum(add_text_columns, []))
-            correlations=copy.deepcopy(correlations_calculate)
+            correlations = copy.deepcopy(correlations_calculate)
             for name, correlation in correlations_calculate.items():
                 if name != "cramer_v":
                     for col_idx in add_text_columns:
@@ -155,7 +159,7 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
                     correlations_calculate[name] = correlation
         else:
             correlations_calculate = calculate_correlations(dataset, columns)
-            correlations=copy.deepcopy(correlations_calculate)
+            correlations = copy.deepcopy(correlations_calculate)
 
         stats = {
             name: self._get_correlations_stats(correlation, columns)
@@ -194,7 +198,7 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
                     )
                     ref_text_df.columns = list(self.text_features_gen[col].keys())
                     ref_df = pd.concat([ref_df.copy().reset_index(drop=True), ref_text_df.reset_index(drop=True)], axis=1)
-        
+
         current_correlations = self._get_correlations(dataset=curr_df, columns=columns, add_text_columns=text_columns)
 
         if ref_df is not None:

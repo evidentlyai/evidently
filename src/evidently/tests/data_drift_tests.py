@@ -463,6 +463,8 @@ class TestColumnDriftRenderer(TestRenderer):
             else:
                 return info
         else:
+            if result.current_distribution is None:
+                raise ValueError("Expected data is missing")
             fig = get_distribution_plot_figure(
                 current_distribution=result.current_distribution,
                 reference_distribution=result.reference_distribution,

@@ -22,9 +22,9 @@ class TextOverviewPreset(MetricPreset):
         column_name: text column name.
     """
 
-    column_name : str
+    column_name: str
 
-    def __init__(self, column_name : str):
+    def __init__(self, column_name: str):
         super().__init__()
         self.column_name = column_name
 
@@ -34,7 +34,7 @@ class TextOverviewPreset(MetricPreset):
             TextDescriptorsDistribution(column_name=self.column_name),
             TextDescriptorsCorrelationMetric(column_name=self.column_name),
         ]
-        if data.reference_data  is not  None:
+        if data.reference_data is not None:
             result.extend(
                 [
                     ColumnDriftMetric(column_name=self.column_name),

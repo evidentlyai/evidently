@@ -208,7 +208,7 @@ def get_one_column_drift(
         )
         if reference_distribution is None:
             raise ValueError(f"Cannot calculate reference distribution for column '{column_name}'.")
-    
+
     elif column_type == "text" and drift_result.drifted:
         typical_examples_cur, typical_examples_ref, typical_words_cur, typical_words_ref = get_text_data_for_plots(
             reference_column, current_column
@@ -311,7 +311,7 @@ def _get_all_columns_for_drift(dataset_columns: DatasetColumns) -> List[str]:
 
     if dataset_columns.cat_feature_names:
         result += dataset_columns.cat_feature_names
-    
+
     if dataset_columns.text_feature_names:
         result += dataset_columns.text_feature_names
 

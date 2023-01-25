@@ -14,7 +14,7 @@ from evidently.metrics import ColumnValueRangeMetric
 from evidently.metrics import ConflictPredictionMetric
 from evidently.metrics import ConflictTargetMetric
 from evidently.metrics import DatasetCorrelationsMetric
-from evidently.metrics.data_integrity.column_summary_metric import NumericCharacteristics
+from evidently.metrics.data_integrity.column_summary_metric import NumericCharacteristics, TextCharacteristics
 from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -702,12 +702,17 @@ class TestNumberOfUniqueValues(BaseFeatureDataQualityMetricsTest):
 
         reference_features_stats = self.metric.get_result().reference_characteristics
         if reference_features_stats is not None:
+            if isinstance(reference_features_stats, TextCharacteristics):
+                raise ValueError(f"{self.column_name} should be numerical, categorical or datetime")
             unique_count = reference_features_stats.unique
             return TestValueCondition(eq=approx(unique_count, relative=0.1))
+
         return TestValueCondition(gt=1)
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
         features_stats = self.metric.get_result().current_characteristics
+        if isinstance(features_stats, TextCharacteristics):
+            raise ValueError(f"{self.column_name} should be numerical, categorical or datetime")
         return features_stats.unique
 
     def get_description(self, value: Numeric) -> str:
@@ -742,6 +747,8 @@ class TestUniqueValuesShare(BaseFeatureDataQualityMetricsTest):
 
         reference_features_stats = self.metric.get_result().reference_characteristics
         if reference_features_stats is not None:
+            if isinstance(reference_features_stats, TextCharacteristics):
+                raise ValueError(f"{self.column_name} should be numerical, categorical or datetime")
             unique_percentage = reference_features_stats.unique_percentage
 
             if unique_percentage is not None:
@@ -751,6 +758,8 @@ class TestUniqueValuesShare(BaseFeatureDataQualityMetricsTest):
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
         features_stats = self.metric.get_result().current_characteristics
+        if isinstance(features_stats, TextCharacteristics):
+            raise ValueError(f"{self.column_name} should be numerical, categorical or datetime")
         unique_percentage = features_stats.unique_percentage
 
         if unique_percentage is None:
@@ -790,6 +799,8 @@ class TestMostCommonValueShare(BaseFeatureDataQualityMetricsTest):
 
         reference_features_stats = self.metric.get_result().reference_characteristics
         if reference_features_stats is not None:
+            if isinstance(reference_features_stats, TextCharacteristics):
+                raise ValueError(f"{self.column_name} should be numerical, categorical or datetime")
             most_common_percentage = reference_features_stats.most_common_percentage
 
             if most_common_percentage is not None:
@@ -799,6 +810,8 @@ class TestMostCommonValueShare(BaseFeatureDataQualityMetricsTest):
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
         features_stats = self.metric.get_result().current_characteristics
+        if isinstance(features_stats, TextCharacteristics):
+            raise ValueError(f"{self.column_name} should be numerical, categorical or datetime")
         most_common_percentage = features_stats.most_common_percentage
 
         if most_common_percentage is None:
@@ -936,7 +949,10 @@ class TestMeanInNSigmasRenderer(TestRenderer):
         metric_result = obj.metric.get_result()
         info = super().render_html(obj)
 
-        if metric_result.reference_characteristics is None:
+        if (
+            metric_result.reference_characteristics is None
+            or metric_result.plot_data.bins_for_hist is None
+        ):
             return info
 
         if not isinstance(metric_result.reference_characteristics, NumericCharacteristics):
