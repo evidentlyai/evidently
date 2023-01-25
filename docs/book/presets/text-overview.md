@@ -6,11 +6,11 @@
 
 You can evaluate and explore text data: 
 
-**1. To monitor input data for NLP models.** When you do not have true labels or actuals, you can monitor changes in the input data (data drift) and descriptive text characteristics. You can run batch checks, for example, comparing the latest batch of text data to the previous or to the training data. You can often combine it with evaluating [Prediction Drift](target-drift.md)
+**1. To monitor input data for NLP models.** When you do not have true labels or actuals, you can monitor changes in the input data (data drift) and descriptive text characteristics. You can run batch checks, for example, comparing the latest batch of text data to earlier or training data. You can often combine it with evaluating [Prediction Drift](target-drift.md).
 
-**2. When you are debugging the model decay.** If you observe a drop in the model performance, you can this report to understand changes in the input data patterns.
+**2. When you are debugging the model decay.** If you observe a drop in the model performance, you can use this report to understand changes in the input data patterns.
 
-**3. Exploratory data analysis and comparison.** You can use the visual report to explore the text data you want to use for training. You can also use it to compare two datasets. 
+**3. Exploratory data analysis and comparison.** You can use the visual report to explore the text data you want to use for training. You can also use it to compare any two datasets. 
 
 # Text Overview Report   
 
@@ -38,7 +38,7 @@ nltk.download('omw-1.4')
 
 ## How it works
 
-The `TextOverviewPreset` provides and overview and comparison of text datasets.
+The `TextOverviewPreset` provides an overview and comparison of text datasets.
 * Generates a **descriptive summary** of the text columns in the dataset. 
 * Performs **data drift detection** to compare the two texts using the domain classifier approach. 
 * Shows distributions of the **text descriptors** in two datasets, and their **correlations** with other features. 
@@ -48,7 +48,7 @@ The `TextOverviewPreset` provides and overview and comparison of text datasets.
 
 * You can pass **one or two** datasets. The **reference** dataset serves as a benchmark. Evidently analyzes the change by comparing the **current** production data to the **reference** data. If you pass a single dataset, there will be no comparison.
 
-* To run this preset, you need to have **text feature** columns available. Additional features are optional. Pass them if you want to analyze the correlations between the features and text descriptors. . 
+* To run this preset, you must have **text columns**. Additional features are optional. Pass them if you want to analyze the correlations between the features and text descriptors. 
 
 * **Column mapping**. You must explicitly specify the columns that contain text features in [column mapping](../input-data/column-mapping.md) to run this report. 
 
@@ -64,7 +64,7 @@ The report first shows the **descriptive statistics** for the text column(s).
 
 ### 2. Text Descriptors Distribution
 
-Evidently generates several features that describe different text properties, and shows the distributions of these text descriptors. 
+The report generates several features that describe different text properties and shows the distributions of these text descriptors. 
 
 #### Text length
 
@@ -103,7 +103,7 @@ If you pass two datasets, the report performs drift detection using the default 
 
 ### 5. Text Descriptors Drift
 
-If you pass two datasets, the report also performs drift detection for text descriptors, to show statistical shifts in patterns between test characteristics.
+If you pass two datasets, the report also performs drift detection for text descriptors to show statistical shifts in patterns between test characteristics.
 
 ![](<../.gitbook/assets/reports/metric_text_descriptors_drift_text-min.png>)
 
@@ -115,4 +115,4 @@ You can get the report output as a JSON or a Python dictionary.
 
 * You can [specify the drift detection threshold](../customization/options-for-statistical-tests.md). 
 * You can use a [different color schema for the report](../customization/options-for-color-schema.md). 
-* You can create a different report or test suite from scratch taking this one as an inspiration. 
+* You can create a different report or test suite from scratch, taking this one as an inspiration. 
