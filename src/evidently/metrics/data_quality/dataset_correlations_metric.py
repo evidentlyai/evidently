@@ -220,7 +220,7 @@ class DataQualityCorrelationMetricsRenderer(MetricRenderer):
     def render_json(self, obj: DatasetCorrelationsMetric) -> dict:
         result = dataclasses.asdict(obj.get_result())
         result["current"].pop("correlation", None)
-        result["current"].pop("correlations_with_text", None)
+        result["current"].pop("correlations_calculate", None)
 
         if result["reference"]:
             result["reference"].pop("correlation", None)
