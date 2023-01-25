@@ -418,7 +418,8 @@ def rich_table_data(
 
     converted_data = []
     for row in data:
-        if row.details is None or row.details.parts is None:
+        if row.details is None or row.details.parts is None or len(row.details.parts) == 0:
+            converted_data.append(dict(**row.fields))
             continue
         parts = []
         for part in row.details.parts:
