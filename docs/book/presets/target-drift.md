@@ -147,4 +147,4 @@ You can get the report output as a JSON or a Python dictionary:
 
 # Examples
 
-* Browse the [examples](../get-started/examples.md) for sample Jupyter notebooks and Colabs.
+* Browse the [examples](../examples/examples.md) for sample Jupyter notebooks and Colabs.
