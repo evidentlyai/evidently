@@ -309,4 +309,4 @@ You can use the `DataStabilityTestPreset` when you receive a new batch of input 
 
 ## Examples
 
-* Browse our [example](../get-started/examples.md) notebooks to see sample Reports and Test Suites.
+* Browse our [example](../examples/examples.md) notebooks to see sample Reports and Test Suites.
