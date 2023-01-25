@@ -21,11 +21,11 @@ from evidently.renderers.html_widgets import RowDetails
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.renderers.html_widgets import rich_table_data
+from evidently.renderers.html_widgets import table_data
 from evidently.renderers.render_utils import get_distribution_plot_figure
 from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.data_operations import process_columns
 from evidently.utils.visualizations import plot_scatter_for_data_drift
-from evidently.renderers.html_widgets import table_data
 
 
 @dataclass
@@ -118,9 +118,7 @@ class DataDriftTableRenderer(MetricRenderer):
 
     def _generate_column_params(self, column_name: str, data: ColumnDataDriftMetrics) -> Optional[RichTableDataRow]:
         details = RowDetails()
-        if (
-            data.column_type == "text"
-        ):
+        if data.column_type == "text":
             if (
                 data.typical_examples_cur is not None
                 and data.typical_examples_ref is not None

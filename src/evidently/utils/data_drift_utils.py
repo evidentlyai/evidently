@@ -3,9 +3,8 @@ from typing import List
 from typing import Optional
 from typing import Tuple
 
-import pandas as pd
 import numpy as np
-
+import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import SGDClassifier
 from sklearn.metrics import roc_auc_score
@@ -121,6 +120,7 @@ def roc_auc_random_classifier_percentile(y_test: np.array, p_value=0.05, iter_nu
         y_random_pred = np.random.rand(len(y_test))
         roc_auc_random = roc_auc_score(y_test, y_random_pred)
         return roc_auc_random
+
     np.random.seed(seed)
     seeds = np.random.randint(0, iter_num * 10, size=iter_num)
     roc_auc_values = [calc_roc_auc_random(y_test, seed=seed) for seed in seeds]

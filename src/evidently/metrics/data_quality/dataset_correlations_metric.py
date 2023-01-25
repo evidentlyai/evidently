@@ -1,3 +1,4 @@
+import copy
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -9,6 +10,9 @@ import pandas as pd
 
 from evidently import ColumnMapping
 from evidently.calculations.data_quality import calculate_correlations
+from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
+from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
+from evidently.features.text_length_feature import TextLength
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
@@ -19,13 +23,9 @@ from evidently.renderers.html_widgets import TabData
 from evidently.renderers.html_widgets import get_heatmaps_widget
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import widget_tabs
-from evidently.utils.data_operations import process_columns
-from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
-from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
-from evidently.features.text_length_feature import TextLength
-from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.data_operations import DatasetColumns
-import copy
+from evidently.utils.data_operations import process_columns
+from evidently.utils.data_preprocessing import DataDefinition
 
 
 @dataclasses.dataclass
@@ -52,6 +52,7 @@ class DatasetCorrelationsMetricResult:
 
 class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
     """Calculate different correlations with target, predictions and features"""
+
     text_features_gen: Optional[
         Dict[str, Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]]]
     ]
@@ -147,7 +148,7 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
         self,
         dataset: pd.DataFrame,
         columns: DatasetColumns,
-        add_text_columns: Optional[list]
+        add_text_columns: Optional[list],
     ) -> DatasetCorrelation:
         if add_text_columns is not None:
             correlations_calculate = calculate_correlations(dataset, columns, sum(add_text_columns, []))
@@ -186,7 +187,10 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
                 )
                 curr_text_df.columns = list(self.text_features_gen[col].keys())
                 text_columns.append(list(curr_text_df.columns))
-                curr_df = pd.concat([curr_df.copy().reset_index(drop=True), curr_text_df.reset_index(drop=True)], axis=1)
+                curr_df = pd.concat(
+                    [curr_df.copy().reset_index(drop=True), curr_text_df.reset_index(drop=True)],
+                    axis=1,
+                )
 
                 if ref_df is not None:
                     ref_text_df = pd.concat(
@@ -197,7 +201,10 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
                         axis=1,
                     )
                     ref_text_df.columns = list(self.text_features_gen[col].keys())
-                    ref_df = pd.concat([ref_df.copy().reset_index(drop=True), ref_text_df.reset_index(drop=True)], axis=1)
+                    ref_df = pd.concat(
+                        [ref_df.copy().reset_index(drop=True), ref_text_df.reset_index(drop=True)],
+                        axis=1,
+                    )
 
         current_correlations = self._get_correlations(dataset=curr_df, columns=columns, add_text_columns=text_columns)
 

@@ -12,11 +12,11 @@ from dataclasses import dataclass
 
 from evidently.calculations.stattests import get_stattest
 from evidently.options import DataDriftOptions
+from evidently.utils.data_drift_utils import get_text_data_for_plots
 from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.data_operations import recognize_column_type
 from evidently.utils.visualizations import Distribution
 from evidently.utils.visualizations import get_distribution_for_column
-from evidently.utils.data_drift_utils import get_text_data_for_plots
 
 
 @dataclass

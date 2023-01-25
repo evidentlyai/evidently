@@ -10,9 +10,9 @@ from airflow.operators.python_operator import PythonOperator
 from airflow.operators.python_operator import ShortCircuitOperator
 from sklearn import datasets
 
-from evidently.report import Report
 from evidently.metric_preset import DataDriftPreset
 from evidently.pipeline.column_mapping import ColumnMapping
+from evidently.report import Report
 
 default_args = {
     "start_date": datetime(2020, 1, 1),

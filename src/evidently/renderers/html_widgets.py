@@ -715,7 +715,7 @@ def get_heatmaps_widget(
         )
 
     figure.update_layout(coloraxis={"colorscale": color_options.heatmap})
-    figure.update_yaxes(type='category')
+    figure.update_yaxes(type="category")
     figure.update_xaxes(tickangle=-45)
     return plotly_figure(title=title, figure=figure, size=size)
 

@@ -8,6 +8,9 @@ import pandas as pd
 
 from evidently.calculations.data_quality import ColumnCorrelations
 from evidently.calculations.data_quality import calculate_numerical_column_correlations
+from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
+from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
+from evidently.features.text_length_feature import TextLength
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
@@ -18,11 +21,8 @@ from evidently.renderers.html_widgets import get_histogram_for_distribution
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import widget_tabs
 from evidently.utils.data_operations import process_columns
-from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
-from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
-from evidently.features.text_length_feature import TextLength
-from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.data_preprocessing import ColumnType as ColumnType_data
+from evidently.utils.data_preprocessing import DataDefinition
 
 
 @dataclasses.dataclass
@@ -53,7 +53,7 @@ class TextDescriptorsCorrelationMetric(Metric[TextDescriptorsCorrelationMetricRe
         return []
 
     def get_parameters(self) -> tuple:
-        return self.column_name,
+        return (self.column_name,)
 
     def calculate(self, data: InputData) -> TextDescriptorsCorrelationMetricResult:
         if self.column_name not in data.current_data:
@@ -73,7 +73,7 @@ class TextDescriptorsCorrelationMetric(Metric[TextDescriptorsCorrelationMetricRe
         curr_text_df.columns = list(self.generated_text_features.keys())
         curr_df = pd.concat(
             [data.current_data.copy().reset_index(drop=True), curr_text_df.reset_index(drop=True)],
-            axis=1
+            axis=1,
         )
         ref_df = None
         if data.reference_data is not None:
@@ -84,7 +84,7 @@ class TextDescriptorsCorrelationMetric(Metric[TextDescriptorsCorrelationMetricRe
             ref_text_df.columns = list(self.generated_text_features.keys())
             ref_df = pd.concat(
                 [data.reference_data.copy().reset_index(drop=True), ref_text_df.reset_index(drop=True)],
-                axis=1
+                axis=1,
             )
         curr_result = {}
         ref_result: Optional[dict] = None
@@ -109,7 +109,11 @@ class TextDescriptorsCorrelationMetricRenderer(MetricRenderer):
         result = dataclasses.asdict(obj.get_result())
         return result
 
-    def _get_plots_correlations(self, curr_metric_result: Dict, ref_metric_result: Optional[Dict]) -> Optional[BaseWidgetInfo]:
+    def _get_plots_correlations(
+        self,
+        curr_metric_result: Dict,
+        ref_metric_result: Optional[Dict],
+    ) -> Optional[BaseWidgetInfo]:
         tabs = []
 
         for correlation_name, current_correlation in curr_metric_result.items():

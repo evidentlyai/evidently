@@ -111,7 +111,6 @@ class TestSuite(Display):
                 test_data["description"] = f"Test failed with exception: {e}"
                 test_results.append(test_data)
 
-
         total_tests = len(self._inner_suite.context.test_results)
 
         return {

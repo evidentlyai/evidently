@@ -112,7 +112,9 @@ class DatasetColumns:
         else:
             len_time_columns = 0
 
-        return len(self.num_feature_names) + len(self.cat_feature_names) + len(self.text_feature_names) + len_time_columns
+        return (
+            len(self.num_feature_names) + len(self.cat_feature_names) + len(self.text_feature_names) + len_time_columns
+        )
 
 
 def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping) -> DatasetColumns:

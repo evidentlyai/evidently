@@ -14,7 +14,8 @@ from evidently.metrics import ColumnValueRangeMetric
 from evidently.metrics import ConflictPredictionMetric
 from evidently.metrics import ConflictTargetMetric
 from evidently.metrics import DatasetCorrelationsMetric
-from evidently.metrics.data_integrity.column_summary_metric import NumericCharacteristics, TextCharacteristics
+from evidently.metrics.data_integrity.column_summary_metric import NumericCharacteristics
+from evidently.metrics.data_integrity.column_summary_metric import TextCharacteristics
 from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -949,10 +950,7 @@ class TestMeanInNSigmasRenderer(TestRenderer):
         metric_result = obj.metric.get_result()
         info = super().render_html(obj)
 
-        if (
-            metric_result.reference_characteristics is None
-            or metric_result.plot_data.bins_for_hist is None
-        ):
+        if metric_result.reference_characteristics is None or metric_result.plot_data.bins_for_hist is None:
             return info
 
         if not isinstance(metric_result.reference_characteristics, NumericCharacteristics):

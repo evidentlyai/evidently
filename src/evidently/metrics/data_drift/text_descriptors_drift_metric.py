@@ -8,11 +8,17 @@ import pandas as pd
 from dataclasses import dataclass
 
 from evidently.calculations.data_drift import ColumnDataDriftMetrics
+from evidently.calculations.data_drift import get_dataset_drift
+from evidently.calculations.data_drift import get_one_column_drift
 from evidently.calculations.stattests import PossibleStatTestType
+from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
+from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
+from evidently.features.text_length_feature import TextLength
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import DataDriftOptions
+from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import ColumnDefinition
@@ -25,15 +31,9 @@ from evidently.renderers.html_widgets import rich_table_data
 from evidently.renderers.render_utils import get_distribution_plot_figure
 from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.data_operations import process_columns
-from evidently.utils.visualizations import plot_scatter_for_data_drift
-from evidently.calculations.data_drift import get_one_column_drift
-from evidently.calculations.data_drift import get_dataset_drift
-from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
-from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
-from evidently.features.text_length_feature import TextLength
-from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.data_preprocessing import ColumnType as ColumnType_data
-from evidently.pipeline.column_mapping import ColumnMapping
+from evidently.utils.data_preprocessing import DataDefinition
+from evidently.utils.visualizations import plot_scatter_for_data_drift
 
 
 @dataclass
@@ -55,13 +55,10 @@ class TextDescriptorsDriftMetric(Metric[TextDescriptorsDriftMetricResults]):
         self,
         column_name: str,
         stattest: Optional[PossibleStatTestType] = None,
-        stattest_threshold: Optional[float] = None
+        stattest_threshold: Optional[float] = None,
     ):
         self.column_name = column_name
-        self.options = DataDriftOptions(
-            all_features_stattest=stattest,
-            all_features_threshold=stattest_threshold
-        )
+        self.options = DataDriftOptions(all_features_stattest=stattest, all_features_threshold=stattest_threshold)
         self.generated_text_features = {}
 
     def required_features(self, data_definition: DataDefinition):

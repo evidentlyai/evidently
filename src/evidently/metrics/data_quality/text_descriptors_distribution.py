@@ -5,6 +5,9 @@ from typing import Union
 
 import dataclasses
 
+from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
+from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
+from evidently.features.text_length_feature import TextLength
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
@@ -16,13 +19,10 @@ from evidently.renderers.html_widgets import plotly_figure
 from evidently.renderers.render_utils import get_distribution_plot_figure
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_operations import recognize_column_type
+from evidently.utils.data_preprocessing import ColumnType
+from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.visualizations import Distribution
 from evidently.utils.visualizations import get_distribution_for_column
-from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
-from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
-from evidently.features.text_length_feature import TextLength
-from evidently.utils.data_preprocessing import DataDefinition
-from evidently.utils.data_preprocessing import ColumnType
 
 
 @dataclasses.dataclass
@@ -38,10 +38,7 @@ class TextDescriptorsDistribution(Metric[TextDescriptorsDistributionResult]):
     column_name: str
     generated_text_features: Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]]
 
-    def __init__(
-        self,
-        column_name: str
-    ) -> None:
+    def __init__(self, column_name: str) -> None:
         self.column_name = column_name
         self.generated_text_features = {}
 
@@ -56,7 +53,7 @@ class TextDescriptorsDistribution(Metric[TextDescriptorsDistributionResult]):
         return []
 
     def get_parameters(self) -> tuple:
-        return self.column_name,
+        return (self.column_name,)
 
     def calculate(self, data: InputData) -> TextDescriptorsDistributionResult:
         current_results = {}
@@ -105,9 +102,7 @@ class TextDescriptorsDistributionRenderer(MetricRenderer):
 
     def render_html(self, obj: TextDescriptorsDistribution) -> List[BaseWidgetInfo]:
         metric_result = obj.get_result()
-        result = [
-            header_text(label=f"Distribution for column '{metric_result.column_name}'.")
-        ]
+        result = [header_text(label=f"Distribution for column '{metric_result.column_name}'.")]
         for col in list(metric_result.current.keys()):
             reference = None
             if metric_result.reference is not None:

@@ -6,14 +6,17 @@ from typing import Tuple
 from typing import Union
 
 import dataclasses
-import pandas as pd
 import numpy as np
+import pandas as pd
 from pandas.api.types import is_numeric_dtype
 from pandas.api.types import is_string_dtype
 
 from evidently.calculations.data_quality import DataQualityGetPlotData
 from evidently.calculations.data_quality import FeatureQualityStats
 from evidently.calculations.data_quality import get_features_stats
+from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
+from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
+from evidently.features.text_length_feature import TextLength
 from evidently.metrics.base_metric import InputData
 from evidently.metrics.base_metric import Metric
 from evidently.model.widget import AdditionalGraphInfo
@@ -22,6 +25,7 @@ from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_preprocessing import ColumnType
+from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.types import Numeric
 from evidently.utils.visualizations import plot_boxes
 from evidently.utils.visualizations import plot_cat_cat_rel
@@ -31,10 +35,6 @@ from evidently.utils.visualizations import plot_distr_with_log_button
 from evidently.utils.visualizations import plot_num_feature_in_time
 from evidently.utils.visualizations import plot_num_num_rel
 from evidently.utils.visualizations import plot_time_feature_distr
-from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
-from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
-from evidently.features.text_length_feature import TextLength
-from evidently.utils.data_preprocessing import DataDefinition
 
 
 @dataclasses.dataclass
@@ -141,9 +141,7 @@ class ColumnSummary:
 
 class ColumnSummaryMetric(Metric[ColumnSummary]):
     column_name: str
-    generated_text_features: Optional[
-        Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]]
-    ]
+    generated_text_features: Optional[Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]]]
 
     def __init__(self, column_name: str):
         self.column_name = column_name
@@ -160,7 +158,7 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
         return []
 
     def get_parameters(self) -> tuple:
-        return (self.column_name, )
+        return (self.column_name,)
 
     @staticmethod
     def acceptable_types() -> List[ColumnType]:
@@ -246,13 +244,13 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
                     "reference",
                     data,
                     data.reference_data[self.column_name],
-                    self.generated_text_features
+                    self.generated_text_features,
                 )
             curr_characteristics = self.get_text_stats(
                 "current",
                 data,
                 data.current_data[self.column_name],
-                self.generated_text_features
+                self.generated_text_features,
             )
         else:
             if data.reference_data is not None:
@@ -401,14 +399,15 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
         raise ValueError(f"unknown feature type {stats.feature_type}")
 
     def get_text_stats(
-        self, dataset: str,
+        self,
+        dataset: str,
         data: InputData,
         text_feature: pd.Series,
-        generated_text_features: dict
+        generated_text_features: dict,
     ) -> TextCharacteristics:
         number_of_rows = len(text_feature)
         missing = text_feature.isna().sum()
-        if dataset == 'current':
+        if dataset == "current":
             text_length = data.get_current_column(generated_text_features["text_length"].feature_name())
             oov = data.get_current_column(generated_text_features["oov"].feature_name())
             non_letter_char = data.get_current_column(generated_text_features["non_letter_char"].feature_name())

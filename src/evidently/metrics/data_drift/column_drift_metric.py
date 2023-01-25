@@ -13,15 +13,16 @@ from evidently.options import DataDriftOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
+from evidently.renderers.html_widgets import TabData
 from evidently.renderers.html_widgets import counter
+from evidently.renderers.html_widgets import plotly_figure
+from evidently.renderers.html_widgets import table_data
+from evidently.renderers.html_widgets import widget_tabs
 from evidently.renderers.render_utils import get_distribution_plot_figure
 from evidently.utils.data_operations import process_columns
 from evidently.utils.types import Numeric
 from evidently.utils.visualizations import Distribution
 from evidently.utils.visualizations import plot_scatter_for_data_drift
-from evidently.renderers.html_widgets import table_data
-from evidently.renderers.html_widgets import TabData
-from evidently.renderers.html_widgets import widget_tabs, plotly_figure
 
 
 @dataclasses.dataclass

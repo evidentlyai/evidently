@@ -20,6 +20,7 @@ from .data_drift.column_value_plot import ColumnValuePlot
 from .data_drift.data_drift_table import DataDriftTable
 from .data_drift.dataset_drift_metric import DatasetDriftMetric
 from .data_drift.target_by_features_table import TargetByFeaturesTable
+from .data_drift.text_descriptors_drift_metric import TextDescriptorsDriftMetric
 from .data_integrity.column_missing_values_metric import ColumnMissingValuesMetric
 from .data_integrity.column_regexp_metric import ColumnRegExpMetric
 from .data_integrity.column_summary_metric import ColumnSummaryMetric
@@ -34,6 +35,8 @@ from .data_quality.conflict_prediction_metric import ConflictPredictionMetric
 from .data_quality.conflict_target_metric import ConflictTargetMetric
 from .data_quality.dataset_correlations_metric import DatasetCorrelationsMetric
 from .data_quality.stability_metric import DataQualityStabilityMetric
+from .data_quality.text_descriptors_correlation_metric import TextDescriptorsCorrelationMetric
+from .data_quality.text_descriptors_distribution import TextDescriptorsDistribution
 from .regression_performance.abs_perc_error_in_time import RegressionAbsPercentageErrorPlot
 from .regression_performance.error_bias_table import RegressionErrorBiasTable
 from .regression_performance.error_distribution import RegressionErrorDistribution
@@ -45,6 +48,3 @@ from .regression_performance.regression_dummy_metric import RegressionDummyMetri
 from .regression_performance.regression_performance_metrics import RegressionPerformanceMetrics
 from .regression_performance.regression_quality import RegressionQualityMetric
 from .regression_performance.top_error import RegressionTopErrorMetric
-from .data_quality.text_descriptors_distribution import TextDescriptorsDistribution
-from .data_drift.text_descriptors_drift_metric import TextDescriptorsDriftMetric
-from .data_quality.text_descriptors_correlation_metric import TextDescriptorsCorrelationMetric

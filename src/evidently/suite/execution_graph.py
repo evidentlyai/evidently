@@ -39,7 +39,11 @@ class SimpleExecutionGraph(ExecutionGraph):
             metrics_by_parameters: Dict[tuple, List[Metric]] = functools.reduce(_aggregate_by_parameters, metrics, {})
 
             for metric in metrics:
-                metric_to_calculations[metric] = metrics_by_parameters[metric.get_parameters()][0]
+                parameters = metric.get_parameters()
+                if parameters is None:
+                    metric_to_calculations[metric] = metric
+                else:
+                    metric_to_calculations[metric] = metrics_by_parameters[parameters][0]
 
         return [(metric, metric_to_calculations[metric]) for metric in self.metrics]
 

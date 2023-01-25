@@ -2,8 +2,8 @@ import abc
 import logging
 from enum import Enum
 from typing import Dict
-from typing import List
 from typing import Generic
+from typing import List
 from typing import Optional
 from typing import Type
 from typing import TypeVar

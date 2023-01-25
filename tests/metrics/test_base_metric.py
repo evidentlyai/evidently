@@ -66,14 +66,16 @@ class SimpleMetricWithFeatures(Metric[int]):
 
 
 class MetricWithAllTextFeatures(Metric[Dict[str, int]]):
-    features: Dict[str, 'LengthFeature']
+    features: Dict[str, "LengthFeature"]
 
     def calculate(self, data: InputData):
         return {k: data.get_current_column(v.feature_name()).sum() for k, v in self.features.items()}
 
     def required_features(self, data_definition: DataDefinition):
-        self.features = {column.column_name: LengthFeature(column.column_name)
-                         for column in data_definition.get_columns("text_features")}
+        self.features = {
+            column.column_name: LengthFeature(column.column_name)
+            for column in data_definition.get_columns("text_features")
+        }
         return list(self.features.values())
 
 
@@ -107,16 +109,18 @@ class LengthFeature(GeneratedFeature):
         (SimpleMetric(additional_feature(SimpleGeneratedFeature("col1"), "col1")), 12),
         (SimpleMetricWithFeatures("col1"), 6),
         (SimpleMetricWithFeatures("col2"), 9),
-        (MetricWithAllTextFeatures(), {"col3": 9, "col4": 12})
+        (MetricWithAllTextFeatures(), {"col3": 9, "col4": 12}),
     ],
 )
 def test_additional_features(metric, result):
-    test_data = pd.DataFrame(dict(
-        col1=[1.0, 2.0, 3.0],
-        col2=["11", "111", "1111"],
-        col3=["11", "111", "1111"],
-        col4=["111", "1111", "11111"],
-    ))
+    test_data = pd.DataFrame(
+        dict(
+            col1=[1.0, 2.0, 3.0],
+            col2=["11", "111", "1111"],
+            col3=["11", "111", "1111"],
+            col4=["111", "1111", "11111"],
+        )
+    )
     report = Report(metrics=[metric])
 
     report.run(
