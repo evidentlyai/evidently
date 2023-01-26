@@ -1,7 +1,7 @@
 **TL;DR:** You can explore and track various dataset and feature statistics.
 
-* For visual analysis using Reports, use the `DataQualityPreset`.
-* For pipeline checks using Test Suites, use the `DataQualityTestPreset`or `DataStabilityTestPreset`.  
+* Report: for visual analysis or metrics export, use the `DataQualityPreset`.
+* Test Suite: for pipeline checks, use the `DataQualityTestPreset`or `DataStabilityTestPreset`.  
 
 # Use Cases
 
