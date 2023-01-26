@@ -7,6 +7,8 @@ import dataclasses
 import pandas as pd
 from dataclasses import dataclass
 
+from evidently.base_metric import InputData
+from evidently.base_metric import Metric
 from evidently.calculations.data_drift import ColumnDataDriftMetrics
 from evidently.calculations.data_drift import get_dataset_drift
 from evidently.calculations.data_drift import get_one_column_drift
@@ -14,8 +16,6 @@ from evidently.calculations.stattests import PossibleStatTestType
 from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
 from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
 from evidently.features.text_length_feature import TextLength
-from evidently.metrics.base_metric import InputData
-from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import DataDriftOptions
 from evidently.pipeline.column_mapping import ColumnMapping

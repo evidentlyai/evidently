@@ -7,6 +7,8 @@ import dataclasses
 import pandas as pd
 
 from evidently import ColumnMapping
+from evidently.base_metric import InputData
+from evidently.base_metric import Metric
 from evidently.calculations.data_integration import get_number_of_all_pandas_missed_values
 from evidently.calculations.data_integration import get_number_of_almost_constant_columns
 from evidently.calculations.data_integration import get_number_of_almost_duplicated_columns
@@ -14,8 +16,6 @@ from evidently.calculations.data_integration import get_number_of_constant_colum
 from evidently.calculations.data_integration import get_number_of_duplicated_columns
 from evidently.calculations.data_integration import get_number_of_empty_columns
 from evidently.calculations.data_quality import get_rows_count
-from evidently.metrics.base_metric import InputData
-from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer

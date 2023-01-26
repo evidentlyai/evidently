@@ -7,8 +7,8 @@ import pandas as pd
 from pandas.api.types import is_numeric_dtype
 from plotly import graph_objs as go
 
-from evidently.metrics.base_metric import InputData
-from evidently.metrics.base_metric import Metric
+from evidently.base_metric import InputData
+from evidently.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer

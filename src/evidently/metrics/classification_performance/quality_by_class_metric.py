@@ -10,7 +10,7 @@ import sklearn
 from plotly import graph_objs as go
 from plotly.subplots import make_subplots
 
-from evidently.metrics.base_metric import InputData
+from evidently.base_metric import InputData
 from evidently.metrics.classification_performance.base_classification_metric import ThresholdClassificationMetric
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer

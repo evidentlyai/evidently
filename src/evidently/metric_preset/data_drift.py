@@ -2,11 +2,11 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
+from evidently.base_metric import InputData
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.metric_preset.metric_preset import MetricPreset
 from evidently.metrics import DataDriftTable
 from evidently.metrics import DatasetDriftMetric
-from evidently.metrics.base_metric import InputData
 from evidently.utils.data_operations import DatasetColumns
 
 

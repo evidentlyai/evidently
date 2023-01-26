@@ -12,9 +12,9 @@ import dataclasses
 import pandas as pd
 
 import evidently
-from evidently.metrics.base_metric import ErrorResult
-from evidently.metrics.base_metric import InputData
-from evidently.metrics.base_metric import Metric
+from evidently.base_metric import ErrorResult
+from evidently.base_metric import InputData
+from evidently.base_metric import Metric
 from evidently.options import OptionsProvider
 from evidently.renderers.base_renderer import DEFAULT_RENDERERS
 from evidently.renderers.base_renderer import MetricRenderer
@@ -241,7 +241,12 @@ class Suite:
         if self.context.execution_graph is not None:
             execution_graph: ExecutionGraph = self.context.execution_graph
             for metric, calculation in execution_graph.get_metric_execution_iterator():
-                for feature in metric.required_features(data_definition):
+                try:
+                    required_features = metric.required_features(data_definition)
+                except Exception as e:
+                    logging.error(f"failed to get features for {type(metric)}: {e}")
+                    continue
+                for feature in required_features:
                     params = feature.get_parameters()
                     if params is not None:
                         _id = (type(feature), params)

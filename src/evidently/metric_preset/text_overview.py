@@ -1,10 +1,10 @@
+from evidently.base_metric import InputData
 from evidently.metric_preset.metric_preset import MetricPreset
 from evidently.metrics import ColumnDriftMetric
 from evidently.metrics import ColumnSummaryMetric
 from evidently.metrics import TextDescriptorsCorrelationMetric
 from evidently.metrics import TextDescriptorsDistribution
 from evidently.metrics import TextDescriptorsDriftMetric
-from evidently.metrics.base_metric import InputData
 from evidently.utils.data_operations import DatasetColumns
 
 

@@ -3,8 +3,8 @@ from typing import List
 from typing import Optional
 
 from evidently import TaskType
+from evidently.base_metric import InputData
 from evidently.calculations.stattests import PossibleStatTestType
-from evidently.metrics.base_metric import InputData
 from evidently.test_preset.test_preset import TestPreset
 from evidently.tests import TestAllFeaturesValueDrift
 from evidently.tests import TestColumnDrift

@@ -7,9 +7,9 @@ import dataclasses
 import pandas as pd
 
 from evidently import ColumnMapping
+from evidently.base_metric import InputData
+from evidently.base_metric import Metric
 from evidently.metric_preset.metric_preset import MetricPreset
-from evidently.metrics.base_metric import InputData
-from evidently.metrics.base_metric import Metric
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.options import ColorOptions

@@ -1,7 +1,7 @@
 from typing import List
 from typing import Optional
 
-from evidently.metrics.base_metric import InputData
+from evidently.base_metric import InputData
 from evidently.test_preset.test_preset import TestPreset
 from evidently.tests import TestAllColumnsShareOfMissingValues
 from evidently.tests import TestCatColumnsOutOfListValues

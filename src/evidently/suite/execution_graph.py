@@ -5,7 +5,7 @@ from typing import List
 from typing import Tuple
 from typing import Type
 
-from evidently.metrics.base_metric import Metric
+from evidently.base_metric import Metric
 from evidently.tests.base_test import Test
 
 

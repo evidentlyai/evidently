@@ -8,7 +8,7 @@ from typing import Union
 import dataclasses
 import pandas as pd
 
-from evidently.metrics.base_metric import InputData
+from evidently.base_metric import InputData
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import ColorOptions
