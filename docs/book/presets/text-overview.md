@@ -1,6 +1,6 @@
 **TL;DR:** You can explore and compare text datasets.
 
-* For visual analysis using Reports, use `TextOverviewPreset`.
+* **Report**: for visual analysis or metrics export, use the `TextOverviewPreset`,
 
 # Use case 
 
@@ -10,7 +10,7 @@ You can evaluate and explore text data:
 
 **2. When you are debugging the model decay.** If you observe a drop in the model performance, you can use this report to understand changes in the input data patterns.
 
-**3. Exploratory data analysis and comparison.** You can use the visual report to explore the text data you want to use for training. You can also use it to compare any two datasets. 
+**3. Exploratory data analysis.** You can use the visual report to explore the text data you want to use for training. You can also use it to compare any two datasets. 
 
 # Text Overview Report   
 
@@ -27,7 +27,7 @@ text_overview_report.run(reference_data=ref, current_data=cur)
 text_overview_report
 ```
 
-Note that to calculate some of the metrics, you should also import text-specific libraries:
+Note that to calculate text-related metrics, you must also import additional libraries:
 
 ```
 import nltk
@@ -48,7 +48,7 @@ The `TextOverviewPreset` provides an overview and comparison of text datasets.
 
 * You can pass **one or two** datasets. The **reference** dataset serves as a benchmark. Evidently analyzes the change by comparing the **current** production data to the **reference** data. If you pass a single dataset, there will be no comparison.
 
-* To run this preset, you must have **text columns**. Additional features are optional. Pass them if you want to analyze the correlations between the features and text descriptors. 
+* To run this preset, you must have **text columns** in your dataset. Additional features and prediction/target are optional. Pass them if you want to analyze the correlations with text descriptors. 
 
 * **Column mapping**. You must explicitly specify the columns that contain text features in [column mapping](../input-data/column-mapping.md) to run this report. 
 
@@ -80,7 +80,7 @@ The report generates several features that describe different text properties an
 
 ### 3. Text Descriptors Correlations
 
-If the dataset contains numerical features, the report will show the **correlations between features and text descriptors** in the current and reference dataset. It helps detects shifts in the relationship.
+If the dataset contains numerical features and/or target, the report will show the **correlations between features and text descriptors** in the current and reference dataset. It helps detects shifts in the relationship.
 
 #### Text length
 
@@ -109,10 +109,10 @@ If you pass two datasets, the report also performs drift detection for text desc
 
 ## Metrics output
 
-You can get the report output as a JSON or a Python dictionary.
+You can also get the report output as a JSON or a Python dictionary.
 
 ## Report customization
 
-* You can [specify the drift detection threshold](../customization/options-for-statistical-tests.md). 
+* You can [specify a different drift detection threshold](../customization/options-for-statistical-tests.md). 
 * You can use a [different color schema for the report](../customization/options-for-color-schema.md). 
 * You can create a different report or test suite from scratch, taking this one as an inspiration. 
