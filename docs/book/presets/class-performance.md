@@ -1,7 +1,7 @@
 **TL;DR:** You can use the pre-built Reports and Test suites to analyze the performance of a classification model. The Presets work for binary and multi-class classification, probabilistic and non-probabilistic classification. 
 
-* For visual analysis using Reports, use the `ClassificationPreset`. 
-* For pipeline checks using Test Suites, use the `MulticlassClassificationTestPreset`, `BinaryClassificationTopKTestPreset` or `BinaryClassificationTestPreset`.
+* **Report**: for visual analysis or metrics export, use the `ClassificationPreset`. 
+* **Test Suite**: for pipeline checks, use the `MulticlassClassificationTestPreset`, `BinaryClassificationTopKTestPreset` or `BinaryClassificationTestPreset`.
 
 # Use Case
 
