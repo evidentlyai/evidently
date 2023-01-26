@@ -2,7 +2,7 @@ Evidently is an open-source Python library for data scientists and ML engineers.
 
 It helps evaluate, test, and monitor the performance of ML models from validation to production.
 
-# Quick Start 
+# Quick Start
 
 Quickly check it out (1 min):
 {% content-ref url="get-started/hello-world.md" %}
@@ -29,9 +29,9 @@ You need to provide the data, choose what to evaluate, and the output format. Ev
 
 You can integrate Evidently into various ML stacks as a monitoring or evaluation component.
 
-Evidently currently works with tabular data. 
+Evidently currently works with tabular and text data. 
 
-# 1. [Tests](tests/README.md): batch model checks 
+# 1. Tests suites: batch model checks 
 
 Tests perform structured data and ML model quality checks. You typically compare two datasets: **reference** and **current**. You can set test parameters manually or let Evidently learn the expectations from the reference. Tests verify a condition and return an explicit **pass** or **fail** result. 
  
@@ -52,7 +52,7 @@ Tests are best for automated batch checks.
 * [User guide: how to generate tests](tests-and-reports/run-tests.md) 
 * [Reference: available tests and presets](reference/all-tests.md) 
 
-# 2. [Reports](reports/README.md): interactive dashboards
+# 2. Reports: interactive dashboards
 
 {% hint style="info" %}
 We added a new Report object starting from **v0.1.57.dev0**. Reports unite the functionality of Dashboards and JSON profiles with a new, cleaner API. 
@@ -81,7 +81,7 @@ Reports are best for exploratory analysis, debugging, and documentation.
 * [User guide: how to run reports](tests-and-reports/get-reports.md) 
 * [Reference: available metrics and metric presets](reference/all-metrics.md) 
 
-# 3. [Real-time ML monitoring](integrations/evidently-and-grafana.md)
+# 3. Monitors: real-time ML monitoring
 
 *Note: this functionality is in early development and subject to an API change*. 
 

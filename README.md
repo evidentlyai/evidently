@@ -17,7 +17,7 @@
 
 # :bar_chart: What is Evidently?
 
-Evidently is an open-source Python library for data scientists and ML engineers. It helps evaluate, test, and monitor the performance of ML models from validation to production.
+Evidently is an open-source Python library for data scientists and ML engineers. It helps evaluate, test, and monitor the performance of ML models from validation to production. It works with tabular and text data.
 
 Evidently has a modular approach with 3 interfaces on top of the shared `metrics` functionality. 
 
@@ -34,7 +34,7 @@ Tests are best for automated batch model checks. You can integrate them as a pip
 ## 2. Reports: interactive dashboards
 
 > **Note**
-> We added a new Report object starting from v0.1.57.dev0. Reports unite the functionality of Dashboards and JSON profiles with a new, cleaner API. You can still use the old [Dashboards API](https://docs.evidentlyai.com/features/dashboards/generate_dashboards) but it will soon be depreciated.
+> We added a new Report object starting from v0.1.57.dev0. Reports unite the functionality of Dashboards and JSON profiles with a new, cleaner API. The old Dashboards API is deprecated and will be removed.
 
 ![Report example](docs/images/evidently_reports_main-min.png)
 
@@ -108,7 +108,7 @@ To run the **Data Stability** test suite and display the reports in the notebook
 data_stability= TestSuite(tests=[
     DataStabilityTestPreset(),
 ])
-data_stability.run(current_data=iris_frame.iloc[:90], reference_data=iris_frame.iloc[90:], column_mapping=None)
+data_stability.run(current_data=iris_frame.iloc[:60], reference_data=iris_frame.iloc[60:], column_mapping=None)
 data_stability 
 ```
 
@@ -146,7 +146,7 @@ data_drift_report = Report(metrics=[
     DataDriftPreset(),
 ])
 
-data_drift_report.run(current_data=iris_frame.iloc[:90], reference_data=iris_frame.iloc[90:], column_mapping=None)
+data_drift_report.run(current_data=iris_frame.iloc[:60], reference_data=iris_frame.iloc[60:], column_mapping=None)
 data_drift_report
 
 ```

@@ -26,11 +26,7 @@ $ jupyter nbextension enable evidently --py --sys-prefix
 Install **Evidently**:
 
 ```python
-try:
-    import evidently
-except:
-    !npm install -g yarn
-    !pip install git+https://github.com/evidentlyai/evidently.git
+!pip install evidently
 ``` 
 
 # Imports 

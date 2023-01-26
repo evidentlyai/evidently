@@ -1,7 +1,7 @@
 **TL;DR:** You can monitor and analyze the performance of a regression model. 
 
-* For visual analysis using Reports, use `RegressionPreset`. 
-* For pipeline checks using Test Suites, use `RegressionTestPreset`.
+* **Report**: for visual analysis or metrics export, use the `RegressionPreset`.
+* **Test Suite**: for pipeline checks, use the `RegressionTestPreset`.
 
 # Use case
 
@@ -43,9 +43,9 @@ It can also compare the performance against the past, or the performance of an a
 
 ## Data Requirements
 
-To run this report, you need to have input features, and **both target and prediction** columns available. Input features are optional. Pass them if you want to explore the relations between features and target.
+* To run this report, you need to have input features, and **both target and prediction** columns available. Input features are optional. Pass them if you want to explore the relations between features and target.
 
-To generate a comparative report, you will need **two** datasets. The **reference** dataset serves as a benchmark. Evidently analyzes the change by comparing the **current** production data to the **reference** data.
+* To generate a comparative report, you will need **two** datasets. The **reference** dataset serves as a benchmark. Evidently analyzes the change by comparing the **current** production data to the **reference** data.
 
 ![](<../.gitbook/assets/two\_datasets\_regression (1).png>)
 
@@ -309,5 +309,5 @@ Head here to the [All tests](../reference/all-tests.md) table to see the composi
 
 # Examples
 
-* Browse the [examples](../get-started/examples.md) for sample Jupyter notebooks and Colabs.
+* Browse the [examples](../examples/examples.md) for sample Jupyter notebooks and Colabs.
 * See a tutorial "[How to break a model in 20 days](https://evidentlyai.com/blog/tutorial-1-model-analytics-in-production)" where we create a demand prediction model and analyze its gradual decay.

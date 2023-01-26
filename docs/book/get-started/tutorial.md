@@ -50,9 +50,9 @@ $ jupyter nbextension enable evidently --py --sys-prefix
 
 That's it!
 
-### Google Colab, Kaggle Kernel, Deepnote
+### Hosted notebooks
 
-To install `evidently`, run the following command in the notebook cell:
+If you are using Google Colab, Kaggle Kernel, Deepnote or Databricks notebooks, run the following command in the notebook cell:
 
 ```
 !pip install evidently
@@ -60,13 +60,13 @@ To install `evidently`, run the following command in the notebook cell:
 
 ### Windows
 
-Unfortunately, building visual HTML reports inside a **Jupyter notebook** is **not yet possible** for Windows. You can still install Evidently and get the output as JSON or a separate HTML file.
-
-To install Evidently, run:
+To install Evidently in Jupyter notebook on Windows, run:
 
 ```bash
 $ pip install evidently
 ```
+
+**Note**: Nbextension does not work on Windows. If you want to generate visual reports in Jupyter notebook on Windows, you will need to use a different visualization method (see instructions in step 4). This is a new functionality with limited testing. If you face issues, you can get the output as a separate HTML file and view it in a browser.
 
 ## 2. Import Evidently
 
@@ -148,7 +148,7 @@ report
 It will display the HTML report directly in the notebook. 
 
 {% hint style="info" %}
-**Visualizations might work differently in other notebook environments**. If you use Databricks, Kaggle and Deepnote notebooks, you should add an argument to display the report inline: report.show(mode='inline'). Consult [this section](../integrations/notebook-environments.md) for help.
+**Note**: If you are using other notebook environments, e.g., Databricks, Kaggle and Deepnote notebooks, or Jypyter notebook on Windows, you should add an argument to display the report inline: report.show(mode='inline'). Consult [this section](../integrations/notebook-environments.md) for help.
 {% endhint %}
 
 First, you can see the Data Drift summary.
@@ -173,7 +173,7 @@ The data drift report compares the distributions of each feature in the two data
 
 Evidently Reports are very configurable. You can define which Metrics to include and how to calculate them. 
 
-To create a custom Report, you need to list individual **Metrics**. Evidently has dozens of Metrics that help evaluate anything from descriptive feature statistics to model quality. You can calculate Metrics on the column level (e.g., mean value of a specific column) or dataset-level (e.g., share of drifted features in the dataset).  
+To create a custom Report, you need to list individual **Metrics**. Evidently has dozens of Metrics that evaluate anything from descriptive feature statistics to model quality. You can calculate Metrics on the column level (e.g., mean value of a specific column) or dataset-level (e.g., share of drifted features in the dataset).  
 
 In this example, you can list several Metrics that evaluate individual statistics for the defined column. 
 
@@ -191,7 +191,7 @@ You will see a combined report that includes multiple Metrics:
 
 ![Part of the custom report, ColumnSummaryMetric.](../.gitbook/assets/tutorial/get-started-column-summary_metric-min.png)
 
-If you want to generate multiple column-level Metrics, there is a helper function. For example, in order to to calculate the same quantile value for all the columns in the list, you can use the generator: 
+If you want to generate multiple column-level Metrics, there is a helper function. For example, in order to calculate the same quantile value for all the columns in the list, you can use the generator: 
 
 ```
 report = Report(metrics=[
@@ -221,9 +221,9 @@ report
 
 ## 6. Define the report output format
 
-You can render the visualizations directly in the notebook as shown above. There are also alternative options. 
+You can render the visualizations in the notebook as shown above. There are also alternative options. 
 
-If you only want to log the calculated metrics and test results, you can export the results as a Python dictionary.
+If you only want to log the metrics and test results, you can get the output as a Python dictionary.
 
 ```python
 report.as_dict()
@@ -234,7 +234,7 @@ You can also get the output as JSON.
 report.json()
 ```
 
-You can also save HTML or JSON externally. 
+You can also save HTML or JSON externally and specify a path and file name: 
 
 ```python
 report.save_html("file.html")
@@ -242,13 +242,13 @@ report.save_html("file.html")
 
 ## 7. Run data stability tests
 
-Reports are useful when you want to visually explore the data or model quality or share results with the team. However, it is less convenient if you want to run your checks automatically and only react to meaningful issues.
+Reports help visually explore the data or model quality or share results with the team. However, it is less convenient if you want to run your checks automatically and only react to meaningful issues.
 
 To integrate Evidently checks in the prediction pipeline, you can use the **Test Suites** functionality. They are also better suited to handle large datasets.
 
 Test Suites help compare the two datasets in a structured way. A **Test Suite** contains several individual tests. Each **Test** compares a specific value against a defined condition and returns an explicit pass/fail result. You can apply Tests to the whole dataset or individual columns. 
 
-Just like with Reports, you can create a custom Test Suite or use one of the **Presets** that work out of the box. 
+Just like with Reports, you can create a custom Test Suite or use one of the **Presets**. 
 
 Let's create a custom one! Imagine you received a new batch of data. Before generating the predictions, you want to check if the quality is good enough to run your model. You can combine several Tests to check missing values, duplicate columns, and so on. 
 
@@ -324,19 +324,19 @@ To integrate Evidently checks in the prediction pipeline, you can get the output
 suite.as_dict()
 ```
 
-You can extract necessary information from the JSON or Python dictionary output and design a conditional workflow around it. For example, if some tests fail, you can trigger an alert, retrain the model or generate the report. 
+You can extract necessary information from the JSON or Python dictionary output and design a conditional workflow around it. For example, if tests fail, you can trigger an alert, retrain the model or generate the report. 
 
 ## 8. What else is there?
 
 * **Go through the steps in more detail**
 
-If you want to walk through all the described steps in more detail, refer to the **User Guide** section of the docs. A good next step is to explore how to pass custom test parameters to define your own [test conditions](../tests-and-reports/custom-test-suite.md).  
+To understand the described flow in more detail, refer to the **User Guide** section of the docs. A good next step is to explore how to pass custom test parameters to define your own [test conditions](../tests-and-reports/custom-test-suite.md).  
 
 * **Explore available presets**
 
 Both **Tests** and **Reports** have multiple Presets available. Some, like Data Quality, require only input data. You can use them even without the reference dataset. When you have the true labels, you can run Presets like **Regression Performance** and **Classification Performance** to evaluate the model quality and errors. 
 
-To understand the contents of each Preset, head to the [Preset overview](../presets). If you want to see the pre-rendered examples of the reports, browse Colab notebooks in the [Examples](../examples/examples.md) section. 
+To understand the contents of each Preset, head to the [Preset overview](../presets/all-presets.md). If you want to see the pre-rendered examples of the reports, browse Colab notebooks in the [Examples](../examples/examples.md) section. 
 
 * **Explore available integrations**
 

@@ -1,7 +1,7 @@
 **TL;DR:** You can use the pre-built Reports and Test suites to analyze the performance of a classification model. The Presets work for binary and multi-class classification, probabilistic and non-probabilistic classification. 
 
-* For visual analysis using Reports, use the `ClassificationPreset`. 
-* For pipeline checks using Test Suites, use the `MulticlassClassificationTestPreset`, `BinaryClassificationTopKTestPreset` or `BinaryClassificationTestPreset`.
+* **Report**: for visual analysis or metrics export, use the `ClassificationPreset`. 
+* **Test Suite**: for pipeline checks, use the `MulticlassClassificationTestPreset`, `BinaryClassificationTopKTestPreset` or `BinaryClassificationTestPreset`.
 
 # Use Case
 
@@ -46,7 +46,7 @@ This report evaluates the quality of a classification model.
 
 To run this report, you need to have **both target and prediction** columns available. Input features are optional. Pass them if you want to explore the relations between features and target.
 
-Refer to the [column mapping section](../tests-and-reports/column-mapping.md) to see how to pass model predictions and labels in different cases. 
+Refer to the [column mapping section](../input-data/column-mapping.md) to see how to pass model predictions and labels in different cases. 
 
 The tool does not yet work for multi-label classification. It expects a single true label.
 
@@ -300,5 +300,5 @@ Head here to the [All tests](../reference/all-tests.md) table to see the composi
 
 ## Examples
 
-* Browse the [examples](../get-started/examples.md) for sample Jupyter notebooks and Colabs.
+* Browse the [examples](../examples/examples.md) for sample Jupyter notebooks and Colabs.
 * See a blog post and a tutorial "[What is your model hiding](https://evidentlyai.com/blog/tutorial-2-model-evaluation-hr-attrition)" where we analyze the performance of two models with identical ROC AUC to choose between the two.

@@ -37,7 +37,7 @@ To use Evidently, you need a dataset that contains model prediction logs. It mig
 
 * Input feature columns
 * Prediction column
-* Target column
+* Target column (if known)
 * Additional columns such as DateTime and ID
 
 The exact schema requirements differ based on the contents of the report or test suite. For example, to evaluate Data Drift or Data Quality, you can pass only the feature columns. To evaluate Model Performance, you also need model prediction and target (true labels or actuals).
@@ -58,4 +58,4 @@ If the dataset is too large, you might need to downsample it before passing the 
 
 ## Supported data types
 
-Right now, Evidently works only with tabular data. We are working to cover other data types.
+Right now, Evidently works with tabular and raw text data. You can also pass a dataset that contains different data types: for example, some columns may contain numerical or categorical data, while others contain text.

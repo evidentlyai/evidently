@@ -1,7 +1,7 @@
 **TL;DR:** You can detect and explore changes in the target function (prediction) and detect distribution drift.
 
-* For visual analysis using Reports, use `TargetDriftPreset`.
-* For pipeline checks using Test Suites, use a `TestColumnDrift` test and apply it to the prediction or target column. Since it is a single test, there is no need for a Preset.
+* **Report**: for visual analysis or metrics export, use the`TargetDriftPreset`.
+* **Test Suite**: for pipeline checks, use a `TestColumnDrift` test and apply it to the prediction or target column. Since it is a single test, there is no need for a Preset.
 
 # Use case 
 
@@ -9,9 +9,9 @@ You can analyze target or prediction drift:
 
 **1. To monitor the model performance without ground truth.** When you do not have true labels or actuals, you can monitor Prediction Drift to react to meaningful changes. For example, to detect when there is a distribution shift in predicted values, probabilities, or classes. You can often combine it with the [Data Drift analysis.](data-drift.md)
 
-**2. When you are debugging the model decay.** If you observe a drop in performance, you can evaluate Target Drift to see how the behavior of the target changed and explore the shift in the relationship between the features and prediction. 
+**2. When you are debugging the model decay.** If you observe a drop in performance, you can evaluate Target Drift to see how the behavior of the target changed and explore the shift in the relationship between the features and prediction (target). 
 
-**3. Before model retraining.** Before feeding fresh data into the model, you might want to verify whether it even makes sense. If there is no target drift, the concept is stable, and retraining might not be necessary.
+**3. Before model retraining.** Before feeding fresh data into the model, you might want to verify whether it even makes sense. If there is no target drift and no data drift, the retraining might not be necessary.
 
 To run drift checks as part of the pipeline, use the Test Suite. To explore and debug, use the Report.  
 
@@ -41,11 +41,11 @@ You can generate this preset both for numerical targets (e.g. if you have a regr
 
 ## Data Requirements
 
-To run this preset, you need to have **target and/or prediction** columns available. Input features are optional. Pass them if you want to analyze the correlations between the features and target (prediction).   
+* You will need **two** datasets. The **reference** dataset serves as a benchmark. Evidently analyzes the change by comparing the **current** production data to the **reference** data.
 
-Evidently estimates the drift for the **target** and **predictions** in the same manner. If you pass both columns, Evidently will generate two sets of plots. If you pass only one of them (either target or predictions), Evidently will build one set of plots. 
+* To run this preset, you need to have **target and/or prediction** columns available. Input features are optional. Pass them if you want to analyze the correlations between the features and target (prediction).  Evidently estimates the drift for the **target** and **predictions** in the same manner. If you pass both columns, Evidently will generate two sets of plots. If you pass only one of them (either target or predictions), Evidently will build one set of plots. 
 
-You will need **two** datasets. The **reference** dataset serves as a benchmark. Evidently analyzes the change by comparing the **current** production data to the **reference** data.
+* **Column mapping**. Evidently can evaluate drift both for numerical and categorical targets. You can explicitly specify the type of target using the task parameter in [column mapping](../input-data/column-mapping.md). If it is not specified, Evidently will try to identify the target type automatically. It is recommended to use column mapping to avoid errors. 
 
 ## How it looks
 
@@ -60,7 +60,7 @@ Evidently uses the default [data drift detection algorithm](../reference/data-dr
 ![](<../.gitbook/assets/num\_targ\_drift (1).png>)
 
 {% hint style="info" %}
-You can modify the drift detection logic by selecting a different method already available in the library, including PSI, K–L divergence, Jensen-Shannon distance, Wasserstein distance, and/or by setting a different threshold. See more details about [setting data drift options](../customization/options-for-statistical-tests.md). You can also implement a [custom drift detection method](../customization/add-custom-metric-or-test.md).
+You can modify the drift detection logic by selecting a different method already available in the library, including PSI, K–L divergence, Jensen-Shannon distance, Wasserstein distance, and/or by setting a different threshold. See more details about [setting data drift parameters](../customization/options-for-statistical-tests.md). You can also implement a [custom drift detection method](../customization/add-custom-metric-or-test.md).
 {% endhint %}
 
 ### 2. Target (Prediction) Correlations
@@ -147,4 +147,4 @@ You can get the report output as a JSON or a Python dictionary:
 
 # Examples
 
-* Browse the [examples](../get-started/examples.md) for sample Jupyter notebooks and Colabs.
+* Browse the [examples](../examples/examples.md) for sample Jupyter notebooks and Colabs.
