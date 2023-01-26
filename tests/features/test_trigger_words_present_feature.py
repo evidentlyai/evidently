@@ -1,8 +1,13 @@
+import nltk
 import pandas as pd
 
 from evidently import ColumnMapping
 from evidently.features.trigger_words_present_feature import TriggerWordsPresent
 from evidently.utils.data_preprocessing import create_data_definition
+
+nltk.download("words")
+nltk.download("wordnet")
+nltk.download("omw-1.4")
 
 
 def test_trigger_words_present_feature():

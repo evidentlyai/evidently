@@ -1,8 +1,13 @@
+import nltk
 import pandas as pd
 
 from evidently import ColumnMapping
 from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
 from evidently.utils.data_preprocessing import create_data_definition
+
+nltk.download("words")
+nltk.download("wordnet")
+nltk.download("omw-1.4")
 
 
 def test_oov_words_percentage():
