@@ -119,5 +119,5 @@ You can also get the report output as a JSON or a Python dictionary.
 
 # Examples
 
-* Head to an [example how-to notebook] (https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/how_to_run_calculations_over_text_data.ipynb) to see an example Text Overview preset and other metrics and tests for text data.
+* Head to an [example how-to notebook](https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/how_to_run_calculations_over_text_data.ipynb) to see an example Text Overview preset and other metrics and tests for text data.
 
