@@ -1,7 +1,7 @@
 **TL;DR:** You can monitor and analyze the performance of a regression model. 
 
-* For visual analysis using Reports, use `RegressionPreset`. 
-* For pipeline checks using Test Suites, use `RegressionTestPreset`.
+* **Report**: for visual analysis or metrics export, use the `RegressionPreset`.
+* **Test Suite**: for pipeline checks, use the `RegressionTestPreset`.
 
 # Use case
 
