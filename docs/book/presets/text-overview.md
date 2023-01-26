@@ -116,3 +116,8 @@ You can also get the report output as a JSON or a Python dictionary.
 * You can [specify a different drift detection threshold](../customization/options-for-statistical-tests.md). 
 * You can use a [different color schema for the report](../customization/options-for-color-schema.md). 
 * You can create a different report or test suite from scratch, taking this one as an inspiration. 
+
+# Examples
+
+* Head to an [example how-to notebook] (https://github.com/evidentlyai/evidently/blob/main/examples/how_to_questions/how_to_run_calculations_over_text_data.ipynb) to see an example Text Overview preset and other metrics and tests for text data.
+
