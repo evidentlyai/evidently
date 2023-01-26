@@ -35,7 +35,7 @@ For **text data**:
 
 <details>
 <summary>Text content drift detection method</summary>
-The drift score, in this case, is the ROC-AUC score of the domain classifier computed on a validation dataset. To ensure the result is statistically meaningful, we repeat the calculation 1000 times with randomly assigned target class probabilities. This produces a distribution with a mean of 0,5. We then take the 95th percentile (default) of this distribution and compare it to the ROC-AUC score of the classifier. If the classifier score is higher, we consider the data drift to be detected. You can also set a different percentile as a parameter.
+The drift score, in this case, is the ROC-AUC score of the domain classifier computed on a validation dataset. The ROC AUC of the created classifier is compared to the ROC AUC of the random classifier at a set percentile (threshold). To ensure the result is statistically meaningful, we repeat the calculation 1000 times with randomly assigned target class probabilities. This produces a distribution with a mean of 0,5. We then take the 95th percentile (default) of this distribution and compare it to the ROC-AUC score of the classifier. If the classifier score is higher, we consider the data drift to be detected. You can also set a different percentile as a parameter.
 </details>
 
 ## Dataset-level drift
