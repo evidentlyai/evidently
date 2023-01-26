@@ -1,6 +1,6 @@
 **TL;DR:** You can combine different checks to test data quality, stability, and drift when you have a model with delayed feedback.
 
-For Test Suite, use the `NoTargetPerformanceTestPreset`.
+* **Test Suite**: for pipeline checks, use the `NoTargetPerformanceTestPreset`.
 
 # Use Case
 
