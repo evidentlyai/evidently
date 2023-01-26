@@ -1,11 +1,9 @@
 import abc
 import logging
 from enum import Enum
-from typing import Dict
 from typing import Generic
 from typing import List
 from typing import Optional
-from typing import Type
 from typing import TypeVar
 from typing import Union
 
@@ -15,8 +13,6 @@ from dataclasses import dataclass
 from evidently.features.generated_features import GeneratedFeature
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.utils.data_preprocessing import DataDefinition
-from evidently.utils.generators import BaseGenerator
-from evidently.utils.generators import make_generator_by_columns
 
 TResult = TypeVar("TResult")
 
@@ -132,18 +128,3 @@ class Metric(Generic[TResult]):
             if issubclass(type(value), ColumnName) and value.feature_class is not None:
                 required_features.append(value.feature_class)
         return required_features
-
-
-def generate_column_metrics(
-    metric_class: Type[Metric],
-    columns: Optional[Union[str, list]] = None,
-    parameters: Optional[Dict] = None,
-    skip_id_column: bool = False,
-) -> BaseGenerator:
-    """Function for generating metrics for columns"""
-    return make_generator_by_columns(
-        base_class=metric_class,
-        columns=columns,
-        parameters=parameters,
-        skip_id_column=skip_id_column,
-    )

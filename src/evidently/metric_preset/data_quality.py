@@ -2,7 +2,7 @@ from typing import List
 from typing import Optional
 
 from evidently.base_metric import InputData
-from evidently.base_metric import generate_column_metrics
+from evidently.metrics.base_metric import generate_column_metrics
 from evidently.metric_preset.metric_preset import MetricPreset
 from evidently.metrics import ColumnSummaryMetric
 from evidently.metrics import DatasetCorrelationsMetric
