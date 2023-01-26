@@ -1,5 +1,6 @@
 """Methods for overall dataset quality calculations - rows count, a specific values count, etc."""
 
+import dataclasses
 from typing import Callable
 from typing import Dict
 from typing import List
@@ -7,7 +8,6 @@ from typing import Optional
 from typing import Tuple
 from typing import Union
 
-import dataclasses
 import numpy as np
 import pandas as pd
 from scipy.stats import chi2_contingency

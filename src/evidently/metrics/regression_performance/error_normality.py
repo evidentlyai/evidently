@@ -1,9 +1,9 @@
+import dataclasses
 import json
 from typing import List
 from typing import Optional
 from typing import Union
 
-import dataclasses
 import numpy as np
 import pandas as pd
 from plotly import graph_objs as go

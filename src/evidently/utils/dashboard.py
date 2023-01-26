@@ -1,14 +1,13 @@
 import base64
+import dataclasses
 import json
 import os
 import shutil
+from dataclasses import asdict
 from enum import Enum
 from typing import Dict
 from typing import List
 from typing import Optional
-
-import dataclasses
-from dataclasses import asdict
 
 import evidently
 from evidently.model.dashboard import DashboardInfo

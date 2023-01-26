@@ -1,3 +1,4 @@
+import dataclasses
 from enum import Enum
 from typing import Iterable
 from typing import List
@@ -6,7 +7,6 @@ from typing import Tuple
 from typing import Union
 from uuid import uuid4
 
-import dataclasses
 import numpy as np
 import pandas as pd
 from plotly import graph_objs as go

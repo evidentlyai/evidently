@@ -1,8 +1,8 @@
+import dataclasses
 from typing import List
 from typing import Optional
 from typing import Tuple
 
-import dataclasses
 import numpy as np
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer

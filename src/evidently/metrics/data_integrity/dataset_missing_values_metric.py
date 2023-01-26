@@ -1,12 +1,12 @@
+import dataclasses
+from dataclasses import dataclass
 from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
 
-import dataclasses
 import numpy as np
 import pandas as pd
-from dataclasses import dataclass
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric

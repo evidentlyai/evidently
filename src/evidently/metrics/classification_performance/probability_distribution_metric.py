@@ -1,9 +1,9 @@
+import dataclasses
 from typing import Dict
 from typing import Iterable
 from typing import List
 from typing import Optional
 
-import dataclasses
 import numpy as np
 import pandas as pd
 from plotly import figure_factory as ff

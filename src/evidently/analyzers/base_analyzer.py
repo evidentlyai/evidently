@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 import abc
+from dataclasses import dataclass
 from typing import Optional
 
 import pandas as pd
-from dataclasses import dataclass
 
 from evidently.options import OptionsProvider
 from evidently.pipeline.column_mapping import ColumnMapping

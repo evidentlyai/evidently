@@ -1,5 +1,6 @@
 import abc
 import copy
+import dataclasses
 import json
 import logging
 from datetime import datetime
@@ -8,7 +9,6 @@ from typing import Optional
 from typing import Tuple
 from typing import Union
 
-import dataclasses
 import pandas as pd
 
 import evidently

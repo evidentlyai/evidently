@@ -1,9 +1,8 @@
+import dataclasses
 from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Union
-
-import dataclasses
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric

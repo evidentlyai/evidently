@@ -1,3 +1,4 @@
+import dataclasses
 import json
 from typing import Dict
 from typing import List
@@ -5,7 +6,6 @@ from typing import Optional
 from typing import Tuple
 from typing import Union
 
-import dataclasses
 import numpy as np
 import pandas as pd
 from pandas.api.types import is_numeric_dtype

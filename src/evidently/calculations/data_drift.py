@@ -1,5 +1,6 @@
 """Methods and types for data drift calculations."""
 
+from dataclasses import dataclass
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -8,7 +9,6 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
-from dataclasses import dataclass
 
 from evidently.calculations.stattests import get_stattest
 from evidently.options import DataDriftOptions

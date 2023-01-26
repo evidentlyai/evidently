@@ -1,10 +1,9 @@
 import logging
+from dataclasses import dataclass
 from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Type
-
-from dataclasses import dataclass
 
 from evidently.options import DataDriftOptions
 from evidently.options import QualityMetricsOptions

@@ -1,7 +1,7 @@
+import dataclasses
 from typing import List
 from typing import Optional
 
-import dataclasses
 import pandas as pd
 
 from evidently.base_metric import InputData

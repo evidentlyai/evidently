@@ -10,9 +10,9 @@ from evidently.base_metric import DatasetType
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
 from evidently.base_metric import additional_feature
-from evidently.metrics.base_metric import generate_column_metrics
 from evidently.features.generated_features import GeneratedFeature
 from evidently.metrics import ColumnValueRangeMetric
+from evidently.metrics.base_metric import generate_column_metrics
 from evidently.report import Report
 from evidently.utils.data_preprocessing import ColumnType
 from evidently.utils.data_preprocessing import DataDefinition

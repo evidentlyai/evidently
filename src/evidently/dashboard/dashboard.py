@@ -4,6 +4,7 @@
 import json
 import os
 import uuid
+from dataclasses import asdict
 from typing import Callable
 from typing import Dict
 from typing import List
@@ -12,7 +13,6 @@ from typing import Sequence
 from typing import Tuple
 
 import pandas
-from dataclasses import asdict
 
 from evidently.dashboard.tabs.base_tab import Tab
 from evidently.model.dashboard import DashboardInfo

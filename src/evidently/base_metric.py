@@ -1,5 +1,6 @@
 import abc
 import logging
+from dataclasses import dataclass
 from enum import Enum
 from typing import Generic
 from typing import List
@@ -8,7 +9,6 @@ from typing import TypeVar
 from typing import Union
 
 import pandas as pd
-from dataclasses import dataclass
 
 from evidently.features.generated_features import GeneratedFeature
 from evidently.pipeline.column_mapping import ColumnMapping

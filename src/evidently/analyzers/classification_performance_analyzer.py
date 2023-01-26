@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
+from dataclasses import dataclass
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -8,7 +9,6 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
-from dataclasses import dataclass
 from sklearn import metrics
 
 from evidently import ColumnMapping

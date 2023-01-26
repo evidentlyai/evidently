@@ -1,9 +1,9 @@
+import dataclasses
 import uuid
 from typing import List
 from typing import Optional
 from typing import Union
 
-import dataclasses
 import pandas as pd
 
 from evidently import ColumnMapping

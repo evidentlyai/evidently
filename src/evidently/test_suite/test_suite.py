@@ -1,11 +1,11 @@
 import copy
+import dataclasses
 import uuid
 from collections import Counter
 from typing import List
 from typing import Optional
 from typing import Union
 
-import dataclasses
 import pandas as pd
 
 from evidently.base_metric import InputData

@@ -1,12 +1,12 @@
+import dataclasses
+from dataclasses import dataclass
 from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Union
 
-import dataclasses
 import numpy as np
 import pandas as pd
-from dataclasses import dataclass
 from sklearn.metrics import mean_absolute_error
 from sklearn.metrics import mean_absolute_percentage_error
 from sklearn.metrics import mean_squared_error

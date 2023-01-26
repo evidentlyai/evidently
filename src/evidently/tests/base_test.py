@@ -1,14 +1,13 @@
 import abc
+import dataclasses
 from abc import ABC
+from dataclasses import dataclass
 from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Type
 from typing import Union
-
-import dataclasses
-from dataclasses import dataclass
 
 from evidently.utils.generators import BaseGenerator
 from evidently.utils.generators import make_generator_by_columns
