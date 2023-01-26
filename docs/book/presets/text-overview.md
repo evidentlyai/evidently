@@ -1,6 +1,6 @@
 **TL;DR:** You can explore and compare text datasets.
 
-* **Report**: for visual analysis or metrics export, use the `TextOverviewPreset`,
+* **Report**: for visual analysis or metrics export, use the `TextOverviewPreset`.
 
 # Use case 
 
