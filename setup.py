@@ -44,7 +44,6 @@ setup_args = dict(
     author_email="emeli.dral@gmail.com",
     include_package_data=True,
     install_requires=[
-        "dataclasses>=0.6;python_version<'3.7'",
         "plotly>=5.5.0",
         "statsmodels>=0.12.2",
         "scikit-learn>=0.24.0",
