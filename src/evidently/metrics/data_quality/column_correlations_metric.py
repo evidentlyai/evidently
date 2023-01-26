@@ -1,16 +1,16 @@
+import dataclasses
 from typing import Dict
 from typing import List
 from typing import Optional
 
-import dataclasses
 import pandas as pd
 
 from evidently import ColumnMapping
+from evidently.base_metric import InputData
+from evidently.base_metric import Metric
 from evidently.calculations.data_quality import ColumnCorrelations
 from evidently.calculations.data_quality import calculate_category_column_correlations
 from evidently.calculations.data_quality import calculate_numerical_column_correlations
-from evidently.metrics.base_metric import InputData
-from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer

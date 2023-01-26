@@ -15,6 +15,7 @@ from evidently.metrics import ConflictPredictionMetric
 from evidently.metrics import ConflictTargetMetric
 from evidently.metrics import DatasetCorrelationsMetric
 from evidently.metrics.data_integrity.column_summary_metric import NumericCharacteristics
+from evidently.metrics.data_integrity.column_summary_metric import TextCharacteristics
 from evidently.renderers.base_renderer import TestHtmlInfo
 from evidently.renderers.base_renderer import TestRenderer
 from evidently.renderers.base_renderer import default_renderer
@@ -482,10 +483,13 @@ class TestColumnValueMinRenderer(TestRenderer):
     def render_html(self, obj: TestColumnValueMin) -> TestHtmlInfo:
         column_name = obj.column_name
         info = super().render_html(obj)
-        curr_distr = obj.metric.get_result().plot_data.bins_for_hist["current"]
+        bins_for_hist = obj.metric.get_result().plot_data.bins_for_hist
+        if bins_for_hist is None:
+            raise ValueError(f"{column_name} should be numerical or bool")
+        curr_distr = bins_for_hist["current"]
         ref_distr = None
-        if "reference" in obj.metric.get_result().plot_data.bins_for_hist.keys():
-            ref_distr = obj.metric.get_result().plot_data.bins_for_hist["reference"]
+        if "reference" in bins_for_hist.keys():
+            ref_distr = bins_for_hist["reference"]
         fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
         fig = plot_check(fig, obj.get_condition(), color_options=self.color_options)
         current_characteristics = obj.metric.get_result().current_characteristics
@@ -531,10 +535,13 @@ class TestColumnValueMaxRenderer(TestRenderer):
     def render_html(self, obj: TestColumnValueMax) -> TestHtmlInfo:
         column_name = obj.column_name
         info = super().render_html(obj)
-        curr_distr = obj.metric.get_result().plot_data.bins_for_hist["current"]
+        bins_for_hist = obj.metric.get_result().plot_data.bins_for_hist
+        if bins_for_hist is None:
+            raise ValueError(f"{column_name} should be numerical or bool")
+        curr_distr = bins_for_hist["current"]
         ref_distr = None
-        if "reference" in obj.metric.get_result().plot_data.bins_for_hist.keys():
-            ref_distr = obj.metric.get_result().plot_data.bins_for_hist["reference"]
+        if "reference" in bins_for_hist.keys():
+            ref_distr = bins_for_hist["reference"]
         fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
         fig = plot_check(fig, obj.get_condition(), color_options=self.color_options)
         current_characteristics = obj.metric.get_result().current_characteristics
@@ -576,10 +583,13 @@ class TestColumnValueMeanRenderer(TestRenderer):
     def render_html(self, obj: TestColumnValueMean) -> TestHtmlInfo:
         column_name = obj.column_name
         info = super().render_html(obj)
-        curr_distr = obj.metric.get_result().plot_data.bins_for_hist["current"]
+        bins_for_hist = obj.metric.get_result().plot_data.bins_for_hist
+        if bins_for_hist is None:
+            raise ValueError(f"{column_name} should be numerical or bool")
+        curr_distr = bins_for_hist["current"]
         ref_distr = None
-        if "reference" in obj.metric.get_result().plot_data.bins_for_hist.keys():
-            ref_distr = obj.metric.get_result().plot_data.bins_for_hist["reference"]
+        if "reference" in bins_for_hist.keys():
+            ref_distr = bins_for_hist["reference"]
         fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
         fig = plot_check(fig, obj.get_condition(), color_options=self.color_options)
         current_characteristics = obj.metric.get_result().current_characteristics
@@ -621,12 +631,13 @@ class TestColumnValueMedianRenderer(TestRenderer):
     def render_html(self, obj: TestColumnValueMedian) -> TestHtmlInfo:
         column_name = obj.column_name
         info = super().render_html(obj)
-        curr_distr = obj.metric.get_result().plot_data.bins_for_hist["current"]
+        bins_for_hist = obj.metric.get_result().plot_data.bins_for_hist
+        if bins_for_hist is None:
+            raise ValueError(f"{column_name} should be numerical or bool")
+        curr_distr = bins_for_hist["current"]
         ref_distr = None
-
-        if "reference" in obj.metric.get_result().plot_data.bins_for_hist.keys():
-            ref_distr = obj.metric.get_result().plot_data.bins_for_hist["reference"]
-
+        if "reference" in bins_for_hist.keys():
+            ref_distr = bins_for_hist["reference"]
         fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
         fig = plot_check(fig, obj.get_condition(), color_options=self.color_options)
         current_characteristics = obj.metric.get_result().current_characteristics
@@ -671,10 +682,13 @@ class TestColumnValueStdRenderer(TestRenderer):
     def render_html(self, obj: TestColumnValueStd) -> TestHtmlInfo:
         column_name = obj.column_name
         info = super().render_html(obj)
-        curr_distr = obj.metric.get_result().plot_data.bins_for_hist["current"]
+        bins_for_hist = obj.metric.get_result().plot_data.bins_for_hist
+        if bins_for_hist is None:
+            raise ValueError(f"{column_name} should be numerical or bool")
+        curr_distr = bins_for_hist["current"]
         ref_distr = None
-        if "reference" in obj.metric.get_result().plot_data.bins_for_hist.keys():
-            ref_distr = obj.metric.get_result().plot_data.bins_for_hist["reference"]
+        if "reference" in bins_for_hist.keys():
+            ref_distr = bins_for_hist["reference"]
         fig = plot_distr(hist_curr=curr_distr, hist_ref=ref_distr, color_options=self.color_options)
         info.with_details(f"Std Value {column_name}", plotly_figure(title="", figure=fig))
         return info
@@ -689,12 +703,17 @@ class TestNumberOfUniqueValues(BaseFeatureDataQualityMetricsTest):
 
         reference_features_stats = self.metric.get_result().reference_characteristics
         if reference_features_stats is not None:
+            if isinstance(reference_features_stats, TextCharacteristics):
+                raise ValueError(f"{self.column_name} should be numerical, categorical or datetime")
             unique_count = reference_features_stats.unique
             return TestValueCondition(eq=approx(unique_count, relative=0.1))
+
         return TestValueCondition(gt=1)
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
         features_stats = self.metric.get_result().current_characteristics
+        if isinstance(features_stats, TextCharacteristics):
+            raise ValueError(f"{self.column_name} should be numerical, categorical or datetime")
         return features_stats.unique
 
     def get_description(self, value: Numeric) -> str:
@@ -729,6 +748,8 @@ class TestUniqueValuesShare(BaseFeatureDataQualityMetricsTest):
 
         reference_features_stats = self.metric.get_result().reference_characteristics
         if reference_features_stats is not None:
+            if isinstance(reference_features_stats, TextCharacteristics):
+                raise ValueError(f"{self.column_name} should be numerical, categorical or datetime")
             unique_percentage = reference_features_stats.unique_percentage
 
             if unique_percentage is not None:
@@ -738,6 +759,8 @@ class TestUniqueValuesShare(BaseFeatureDataQualityMetricsTest):
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
         features_stats = self.metric.get_result().current_characteristics
+        if isinstance(features_stats, TextCharacteristics):
+            raise ValueError(f"{self.column_name} should be numerical, categorical or datetime")
         unique_percentage = features_stats.unique_percentage
 
         if unique_percentage is None:
@@ -777,6 +800,8 @@ class TestMostCommonValueShare(BaseFeatureDataQualityMetricsTest):
 
         reference_features_stats = self.metric.get_result().reference_characteristics
         if reference_features_stats is not None:
+            if isinstance(reference_features_stats, TextCharacteristics):
+                raise ValueError(f"{self.column_name} should be numerical, categorical or datetime")
             most_common_percentage = reference_features_stats.most_common_percentage
 
             if most_common_percentage is not None:
@@ -786,6 +811,8 @@ class TestMostCommonValueShare(BaseFeatureDataQualityMetricsTest):
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
         features_stats = self.metric.get_result().current_characteristics
+        if isinstance(features_stats, TextCharacteristics):
+            raise ValueError(f"{self.column_name} should be numerical, categorical or datetime")
         most_common_percentage = features_stats.most_common_percentage
 
         if most_common_percentage is None:
@@ -842,7 +869,7 @@ class TestAllColumnsMostCommonValueShare(BaseGenerator):
 
     def generate(self, columns_info: DatasetColumns) -> List[TestMostCommonValueShare]:
         if self.columns is None:
-            columns = columns_info.get_all_columns_list()
+            columns = columns_info.get_all_columns_list(skip_text_columns=True)
 
         else:
             columns = self.columns
@@ -923,7 +950,7 @@ class TestMeanInNSigmasRenderer(TestRenderer):
         metric_result = obj.metric.get_result()
         info = super().render_html(obj)
 
-        if metric_result.reference_characteristics is None:
+        if metric_result.reference_characteristics is None or metric_result.plot_data.bins_for_hist is None:
             return info
 
         if not isinstance(metric_result.reference_characteristics, NumericCharacteristics):

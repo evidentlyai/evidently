@@ -1,3 +1,4 @@
+import dataclasses
 from enum import Enum
 from typing import Iterable
 from typing import List
@@ -6,7 +7,6 @@ from typing import Tuple
 from typing import Union
 from uuid import uuid4
 
-import dataclasses
 import numpy as np
 import pandas as pd
 from plotly import graph_objs as go
@@ -418,7 +418,8 @@ def rich_table_data(
 
     converted_data = []
     for row in data:
-        if row.details is None or row.details.parts is None:
+        if row.details is None or row.details.parts is None or len(row.details.parts) == 0:
+            converted_data.append(dict(**row.fields))
             continue
         parts = []
         for part in row.details.parts:
@@ -714,6 +715,8 @@ def get_heatmaps_widget(
         )
 
     figure.update_layout(coloraxis={"colorscale": color_options.heatmap})
+    figure.update_yaxes(type="category")
+    figure.update_xaxes(tickangle=-45)
     return plotly_figure(title=title, figure=figure, size=size)
 
 

@@ -1,25 +1,31 @@
 import copy
+import dataclasses
 import json
+from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Union
 
-import dataclasses
 import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
 
+from evidently.base_metric import InputData
+from evidently.base_metric import Metric
 from evidently.calculations.regression_performance import error_bias_table
 from evidently.calculations.regression_performance import error_with_quantiles
-from evidently.metrics.base_metric import InputData
-from evidently.metrics.base_metric import Metric
+from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
+from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
+from evidently.features.text_length_feature import TextLength
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import header_text
 from evidently.utils.data_operations import process_columns
+from evidently.utils.data_preprocessing import DataDefinition
 
 
 @dataclasses.dataclass
@@ -42,6 +48,9 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
     TOP_ERROR_MAX = 0.5
     top_error: float
     columns: Optional[List[str]]
+    text_features_gen: Optional[
+        Dict[str, Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]]]
+    ]
 
     def __init__(self, columns: Optional[List[str]] = None, top_error: Optional[float] = None):
         if top_error is None:
@@ -51,6 +60,33 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
             self.top_error = top_error
 
         self.columns = columns
+        self.text_features_gen = None
+
+    def required_features(self, data_definition: DataDefinition):
+        if len(data_definition.get_columns("text_features")) > 0:
+            text_cols = [col.column_name for col in data_definition.get_columns("text_features")]
+            text_features_gen = {}
+            text_features_gen_result = []
+            for col in text_cols:
+                col_dict: Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]] = {}
+                col_dict[f"{col}: Text Length"] = TextLength(col)
+                col_dict[f"{col}: Non Letter Character %"] = NonLetterCharacterPercentage(col)
+                col_dict[f"{col}: OOV %"] = OOVWordsPercentage(col)
+
+                text_features_gen_result += [
+                    col_dict[f"{col}: Text Length"],
+                    col_dict[f"{col}: Non Letter Character %"],
+                    col_dict[f"{col}: OOV %"],
+                ]
+                text_features_gen[col] = col_dict
+            self.text_features_gen = text_features_gen
+
+            return text_features_gen_result
+        else:
+            return []
+
+    def get_parameters(self) -> tuple:
+        return ()
 
     def calculate(self, data: InputData) -> RegressionErrorBiasTableResults:
         if self.top_error <= self.TOP_ERROR_MIN or self.top_error >= self.TOP_ERROR_MAX:
@@ -82,6 +118,31 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
 
         num_feature_names = list(np.intersect1d(dataset_columns.num_feature_names, columns))
         cat_feature_names = list(np.intersect1d(dataset_columns.cat_feature_names, columns))
+        # process text columns
+        if (
+            self.text_features_gen is not None
+            and len(np.intersect1d(list(self.text_features_gen.keys()), columns)) >= 1
+        ):
+            for col in np.intersect1d(list(self.text_features_gen.keys()), columns):
+                num_feature_names += list(self.text_features_gen[col].keys())
+                columns += list(self.text_features_gen[col].keys())
+                curr_text_df = pd.concat(
+                    [data.get_current_column(x.feature_name()) for x in list(self.text_features_gen[col].values())],
+                    axis=1,
+                )
+                curr_text_df.columns = list(self.text_features_gen[col].keys())
+                curr_df = pd.concat([curr_df.reset_index(drop=True), curr_text_df.reset_index(drop=True)], axis=1)
+
+                if ref_df is not None:
+                    ref_text_df = pd.concat(
+                        [
+                            data.get_reference_column(x.feature_name())
+                            for x in list(self.text_features_gen[col].values())
+                        ],
+                        axis=1,
+                    )
+                    ref_text_df.columns = list(self.text_features_gen[col].keys())
+                    ref_df = pd.concat([ref_df.reset_index(drop=True), ref_text_df.reset_index(drop=True)], axis=1)
         columns_ext = np.union1d(columns, [target_name, prediction_name])
         curr_df = self._make_df_for_plot(curr_df[columns_ext], target_name, prediction_name, None)
 
@@ -89,6 +150,7 @@ class RegressionErrorBiasTable(Metric[RegressionErrorBiasTableResults]):
             ref_df = self._make_df_for_plot(ref_df[columns_ext], target_name, prediction_name, None)
 
         err_quantiles = error_with_quantiles(curr_df, prediction_name, target_name, quantile=self.top_error)
+
         feature_bias = error_bias_table(curr_df, err_quantiles, num_feature_names, cat_feature_names)
         error_bias = {
             feature: dict(feature_type=bias.feature_type, **bias.as_dict("current_"))
@@ -310,9 +372,12 @@ class RegressionErrorBiasTableRenderer(MetricRenderer):
                 )
 
                 feature_hist_json = json.loads(feature_hist.to_json())
-
                 segment_fig = px.scatter(
-                    merged_data, x=target_name, y=prediction_name, color=feature_name, facet_col="dataset"
+                    merged_data[~merged_data[feature_name].isna()],
+                    x=target_name,
+                    y=prediction_name,
+                    color=feature_name,
+                    facet_col="dataset",
                 )
 
                 segment_json = json.loads(segment_fig.to_json())

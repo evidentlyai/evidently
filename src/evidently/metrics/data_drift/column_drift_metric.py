@@ -1,21 +1,22 @@
+import dataclasses
 from typing import Dict
 from typing import List
 from typing import Optional
 
-import dataclasses
-
+from evidently.base_metric import InputData
+from evidently.base_metric import Metric
 from evidently.calculations.data_drift import get_one_column_drift
 from evidently.calculations.stattests import PossibleStatTestType
-from evidently.metrics.base_metric import InputData
-from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import DataDriftOptions
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.renderers.html_widgets import CounterData
-from evidently.renderers.html_widgets import GraphData
+from evidently.renderers.html_widgets import TabData
 from evidently.renderers.html_widgets import counter
-from evidently.renderers.html_widgets import plotly_graph_tabs
+from evidently.renderers.html_widgets import plotly_figure
+from evidently.renderers.html_widgets import table_data
+from evidently.renderers.html_widgets import widget_tabs
 from evidently.renderers.render_utils import get_distribution_plot_figure
 from evidently.utils.data_operations import process_columns
 from evidently.utils.types import Numeric
@@ -31,11 +32,15 @@ class ColumnDriftMetricResults:
     stattest_threshold: float
     drift_score: Numeric
     drift_detected: bool
-    current_distribution: Distribution
-    reference_distribution: Distribution
+    current_distribution: Optional[Distribution]
+    reference_distribution: Optional[Distribution]
     current_scatter: Optional[Dict[str, list]]
     x_name: Optional[str]
     plot_shape: Optional[Dict[str, float]]
+    typical_examples_cur: Optional[List[str]]
+    typical_examples_ref: Optional[List[str]]
+    typical_words_cur: Optional[List[str]]
+    typical_words_ref: Optional[List[str]]
 
 
 class ColumnDriftMetric(Metric[ColumnDriftMetricResults]):
@@ -90,6 +95,10 @@ class ColumnDriftMetric(Metric[ColumnDriftMetricResults]):
             current_scatter=drift_result.current_scatter,
             x_name=drift_result.x_name,
             plot_shape=drift_result.plot_shape,
+            typical_examples_cur=drift_result.typical_examples_cur,
+            typical_examples_ref=drift_result.typical_examples_ref,
+            typical_words_cur=drift_result.typical_words_cur,
+            typical_words_ref=drift_result.typical_words_ref,
         )
 
 
@@ -103,6 +112,10 @@ class ColumnDriftMetricRenderer(MetricRenderer):
         result.pop("current_scatter", None)
         result.pop("x_name", None)
         result.pop("plot_shape", None)
+        result.pop("typical_examples_cur", None)
+        result.pop("typical_examples_ref", None)
+        result.pop("typical_words_cur", None)
+        result.pop("typical_words_ref", None)
         return result
 
     def render_html(self, obj: ColumnDriftMetric) -> List[BaseWidgetInfo]:
@@ -116,7 +129,7 @@ class ColumnDriftMetricRenderer(MetricRenderer):
 
         drift_score = round(result.drift_score, 3)
 
-        figures = []
+        tabs = []
 
         # fig_json = fig.to_plotly_json()
         if result.current_scatter is not None and result.plot_shape is not None and result.x_name is not None:
@@ -129,15 +142,51 @@ class ColumnDriftMetricRenderer(MetricRenderer):
                 x_name=result.x_name,
                 color_options=self.color_options,
             )
-            figures.append(GraphData.figure("DATA DRIFT", scatter_fig))
+            tabs.append(TabData("DATA DRIFT", plotly_figure(title="", figure=scatter_fig)))
 
-        distr_fig = get_distribution_plot_figure(
-            current_distribution=result.current_distribution,
-            reference_distribution=result.reference_distribution,
-            color_options=self.color_options,
-        )
-        figures.append(GraphData.figure("DATA DISTRIBUTION", distr_fig))
-        return [
+        if result.current_distribution is not None and result.reference_distribution is not None:
+            distr_fig = get_distribution_plot_figure(
+                current_distribution=result.current_distribution,
+                reference_distribution=result.reference_distribution,
+                color_options=self.color_options,
+            )
+            # figures.append(GraphData.figure("DATA DISTRIBUTION", distr_fig))
+            tabs.append(TabData("DATA DISTRIBUTION", plotly_figure(title="", figure=distr_fig)))
+
+        if (
+            result.typical_examples_cur is not None
+            and result.typical_examples_ref is not None
+            and result.typical_words_cur is not None
+            and result.typical_words_ref is not None
+        ):
+            current_table_words = table_data(
+                title="",
+                column_names=["", ""],
+                data=[[el, ""] for el in result.typical_words_cur],
+            )
+            reference_table_words = table_data(
+                title="",
+                column_names=["", ""],
+                data=[[el, ""] for el in result.typical_words_ref],
+            )
+            current_table_examples = table_data(
+                title="",
+                column_names=["", ""],
+                data=[[el, ""] for el in result.typical_examples_cur],
+            )
+            reference_table_examples = table_data(
+                title="",
+                column_names=["", ""],
+                data=[[el, ""] for el in result.typical_examples_ref],
+            )
+
+            tabs = [
+                TabData(title="current: characteristic words", widget=current_table_words),
+                TabData(title="reference: characteristic words", widget=reference_table_words),
+                TabData(title="current: characteristic examples", widget=current_table_examples),
+                TabData(title="reference: characteristic examples", widget=reference_table_examples),
+            ]
+        render_result = [
             counter(
                 counters=[
                     CounterData(
@@ -150,9 +199,14 @@ class ColumnDriftMetricRenderer(MetricRenderer):
                     )
                 ],
                 title="",
-            ),
-            plotly_graph_tabs(
-                title="",
-                figures=figures,
-            ),
+            )
         ]
+        if len(tabs) > 0:
+            render_result.append(
+                widget_tabs(
+                    title="",
+                    tabs=tabs,
+                )
+            )
+
+        return render_result

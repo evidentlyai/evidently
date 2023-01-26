@@ -1,4 +1,5 @@
 """Methods for clean null or NaN values in a dataset"""
+from dataclasses import dataclass
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -7,7 +8,6 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
-from dataclasses import dataclass
 
 from evidently import ColumnMapping
 
@@ -26,7 +26,9 @@ class DatasetUtilityColumns:
     target: Optional[str]
     prediction: Optional[Union[str, Sequence[str]]]
 
-    def as_dict(self) -> Dict[str, Union[Optional[str], Optional[Union[str, Sequence[str]]]]]:
+    def as_dict(
+        self,
+    ) -> Dict[str, Union[Optional[str], Optional[Union[str, Sequence[str]]]]]:
         return {
             "date": self.date,
             "id": self.id_column,
@@ -41,6 +43,7 @@ class DatasetColumns:
     target_type: Optional[str]
     num_feature_names: List[str]
     cat_feature_names: List[str]
+    text_feature_names: List[str]
     datetime_feature_names: List[str]
     target_names: Optional[List[str]]
     task: Optional[str]
@@ -52,6 +55,7 @@ class DatasetColumns:
             "num_feature_names": self.num_feature_names,
             "datetime_feature_names": self.datetime_feature_names,
             "target_names": self.target_names,
+            "text_feature_names": self.text_feature_names,
         }
 
     def get_all_features_list(self, cat_before_num: bool = True, include_datetime_feature: bool = False) -> List[str]:
@@ -64,19 +68,23 @@ class DatasetColumns:
         If you want to add date time columns - set `include_datetime_feature` to True.
         """
         if cat_before_num:
-            result = self.cat_feature_names + self.num_feature_names
+            result = self.cat_feature_names + self.num_feature_names + self.text_feature_names
 
         else:
-            result = self.num_feature_names + self.cat_feature_names
+            result = self.num_feature_names + self.cat_feature_names + self.text_feature_names
 
         if include_datetime_feature and self.datetime_feature_names:
             result += self.datetime_feature_names
 
         return result
 
-    def get_all_columns_list(self, skip_id_column: bool = False) -> List[str]:
+    def get_all_columns_list(self, skip_id_column: bool = False, skip_text_columns: bool = False) -> List[str]:
         """List all columns."""
         result: List[str] = self.cat_feature_names + self.num_feature_names
+
+        if not skip_text_columns:
+            result.extend(self.text_feature_names)
+
         result.extend(
             [
                 name
@@ -104,7 +112,9 @@ class DatasetColumns:
         else:
             len_time_columns = 0
 
-        return len(self.num_feature_names) + len(self.cat_feature_names) + len_time_columns
+        return (
+            len(self.num_feature_names) + len(self.cat_feature_names) + len(self.text_feature_names) + len_time_columns
+        )
 
 
 def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping) -> DatasetColumns:
@@ -126,6 +136,7 @@ def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping) -> Dat
     datetime_feature_names = column_mapping.datetime_features
     target_names = column_mapping.target_names
     utility_columns = [date_column, id_column, target_column]
+    text_feature_names = column_mapping.text_features
 
     prediction_column: Optional[str] = None
     if isinstance(column_mapping.prediction, str):
@@ -144,12 +155,18 @@ def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping) -> Dat
 
     utility_columns_set = set(utility_columns)
     cat_feature_names_set = set(cat_feature_names or [])
+    text_feature_names_set = set(text_feature_names or [])
 
     if num_feature_names is None:
         # try to guess about numeric features in the dataset
-        # ignore prediction, target, index and explicitly specified category columns
+        # ignore prediction, target, index and explicitly specified category columns and columns with text
         num_feature_names = sorted(
-            list(set(dataset.select_dtypes([np.number]).columns) - utility_columns_set - cat_feature_names_set)
+            list(
+                set(dataset.select_dtypes([np.number]).columns)
+                - utility_columns_set
+                - cat_feature_names_set
+                - text_feature_names_set
+            )
         )
 
     else:
@@ -172,7 +189,11 @@ def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping) -> Dat
 
     if cat_feature_names is None:
         cat_feature_names = sorted(
-            list(set(dataset.select_dtypes(exclude=[np.number, "datetime"]).columns) - utility_columns_set)
+            list(
+                set(dataset.select_dtypes(exclude=[np.number, "datetime"]).columns)
+                - utility_columns_set
+                - text_feature_names_set
+            )
         )
 
     else:
@@ -186,6 +207,7 @@ def process_columns(dataset: pd.DataFrame, column_mapping: ColumnMapping) -> Dat
         datetime_feature_names=datetime_feature_names or [],
         target_names=target_names,
         task=task,
+        text_feature_names=text_feature_names or [],
     )
 
 
@@ -279,6 +301,9 @@ def recognize_column_type(
 
     if column_name in columns.datetime_feature_names:
         return "datetime"
+
+    if column_name in columns.text_feature_names:
+        return "text"
 
     if column_name == columns.utility_columns.id_column:
         return "id"

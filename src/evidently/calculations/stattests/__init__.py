@@ -20,6 +20,7 @@ from .registry import StatTestFuncType
 from .registry import get_stattest
 from .registry import register_stattest
 from .t_test import t_test
+from .text_content_drift import text_content_drift_stat_test
 from .tvd_stattest import tvd_test
 from .wasserstein_distance_norm import wasserstein_stat_test
 from .z_stattest import z_stat_test

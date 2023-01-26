@@ -1,9 +1,8 @@
 import warnings
+from dataclasses import dataclass
 from typing import Dict
 from typing import Optional
 from typing import Union
-
-from dataclasses import dataclass
 
 from evidently.calculations.stattests import PossibleStatTestType
 from evidently.calculations.stattests import StatTest
@@ -53,11 +52,13 @@ class DataDriftOptions:
     all_features_stattest: Optional[PossibleStatTestType] = None
     cat_features_stattest: Optional[PossibleStatTestType] = None
     num_features_stattest: Optional[PossibleStatTestType] = None
+    text_features_stattest: Optional[PossibleStatTestType] = None
     per_feature_stattest: Optional[Dict[str, PossibleStatTestType]] = None
 
     all_features_threshold: Optional[float] = None
     cat_features_threshold: Optional[float] = None
     num_features_threshold: Optional[float] = None
+    text_features_threshold: Optional[float] = None
     per_feature_threshold: Optional[Dict[str, float]] = None
 
     cat_target_threshold: Optional[float] = None
@@ -90,10 +91,12 @@ class DataDriftOptions:
             self.all_features_stattest,
             self.cat_features_stattest,
             self.num_features_stattest,
+            self.text_features_stattest,
             self.per_feature_stattest,
             self.all_features_threshold,
             self.cat_features_threshold,
             self.num_features_threshold,
+            self.text_features_threshold,
             self.per_feature_threshold,
         )
         return threshold
@@ -131,6 +134,7 @@ class DataDriftOptions:
                 self.all_features_stattest,
                 self.cat_features_stattest,
                 self.num_features_stattest,
+                self.text_features_stattest,
                 self.per_feature_stattest,
             ]
         ):
@@ -138,6 +142,7 @@ class DataDriftOptions:
                 "Cannot use DataDriftOptions.feature_stattest_func along with any "
                 "of DataDriftOptions.cat_stattest_func,"
                 " DataDriftOptions.num_stattest_func,"
+                " DataDriftOptions.text_stattest_func,"
                 " DataDriftOptions.per_feature_stattest_func."
             )
         if self.feature_stattest_func is not None:
@@ -156,10 +161,12 @@ class DataDriftOptions:
             self.all_features_stattest,
             self.cat_features_stattest,
             self.num_features_stattest,
+            self.text_features_stattest,
             self.per_feature_stattest,
             self.all_features_threshold,
             self.cat_features_threshold,
             self.num_features_threshold,
+            self.text_features_threshold,
             self.per_feature_threshold,
         )
         return stattest

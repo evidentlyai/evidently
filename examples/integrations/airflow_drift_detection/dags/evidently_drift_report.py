@@ -8,9 +8,9 @@ try:
     from airflow.operators.python_operator import PythonOperator
     from sklearn import datasets
 
-    from evidently.report import Report
     from evidently.metric_preset import DataDriftPreset
     from evidently.pipeline.column_mapping import ColumnMapping
+    from evidently.report import Report
 
 except Exception as e:
     print("Error  {} ".format(e))

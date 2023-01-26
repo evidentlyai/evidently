@@ -3,7 +3,6 @@ import pytest
 
 from evidently import ColumnMapping
 from evidently.metrics import ClassificationClassBalance
-from evidently.metrics.base_metric import InputData
 from evidently.report import Report
 
 

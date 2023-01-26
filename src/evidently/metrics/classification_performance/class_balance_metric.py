@@ -1,10 +1,9 @@
+import dataclasses
 from typing import Dict
 from typing import List
 
-import dataclasses
-
-from evidently.metrics.base_metric import InputData
-from evidently.metrics.base_metric import Metric
+from evidently.base_metric import InputData
+from evidently.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer

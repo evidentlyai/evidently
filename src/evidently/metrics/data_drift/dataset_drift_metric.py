@@ -1,14 +1,13 @@
+import dataclasses
+from dataclasses import dataclass
 from typing import Dict
 from typing import List
 from typing import Optional
 
-import dataclasses
-from dataclasses import dataclass
-
+from evidently.base_metric import InputData
+from evidently.base_metric import Metric
 from evidently.calculations.data_drift import get_drift_for_columns
 from evidently.calculations.stattests import PossibleStatTestType
-from evidently.metrics.base_metric import InputData
-from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import DataDriftOptions
 from evidently.renderers.base_renderer import MetricRenderer
@@ -39,10 +38,12 @@ class DatasetDriftMetric(Metric[DatasetDriftMetricResults]):
         stattest: Optional[PossibleStatTestType] = None,
         cat_stattest: Optional[PossibleStatTestType] = None,
         num_stattest: Optional[PossibleStatTestType] = None,
+        text_stattest: Optional[PossibleStatTestType] = None,
         per_column_stattest: Optional[Dict[str, PossibleStatTestType]] = None,
         stattest_threshold: Optional[float] = None,
         cat_stattest_threshold: Optional[float] = None,
         num_stattest_threshold: Optional[float] = None,
+        text_stattest_threshold: Optional[float] = None,
         per_column_stattest_threshold: Optional[Dict[str, float]] = None,
     ):
         self.columns = columns
@@ -50,10 +51,12 @@ class DatasetDriftMetric(Metric[DatasetDriftMetricResults]):
             all_features_stattest=stattest,
             cat_features_stattest=cat_stattest,
             num_features_stattest=num_stattest,
+            text_features_stattest=text_stattest,
             per_feature_stattest=per_column_stattest,
             all_features_threshold=stattest_threshold,
             cat_features_threshold=cat_stattest_threshold,
             num_features_threshold=num_stattest_threshold,
+            text_features_threshold=text_stattest_threshold,
             per_feature_threshold=per_column_stattest_threshold,
         )
         self.drift_share = drift_share

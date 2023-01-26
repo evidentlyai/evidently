@@ -227,7 +227,7 @@ def test_data_drift_profile() -> None:
     _check_profile_section_high_level_fields(actual["data_drift"])
     data_drift_data = actual["data_drift"]["data"]
     _check_columns_info_in_profile_section_data(data_drift_data)
-    assert len(data_drift_data) == 7
+    assert len(data_drift_data) == 8
     assert "options" in data_drift_data
     assert "metrics" in data_drift_data
 
@@ -247,13 +247,13 @@ def test_data_drift_categorical_target_drift_profile() -> None:
     _check_profile_section_high_level_fields(actual["data_drift"])
     data_drift_data = actual["data_drift"]["data"]
     # we have only 3 fields
-    assert len(data_drift_data) == 7
+    assert len(data_drift_data) == 8
     assert "options" in data_drift_data
     assert "metrics" in data_drift_data
 
     _check_profile_section_high_level_fields(actual["cat_target_drift"])
     cat_target_drift_data = actual["cat_target_drift"]["data"]
-    assert len(cat_target_drift_data) == 6
+    assert len(cat_target_drift_data) == 7
     assert "metrics" in cat_target_drift_data
 
 
@@ -271,7 +271,7 @@ def test_regression_performance_profile() -> None:
     _check_profile_high_level_fields(actual, expected_profiles=["regression_performance"])
     _check_profile_section_high_level_fields(actual["regression_performance"])
     regression_performance_data = actual["regression_performance"]["data"]
-    assert len(regression_performance_data) == 6
+    assert len(regression_performance_data) == 7
     assert "metrics" in regression_performance_data
 
 
@@ -289,7 +289,7 @@ def test_regression_performance_single_frame_profile() -> None:
     _check_profile_high_level_fields(actual, expected_profiles=["regression_performance"])
     _check_profile_section_high_level_fields(actual["regression_performance"])
     regression_performance_data = actual["regression_performance"]["data"]
-    assert len(regression_performance_data) == 6
+    assert len(regression_performance_data) == 7
     assert "metrics" in regression_performance_data
 
 
@@ -307,7 +307,7 @@ def test_classification_performance_profile() -> None:
     _check_profile_high_level_fields(actual, expected_profiles=["classification_performance"])
     _check_profile_section_high_level_fields(actual["classification_performance"])
     classification_performance_data = actual["classification_performance"]["data"]
-    assert len(classification_performance_data) == 6
+    assert len(classification_performance_data) == 7
     assert "metrics" in classification_performance_data
 
 
@@ -324,7 +324,7 @@ def test_classification_performance_single_profile() -> None:
     _check_profile_high_level_fields(actual, expected_profiles=["classification_performance"])
     _check_profile_section_high_level_fields(actual["classification_performance"])
     classification_performance_data = actual["classification_performance"]["data"]
-    assert len(classification_performance_data) == 6
+    assert len(classification_performance_data) == 7
     assert "metrics" in classification_performance_data
 
 
@@ -343,7 +343,7 @@ def test_probabilistic_classification_performance_profile() -> None:
     _check_profile_high_level_fields(actual, expected_profiles=["probabilistic_classification_performance"])
     _check_profile_section_high_level_fields(actual["probabilistic_classification_performance"])
     probabilistic_classification_performance_data = actual["probabilistic_classification_performance"]["data"]
-    assert len(probabilistic_classification_performance_data) == 7
+    assert len(probabilistic_classification_performance_data) == 8
     assert "options" in probabilistic_classification_performance_data
     assert "metrics" in probabilistic_classification_performance_data
     assert len(probabilistic_classification_performance_data["metrics"]) == 2
@@ -367,7 +367,7 @@ def test_probabilistic_classification_single_performance_profile() -> None:
     _check_profile_high_level_fields(actual, expected_profiles=["probabilistic_classification_performance"])
     _check_profile_section_high_level_fields(actual["probabilistic_classification_performance"])
     probabilistic_classification_performance_data = actual["probabilistic_classification_performance"]["data"]
-    assert len(probabilistic_classification_performance_data) == 7
+    assert len(probabilistic_classification_performance_data) == 8
     assert "options" in probabilistic_classification_performance_data
     assert "metrics" in probabilistic_classification_performance_data
     assert len(probabilistic_classification_performance_data["metrics"]) == 1

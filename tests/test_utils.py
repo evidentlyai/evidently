@@ -39,14 +39,23 @@ from evidently.utils.numpy_encoder import NumpyEncoder
             "[0.5, 0.5, 0.5, 0.5]",
         ),
         (np.array([np.bool_(1), np.bool_(0)]), "[true, false]"),
-        (np.array([0, 1, 2.1, np.nan, np.inf, pd.NaT]), "[0, 1, 2.1, NaN, Infinity, null]"),
+        (
+            np.array([0, 1, 2.1, np.nan, np.inf, pd.NaT]),
+            "[0, 1, 2.1, NaN, Infinity, null]",
+        ),
         (np.empty((0, 0)), "[]"),
-        (np.array([[0, 1, 2.1], [0, 1, 2.1], [0, 1, 2.1]]), "[[0.0, 1.0, 2.1], [0.0, 1.0, 2.1], [0.0, 1.0, 2.1]]"),
+        (
+            np.array([[0, 1, 2.1], [0, 1, 2.1], [0, 1, 2.1]]),
+            "[[0.0, 1.0, 2.1], [0.0, 1.0, 2.1], [0.0, 1.0, 2.1]]",
+        ),
         (np.ones((2, 3)), "[[1.0, 1.0, 1.0], [1.0, 1.0, 1.0]]"),
         (np.void(3), "null"),
         # pandas date classes
         ([pd.Timestamp(2022, 2, 3, 12)], '["2022-02-03T12:00:00"]'),
-        ([datetime(year=2022, month=1, day=13, hour=12, minute=45, second=32)], '["2022-01-13T12:45:32"]'),
+        (
+            [datetime(year=2022, month=1, day=13, hour=12, minute=45, second=32)],
+            '["2022-01-13T12:45:32"]',
+        ),
         ([pd.Timedelta(days=1)], '["1 days 00:00:00"]'),
         # python types
         (

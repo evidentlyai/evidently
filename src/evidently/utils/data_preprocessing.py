@@ -1,10 +1,11 @@
+import dataclasses
 from enum import Enum
+from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Sequence
 from typing import Union
 
-import dataclasses
 import numpy as np
 import pandas as pd
 
@@ -22,6 +23,7 @@ class ColumnType(Enum):
     Categorical = "cat"
     Numerical = "num"
     Datetime = "datetime"
+    Text = "text"
 
 
 @dataclasses.dataclass
@@ -51,8 +53,12 @@ def _check_filter(column: ColumnDefinition, utility_columns: List[str], filter_d
         return column.column_type == ColumnType.Numerical
     if filter_def == "datetime_columns":
         return column.column_type == ColumnType.Datetime
+    if filter_def == "text_columns":
+        return column.column_type == ColumnType.Text
     if filter_def == "all_features":
         return column.column_name not in utility_columns
+    if filter_def == "text_features":
+        return column.column_type == ColumnType.Text and column.column_name not in utility_columns
     if filter_def == "categorical_features":
         return column.column_type == ColumnType.Categorical and column.column_name not in utility_columns
     if filter_def == "numerical_features":
@@ -64,7 +70,7 @@ def _check_filter(column: ColumnDefinition, utility_columns: List[str], filter_d
 
 @dataclasses.dataclass
 class DataDefinition:
-    _columns: List[ColumnDefinition]
+    _columns: Dict[str, ColumnDefinition]
     _target: Optional[ColumnDefinition]
     _prediction_columns: Optional[PredictionColumns]
     _id_column: Optional[ColumnDefinition]
@@ -83,13 +89,16 @@ class DataDefinition:
         task: Optional[str],
         classification_labels: Optional[Sequence[str]],
     ):
-        self._columns = columns
+        self._columns = {column.column_name: column for column in columns}
         self._id_column = id_column
         self._datetime_column = datetime_column
         self._task = task
         self._target = target
         self._prediction_columns = prediction_columns
         self._classification_labels = classification_labels
+
+    def get_column(self, column_name: str) -> ColumnDefinition:
+        return self._columns[column_name]
 
     def get_columns(self, filter_def: str = "all") -> List[ColumnDefinition]:
         if self._prediction_columns is not None:
@@ -106,7 +115,7 @@ class DataDefinition:
             ]
             if col is not None
         ]
-        return [column for column in self._columns if _check_filter(column, utility_columns, filter_def)]
+        return [column for column in self._columns.values() if _check_filter(column, utility_columns, filter_def)]
 
     def get_target_column(self) -> Optional[ColumnDefinition]:
         return self._target
@@ -131,21 +140,22 @@ def _process_column(
     column_name: Optional[str],
     data: _InputData,
     if_partially_present: str = "raise",
+    predefined_type: Optional[ColumnType] = None,
 ) -> Optional[ColumnDefinition]:
     if column_name is None:
         return None
-    presense = _get_column_presence(column_name, data)
-    if presense == ColumnPresenceState.Partially:
+    presence = _get_column_presence(column_name, data)
+    if presence == ColumnPresenceState.Missing:
+        return None
+    if presence == ColumnPresenceState.Partially:
         if if_partially_present == "raise":
             raise ValueError(f"Column ({column_name}) is partially present in data")
         if if_partially_present == "skip":
             return None
         if if_partially_present == "keep":
-            return ColumnDefinition(column_name, _get_column_type(column_name, data))
-        return None
-    if presense == ColumnPresenceState.Present:
-        return ColumnDefinition(column_name, _get_column_type(column_name, data))
-    return None
+            pass
+    column_type = predefined_type if predefined_type is not None else _get_column_type(column_name, data)
+    return ColumnDefinition(column_name, column_type)
 
 
 def _prediction_column(
@@ -218,6 +228,7 @@ def create_data_definition(
     )
 
     prediction_cols = prediction_columns.get_columns_list() if prediction_columns is not None else []
+
     all_columns = [
         id_column,
         datetime_column,
@@ -234,7 +245,7 @@ def create_data_definition(
     else:
         all_columns.extend(
             [
-                _process_column(column_name, data)
+                _process_column(column_name, data, predefined_type=ColumnType.Numerical)
                 for column_name in mapping.numerical_features
                 if column_name not in utility_column_names
             ]
@@ -246,7 +257,7 @@ def create_data_definition(
     else:
         all_columns.extend(
             [
-                _process_column(column_name, data)
+                _process_column(column_name, data, predefined_type=ColumnType.Categorical)
                 for column_name in mapping.categorical_features
                 if column_name not in utility_column_names
             ]
@@ -258,12 +269,20 @@ def create_data_definition(
     else:
         all_columns.extend(
             [
-                _process_column(column_name, data)
+                _process_column(column_name, data, predefined_type=ColumnType.Datetime)
                 for column_name in mapping.datetime_features
                 if column_name not in utility_column_names
             ]
         )
 
+    if mapping.text_features is not None:
+        all_columns.extend(
+            [
+                _process_column(column_name, data, predefined_type=ColumnType.Text)
+                for column_name in mapping.text_features
+                if column_name not in utility_column_names
+            ]
+        )
     task = mapping.task
     if task is None:
         if target_column is None:

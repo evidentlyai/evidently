@@ -1,6 +1,6 @@
+import dataclasses
 from typing import Optional
 
-import dataclasses
 import pandas as pd
 
 from evidently import ColumnMapping

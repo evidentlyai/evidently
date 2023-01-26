@@ -1,18 +1,19 @@
 import copy
+import dataclasses
 import uuid
 from collections import Counter
 from typing import List
 from typing import Optional
 from typing import Union
 
-import dataclasses
 import pandas as pd
 
-from evidently.metrics.base_metric import InputData
+from evidently.base_metric import InputData
 from evidently.model.dashboard import DashboardInfo
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import ColorOptions
 from evidently.pipeline.column_mapping import ColumnMapping
+from evidently.renderers.base_renderer import TestRenderer
 from evidently.suite.base_suite import Display
 from evidently.suite.base_suite import Suite
 from evidently.suite.base_suite import find_test_renderer
@@ -75,8 +76,7 @@ class TestSuite(Display):
 
         self._columns_info = process_columns(current_data, column_mapping)
         data_definition = create_data_definition(reference_data, current_data, column_mapping)
-
-        data = InputData(reference_data, current_data, column_mapping, data_definition)
+        data = InputData(reference_data, current_data, None, None, column_mapping, data_definition)
         for preset in self._test_presets:
             tests = preset.generate_tests(data, self._columns_info)
 
@@ -89,8 +89,10 @@ class TestSuite(Display):
 
         for test_generator in self._test_generators:
             self._add_tests_from_generator(test_generator)
-
         self._inner_suite.verify()
+        curr_add, ref_add = self._inner_suite.create_additional_features(current_data, reference_data, data_definition)
+        data = InputData(reference_data, current_data, ref_add, curr_add, column_mapping, data_definition)
+
         self._inner_suite.run_calculate(data)
         self._inner_suite.run_checks()
 
@@ -100,7 +102,14 @@ class TestSuite(Display):
 
         for test in self._inner_suite.context.test_results:
             renderer = find_test_renderer(type(test), self._inner_suite.context.renderers)
-            test_results.append(renderer.render_json(test))
+            try:
+                test_data = renderer.render_json(test)
+                test_results.append(test_data)
+            except BaseException as e:
+                test_data = TestRenderer.render_json(renderer, test)
+                test_data["status"] = TestResult.ERROR
+                test_data["description"] = f"Test failed with exception: {e}"
+                test_results.append(test_data)
 
         total_tests = len(self._inner_suite.context.test_results)
 

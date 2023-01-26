@@ -1,8 +1,8 @@
+import dataclasses
 from typing import List
 from typing import Optional
 from typing import Union
 
-import dataclasses
 import numpy as np
 import pandas as pd
 from sklearn.metrics import classification_report
@@ -10,12 +10,12 @@ from sklearn.metrics import log_loss
 from sklearn.metrics import precision_score
 from sklearn.metrics import recall_score
 
+from evidently.base_metric import InputData
 from evidently.calculations.classification_performance import DatasetClassificationQuality
 from evidently.calculations.classification_performance import PredictionData
 from evidently.calculations.classification_performance import calculate_matrix
 from evidently.calculations.classification_performance import calculate_metrics
 from evidently.calculations.classification_performance import k_probability_threshold
-from evidently.metrics.base_metric import InputData
 from evidently.metrics.classification_performance.base_classification_metric import ThresholdClassificationMetric
 from evidently.metrics.classification_performance.classification_quality_metric import ClassificationQualityMetric
 from evidently.model.widget import BaseWidgetInfo

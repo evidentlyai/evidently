@@ -1,6 +1,6 @@
 import abc
 
-from evidently.metrics.base_metric import InputData
+from evidently.base_metric import InputData
 from evidently.utils.data_operations import DatasetColumns
 
 

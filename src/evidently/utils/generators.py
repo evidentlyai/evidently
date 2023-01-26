@@ -59,6 +59,7 @@ def make_generator_by_columns(
     - "all" - make tests for all columns, including target/prediction columns
     - "num" - for numeric features
     - "cat" - for category features
+    - "text" - for text features
     - "features" - for all features, not target/prediction columns.
     None value is the same as "all".
     If `columns` is string, and it is not one of the values, ValueError will be raised.
@@ -87,6 +88,9 @@ def make_generator_by_columns(
 
             elif columns == "num":
                 columns_for_generation = columns_info.num_feature_names
+
+            elif columns == "text":
+                columns_for_generation = columns_info.text_feature_names
 
             elif columns == "features":
                 columns_for_generation = columns_info.get_all_features_list(include_datetime_feature=True)

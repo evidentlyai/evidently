@@ -1,3 +1,4 @@
+import dataclasses
 import json
 from typing import Dict
 from typing import List
@@ -5,21 +6,26 @@ from typing import Optional
 from typing import Tuple
 from typing import Union
 
-import dataclasses
+import numpy as np
 import pandas as pd
 from pandas.api.types import is_numeric_dtype
 from pandas.api.types import is_string_dtype
 
+from evidently.base_metric import InputData
+from evidently.base_metric import Metric
 from evidently.calculations.data_quality import DataQualityGetPlotData
 from evidently.calculations.data_quality import FeatureQualityStats
 from evidently.calculations.data_quality import get_features_stats
-from evidently.metrics.base_metric import InputData
-from evidently.metrics.base_metric import Metric
+from evidently.features.non_letter_character_percentage_feature import NonLetterCharacterPercentage
+from evidently.features.OOV_words_percentage_feature import OOVWordsPercentage
+from evidently.features.text_length_feature import TextLength
 from evidently.model.widget import AdditionalGraphInfo
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
 from evidently.utils.data_operations import process_columns
+from evidently.utils.data_preprocessing import ColumnType
+from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.types import Numeric
 from evidently.utils.visualizations import plot_boxes
 from evidently.utils.visualizations import plot_cat_cat_rel
@@ -80,7 +86,26 @@ class DatetimeCharacteristics:
     last: Optional[str]
 
 
-ColumnCharacteristics = Union[NumericCharacteristics, CategoricalCharacteristics, DatetimeCharacteristics]
+@dataclasses.dataclass
+class TextCharacteristics:
+    number_of_rows: int
+    count: int
+    missing: Optional[int]
+    missing_percentage: Optional[float]
+    text_length_min: Optional[float]
+    text_length_mean: Optional[float]
+    text_length_max: Optional[float]
+    oov_min: Optional[float]
+    oov_mean: Optional[float]
+    oov_max: Optional[float]
+    non_letter_char_min: Optional[float]
+    non_letter_char_mean: Optional[float]
+    non_letter_char_max: Optional[float]
+
+
+ColumnCharacteristics = Union[
+    NumericCharacteristics, CategoricalCharacteristics, DatetimeCharacteristics, TextCharacteristics
+]
 
 
 @dataclasses.dataclass
@@ -99,7 +124,7 @@ class DataByTarget:
 
 @dataclasses.dataclass
 class DataQualityPlot:
-    bins_for_hist: Dict[str, pd.DataFrame]
+    bins_for_hist: Optional[Dict[str, pd.DataFrame]]
     data_in_time: Optional[DataInTime]
     data_by_target: Optional[DataByTarget]
     counts_of_values: Optional[Dict[str, pd.DataFrame]]
@@ -115,8 +140,29 @@ class ColumnSummary:
 
 
 class ColumnSummaryMetric(Metric[ColumnSummary]):
+    column_name: str
+    generated_text_features: Optional[Dict[str, Union[TextLength, NonLetterCharacterPercentage, OOVWordsPercentage]]]
+
     def __init__(self, column_name: str):
         self.column_name = column_name
+        self.generated_text_features = None
+
+    def required_features(self, data_definition: DataDefinition):
+        column_type = data_definition.get_column(self.column_name).column_type
+        if column_type == ColumnType.Text:
+            self.generated_text_features = {}
+            self.generated_text_features["text_length"] = TextLength(self.column_name)
+            self.generated_text_features["non_letter_char"] = NonLetterCharacterPercentage(self.column_name)
+            self.generated_text_features["oov"] = OOVWordsPercentage(self.column_name)
+            return list(self.generated_text_features.values())
+        return []
+
+    def get_parameters(self) -> tuple:
+        return (self.column_name,)
+
+    @staticmethod
+    def acceptable_types() -> List[ColumnType]:
+        return [ColumnType.Numerical, ColumnType.Categorical, ColumnType.Text]
 
     def calculate(self, data: InputData) -> ColumnSummary:
         columns = process_columns(data.current_data, data.column_mapping)
@@ -184,30 +230,50 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
             columns.utility_columns.date is not None and columns.utility_columns.date == self.column_name
         ):
             column_type = "datetime"
+        elif self.column_name in columns.text_feature_names:
+            column_type = "text"
         if column_type is None:
-            raise ValueError(f"column {self.column_name} not in num, cat or datetime features lists")
+            raise ValueError(f"column {self.column_name} not in num, cat, text or datetime features lists")
 
+        curr_characteristics: ColumnCharacteristics
         reference_data = None
-        ref_characteristics = None
-        if data.reference_data is not None:
-            reference_data = data.reference_data
-            ref_characteristics = self.map_data(get_features_stats(data.reference_data[self.column_name], column_type))
-        curr_characteristics = self.map_data(get_features_stats(data.current_data[self.column_name], column_type))
+        ref_characteristics: Optional[ColumnCharacteristics] = None
+        if column_type == "text" and self.generated_text_features is not None:
+            if data.reference_data is not None:
+                ref_characteristics = self.get_text_stats(
+                    "reference",
+                    data,
+                    data.reference_data[self.column_name],
+                    self.generated_text_features,
+                )
+            curr_characteristics = self.get_text_stats(
+                "current",
+                data,
+                data.current_data[self.column_name],
+                self.generated_text_features,
+            )
+        else:
+            if data.reference_data is not None:
+                reference_data = data.reference_data
+                ref_characteristics = self.map_data(
+                    get_features_stats(data.reference_data[self.column_name], column_type)
+                )
+            curr_characteristics = self.map_data(get_features_stats(data.current_data[self.column_name], column_type))
 
-        if data.reference_data is not None and column_type == "cat":
-            current_values_set = set(data.current_data[self.column_name].unique())
-            reference_values_set = set(data.reference_data[self.column_name].unique())
-            unique_in_current = current_values_set - reference_values_set
-            new_in_current_values_count: int = len(unique_in_current)
-            unique_in_reference = reference_values_set - current_values_set
-            unused_in_current_values_count: int = len(unique_in_reference)
-            if any(pd.isnull(list(unique_in_current))) and any(pd.isnull(list(unique_in_reference))):
-                new_in_current_values_count -= 1
-                unused_in_current_values_count -= 1
-            if not isinstance(curr_characteristics, CategoricalCharacteristics):
-                raise ValueError(f"{self.column_name} should be categorical")
-            curr_characteristics.new_in_current_values_count = new_in_current_values_count
-            curr_characteristics.unused_in_current_values_count = unused_in_current_values_count
+            if data.reference_data is not None and column_type == "cat":
+                current_values_set = set(data.current_data[self.column_name].unique())
+                reference_values_set = set(data.reference_data[self.column_name].unique())
+                unique_in_current = current_values_set - reference_values_set
+                new_in_current_values_count: int = len(unique_in_current)
+                unique_in_reference = reference_values_set - current_values_set
+                unused_in_current_values_count: int = len(unique_in_reference)
+                if any(pd.isnull(list(unique_in_current))) and any(pd.isnull(list(unique_in_reference))):
+                    new_in_current_values_count -= 1
+                    unused_in_current_values_count -= 1
+                if not isinstance(curr_characteristics, CategoricalCharacteristics):
+                    raise ValueError(f"{self.column_name} should be categorical")
+                curr_characteristics.new_in_current_values_count = new_in_current_values_count
+                curr_characteristics.unused_in_current_values_count = unused_in_current_values_count
 
         # plot data
         gpd = DataQualityGetPlotData()
@@ -332,6 +398,40 @@ class ColumnSummaryMetric(Metric[ColumnSummary]):
             )
         raise ValueError(f"unknown feature type {stats.feature_type}")
 
+    def get_text_stats(
+        self,
+        dataset: str,
+        data: InputData,
+        text_feature: pd.Series,
+        generated_text_features: dict,
+    ) -> TextCharacteristics:
+        number_of_rows = len(text_feature)
+        missing = text_feature.isna().sum()
+        if dataset == "current":
+            text_length = data.get_current_column(generated_text_features["text_length"].feature_name())
+            oov = data.get_current_column(generated_text_features["oov"].feature_name())
+            non_letter_char = data.get_current_column(generated_text_features["non_letter_char"].feature_name())
+        else:
+            text_length = data.get_reference_column(generated_text_features["text_length"].feature_name())
+            oov = data.get_reference_column(generated_text_features["oov"].feature_name())
+            non_letter_char = data.get_reference_column(generated_text_features["non_letter_char"].feature_name())
+
+        return TextCharacteristics(
+            number_of_rows=number_of_rows,
+            count=text_feature.count(),
+            missing=missing,
+            missing_percentage=np.round(missing / number_of_rows, 3),
+            text_length_min=text_length.min(),
+            text_length_mean=np.round(text_length.mean(), 3),
+            text_length_max=text_length.max(),
+            oov_min=np.round(oov.min(), 3),
+            oov_mean=np.round(oov.mean(), 3),
+            oov_max=np.round(oov.max(), 3),
+            non_letter_char_min=np.round(non_letter_char.min(), 3),
+            non_letter_char_mean=np.round(non_letter_char.mean(), 3),
+            non_letter_char_max=np.round(non_letter_char.max(), 3),
+        )
+
 
 @default_renderer(wrap_type=ColumnSummaryMetric)
 class ColumnSummaryMetricRenderer(MetricRenderer):
@@ -346,26 +446,33 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
         column_name = metric_result.column_name
         # main plot
         bins_for_hist = metric_result.plot_data.bins_for_hist
-        hist_curr = bins_for_hist["current"]
-        hist_ref = None
-        metrics_values_headers = [""]
-        if "reference" in bins_for_hist.keys():
-            hist_ref = bins_for_hist["reference"]
-            metrics_values_headers = ["current", "reference"]
+        if bins_for_hist is not None:
+            hist_curr = bins_for_hist["current"]
+            hist_ref = None
+            metrics_values_headers = [""]
+            if "reference" in bins_for_hist.keys():
+                hist_ref = bins_for_hist["reference"]
+                metrics_values_headers = ["current", "reference"]
 
-        if column_type == "cat":
-            fig = plot_distr(hist_curr=hist_curr, hist_ref=hist_ref, color_options=self.color_options)
-            fig.update_layout(legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1))
-            fig = json.loads(fig.to_json())
-        if column_type == "num":
-            ref_log = None
-            if "reference_log" in bins_for_hist.keys():
-                ref_log = bins_for_hist["reference_log"]
-            fig = plot_distr_with_log_button(
-                hist_curr, bins_for_hist["current_log"], hist_ref, ref_log, color_options=self.color_options
-            )
-        if column_type == "datetime":
-            fig = plot_time_feature_distr(hist_curr, hist_ref, column_name, color_options=self.color_options)
+            if column_type == "cat":
+                fig = plot_distr(hist_curr=hist_curr, hist_ref=hist_ref, color_options=self.color_options)
+                fig.update_layout(legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1))
+                fig = json.loads(fig.to_json())
+            if column_type == "num":
+                ref_log = None
+                if "reference_log" in bins_for_hist.keys():
+                    ref_log = bins_for_hist["reference_log"]
+                fig = plot_distr_with_log_button(
+                    hist_curr, bins_for_hist["current_log"], hist_ref, ref_log, color_options=self.color_options
+                )
+            if column_type == "datetime":
+                fig = plot_time_feature_distr(hist_curr, hist_ref, column_name, color_options=self.color_options)
+            graph = {"data": fig["data"], "layout": fig["layout"]}
+        else:
+            graph = {}
+            metrics_values_headers = [""]
+            if metric_result.reference_characteristics is not None:
+                metrics_values_headers = ["current", "reference"]
 
         # additional plots
         additional_graphs = []
@@ -400,7 +507,10 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
             )
             parts.append({"title": column_name + " in time", "id": column_name + "_in_time"})
 
-        if metric_result.plot_data.data_by_target is not None:
+        if (
+            metric_result.plot_data.data_by_target is not None
+            and metric_result.plot_data.data_by_target.data_for_plots is not None
+        ):
             ref_data_by_target = None
             if "reference" in metric_result.plot_data.data_by_target.data_for_plots.keys():
                 ref_data_by_target = metric_result.plot_data.data_by_target.data_for_plots["reference"]
@@ -449,21 +559,36 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
                 )
             )
             parts.append({"title": column_name + " by target", "id": column_name + "_by_target"})
-
-        wi = BaseWidgetInfo(
-            type="rich_data",
-            title="",
-            size=2,
-            params={
-                "header": metric_result.column_name,
-                "description": column_type,
-                "metricsValuesHeaders": metrics_values_headers,
-                "metrics": self._metrics_fot_table(column_type, metric_result),
-                "graph": {"data": fig["data"], "layout": fig["layout"]},
-                "details": {"parts": parts, "insights": []},
-            },
-            additionalGraphs=additional_graphs,
-        )
+        if column_type == "text":
+            wi = BaseWidgetInfo(
+                type="rich_data",
+                title="",
+                size=2,
+                params={
+                    "header": metric_result.column_name,
+                    "description": column_type,
+                    "metricsValuesHeaders": metrics_values_headers,
+                    "metrics": self._metrics_fot_table(column_type, metric_result),
+                    # "graph": graph,
+                    "details": {"parts": parts, "insights": []},
+                },
+                additionalGraphs=additional_graphs,
+            )
+        else:
+            wi = BaseWidgetInfo(
+                type="rich_data",
+                title="",
+                size=2,
+                params={
+                    "header": metric_result.column_name,
+                    "description": column_type,
+                    "metricsValuesHeaders": metrics_values_headers,
+                    "metrics": self._metrics_fot_table(column_type, metric_result),
+                    "graph": graph,
+                    "details": {"parts": parts, "insights": []},
+                },
+                additionalGraphs=additional_graphs,
+            )
         return [wi]
 
     @staticmethod
@@ -565,5 +690,21 @@ class ColumnSummaryMetricRenderer(MetricRenderer):
                 ("last", "last", None),
             ]
             metrics.extend(self._get_stats_with_names(datetime_features, current_stats, reference_stats))
+
+        elif column_type == "text":
+            text_features = [
+                ("count", "count", None),
+                ("missing", "missing", "missing_percentage"),
+                ("Text Length min", "text_length_min", None),
+                ("Text Length mean", "text_length_mean", None),
+                ("Text Length max", "text_length_max", None),
+                ("OOV % min", "oov_min", None),
+                ("OOV % mean", "oov_mean", None),
+                ("OOV % max", "oov_max", None),
+                ("Non Letter Character % min", "non_letter_char_min", None),
+                ("Non Letter Character % mean", "non_letter_char_mean", None),
+                ("Non Letter Character % max", "non_letter_char_max", None),
+            ]
+            metrics.extend(self._get_stats_with_names(text_features, current_stats, reference_stats))
 
         return metrics

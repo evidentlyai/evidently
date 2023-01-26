@@ -1,20 +1,14 @@
+import dataclasses
 from typing import List
 from typing import Optional
 
-import dataclasses
-import pandas as pd
-
-from evidently import ColumnMapping
-from evidently.calculations.data_quality import calculate_column_distribution
-from evidently.metrics.base_metric import InputData
-from evidently.metrics.base_metric import Metric
+from evidently.base_metric import InputData
+from evidently.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer
 from evidently.renderers.base_renderer import default_renderer
-from evidently.renderers.html_widgets import HistogramData
 from evidently.renderers.html_widgets import WidgetSize
 from evidently.renderers.html_widgets import header_text
-from evidently.renderers.html_widgets import histogram
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.renderers.render_utils import get_distribution_plot_figure
 from evidently.utils.data_operations import process_columns

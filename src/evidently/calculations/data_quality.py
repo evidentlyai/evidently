@@ -1,5 +1,6 @@
 """Methods for overall dataset quality calculations - rows count, a specific values count, etc."""
 
+import dataclasses
 from typing import Callable
 from typing import Dict
 from typing import List
@@ -7,7 +8,6 @@ from typing import Optional
 from typing import Tuple
 from typing import Union
 
-import dataclasses
 import numpy as np
 import pandas as pd
 from scipy.stats import chi2_contingency
@@ -320,6 +320,8 @@ class DataQualityGetPlotData:
                 if max_ref_date == min_curr_date:
                     curr_data, ref_data = self._split_periods(curr_data, ref_data, feature_name)
                 bins_for_hist["reference"] = ref_data
+        if feature_type == "text":
+            bins_for_hist = None
 
         return bins_for_hist
 
@@ -694,8 +696,14 @@ def _calculate_correlations(df: pd.DataFrame, num_for_corr, cat_for_corr, kind):
         return get_pairwise_correlation(df[cat_for_corr], _cramer_v)
 
 
-def calculate_correlations(dataset: pd.DataFrame, columns: DatasetColumns) -> Dict:
+def calculate_correlations(
+    dataset: pd.DataFrame,
+    columns: DatasetColumns,
+    add_text_columns: Optional[list] = None,
+) -> Dict:
     num_for_corr, cat_for_corr = _select_features_for_corr(dataset, columns)
+    if add_text_columns is not None:
+        num_for_corr += add_text_columns
     correlations = {}
 
     for kind in ["pearson", "spearman", "kendall", "cramer_v"]:

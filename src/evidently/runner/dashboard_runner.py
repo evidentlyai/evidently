@@ -1,6 +1,5 @@
-from typing import Dict
-
 from dataclasses import dataclass
+from typing import Dict
 
 from evidently.dashboard import Dashboard
 from evidently.dashboard.tabs import CatTargetDriftTab

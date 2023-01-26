@@ -1,12 +1,11 @@
+import dataclasses
 from typing import List
 from typing import Optional
 from typing import Union
 
-import dataclasses
-
+from evidently.base_metric import InputData
 from evidently.calculations.classification_performance import ConfusionMatrix
 from evidently.calculations.classification_performance import calculate_matrix
-from evidently.metrics.base_metric import InputData
 from evidently.metrics.classification_performance.base_classification_metric import ThresholdClassificationMetric
 from evidently.model.widget import BaseWidgetInfo
 from evidently.renderers.base_renderer import MetricRenderer

@@ -1,16 +1,15 @@
 #!/usr/bin/env python
 # coding: utf-8
 # pylint: disable=invalid-name
+import dataclasses
 import uuid
+from dataclasses import dataclass
 from enum import Enum
 from typing import Any
 from typing import Iterable
 from typing import List
 from typing import Optional
 from typing import Union
-
-import dataclasses
-from dataclasses import dataclass
 
 
 @dataclass()

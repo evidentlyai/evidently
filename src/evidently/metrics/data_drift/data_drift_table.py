@@ -1,15 +1,14 @@
+import dataclasses
+from dataclasses import dataclass
 from typing import Dict
 from typing import List
 from typing import Optional
 
-import dataclasses
-from dataclasses import dataclass
-
+from evidently.base_metric import InputData
+from evidently.base_metric import Metric
 from evidently.calculations.data_drift import ColumnDataDriftMetrics
 from evidently.calculations.data_drift import get_drift_for_columns
 from evidently.calculations.stattests import PossibleStatTestType
-from evidently.metrics.base_metric import InputData
-from evidently.metrics.base_metric import Metric
 from evidently.model.widget import BaseWidgetInfo
 from evidently.options import DataDriftOptions
 from evidently.renderers.base_renderer import MetricRenderer
@@ -21,6 +20,7 @@ from evidently.renderers.html_widgets import RowDetails
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import plotly_figure
 from evidently.renderers.html_widgets import rich_table_data
+from evidently.renderers.html_widgets import table_data
 from evidently.renderers.render_utils import get_distribution_plot_figure
 from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.data_operations import process_columns
@@ -47,10 +47,12 @@ class DataDriftTable(Metric[DataDriftTableResults]):
         stattest: Optional[PossibleStatTestType] = None,
         cat_stattest: Optional[PossibleStatTestType] = None,
         num_stattest: Optional[PossibleStatTestType] = None,
+        text_stattest: Optional[PossibleStatTestType] = None,
         per_column_stattest: Optional[Dict[str, PossibleStatTestType]] = None,
         stattest_threshold: Optional[float] = None,
         cat_stattest_threshold: Optional[float] = None,
         num_stattest_threshold: Optional[float] = None,
+        text_stattest_threshold: Optional[float] = None,
         per_column_stattest_threshold: Optional[Dict[str, float]] = None,
     ):
         self.columns = columns
@@ -58,10 +60,12 @@ class DataDriftTable(Metric[DataDriftTableResults]):
             all_features_stattest=stattest,
             cat_features_stattest=cat_stattest,
             num_features_stattest=num_stattest,
+            text_features_stattest=text_stattest,
             per_feature_stattest=per_column_stattest,
             all_features_threshold=stattest_threshold,
             cat_features_threshold=cat_stattest_threshold,
             num_features_threshold=num_stattest_threshold,
+            text_features_threshold=text_stattest_threshold,
             per_feature_threshold=per_column_stattest_threshold,
         )
 
@@ -112,49 +116,108 @@ class DataDriftTableRenderer(MetricRenderer):
         return result
 
     def _generate_column_params(self, column_name: str, data: ColumnDataDriftMetrics) -> Optional[RichTableDataRow]:
-        if data.current_small_distribution is None or data.reference_small_distribution is None:
-            return None
-
-        current_small_hist = data.current_small_distribution
-        ref_small_hist = data.reference_small_distribution
-        data_drift = "Detected" if data.drift_detected else "Not Detected"
         details = RowDetails()
-        if (
-            data.column_type == "num"
-            and data.current_scatter is not None
-            and data.x_name is not None
-            and data.plot_shape is not None
-        ):
-            scatter_fig = plot_scatter_for_data_drift(
-                curr_y=data.current_scatter[data.column_name],
-                curr_x=data.current_scatter[data.x_name],
-                y0=data.plot_shape["y0"],
-                y1=data.plot_shape["y1"],
-                y_name=data.column_name,
-                x_name=data.x_name,
+        if data.column_type == "text":
+            if (
+                data.typical_examples_cur is not None
+                and data.typical_examples_ref is not None
+                and data.typical_words_cur is not None
+                and data.typical_words_ref is not None
+            ):
+                current_table_words = table_data(
+                    title="",
+                    column_names=["", ""],
+                    data=[[el, ""] for el in data.typical_words_cur],
+                )
+                details.with_part("current: characteristic words", info=current_table_words)
+                reference_table_words = table_data(
+                    title="",
+                    column_names=["", ""],
+                    data=[[el, ""] for el in data.typical_words_ref],
+                )
+                details.with_part("reference: characteristic words", info=reference_table_words)
+                current_table_examples = table_data(
+                    title="",
+                    column_names=["", ""],
+                    data=[[el, ""] for el in data.typical_examples_cur],
+                )
+                details.with_part("current: characteristic examples", info=current_table_examples)
+                reference_table_examples = table_data(
+                    title="",
+                    column_names=["", ""],
+                    data=[[el, ""] for el in data.typical_examples_ref],
+                )
+                details.with_part("reference: characteristic examples", info=reference_table_examples)
+
+            data_drift = "Detected" if data.drift_detected else "Not Detected"
+
+            # tabs = [
+            #     TabData(title="Carent Dataset: characteristic WORDS", widget=current_table_words),
+            #     TabData(title="Reference Dataset: characteristic WORDS", widget=reference_table_words),
+            #     TabData(title="Carent Dataset: characteristic EXAMPLES", widget=current_table_examples),
+            #     TabData(title="Reference Dataset: characteristic EXAMPLES", widget=reference_table_examples),
+            # ]
+            return RichTableDataRow(
+                details=details,
+                fields={
+                    "column_name": column_name,
+                    "column_type": data.column_type,
+                    "stattest_name": data.stattest_name,
+                    # "reference_distribution": {},
+                    # "current_distribution": {},
+                    "data_drift": data_drift,
+                    "drift_score": round(data.drift_score, 6),
+                },
+            )
+
+        else:
+            if (
+                data.current_small_distribution is None
+                or data.reference_small_distribution is None
+                or data.current_distribution is None
+                or data.reference_distribution is None
+            ):
+                return None
+
+            current_small_hist = data.current_small_distribution
+            ref_small_hist = data.reference_small_distribution
+            data_drift = "Detected" if data.drift_detected else "Not Detected"
+            if (
+                data.column_type == "num"
+                and data.current_scatter is not None
+                and data.x_name is not None
+                and data.plot_shape is not None
+            ):
+                scatter_fig = plot_scatter_for_data_drift(
+                    curr_y=data.current_scatter[data.column_name],
+                    curr_x=data.current_scatter[data.x_name],
+                    y0=data.plot_shape["y0"],
+                    y1=data.plot_shape["y1"],
+                    y_name=data.column_name,
+                    x_name=data.x_name,
+                    color_options=self.color_options,
+                )
+                scatter = plotly_figure(title="", figure=scatter_fig)
+                details.with_part("DATA DRIFT", info=scatter)
+            fig = get_distribution_plot_figure(
+                current_distribution=data.current_distribution,
+                reference_distribution=data.reference_distribution,
                 color_options=self.color_options,
             )
-            scatter = plotly_figure(title="", figure=scatter_fig)
-            details.with_part("DATA DRIFT", info=scatter)
-        fig = get_distribution_plot_figure(
-            current_distribution=data.current_distribution,
-            reference_distribution=data.reference_distribution,
-            color_options=self.color_options,
-        )
-        distribution = plotly_figure(title="", figure=fig)
-        details.with_part("DATA DISTRIBUTION", info=distribution)
-        return RichTableDataRow(
-            details=details,
-            fields={
-                "column_name": column_name,
-                "column_type": data.column_type,
-                "stattest_name": data.stattest_name,
-                "reference_distribution": {"x": list(ref_small_hist[1]), "y": list(ref_small_hist[0])},
-                "current_distribution": {"x": list(current_small_hist[1]), "y": list(current_small_hist[0])},
-                "data_drift": data_drift,
-                "drift_score": round(data.drift_score, 6),
-            },
-        )
+            distribution = plotly_figure(title="", figure=fig)
+            details.with_part("DATA DISTRIBUTION", info=distribution)
+            return RichTableDataRow(
+                details=details,
+                fields={
+                    "column_name": column_name,
+                    "column_type": data.column_type,
+                    "stattest_name": data.stattest_name,
+                    "reference_distribution": {"x": list(ref_small_hist[1]), "y": list(ref_small_hist[0])},
+                    "current_distribution": {"x": list(current_small_hist[1]), "y": list(current_small_hist[0])},
+                    "data_drift": data_drift,
+                    "drift_score": round(data.drift_score, 6),
+                },
+            )
 
     def render_html(self, obj: DataDriftTable) -> List[BaseWidgetInfo]:
         results = obj.get_result()

@@ -1,6 +1,7 @@
 from typing import List
 from typing import Optional
 
+from evidently.base_metric import InputData
 from evidently.metric_preset.metric_preset import MetricPreset
 from evidently.metrics import RegressionAbsPercentageErrorPlot
 from evidently.metrics import RegressionErrorBiasTable
@@ -11,7 +12,6 @@ from evidently.metrics import RegressionPredictedVsActualPlot
 from evidently.metrics import RegressionPredictedVsActualScatter
 from evidently.metrics import RegressionQualityMetric
 from evidently.metrics import RegressionTopErrorMetric
-from evidently.metrics.base_metric import InputData
 from evidently.utils.data_operations import DatasetColumns
 
 
