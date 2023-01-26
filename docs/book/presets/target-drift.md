@@ -1,7 +1,7 @@
 **TL;DR:** You can detect and explore changes in the target function (prediction) and detect distribution drift.
 
-* For visual analysis using Reports, use `TargetDriftPreset`.
-* For pipeline checks using Test Suites, use a `TestColumnDrift` test and apply it to the prediction or target column. Since it is a single test, there is no need for a Preset.
+* **Report**: for visual analysis or metrics export, use the`TargetDriftPreset`.
+* **Test Suite**: for pipeline checks, use a `TestColumnDrift` test and apply it to the prediction or target column. Since it is a single test, there is no need for a Preset.
 
 # Use case 
 
