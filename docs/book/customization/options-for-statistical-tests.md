@@ -135,5 +135,9 @@ TestShareOfDriftedColumns(lt=0.5)
   - returns `p-value`
   - drift detected when `p_value < threshold`
 - `text_content_drift` - Text content drift (domain classifier)
+  - default for text features
   - only for text features
-  - returns `roc_auc`
+  - returns `roc_auc` as drift_score
+  - drift detected when roc_auc > roc_auc of the random classifier at a set percentile (`threshold`) 
+  - default threshold: 0.05
+  - `roc_auc` values can be 0 to 1 (typically 0.5 to 1); higher value mean more confident drift detection
