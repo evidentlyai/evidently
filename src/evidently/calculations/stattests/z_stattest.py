@@ -1,10 +1,10 @@
-"""Mann-Whitney U-rank test of two samples.
+"""Z-test test of two samples.
 
-Name: "mannw"
+Name: "z"
 
 Import:
 
-    >>> from evidently.calculations.stattests import mann_whitney_u_stat_test
+    >>> from evidently.calculations.stattests import z_stat_test
 
 Properties:
 - only for numerical features
@@ -14,13 +14,13 @@ Example:
     Using by object:
 
     >>> from evidently.options import DataDriftOptions
-    >>> from evidently.calculations.stattests import mann_whitney_u_stat_test
-    >>> options = DataDriftOptions(all_features_stattest=mann_whitney_u_stat_test)
+    >>> from evidently.calculations.stattests import z_stat_test
+    >>> options = DataDriftOptions(all_features_stattest=z_stat_test)
 
     Using by name:
 
     >>> from evidently.options import DataDriftOptions
-    >>> options = DataDriftOptions(all_features_stattest="mannw")
+    >>> options = DataDriftOptions(all_features_stattest="z")
 """
 from typing import Tuple
 
