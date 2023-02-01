@@ -55,7 +55,7 @@ To install `evidently`, run the following command in the notebook cell:
 !pip install evidently
 ```
 
-**Note**. There is no need to enable nbextension for this case. `Evidently` uses an alternative way to display visuals in the hosted notebooks. Note that you will need to **explicitly specify the inline method** in your code when calling the Report or Test Suite. Consult [this section](../integrations/notebook-environments.md) for help. If you face issues, you can get the output as a separate HTML file and view it in a browser.
+**Note**: There is no need to enable nbextension for this case. `Evidently` uses an alternative way to display visuals in the hosted notebooks. Note that you will need to **explicitly specify the inline method** in your code when calling the Report or Test Suite. Consult [this section](../integrations/notebook-environments.md) for help. If you face issues, you can get the output as a separate HTML file and view it in a browser.
 
 ## Windows
 
@@ -67,4 +67,4 @@ To install it using the pip package manager, run:
 $ pip install evidently
 ```
 
-**Note**: Nbextension does not work on Windows. If you want to generate visual reports in Jupyter notebook on Windows, you will need to use a different visulization method when calling the report. Note that you will need to **explicitly specify the inline method** in your code when calling the Report or Test Suite. Consult [this section](../integrations/notebook-environments.md) for help. This is a new functionality with limited testing. If you face issues, you can get the output as a separate HTML file and view it in a browser.
+**Note**: Nbextension does not work on Windows. If you want to generate visual reports in Jupyter notebook on Windows, you need to use a different visualization method. Note that you will need to **explicitly specify the inline method** in your code when calling the Report or Test Suite. Consult [this section](../integrations/notebook-environments.md) for help. This is a new functionality with limited testing. If you face issues, you can get the output as a separate HTML file and view it in a browser.
