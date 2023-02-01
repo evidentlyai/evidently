@@ -165,6 +165,7 @@ def _prediction_column(
     target_names: Optional[List[str]],
     task: Optional[str],
     data: _InputData,
+    mapping: Optional[ColumnMapping] = None,
 ) -> Optional[PredictionColumns]:
     if prediction is None:
         return None
@@ -174,7 +175,7 @@ def _prediction_column(
             return None
         if prediction_present == ColumnPresenceState.Partially:
             raise ValueError(f"Prediction column ({prediction}) is partially present in data")
-        prediction_type = _get_column_type(prediction, data)
+        prediction_type = _get_column_type(prediction, data, mapping)
         if task == TaskType.CLASSIFICATION_TASK:
             if prediction_type == ColumnType.Categorical:
                 return PredictionColumns(predicted_values=ColumnDefinition(prediction, prediction_type))
@@ -226,6 +227,7 @@ def create_data_definition(
         mapping.target_names,
         mapping.task,
         data,
+        mapping,
     )
 
     prediction_cols = prediction_columns.get_columns_list() if prediction_columns is not None else []
@@ -342,6 +344,9 @@ def _get_column_type(column_name: str, data: _InputData, mapping: Optional[Colum
         and (ref_type != cur_type and not np.can_cast(cur_type, ref_type) and not np.can_cast(ref_type, cur_type))
     ):
         raise ValueError(f"Column {column_name} have different types in reference {ref_type} and current {cur_type}")
+
+    nunique = ref_unique or cur_unique
+    # special case: target
     if (
         mapping is not None
         and (
@@ -352,15 +357,62 @@ def _get_column_type(column_name: str, data: _InputData, mapping: Optional[Colum
         reg_condition = (
             mapping.task == "regression"
             or (
-                pd.api.types.is_numeric_dtype(data.current[column_name])
+                pd.api.types.is_numeric_dtype(cur_type if cur_type is not None else ref_type)
                 and mapping.task != "classification"
-                and mapping.nunique() > 5
+                and (nunique is not None and nunique > NUMBER_UNIQUE_AS_CATEGORICAL)
             )
         )
         if reg_condition:
             return ColumnType.Numerical
         else:
             return ColumnType.Categorical
+
+    # special case: prediction labels
+    # logging.warning('here')
+    # logging.warning((isinstance(mapping.prediction, str) and column_name == mapping.prediction)
+            # or (mapping.prediction is None and column_name == 'prediction'))
+    if (
+        mapping is not None
+        and (
+            (isinstance(mapping.prediction, str) and column_name == mapping.prediction)
+            or (mapping.prediction is None and column_name == 'prediction')
+        )
+    ):
+        # logging.warning('here')
+        # logging.warning(
+        #     (pd.api.types.is_string_dtype(cur_type if cur_type is not None else ref_type)
+        #     or (
+        #         pd.api.types.is_numeric_dtype(cur_type if cur_type is not None else ref_type)
+        #         and mapping.task != "classification"
+        #         and (nunique is not None and nunique <= NUMBER_UNIQUE_AS_CATEGORICAL))
+        #     ))
+        # logging.warning(pd.api.types.is_numeric_dtype(cur_type if cur_type is not None else ref_type)
+        #         and mapping.task == "classification"
+        #         and (
+        #             data.current[column_name].max() > 1
+        #             or data.current[column_name].min() < 0
+        #         ))
+        if (
+            pd.api.types.is_string_dtype(cur_type if cur_type is not None else ref_type)
+            or (
+                pd.api.types.is_numeric_dtype(cur_type if cur_type is not None else ref_type)
+                and mapping.task != "classification"
+                and (nunique is not None and nunique <= NUMBER_UNIQUE_AS_CATEGORICAL)
+            )
+            or (
+                pd.api.types.is_numeric_dtype(cur_type if cur_type is not None else ref_type)
+                and mapping.task == "classification"
+                and (
+                    data.current[column_name].max() > 1
+                    or data.current[column_name].min() < 0
+                )
+            )
+        ):
+            return ColumnType.Categorical
+        else:
+            return ColumnType.Numerical
+
+    # all other features
     if pd.api.types.is_integer_dtype(cur_type if cur_type is not None else ref_type):
         nunique = ref_unique or cur_unique
         if nunique is not None and nunique <= NUMBER_UNIQUE_AS_CATEGORICAL:

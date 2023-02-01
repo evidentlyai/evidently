@@ -17,6 +17,7 @@ from evidently.utils.types import ColumnDistribution
 from evidently.utils.visualizations import Distribution
 from evidently.utils.visualizations import make_hist_for_cat_plot
 from evidently.utils.visualizations import make_hist_for_num_plot
+from evidently.utils.data_preprocessing import DataDefinition
 
 MAX_CATEGORIES = 5
 
@@ -576,7 +577,7 @@ class DataQualityGetPlotData:
         return df[df["num"] > 0]
 
 import logging
-def _select_features_for_corr(dataset: pd.DataFrame, columns: DatasetColumns) -> tuple:
+def _select_features_for_corr(dataset: pd.DataFrame, data_definition: DataDefinition) -> tuple:
     """Define which features should be used for calculating correlation matrices:
         - for pearson, spearman, and kendall correlation matrices we select numerical features which have > 1
             unique values;
@@ -587,44 +588,23 @@ def _select_features_for_corr(dataset: pd.DataFrame, columns: DatasetColumns) ->
         num_for_corr: list of feature names for pearson, spearman, and kendall correlation matrices.
         cat_for_corr: list of feature names for kramer_v correlation matrix.
     """
-    target_name = columns.utility_columns.target
-    prediction_name = columns.utility_columns.prediction
+
+    num = data_definition.get_columns("numerical_columns")
+    cat = data_definition.get_columns("categorical_columns")
     num_for_corr = []
-    for feature in columns.num_feature_names:
-        unique_count = dataset[feature].nunique()
-
-        if unique_count and unique_count > 1:
-            num_for_corr.append(feature)
-
     cat_for_corr = []
 
-    for feature in columns.cat_feature_names:
-        unique_count = dataset[feature].nunique()
-
+    for col in num:
+        col_name = col.column_name
+        unique_count = dataset[col_name].nunique()
         if unique_count and unique_count > 1:
-            cat_for_corr.append(feature)
+            num_for_corr.append(col_name)
 
-    if target_name is not None:
-        unique_count = dataset[target_name].nunique()
-
-        if unique_count > 1:
-            if columns.task == "classification":
-                cat_for_corr.append(target_name)
-
-            else:
-                num_for_corr.append(target_name)
-
-    if isinstance(prediction_name, str):
-        unique_count = dataset[prediction_name].nunique()
-
-        if unique_count > 1:
-            if columns.task == "classification":
-                cat_for_corr.append(prediction_name)
-
-            else:
-                num_for_corr.append(prediction_name)
-    logging.warning(num_for_corr)
-    logging.warning(cat_for_corr)
+    for col in cat:
+        col_name = col.column_name
+        unique_count = dataset[col_name].nunique()
+        if unique_count and unique_count > 1:
+            cat_for_corr.append(col_name)
 
     return num_for_corr, cat_for_corr
 
@@ -700,10 +680,10 @@ def _calculate_correlations(df: pd.DataFrame, num_for_corr, cat_for_corr, kind):
 
 def calculate_correlations(
     dataset: pd.DataFrame,
-    columns: DatasetColumns,
+    data_definition: DataDefinition,
     add_text_columns: Optional[list] = None,
 ) -> Dict:
-    num_for_corr, cat_for_corr = _select_features_for_corr(dataset, columns)
+    num_for_corr, cat_for_corr = _select_features_for_corr(dataset, data_definition)
     if add_text_columns is not None:
         num_for_corr += add_text_columns
     correlations = {}
@@ -799,3 +779,12 @@ def calculate_column_distribution(column: pd.Series, column_type: str) -> Column
         raise ValueError(f"Cannot calculate distribution for column type {column_type}")
 
     return distribution
+
+
+def get_corr_method(method:Optional[str], target_correlation: Optional[str] = None, pearson_default: bool = True):
+    if method is not None:
+        return method
+    if method is None and pearson_default is False:
+        return target_correlation
+    else:
+        return 'pearson'
