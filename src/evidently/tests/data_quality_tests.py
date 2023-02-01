@@ -6,6 +6,7 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
+from visions import logging
 
 from evidently.metrics import ColumnQuantileMetric
 from evidently.metrics import ColumnSummaryMetric
@@ -117,11 +118,11 @@ class TestConflictPrediction(Test):
 class BaseDataQualityCorrelationsMetricsValueTest(BaseCheckValueTest, ABC):
     group = DATA_QUALITY_GROUP.id
     metric: DatasetCorrelationsMetric
-    method: str
+    method: Optional[str]
 
     def __init__(
         self,
-        method: str = "pearson",
+        method: Optional[str] = None,
         eq: Optional[Numeric] = None,
         gt: Optional[Numeric] = None,
         gte: Optional[Numeric] = None,
@@ -132,12 +133,48 @@ class BaseDataQualityCorrelationsMetricsValueTest(BaseCheckValueTest, ABC):
         not_in: Optional[List[Union[Numeric, str, bool]]] = None,
     ):
         self.method = method
+        # if self.method is None:
+        #     self.method = 'pearson'
+        #     self.defined_by_user = False
+        # else:
+        #     self.defined_by_user = True
         super().__init__(eq=eq, gt=gt, gte=gte, is_in=is_in, lt=lt, lte=lte, not_eq=not_eq, not_in=not_in)
         self.metric = DatasetCorrelationsMetric()
 
 
 class TestTargetPredictionCorrelation(BaseDataQualityCorrelationsMetricsValueTest):
     name = "Correlation between Target and Prediction"
+
+    def __init__(self,
+        method: Optional[str] = None,
+        eq: Optional[Numeric] = None,
+        gt: Optional[Numeric] = None,
+        gte: Optional[Numeric] = None,
+        is_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        lt: Optional[Numeric] = None,
+        lte: Optional[Numeric] = None,
+        not_eq: Optional[Numeric] = None,
+        not_in: Optional[List[Union[Numeric, str, bool]]] = None,
+    ):
+        self.method = method
+        if self.method is None:
+            self.method = 'pearson'
+            self.defined_by_user = False
+        else:
+            self.defined_by_user = True
+        super().__init__(
+            eq=eq,
+            gt=gt,
+            gte=gte,
+            is_in=is_in,
+            lt=lt,
+            lte=lte,
+            not_eq=not_eq,
+            not_in=not_in,
+            method=self.method,
+        )
+        if self.defined_by_user == False:
+            self.method = self.metric.get_result().target_correlation
 
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
@@ -216,6 +253,37 @@ class TestHighlyCorrelatedColumnsRenderer(TestRenderer):
 class TestTargetFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValueTest):
     name = "Correlation between Target and Features"
 
+    def __init__(self,
+        method: Optional[str] = None,
+        eq: Optional[Numeric] = None,
+        gt: Optional[Numeric] = None,
+        gte: Optional[Numeric] = None,
+        is_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        lt: Optional[Numeric] = None,
+        lte: Optional[Numeric] = None,
+        not_eq: Optional[Numeric] = None,
+        not_in: Optional[List[Union[Numeric, str, bool]]] = None,
+    ):
+        self.method = method
+        if self.method is None:
+            self.method = 'pearson'
+            self.defined_by_user = False
+        else:
+            self.defined_by_user = True
+        super().__init__(
+            eq=eq,
+            gt=gt,
+            gte=gte,
+            is_in=is_in,
+            lt=lt,
+            lte=lte,
+            not_eq=not_eq,
+            not_in=not_in,
+            method=self.method,
+        )
+        if self.defined_by_user == False:
+            self.method = self.metric.get_result().target_correlation
+
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
             return self.condition
@@ -275,6 +343,46 @@ class TestTargetFeaturesCorrelationsRenderer(TestRenderer):
 class TestPredictionFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValueTest):
     name = "Correlation between Prediction and Features"
 
+    def __init__(self,
+        method: Optional[str] = None,
+        eq: Optional[Numeric] = None,
+        gt: Optional[Numeric] = None,
+        gte: Optional[Numeric] = None,
+        is_in: Optional[List[Union[Numeric, str, bool]]] = None,
+        lt: Optional[Numeric] = None,
+        lte: Optional[Numeric] = None,
+        not_eq: Optional[Numeric] = None,
+        not_in: Optional[List[Union[Numeric, str, bool]]] = None,
+    ):
+        self.method = method
+        logging.warning(f"method is {self.method}")
+        if self.method is None:
+            logging.warning("we are here")
+            self.method = 'pearson'
+            self.defined_by_user = False
+            logging.warning(self.defined_by_user)
+        else:
+            logging.warning("we are not here")
+            self.defined_by_user = True
+        logging.warning(self.defined_by_user)
+        super().__init__(
+            eq=eq,
+            gt=gt,
+            gte=gte,
+            is_in=is_in,
+            lt=lt,
+            lte=lte,
+            not_eq=not_eq,
+            not_in=not_in,
+            method=self.method,
+        )
+        logging.warning(f'defined_by_user is {self.defined_by_user}')
+        if self.defined_by_user is False:
+            self.method = self.metric.get_result().target_correlation
+        # self.metric = DatasetCorrelationsMetric()
+        # logging.warning(self.metric.get_result().target_correlation)
+        # logging.warning(self.method)
+
     def get_condition(self) -> TestValueCondition:
         if self.condition.has_condition():
             return self.condition
@@ -290,6 +398,8 @@ class TestPredictionFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValue
         return TestValueCondition(lt=0.9)
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
+        logging.warning(self.method)
+        logging.warning(self.metric.get_result().current.stats[self.method].abs_max_prediction_features_correlation)
         return self.metric.get_result().current.stats[self.method].abs_max_prediction_features_correlation
 
     def get_description(self, value: Numeric) -> str:

@@ -7,6 +7,7 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
+from sympy import N
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
@@ -25,6 +26,8 @@ from evidently.renderers.html_widgets import widget_tabs
 from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_preprocessing import DataDefinition
+from evidently.utils.data_preprocessing import ColumnType
+from evidently.calculations.classification_performance import get_prediction_data
 
 
 @dataclasses.dataclass
@@ -47,8 +50,10 @@ class DatasetCorrelation:
 class DatasetCorrelationsMetricResult:
     current: DatasetCorrelation
     reference: Optional[DatasetCorrelation]
+    target_correlation: Optional[str]
+    prediction_labels_name: Optional[str]
 
-
+import logging
 class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
     """Calculate different correlations with target, predictions and features"""
 
@@ -149,6 +154,8 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
         columns: DatasetColumns,
         add_text_columns: Optional[list],
     ) -> DatasetCorrelation:
+        # process predictions. If task == 'classification' add prediction labels
+        
         if add_text_columns is not None:
             correlations_calculate = calculate_correlations(dataset, columns, sum(add_text_columns, []))
             correlations = copy.deepcopy(correlations_calculate)
@@ -173,9 +180,34 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
         )
 
     def calculate(self, data: InputData) -> DatasetCorrelationsMetricResult:
+        prediction_labels_name: Optional[str] = None
+        target_correlation: Optional[str] = None
         columns = process_columns(data.current_data, data.column_mapping)
-        curr_df = data.current_data
-        ref_df = data.reference_data
+        curr_df = data.current_data.copy()
+        ref_df: Optional[pd.DataFrame] = None
+        if data.reference_data is not None:
+            ref_df = data.reference_data.copy()
+
+        target_type = data.data_definition.get_target_column().column_type
+        if target_type == ColumnType.Numerical:
+            target_correlation = 'pearson'
+        elif target_type == ColumnType.Categorical:
+            target_correlation = 'cramer_v'
+        
+        if not isinstance(columns.utility_columns.prediction, str):
+            prediction_data = data.data_definition.get_prediction_columns()
+            if prediction_data.predicted_values is None:
+                prediction_labels_name = 'prediction_labels'
+                prediction_curr = get_prediction_data(curr_df, columns, data.column_mapping.pos_label)
+                curr_df[prediction_labels_name] = prediction_curr.labels.values
+                if ref_df is not None:
+                    prediction_ref = get_prediction_data(ref_df, columns, data.column_mapping.pos_label)
+                    ref_df[prediction_labels_name] = prediction_ref.labels.values
+            else:
+                prediction_labels_name = prediction_data.predicted_values.name()
+            columns.utility_columns.prediction = prediction_labels_name
+
+
         # process text columns
         text_columns = []
         if self.text_features_gen is not None:
@@ -214,10 +246,13 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
 
         else:
             reference_correlation = None
+        logging.warning(target_correlation)
 
         return DatasetCorrelationsMetricResult(
             current=current_correlations,
             reference=reference_correlation,
+            target_correlation=target_correlation,
+            prediction_labels_name=prediction_labels_name,
         )
 
 
@@ -227,10 +262,12 @@ class DataQualityCorrelationMetricsRenderer(MetricRenderer):
         result = dataclasses.asdict(obj.get_result())
         result["current"].pop("correlation", None)
         result["current"].pop("correlations_calculate", None)
+        result["current"].pop("target_correlation", None)
 
         if result["reference"]:
             result["reference"].pop("correlation", None)
             result["reference"].pop("correlations_calculate", None)
+            result["reference"].pop("target_correlation", None)
 
         return result
 
