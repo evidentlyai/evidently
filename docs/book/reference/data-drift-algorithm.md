@@ -50,15 +50,11 @@ To detect dataset-level drift, you can set a rule on top of the individual featu
 
 To evaluate data or prediction drift in the dataset, you need to ensure that the columns you test for drift are not empty. If these columns are empty in either reference or current data, Evidently will not calculate distribution drift and will raise an error.
 
-### Rows with empty values 
+### Empty values 
 
-Evidently applies the following pre-processing before calculating the drift metric or test:
-- Filters out rows with infinite values `(+- np.inf)`
-- Filters out rows with nulls 
+If some columns contain empty or infinite values (+-np.inf), these values will be filtered out when calculating distribution drift in the corresponding column.
 
-By default, drift tests do not react to changes or increases in the number of empty values. Drift calculations only consider complete rows.
-
-Since the high number of nulls can be an important indicator, we recommend grouping the data drift tests (that check for distribution shift) with data integrity tests (that check for a share of nulls). You can choose from several null-related [tests](all-tests.md#data-integrity) and metrics and set a thresholds.
+By default, drift tests do not react to changes or increases in the number of empty values. Since the high number of nulls can be an important indicator, we recommend grouping the data drift tests (that check for distribution shift) with data integrity tests (that check for a share of nulls). You can choose from several null-related [tests](all-tests.md#data-integrity) and metrics and set a threshold.
 
 ## Resources
 
