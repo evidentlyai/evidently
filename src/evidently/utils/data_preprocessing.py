@@ -326,7 +326,7 @@ def _get_column_presence(column_name: str, data: _InputData) -> ColumnPresenceSt
 
 NUMBER_UNIQUE_AS_CATEGORICAL = 5
 
-import logging
+
 def _get_column_type(column_name: str, data: _InputData, mapping: Optional[ColumnMapping] = None) -> ColumnType:
     ref_type = None
     ref_unique = None
@@ -367,10 +367,6 @@ def _get_column_type(column_name: str, data: _InputData, mapping: Optional[Colum
         else:
             return ColumnType.Categorical
 
-    # special case: prediction labels
-    # logging.warning('here')
-    # logging.warning((isinstance(mapping.prediction, str) and column_name == mapping.prediction)
-            # or (mapping.prediction is None and column_name == 'prediction'))
     if (
         mapping is not None
         and (
@@ -378,29 +374,15 @@ def _get_column_type(column_name: str, data: _InputData, mapping: Optional[Colum
             or (mapping.prediction is None and column_name == 'prediction')
         )
     ):
-        # logging.warning('here')
-        # logging.warning(
-        #     (pd.api.types.is_string_dtype(cur_type if cur_type is not None else ref_type)
-        #     or (
-        #         pd.api.types.is_numeric_dtype(cur_type if cur_type is not None else ref_type)
-        #         and mapping.task != "classification"
-        #         and (nunique is not None and nunique <= NUMBER_UNIQUE_AS_CATEGORICAL))
-        #     ))
-        # logging.warning(pd.api.types.is_numeric_dtype(cur_type if cur_type is not None else ref_type)
-        #         and mapping.task == "classification"
-        #         and (
-        #             data.current[column_name].max() > 1
-        #             or data.current[column_name].min() < 0
-        #         ))
         if (
             pd.api.types.is_string_dtype(cur_type if cur_type is not None else ref_type)
             or (
-                pd.api.types.is_numeric_dtype(cur_type if cur_type is not None else ref_type)
-                and mapping.task != "classification"
+                pd.api.types.is_integer_dtype(cur_type if cur_type is not None else ref_type)
+                and mapping.task != "regression"
                 and (nunique is not None and nunique <= NUMBER_UNIQUE_AS_CATEGORICAL)
             )
             or (
-                pd.api.types.is_numeric_dtype(cur_type if cur_type is not None else ref_type)
+                pd.api.types.is_integer_dtype(cur_type if cur_type is not None else ref_type)
                 and mapping.task == "classification"
                 and (
                     data.current[column_name].max() > 1

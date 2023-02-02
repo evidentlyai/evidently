@@ -257,6 +257,67 @@ def test_get_column_type(reference, current, column_name, expected):
                 ColumnDefinition(column_name="prediction", column_type=ColumnType.Numerical),
             ],
         ),
+        (
+            None,
+            pd.DataFrame({"a": [0] * 100 + [1] * 100, "b": [0] * 100 + [1] * 100}),
+            ColumnMapping(target="a", prediction="b"),
+            ColumnDefinition(column_name="a", column_type=ColumnType.Categorical),
+            None,
+            None,
+            PredictionColumns(
+                predicted_values=ColumnDefinition(column_name="b", column_type=ColumnType.Categorical),
+                prediction_probas=None,
+            ),
+            [
+                ColumnDefinition(column_name="a", column_type=ColumnType.Categorical),
+                ColumnDefinition(column_name="b", column_type=ColumnType.Categorical),
+            ],
+        ),
+        (
+            None,
+            pd.DataFrame({"a": [0] * 100 + [1] * 100, "b": [0] * 100 + [1] * 100}),
+            ColumnMapping(target="a", prediction="b", task='regression'),
+            ColumnDefinition(column_name="a", column_type=ColumnType.Numerical),
+            None,
+            None,
+            PredictionColumns(
+                predicted_values=ColumnDefinition(column_name="b", column_type=ColumnType.Numerical),
+                prediction_probas=None,
+            ),
+            [
+                ColumnDefinition(column_name="a", column_type=ColumnType.Numerical),
+                ColumnDefinition(column_name="b", column_type=ColumnType.Numerical),
+            ],
+        ),
+        (
+            None,
+            pd.DataFrame(
+                {
+                    "a": [0] * 100 + [1] * 100,
+                    "b": [0] * 100 + [1] * 100,
+                    "c": [0.1]*100 + [0.6]*100,
+                    "d": [0.1]* 50 + [0.2]*50 + [0.6]*100,
+                }
+            ),
+            ColumnMapping(target="a", prediction=["c", "d"]),
+            ColumnDefinition(column_name="a", column_type=ColumnType.Categorical),
+            None,
+            None,
+            PredictionColumns(
+                predicted_values=None,
+                prediction_probas=[
+                    ColumnDefinition(column_name="c", column_type=ColumnType.Numerical),
+                    ColumnDefinition(column_name="d", column_type=ColumnType.Numerical),
+                ],
+            ),
+            [
+                ColumnDefinition(column_name="a", column_type=ColumnType.Categorical),
+                ColumnDefinition(column_name="c", column_type=ColumnType.Numerical),
+                ColumnDefinition(column_name="d", column_type=ColumnType.Numerical),
+                ColumnDefinition(column_name="b", column_type=ColumnType.Categorical),
+            ],
+        ),
+        
     ],
 )
 def test_create_data_definition(reference, current, mapping, target, id, datetime, prediction, columns):
