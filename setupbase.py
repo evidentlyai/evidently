@@ -66,12 +66,12 @@ npm_path = ":".join(
     ]
 )
 
-if "--skip-npm" in sys.argv:
-    print("Skipping npm install as requested.")
-    skip_npm = True
-    sys.argv.remove("--skip-npm")
+if "--npm" in sys.argv:
+    print("Rebuild UI as requested.")
+    build_npm = True
+    sys.argv.remove("--npm")
 else:
-    skip_npm = False
+    build_npm = False
 
 
 # ---------------------------------------------------------------------------
@@ -330,7 +330,7 @@ def install_npm(path=None, build_dir=None, source_dir=None, build_cmd="build", f
         description = "install package.json dependencies using npm"
 
         def run(self):
-            if skip_npm:
+            if not build_npm:
                 log.info("Skipping npm-installation")
                 return
             node_package = path or HERE
@@ -375,7 +375,7 @@ def ensure_targets(targets):
 
     class TargetsCheck(BaseCommand):
         def run(self):
-            if skip_npm:
+            if not build_npm:
                 log.info("Skipping target checks")
                 return
             missing = [t for t in targets if not os.path.exists(t)]
