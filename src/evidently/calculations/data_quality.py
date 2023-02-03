@@ -576,7 +576,7 @@ class DataQualityGetPlotData:
         df[date_column] = df["period"].dt.to_timestamp()
         return df[df["num"] > 0]
 
-import logging
+
 def _select_features_for_corr(dataset: pd.DataFrame, data_definition: DataDefinition) -> tuple:
     """Define which features should be used for calculating correlation matrices:
         - for pearson, spearman, and kendall correlation matrices we select numerical features which have > 1
@@ -605,7 +605,6 @@ def _select_features_for_corr(dataset: pd.DataFrame, data_definition: DataDefini
         unique_count = dataset[col_name].nunique()
         if unique_count and unique_count > 1:
             cat_for_corr.append(col_name)
-
     return num_for_corr, cat_for_corr
 
 

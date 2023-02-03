@@ -30,7 +30,6 @@ from evidently.utils.data_preprocessing import ColumnType
 from evidently.calculations.classification_performance import get_prediction_data
 from evidently.utils.data_preprocessing import ColumnDefinition
 from evidently.utils.data_preprocessing import PredictionColumns
-import logging
 
 
 @dataclasses.dataclass
@@ -177,6 +176,13 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
         else:
             correlations_calculate = calculate_correlations(dataset, data_definition)
             correlations = copy.deepcopy(correlations_calculate)
+        
+        if data_definition.get_prediction_columns().prediction_probas is not None:
+            names = [col.column_name for col in data_definition.get_prediction_columns().prediction_probas]
+            for name, correlation in correlations_calculate.items():
+                if name != "cramer_v" and len(names) > 1:
+                    correlation.loc[names, names] = 0
+                    correlations_calculate[name] = correlation
 
         stats = {
             name: self._get_correlations_stats(correlation, data_definition)
@@ -212,10 +218,11 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
             if ref_df is not None:
                 prediction_ref = get_prediction_data(ref_df, columns, data.column_mapping.pos_label)
                 ref_df[prediction_labels_name] = prediction_ref.predictions
-                data_definition._prediction_columns = PredictionColumns(
-                    prediction_probas=prediction_data.prediction_probas,
-                    predicted_values=ColumnDefinition(prediction_labels_name, target_type)
-                )
+            data_definition._prediction_columns = PredictionColumns(
+                prediction_probas=prediction_data.prediction_probas,
+                predicted_values=ColumnDefinition(prediction_labels_name, target_type)
+            )
+            data_definition._columns[prediction_labels_name] = ColumnDefinition(prediction_labels_name, target_type)
 
         # process text columns
         text_columns = []
@@ -245,7 +252,6 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
                         [ref_df.copy().reset_index(drop=True), ref_text_df.reset_index(drop=True)],
                         axis=1,
                     )
-
         current_correlations = self._get_correlations(
             dataset=curr_df,
             data_definition=data_definition,
