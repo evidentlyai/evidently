@@ -7,7 +7,6 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
-from sympy import N
 
 from evidently.base_metric import InputData
 from evidently.base_metric import Metric
@@ -23,7 +22,6 @@ from evidently.renderers.html_widgets import TabData
 from evidently.renderers.html_widgets import get_heatmaps_widget
 from evidently.renderers.html_widgets import header_text
 from evidently.renderers.html_widgets import widget_tabs
-from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.data_preprocessing import ColumnType
