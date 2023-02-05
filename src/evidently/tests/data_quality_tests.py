@@ -6,7 +6,6 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
-from visions import logging
 
 from evidently.metrics import ColumnQuantileMetric
 from evidently.metrics import ColumnSummaryMetric
@@ -279,7 +278,7 @@ class TestTargetFeaturesCorrelationsRenderer(TestRenderer):
         info.with_details("Target Features Correlations", plotly_figure(title="", figure=fig))
         return info
 
-import logging
+
 class TestPredictionFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValueTest):
     name = "Correlation between Prediction and Features"
 
@@ -299,10 +298,7 @@ class TestPredictionFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValue
         return TestValueCondition(lt=0.9)
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
-        logging.warning(self.method)
         method = get_corr_method(self.method, self.metric.get_result().target_correlation, False)
-        logging.warning(self.metric.get_result().target_correlation)
-        logging.warning(method)
         return self.metric.get_result().current.stats[method].abs_max_prediction_features_correlation
 
     def get_description(self, value: Numeric) -> str:
