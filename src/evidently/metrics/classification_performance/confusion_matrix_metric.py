@@ -36,21 +36,39 @@ class ClassificationConfusionMatrix(ThresholdClassificationMetric[Classification
 
     def calculate(self, data: InputData) -> ClassificationConfusionMatrixResult:
         current_target_data, current_pred = self.get_target_prediction_data(data.current_data, data.column_mapping)
-
-        current_results = calculate_matrix(
-            current_target_data,
-            current_pred.predictions,
-            current_pred.labels,
-        )
+        labels = current_pred.labels
+        target_names = data.column_mapping.target_names
+        if target_names is not None and current_pred.prediction_probas is None:
+            labels = [target_names[x] for x in labels]
+            current_results = calculate_matrix(
+                current_target_data.map(target_names),
+                current_pred.predictions.map(target_names),
+                labels,
+            )
+        else:
+            current_results = calculate_matrix(
+                current_target_data,
+                current_pred.predictions,
+                labels,
+            )
 
         reference_results = None
         if data.reference_data is not None:
             ref_target_data, ref_pred = self.get_target_prediction_data(data.reference_data, data.column_mapping)
-            reference_results = calculate_matrix(
-                ref_target_data,
-                ref_pred.predictions,
-                ref_pred.labels,
-            )
+            labels = ref_pred.labels
+            if target_names is not None and ref_pred.prediction_probas is None:
+                labels = [target_names[x] for x in labels]
+                reference_results = calculate_matrix(
+                    ref_target_data.map(target_names),
+                    ref_pred.predictions.map(target_names),
+                    labels,
+                )
+            else:
+                reference_results = calculate_matrix(
+                    ref_target_data,
+                    ref_pred.predictions,
+                    ref_pred.labels,
+                )
 
         return ClassificationConfusionMatrixResult(
             current_matrix=current_results,

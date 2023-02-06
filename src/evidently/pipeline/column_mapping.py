@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Sequence
@@ -19,7 +20,7 @@ class ColumnMapping:
     numerical_features: Optional[List[str]] = None
     categorical_features: Optional[List[str]] = None
     datetime_features: Optional[List[str]] = None
-    target_names: Optional[List[str]] = None
+    target_names: Optional[Dict[Union[str, int], str]] = None
     task: Optional[str] = None
     pos_label: Optional[Union[str, int]] = 1
     text_features: Optional[List[str]] = None

@@ -201,6 +201,24 @@ def get_one_column_drift(
             reversed(list(map(list, zip(*sorted(current_counts.items(), key=lambda x: str(x[0]))))))
         )
     if column_type != "text":
+        if (
+            column_type == 'cat'
+            and dataset_columns.target_names is not None
+            and (
+                column_name == dataset_columns.utility_columns.target
+                or (
+                    isinstance(dataset_columns.utility_columns.prediction, str)
+                    and column_name == dataset_columns.utility_columns.prediction
+                )
+            )
+        ):
+            column_values = np.union1d(current_column.unique(), reference_column.unique())
+            new_values = np.setdiff1d(list(dataset_columns.target_names), column_values)
+            if len(new_values) > 0:
+                raise ValueError(f"Values {new_values} not presented in 'target_names'")
+            else:
+                current_column = current_column.map(dataset_columns.target_names)
+                reference_column = reference_column.map(dataset_columns.target_names)
         current_distribution, reference_distribution = get_distribution_for_column(
             column_type=column_type,
             current=current_column,

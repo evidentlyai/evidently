@@ -49,7 +49,6 @@ def test_data_drift_analyzer_as_dict_format(data_drift_analyzer: DataDriftAnalyz
     data_columns = ColumnMapping()
     data_columns.numerical_features = ["numerical_feature_1", "numerical_feature_2"]
     data_columns.categorical_features = ["categorical_feature_1", "categorical_feature_2"]
-    data_columns.target_names = ["drift_target"]
     result = data_drift_analyzer.calculate(test_data[:2], test_data, data_columns)
     assert result.options is not None
     assert result.columns is not None
@@ -64,7 +63,6 @@ def test_data_drift_analyzer_as_dict_format(data_drift_analyzer: DataDriftAnalyz
     assert "numerical_feature_3" not in result.metrics.drift_by_columns
 
     # check data drift results
-    assert result.columns.target_names == ["drift_target"]
     assert result.metrics.dataset_drift is True
 
 

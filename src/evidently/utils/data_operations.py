@@ -45,7 +45,7 @@ class DatasetColumns:
     cat_feature_names: List[str]
     text_feature_names: List[str]
     datetime_feature_names: List[str]
-    target_names: Optional[List[str]]
+    target_names: Optional[Dict[Union[str, int], str]]
     task: Optional[str]
 
     def as_dict(self) -> Dict[str, Union[str, Optional[List[str]], Dict]]:
