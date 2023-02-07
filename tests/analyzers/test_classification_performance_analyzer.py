@@ -266,19 +266,19 @@ def test_classification_performance_metrics_with_reference_data(
         # simple target names mapping
         (
             pd.DataFrame({"target": [1, 0, 1, 1, 0, 1], "prediction": [1, 1, 0, 1, 0, 1]}),
-            column_mapping.ColumnMapping(target_names=["false", "true"]),
+            column_mapping.ColumnMapping(target_names={0: "false", 1: "true"}),
         ),
         # test with mapping for target and prediction and target names
         (
             pd.DataFrame({"another_target": [1, 0, 1, 1, 0, 1], "another_prediction": [1, 1, 0, 1, 0, 1]}),
             column_mapping.ColumnMapping(
-                target="another_target", prediction="another_prediction", target_names=["false", "true"]
+                target="another_target", prediction="another_prediction", target_names={0: "false", 1: "true"}
             ),
         ),
         # second class is in prediction column only
         (
             pd.DataFrame({"another_target": [0, 0, 0, 0, 0], "prediction": [0, 1, 0, 0, 0]}),
-            column_mapping.ColumnMapping(target="another_target", target_names=["false", "true"]),
+            column_mapping.ColumnMapping(target="another_target", target_names={0: "false", 1: "true"}),
         ),
     ),
 )
@@ -292,11 +292,11 @@ def test_classification_analyser_with_target_names(
         current_data=None,
         column_mapping=data_mapping,
     )
-    assert result.columns.target_names == ["false", "true"]
+    assert result.columns.target_names == {0: "false", 1: "true"}
     # target_names now changes labels for confusion matrix only
     assert "0" in result.reference_metrics.metrics_matrix
     assert "1" in result.reference_metrics.metrics_matrix
-    assert result.reference_metrics.confusion_matrix.labels == ["false", "true"]
+    assert result.reference_metrics.confusion_matrix.labels == [0, 1]
 
 
 @pytest.mark.parametrize(
