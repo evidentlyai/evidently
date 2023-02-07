@@ -202,7 +202,7 @@ def get_one_column_drift(
         )
     if column_type != "text":
         if (
-            column_type == 'cat'
+            column_type == "cat"
             and dataset_columns.target_names is not None
             and (
                 column_name == dataset_columns.utility_columns.target
