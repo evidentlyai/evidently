@@ -637,7 +637,7 @@ def _translate_glob(pat):
         translated_parts.append(_translate_glob_part(part))
     os_sep_class = "[%s]" % re.escape(SEPARATORS)
     res = _join_translated(translated_parts, os_sep_class)
-    return "{res}\\Z(?ms)".format(res=res)
+    return "(?ms){res}\\Z".format(res=res)
 
 
 def _join_translated(translated_parts, os_sep_class):
