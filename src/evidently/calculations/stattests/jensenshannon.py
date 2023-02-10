@@ -22,7 +22,7 @@ Example:
     >>> from evidently.options import DataDriftOptions
     >>> options = DataDriftOptions(all_features_stattest="jensenshannon")
 """
-from typing import Tuple
+from typing import Tuple, Optional
 
 import pandas as pd
 from scipy.spatial import distance
@@ -38,7 +38,7 @@ def _jensenshannon(
     feature_type: str,
     threshold: float,
     n_bins: int = 30,
-    base: float = None,
+    base: Optional[float] = None,
 ) -> Tuple[float, bool]:
     """Compute the Jensen-Shannon distance between two arrays
     Args:
