@@ -22,7 +22,8 @@ Example:
     >>> from evidently.options import DataDriftOptions
     >>> options = DataDriftOptions(all_features_stattest="jensenshannon")
 """
-from typing import Tuple, Optional
+from typing import Optional
+from typing import Tuple
 
 import pandas as pd
 from scipy.spatial import distance
