@@ -38,7 +38,7 @@ def _jensenshannon(
     feature_type: str,
     threshold: float,
     n_bins: int = 30,
-    base: float = 2,
+    base: float = None,
 ) -> Tuple[float, bool]:
     """Compute the Jensen-Shannon distance between two arrays
     Args:
