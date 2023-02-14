@@ -101,7 +101,7 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
             target_name = target.column_name
         prediction = data_definition.get_prediction_columns()
         prediction_name = None
-        if prediction.predicted_values is not None:
+        if prediction is not None and prediction.predicted_values is not None:
             prediction_name = prediction.predicted_values.column_name
         columns_corr = [i for i in correlation_matrix.columns if i not in [target_name, prediction_name]]
         # fill diagonal with 1 values for getting abs max values
@@ -175,7 +175,10 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
             correlations_calculate = calculate_correlations(dataset, data_definition)
             correlations = copy.deepcopy(correlations_calculate)
         
-        if data_definition.get_prediction_columns().prediction_probas is not None:
+        if (
+            data_definition.get_prediction_columns() is not None
+            and data_definition.get_prediction_columns().prediction_probas is not None
+        ):
             names = [col.column_name for col in data_definition.get_prediction_columns().prediction_probas]
             for name, correlation in correlations_calculate.items():
                 if name != "cramer_v" and len(names) > 1:
@@ -202,14 +205,17 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
         if data.reference_data is not None:
             ref_df = data.reference_data.copy()
 
-        target_type = data_definition.get_target_column().column_type
-        if target_type == ColumnType.Numerical:
-            target_correlation = 'pearson'
-        elif target_type == ColumnType.Categorical:
-            target_correlation = 'cramer_v'
+        target_correlation = None
+        target = data_definition.get_target_column()
+        if target is not None:
+            target_type = target.column_type
+            if target_type == ColumnType.Numerical:
+                target_correlation = 'pearson'
+            elif target_type == ColumnType.Categorical:
+                target_correlation = 'cramer_v'
         
         prediction_data = data_definition.get_prediction_columns()
-        if prediction_data.predicted_values is None:
+        if prediction_data is not None and prediction_data.predicted_values is None:
             prediction_labels_name = 'prediction_labels'
             prediction_curr = get_prediction_data(curr_df, columns, data.column_mapping.pos_label)
             curr_df[prediction_labels_name] = prediction_curr.predictions
