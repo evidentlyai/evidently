@@ -13,11 +13,11 @@ import pandas as pd
 from scipy.stats import chi2_contingency
 
 from evidently.utils.data_operations import DatasetColumns
+from evidently.utils.data_preprocessing import DataDefinition
 from evidently.utils.types import ColumnDistribution
 from evidently.utils.visualizations import Distribution
 from evidently.utils.visualizations import make_hist_for_cat_plot
 from evidently.utils.visualizations import make_hist_for_num_plot
-from evidently.utils.data_preprocessing import DataDefinition
 
 MAX_CATEGORIES = 5
 
@@ -187,7 +187,8 @@ def get_features_stats(feature: pd.Series, feature_type: str) -> FeatureQualityS
         # round most common feature value for numeric features to 1e-5
         if not np.issubdtype(feature, np.number):
             feature = feature.astype(float)
-        result.most_common_value = np.round(result.most_common_value, 5)
+        if isinstance(result.most_common_value, float):
+            result.most_common_value = np.round(result.most_common_value, 5)
         result.infinite_count = int(np.sum(np.isinf(feature)))
         result.infinite_percentage = get_percentage_from_all_values(result.infinite_count)
         result.max = np.round(feature.max(), 2)
@@ -514,7 +515,10 @@ class DataQualityGetPlotData:
             return self.curr, self.ref
         if ref is not None:
             unique_values = len(
-                np.union1d(curr[feature_name].astype(str).unique(), ref[feature_name].astype(str).unique())
+                np.union1d(
+                    curr[feature_name].astype(str).unique(),
+                    ref[feature_name].astype(str).unique(),
+                )
             )
         else:
             unique_values = curr[feature_name].astype(str).nunique()
@@ -545,7 +549,14 @@ class DataQualityGetPlotData:
         current_data: pd.DataFrame,
     ) -> str:
         optimal_points = 150
-        prefix_dict = {"A": "year", "Q": "quarter", "M": "month", "W": "week", "D": "day", "H": "hour"}
+        prefix_dict = {
+            "A": "year",
+            "Q": "quarter",
+            "M": "month",
+            "W": "week",
+            "D": "day",
+            "H": "hour",
+        }
         datetime_feature = current_data[date_column]
         if reference_data is not None:
             datetime_feature = datetime_feature.append(reference_data[date_column])
@@ -709,7 +720,11 @@ def calculate_cramer_v_correlation(column_name: str, dataset: pd.DataFrame, colu
             result_x.append(correlation_columns_name)
             result_y.append(_cramer_v(dataset[column_name], dataset[correlation_columns_name]))
 
-    return ColumnCorrelations(column_name=column_name, kind="cramer_v", values=Distribution(x=result_x, y=result_y))
+    return ColumnCorrelations(
+        column_name=column_name,
+        kind="cramer_v",
+        values=Distribution(x=result_x, y=result_y),
+    )
 
 
 def calculate_category_column_correlations(
@@ -734,7 +749,6 @@ def calculate_category_column_correlations(
 def calculate_numerical_column_correlations(
     column_name: str, dataset: pd.DataFrame, columns: List[str]
 ) -> Dict[str, ColumnCorrelations]:
-
     if dataset[column_name].empty or not columns:
         return {}
 
@@ -780,10 +794,14 @@ def calculate_column_distribution(column: pd.Series, column_type: str) -> Column
     return distribution
 
 
-def get_corr_method(method:Optional[str], target_correlation: Optional[str] = None, pearson_default: bool = True):
+def get_corr_method(
+    method: Optional[str],
+    target_correlation: Optional[str] = None,
+    pearson_default: bool = True,
+):
     if method is not None:
         return method
     if method is None and pearson_default is False:
         return target_correlation
     else:
-        return 'pearson'
+        return "pearson"

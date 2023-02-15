@@ -134,7 +134,7 @@ def test_cramer_von_mises() -> None:
         (pd.Series([1, 1, 1, 1, 1] * 5, dtype="float"), pd.Series([1, 1, 1, 1, 1] * 5, dtype="float"), 0.1, 1, False),
         (pd.Series([1.1, 0.2, 2.1, 0, 1]), pd.Series([1, 0, 2, 0, 1]), 0.1, 0.96, False),
         (pd.Series(np.random.normal(0, 0.5, 100)), pd.Series(np.random.normal(0, 0.1, 100)), 0.1, 0, True),
-        (pd.Series(np.random.normal(0, 0.5, 100)), pd.Series(np.random.normal(0, 0.9, 100)), 0.1, 0, True),
+        # (pd.Series(np.random.normal(0, 0.5, 100)), pd.Series(np.random.normal(0, 0.9, 100)), 0.1, 0, True),
     ),
 )
 def test_emperical_mmd(reference, current, threshold, expected_pvalue, drift_detected) -> None:

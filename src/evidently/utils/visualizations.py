@@ -48,8 +48,8 @@ def plot_distr(*, hist_curr, hist_ref=None, orientation="v", color_options: Colo
 
 @dataclasses.dataclass
 class Distribution:
-    x: Union[np.array, list]
-    y: Union[np.array, list]
+    x: Union[np.ndarray, list]
+    y: Union[np.ndarray, list]
 
 
 def plot_distr_with_log_button(
@@ -430,7 +430,7 @@ def get_distribution_for_category_column(column: pd.Series, normalize: bool = Fa
 
 def get_distribution_for_numerical_column(
     column: pd.Series,
-    bins: Optional[Union[list, np.array]] = None,
+    bins: Optional[Union[list, np.ndarray]] = None,
 ) -> Distribution:
     if bins is None:
         bins = np.histogram_bin_edges(column, bins="doane")
@@ -469,7 +469,7 @@ def get_distribution_for_column(
     return current_distribution, reference_distribution
 
 
-def make_hist_df(hist: Tuple[np.array, np.array]) -> pd.DataFrame:
+def make_hist_df(hist: Tuple[np.ndarray, np.ndarray]) -> pd.DataFrame:
     hist_df = pd.DataFrame(
         np.array([hist[1][:-1], hist[0], [f"{x[0]}-{x[1]}" for x in zip(hist[1][:-1], hist[1][1:])]]).T,
         columns=["x", "count", "range"],

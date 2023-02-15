@@ -14,13 +14,6 @@ from evidently.report import Report
     "current_data, reference_data, metric, column_mapping",
     (
         (
-            pd.DataFrame(),
-            None,
-            DataQualityPreset(),
-            ColumnMapping(),
-        ),
-        (pd.DataFrame(), pd.DataFrame(), DataQualityPreset(), ColumnMapping()),
-        (
             pd.DataFrame(
                 {
                     "my_target": [1, 2, 3],

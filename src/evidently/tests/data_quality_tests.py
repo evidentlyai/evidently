@@ -7,6 +7,7 @@ from typing import Union
 import numpy as np
 import pandas as pd
 
+from evidently.calculations.data_quality import get_corr_method
 from evidently.metrics import ColumnQuantileMetric
 from evidently.metrics import ColumnSummaryMetric
 from evidently.metrics import ColumnValueListMetric
@@ -37,7 +38,6 @@ from evidently.tests.utils import plot_value_counts_tables_ref_curr
 from evidently.utils.data_operations import DatasetColumns
 from evidently.utils.generators import BaseGenerator
 from evidently.utils.types import Numeric
-from evidently.calculations.data_quality import get_corr_method
 
 DATA_QUALITY_GROUP = GroupData("data_quality", "Data Quality", "")
 GroupingTypes.TestGroup.add_value(DATA_QUALITY_GROUP)
@@ -385,6 +385,8 @@ class TestCorrelationChanges(BaseDataQualityCorrelationsMetricsValueTest):
         if metric_result.reference is None:
             raise ValueError("Reference should be present")
 
+        if self.method is None:
+            raise ValueError("method should be set")
         current_correlations = metric_result.current.correlation[self.method]
         reference_correlations: Optional[pd.DataFrame] = metric_result.reference.correlation[self.method]
         diff = reference_correlations - current_correlations
@@ -399,6 +401,9 @@ class TestCorrelationChangesRenderer(TestRenderer):
     def render_html(self, obj: TestCorrelationChanges) -> TestHtmlInfo:
         info = super().render_html(obj)
         metric_result = obj.metric.get_result()
+
+        if obj.method is None:
+            raise ValueError("method should be set")
         current_correlations = metric_result.current.correlation[obj.method]
 
         if metric_result.reference is not None:

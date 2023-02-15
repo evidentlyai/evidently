@@ -347,32 +347,20 @@ def _get_column_type(column_name: str, data: _InputData, mapping: Optional[Colum
 
     nunique = ref_unique or cur_unique
     # special case: target
-    if (
-        mapping is not None
-        and (
-            column_name == mapping.target
-            or (mapping.target is None and column_name == 'target')
-        )
-    ):
-        reg_condition = (
-            mapping.task == "regression"
-            or (
-                pd.api.types.is_numeric_dtype(cur_type if cur_type is not None else ref_type)
-                and mapping.task != "classification"
-                and (nunique is not None and nunique > NUMBER_UNIQUE_AS_CATEGORICAL)
-            )
+    if mapping is not None and (column_name == mapping.target or (mapping.target is None and column_name == "target")):
+        reg_condition = mapping.task == "regression" or (
+            pd.api.types.is_numeric_dtype(cur_type if cur_type is not None else ref_type)
+            and mapping.task != "classification"
+            and (nunique is not None and nunique > NUMBER_UNIQUE_AS_CATEGORICAL)
         )
         if reg_condition:
             return ColumnType.Numerical
         else:
             return ColumnType.Categorical
 
-    if (
-        mapping is not None
-        and (
-            (isinstance(mapping.prediction, str) and column_name == mapping.prediction)
-            or (mapping.prediction is None and column_name == 'prediction')
-        )
+    if mapping is not None and (
+        (isinstance(mapping.prediction, str) and column_name == mapping.prediction)
+        or (mapping.prediction is None and column_name == "prediction")
     ):
         if (
             pd.api.types.is_string_dtype(cur_type if cur_type is not None else ref_type)
@@ -384,10 +372,7 @@ def _get_column_type(column_name: str, data: _InputData, mapping: Optional[Colum
             or (
                 pd.api.types.is_integer_dtype(cur_type if cur_type is not None else ref_type)
                 and mapping.task == "classification"
-                and (
-                    data.current[column_name].max() > 1
-                    or data.current[column_name].min() < 0
-                )
+                and (data.current[column_name].max() > 1 or data.current[column_name].min() < 0)
             )
         ):
             return ColumnType.Categorical
