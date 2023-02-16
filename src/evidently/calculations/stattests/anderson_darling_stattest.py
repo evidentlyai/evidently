@@ -38,7 +38,7 @@ def _anderson_darling(
     feature_type: str,
     threshold: float,
 ) -> Tuple[float, bool]:
-    p_value = anderson_ksamp(np.array([reference_data, current_data]))[2]
+    p_value = anderson_ksamp([reference_data.values, current_data.values])[2]
     return p_value, p_value < threshold
 
 
