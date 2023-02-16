@@ -170,10 +170,7 @@ class DatasetCorrelationsMetric(Metric[DatasetCorrelationsMetricResult]):
             correlations = copy.deepcopy(correlations_calculate)
 
         prediction_columns = data_definition.get_prediction_columns()
-        if (
-            prediction_columns is not None
-            and prediction_columns.prediction_probas is not None
-        ):
+        if prediction_columns is not None and prediction_columns.prediction_probas is not None:
             names = [col.column_name for col in prediction_columns.prediction_probas]
             for name, correlation in correlations_calculate.items():
                 if name != "cramer_v" and len(names) > 1:
