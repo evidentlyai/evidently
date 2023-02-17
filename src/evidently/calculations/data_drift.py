@@ -83,7 +83,9 @@ def get_one_column_drift(
         raise ValueError(f"Cannot find column '{column_name}' in reference dataset")
 
     if column_type is None:
-        column_type = recognize_column_type(dataset=reference_data, column_name=column_name, columns=dataset_columns)
+        column_type = recognize_column_type(
+            dataset=reference_data.append(current_data), column_name=column_name, columns=dataset_columns
+        )
 
     if column_type not in ("cat", "num", "text"):
         raise ValueError(f"Cannot calculate drift metric for column '{column_name}' with type {column_type}")

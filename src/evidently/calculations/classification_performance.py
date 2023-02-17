@@ -113,20 +113,13 @@ def get_prediction_data(
             labels=prediction,
         )
 
-    # # calculate labels as np.array - for better negative label calculations for binary classification
-    # if data_columns.target_names is not None:
-    #     # if target_names is specified, get labels from it
-    #     labels = np.array(data_columns.target_names)
-
-    # else:
-    # if target_names is not specified, try to get labels from target and/or prediction
     if isinstance(prediction, str) and not is_float_dtype(data[prediction]):
         # if prediction is not probas, get unique values from it and target
-        labels = np.union1d(data[target].unique(), data[prediction].unique())
+        labels = np.union1d(data[target].unique(), data[prediction].unique()).tolist()
 
     else:
         # if prediction is probas, get unique values from target only
-        labels = data[target].unique()
+        labels = data[target].unique().tolist()
 
     # binary classification
     # prediction in mapping is a list of two columns:

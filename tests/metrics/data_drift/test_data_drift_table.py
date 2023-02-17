@@ -6,7 +6,6 @@ import pytest
 from pytest import approx
 
 from evidently.metrics.data_drift.data_drift_table import DataDriftTable
-from evidently.options import DataDriftOptions
 from evidently.pipeline.column_mapping import ColumnMapping
 from evidently.report import Report
 
@@ -203,14 +202,14 @@ def test_data_drift_metrics_json_output() -> None:
         {
             "category_feature": ["a", "b", "a", np.NAN],
             "target": [np.NAN, np.NAN, 3, 4],
-            "prediction": [1, 0, np.NAN, 1],
+            "prediction": [1, 0, np.NAN, 5],
         }
     )
     reference_dataset = pd.DataFrame(
         {
             "category_feature": ["a", "a", "b", "b"],
             "target": [1, 4, 5, 5],
-            "prediction": [1, 0, 1, 1],
+            "prediction": [1, 5, 4, 4],
         }
     )
     report = Report(metrics=[DataDriftTable(stattest_threshold=0.7)])
@@ -236,9 +235,9 @@ def test_data_drift_metrics_json_output() -> None:
             "prediction": {
                 "column_name": "prediction",
                 "column_type": "cat",
-                "drift_detected": False,
-                "drift_score": approx(0.8, abs=0.01),
-                "stattest_name": "Z-test p_value",
+                "drift_detected": True,
+                "drift_score": 0.0,
+                "stattest_name": "chi-square p_value",
                 "threshold": 0.7,
                 "typical_examples_cur": None,
                 "typical_examples_ref": None,
@@ -259,6 +258,6 @@ def test_data_drift_metrics_json_output() -> None:
             },
         },
         "number_of_columns": 3,
-        "number_of_drifted_columns": 2,
-        "share_of_drifted_columns": approx(0.67, abs=0.01),
+        "number_of_drifted_columns": 3,
+        "share_of_drifted_columns": 1,
     }

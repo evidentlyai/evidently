@@ -56,17 +56,23 @@ Evidently has `monitors` that collect data and model metrics from a deployed ML 
 ### MAC OS and Linux
 Evidently is available as a PyPI package. To install it using pip package manager, run:
 ```sh
-$ pip install evidently
+pip install evidently
 ```
+Since version 0.2.4 Evidently is available in Anaconda distribution platform.
+To install Evidently using conda installer, run:
+```sh
+conda install -c conda-forge evidently
+```
+
 If you only want to get results as HTML or JSON files, the installation is now complete. To display the dashboards inside a Jupyter notebook, you need `jupyter nbextension`. After installing `evidently`, run the two following commands in the terminal from the evidently directory.
 
 To install jupyter nbextension, run:
 ```sh
-$ jupyter nbextension install --sys-prefix --symlink --overwrite --py evidently
+jupyter nbextension install --sys-prefix --symlink --overwrite --py evidently
 ```
 To enable it, run:
 ```sh
-$ jupyter nbextension enable evidently --py --sys-prefix
+jupyter nbextension enable evidently --py --sys-prefix
 ```
 That's it! A single run after the installation is enough. 
 
@@ -75,9 +81,14 @@ That's it! A single run after the installation is enough.
 ### Windows
 Evidently is available as a PyPI package. To install it using pip package manager, run:
 ```sh
-$ pip install evidently
+pip install evidently
 ```
-Unfortunately, building reports inside a Jupyter notebook is not yet possible for Windows. The reason is Windows requires administrator privileges to create symlink. In later versions we will address this issue. You can still generate the HTML to view externally.
+To install Evidently using conda installer, run:
+```sh
+conda install -c conda-forge evidently
+```
+
+Unfortunately, building reports inside a Jupyter notebook using ```jupyter nbextension``` is not yet possible for Windows. The reason is Windows requires administrator privileges to create symlink. You can still display reports and testsuits inside a Jupyter notebook by explicitly adding the argument ```inline``` when calling it: ```report.show(mode='inline')```.  And you can generate the HTML to view externally as well.
 
 # :arrow_forward: Getting started
 > **Note**

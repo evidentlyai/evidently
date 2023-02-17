@@ -14,6 +14,7 @@ from evidently.calculations.data_quality import calculate_correlations
 from evidently.calculations.data_quality import calculate_data_quality_stats
 from evidently.utils.data_operations import process_columns
 from evidently.utils.data_operations import recognize_task
+from evidently.utils.data_preprocessing import create_data_definition
 
 
 @dataclass
@@ -114,11 +115,12 @@ class DataQualityAnalyzer(Analyzer):
         else:
             current_features_stats = None
 
+        data_definition = create_data_definition(current_data, reference_data, column_mapping)
         # calculate correlations
-        reference_correlations: Dict = calculate_correlations(reference_data, columns)
+        reference_correlations: Dict = calculate_correlations(reference_data, data_definition)
 
         if current_features_stats is not None:
-            current_correlations: Dict = calculate_correlations(current_data, columns)
+            current_correlations: Dict = calculate_correlations(current_data, data_definition)
 
         else:
             current_correlations = {}
