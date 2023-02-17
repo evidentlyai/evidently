@@ -7,6 +7,7 @@ from typing import Union
 import numpy as np
 import pandas as pd
 
+from evidently.calculations.data_quality import get_corr_method
 from evidently.metrics import ColumnQuantileMetric
 from evidently.metrics import ColumnSummaryMetric
 from evidently.metrics import ColumnValueListMetric
@@ -117,11 +118,11 @@ class TestConflictPrediction(Test):
 class BaseDataQualityCorrelationsMetricsValueTest(BaseCheckValueTest, ABC):
     group = DATA_QUALITY_GROUP.id
     metric: DatasetCorrelationsMetric
-    method: str
+    method: Optional[str]
 
     def __init__(
         self,
-        method: str = "pearson",
+        method: Optional[str] = None,
         eq: Optional[Numeric] = None,
         gt: Optional[Numeric] = None,
         gte: Optional[Numeric] = None,
@@ -146,7 +147,8 @@ class TestTargetPredictionCorrelation(BaseDataQualityCorrelationsMetricsValueTes
         reference = self.metric.get_result().reference
 
         if reference is not None:
-            value = reference.stats[self.method].target_prediction_correlation
+            method = get_corr_method(self.method, self.metric.get_result().target_correlation, False)
+            value = reference.stats[method].target_prediction_correlation
 
             if value is not None:
                 return TestValueCondition(eq=approx(value, absolute=0.25))
@@ -154,7 +156,8 @@ class TestTargetPredictionCorrelation(BaseDataQualityCorrelationsMetricsValueTes
         return TestValueCondition(gt=0)
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
-        return self.metric.get_result().current.stats[self.method].target_prediction_correlation
+        method = get_corr_method(self.method, self.metric.get_result().target_correlation, False)
+        return self.metric.get_result().current.stats[method].target_prediction_correlation
 
     def get_description(self, value: Numeric) -> str:
         if value is None:
@@ -175,7 +178,7 @@ class TestHighlyCorrelatedColumns(BaseDataQualityCorrelationsMetricsValueTest):
         reference_correlation = self.metric.get_result().reference
 
         if reference_correlation is not None:
-            value = reference_correlation.stats[self.method].abs_max_features_correlation
+            value = reference_correlation.stats[get_corr_method(self.method)].abs_max_features_correlation
 
             if value is not None:
                 return TestValueCondition(eq=approx(value, relative=0.1))
@@ -183,7 +186,7 @@ class TestHighlyCorrelatedColumns(BaseDataQualityCorrelationsMetricsValueTest):
         return TestValueCondition(lt=0.9)
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
-        return self.metric.get_result().current.stats[self.method].abs_max_features_correlation
+        return self.metric.get_result().current.stats[get_corr_method(self.method)].abs_max_features_correlation
 
     def get_description(self, value: Numeric) -> str:
         return f"The maximum correlation is {value:.3g}. The test threshold is {self.get_condition()}."
@@ -200,10 +203,11 @@ class TestHighlyCorrelatedColumnsRenderer(TestRenderer):
     def render_html(self, obj: TestHighlyCorrelatedColumns) -> TestHtmlInfo:
         info = super().render_html(obj)
         metric_result = obj.metric.get_result()
-        current_correlations = metric_result.current.correlation[obj.method]
+        method = get_corr_method(obj.method)
+        current_correlations = metric_result.current.correlation[method]
 
         if metric_result.reference is not None:
-            reference_correlations: Optional[pd.DataFrame] = metric_result.reference.correlation[obj.method]
+            reference_correlations: Optional[pd.DataFrame] = metric_result.reference.correlation[method]
 
         else:
             reference_correlations = None
@@ -223,7 +227,8 @@ class TestTargetFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValueTest
         reference_correlation = self.metric.get_result().reference
 
         if reference_correlation is not None:
-            value = reference_correlation.stats[self.method].abs_max_target_features_correlation
+            method = get_corr_method(self.method, self.metric.get_result().target_correlation, False)
+            value = reference_correlation.stats[method].abs_max_target_features_correlation
 
             if value is not None:
                 return TestValueCondition(eq=approx(value, relative=0.1))
@@ -231,7 +236,8 @@ class TestTargetFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValueTest
         return TestValueCondition(lt=0.9)
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
-        return self.metric.get_result().current.stats[self.method].abs_max_target_features_correlation
+        method = get_corr_method(self.method, self.metric.get_result().target_correlation, False)
+        return self.metric.get_result().current.stats[method].abs_max_target_features_correlation
 
     def get_description(self, value: Numeric) -> str:
         if value is None:
@@ -259,10 +265,11 @@ class TestTargetFeaturesCorrelationsRenderer(TestRenderer):
     def render_html(self, obj: TestTargetFeaturesCorrelations) -> TestHtmlInfo:
         info = super().render_html(obj)
         metric_result = obj.metric.get_result()
-        current_correlations = metric_result.current.correlation[obj.method]
+        method = get_corr_method(obj.method, metric_result.target_correlation, False)
+        current_correlations = metric_result.current.correlation[method]
 
         if metric_result.reference is not None:
-            reference_correlations: Optional[pd.DataFrame] = metric_result.reference.correlation[obj.method]
+            reference_correlations: Optional[pd.DataFrame] = metric_result.reference.correlation[method]
 
         else:
             reference_correlations = None
@@ -282,7 +289,8 @@ class TestPredictionFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValue
         reference_correlation = self.metric.get_result().reference
 
         if reference_correlation is not None:
-            value = reference_correlation.stats[self.method].abs_max_prediction_features_correlation
+            method = get_corr_method(self.method, self.metric.get_result().target_correlation, False)
+            value = reference_correlation.stats[method].abs_max_prediction_features_correlation
 
             if value is not None:
                 return TestValueCondition(eq=approx(value, relative=0.1))
@@ -290,7 +298,8 @@ class TestPredictionFeaturesCorrelations(BaseDataQualityCorrelationsMetricsValue
         return TestValueCondition(lt=0.9)
 
     def calculate_value_for_test(self) -> Optional[Numeric]:
-        return self.metric.get_result().current.stats[self.method].abs_max_prediction_features_correlation
+        method = get_corr_method(self.method, self.metric.get_result().target_correlation, False)
+        return self.metric.get_result().current.stats[method].abs_max_prediction_features_correlation
 
     def get_description(self, value: Numeric) -> str:
         if value is None:
@@ -318,10 +327,11 @@ class TestPredictionFeaturesCorrelationsRenderer(TestRenderer):
     def render_html(self, obj: TestTargetFeaturesCorrelations) -> TestHtmlInfo:
         info = super().render_html(obj)
         metric_result = obj.metric.get_result()
-        current_correlations = metric_result.current.correlation[obj.method]
+        method = get_corr_method(obj.method, metric_result.target_correlation, False)
+        current_correlations = metric_result.current.correlation[method]
 
         if metric_result.reference is not None:
-            reference_correlations: Optional[pd.DataFrame] = metric_result.reference.correlation[obj.method]
+            reference_correlations: Optional[pd.DataFrame] = metric_result.reference.correlation[method]
 
         else:
             reference_correlations = None
@@ -375,6 +385,8 @@ class TestCorrelationChanges(BaseDataQualityCorrelationsMetricsValueTest):
         if metric_result.reference is None:
             raise ValueError("Reference should be present")
 
+        if self.method is None:
+            raise ValueError("method should be set")
         current_correlations = metric_result.current.correlation[self.method]
         reference_correlations: Optional[pd.DataFrame] = metric_result.reference.correlation[self.method]
         diff = reference_correlations - current_correlations
@@ -389,6 +401,9 @@ class TestCorrelationChangesRenderer(TestRenderer):
     def render_html(self, obj: TestCorrelationChanges) -> TestHtmlInfo:
         info = super().render_html(obj)
         metric_result = obj.metric.get_result()
+
+        if obj.method is None:
+            raise ValueError("method should be set")
         current_correlations = metric_result.current.correlation[obj.method]
 
         if metric_result.reference is not None:

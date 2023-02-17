@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 
 
-def make_hist_df(hist: Tuple[np.array, np.array]) -> pd.DataFrame:
+def make_hist_df(hist: Tuple[np.ndarray, np.ndarray]) -> pd.DataFrame:
     hist_df = pd.DataFrame(
         np.array(
             [

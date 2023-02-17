@@ -141,6 +141,7 @@ def _process_column(
     data: _InputData,
     if_partially_present: str = "raise",
     predefined_type: Optional[ColumnType] = None,
+    mapping: Optional[ColumnMapping] = None,
 ) -> Optional[ColumnDefinition]:
     if column_name is None:
         return None
@@ -154,7 +155,7 @@ def _process_column(
             return None
         if if_partially_present == "keep":
             pass
-    column_type = predefined_type if predefined_type is not None else _get_column_type(column_name, data)
+    column_type = predefined_type if predefined_type is not None else _get_column_type(column_name, data, mapping)
     return ColumnDefinition(column_name, column_type)
 
 
@@ -164,6 +165,7 @@ def _prediction_column(
     target_names: Optional[List[str]],
     task: Optional[str],
     data: _InputData,
+    mapping: Optional[ColumnMapping] = None,
 ) -> Optional[PredictionColumns]:
     if prediction is None:
         return None
@@ -173,7 +175,7 @@ def _prediction_column(
             return None
         if prediction_present == ColumnPresenceState.Partially:
             raise ValueError(f"Prediction column ({prediction}) is partially present in data")
-        prediction_type = _get_column_type(prediction, data)
+        prediction_type = _get_column_type(prediction, data, mapping)
         if task == TaskType.CLASSIFICATION_TASK:
             if prediction_type == ColumnType.Categorical:
                 return PredictionColumns(predicted_values=ColumnDefinition(prediction, prediction_type))
@@ -216,7 +218,7 @@ def create_data_definition(
 ) -> DataDefinition:
     data = _InputData(reference_data, current_data)
     id_column = _process_column(mapping.id, data)
-    target_column = _process_column(mapping.target, data)
+    target_column = _process_column(mapping.target, data, mapping=mapping)
     datetime_column = _process_column(mapping.datetime, data)
 
     prediction_columns = _prediction_column(
@@ -225,6 +227,7 @@ def create_data_definition(
         mapping.target_names,
         mapping.task,
         data,
+        mapping,
     )
 
     prediction_cols = prediction_columns.get_columns_list() if prediction_columns is not None else []
@@ -245,7 +248,7 @@ def create_data_definition(
     else:
         all_columns.extend(
             [
-                _process_column(column_name, data, predefined_type=ColumnType.Numerical)
+                _process_column(column_name, data, predefined_type=ColumnType.Numerical, mapping=mapping)
                 for column_name in mapping.numerical_features
                 if column_name not in utility_column_names
             ]
@@ -257,7 +260,7 @@ def create_data_definition(
     else:
         all_columns.extend(
             [
-                _process_column(column_name, data, predefined_type=ColumnType.Categorical)
+                _process_column(column_name, data, predefined_type=ColumnType.Categorical, mapping=mapping)
                 for column_name in mapping.categorical_features
                 if column_name not in utility_column_names
             ]
@@ -269,7 +272,7 @@ def create_data_definition(
     else:
         all_columns.extend(
             [
-                _process_column(column_name, data, predefined_type=ColumnType.Datetime)
+                _process_column(column_name, data, predefined_type=ColumnType.Datetime, mapping=mapping)
                 for column_name in mapping.datetime_features
                 if column_name not in utility_column_names
             ]
@@ -278,7 +281,7 @@ def create_data_definition(
     if mapping.text_features is not None:
         all_columns.extend(
             [
-                _process_column(column_name, data, predefined_type=ColumnType.Text)
+                _process_column(column_name, data, predefined_type=ColumnType.Text, mapping=mapping)
                 for column_name in mapping.text_features
                 if column_name not in utility_column_names
             ]
@@ -324,7 +327,7 @@ def _get_column_presence(column_name: str, data: _InputData) -> ColumnPresenceSt
 NUMBER_UNIQUE_AS_CATEGORICAL = 5
 
 
-def _get_column_type(column_name: str, data: _InputData) -> ColumnType:
+def _get_column_type(column_name: str, data: _InputData, mapping: Optional[ColumnMapping] = None) -> ColumnType:
     ref_type = None
     ref_unique = None
     if data.reference is not None and column_name in data.reference.columns:
@@ -341,6 +344,42 @@ def _get_column_type(column_name: str, data: _InputData) -> ColumnType:
         and (ref_type != cur_type and not np.can_cast(cur_type, ref_type) and not np.can_cast(ref_type, cur_type))
     ):
         raise ValueError(f"Column {column_name} have different types in reference {ref_type} and current {cur_type}")
+
+    nunique = ref_unique or cur_unique
+    # special case: target
+    if mapping is not None and (column_name == mapping.target or (mapping.target is None and column_name == "target")):
+        reg_condition = mapping.task == "regression" or (
+            pd.api.types.is_numeric_dtype(cur_type if cur_type is not None else ref_type)
+            and mapping.task != "classification"
+            and (nunique is not None and nunique > NUMBER_UNIQUE_AS_CATEGORICAL)
+        )
+        if reg_condition:
+            return ColumnType.Numerical
+        else:
+            return ColumnType.Categorical
+
+    if mapping is not None and (
+        (isinstance(mapping.prediction, str) and column_name == mapping.prediction)
+        or (mapping.prediction is None and column_name == "prediction")
+    ):
+        if (
+            pd.api.types.is_string_dtype(cur_type if cur_type is not None else ref_type)
+            or (
+                pd.api.types.is_integer_dtype(cur_type if cur_type is not None else ref_type)
+                and mapping.task != "regression"
+                and (nunique is not None and nunique <= NUMBER_UNIQUE_AS_CATEGORICAL)
+            )
+            or (
+                pd.api.types.is_integer_dtype(cur_type if cur_type is not None else ref_type)
+                and mapping.task == "classification"
+                and (data.current[column_name].max() > 1 or data.current[column_name].min() < 0)
+            )
+        ):
+            return ColumnType.Categorical
+        else:
+            return ColumnType.Numerical
+
+    # all other features
     if pd.api.types.is_integer_dtype(cur_type if cur_type is not None else ref_type):
         nunique = ref_unique or cur_unique
         if nunique is not None and nunique <= NUMBER_UNIQUE_AS_CATEGORICAL:

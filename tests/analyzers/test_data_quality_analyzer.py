@@ -9,6 +9,7 @@ from evidently.analyzers.data_quality_analyzer import DataQualityAnalyzer
 from evidently.calculations import data_quality
 from evidently.calculations.data_quality import FeatureQualityStats
 from evidently.utils.data_operations import process_columns
+from evidently.utils.data_preprocessing import create_data_definition
 
 
 @pytest.mark.parametrize(
@@ -787,9 +788,9 @@ def test_select_features_for_corr() -> None:
         datetime_features=["datetime_feature_1", "datetime_feature_2"],
         task="regression",
     )
-    columns = process_columns(reference_data, column_mapping)
+    columns = create_data_definition(None, reference_data, column_mapping)
     num_for_corr, cat_for_corr = data_quality._select_features_for_corr(reference_data, columns)
-    assert num_for_corr == ["numerical_feature_1", "numerical_feature_2", "my_target"]
+    assert num_for_corr == ["my_target", "numerical_feature_1", "numerical_feature_2"]
     assert cat_for_corr == ["categorical_feature_1", "categorical_feature_2"]
 
 
@@ -827,49 +828,57 @@ def test_corr_matrix(df: pd.DataFrame, expected: np.array) -> None:
     [
         (
             "pearson",
-            np.array(
-                [
+            pd.DataFrame(
+                data=[
                     [1.0, 0.83124651, 0.87038828, 1.0, 0.06286946],
                     [0.83124651, 1.0, 0.63871402, 1.0, -0.13547661],
                     [0.87038828, 0.63871402, 1.0, np.nan, 0.12038585],
                     [1.0, 1.0, np.nan, 1.0, 1.0],
                     [0.06286946, -0.13547661, 0.12038585, 1.0, 1.0],
-                ]
+                ],
+                columns=["num_feature_1", "num_feature_2", "num_feature_3", "num_feature_4", "target"],
+                index=["num_feature_1", "num_feature_2", "num_feature_3", "num_feature_4", "target"],
             ),
         ),
         (
             "spearman",
-            np.array(
-                [
+            pd.DataFrame(
+                data=[
                     [1.0, 0.79147062, 0.87038828, 1.0, 0.05778856],
                     [0.79147062, 1.0, 0.59917127, 1.0, -0.19500675],
                     [0.87038828, 0.59917127, 1.0, np.nan, 0.11065667],
                     [1.0, 1.0, np.nan, 1.0, 1.0],
                     [0.05778856, -0.19500675, 0.11065667, 1.0, 1.0],
-                ]
+                ],
+                columns=["num_feature_1", "num_feature_2", "num_feature_3", "num_feature_4", "target"],
+                index=["num_feature_1", "num_feature_2", "num_feature_3", "num_feature_4", "target"],
             ),
         ),
         (
             "kendall",
-            np.array(
-                [
+            pd.DataFrame(
+                data=[
                     [1.0, 0.73606993, 0.74535599, 1.0, 0.07784989],
                     [0.73606993, 1.0, 0.52463139, 1.0, -0.13430383],
                     [0.74535599, 0.52463139, 1.0, np.nan, 0.10444659],
                     [1.0, 1.0, np.nan, 1.0, 1.0],
                     [0.07784989, -0.13430383, 0.10444659, 1.0, 1.0],
-                ]
+                ],
+                columns=["num_feature_1", "num_feature_2", "num_feature_3", "num_feature_4", "target"],
+                index=["num_feature_1", "num_feature_2", "num_feature_3", "num_feature_4", "target"],
             ),
         ),
         (
             "cramer_v",
-            np.array(
-                [
+            pd.DataFrame(
+                data=[
                     [1.0, 0.72111026, 0.81649658, np.nan],
                     [0.72111026, 1.0, 0.70710678, 1.0],
                     [0.81649658, 0.70710678, 1.0, np.nan],
                     [np.nan, 1.0, np.nan, 1.0],
-                ]
+                ],
+                columns=["cat_feature_1", "cat_feature_2", "cat_feature_3", "cat_feature_4"],
+                index=["cat_feature_1", "cat_feature_2", "cat_feature_3", "cat_feature_4"],
             ),
         ),
     ],
@@ -914,9 +923,13 @@ def test_calculate_correlations(kind: str, expected_corr_df: np.array) -> None:
         datetime_features=["datetime_feature"],
         task="regression",
     )
-    columns = process_columns(df, column_mapping)
+    columns = create_data_definition(None, df, column_mapping)
     num_for_corr, cat_for_corr = data_quality._select_features_for_corr(df, columns)
     corr_df = data_quality._calculate_correlations(df, num_for_corr, cat_for_corr, kind)
-    assert num_for_corr == ["num_feature_1", "num_feature_2", "num_feature_3", "num_feature_4", "target"]
+    assert num_for_corr == ["target", "num_feature_1", "num_feature_2", "num_feature_3", "num_feature_4"]
     assert cat_for_corr == ["cat_feature_1", "cat_feature_2", "cat_feature_3", "cat_feature_4"]
-    assert np.allclose(corr_df, expected_corr_df, equal_nan=True)
+    assert np.allclose(
+        corr_df[expected_corr_df.columns].loc[expected_corr_df.columns],
+        expected_corr_df,
+        equal_nan=True,
+    )
