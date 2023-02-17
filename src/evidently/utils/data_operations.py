@@ -283,15 +283,11 @@ def recognize_column_type(
             return "cat"
 
     if isinstance(columns.utility_columns.prediction, str) and column_name == columns.utility_columns.prediction:
-
-        if (
-            reg_condition
-            or (
-                not pd.api.types.is_integer_dtype(column)
-                and pd.api.types.is_numeric_dtype(column)
-                and column.max() <= 1
-                and column.min() >= 0
-            )
+        if reg_condition or (
+            not pd.api.types.is_integer_dtype(column)
+            and pd.api.types.is_numeric_dtype(column)
+            and column.max() <= 1
+            and column.min() >= 0
         ):
             return "num"
 
